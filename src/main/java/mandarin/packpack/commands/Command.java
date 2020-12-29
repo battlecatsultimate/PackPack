@@ -1,21 +1,26 @@
 package mandarin.packpack.commands;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.MessageEvent;
+import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.StaticStore;
 
 interface Command {
+    int DEFAULT_ERROR = -1;
+
     default void execute(MessageCreateEvent event) {
         try {
             doSomething(event);
         } catch (Exception e) {
-            onFail(event);
+            e.printStackTrace();
+            onFail(event, DEFAULT_ERROR);
         }
     }
 
     void doSomething(MessageCreateEvent event);
 
-    default void onFail(MessageCreateEvent event) {
+    default void onFail(MessageCreateEvent event, int error) {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
@@ -30,5 +35,9 @@ interface Command {
 
     default MessageChannel getChannel(MessageCreateEvent event) {
         return event.getMessage().getChannel().block();
+    }
+
+    default String getMessage(MessageCreateEvent event) {
+        return event.getMessage().getContent();
     }
 }
