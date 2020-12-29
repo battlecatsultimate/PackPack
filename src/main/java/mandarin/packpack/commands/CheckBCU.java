@@ -29,7 +29,7 @@ public class CheckBCU implements Command {
 
             event.getGuild()
                     .subscribe(g -> g.getMembers()
-                        .filter(m -> !StaticStore.rolesToString(m.getRoleIds()).contains(StaticStore.MUTED))
+                        .filter(m -> !StaticStore.rolesToString(m.getRoleIds()).contains(StaticStore.MUTED_ID))
                         .subscribe(m -> {
                             boolean pre = false;
                             boolean mem = false;
@@ -49,7 +49,7 @@ public class CheckBCU implements Command {
                                 both.get().append(m.getUsername()).append(", ");
                         }, e -> ch.createMessage(StaticStore.ERROR_MSG).subscribe(), pause::resume));
 
-            pause.pause(() -> onFail(event));
+            pause.pause(() -> onFail(event, DEFAULT_ERROR));
 
             ch.createMessage(both.get().substring(0, both.get().length()-2)+"\n"+none.get().substring(0, none.get().length()-2)).subscribe();
 
