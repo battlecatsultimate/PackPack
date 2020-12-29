@@ -1,5 +1,6 @@
 package mandarin.packpack;
 
+import common.CommonStatic;
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
@@ -9,12 +10,16 @@ import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.presence.Activity;
 import discord4j.core.object.presence.Presence;
 import discord4j.rest.request.RouterOptions;
-import mandarin.packpack.commands.BCUStat;
-import mandarin.packpack.commands.CheckBCU;
+import mandarin.packpack.commands.*;
+import mandarin.packpack.supporter.PackContext;
 import mandarin.packpack.supporter.StaticStore;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 public class PackBot {
     public static void main(String[] args) {
+        initialize();
+
         final String TOKEN = args[0];
 
         DiscordClientBuilder<DiscordClient, RouterOptions> builder = DiscordClientBuilder.create(TOKEN);
@@ -35,23 +40,52 @@ public class PackBot {
 
                     if(mc == null)
                         return false;
-                    else
-                        return mc.getId().asString().equals(StaticStore.BOT_COMMANDS);
+                    else {
+                        AtomicReference<Boolean> mandarin = new AtomicReference<>(false);
+
+                        event.getMember().ifPresent(m -> mandarin.set(m.getId().asString().equals(StaticStore.MANDARIN_SMELL)));
+
+                        return mc.getId().asString().equals(StaticStore.BOT_COMMANDS) || mandarin.get();
+                    }
                 }).subscribe(event -> {
                     Message msg = event.getMessage();
 
                     MessageChannel ch = msg.getChannel().block();
 
-                    if(ch != null) {
-                        switch (msg.getContent()) {
-                            case "p!checkbcu":
-                                new CheckBCU().execute(event);
-                                break;
-                            case "p!bcustat":
-                                new BCUStat().execute(event);
-                                break;
+                    event.getMember().ifPresent(m -> {
+                        String prefix = StaticStore.getPrefix(m.getId().asString());
+
+                        if(msg.getContent().startsWith(StaticStore.serverPrefix))
+                            prefix = StaticStore.serverPrefix;
+
+                        System.out.println(StaticStore.getCommand(msg.getContent(), prefix));
+
+                        if(ch != null) {
+                            switch (StaticStore.getCommand(msg.getContent(), prefix)) {
+                                case "checkbcu":
+                                    new CheckBCU().execute(event);
+                                    break;
+                                case "bcustat":
+                                    new BCUStat().execute(event);
+                                    break;
+                                case "analyze":
+                                    new Analyze(ConstraintCommand.ROLE.MANDARIN).execute(event);
+                                    break;
+                                case "help":
+                                    new Help().execute(event);
+                                    break;
+                                case "prefix":
+                                    new Prefix(ConstraintCommand.ROLE.MEMBER).execute(event);
+                                    break;
+                                case "serverpre":
+                                    new ServerPrefix(ConstraintCommand.ROLE.MOD).execute(event);
+                                    break;
+                                case "save":
+                                    new Save(ConstraintCommand.ROLE.MOD).execute(event);
+                                    break;
+                            }
                         }
-                    }
+                    });
         });
 
         gate.onDisconnect().block();
@@ -67,6 +101,15 @@ public class PackBot {
                 return "rd";
             default:
                 return "th";
+        }
+    }
+
+    public static void initialize() {
+        if(!StaticStore.initialized) {
+            CommonStatic.ctx = new PackContext();
+            StaticStore.readServerInfo();
+
+            StaticStore.initialized = true;
         }
     }
 }
