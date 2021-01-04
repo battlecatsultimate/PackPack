@@ -59,7 +59,7 @@ public abstract class ConstraintCommand implements Command {
             if(constRole.equals("MANDARIN")) {
                 isDev.set(m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
             } else {
-                isDev.set(role.contains(constRole));
+                isDev.set(role.contains(constRole) || m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
             }
 
         }, e -> onFail(event, DEFAULT_ERROR), pause::resume);

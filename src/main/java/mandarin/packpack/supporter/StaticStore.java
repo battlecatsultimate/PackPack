@@ -2,9 +2,7 @@ package mandarin.packpack.supporter;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -23,6 +21,8 @@ public class StaticStore {
 
     public static String serverPrefix = "p!";
     public static Map<String, String> prefix = new HashMap<>();
+
+    public static Timer saver = null;
 
     public static Color[] rainbow = {Color.of(217, 65, 68), Color.of(217, 128, 65), Color.of(224, 213, 85)
     , Color.of(118, 224, 85), Color.of(85, 169, 224), Color.of(185, 85, 224)};
@@ -233,6 +233,40 @@ public class StaticStore {
 
             if(obj.has("prefix")) {
                 jsonToMap(obj.get("prefix").getAsJsonObject());
+            }
+        }
+    }
+
+    public static void deleteFile(File f, boolean selfDelete) {
+        if(f.isFile()) {
+            boolean res = f.delete();
+
+            if(!res) {
+                System.out.println("Failed to delete file : "+f.getAbsolutePath());
+            }
+        } else if(f.isDirectory()) {
+            File[] files = f.listFiles();
+
+            if(files != null) {
+                for(File g : files) {
+                    if(g.isFile()) {
+                        boolean res = g.delete();
+
+                        if(!res) {
+                            System.out.println("Failed to delete file : "+g.getAbsolutePath());
+                        }
+                    } else if(g.isDirectory()) {
+                        deleteFile(g, true);
+                    }
+                }
+            }
+
+            if(selfDelete) {
+                boolean res = f.delete();
+
+                if(!res) {
+                    System.out.println("Failed to delete folder : "+f.getAbsolutePath());
+                }
             }
         }
     }

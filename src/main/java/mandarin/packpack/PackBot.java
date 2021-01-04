@@ -1,6 +1,7 @@
 package mandarin.packpack;
 
 import common.CommonStatic;
+import common.system.fake.ImageBuilder;
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
@@ -13,7 +14,11 @@ import discord4j.rest.request.RouterOptions;
 import mandarin.packpack.commands.*;
 import mandarin.packpack.supporter.PackContext;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.awt.FIBI;
 
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class PackBot {
@@ -32,7 +37,7 @@ public class PackBot {
             return;
         }
 
-        gate.updatePresence(Presence.online(Activity.playing("Under Construction!"))).subscribe();
+        gate.updatePresence(Presence.online(Activity.playing("p!help, but under Construction!"))).subscribe();
 
         gate.on(MessageCreateEvent.class)
                 .filter(event -> {
@@ -83,6 +88,18 @@ public class PackBot {
                                 case "save":
                                     new Save(ConstraintCommand.ROLE.MOD).execute(event);
                                     break;
+                                case "stimg":
+                                case "stimage":
+                                case "stageimg":
+                                case "stageimage":
+                                    new StageImage(ConstraintCommand.ROLE.MEMBER).execute(event);
+                                    break;
+                                case "stmimg":
+                                case "stmimage":
+                                case "stagemapimg":
+                                case "stagemapimage":
+                                    new StmImage(ConstraintCommand.ROLE.MEMBER).execute(event);
+                                    break;
                             }
                         }
                     });
@@ -107,7 +124,17 @@ public class PackBot {
     public static void initialize() {
         if(!StaticStore.initialized) {
             CommonStatic.ctx = new PackContext();
+            ImageBuilder.builder = FIBI.builder;
             StaticStore.readServerInfo();
+
+            StaticStore.saver = new Timer();
+            StaticStore.saver.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    System.out.println("Save Process");
+                    StaticStore.saveServerInfo();
+                }
+            }, 0, TimeUnit.MINUTES.toMillis(5));
 
             StaticStore.initialized = true;
         }
