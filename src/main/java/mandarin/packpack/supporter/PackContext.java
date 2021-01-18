@@ -14,13 +14,17 @@ public class PackContext implements Context {
 
     @Override
     public boolean confirmDelete() {
-        System.out.println("skip delete confirmation");
+        return true;
+    }
+
+    @Override
+    public boolean confirmDelete(File f) {
         return true;
     }
 
     @Override
     public File getAssetFile(String string) {
-        return new File("./assets/" + string);
+        return new File("./data/assets/" + string);
     }
 
     @Override
@@ -30,7 +34,15 @@ public class PackContext implements Context {
 
     @Override
     public InputStream getLangFile(String file) {
-        return Data.err(() -> new FileInputStream("./assets/lang/en/" + file));
+        try {
+            if (CommonStatic.getConfig().lang == 2) {
+                return new FileInputStream("./data/lang/proc_kr.json");
+            }
+            return new FileInputStream("./data/lang/proc.json");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
@@ -61,6 +73,11 @@ public class PackContext implements Context {
     @Override
     public void printErr(ErrType t, String str) {
         (t == ErrType.INFO ? System.out : System.err).println(str);
+    }
+
+    @Override
+    public void loadProg(String str) {
+
     }
 
 }

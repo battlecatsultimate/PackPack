@@ -5,12 +5,22 @@ import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.Pauser;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.IDHolder;
 
 import java.text.DecimalFormat;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class BCUStat implements Command {
+
+    final int lang;
+    final IDHolder holder;
+
+    public BCUStat(int lang, IDHolder holder) {
+        this.lang = lang;
+        this.holder = holder;
+    }
 
     @Override
     public void doSomething(MessageCreateEvent event) {
@@ -34,33 +44,33 @@ public class BCUStat implements Command {
                     .filter(m -> !m.isBot())
                     .count()
                     .subscribe(l -> {
-                        result.get().append("There are ").append(l).append(" human in this server\n\n");
+                        result.get().append(LangID.getStringByID("bcustat_human", lang).replace("_", Long.toString(l)));
                         allUsers.set(l);
                     });
 
             g.getMembers()
                     .filter(m -> !m.isBot())
-                    .filter(m -> StaticStore.rolesToString(m.getRoleIds()).contains(StaticStore.PRE_MEMBER_ID))
+                    .filter(m -> StaticStore.rolesToString(m.getRoleIds()).contains(holder.PRE_MEMBER))
                     .count()
-                    .subscribe(l -> result.get().append("There are ").append(l).append(" pre-members in this server. It takes about ").append(df.format(l * 100.0 / allUsers.get())).append("% of the total number of people.\n\n"));
+                    .subscribe(l -> result.get().append(LangID.getStringByID("bcustat_prem", lang).replace("_", String.valueOf(l)).replace("-", df.format(l * 100.0 / allUsers.get()))));
 
             g.getMembers()
                     .filter(m -> !m.isBot())
-                    .filter(m -> StaticStore.rolesToString(m.getRoleIds()).contains(StaticStore.MEMBER_ID))
+                    .filter(m -> StaticStore.rolesToString(m.getRoleIds()).contains(holder.MEMBER))
                     .count()
-                    .subscribe(l -> result.get().append("There are ").append(l).append(" members in this server. It takes about ").append(df.format(l * 100.0 / allUsers.get())).append("% of the total number of people.\n\n"));
+                    .subscribe(l -> result.get().append(LangID.getStringByID("bcustat_mem", lang).replace("_", String.valueOf(l)).replace("-", df.format(l * 100.0 / allUsers.get()))));
 
             g.getMembers()
                     .filter(m -> !m.isBot())
-                    .filter(m -> StaticStore.rolesToString(m.getRoleIds()).contains(StaticStore.BCU_PC_USER_ID))
+                    .filter(m -> StaticStore.rolesToString(m.getRoleIds()).contains(holder.BCU_PC_USER))
                     .count()
-                    .subscribe(l -> result.get().append("There are ").append(l).append(" BCU PC users in this server. It takes about ").append(df.format(l * 100.0 / allUsers.get())).append("% of the total number of people.\n\n"));
+                    .subscribe(l -> result.get().append(LangID.getStringByID("bcustat_pc", lang).replace("_", String.valueOf(l)).replace("-", df.format(l * 100.0 / allUsers.get()))));
 
             g.getMembers()
                     .filter(m -> !m.isBot())
-                    .filter(m -> StaticStore.rolesToString(m.getRoleIds()).contains(StaticStore.BCU_ANDROId_USER_ID))
+                    .filter(m -> StaticStore.rolesToString(m.getRoleIds()).contains(holder.BCU_ANDROID))
                     .count()
-                    .subscribe(l -> result.get().append("There are ").append(l).append(" BCU Android users in this server. It takes about ").append(df.format(l * 100.0 / allUsers.get())).append("% of the total number of people.\n\n"));
+                    .subscribe(l -> result.get().append(LangID.getStringByID("bcustat_and", lang).replace("_", String.valueOf(l)).replace("-",df.format(l * 100.0 / allUsers.get()))));
         }, e -> {
             ch.createMessage(StaticStore.ERROR_MSG).subscribe();
             error.set(true);

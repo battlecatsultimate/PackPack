@@ -3,10 +3,12 @@ package mandarin.packpack.commands;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.IDHolder;
 
 public class ServerPrefix extends ConstraintCommand {
-    public ServerPrefix(ROLE role) {
-        super(role);
+    public ServerPrefix(ROLE role, int lang, IDHolder holder) {
+        super(role, lang, holder);
     }
 
     @Override
@@ -17,17 +19,17 @@ public class ServerPrefix extends ConstraintCommand {
 
         if(list.length == 2) {
             if(list[1] == null || list[1].isBlank()) {
-                ch.createMessage("Prefix can't be white spaces!");
+                ch.createMessage(LangID.getStringByID("prefix_space", lang));
                 return;
             }
 
             StaticStore.serverPrefix = list[1];
 
-            ch.createMessage("Server prefix set as "+StaticStore.serverPrefix+"!").subscribe();
+            ch.createMessage(LangID.getStringByID("serverpre_set", lang).replace("_", StaticStore.serverPrefix)).subscribe();
         } else if(list.length == 1) {
-            ch.createMessage("This command requires one more argument : [Prefix]").subscribe();
+            ch.createMessage(LangID.getStringByID("prefix_argu", lang)).subscribe();
         } else {
-            ch.createMessage("Too many arguments! This command needs only one argument : [Prefix]").subscribe();
+            ch.createMessage(LangID.getStringByID("prefix_tooag", lang)).subscribe();
         }
     }
 }

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 
 public interface ImageGenerator {
     int space = 30;
+    int xGap = 5;
+    int yGap = 2;
 
     File generateImage(String message, boolean isStage);
 

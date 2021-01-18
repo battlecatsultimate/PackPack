@@ -9,7 +9,8 @@ import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.ImageGenerator;
 import mandarin.packpack.supporter.FontStageImageGenerator;
 import mandarin.packpack.supporter.StageImageGenerator;
-import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.IDHolder;
 
 import java.awt.*;
 import java.io.File;
@@ -22,8 +23,8 @@ public class StageImage extends ConstraintCommand {
     private static final int PARAM_REAL = 2;
     private static final int PARAM_FORCE = 4;
 
-    public StageImage(ROLE role) {
-        super(role);
+    public StageImage(ROLE role, int lang, IDHolder holder) {
+        super(role, lang, holder);
     }
 
     private FileInputStream fis;
@@ -75,7 +76,7 @@ public class StageImage extends ConstraintCommand {
 
                 handleLast(message, ch, generator);
             } else {
-                ch.createMessage("You need one more argument!\nUsage : `"+ StaticStore.serverPrefix+"stageimg [Text]`").subscribe();
+                ch.createMessage(LangID.getStringByID("stimg_argu", lang)).subscribe();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -112,15 +113,19 @@ public class StageImage extends ConstraintCommand {
 
             for(int i = 0; i < 2; i++) {
                 if(pureMessage.startsWith("-r")) {
-                    result |= PARAM_REAL;
-                    startIndex++;
+                    if((result & PARAM_REAL) == 0) {
+                        result |= PARAM_REAL;
+                        startIndex++;
 
-                    pureMessage = pureMessage.substring(2);
+                        pureMessage = pureMessage.substring(2);
+                    }
                 } else if(pureMessage.startsWith("-f")) {
-                    result |= PARAM_FORCE;
-                    startIndex++;
+                    if((result & PARAM_FORCE) == 0) {
+                        result |= PARAM_FORCE;
+                        startIndex++;
 
-                    pureMessage = pureMessage.substring(2);
+                        pureMessage = pureMessage.substring(2);
+                    }
                 }
             }
         }
@@ -133,15 +138,15 @@ public class StageImage extends ConstraintCommand {
             fis = new FileInputStream(f);
             ch.createMessage(m -> {
                 m.addFile(f.getName(),fis);
-                m.setContent("Result : ");
+                m.setContent(LangID.getStringByID("stimg_result", lang));
             }).subscribe();
         } else {
             ArrayList<String> invalid = generator.getInvalids(message);
 
             if(invalid.isEmpty()) {
-                ch.createMessage("Something went wrong while generating image").subscribe();
+                ch.createMessage(LangID.getStringByID("stimg_wrong", lang)).subscribe();
             } else {
-                StringBuilder builder = new StringBuilder("Your message has invalid letters : ");
+                StringBuilder builder = new StringBuilder(LangID.getStringByID("stimg_letter", lang));
 
                 for(int i = 0; i < invalid.size(); i++) {
                     if(i == invalid.size() -1) {

@@ -20,6 +20,20 @@ public class FontStageImageGenerator implements ImageGenerator{
     private final Font font;
     private final float strokeWidth;
 
+    public static boolean valid(Font font, String message) {
+        for(int i = 0; i < message.length(); i++) {
+            String str = Character.toString(message.charAt(i));
+
+            if(str.isBlank())
+                continue;
+
+            if(!font.canDisplay(message.charAt(i)))
+                return false;
+        }
+
+        return true;
+    }
+
     public FontStageImageGenerator(Font font, float strokeWidth) {
         this.font = font;
         this.strokeWidth = strokeWidth;
@@ -35,7 +49,7 @@ public class FontStageImageGenerator implements ImageGenerator{
             double w = generateWidth(message, frc);
             double[] h = generateHeight(message, frc, affine);
 
-            BufferedImage img = new BufferedImage((int) (w + strokeWidth * 2 + 6), (int) (h[0] + h[1] + strokeWidth * 2 + 4), BufferedImage.TYPE_INT_ARGB);
+            BufferedImage img = new BufferedImage((int) (w + strokeWidth * 2 + xGap * 2), (int) (h[0] + h[1] + strokeWidth * 2 + yGap), BufferedImage.TYPE_INT_ARGB);
 
             FG2D g = new FG2D(img.getGraphics());
 
@@ -57,7 +71,7 @@ public class FontStageImageGenerator implements ImageGenerator{
                 double[] offset = decideOffset(pad, h[0] + h[1], h[1]);
                 double left = getLeftPoint(outline.getPathIterator(affine));
 
-                offset[0] -= left - strokeWidth - 5;
+                offset[0] -= left - strokeWidth - xGap;
                 offset[1] += strokeWidth;
 
                 Path2D path = generatePath2D(offset, outline.getPathIterator(affine));
@@ -82,7 +96,7 @@ public class FontStageImageGenerator implements ImageGenerator{
                 double[] offset = decideOffset(pad, h[0] + h[1], h[1]);
                 double left = getLeftPoint(outline.getPathIterator(affine));
 
-                offset[0] -= left - strokeWidth - 5;
+                offset[0] -= left - strokeWidth - xGap;
                 offset[1] += strokeWidth;
 
                 Path2D path = generatePath2D(offset, outline.getPathIterator(affine));
@@ -134,7 +148,7 @@ public class FontStageImageGenerator implements ImageGenerator{
             double w = generateWidth(message, frc);
             double[] h = generateHeight(message, frc, affine);
 
-            BufferedImage img = new BufferedImage((int) (w + strokeWidth * 2 + 6), (int) (h[0] + h[1] + strokeWidth * 2), BufferedImage.TYPE_INT_ARGB);
+            BufferedImage img = new BufferedImage((int) (w + strokeWidth * 2 + xGap * 2), (int) (h[0] + h[1] + strokeWidth * 2 + yGap * 2), BufferedImage.TYPE_INT_ARGB);
 
             FG2D g = new FG2D(img.getGraphics());
 
@@ -156,7 +170,7 @@ public class FontStageImageGenerator implements ImageGenerator{
                 double[] offset = decideOffset(pad, h[0] + h[1], h[1]);
                 double left = getLeftPoint(outline.getPathIterator(affine));
 
-                offset[0] -= left - strokeWidth - 5;
+                offset[0] -= left - strokeWidth - xGap;
                 offset[1] += strokeWidth;
 
                 Path2D path = generatePath2D(offset, outline.getPathIterator(affine));
@@ -181,7 +195,7 @@ public class FontStageImageGenerator implements ImageGenerator{
                 double[] offset = decideOffset(pad, h[0] + h[1], h[1]);
                 double left = getLeftPoint(outline.getPathIterator(affine));
 
-                offset[0] -= left - strokeWidth - 5;
+                offset[0] -= left - strokeWidth - xGap;
                 offset[1] += strokeWidth + 1;
 
                 Path2D path = generatePath2D(offset, outline.getPathIterator(affine));

@@ -5,6 +5,8 @@ import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.Pauser;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.IDHolder;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -18,20 +20,21 @@ public abstract class ConstraintCommand implements Command {
     }
 
     final String constRole;
+    final int lang;
 
-    public ConstraintCommand(ROLE role) {
+    public ConstraintCommand(ROLE role, int lang, IDHolder id) {
         switch (role) {
             case DEV:
-                constRole = StaticStore.DEV_ID;
+                constRole = id.DEV;
                 break;
             case MOD:
-                constRole = StaticStore.MOD_ID;
+                constRole = id.MOD;
                 break;
             case MEMBER:
-                constRole = StaticStore.MEMBER_ID;
+                constRole = id.MEMBER;
                 break;
             case PRE_MEMBER:
-                constRole = StaticStore.PRE_MEMBER_ID;
+                constRole = id.PRE_MEMBER;
                 break;
             case MANDARIN:
                 constRole = "MANDARIN";
@@ -39,6 +42,8 @@ public abstract class ConstraintCommand implements Command {
             default:
                 throw new IllegalStateException("Invalid ROLE enum : "+role);
         }
+
+        this.lang = lang;
     }
 
     @Override
@@ -68,10 +73,10 @@ public abstract class ConstraintCommand implements Command {
 
         if(!isDev.get()) {
             if(constRole.equals("MANDARIN")) {
-                ch.createMessage("This command can be only run by MandarinSmell!").subscribe();
+                ch.createMessage(LangID.getStringByID("const_man", lang)).subscribe();
             } else {
                 String role = StaticStore.roleNameFromID(event, constRole);
-                ch.createMessage("This command can be only run by "+role+"!").subscribe();
+                ch.createMessage(LangID.getStringByID("const_role", lang).replace("_", role)).subscribe();
             }
         } else {
             try {

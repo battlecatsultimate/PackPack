@@ -1,5 +1,6 @@
 package mandarin.packpack.commands;
 
+import common.io.assets.AssetLoader;
 import common.io.assets.UpdateCheck;
 import common.pack.PackData;
 import common.pack.UserProfile;
@@ -9,6 +10,8 @@ import discord4j.core.object.entity.Attachment;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.IDHolder;
 
 import java.io.File;
 import java.text.DecimalFormat;
@@ -23,8 +26,8 @@ public class Analyze extends ConstraintCommand {
     private final DecimalFormat df = new DecimalFormat("#.##");
     private Message msg;
 
-    public Analyze(ROLE role) {
-        super(role);
+    public Analyze(ROLE role, int lang, IDHolder holder) {
+        super(role, lang, holder);
     }
 
     @Override
@@ -42,7 +45,7 @@ public class Analyze extends ConstraintCommand {
                 Attachment at = attachments.get(0);
 
                 if(at.getFilename().endsWith("pack.bcuzip")) {
-                    this.msg = ch.createMessage("Downloading Pack... : 0%").block();
+                    this.msg = ch.createMessage(LangID.getStringByID("analyz_down", lang).replace("_", String.valueOf(0))).block();
 
                     String url = at.getUrl();
 
@@ -53,10 +56,20 @@ public class Analyze extends ConstraintCommand {
 
                     down.run(this::editMessage);
 
-                    this.msg.edit(m -> m.setContent("Analyzing Pack...")).subscribe();
+                    this.msg.edit(m -> m.setContent(LangID.getStringByID("analyz_pack", lang))).subscribe();
 
                     PackData.UserPack pack = UserProfile.readZipPack(target);
+
+                    if(!canAdd(pack)) {
+                        this.msg.edit(m -> m.setContent(LangID.getStringByID("analyz_parent", lang))).subscribe();
+                        return;
+                    }
+
+                    UserProfile.profile().pending.put(pack.desc.id, pack);
+
                     pack.load();
+
+                    UserProfile.profile().packmap.put(pack.desc.id, pack);
 
                     this.msg.delete().subscribe();
 
@@ -64,11 +77,11 @@ public class Analyze extends ConstraintCommand {
                         emb.setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)]);
                         emb.setTitle(pack.desc.name);
                         emb.addField("ID", pack.desc.id, false);
-                        emb.addField("Total number of Units", Integer.toString(pack.units.getList().size()), true);
-                        emb.addField("Total number of Enemies", Integer.toString(pack.enemies.getList().size()), true);
-                        emb.addField("Total number of Stages", Integer.toString(MapColc.get(pack.desc.id).maps.size()), true);
-                        emb.addField("Total number of Backgrounds", Integer.toString(pack.bgs.getList().size()), true);
-                        emb.addField("Total number of Music", Integer.toString(pack.musics.getList().size()), true);
+                        emb.addField(LangID.getStringByID("analyz_unit", lang), Integer.toString(pack.units.getList().size()), true);
+                        emb.addField(LangID.getStringByID("analyz_enemy", lang), Integer.toString(pack.enemies.getList().size()), true);
+                        emb.addField(LangID.getStringByID("analyz_stage", lang), Integer.toString(MapColc.get(pack.desc.id).maps.size()), true);
+                        emb.addField(LangID.getStringByID("analyz_bg", lang), Integer.toString(pack.bgs.getList().size()), true);
+                        emb.addField(LangID.getStringByID("analyz_music", lang), Integer.toString(pack.musics.getList().size()), true);
                         emb.setDescription(at.getFilename()+" ("+getFileSize(target.length())+")");
                     }).subscribe();
 
@@ -84,10 +97,10 @@ public class Analyze extends ConstraintCommand {
                         temp.delete();
                     }
                 } else {
-                    ch.createMessage("Please upload pack.bcuzip file").subscribe();
+                    ch.createMessage(LangID.getStringByID("analyz_file", lang)).subscribe();
                 }
             } else {
-                ch.createMessage("Please attach pack.bcuzip file which will be analyzed").subscribe();
+                ch.createMessage(LangID.getStringByID("analyz_attach", lang)).subscribe();
             }
         } catch (Exception e) {
             onFail(event, DEFAULT_ERROR);
@@ -101,7 +114,7 @@ public class Analyze extends ConstraintCommand {
         NOW = System.currentTimeMillis();
 
         if(msg != null) {
-            msg.edit(m -> m.setContent("Downloading Pack... : "+df.format(prog*100)+"%")).subscribe();
+            msg.edit(m -> m.setContent(LangID.getStringByID("analyz_down", lang).replace("_", df.format(prog*100)))).subscribe();
         }
     }
 
@@ -119,6 +132,10 @@ public class Analyze extends ConstraintCommand {
         }
 
         return df.format(size)+siz[index];
+    }
+
+    private boolean canAdd(PackData.UserPack pack) {
+        return pack.desc.dependency.isEmpty();
     }
 }
 

@@ -6,11 +6,16 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import common.util.lang.MultiLangCont;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.rest.util.Color;
+import mandarin.packpack.supporter.server.FormStatHolder;
+import mandarin.packpack.supporter.server.IDHolder;
 
 import java.io.*;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -21,6 +26,13 @@ public class StaticStore {
 
     public static String serverPrefix = "p!";
     public static Map<String, String> prefix = new HashMap<>();
+    public static Map<String, String> langs = new HashMap<>();
+    public static Map<String, Integer> locales = new HashMap<>();
+
+    public static Map<String, FormStatHolder> formHolder = new HashMap<>();
+
+    public static final MultiLangCont<Integer, String> MEDNAME = new MultiLangCont<>();
+    public static final MultiLangCont<Integer, String> MEDEXP = new MultiLangCont<>();
 
     public static Timer saver = null;
 
@@ -31,6 +43,7 @@ public class StaticStore {
     public static boolean analyzing = false;
 
     public static final Random random = new Random();
+    public static final BigInteger max = new BigInteger(Integer.toString(Integer.MAX_VALUE));
 
     public static final String MANDARIN_SMELL = "460409259021172781";
 
@@ -39,15 +52,11 @@ public class StaticStore {
 
     public static final String ERROR_MSG = "`INTERNAL_ERROR`";
 
-    public static final String DEV_ID = "490941233963728896";
-    public static final String MOD_ID = "490935132564357131";
-    public static final String MEMBER_ID = "632835571655507968";
-    public static final String PRE_MEMBER_ID = "490940081738350592";
-    public static final String MUTED_ID = "563745009912774687";
-    public static final String BCU_PC_USER_ID = "490940151501946880";
-    public static final String BCU_ANDROId_USER_ID = "787391428916543488";
+    public static final Map<String, IDHolder> holder = new HashMap<>();
 
-    public static final String BOT_COMMANDS = "508042127352266755";
+    public static final String BCU_SERVER = "490262537527623692";
+    public static final String BCU_KR_SERVER = "679858366389944409";
+
     public static final String GET_ACCESS = "632836623931015185";
 
     public static String rolesToString(Set<Snowflake> roles) {
@@ -112,7 +121,7 @@ public class StaticStore {
             return "";
     }
 
-    public static JsonObject mapToJson(Map<String, String> map) {
+    public static JsonObject mapToJsonString(Map<String, String> map) {
         JsonObject obj = new JsonObject();
 
         int i = 0;
@@ -138,7 +147,30 @@ public class StaticStore {
         return obj;
     }
 
-    public static void jsonToMap(JsonObject obj) {
+    public static JsonObject mapToJsonInt(Map<String, Integer> map) {
+        JsonObject obj = new JsonObject();
+
+        int i = 0;
+
+        for(String key : map.keySet()) {
+            int value = map.get(key);
+
+            JsonObject set = new JsonObject();
+
+            set.addProperty("key", key);
+            set.addProperty("val", value);
+
+            obj.add(Integer.toString(i), set);
+
+            i++;
+        }
+
+        return obj;
+    }
+
+    public static Map<String, String> jsonToMapString(JsonObject obj) {
+        Map<String, String> map = new HashMap<>();
+
         int i = 0;
 
         while(true) {
@@ -146,7 +178,7 @@ public class StaticStore {
                 JsonObject set = obj.getAsJsonObject(Integer.toString(i));
 
                 if(set.has("key") && set.has("val")) {
-                    prefix.put(set.get("key").getAsString(), set.get("val").getAsString());
+                    map.put(set.get("key").getAsString(), set.get("val").getAsString());
                 }
 
                 i++;
@@ -154,6 +186,30 @@ public class StaticStore {
                 break;
             }
         }
+
+        return map;
+    }
+
+    public static Map<String, Integer> jsonToMapInt(JsonObject obj) {
+        Map<String, Integer> map = new HashMap<>();
+
+        int i = 0;
+
+        while(true) {
+            if(obj.has(Integer.toString(i))) {
+                JsonObject set = obj.getAsJsonObject(Integer.toString(i));
+
+                if(set.has("key") && set.has("val")) {
+                    map.put(set.get("key").getAsString(), set.get("val").getAsInt());
+                }
+
+                i++;
+            } else {
+                break;
+            }
+        }
+
+        return map;
     }
 
     public static JsonObject getJsonFile(String name) {
@@ -163,7 +219,8 @@ public class StaticStore {
             return null;
 
         try {
-            BufferedReader br = new BufferedReader(new FileReader(f));
+            InputStreamReader reader = new InputStreamReader(new FileInputStream(f), StandardCharsets.UTF_8);
+            BufferedReader br = new BufferedReader(reader);
 
             JsonElement obj = JsonParser.parseReader(br);
 
@@ -179,7 +236,9 @@ public class StaticStore {
 
         obj.addProperty("rating", ratingChannel);
         obj.addProperty("serverpre", serverPrefix);
-        obj.add("prefix", mapToJson(prefix));
+        obj.add("prefix", mapToJsonString(prefix));
+        obj.add("lang", mapToJsonString(langs));
+        obj.add("locale", mapToJsonInt(locales));
 
         try {
             File folder = new File("./data/");
@@ -232,7 +291,15 @@ public class StaticStore {
             }
 
             if(obj.has("prefix")) {
-                jsonToMap(obj.get("prefix").getAsJsonObject());
+                prefix = jsonToMapString(obj.get("prefix").getAsJsonObject());
+            }
+
+            if(obj.has("lang")) {
+                langs = jsonToMapString(obj.get("lang").getAsJsonObject());
+            }
+
+            if(obj.has("locale")) {
+                locales = jsonToMapInt(obj.get("locale").getAsJsonObject());
             }
         }
     }
@@ -268,6 +335,29 @@ public class StaticStore {
                     System.out.println("Failed to delete folder : "+f.getAbsolutePath());
                 }
             }
+        }
+    }
+
+    public static boolean isNumeric(String name) {
+        for(int i = 0; i < name.length(); i++) {
+            if(!Character.isDigit(name.charAt(i)))
+                return false;
+        }
+
+        return true;
+    }
+
+    public static int safeParseInt(String value) {
+        if(isNumeric(value)) {
+            BigInteger big = new BigInteger(value);
+
+            if(big.compareTo(max) > 0) {
+                return Integer.MAX_VALUE;
+            } else {
+                return Integer.parseInt(value);
+            }
+        } else {
+            throw new IllegalStateException("Value isn't numeric! : "+value);
         }
     }
 }

@@ -5,10 +5,20 @@ import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.Pauser;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.IDHolder;
 
 import java.util.concurrent.atomic.AtomicReference;
 
 public class CheckBCU implements Command {
+    private final int lang;
+    private final IDHolder holder;
+
+    public CheckBCU(int lang, IDHolder holder) {
+        this.lang = lang;
+        this.holder = holder;
+    }
+
     @Override
     public void doSomething(MessageCreateEvent event) {
         Message msg = event.getMessage();
@@ -18,7 +28,7 @@ public class CheckBCU implements Command {
             return;
 
         if(StaticStore.checkingBCU) {
-            ch.createMessage("I'm already performing this command! Wait for me to finish this");
+            ch.createMessage(LangID.getStringByID("chbcu_perform", lang)).subscribe();
         } else {
             StaticStore.checkingBCU = true;
 
@@ -29,17 +39,17 @@ public class CheckBCU implements Command {
 
             event.getGuild()
                     .subscribe(g -> g.getMembers()
-                        .filter(m -> !StaticStore.rolesToString(m.getRoleIds()).contains(StaticStore.MUTED_ID))
+                        .filter(m -> !StaticStore.rolesToString(m.getRoleIds()).contains(holder.MUTED))
                         .subscribe(m -> {
                             boolean pre = false;
                             boolean mem = false;
 
                             String role = StaticStore.rolesToString(m.getRoleIds());
 
-                            if(role.contains(StaticStore.PRE_MEMBER_ID))
+                            if(role.contains(holder.PRE_MEMBER))
                                 pre = true;
 
-                            if(role.contains(StaticStore.MEMBER_ID))
+                            if(role.contains(holder.MEMBER))
                                 mem = true;
 
                             if (!pre && !mem)
