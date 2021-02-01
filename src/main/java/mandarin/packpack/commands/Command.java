@@ -4,10 +4,12 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
+import mandarin.packpack.supporter.Pauser;
 import mandarin.packpack.supporter.StaticStore;
 
 interface Command {
     int DEFAULT_ERROR = -1;
+    Pauser pause = new Pauser();
 
     default void execute(MessageCreateEvent event) {
         try {
@@ -18,7 +20,7 @@ interface Command {
         }
     }
 
-    void doSomething(MessageCreateEvent event);
+    void doSomething(MessageCreateEvent event) throws Exception;
 
     default void onFail(MessageCreateEvent event, int error) {
         MessageChannel ch = getChannel(event);

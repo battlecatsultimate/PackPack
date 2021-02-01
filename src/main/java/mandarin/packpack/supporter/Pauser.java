@@ -2,7 +2,7 @@ package mandarin.packpack.supporter;
 
 public class Pauser {
     final Object obj = new Object();
-    boolean finish = false;
+    public boolean finish = false;
 
     public void pause(Runnable handler) {
         while(!finish) {
@@ -23,5 +23,9 @@ public class Pauser {
         synchronized (obj) {
             obj.notifyAll();
         }
+    }
+
+    public synchronized void reset() {
+        finish = false;
     }
 }

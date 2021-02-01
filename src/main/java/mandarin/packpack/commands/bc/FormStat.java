@@ -1,4 +1,4 @@
-package mandarin.packpack.commands;
+package mandarin.packpack.commands.bc;
 
 import common.CommonStatic;
 import common.util.Data;
@@ -7,6 +7,7 @@ import common.util.unit.Form;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
+import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
@@ -15,7 +16,6 @@ import mandarin.packpack.supporter.server.FormStatHolder;
 import mandarin.packpack.supporter.server.IDHolder;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 public class FormStat extends ConstraintCommand {
     private static final int PARAM_TALENT = 2;
@@ -29,6 +29,8 @@ public class FormStat extends ConstraintCommand {
     public void doSomething(MessageCreateEvent event) {
         MessageChannel ch = getChannel(event);
 
+        System.out.println(filterCommand(getMessage(event)));
+
         String[] list = getMessage(event).split(" ",2);
 
         if(list.length == 1 || filterCommand(getMessage(event)).isBlank()) {
@@ -41,18 +43,18 @@ public class FormStat extends ConstraintCommand {
 
                 int param = checkParameters(getMessage(event));
 
-                int lv = handleLevel(getMessage(event));
+                int[] lv = handleLevel(getMessage(event));
 
                 boolean isFrame = (param & PARAM_SECOND) == 0;
                 boolean talent = (param & PARAM_TALENT) > 0;
 
                 EntityHandler.showUnitEmb(forms.get(0), ch, isFrame, talent, lv, lang);
             } else if (forms.size() == 0) {
-                ch.createMessage(LangID.getStringByID("formst_nounit", lang)).subscribe();
+                ch.createMessage(LangID.getStringByID("formst_nounit", lang).replace("_", filterCommand(getMessage(event)))).subscribe();
             } else {
                 CommonStatic.getConfig().lang = lang;
 
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang));
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", filterCommand(getMessage(event))));
 
                 String check;
 
@@ -80,13 +82,14 @@ public class FormStat extends ConstraintCommand {
                 if(forms.size() > 20)
                     sb.append(LangID.getStringByID("formst_page", lang).replace("_", "1").replace("-", String.valueOf(forms.size()/20 + 1)));
 
+                sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
 
                 Message res = ch.createMessage(sb.toString()).block();
 
                 int param = checkParameters(getMessage(event));
 
-                int lv = handleLevel(getMessage(event));
+                int[] lv = handleLevel(getMessage(event));
 
                 if(res != null) {
                     event.getMember().ifPresent(member -> StaticStore.formHolder.put(member.getId().asString(), new FormStatHolder(forms, res, param, lv, lang)));
@@ -101,21 +104,21 @@ public class FormStat extends ConstraintCommand {
         int result =  1;
 
         if(msg.length >= 2) {
-            String pureMessage = message.split(" ", 2)[1].toLowerCase(Locale.ROOT).replace(" ", "");
+            String[] pureMessage = message.split(" ", 2)[1].split(" ");
 
-            for(int i = 0; i < 2; i++) {
-                if(pureMessage.startsWith("-t")) {
+            for(String str : pureMessage) {
+                if(str.startsWith("-t")) {
                     if((result & PARAM_TALENT) == 0) {
                         result |= PARAM_TALENT;
-
-                        pureMessage = pureMessage.substring(2);
-                    }
-                } else if(pureMessage.startsWith("-s")) {
+                    } else
+                        break;
+                } else if(str.startsWith("-s")) {
                     if((result & PARAM_SECOND) == 0) {
                         result |= PARAM_SECOND;
-
-                        pureMessage = pureMessage.substring(2);
-                    }
+                    } else
+                        break;
+                } else {
+                    break;
                 }
             }
         }
@@ -153,38 +156,123 @@ public class FormStat extends ConstraintCommand {
             } else {
                 paramEnd = true;
 
-                if(content[i].equals("-lv") && i < content.length - 1 && StaticStore.isNumeric(content[i+1])) {
+                if(content[i].equals("-lv") && i < content.length - 1) {
                     if(isLevel)
                         command.append(content[i]).append(" ");
                     else {
                         isLevel = true;
                     }
 
-                    i++;
+                    String text = getLevelText(content, i+1);
+
+                    if(text.contains(" ")) {
+                        i += getLevelText(content, i + 1).split(" ").length;
+                    } else if(msg.endsWith(text)) {
+                        i++;
+                    }
                 } else
                     command.append(content[i]).append(" ");
             }
         }
 
+        if(command.toString().isBlank()) {
+            return "";
+        }
+
         return command.substring(0, command.length()-1);
     }
 
-    private int handleLevel(String msg) {
-        int lv = 30;
-
+    private int[] handleLevel(String msg) {
         if(msg.contains("-lv")) {
             String[] content = msg.split(" ");
 
             for(int i = 0; i < content.length; i++) {
                 if(content[i].equals("-lv") && i != content.length -1) {
-                    if(StaticStore.isNumeric(content[i+1])) {
-                        lv = StaticStore.safeParseInt(content[i + 1]);
+                    String[] trial = getLevelText(content, i+1).replace(" ", "").split(",");
+
+                    int length = 0;
+
+                    for (String s : trial) {
+                        if (StaticStore.isNumeric(s))
+                            length++;
+                        else
+                            break;
+                    }
+
+                    if(length == 0)
+                        return new int[] {0};
+                    else {
+                        int[] lv = new int[length];
+
+                        for (int j = 0; j < length; j++) {
+                            lv[j] = StaticStore.safeParseInt(trial[j]);
+                        }
+
                         return lv;
                     }
                 }
             }
+        } else {
+            return new int[] {0};
         }
 
-        return lv;
+        return new int[] {0};
+    }
+
+    private String getLevelText(String[] trial, int index) {
+        StringBuilder sb = new StringBuilder();
+
+        for(int i = index; i < trial.length; i++) {
+            sb.append(trial[i]);
+
+            if(i != trial.length - 1)
+                sb.append(" ");
+        }
+
+        StringBuilder fin = new StringBuilder();
+
+        boolean commaStart = false;
+        boolean beforeSpace = false;
+        int numberLetter = 0;
+        int commaAdd = 0;
+
+        for(int i = 0; i < sb.length(); i++) {
+            if(sb.charAt(i) == ',') {
+                if(!commaStart && commaAdd <= 5) {
+                    commaStart = true;
+                    commaAdd++;
+                    fin.append(sb.charAt(i));
+                    numberLetter++;
+                } else {
+                    break;
+                }
+            } else if(sb.charAt(i) == ' ') {
+                beforeSpace = true;
+                numberLetter = 0;
+                fin.append(sb.charAt(i));
+            } else {
+                if(Character.isDigit(sb.charAt(i))) {
+                    commaStart = false;
+                    fin.append(sb.charAt(i));
+                    numberLetter++;
+                } else if(beforeSpace) {
+                    numberLetter = 0;
+                    break;
+                } else {
+                    break;
+                }
+
+                beforeSpace = false;
+            }
+
+            if(i == sb.length() - 1)
+                numberLetter = 0;
+        }
+
+        String result = fin.toString();
+
+        result = result.substring(0, result.length() - numberLetter);
+
+        return result;
     }
 }

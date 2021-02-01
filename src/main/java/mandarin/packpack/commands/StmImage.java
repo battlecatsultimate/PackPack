@@ -15,7 +15,6 @@ import mandarin.packpack.supporter.server.IDHolder;
 import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -65,12 +64,12 @@ public class StmImage extends ConstraintCommand {
                         font = Font.createFont(Font.TRUETYPE_FONT, alt).deriveFont(102f);
                     }
 
-                    generator = new FontStageImageGenerator(font, 13.5f);
+                    generator = new FontStageImageGenerator(font, 11.5f);
                 } else if(!canImage(message) || (param & PARAM_FORCE) > 0) {
                     File fon = new File("./data/ForceFont.otf");
                     Font font = Font.createFont(Font.TRUETYPE_FONT, fon).deriveFont(102f);
 
-                    generator = new FontStageImageGenerator(font, 13.5f);
+                    generator = new FontStageImageGenerator(font, 11.5f);
                 } else {
                     ImgCut ic = ImgCut.newIns(new FDFile(new File("./data/stage/stm/Font.imgcut")));
                     FakeImage img = ImageBuilder.builder.build(new File("./data/stage/stm/Font.png"));
@@ -94,17 +93,27 @@ public class StmImage extends ConstraintCommand {
         }
     }
 
-    private void handleLast(String message, File f, MessageChannel ch, ImageGenerator generator) {
+    private void handleLast(String message, File f, MessageChannel ch, ImageGenerator generator) throws Exception {
         if(f != null) {
+            FileInputStream fis = new FileInputStream(f);
             ch.createMessage(m -> {
+                m.addFile(f.getName(), fis);
+                m.setContent(LangID.getStringByID("stimg_result", lang));
+            }).subscribe(null, null, () -> {
                 try {
-                    m.addFile(f.getName(), new FileInputStream(f));
-                    m.setContent(LangID.getStringByID("stimg_result", lang));
-                } catch (FileNotFoundException e) {
-                    m.setContent("Can't send file!");
+                    if(f.exists()) {
+                        fis.close();
+
+                        boolean res = f.delete();
+
+                        if(!res) {
+                            System.out.println("Can't delete file : "+f.getAbsolutePath());
+                        }
+                    }
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }).subscribe();
+            });
         } else {
             ArrayList<String> invalid = generator.getInvalids(message);
 
@@ -132,30 +141,32 @@ public class StmImage extends ConstraintCommand {
         int result =  1;
 
         if(msg.length >= 2) {
-            String pureMessage = message.split(" ", 2)[1].toLowerCase(Locale.ROOT).replace(" ", "");
+            String[] pureMessage = message.split(" ", 2)[1].toLowerCase(Locale.ROOT).split(" ");
 
-            for(int i = 0; i < 3; i++) {
-                if(pureMessage.startsWith("-r")) {
-                    if((result & PARAM_REAL) == 0) {
-                        result |= PARAM_REAL;
-                        startIndex++;
-
-                        pureMessage = pureMessage.substring(2);
-                    }
-                } else if(pureMessage.startsWith("-jp")) {
-                    if((result & PARAM_JP) == 0) {
-                        result |= PARAM_JP;
-                        startIndex++;
-
-                        pureMessage = pureMessage.substring(3);
-                    }
-                } else if(pureMessage.startsWith("-f")) {
-                    if((result & PARAM_FORCE) == 0) {
-                        result |= PARAM_FORCE;
-                        startIndex++;
-
-                        pureMessage = pureMessage.substring(2);
-                    }
+            label:
+            for(String str : pureMessage) {
+                switch (str) {
+                    case "-r":
+                        if ((result & PARAM_REAL) == 0) {
+                            result |= PARAM_REAL;
+                            startIndex++;
+                        } else
+                            break label;
+                        break;
+                    case "-jp":
+                        if ((result & PARAM_JP) == 0) {
+                            result |= PARAM_JP;
+                            startIndex++;
+                        } else
+                            break label;
+                        break;
+                    case "-f":
+                        if ((result & PARAM_FORCE) == 0) {
+                            result |= PARAM_FORCE;
+                            startIndex++;
+                        } else
+                            break label;
+                        break;
                 }
             }
         }

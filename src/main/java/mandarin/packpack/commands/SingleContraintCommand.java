@@ -7,21 +7,20 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.IDHolder;
 
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-public abstract class ConstraintCommand implements Command {
-    public enum ROLE {
-        MANDARIN,
-        DEV,
-        MOD,
-        MEMBER,
-        PRE_MEMBER
-    }
+public abstract class SingleContraintCommand implements Command {
+    static String ABORT = "ABORT";
 
     final String constRole;
     protected final int lang;
+    final String mainID;
+    protected String optionalID = "";
+    protected final ArrayList<String> aborts = new ArrayList<>();
+    final long time;
 
-    public ConstraintCommand(ROLE role, int lang, IDHolder id) {
+    public SingleContraintCommand(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID, long millis) {
         switch (role) {
             case DEV:
                 constRole = id.DEV;
@@ -43,10 +42,16 @@ public abstract class ConstraintCommand implements Command {
         }
 
         this.lang = lang;
+        this.mainID = mainID;
+        this.time = millis;
+
+        aborts.add(ABORT);
     }
 
     @Override
     public void execute(MessageCreateEvent event) {
+        prepareAborts();
+
         Message msg = event.getMessage();
         MessageChannel ch = getChannel(event);
 
@@ -77,9 +82,41 @@ public abstract class ConstraintCommand implements Command {
             }
         } else {
             try {
-                doSomething(event);
+                setOptionalID(event);
+
+                String id = mainID+optionalID;
+
+                if(StaticStore.canDo.containsKey(id) && !StaticStore.canDo.get(id)) {
+                    ch.createMessage(LangID.getStringByID("single_wait", lang)).subscribe();
+                } else {
+
+                    if(!aborts.contains(optionalID)) {
+                        pause.reset();
+
+                        System.out.println("Added process : "+id);
+
+                        StaticStore.canDo.put(id, false);
+
+                        Timer timer = new Timer();
+
+                        timer.schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                System.out.println("Remove Process : "+id);
+                                StaticStore.canDo.put(id, true);
+                            }
+                        }, time);
+
+                        doSomething(event);
+
+                        pause.pause(() -> onFail(event, DEFAULT_ERROR));
+                    } else {
+                        onAbort(event);
+                    }
+                }
             } catch (Exception e) {
                 e.printStackTrace();
+
                 onFail(event, DEFAULT_ERROR);
             }
 
@@ -90,4 +127,19 @@ public abstract class ConstraintCommand implements Command {
             }
         }
     }
+
+    @Override
+    public void doSomething(MessageCreateEvent event) throws Exception {
+        doThing(event);
+
+        pause.resume();
+    }
+
+    protected abstract void doThing(MessageCreateEvent event) throws Exception;
+
+    protected abstract void setOptionalID(MessageCreateEvent event);
+
+    protected abstract void prepareAborts();
+
+    protected void onAbort(MessageCreateEvent event) {}
 }

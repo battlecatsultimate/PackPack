@@ -3,7 +3,6 @@ package mandarin.packpack.commands;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
-import mandarin.packpack.supporter.Pauser;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.IDHolder;
@@ -30,7 +29,6 @@ public class BCUStat implements Command {
         if(ch == null)
             return;
 
-        Pauser pause = new Pauser();
         DecimalFormat df = new DecimalFormat("#.##");
 
         AtomicBoolean error = new AtomicBoolean(false);

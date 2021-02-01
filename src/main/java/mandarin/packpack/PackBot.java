@@ -13,11 +13,16 @@ import discord4j.core.object.presence.Activity;
 import discord4j.core.object.presence.Presence;
 import discord4j.rest.request.RouterOptions;
 import mandarin.packpack.commands.*;
+import mandarin.packpack.commands.bc.EnemyStat;
+import mandarin.packpack.commands.bc.FormStat;
+import mandarin.packpack.commands.bc.Music;
 import mandarin.packpack.supporter.AssetDownloader;
 import mandarin.packpack.supporter.PackContext;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.awt.FIBI;
+import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.EnemyStatHolder;
 import mandarin.packpack.supporter.server.FormStatHolder;
 import mandarin.packpack.supporter.server.IDHolder;
 
@@ -95,6 +100,20 @@ public class PackBot {
                             }
                         }
 
+                        if(StaticStore.enemyHolder.containsKey(m.getId().asString())) {
+                            EnemyStatHolder holder = StaticStore.enemyHolder.get(m.getId().asString());
+
+                            int result = holder.handleEvent(event);
+
+                            if(result == EnemyStatHolder.RESULT_FINISH) {
+                                holder.clean();
+                                StaticStore.formHolder.remove(m.getId().asString());
+                            } else if(result == EnemyStatHolder.RESULT_FAIL) {
+                                System.out.println("ERROR : Expired process tried to be handled : "+m.getId().asString()+"|"+m.getNickname().orElse(m.getUsername()));
+                                StaticStore.enemyHolder.remove(m.getId().asString());
+                            }
+                        }
+
                         if(ch != null) {
                             Guild g = event.getGuild().block();
 
@@ -167,6 +186,13 @@ public class PackBot {
                                 case "locale":
                                     new Locale(ConstraintCommand.ROLE.MEMBER, lang, ids).execute(event);
                                     break;
+                                case "music":
+                                    new Music(ConstraintCommand.ROLE.MEMBER, lang, ids, "music_").execute(event);
+                                    break;
+                                case "enemystat":
+                                case "es":
+                                    new EnemyStat(ConstraintCommand.ROLE.MEMBER, lang, ids).execute(event);
+                                    break;
                             }
                         }
                     });
@@ -185,8 +211,10 @@ public class PackBot {
 
             LangID.initialize();
 
+            DataToString.initialize();
+
             StaticStore.holder.put("490262537527623692", new IDHolder(
-                     "490941233963728896", "490935132564357131",
+                     "490941233963728896", "563745009912774687",
                     "632835571655507968", "490940081738350592",
                     "490940151501946880", "787391428916543488",
                     "508042127352266755", "632836623931015185"

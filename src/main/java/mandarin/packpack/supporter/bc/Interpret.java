@@ -11,7 +11,7 @@ import mandarin.packpack.supporter.lang.LangID;
 import java.util.ArrayList;
 
 public class Interpret extends Data {
-    public static final String[] TRAIT = {"data_white", "data_red", "data_float", "data_black", "data_metal", "data_angel", "data_alien", "data_zombie", "data_relic"};
+    public static final String[] TRAIT = {"data_red", "data_float", "data_black", "data_metal", "data_angel", "data_alien", "data_zombie", "data_relic", "data_white", "data_eva", "data_witch"};
 
     public static final String[] ABIS = {"data_strong", "data_resistant", "data_massive", "data_attackon", "data_extramon",
             "data_basedest", "data_abimetal", "data_imumovatk", "data_waveshie", "data_imusnipe", "data_imustoptt",
@@ -48,7 +48,7 @@ public class Interpret extends Data {
         return res.toString();
     }
 
-    public static boolean isType(MaskUnit du, int type) {
+    public static boolean isType(MaskEntity du, int type) {
         int[][] raw = du.rawAtkData();
 
         switch (type) {
@@ -67,7 +67,7 @@ public class Interpret extends Data {
         }
     }
 
-    public static ArrayList<String> getAbi(MaskUnit mu, int lang) {
+    public static ArrayList<String> getAbi(MaskEntity mu, int lang) {
         ArrayList<String> l = new ArrayList<>();
 
         for(int i = 0; i < ABIS.length; i++) {

@@ -84,49 +84,29 @@ public class StageImage extends ConstraintCommand {
         }
     }
 
-    @Override
-    public void onSuccess(MessageCreateEvent event) {
-        if(fis != null) {
-            try {
-                fis.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        if(f.exists()) {
-            boolean res = f.delete();
-
-            if(!res) {
-                System.out.println("Can't delete file : "+f.getAbsolutePath());
-            }
-        }
-    }
-
     private int checkParameters(String message) {
         String[] msg = message.split(" ");
 
         int result =  1;
 
         if(msg.length >= 2) {
-            String pureMessage = message.split(" ", 2)[1].toLowerCase(Locale.ROOT).replace(" ", "");
+            String[] pureMessage = message.split(" ", 2)[1].toLowerCase(Locale.ROOT).split(" ");
 
-            for(int i = 0; i < 2; i++) {
-                if(pureMessage.startsWith("-r")) {
+            for(String str : pureMessage) {
+                if(str.equals("-r")) {
                     if((result & PARAM_REAL) == 0) {
                         result |= PARAM_REAL;
                         startIndex++;
-
-                        pureMessage = pureMessage.substring(2);
-                    }
-                } else if(pureMessage.startsWith("-f")) {
+                    } else
+                        break;
+                } else if(str.equals("-f")) {
                     if((result & PARAM_FORCE) == 0) {
                         result |= PARAM_FORCE;
                         startIndex++;
-
-                        pureMessage = pureMessage.substring(2);
-                    }
-                }
+                    } else
+                        break;
+                } else
+                    break;
             }
         }
 
@@ -139,7 +119,21 @@ public class StageImage extends ConstraintCommand {
             ch.createMessage(m -> {
                 m.addFile(f.getName(),fis);
                 m.setContent(LangID.getStringByID("stimg_result", lang));
-            }).subscribe();
+            }).subscribe(null, null, () -> {
+                try {
+                    if(f.exists()) {
+                        fis.close();
+
+                        boolean res = f.delete();
+
+                        if(!res) {
+                            System.out.println("Can't delete file : "+f.getAbsolutePath());
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
         } else {
             ArrayList<String> invalid = generator.getInvalids(message);
 

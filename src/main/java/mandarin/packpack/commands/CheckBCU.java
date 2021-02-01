@@ -3,7 +3,6 @@ package mandarin.packpack.commands;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
-import mandarin.packpack.supporter.Pauser;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.IDHolder;
@@ -31,8 +30,6 @@ public class CheckBCU implements Command {
             ch.createMessage(LangID.getStringByID("chbcu_perform", lang)).subscribe();
         } else {
             StaticStore.checkingBCU = true;
-
-            Pauser pause = new Pauser();
 
             AtomicReference<StringBuilder> both = new AtomicReference<>(new StringBuilder("BOTH : "));
             AtomicReference<StringBuilder> none = new AtomicReference<>(new StringBuilder("NONE : "));
