@@ -6,8 +6,11 @@ import common.system.fake.FakeTransform;
 
 import java.awt.*;
 import java.awt.RenderingHints.Key;
+import java.awt.font.FontRenderContext;
+import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
+import java.awt.geom.Rectangle2D;
 
 import static java.awt.AlphaComposite.SRC_OVER;
 
@@ -121,6 +124,42 @@ public class FG2D implements FakeGraphics {
 			g.setColor(Color.CYAN);
 		if (c == WHITE)
 			g.setColor(Color.WHITE);
+	}
+
+	public void setColor(int r, int g, int b, int a) {
+		this.g.setColor(new Color(r, g, b, a));
+	}
+
+	public void drawText(String text, int x, int y) {
+		g.drawString(text, x, y);
+	}
+
+	public void changeFontSize(float pt) {
+		g.setFont(g.getFont().deriveFont(pt));
+	}
+
+	public void setFont(Font font) {
+		g.setFont(font);
+	}
+
+	public void drawCenteredText(String text, int x, int y) {
+		FontMetrics fm = g.getFontMetrics();
+
+		Rectangle2D rect = fm.getStringBounds(text, g);
+
+		g.drawString(text, (int) (x - rect.getWidth() / 2), (int) (y + (rect.getHeight() - fm.getDescent()) / 2));
+	}
+
+	public void drawVerticalCenteredText(String text, int x, int y) {
+		FontMetrics fm = g.getFontMetrics();
+
+		Rectangle2D rect = fm.getStringBounds(text, g);
+
+		g.drawString(text, x, (int) (y + (rect.getHeight() - fm.getDescent()) / 2));
+	}
+
+	public void setStroke(float f) {
+		g.setStroke(new BasicStroke(f,BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER));
 	}
 
 	@Override
