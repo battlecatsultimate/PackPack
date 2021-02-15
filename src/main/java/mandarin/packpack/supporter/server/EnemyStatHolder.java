@@ -165,7 +165,11 @@ public class EnemyStatHolder {
             if(ch != null) {
                 msg.delete().subscribe();
 
-                EntityHandler.showEnemyEmb(enemy.get(id), ch, isFrame, magnification, lang);
+                try {
+                    EntityHandler.showEnemyEmb(enemy.get(id), ch, isFrame, magnification, lang);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
             expired = true;

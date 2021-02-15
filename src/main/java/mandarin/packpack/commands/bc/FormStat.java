@@ -26,10 +26,8 @@ public class FormStat extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageCreateEvent event) {
+    public void doSomething(MessageCreateEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
-
-        System.out.println(filterCommand(getMessage(event)));
 
         String[] list = getMessage(event).split(" ",2);
 

@@ -51,7 +51,7 @@ public class FormStatHolder {
                     return;
 
                 msg.edit(m -> {
-                    m.setContent("Searching process expired...");
+                    m.setContent(LangID.getStringByID("formst_expire", lang));
 
                     expired = true;
 
@@ -177,7 +177,11 @@ public class FormStatHolder {
                         lv[0] = 30;
                 }
 
-                EntityHandler.showUnitEmb(form.get(id), ch, isFrame, talent, lv, lang);
+                try {
+                    EntityHandler.showUnitEmb(form.get(id), ch, isFrame, talent, lv, lang);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
             expired = true;
