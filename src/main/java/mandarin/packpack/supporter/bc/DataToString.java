@@ -2,11 +2,21 @@ package mandarin.packpack.supporter.bc;
 
 import common.battle.BasisSet;
 import common.battle.Treasure;
-import common.battle.data.*;
+import common.battle.data.AtkDataModel;
+import common.battle.data.CustomEntity;
+import common.battle.data.MaskAtk;
+import common.battle.data.MaskUnit;
+import common.pack.PackData;
+import common.pack.UserProfile;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
+import common.util.stage.Limit;
+import common.util.stage.MapColc;
+import common.util.stage.Stage;
+import common.util.stage.StageMap;
 import common.util.unit.Enemy;
 import common.util.unit.Form;
+import common.util.unit.Unit;
 import mandarin.packpack.supporter.lang.LangID;
 
 import java.text.DecimalFormat;
@@ -15,7 +25,9 @@ import java.util.*;
 
 public class DataToString {
     private static final Map<Integer, String> talentText = new HashMap<>();
-    private static final DecimalFormat df;
+    public static final DecimalFormat df;
+    private static final List<String> mapIds = Arrays.asList("000000", "000001", "000002", "000003", "000004", "000006", "000007", "000011", "000012", "000013", "000014", "000024", "000025", "000027");
+    private static final String[] mapCodes = {"N", "S", "C", "CH", "E", "T", "V", "R", "M", "A", "B", "RA", "H", "CA"};
 
     static {
         NumberFormat nf = NumberFormat.getInstance(Locale.US);
@@ -795,5 +807,489 @@ public class DataToString {
         } else {
             return "["+mag[0]+", "+mag[1]+"] %";
         }
+    }
+
+    public static String getPackName(String id, int lang) {
+        if(mapIds.contains(id))
+            return LangID.getStringByID("data_default", lang);
+
+        PackData pack = UserProfile.getPack(id);
+
+        if(pack == null)
+            return id;
+        else if(pack instanceof PackData.DefPack) {
+            return LangID.getStringByID("data_default", lang);
+        } else if(pack instanceof PackData.UserPack) {
+            String p = ((PackData.UserPack) pack).desc.name;
+
+            if(p == null)
+                p = id;
+
+            return p;
+        }
+
+        return id;
+    }
+
+    public static String getStar(Stage st, int star) {
+        StageMap stm = st.getCont();
+
+        return (star+1)+" ("+stm.stars[star]+"%) / "+stm.stars.length;
+    }
+
+    public static String getEnergy(Stage st) {
+        return st.info.energy+"";
+    }
+
+    public static String getBaseHealth(Stage st) {
+        return ""+st.health;
+    }
+
+    public static String getXP(Stage st) {
+        if(st.info == null)
+            return "" + 0;
+
+        Treasure t = BasisSet.current().t();
+
+        MapColc mc = st.getCont().getCont();
+
+        if(mc.getSID().equals("000000") || mc.getSID().equals("000013"))
+            return "" + (int) (st.info.xp * t.getXPMult() * 9);
+        else
+            return "" + (int) (st.info.xp * t.getXPMult());
+    }
+
+    public static String getDifficulty(Stage st, int lang) {
+        if(st.info == null)
+            return LangID.getStringByID("data_none", lang);
+
+        switch (st.info.diff) {
+            case -1:
+                return LangID.getStringByID("data_none", lang);
+            case 0:
+                return LangID.getStringByID("data_easy", lang);
+            case 1:
+                return LangID.getStringByID("data_normal", lang);
+            case 2:
+                return LangID.getStringByID("data_hard", lang);
+            case 3:
+                return LangID.getStringByID("data_veteran", lang);
+            case 4:
+                return LangID.getStringByID("data_expert", lang);
+            case 5:
+                return LangID.getStringByID("data_insane", lang);
+            case 6:
+                return LangID.getStringByID("data_deadly", lang);
+            case 7:
+                return LangID.getStringByID("data_merciless", lang);
+            default:
+                return "Unknown";
+        }
+    }
+
+    public static String getContinuable(Stage st, int lang) {
+        if(st.non_con) {
+            return LangID.getStringByID("data_false", lang);
+        } else {
+            return LangID.getStringByID("data_true", lang);
+        }
+    }
+
+    public static String getLength(Stage st) {
+        return ""+st.len;
+    }
+
+    public static String getMaxEnemy(Stage st) {
+        return ""+st.max;
+    }
+
+    public static String getMusic(Stage st, int lang) {
+        if(st.mus0 == null || st.mus0.id == -1) {
+            return LangID.getStringByID("data_none", lang);
+        } else {
+            return getPackName(st.getCont().getCont().getSID(), lang)+" - "+Data.trio(st.mus0.id);
+        }
+    }
+
+    public static String getMusicChange(Stage st) {
+        return "<"+st.mush+"%";
+    }
+
+    public static String getMusic1(Stage st, int lang) {
+        if(st.mus1 == null || st.mus1.id == -1) {
+            return LangID.getStringByID("data_none", lang);
+        } else {
+            return getPackName(st.getCont().getCont().getSID(), lang)+" - "+Data.trio(st.mus1.id);
+        }
+    }
+
+    private static String convertTime(long t) {
+        long min = t / 1000 / 60;
+        double time = ((double) t - min * 60.0 * 1000.0) / 1000.0;
+
+        DecimalFormat d = (DecimalFormat) NumberFormat.getInstance(Locale.US);
+        d.applyPattern("#.###");
+
+        time = Double.parseDouble(d.format(time));
+
+        if(time >= 60) {
+            time -= 60.0;
+            min += 1;
+        }
+
+        if(time < 10) {
+            return min+":0"+d.format(time);
+        } else {
+            return min+":"+d.format(time);
+        }
+    }
+
+    public static String getLoop0(Stage st) {
+        return convertTime(st.loop0);
+    }
+
+    public static String getLoop1(Stage st) {
+        return convertTime(st.loop1);
+    }
+
+    public static String getBackground(Stage st, int lang) {
+        if(st.bg == null || st.bg.id == -1) {
+            return LangID.getStringByID("data_none", lang);
+        } else {
+            return getPackName(st.bg.pack, lang)+" - "+Data.trio(st.bg.id);
+        }
+    }
+
+    public static String getCastle(Stage st, int lang) {
+        if(st.castle == null || st.castle.id == -1) {
+            return LangID.getStringByID("data_none", lang);
+        } else {
+            return getPackName(st.castle.pack, lang)+" - "+Data.trio(st.castle.id);
+        }
+    }
+
+    public static String getMinSpawn(Stage st, boolean isFrame) {
+        if(st.minSpawn == st.maxSpawn) {
+            if(isFrame) {
+                return st.minSpawn+"f";
+            } else {
+                return df.format(st.minSpawn/30.0)+"s";
+            }
+        } else {
+            if(isFrame) {
+                return st.minSpawn + "f ~ " + st.maxSpawn+"f";
+            } else {
+                return df.format(st.minSpawn/30.0)+"s ~ "+df.format(st.maxSpawn/30.0)+"s";
+            }
+        }
+    }
+
+    public static ArrayList<String> getLimit(Limit l, int lang) {
+        ArrayList<String> res = new ArrayList<>();
+
+        if(l == null)
+            return res;
+
+        if(l.line != 0) {
+            res.add(LangID.getStringByID("data_linelim", lang)+" : "+LangID.getStringByID("data_firstline", lang));
+        }
+
+        if(l.max != 0) {
+            res.add(LangID.getStringByID("data_maxcolim", lang)+" : "+LangID.getStringByID("data_costmax", lang).replace("_", String.valueOf(l.max)));
+        }
+
+        if(l.min != 0) {
+            res.add(LangID.getStringByID("data_mincolim", lang)+" : "+LangID.getStringByID("data_costmin", lang).replace("_", String.valueOf(l.min)));
+        }
+
+        if(l.rare != 0) {
+            String[] rid = {"data_basic", "data_ex", "data_rare", "data_sr", "data_ur", "data_lr"};
+            StringBuilder rare = new StringBuilder();
+
+            for(int i = 0; i < rid.length; i++) {
+                if(((l.rare >> i) & 1) > 0)
+                    rare.append(LangID.getStringByID(rid[i], lang)).append(", ");
+            }
+
+            res.add(LangID.getStringByID("data_rarelim", lang)+" : "+ rare.substring(0, rare.length() - 2));
+        }
+
+        if(l.num != 0) {
+            res.add(LangID.getStringByID("data_maxunitlim", lang)+" : "+l.num);
+        }
+
+        if(l.group != null && l.group.set.size() != 0) {
+            StringBuilder units = new StringBuilder();
+
+            ArrayList<Unit> u = new ArrayList<>(l.group.set);
+
+            for(int i = 0; i < u.size(); i++) {
+                if(u.get(i).forms == null || u.get(i).forms.length == 0)
+                    continue;
+
+                String f = MultiLangCont.get(u.get(i).forms[0]);
+
+                if(f == null)
+                    f = u.get(i).forms[0].name;
+
+                if(f == null)
+                    f = LangID.getStringByID("data_unit", lang)+Data.trio(u.get(i).id.id);
+
+                if(i == l.group.set.size() - 1) {
+                    units.append(f);
+                } else {
+                    units.append(f).append(", ");
+                }
+            }
+
+            String result;
+
+            if(l.group.type == 0) {
+                result = LangID.getStringByID("data_charagroup", lang)+" : "+LangID.getStringByID("data_only", lang).replace("_", units.toString());
+            } else {
+                result = LangID.getStringByID("data_charagroup", lang)+" : "+LangID.getStringByID("data_cantuse", lang).replace("_", units.toString());
+            }
+
+            res.add(result);
+        }
+
+        return res;
+    }
+
+    public static String getStageCode(Stage st) {
+        StageMap stm = st.getCont();
+        MapColc mc = stm.getCont();
+
+        int index = mapIds.indexOf(mc.getSID());
+
+        String code;
+
+        if(index == -1)
+            code = mc.getSID()+"-";
+        else
+            code = mapCodes[index]+"-";
+
+        if(stm.id != null) {
+            code += Data.trio(stm.id.id)+"-";
+        } else {
+            code += "Unknown-";
+        }
+
+        if(st.id != null) {
+            code += Data.trio(st.id.id);
+        } else {
+            code += "Unknown";
+        }
+
+        return code;
+    }
+
+    public static String getDescription(Form f) {
+        if(f.unit == null)
+            return null;
+
+        String[] desc = MultiLangCont.getStatic().FEXP.getCont(f);
+
+        if(desc == null)
+            return null;
+
+        boolean canGo = false;
+
+        for (String s : desc) {
+            if (s != null && !s.isBlank()) {
+                canGo = true;
+                break;
+            }
+        }
+
+        if(canGo) {
+            StringBuilder result = new StringBuilder();
+
+            for(int i = 0; i < desc.length; i++) {
+                result.append(desc[i]);
+
+                if(i != desc.length - 1)
+                    result.append("\n");
+            }
+
+            return result.toString();
+        } else {
+            return null;
+        }
+    }
+
+    public static String getDescription(Enemy e) {
+        String[] desc = MultiLangCont.getStatic().EEXP.getCont(e);
+
+        if(desc == null)
+            return null;
+
+        boolean canGo = false;
+
+        for(String s : desc) {
+            if(s != null && !s.isBlank()) {
+                canGo = true;
+                break;
+            }
+        }
+
+        if(canGo) {
+            StringBuilder builder = new StringBuilder();
+
+            for(int i = 0; i < desc.length; i++) {
+                builder.append(desc[i]);
+
+                if(i != desc.length - 1)
+                    builder.append("\n");
+            }
+
+            return builder.toString();
+        } else {
+            return null;
+        }
+    }
+
+    public static String getCatruitEvolve(Form f) {
+        if(f.unit == null)
+            return null;
+
+        String[] cf = MultiLangCont.getStatic().CFEXP.getCont(f.unit.info);
+
+        if(cf == null)
+            return null;
+
+        boolean canGo = false;
+
+        for(String s : cf) {
+            if(s != null && !s.isBlank()) {
+                canGo = true;
+                break;
+            }
+        }
+
+        if(canGo) {
+            StringBuilder builder = new StringBuilder();
+
+            for(int i = 0; i < cf.length; i++) {
+                builder.append(cf[i]);
+
+                if(i != cf.length -1)
+                    builder.append("\n");
+            }
+
+            return builder.toString();
+        } else {
+            return null;
+        }
+    }
+
+    public static String getRewards(Stage s, int lang) {
+        if(s == null || s.info == null || s.info.drop == null || s.info.drop.length == 0)
+            return null;
+
+        ArrayList<String> chances = getDropData(s);
+
+        if(chances == null)
+            return null;
+
+        StringBuilder builder = new StringBuilder();
+
+        for(int i = 0; i < s.info.drop.length; i++) {
+            String chance;
+
+            if(chances.isEmpty())
+                chance = String.valueOf(i + 1);
+            else
+                chance = chances.get(i)+"%";
+
+            String reward = MultiLangCont.getStatic().RWNAME.getCont(s.info.drop[i][1]);
+
+            if(reward == null || reward.isBlank())
+                reward = LangID.getStringByID("data_dumreward", lang).replace("_", Data.trio(s.info.drop[i][1]));
+
+            builder.append(chance).append("  |  ").append(reward);
+
+            if(i == 0 && (s.info.rand == 1 || s.info.drop[i][1] >= 1000))
+                builder.append(LangID.getStringByID("data_once", lang));
+
+            if(i == 0 && s.info.drop[i][0] != 100)
+                builder.append(" <:treasureRadar:810007545355173889>");
+
+            builder.append("  |  ").append(s.info.drop[i][2]);
+
+            if(i != s.info.drop.length - 1)
+                builder.append("\n");
+        }
+
+        if(chances.isEmpty())
+            builder.append("!!number!!");
+
+        return builder.toString();
+    }
+
+    private static ArrayList<String> getDropData(Stage s) {
+        ArrayList<String> res = new ArrayList<>();
+
+        int[][] data = s.info.drop;
+
+        int sum = 0;
+
+        for(int[] d : data) {
+            sum += d[0];
+        }
+
+        if(sum == 0)
+            return null;
+
+        if(sum == 1000) {
+            for(int[] d : data) {
+                res.add(df.format(d[0]/10.0));
+            }
+        } else if((sum == data.length && sum != 1) || s.info.rand == -3) {
+            return res;
+        } else if(sum == 100) {
+            for(int[] d : data) {
+                res.add(String.valueOf(d[0]));
+            }
+        } else if(sum > 100 && s.info.rand == 0) {
+            double rest = 100.0;
+
+            for(int[] d : data) {
+                double filter = rest * d[0] / 100.0;
+
+                rest -= filter;
+
+                res.add(df.format(filter));
+            }
+        } else {
+            for(int[] d : data) {
+                res.add(String.valueOf(d[0]));
+            }
+        }
+
+        return res;
+    }
+
+    public static String getScoreDrops(Stage st, int lang) {
+        if(st == null || st.info == null || st.info.time == null || st.info.time.length == 0)
+            return null;
+
+        StringBuilder builder = new StringBuilder();
+
+        int[][] data = st.info.time;
+
+        for(int i = 0; i < st.info.time.length; i++) {
+            String reward = MultiLangCont.getStatic().RWNAME.getCont(data[i][1]);
+
+            if(reward == null || reward.isBlank())
+                reward = LangID.getStringByID("data_dumreward", lang).replace("_", Data.trio(data[i][1]));
+
+            builder.append(data[i][0]).append("  |  ").append(reward).append("  |  ").append(data[i][2]);
+
+            if(i != st.info.time.length - 1)
+                builder.append("\n");
+        }
+
+        return builder.toString();
     }
 }
