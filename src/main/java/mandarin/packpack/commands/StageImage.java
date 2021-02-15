@@ -9,13 +9,13 @@ import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.ImageGenerator;
 import mandarin.packpack.supporter.FontStageImageGenerator;
 import mandarin.packpack.supporter.StageImageGenerator;
+import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.IDHolder;
 
 import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -54,7 +54,14 @@ public class StageImage extends ConstraintCommand {
                 int param = checkParameters(getMessage(event));
 
                 ImageGenerator generator;
-                String message = getMessage(event).split(" ", startIndex+1)[startIndex];
+                String[] messages = getMessage(event).split(" ", startIndex+1);
+
+                if(messages.length <= startIndex) {
+                    ch.createMessage(LangID.getStringByID("stimg_more", lang).replace("_", StaticStore.serverPrefix)).subscribe();
+                    return;
+                }
+
+                String message = messages[startIndex];
 
                 if((param & PARAM_FORCE) > 0 || !canImage(message)) {
                     File fon = new File("./data/ForceFont.otf");
@@ -76,7 +83,7 @@ public class StageImage extends ConstraintCommand {
 
                 handleLast(message, ch, generator);
             } else {
-                ch.createMessage(LangID.getStringByID("stimg_argu", lang)).subscribe();
+                ch.createMessage(LangID.getStringByID("stimg_argu", lang).replace("_", StaticStore.serverPrefix)).subscribe();
             }
         } catch (Exception e) {
             e.printStackTrace();

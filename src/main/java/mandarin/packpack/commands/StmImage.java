@@ -9,6 +9,7 @@ import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.ImageGenerator;
 import mandarin.packpack.supporter.FontStageImageGenerator;
 import mandarin.packpack.supporter.StageImageGenerator;
+import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.IDHolder;
 
@@ -52,7 +53,14 @@ public class StmImage extends ConstraintCommand {
 
                 ImageGenerator generator;
                 File f;
-                String message = getMessage(event).split(" ", startIndex+1)[startIndex];
+                String[] messages = getMessage(event).split(" ", startIndex+1);
+
+                if(messages.length <= startIndex) {
+                    ch.createMessage(LangID.getStringByID("stimg_more", lang).replace("_", StaticStore.serverPrefix)).subscribe();
+                    return;
+                }
+
+                String message = messages[startIndex];
 
                 if((param & PARAM_JP) > 0) {
                     File fon = new File("./data/Font.otf");
