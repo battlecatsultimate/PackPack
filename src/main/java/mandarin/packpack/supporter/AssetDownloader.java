@@ -3,7 +3,6 @@ package mandarin.packpack.supporter;
 import common.CommonStatic;
 import common.io.assets.AssetLoader;
 import common.io.assets.UpdateCheck;
-import common.pack.Context;
 import common.pack.PackData;
 import common.pack.UserProfile;
 import common.system.fake.ImageBuilder;
@@ -15,13 +14,12 @@ import common.util.stage.Stage;
 import common.util.stage.StageMap;
 import common.util.unit.Enemy;
 import common.util.unit.Unit;
-import discord4j.core.object.entity.User;
 import mandarin.packpack.supporter.awt.PCIB;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Queue;
 
 public class AssetDownloader {
     private static final String[] folder = {"en/", "jp/", "kr/", "zh/"};
@@ -269,7 +267,7 @@ public class AssetDownloader {
 
                                 String[] lines = str[1].trim().split("<br>");
 
-                                MultiLangCont.getStatic().EEXP.put(f.substring(1, f.length() -1), e, lines);
+                                MultiLangCont.getStatic().EEXP.put(f.substring(0, f.length() -1), e, lines);
                             }
                             break;
                         case "StageName.txt":
