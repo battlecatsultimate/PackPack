@@ -47,7 +47,7 @@ public class LangID {
 
                 break;
             case JP:
-                if(JP_OBJ == null) {
+                if(JP_OBJ == null || !JP_OBJ.has(id)) {
                     if(EN_OBJ == null)
                         return id;
 
@@ -60,7 +60,7 @@ public class LangID {
 
                 break;
             case KR:
-                if(KR_OBJ == null) {
+                if(KR_OBJ == null || !KR_OBJ.has(id)) {
                     if(EN_OBJ == null)
                         return id;
 
@@ -73,7 +73,7 @@ public class LangID {
 
                 break;
             case ZH:
-                if(ZH_OBJ == null) {
+                if(ZH_OBJ == null || !ZH_OBJ.has(id)) {
                     if(EN_OBJ == null)
                         return id;
 
