@@ -20,7 +20,7 @@ public class Music extends SingleContraintCommand {
     private static final String ARGUMENT = "arguments";
 
     public Music(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID) {
-        super(role, lang, id, mainID, TimeUnit.SECONDS.toMillis(3));
+        super(role, lang, id, mainID, TimeUnit.SECONDS.toMillis(10));
     }
 
     private final Pauser waiter = new Pauser();
@@ -123,7 +123,7 @@ public class Music extends SingleContraintCommand {
                     ch.createMessage(LangID.getStringByID("music_number", lang)).subscribe();
                     break;
                 case OUT_RANGE:
-                    ch.createMessage(LangID.getStringByID("music_outrange", lang).replace("_", String.valueOf(UserProfile.getBCData().musics.getList().size()))).subscribe();
+                    ch.createMessage(LangID.getStringByID("music_outrange", lang).replace("_", String.valueOf(UserProfile.getBCData().musics.getList().size() - 1))).subscribe();
                     break;
                 case ARGUMENT:
                     ch.createMessage(LangID.getStringByID("music_argu", lang));
