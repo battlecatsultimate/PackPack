@@ -28,6 +28,17 @@ public class HelpBC implements Command {
             emb.addField(StaticStore.serverPrefix+"stageinfo", LangID.getStringByID("helpbc_si", lang).replace("_", StaticStore.serverPrefix), false);
             emb.addField(StaticStore.serverPrefix+"music",LangID.getStringByID("helpbc_ms", lang).replace("_", StaticStore.serverPrefix),false);
             emb.addField(StaticStore.serverPrefix+"castle",LangID.getStringByID("helpbc_cs", lang).replace("_", StaticStore.serverPrefix), false);
+            String content = LangID.getStringByID("helpbc_fimg", lang)
+                    .replace("_", StaticStore.serverPrefix)
+                    .replace("A0", LangID.getStringByID("fimg_walk", lang))
+                    .replace("A1", LangID.getStringByID("fimg_idle", lang))
+                    .replace("A2", LangID.getStringByID("fimg_atk", lang))
+                    .replace("A3", LangID.getStringByID("fimg_hitback", lang))
+                    .replace("A4", LangID.getStringByID("fimg_enter", lang))
+                    .replace("A5", LangID.getStringByID("fimg_burrowdown", lang))
+                    .replace("A6", LangID.getStringByID("fimg_burrowmove", lang))
+                    .replace("A7", LangID.getStringByID("fimg_burrowup", lang));
+            emb.addField(StaticStore.serverPrefix+"formimage", content, false);
         }).subscribe();
     }
 }

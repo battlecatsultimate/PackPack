@@ -22,10 +22,7 @@ import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
-import mandarin.packpack.supporter.server.EnemyStatHolder;
-import mandarin.packpack.supporter.server.FormStatHolder;
-import mandarin.packpack.supporter.server.IDHolder;
-import mandarin.packpack.supporter.server.StageInfoHolder;
+import mandarin.packpack.supporter.server.*;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -129,6 +126,20 @@ public class PackBot {
                             }
                         }
 
+                        if(StaticStore.formAnimHolder.containsKey(m.getId().asString())) {
+                            FormAnimHolder holder = StaticStore.formAnimHolder.get(m.getId().asString());
+
+                            int result = holder.handleEvent(event);
+
+                            if(result == StageInfoHolder.RESULT_FINISH) {
+                                holder.clean();
+                                StaticStore.formAnimHolder.remove(m.getId().asString());
+                            } else if(result == StageInfoHolder.RESULT_FAIL) {
+                                System.out.println("ERROR : Expired process tried to be handled : "+m.getId().asString()+"|"+m.getNickname().orElse(m.getUsername()));
+                                StaticStore.formAnimHolder.remove(m.getId().asString());
+                            }
+                        }
+
                         if(ch != null) {
                             Guild g = event.getGuild().block();
 
@@ -159,8 +170,6 @@ public class PackBot {
 
                             if(ids == null)
                                 ids = StaticStore.holder.get(StaticStore.BCU_SERVER);
-
-                            System.out.println(StaticStore.getCommand(msg.getContent(), prefix));
 
                             switch (StaticStore.getCommand(msg.getContent(), prefix)) {
                                 case "checkbcu":
@@ -226,6 +235,12 @@ public class PackBot {
                                 case "memory":
                                 case "mm":
                                     new Memory(ConstraintCommand.ROLE.DEV, lang, ids).execute(event);
+                                    break;
+                                case "formimage":
+                                case "formimg":
+                                case "fimg":
+                                    new FormImage(TimedConstraintCommand.ROLE.MANDARIN, lang, ids, 10000).execute(event);
+                                    break;
                             }
                         }
                     });

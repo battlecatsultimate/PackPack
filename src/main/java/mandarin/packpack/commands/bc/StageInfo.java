@@ -159,7 +159,7 @@ public class StageInfo extends TimedConstraintCommand {
             String[] pureMessage = message.split(" ", 2)[1].split(" ");
 
             for(String str : pureMessage) {
-                if(str.startsWith("-s")) {
+                if(str.startsWith("-s") && !str.startsWith("-st") && !str.startsWith("-stm")) {
                     if((result & PARAM_SECOND) == 0) {
                         result |= PARAM_SECOND;
                     } else

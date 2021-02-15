@@ -154,6 +154,8 @@ public class EntityFilter {
 
                 for(Stage st : stm.list.getList()) {
                     for(int i = 0; i < 4; i++) {
+                        CommonStatic.getConfig().lang = i;
+
                         if(names[2] == null)
                             continue;
 

@@ -10,10 +10,7 @@ import common.util.lang.MultiLangCont;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.rest.util.Color;
-import mandarin.packpack.supporter.server.EnemyStatHolder;
-import mandarin.packpack.supporter.server.FormStatHolder;
-import mandarin.packpack.supporter.server.IDHolder;
-import mandarin.packpack.supporter.server.StageInfoHolder;
+import mandarin.packpack.supporter.server.*;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -35,6 +32,7 @@ public class StaticStore {
     public static Map<String, FormStatHolder> formHolder = new HashMap<>();
     public static Map<String, EnemyStatHolder> enemyHolder = new HashMap<>();
     public static Map<String, StageInfoHolder> stageHolder = new HashMap<>();
+    public static Map<String, FormAnimHolder> formAnimHolder = new HashMap<>();
 
     public static Map<String, Boolean> canDo = new HashMap<>();
 

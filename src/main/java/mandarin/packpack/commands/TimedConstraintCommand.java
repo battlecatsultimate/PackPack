@@ -69,17 +69,13 @@ public abstract class TimedConstraintCommand implements Command {
                 long currentTime = System.currentTimeMillis();
 
                 if(currentTime-oldTime < time) {
-                    System.out.println("Allow : "+id+" | "+currentTime+" | "+m.getUsername());
                     ch.createMessage(LangID.getStringByID("command_timelimit", lang).replace("_", getCooldown(time - (currentTime-oldTime)))).subscribe();
                     canGo.set(false);
                 } else {
-                    System.out.println("Put : "+id+" | "+currentTime+" | "+m.getUsername());
                     StaticStore.timeLimit.put(id, currentTime);
                 }
             } else {
                 long currentTime = System.currentTimeMillis();
-
-                System.out.println("Put : "+id+" | "+currentTime+" | "+m.getUsername());
                 StaticStore.timeLimit.put(id, currentTime);
             }
         });
