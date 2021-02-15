@@ -31,6 +31,7 @@ public class Help implements Command {
             emb.addField(StaticStore.serverPrefix+"stageimage", LangID.getStringByID("help_stimg", lang).replace("_", StaticStore.serverPrefix), false);
             emb.addField(StaticStore.serverPrefix+"stmimage",LangID.getStringByID("help_stmimg", lang).replace("_", StaticStore.serverPrefix), false);
             emb.addField(StaticStore.serverPrefix+"locale", LangID.getStringByID("help_locale", lang).replace("_", StaticStore.serverPrefix), false);
+            emb.addField(StaticStore.serverPrefix+"helpbc", LangID.getStringByID("help_helpbc", lang).replace("_", StaticStore.serverPrefix), false);
         }).subscribe();
     }
 }
