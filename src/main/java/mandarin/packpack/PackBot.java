@@ -13,18 +13,19 @@ import discord4j.core.object.presence.Activity;
 import discord4j.core.object.presence.Presence;
 import discord4j.rest.request.RouterOptions;
 import mandarin.packpack.commands.*;
-import mandarin.packpack.commands.bc.EnemyStat;
-import mandarin.packpack.commands.bc.FormStat;
-import mandarin.packpack.commands.bc.Music;
+import mandarin.packpack.commands.bc.*;
 import mandarin.packpack.supporter.AssetDownloader;
 import mandarin.packpack.supporter.PackContext;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.awt.FIBI;
 import mandarin.packpack.supporter.bc.DataToString;
+import mandarin.packpack.supporter.bc.EntityFilter;
+import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.EnemyStatHolder;
 import mandarin.packpack.supporter.server.FormStatHolder;
 import mandarin.packpack.supporter.server.IDHolder;
+import mandarin.packpack.supporter.server.StageInfoHolder;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -114,6 +115,20 @@ public class PackBot {
                             }
                         }
 
+                        if(StaticStore.stageHolder.containsKey(m.getId().asString())) {
+                            StageInfoHolder holder = StaticStore.stageHolder.get(m.getId().asString());
+
+                            int result = holder.handleEvent(event);
+
+                            if(result == StageInfoHolder.RESULT_FINISH) {
+                                holder.clean();
+                                StaticStore.stageHolder.remove(m.getId().asString());
+                            } else if(result == StageInfoHolder.RESULT_FAIL) {
+                                System.out.println("ERROR : Expired process tried to be handled : "+m.getId().asString()+"|"+m.getNickname().orElse(m.getUsername()));
+                                StaticStore.stageHolder.remove(m.getId().asString());
+                            }
+                        }
+
                         if(ch != null) {
                             Guild g = event.getGuild().block();
 
@@ -144,6 +159,8 @@ public class PackBot {
 
                             if(ids == null)
                                 ids = StaticStore.holder.get(StaticStore.BCU_SERVER);
+
+                            System.out.println(StaticStore.getCommand(msg.getContent(), prefix));
 
                             switch (StaticStore.getCommand(msg.getContent(), prefix)) {
                                 case "checkbcu":
@@ -187,12 +204,28 @@ public class PackBot {
                                     new Locale(ConstraintCommand.ROLE.MEMBER, lang, ids).execute(event);
                                     break;
                                 case "music":
+                                case "ms":
                                     new Music(ConstraintCommand.ROLE.MEMBER, lang, ids, "music_").execute(event);
                                     break;
                                 case "enemystat":
                                 case "es":
                                     new EnemyStat(ConstraintCommand.ROLE.MEMBER, lang, ids).execute(event);
                                     break;
+                                case "castle":
+                                case "cs":
+                                    new Castle(ConstraintCommand.ROLE.MEMBER, lang, ids).execute(event);
+                                    break;
+                                case "helpbc":
+                                case "hbc":
+                                    new HelpBC(lang).execute(event);
+                                    break;
+                                case "stageinfo":
+                                case "si":
+                                    new StageInfo(TimedConstraintCommand.ROLE.MEMBER, lang, ids, 5000).execute(event);
+                                    break;
+                                case "memory":
+                                case "mm":
+                                    new Memory(ConstraintCommand.ROLE.DEV, lang, ids).execute(event);
                             }
                         }
                     });
