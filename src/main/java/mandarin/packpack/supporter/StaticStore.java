@@ -13,6 +13,7 @@ import discord4j.rest.util.Color;
 import mandarin.packpack.supporter.server.EnemyStatHolder;
 import mandarin.packpack.supporter.server.FormStatHolder;
 import mandarin.packpack.supporter.server.IDHolder;
+import mandarin.packpack.supporter.server.StageInfoHolder;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -33,19 +34,32 @@ public class StaticStore {
 
     public static Map<String, FormStatHolder> formHolder = new HashMap<>();
     public static Map<String, EnemyStatHolder> enemyHolder = new HashMap<>();
+    public static Map<String, StageInfoHolder> stageHolder = new HashMap<>();
 
     public static Map<String, Boolean> canDo = new HashMap<>();
 
     public static final MultiLangCont<Integer, String> MEDNAME = new MultiLangCont<>();
     public static final MultiLangCont<Integer, String> MEDEXP = new MultiLangCont<>();
 
+    public static final Map<String, Long> timeLimit = new HashMap<>();
+
     public static Timer saver = null;
 
     public static Color[] rainbow = {Color.of(217, 65, 68), Color.of(217, 128, 65), Color.of(224, 213, 85)
     , Color.of(118, 224, 85), Color.of(85, 169, 224), Color.of(185, 85, 224)};
 
+    public static Color[] coolHot = {
+            Color.of(52, 147, 235),
+            Color.of(38, 189, 178),
+            Color.of(51, 196, 106),
+            Color.of(186, 219, 53),
+            Color.of(245, 217, 42),
+            Color.of(240, 140, 53),
+            Color.of(240, 112, 60),
+            Color.of(222, 51, 60)
+    };
+
     public static boolean checkingBCU = false;
-    public static boolean analyzing = false;
 
     public static final Random random = new Random();
     public static final BigInteger max = new BigInteger(Integer.toString(Integer.MAX_VALUE));
@@ -120,8 +134,8 @@ public class StaticStore {
 
         String[] list = message.split(" ");
 
-        if(list[0].startsWith(prefix))
-            return list[0].replaceFirst(prefix, "");
+        if(list[0].toLowerCase(Locale.ENGLISH).startsWith(prefix.toLowerCase(Locale.ENGLISH)))
+            return list[0].toLowerCase(Locale.ENGLISH).replaceFirst(prefix.toLowerCase(Locale.ENGLISH), "");
         else
             return "";
     }
@@ -340,6 +354,26 @@ public class StaticStore {
                     System.out.println("Failed to delete folder : "+f.getAbsolutePath());
                 }
             }
+        }
+    }
+
+    public static String findFileName(File folder, String name, String extension) {
+        int n = 0;
+
+        while(true) {
+            String fileName;
+
+            if(n == 0)
+                fileName = name+extension;
+            else
+                fileName = name+"_"+n+extension;
+
+            File test = new File(folder, fileName);
+
+            if(!test.exists())
+                return fileName;
+            else
+                n++;
         }
     }
 
