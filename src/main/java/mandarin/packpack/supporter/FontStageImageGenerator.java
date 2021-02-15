@@ -110,7 +110,7 @@ public class FontStageImageGenerator implements ImageGenerator{
                 pad += generateLetterWidth(str, frc) + 4;
             }
 
-            File f = new File("./temp/Result.png");
+            File f = new File("./temp/", StaticStore.findFileName(new File("./temp/"), "Result", ".png"));
 
             try {
                 if(!f.exists()) {
@@ -246,7 +246,7 @@ public class FontStageImageGenerator implements ImageGenerator{
 
             g.drawImage(FIBI.build(scaled), 128 - (scaled.getWidth() * ratio / 2), 32 - 55.0/2, scaled.getWidth() * ratio, scaled.getHeight());
 
-            File f = new File("./temp/Result.png");
+            File f = new File("./temp/", StaticStore.findFileName(new File("./temp/"), "Result", ".png"));
 
             try {
                 Context.check(f);

@@ -308,7 +308,7 @@ public class StageImageGenerator implements  ImageGenerator {
                 index++;
             }
 
-            File f = new File("./temp/Result.png");
+            File f = new File("./temp/", StaticStore.findFileName(new File("./temp/"), "Result", ".png"));
 
             if(!f.exists()) {
                 try {
@@ -404,7 +404,7 @@ public class StageImageGenerator implements  ImageGenerator {
 
             g.drawImage(FIBI.build(scaled), 3, 10, scaled.getWidth() * ratio, scaled.getHeight());
 
-            File f = new File("./temp/Result.png");
+            File f = new File("./temp/", StaticStore.findFileName(new File("./temp/"), "Result", ".png"));
 
             try {
                 Context.check(f);
