@@ -177,9 +177,6 @@ public class EntityFilter {
 
                         String stName = MultiLangCont.get(st);
 
-                        if(mc.getSID().equals("000002"))
-                            System.out.println(stName);
-
                         if(stName == null || stName.isBlank())
                             continue;
 

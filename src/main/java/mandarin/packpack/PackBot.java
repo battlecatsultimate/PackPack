@@ -262,6 +262,9 @@ public class PackBot {
                                 case "bg":
                                     new Background(TimedConstraintCommand.ROLE.MEMBER, lang, ids, 10000).execute(event);
                                     break;
+                                case "test":
+                                    new Test(ConstraintCommand.ROLE.MANDARIN, lang, ids).execute(event);
+                                    break;
                             }
                         }
                     });

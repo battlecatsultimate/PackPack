@@ -69,7 +69,7 @@ public class ImageDrawing {
         while(pos < w) {
             g.drawImage(bg.parts[Background.BG], pos, y - lowHeight, lowWidth, lowHeight);
 
-            pos += (int) (bg.parts[0].getWidth() * ratio);
+            pos += Math.max(1, (int) (bg.parts[0].getWidth() * ratio));
         }
 
         if(bg.top) {
@@ -82,7 +82,7 @@ public class ImageDrawing {
             while(pos < w) {
                 g.drawImage(bg.parts[Background.TOP], pos, y - topHeight, topWidth, topHeight);
 
-                pos += (int) (bg.parts[0].getWidth() * ratio);
+                pos += Math.max(1, (int) (bg.parts[0].getWidth() * ratio));
             }
 
             if(y - topHeight > 0) {
