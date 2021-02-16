@@ -17,6 +17,7 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Pattern;
 
 public class StaticStore {
     public static String ratingChannel = "";
@@ -33,6 +34,7 @@ public class StaticStore {
     public static Map<String, EnemyStatHolder> enemyHolder = new HashMap<>();
     public static Map<String, StageInfoHolder> stageHolder = new HashMap<>();
     public static Map<String, FormAnimHolder> formAnimHolder = new HashMap<>();
+    public static Map<String, EnemyAnimHolder> enemyAnimHolder = new HashMap<>();
 
     public static Map<String, Boolean> canDo = new HashMap<>();
 
@@ -133,7 +135,7 @@ public class StaticStore {
         String[] list = message.split(" ");
 
         if(list[0].toLowerCase(Locale.ENGLISH).startsWith(prefix.toLowerCase(Locale.ENGLISH)))
-            return list[0].toLowerCase(Locale.ENGLISH).replaceFirst(prefix.toLowerCase(Locale.ENGLISH), "");
+            return list[0].toLowerCase(Locale.ENGLISH).replaceFirst(Pattern.quote(prefix.toLowerCase(Locale.ENGLISH)), "");
         else
             return "";
     }

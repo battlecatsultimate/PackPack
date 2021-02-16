@@ -1,7 +1,6 @@
 package mandarin.packpack;
 
 import common.CommonStatic;
-import common.system.fake.ImageBuilder;
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
@@ -17,13 +16,11 @@ import mandarin.packpack.commands.bc.*;
 import mandarin.packpack.supporter.AssetDownloader;
 import mandarin.packpack.supporter.PackContext;
 import mandarin.packpack.supporter.StaticStore;
-import mandarin.packpack.supporter.awt.FIBI;
 import mandarin.packpack.supporter.bc.DataToString;
-import mandarin.packpack.supporter.bc.EntityFilter;
-import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.*;
 
+import java.net.URLClassLoader;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -131,12 +128,26 @@ public class PackBot {
 
                             int result = holder.handleEvent(event);
 
-                            if(result == StageInfoHolder.RESULT_FINISH) {
+                            if(result == FormAnimHolder.RESULT_FINISH) {
                                 holder.clean();
                                 StaticStore.formAnimHolder.remove(m.getId().asString());
-                            } else if(result == StageInfoHolder.RESULT_FAIL) {
+                            } else if(result == FormAnimHolder.RESULT_FAIL) {
                                 System.out.println("ERROR : Expired process tried to be handled : "+m.getId().asString()+"|"+m.getNickname().orElse(m.getUsername()));
                                 StaticStore.formAnimHolder.remove(m.getId().asString());
+                            }
+                        }
+
+                        if(StaticStore.enemyAnimHolder.containsKey(m.getId().asString())) {
+                            EnemyAnimHolder holder = StaticStore.enemyAnimHolder.get(m.getId().asString());
+
+                            int result = holder.handleEvent(event);
+
+                            if(result == EnemyAnimHolder.RESULT_FINISH) {
+                                holder.clean();
+                                StaticStore.enemyAnimHolder.remove(m.getId().asString());
+                            } else if(result == EnemyAnimHolder.RESULT_FAIL) {
+                                System.out.println("ERROR : Expired process tried to be handled : "+m.getId().asString()+"|"+m.getNickname().orElse(m.getUsername()));
+                                StaticStore.enemyAnimHolder.remove(m.getId().asString());
                             }
                         }
 
@@ -238,8 +249,15 @@ public class PackBot {
                                     break;
                                 case "formimage":
                                 case "formimg":
+                                case "fimage":
                                 case "fimg":
-                                    new FormImage(TimedConstraintCommand.ROLE.MANDARIN, lang, ids, 10000).execute(event);
+                                    new FormImage(TimedConstraintCommand.ROLE.MEMBER, lang, ids, 10000).execute(event);
+                                    break;
+                                case "enemyimage":
+                                case "enemyimg":
+                                case "eimage":
+                                case "eimg":
+                                    new EnemyImage(TimedConstraintCommand.ROLE.MEMBER, lang, ids, 10000).execute(event);
                                     break;
                             }
                         }
@@ -252,7 +270,6 @@ public class PackBot {
     public static void initialize() {
         if(!StaticStore.initialized) {
             CommonStatic.ctx = new PackContext();
-            ImageBuilder.builder = FIBI.builder;
             StaticStore.readServerInfo();
 
             AssetDownloader.checkAssetDownload();

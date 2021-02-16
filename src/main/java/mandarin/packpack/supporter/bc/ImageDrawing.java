@@ -6,6 +6,7 @@ import common.system.fake.FakeGraphics;
 import common.system.fake.FakeImage;
 import common.util.anim.AnimU;
 import common.util.anim.EAnimD;
+import common.util.unit.Enemy;
 import common.util.unit.Form;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.awt.FG2D;
@@ -14,6 +15,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.ArrayList;
 
 public class ImageDrawing {
     public static File drawFormImage(Form f, int mode, int frame, double siz, boolean transparent, boolean debug) throws Exception {
@@ -42,7 +44,7 @@ public class ImageDrawing {
 
             int[][] result = getter.getRect();
 
-            if(Math.abs(result[1][0]-result[0][0]) >= 500 || Math.abs(result[1][1] - result[2][1]) >= 500)
+            if(Math.abs(result[1][0]-result[0][0]) >= 1000 || Math.abs(result[1][1] - result[2][1]) >= 1000)
                 continue;
 
             int oldX = rect.x;
@@ -63,20 +65,7 @@ public class ImageDrawing {
             rect.height = Math.max(Math.abs(maxAmong(result[0][1], result[1][1], result[2][1], result[3][1]) - rect.y), rect.height);
         }
 
-        int w = rect.width;
-        int h = rect.height;
-
-        int offY = 0;
-
-        if(h > w && h / w > 2) {
-            int oldH = h;
-
-            h = w * 2;
-
-            offY = oldH - h;
-        }
-
-        BufferedImage result = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage result = new BufferedImage(rect.width, rect.height, BufferedImage.TYPE_INT_ARGB);
         FG2D rg = new FG2D(result.getGraphics());
 
         rg.setRenderingHint(3, 1);
@@ -84,10 +73,10 @@ public class ImageDrawing {
 
         if(!transparent) {
             rg.setColor(54,57,63,255);
-            rg.fillRect(0, 0, w, h);
+            rg.fillRect(0, 0, rect.width, rect.height);
         }
 
-        anim.draw(rg, new P(-rect.x, -rect.y-offY), siz);
+        anim.draw(rg, new P(-rect.x, -rect.y), siz);
 
         rg.setStroke(1.5f);
 
@@ -132,6 +121,110 @@ public class ImageDrawing {
         ImageIO.write(result, "PNG", file);
 
         f.anim.unload();
+
+        return file;
+    }
+
+    public static File drawEnemyImage(Enemy e, int mode, int frame, double siz, boolean transparent, boolean debug) throws Exception {
+        e.anim.load();
+
+        CommonStatic.getConfig().ref = false;
+
+        if(mode >= e.anim.anims.length)
+            mode = 0;
+
+        EAnimD<?> anim = e.anim.getEAnim(getAnimType(mode, e.anim.anims.length));
+
+        anim.setTime(frame);
+
+        Rectangle rect = new Rectangle();
+
+        ArrayList<int[][]> rects = new ArrayList<>();
+        ArrayList<P> centers = new ArrayList<>();
+
+        for(int i = 0; i < anim.getOrder().length; i++) {
+            FakeImage fi = e.anim.parts[anim.getOrder()[i].getVal(2)];
+
+            if(fi.getHeight() == 1 && fi.getWidth() == 1)
+                continue;
+
+            RawPointGetter getter = new RawPointGetter(fi.getWidth(), fi.getHeight());
+
+            getter.apply(anim.getOrder()[i], siz, false);
+
+            int[][] result = getter.getRect();
+
+            rects.add(result);
+            centers.add(getter.center);
+
+            if(Math.abs(result[1][0]-result[0][0]) >= 1000 || Math.abs(result[1][1] - result[2][1]) >= 1000)
+                continue;
+
+            int oldX = rect.x;
+            int oldY = rect.y;
+
+            rect.x = Math.min(minAmong(result[0][0], result[1][0], result[2][0], result[3][0]), rect.x);
+            rect.y = Math.min(minAmong(result[0][1], result[1][1], result[2][1], result[3][1]), rect.y);
+
+            if(oldX != rect.x) {
+                rect.width += oldX - rect.x;
+            }
+
+            if(oldY != rect.y) {
+                rect.height += oldY - rect.y;
+            }
+
+            rect.width = Math.max(Math.abs(maxAmong(result[0][0], result[1][0], result[2][0], result[3][0]) - rect.x), rect.width);
+            rect.height = Math.max(Math.abs(maxAmong(result[0][1], result[1][1], result[2][1], result[3][1]) - rect.y), rect.height);
+        }
+
+        BufferedImage result = new BufferedImage(rect.width, rect.height, BufferedImage.TYPE_INT_ARGB);
+        FG2D rg = new FG2D(result.getGraphics());
+
+        rg.setRenderingHint(3, 1);
+        rg.enableAntialiasing();
+
+        if(!transparent) {
+            rg.setColor(54,57,63,255);
+            rg.fillRect(0, 0, rect.width, rect.height);
+        }
+
+        anim.draw(rg, new P(-rect.x, -rect.y), siz);
+
+        rg.setStroke(1.5f);
+
+        if(debug) {
+            for(int i = 0; i < rects.size(); i++) {
+                int[][] res = rects.get(i);
+
+                rg.setColor(FakeGraphics.RED);
+
+                rg.drawLine(-rect.x + res[0][0], -rect.y + res[0][1], -rect.x + res[1][0], -rect.y + res[1][1]);
+                rg.drawLine(-rect.x + res[1][0], -rect.y + res[1][1], -rect.x + res[2][0], -rect.y + res[2][1]);
+                rg.drawLine(-rect.x + res[2][0], -rect.y + res[2][1], -rect.x + res[3][0], -rect.y + res[3][1]);
+                rg.drawLine(-rect.x + res[3][0], -rect.y + res[3][1], -rect.x + res[0][0], -rect.y + res[0][1]);
+
+                rg.setColor(0, 255, 0, 255);
+
+                rg.fillRect(-rect.x + (int) centers.get(i).x - 2, -rect.y + (int) centers.get(i).y -2, 4, 4);
+            }
+        }
+
+        File temp = new File("./temp");
+        File file = new File("./temp", StaticStore.findFileName(temp, "result", ".png"));
+
+        if(!file.exists()) {
+            boolean res = file.createNewFile();
+
+            if(!res) {
+                System.out.println("Can't create file : "+file.getAbsolutePath());
+                return null;
+            }
+        }
+
+        ImageIO.write(result, "PNG", file);
+
+        e.anim.unload();
 
         return file;
     }

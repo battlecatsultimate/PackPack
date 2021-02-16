@@ -198,7 +198,7 @@ public class FormStat extends ConstraintCommand {
                     }
 
                     if(length == 0)
-                        return new int[] {0};
+                        return new int[] {-1};
                     else {
                         int[] lv = new int[length];
 
@@ -211,10 +211,10 @@ public class FormStat extends ConstraintCommand {
                 }
             }
         } else {
-            return new int[] {0};
+            return new int[] {-1};
         }
 
-        return new int[] {0};
+        return new int[] {-1};
     }
 
     private String getLevelText(String[] trial, int index) {

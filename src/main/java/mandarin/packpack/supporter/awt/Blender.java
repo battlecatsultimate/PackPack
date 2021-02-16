@@ -16,6 +16,7 @@ public class Blender implements Composite, CompositeContext {
 
 	@Override
 	public void compose(Raster src, Raster dst, WritableRaster out) {
+		comp4(src, dst, out);
 	}
 
 	@Override

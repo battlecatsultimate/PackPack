@@ -55,10 +55,25 @@ public class EntityHandler {
         int level = lv[0];
         int levelp = 0;
 
-        if(level > f.unit.max) {
-            level = f.unit.max;
-            levelp = lv[0] - level;
+        if(level <= 0) {
+            if(f.unit.rarity == 0)
+                level = 110;
+            else
+                level = 30;
         }
+
+        if(level > f.unit.max) {
+            levelp = level - f.unit.max;
+            level = f.unit.max;
+
+            if(levelp > f.unit.maxp)
+                levelp = f.unit.maxp;
+
+            if(levelp < 0)
+                levelp = 0;
+        }
+
+        lv[0] = level + levelp;
 
         String l;
 
@@ -214,6 +229,8 @@ public class EntityHandler {
                     System.out.println("Can't delete file : "+cf.getAbsolutePath());
             }
         });
+
+        f.anim.unload();
     }
 
     private static int[] handleTalent(int[] lv, int[] t) {
@@ -340,6 +357,8 @@ public class EntityHandler {
                     System.out.println("Can't delete file : "+img.getAbsolutePath());
             }
         });
+
+        e.anim.unload();
     }
 
     private static File generateIcon(Enemy e) throws IOException {

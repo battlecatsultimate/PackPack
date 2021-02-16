@@ -25,10 +25,16 @@ public class EntityFilter {
             for(Form f : u.forms) {
                 for(int i = 0; i < 4; i++) {
                     CommonStatic.getConfig().lang = i;
-                    StringBuilder fname = new StringBuilder(Data.trio(u.id.id)+"-"+Data.trio(f.fid)+" "+Data.trio(u.id.id)+" - "+Data.trio(f.fid) + " ");
+                    StringBuilder fname = new StringBuilder(Data.trio(u.id.id)+"-"+Data.trio(f.fid)+" "+Data.trio(u.id.id)+" - "+Data.trio(f.fid) + " "
+                    +u.id.id+"-"+f.fid+" "+Data.trio(u.id.id)+"-"+f.fid+" ");
                     fname.append(Data.trio(u.id.id)).append(Data.trio(f.fid)).append(" ");
+
                     if(MultiLangCont.get(f) != null) {
                         fname.append(MultiLangCont.get(f));
+                    }
+
+                    if(f.name != null) {
+                        fname.append(" ").append(f.name);
                     }
 
                     if(fname.toString().toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
