@@ -70,10 +70,14 @@ public class EnemyImage extends TimedConstraintCommand {
 
                 if(img != null) {
                     FileInputStream fis = new FileInputStream(img);
-                    CommonStatic.getConfig().lang = lang;
 
                     ch.createMessage(m -> {
+                        int oldConfig = CommonStatic.getConfig().lang;
+                        CommonStatic.getConfig().lang = lang;
+
                         String fName = MultiLangCont.get(enemies.get(0));
+
+                        CommonStatic.getConfig().lang = oldConfig;
 
                         if(fName == null || fName.isBlank())
                             fName = enemies.get(0).name;
@@ -127,8 +131,13 @@ public class EnemyImage extends TimedConstraintCommand {
                         fname = e.toString();
                     }
 
+                    int oldConfig = CommonStatic.getConfig().lang;
+                    CommonStatic.getConfig().lang = lang;
+
                     if(MultiLangCont.get(e) != null)
                         fname += MultiLangCont.get(e);
+
+                    CommonStatic.getConfig().lang = oldConfig;
 
                     sb.append(i+1).append(". ").append(fname).append("\n");
                 }

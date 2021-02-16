@@ -6,6 +6,7 @@ import common.system.fake.FakeGraphics;
 import common.system.fake.FakeImage;
 import common.util.anim.AnimU;
 import common.util.anim.EAnimD;
+import common.util.pack.Background;
 import common.util.unit.Enemy;
 import common.util.unit.Form;
 import mandarin.packpack.supporter.StaticStore;
@@ -18,6 +19,84 @@ import java.io.File;
 import java.util.ArrayList;
 
 public class ImageDrawing {
+    public static File drawBGImage(Background bg, int w, int h) throws Exception {
+        File temp = new File("./temp");
+
+        if(!temp.exists()) {
+            boolean res = temp.mkdirs();
+
+            if(!res) {
+                System.out.println("Can't create folder : "+temp.getAbsolutePath());
+                return null;
+            }
+        }
+
+        File image = new File("./temp", StaticStore.findFileName(temp, "result", ".png"));
+
+        if(!image.exists()) {
+            boolean res = image.createNewFile();
+
+            if(!res) {
+                System.out.println("Can't create new file : "+image.getAbsolutePath());
+                return null;
+            }
+        }
+
+        BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        FG2D g = new FG2D(img.getGraphics());
+
+        g.setRenderingHint(3, 2);
+        g.enableAntialiasing();
+
+        double groundRatio = 0.1;
+        double skyRatio = 0.1;
+
+        double ratio = h * (1.0 - groundRatio - skyRatio) / 2.0 / 512.0;
+
+        int groundHeight = (int) (groundRatio * h);
+
+        bg.load();
+
+        g.gradRect(0, h - groundHeight, w, groundHeight, 0, h - groundHeight, bg.cs[2], 0, h, bg.cs[3]);
+
+        int pos = (int) ((-bg.parts[Background.BG].getWidth()+256) * ratio);
+
+        int y = h - groundHeight;
+
+        int lowHeight = (int) (bg.parts[Background.BG].getHeight() * ratio);
+        int lowWidth = (int) (bg.parts[Background.BG].getWidth() * ratio);
+
+        while(pos < w) {
+            g.drawImage(bg.parts[Background.BG], pos, y - lowHeight, lowWidth, lowHeight);
+
+            pos += (int) (bg.parts[0].getWidth() * ratio);
+        }
+
+        if(bg.top) {
+            int topHeight = (int) (bg.parts[Background.TOP].getHeight() * ratio);
+            int topWidth = (int) (bg.parts[Background.TOP].getWidth() * ratio);
+
+            pos = (int) ((-bg.parts[Background.BG].getWidth() + 256) * ratio);
+            y = h - groundHeight - lowHeight;
+
+            while(pos < w) {
+                g.drawImage(bg.parts[Background.TOP], pos, y - topHeight, topWidth, topHeight);
+
+                pos += (int) (bg.parts[0].getWidth() * ratio);
+            }
+
+            if(y - topHeight > 0) {
+                g.gradRect(0, 0, w, h - groundHeight - lowHeight - topHeight, 0, 0, bg.cs[0], 0, h - groundHeight - lowHeight - topHeight, bg.cs[1]);
+            }
+        } else {
+            g.gradRect(0, 0, w, h - groundHeight - lowHeight, 0, 0, bg.cs[0], 0, h - groundHeight - lowHeight, bg.cs[1]);
+        }
+
+        ImageIO.write(img, "PNG", image);
+
+        return image;
+    }
+
     public static File drawFormImage(Form f, int mode, int frame, double siz, boolean transparent, boolean debug) throws Exception {
         f.anim.load();
 

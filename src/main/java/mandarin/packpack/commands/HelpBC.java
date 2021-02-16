@@ -50,6 +50,7 @@ public class HelpBC implements Command {
                     .replace("A6", LangID.getStringByID("fimg_burrowmove", lang))
                     .replace("A7", LangID.getStringByID("fimg_burrowup", lang));
             emb.addField(StaticStore.serverPrefix+"enemyimage", content, false);
+            emb.addField(StaticStore.serverPrefix+"background", LangID.getStringByID("helpbc_bg", lang).replace("_", StaticStore.serverPrefix), false);
         }).subscribe();
     }
 }

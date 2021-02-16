@@ -95,6 +95,9 @@ public class EnemyAnimHolder {
 
                 StringBuilder sb = new StringBuilder("```md\n").append(check);
 
+                int oldConfig = CommonStatic.getConfig().lang;
+                CommonStatic.getConfig().lang = lang;
+
                 for(int i = 20 * page; i < 20 * (page +1); i++) {
                     if(i >= enemy.size())
                         break;
@@ -103,11 +106,17 @@ public class EnemyAnimHolder {
 
                     String fname = Data.trio(e.id.id) + " - ";
 
+                    CommonStatic.getConfig().lang = lang;
+
                     if(MultiLangCont.get(e) != null)
                         fname += MultiLangCont.get(e);
 
+                    CommonStatic.getConfig().lang = oldConfig;
+
                     sb.append(i+1).append(". ").append(fname).append("\n");
                 }
+
+                CommonStatic.getConfig().lang = oldConfig;
 
                 if(enemy.size() > 20)
                     sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(enemy.size()/20 + 1)));
@@ -139,6 +148,9 @@ public class EnemyAnimHolder {
 
                 StringBuilder sb = new StringBuilder("```md\n").append(check);
 
+                int oldConfig = CommonStatic.getConfig().lang;
+                CommonStatic.getConfig().lang = lang;
+
                 for(int i = 20 * page; i < 20 * (page +1); i++) {
                     if(i >= enemy.size())
                         break;
@@ -147,11 +159,17 @@ public class EnemyAnimHolder {
 
                     String fname = Data.trio(e.id.id) + " - ";
 
+                    CommonStatic.getConfig().lang = lang;
+
                     if(MultiLangCont.get(e) != null)
                         fname += MultiLangCont.get(e);
 
+                    CommonStatic.getConfig().lang = oldConfig;
+
                     sb.append(i+1).append(". ").append(fname).append("\n");
                 }
+
+                CommonStatic.getConfig().lang = oldConfig;
 
                 if(enemy.size() > 20)
                     sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(enemy.size()/20 + 1)));
@@ -180,7 +198,12 @@ public class EnemyAnimHolder {
                         CommonStatic.getConfig().lang = lang;
 
                         ch.createMessage(m -> {
+                            int oldConfig = CommonStatic.getConfig().lang;
+                            CommonStatic.getConfig().lang = lang;
+
                             String fName = MultiLangCont.get(enemy.get(id));
+
+                            CommonStatic.getConfig().lang = oldConfig;
 
                             if(fName == null || fName.isBlank())
                                 fName = enemy.get(id).name;
@@ -262,8 +285,13 @@ public class EnemyAnimHolder {
 
                             String fname = Data.trio(e.id.id) + " - ";
 
+                            int oldConfig = CommonStatic.getConfig().lang;
+                            CommonStatic.getConfig().lang = lang;
+
                             if(MultiLangCont.get(e) != null)
                                 fname += MultiLangCont.get(e);
+
+                            CommonStatic.getConfig().lang = oldConfig;
 
                             sb.append(i+1).append(". ").append(fname).append("\n");
                         }

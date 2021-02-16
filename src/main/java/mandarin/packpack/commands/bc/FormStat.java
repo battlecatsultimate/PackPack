@@ -71,8 +71,13 @@ public class FormStat extends ConstraintCommand {
 
                     String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
 
+                    int oldConfig = CommonStatic.getConfig().lang;
+                    CommonStatic.getConfig().lang = lang;
+
                     if(MultiLangCont.get(f) != null)
                         fname += MultiLangCont.get(f);
+
+                    CommonStatic.getConfig().lang = oldConfig;
 
                     sb.append(i+1).append(". ").append(fname).append("\n");
                 }

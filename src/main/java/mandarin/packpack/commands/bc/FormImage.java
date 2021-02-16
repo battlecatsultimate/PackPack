@@ -70,10 +70,14 @@ public class FormImage extends TimedConstraintCommand {
 
                 if(img != null) {
                     FileInputStream fis = new FileInputStream(img);
-                    CommonStatic.getConfig().lang = lang;
 
                     ch.createMessage(m -> {
+                        int oldConfig = CommonStatic.getConfig().lang;
+                        CommonStatic.getConfig().lang = lang;
+
                         String fName = MultiLangCont.get(forms.get(0));
+
+                        CommonStatic.getConfig().lang = oldConfig;
 
                         if(fName == null || fName.isBlank())
                             fName = forms.get(0).name;
@@ -100,8 +104,6 @@ public class FormImage extends TimedConstraintCommand {
                     });
                 }
             } else {
-                CommonStatic.getConfig().lang = lang;
-
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", filterCommand(getMessage(event))));
 
                 String check;

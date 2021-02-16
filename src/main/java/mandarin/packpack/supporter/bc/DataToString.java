@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.bc;
 
+import common.CommonStatic;
 import common.battle.BasisSet;
 import common.battle.Treasure;
 import common.battle.data.AtkDataModel;
@@ -99,7 +100,12 @@ public class DataToString {
         if(f == null)
             return "";
 
+        int oldConfig = CommonStatic.getConfig().lang;
+        CommonStatic.getConfig().lang = lang;
+
         String name = MultiLangCont.get(f);
+
+        CommonStatic.getConfig().lang = oldConfig;
 
         if(name == null)
             name = "";
@@ -128,14 +134,24 @@ public class DataToString {
         }
     }
 
-    public static String getTitle(Enemy e) {
+    public static String getTitle(Enemy e, int lang) {
         if(e == null)
             return "";
 
+        int oldConfig = CommonStatic.getConfig().lang;
+        CommonStatic.getConfig().lang = lang;
+
         if(MultiLangCont.get(e) == null) {
+            CommonStatic.getConfig().lang = oldConfig;
+
             return Data.trio(e.id.id);
-        } else
-            return MultiLangCont.get(e);
+        } else {
+            String res = MultiLangCont.get(e);
+
+            CommonStatic.getConfig().lang = oldConfig;
+
+            return res;
+        }
     }
 
     public static String getAtkTime(Form f, boolean isFrame) {
@@ -1027,7 +1043,12 @@ public class DataToString {
                 if(u.get(i).forms == null || u.get(i).forms.length == 0)
                     continue;
 
+                int oldConfig = CommonStatic.getConfig().lang;
+                CommonStatic.getConfig().lang = lang;
+
                 String f = MultiLangCont.get(u.get(i).forms[0]);
+
+                CommonStatic.getConfig().lang = oldConfig;
 
                 if(f == null)
                     f = u.get(i).forms[0].name;

@@ -36,8 +36,6 @@ public class EnemyStat extends ConstraintCommand {
             ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(filterCommand(getMessage(event)));
 
             if(enemies.size() == 1) {
-                CommonStatic.getConfig().lang = lang;
-
                 int param = checkParameters(getMessage(event));
 
                 int[] magnification = handleMagnification(getMessage(event));
@@ -48,8 +46,6 @@ public class EnemyStat extends ConstraintCommand {
             } else if(enemies.size() == 0) {
                 ch.createMessage(LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(getMessage(event)))).subscribe();
             } else {
-                CommonStatic.getConfig().lang = lang;
-
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", filterCommand(getMessage(event))));
 
                 String check;
@@ -69,8 +65,13 @@ public class EnemyStat extends ConstraintCommand {
 
                     String ename = e.id == null ? "UNKNOWN " : Data.trio(e.id.id)+" ";
 
+                    int oldConfig = CommonStatic.getConfig().lang;
+                    CommonStatic.getConfig().lang = lang;
+
                     if(MultiLangCont.get(e) != null)
                         ename += MultiLangCont.get(e);
+
+                    CommonStatic.getConfig().lang = oldConfig;
 
                     sb.append(i+1).append(". ").append(ename).append("\n");
                 }

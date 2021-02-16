@@ -18,6 +18,8 @@ public class EntityFilter {
     public static ArrayList<Form> findUnitWithName(String name) {
         ArrayList<Form> res = new ArrayList<>();
 
+        int oldConfig = CommonStatic.getConfig().lang;
+
         for(Unit u : UserProfile.getBCData().units.getList()) {
             if(u == null)
                 continue;
@@ -45,11 +47,15 @@ public class EntityFilter {
             }
         }
 
+        CommonStatic.getConfig().lang = oldConfig;
+
         return res;
     }
 
     public static ArrayList<Enemy> findEnemyWithName(String name) {
         ArrayList<Enemy> res = new ArrayList<>();
+
+        int oldConfig = CommonStatic.getConfig().lang;
 
         for(Enemy e : UserProfile.getBCData().enemies.getList()) {
             if(e == null)
@@ -71,11 +77,15 @@ public class EntityFilter {
             }
         }
 
+        CommonStatic.getConfig().lang = oldConfig;
+
         return res;
     }
 
     public static ArrayList<Stage> findStageWithName(String[] names) {
         ArrayList<Stage> res = new ArrayList<>();
+
+        int oldConfig = CommonStatic.getConfig().lang;
 
         for(MapColc mc : MapColc.values()) {
             if(mc == null)
@@ -167,6 +177,9 @@ public class EntityFilter {
 
                         String stName = MultiLangCont.get(st);
 
+                        if(mc.getSID().equals("000002"))
+                            System.out.println(stName);
+
                         if(stName == null || stName.isBlank())
                             continue;
 
@@ -209,6 +222,8 @@ public class EntityFilter {
                 }
             }
         }
+
+        CommonStatic.getConfig().lang = oldConfig;
 
         return res;
     }

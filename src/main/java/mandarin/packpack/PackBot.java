@@ -20,7 +20,6 @@ import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.*;
 
-import java.net.URLClassLoader;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -258,6 +257,10 @@ public class PackBot {
                                 case "eimage":
                                 case "eimg":
                                     new EnemyImage(TimedConstraintCommand.ROLE.MEMBER, lang, ids, 10000).execute(event);
+                                    break;
+                                case "background":
+                                case "bg":
+                                    new Background(TimedConstraintCommand.ROLE.MEMBER, lang, ids, 10000).execute(event);
                                     break;
                             }
                         }

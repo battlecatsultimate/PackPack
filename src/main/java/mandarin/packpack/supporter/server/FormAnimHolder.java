@@ -103,8 +103,13 @@ public class FormAnimHolder {
 
                     String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
 
+                    int oldConfig = CommonStatic.getConfig().lang;
+                    CommonStatic.getConfig().lang = lang;
+
                     if(MultiLangCont.get(f) != null)
                         fname += MultiLangCont.get(f);
+
+                    CommonStatic.getConfig().lang = oldConfig;
 
                     sb.append(i+1).append(". ").append(fname).append("\n");
                 }
@@ -147,8 +152,13 @@ public class FormAnimHolder {
 
                     String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
 
+                    int oldConfig = CommonStatic.getConfig().lang;
+                    CommonStatic.getConfig().lang = lang;
+
                     if(MultiLangCont.get(f) != null)
                         fname += MultiLangCont.get(f);
+
+                    CommonStatic.getConfig().lang = oldConfig;
 
                     sb.append(i+1).append(". ").append(fname).append("\n");
                 }
@@ -180,7 +190,12 @@ public class FormAnimHolder {
                         CommonStatic.getConfig().lang = lang;
 
                         ch.createMessage(m -> {
+                            int oldConfig = CommonStatic.getConfig().lang;
+                            CommonStatic.getConfig().lang = lang;
+
                             String fName = MultiLangCont.get(form.get(id));
+
+                            CommonStatic.getConfig().lang = oldConfig;
 
                             if(fName == null || fName.isBlank())
                                 fName = form.get(id).name;
@@ -262,8 +277,13 @@ public class FormAnimHolder {
 
                             String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
 
+                            int oldConfig = CommonStatic.getConfig().lang;
+                            CommonStatic.getConfig().lang = lang;
+
                             if(MultiLangCont.get(f) != null)
                                 fname += MultiLangCont.get(f);
+
+                            CommonStatic.getConfig().lang = oldConfig;
 
                             sb.append(i+1).append(". ").append(fname).append("\n");
                         }

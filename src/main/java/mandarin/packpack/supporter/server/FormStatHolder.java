@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server;
 
+import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Form;
@@ -97,8 +98,13 @@ public class FormStatHolder {
 
                     String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
 
+                    int oldConfig = CommonStatic.getConfig().lang;
+                    CommonStatic.getConfig().lang = lang;
+
                     if(MultiLangCont.get(f) != null)
                         fname += MultiLangCont.get(f);
+
+                    CommonStatic.getConfig().lang = oldConfig;
 
                     sb.append(i+1).append(". ").append(fname).append("\n");
                 }
@@ -141,8 +147,13 @@ public class FormStatHolder {
 
                     String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
 
+                    int oldConfig = CommonStatic.getConfig().lang;
+                    CommonStatic.getConfig().lang = lang;
+
                     if(MultiLangCont.get(f) != null)
                         fname += MultiLangCont.get(f);
+
+                    CommonStatic.getConfig().lang = oldConfig;
 
                     sb.append(i+1).append(". ").append(fname).append("\n");
                 }
@@ -233,8 +244,13 @@ public class FormStatHolder {
 
                             String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
 
+                            int oldConfig = CommonStatic.getConfig().lang;
+                            CommonStatic.getConfig().lang = lang;
+
                             if(MultiLangCont.get(f) != null)
                                 fname += MultiLangCont.get(f);
+
+                            CommonStatic.getConfig().lang = oldConfig;
 
                             sb.append(i+1).append(". ").append(fname).append("\n");
                         }

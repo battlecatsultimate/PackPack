@@ -290,7 +290,7 @@ public class EntityHandler {
                         mag[1] = 0;
                 }
 
-                spec.setTitle(DataToString.getTitle(e));
+                spec.setTitle(DataToString.getTitle(e, lang));
                 spec.setColor(c);
                 spec.setThumbnail("attachment://icon.png");
                 spec.addField(LangID.getStringByID("data_id", lang), DataToString.getID(e.id.id), false);
@@ -543,14 +543,23 @@ public class EntityHandler {
                     StageMap stm = st.getCont();
                     MapColc mc = stm.getCont();
 
+                    int oldConfig = CommonStatic.getConfig().lang;
+                    CommonStatic.getConfig().lang = lang;
+
                     String mcName = MultiLangCont.get(mc);
+
+                    CommonStatic.getConfig().lang = oldConfig;
 
                     if(mcName == null || mcName.isBlank())
                         mcName = mc.getSID();
 
                     name += mcName+" - ";
 
+                    CommonStatic.getConfig().lang = lang;
+
                     String stmName = MultiLangCont.get(stm);
+
+                    CommonStatic.getConfig().lang = oldConfig;
 
                     if(stmName == null || stmName.isBlank())
                         if(stm.id != null)
@@ -560,7 +569,11 @@ public class EntityHandler {
 
                     name += stmName + " - ";
 
+                    CommonStatic.getConfig().lang = lang;
+
                     String stName = MultiLangCont.get(st);
+
+                    CommonStatic.getConfig().lang = oldConfig;
 
                     if(stName == null || stName.isBlank())
                         if(st.id != null)
@@ -695,7 +708,12 @@ public class EntityHandler {
                 continue;
 
             if(enemy instanceof Enemy) {
+                int oldConfig = CommonStatic.getConfig().lang;
+                CommonStatic.getConfig().lang = lang;
+
                 String eName = MultiLangCont.get(enemy);
+
+                CommonStatic.getConfig().lang = oldConfig;
 
                 if(eName == null || eName.isBlank())
                     eName = ((Enemy) enemy).name;
