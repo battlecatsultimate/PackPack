@@ -33,8 +33,11 @@ public class Background extends TimedConstraintCommand {
         } else {
             int id = getID(getMessage(event));
 
-            if(id < 0 || id >= UserProfile.getBCData().bgs.getList().size()) {
-                ch.createMessage(LangID.getStringByID("bg_invalid", lang).replace("_", UserProfile.getBCData().bgs.getList().size()+"")).subscribe();
+            if(id == -1) {
+                ch.createMessage(LangID.getStringByID("bg_more", lang)).subscribe();
+                return;
+            } else if(id < 0 || id >= UserProfile.getBCData().bgs.getList().size()) {
+                ch.createMessage(LangID.getStringByID("bg_invalid", lang).replace("_", (UserProfile.getBCData().bgs.getList().size()-1)+"")).subscribe();
                 return;
             }
 
