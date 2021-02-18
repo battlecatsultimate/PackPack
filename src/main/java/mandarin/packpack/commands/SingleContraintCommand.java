@@ -127,8 +127,6 @@ public abstract class SingleContraintCommand implements Command {
                                 onFail(event, DEFAULT_ERROR);
                             }
                         }).start();
-
-                        pause.pause(() -> onFail(event, DEFAULT_ERROR));
                     } else {
                         onAbort(event);
                     }
