@@ -631,7 +631,7 @@ public class ImageDrawing {
         String cont = LangID.getStringByID("gif_anbox", lang)+ "\n"
                 + LangID.getStringByID("gif_result", lang).replace("_WWW_", ""+rect.width)
                 .replace("_HHH_", rect.height+"").replace("_XXX_", rect.x+"")
-                .replace("_WWW_", rect.x+"")+"\n";
+                .replace("_YYY_", rect.x+"")+"\n";
 
         if(ratio != 1.0) {
             cont += LangID.getStringByID("gif_adjust", lang).replace("_", DataToString.df.format(ratio * 100.0))+"\n";
