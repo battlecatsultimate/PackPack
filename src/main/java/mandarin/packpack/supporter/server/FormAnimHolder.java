@@ -8,6 +8,7 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 
@@ -205,6 +206,8 @@ public class FormAnimHolder {
                                     StaticStore.canDo.put("gif", new TimeBoolean(true));
                                 }
                             }, TimeUnit.SECONDS.toMillis(30));
+                        } else {
+                            ch.createMessage(LangID.getStringByID("single_wait", lang).replace("_", DataToString.df.format((30000 - (System.currentTimeMillis() - StaticStore.canDo.get("gif").time)) / 1000.0))).subscribe();
                         }
                     } else {
                         EntityHandler.generateFormImage(f, ch, mode, frame, transparent, debug, lang);
