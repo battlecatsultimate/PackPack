@@ -53,7 +53,7 @@ public class EnemyImage extends TimedConstraintCommand {
             String search = filterCommand(getMessage(event));
 
             if(search.isBlank()) {
-                ch.createMessage(LangID.getStringByID("fimg_more", lang)).subscribe();
+                ch.createMessage(LangID.getStringByID("eimg_more", lang)).subscribe();
                 return;
             }
 
@@ -159,7 +159,7 @@ public class EnemyImage extends TimedConstraintCommand {
                 }
             }
         } else {
-            ch.createMessage(LangID.getStringByID("fimg_more", lang)).subscribe();
+            ch.createMessage(LangID.getStringByID("eimg_more", lang)).subscribe();
         }
     }
 

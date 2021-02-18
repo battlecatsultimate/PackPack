@@ -52,7 +52,7 @@ public class EnemyGif extends SingleContraintCommand {
             String search = filterCommand(getMessage(event));
 
             if(search.isBlank()) {
-                ch.createMessage(LangID.getStringByID("fimg_more", lang)).subscribe();
+                ch.createMessage(LangID.getStringByID("eimg_more", lang)).subscribe();
                 return;
             }
 
@@ -126,7 +126,7 @@ public class EnemyGif extends SingleContraintCommand {
                 }
             }
         } else {
-            ch.createMessage(LangID.getStringByID("fimg_more", lang)).subscribe();
+            ch.createMessage(LangID.getStringByID("eimg_more", lang)).subscribe();
         }
     }
 
