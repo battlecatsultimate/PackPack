@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import common.CommonStatic;
 import common.util.lang.MultiLangCont;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.message.MessageCreateEvent;
@@ -15,6 +16,8 @@ import mandarin.packpack.supporter.server.*;
 import java.io.*;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
@@ -35,6 +38,8 @@ public class StaticStore {
     public static Map<String, StageInfoHolder> stageHolder = new HashMap<>();
     public static Map<String, FormAnimHolder> formAnimHolder = new HashMap<>();
     public static Map<String, EnemyAnimHolder> enemyAnimHolder = new HashMap<>();
+
+    public static ImgurDataHolder imgur = new ImgurDataHolder(null);
 
     public static Map<String, Boolean> canDo = new HashMap<>();
 
@@ -75,8 +80,6 @@ public class StaticStore {
 
     public static final String BCU_SERVER = "490262537527623692";
     public static final String BCU_KR_SERVER = "679858366389944409";
-
-    public static final String GET_ACCESS = "632836623931015185";
 
     public static String rolesToString(Set<Snowflake> roles) {
         StringBuilder builder = new StringBuilder();
@@ -258,6 +261,7 @@ public class StaticStore {
         obj.add("prefix", mapToJsonString(prefix));
         obj.add("lang", mapToJsonString(langs));
         obj.add("locale", mapToJsonInt(locales));
+        obj.add("imgur", imgur.getData());
 
         try {
             File folder = new File("./data/");
@@ -319,6 +323,10 @@ public class StaticStore {
 
             if(obj.has("locale")) {
                 locales = jsonToMapInt(obj.get("locale").getAsJsonObject());
+            }
+
+            if(obj.has("imgur")) {
+                imgur = new ImgurDataHolder(obj.getAsJsonObject("imgur"));
             }
         }
     }
@@ -398,5 +406,46 @@ public class StaticStore {
         } else {
             throw new IllegalStateException("Value isn't numeric! : "+value);
         }
+    }
+
+    public static String fileToMD5(File f) {
+        if(!f.exists() || f.isDirectory())
+            return null;
+
+        try {
+            FileInputStream fis = new FileInputStream(f);
+
+            byte[] buffer = new byte[65536];
+
+            MessageDigest md5 = MessageDigest.getInstance("MD5");
+            int n;
+
+            while((n = fis.read(buffer)) != -1) {
+                md5.update(buffer, 0, n);
+            }
+
+            byte[] result = md5.digest();
+
+            BigInteger big = new BigInteger(1, result);
+
+            String str = big.toString(16);
+
+            return String.format("%32s", str).replace(' ', '0');
+        } catch (NoSuchAlgorithmException | IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public static String safeMultiLangGet(Object any, int lang) {
+        int oldConfig = CommonStatic.getConfig().lang;
+        CommonStatic.getConfig().lang = lang;
+
+        String res = MultiLangCont.get(any);
+
+        CommonStatic.getConfig().lang = oldConfig;
+
+        return res;
     }
 }

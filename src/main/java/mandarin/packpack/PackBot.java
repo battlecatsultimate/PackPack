@@ -25,9 +25,12 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * Usage : java -jar JARNAME DISCORD_BOT_TOKEN IMGUR_API_ACCESS_TOKEN
+ */
 public class PackBot {
     public static void main(String[] args) {
-        initialize();
+        initialize(args);
 
         final String TOKEN = args[0];
 
@@ -273,10 +276,14 @@ public class PackBot {
         gate.onDisconnect().block();
     }
 
-    public static void initialize() {
+    public static void initialize(String... arg) {
         if(!StaticStore.initialized) {
             CommonStatic.ctx = new PackContext();
             StaticStore.readServerInfo();
+
+            if(arg.length >= 3) {
+                StaticStore.imgur.registerClient(arg[1]);
+            }
 
             AssetDownloader.checkAssetDownload();
 

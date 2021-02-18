@@ -77,6 +77,14 @@ public class RawPointGetter {
         leftDown = scalePoint(rawSizX, rawSizY, leftDown);
     }
 
+    public void wholeScale(double size) {
+        rightUp.times(size);
+        rightDown.times(size);
+        leftUp.times(size);
+        leftDown.times(size);
+        center.times(size);
+    }
+
     public void rotate(double angle) {
         rawAngle += angle;
 
@@ -138,11 +146,11 @@ public class RawPointGetter {
             return;
         }
 
-        P siz = new P(size, size);
+        P siz = new P(1.0, 1.0);
 
         if(p.getFa() != null) {
             apply(p.getFa(), 1.0, true);
-            siz = getSize(p.getFa()).times(size);
+            siz = getSize(p.getFa());
         }
 
         P tPos = new P(p.getVal(4), p.getVal(5)).times(siz);
@@ -175,6 +183,7 @@ public class RawPointGetter {
 
             translatePivot(piv.x, piv.y);
             finalSize(scale.x, scale.y);
+            wholeScale(size);
         }
     }
 

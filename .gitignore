@@ -26,6 +26,7 @@ hs_err_pid*
 .gradle/*
 /.gradle/
 /pack/
-/data/
+/data/assets/
+/data/serverinfo.json
 /temp/
 /out/

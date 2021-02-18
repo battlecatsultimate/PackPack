@@ -13,7 +13,14 @@ interface Command {
 
     default void execute(MessageCreateEvent event) {
         try {
-            doSomething(event);
+            new Thread(() -> {
+                try {
+                    doSomething(event);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    onFail(event, DEFAULT_ERROR);
+                }
+            }).start();
         } catch (Exception e) {
             e.printStackTrace();
             onFail(event, DEFAULT_ERROR);

@@ -32,13 +32,14 @@ public class FormAnimHolder {
     private final boolean transparent;
     private final boolean debug;
     private final int lang;
+    private final boolean gif;
 
     private int page = 0;
     private boolean expired = false;
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
-    public FormAnimHolder(ArrayList<Form> form, Message msg, int mode, int frame, boolean transparent, boolean debug, int lang) {
+    public FormAnimHolder(ArrayList<Form> form, Message msg, int mode, int frame, boolean transparent, boolean debug, int lang, boolean isGif) {
         this.form = form;
         this.msg = msg;
 
@@ -47,6 +48,7 @@ public class FormAnimHolder {
         this.transparent = transparent;
         this.debug = debug;
         this.lang = lang;
+        this.gif = isGif;
 
         Timer autoFinish = new Timer();
 

@@ -107,7 +107,14 @@ public abstract class TimedConstraintCommand implements Command {
             }
         } else {
             try {
-                doSomething(event);
+                new Thread(() -> {
+                    try {
+                        doSomething(event);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        onFail(event, DEFAULT_ERROR);
+                    }
+                }).start();
             } catch (Exception e) {
                 e.printStackTrace();
                 onFail(event, DEFAULT_ERROR);
@@ -119,10 +126,6 @@ public abstract class TimedConstraintCommand implements Command {
                 e.printStackTrace();
             }
         }
-    }
-
-    protected void putTime(MessageCreateEvent event) {
-
     }
 
     private String getCooldown(long time) {

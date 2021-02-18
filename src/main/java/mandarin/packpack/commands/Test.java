@@ -1,27 +1,28 @@
 package mandarin.packpack.commands;
 
 import common.CommonStatic;
-import common.system.fake.FakeImage;
 import common.util.Data;
 import common.util.anim.AnimU;
-import common.util.anim.EAnimD;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Form;
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Attachment;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityFilter;
-import mandarin.packpack.supporter.bc.RawPointGetter;
+import mandarin.packpack.supporter.bc.ImageDrawing;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.FormAnimHolder;
 import mandarin.packpack.supporter.server.IDHolder;
 
-import java.awt.*;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Set;
 
 public class Test extends ConstraintCommand {
     private static final int PARAM_TRANSPARENT = 2;
@@ -64,77 +65,85 @@ public class Test extends ConstraintCommand {
             if(forms.isEmpty()) {
                 ch.createMessage(LangID.getStringByID("formst_nounit", lang).replace("_", filterCommand(getMessage(event)))).subscribe();
             } else if(forms.size() == 1) {
+                int param = checkParameters(getMessage(event));
                 int mode = getMode(getMessage(event));
+                boolean debug = (param & PARAM_DEBUG) > 0;
 
                 Form f = forms.get(0);
 
+                if(f.unit == null || f.unit.id == null)
+                    return;
+                else if(!debug) {
+                    String id = f.unit.id.pack+" - "+ Data.trio(f.unit.id.id)+" - "+Data.trio(f.fid) + " - " + Data.trio(mode);
+
+                    String link = StaticStore.imgur.get(id);
+
+                    if(link != null) {
+                        ch.createMessage("Bringing cached image link\n"+link).subscribe();
+                        return;
+                    }
+                }
+
                 f.anim.load();
 
-                ch.createMessage("Length : "+f.anim.len(getAnimType(mode, f.anim.anims.length))).subscribe();
-
-                Message m = ch.createMessage("Analyzing 0%").block();
-
-                if(m == null)
-                    return;
+                if(f.anim.len(getAnimType(mode, f.anim.anims.length)) > 300) {
+                    ch.createMessage("Length : "+f.anim.len(getAnimType(mode, f.anim.anims.length))+" (Limiting to 300f)").subscribe();
+                } else {
+                    ch.createMessage("Length : "+f.anim.len(getAnimType(mode, f.anim.anims.length))).subscribe();
+                }
 
                 CommonStatic.getConfig().ref = false;
 
                 if(mode >= f.anim.anims.length)
                     mode = 0;
 
-                EAnimD<?> anim = f.anim.getEAnim(getAnimType(mode, f.anim.anims.length));
+                Message msg = ch.createMessage("Analyzing Box...").block();
 
-                Rectangle rect = new Rectangle();
+                if(msg == null)
+                    return;
 
                 long start = System.currentTimeMillis();
 
-                for(int j = 0; j < anim.len(); j++) {
-                    if(j % Math.min(10, (anim.len() / 10)) == 0) {
-                        final int jj = j;
-                        m.edit(e -> e.setContent("Analyzing "+ DataToString.df.format(jj * 100.0 / anim.len())+"%")).subscribe();
-                    }
-
-                    anim.setTime(j);
-
-                    for(int i = 0; i < anim.getOrder().length; i++) {
-                        FakeImage fi = f.anim.parts[anim.getOrder()[i].getVal(2)];
-
-                        if(fi.getHeight() == 1 && fi.getWidth() == 1)
-                            continue;
-
-                        RawPointGetter getter = new RawPointGetter(fi.getWidth(), fi.getHeight());
-
-                        getter.apply(anim.getOrder()[i], 1.0, false);
-
-                        int[][] result = getter.getRect();
-
-                        if(Math.abs(result[1][0]-result[0][0]) >= 1000 || Math.abs(result[1][1] - result[2][1]) >= 1000)
-                            continue;
-
-                        int oldX = rect.x;
-                        int oldY = rect.y;
-
-                        rect.x = Math.min(minAmong(result[0][0], result[1][0], result[2][0], result[3][0]), rect.x);
-                        rect.y = Math.min(minAmong(result[0][1], result[1][1], result[2][1], result[3][1]), rect.y);
-
-                        if(oldX != rect.x) {
-                            rect.width += oldX - rect.x;
-                        }
-
-                        if(oldY != rect.y) {
-                            rect.height += oldY - rect.y;
-                        }
-
-                        rect.width = Math.max(Math.abs(maxAmong(result[0][0], result[1][0], result[2][0], result[3][0]) - rect.x), rect.width);
-                        rect.height = Math.max(Math.abs(maxAmong(result[0][1], result[1][1], result[2][1], result[3][1]) - rect.y), rect.height);
-                    }
-                }
+                File img = ImageDrawing.drawFormGif(f, msg, mode, 1.0, debug);
 
                 long end = System.currentTimeMillis();
 
                 String time = DataToString.df.format((end - start)/1000.0);
 
-                ch.createMessage("Done : Time = "+time+"sec | X = "+rect.x+" | Y = "+rect.y+" | W = "+rect.width+" | H = "+ rect.height).subscribe();
+                FileInputStream fis;
+
+                if(img == null) {
+                    ch.createMessage("Failed to generate gif").subscribe();
+                    return;
+                }
+
+                fis = new FileInputStream(img);
+
+                int finalMode = mode;
+                ch.createMessage(
+                        m -> {
+                            m.setContent("Done : Time = "+time+"sec ("+getFileSize(img)+")");
+                            m.addFile("result.gif", fis);
+                        }
+                ).subscribe(m -> {
+                    if(img.length() >= 1024 * 1024 && !debug) {
+                        cacheImage(f, finalMode, m);
+                    }
+                }, null, () -> {
+                    try {
+                        fis.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    if(img.exists()) {
+                        boolean res = img.delete();
+
+                        if(!res) {
+                            System.out.println("Can't delete file : "+img.getAbsolutePath());
+                        }
+                    }
+                });
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", filterCommand(getMessage(event))));
 
@@ -174,7 +183,7 @@ public class Test extends ConstraintCommand {
                 int frame = getFrame(getMessage(event));
 
                 if(res != null) {
-                    event.getMember().ifPresent(member -> StaticStore.formAnimHolder.put(member.getId().asString(), new FormAnimHolder(forms, res, mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang)));
+                    event.getMember().ifPresent(member -> StaticStore.formAnimHolder.put(member.getId().asString(), new FormAnimHolder(forms, res, mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang, false)));
                 }
             }
         } else {
@@ -380,39 +389,41 @@ public class Test extends ConstraintCommand {
         }
     }
 
-    private static int maxAmong(int... values) {
-        if(values.length == 1)
-            return values[0];
-        else if(values.length == 2) {
-            return Math.max(values[0], values[1]);
-        } else if(values.length >= 3) {
-            int val = Math.max(values[0], values[1]);
+    private String getFileSize(File f) {
+        String[] unit = {"B", "KB", "MB"};
 
-            for(int i = 2; i < values.length; i++) {
-                val = Math.max(values[i], val);
+        double size = f.length();
+
+        for (String s : unit) {
+            if (size < 1024) {
+                return DataToString.df.format(size) + s;
+            } else {
+                size /= 1024.0;
             }
-
-            return val;
-        } else {
-            return  0;
         }
+
+        return DataToString.df.format(size)+unit[2];
     }
 
-    private static int minAmong(int... values) {
-        if(values.length == 1)
-            return values[0];
-        else if(values.length == 2) {
-            return Math.min(values[0], values[1]);
-        } else if(values.length >= 3) {
-            int val = Math.min(values[0], values[1]);
+    private void cacheImage(Form f, int mode, Message msg) {
+        if(f.unit == null || f.unit.id == null)
+            return;
 
-            for(int i = 2; i < values.length; i++) {
-                val = Math.min(values[i], val);
+        String id = f.unit.id.pack+" - "+ Data.trio(f.unit.id.id)+" - "+Data.trio(f.fid) + " - " + Data.trio(mode);
+
+        Set<Attachment> att = msg.getAttachments();
+
+        if(att.isEmpty())
+            return;
+
+        for(Attachment a : att) {
+            if (a.getFilename().equals("result.gif")) {
+                String link = a.getUrl();
+
+                StaticStore.imgur.put(id, link);
+
+                return;
             }
-
-            return val;
-        } else {
-            return  0;
         }
     }
 }

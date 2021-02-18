@@ -9,13 +9,16 @@ import common.util.anim.EAnimD;
 import common.util.pack.Background;
 import common.util.unit.Enemy;
 import common.util.unit.Form;
+import discord4j.core.object.entity.Message;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.awt.FG2D;
+import mandarin.packpack.supporter.lzw.AnimatedGifEncoder;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 public class ImageDrawing {
@@ -306,6 +309,198 @@ public class ImageDrawing {
         e.anim.unload();
 
         return file;
+    }
+
+    public static File drawFormGif(Form f, Message msg, int mode, double siz, boolean debug) throws Exception {
+        File temp = new File("./temp");
+
+        if(!temp.exists()) {
+            boolean res = temp.mkdirs();
+
+            if(!res) {
+                System.out.println("Can't create folder : "+temp.getAbsolutePath());
+                return null;
+            }
+        }
+
+        File gif = new File("./temp", StaticStore.findFileName(temp, "result", ".gif"));
+
+        if(!gif.exists()) {
+            boolean res = gif.createNewFile();
+
+            if(!res) {
+                System.out.println("Can't create file : "+gif.getAbsolutePath());
+                return null;
+            }
+        }
+
+        f.anim.load();
+
+        CommonStatic.getConfig().ref = false;
+
+        if(mode >= f.anim.anims.length)
+            mode = 0;
+
+        EAnimD<?> anim = f.anim.getEAnim(getAnimType(mode, f.anim.anims.length));
+
+        anim.setTime(0);
+
+        Rectangle rect = new Rectangle();
+
+        ArrayList<ArrayList<int[][]>> rectFrames = new ArrayList<>();
+        ArrayList<ArrayList<P>> centerFrames = new ArrayList<>();
+
+        for(int i = 0; i < Math.min(anim.len(), 300); i++) {
+            anim.setTime(i);
+
+            ArrayList<int[][]> rects = new ArrayList<>();
+            ArrayList<P> centers = new ArrayList<>();
+
+            for(int j = 0; j < anim.getOrder().length; j++) {
+                FakeImage fi = f.anim.parts[anim.getOrder()[j].getVal(2)];
+
+                if(fi.getWidth() == 1 && fi.getHeight() == 1)
+                    continue;
+
+                RawPointGetter getter = new RawPointGetter(fi.getWidth(), fi.getHeight());
+
+                getter.apply(anim.getOrder()[j], siz * 0.5, false);
+
+                int[][] result = getter.getRect();
+
+                if(Math.abs(result[1][0]-result[0][0]) >= (1000 * siz * 0.5) || Math.abs(result[1][1] - result[2][1]) >= (1000 * siz * 0.5))
+                    continue;
+
+                rects.add(result);
+                centers.add(getter.center);
+
+                int oldX = rect.x;
+                int oldY = rect.y;
+
+                rect.x = Math.min(minAmong(result[0][0], result[1][0], result[2][0], result[3][0]), rect.x);
+                rect.y = Math.min(minAmong(result[0][1], result[1][1], result[2][1], result[3][1]), rect.y);
+
+                if(oldX != rect.x) {
+                    rect.width += oldX - rect.x;
+                }
+
+                if(oldY != rect.y) {
+                    rect.height += oldY - rect.y;
+                }
+
+                rect.width = Math.max(Math.abs(maxAmong(result[0][0], result[1][0], result[2][0], result[3][0]) - rect.x), rect.width);
+                rect.height = Math.max(Math.abs(maxAmong(result[0][1], result[1][1], result[2][1], result[3][1]) - rect.y), rect.height);
+            }
+
+            rectFrames.add(rects);
+            centerFrames.add(centers);
+        }
+
+        int minSize = 300;
+
+        double ratio;
+
+        long surface = (long) rect.width * rect.height;
+
+        if(surface > minSize * minSize) {
+            ratio = (surface - (surface - 300 * 300) * 1.0 * Math.min(300, anim.len()) / 300.0) / surface;
+        } else {
+            ratio = 1.0;
+        }
+
+        String cont = "Analyzing Boxes...\nResult : W = "+rect.width+" | H = "+rect.height+" | X = "+rect.x+" | Y = "+rect.y+"\n";
+
+        if(ratio != 1.0) {
+            cont += "GIF size adjusted to "+DataToString.df.format(ratio * 100.0)+"% relative to raw size\n";
+        } else {
+            cont += "Can go with current result\n";
+        }
+
+        cont += "Final Result : W = "+(int) (ratio * rect.width)+"px | H = "+(int) (ratio* rect.height)+" | X = "+(int) (ratio * rect.x)+" | Y = "+(int) (ratio * rect.y);
+
+        String finalCont = cont;
+        msg.edit(m -> m.setContent(finalCont)).subscribe();
+
+        rect.x = (int) (ratio * rect.x);
+        rect.y = (int) (ratio * rect.y);
+        rect.width = (int) (ratio * rect.width);
+        rect.height = (int) (ratio* rect.height);
+
+        AnimatedGifEncoder encoder = new AnimatedGifEncoder();
+
+        encoder.setSize(rect.width, rect.height);
+        encoder.setFrameRate(30);
+        encoder.setRepeat(0);
+
+        FileOutputStream fos = new FileOutputStream(gif);
+
+        encoder.start(fos);
+
+        P pos = new P(-rect.x, -rect.y);
+
+        long current = System.currentTimeMillis();
+
+        for(int i = 0; i < Math.min(anim.len(), 300); i++) {
+            if(System.currentTimeMillis() - current >= 1000) {
+                int finalI = i;
+                String finalCont1 = cont;
+                msg.edit(m -> {
+                    String content = finalCont1 +"\n\n";
+
+                    content += "Making GIF : "+DataToString.df.format(finalI * 100.0 / Math.min(300, anim.len()))+"%...";
+
+                    m.setContent(content);
+                }).subscribe();
+                current = System.currentTimeMillis();
+            }
+
+            anim.setTime(i);
+
+            BufferedImage image = new BufferedImage(rect.width, rect.height, BufferedImage.TYPE_INT_ARGB);
+            FG2D g = new FG2D(image.getGraphics());
+
+            g.setRenderingHint(3, 2);
+            g.enableAntialiasing();
+
+            g.setStroke(1.5f);
+
+            g.setColor(54,57,63,255);
+            g.fillRect(0, 0, rect.width, rect.height);
+
+            if(debug) {
+                for(int j = 0; j < rectFrames.get(i).size(); j++) {
+                    int[][] r = rectFrames.get(i).get(j);
+                    P c = centerFrames.get(i).get(j);
+
+                    g.setColor(FakeGraphics.RED);
+
+                    g.drawLine(-rect.x + (int) (r[0][0] * ratio), -rect.y + (int) (r[0][1] * ratio), -rect.x + (int) (r[1][0] * ratio), -rect.y + (int) (r[1][1] * ratio));
+                    g.drawLine(-rect.x + (int) (r[1][0] * ratio), -rect.y + (int) (r[1][1] * ratio), -rect.x + (int) (r[2][0] * ratio), -rect.y + (int) (r[2][1] * ratio));
+                    g.drawLine(-rect.x + (int) (r[2][0] * ratio), -rect.y + (int) (r[2][1] * ratio), -rect.x + (int) (r[3][0] * ratio), -rect.y + (int) (r[3][1] * ratio));
+                    g.drawLine(-rect.x + (int) (r[3][0] * ratio), -rect.y + (int) (r[3][1] * ratio), -rect.x + (int) (r[0][0] * ratio), -rect.y + (int) (r[0][1] * ratio));
+
+                    g.setColor(0, 255, 0, 255);
+
+                    g.fillRect(-rect.x + (int) (ratio * c.x) - 2, -rect.y + (int) (ratio * c.y) -2, 4, 4);
+                }
+            } else {
+                anim.setTime(i);
+
+                anim.draw(g, pos, siz * ratio * 0.5);
+            }
+
+            encoder.addFrame(image);
+        }
+
+        encoder.finish();
+
+        fos.close();
+
+        f.anim.unload();
+
+        msg.delete().subscribe();
+
+        return gif;
     }
 
     public static AnimU.UType getAnimType(int mode, int max) {

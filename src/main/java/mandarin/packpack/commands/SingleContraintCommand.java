@@ -107,7 +107,14 @@ public abstract class SingleContraintCommand implements Command {
                             }
                         }, time);
 
-                        doSomething(event);
+                        new Thread(() -> {
+                            try {
+                                doSomething(event);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                onFail(event, DEFAULT_ERROR);
+                            }
+                        }).start();
 
                         pause.pause(() -> onFail(event, DEFAULT_ERROR));
                     } else {

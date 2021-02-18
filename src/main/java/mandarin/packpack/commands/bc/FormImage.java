@@ -142,7 +142,7 @@ public class FormImage extends TimedConstraintCommand {
                 int frame = getFrame(getMessage(event));
 
                 if(res != null) {
-                    event.getMember().ifPresent(member -> StaticStore.formAnimHolder.put(member.getId().asString(), new FormAnimHolder(forms, res, mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang)));
+                    event.getMember().ifPresent(member -> StaticStore.formAnimHolder.put(member.getId().asString(), new FormAnimHolder(forms, res, mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang, false)));
                 }
             }
         } else {
@@ -314,7 +314,6 @@ public class FormImage extends TimedConstraintCommand {
                         result.append(contents[i]);
                     }
                 } else {
-                    System.out.println("OH");
                     result.append(contents[i]);
                 }
 
