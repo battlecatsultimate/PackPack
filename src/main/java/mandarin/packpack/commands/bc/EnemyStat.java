@@ -186,7 +186,11 @@ public class EnemyStat extends ConstraintCommand {
                         int[] lv = new int[length];
 
                         for (int j = 0; j < length; j++) {
-                            lv[j] = StaticStore.safeParseInt(trial[j]);
+                            if(trial[j].isBlank() && StaticStore.isNumeric(trial[j])) {
+                                lv[j] = 100;
+                            } else {
+                                lv[j] = StaticStore.safeParseInt(trial[j]);
+                            }
                         }
 
                         return lv;
