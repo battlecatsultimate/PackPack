@@ -268,6 +268,16 @@ public class PackBot {
                                 case "test":
                                     new Test(ConstraintCommand.ROLE.MANDARIN, lang, ids).execute(event);
                                     break;
+                                case "formgif":
+                                case "fgif":
+                                case "fg":
+                                    new FormGif(ConstraintCommand.ROLE.MEMBER, lang, ids, "gif").execute(event);
+                                    break;
+                                case "enemygif":
+                                case "egif":
+                                case "eg":
+                                    new EnemyGif(ConstraintCommand.ROLE.MEMBER, lang, ids, "gif").execute(event);
+                                    break;
                             }
                         }
                     });
@@ -281,7 +291,7 @@ public class PackBot {
             CommonStatic.ctx = new PackContext();
             StaticStore.readServerInfo();
 
-            if(arg.length >= 3) {
+            if(arg.length >= 2) {
                 StaticStore.imgur.registerClient(arg[1]);
             }
 

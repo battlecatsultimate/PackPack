@@ -41,7 +41,7 @@ public class StaticStore {
 
     public static ImgurDataHolder imgur = new ImgurDataHolder(null);
 
-    public static Map<String, Boolean> canDo = new HashMap<>();
+    public static Map<String, TimeBoolean> canDo = new HashMap<>();
 
     public static final MultiLangCont<Integer, String> MEDNAME = new MultiLangCont<>();
     public static final MultiLangCont<Integer, String> MEDEXP = new MultiLangCont<>();

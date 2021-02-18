@@ -8,6 +8,7 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.bc.ImageDrawing;
 import mandarin.packpack.supporter.lang.LangID;
 
@@ -32,13 +33,14 @@ public class EnemyAnimHolder {
     private final boolean transparent;
     private final boolean debug;
     private final int lang;
+    private final boolean gif;
 
     private int page = 0;
     private boolean expired = false;
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
-    public EnemyAnimHolder(ArrayList<Enemy> enemy, Message msg, int mode, int frame, boolean transparent, boolean debug, int lang) {
+    public EnemyAnimHolder(ArrayList<Enemy> enemy, Message msg, int mode, int frame, boolean transparent, boolean debug, int lang, boolean isGif) {
         this.enemy = enemy;
         this.msg = msg;
 
@@ -47,6 +49,7 @@ public class EnemyAnimHolder {
         this.transparent = transparent;
         this.debug = debug;
         this.lang = lang;
+        this.gif = isGif;
 
         Timer autoFinish = new Timer();
 
@@ -191,43 +194,69 @@ public class EnemyAnimHolder {
 
             if(ch != null) {
                 try {
-                    File img = ImageDrawing.drawEnemyImage(enemy.get(id), mode, frame, 1.0, transparent, debug);
+                    Enemy e = enemy.get(id);
 
-                    if(img != null) {
-                        FileInputStream fis = new FileInputStream(img);
-                        CommonStatic.getConfig().lang = lang;
+                    if(gif) {
+                        if(StaticStore.canDo.get("gif").canDo) {
+                            new Thread(() -> {
+                                try {
+                                    EntityHandler.generateEnemyGif(e, ch, mode, debug, frame, lang);
+                                } catch (Exception exception) {
+                                    exception.printStackTrace();
+                                }
+                            }).start();
 
-                        ch.createMessage(m -> {
-                            int oldConfig = CommonStatic.getConfig().lang;
+                            StaticStore.canDo.put("gif", new TimeBoolean(false));
+
+                            Timer timer = new Timer();
+
+                            timer.schedule(new TimerTask() {
+                                @Override
+                                public void run() {
+                                    System.out.println("Remove Process : gif");
+                                    StaticStore.canDo.put("gif", new TimeBoolean(true));
+                                }
+                            }, TimeUnit.SECONDS.toMillis(30));
+                        }
+                    } else {
+                        File img = ImageDrawing.drawEnemyImage(e , mode, frame, 1.0, transparent, debug);
+
+                        if(img != null) {
+                            FileInputStream fis = new FileInputStream(img);
                             CommonStatic.getConfig().lang = lang;
 
-                            String fName = MultiLangCont.get(enemy.get(id));
+                            ch.createMessage(m -> {
+                                int oldConfig = CommonStatic.getConfig().lang;
+                                CommonStatic.getConfig().lang = lang;
 
-                            CommonStatic.getConfig().lang = oldConfig;
+                                String fName = MultiLangCont.get(enemy.get(id));
 
-                            if(fName == null || fName.isBlank())
-                                fName = enemy.get(id).name;
+                                CommonStatic.getConfig().lang = oldConfig;
 
-                            if(fName == null || fName.isBlank())
-                                fName = LangID.getStringByID("data_enemy", lang)+" "+ Data.trio(enemy.get(id).id.id);
+                                if(fName == null || fName.isBlank())
+                                    fName = enemy.get(id).name;
 
-                            m.setContent(LangID.getStringByID("eimg_result", lang).replace("_", fName).replace(":::", getModeName(mode, enemy.get(id).anim.anims.length)).replace("=", String.valueOf(frame)));
-                            m.addFile("result.png", fis);
-                        }).subscribe(null, null, () -> {
-                            try {
-                                fis.close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+                                if(fName == null || fName.isBlank())
+                                    fName = LangID.getStringByID("data_enemy", lang)+" "+ Data.trio(enemy.get(id).id.id);
 
-                            if(img.exists()) {
-                                boolean res = img.delete();
-
-                                if(!res) {
-                                    System.out.println("Can't delete file : "+img.getAbsolutePath());
+                                m.setContent(LangID.getStringByID("eimg_result", lang).replace("_", fName).replace(":::", getModeName(mode, enemy.get(id).anim.anims.length)).replace("=", String.valueOf(frame)));
+                                m.addFile("result.png", fis);
+                            }).subscribe(null, null, () -> {
+                                try {
+                                    fis.close();
+                                } catch (IOException err) {
+                                    err.printStackTrace();
                                 }
-                            }
-                        });
+
+                                if(img.exists()) {
+                                    boolean res = img.delete();
+
+                                    if(!res) {
+                                        System.out.println("Can't delete file : "+img.getAbsolutePath());
+                                    }
+                                }
+                            });
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

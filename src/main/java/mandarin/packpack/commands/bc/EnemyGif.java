@@ -1,8 +1,9 @@
 package mandarin.packpack.commands.bc;
 
+import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
-import common.util.unit.Form;
+import common.util.unit.Enemy;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
@@ -12,7 +13,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
-import mandarin.packpack.supporter.server.FormAnimHolder;
+import mandarin.packpack.supporter.server.EnemyAnimHolder;
 import mandarin.packpack.supporter.server.IDHolder;
 
 import java.io.File;
@@ -20,10 +21,10 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-public class FormGif extends SingleContraintCommand {
+public class EnemyGif extends SingleContraintCommand {
     private final int PARAM_DEBUG = 2;
 
-    public FormGif(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID) {
+    public EnemyGif(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID) {
         super(role, lang, id, mainID, TimeUnit.SECONDS.toMillis(30));
     }
 
@@ -55,25 +56,27 @@ public class FormGif extends SingleContraintCommand {
                 return;
             }
 
-            ArrayList<Form> forms = EntityFilter.findUnitWithName(search);
+            ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(search);
 
-            if(forms.isEmpty()) {
-                ch.createMessage(LangID.getStringByID("formst_nounit", lang).replace("_", filterCommand(getMessage(event)))).subscribe();
-            } else if(forms.size() == 1) {
+            if(enemies.isEmpty()) {
+                ch.createMessage(LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(getMessage(event)))).subscribe();
+            } else if(enemies.size() == 1) {
                 int param = checkParameters(getMessage(event));
                 int mode = getMode(getMessage(event));
                 boolean debug = (param & PARAM_DEBUG) > 0;
                 int frame = getFrame(getMessage(event));
 
-                Form f = forms.get(0);
+                Enemy en = enemies.get(0);
 
-                EntityHandler.generateFormGif(f, ch, mode, debug, frame, lang);
+                EntityHandler.generateEnemyGif(en, ch, mode, debug, frame, lang);
             } else {
+                CommonStatic.getConfig().lang = lang;
+
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", filterCommand(getMessage(event))));
 
                 String check;
 
-                if(forms.size() <= 20)
+                if(enemies.size() <= 20)
                     check = "";
                 else
                     check = LangID.getStringByID("formst_next", lang);
@@ -81,21 +84,32 @@ public class FormGif extends SingleContraintCommand {
                 sb.append("```md\n").append(check);
 
                 for(int i = 0; i < 20; i++) {
-                    if(i >= forms.size())
+                    if(i >= enemies.size())
                         break;
 
-                    Form f = forms.get(i);
+                    Enemy e = enemies.get(i);
 
-                    String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
+                    String fname;
 
-                    if(MultiLangCont.get(f) != null)
-                        fname += MultiLangCont.get(f);
+                    if(e.id != null) {
+                        fname = Data.trio(e.id.id)+" - ";
+                    } else {
+                        fname = e.toString();
+                    }
+
+                    int oldConfig = CommonStatic.getConfig().lang;
+                    CommonStatic.getConfig().lang = lang;
+
+                    if(MultiLangCont.get(e) != null)
+                        fname += MultiLangCont.get(e);
+
+                    CommonStatic.getConfig().lang = oldConfig;
 
                     sb.append(i+1).append(". ").append(fname).append("\n");
                 }
 
-                if(forms.size() > 20)
-                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", "1").replace("-", String.valueOf(forms.size()/20 + 1)));
+                if(enemies.size() > 20)
+                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", "1").replace("-", String.valueOf(enemies.size()/20 + 1)));
 
                 sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
@@ -108,7 +122,7 @@ public class FormGif extends SingleContraintCommand {
 
                 if(res != null) {
                     disableTimer();
-                    event.getMember().ifPresent(member -> StaticStore.formAnimHolder.put(member.getId().asString(), new FormAnimHolder(forms, res, mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true)));
+                    event.getMember().ifPresent(member -> StaticStore.enemyAnimHolder.put(member.getId().asString(), new EnemyAnimHolder(enemies, res, mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true)));
                 }
             }
         } else {

@@ -4,8 +4,10 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.IDHolder;
+import mandarin.packpack.supporter.server.TimeBoolean;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -19,6 +21,8 @@ public abstract class SingleContraintCommand implements Command {
     protected String optionalID = "";
     protected final ArrayList<String> aborts = new ArrayList<>();
     final long time;
+
+    private boolean timerStart = true;
 
     public SingleContraintCommand(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID, long millis) {
         switch (role) {
@@ -59,6 +63,7 @@ public abstract class SingleContraintCommand implements Command {
             return;
 
         AtomicReference<Boolean> isDev = new AtomicReference<>(false);
+        AtomicReference<Boolean> isMandarin = new AtomicReference<>(false);
 
         msg.getAuthorAsMember().subscribe(m -> {
             String role = StaticStore.rolesToString(m.getRoleIds());
@@ -69,6 +74,7 @@ public abstract class SingleContraintCommand implements Command {
                 isDev.set(role.contains(constRole) || m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
             }
 
+            isMandarin.set(m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
         }, e -> onFail(event, DEFAULT_ERROR), pause::resume);
 
         pause.pause(() -> onFail(event, DEFAULT_ERROR));
@@ -86,8 +92,8 @@ public abstract class SingleContraintCommand implements Command {
 
                 String id = mainID+optionalID;
 
-                if(StaticStore.canDo.containsKey(id) && !StaticStore.canDo.get(id)) {
-                    ch.createMessage(LangID.getStringByID("single_wait", lang)).subscribe();
+                if(!isMandarin.get() && StaticStore.canDo.containsKey(id) && !StaticStore.canDo.get(id).canDo) {
+                    ch.createMessage(LangID.getStringByID("single_wait", lang).replace("_", DataToString.df.format((30000 - (System.currentTimeMillis() - StaticStore.canDo.get(id).time)) / 1000.0))).subscribe();
                 } else {
 
                     if(!aborts.contains(optionalID)) {
@@ -95,21 +101,27 @@ public abstract class SingleContraintCommand implements Command {
 
                         System.out.println("Added process : "+id);
 
-                        StaticStore.canDo.put(id, false);
-
-                        Timer timer = new Timer();
-
-                        timer.schedule(new TimerTask() {
-                            @Override
-                            public void run() {
-                                System.out.println("Remove Process : "+id);
-                                StaticStore.canDo.put(id, true);
-                            }
-                        }, time);
+                        StaticStore.canDo.put(id, new TimeBoolean(false));
 
                         new Thread(() -> {
                             try {
                                 doSomething(event);
+
+                                System.out.println(timerStart);
+
+                                if(timerStart) {
+                                    Timer timer = new Timer();
+
+                                    timer.schedule(new TimerTask() {
+                                        @Override
+                                        public void run() {
+                                            System.out.println("Remove Process : "+id);
+                                            StaticStore.canDo.put(id, new TimeBoolean(true));
+                                        }
+                                    }, time);
+                                } else {
+                                    StaticStore.canDo.put(id, new TimeBoolean(true));
+                                }
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 onFail(event, DEFAULT_ERROR);
@@ -140,6 +152,10 @@ public abstract class SingleContraintCommand implements Command {
         doThing(event);
 
         pause.resume();
+    }
+
+    protected void disableTimer() {
+        timerStart = false;
     }
 
     protected abstract void doThing(MessageCreateEvent event) throws Exception;

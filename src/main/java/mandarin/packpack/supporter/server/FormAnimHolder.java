@@ -8,12 +8,9 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.StaticStore;
-import mandarin.packpack.supporter.bc.ImageDrawing;
+import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -185,43 +182,32 @@ public class FormAnimHolder {
 
             if(ch != null) {
                 try {
-                    File img = ImageDrawing.drawFormImage(form.get(id), mode, frame, 1.0, transparent, debug);
+                    Form f = form.get(id);
 
-                    if(img != null) {
-                        FileInputStream fis = new FileInputStream(img);
-                        CommonStatic.getConfig().lang = lang;
-
-                        ch.createMessage(m -> {
-                            int oldConfig = CommonStatic.getConfig().lang;
-                            CommonStatic.getConfig().lang = lang;
-
-                            String fName = MultiLangCont.get(form.get(id));
-
-                            CommonStatic.getConfig().lang = oldConfig;
-
-                            if(fName == null || fName.isBlank())
-                                fName = form.get(id).name;
-
-                            if(fName == null || fName.isBlank())
-                                fName = LangID.getStringByID("data_unit", lang)+" "+ Data.trio(form.get(id).uid.id)+" "+Data.trio(form.get(id).fid);
-
-                            m.setContent(LangID.getStringByID("fimg_result", lang).replace("_", fName).replace(":::", getModeName(mode, form.get(id).anim.anims.length)).replace("=", String.valueOf(frame)));
-                            m.addFile("result.png", fis);
-                        }).subscribe(null, null, () -> {
-                            try {
-                                fis.close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-
-                            if(img.exists()) {
-                                boolean res = img.delete();
-
-                                if(!res) {
-                                    System.out.println("Can't delete file : "+img.getAbsolutePath());
+                    if(gif) {
+                        if(StaticStore.canDo.get("gif").canDo) {
+                            new Thread(() -> {
+                                try {
+                                    EntityHandler.generateFormGif(f, ch, mode, debug, frame, lang);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
                                 }
-                            }
-                        });
+                            }).start();
+
+                            StaticStore.canDo.put("gif", new TimeBoolean(false));
+
+                            Timer timer = new Timer();
+
+                            timer.schedule(new TimerTask() {
+                                @Override
+                                public void run() {
+                                    System.out.println("Remove Process : gif");
+                                    StaticStore.canDo.put("gif", new TimeBoolean(true));
+                                }
+                            }, TimeUnit.SECONDS.toMillis(30));
+                        }
+                    } else {
+                        EntityHandler.generateFormImage(f, ch, mode, frame, transparent, debug, lang);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -311,28 +297,6 @@ public class FormAnimHolder {
         for(Message m : cleaner) {
             if(m != null)
                 m.delete().subscribe();
-        }
-    }
-
-    private String getModeName(int mode, int max) {
-        switch (mode) {
-            case 1:
-                return LangID.getStringByID("fimg_idle", lang);
-            case 2:
-                return LangID.getStringByID("fimg_atk", lang);
-            case 3:
-                return LangID.getStringByID("fimg_hitback", lang);
-            case 4:
-                if(max == 5)
-                    return LangID.getStringByID("fimg_enter", lang);
-                else
-                    return LangID.getStringByID("fimg_burrowdown", lang);
-            case 5:
-                return LangID.getStringByID("fimg_burrowmove", lang);
-            case 6:
-                return LangID.getStringByID("fimg_burrowup", lang);
-            default:
-                return LangID.getStringByID("fimg_walk", lang);
         }
     }
 }
