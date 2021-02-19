@@ -53,6 +53,7 @@ public class EnemyGif extends SingleContraintCommand {
 
             if(search.isBlank()) {
                 ch.createMessage(LangID.getStringByID("eimg_more", lang)).subscribe();
+                disableTimer();
                 return;
             }
 
@@ -60,6 +61,7 @@ public class EnemyGif extends SingleContraintCommand {
 
             if(enemies.isEmpty()) {
                 ch.createMessage(LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(getMessage(event)))).subscribe();
+                disableTimer();
             } else if(enemies.size() == 1) {
                 int param = checkParameters(getMessage(event));
                 int mode = getMode(getMessage(event));
@@ -68,7 +70,11 @@ public class EnemyGif extends SingleContraintCommand {
 
                 Enemy en = enemies.get(0);
 
-                EntityHandler.generateEnemyGif(en, ch, mode, debug, frame, lang);
+                boolean result = EntityHandler.generateEnemyGif(en, ch, mode, debug, frame, lang);
+
+                if(!result) {
+                    disableTimer();
+                }
             } else {
                 CommonStatic.getConfig().lang = lang;
 
@@ -127,6 +133,7 @@ public class EnemyGif extends SingleContraintCommand {
             }
         } else {
             ch.createMessage(LangID.getStringByID("eimg_more", lang)).subscribe();
+            disableTimer();
         }
     }
 

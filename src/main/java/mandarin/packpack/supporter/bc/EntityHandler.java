@@ -1067,9 +1067,9 @@ public class EntityHandler {
         }
     }
 
-    public static void generateFormGif(Form f, MessageChannel ch, int mode, boolean debug, int limit, int lang) throws Exception {
+    public static boolean generateFormGif(Form f, MessageChannel ch, int mode, boolean debug, int limit, int lang) throws Exception {
         if(f.unit == null || f.unit.id == null)
-            return;
+            return false;
         else if(!debug) {
             String id = generateID(f, mode);
 
@@ -1077,7 +1077,7 @@ public class EntityHandler {
 
             if(link != null) {
                 ch.createMessage(LangID.getStringByID("gif_cache", lang).replace("_", link)).subscribe();
-                return;
+                return false;
             }
         }
 
@@ -1099,7 +1099,7 @@ public class EntityHandler {
         Message msg = ch.createMessage(LangID.getStringByID("gif_anbox", lang)).block();
 
         if(msg == null)
-            return;
+            return false;
 
         long start = System.currentTimeMillis();
 
@@ -1113,7 +1113,7 @@ public class EntityHandler {
 
         if(img == null) {
             ch.createMessage(LangID.getStringByID("gif_faile", lang)).subscribe();
-            return;
+            return false;
         } else if(!debug && img.length() >= 8 * 1024 * 1024 && img.length() < 10 * 1024 * 1024) {
             Message m = ch.createMessage(LangID.getStringByID("gif_filesize", lang)).block();
 
@@ -1127,7 +1127,7 @@ public class EntityHandler {
                         }
                     }
                 });
-                return;
+                return false;
             }
 
             String link = StaticStore.imgur.uploadFile(img);
@@ -1142,7 +1142,6 @@ public class EntityHandler {
                         }
                     }
                 });
-
             } else {
                 int finalMode1 = mode;
                 m.edit(e -> {
@@ -1163,10 +1162,9 @@ public class EntityHandler {
                         }
                     }
                 });
-
             }
 
-            return;
+            return true;
         }
 
         fis = new FileInputStream(img);
@@ -1196,11 +1194,13 @@ public class EntityHandler {
                 }
             }
         });
+
+        return true;
     }
 
-    public static void generateEnemyGif(Enemy en, MessageChannel ch, int mode, boolean debug, int limit, int lang) throws Exception {
+    public static boolean generateEnemyGif(Enemy en, MessageChannel ch, int mode, boolean debug, int limit, int lang) throws Exception {
         if(en.id == null)
-            return;
+            return false;
         else if(!debug) {
             String id = generateID(en, mode);
 
@@ -1208,7 +1208,7 @@ public class EntityHandler {
 
             if(link != null) {
                 ch.createMessage(LangID.getStringByID("gif_cache", lang).replace("_", link)).subscribe();
-                return;
+                return false;
             }
         }
 
@@ -1230,7 +1230,7 @@ public class EntityHandler {
         Message msg = ch.createMessage(LangID.getStringByID("gif_anbox", lang)).block();
 
         if(msg == null)
-            return;
+            return false;
 
         long start = System.currentTimeMillis();
 
@@ -1244,7 +1244,7 @@ public class EntityHandler {
 
         if(img == null) {
             ch.createMessage(LangID.getStringByID("gif_faile", lang)).subscribe();
-            return;
+            return false;
         } else if(!debug && img.length() >= 8 * 1024 * 1024 && img.length() < 10 * 1024 * 1024) {
             Message m = ch.createMessage(LangID.getStringByID("gif_filesize", lang)).block();
 
@@ -1258,7 +1258,7 @@ public class EntityHandler {
                         }
                     }
                 });
-                return;
+                return false;
             }
 
             String link = StaticStore.imgur.uploadFile(img);
@@ -1273,7 +1273,6 @@ public class EntityHandler {
                         }
                     }
                 });
-
             } else {
                 int finalMode1 = mode;
                 m.edit(e -> {
@@ -1294,10 +1293,9 @@ public class EntityHandler {
                         }
                     }
                 });
-
             }
 
-            return;
+            return true;
         }
 
         fis = new FileInputStream(img);
@@ -1327,6 +1325,8 @@ public class EntityHandler {
                 }
             }
         });
+
+        return true;
     }
 
     private static String getFileSize(File f) {

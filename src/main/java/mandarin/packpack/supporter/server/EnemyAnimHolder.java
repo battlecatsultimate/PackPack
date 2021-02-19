@@ -201,23 +201,25 @@ public class EnemyAnimHolder {
                         if(StaticStore.canDo.get("gif").canDo) {
                             new Thread(() -> {
                                 try {
-                                    EntityHandler.generateEnemyGif(e, ch, mode, debug, frame, lang);
+                                    boolean result = EntityHandler.generateEnemyGif(e, ch, mode, debug, frame, lang);
+
+                                    if(result) {
+                                        StaticStore.canDo.put("gif", new TimeBoolean(false));
+
+                                        Timer timer = new Timer();
+
+                                        timer.schedule(new TimerTask() {
+                                            @Override
+                                            public void run() {
+                                                System.out.println("Remove Process : gif");
+                                                StaticStore.canDo.put("gif", new TimeBoolean(true));
+                                            }
+                                        }, TimeUnit.SECONDS.toMillis(30));
+                                    }
                                 } catch (Exception exception) {
                                     exception.printStackTrace();
                                 }
                             }).start();
-
-                            StaticStore.canDo.put("gif", new TimeBoolean(false));
-
-                            Timer timer = new Timer();
-
-                            timer.schedule(new TimerTask() {
-                                @Override
-                                public void run() {
-                                    System.out.println("Remove Process : gif");
-                                    StaticStore.canDo.put("gif", new TimeBoolean(true));
-                                }
-                            }, TimeUnit.SECONDS.toMillis(30));
                         } else {
                             ch.createMessage(LangID.getStringByID("single_wait", lang).replace("_", DataToString.df.format((30000 - (System.currentTimeMillis() - StaticStore.canDo.get("gif").time)) / 1000.0))).subscribe();
                         }

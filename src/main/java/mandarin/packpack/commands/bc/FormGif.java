@@ -44,6 +44,7 @@ public class FormGif extends SingleContraintCommand {
 
                 if(!res) {
                     System.out.println("Can't create folder : "+temp.getAbsolutePath());
+                    disableTimer();
                     return;
                 }
             }
@@ -52,6 +53,7 @@ public class FormGif extends SingleContraintCommand {
 
             if(search.isBlank()) {
                 ch.createMessage(LangID.getStringByID("fimg_more", lang)).subscribe();
+                disableTimer();
                 return;
             }
 
@@ -59,6 +61,7 @@ public class FormGif extends SingleContraintCommand {
 
             if(forms.isEmpty()) {
                 ch.createMessage(LangID.getStringByID("formst_nounit", lang).replace("_", filterCommand(getMessage(event)))).subscribe();
+                disableTimer();
             } else if(forms.size() == 1) {
                 int param = checkParameters(getMessage(event));
                 int mode = getMode(getMessage(event));
@@ -67,7 +70,11 @@ public class FormGif extends SingleContraintCommand {
 
                 Form f = forms.get(0);
 
-                EntityHandler.generateFormGif(f, ch, mode, debug, frame, lang);
+                boolean result = EntityHandler.generateFormGif(f, ch, mode, debug, frame, lang);
+
+                if(!result) {
+                    disableTimer();
+                }
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", filterCommand(getMessage(event))));
 
@@ -113,6 +120,7 @@ public class FormGif extends SingleContraintCommand {
             }
         } else {
             ch.createMessage(LangID.getStringByID("fimg_more", lang)).subscribe();
+            disableTimer();
         }
     }
 
