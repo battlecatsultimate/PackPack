@@ -6,6 +6,10 @@ public class IDHolder {
     public static IDHolder jsonToIDHolder(JsonObject obj) {
         IDHolder id = new IDHolder();
 
+        if(obj.has("server")) {
+            id.serverPrefix = id.setOr(obj.get("server").getAsString());
+        }
+
         if(obj.has("dev")) {
             id.DEV = id.setOrNull(obj.get("dev").getAsString());
         }
@@ -41,6 +45,8 @@ public class IDHolder {
         return id;
     }
 
+    public String serverPrefix = "p!";
+
     public String DEV;
     public String MOD;
     public String MEMBER;
@@ -69,6 +75,7 @@ public class IDHolder {
     public JsonObject jsonfy() {
         JsonObject obj = new JsonObject();
 
+        obj.addProperty("server", getOrNull(serverPrefix));
         obj.addProperty("dev", getOrNull(DEV));
         obj.addProperty("mod", getOrNull(MOD));
         obj.addProperty("mem", getOrNull(MEMBER));
@@ -87,5 +94,9 @@ public class IDHolder {
 
     private String setOrNull(String id) {
         return id.equals("null") ? null : id;
+    }
+
+    private String setOr(String id) {
+        return id.equals("null") ? "p!" : id;
     }
 }

@@ -57,7 +57,7 @@ public class StageImage extends ConstraintCommand {
                 String[] messages = getMessage(event).split(" ", startIndex+1);
 
                 if(messages.length <= startIndex) {
-                    ch.createMessage(LangID.getStringByID("stimg_more", lang).replace("_", StaticStore.serverPrefix)).subscribe();
+                    ch.createMessage(LangID.getStringByID("stimg_more", lang).replace("_", holder.serverPrefix)).subscribe();
                     return;
                 }
 
@@ -83,7 +83,7 @@ public class StageImage extends ConstraintCommand {
 
                 handleLast(message, ch, generator);
             } else {
-                ch.createMessage(LangID.getStringByID("stimg_argu", lang).replace("_", StaticStore.serverPrefix)).subscribe();
+                ch.createMessage(LangID.getStringByID("stimg_argu", lang).replace("_", holder.serverPrefix)).subscribe();
             }
         } catch (Exception e) {
             e.printStackTrace();

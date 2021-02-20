@@ -13,6 +13,10 @@ import discord4j.core.object.presence.Presence;
 import discord4j.rest.request.RouterOptions;
 import mandarin.packpack.commands.*;
 import mandarin.packpack.commands.bc.*;
+import mandarin.packpack.commands.server.BCUStat;
+import mandarin.packpack.commands.server.CheckBCU;
+import mandarin.packpack.commands.server.IDSet;
+import mandarin.packpack.commands.server.ServerPrefix;
 import mandarin.packpack.supporter.AssetDownloader;
 import mandarin.packpack.supporter.PackContext;
 import mandarin.packpack.supporter.StaticStore;
@@ -102,12 +106,24 @@ public class PackBot {
                         return (acc == null || !mc.getId().asString().equals(ids.GET_ACCESS)) || mandarin.get() || isMod.get() || isDev.get();
                     }
                 }).subscribe(event -> {
+                    Guild g = event.getGuild().block();
+                    IDHolder ids;
+
+                    if(g != null) {
+                        ids = StaticStore.holder.get(g.getId().asString());
+                    } else {
+                        ids = new IDHolder();
+                    }
+
                     Message msg = event.getMessage();
 
                     MessageChannel ch = msg.getChannel().block();
 
                     event.getMember().ifPresent(m -> {
                         String prefix = StaticStore.getPrefix(m.getId().asString());
+
+                        if(msg.getContent().startsWith(ids.serverPrefix))
+                            prefix = ids.serverPrefix;
 
                         if(msg.getContent().startsWith(StaticStore.serverPrefix))
                             prefix = StaticStore.serverPrefix;
@@ -183,14 +199,12 @@ public class PackBot {
                         }
 
                         if(ch != null) {
-                            Guild g = event.getGuild().block();
-
-                            IDHolder ids;
+                            IDHolder idh;
 
                             if(g != null) {
-                                ids = StaticStore.holder.get(g.getId().asString());
+                                idh = StaticStore.holder.get(g.getId().asString());
                             } else {
-                                ids = StaticStore.holder.get(StaticStore.BCU_SERVER);
+                                idh = new IDHolder();
                             }
 
                             int lang;
@@ -210,105 +224,105 @@ public class PackBot {
                                 lang = StaticStore.locales.get(m.getId().asString());
                             }
 
-                            if(ids == null)
-                                ids = StaticStore.holder.get(StaticStore.BCU_SERVER);
+                            if(idh == null)
+                                idh = StaticStore.holder.get(StaticStore.BCU_SERVER);
 
                             switch (StaticStore.getCommand(msg.getContent(), prefix)) {
                                 case "checkbcu":
-                                    new CheckBCU(lang, ids).execute(event);
+                                    new CheckBCU(lang, idh).execute(event);
                                     break;
                                 case "bcustat":
-                                    new BCUStat(lang, ids).execute(event);
+                                    new BCUStat(lang, idh).execute(event);
                                     break;
                                 case "analyze":
-                                    new Analyze(ConstraintCommand.ROLE.MANDARIN, lang, ids).execute(event);
+                                    new Analyze(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
                                     break;
                                 case "help":
-                                    new Help(lang).execute(event);
+                                    new Help(lang, idh).execute(event);
                                     break;
                                 case "prefix":
-                                    new Prefix(ConstraintCommand.ROLE.MEMBER, lang, ids).execute(event);
+                                    new Prefix(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
                                     break;
                                 case "serverpre":
-                                    new ServerPrefix(ConstraintCommand.ROLE.MOD, lang, ids).execute(event);
+                                    new ServerPrefix(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
                                     break;
                                 case "save":
-                                    new Save(ConstraintCommand.ROLE.MANDARIN, lang, ids).execute(event);
+                                    new Save(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
                                     break;
                                 case "stimg":
                                 case "stimage":
                                 case "stageimg":
                                 case "stageimage":
-                                    new StageImage(ConstraintCommand.ROLE.MEMBER, lang, ids).execute(event);
+                                    new StageImage(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
                                     break;
                                 case "stmimg":
                                 case "stmimage":
                                 case "stagemapimg":
                                 case "stagemapimage":
-                                    new StmImage(ConstraintCommand.ROLE.MEMBER, lang, ids).execute(event);
+                                    new StmImage(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
                                     break;
                                 case "formstat":
                                 case "fs":
-                                    new FormStat(ConstraintCommand.ROLE.MEMBER, lang, ids).execute(event);
+                                    new FormStat(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
                                     break;
                                 case "locale":
-                                    new Locale(ConstraintCommand.ROLE.MEMBER, lang, ids).execute(event);
+                                    new Locale(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
                                     break;
                                 case "music":
                                 case "ms":
-                                    new Music(ConstraintCommand.ROLE.MEMBER, lang, ids, "music_").execute(event);
+                                    new Music(ConstraintCommand.ROLE.MEMBER, lang, idh, "music_").execute(event);
                                     break;
                                 case "enemystat":
                                 case "es":
-                                    new EnemyStat(ConstraintCommand.ROLE.MEMBER, lang, ids).execute(event);
+                                    new EnemyStat(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
                                     break;
                                 case "castle":
                                 case "cs":
-                                    new Castle(ConstraintCommand.ROLE.MEMBER, lang, ids).execute(event);
+                                    new Castle(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
                                     break;
                                 case "helpbc":
                                 case "hbc":
-                                    new HelpBC(lang).execute(event);
+                                    new HelpBC(lang, idh).execute(event);
                                     break;
                                 case "stageinfo":
                                 case "si":
-                                    new StageInfo(TimedConstraintCommand.ROLE.MEMBER, lang, ids, 5000).execute(event);
+                                    new StageInfo(TimedConstraintCommand.ROLE.MEMBER, lang, idh, 5000).execute(event);
                                     break;
                                 case "memory":
                                 case "mm":
-                                    new Memory(ConstraintCommand.ROLE.DEV, lang, ids).execute(event);
+                                    new Memory(ConstraintCommand.ROLE.DEV, lang, idh).execute(event);
                                     break;
                                 case "formimage":
                                 case "formimg":
                                 case "fimage":
                                 case "fimg":
-                                    new FormImage(TimedConstraintCommand.ROLE.MEMBER, lang, ids, 10000).execute(event);
+                                    new FormImage(TimedConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
                                     break;
                                 case "enemyimage":
                                 case "enemyimg":
                                 case "eimage":
                                 case "eimg":
-                                    new EnemyImage(TimedConstraintCommand.ROLE.MEMBER, lang, ids, 10000).execute(event);
+                                    new EnemyImage(TimedConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
                                     break;
                                 case "background":
                                 case "bg":
-                                    new Background(TimedConstraintCommand.ROLE.MEMBER, lang, ids, 10000).execute(event);
+                                    new Background(TimedConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
                                     break;
                                 case "test":
-                                    new Test(ConstraintCommand.ROLE.MANDARIN, lang, ids, "test").execute(event);
+                                    new Test(ConstraintCommand.ROLE.MANDARIN, lang, idh, "test").execute(event);
                                     break;
                                 case "formgif":
                                 case "fgif":
                                 case "fg":
-                                    new FormGif(ConstraintCommand.ROLE.MEMBER, lang, ids, "gif").execute(event);
+                                    new FormGif(ConstraintCommand.ROLE.MEMBER, lang, idh, "gif").execute(event);
                                     break;
                                 case "enemygif":
                                 case "egif":
                                 case "eg":
-                                    new EnemyGif(ConstraintCommand.ROLE.MEMBER, lang, ids, "gif").execute(event);
+                                    new EnemyGif(ConstraintCommand.ROLE.MEMBER, lang, idh, "gif").execute(event);
                                     break;
                                 case "idset":
-                                    new IDSet(ConstraintCommand.ROLE.MANDARIN, lang, ids).execute(event);
+                                    new IDSet(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
                             }
                         }
                     });

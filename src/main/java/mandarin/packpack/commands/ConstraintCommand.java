@@ -20,6 +20,7 @@ public abstract class ConstraintCommand implements Command {
 
     final String constRole;
     protected final int lang;
+    protected final IDHolder holder;
 
     public ConstraintCommand(ROLE role, int lang, IDHolder id) {
         switch (role) {
@@ -43,6 +44,7 @@ public abstract class ConstraintCommand implements Command {
         }
 
         this.lang = lang;
+        this.holder = id;
     }
 
     @Override

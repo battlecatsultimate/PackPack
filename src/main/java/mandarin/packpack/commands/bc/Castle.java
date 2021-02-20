@@ -57,7 +57,7 @@ public class Castle extends ConstraintCommand {
             String[] messages = getMessage(event).split(" ", startIndex+1);
 
             if(messages.length <= startIndex) {
-                ch.createMessage(LangID.getStringByID("castle_more", lang).replace("_", StaticStore.serverPrefix)).subscribe();
+                ch.createMessage(LangID.getStringByID("castle_more", lang).replace("_", holder.serverPrefix)).subscribe();
                 return;
             }
 
@@ -141,7 +141,7 @@ public class Castle extends ConstraintCommand {
                 }
             });
         } else {
-            ch.createMessage(LangID.getStringByID("castle_argu", lang).replace("_", StaticStore.serverPrefix)).subscribe();
+            ch.createMessage(LangID.getStringByID("castle_argu", lang).replace("_", holder.serverPrefix)).subscribe();
         }
     }
 

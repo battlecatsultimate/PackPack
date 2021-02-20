@@ -1,7 +1,8 @@
-package mandarin.packpack.commands;
+package mandarin.packpack.commands.server;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.channel.MessageChannel;
+import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.IDHolder;
@@ -23,9 +24,9 @@ public class ServerPrefix extends ConstraintCommand {
                 return;
             }
 
-            StaticStore.serverPrefix = list[1];
+            holder.serverPrefix = list[1];
 
-            ch.createMessage(LangID.getStringByID("serverpre_set", lang).replace("_", StaticStore.serverPrefix)).subscribe();
+            ch.createMessage(LangID.getStringByID("serverpre_set", lang).replace("_", holder.serverPrefix)).subscribe();
         } else if(list.length == 1) {
             ch.createMessage(LangID.getStringByID("prefix_argu", lang)).subscribe();
         } else {

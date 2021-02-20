@@ -56,7 +56,7 @@ public class StmImage extends ConstraintCommand {
                 String[] messages = getMessage(event).split(" ", startIndex+1);
 
                 if(messages.length <= startIndex) {
-                    ch.createMessage(LangID.getStringByID("stimg_more", lang).replace("_", StaticStore.serverPrefix)).subscribe();
+                    ch.createMessage(LangID.getStringByID("stimg_more", lang).replace("_", holder.serverPrefix)).subscribe();
                     return;
                 }
 

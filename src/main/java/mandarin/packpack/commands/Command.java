@@ -7,7 +7,7 @@ import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.Pauser;
 import mandarin.packpack.supporter.StaticStore;
 
-interface Command {
+public interface Command {
     int DEFAULT_ERROR = -1;
     Pauser pause = new Pauser();
 
