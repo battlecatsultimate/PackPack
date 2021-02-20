@@ -1,10 +1,8 @@
 package mandarin.packpack.supporter.server;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import mandarin.packpack.supporter.StaticStore;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -18,6 +16,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.util.Objects;
+import java.util.Set;
 
 public class ImgurDataHolder {
     private final JsonObject data;
@@ -82,6 +81,14 @@ public class ImgurDataHolder {
         }
 
         return null;
+    }
+
+    public void clear() {
+        Set<String> keys = data.keySet();
+
+        for(String k : keys) {
+            data.remove(k);
+        }
     }
 
     public boolean finalized(String md5) {
