@@ -24,6 +24,7 @@ public class FormAnimHolder {
 
     private final ArrayList<Form> form;
     private final Message msg;
+    private final String channelID;
 
     private final int mode;
     private final int frame;
@@ -38,9 +39,10 @@ public class FormAnimHolder {
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
-    public FormAnimHolder(ArrayList<Form> form, Message msg, int mode, int frame, boolean transparent, boolean debug, int lang, boolean isGif, boolean raw) {
+    public FormAnimHolder(ArrayList<Form> form, Message msg, String channelID, int mode, int frame, boolean transparent, boolean debug, int lang, boolean isGif, boolean raw) {
         this.form = form;
         this.msg = msg;
+        this.channelID = channelID;
 
         this.mode = mode;
         this.frame = frame;
@@ -74,6 +76,14 @@ public class FormAnimHolder {
             System.out.println("Expired!!");
             return RESULT_FAIL;
         }
+
+        MessageChannel ch = event.getMessage().getChannel().block();
+
+        if(ch == null)
+            return RESULT_STILL;
+
+        if(!ch.getId().asString().equals(channelID))
+            return RESULT_STILL;
 
         String content = event.getMessage().getContent();
 
@@ -176,55 +186,51 @@ public class FormAnimHolder {
 
             cleaner.add(event.getMessage());
         } else if(StaticStore.isNumeric(content)) {
-            MessageChannel ch = event.getMessage().getChannel().block();
-
             int id = StaticStore.safeParseInt(content)-1;
 
             if(id < 0 || id >= form.size())
                 return RESULT_STILL;
 
-            if(ch != null) {
-                try {
-                    Form f = form.get(id);
+            try {
+                Form f = form.get(id);
 
-                    if(gif) {
-                        if(StaticStore.canDo.get("gif").canDo) {
-                            new Thread(() -> {
-                                try {
-                                    boolean result;
+                if(gif) {
+                    if(StaticStore.canDo.get("gif").canDo) {
+                        new Thread(() -> {
+                            try {
+                                boolean result;
 
-                                    if(raw) {
-                                        result = EntityHandler.generateFormMp4(f, ch, mode, debug, frame, lang);
-                                    } else {
-                                        result = EntityHandler.generateFormGif(f, ch, mode, debug, frame, lang);
-                                    }
-
-                                    if(result) {
-                                        StaticStore.canDo.put("gif", new TimeBoolean(false));
-
-                                        Timer timer = new Timer();
-
-                                        timer.schedule(new TimerTask() {
-                                            @Override
-                                            public void run() {
-                                                System.out.println("Remove Process : gif");
-                                                StaticStore.canDo.put("gif", new TimeBoolean(true));
-                                            }
-                                        }, raw ? TimeUnit.MINUTES.toMillis(1) : TimeUnit.SECONDS.toMillis(30));
-                                    }
-                                } catch (Exception e) {
-                                    e.printStackTrace();
+                                if(raw) {
+                                    result = EntityHandler.generateFormMp4(f, ch, mode, debug, frame, lang);
+                                } else {
+                                    result = EntityHandler.generateFormGif(f, ch, mode, debug, frame, lang);
                                 }
-                            }).start();
-                        } else {
-                            ch.createMessage(LangID.getStringByID("single_wait", lang).replace("_", DataToString.df.format((30000 - (System.currentTimeMillis() - StaticStore.canDo.get("gif").time)) / 1000.0))).subscribe();
-                        }
+
+                                if(result) {
+                                    StaticStore.canDo.put("gif", new TimeBoolean(false));
+
+                                    Timer timer = new Timer();
+
+                                    timer.schedule(new TimerTask() {
+                                        @Override
+                                        public void run() {
+                                            System.out.println("Remove Process : gif");
+                                            StaticStore.canDo.put("gif", new TimeBoolean(true));
+                                        }
+                                    }, raw ? TimeUnit.MINUTES.toMillis(1) : TimeUnit.SECONDS.toMillis(30));
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }).start();
                     } else {
-                        EntityHandler.generateFormImage(f, ch, mode, frame, transparent, debug, lang);
+                        ch.createMessage(LangID.getStringByID("single_wait", lang).replace("_", DataToString.df.format((30000 - (System.currentTimeMillis() - StaticStore.canDo.get("gif").time)) / 1000.0))).subscribe();
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } else {
+                    EntityHandler.generateFormImage(f, ch, mode, frame, transparent, debug, lang);
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
             msg.delete().subscribe();

@@ -13,6 +13,8 @@ import discord4j.core.object.presence.Presence;
 import discord4j.rest.request.RouterOptions;
 import mandarin.packpack.commands.*;
 import mandarin.packpack.commands.bc.*;
+import mandarin.packpack.commands.data.StageImage;
+import mandarin.packpack.commands.data.StmImage;
 import mandarin.packpack.commands.server.*;
 import mandarin.packpack.supporter.AssetDownloader;
 import mandarin.packpack.supporter.PackContext;

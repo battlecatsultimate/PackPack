@@ -23,6 +23,7 @@ public class FormStatHolder {
 
     private final ArrayList<Form> form;
     private final Message msg;
+    private final String channelID;
 
     private int page = 0;
     private boolean expired = false;
@@ -34,9 +35,10 @@ public class FormStatHolder {
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
-    public FormStatHolder(ArrayList<Form> form, Message msg, int param, int[] lv, int lang) {
+    public FormStatHolder(ArrayList<Form> form, Message msg, String channelID, int param, int[] lv, int lang) {
         this.form = form;
         this.msg = msg;
+        this.channelID = channelID;
 
         this.talent = (param & 2) > 0;
         this.isFrame = (param & 4) == 0;
@@ -67,6 +69,14 @@ public class FormStatHolder {
             System.out.println("Expired!!");
             return RESULT_FAIL;
         }
+
+        MessageChannel ch = event.getMessage().getChannel().block();
+
+        if(ch == null)
+            return RESULT_STILL;
+
+        if(!ch.getId().asString().equals(channelID))
+            return RESULT_STILL;
 
         String content = event.getMessage().getContent();
 
@@ -169,30 +179,26 @@ public class FormStatHolder {
 
             cleaner.add(event.getMessage());
         } else if(StaticStore.isNumeric(content)) {
-            MessageChannel ch = event.getMessage().getChannel().block();
-
             int id = StaticStore.safeParseInt(content)-1;
 
             if(id < 0 || id >= form.size())
                 return RESULT_STILL;
 
-            if(ch != null) {
-                msg.delete().subscribe();
+            msg.delete().subscribe();
 
-                if(lv[0] > form.get(id).unit.max + form.get(id).unit.maxp)
-                    lv[0] = form.get(id).unit.max + form.get(id).unit.maxp;
-                else if(lv[0] <= 0) {
-                    if(form.get(id).unit.rarity == 0)
-                        lv[0] = 110;
-                    else
-                        lv[0] = 30;
-                }
+            if(lv[0] > form.get(id).unit.max + form.get(id).unit.maxp)
+                lv[0] = form.get(id).unit.max + form.get(id).unit.maxp;
+            else if(lv[0] <= 0) {
+                if(form.get(id).unit.rarity == 0)
+                    lv[0] = 110;
+                else
+                    lv[0] = 30;
+            }
 
-                try {
-                    EntityHandler.showUnitEmb(form.get(id), ch, isFrame, talent, lv, lang);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            try {
+                EntityHandler.showUnitEmb(form.get(id), ch, isFrame, talent, lv, lang);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
             expired = true;

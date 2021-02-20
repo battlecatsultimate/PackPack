@@ -25,6 +25,7 @@ public class StageInfoHolder {
 
     private final ArrayList<Stage> stage;
     private final Message msg;
+    private final String channelID;
 
     private int page = 0;
     private boolean expired = false;
@@ -35,9 +36,11 @@ public class StageInfoHolder {
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
-    public StageInfoHolder(ArrayList<Stage> stage, Message msg, int star, boolean isFrame, int lang) {
+    public StageInfoHolder(ArrayList<Stage> stage, Message msg, String channelID, int star, boolean isFrame, int lang) {
         this.stage = stage;
         this.msg = msg;
+        this.channelID = channelID;
+
         this.star = star;
         this.isFrame = isFrame;
         this.lang = lang;
@@ -67,6 +70,14 @@ public class StageInfoHolder {
             return RESULT_FAIL;
         }
 
+        MessageChannel ch = event.getMessage().getChannel().block();
+
+        if(ch == null)
+            return RESULT_STILL;
+
+        if(!ch.getId().asString().equals(channelID))
+            return RESULT_STILL;
+
         String content = event.getMessage().getContent();
 
         if(content.equals("n")) {
@@ -89,27 +100,23 @@ public class StageInfoHolder {
 
             cleaner.add(event.getMessage());
         } else if(StaticStore.isNumeric(content)) {
-            MessageChannel ch = event.getMessage().getChannel().block();
-
             int id = StaticStore.safeParseInt(content) - 1;
 
             if(id < 0 || id >= stage.size())
                 return RESULT_STILL;
 
-            if(ch != null) {
-                msg.delete().subscribe();
+            msg.delete().subscribe();
 
-                event.getMember().ifPresent(m -> {
-                    String mid = m.getId().asString();
+            event.getMember().ifPresent(m -> {
+                String mid = m.getId().asString();
 
-                    StaticStore.timeLimit.put(mid, System.currentTimeMillis());
-                });
+                StaticStore.timeLimit.put(mid, System.currentTimeMillis());
+            });
 
-                try {
-                    EntityHandler.showStageEmb(stage.get(id), ch, isFrame, star, lang);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            try {
+                EntityHandler.showStageEmb(stage.get(id), ch, isFrame, star, lang);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
             expired = true;

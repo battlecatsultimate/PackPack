@@ -159,7 +159,7 @@ public class EnemyGif extends SingleContraintCommand {
 
                 if(res != null) {
                     disableTimer();
-                    event.getMember().ifPresent(member -> StaticStore.enemyAnimHolder.put(member.getId().asString(), new EnemyAnimHolder(enemies, res, mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isDev.get())));
+                    event.getMember().ifPresent(member -> StaticStore.enemyAnimHolder.put(member.getId().asString(), new EnemyAnimHolder(enemies, res, ch.getId().asString(), mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isDev.get())));
                 }
             }
         } else {

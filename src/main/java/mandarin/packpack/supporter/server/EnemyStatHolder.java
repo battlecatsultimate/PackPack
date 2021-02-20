@@ -23,6 +23,7 @@ public class EnemyStatHolder {
 
     private final ArrayList<Enemy> enemy;
     private final Message msg;
+    private final String channelID;
 
     private int page = 0;
     private boolean expired = false;
@@ -33,9 +34,11 @@ public class EnemyStatHolder {
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
-    public EnemyStatHolder(ArrayList<Enemy> enemy, Message msg, int[] magnification, boolean isFrame, int lang) {
+    public EnemyStatHolder(ArrayList<Enemy> enemy, Message msg, String channelID, int[] magnification, boolean isFrame, int lang) {
         this.enemy = enemy;
         this.msg = msg;
+        this.channelID = channelID;
+
         this.magnification = magnification;
         this.isFrame = isFrame;
         this.lang = lang;
@@ -64,6 +67,14 @@ public class EnemyStatHolder {
             System.out.println("Expired!!");
             return RESULT_FAIL;
         }
+
+        MessageChannel ch = event.getMessage().getChannel().block();
+
+        if(ch == null)
+            return RESULT_STILL;
+
+        if(!ch.getId().asString().equals(channelID))
+            return RESULT_STILL;
 
         String content = event.getMessage().getContent();
 
@@ -166,21 +177,17 @@ public class EnemyStatHolder {
 
             cleaner.add(event.getMessage());
         } else if(StaticStore.isNumeric(content)) {
-            MessageChannel ch = event.getMessage().getChannel().block();
-
             int id = StaticStore.safeParseInt(content)-1;
 
             if(id < 0 || id >= enemy.size())
                 return RESULT_STILL;
 
-            if(ch != null) {
-                msg.delete().subscribe();
+            msg.delete().subscribe();
 
-                try {
-                    EntityHandler.showEnemyEmb(enemy.get(id), ch, isFrame, magnification, lang);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            try {
+                EntityHandler.showEnemyEmb(enemy.get(id), ch, isFrame, magnification, lang);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
             expired = true;

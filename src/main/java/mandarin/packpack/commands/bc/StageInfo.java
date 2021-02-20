@@ -155,7 +155,7 @@ public class StageInfo extends TimedConstraintCommand {
                 Message res = ch.createMessage(sb.toString()).block();
 
                 if(res != null) {
-                    event.getMember().ifPresent(member -> StaticStore.stageHolder.put(member.getId().asString(), new StageInfoHolder(stages, res, star, isFrame, lang)));
+                    event.getMember().ifPresent(member -> StaticStore.stageHolder.put(member.getId().asString(), new StageInfoHolder(stages, res, ch.getId().asString(), star, isFrame, lang)));
                 }
             }
         }
