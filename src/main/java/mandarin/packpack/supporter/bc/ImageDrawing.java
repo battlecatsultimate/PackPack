@@ -965,7 +965,7 @@ public class ImageDrawing {
         StaticStore.deleteFile(folder, true);
 
         msg.edit(m -> {
-            String content = cont + "\n\n"+LangID.getStringByID("gif_making", lang).replace("_", "100")+"\n\n"
+            String content = cont + "\n\n"+LangID.getStringByID("gif_makepng", lang).replace("_", "100")+"\n\n"
                     +LangID.getStringByID("gif_converting", lang)+"\n\n"+LangID.getStringByID("gif_uploadmp4", lang);
 
             m.setContent(content);
