@@ -20,12 +20,17 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class EnemyGif extends SingleContraintCommand {
     private final int PARAM_DEBUG = 2;
+    private final int PARAM_RAW = 4;
+
+    private final String devID;
 
     public EnemyGif(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID) {
         super(role, lang, id, mainID, TimeUnit.SECONDS.toMillis(30));
+        this.devID = id.DEV;
     }
 
     @Override
@@ -34,6 +39,16 @@ public class EnemyGif extends SingleContraintCommand {
 
         if(ch == null)
             return;
+
+        AtomicReference<Boolean> isDev = new AtomicReference<>(false);
+
+        event.getMember().ifPresentOrElse(m -> {
+            if(devID != null && StaticStore.rolesToString(m.getRoleIds()).contains(devID)) {
+                isDev.set(true);
+            } else {
+                isDev.set(false);
+            }
+        }, () -> isDev.set(false));
 
         String[] list = getMessage(event).split(" ");
 
@@ -66,18 +81,28 @@ public class EnemyGif extends SingleContraintCommand {
                 int param = checkParameters(getMessage(event));
                 int mode = getMode(getMessage(event));
                 boolean debug = (param & PARAM_DEBUG) > 0;
+                boolean raw = (param & PARAM_RAW) > 0;
                 int frame = getFrame(getMessage(event));
+
+                if(raw && !isDev.get()) {
+                    ch.createMessage(LangID.getStringByID("gif_ignore", lang)).subscribe();
+                }
 
                 Enemy en = enemies.get(0);
 
-                boolean result = EntityHandler.generateEnemyGif(en, ch, mode, debug, frame, lang);
+                boolean result;
+
+                if(raw && isDev.get()) {
+                    result = EntityHandler.generateEnemyMp4(en, ch, mode, debug, frame, lang);
+                    changeTime(TimeUnit.MINUTES.toMillis(1));
+                } else {
+                    result = EntityHandler.generateEnemyGif(en, ch, mode, debug, frame, lang);
+                }
 
                 if(!result) {
                     disableTimer();
                 }
             } else {
-                CommonStatic.getConfig().lang = lang;
-
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", filterCommand(getMessage(event))));
 
                 String check;
@@ -126,9 +151,15 @@ public class EnemyGif extends SingleContraintCommand {
                 int mode = getMode(getMessage(event));
                 int frame = getFrame(getMessage(event));
 
+                boolean raw = (param & PARAM_RAW) > 0;
+
+                if(raw && !isDev.get()) {
+                    ch.createMessage(LangID.getStringByID("gif_ignore", lang)).subscribe();
+                }
+
                 if(res != null) {
                     disableTimer();
-                    event.getMember().ifPresent(member -> StaticStore.enemyAnimHolder.put(member.getId().asString(), new EnemyAnimHolder(enemies, res, mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true)));
+                    event.getMember().ifPresent(member -> StaticStore.enemyAnimHolder.put(member.getId().asString(), new EnemyAnimHolder(enemies, res, mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isDev.get())));
                 }
             }
         } else {
@@ -211,6 +242,14 @@ public class EnemyGif extends SingleContraintCommand {
                             break label;
                         }
                         break;
+                    case "-r":
+                    case "-raw":
+                        if((result & PARAM_RAW) == 0) {
+                            result |= PARAM_RAW;
+                        } else {
+                            break label;
+                        }
+                        break;
                     case "-f":
                     case "-fr":
                         if(i < pureMessage.length - 1 && StaticStore.isNumeric(pureMessage[i+1])) {
@@ -245,6 +284,7 @@ public class EnemyGif extends SingleContraintCommand {
         boolean preParamEnd = false;
 
         boolean debug = false;
+        boolean raw = false;
 
         boolean mode = false;
         boolean frame = false;
@@ -256,6 +296,15 @@ public class EnemyGif extends SingleContraintCommand {
                     case "-d":
                         if (!debug) {
                             debug = true;
+                        } else {
+                            i--;
+                            preParamEnd = true;
+                        }
+                        break;
+                    case "-r":
+                    case "-raw":
+                        if(!raw) {
+                            raw = true;
                         } else {
                             i--;
                             preParamEnd = true;

@@ -155,7 +155,7 @@ public class EnemyImage extends TimedConstraintCommand {
                 int frame = getFrame(getMessage(event));
 
                 if(res != null) {
-                    event.getMember().ifPresent(member -> StaticStore.enemyAnimHolder.put(member.getId().asString(), new EnemyAnimHolder(enemies, res, mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang, false)));
+                    event.getMember().ifPresent(member -> StaticStore.enemyAnimHolder.put(member.getId().asString(), new EnemyAnimHolder(enemies, res, mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang, false, false)));
                 }
             }
         } else {

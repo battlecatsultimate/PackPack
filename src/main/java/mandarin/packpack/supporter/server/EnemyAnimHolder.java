@@ -35,13 +35,14 @@ public class EnemyAnimHolder {
     private final boolean debug;
     private final int lang;
     private final boolean gif;
+    private final boolean raw;
 
     private int page = 0;
     private boolean expired = false;
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
-    public EnemyAnimHolder(ArrayList<Enemy> enemy, Message msg, int mode, int frame, boolean transparent, boolean debug, int lang, boolean isGif) {
+    public EnemyAnimHolder(ArrayList<Enemy> enemy, Message msg, int mode, int frame, boolean transparent, boolean debug, int lang, boolean isGif, boolean raw) {
         this.enemy = enemy;
         this.msg = msg;
 
@@ -51,6 +52,7 @@ public class EnemyAnimHolder {
         this.debug = debug;
         this.lang = lang;
         this.gif = isGif;
+        this.raw = raw;
 
         Timer autoFinish = new Timer();
 
@@ -201,7 +203,13 @@ public class EnemyAnimHolder {
                         if(StaticStore.canDo.get("gif").canDo) {
                             new Thread(() -> {
                                 try {
-                                    boolean result = EntityHandler.generateEnemyGif(e, ch, mode, debug, frame, lang);
+                                    boolean result;
+
+                                    if(raw) {
+                                        result = EntityHandler.generateEnemyMp4(e, ch, mode, debug, frame, lang);
+                                    } else {
+                                        result = EntityHandler.generateEnemyGif(e, ch, mode, debug, frame, lang);
+                                    }
 
                                     if(result) {
                                         StaticStore.canDo.put("gif", new TimeBoolean(false));
@@ -214,7 +222,7 @@ public class EnemyAnimHolder {
                                                 System.out.println("Remove Process : gif");
                                                 StaticStore.canDo.put("gif", new TimeBoolean(true));
                                             }
-                                        }, TimeUnit.SECONDS.toMillis(30));
+                                        }, raw ? TimeUnit.MINUTES.toMillis(1) : TimeUnit.SECONDS.toMillis(30));
                                     }
                                 } catch (Exception exception) {
                                     exception.printStackTrace();

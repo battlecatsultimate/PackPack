@@ -43,7 +43,7 @@ public class FormGif extends SingleContraintCommand {
         AtomicReference<Boolean> isDev = new AtomicReference<>(false);
 
         event.getMember().ifPresentOrElse(m -> {
-            if(StaticStore.rolesToString(m.getRoleIds()).contains(devID)) {
+            if(devID != null && StaticStore.rolesToString(m.getRoleIds()).contains(devID)) {
                 isDev.set(true);
             } else {
                 isDev.set(false);
@@ -123,8 +123,10 @@ public class FormGif extends SingleContraintCommand {
 
                     String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
 
-                    if(MultiLangCont.get(f) != null)
-                        fname += MultiLangCont.get(f);
+                    String name = StaticStore.safeMultiLangGet(f, lang);
+
+                    if(name != null)
+                        fname += name;
 
                     sb.append(i+1).append(". ").append(fname).append("\n");
                 }
