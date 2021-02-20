@@ -114,7 +114,7 @@ public class Test extends SingleContraintCommand {
 
                 if(res != null) {
                     disableTimer();
-                    event.getMember().ifPresent(member -> StaticStore.formAnimHolder.put(member.getId().asString(), new FormAnimHolder(forms, res, mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, true)));
+                    event.getMember().ifPresent(member -> StaticStore.formAnimHolder.put(member.getId().asString(), new FormAnimHolder(forms, res, ch.getId().asString(), mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, true)));
                 }
             }
         } else {

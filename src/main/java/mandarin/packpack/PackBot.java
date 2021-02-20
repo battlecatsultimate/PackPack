@@ -13,6 +13,7 @@ import discord4j.core.object.presence.Presence;
 import discord4j.rest.request.RouterOptions;
 import mandarin.packpack.commands.*;
 import mandarin.packpack.commands.bc.*;
+import mandarin.packpack.commands.data.AnimAnalyzer;
 import mandarin.packpack.commands.data.StageImage;
 import mandarin.packpack.commands.data.StmImage;
 import mandarin.packpack.commands.server.*;
@@ -192,6 +193,23 @@ public class PackBot {
                             }
                         }
 
+                        if(StaticStore.animHolder.containsKey(m.getId().asString())) {
+                            AnimHolder holder = StaticStore.animHolder.get(m.getId().asString());
+
+                            try {
+                                int result = holder.handleEvent(event);
+
+                                if(result == EnemyAnimHolder.RESULT_FINISH) {
+                                    StaticStore.animHolder.remove(m.getId().asString());
+                                }else if(result == AnimHolder.RESULT_FAIL) {
+                                    System.out.println("ERROR : Expired process tried to be handled : "+m.getId().asString()+"|"+m.getNickname().orElse(m.getUsername()));
+                                    StaticStore.animHolder.remove(m.getId().asString());
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+
                         if(ch != null) {
                             IDHolder idh;
 
@@ -320,6 +338,10 @@ public class PackBot {
                                     break;
                                 case "clearcache":
                                     new ClearCache(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+                                    break;
+                                case "aa":
+                                case "animanalyzer":
+                                    new AnimAnalyzer(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
                                     break;
                             }
                         }

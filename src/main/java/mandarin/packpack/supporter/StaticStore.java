@@ -7,9 +7,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import common.CommonStatic;
+import common.io.assets.UpdateCheck;
 import common.util.lang.MultiLangCont;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Attachment;
 import discord4j.rest.util.Color;
 import mandarin.packpack.supporter.server.*;
 
@@ -38,6 +40,7 @@ public class StaticStore {
     public static Map<String, StageInfoHolder> stageHolder = new HashMap<>();
     public static Map<String, FormAnimHolder> formAnimHolder = new HashMap<>();
     public static Map<String, EnemyAnimHolder> enemyAnimHolder = new HashMap<>();
+    public static Map<String, AnimHolder> animHolder = new HashMap<>();
 
     public static ImgurDataHolder imgur = new ImgurDataHolder(null);
 
@@ -505,5 +508,17 @@ public class StaticStore {
         CommonStatic.getConfig().lang = oldConfig;
 
         return res;
+    }
+
+    public static UpdateCheck.Downloader getDownloader(Attachment att, File container) {
+        if(!container.exists() || container.isFile())
+            return null;
+
+        String url = att.getUrl();
+
+        File target = new File(container, att.getFilename());
+        File temp = new File(container, att.getFilename()+".tmp");
+
+        return new UpdateCheck.Downloader(url, target, temp, "", false);
     }
 }
