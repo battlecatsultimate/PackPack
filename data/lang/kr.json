@@ -301,5 +301,6 @@
   "idset_ignore" : "_ 역할의 ID는 이 명령어에서 이미 설정되었으므로 무시합니다",
   "idset_chanchange" : "Get-Access 채널의 ID가 _ 로 변경되었습니다",
   "idset_chaninvalid" : "ID _ 는 이 서버에 존재하지 않거나 채팅 채널이 아닙니다",
-  "idset_chanignore" : "Get-Access 채널의 ID는 이 명령어에서 이미 설정되었으므로 무시합니다"
+  "idset_chanignore" : "Get-Access 채널의 ID는 이 명령어에서 이미 설정되었으므로 무시합니다",
+  "clearcache_cleared" : "모든 캐시된 이미지 링크 데이터를 삭제했습니다"
 }

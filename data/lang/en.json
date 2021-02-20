@@ -302,5 +302,6 @@
   "idset_ignore" : "ID for _ role has already been set in this command, ignoring this argument set",
   "idset_chanchange" : "Get-Access channel is change to _",
   "idset_chaninvalid" : "ID _ doesn't exist in this server, or channel isn't text channel",
-  "idset_chanignore" : "ID for Get-Access channel has already been set in this command, ignoring this argument set"
+  "idset_chanignore" : "ID for Get-Access channel has already been set in this command, ignoring this argument set",
+  "clearcache_cleared" : "Cleared all image cache link data"
 }
