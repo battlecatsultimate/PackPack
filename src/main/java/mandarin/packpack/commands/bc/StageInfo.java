@@ -9,6 +9,7 @@ import common.util.stage.StageMap;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
+import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.TimedConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
@@ -22,7 +23,7 @@ import java.util.ArrayList;
 public class StageInfo extends TimedConstraintCommand {
     private static final int PARAM_SECOND = 2;
 
-    public StageInfo(ROLE role, int lang, IDHolder id, long time) {
+    public StageInfo(ConstraintCommand.ROLE role, int lang, IDHolder id, long time) {
         super(role, lang, id, time);
     }
 

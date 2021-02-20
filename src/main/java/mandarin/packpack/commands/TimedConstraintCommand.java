@@ -11,23 +11,13 @@ import mandarin.packpack.supporter.server.IDHolder;
 import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class TimedConstraintCommand implements Command {
-    public enum ROLE {
-        MANDARIN,
-        DEV,
-        MOD,
-        MEMBER,
-        PRE_MEMBER
-    }
 
     final String constRole;
     protected final int lang;
     protected final long time;
 
-    public TimedConstraintCommand(ROLE role, int lang, IDHolder id, long time) {
+    public TimedConstraintCommand(ConstraintCommand.ROLE role, int lang, IDHolder id, long time) {
         switch (role) {
-            case DEV:
-                constRole = id.DEV;
-                break;
             case MOD:
                 constRole = id.MOD;
                 break;

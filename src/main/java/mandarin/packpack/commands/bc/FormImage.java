@@ -7,6 +7,7 @@ import common.util.unit.Form;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
+import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.TimedConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
@@ -25,7 +26,7 @@ public class FormImage extends TimedConstraintCommand {
     private static final int PARAM_TRANSPARENT = 2;
     private static final int PARAM_DEBUG = 4;
 
-    public FormImage(ROLE role, int lang, IDHolder id, long time) {
+    public FormImage(ConstraintCommand.ROLE role, int lang, IDHolder id, long time) {
         super(role, lang, id, time);
     }
 
