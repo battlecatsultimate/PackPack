@@ -48,27 +48,27 @@ public class BCUStat implements Command {
 
             g.getMembers()
                     .filter(m -> !m.isBot())
-                    .filter(m -> StaticStore.rolesToString(m.getRoleIds()).contains(holder.PRE_MEMBER))
+                    .filter(m -> holder.PRE_MEMBER != null && StaticStore.rolesToString(m.getRoleIds()).contains(holder.PRE_MEMBER))
                     .count()
-                    .subscribe(l -> result.get().append(LangID.getStringByID("bcustat_prem", lang).replace("_", String.valueOf(l)).replace("-", df.format(l * 100.0 / allUsers.get()))));
+                    .subscribe(l -> result.get().append(LangID.getStringByID("bcustat_prem", lang).replace("_", String.valueOf(l)).replace("=", df.format(l * 100.0 / allUsers.get()))));
 
             g.getMembers()
                     .filter(m -> !m.isBot())
-                    .filter(m -> StaticStore.rolesToString(m.getRoleIds()).contains(holder.MEMBER))
+                    .filter(m -> holder.MEMBER != null && StaticStore.rolesToString(m.getRoleIds()).contains(holder.MEMBER))
                     .count()
-                    .subscribe(l -> result.get().append(LangID.getStringByID("bcustat_mem", lang).replace("_", String.valueOf(l)).replace("-", df.format(l * 100.0 / allUsers.get()))));
+                    .subscribe(l -> result.get().append(LangID.getStringByID("bcustat_mem", lang).replace("_", String.valueOf(l)).replace("=", df.format(l * 100.0 / allUsers.get()))));
 
             g.getMembers()
                     .filter(m -> !m.isBot())
-                    .filter(m -> StaticStore.rolesToString(m.getRoleIds()).contains(holder.BCU_PC_USER))
+                    .filter(m -> holder.BCU_PC_USER != null && StaticStore.rolesToString(m.getRoleIds()).contains(holder.BCU_PC_USER))
                     .count()
-                    .subscribe(l -> result.get().append(LangID.getStringByID("bcustat_pc", lang).replace("_", String.valueOf(l)).replace("-", df.format(l * 100.0 / allUsers.get()))));
+                    .subscribe(l -> result.get().append(LangID.getStringByID("bcustat_pc", lang).replace("_", String.valueOf(l)).replace("=", df.format(l * 100.0 / allUsers.get()))));
 
             g.getMembers()
                     .filter(m -> !m.isBot())
-                    .filter(m -> StaticStore.rolesToString(m.getRoleIds()).contains(holder.BCU_ANDROID))
+                    .filter(m -> holder.BCU_ANDROID != null && StaticStore.rolesToString(m.getRoleIds()).contains(holder.BCU_ANDROID))
                     .count()
-                    .subscribe(l -> result.get().append(LangID.getStringByID("bcustat_and", lang).replace("_", String.valueOf(l)).replace("-",df.format(l * 100.0 / allUsers.get()))));
+                    .subscribe(l -> result.get().append(LangID.getStringByID("bcustat_and", lang).replace("_", String.valueOf(l)).replace("=",df.format(l * 100.0 / allUsers.get()))));
         }, e -> {
             ch.createMessage(StaticStore.ERROR_MSG).subscribe();
             error.set(true);

@@ -36,17 +36,17 @@ public class CheckBCU implements Command {
 
             event.getGuild()
                     .subscribe(g -> g.getMembers()
-                        .filter(m -> !StaticStore.rolesToString(m.getRoleIds()).contains(holder.MUTED))
+                        .filter(m -> holder.MUTED != null && !StaticStore.rolesToString(m.getRoleIds()).contains(holder.MUTED))
                         .subscribe(m -> {
                             boolean pre = false;
                             boolean mem = false;
 
                             String role = StaticStore.rolesToString(m.getRoleIds());
 
-                            if(role.contains(holder.PRE_MEMBER))
+                            if(holder.PRE_MEMBER != null && role.contains(holder.PRE_MEMBER))
                                 pre = true;
 
-                            if(role.contains(holder.MEMBER))
+                            if(holder.MEMBER != null && role.contains(holder.MEMBER))
                                 mem = true;
 
                             if (!pre && !mem)
