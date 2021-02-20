@@ -10,10 +10,6 @@ public class IDHolder {
             id.serverPrefix = id.setOr(obj.get("server").getAsString());
         }
 
-        if(obj.has("dev")) {
-            id.DEV = id.setOrNull(obj.get("dev").getAsString());
-        }
-
         if(obj.has("mod")) {
             id.MOD = id.setOrNull(obj.get("mod").getAsString());
         }
@@ -47,7 +43,6 @@ public class IDHolder {
 
     public String serverPrefix = "p!";
 
-    public String DEV;
     public String MOD;
     public String MEMBER;
     public String PRE_MEMBER;
@@ -57,8 +52,7 @@ public class IDHolder {
 
     public String GET_ACCESS;
 
-    public IDHolder(String d, String m, String me, String pre, String pc, String and, String acc, String mu) {
-        this.DEV = d;
+    public IDHolder(String m, String me, String pre, String pc, String and, String acc, String mu) {
         this.MOD = m;
         this.MEMBER = me;
         this.PRE_MEMBER = pre;
@@ -76,7 +70,6 @@ public class IDHolder {
         JsonObject obj = new JsonObject();
 
         obj.addProperty("server", getOrNull(serverPrefix));
-        obj.addProperty("dev", getOrNull(DEV));
         obj.addProperty("mod", getOrNull(MOD));
         obj.addProperty("mem", getOrNull(MEMBER));
         obj.addProperty("pre", getOrNull(PRE_MEMBER));

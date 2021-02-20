@@ -12,7 +12,6 @@ import java.util.concurrent.atomic.AtomicReference;
 public abstract class ConstraintCommand implements Command {
     public enum ROLE {
         MANDARIN,
-        DEV,
         MOD,
         MEMBER,
         PRE_MEMBER
@@ -24,9 +23,6 @@ public abstract class ConstraintCommand implements Command {
 
     public ConstraintCommand(ROLE role, int lang, IDHolder id) {
         switch (role) {
-            case DEV:
-                constRole = id.DEV;
-                break;
             case MOD:
                 constRole = id.MOD;
                 break;

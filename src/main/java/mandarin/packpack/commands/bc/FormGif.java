@@ -1,7 +1,6 @@
 package mandarin.packpack.commands.bc;
 
 import common.util.Data;
-import common.util.lang.MultiLangCont;
 import common.util.unit.Form;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
@@ -25,12 +24,12 @@ public class FormGif extends SingleContraintCommand {
     private final int PARAM_DEBUG = 2;
     private final int PARAM_RAW = 4;
 
-    private final String devID;
+    private final String modID;
 
     public FormGif(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID) {
         super(role, lang, id, mainID, TimeUnit.SECONDS.toMillis(30));
 
-        devID = id.DEV;
+        modID = id.MOD;
     }
 
     @Override
@@ -43,7 +42,7 @@ public class FormGif extends SingleContraintCommand {
         AtomicReference<Boolean> isDev = new AtomicReference<>(false);
 
         event.getMember().ifPresentOrElse(m -> {
-            if(devID != null && StaticStore.rolesToString(m.getRoleIds()).contains(devID)) {
+            if(modID != null && StaticStore.rolesToString(m.getRoleIds()).contains(modID)) {
                 isDev.set(true);
             } else {
                 isDev.set(false);

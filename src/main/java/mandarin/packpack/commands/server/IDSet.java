@@ -43,7 +43,6 @@ public class IDSet extends ConstraintCommand {
             if(g == null)
                 result.append(LangID.getStringByID("idset_noguild", lang));
             else {
-                boolean dev = false;
                 boolean mod = false;
                 boolean mem = false;
                 boolean pre = false;
@@ -54,39 +53,6 @@ public class IDSet extends ConstraintCommand {
 
                 for(int i = 0; i < msg.length; i++) {
                     switch (msg[i]) {
-                        case "-d":
-                        case "-dev":
-                            if(!dev && i < msg.length - 1) {
-                                String id = msg[i+1];
-
-                                if(isValidID(g, id)) {
-                                    holder.DEV = id;
-
-                                    result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                    result.append(LangID.getStringByID("idset_idchange", lang).replace("_", "Developer").replace("=", getRoleIDWithName(id, event))).append("\n");
-
-                                    dev = true;
-                                } else if(id.toLowerCase(Locale.ENGLISH).equals("none")) {
-                                    holder.DEV = null;
-
-                                    result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                    result.append(LangID.getStringByID("idset_idchange", lang).replace("_", "Developer").replace("=", LangID.getStringByID("idset_none", lang))).append("\n");
-
-                                    dev = true;
-                                } else if(StaticStore.isNumeric(id)) {
-                                    result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                    result.append(LangID.getStringByID("idset_invalid", lang).replace("_", id)).append("\n");
-                                } else {
-                                    result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                    result.append(LangID.getStringByID("idset_numeric", lang).replace("_",id)).append("\n");
-                                }
-
-                                i++;
-                            } else {
-                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                result.append(LangID.getStringByID("idset_ignore", lang).replace("_", "Developer")).append("\n");
-                            }
-                            break;
                         case "-m":
                         case "-mod":
                             if(!mod && i < msg.length - 1) {
@@ -105,7 +71,7 @@ public class IDSet extends ConstraintCommand {
                                     result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
                                     result.append(LangID.getStringByID("idset_idchange", lang).replace("_", "Moderator").replace("=", LangID.getStringByID("idset_none", lang))).append("\n");
 
-                                    dev = true;
+                                    mod = true;
                                 } else if(StaticStore.isNumeric(id)) {
                                     result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
                                     result.append(LangID.getStringByID("idset_invalid", lang).replace("_", id)).append("\n");
@@ -138,7 +104,7 @@ public class IDSet extends ConstraintCommand {
                                     result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
                                     result.append(LangID.getStringByID("idset_idchange", lang).replace("_", "Member").replace("=", LangID.getStringByID("idset_none", lang))).append("\n");
 
-                                    dev = true;
+                                    mem = true;
                                 } else if(StaticStore.isNumeric(id)) {
                                     result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
                                     result.append(LangID.getStringByID("idset_invalid", lang).replace("_", id)).append("\n");
@@ -171,7 +137,7 @@ public class IDSet extends ConstraintCommand {
                                     result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
                                     result.append(LangID.getStringByID("idset_idchange", lang).replace("_", "Pre-Member").replace("=", LangID.getStringByID("idset_none", lang))).append("\n");
 
-                                    dev = true;
+                                    pre = true;
                                 } else if(StaticStore.isNumeric(id)) {
                                     result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
                                     result.append(LangID.getStringByID("idset_invalid", lang).replace("_", id)).append("\n");
@@ -204,7 +170,7 @@ public class IDSet extends ConstraintCommand {
                                     result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
                                     result.append(LangID.getStringByID("idset_idchange", lang).replace("_", "Muted").replace("=", LangID.getStringByID("idset_none", lang))).append("\n");
 
-                                    dev = true;
+                                    mut = true;
                                 } else if(StaticStore.isNumeric(id)) {
                                     result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
                                     result.append(LangID.getStringByID("idset_invalid", lang).replace("_", id)).append("\n");
@@ -237,7 +203,7 @@ public class IDSet extends ConstraintCommand {
                                     result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
                                     result.append(LangID.getStringByID("idset_idchange", lang).replace("_", "BCU-PC User").replace("=", LangID.getStringByID("idset_none", lang))).append("\n");
 
-                                    dev = true;
+                                    pc = true;
                                 } else if(StaticStore.isNumeric(id)) {
                                     result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
                                     result.append(LangID.getStringByID("idset_invalid", lang).replace("_", id)).append("\n");
@@ -270,7 +236,7 @@ public class IDSet extends ConstraintCommand {
                                     result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
                                     result.append(LangID.getStringByID("idset_idchange", lang).replace("_", "BCU-Android User").replace("=", LangID.getStringByID("idset_none", lang))).append("\n");
 
-                                    dev = true;
+                                    and = true;
                                 } else if(StaticStore.isNumeric(id)) {
                                     result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
                                     result.append(LangID.getStringByID("idset_invalid", lang).replace("_", id)).append("\n");
@@ -302,7 +268,7 @@ public class IDSet extends ConstraintCommand {
                                     result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
                                     result.append(LangID.getStringByID("idset_chanchange", lang).replace("_", LangID.getStringByID("idset_none", lang))).append("\n");
 
-                                    dev = true;
+                                    get = true;
                                 } else if(StaticStore.isNumeric(id)) {
                                     result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
                                     result.append(LangID.getStringByID("idset_chaninvalid", lang).replace("_", id)).append("\n");

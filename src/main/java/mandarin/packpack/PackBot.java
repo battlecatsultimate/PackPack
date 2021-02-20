@@ -13,10 +13,7 @@ import discord4j.core.object.presence.Presence;
 import discord4j.rest.request.RouterOptions;
 import mandarin.packpack.commands.*;
 import mandarin.packpack.commands.bc.*;
-import mandarin.packpack.commands.server.BCUStat;
-import mandarin.packpack.commands.server.CheckBCU;
-import mandarin.packpack.commands.server.IDSet;
-import mandarin.packpack.commands.server.ServerPrefix;
+import mandarin.packpack.commands.server.*;
 import mandarin.packpack.supporter.AssetDownloader;
 import mandarin.packpack.supporter.PackContext;
 import mandarin.packpack.supporter.StaticStore;
@@ -77,7 +74,6 @@ public class PackBot {
                     else {
                         AtomicReference<Boolean> mandarin = new AtomicReference<>(false);
                         AtomicReference<Boolean> isMod = new AtomicReference<>(false);
-                        AtomicReference<Boolean> isDev = new AtomicReference<>(false);
 
                         Guild g = event.getGuild().block();
 
@@ -95,15 +91,11 @@ public class PackBot {
                             if(ids.MOD != null) {
                                 isMod.set(StaticStore.rolesToString(m.getRoleIds()).contains(ids.MOD));
                             }
-
-                            if(ids.DEV != null) {
-                                isDev.set(StaticStore.rolesToString(m.getRoleIds()).contains(ids.DEV));
-                            }
                         });
 
                         String acc = ids.GET_ACCESS;
 
-                        return (acc == null || !mc.getId().asString().equals(ids.GET_ACCESS)) || mandarin.get() || isMod.get() || isDev.get();
+                        return (acc == null || !mc.getId().asString().equals(ids.GET_ACCESS)) || mandarin.get() || isMod.get();
                     }
                 }).subscribe(event -> {
                     Guild g = event.getGuild().block();
@@ -286,27 +278,27 @@ public class PackBot {
                                     break;
                                 case "stageinfo":
                                 case "si":
-                                    new StageInfo(TimedConstraintCommand.ROLE.MEMBER, lang, idh, 5000).execute(event);
+                                    new StageInfo(ConstraintCommand.ROLE.MEMBER, lang, idh, 5000).execute(event);
                                     break;
                                 case "memory":
                                 case "mm":
-                                    new Memory(ConstraintCommand.ROLE.DEV, lang, idh).execute(event);
+                                    new Memory(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
                                     break;
                                 case "formimage":
                                 case "formimg":
                                 case "fimage":
                                 case "fimg":
-                                    new FormImage(TimedConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
+                                    new FormImage(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
                                     break;
                                 case "enemyimage":
                                 case "enemyimg":
                                 case "eimage":
                                 case "eimg":
-                                    new EnemyImage(TimedConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
+                                    new EnemyImage(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
                                     break;
                                 case "background":
                                 case "bg":
-                                    new Background(TimedConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
+                                    new Background(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
                                     break;
                                 case "test":
                                     new Test(ConstraintCommand.ROLE.MANDARIN, lang, idh, "test").execute(event);
@@ -323,6 +315,10 @@ public class PackBot {
                                     break;
                                 case "idset":
                                     new IDSet(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+                                    break;
+                                case "clearcache":
+                                    new ClearCache(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+                                    break;
                             }
                         }
                     });
@@ -347,14 +343,14 @@ public class PackBot {
             DataToString.initialize();
 
             StaticStore.holder.put("490262537527623692", new IDHolder(
-                     "490941233963728896", "563745009912774687",
+                    "563745009912774687",
                     "632835571655507968", "490940081738350592",
                     "490940151501946880", "787391428916543488",
                     "632836623931015185", "632836623931015185"
             ));
 
             StaticStore.holder.put("679858366389944409", new IDHolder(
-                    "679871555794108416", "679870747694596121",
+                    "679870747694596121",
                     "679869691656667157", "743808872376041553",
                     "679870744561188919", "800632019418742824",
                     null, "689333420794707984"

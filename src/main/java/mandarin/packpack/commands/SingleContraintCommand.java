@@ -26,9 +26,6 @@ public abstract class SingleContraintCommand implements Command {
 
     public SingleContraintCommand(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID, long millis) {
         switch (role) {
-            case DEV:
-                constRole = id.DEV;
-                break;
             case MOD:
                 constRole = id.MOD;
                 break;

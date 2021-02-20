@@ -26,11 +26,11 @@ public class EnemyGif extends SingleContraintCommand {
     private final int PARAM_DEBUG = 2;
     private final int PARAM_RAW = 4;
 
-    private final String devID;
+    private final String modID;
 
     public EnemyGif(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID) {
         super(role, lang, id, mainID, TimeUnit.SECONDS.toMillis(30));
-        this.devID = id.DEV;
+        this.modID = id.MOD;
     }
 
     @Override
@@ -43,7 +43,7 @@ public class EnemyGif extends SingleContraintCommand {
         AtomicReference<Boolean> isDev = new AtomicReference<>(false);
 
         event.getMember().ifPresentOrElse(m -> {
-            if(devID != null && StaticStore.rolesToString(m.getRoleIds()).contains(devID)) {
+            if(modID != null && StaticStore.rolesToString(m.getRoleIds()).contains(modID)) {
                 isDev.set(true);
             } else {
                 isDev.set(false);
