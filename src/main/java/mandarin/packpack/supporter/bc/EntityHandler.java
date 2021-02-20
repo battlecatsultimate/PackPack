@@ -1147,12 +1147,11 @@ public class EntityHandler {
                 m.edit(e -> {
                     long finalEnd = System.currentTimeMillis();
 
-
                     e.setContent(LangID.getStringByID("gif_uploadimgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0)+"sec\n"+link));
 
                     String id = generateID(f, finalMode1);
 
-                    StaticStore.imgur.put(id, link);
+                    StaticStore.imgur.put(id, link, false);
                 }).subscribe(null, null, () -> {
                     if(img.exists()) {
                         boolean res = img.delete();
@@ -1194,6 +1193,133 @@ public class EntityHandler {
                 }
             }
         });
+
+        return true;
+    }
+
+    public static boolean generateFormMp4(Form f, MessageChannel ch, int mode, boolean debug, int limit, int lang) throws Exception {
+        if(f.unit == null || f.unit.id == null)
+            return false;
+        else if(!debug) {
+            String id = generateID(f, mode);
+
+            String link = StaticStore.imgur.get(id);
+            boolean finalized = StaticStore.imgur.finalized(id);
+
+            if(link != null && finalized) {
+                ch.createMessage(LangID.getStringByID("gif_cache", lang).replace("_", link)).subscribe();
+                return false;
+            }
+        }
+
+        f.anim.load();
+
+        if(f.anim.len(getAnimType(mode, f.anim.anims.length)) > 300) {
+            ch.createMessage(LangID.getStringByID("gif_lengthlim", lang).replace("_", f.anim.len(getAnimType(mode, f.anim.anims.length))+"").replace("-", "300")).subscribe();
+        } else if(limit > 0)  {
+            ch.createMessage(LangID.getStringByID("gif_lengthlim", lang).replace("_", f.anim.len(getAnimType(mode, f.anim.anims.length))+"").replace("-", limit+"")).subscribe();
+        } else {
+            ch.createMessage(LangID.getStringByID("gif_length", lang).replace("_", f.anim.len(getAnimType(mode, f.anim.anims.length))+"")).subscribe();
+        }
+
+        CommonStatic.getConfig().ref = false;
+
+        if(mode >= f.anim.anims.length)
+            mode = 0;
+
+        Message msg = ch.createMessage(LangID.getStringByID("gif_anbox", lang)).block();
+
+        if(msg == null)
+            return false;
+
+        long start = System.currentTimeMillis();
+
+        File img = ImageDrawing.drawFormMp4(f, msg, mode, 1.0, debug, limit, lang);
+
+        long end = System.currentTimeMillis();
+
+        String time = DataToString.df.format((end - start)/1000.0);
+
+        FileInputStream fis;
+
+        if(img == null) {
+            ch.createMessage(LangID.getStringByID("gif_faile", lang)).subscribe();
+            return false;
+        } else if(!debug && img.length() >= 8 * 1024 * 1024) {
+            Message m = ch.createMessage(LangID.getStringByID("gif_filesize", lang)).block();
+
+            if(m == null) {
+                ch.createMessage(LangID.getStringByID("gif_failcommand", lang)).subscribe(null, null, () -> {
+                    if(img.exists()) {
+                        boolean res = img.delete();
+
+                        if(!res) {
+                            System.out.println("Failed to delete file : "+img.getAbsolutePath());
+                        }
+                    }
+                });
+                return false;
+            }
+
+            String link = StaticStore.imgur.uploadFile(img);
+
+            if(link == null) {
+                m.edit(e -> e.setContent(LangID.getStringByID("gif_failimgur", lang))).subscribe(null, null, () -> {
+                    if(img.exists()) {
+                        boolean res = img.delete();
+
+                        if(!res) {
+                            System.out.println("Failed to delete file : "+img.getAbsolutePath());
+                        }
+                    }
+                });
+            } else {
+                String id = generateID(f, mode);
+
+                StaticStore.imgur.put(id, link, true);
+
+                m.edit(e -> {
+                    long finalEnd = System.currentTimeMillis();
+
+                    e.setContent(LangID.getStringByID("gif_uploadimgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link);
+                }).subscribe(null, null, () -> {
+                    if(img.exists()) {
+                        boolean res = img.delete();
+
+                        if(!res) {
+                            System.out.println("Failed to delete file : "+img.getAbsolutePath());
+                        }
+                    }
+                });
+            }
+
+            return true;
+        } else if(img.length() < 8 * 1024 * 1024) {
+            fis = new FileInputStream(img);
+
+            int finalMode = mode;
+
+            ch.createMessage(
+                    m -> {
+                        m.setContent(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)));
+                        m.addFile("result.mp4", fis);
+                    }
+            ).subscribe(m -> cacheImage(f, finalMode, m), null, () -> {
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                if(img.exists()) {
+                    boolean res = img.delete();
+
+                    if(!res) {
+                        System.out.println("Can't delete file : "+img.getAbsolutePath());
+                    }
+                }
+            });
+        }
 
         return true;
     }
@@ -1283,7 +1409,7 @@ public class EntityHandler {
 
                     String id = generateID(en, finalMode1);
 
-                    StaticStore.imgur.put(id, link);
+                    StaticStore.imgur.put(id, link, false);
                 }).subscribe(null, null, () -> {
                     if(img.exists()) {
                         boolean res = img.delete();
@@ -1360,7 +1486,13 @@ public class EntityHandler {
             if (a.getFilename().equals("result.gif")) {
                 String link = a.getUrl();
 
-                StaticStore.imgur.put(id, link);
+                StaticStore.imgur.put(id, link, false);
+
+                return;
+            } else if(a.getFilename().equals("result.mp4")) {
+                String link = a.getUrl();
+
+                StaticStore.imgur.put(id, link, true);
 
                 return;
             }
@@ -1382,7 +1514,13 @@ public class EntityHandler {
             if (a.getFilename().equals("result.gif")) {
                 String link = a.getUrl();
 
-                StaticStore.imgur.put(id, link);
+                StaticStore.imgur.put(id, link, false);
+
+                return;
+            } else if(a.getFilename().equals("result.mp4")) {
+                String link = a.getUrl();
+
+                StaticStore.imgur.put(id, link, true);
 
                 return;
             }

@@ -53,22 +53,24 @@ public abstract class ConstraintCommand implements Command {
         if(ch == null)
             return;
 
-        AtomicReference<Boolean> isDev = new AtomicReference<>(false);
+        AtomicReference<Boolean> hasRole = new AtomicReference<>(false);
 
         msg.getAuthorAsMember().subscribe(m -> {
             String role = StaticStore.rolesToString(m.getRoleIds());
 
-            if(constRole.equals("MANDARIN")) {
-                isDev.set(m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
+            if(constRole == null) {
+                hasRole.set(true);
+            } else if(constRole.equals("MANDARIN")) {
+                hasRole.set(m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
             } else {
-                isDev.set(role.contains(constRole) || m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
+                hasRole.set(role.contains(constRole) || m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
             }
 
         }, e -> onFail(event, DEFAULT_ERROR), pause::resume);
 
         pause.pause(() -> onFail(event, DEFAULT_ERROR));
 
-        if(!isDev.get()) {
+        if(!hasRole.get()) {
             if(constRole.equals("MANDARIN")) {
                 ch.createMessage(LangID.getStringByID("const_man", lang)).subscribe();
             } else {

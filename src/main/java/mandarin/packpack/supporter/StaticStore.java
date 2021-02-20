@@ -76,7 +76,7 @@ public class StaticStore {
 
     public static final String ERROR_MSG = "`INTERNAL_ERROR`";
 
-    public static final Map<String, IDHolder> holder = new HashMap<>();
+    public static Map<String, IDHolder> holder = new HashMap<>();
 
     public static final String BCU_SERVER = "490262537527623692";
     public static final String BCU_KR_SERVER = "679858366389944409";
@@ -141,6 +141,59 @@ public class StaticStore {
             return list[0].toLowerCase(Locale.ENGLISH).replaceFirst(Pattern.quote(prefix.toLowerCase(Locale.ENGLISH)), "");
         else
             return "";
+    }
+
+    public static JsonObject mapToJsonIDHolder(Map<String, IDHolder> map) {
+        JsonObject obj = new JsonObject();
+
+        int i = 0;
+
+        for(String key : map.keySet()) {
+            IDHolder value = map.get(key);
+
+            if(value == null) {
+                System.out.println("Warning! : Key "+key+" returns null!");
+                continue;
+            }
+
+            JsonObject id = new JsonObject();
+
+            id.add("val", value.jsonfy());
+            id.addProperty("key", key);
+
+            obj.add(Integer.toString(i), id);
+
+            i++;
+        }
+
+        return obj;
+    }
+
+    public static Map<String, IDHolder> jsonToMapIDHolder(JsonObject obj) {
+        Map<String, IDHolder> map = new HashMap<>();
+
+        int i = 0;
+
+        while(true) {
+            if(obj.has(Integer.toString(i))) {
+                JsonObject id = obj.get(Integer.toString(i)).getAsJsonObject();
+
+                if(id.has("val") && id.has("key")) {
+                    JsonObject val = id.getAsJsonObject("val");
+                    String key = id.get("key").getAsString();
+
+                    IDHolder holder = IDHolder.jsonToIDHolder(val);
+
+                    map.put(key, holder);
+                }
+
+                i++;
+            } else {
+                break;
+            }
+        }
+
+        return map;
     }
 
     public static JsonObject mapToJsonString(Map<String, String> map) {
@@ -262,6 +315,7 @@ public class StaticStore {
         obj.add("lang", mapToJsonString(langs));
         obj.add("locale", mapToJsonInt(locales));
         obj.add("imgur", imgur.getData());
+        obj.add("idholder", mapToJsonIDHolder(holder));
 
         try {
             File folder = new File("./data/");
@@ -327,6 +381,10 @@ public class StaticStore {
 
             if(obj.has("imgur")) {
                 imgur = new ImgurDataHolder(obj.getAsJsonObject("imgur"));
+            }
+
+            if(obj.has("idholder")) {
+                holder = jsonToMapIDHolder(obj.getAsJsonObject("idholder"));
             }
         }
     }

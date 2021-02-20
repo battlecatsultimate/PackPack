@@ -123,8 +123,10 @@ public class FormImage extends TimedConstraintCommand {
 
                     String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
 
-                    if(MultiLangCont.get(f) != null)
-                        fname += MultiLangCont.get(f);
+                    String name = StaticStore.safeMultiLangGet(f, lang);
+
+                    if(name != null)
+                        fname += name;
 
                     sb.append(i+1).append(". ").append(fname).append("\n");
                 }
@@ -142,7 +144,7 @@ public class FormImage extends TimedConstraintCommand {
                 int frame = getFrame(getMessage(event));
 
                 if(res != null) {
-                    event.getMember().ifPresent(member -> StaticStore.formAnimHolder.put(member.getId().asString(), new FormAnimHolder(forms, res, mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang, false)));
+                    event.getMember().ifPresent(member -> StaticStore.formAnimHolder.put(member.getId().asString(), new FormAnimHolder(forms, res, mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang, false, false)));
                 }
             }
         } else {

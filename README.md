@@ -11,4 +11,6 @@ java -jar PackPack.jar DISCORD_TOKEN IMGUR_TOKEN
 ---
 Plese check [Discord API](https://discord.com/developers/docs/intro) site and [Imgur API](https://apidocs.imgur.com/) site to generate your own tokens.
 
-This project uses [Animated Gif Encoder](https://github.com/battlecatsultimate/PackPack/blob/main/src/main/java/mandarin/packpack/supporter/lzw/AnimatedGifEncoder.java) to generate gif from The Battle Cats units and emies.
+This project uses [Animated Gif Encoder](https://github.com/battlecatsultimate/PackPack/blob/main/src/main/java/mandarin/packpack/supporter/lzw/AnimatedGifEncoder.java) to generate gif from `The Battle Cats` units and enemies.
+
+This project uses [FFMPEG](https://ffmpeg.org/) to generate mp4 from `The Battle Cats` units and enemies

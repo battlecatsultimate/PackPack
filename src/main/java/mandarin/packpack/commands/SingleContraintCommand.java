@@ -20,7 +20,7 @@ public abstract class SingleContraintCommand implements Command {
     final String mainID;
     protected String optionalID = "";
     protected final ArrayList<String> aborts = new ArrayList<>();
-    final long time;
+    long time;
 
     private boolean timerStart = true;
 
@@ -62,16 +62,18 @@ public abstract class SingleContraintCommand implements Command {
         if(ch == null)
             return;
 
-        AtomicReference<Boolean> isDev = new AtomicReference<>(false);
+        AtomicReference<Boolean> hasRole = new AtomicReference<>(false);
         AtomicReference<Boolean> isMandarin = new AtomicReference<>(false);
 
         msg.getAuthorAsMember().subscribe(m -> {
             String role = StaticStore.rolesToString(m.getRoleIds());
 
-            if(constRole.equals("MANDARIN")) {
-                isDev.set(m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
+            if(constRole == null) {
+                hasRole.set(true);
+            } else if(constRole.equals("MANDARIN")) {
+                hasRole.set(m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
             } else {
-                isDev.set(role.contains(constRole) || m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
+                hasRole.set(role.contains(constRole) || m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
             }
 
             isMandarin.set(m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
@@ -79,7 +81,7 @@ public abstract class SingleContraintCommand implements Command {
 
         pause.pause(() -> onFail(event, DEFAULT_ERROR));
 
-        if(!isDev.get()) {
+        if(!hasRole.get()) {
             if(constRole.equals("MANDARIN")) {
                 ch.createMessage(LangID.getStringByID("const_man", lang)).subscribe();
             } else {
@@ -154,6 +156,10 @@ public abstract class SingleContraintCommand implements Command {
 
     protected void disableTimer() {
         timerStart = false;
+    }
+
+    protected void changeTime(long millis) {
+        time = millis;
     }
 
     protected abstract void doThing(MessageCreateEvent event) throws Exception;

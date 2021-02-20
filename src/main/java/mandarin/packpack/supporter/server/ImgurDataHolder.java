@@ -1,7 +1,10 @@
 package mandarin.packpack.supporter.server;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import mandarin.packpack.supporter.StaticStore;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -25,18 +28,78 @@ public class ImgurDataHolder {
         data = Objects.requireNonNullElseGet(object, JsonObject::new);
     }
 
-    public void put(String md5, String url) {
+    public void put(String md5, String url, boolean finalize) {
         if(!data.has(md5)) {
-            data.addProperty(md5, url);
+            JsonObject obj = new JsonObject();
+
+            obj.addProperty("url", url);
+            obj.addProperty("final", finalize);
+
+            data.add(md5, obj);
+        } else {
+            JsonElement elem = data.get(md5);
+
+            if(elem.isJsonObject()) {
+                JsonObject obj = elem.getAsJsonObject();
+
+                if(obj.has("final")) {
+                    boolean fin = obj.get("final").getAsBoolean();
+
+                    if(!fin) {
+                        obj.addProperty("url", url);
+                        obj.addProperty("final", finalize);
+                    }
+                } else {
+                    obj.addProperty("url", url);
+                    obj.addProperty("final", finalize);
+                }
+
+                data.add(md5, obj);
+            } else {
+                JsonObject obj = new JsonObject();
+
+                obj.addProperty("url" , url);
+                obj.addProperty("final", false);
+
+                data.add(md5, obj);
+            }
         }
     }
 
     public String get(String md5) {
         if(data.has(md5)) {
-            return data.get(md5).getAsString();
+            JsonElement elem = data.get(md5);
+
+            if(elem.isJsonPrimitive()) {
+                return elem.getAsString();
+            } else if(elem.isJsonObject()) {
+                JsonObject obj = elem.getAsJsonObject();
+
+                if(obj.has("url")) {
+                    return obj.get("url").getAsString();
+                }
+            }
         }
 
         return null;
+    }
+
+    public boolean finalized(String md5) {
+        if(data.has(md5)) {
+            JsonElement elem = data.get(md5);
+
+            if(elem.isJsonPrimitive()) {
+                return false;
+            } else if(elem.isJsonObject()) {
+                JsonObject object = elem.getAsJsonObject();
+
+                if(object.has("final")) {
+                    return object.get("final").getAsBoolean();
+                }
+            }
+        }
+
+        return false;
     }
 
     public JsonObject getData() {

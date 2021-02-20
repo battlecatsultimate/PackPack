@@ -19,12 +19,18 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class FormGif extends SingleContraintCommand {
     private final int PARAM_DEBUG = 2;
+    private final int PARAM_RAW = 4;
+
+    private final String devID;
 
     public FormGif(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID) {
         super(role, lang, id, mainID, TimeUnit.SECONDS.toMillis(30));
+
+        devID = id.DEV;
     }
 
     @Override
@@ -33,6 +39,16 @@ public class FormGif extends SingleContraintCommand {
 
         if(ch == null)
             return;
+
+        AtomicReference<Boolean> isDev = new AtomicReference<>(false);
+
+        event.getMember().ifPresentOrElse(m -> {
+            if(StaticStore.rolesToString(m.getRoleIds()).contains(devID)) {
+                isDev.set(true);
+            } else {
+                isDev.set(false);
+            }
+        }, () -> isDev.set(false));
 
         String[] list = getMessage(event).split(" ");
 
@@ -66,11 +82,19 @@ public class FormGif extends SingleContraintCommand {
                 int param = checkParameters(getMessage(event));
                 int mode = getMode(getMessage(event));
                 boolean debug = (param & PARAM_DEBUG) > 0;
+                boolean raw = (param & PARAM_RAW) > 0;
                 int frame = getFrame(getMessage(event));
 
                 Form f = forms.get(0);
 
-                boolean result = EntityHandler.generateFormGif(f, ch, mode, debug, frame, lang);
+                boolean result;
+
+                if(raw) {
+                    result = EntityHandler.generateFormMp4(f, ch, mode, debug, frame, lang);
+                    changeTime(TimeUnit.MINUTES.toMillis(1));
+                } else {
+                    result = EntityHandler.generateFormGif(f, ch, mode, debug, frame, lang);
+                }
 
                 if(!result) {
                     disableTimer();
@@ -115,7 +139,7 @@ public class FormGif extends SingleContraintCommand {
 
                 if(res != null) {
                     disableTimer();
-                    event.getMember().ifPresent(member -> StaticStore.formAnimHolder.put(member.getId().asString(), new FormAnimHolder(forms, res, mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true)));
+                    event.getMember().ifPresent(member -> StaticStore.formAnimHolder.put(member.getId().asString(), new FormAnimHolder(forms, res, mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, ((param & PARAM_RAW) > 0) && isDev.get())));
                 }
             }
         } else {
@@ -198,6 +222,14 @@ public class FormGif extends SingleContraintCommand {
                             break label;
                         }
                         break;
+                    case "-r":
+                    case "-raw":
+                        if((result & PARAM_RAW) == 0) {
+                            result |= PARAM_RAW;
+                        } else {
+                            break label;
+                        }
+                        break;
                     case "-f":
                     case "-fr":
                         if(i < pureMessage.length - 1 && StaticStore.isNumeric(pureMessage[i+1])) {
@@ -232,6 +264,7 @@ public class FormGif extends SingleContraintCommand {
         boolean preParamEnd = false;
 
         boolean debug = false;
+        boolean raw = false;
 
         boolean mode = false;
         boolean frame = false;
@@ -243,6 +276,15 @@ public class FormGif extends SingleContraintCommand {
                     case "-d":
                         if (!debug) {
                             debug = true;
+                        } else {
+                            i--;
+                            preParamEnd = true;
+                        }
+                        break;
+                    case "-r":
+                    case "-raw":
+                        if(!raw) {
+                            raw = true;
                         } else {
                             i--;
                             preParamEnd = true;

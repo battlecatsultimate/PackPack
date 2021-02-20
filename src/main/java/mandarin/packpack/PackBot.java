@@ -46,6 +46,24 @@ public class PackBot {
 
         gate.updatePresence(Presence.online(Activity.playing("p!help, but under Construction!"))).subscribe();
 
+        gate.getGuilds().collectList().subscribe(l -> {
+            for (Guild guild : l) {
+                if (guild != null) {
+                    IDHolder id = StaticStore.holder.get(guild.getId().asString());
+
+                    if (id == null) {
+                        final IDHolder idh = new IDHolder();
+
+                        guild.createRole(r -> r.setName("PackPackMod")).subscribe(r -> idh.MOD = r.getId().asString());
+
+                        StaticStore.holder.put(guild.getId().asString(), idh);
+                    }
+                }
+            }
+
+            StaticStore.saveServerInfo();
+        });
+
         gate.on(MessageCreateEvent.class)
                 .filter(event -> {
                     MessageChannel mc = event.getMessage().getChannel().block();
@@ -54,8 +72,8 @@ public class PackBot {
                         return false;
                     else {
                         AtomicReference<Boolean> mandarin = new AtomicReference<>(false);
-
-                        event.getMember().ifPresent(m -> mandarin.set(m.getId().asString().equals(StaticStore.MANDARIN_SMELL)));
+                        AtomicReference<Boolean> isMod = new AtomicReference<>(false);
+                        AtomicReference<Boolean> isDev = new AtomicReference<>(false);
 
                         Guild g = event.getGuild().block();
 
@@ -64,13 +82,24 @@ public class PackBot {
                         if(g != null) {
                             ids = StaticStore.holder.get(g.getId().asString());
                         } else {
-                            ids = StaticStore.holder.get(StaticStore.BCU_SERVER);
+                            ids = new IDHolder();
                         }
 
-                        if(ids == null)
-                            ids = StaticStore.holder.get(StaticStore.BCU_SERVER);
+                        event.getMember().ifPresent(m -> {
+                            mandarin.set(m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
 
-                        return mc.getId().asString().equals(ids.BOT_COMMAND) || mandarin.get();
+                            if(ids.MOD != null) {
+                                isMod.set(StaticStore.rolesToString(m.getRoleIds()).contains(ids.MOD));
+                            }
+
+                            if(ids.DEV != null) {
+                                isDev.set(StaticStore.rolesToString(m.getRoleIds()).contains(ids.DEV));
+                            }
+                        });
+
+                        String acc = ids.GET_ACCESS;
+
+                        return (acc == null || !mc.getId().asString().equals(ids.GET_ACCESS)) || mandarin.get() || isMod.get() || isDev.get();
                     }
                 }).subscribe(event -> {
                     Message msg = event.getMessage();
@@ -266,7 +295,7 @@ public class PackBot {
                                     new Background(TimedConstraintCommand.ROLE.MEMBER, lang, ids, 10000).execute(event);
                                     break;
                                 case "test":
-                                    new Test(ConstraintCommand.ROLE.MANDARIN, lang, ids).execute(event);
+                                    new Test(ConstraintCommand.ROLE.MANDARIN, lang, ids, "test").execute(event);
                                     break;
                                 case "formgif":
                                 case "fgif":
@@ -278,6 +307,8 @@ public class PackBot {
                                 case "eg":
                                     new EnemyGif(ConstraintCommand.ROLE.MEMBER, lang, ids, "gif").execute(event);
                                     break;
+                                case "idset":
+                                    new IDSet(ConstraintCommand.ROLE.MANDARIN, lang, ids).execute(event);
                             }
                         }
                     });
@@ -305,14 +336,14 @@ public class PackBot {
                      "490941233963728896", "563745009912774687",
                     "632835571655507968", "490940081738350592",
                     "490940151501946880", "787391428916543488",
-                    "508042127352266755", "632836623931015185"
+                    "632836623931015185", "632836623931015185"
             ));
 
             StaticStore.holder.put("679858366389944409", new IDHolder(
                     "679871555794108416", "679870747694596121",
                     "679869691656667157", "743808872376041553",
                     "679870744561188919", "800632019418742824",
-                    "679862700284575744", "689333420794707984"
+                    null, "689333420794707984"
             ));
 
             StaticStore.saver = new Timer();

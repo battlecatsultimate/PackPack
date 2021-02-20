@@ -287,5 +287,20 @@
   "gif_cango" : "Can go with current result",
   "gif_final" : "Final Result : W = _WWW_px | H = _HHH_px | X = _XXX_ | Y = _YYY_",
   "gif_making" : "Making GIF : _%",
-  "gif_uploading" : "Uploading gif..."
+  "gif_makepng" : "Making PNG files : _%",
+  "gif_converting" : "Converting PNGs to MP4...",
+  "gif_uploading" : "Uploading gif...",
+  "gif_uploadmp4" : "Uploading mp4...",
+  "gif_ignore" : "Ignoring -raw param because user isn't dev",
+  "idset_argu" : "This command requires one more argument set : `Usage : p!idset [ROLE] [ID]",
+  "idset_result" : "-----------RESULT----------\n\n",
+  "idset_noguild" : "Couldn't get guild info",
+  "idset_idchange" : "ID of _ role is changed to =",
+  "idset_none" : "None",
+  "idset_invalid" : "ID _ doesn't exist in this server, check if offered ID is correct",
+  "idset_numeric" : "ID _ isn't numeric, please specify raw integer ID to make bot not confused roles",
+  "idset_ignore" : "ID for _ role has already been set in this command, ignoring this argument set",
+  "idset_chanchange" : "Get-Access channel is change to _",
+  "idset_chaninvalid" : "ID _ doesn't exist in this server, or channel isn't text channel",
+  "idset_chanignore" : "ID for Get-Access channel has already been set in this command, ignoring this argument set"
 }
