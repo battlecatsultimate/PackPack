@@ -85,11 +85,15 @@ public class FormGif extends SingleContraintCommand {
                 boolean raw = (param & PARAM_RAW) > 0;
                 int frame = getFrame(getMessage(event));
 
+                if(raw && !isDev.get()) {
+                    ch.createMessage(LangID.getStringByID("gif_ignore", lang)).subscribe();
+                }
+
                 Form f = forms.get(0);
 
                 boolean result;
 
-                if(raw) {
+                if(raw && isDev.get()) {
                     result = EntityHandler.generateFormMp4(f, ch, mode, debug, frame, lang);
                     changeTime(TimeUnit.MINUTES.toMillis(1));
                 } else {
@@ -131,15 +135,21 @@ public class FormGif extends SingleContraintCommand {
                 sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
 
-                Message res = ch.createMessage(sb.toString()).block();
-
                 int param = checkParameters(getMessage(event));
                 int mode = getMode(getMessage(event));
                 int frame = getFrame(getMessage(event));
 
+                boolean raw = (param & PARAM_RAW) > 0;
+
+                if(raw && !isDev.get()) {
+                    ch.createMessage(LangID.getStringByID("gif_ignore", lang)).subscribe();
+                }
+
+                Message res = ch.createMessage(sb.toString()).block();
+
                 if(res != null) {
                     disableTimer();
-                    event.getMember().ifPresent(member -> StaticStore.formAnimHolder.put(member.getId().asString(), new FormAnimHolder(forms, res, mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, ((param & PARAM_RAW) > 0) && isDev.get())));
+                    event.getMember().ifPresent(member -> StaticStore.formAnimHolder.put(member.getId().asString(), new FormAnimHolder(forms, res, mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isDev.get())));
                 }
             }
         } else {
