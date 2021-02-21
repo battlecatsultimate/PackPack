@@ -97,6 +97,7 @@ public class FormStat extends ConstraintCommand {
                 if(res != null) {
                     event.getMember().ifPresent(member -> StaticStore.formHolder.put(member.getId().asString(), new FormStatHolder(forms, event.getMessage(), res, ch.getId().asString(), param, lv, lang)));
                 }
+
             }
         }
     }
