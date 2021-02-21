@@ -1155,7 +1155,7 @@ public class EntityHandler {
                     }
                 });
             } else {
-                if(!debug) {
+                if(!debug && limit < 0) {
                     String id = generateID(f, mode);
 
                     StaticStore.imgur.put(id, link, true);
@@ -1185,9 +1185,9 @@ public class EntityHandler {
             ch.createMessage(
                     m -> {
                         m.setContent(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)));
-                        m.addFile("result.mp4", fis);
+                        m.addFile(raw ? "result.mp4" : "result.gif", fis);
                     }
-            ).subscribe(m -> {if(!debug) cacheImage(f, finalMode, m);}, null, () -> {
+            ).subscribe(m -> {if(!debug && limit <= 0) cacheImage(f, finalMode, m);}, null, () -> {
                 try {
                     fis.close();
                 } catch (IOException e) {
@@ -1292,7 +1292,7 @@ public class EntityHandler {
                     }
                 });
             } else {
-                if(!debug) {
+                if(!debug && limit <= 0) {
                     String id = generateID(en, mode);
 
                     StaticStore.imgur.put(id, link, true);
@@ -1322,7 +1322,7 @@ public class EntityHandler {
             ch.createMessage(
                     m -> {
                         m.setContent(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)));
-                        m.addFile("result.mp4", fis);
+                        m.addFile(raw ? "reuslt.mp4" : "result.gif", fis);
                     }
             ).subscribe(m -> {if(!debug) cacheImage(en, finalMode, m);}, null, () -> {
                 try {
@@ -1344,7 +1344,7 @@ public class EntityHandler {
         return true;
     }
 
-    public static void generateAnimGif(MessageChannel ch, String md5, AnimMixer mixer, int lang, boolean debug, int limit) throws Exception {
+    public static void generateAnim(MessageChannel ch, String md5, AnimMixer mixer, int lang, boolean debug, int limit, boolean raw) throws Exception {
         if(!debug) {
             String link = StaticStore.imgur.get(md5);
             boolean finalized = StaticStore.imgur.finalized(md5);
@@ -1380,7 +1380,13 @@ public class EntityHandler {
 
         long start = System.currentTimeMillis();
 
-        File img = ImageDrawing.drawAnimGif(anim, msg, 1.0, debug, lang, limit);
+        File img;
+
+        if(raw) {
+            img = ImageDrawing.drawAnimMp4(anim, msg, 1.0, debug, limit, lang);
+        } else {
+            img = ImageDrawing.drawAnimGif(anim, msg, 1.0, debug, lang, limit);
+        }
 
         long end = System.currentTimeMillis();
 
