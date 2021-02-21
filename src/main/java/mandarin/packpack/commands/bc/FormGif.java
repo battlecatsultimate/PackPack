@@ -90,13 +90,10 @@ public class FormGif extends SingleContraintCommand {
 
                 Form f = forms.get(0);
 
-                boolean result;
+                boolean result = EntityHandler.generateFormAnim(f, ch, mode, debug, frame, lang, raw && isDev.get());
 
                 if(raw && isDev.get()) {
-                    result = EntityHandler.generateFormMp4(f, ch, mode, debug, frame, lang);
                     changeTime(TimeUnit.MINUTES.toMillis(1));
-                } else {
-                    result = EntityHandler.generateFormGif(f, ch, mode, debug, frame, lang);
                 }
 
                 if(!result) {

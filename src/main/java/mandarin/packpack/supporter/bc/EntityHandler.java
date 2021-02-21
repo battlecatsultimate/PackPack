@@ -1068,137 +1068,7 @@ public class EntityHandler {
         }
     }
 
-    public static boolean generateFormGif(Form f, MessageChannel ch, int mode, boolean debug, int limit, int lang) throws Exception {
-        if(f.unit == null || f.unit.id == null)
-            return false;
-        else if(!debug) {
-            String id = generateID(f, mode);
-
-            String link = StaticStore.imgur.get(id);
-
-            if(link != null) {
-                ch.createMessage(LangID.getStringByID("gif_cache", lang).replace("_", link)).subscribe();
-                return false;
-            }
-        }
-
-        f.anim.load();
-
-        if(f.anim.len(getAnimType(mode, f.anim.anims.length)) > 300) {
-            ch.createMessage(LangID.getStringByID("gif_lengthlim", lang).replace("_", f.anim.len(getAnimType(mode, f.anim.anims.length))+"").replace("-", "300")).subscribe();
-        } else if(limit > 0)  {
-            ch.createMessage(LangID.getStringByID("gif_lengthlim", lang).replace("_", f.anim.len(getAnimType(mode, f.anim.anims.length))+"").replace("-", limit+"")).subscribe();
-        } else {
-            ch.createMessage(LangID.getStringByID("gif_length", lang).replace("_", f.anim.len(getAnimType(mode, f.anim.anims.length))+"")).subscribe();
-        }
-
-        CommonStatic.getConfig().ref = false;
-
-        if(mode >= f.anim.anims.length)
-            mode = 0;
-
-        Message msg = ch.createMessage(LangID.getStringByID("gif_anbox", lang)).block();
-
-        if(msg == null)
-            return false;
-
-        long start = System.currentTimeMillis();
-
-        File img = ImageDrawing.drawFormGif(f, msg, mode, 1.0, debug, limit, lang);
-
-        long end = System.currentTimeMillis();
-
-        String time = DataToString.df.format((end - start)/1000.0);
-
-        FileInputStream fis;
-
-        if(img == null) {
-            ch.createMessage(LangID.getStringByID("gif_faile", lang)).subscribe();
-            return false;
-        } else if(!debug && img.length() >= 8 * 1024 * 1024 && img.length() < 10 * 1024 * 1024) {
-            Message m = ch.createMessage(LangID.getStringByID("gif_filesize", lang)).block();
-
-            if(m == null) {
-                ch.createMessage(LangID.getStringByID("gif_failcommand", lang)).subscribe(null, null, () -> {
-                    if(img.exists()) {
-                        boolean res = img.delete();
-
-                        if(!res) {
-                            System.out.println("Failed to delete file : "+img.getAbsolutePath());
-                        }
-                    }
-                });
-                return false;
-            }
-
-            String link = StaticStore.imgur.uploadFile(img);
-
-            if(link == null) {
-                m.edit(e -> e.setContent(LangID.getStringByID("gif_failimgur", lang))).subscribe(null, null, () -> {
-                    if(img.exists()) {
-                        boolean res = img.delete();
-
-                        if(!res) {
-                            System.out.println("Failed to delete file : "+img.getAbsolutePath());
-                        }
-                    }
-                });
-            } else {
-                int finalMode1 = mode;
-                m.edit(e -> {
-                    long finalEnd = System.currentTimeMillis();
-
-                    e.setContent(LangID.getStringByID("gif_uploadimgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0)+"sec\n"+link));
-
-                    String id = generateID(f, finalMode1);
-
-                    StaticStore.imgur.put(id, link, false);
-                }).subscribe(null, null, () -> {
-                    if(img.exists()) {
-                        boolean res = img.delete();
-
-                        if(!res) {
-                            System.out.println("Failed to delete file : "+img.getAbsolutePath());
-                        }
-                    }
-                });
-            }
-
-            return true;
-        }
-
-        fis = new FileInputStream(img);
-
-        int finalMode = mode;
-        ch.createMessage(
-                m -> {
-                    m.setContent(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)));
-                    m.addFile("result.gif", fis);
-                }
-        ).subscribe(m -> {
-            if(img.length() >= 1024 * 1024 && !debug && limit <= 0) {
-                cacheImage(f, finalMode, m);
-            }
-        }, null, () -> {
-            try {
-                fis.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            if(img.exists()) {
-                boolean res = img.delete();
-
-                if(!res) {
-                    System.out.println("Can't delete file : "+img.getAbsolutePath());
-                }
-            }
-        });
-
-        return true;
-    }
-
-    public static boolean generateFormMp4(Form f, MessageChannel ch, int mode, boolean debug, int limit, int lang) throws Exception {
+    public static boolean generateFormAnim(Form f, MessageChannel ch, int mode, boolean debug, int limit, int lang, boolean raw) throws Exception {
         if(f.unit == null || f.unit.id == null)
             return false;
         else if(!debug) {
@@ -1233,7 +1103,19 @@ public class EntityHandler {
 
         long start = System.currentTimeMillis();
 
-        File img = ImageDrawing.drawFormMp4(f, msg, mode, 1.0, debug, limit, lang);
+        f.anim.load();
+
+        EAnimD<?> anim = f.getEAnim(getAnimType(mode, f.anim.anims.length));
+
+        File img;
+
+        if(raw) {
+            img = ImageDrawing.drawAnimMp4(anim, msg, 1.0, debug, limit, lang);
+        } else {
+            img = ImageDrawing.drawAnimGif(anim, msg, 1.0, debug, limit, lang);
+        }
+
+        f.anim.unload();
 
         long end = System.currentTimeMillis();
 
@@ -1325,138 +1207,7 @@ public class EntityHandler {
         return true;
     }
 
-    public static boolean generateEnemyGif(Enemy en, MessageChannel ch, int mode, boolean debug, int limit, int lang) throws Exception {
-        if(en.id == null)
-            return false;
-        else if(!debug) {
-            String id = generateID(en, mode);
-
-            String link = StaticStore.imgur.get(id);
-
-            if(link != null) {
-                ch.createMessage(LangID.getStringByID("gif_cache", lang).replace("_", link)).subscribe();
-                return false;
-            }
-        }
-
-        en.anim.load();
-
-        if(en.anim.len(getAnimType(mode, en.anim.anims.length)) > 300) {
-            ch.createMessage(LangID.getStringByID("gif_lengthlim", lang).replace("_", en.anim.len(getAnimType(mode, en.anim.anims.length))+"").replace("-", "300")).subscribe();
-        } else if(limit > 0)  {
-            ch.createMessage(LangID.getStringByID("gif_lengthlim", lang).replace("_", en.anim.len(getAnimType(mode, en.anim.anims.length))+"").replace("-", limit+"")).subscribe();
-        } else {
-            ch.createMessage(LangID.getStringByID("gif_length", lang).replace("_", en.anim.len(getAnimType(mode, en.anim.anims.length))+"")).subscribe();
-        }
-
-        CommonStatic.getConfig().ref = false;
-
-        if(mode >= en.anim.anims.length)
-            mode = 0;
-
-        Message msg = ch.createMessage(LangID.getStringByID("gif_anbox", lang)).block();
-
-        if(msg == null)
-            return false;
-
-        long start = System.currentTimeMillis();
-
-        File img = ImageDrawing.drawEnemyGif(en, msg, mode, 1.0, debug, limit, lang);
-
-        long end = System.currentTimeMillis();
-
-        String time = DataToString.df.format((end - start)/1000.0);
-
-        FileInputStream fis;
-
-        if(img == null) {
-            ch.createMessage(LangID.getStringByID("gif_faile", lang)).subscribe();
-            return false;
-        } else if(!debug && img.length() >= 8 * 1024 * 1024 && img.length() < 10 * 1024 * 1024) {
-            Message m = ch.createMessage(LangID.getStringByID("gif_filesize", lang)).block();
-
-            if(m == null) {
-                ch.createMessage(LangID.getStringByID("gif_failcommand", lang)).subscribe(null, null, () -> {
-                    if(img.exists()) {
-                        boolean res = img.delete();
-
-                        if(!res) {
-                            System.out.println("Failed to delete file : "+img.getAbsolutePath());
-                        }
-                    }
-                });
-                return false;
-            }
-
-            String link = StaticStore.imgur.uploadFile(img);
-
-            if(link == null) {
-                m.edit(e -> e.setContent(LangID.getStringByID("gif_failimgur", lang))).subscribe(null, null, () -> {
-                    if(img.exists()) {
-                        boolean res = img.delete();
-
-                        if(!res) {
-                            System.out.println("Failed to delete file : "+img.getAbsolutePath());
-                        }
-                    }
-                });
-            } else {
-                int finalMode1 = mode;
-                m.edit(e -> {
-                    long finalEnd = System.currentTimeMillis();
-
-
-                    e.setContent(LangID.getStringByID("gif_uploadimgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0)+"sec\n"+link));
-
-                    String id = generateID(en, finalMode1);
-
-                    StaticStore.imgur.put(id, link, false);
-                }).subscribe(null, null, () -> {
-                    if(img.exists()) {
-                        boolean res = img.delete();
-
-                        if(!res) {
-                            System.out.println("Failed to delete file : "+img.getAbsolutePath());
-                        }
-                    }
-                });
-            }
-
-            return true;
-        }
-
-        fis = new FileInputStream(img);
-
-        int finalMode = mode;
-        ch.createMessage(
-                m -> {
-                    m.setContent(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)));
-                    m.addFile("result.gif", fis);
-                }
-        ).subscribe(m -> {
-            if(img.length() >= 1024 * 1024 && !debug && limit <= 0) {
-                cacheImage(en, finalMode, m);
-            }
-        }, null, () -> {
-            try {
-                fis.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            if(img.exists()) {
-                boolean res = img.delete();
-
-                if(!res) {
-                    System.out.println("Can't delete file : "+img.getAbsolutePath());
-                }
-            }
-        });
-
-        return true;
-    }
-
-    public static boolean generateEnemyMp4(Enemy en, MessageChannel ch, int mode, boolean debug, int limit, int lang) throws Exception {
+    public static boolean generateEnemyAnim(Enemy en, MessageChannel ch, int mode, boolean debug, int limit, int lang, boolean raw) throws Exception {
         if(en.id == null)
             return false;
         else if(!debug) {
@@ -1491,7 +1242,17 @@ public class EntityHandler {
 
         long start = System.currentTimeMillis();
 
-        File img = ImageDrawing.drawEnemyMp4(en, msg, mode, 1.0, debug, limit, lang);
+        en.anim.load();
+
+        EAnimD<?> anim = en.getEAnim(getAnimType(mode, en.anim.anims.length));
+
+        File img;
+
+        if(raw) {
+            img = ImageDrawing.drawAnimMp4(anim, msg, 1.0, debug, limit, lang);
+        } else {
+            img = ImageDrawing.drawAnimGif(anim, msg, 1.0, debug, limit, lang);
+        }
 
         long end = System.currentTimeMillis();
 
@@ -1583,7 +1344,7 @@ public class EntityHandler {
         return true;
     }
 
-    public static void generateAnimGif(MessageChannel ch, String md5, AnimMixer mixer, int lang, boolean debug) throws Exception {
+    public static void generateAnimGif(MessageChannel ch, String md5, AnimMixer mixer, int lang, boolean debug, int limit) throws Exception {
         if(!debug) {
             String link = StaticStore.imgur.get(md5);
             boolean finalized = StaticStore.imgur.finalized(md5);
@@ -1619,7 +1380,7 @@ public class EntityHandler {
 
         long start = System.currentTimeMillis();
 
-        File img = ImageDrawing.drawAnimGif(anim, msg, 1.0, debug, lang);
+        File img = ImageDrawing.drawAnimGif(anim, msg, 1.0, debug, lang, limit);
 
         long end = System.currentTimeMillis();
 
@@ -1833,6 +1594,4 @@ public class EntityHandler {
                 return AnimU.UType.WALK;
         }
     }
-
-
 }

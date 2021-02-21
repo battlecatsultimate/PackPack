@@ -198,13 +198,7 @@ public class FormAnimHolder {
                     if(StaticStore.canDo.get("gif").canDo) {
                         new Thread(() -> {
                             try {
-                                boolean result;
-
-                                if(raw) {
-                                    result = EntityHandler.generateFormMp4(f, ch, mode, debug, frame, lang);
-                                } else {
-                                    result = EntityHandler.generateFormGif(f, ch, mode, debug, frame, lang);
-                                }
+                                boolean result = EntityHandler.generateFormAnim(f, ch, mode, debug, frame, lang, raw);
 
                                 if(result) {
                                     StaticStore.canDo.put("gif", new TimeBoolean(false));

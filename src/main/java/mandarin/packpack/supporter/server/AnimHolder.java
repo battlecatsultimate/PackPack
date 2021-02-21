@@ -251,7 +251,7 @@ public class AnimHolder {
                     String id = generateMD5ID();
 
                     if(id != null) {
-                        EntityHandler.generateAnimGif(ch, id, mixer, lang, debug);
+                        EntityHandler.generateAnimGif(ch, id, mixer, lang, debug, -1);
                     }
 
                     StaticStore.deleteFile(container, true);
@@ -488,7 +488,7 @@ public class AnimHolder {
                         String id = generateMD5ID();
 
                         if(id != null) {
-                            EntityHandler.generateAnimGif(ch, id, mixer, lang, debug);
+                            EntityHandler.generateAnimGif(ch, id, mixer, lang, debug, -1);
                         }
 
                         StaticStore.deleteFile(container, true);

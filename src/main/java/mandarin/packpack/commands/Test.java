@@ -69,7 +69,7 @@ public class Test extends SingleContraintCommand {
 
                 Form f = forms.get(0);
 
-                boolean result = EntityHandler.generateFormMp4(f, ch, mode, debug, frame, lang);
+                boolean result = EntityHandler.generateFormAnim(f, ch, mode, debug, frame, lang, false);
 
                 if(!result) {
                     disableTimer();

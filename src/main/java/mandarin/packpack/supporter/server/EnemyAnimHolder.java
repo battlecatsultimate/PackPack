@@ -211,13 +211,7 @@ public class EnemyAnimHolder {
                     if(StaticStore.canDo.get("gif").canDo) {
                         new Thread(() -> {
                             try {
-                                boolean result;
-
-                                if(raw) {
-                                    result = EntityHandler.generateEnemyMp4(e, ch, mode, debug, frame, lang);
-                                } else {
-                                    result = EntityHandler.generateEnemyGif(e, ch, mode, debug, frame, lang);
-                                }
+                                boolean result = EntityHandler.generateEnemyAnim(e, ch, mode, debug, frame, lang, raw);
 
                                 if(result) {
                                     StaticStore.canDo.put("gif", new TimeBoolean(false));

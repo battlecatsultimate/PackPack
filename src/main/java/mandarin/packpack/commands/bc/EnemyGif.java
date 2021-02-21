@@ -90,13 +90,10 @@ public class EnemyGif extends SingleContraintCommand {
 
                 Enemy en = enemies.get(0);
 
-                boolean result;
+                boolean result = EntityHandler.generateEnemyAnim(en, ch, mode, debug, frame, lang, raw && isDev.get());
 
                 if(raw && isDev.get()) {
-                    result = EntityHandler.generateEnemyMp4(en, ch, mode, debug, frame, lang);
                     changeTime(TimeUnit.MINUTES.toMillis(1));
-                } else {
-                    result = EntityHandler.generateEnemyGif(en, ch, mode, debug, frame, lang);
                 }
 
                 if(!result) {
