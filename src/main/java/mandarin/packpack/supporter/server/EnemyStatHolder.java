@@ -34,7 +34,7 @@ public class EnemyStatHolder {
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
-    public EnemyStatHolder(ArrayList<Enemy> enemy, Message msg, String channelID, int[] magnification, boolean isFrame, int lang) {
+    public EnemyStatHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, int[] magnification, boolean isFrame, int lang) {
         this.enemy = enemy;
         this.msg = msg;
         this.channelID = channelID;
@@ -56,7 +56,7 @@ public class EnemyStatHolder {
 
                     expired = true;
 
-                    msg.getAuthor().ifPresent(u -> StaticStore.enemyHolder.remove(u.getId().asString()));
+                    author.getAuthor().ifPresent(u -> StaticStore.enemyHolder.remove(u.getId().asString()));
                 }).subscribe();
             }
         }, TimeUnit.MINUTES.toMillis(5));

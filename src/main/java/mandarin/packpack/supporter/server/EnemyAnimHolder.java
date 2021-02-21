@@ -44,7 +44,7 @@ public class EnemyAnimHolder {
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
-    public EnemyAnimHolder(ArrayList<Enemy> enemy, Message msg, String channelID, int mode, int frame, boolean transparent, boolean debug, int lang, boolean isGif, boolean raw) {
+    public EnemyAnimHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, int mode, int frame, boolean transparent, boolean debug, int lang, boolean isGif, boolean raw) {
         this.enemy = enemy;
         this.msg = msg;
         this.channelID = channelID;
@@ -70,7 +70,7 @@ public class EnemyAnimHolder {
 
                     expired = true;
 
-                    msg.getAuthor().ifPresent(u -> StaticStore.formAnimHolder.remove(u.getId().asString()));
+                    author.getAuthor().ifPresent(u -> StaticStore.formAnimHolder.remove(u.getId().asString()));
                 }).subscribe();
             }
         }, TimeUnit.MINUTES.toMillis(5));

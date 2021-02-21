@@ -88,7 +88,7 @@ public class EnemyStat extends ConstraintCommand {
                 boolean isFrame = (checkParameters(getMessage(event)) & PARAM_SECOND) == 0;
 
                 if(res != null) {
-                    event.getMember().ifPresent(member -> StaticStore.enemyHolder.put(member.getId().asString(), new EnemyStatHolder(enemies, res, ch.getId().asString(), magnification, isFrame, lang)));
+                    event.getMember().ifPresent(member -> StaticStore.enemyHolder.put(member.getId().asString(), new EnemyStatHolder(enemies, event.getMessage(), res, ch.getId().asString(), magnification, isFrame, lang)));
                 }
             }
         }

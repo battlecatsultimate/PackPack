@@ -145,7 +145,7 @@ public class FormImage extends TimedConstraintCommand {
                 int frame = getFrame(getMessage(event));
 
                 if(res != null) {
-                    event.getMember().ifPresent(member -> StaticStore.formAnimHolder.put(member.getId().asString(), new FormAnimHolder(forms, res, ch.getId().asString(), mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang, false, false)));
+                    event.getMember().ifPresent(member -> StaticStore.formAnimHolder.put(member.getId().asString(), new FormAnimHolder(forms, event.getMessage(), res, ch.getId().asString(), mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang, false, false)));
                 }
             }
         } else {

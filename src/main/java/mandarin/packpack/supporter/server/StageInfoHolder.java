@@ -36,7 +36,7 @@ public class StageInfoHolder {
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
-    public StageInfoHolder(ArrayList<Stage> stage, Message msg, String channelID, int star, boolean isFrame, int lang) {
+    public StageInfoHolder(ArrayList<Stage> stage, Message author, Message msg, String channelID, int star, boolean isFrame, int lang) {
         this.stage = stage;
         this.msg = msg;
         this.channelID = channelID;
@@ -58,7 +58,7 @@ public class StageInfoHolder {
 
                     expired = true;
 
-                    msg.getAuthor().ifPresent(u -> StaticStore.stageHolder.remove(u.getId().asString()));
+                    author.getAuthor().ifPresent(u -> StaticStore.stageHolder.remove(u.getId().asString()));
                 }).subscribe();
             }
         }, TimeUnit.MINUTES.toMillis(5));

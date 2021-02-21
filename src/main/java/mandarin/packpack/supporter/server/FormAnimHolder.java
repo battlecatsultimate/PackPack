@@ -39,7 +39,7 @@ public class FormAnimHolder {
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
-    public FormAnimHolder(ArrayList<Form> form, Message msg, String channelID, int mode, int frame, boolean transparent, boolean debug, int lang, boolean isGif, boolean raw) {
+    public FormAnimHolder(ArrayList<Form> form, Message author, Message msg, String channelID, int mode, int frame, boolean transparent, boolean debug, int lang, boolean isGif, boolean raw) {
         this.form = form;
         this.msg = msg;
         this.channelID = channelID;
@@ -65,7 +65,7 @@ public class FormAnimHolder {
 
                     expired = true;
 
-                    msg.getAuthor().ifPresent(u -> StaticStore.formAnimHolder.remove(u.getId().asString()));
+                    author.getAuthor().ifPresent(u -> StaticStore.formAnimHolder.remove(u.getId().asString()));
                 }).subscribe();
             }
         }, TimeUnit.MINUTES.toMillis(5));

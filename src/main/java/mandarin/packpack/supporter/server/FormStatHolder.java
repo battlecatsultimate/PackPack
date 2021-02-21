@@ -35,7 +35,7 @@ public class FormStatHolder {
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
-    public FormStatHolder(ArrayList<Form> form, Message msg, String channelID, int param, int[] lv, int lang) {
+    public FormStatHolder(ArrayList<Form> form, Message author, Message msg, String channelID, int param, int[] lv, int lang) {
         this.form = form;
         this.msg = msg;
         this.channelID = channelID;
@@ -58,7 +58,7 @@ public class FormStatHolder {
 
                     expired = true;
 
-                    msg.getAuthor().ifPresent(u -> StaticStore.formHolder.remove(u.getId().asString()));
+                    author.getAuthor().ifPresent(u -> StaticStore.formHolder.remove(u.getId().asString()));
                 }).subscribe();
             }
         }, TimeUnit.MINUTES.toMillis(5));
