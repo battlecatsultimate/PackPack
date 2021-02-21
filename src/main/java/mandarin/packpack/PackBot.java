@@ -292,10 +292,6 @@ public class PackBot {
                                 case "cs":
                                     new Castle(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
                                     break;
-                                case "helpbc":
-                                case "hbc":
-                                    new HelpBC(lang, idh).execute(event);
-                                    break;
                                 case "stageinfo":
                                 case "si":
                                     new StageInfo(ConstraintCommand.ROLE.MEMBER, lang, idh, 5000).execute(event);
