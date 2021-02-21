@@ -34,6 +34,7 @@ public class AnimHolder {
     private final File container;
 
     private final boolean debug;
+    private final boolean raw;
 
     private boolean pngDone = false;
     private boolean cutDone = false;
@@ -52,13 +53,14 @@ public class AnimHolder {
 
     private boolean expired = false;
 
-    public AnimHolder(Message msg, Message target, int lang, String channelID, File container, boolean debug, MessageChannel ch) throws Exception {
+    public AnimHolder(Message msg, Message target, int lang, String channelID, File container, boolean debug, MessageChannel ch, boolean raw) throws Exception {
         this.msg = target;
         this.lang = lang;
         this.channelID = channelID;
         this.container = container;
 
         this.debug = debug;
+        this.raw = raw;
 
         mixer = new AnimMixer();
 
@@ -251,7 +253,7 @@ public class AnimHolder {
                     String id = generateMD5ID();
 
                     if(id != null) {
-                        EntityHandler.generateAnimGif(ch, id, mixer, lang, debug, -1);
+                        EntityHandler.generateAnim(ch, id, mixer, lang, debug, -1, raw);
                     }
 
                     StaticStore.deleteFile(container, true);
@@ -270,8 +272,8 @@ public class AnimHolder {
                     if(expired)
                         return;
 
-                    msg.edit(m -> {
-                        m.setContent(LangID.getStringByID("formst_expire", lang));
+                    target.edit(m -> {
+                        m.setContent(LangID.getStringByID("animanalyze_expire", lang));
 
                         expired = true;
 
@@ -488,7 +490,7 @@ public class AnimHolder {
                         String id = generateMD5ID();
 
                         if(id != null) {
-                            EntityHandler.generateAnimGif(ch, id, mixer, lang, debug, -1);
+                            EntityHandler.generateAnim(ch, id, mixer, lang, debug, -1, raw);
                         }
 
                         StaticStore.deleteFile(container, true);
@@ -499,6 +501,10 @@ public class AnimHolder {
 
                 return RESULT_FINISH;
             }
+        } else if(m.getContent().equals("c")) {
+            msg.edit(e -> e.setContent(LangID.getStringByID("animanalyze_cancel", lang))).subscribe();
+
+            return RESULT_FINISH;
         }
 
         return RESULT_STILL;

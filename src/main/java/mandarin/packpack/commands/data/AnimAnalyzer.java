@@ -34,6 +34,7 @@ public class AnimAnalyzer extends ConstraintCommand {
         int param = checkParam(getMessage(event));
 
         boolean debug = (PARAM_DEBUG & param) > 0;
+        boolean raw = (PARAM_RAW & param) > 0;
 
         File temp = new File("./temp");
 
@@ -57,7 +58,7 @@ public class AnimAnalyzer extends ConstraintCommand {
             }
         }
 
-        new AnimHolder(event.getMessage(), m, lang, ch.getId().asString(), container, debug, ch);
+        new AnimHolder(event.getMessage(), m, lang, ch.getId().asString(), container, debug, ch, raw);
     }
 
     private int checkParam(String message) {

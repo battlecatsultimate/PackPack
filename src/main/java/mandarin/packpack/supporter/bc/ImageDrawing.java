@@ -356,7 +356,7 @@ public class ImageDrawing {
 
         anim.setTime(0);
 
-        int frame = limit;
+        int frame = Math.min(anim.len(), limit);
 
         if(frame <= 0)
             frame = anim.len();
