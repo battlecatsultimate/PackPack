@@ -12,6 +12,8 @@ import common.util.lang.MultiLangCont;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Attachment;
+import discord4j.core.object.entity.Guild;
+import discord4j.core.object.entity.Role;
 import discord4j.rest.util.Color;
 import mandarin.packpack.supporter.server.*;
 
@@ -520,5 +522,20 @@ public class StaticStore {
         File temp = new File(container, att.getFilename()+".tmp");
 
         return new UpdateCheck.Downloader(url, target, temp, "", false);
+    }
+
+    public static String getRoleIDByName(String name, Guild g) {
+        AtomicReference<String> id = new AtomicReference<>(null);
+
+        g.getRoles().collectList().subscribe(l -> {
+            for(Role r : l) {
+                if(r.getName().equals(name)) {
+                    id.set(r.getId().asString());
+                    return;
+                }
+            }
+        });
+
+        return id.get();
     }
 }

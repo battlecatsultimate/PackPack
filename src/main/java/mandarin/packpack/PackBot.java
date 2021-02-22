@@ -1,13 +1,15 @@
 package mandarin.packpack;
 
 import common.CommonStatic;
-import discord4j.common.util.Snowflake;
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
+import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.role.RoleDeleteEvent;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.Role;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.presence.Activity;
 import discord4j.core.object.presence.Presence;
@@ -59,7 +61,13 @@ public class PackBot {
                     if (id == null) {
                         final IDHolder idh = new IDHolder();
 
-                        guild.createRole(r -> r.setName("PackPackMod")).subscribe(r -> idh.MOD = r.getId().asString());
+                        String modID = StaticStore.getRoleIDByName("PackPackMod", guild);
+
+                        if(modID == null) {
+                            guild.createRole(r -> r.setName("PackPackMod")).subscribe(r -> idh.MOD = r.getId().asString());
+                        } else {
+                            idh.MOD = modID;
+                        }
 
                         StaticStore.holder.put(guild.getId().asString(), idh);
                     } else {
@@ -67,11 +75,27 @@ public class PackBot {
                         String mod = id.MOD;
 
                         if(mod == null) {
-                            guild.createRole(r -> r.setName("PackPackMod")).subscribe(r -> id.MOD = r.getId().asString());
-                        } else {
-                            guild.getRoleById(Snowflake.of(mod)).subscribe(null, e -> {
-                                e.printStackTrace();
+                            String modID = StaticStore.getRoleIDByName("PackPackMod", guild);
+
+                            if(modID == null) {
                                 guild.createRole(r -> r.setName("PackPackMod")).subscribe(r -> id.MOD = r.getId().asString());
+                            } else {
+                                id.MOD = modID;
+                            }
+                        } else {
+                            guild.getRoles().collectList().subscribe(ro -> {
+                                for(Role r : ro) {
+                                    if(r.getId().asString().equals(mod))
+                                        return;
+                                }
+
+                                String modID = StaticStore.getRoleIDByName("PackPackMod", guild);
+
+                                if(modID == null) {
+                                    guild.createRole(r -> r.setName("PackPackMod")).subscribe(r -> id.MOD = r.getId().asString());
+                                } else {
+                                    id.MOD = modID;
+                                }
                             });
                         }
                     }
@@ -79,6 +103,103 @@ public class PackBot {
             }
 
             StaticStore.saveServerInfo();
+        });
+
+        gate.on(RoleDeleteEvent.class).subscribe(e -> {
+            Guild guild = e.getGuild().block();
+
+            if(guild == null)
+                return;
+
+            IDHolder holder = StaticStore.holder.get(guild.getId().asString());
+
+            if(holder != null) {
+                String mod = holder.MOD;
+
+                if(mod == null) {
+                    String modID = StaticStore.getRoleIDByName("PackPackMod", guild);
+
+                    if(modID == null) {
+                        guild.createRole(r -> r.setName("PackPackMod")).subscribe(r -> holder.MOD = r.getId().asString());
+                    } else {
+                        holder.MOD = modID;
+                    }
+                } else {
+                    e.getRole().ifPresent(r -> {
+                        if(r.getId().asString().equals(mod)) {
+                            String modID = StaticStore.getRoleIDByName("PackPackMod", guild);
+
+                            if(modID == null) {
+                                guild.createRole(ro -> ro.setName("PackPackMod")).subscribe(ro -> holder.MOD = r.getId().asString());
+                            } else {
+                                holder.MOD = modID;
+                            }
+                        }
+                    });
+                }
+            } else {
+                final IDHolder idh = new IDHolder();
+
+                String modID = StaticStore.getRoleIDByName("PackPackMod", guild);
+
+                if(modID == null) {
+                    guild.createRole(r -> r.setName("PackPackMod")).subscribe(r -> idh.MOD = r.getId().asString());
+                } else {
+                    idh.MOD = modID;
+                }
+
+                StaticStore.holder.put(guild.getId().asString(), idh);
+            }
+
+            StaticStore.saveServerInfo();
+        });
+
+        gate.on(GuildCreateEvent.class).subscribe(e -> {
+            Guild guild = e.getGuild();
+
+            IDHolder id = StaticStore.holder.get(guild.getId().asString());
+
+            if (id == null) {
+                final IDHolder idh = new IDHolder();
+
+                String modID = StaticStore.getRoleIDByName("PackPackMod", guild);
+
+                if(modID == null) {
+                    guild.createRole(r -> r.setName("PackPackMod")).subscribe(r -> idh.MOD = r.getId().asString());
+                } else {
+                    idh.MOD = modID;
+                }
+
+                StaticStore.holder.put(guild.getId().asString(), idh);
+            } else {
+                //Validate Role
+                String mod = id.MOD;
+
+                if(mod == null) {
+                    String modID = StaticStore.getRoleIDByName("PackPackMod", guild);
+
+                    if(modID == null) {
+                        guild.createRole(r -> r.setName("PackPackMod")).subscribe(r -> id.MOD = r.getId().asString());
+                    } else {
+                        id.MOD = modID;
+                    }
+                } else {
+                    guild.getRoles().collectList().subscribe(ro -> {
+                        for(Role r : ro) {
+                            if(r.getId().asString().equals(mod))
+                                return;
+                        }
+
+                        String modID = StaticStore.getRoleIDByName("PackPackMod", guild);
+
+                        if(modID == null) {
+                            guild.createRole(r -> r.setName("PackPackMod")).subscribe(r -> id.MOD = r.getId().asString());
+                        } else {
+                            id.MOD = modID;
+                        }
+                    });
+                }
+            }
         });
 
         gate.on(MessageCreateEvent.class)
@@ -380,7 +501,7 @@ public class PackBot {
                     "490935132564357131",
                     "632835571655507968", "490940081738350592",
                     "490940151501946880", "787391428916543488",
-                    "632836623931015185", "632836623931015185"
+                    "632836623931015185", "563745009912774687"
             ));
 
             StaticStore.holder.put("679858366389944409", new IDHolder(
