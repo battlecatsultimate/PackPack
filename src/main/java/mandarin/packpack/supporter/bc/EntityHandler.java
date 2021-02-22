@@ -184,12 +184,12 @@ public class EntityHandler {
 
                 spec.addField(LangID.getStringByID("data_ability", lang), res, false);
 
-                String explanation = DataToString.getDescription(f);
+                String explanation = DataToString.getDescription(f, lang);
 
                 if(explanation != null)
                     spec.addField(LangID.getStringByID("data_udesc", lang), explanation, false);
 
-                String catfruit = DataToString.getCatruitEvolve(f);
+                String catfruit = DataToString.getCatruitEvolve(f, lang);
 
                 if(catfruit != null)
                     spec.addField(LangID.getStringByID("data_evolve", lang), catfruit, false);
@@ -335,7 +335,7 @@ public class EntityHandler {
 
                 spec.addField(LangID.getStringByID("data_ability", lang), res, false);
 
-                String explanation = DataToString.getDescription(e);
+                String explanation = DataToString.getDescription(e, lang);
 
                 if(explanation != null) {
                     spec.addField(LangID.getStringByID("data_edesc", lang), explanation, false);
@@ -1449,7 +1449,7 @@ public class EntityHandler {
             ch.createMessage(
                     m -> {
                         m.setContent(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)));
-                        m.addFile("result.gif", fis);
+                        m.addFile(raw ? "result.mp4" : "result.gif", fis);
                     }
             ).subscribe(m -> {if(!debug) cacheImage(md5, m);}, null, () -> {
                 try {

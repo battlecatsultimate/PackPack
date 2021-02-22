@@ -230,7 +230,7 @@
   "help_stagemapimage_argu" : "`-jp` : Generate image with BCJP fonts\n`-r` : Generate image with BC image format",
   "help_stagemapimage_exam" : "`p!stmimg -jp The Battle Cats Japanese Font`\n`p!stmimg -r With Battle Cat's File Format`\n`p!stmimg -r -jp Now with both arguments`",
   "help_locale_use" : "`_locale [Locale]`",
-  "help_locale_desc" : "Set bot's language only for you. EN for 1, ZH (Chinese) for 2, KR for 3, JP for 4 (ZH, JP isn't ready)",
+  "help_locale_desc" : "Set bot's language only for you. EN for 1, ZH (Chinese) for 2, KR for 3, JP for 4 (ZH, JP isn't ready). `loc` is also valid command",
   "help_formstat_use" : "`_formstat [Name]`",
   "help_formstat_desc" : "Try to search unit with specified name, and display info of it. `fs` is also valid command",
   "help_formstat_argu" : "`-s` : Display info with second unit\n`-t` : Display info with talents applied if this form has\n`-lv` : Customize this form's level and talent levels. With order of `level, talent 1 level, talent 2 level, ..., talent 5 level`",

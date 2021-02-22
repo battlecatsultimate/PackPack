@@ -1105,11 +1105,16 @@ public class DataToString {
         return code;
     }
 
-    public static String getDescription(Form f) {
+    public static String getDescription(Form f, int lang) {
         if(f.unit == null)
             return null;
 
+        int oldConfig = CommonStatic.getConfig().lang;
+        CommonStatic.getConfig().lang = lang;
+
         String[] desc = MultiLangCont.getStatic().FEXP.getCont(f);
+
+        CommonStatic.getConfig().lang = oldConfig;
 
         if(desc == null)
             return null;
@@ -1139,8 +1144,13 @@ public class DataToString {
         }
     }
 
-    public static String getDescription(Enemy e) {
+    public static String getDescription(Enemy e, int lang) {
+        int oldConfig = CommonStatic.getConfig().lang;
+        CommonStatic.getConfig().lang = lang;
+
         String[] desc = MultiLangCont.getStatic().EEXP.getCont(e);
+
+        CommonStatic.getConfig().lang = oldConfig;
 
         if(desc == null)
             return null;
@@ -1170,11 +1180,16 @@ public class DataToString {
         }
     }
 
-    public static String getCatruitEvolve(Form f) {
+    public static String getCatruitEvolve(Form f, int lang) {
         if(f.unit == null)
             return null;
 
+        int oldConfig = CommonStatic.getConfig().lang;
+        CommonStatic.getConfig().lang = lang;
+
         String[] cf = MultiLangCont.getStatic().CFEXP.getCont(f.unit.info);
+
+        CommonStatic.getConfig().lang = oldConfig;
 
         if(cf == null)
             return null;

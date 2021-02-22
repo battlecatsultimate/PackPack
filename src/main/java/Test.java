@@ -5,11 +5,9 @@ import java.io.File;
 
 public class Test {
     public static void main(String[] args) throws Exception {
-        File file = new File("Test.imgcut");
-
-        AnimMixer mixer = new AnimMixer();
-
-        System.out.println(mixer.validImgCut(file));
+        for(int i = 0; i < 8; i++) {
+            System.out.println(((125 >> i) & 1) > 0);
+        }
     }
 
     private static String quad(int n) {

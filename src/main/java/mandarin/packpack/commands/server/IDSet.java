@@ -34,7 +34,20 @@ public class IDSet extends ConstraintCommand {
         String[] msg = getMessage(event).split(" ");
 
         if(msg.length == 1) {
-            ch.createMessage(LangID.getStringByID("idset_argu", lang));
+            Guild g = event.getGuild().block();
+
+            if(g == null)
+                return;
+
+            String result = "Moderator : " + getRoleIDWithName(holder.MOD, event) + "\n" +
+                    "Member : " + (holder.MEMBER == null ? "None" : getRoleIDWithName(holder.MEMBER, event)) + "\n" +
+                    "Pre-Member : " + (holder.PRE_MEMBER == null ? "None" : getRoleIDWithName(holder.PRE_MEMBER, event)) + "\n" +
+                    "Muted : " + (holder.MUTED == null ? "None" : getRoleIDWithName(holder.MUTED, event)) + "\n" +
+                    "BCU-PC User : " + (holder.BCU_PC_USER == null ? "None" : getRoleIDWithName(holder.BCU_PC_USER, event)) + "\n" +
+                    "BCU-Android User : " + (holder.BCU_ANDROID == null ? "None" : getRoleIDWithName(holder.BCU_ANDROID, event)) + "\n" +
+                    "Get-Access : " + (holder.GET_ACCESS == null ? "None" : getChannelIDWithName(holder.GET_ACCESS, g));
+
+            ch.createMessage(result).subscribe();
         } else {
             StringBuilder result = new StringBuilder(LangID.getStringByID("idset_result", lang));
 
@@ -63,13 +76,6 @@ public class IDSet extends ConstraintCommand {
 
                                     result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
                                     result.append(LangID.getStringByID("idset_idchange", lang).replace("_", "Moderator").replace("=", getRoleIDWithName(id, event))).append("\n");
-
-                                    mod = true;
-                                } else if(id.toLowerCase(Locale.ENGLISH).equals("none")) {
-                                    holder.MOD = null;
-
-                                    result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                    result.append(LangID.getStringByID("idset_idchange", lang).replace("_", "Moderator").replace("=", LangID.getStringByID("idset_none", lang))).append("\n");
 
                                     mod = true;
                                 } else if(StaticStore.isNumeric(id)) {
@@ -330,6 +336,6 @@ public class IDSet extends ConstraintCommand {
             return id;
         }
 
-        return "`"+id+"`" + "[**"+gc.getName()+"**]";
+        return "`"+id+"`" + "[**<#"+id+">**]";
     }
 }

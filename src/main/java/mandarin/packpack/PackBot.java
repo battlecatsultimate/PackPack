@@ -1,6 +1,7 @@
 package mandarin.packpack;
 
 import common.CommonStatic;
+import discord4j.common.util.Snowflake;
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
@@ -61,6 +62,18 @@ public class PackBot {
                         guild.createRole(r -> r.setName("PackPackMod")).subscribe(r -> idh.MOD = r.getId().asString());
 
                         StaticStore.holder.put(guild.getId().asString(), idh);
+                    } else {
+                        //Validate Role
+                        String mod = id.MOD;
+
+                        if(mod == null) {
+                            guild.createRole(r -> r.setName("PackPackMod")).subscribe(r -> id.MOD = r.getId().asString());
+                        } else {
+                            guild.getRoleById(Snowflake.of(mod)).subscribe(null, e -> {
+                                e.printStackTrace();
+                                guild.createRole(r -> r.setName("PackPackMod")).subscribe(r -> id.MOD = r.getId().asString());
+                            });
+                        }
                     }
                 }
             }
@@ -132,7 +145,7 @@ public class PackBot {
                                 holder.clean();
                                 StaticStore.formHolder.remove(m.getId().asString());
                             } else if(result == FormStatHolder.RESULT_FAIL) {
-                                System.out.println("ERROR : Expired process tried to be handled : "+m.getId().asString());
+                                System.out.println("ERROR : Expired process FormHolder tried to be handled : "+m.getId().asString());
                                 StaticStore.formHolder.remove(m.getId().asString());
                             }
                         }
@@ -144,9 +157,9 @@ public class PackBot {
 
                             if(result == EnemyStatHolder.RESULT_FINISH) {
                                 holder.clean();
-                                StaticStore.formHolder.remove(m.getId().asString());
+                                StaticStore.enemyHolder.remove(m.getId().asString());
                             } else if(result == EnemyStatHolder.RESULT_FAIL) {
-                                System.out.println("ERROR : Expired process tried to be handled : "+m.getId().asString()+"|"+m.getNickname().orElse(m.getUsername()));
+                                System.out.println("ERROR : Expired process EnemyHolder tried to be handled : "+m.getId().asString()+"|"+m.getNickname().orElse(m.getUsername()));
                                 StaticStore.enemyHolder.remove(m.getId().asString());
                             }
                         }
@@ -160,7 +173,7 @@ public class PackBot {
                                 holder.clean();
                                 StaticStore.stageHolder.remove(m.getId().asString());
                             } else if(result == StageInfoHolder.RESULT_FAIL) {
-                                System.out.println("ERROR : Expired process tried to be handled : "+m.getId().asString()+"|"+m.getNickname().orElse(m.getUsername()));
+                                System.out.println("ERROR : Expired process StageHolder tried to be handled : "+m.getId().asString()+"|"+m.getNickname().orElse(m.getUsername()));
                                 StaticStore.stageHolder.remove(m.getId().asString());
                             }
                         }
@@ -174,7 +187,7 @@ public class PackBot {
                                 holder.clean();
                                 StaticStore.formAnimHolder.remove(m.getId().asString());
                             } else if(result == FormAnimHolder.RESULT_FAIL) {
-                                System.out.println("ERROR : Expired process tried to be handled : "+m.getId().asString()+"|"+m.getNickname().orElse(m.getUsername()));
+                                System.out.println("ERROR : Expired process FormAnimHolder tried to be handled : "+m.getId().asString()+"|"+m.getNickname().orElse(m.getUsername()));
                                 StaticStore.formAnimHolder.remove(m.getId().asString());
                             }
                         }
@@ -188,7 +201,7 @@ public class PackBot {
                                 holder.clean();
                                 StaticStore.enemyAnimHolder.remove(m.getId().asString());
                             } else if(result == EnemyAnimHolder.RESULT_FAIL) {
-                                System.out.println("ERROR : Expired process tried to be handled : "+m.getId().asString()+"|"+m.getNickname().orElse(m.getUsername()));
+                                System.out.println("ERROR : Expired process EnemyAnimHolder tried to be handled : "+m.getId().asString()+"|"+m.getNickname().orElse(m.getUsername()));
                                 StaticStore.enemyAnimHolder.remove(m.getId().asString());
                             }
                         }
@@ -202,7 +215,7 @@ public class PackBot {
                                 if(result == EnemyAnimHolder.RESULT_FINISH) {
                                     StaticStore.animHolder.remove(m.getId().asString());
                                 }else if(result == AnimHolder.RESULT_FAIL) {
-                                    System.out.println("ERROR : Expired process tried to be handled : "+m.getId().asString()+"|"+m.getNickname().orElse(m.getUsername()));
+                                    System.out.println("ERROR : Expired process AnimHolder tried to be handled : "+m.getId().asString()+"|"+m.getNickname().orElse(m.getUsername()));
                                     StaticStore.animHolder.remove(m.getId().asString());
                                 }
                             } catch (Exception e) {
@@ -278,6 +291,7 @@ public class PackBot {
                                     new FormStat(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
                                     break;
                                 case "locale":
+                                case "loc":
                                     new Locale(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
                                     break;
                                 case "music":

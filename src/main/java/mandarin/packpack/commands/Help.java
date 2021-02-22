@@ -78,6 +78,7 @@ public class Help implements Command {
                 ch.createEmbed(e -> addFields(e, "formstat", true, true, false)).subscribe();
                 break;
             case "locale":
+            case "loc":
                 ch.createEmbed(e -> addFields(e, "locale", false, false, false)).subscribe();
                 break;
             case "music":

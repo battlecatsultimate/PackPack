@@ -52,6 +52,7 @@ public abstract class ConstraintCommand implements Command {
             return;
 
         AtomicReference<Boolean> hasRole = new AtomicReference<>(false);
+        AtomicReference<Boolean> isMod = new AtomicReference<>(false);
 
         msg.getAuthorAsMember().subscribe(m -> {
             String role = StaticStore.rolesToString(m.getRoleIds());
@@ -64,11 +65,15 @@ public abstract class ConstraintCommand implements Command {
                 hasRole.set(role.contains(constRole) || m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
             }
 
+            if(!hasRole.get()) {
+                isMod.set(holder.MOD != null && role.contains(holder.MOD));
+            }
+
         }, e -> onFail(event, DEFAULT_ERROR), pause::resume);
 
         pause.pause(() -> onFail(event, DEFAULT_ERROR));
 
-        if(!hasRole.get()) {
+        if(!hasRole.get() && !isMod.get()) {
             if(constRole.equals("MANDARIN")) {
                 ch.createMessage(LangID.getStringByID("const_man", lang)).subscribe();
             } else {

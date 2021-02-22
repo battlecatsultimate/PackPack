@@ -22,6 +22,8 @@ public abstract class SingleContraintCommand implements Command {
     protected final ArrayList<String> aborts = new ArrayList<>();
     long time;
 
+    protected final IDHolder holder;
+
     private boolean timerStart = true;
 
     public SingleContraintCommand(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID, long millis) {
@@ -45,6 +47,7 @@ public abstract class SingleContraintCommand implements Command {
         this.lang = lang;
         this.mainID = mainID;
         this.time = millis;
+        this.holder = id;
 
         aborts.add(ABORT);
     }
@@ -61,6 +64,7 @@ public abstract class SingleContraintCommand implements Command {
 
         AtomicReference<Boolean> hasRole = new AtomicReference<>(false);
         AtomicReference<Boolean> isMandarin = new AtomicReference<>(false);
+        AtomicReference<Boolean> isMod = new AtomicReference<>(false);
 
         msg.getAuthorAsMember().subscribe(m -> {
             String role = StaticStore.rolesToString(m.getRoleIds());
@@ -73,12 +77,16 @@ public abstract class SingleContraintCommand implements Command {
                 hasRole.set(role.contains(constRole) || m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
             }
 
+            if(!hasRole.get()) {
+                isMod.set(holder.MOD != null && role.contains(holder.MOD));
+            }
+
             isMandarin.set(m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
         }, e -> onFail(event, DEFAULT_ERROR), pause::resume);
 
         pause.pause(() -> onFail(event, DEFAULT_ERROR));
 
-        if(!hasRole.get()) {
+        if(!hasRole.get() && !isMod.get()) {
             if(constRole.equals("MANDARIN")) {
                 ch.createMessage(LangID.getStringByID("const_man", lang)).subscribe();
             } else {

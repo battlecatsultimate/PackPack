@@ -277,7 +277,7 @@ public class AnimHolder {
 
                         expired = true;
 
-                        msg.getAuthor().ifPresent(u -> StaticStore.animHolder.remove(u.getId().asString()));
+                        target.getAuthor().ifPresent(u -> StaticStore.animHolder.remove(u.getId().asString()));
                     }).subscribe();
                 }
             }, TimeUnit.MINUTES.toMillis(5));
