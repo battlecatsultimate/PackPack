@@ -86,6 +86,8 @@ public abstract class SingleContraintCommand implements Command {
 
         pause.pause(() -> onFail(event, DEFAULT_ERROR));
 
+        System.out.println(hasRole.get()+" | "+isMod.get()+" | "+constRole);
+
         if(!hasRole.get() && !isMod.get()) {
             if(constRole.equals("MANDARIN")) {
                 ch.createMessage(LangID.getStringByID("const_man", lang)).subscribe();
