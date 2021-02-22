@@ -87,7 +87,7 @@ public class IDSet extends ConstraintCommand {
                                 }
 
                                 i++;
-                            } else {
+                            } else if(i <msg.length - 1) {
                                 result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
                                 result.append(LangID.getStringByID("idset_ignore", lang).replace("_", "Moderator")).append("\n");
                             }
@@ -120,7 +120,7 @@ public class IDSet extends ConstraintCommand {
                                 }
 
                                 i++;
-                            } else {
+                            } else if(i <msg.length - 1) {
                                 result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
                                 result.append(LangID.getStringByID("idset_ignore", lang).replace("_", "Member")).append("\n");
                             }
@@ -153,7 +153,7 @@ public class IDSet extends ConstraintCommand {
                                 }
 
                                 i++;
-                            } else {
+                            } else if(i <msg.length - 1) {
                                 result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
                                 result.append(LangID.getStringByID("idset_ignore", lang).replace("_", "Pre-Member")).append("\n");
                             }
@@ -186,7 +186,7 @@ public class IDSet extends ConstraintCommand {
                                 }
 
                                 i++;
-                            } else {
+                            } else if(i <msg.length - 1) {
                                 result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
                                 result.append(LangID.getStringByID("idset_ignore", lang).replace("_", "Muted")).append("\n");
                             }
@@ -219,7 +219,7 @@ public class IDSet extends ConstraintCommand {
                                 }
 
                                 i++;
-                            } else {
+                            } else if(i <msg.length - 1) {
                                 result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
                                 result.append(LangID.getStringByID("idset_ignore", lang).replace("_", "BCU-PC User")).append("\n");
                             }
@@ -252,7 +252,7 @@ public class IDSet extends ConstraintCommand {
                                 }
 
                                 i++;
-                            } else {
+                            } else if(i <msg.length - 1) {
                                 result.append(LangID.getStringByID("idset_ignore", lang).replace("_", "BCU-Android User")).append("\n");
                             }
                             break;
@@ -284,7 +284,7 @@ public class IDSet extends ConstraintCommand {
                                 }
 
                                 i++;
-                            } else {
+                            } else if(i <msg.length - 1) {
                                 result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
                                 result.append(LangID.getStringByID("idset_chanignore", lang)).append("\n");
                             }
