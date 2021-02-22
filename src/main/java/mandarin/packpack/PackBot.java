@@ -330,7 +330,7 @@ public class PackBot {
                                     new EnemyGif(ConstraintCommand.ROLE.MEMBER, lang, idh, "gif").execute(event);
                                     break;
                                 case "idset":
-                                    new IDSet(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+                                    new IDSet(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
                                     break;
                                 case "clearcache":
                                     new ClearCache(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
