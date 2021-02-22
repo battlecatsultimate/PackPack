@@ -1,7 +1,6 @@
 package mandarin.packpack.commands;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
@@ -9,7 +8,9 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.IDHolder;
 import mandarin.packpack.supporter.server.TimeBoolean;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class SingleContraintCommand implements Command {
@@ -56,7 +57,6 @@ public abstract class SingleContraintCommand implements Command {
     public void execute(MessageCreateEvent event) {
         prepareAborts();
 
-        Message msg = event.getMessage();
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
@@ -66,7 +66,9 @@ public abstract class SingleContraintCommand implements Command {
         AtomicReference<Boolean> isMandarin = new AtomicReference<>(false);
         AtomicReference<Boolean> isMod = new AtomicReference<>(false);
 
-        msg.getAuthorAsMember().subscribe(m -> {
+        AtomicReference<Boolean> canGo = new AtomicReference<>(true);
+
+        event.getMember().ifPresentOrElse(m -> {
             String role = StaticStore.rolesToString(m.getRoleIds());
 
             if(constRole == null) {
@@ -85,9 +87,10 @@ public abstract class SingleContraintCommand implements Command {
             }
 
             isMandarin.set(m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
-        }, e -> onFail(event, DEFAULT_ERROR), pause::resume);
+        }, () -> canGo.set(false));
 
-        pause.pause(() -> onFail(event, DEFAULT_ERROR));
+        if(!canGo.get())
+            return;
 
         System.out.println(hasRole.get()+" | "+isMod.get()+" | "+constRole);
 
