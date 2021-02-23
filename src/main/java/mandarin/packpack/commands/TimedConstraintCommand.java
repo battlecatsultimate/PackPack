@@ -40,7 +40,6 @@ public abstract class TimedConstraintCommand implements Command {
 
     @Override
     public void execute(MessageCreateEvent event) {
-        Message msg = event.getMessage();
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
@@ -75,7 +74,7 @@ public abstract class TimedConstraintCommand implements Command {
 
         AtomicReference<Boolean> hasRole = new AtomicReference<>(false);
 
-        msg.getAuthorAsMember().subscribe(m -> {
+        event.getMember().ifPresentOrElse(m -> {
             String role = StaticStore.rolesToString(m.getRoleIds());
 
             if(constRole == null) {
@@ -85,10 +84,10 @@ public abstract class TimedConstraintCommand implements Command {
             } else {
                 hasRole.set(role.contains(constRole) || m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
             }
+        }, () -> canGo.set(false));
 
-        }, e -> onFail(event, DEFAULT_ERROR), pause::resume);
-
-        pause.pause(() -> onFail(event, DEFAULT_ERROR));
+        if(!canGo.get())
+            return;
 
         if(!hasRole.get()) {
             if(constRole.equals("MANDARIN")) {
