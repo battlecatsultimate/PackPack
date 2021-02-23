@@ -1085,8 +1085,13 @@ public class EntityHandler {
 
         f.anim.load();
 
+        if(mode >= f.anim.anims.length)
+            mode = 0;
+
         if(limit > 0)  {
             ch.createMessage(LangID.getStringByID("gif_lengthlim", lang).replace("_", f.anim.len(getAnimType(mode, f.anim.anims.length))+"").replace("-", limit+"")).subscribe();
+        } else if(!raw && f.anim.len(getAnimType(mode, f.anim.anims.length)) >= 300) {
+            ch.createMessage(LangID.getStringByID("gif_lengthlim", lang).replace("_", f.anim.len(getAnimType(mode, f.anim.anims.length))+"").replace("-", 300+"")).subscribe();
         } else {
             ch.createMessage(LangID.getStringByID("gif_length", lang).replace("_", f.anim.len(getAnimType(mode, f.anim.anims.length))+"")).subscribe();
         }
@@ -1224,10 +1229,17 @@ public class EntityHandler {
 
         en.anim.load();
 
+        if(mode >= en.anim.anims.length)
+            mode = 0;
+
+        EAnimD<?> anim = en.getEAnim(getAnimType(mode, en.anim.anims.length));
+
         if(limit > 0)  {
-            ch.createMessage(LangID.getStringByID("gif_lengthlim", lang).replace("_", en.anim.len(getAnimType(mode, en.anim.anims.length))+"").replace("-", limit+"")).subscribe();
+            ch.createMessage(LangID.getStringByID("gif_lengthlim", lang).replace("_", anim.len()+"").replace("-", limit+"")).subscribe();
+        } else if(!raw && anim.len() >= 300) {
+            ch.createMessage(LangID.getStringByID("gif_lengthlim", lang).replace("_", anim.len()+"").replace("-", 300+"")).subscribe();
         } else {
-            ch.createMessage(LangID.getStringByID("gif_length", lang).replace("_", en.anim.len(getAnimType(mode, en.anim.anims.length))+"")).subscribe();
+            ch.createMessage(LangID.getStringByID("gif_length", lang).replace("_", anim.len()+"")).subscribe();
         }
 
         CommonStatic.getConfig().ref = false;
@@ -1241,10 +1253,6 @@ public class EntityHandler {
             return false;
 
         long start = System.currentTimeMillis();
-
-        en.anim.load();
-
-        EAnimD<?> anim = en.getEAnim(getAnimType(mode, en.anim.anims.length));
 
         File img;
 
