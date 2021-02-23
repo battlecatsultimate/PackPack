@@ -72,13 +72,10 @@ public abstract class SingleContraintCommand implements Command {
             String role = StaticStore.rolesToString(m.getRoleIds());
 
             if(constRole == null) {
-                System.out.println("Set to null");
                 hasRole.set(true);
             } else if(constRole.equals("MANDARIN")) {
-                System.out.println("Is Mandarin");
                 hasRole.set(m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
             } else {
-                System.out.println("Normal");
                 hasRole.set(role.contains(constRole) || m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
             }
 
@@ -91,8 +88,6 @@ public abstract class SingleContraintCommand implements Command {
 
         if(!canGo.get())
             return;
-
-        System.out.println(hasRole.get()+" | "+isMod.get()+" | "+constRole);
 
         if(!hasRole.get() && !isMod.get()) {
             if(constRole.equals("MANDARIN")) {
