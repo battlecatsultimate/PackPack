@@ -393,7 +393,7 @@ public class PackBot {
                                     new ServerPrefix(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
                                     break;
                                 case "save":
-                                    new Save(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+                                    new Save(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
                                     break;
                                 case "stimg":
                                 case "stimage":
