@@ -59,7 +59,7 @@ public class ImgurDataHolder {
                 JsonObject obj = new JsonObject();
 
                 obj.addProperty("url" , url);
-                obj.addProperty("final", false);
+                obj.addProperty("final", finalize);
 
                 data.add(md5, obj);
             }
