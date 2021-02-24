@@ -118,7 +118,10 @@ public class ImageDrawing {
 
         Rectangle rect = new Rectangle();
 
-        for(int i = 0; i < anim.getOrder().length; i++) {
+        ArrayList<int[][]> rects = new ArrayList<>();
+        ArrayList<P> centers = new ArrayList<>();
+
+        for(int i = 1; i < anim.getOrder().length; i++) {
             FakeImage fi = f.anim.parts[anim.getOrder()[i].getVal(2)];
 
             if(fi.getHeight() == 1 && fi.getWidth() == 1)
@@ -132,6 +135,9 @@ public class ImageDrawing {
 
             if(Math.abs(result[1][0]-result[0][0]) >= 1000 || Math.abs(result[1][1] - result[2][1]) >= 1000)
                 continue;
+
+            rects.add(result);
+            centers.add(getter.center);
 
             int oldX = rect.x;
             int oldY = rect.y;
@@ -167,17 +173,8 @@ public class ImageDrawing {
         rg.setStroke(1.5f);
 
         if(debug) {
-            for(int i = 0; i < anim.getOrder().length; i++) {
-                FakeImage fi = f.anim.parts[anim.getOrder()[i].getVal(2)];
-
-                if(fi.getHeight() == 1 && fi.getWidth() == 1)
-                    continue;
-
-                RawPointGetter getter = new RawPointGetter(fi.getWidth(), fi.getHeight());
-
-                getter.apply(anim.getOrder()[i], siz, false);
-
-                int[][] res = getter.getRect();
+            for(int i = 0; i < rects.size(); i++) {
+                int[][] res = rects.get(i);
 
                 rg.setColor(FakeGraphics.RED);
 
@@ -188,7 +185,7 @@ public class ImageDrawing {
 
                 rg.setColor(0, 255, 0, 255);
 
-                rg.fillRect(-rect.x + (int) getter.center.x - 2, -rect.y + (int)getter.center.y -2, 4, 4);
+                rg.fillRect(-rect.x + (int) centers.get(i).x - 2, -rect.y + (int) centers.get(i).y -2, 4, 4);
             }
         }
 
@@ -228,7 +225,7 @@ public class ImageDrawing {
         ArrayList<int[][]> rects = new ArrayList<>();
         ArrayList<P> centers = new ArrayList<>();
 
-        for(int i = 0; i < anim.getOrder().length; i++) {
+        for(int i = 1; i < anim.getOrder().length; i++) {
             FakeImage fi = e.anim.parts[anim.getOrder()[i].getVal(2)];
 
             if(fi.getHeight() == 1 && fi.getWidth() == 1)
