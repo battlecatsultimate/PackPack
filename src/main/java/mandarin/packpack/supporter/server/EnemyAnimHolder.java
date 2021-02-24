@@ -208,13 +208,17 @@ public class EnemyAnimHolder {
                 Enemy e = enemy.get(id);
 
                 if(gif) {
-                    if(StaticStore.canDo.get("gif").canDo) {
+                    TimeBoolean timeBoolean = StaticStore.canDo.get("gif");
+
+                    if(timeBoolean == null || timeBoolean.canDo) {
                         new Thread(() -> {
                             try {
                                 boolean result = EntityHandler.generateEnemyAnim(e, ch, mode, debug, frame, lang, raw);
 
                                 if(result) {
-                                    StaticStore.canDo.put("gif", new TimeBoolean(false));
+                                    long time = raw ? TimeUnit.MINUTES.toMillis(1) : TimeUnit.SECONDS.toMillis(30);
+
+                                    StaticStore.canDo.put("gif", new TimeBoolean(false, time));
 
                                     Timer timer = new Timer();
 
@@ -224,14 +228,14 @@ public class EnemyAnimHolder {
                                             System.out.println("Remove Process : gif");
                                             StaticStore.canDo.put("gif", new TimeBoolean(true));
                                         }
-                                    }, raw ? TimeUnit.MINUTES.toMillis(1) : TimeUnit.SECONDS.toMillis(30));
+                                    }, time);
                                 }
                             } catch (Exception exception) {
                                 exception.printStackTrace();
                             }
                         }).start();
                     } else {
-                        ch.createMessage(LangID.getStringByID("single_wait", lang).replace("_", DataToString.df.format((30000 - (System.currentTimeMillis() - StaticStore.canDo.get("gif").time)) / 1000.0))).subscribe();
+                        ch.createMessage(LangID.getStringByID("single_wait", lang).replace("_", DataToString.df.format((timeBoolean.totalTime - (System.currentTimeMillis() - StaticStore.canDo.get("gif").time)) / 1000.0))).subscribe();
                     }
                 } else {
                     File img = ImageDrawing.drawEnemyImage(e , mode, frame, 1.0, transparent, debug);

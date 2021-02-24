@@ -102,9 +102,10 @@ public abstract class SingleContraintCommand implements Command {
             String id = mainID+optionalID;
 
             try {
+                TimeBoolean bool = StaticStore.canDo.get(id);
 
-                if(!isMandarin.get() && StaticStore.canDo.containsKey(id) && !StaticStore.canDo.get(id).canDo && System.currentTimeMillis() - StaticStore.canDo.get(id).time < time) {
-                    ch.createMessage(LangID.getStringByID("single_wait", lang).replace("_", DataToString.df.format((time - (System.currentTimeMillis() - StaticStore.canDo.get(id).time)) / 1000.0))).subscribe();
+                if(!isMandarin.get() && bool != null && !bool.canDo && System.currentTimeMillis() - bool.time < bool.totalTime) {
+                    ch.createMessage(LangID.getStringByID("single_wait", lang).replace("_", DataToString.df.format((bool.totalTime - (System.currentTimeMillis() - StaticStore.canDo.get(id).time)) / 1000.0))).subscribe();
                 } else {
 
                     if(!aborts.contains(optionalID)) {
@@ -112,13 +113,13 @@ public abstract class SingleContraintCommand implements Command {
 
                         System.out.println("Added process : "+id);
 
-                        StaticStore.canDo.put(id, new TimeBoolean(false));
+                        StaticStore.canDo.put(id, new TimeBoolean(false, time));
 
                         new Thread(() -> {
                             try {
                                 doSomething(event);
 
-                                System.out.println(timerStart);
+                                System.out.println(time);
 
                                 if(timerStart) {
                                     Timer timer = new Timer();
@@ -126,7 +127,7 @@ public abstract class SingleContraintCommand implements Command {
                                     timer.schedule(new TimerTask() {
                                         @Override
                                         public void run() {
-                                            System.out.println("Remove Process : "+id);
+                                            System.out.println("Remove Process : "+id+" | "+time);
                                             StaticStore.canDo.put(id, new TimeBoolean(true));
                                         }
                                     }, time);
@@ -170,6 +171,12 @@ public abstract class SingleContraintCommand implements Command {
 
     protected void changeTime(long millis) {
         time = millis;
+
+        TimeBoolean bool = StaticStore.canDo.get(mainID+optionalID);
+
+        if(bool != null) {
+            bool.totalTime = time;
+        }
     }
 
     protected abstract void doThing(MessageCreateEvent event) throws Exception;
