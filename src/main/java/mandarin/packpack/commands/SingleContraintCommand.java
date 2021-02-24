@@ -97,13 +97,14 @@ public abstract class SingleContraintCommand implements Command {
                 ch.createMessage(LangID.getStringByID("const_role", lang).replace("_", role)).subscribe();
             }
         } else {
+            setOptionalID(event);
+
+            String id = mainID+optionalID;
+
             try {
-                setOptionalID(event);
 
-                String id = mainID+optionalID;
-
-                if(!isMandarin.get() && StaticStore.canDo.containsKey(id) && !StaticStore.canDo.get(id).canDo) {
-                    ch.createMessage(LangID.getStringByID("single_wait", lang).replace("_", DataToString.df.format((30000 - (System.currentTimeMillis() - StaticStore.canDo.get(id).time)) / 1000.0))).subscribe();
+                if(!isMandarin.get() && StaticStore.canDo.containsKey(id) && !StaticStore.canDo.get(id).canDo && System.currentTimeMillis() - StaticStore.canDo.get(id).time < time) {
+                    ch.createMessage(LangID.getStringByID("single_wait", lang).replace("_", DataToString.df.format((time - (System.currentTimeMillis() - StaticStore.canDo.get(id).time)) / 1000.0))).subscribe();
                 } else {
 
                     if(!aborts.contains(optionalID)) {
@@ -135,6 +136,7 @@ public abstract class SingleContraintCommand implements Command {
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 onFail(event, DEFAULT_ERROR);
+                                StaticStore.canDo.put(id, new TimeBoolean(true));
                             }
                         }).start();
                     } else {
@@ -143,7 +145,7 @@ public abstract class SingleContraintCommand implements Command {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-
+                StaticStore.canDo.put(id, new TimeBoolean(true));
                 onFail(event, DEFAULT_ERROR);
             }
 
