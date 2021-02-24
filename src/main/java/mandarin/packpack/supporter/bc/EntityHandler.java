@@ -1077,9 +1077,11 @@ public class EntityHandler {
             String link = StaticStore.imgur.get(id);
             boolean finalized = StaticStore.imgur.finalized(id);
 
-            if(link != null && finalized) {
-                ch.createMessage(LangID.getStringByID("gif_cache", lang).replace("_", link)).subscribe();
-                return false;
+            if(link != null) {
+                if(!raw || finalized) {
+                    ch.createMessage(LangID.getStringByID("gif_cache", lang).replace("_", link)).subscribe();
+                    return false;
+                }
             }
         }
 
@@ -1131,7 +1133,7 @@ public class EntityHandler {
         if(img == null) {
             ch.createMessage(LangID.getStringByID("gif_faile", lang)).subscribe();
             return false;
-        } else if(img.length() >= 8 * 1024 * 1024) {
+        } else if(img.length() >= 8 * 1024 * 1024 && img.length() < (raw ? 200 * 1024 * 1024 : 10 * 1024 * 1024)) {
             Message m = ch.createMessage(LangID.getStringByID("gif_filesize", lang)).block();
 
             if(m == null) {
@@ -1160,7 +1162,7 @@ public class EntityHandler {
                     }
                 });
             } else {
-                if(!debug && limit < 0) {
+                if(!debug && limit <= 0) {
                     String id = generateID(f, mode);
 
                     StaticStore.imgur.put(id, link, true);
@@ -1221,9 +1223,11 @@ public class EntityHandler {
             String link = StaticStore.imgur.get(id);
             boolean finalized = StaticStore.imgur.finalized(id);
 
-            if(link != null && finalized) {
-                ch.createMessage(LangID.getStringByID("gif_cache", lang).replace("_", link)).subscribe();
-                return false;
+            if(link != null) {
+                if(!raw || finalized) {
+                    ch.createMessage(LangID.getStringByID("gif_cache", lang).replace("_", link)).subscribe();
+                    return false;
+                }
             }
         }
 
@@ -1271,7 +1275,7 @@ public class EntityHandler {
         if(img == null) {
             ch.createMessage(LangID.getStringByID("gif_faile", lang)).subscribe();
             return false;
-        } else if(img.length() >= 8 * 1024 * 1024) {
+        } else if(img.length() >= 8 * 1024 * 1024 && img.length() < (raw ? 200 * 1024 * 1024 : 8 * 1024 * 1024)) {
             Message m = ch.createMessage(LangID.getStringByID("gif_filesize", lang)).block();
 
             if(m == null) {
@@ -1330,9 +1334,9 @@ public class EntityHandler {
             ch.createMessage(
                     m -> {
                         m.setContent(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)));
-                        m.addFile(raw ? "reuslt.mp4" : "result.gif", fis);
+                        m.addFile(raw ? "result.mp4" : "result.gif", fis);
                     }
-            ).subscribe(m -> {if(!debug) cacheImage(en, finalMode, m);}, null, () -> {
+            ).subscribe(m -> {if(!debug && limit <= 0) cacheImage(en, finalMode, m);}, null, () -> {
                 try {
                     fis.close();
                 } catch (IOException e) {
@@ -1357,9 +1361,11 @@ public class EntityHandler {
             String link = StaticStore.imgur.get(md5);
             boolean finalized = StaticStore.imgur.finalized(md5);
 
-            if(link != null && finalized) {
-                ch.createMessage(LangID.getStringByID("gif_cache", lang).replace("_", link)).subscribe();
-                return;
+            if(link != null) {
+                if(!raw || finalized) {
+                    ch.createMessage(LangID.getStringByID("gif_cache", lang).replace("_", link)).subscribe();
+                    return;
+                }
             }
         }
 
