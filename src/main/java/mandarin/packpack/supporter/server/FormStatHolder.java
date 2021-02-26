@@ -16,7 +16,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
-public class FormStatHolder {
+public class FormStatHolder extends Holder {
     public static final int RESULT_FAIL = -1;
     public static final int RESULT_STILL = 0;
     public static final int RESULT_FINISH = 1;
@@ -53,17 +53,16 @@ public class FormStatHolder {
                 if(expired)
                     return;
 
-                msg.edit(m -> {
-                    m.setContent(LangID.getStringByID("formst_expire", lang));
+                expired = true;
 
-                    expired = true;
+                author.getAuthor().ifPresent(u -> StaticStore.removeHolder(u.getId().asString(), FormStatHolder.this));
 
-                    author.getAuthor().ifPresent(u -> StaticStore.formHolder.remove(u.getId().asString()));
-                }).subscribe();
+                msg.edit(m -> m.setContent(LangID.getStringByID("formst_expire", lang))).subscribe();
             }
         }, TimeUnit.MINUTES.toMillis(5));
     }
 
+    @Override
     public int handleEvent(MessageCreateEvent event) {
         if(expired) {
             System.out.println("Expired!!");
@@ -278,10 +277,23 @@ public class FormStatHolder {
         return RESULT_STILL;
     }
 
+    @Override
     public void clean() {
         for(Message m : cleaner) {
             if(m != null)
                 m.delete().subscribe();
         }
+    }
+
+    @Override
+    public void expire(String id) {
+        if(expired)
+            return;
+
+        expired = true;
+
+        StaticStore.removeHolder(id, this);
+
+        msg.edit(m -> m.setContent(LangID.getStringByID("formst_expire", lang))).subscribe();
     }
 }

@@ -17,11 +17,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
-public class FormAnimHolder {
-    public static final int RESULT_FAIL = -1;
-    public static final int RESULT_STILL = 0;
-    public static final int RESULT_FINISH = 1;
-
+public class FormAnimHolder extends Holder {
     private final ArrayList<Form> form;
     private final Message msg;
     private final String channelID;
@@ -60,17 +56,20 @@ public class FormAnimHolder {
                 if(expired)
                     return;
 
+                expired = true;
+
+                author.getAuthor().ifPresent(u -> StaticStore.removeHolder(u.getId().asString(), FormAnimHolder.this));
+
                 msg.edit(m -> {
                     m.setContent(LangID.getStringByID("formst_expire", lang));
 
                     expired = true;
-
-                    author.getAuthor().ifPresent(u -> StaticStore.formAnimHolder.remove(u.getId().asString()));
                 }).subscribe();
             }
         }, TimeUnit.MINUTES.toMillis(5));
     }
 
+    @Override
     public int handleEvent(MessageCreateEvent event) {
         if(expired) {
             System.out.println("Expired!!");
@@ -310,10 +309,23 @@ public class FormAnimHolder {
         return RESULT_STILL;
     }
 
+    @Override
     public void clean() {
         for(Message m : cleaner) {
             if(m != null)
                 m.delete().subscribe();
         }
+    }
+
+    @Override
+    public void expire(String id) {
+        if(expired)
+            return;
+
+        expired = true;
+
+        StaticStore.removeHolder(id, this);
+
+        msg.edit(m -> m.setContent(LangID.getStringByID("formst_expire", lang))).subscribe();
     }
 }

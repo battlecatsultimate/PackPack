@@ -147,7 +147,7 @@ public class FormGif extends SingleContraintCommand {
 
                 if(res != null) {
                     disableTimer();
-                    event.getMember().ifPresent(member -> StaticStore.formAnimHolder.put(member.getId().asString(), new FormAnimHolder(forms, event.getMessage(), res, ch.getId().asString(), mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isDev.get())));
+                    event.getMember().ifPresent(member -> StaticStore.putHolder(member.getId().asString(), new FormAnimHolder(forms, event.getMessage(), res, ch.getId().asString(), mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isDev.get())));
                 }
             }
         } else {

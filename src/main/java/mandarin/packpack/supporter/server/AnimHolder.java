@@ -22,11 +22,7 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class AnimHolder {
-    public static final int RESULT_FAIL = -1;
-    public static final int RESULT_STILL = 0;
-    public static final int RESULT_FINISH = 1;
-
+public class AnimHolder extends Holder {
     private final AnimMixer mixer;
     private final Message msg;
     private final int lang;
@@ -262,7 +258,7 @@ public class AnimHolder {
                 }
             }).start();
         } else {
-            msg.getAuthor().ifPresent(u -> StaticStore.animHolder.put(u.getId().asString(), this));
+            msg.getAuthor().ifPresent(u -> StaticStore.putHolder(u.getId().asString(), this));
 
             Timer autoFinish = new Timer();
 
@@ -277,237 +273,259 @@ public class AnimHolder {
 
                         expired = true;
 
-                        target.getAuthor().ifPresent(u -> StaticStore.animHolder.remove(u.getId().asString()));
+                        target.getAuthor().ifPresent(u -> StaticStore.removeHolder(u.getId().asString(), AnimHolder.this));
                     }).subscribe();
                 }
             }, TimeUnit.MINUTES.toMillis(5));
         }
     }
 
-    public int handleEvent(MessageCreateEvent event) throws Exception {
-        if(expired) {
-            System.out.println("Expired!!");
-            return RESULT_FAIL;
-        }
-
-        MessageChannel ch = event.getMessage().getChannel().block();
-
-        if(ch == null) {
-            return RESULT_STILL;
-        }
-
-        if(!ch.getId().asString().equals(channelID)) {
-            return RESULT_STILL;
-        }
-
-        AtomicReference<Long> now = new AtomicReference<>(System.currentTimeMillis());
-
-        Message m = event.getMessage();
-
-        if(!m.getAttachments().isEmpty()) {
-            for(Attachment a : m.getAttachments()) {
-                System.out.println(a.getFilename());
-                if(a.getFilename().endsWith(".png") && mixer.png == null) {
-                    UpdateCheck.Downloader down = StaticStore.getDownloader(a, container);
-
-                    if(down != null) {
-                        down.run(d -> {
-                            String p = "PNG : ";
-
-                            if(d == 1.0) {
-                                p += "VALIDATING...";
-                            } else {
-                                p += DataToString.df.format(d * 100.0) + "%";
-                            }
-
-                            png.set(p);
-
-                            if(System.currentTimeMillis() - now.get() >= 1500) {
-                                now.set(System.currentTimeMillis());
-
-                                edit();
-                            }
-                        });
-
-                        File res = new File(container, a.getFilename());
-
-                        if(res.exists()) {
-                            if(mixer.validPng(res)) {
-                                png.set("PNG : SUCCESS");
-                                pngDone = true;
-                                pngName = a.getFilename();
-
-                                mixer.png = ImageIO.read(res);
-                            } else {
-                                png.set("PNG : INVALID");
-                            }
-                        } else {
-                            png.set("PNG : DOWN_FAIL");
-                        }
-
-                        edit();
-                    }
-                } else if((a.getFilename().endsWith(".imgcut") || a.getFilename().contains("imgcut.txt")) && mixer.imgCut == null) {
-                    UpdateCheck.Downloader down = StaticStore.getDownloader(a, container);
-
-                    if(down != null) {
-                        down.run(d -> {
-                            String p = "IMGCUT : ";
-
-                            if(d == 1.0) {
-                                p += "VALIDATING...";
-                            } else {
-                                p += DataToString.df.format(d * 100.0) + "%";
-                            }
-
-                            imgcut.set(p);
-
-                            if(System.currentTimeMillis() - now.get() >= 1500) {
-                                now.set(System.currentTimeMillis());
-
-                                edit();
-                            }
-                        });
-
-                        File res = new File(container, a.getFilename());
-
-                        if(res.exists()) {
-                            if(mixer.validImgCut(res)) {
-                                imgcut.set("IMGCUT : SUCCESS");
-                                cutDone = true;
-                                cutName = a.getFilename();
-
-                                VFile vf = VFile.getFile(res);
-
-                                if(vf != null) {
-                                    mixer.imgCut = ImgCut.newIns(vf.getData());
-                                }
-                            } else {
-                                imgcut.set("IMGCUT : INVALID");
-                            }
-                        } else {
-                            imgcut.set("IMGCUT : DOWN_FAIL");
-                        }
-
-                        edit();
-                    }
-                } else if((a.getFilename().endsWith(".mamodel") || a.getFilename().contains("mamodel.txt")) && mixer.model == null) {
-                    UpdateCheck.Downloader down = StaticStore.getDownloader(a, container);
-
-                    if(down != null) {
-                        down.run(d -> {
-                            String p = "MAMODEL : ";
-
-                            if(d == 1.0) {
-                                p += "VALIDATING...";
-                            } else {
-                                p += DataToString.df.format(d * 100.0) + "%";
-                            }
-
-                            mamodel.set(p);
-
-                            if(System.currentTimeMillis() - now.get() >= 1500) {
-                                now.set(System.currentTimeMillis());
-
-                                edit();
-                            }
-                        });
-
-                        File res = new File(container, a.getFilename());
-
-                        if(res.exists()) {
-                            if(mixer.validMamodel(res)) {
-                                mamodel.set("MAMODEL : SUCCESS");
-                                modelDone = true;
-                                modelName = a.getFilename();
-
-                                VFile vf = VFile.getFile(res);
-
-                                if(vf != null) {
-                                    mixer.model = MaModel.newIns(vf.getData());
-                                }
-                            } else {
-                                mamodel.set("MAMODEL : INVALID");
-                            }
-                        } else {
-                            mamodel.set("MAMODEL : DOWN_FAIL");
-                        }
-
-                        edit();
-                    }
-                } else if((a.getFilename().endsWith(".maanim") || (a.getFilename().startsWith("maanim") && a.getFilename().endsWith(".txt"))) && mixer.anim == null) {
-                    UpdateCheck.Downloader down = StaticStore.getDownloader(a, container);
-
-                    if(down != null) {
-                        down.run(d -> {
-                            String p = "MAANIM : ";
-
-                            if(d == 1.0) {
-                                p += "VALIDATING...";
-                            } else {
-                                p += DataToString.df.format(d * 100.0) + "%";
-                            }
-
-                            maanim.set(p);
-
-                            if(System.currentTimeMillis() - now.get() >= 1500) {
-                                now.set(System.currentTimeMillis());
-
-                                edit();
-                            }
-                        });
-
-                        File res = new File(container, a.getFilename());
-
-                        if(res.exists()) {
-                            if(mixer.validMaanim(res)) {
-                                maanim.set("MAANIM : SUCCESS");
-                                animDone = true;
-                                animName = a.getFilename();
-
-                                VFile vf = VFile.getFile(res);
-
-                                if(vf != null) {
-                                    mixer.anim = MaAnim.newIns(vf.getData());
-                                }
-                            } else {
-                                maanim.set("MAANIM : INVALID");
-                            }
-                        } else {
-                            maanim.set("MAANIM : DOWN_FAIL");
-                        }
-
-                        edit();
-                    }
-                }
+    @Override
+    public int handleEvent(MessageCreateEvent event) {
+        try {
+            if(expired) {
+                System.out.println("Expired!!");
+                return RESULT_FAIL;
             }
 
-            m.delete().subscribe();
+            MessageChannel ch = event.getMessage().getChannel().block();
 
-            if(pngDone && cutDone && modelDone && animDone) {
-                new Thread(() -> {
-                    try {
-                        String id = generateMD5ID();
+            if(ch == null) {
+                return RESULT_STILL;
+            }
 
-                        if(id != null) {
-                            EntityHandler.generateAnim(ch, id, mixer, lang, debug, -1, raw);
+            if(!ch.getId().asString().equals(channelID)) {
+                return RESULT_STILL;
+            }
+
+            AtomicReference<Long> now = new AtomicReference<>(System.currentTimeMillis());
+
+            Message m = event.getMessage();
+
+            if(!m.getAttachments().isEmpty()) {
+                for(Attachment a : m.getAttachments()) {
+                    System.out.println(a.getFilename());
+                    if(a.getFilename().endsWith(".png") && mixer.png == null) {
+                        UpdateCheck.Downloader down = StaticStore.getDownloader(a, container);
+
+                        if(down != null) {
+                            down.run(d -> {
+                                String p = "PNG : ";
+
+                                if(d == 1.0) {
+                                    p += "VALIDATING...";
+                                } else {
+                                    p += DataToString.df.format(d * 100.0) + "%";
+                                }
+
+                                png.set(p);
+
+                                if(System.currentTimeMillis() - now.get() >= 1500) {
+                                    now.set(System.currentTimeMillis());
+
+                                    edit();
+                                }
+                            });
+
+                            File res = new File(container, a.getFilename());
+
+                            if(res.exists()) {
+                                if(mixer.validPng(res)) {
+                                    png.set("PNG : SUCCESS");
+                                    pngDone = true;
+                                    pngName = a.getFilename();
+
+                                    mixer.png = ImageIO.read(res);
+                                } else {
+                                    png.set("PNG : INVALID");
+                                }
+                            } else {
+                                png.set("PNG : DOWN_FAIL");
+                            }
+
+                            edit();
                         }
+                    } else if((a.getFilename().endsWith(".imgcut") || a.getFilename().contains("imgcut.txt")) && mixer.imgCut == null) {
+                        UpdateCheck.Downloader down = StaticStore.getDownloader(a, container);
 
-                        StaticStore.deleteFile(container, true);
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                        if(down != null) {
+                            down.run(d -> {
+                                String p = "IMGCUT : ";
+
+                                if(d == 1.0) {
+                                    p += "VALIDATING...";
+                                } else {
+                                    p += DataToString.df.format(d * 100.0) + "%";
+                                }
+
+                                imgcut.set(p);
+
+                                if(System.currentTimeMillis() - now.get() >= 1500) {
+                                    now.set(System.currentTimeMillis());
+
+                                    edit();
+                                }
+                            });
+
+                            File res = new File(container, a.getFilename());
+
+                            if(res.exists()) {
+                                if(mixer.validImgCut(res)) {
+                                    imgcut.set("IMGCUT : SUCCESS");
+                                    cutDone = true;
+                                    cutName = a.getFilename();
+
+                                    VFile vf = VFile.getFile(res);
+
+                                    if(vf != null) {
+                                        mixer.imgCut = ImgCut.newIns(vf.getData());
+                                    }
+                                } else {
+                                    imgcut.set("IMGCUT : INVALID");
+                                }
+                            } else {
+                                imgcut.set("IMGCUT : DOWN_FAIL");
+                            }
+
+                            edit();
+                        }
+                    } else if((a.getFilename().endsWith(".mamodel") || a.getFilename().contains("mamodel.txt")) && mixer.model == null) {
+                        UpdateCheck.Downloader down = StaticStore.getDownloader(a, container);
+
+                        if(down != null) {
+                            down.run(d -> {
+                                String p = "MAMODEL : ";
+
+                                if(d == 1.0) {
+                                    p += "VALIDATING...";
+                                } else {
+                                    p += DataToString.df.format(d * 100.0) + "%";
+                                }
+
+                                mamodel.set(p);
+
+                                if(System.currentTimeMillis() - now.get() >= 1500) {
+                                    now.set(System.currentTimeMillis());
+
+                                    edit();
+                                }
+                            });
+
+                            File res = new File(container, a.getFilename());
+
+                            if(res.exists()) {
+                                if(mixer.validMamodel(res)) {
+                                    mamodel.set("MAMODEL : SUCCESS");
+                                    modelDone = true;
+                                    modelName = a.getFilename();
+
+                                    VFile vf = VFile.getFile(res);
+
+                                    if(vf != null) {
+                                        mixer.model = MaModel.newIns(vf.getData());
+                                    }
+                                } else {
+                                    mamodel.set("MAMODEL : INVALID");
+                                }
+                            } else {
+                                mamodel.set("MAMODEL : DOWN_FAIL");
+                            }
+
+                            edit();
+                        }
+                    } else if((a.getFilename().endsWith(".maanim") || (a.getFilename().startsWith("maanim") && a.getFilename().endsWith(".txt"))) && mixer.anim == null) {
+                        UpdateCheck.Downloader down = StaticStore.getDownloader(a, container);
+
+                        if(down != null) {
+                            down.run(d -> {
+                                String p = "MAANIM : ";
+
+                                if(d == 1.0) {
+                                    p += "VALIDATING...";
+                                } else {
+                                    p += DataToString.df.format(d * 100.0) + "%";
+                                }
+
+                                maanim.set(p);
+
+                                if(System.currentTimeMillis() - now.get() >= 1500) {
+                                    now.set(System.currentTimeMillis());
+
+                                    edit();
+                                }
+                            });
+
+                            File res = new File(container, a.getFilename());
+
+                            if(res.exists()) {
+                                if(mixer.validMaanim(res)) {
+                                    maanim.set("MAANIM : SUCCESS");
+                                    animDone = true;
+                                    animName = a.getFilename();
+
+                                    VFile vf = VFile.getFile(res);
+
+                                    if(vf != null) {
+                                        mixer.anim = MaAnim.newIns(vf.getData());
+                                    }
+                                } else {
+                                    maanim.set("MAANIM : INVALID");
+                                }
+                            } else {
+                                maanim.set("MAANIM : DOWN_FAIL");
+                            }
+
+                            edit();
+                        }
                     }
-                }).start();
+                }
+
+                m.delete().subscribe();
+
+                if(pngDone && cutDone && modelDone && animDone) {
+                    new Thread(() -> {
+                        try {
+                            String id = generateMD5ID();
+
+                            if(id != null) {
+                                EntityHandler.generateAnim(ch, id, mixer, lang, debug, -1, raw);
+                            }
+
+                            StaticStore.deleteFile(container, true);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }).start();
+
+                    return RESULT_FINISH;
+                }
+            } else if(m.getContent().equals("c")) {
+                msg.edit(e -> e.setContent(LangID.getStringByID("animanalyze_cancel", lang))).subscribe();
 
                 return RESULT_FINISH;
             }
-        } else if(m.getContent().equals("c")) {
-            msg.edit(e -> e.setContent(LangID.getStringByID("animanalyze_cancel", lang))).subscribe();
 
-            return RESULT_FINISH;
+            return RESULT_STILL;
+        } catch (Exception e) {
+            return RESULT_STILL;
         }
+    }
 
-        return RESULT_STILL;
+    @Override
+    public void clean() {
+
+    }
+
+    @Override
+    public void expire(String id) {
+        if(expired)
+            return;
+
+        expired = true;
+
+        StaticStore.removeHolder(id, this);
+
+        msg.edit(m -> m.setContent(LangID.getStringByID("formst_expire", lang))).subscribe();
     }
 
     private void edit() {

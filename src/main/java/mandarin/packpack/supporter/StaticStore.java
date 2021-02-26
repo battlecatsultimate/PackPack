@@ -37,12 +37,7 @@ public class StaticStore {
     public static Map<String, String> langs = new HashMap<>();
     public static Map<String, Integer> locales = new HashMap<>();
 
-    public static Map<String, FormStatHolder> formHolder = new HashMap<>();
-    public static Map<String, EnemyStatHolder> enemyHolder = new HashMap<>();
-    public static Map<String, StageInfoHolder> stageHolder = new HashMap<>();
-    public static Map<String, FormAnimHolder> formAnimHolder = new HashMap<>();
-    public static Map<String, EnemyAnimHolder> enemyAnimHolder = new HashMap<>();
-    public static Map<String, AnimHolder> animHolder = new HashMap<>();
+    private static Map<String, Holder> holders = new HashMap<>();
 
     public static ImgurDataHolder imgur = new ImgurDataHolder(null);
 
@@ -81,7 +76,7 @@ public class StaticStore {
 
     public static final String ERROR_MSG = "`INTERNAL_ERROR`";
 
-    public static Map<String, IDHolder> holder = new HashMap<>();
+    public static Map<String, IDHolder> idHolder = new HashMap<>();
 
     public static final String BCU_SERVER = "490262537527623692";
     public static final String BCU_KR_SERVER = "679858366389944409";
@@ -320,7 +315,7 @@ public class StaticStore {
         obj.add("lang", mapToJsonString(langs));
         obj.add("locale", mapToJsonInt(locales));
         obj.add("imgur", imgur.getData());
-        obj.add("idholder", mapToJsonIDHolder(holder));
+        obj.add("idholder", mapToJsonIDHolder(idHolder));
 
         try {
             File folder = new File("./data/");
@@ -389,7 +384,7 @@ public class StaticStore {
             }
 
             if(obj.has("idholder")) {
-                holder = jsonToMapIDHolder(obj.getAsJsonObject("idholder"));
+                idHolder = jsonToMapIDHolder(obj.getAsJsonObject("idholder"));
             }
         }
     }
@@ -537,5 +532,30 @@ public class StaticStore {
         });
 
         return id.get();
+    }
+
+    synchronized public static void putHolder(String id, Holder holder) {
+        Holder oldHolder = holders.get(id);
+
+        if(oldHolder != null) {
+            oldHolder.expire(id);
+        }
+
+        holders.put(id, holder);
+    }
+
+    synchronized public static void removeHolder(String id, Holder holder) {
+        Holder thisHolder = holders.get(id);
+
+        if(thisHolder != null && thisHolder.equals(holder))
+            holders.remove(id);
+    }
+
+    synchronized public static Holder getHolder(String id) {
+        return holders.get(id);
+    }
+
+    public static boolean holderContainsKey(String id) {
+        return holders.containsKey(id);
     }
 }

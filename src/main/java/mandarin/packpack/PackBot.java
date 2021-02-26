@@ -57,7 +57,7 @@ public class PackBot {
         gate.getGuilds().collectList().subscribe(l -> {
             for (Guild guild : l) {
                 if (guild != null) {
-                    IDHolder id = StaticStore.holder.get(guild.getId().asString());
+                    IDHolder id = StaticStore.idHolder.get(guild.getId().asString());
 
                     if (id == null) {
                         final IDHolder idh = new IDHolder();
@@ -70,7 +70,7 @@ public class PackBot {
                             idh.MOD = modID;
                         }
 
-                        StaticStore.holder.put(guild.getId().asString(), idh);
+                        StaticStore.idHolder.put(guild.getId().asString(), idh);
                     } else {
                         //Validate Role
                         String mod = id.MOD;
@@ -112,7 +112,7 @@ public class PackBot {
             if(guild == null)
                 return;
 
-            IDHolder holder = StaticStore.holder.get(guild.getId().asString());
+            IDHolder holder = StaticStore.idHolder.get(guild.getId().asString());
 
             if(holder != null) {
                 String mod = holder.MOD;
@@ -149,7 +149,7 @@ public class PackBot {
                     idh.MOD = modID;
                 }
 
-                StaticStore.holder.put(guild.getId().asString(), idh);
+                StaticStore.idHolder.put(guild.getId().asString(), idh);
             }
 
             StaticStore.saveServerInfo();
@@ -158,7 +158,7 @@ public class PackBot {
         gate.on(GuildCreateEvent.class).subscribe(e -> {
             Guild guild = e.getGuild();
 
-            IDHolder id = StaticStore.holder.get(guild.getId().asString());
+            IDHolder id = StaticStore.idHolder.get(guild.getId().asString());
 
             if (id == null) {
                 final IDHolder idh = new IDHolder();
@@ -171,7 +171,7 @@ public class PackBot {
                     idh.MOD = modID;
                 }
 
-                StaticStore.holder.put(guild.getId().asString(), idh);
+                StaticStore.idHolder.put(guild.getId().asString(), idh);
             } else {
                 //Validate Role
                 String mod = id.MOD;
@@ -212,15 +212,16 @@ public class PackBot {
                     else {
                         AtomicReference<Boolean> mandarin = new AtomicReference<>(false);
                         AtomicReference<Boolean> isMod = new AtomicReference<>(false);
+                        AtomicReference<Boolean> canGo = new AtomicReference<>(true);
 
                         Guild g = event.getGuild().block();
 
                         IDHolder ids;
 
                         if(g != null) {
-                            ids = StaticStore.holder.get(g.getId().asString());
+                            ids = StaticStore.idHolder.get(g.getId().asString());
                         } else {
-                            ids = new IDHolder();
+                            return true;
                         }
 
                         event.getMember().ifPresent(m -> {
@@ -229,51 +230,34 @@ public class PackBot {
                             if(ids.MOD != null) {
                                 isMod.set(StaticStore.rolesToString(m.getRoleIds()).contains(ids.MOD));
                             }
+
+                            ArrayList<String> channels = ids.getAllAllowedChannels(m.getRoleIds());
+
+                            if(channels == null)
+                                return;
+
+                            if(channels.isEmpty())
+                                canGo.set(false);
+                            else {
+                                MessageChannel channel = event.getMessage().getChannel().block();
+
+                                if(channel == null)
+                                    return;
+
+                                canGo.set(channels.contains(channel.getId().asString()));
+                            }
                         });
 
                         String acc = ids.GET_ACCESS;
 
-                        return (acc == null || !mc.getId().asString().equals(ids.GET_ACCESS)) || mandarin.get() || isMod.get();
+                        return ((acc == null || !mc.getId().asString().equals(ids.GET_ACCESS)) && canGo.get()) || mandarin.get() || isMod.get();
                     }
-                }).filter(event -> {
-                    AtomicReference<Boolean> canGo = new AtomicReference<>(true);
-
-                    event.getMember().ifPresentOrElse(m -> {
-                        Guild g = event.getGuild().block();
-
-                        if(g == null) {
-                            return;
-                        }
-
-                        IDHolder ids = StaticStore.holder.get(g.getId().asString());
-
-                        if(ids == null)
-                            return;
-
-                        ArrayList<String> channels = ids.getAllAllowedChannels(m.getRoleIds());
-
-                        if(channels == null)
-                            return;
-
-                        if(channels.isEmpty())
-                            canGo.set(false);
-                        else {
-                            MessageChannel channel = event.getMessage().getChannel().block();
-
-                            if(channel == null)
-                                return;
-
-                            canGo.set(channels.contains(channel.getId().asString()));
-                        }
-                    }, () -> canGo.set(false));
-
-                    return canGo.get();
                 }).subscribe(event -> {
                     Guild g = event.getGuild().block();
                     IDHolder ids;
 
                     if(g != null) {
-                        ids = StaticStore.holder.get(g.getId().asString());
+                        ids = StaticStore.idHolder.get(g.getId().asString());
                     } else {
                         ids = new IDHolder();
                     }
@@ -291,90 +275,17 @@ public class PackBot {
                         if(msg.getContent().startsWith(StaticStore.serverPrefix))
                             prefix = StaticStore.serverPrefix;
 
-                        if(StaticStore.formHolder.containsKey(m.getId().asString())) {
-                            FormStatHolder holder = StaticStore.formHolder.get(m.getId().asString());
+                        if(StaticStore.holderContainsKey(m.getId().asString())) {
+                            Holder holder = StaticStore.getHolder(m.getId().asString());
 
                             int result = holder.handleEvent(event);
 
-                            if(result == FormStatHolder.RESULT_FINISH) {
+                            if(result == Holder.RESULT_FINISH) {
                                 holder.clean();
-                                StaticStore.formHolder.remove(m.getId().asString());
-                            } else if(result == FormStatHolder.RESULT_FAIL) {
-                                System.out.println("ERROR : Expired process FormHolder tried to be handled : "+m.getId().asString());
-                                StaticStore.formHolder.remove(m.getId().asString());
-                            }
-                        }
-
-                        if(StaticStore.enemyHolder.containsKey(m.getId().asString())) {
-                            EnemyStatHolder holder = StaticStore.enemyHolder.get(m.getId().asString());
-
-                            int result = holder.handleEvent(event);
-
-                            if(result == EnemyStatHolder.RESULT_FINISH) {
-                                holder.clean();
-                                StaticStore.enemyHolder.remove(m.getId().asString());
-                            } else if(result == EnemyStatHolder.RESULT_FAIL) {
-                                System.out.println("ERROR : Expired process EnemyHolder tried to be handled : "+m.getId().asString()+"|"+m.getNickname().orElse(m.getUsername()));
-                                StaticStore.enemyHolder.remove(m.getId().asString());
-                            }
-                        }
-
-                        if(StaticStore.stageHolder.containsKey(m.getId().asString())) {
-                            StageInfoHolder holder = StaticStore.stageHolder.get(m.getId().asString());
-
-                            int result = holder.handleEvent(event);
-
-                            if(result == StageInfoHolder.RESULT_FINISH) {
-                                holder.clean();
-                                StaticStore.stageHolder.remove(m.getId().asString());
-                            } else if(result == StageInfoHolder.RESULT_FAIL) {
-                                System.out.println("ERROR : Expired process StageHolder tried to be handled : "+m.getId().asString()+"|"+m.getNickname().orElse(m.getUsername()));
-                                StaticStore.stageHolder.remove(m.getId().asString());
-                            }
-                        }
-
-                        if(StaticStore.formAnimHolder.containsKey(m.getId().asString())) {
-                            FormAnimHolder holder = StaticStore.formAnimHolder.get(m.getId().asString());
-
-                            int result = holder.handleEvent(event);
-
-                            if(result == FormAnimHolder.RESULT_FINISH) {
-                                holder.clean();
-                                StaticStore.formAnimHolder.remove(m.getId().asString());
-                            } else if(result == FormAnimHolder.RESULT_FAIL) {
-                                System.out.println("ERROR : Expired process FormAnimHolder tried to be handled : "+m.getId().asString()+"|"+m.getNickname().orElse(m.getUsername()));
-                                StaticStore.formAnimHolder.remove(m.getId().asString());
-                            }
-                        }
-
-                        if(StaticStore.enemyAnimHolder.containsKey(m.getId().asString())) {
-                            EnemyAnimHolder holder = StaticStore.enemyAnimHolder.get(m.getId().asString());
-
-                            int result = holder.handleEvent(event);
-
-                            if(result == EnemyAnimHolder.RESULT_FINISH) {
-                                holder.clean();
-                                StaticStore.enemyAnimHolder.remove(m.getId().asString());
-                            } else if(result == EnemyAnimHolder.RESULT_FAIL) {
-                                System.out.println("ERROR : Expired process EnemyAnimHolder tried to be handled : "+m.getId().asString()+"|"+m.getNickname().orElse(m.getUsername()));
-                                StaticStore.enemyAnimHolder.remove(m.getId().asString());
-                            }
-                        }
-
-                        if(StaticStore.animHolder.containsKey(m.getId().asString())) {
-                            AnimHolder holder = StaticStore.animHolder.get(m.getId().asString());
-
-                            try {
-                                int result = holder.handleEvent(event);
-
-                                if(result == EnemyAnimHolder.RESULT_FINISH) {
-                                    StaticStore.animHolder.remove(m.getId().asString());
-                                }else if(result == AnimHolder.RESULT_FAIL) {
-                                    System.out.println("ERROR : Expired process AnimHolder tried to be handled : "+m.getId().asString()+"|"+m.getNickname().orElse(m.getUsername()));
-                                    StaticStore.animHolder.remove(m.getId().asString());
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
+                                StaticStore.removeHolder(m.getId().asString(), holder);
+                            } else if(result == Holder.RESULT_FAIL) {
+                                System.out.println("ERROR : Expired process tried to be handled : "+m.getId().asString() + " | "+holder.getClass().getName());
+                                StaticStore.removeHolder(m.getId().asString(), holder);
                             }
                         }
 
@@ -382,7 +293,7 @@ public class PackBot {
                             IDHolder idh;
 
                             if(g != null) {
-                                idh = StaticStore.holder.get(g.getId().asString());
+                                idh = StaticStore.idHolder.get(g.getId().asString());
                             } else {
                                 idh = new IDHolder();
                             }
@@ -405,7 +316,7 @@ public class PackBot {
                             }
 
                             if(idh == null)
-                                idh = StaticStore.holder.get(StaticStore.BCU_SERVER);
+                                idh = StaticStore.idHolder.get(StaticStore.BCU_SERVER);
 
                             switch (StaticStore.getCommand(msg.getContent(), prefix)) {
                                 case "checkbcu":
@@ -538,14 +449,14 @@ public class PackBot {
 
             DataToString.initialize();
 
-            StaticStore.holder.put("490262537527623692", new IDHolder(
+            StaticStore.idHolder.put("490262537527623692", new IDHolder(
                     "490935132564357131",
                     "632835571655507968", "490940081738350592",
                     "490940151501946880", "787391428916543488",
                     "632836623931015185", "563745009912774687"
             ));
 
-            StaticStore.holder.put("679858366389944409", new IDHolder(
+            StaticStore.idHolder.put("679858366389944409", new IDHolder(
                     "679871555794108416",
                     "679869691656667157", "743808872376041553",
                     "679870744561188919", "800632019418742824",
