@@ -13,7 +13,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicReference;
 
-public abstract class SingleContraintCommand implements Command {
+public abstract class GlobalTimedConstraintCommand implements Command {
     static String ABORT = "ABORT";
 
     final String constRole;
@@ -27,7 +27,7 @@ public abstract class SingleContraintCommand implements Command {
 
     private boolean timerStart = true;
 
-    public SingleContraintCommand(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID, long millis) {
+    public GlobalTimedConstraintCommand(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID, long millis) {
         switch (role) {
             case MOD:
                 constRole = id.MOD;

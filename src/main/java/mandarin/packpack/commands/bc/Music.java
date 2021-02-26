@@ -5,7 +5,7 @@ import common.util.Data;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
-import mandarin.packpack.commands.SingleContraintCommand;
+import mandarin.packpack.commands.GlobalTimedConstraintCommand;
 import mandarin.packpack.supporter.Pauser;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -14,7 +14,7 @@ import mandarin.packpack.supporter.server.IDHolder;
 import java.io.*;
 import java.util.concurrent.TimeUnit;
 
-public class Music extends SingleContraintCommand {
+public class Music extends GlobalTimedConstraintCommand {
     private static final String NOT_NUMBER = "notNumber";
     private static final String OUT_RANGE = "outRange";
     private static final String ARGUMENT = "arguments";

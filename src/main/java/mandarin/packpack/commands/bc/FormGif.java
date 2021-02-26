@@ -6,7 +6,7 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
-import mandarin.packpack.commands.SingleContraintCommand;
+import mandarin.packpack.commands.GlobalTimedConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
@@ -20,7 +20,7 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class FormGif extends SingleContraintCommand {
+public class FormGif extends GlobalTimedConstraintCommand {
     private final int PARAM_DEBUG = 2;
     private final int PARAM_RAW = 4;
 
@@ -146,9 +146,10 @@ public class FormGif extends SingleContraintCommand {
                 Message res = ch.createMessage(sb.toString()).block();
 
                 if(res != null) {
-                    disableTimer();
                     event.getMember().ifPresent(member -> StaticStore.putHolder(member.getId().asString(), new FormAnimHolder(forms, event.getMessage(), res, ch.getId().asString(), mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isDev.get())));
                 }
+
+                disableTimer();
             }
         } else {
             ch.createMessage(LangID.getStringByID("fimg_more", lang)).subscribe();
