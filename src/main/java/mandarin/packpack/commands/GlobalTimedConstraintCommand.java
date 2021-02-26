@@ -119,8 +119,6 @@ public abstract class GlobalTimedConstraintCommand implements Command {
                             try {
                                 doSomething(event);
 
-                                System.out.println(time);
-
                                 if(timerStart) {
                                     Timer timer = new Timer();
 

@@ -30,8 +30,6 @@ public class ChannelPermission extends ConstraintCommand {
 
         String pureMessage = getMessage(event).replaceAll("[ ]+,[ ]+|,[ ]+|[ ]+,", ",");
 
-        System.out.println(pureMessage);
-
         String[] msg = pureMessage.split(" ");
 
         if(msg.length == 1) {

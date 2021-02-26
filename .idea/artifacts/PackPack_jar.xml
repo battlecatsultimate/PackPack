@@ -1,7 +1,7 @@
 <component name="ArtifactManager">
-  <artifact type="jar" name="PackPack.main:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/PackPack_main_jar</output-path>
-    <root id="archive" name="PackPack.main.jar">
+  <artifact type="jar" name="PackPack.jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/PackPack_jar</output-path>
+    <root id="archive" name="PackPack.jar">
       <element id="directory" name="META-INF">
         <element id="file-copy" path="$PROJECT_DIR$/META-INF/MANIFEST.MF" />
       </element>

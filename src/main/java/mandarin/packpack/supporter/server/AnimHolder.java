@@ -62,11 +62,8 @@ public class AnimHolder extends Holder {
 
         AtomicReference<Long> now = new AtomicReference<>(System.currentTimeMillis());
 
-        System.out.println(msg.getAttachments().isEmpty());
-
         if(!msg.getAttachments().isEmpty()) {
             for(Attachment a : msg.getAttachments()) {
-                System.out.println(a.getFilename());
                 if(a.getFilename().endsWith(".png") && mixer.png == null) {
                     UpdateCheck.Downloader down = StaticStore.getDownloader(a, container);
 
@@ -304,7 +301,6 @@ public class AnimHolder extends Holder {
 
             if(!m.getAttachments().isEmpty()) {
                 for(Attachment a : m.getAttachments()) {
-                    System.out.println(a.getFilename());
                     if(a.getFilename().endsWith(".png") && mixer.png == null) {
                         UpdateCheck.Downloader down = StaticStore.getDownloader(a, container);
 
