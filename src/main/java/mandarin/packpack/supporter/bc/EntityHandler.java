@@ -2,6 +2,7 @@ package mandarin.packpack.supporter.bc;
 
 import common.CommonStatic;
 import common.battle.data.MaskUnit;
+import common.pack.PackData;
 import common.system.fake.FakeImage;
 import common.system.files.VFile;
 import common.util.Data;
@@ -1046,6 +1047,47 @@ public class EntityHandler {
         }
     }
 
+    public static void generateEnemyImage(Enemy f, MessageChannel ch, int mode, int frame, boolean transparent, boolean debug, int lang) throws Exception {
+        File img = ImageDrawing.drawEnemyImage(f, mode, frame, 1.0, transparent, debug);
+
+        if(img != null) {
+            FileInputStream fis = new FileInputStream(img);
+            CommonStatic.getConfig().lang = lang;
+
+            ch.createMessage(m -> {
+                int oldConfig = CommonStatic.getConfig().lang;
+                CommonStatic.getConfig().lang = lang;
+
+                String fName = MultiLangCont.get(f);
+
+                CommonStatic.getConfig().lang = oldConfig;
+
+                if(fName == null || fName.isBlank())
+                    fName = f.name;
+
+                if(fName == null || fName.isBlank())
+                    fName = LangID.getStringByID("data_enemy", lang)+" "+ Data.trio(f.id.id);
+
+                m.setContent(LangID.getStringByID("fimg_result", lang).replace("_", fName).replace(":::", getModeName(mode, f.anim.anims.length, lang)).replace("=", String.valueOf(frame)));
+                m.addFile("result.png", fis);
+            }).subscribe(null, null, () -> {
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                if(img.exists()) {
+                    boolean res = img.delete();
+
+                    if(!res) {
+                        System.out.println("Can't delete file : "+img.getAbsolutePath());
+                    }
+                }
+            });
+        }
+    }
+
     private static String getModeName(int mode, int max, int lang) {
         switch (mode) {
             case 1:
@@ -1526,6 +1568,209 @@ public class EntityHandler {
                 return;
             }
         }
+    }
+
+    public static void getFormSprite(Form f, MessageChannel ch, int mode, int lang) throws Exception {
+        if(f.unit == null || f.unit.id == null) {
+            ch.createMessage(LangID.getStringByID("fsp_cantunit", lang)).subscribe();
+            return;
+        }
+
+        File temp = new File("./temp");
+
+        if(!temp.exists()) {
+            boolean res = temp.mkdirs();
+
+            if(!res) {
+                System.out.println("Can't create folder : "+temp.getAbsolutePath());
+                return;
+            }
+        }
+
+        File image = new File("./temp/", StaticStore.findFileName(temp, "result", ".png"));
+
+        if(!image.exists()) {
+            boolean res = image.createNewFile();
+
+            if(!res) {
+                System.out.println("Can't create file : "+image.getAbsolutePath());
+                return;
+            }
+        }
+
+        f.anim.load();
+
+        FakeImage img;
+
+        switch (mode) {
+            case 0:
+                img = f.anim.getNum();
+                break;
+            case 1:
+                img = f.anim.getUni().getImg();
+                break;
+            case 2:
+                if(f.unit.getCont() instanceof PackData.DefPack) {
+                    String code;
+
+                    if(f.fid == 0)
+                        code = "f";
+                    else if(f.fid == 1)
+                        code = "c";
+                    else
+                        code = "s";
+
+                    VFile vf = VFile.get("./org/unit/"+Data.trio(f.unit.id.id)+"/"+code+"/udi"+Data.trio(f.unit.id.id)+"_"+code+".png");
+
+                    if(vf != null) {
+                        img = vf.getData().getImg();
+                    } else {
+                        img = null;
+                    }
+                } else {
+                    img = null;
+                }
+                break;
+            case 3:
+                img = f.anim.getEdi().getImg();
+                break;
+            default:
+                throw new IllegalStateException("Mode in sprite getter is incorrect : "+mode);
+        }
+
+        if(img == null) {
+            ch.createMessage(LangID.getStringByID("fsp_nodata", lang).replace("_", getIconName(mode, lang))).subscribe();
+            return;
+        }
+
+        BufferedImage result = (BufferedImage) img.bimg();
+
+        ImageIO.write(result, "PNG", image);
+
+        FileInputStream fis = new FileInputStream(image);
+
+        ch.createMessage(m -> {
+            String fName = StaticStore.safeMultiLangGet(f, lang);
+
+            if(fName == null || fName.isBlank()) {
+                fName = Data.trio(f.unit.id.id)+"-"+Data.trio(f.fid);
+            }
+
+            m.setContent(LangID.getStringByID("fsp_result", lang).replace("_", fName).replace("===", getIconName(mode, lang)));
+            m.addFile("result.png", fis);
+        }).subscribe(null, null, () -> {
+            try {
+                fis.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            if(image.exists()) {
+                boolean res = image.delete();
+
+                if(!res) {
+                    System.out.println("Can't delete file : "+image.getAbsolutePath());
+                }
+            }
+        });
+
+        f.anim.unload();
+    }
+
+    public static void getEnemySprite(Enemy e, MessageChannel ch, int mode, int lang) throws Exception {
+        if(e.id == null) {
+            ch.createMessage(LangID.getStringByID("esp_cantunit", lang)).subscribe();
+            return;
+        }
+
+        File temp = new File("./temp");
+
+        if(!temp.exists()) {
+            boolean res = temp.mkdirs();
+
+            if(!res) {
+                System.out.println("Can't create folder : "+temp.getAbsolutePath());
+                return;
+            }
+        }
+
+        File image = new File("./temp/", StaticStore.findFileName(temp, "result", ".png"));
+
+        if(!image.exists()) {
+            boolean res = image.createNewFile();
+
+            if(!res) {
+                System.out.println("Can't create file : "+image.getAbsolutePath());
+                return;
+            }
+        }
+
+        e.anim.load();
+
+        FakeImage img;
+
+        switch (mode) {
+            case 0:
+                img = e.anim.getNum();
+                break;
+            case 1:
+                img = e.anim.getUni().getImg();
+                break;
+            case 3:
+                img = e.anim.getEdi().getImg();
+                break;
+            default:
+                throw new IllegalStateException("Mode in sprite getter is incorrect : "+mode);
+        }
+
+        if(img == null) {
+            ch.createMessage(LangID.getStringByID("fsp_nodata", lang).replace("_", getIconName(mode, lang))).subscribe();
+            return;
+        }
+
+        BufferedImage result = (BufferedImage) img.bimg();
+
+        ImageIO.write(result, "PNG", image);
+
+        FileInputStream fis = new FileInputStream(image);
+
+        ch.createMessage(m -> {
+            String fName = StaticStore.safeMultiLangGet(e, lang);
+
+            if(fName == null || fName.isBlank()) {
+                fName = Data.trio(e.id.id);
+            }
+
+            m.setContent(LangID.getStringByID("fsp_result", lang).replace("_", fName).replace("===", getIconName(mode, lang)));
+            m.addFile("result.png", fis);
+        }).subscribe(null, null, () -> {
+            try {
+                fis.close();
+            } catch (IOException err) {
+                err.printStackTrace();
+            }
+
+            if(image.exists()) {
+                boolean res = image.delete();
+
+                if(!res) {
+                    System.out.println("Can't delete file : "+image.getAbsolutePath());
+                }
+            }
+        });
+
+        e.anim.unload();
+    }
+
+    private static String getIconName(int mode, int lang) {
+        if(mode == 0)
+            return LangID.getStringByID("fsp_sprite", lang);
+        else if(mode == 1)
+            return LangID.getStringByID("fsp_uni", lang);
+        else if(mode == 2)
+            return LangID.getStringByID("fsp_udi", lang);
+        else
+            return LangID.getStringByID("fsp_edi", lang);
     }
 
     private static void cacheImage(Enemy e, int mode, Message msg) {

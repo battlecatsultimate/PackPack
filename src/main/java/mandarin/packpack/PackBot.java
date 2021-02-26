@@ -426,6 +426,18 @@ public class PackBot {
                                 case "chp":
                                     new ChannelPermission(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
                                     break;
+                                case "formsprite":
+                                case "fsprite":
+                                case "formsp":
+                                case "fsp":
+                                    new FormSprite(ConstraintCommand.ROLE.MEMBER, lang, idh, TimeUnit.SECONDS.toMillis(10)).execute(event);
+                                    break;
+                                case "enemysprite":
+                                case "esprite":
+                                case "enemysp":
+                                case "esp":
+                                    new EnemySprite(ConstraintCommand.ROLE.MEMBER, lang, idh, TimeUnit.SECONDS.toMillis(10)).execute(event);
+                                    break;
                             }
                         }
                     });

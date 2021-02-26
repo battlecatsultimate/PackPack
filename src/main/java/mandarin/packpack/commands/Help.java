@@ -144,6 +144,18 @@ public class Help implements Command {
             case "chp":
                 ch.createEmbed(e -> addFields(e, "channelpermission", true, true, true)).subscribe();
                 break;
+            case "formsprite":
+            case "fsprite":
+            case "formsp":
+            case "fsp":
+                ch.createEmbed(e -> addFields(e, "formsprite", true, true, false)).subscribe();
+                break;
+            case "enemysprite":
+            case "esprite":
+            case "enemysp":
+            case "esp":
+                ch.createEmbed(e -> addFields(e, "enemysprite", true, true, false)).subscribe();
+                break;
             default:
                 ch.createMessage(LangID.getStringByID("help_nocomm", lang).replace("_", command)).subscribe();
         }

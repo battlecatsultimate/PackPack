@@ -7,7 +7,7 @@ import mandarin.packpack.supporter.server.IDHolder;
 
 import java.util.concurrent.TimeUnit;
 
-public class Test extends SingleContraintCommand {
+public class Test extends GlobalTimedConstraintCommand {
 
     public Test(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID) {
         super(role, lang, id, mainID, TimeUnit.SECONDS.toMillis(1));
