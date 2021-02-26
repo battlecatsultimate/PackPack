@@ -27,6 +27,7 @@ import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.*;
 
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -234,6 +235,39 @@ public class PackBot {
 
                         return (acc == null || !mc.getId().asString().equals(ids.GET_ACCESS)) || mandarin.get() || isMod.get();
                     }
+                }).filter(event -> {
+                    AtomicReference<Boolean> canGo = new AtomicReference<>(true);
+
+                    event.getMember().ifPresentOrElse(m -> {
+                        Guild g = event.getGuild().block();
+
+                        if(g == null) {
+                            return;
+                        }
+
+                        IDHolder ids = StaticStore.holder.get(g.getId().asString());
+
+                        if(ids == null)
+                            return;
+
+                        ArrayList<String> channels = ids.getAllAllowedChannels(m.getRoleIds());
+
+                        if(channels == null)
+                            return;
+
+                        if(channels.isEmpty())
+                            canGo.set(false);
+                        else {
+                            MessageChannel channel = event.getMessage().getChannel().block();
+
+                            if(channel == null)
+                                return;
+
+                            canGo.set(channels.contains(channel.getId().asString()));
+                        }
+                    }, () -> canGo.set(false));
+
+                    return canGo.get();
                 }).subscribe(event -> {
                     Guild g = event.getGuild().block();
                     IDHolder ids;
@@ -473,6 +507,13 @@ public class PackBot {
                                 case "aa":
                                 case "animanalyzer":
                                     new AnimAnalyzer(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+                                    break;
+                                case "channelpermission":
+                                case "channelperm":
+                                case "chpermission":
+                                case "chperm":
+                                case "chp":
+                                    new ChannelPermission(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
                                     break;
                             }
                         }

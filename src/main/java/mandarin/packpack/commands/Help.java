@@ -34,7 +34,7 @@ public class Help implements Command {
                 emb.setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)]);
                 emb.addField(LangID.getStringByID("help_normal", lang), "```analyze, locale, prefix```", false);
                 emb.addField(LangID.getStringByID("help_bc", lang), "```background, castle, enemygif, enemyimage, enemystat, formgif, formimage, formstat, music, stageinfo```", false);
-                emb.addField(LangID.getStringByID("help_server", lang), "```bcustat, checkbcu, clearcache, idset, memory, save, serverprefix```", false);
+                emb.addField(LangID.getStringByID("help_server", lang), "```bcustat, checkbcu, clearcache, idset, memory, save, serverprefix, channelpermission```", false);
                 emb.addField(LangID.getStringByID("help_data", lang), "```animanalyzer, stageimage, stagemapimage```", false);
             }).subscribe();
         }
@@ -136,6 +136,13 @@ public class Help implements Command {
             case "aa":
             case "animanalyzer":
                 ch.createEmbed(e -> addFields(e, "animanalyzer", true, false, true)).subscribe();
+                break;
+            case "channelpermission":
+            case "channelperm":
+            case "chpermission":
+            case "chperm":
+            case "chp":
+                ch.createEmbed(e -> addFields(e, "channelpermission", true, true, true)).subscribe();
                 break;
             default:
                 ch.createMessage(LangID.getStringByID("help_nocomm", lang).replace("_", command)).subscribe();

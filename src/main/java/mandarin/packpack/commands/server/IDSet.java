@@ -11,6 +11,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.IDHolder;
 
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
@@ -98,13 +99,23 @@ public class IDSet extends ConstraintCommand {
                                 String id = msg[i+1];
 
                                 if(isValidID(g, id)) {
+                                    String oldID = holder.MEMBER;
+
                                     holder.MEMBER = id;
+
+                                    if(holder.channel.containsKey(oldID)) {
+                                        ArrayList<String> arr = holder.channel.get(oldID);
+
+                                        holder.channel.put(id, arr);
+                                    }
 
                                     result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
                                     result.append(LangID.getStringByID("idset_idchange", lang).replace("_", "Member").replace("=", getRoleIDWithName(id, event))).append("\n");
 
                                     mem = true;
                                 } else if(id.toLowerCase(Locale.ENGLISH).equals("none")) {
+                                    holder.channel.remove(holder.MEMBER);
+
                                     holder.MEMBER = null;
 
                                     result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
@@ -131,13 +142,23 @@ public class IDSet extends ConstraintCommand {
                                 String id = msg[i+1];
 
                                 if(isValidID(g, id)) {
+                                    String oldID = holder.PRE_MEMBER;
+
                                     holder.PRE_MEMBER = id;
+
+                                    if(holder.channel.containsKey(oldID)) {
+                                        ArrayList<String> arr = holder.channel.get(oldID);
+
+                                        holder.channel.put(id, arr);
+                                    }
 
                                     result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
                                     result.append(LangID.getStringByID("idset_idchange", lang).replace("_", "Pre-Member").replace("=", getRoleIDWithName(id, event))).append("\n");
 
                                     pre = true;
                                 } else if(id.toLowerCase(Locale.ENGLISH).equals("none")) {
+                                    holder.channel.remove(holder.PRE_MEMBER);
+
                                     holder.PRE_MEMBER = null;
 
                                     result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
@@ -164,13 +185,23 @@ public class IDSet extends ConstraintCommand {
                                 String id = msg[i+1];
 
                                 if(isValidID(g, id)) {
+                                    String oldID = holder.MUTED;
+
                                     holder.MUTED = id;
+
+                                    if(holder.channel.containsKey(oldID)) {
+                                        ArrayList<String> arr = holder.channel.get(oldID);
+
+                                        holder.channel.put(id, arr);
+                                    }
 
                                     result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
                                     result.append(LangID.getStringByID("idset_idchange", lang).replace("_", "Muted").replace("=", getRoleIDWithName(id, event))).append("\n");
 
                                     mut = true;
                                 } else if(id.toLowerCase(Locale.ENGLISH).equals("none")) {
+                                    holder.channel.remove(holder.MUTED);
+
                                     holder.MUTED = null;
 
                                     result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
@@ -197,13 +228,23 @@ public class IDSet extends ConstraintCommand {
                                 String id = msg[i+1];
 
                                 if(isValidID(g, id)) {
+                                    String oldID = holder.BCU_PC_USER;
+
                                     holder.BCU_PC_USER = id;
+
+                                    if(holder.channel.containsKey(oldID)) {
+                                        ArrayList<String> arr = holder.channel.get(oldID);
+
+                                        holder.channel.put(id, arr);
+                                    }
 
                                     result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
                                     result.append(LangID.getStringByID("idset_idchange", lang).replace("_", "BCU-PC User").replace("=", getRoleIDWithName(id, event))).append("\n");
 
                                     pc = true;
                                 } else if(id.toLowerCase(Locale.ENGLISH).equals("none")) {
+                                    holder.channel.remove(holder.BCU_PC_USER);
+
                                     holder.BCU_PC_USER = null;
 
                                     result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
@@ -224,19 +265,29 @@ public class IDSet extends ConstraintCommand {
                                 result.append(LangID.getStringByID("idset_ignore", lang).replace("_", "BCU-PC User")).append("\n");
                             }
                             break;
-                        case "-a":
+                        case "-an":
                         case "-bcuandroid":
                             if(!and && i < msg.length - 1) {
                                 String id = msg[i+1];
 
                                 if(isValidID(g, id)) {
+                                    String oldID = holder.BCU_ANDROID;
+
                                     holder.BCU_ANDROID = id;
+
+                                    if(holder.channel.containsKey(oldID)) {
+                                        ArrayList<String> arr = holder.channel.get(oldID);
+
+                                        holder.channel.put(id, arr);
+                                    }
 
                                     result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
                                     result.append(LangID.getStringByID("idset_idchange", lang).replace("_", "BCU-Android User").replace("=", getRoleIDWithName(id, event))).append("\n");
 
                                     and = true;
                                 } else if(id.toLowerCase(Locale.ENGLISH).equals("none")) {
+                                    holder.channel.remove(holder.BCU_ANDROID);
+
                                     holder.BCU_ANDROID = null;
 
                                     result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
