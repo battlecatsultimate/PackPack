@@ -288,7 +288,7 @@
   "help_animanalyzer_desc" : "Analyze custom animation files. Type `c` to cancel analyzing process or will be expired 5 mins later. `aa` is also valid command. **Only Moderators can use this command because this command can potentially cause internal error with misusing**",
   "help_animanalyzer_argu" : "`-r` or `-raw` : Generate animation with mp4 format for high-res result",
   "help_animanalyzer_tip" : "This command requires 4 things : Png, Imgcut, Mamodel, and Maanim file. If you upload one of these files, it will try to grab them and validate if these files have valid format. After getting all 4 files, it will generate gif/mp4 of analyzed animation",
-  "help_channelpermission_use" : "`p!channelpermission <Mode> <[Role] [Channel_ID]> ...`",
+  "help_channelpermission_use" : "`p!channelpermission <Mode> <[Role] [Channel ID]> ...`",
   "help_channelpermission_desc" : "Allow or Disallow users who have specific role to use bot's commands in specified channels. `channelperm`, `chpermission`, `chperm`, `chp` are also valid command. **Only Moderators can use this command because it touches permission of each role**",
   "help_channelpermission_argu" : "`-a` : Enable \"Channel Allowing Mode\"\n`-r` : Enable \"Channel Disallowing Mode\"\n`-me` or `-member` : Decide **Member**'s role ID\n`-p` or `-premember` : Decide **Pre-Memeber**'s role ID\n`-mu` or `-muted` : Decide **Muted**'s role ID\n`-pc` or `-bcupc` : Decide **BCU-PC User**'s role ID\n`-an` or `-bcuandroid` : Decide **BCU-Android User**'s role ID",
   "help_channelpermission_exam" : "`p!chp -r -me #A, #B, #C`\n`p!chp -a -me 123456789012345678, #B, #C -p #D`",
