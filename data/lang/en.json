@@ -406,5 +406,5 @@
   "esp_cantenemy" : "Can't get enemy ID, aborting command",
   "esp_nodata" : "This enemy doesn't have _",
   "medal_nomed" : "Searching with `_`, but no such medal found!",
-  "meal_more" : "This command requires one more argument : [Medal Name]"
+  "medal_more" : "This command requires one more argument : [Medal Name]"
 }
