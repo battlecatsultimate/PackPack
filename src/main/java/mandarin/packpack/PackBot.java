@@ -438,6 +438,10 @@ public class PackBot {
                                 case "esp":
                                     new EnemySprite(ConstraintCommand.ROLE.MEMBER, lang, idh, TimeUnit.SECONDS.toMillis(10)).execute(event);
                                     break;
+                                case "medal":
+                                case "md":
+                                    new Medal(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
+                                    break;
                             }
                         }
                     });

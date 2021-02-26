@@ -289,7 +289,7 @@
   "help_animanalyzer_argu" : "`-r` 또는 `-raw` : 높은 해상도의 결과를 위해 애니메이션을 mp4 형식으로 업로드합니다",
   "help_animanalyzer_tip" : "해당 명령어는 4개의 파일을 요구합니다 : Png, Imgcut, Mamodel, Maanim. 만약 유저가 이 중 하나의 파일을 업로드하면, 봇이 파일을 다운받아 파일 형식을 확인하여 애니메이션 분석 준비를 합니다. 4 종류의 파일이 모두 모이면 분석된 애니메이션을 gif 혹은 mp4 형식으로 업로드합니다",
   "help_channelpermission_use" : "`p!channelpermission <모드> <[역할] [채널 ID]> ...`",
-  "help_channelpermission_desc" : "특정 역할을 가진 유저들이 봇의 명령어를 특정한 채널에서 사용하거나 사용하지 못 하도록 만듭니다. `channelperm`, `chpermission`, `chperm`, `chp` 또한 유효한 명령어 입니다",
+  "help_channelpermission_desc" : "특정 역할을 가진 유저들이 봇의 명령어를 특정한 채널에서 사용하거나 사용하지 못 하도록 만듭니다. `channelperm`, `chpermission`, `chperm`, `chp` 또한 유효한 명령어 입니다. **역할의 권한을 다루는 명령어이므로 서버 관리자 이상만 사용할 수 있습니다**",
   "help_channelpermission_argu" : "`-a` : \"채널 허용 모드\"를 활성화 합니다\n`-r` : Enable \"채널 금지 모드\"를 활성화 합니다\n`-me` 또는 `-member` : **멤버**의 역할을 다룹니다\n`-p` 또는 `-premember` : **준멤버**의 역할을 다룹니다\n`-mu` 또는 `-muted` : **채팅 정지**의 역할을 다룹니다\n`-pc` 또는 `-bcupc` : **BCU PC 유저**의 역할을 다룹니다\n`-a` 또는 `-bcuandroid` : **BCU 안드로이드 유저**의 역할을 다룹니다",
   "help_channelpermission_exam" : "`p!chp -r -me #A, #B, #C`\n`p!chp -a -me 123456789012345678, #B, #C -p #D`",
   "help_channelpermission_tip" : "해당 명령어는 특정한 역할을 가진 유저들이 명령어를 특정한 채널에서 사용/혹은 사용하지 못하도록 만들 수 있습니다. 명령어 옆에 `-a`를 호출하여 특정된 채널에서 명령어가 사용되는 것을 허용할 수 있거나 `-r`을 호출하여 명령어가 사용되는 것을 금지할 수 있습니다.\n\n채널 허용 모드를 정한 뒤에 위의 인자 리스트를 통해 어떤 역할을 다룰지 정하고, 채널(들)을 호출하여 어떤 채널이 허용될지 혹은 금지될지 정합니다.\n\n채널은 #을 통해서 혹은 숫자 형식의 ID를 통해서 호출할 수 있습니다\n\nModerator 역할을 가진 유저들은 항상 어디에서나 명령어 사용이 가능합니다. 만약 유저가, 예를 들어, Member와 BCU-PC 역할을 동시에 갖고 있고, 만약 Member 역할은 #A 에서, BCU-PC 역할은 #B 에서 명령어를 사용할 수 있다면, 해당 유저는 #A 와 #B 두 곳 모두에서 명령어를 사용 할 수 있게 됩니다",
@@ -301,6 +301,9 @@
   "help_enemysprite_desc" : "제공된 이름으로 적을 찾고, 그 적의 이미지 파일을 업로드합니다. `esprite`, `enemysp`, `esp` 또한 유효한 명령어 입니다",
   "help_enemysprite_argu" : "`-edi` : Edi 아이콘을 업로드 합니다",
   "help_enemysprite_exam" : "`p!esp 멍뭉이`\n`p!esp -edi 신 레전드 맴매`\n`p!esp 535`",
+  "help_medal_use" : "`p!medal [메달 이름]",
+  "help_medal_desc" : "제공된 이름으로 메달을 찾고, 그 메달의 정보를 업로드 합니다. `md` 또한 유효한 명령어 입니다",
+  "help_medal_exam" : "`p!medal 세계편 3장`\n`p!medal 086`",
   "prefix_space" : "접두사는 여백으로 설정될 수 없습니다!",
   "prefix_set" : "접두사가 _ 로 설정되었습니다!",
   "prefix_argu" : "해당 명령어는 하나의 정보를 더 요구합니다 : [접두사]",
@@ -333,7 +336,7 @@
   "stinfo_st" : "스테이지 : `_`",
   "stinfo_nores" : "[_] 로 검색해 보았지만, 해당 스테이지를 찾지 못했습니다!",
   "stinfo_several" : "[_] 로 검색한 결과, 여러 종류의 결과가 존재합니다...\n",
-  "stinfo_noname" : "해당 명령어는 하나의 정보를 더 요구합니다! : [스테이지 이름]",
+  "stinfo_noname" : "해당 명령어는 하나의 정보를 더 요구합니다 : [스테이지 이름]",
   "fimg_walk" : "이동",
   "fimg_idle" : "대기",
   "fimg_atk" : "공격",
@@ -390,5 +393,7 @@
   "channelpermission_added" : "_ 역할이 [=] 채널에서 명령어를 사용할 수 있도록 허용했습니다, 이제 이 역할은 [::] 에서 명령어를 사용할 수 있습니다",
   "channelpermission_removed" : "_ 역할이 [=] 채널에서 명령어를 사용할 수 없도록 만들었습니다, 이제 이 역할은 [::] 에서 명령어를 사용할 수 있습니다",
   "channelpermission_noid" : "_ 역할이 지정되지 않았으므로 무시합니다",
-  "channelpermission_ignore" : "_ 역할의 채널이 이미 이 명령어에서 설정되었으므로 무시합니다"
+  "channelpermission_ignore" : "_ 역할의 채널이 이미 이 명령어에서 설정되었으므로 무시합니다",
+  "medal_nomed" : "`_`로 검색을 시도해 보았지만, 해당 메달을 찾지 못했습니다!",
+  "meal_more" : "해당 명령어는 하나의 정보를 더 요구합니다 : [메달 이름]"
 }

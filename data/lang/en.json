@@ -301,6 +301,9 @@
   "help_enemysprite_desc" : "Try to search enemy with specified name, and upload raw image file of it. `esprite`, `enemysp`, `esp` are also valid command",
   "help_enemysprite_argu" : "`-edi` : Try to upload edi icon",
   "help_enemysprite_exam" : "`p!esp Doge`\n`p!esp -edi Relic Bun-Bun`\n`p!esp 535`",
+  "help_medal_use" : "`p!medal [Medal Name]",
+  "help_medal_desc" : "Try to search medal with specified name, and upload info of it. `md` is also valid command",
+  "help_medal_exam" : "`p!medal Builder of Empires 3`\n`p!medal 086`",
   "prefix_space" : "Prefix can't be white spaces!",
   "prefix_set" : "Prefix is set as _!",
   "prefix_argu" : "This command requires one more argument : [Prefix]",
@@ -401,5 +404,7 @@
   "fsp_udi" : "Udi icon",
   "fsp_edi" : "Edi icon",
   "esp_cantenemy" : "Can't get enemy ID, aborting command",
-  "esp_nodata" : "This enemy doesn't have _"
+  "esp_nodata" : "This enemy doesn't have _",
+  "medal_nomed" : "Searching with `_`, but no such medal found!",
+  "meal_more" : "This command requires one more argument : [Medal Name]"
 }

@@ -37,7 +37,7 @@ public class StaticStore {
     public static Map<String, String> langs = new HashMap<>();
     public static Map<String, Integer> locales = new HashMap<>();
 
-    private static Map<String, Holder> holders = new HashMap<>();
+    private static final Map<String, Holder> holders = new HashMap<>();
 
     public static ImgurDataHolder imgur = new ImgurDataHolder(null);
 
@@ -45,6 +45,8 @@ public class StaticStore {
 
     public static final MultiLangCont<Integer, String> MEDNAME = new MultiLangCont<>();
     public static final MultiLangCont<Integer, String> MEDEXP = new MultiLangCont<>();
+    public static int medalNumber = 0;
+    public static JsonElement medalData;
 
     public static final Map<String, Long> timeLimit = new HashMap<>();
 
@@ -62,6 +64,13 @@ public class StaticStore {
             Color.of(240, 140, 53),
             Color.of(240, 112, 60),
             Color.of(222, 51, 60)
+    };
+
+    public static Color[] grade = {
+        Color.of(204,124,84),
+        Color.of(206,209,210),
+        Color.of(213,171,98),
+        Color.of(218,232,240)
     };
 
     public static boolean checkingBCU = false;

@@ -10,6 +10,7 @@ import common.util.stage.StageMap;
 import common.util.unit.Enemy;
 import common.util.unit.Form;
 import common.util.unit.Unit;
+import mandarin.packpack.supporter.StaticStore;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -223,6 +224,34 @@ public class EntityFilter {
         CommonStatic.getConfig().lang = oldConfig;
 
         return res;
+    }
+
+    public static ArrayList<Integer> findMedalByName(String name) {
+        ArrayList<Integer> result = new ArrayList<>();
+
+        for(int i = 0; i < StaticStore.medalNumber; i++) {
+            for(int j = 0; j < 4; j++) {
+                int oldConfg = CommonStatic.getConfig().lang;
+                CommonStatic.getConfig().lang = j;
+
+                String medalName = StaticStore.MEDNAME.getCont(i);
+
+                CommonStatic.getConfig().lang = oldConfg;
+
+                if(medalName == null || medalName.isBlank()) {
+                    medalName = Data.trio(i);
+                } else {
+                    medalName += " " + Data.trio(i);
+                }
+
+                if(medalName.toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
+                    result.add(i);
+                    break;
+                }
+            }
+        }
+
+        return result;
     }
 
     private static String duo(int i) {

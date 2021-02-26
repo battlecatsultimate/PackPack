@@ -33,8 +33,8 @@ public class Help implements Command {
                 emb.setDescription(LangID.getStringByID("help_explain", lang));
                 emb.setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)]);
                 emb.addField(LangID.getStringByID("help_normal", lang), "```analyze, locale, prefix```", false);
-                emb.addField(LangID.getStringByID("help_bc", lang), "```background, castle, enemygif, enemyimage, enemystat, formgif, formimage, formstat, music, stageinfo```", false);
-                emb.addField(LangID.getStringByID("help_server", lang), "```bcustat, checkbcu, clearcache, idset, memory, save, serverprefix, channelpermission```", false);
+                emb.addField(LangID.getStringByID("help_bc", lang), "```background, castle, enemygif, enemyimage, enemysprite, enemystat, formgif, formimage, formsprite, formstat, medal, music, stageinfo```", false);
+                emb.addField(LangID.getStringByID("help_server", lang), "```bcustat, channelpermission, checkbcu, clearcache, idset, memory, save, serverprefix```", false);
                 emb.addField(LangID.getStringByID("help_data", lang), "```animanalyzer, stageimage, stagemapimage```", false);
             }).subscribe();
         }
@@ -155,6 +155,10 @@ public class Help implements Command {
             case "enemysp":
             case "esp":
                 ch.createEmbed(e -> addFields(e, "enemysprite", true, true, false)).subscribe();
+                break;
+            case "medal":
+            case "md":
+                ch.createEmbed(e -> addFields(e, "medal", false, true, false)).subscribe();
                 break;
             default:
                 ch.createMessage(LangID.getStringByID("help_nocomm", lang).replace("_", command)).subscribe();

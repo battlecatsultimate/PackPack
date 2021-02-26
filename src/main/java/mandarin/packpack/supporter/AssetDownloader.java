@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter;
 
+import com.google.gson.JsonParser;
 import common.CommonStatic;
 import common.io.assets.AssetLoader;
 import common.io.assets.UpdateCheck;
@@ -17,6 +18,7 @@ import common.util.unit.Unit;
 import mandarin.packpack.supporter.awt.PCIB;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
@@ -92,7 +94,11 @@ public class AssetDownloader {
             for(String key : CommonStatic.getConfig().localLangMap.keySet()) {
                 StaticStore.langs.put(key, CommonStatic.getConfig().localLangMap.get(key));
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
+        try {
             define();
         } catch (Exception e) {
             e.printStackTrace();
@@ -372,6 +378,28 @@ public class AssetDownloader {
                     }
                 }
             }
+        }
+
+        int i = 0;
+
+        while(true) {
+            VFile vf = VFile.get("./org/page/medal/medal_"+Data.trio(i)+".png");
+
+            if(vf != null) {
+                i++;
+            } else {
+                break;
+            }
+        }
+
+        StaticStore.medalNumber = i;
+
+        VFile medalJson = VFile.get("./org/data/medallist.json");
+
+        if(medalJson != null) {
+            String json = new String(medalJson.getData().getBytes(), StandardCharsets.UTF_8);
+
+            StaticStore.medalData = JsonParser.parseString(json).getAsJsonObject().get("iconID");
         }
 
         File g = new File("./data/assets/lang/Difficulty.txt");

@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.bc;
 
+import com.google.gson.JsonObject;
 import common.CommonStatic;
 import common.battle.data.MaskUnit;
 import common.pack.PackData;
@@ -1760,6 +1761,65 @@ public class EntityHandler {
         });
 
         e.anim.unload();
+    }
+
+    public static void showMedalEmbed(int id, MessageChannel ch, int lang) throws  Exception {
+        File temp = new File("./temp");
+
+        if(!temp.exists()) {
+            boolean res = temp.mkdirs();
+
+            if(!res) {
+                System.out.println("Can't create folder : "+temp.getAbsolutePath());
+                return;
+            }
+        }
+
+        File image = new File("./temp", StaticStore.findFileName(temp, "result", ".png"));
+
+        if(!image.exists()) {
+            boolean res = image.createNewFile();
+
+            if(!res) {
+                System.out.println("Can't create file : "+image.getAbsolutePath());
+                return;
+            }
+        }
+
+        VFile vf = VFile.get("./org/page/medal/medal_"+ Data.trio(id)+".png");
+
+        if(vf == null)
+            ch.createMessage(LangID.getStringByID("medal_nopng", lang)).subscribe();
+        else {
+            BufferedImage img = (BufferedImage) vf.getData().getImg().bimg();
+
+            ImageIO.write(img, "PNG", image);
+
+            FileInputStream fis = new FileInputStream(image);
+
+            ch.createMessage(m -> {
+                m.setEmbed(e -> {
+                    int oldConfig = CommonStatic.getConfig().lang;
+                    CommonStatic.getConfig().lang = lang;
+
+                    String name = StaticStore.MEDNAME.getCont(id);
+                    String desc = StaticStore.MEDEXP.getCont(id);
+
+                    CommonStatic.getConfig().lang = oldConfig;
+
+                    if(StaticStore.medalData != null) {
+                        JsonObject obj = StaticStore.medalData.getAsJsonArray().get(id).getAsJsonObject();
+
+                        int grade = obj.get("grade").getAsInt();
+
+                        e.setColor(StaticStore.grade[grade]);
+                    }
+                    e.addField(name, desc, false);
+                    e.setImage("attachment://medal.png");
+                });
+                m.addFile("medal.png", fis);
+            }).subscribe();
+        }
     }
 
     private static String getIconName(int mode, int lang) {
