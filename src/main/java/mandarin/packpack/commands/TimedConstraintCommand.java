@@ -16,6 +16,8 @@ public abstract class TimedConstraintCommand implements Command {
     protected final int lang;
     protected final long time;
 
+    private boolean startTimer = true;
+
     public TimedConstraintCommand(ConstraintCommand.ROLE role, int lang, IDHolder id, long time) {
         switch (role) {
             case MOD:
@@ -46,9 +48,12 @@ public abstract class TimedConstraintCommand implements Command {
             return;
 
         AtomicReference<Boolean> canGo = new AtomicReference<>(true);
+        AtomicReference<String> memberID = new AtomicReference<>("");
 
         event.getMember().ifPresent(m -> {
             String id = m.getId().asString();
+
+            memberID.set(id);
 
             if(id.equals(StaticStore.MANDARIN_SMELL))
                 return;
@@ -60,12 +65,7 @@ public abstract class TimedConstraintCommand implements Command {
                 if(currentTime-oldTime < time) {
                     ch.createMessage(LangID.getStringByID("command_timelimit", lang).replace("_", getCooldown(time - (currentTime-oldTime)))).subscribe();
                     canGo.set(false);
-                } else {
-                    StaticStore.timeLimit.put(id, currentTime);
                 }
-            } else {
-                long currentTime = System.currentTimeMillis();
-                StaticStore.timeLimit.put(id, currentTime);
             }
         });
 
@@ -101,6 +101,10 @@ public abstract class TimedConstraintCommand implements Command {
                 new Thread(() -> {
                     try {
                         doSomething(event);
+
+                        if(startTimer && !memberID.get().isBlank()) {
+                            StaticStore.timeLimit.put(memberID.get(), System.currentTimeMillis());
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                         onFail(event, DEFAULT_ERROR);
@@ -121,5 +125,9 @@ public abstract class TimedConstraintCommand implements Command {
 
     private String getCooldown(long time) {
         return DataToString.df.format(time / 1000.0);
+    }
+
+    public void disableTimer() {
+        startTimer = false;
     }
 }

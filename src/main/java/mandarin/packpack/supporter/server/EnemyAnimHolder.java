@@ -10,12 +10,8 @@ import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityHandler;
-import mandarin.packpack.supporter.bc.ImageDrawing;
 import mandarin.packpack.supporter.lang.LangID;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -237,44 +233,27 @@ public class EnemyAnimHolder extends Holder {
                         ch.createMessage(LangID.getStringByID("single_wait", lang).replace("_", DataToString.df.format((timeBoolean.totalTime - (System.currentTimeMillis() - StaticStore.canDo.get("gif").time)) / 1000.0))).subscribe();
                     }
                 } else {
-                    File img = ImageDrawing.drawEnemyImage(e , mode, frame, 1.0, transparent, debug);
+                    event.getMember().ifPresent(m -> {
+                        try {
+                            if(StaticStore.timeLimit.containsKey(m.getId().asString())) {
+                                long time = StaticStore.timeLimit.get(m.getId().asString());
 
-                    if(img != null) {
-                        FileInputStream fis = new FileInputStream(img);
-                        CommonStatic.getConfig().lang = lang;
+                                if(System.currentTimeMillis() - time > 10000) {
+                                    EntityHandler.generateEnemyImage(e, ch, mode, frame, transparent, debug, lang);
 
-                        ch.createMessage(m -> {
-                            int oldConfig = CommonStatic.getConfig().lang;
-                            CommonStatic.getConfig().lang = lang;
-
-                            String fName = MultiLangCont.get(enemy.get(id));
-
-                            CommonStatic.getConfig().lang = oldConfig;
-
-                            if(fName == null || fName.isBlank())
-                                fName = enemy.get(id).name;
-
-                            if(fName == null || fName.isBlank())
-                                fName = LangID.getStringByID("data_enemy", lang)+" "+ Data.trio(enemy.get(id).id.id);
-
-                            m.setContent(LangID.getStringByID("eimg_result", lang).replace("_", fName).replace(":::", getModeName(mode, enemy.get(id).anim.anims.length)).replace("=", String.valueOf(frame)));
-                            m.addFile("result.png", fis);
-                        }).subscribe(null, null, () -> {
-                            try {
-                                fis.close();
-                            } catch (IOException err) {
-                                err.printStackTrace();
-                            }
-
-                            if(img.exists()) {
-                                boolean res = img.delete();
-
-                                if(!res) {
-                                    System.out.println("Can't delete file : "+img.getAbsolutePath());
+                                    StaticStore.timeLimit.put(m.getId().asString(), System.currentTimeMillis());
+                                } else {
+                                    ch.createMessage(LangID.getStringByID("command_timelimit", lang).replace("_", DataToString.df.format((System.currentTimeMillis() - time) / 1000.0))).subscribe();
                                 }
+                            } else {
+                                EntityHandler.generateEnemyImage(e, ch, mode, frame, transparent, debug, lang);
+
+                                StaticStore.timeLimit.put(m.getId().asString(), System.currentTimeMillis());
                             }
-                        });
-                    }
+                        } catch (Exception exception) {
+                            exception.printStackTrace();
+                        }
+                    });
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -377,27 +356,5 @@ public class EnemyAnimHolder extends Holder {
         StaticStore.removeHolder(id, this);
 
         msg.edit(m -> m.setContent(LangID.getStringByID("formst_expire", lang))).subscribe();
-    }
-
-    private String getModeName(int mode, int max) {
-        switch (mode) {
-            case 1:
-                return LangID.getStringByID("fimg_idle", lang);
-            case 2:
-                return LangID.getStringByID("fimg_atk", lang);
-            case 3:
-                return LangID.getStringByID("fimg_hitback", lang);
-            case 4:
-                if(max == 5)
-                    return LangID.getStringByID("fimg_enter", lang);
-                else
-                    return LangID.getStringByID("fimg_burrowdown", lang);
-            case 5:
-                return LangID.getStringByID("fimg_burrowmove", lang);
-            case 6:
-                return LangID.getStringByID("fimg_burrowup", lang);
-            default:
-                return LangID.getStringByID("fimg_walk", lang);
-        }
     }
 }

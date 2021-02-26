@@ -55,6 +55,7 @@ public class FormImage extends TimedConstraintCommand {
 
             if(search.isBlank()) {
                 ch.createMessage(LangID.getStringByID("fimg_more", lang)).subscribe();
+                disableTimer();
                 return;
             }
 
@@ -62,6 +63,7 @@ public class FormImage extends TimedConstraintCommand {
 
             if(forms.isEmpty()) {
                 ch.createMessage(LangID.getStringByID("formst_nounit", lang).replace("_", filterCommand(getMessage(event)))).subscribe();
+                disableTimer();
             } else if(forms.size() == 1) {
                 int param = checkParameters(getMessage(event));
                 int mode = getMode(getMessage(event));
@@ -147,9 +149,12 @@ public class FormImage extends TimedConstraintCommand {
                 if(res != null) {
                     event.getMember().ifPresent(member -> StaticStore.putHolder(member.getId().asString(), new FormAnimHolder(forms, event.getMessage(), res, ch.getId().asString(), mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang, false, false)));
                 }
+
+                disableTimer();
             }
         } else {
             ch.createMessage(LangID.getStringByID("fimg_more", lang)).subscribe();
+            disableTimer();
         }
     }
 

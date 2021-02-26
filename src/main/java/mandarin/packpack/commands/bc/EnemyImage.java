@@ -62,6 +62,7 @@ public class EnemyImage extends TimedConstraintCommand {
 
             if(enemies.isEmpty()) {
                 ch.createMessage(LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(getMessage(event)))).subscribe();
+                disableTimer();
             } else if(enemies.size() == 1) {
                 int param = checkParameters(getMessage(event));
                 int mode = getMode(getMessage(event));
@@ -158,9 +159,12 @@ public class EnemyImage extends TimedConstraintCommand {
                 if(res != null) {
                     event.getMember().ifPresent(member -> StaticStore.putHolder(member.getId().asString(), new EnemyAnimHolder(enemies, event.getMessage(), res, ch.getId().asString(), mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang, false, false)));
                 }
+
+                disableTimer();
             }
         } else {
             ch.createMessage(LangID.getStringByID("eimg_more", lang)).subscribe();
+            disableTimer();
         }
     }
 

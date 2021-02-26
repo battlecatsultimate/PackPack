@@ -60,11 +60,7 @@ public class FormAnimHolder extends Holder {
 
                 author.getAuthor().ifPresent(u -> StaticStore.removeHolder(u.getId().asString(), FormAnimHolder.this));
 
-                msg.edit(m -> {
-                    m.setContent(LangID.getStringByID("formst_expire", lang));
-
-                    expired = true;
-                }).subscribe();
+                msg.edit(m -> m.setContent(LangID.getStringByID("formst_expire", lang))).subscribe();
             }
         }, TimeUnit.MINUTES.toMillis(5));
     }
@@ -224,7 +220,27 @@ public class FormAnimHolder extends Holder {
                         ch.createMessage(LangID.getStringByID("single_wait", lang).replace("_", DataToString.df.format((timeBoolean.totalTime - (System.currentTimeMillis() - StaticStore.canDo.get("gif").time)) / 1000.0))).subscribe();
                     }
                 } else {
-                    EntityHandler.generateFormImage(f, ch, mode, frame, transparent, debug, lang);
+                    event.getMember().ifPresent(m -> {
+                        try {
+                            if(StaticStore.timeLimit.containsKey(m.getId().asString())) {
+                                long time = StaticStore.timeLimit.get(m.getId().asString());
+
+                                if(System.currentTimeMillis() - time > 10000) {
+                                    EntityHandler.generateFormImage(f, ch, mode, frame, transparent, debug, lang);
+
+                                    StaticStore.timeLimit.put(m.getId().asString(), System.currentTimeMillis());
+                                } else {
+                                    ch.createMessage(LangID.getStringByID("command_timelimit", lang).replace("_", DataToString.df.format((System.currentTimeMillis() - time) / 1000.0))).subscribe();
+                                }
+                            } else {
+                                EntityHandler.generateFormImage(f, ch, mode, frame, transparent, debug, lang);
+
+                                StaticStore.timeLimit.put(m.getId().asString(), System.currentTimeMillis());
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
                 }
             } catch (Exception e) {
                 e.printStackTrace();
