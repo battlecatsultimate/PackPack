@@ -1818,7 +1818,21 @@ public class EntityHandler {
                     e.setImage("attachment://medal.png");
                 });
                 m.addFile("medal.png", fis);
-            }).subscribe();
+            }).subscribe(null, null, () -> {
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                if(image.exists()) {
+                    boolean res = image.delete();
+
+                    if(!res) {
+                        System.out.println("Can't delete file : "+image.getAbsolutePath());
+                    }
+                }
+            });
         }
     }
 
