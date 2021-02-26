@@ -53,6 +53,8 @@ public class LangID {
 
                     if(EN_OBJ.has(id))
                         return EN_OBJ.get(id).getAsString();
+                    else
+                        return id;
                 }
 
                 if(JP_OBJ.has(id))
@@ -66,6 +68,8 @@ public class LangID {
 
                     if(EN_OBJ.has(id))
                         return EN_OBJ.get(id).getAsString();
+                    else
+                        return id;
                 }
 
                 if(KR_OBJ.has(id))
@@ -79,6 +83,8 @@ public class LangID {
 
                     if(EN_OBJ.has(id))
                         return EN_OBJ.get(id).getAsString();
+                    else
+                        return id;
                 }
 
                 if(ZH_OBJ.has(id))
