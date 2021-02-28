@@ -1807,7 +1807,15 @@ public class EntityHandler {
             }
         }
 
-        VFile vf = VFile.get("./org/page/medal/medal_"+ Data.trio(id)+".png");
+        String medalName = "./org/page/medal/medal_"+Data.trio(id);
+
+        if(id <= 13 && lang != 3) {
+            medalName += "_"+getLocaleName(lang);
+        }
+
+        medalName += ".png";
+
+        VFile vf = VFile.get(medalName);
 
         if(vf == null)
             ch.createMessage(LangID.getStringByID("medal_nopng", lang)).subscribe();
@@ -1953,5 +1961,16 @@ public class EntityHandler {
             default:
                 return AnimU.UType.WALK;
         }
+    }
+
+    private static String getLocaleName(int lang) {
+        if(lang == 0)
+            return "en";
+        else if(lang == 1)
+            return "tw";
+        else if(lang == 2)
+            return "kr";
+        else
+            return "";
     }
 }

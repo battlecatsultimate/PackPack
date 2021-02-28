@@ -49,7 +49,7 @@ public class AssetDownloader {
                 }
             }
 
-            asset = UpdateCheck.checkAsset(json, "android");
+            asset = UpdateCheck.checkAsset(json, "android", "bot");
             music = UpdateCheck.checkMusic(json.music);
             lang = UpdateCheck.checkLang(langFile.toArray(new String[0])).get();
 
