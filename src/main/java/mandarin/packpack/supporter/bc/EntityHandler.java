@@ -1008,11 +1008,22 @@ public class EntityHandler {
     }
 
     public static void generateFormImage(Form f, MessageChannel ch, int mode, int frame, boolean transparent, boolean debug, int lang) throws Exception {
-        File img = ImageDrawing.drawFormImage(f, mode, frame, 1.0, transparent, debug);
+        f.anim.load();
+
+        if(mode >= f.anim.anims.length)
+            mode = 0;
+
+        EAnimD<?> anim = f.anim.getEAnim(ImageDrawing.getAnimType(mode, f.anim.anims.length));
+
+        File img = ImageDrawing.drawAnimImage(anim, frame, 1.0, transparent, debug);
+
+        f.anim.unload();
 
         if(img != null) {
             FileInputStream fis = new FileInputStream(img);
             CommonStatic.getConfig().lang = lang;
+
+            int finalMode = mode;
 
             ch.createMessage(m -> {
                 int oldConfig = CommonStatic.getConfig().lang;
@@ -1028,7 +1039,7 @@ public class EntityHandler {
                 if(fName == null || fName.isBlank())
                     fName = LangID.getStringByID("data_unit", lang)+" "+ Data.trio(f.uid.id)+" "+Data.trio(f.fid);
 
-                m.setContent(LangID.getStringByID("fimg_result", lang).replace("_", fName).replace(":::", getModeName(mode, f.anim.anims.length, lang)).replace("=", String.valueOf(frame)));
+                m.setContent(LangID.getStringByID("fimg_result", lang).replace("_", fName).replace(":::", getModeName(finalMode, f.anim.anims.length, lang)).replace("=", String.valueOf(frame)));
                 m.addFile("result.png", fis);
             }).subscribe(null, null, () -> {
                 try {
@@ -1048,28 +1059,38 @@ public class EntityHandler {
         }
     }
 
-    public static void generateEnemyImage(Enemy f, MessageChannel ch, int mode, int frame, boolean transparent, boolean debug, int lang) throws Exception {
-        File img = ImageDrawing.drawEnemyImage(f, mode, frame, 1.0, transparent, debug);
+    public static void generateEnemyImage(Enemy en, MessageChannel ch, int mode, int frame, boolean transparent, boolean debug, int lang) throws Exception {
+        en.anim.load();
+
+        if(mode >= en.anim.anims.length)
+            mode = 0;
+
+        EAnimD<?> anim = en.anim.getEAnim(ImageDrawing.getAnimType(mode, en.anim.anims.length));
+
+        File img = ImageDrawing.drawAnimImage(anim, frame, 1.0, transparent, debug);
+
+        en.anim.unload();
 
         if(img != null) {
             FileInputStream fis = new FileInputStream(img);
             CommonStatic.getConfig().lang = lang;
 
+            int finalMode = mode;
             ch.createMessage(m -> {
                 int oldConfig = CommonStatic.getConfig().lang;
                 CommonStatic.getConfig().lang = lang;
 
-                String fName = MultiLangCont.get(f);
+                String fName = MultiLangCont.get(en);
 
                 CommonStatic.getConfig().lang = oldConfig;
 
                 if(fName == null || fName.isBlank())
-                    fName = f.name;
+                    fName = en.name;
 
                 if(fName == null || fName.isBlank())
-                    fName = LangID.getStringByID("data_enemy", lang)+" "+ Data.trio(f.id.id);
+                    fName = LangID.getStringByID("data_enemy", lang)+" "+ Data.trio(en.id.id);
 
-                m.setContent(LangID.getStringByID("fimg_result", lang).replace("_", fName).replace(":::", getModeName(mode, f.anim.anims.length, lang)).replace("=", String.valueOf(frame)));
+                m.setContent(LangID.getStringByID("fimg_result", lang).replace("_", fName).replace(":::", getModeName(finalMode, en.anim.anims.length, lang)).replace("=", String.valueOf(frame)));
                 m.addFile("result.png", fis);
             }).subscribe(null, null, () -> {
                 try {
@@ -1399,7 +1420,7 @@ public class EntityHandler {
         return true;
     }
 
-    public static void generateAnim(MessageChannel ch, String md5, AnimMixer mixer, int lang, boolean debug, int limit, boolean raw) throws Exception {
+    public static void generateAnim(MessageChannel ch, String md5, AnimMixer mixer, int lang, boolean debug, int limit, boolean raw, int index) throws Exception {
         if(!debug) {
             String link = StaticStore.imgur.get(md5);
             boolean finalized = StaticStore.imgur.finalized(md5);
@@ -1419,7 +1440,7 @@ public class EntityHandler {
             return;
         }
 
-        EAnimD<?> anim = mixer.getAnim();
+        EAnimD<?> anim = mixer.getAnim(index);
 
         if(anim == null) {
             ch.createMessage("Failed to generate anim instance").subscribe();

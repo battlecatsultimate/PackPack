@@ -2,6 +2,7 @@ package mandarin.packpack.commands.bc;
 
 import common.CommonStatic;
 import common.util.Data;
+import common.util.anim.EAnimD;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Form;
 import discord4j.core.event.domain.message.MessageCreateEvent;
@@ -69,11 +70,21 @@ public class FormImage extends TimedConstraintCommand {
                 int mode = getMode(getMessage(event));
                 int frame = getFrame(getMessage(event));
 
-                File img = ImageDrawing.drawFormImage(forms.get(0), mode, frame, 1.0, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0));
+                forms.get(0).anim.load();
+
+                if(mode >= forms.get(0).anim.anims.length)
+                    mode = 0;
+
+                EAnimD<?> anim = forms.get(0).anim.getEAnim(ImageDrawing.getAnimType(mode, forms.get(0).anim.anims.length));
+
+                File img = ImageDrawing.drawAnimImage(anim, frame, 1.0, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0));
+
+                forms.get(0).anim.unload();
 
                 if(img != null) {
                     FileInputStream fis = new FileInputStream(img);
 
+                    int finalMode = mode;
                     ch.createMessage(m -> {
                         int oldConfig = CommonStatic.getConfig().lang;
                         CommonStatic.getConfig().lang = lang;
@@ -88,7 +99,7 @@ public class FormImage extends TimedConstraintCommand {
                         if(fName == null || fName.isBlank())
                             fName = LangID.getStringByID("data_unit", lang)+" "+ Data.trio(forms.get(0).uid.id)+" "+Data.trio(forms.get(0).fid);
 
-                        m.setContent(LangID.getStringByID("fimg_result", lang).replace("_", fName).replace(":::", getModeName(mode, forms.get(0).anim.anims.length)).replace("=", String.valueOf(frame)));
+                        m.setContent(LangID.getStringByID("fimg_result", lang).replace("_", fName).replace(":::", getModeName(finalMode, forms.get(0).anim.anims.length)).replace("=", String.valueOf(frame)));
                         m.addFile("result.png", fis);
                     }).subscribe(null, null, () -> {
                         try {
