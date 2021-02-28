@@ -1,0 +1,9 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="IOResource" enabled="false" level="WARNING" enabled_by_default="false">
+      <option name="ignoredTypesString" value="java.io.ByteArrayOutputStream,java.io.ByteArrayInputStream,java.io.StringBufferInputStream,java.io.CharArrayWriter,java.io.CharArrayReader,java.io.StringWriter,java.io.StringReader,common.io.PackLoader.FileLoader.FLStream,common.io.ISStream" />
+      <option name="insideTryAllowed" value="false" />
+    </inspection_tool>
+  </profile>
+</component>

@@ -455,7 +455,8 @@ public class StaticStore {
     public static boolean isNumeric(String name) {
         for(int i = 0; i < name.length(); i++) {
             if(!Character.isDigit(name.charAt(i)))
-                return false;
+                if(i != 0 || name.charAt(i) != '-')
+                    return false;
         }
 
         return true;
@@ -490,6 +491,8 @@ public class StaticStore {
             while((n = fis.read(buffer)) != -1) {
                 md5.update(buffer, 0, n);
             }
+
+            fis.close();
 
             byte[] result = md5.digest();
 

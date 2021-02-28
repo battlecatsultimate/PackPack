@@ -2,7 +2,7 @@ package mandarin.packpack.commands;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.channel.MessageChannel;
-import mandarin.packpack.supporter.event.StageSchedule;
+import mandarin.packpack.supporter.event.GachaSchedule;
 import mandarin.packpack.supporter.server.IDHolder;
 
 import java.util.concurrent.TimeUnit;
@@ -20,12 +20,12 @@ public class Test extends GlobalTimedConstraintCommand {
         if(ch == null)
             return;
 
-        String[] list = getMessage(event).replace("    ", "\t").split(" ");
+        String[] list = getMessage(event).replace("    ", "\t").split(" ", 2);
 
         if(list.length >= 2) {
-            StageSchedule schedule = new StageSchedule(list[1]);
+            GachaSchedule gacha = new GachaSchedule(list[1]);
 
-            ch.createMessage(schedule.dataToString()).subscribe();
+            ch.createMessage(gacha.dataToString()).subscribe();
         }
     }
 
