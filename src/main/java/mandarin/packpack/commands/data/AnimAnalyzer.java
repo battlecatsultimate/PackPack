@@ -26,7 +26,18 @@ public class AnimAnalyzer extends ConstraintCommand {
         if(ch == null)
             return;
 
-        Message m = ch.createMessage("PNG : -\nIMGCUT : -\nMAMODEL : -\nMAANIM : -").block();
+        int anim = getAnimNumber(getMessage(event));
+
+        StringBuilder message = new StringBuilder("PNG : -\nIMGCUT : -\nMAMODEL : -\n");
+
+        for(int i = 0; i < anim; i++) {
+            message.append("MAANIM ").append(i).append(" : -");
+
+            if(i < anim - 1)
+                message.append("\n");
+        }
+
+        Message m = ch.createMessage(message.toString()).block();
 
         if(m == null)
             return;
@@ -58,7 +69,7 @@ public class AnimAnalyzer extends ConstraintCommand {
             }
         }
 
-        new AnimHolder(event.getMessage(), m, lang, ch.getId().asString(), container, debug, ch, raw);
+        new AnimHolder(event.getMessage(), m, lang, ch.getId().asString(), container, debug, ch, raw, anim);
     }
 
     private int checkParam(String message) {
@@ -93,5 +104,17 @@ public class AnimAnalyzer extends ConstraintCommand {
         }
 
         return result;
+    }
+
+    private int getAnimNumber(String message) {
+        String[] contents = message.split(" ");
+
+        for(int i = 0; i < contents.length; i++) {
+            if((contents[i].equals("-anim") || (contents[i].equals("-a"))) && i < contents.length - 1 && StaticStore.isNumeric(contents[i+1])) {
+                return Math.min(5, Math.max(1, StaticStore.safeParseInt(contents[i + 1])));
+            }
+        }
+
+        return 1;
     }
 }

@@ -17,6 +17,7 @@ import mandarin.packpack.supporter.lang.LangID;
 
 import javax.imageio.ImageIO;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -35,21 +36,20 @@ public class AnimHolder extends Holder {
     private boolean pngDone = false;
     private boolean cutDone = false;
     private boolean modelDone = false;
-    private boolean animDone = false;
 
     private final AtomicReference<String> png = new AtomicReference<>("PNG : -");
     private final AtomicReference<String> imgcut = new AtomicReference<>("IMGCUT : -");
     private final AtomicReference<String> mamodel = new AtomicReference<>("MAMODEL : -");
-    private final AtomicReference<String> maanim = new AtomicReference<>("MAANIM : -");
+    private final ArrayList<AtomicReference<String>> maanim = new ArrayList<>();
 
     private String pngName;
     private String cutName;
     private String modelName;
-    private String animName;
+    private final String[] animName;
 
     private boolean expired = false;
 
-    public AnimHolder(Message msg, Message target, int lang, String channelID, File container, boolean debug, MessageChannel ch, boolean raw) throws Exception {
+    public AnimHolder(Message msg, Message target, int lang, String channelID, File container, boolean debug, MessageChannel ch, boolean raw, int len) throws Exception {
         this.msg = target;
         this.lang = lang;
         this.channelID = channelID;
@@ -58,7 +58,12 @@ public class AnimHolder extends Holder {
         this.debug = debug;
         this.raw = raw;
 
-        mixer = new AnimMixer();
+        mixer = new AnimMixer(len);
+        animName = new String[len];
+
+        for(int i = 0; i < len; i++) {
+            maanim.add(new AtomicReference<>("MAANIM "+i+" : -"));
+        }
 
         AtomicReference<Long> now = new AtomicReference<>(System.currentTimeMillis());
 
@@ -192,12 +197,17 @@ public class AnimHolder extends Holder {
 
                         edit();
                     }
-                } else if((a.getFilename().endsWith(".maanim") || (a.getFilename().startsWith("maanim") && a.getFilename().endsWith(".txt"))) && mixer.anim == null) {
+                } else if((a.getFilename().endsWith(".maanim") || (a.getFilename().startsWith("maanim") && a.getFilename().endsWith(".txt"))) && !animAllDone()) {
+                    int ind = getLastIndex();
+
+                    if(ind == -1)
+                        continue;
+
                     UpdateCheck.Downloader down = StaticStore.getDownloader(a, container);
 
                     if(down != null) {
                         down.run(d -> {
-                            String p = "MAANIM : ";
+                            String p = "MAANIM "+ind+" : ";
 
                             if(d == 1.0) {
                                 p += "VALIDATING...";
@@ -205,7 +215,7 @@ public class AnimHolder extends Holder {
                                 p += DataToString.df.format(d * 100.0) + "%";
                             }
 
-                            maanim.set(p);
+                            maanim.get(ind).set(p);
 
                             if(System.currentTimeMillis() - now.get() >= 1500) {
                                 now.set(System.currentTimeMillis());
@@ -218,20 +228,19 @@ public class AnimHolder extends Holder {
 
                         if(res.exists()) {
                             if(mixer.validMaanim(res)) {
-                                maanim.set("MAANIM : SUCCESS");
-                                animDone = true;
-                                animName = a.getFilename();
+                                maanim.get(ind).set("MAANIM "+ind+" : SUCCESS");
+                                animName[ind] = a.getFilename();
 
                                 VFile vf = VFile.getFile(res);
 
                                 if(vf != null) {
-                                    mixer.anim = MaAnim.newIns(vf.getData());
+                                    mixer.anim[ind] = MaAnim.newIns(vf.getData());
                                 }
                             } else {
-                                maanim.set("MAANIM : INVALID");
+                                maanim.get(ind).set("MAANIM "+ind+" : INVALID");
                             }
                         } else {
-                            maanim.set("MAANIM : DOWN_FAIL");
+                            maanim.get(ind).set("MAANIM "+ind+" : DOWN_FAIL");
                         }
 
                         edit();
@@ -240,16 +249,23 @@ public class AnimHolder extends Holder {
             }
         }
 
-        if(pngDone && cutDone && modelDone && animDone) {
+        if(pngDone && cutDone && modelDone && animAllDone()) {
             new Thread(() -> {
                 try {
-                    String id = generateMD5ID();
+                    for(int i = 0; i < mixer.anim.length; i++) {
+                        String id = generateMD5ID(i);
 
-                    if(id != null) {
-                        EntityHandler.generateAnim(ch, id, mixer, lang, debug, -1, raw);
+                        if(id != null) {
+                            EntityHandler.generateAnim(ch, id, mixer, lang, debug, -1, raw, i);
+                        }
                     }
 
-                    StaticStore.deleteFile(container, true);
+                    new Timer().schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            StaticStore.deleteFile(container, true);
+                        }
+                    }, 1000);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -429,12 +445,17 @@ public class AnimHolder extends Holder {
 
                             edit();
                         }
-                    } else if((a.getFilename().endsWith(".maanim") || (a.getFilename().startsWith("maanim") && a.getFilename().endsWith(".txt"))) && mixer.anim == null) {
+                    } else if((a.getFilename().endsWith(".maanim") || (a.getFilename().startsWith("maanim") && a.getFilename().endsWith(".txt"))) && !animAllDone()) {
+                        int ind = getLastIndex();
+
+                        if(ind == -1)
+                            continue;
+
                         UpdateCheck.Downloader down = StaticStore.getDownloader(a, container);
 
                         if(down != null) {
                             down.run(d -> {
-                                String p = "MAANIM : ";
+                                String p = "MAANIM "+ind+" : ";
 
                                 if(d == 1.0) {
                                     p += "VALIDATING...";
@@ -442,7 +463,7 @@ public class AnimHolder extends Holder {
                                     p += DataToString.df.format(d * 100.0) + "%";
                                 }
 
-                                maanim.set(p);
+                                maanim.get(ind).set(p);
 
                                 if(System.currentTimeMillis() - now.get() >= 1500) {
                                     now.set(System.currentTimeMillis());
@@ -455,20 +476,19 @@ public class AnimHolder extends Holder {
 
                             if(res.exists()) {
                                 if(mixer.validMaanim(res)) {
-                                    maanim.set("MAANIM : SUCCESS");
-                                    animDone = true;
-                                    animName = a.getFilename();
+                                    maanim.get(ind).set("MAANIM "+ind+" : SUCCESS");
+                                    animName[ind] = a.getFilename();
 
                                     VFile vf = VFile.getFile(res);
 
                                     if(vf != null) {
-                                        mixer.anim = MaAnim.newIns(vf.getData());
+                                        mixer.anim[ind] = MaAnim.newIns(vf.getData());
                                     }
                                 } else {
-                                    maanim.set("MAANIM : INVALID");
+                                    maanim.get(ind).set("MAANIM "+ind+" : INVALID");
                                 }
                             } else {
-                                maanim.set("MAANIM : DOWN_FAIL");
+                                maanim.get(ind).set("MAANIM "+ind+" : DOWN_FAIL");
                             }
 
                             edit();
@@ -478,16 +498,23 @@ public class AnimHolder extends Holder {
 
                 m.delete().subscribe();
 
-                if(pngDone && cutDone && modelDone && animDone) {
+                if(pngDone && cutDone && modelDone && animAllDone()) {
                     new Thread(() -> {
                         try {
-                            String id = generateMD5ID();
+                            for(int i = 0; i < maanim.size(); i++) {
+                                String id = generateMD5ID(i);
 
-                            if(id != null) {
-                                EntityHandler.generateAnim(ch, id, mixer, lang, debug, -1, raw);
+                                if(id != null) {
+                                    EntityHandler.generateAnim(ch, id, mixer, lang, debug, -1, raw, i);
+                                }
                             }
 
-                            StaticStore.deleteFile(container, true);
+                            new Timer().schedule(new TimerTask() {
+                                @Override
+                                public void run() {
+                                    StaticStore.deleteFile(container, true);
+                                }
+                            }, 1000);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -497,6 +524,8 @@ public class AnimHolder extends Holder {
                 }
             } else if(m.getContent().equals("c")) {
                 msg.edit(e -> e.setContent(LangID.getStringByID("animanalyze_cancel", lang))).subscribe();
+
+                StaticStore.deleteFile(container, true);
 
                 return RESULT_FINISH;
             }
@@ -525,10 +554,19 @@ public class AnimHolder extends Holder {
     }
 
     private void edit() {
-        msg.edit(m -> m.setContent(png.get()+"\n"+imgcut.get()+"\n"+mamodel.get()+"\n"+maanim.get())).subscribe();
+        StringBuilder content = new StringBuilder(png.get()+"\n"+imgcut.get()+"\n"+mamodel.get()+"\n");
+
+        for(int i = 0; i < maanim.size(); i++) {
+            content.append(maanim.get(i));
+
+            if(i < maanim.size() - 1)
+                content.append("\n");
+        }
+
+        msg.edit(m -> m.setContent(content.toString())).subscribe();
     }
 
-    public String generateMD5ID() {
+    public String generateMD5ID(int index) {
         if(!container.exists() || container.isFile())
             return null;
 
@@ -550,11 +588,29 @@ public class AnimHolder extends Holder {
         if(!mod.exists())
             return null;
 
-        File anim = new File(container, animName);
+        File anim = new File(container, animName[index]);
 
         if(!anim.exists())
             return null;
 
         return "C - "+StaticStore.fileToMD5(png)+" - "+StaticStore.fileToMD5(cut)+" - "+StaticStore.fileToMD5(mod)+" - "+StaticStore.fileToMD5(anim);
+    }
+
+    private int getLastIndex() {
+        for(int i = 0; i < mixer.anim.length; i++) {
+            if(mixer.anim[i] == null)
+                return i;
+        }
+
+        return -1;
+    }
+
+    private boolean animAllDone() {
+        for(int i = 0; i < mixer.anim.length; i++) {
+            if(mixer.anim[i] == null)
+                return false;
+        }
+
+        return true;
     }
 }

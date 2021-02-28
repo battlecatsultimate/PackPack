@@ -17,21 +17,31 @@ public class AnimMixer implements Source.AnimLoader {
     public BufferedImage png;
     public ImgCut imgCut;
     public MaModel model;
-    public MaAnim anim;
+    public MaAnim[] anim;
 
     public AnimCI mixture;
 
-    public EAnimD<?> getAnim() {
+    public AnimMixer(int len) {
+        anim = new MaAnim[len];
+    }
+
+    public EAnimD<?> getAnim(int index) {
+        if(index < 0)
+            index = 0;
+
+        if(index >= anim.length)
+            index = anim.length - 1;
+
         if(mixture == null) {
             boolean result = mix();
 
             if(!result) {
                 return null;
             } else {
-                return new EAnimD<>(mixture, model, anim);
+                return new EAnimD<>(mixture, model, anim[index]);
             }
         } else {
-            return new EAnimD<>(mixture, model, anim);
+            return new EAnimD<>(mixture, model, anim[index]);
         }
     }
 
@@ -134,7 +144,7 @@ public class AnimMixer implements Source.AnimLoader {
 
     @Override
     public MaAnim[] getMA() {
-        return new MaAnim[] {anim};
+        return anim;
     }
 
     @Override
