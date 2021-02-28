@@ -4,8 +4,8 @@ import common.util.Data;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
 
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -383,6 +383,9 @@ public class GachaSchedule extends EventFactor {
         try {
             String html = getHtmlFromUrl(url);
 
+            if(html == null)
+                return "Gacha Code "+Data.trio(gachaID);
+
             Matcher m = p.matcher(html);
 
             boolean res = m.find();
@@ -400,7 +403,10 @@ public class GachaSchedule extends EventFactor {
     }
 
     private String getHtmlFromUrl(String url) throws Exception {
-        URLConnection connection = new URL(url).openConnection();
+        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+
+        if(connection.getResponseCode() == 403)
+            return null;
 
         Scanner scan = new Scanner(connection.getInputStream());
 
