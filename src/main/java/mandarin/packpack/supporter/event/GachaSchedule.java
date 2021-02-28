@@ -1,11 +1,19 @@
 package mandarin.packpack.supporter.event;
 
+import common.util.Data;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
 
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class GachaSchedule extends EventFactor {
+    private static final Pattern p = Pattern.compile("<h2>.+</h2>");
+
     public ArrayList<EventSection> sections = new ArrayList<>();
     public EventDateSet date;
     public String minVersion, maxVersion;
@@ -248,7 +256,7 @@ public class GachaSchedule extends EventFactor {
         for (GachaSection section : gacha) {
             result.append("<").append(section.index + 1).append(getNumberExtension(section.index + 1)).append(" Gacha>\n\n");
 
-            result.append("ID : ").append(section.gachaID).append("\n");
+            result.append("Gacha Name : ").append(tryGetGachaName(section.gachaID)).append("\n");
             result.append("Cf per roll : ").append(section.requiredCatFruit).append("\n");
             result.append("Rarity Data : ");
 
@@ -364,5 +372,44 @@ public class GachaSchedule extends EventFactor {
             default:
                 return "Unknown Month "+mon;
         }
+    }
+
+    public String tryGetGachaName(int gachaID) {
+        if(gachaID <= 100)
+            return "Gacha Code "+Data.trio(gachaID);
+
+        String url = GACHAURL.replace("___", Data.trio(gachaID));
+
+        try {
+            String html = getHtmlFromUrl(url);
+
+            Matcher m = p.matcher(html);
+
+            boolean res = m.find();
+
+            if(!res) {
+                return "Gacha Code " + Data.trio(gachaID);
+            }
+
+            return m.group(0).replace("<h2>", "").replace("</h2>", "").replaceAll("<span.+</span>", "") + " ["+Data.trio(gachaID)+"]";
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            return "Gacha Code " + Data.trio(gachaID);
+        }
+    }
+
+    private String getHtmlFromUrl(String url) throws Exception {
+        URLConnection connection = new URL(url).openConnection();
+
+        Scanner scan = new Scanner(connection.getInputStream());
+
+        scan.useDelimiter("\\Z");
+
+        String content = scan.next();
+
+        scan.close();
+
+        return content;
     }
 }

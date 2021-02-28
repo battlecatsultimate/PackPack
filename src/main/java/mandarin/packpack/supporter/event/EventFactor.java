@@ -40,4 +40,6 @@ public class EventFactor {
     public static final int DRINKA = 700;
     public static final int DRINKB = 701;
     public static final int DRINKC = 702;
+
+    public static final String GACHAURL = "https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/gacha/rare/en/R___.html";
 }
