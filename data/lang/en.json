@@ -205,7 +205,7 @@
   "help_bc" : "BC Related Commands",
   "help_server" : "Server/Moderating Commands",
   "help_nocomm" : "No such command `_` exists",
-  "help_explain" : "This embed text contains all commands",
+  "help_explain" : "This embed text contains all commands\nUse `p!help [Command Name]` (without bracket) to see detailed info of specified command",
   "help_use" : "Usage",
   "help_desc" : "Description",
   "help_argu" : "Arguments",
@@ -304,6 +304,10 @@
   "help_medal_use" : "`p!medal [Medal Name]`",
   "help_medal_desc" : "Try to search medal with specified name, and upload info of it. `md` is also valid command",
   "help_medal_exam" : "`p!medal Builder of Empires 3`\n`p!medal 086`",
+  "help_announcement_use" : "`p!announcement <locale>`",
+  "help_announcement_desc" : "Upload BC announcement link which lasts for 5 minutes (The link when you tap \"i\" button in main menu of BC). If argument isn't specified it uploads link syncing with user's locale. `ann` is also valid command",
+  "help_announcement_argu" : "-en : Upload BCEN announcement link\n-jp : Upload BCJP announcement link\n-kr : Upload BCKR announcement link\n-tw : Upload BCTW announcement link",
+  "help_announcement_exam" : "`p!ann`\n`p!ann -en`",
   "prefix_space" : "Prefix can't be white spaces!",
   "prefix_set" : "Prefix is set as _!",
   "prefix_argu" : "This command requires one more argument : [Prefix]",
@@ -406,5 +410,6 @@
   "esp_cantenemy" : "Can't get enemy ID, aborting command",
   "esp_nodata" : "This enemy doesn't have _",
   "medal_nomed" : "Searching with `_`, but no such medal found!",
-  "medal_more" : "This command requires one more argument : [Medal Name]"
+  "medal_more" : "This command requires one more argument : [Medal Name]",
+  "announce_limit" : "This link has 5 minutes limit, call this command again if 5 minutes already have passed : "
 }

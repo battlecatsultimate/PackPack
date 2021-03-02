@@ -3,6 +3,8 @@ package mandarin.packpack.supporter.event;
 public class EventFactor {
     public static EventDate END = new EventDate(20300101);
     public static String NOMAX = "99.99.99";
+    public static String currentGlobalVersion = "100201";
+    public static String currentJapaneseVersion = "100300";
 
     public static final int SUNDAY = 1;
     public static final int MONDAY = 2;
@@ -42,4 +44,5 @@ public class EventFactor {
     public static final int DRINKC = 702;
 
     public static final String GACHAURL = "https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/gacha/rare/en/R___.html";
+    public static final String ANNOUNCEURL = "https://nyanko-announcement.ponosgames.com/v1/notices?platform=google&clientVersion=VVVVVV&countryCode=LL&clearedStageJapan=100&clearedStageFuture=100&clearedUniverse=100&clientTime=DDDDDDDDD&timeDifference=1";
 }

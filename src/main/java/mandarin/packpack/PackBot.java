@@ -17,6 +17,7 @@ import discord4j.rest.request.RouterOptions;
 import mandarin.packpack.commands.*;
 import mandarin.packpack.commands.bc.*;
 import mandarin.packpack.commands.data.AnimAnalyzer;
+import mandarin.packpack.commands.data.Announcement;
 import mandarin.packpack.commands.data.StageImage;
 import mandarin.packpack.commands.data.StmImage;
 import mandarin.packpack.commands.server.*;
@@ -441,6 +442,10 @@ public class PackBot {
                                 case "medal":
                                 case "md":
                                     new Medal(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
+                                    break;
+                                case "announcement":
+                                case "ann":
+                                    new Announcement(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
                                     break;
                             }
                         }
