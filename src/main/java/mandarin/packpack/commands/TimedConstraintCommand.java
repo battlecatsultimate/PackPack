@@ -1,7 +1,6 @@
 package mandarin.packpack.commands;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
@@ -15,6 +14,7 @@ public abstract class TimedConstraintCommand implements Command {
     final String constRole;
     protected final int lang;
     protected final long time;
+    protected final IDHolder holder;
 
     private boolean startTimer = true;
 
@@ -38,6 +38,7 @@ public abstract class TimedConstraintCommand implements Command {
 
         this.lang = lang;
         this.time = time;
+        this.holder = id;
     }
 
     @Override
@@ -49,14 +50,21 @@ public abstract class TimedConstraintCommand implements Command {
 
         AtomicReference<Boolean> canGo = new AtomicReference<>(true);
         AtomicReference<String> memberID = new AtomicReference<>("");
+        AtomicReference<Boolean> hasRole = new AtomicReference<>(false);
 
         event.getMember().ifPresent(m -> {
             String id = m.getId().asString();
+            String role = StaticStore.rolesToString(m.getRoleIds());
+
+            boolean isMod = holder.MOD != null && role.contains(holder.MOD);
 
             memberID.set(id);
 
-            if(id.equals(StaticStore.MANDARIN_SMELL))
+            if(id.equals(StaticStore.MANDARIN_SMELL) || isMod) {
+                hasRole.set(true);
+
                 return;
+            }
 
             if (StaticStore.timeLimit.containsKey(id)) {
                 long oldTime = StaticStore.timeLimit.get(id);
@@ -67,15 +75,6 @@ public abstract class TimedConstraintCommand implements Command {
                     canGo.set(false);
                 }
             }
-        });
-
-        if(!canGo.get())
-            return;
-
-        AtomicReference<Boolean> hasRole = new AtomicReference<>(false);
-
-        event.getMember().ifPresentOrElse(m -> {
-            String role = StaticStore.rolesToString(m.getRoleIds());
 
             if(constRole == null) {
                 hasRole.set(true);
@@ -84,13 +83,19 @@ public abstract class TimedConstraintCommand implements Command {
             } else {
                 hasRole.set(role.contains(constRole) || m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
             }
+        });
+
+        if(!canGo.get())
+            return;
+
+        event.getMember().ifPresentOrElse(m -> {
         }, () -> canGo.set(false));
 
         if(!canGo.get())
             return;
 
         if(!hasRole.get()) {
-            if(constRole.equals("MANDARIN")) {
+            if(constRole != null && constRole.equals("MANDARIN")) {
                 ch.createMessage(LangID.getStringByID("const_man", lang)).subscribe();
             } else {
                 String role = StaticStore.roleNameFromID(event, constRole);

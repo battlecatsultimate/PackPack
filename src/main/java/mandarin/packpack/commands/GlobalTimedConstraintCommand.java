@@ -104,7 +104,7 @@ public abstract class GlobalTimedConstraintCommand implements Command {
             try {
                 TimeBoolean bool = StaticStore.canDo.get(id);
 
-                if(!isMandarin.get() && bool != null && !bool.canDo && System.currentTimeMillis() - bool.time < bool.totalTime) {
+                if(!isMandarin.get() && !isMod.get() && bool != null && !bool.canDo && System.currentTimeMillis() - bool.time < bool.totalTime) {
                     ch.createMessage(LangID.getStringByID("single_wait", lang).replace("_", DataToString.df.format((bool.totalTime - (System.currentTimeMillis() - StaticStore.canDo.get(id).time)) / 1000.0))).subscribe();
                 } else {
 
