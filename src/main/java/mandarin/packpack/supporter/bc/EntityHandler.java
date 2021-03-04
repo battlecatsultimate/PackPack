@@ -630,6 +630,8 @@ public class EntityHandler {
                     if(drops != null) {
                         if(drops.endsWith("!!number!!")) {
                             spec.addField(LangID.getStringByID("data_numreward", lang), drops.replace("!!number!!", ""), false);
+                        } else if(drops.endsWith("!!nofail!!")) {
+                            spec.addField(LangID.getStringByID("data_chanrewardnofail", lang), drops.replace("!!nofail!!", ""), false);
                         } else {
                             spec.addField(LangID.getStringByID("data_chanreward", lang), drops, false);
                         }

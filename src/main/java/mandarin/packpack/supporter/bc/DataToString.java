@@ -1231,6 +1231,9 @@ public class DataToString {
         StringBuilder builder = new StringBuilder();
 
         for(int i = 0; i < s.info.drop.length; i++) {
+            if(Double.parseDouble(chances.get(i)) == 0.0)
+                continue;
+
             String chance;
 
             if(chances.isEmpty())
@@ -1245,10 +1248,10 @@ public class DataToString {
 
             builder.append(chance).append("  |  ").append(reward);
 
-            if(i == 0 && (s.info.rand == 1 || s.info.drop[i][1] >= 1000))
+            if(i == 0 && (s.info.rand == 1 || (s.info.drop[i][1] >= 1000 && s.info.drop[i][1] < 30000)))
                 builder.append(LangID.getStringByID("data_once", lang));
 
-            if(i == 0 && s.info.drop[i][0] != 100)
+            if(i == 0 && s.info.drop[i][0] != 100 && s.info.rand != -4)
                 builder.append(" <:treasureRadar:810007545355173889>");
 
             builder.append("  |  ").append(s.info.drop[i][2]);
@@ -1259,6 +1262,8 @@ public class DataToString {
 
         if(chances.isEmpty())
             builder.append("!!number!!");
+        else if(s.info.rand == -4)
+            builder.append("!!nofail!!");
 
         return builder.toString();
     }
@@ -1287,7 +1292,7 @@ public class DataToString {
             for(int[] d : data) {
                 res.add(String.valueOf(d[0]));
             }
-        } else if(sum > 100 && s.info.rand == 0) {
+        } else if(sum > 100 && (s.info.rand == 0 || s.info.rand == 1) && data[0][0] != 100) {
             double rest = 100.0;
 
             for(int[] d : data) {
@@ -1296,6 +1301,24 @@ public class DataToString {
                 rest -= filter;
 
                 res.add(df.format(filter));
+            }
+        } else if(s.info.rand == -4) {
+            Map<Integer, Integer> collect = new HashMap<>();
+
+            for(int[] d : data) {
+                if(collect.containsKey(d[0])) {
+                    collect.put(d[0], collect.get(d[0])+1);
+                } else {
+                    collect.put(d[0], 1);
+                }
+            }
+
+            for(int[] d : data) {
+                if(collect.containsKey(d[0])) {
+                    res.add(df.format(d[0] * 1.0 / collect.get(d[0])));
+                } else {
+                    res.add(df.format(d[0] * 1.0));
+                }
             }
         } else {
             for(int[] d : data) {

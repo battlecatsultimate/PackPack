@@ -25,6 +25,7 @@
   "data_treasure" : " [Treasure]",
   "data_numreward" : "Drops (No. | Reward | Amount)",
   "data_chanreward" : "Drops (Chance | Reward | Amount)",
+  "data_chanrewardnofail" : "Drops (Chance | Reward | Amount) [Guaranteed reward]",
   "data_score" : "Score Drops (Score | Reward | Amount)",
   "data_basic" : "Basic",
   "data_ex" : "EX",
