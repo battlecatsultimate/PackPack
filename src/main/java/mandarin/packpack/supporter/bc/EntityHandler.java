@@ -592,7 +592,15 @@ public class EntityHandler {
 
                     spec.setTitle(name);
                     spec.addField(LangID.getStringByID("data_id", lang), DataToString.getStageCode(st), false);
-                    spec.addField(LangID.getStringByID("data_energy", lang), DataToString.getEnergy(st), true);
+
+                    String energy = DataToString.getEnergy(st, lang);
+
+                    if(energy.endsWith("!!drink!!")) {
+                        spec.addField(LangID.getStringByID("data_catamin", lang), energy.replace("!!drink!!", ""), true);
+                    } else {
+                        spec.addField(LangID.getStringByID("data_energy", lang), energy, true);
+                    }
+
                     spec.addField(LangID.getStringByID("data_star", lang), DataToString.getStar(st, sta), true);
                     spec.addField(LangID.getStringByID("data_base", lang), DataToString.getBaseHealth(st), true);
                     spec.addField(LangID.getStringByID("data_xp", lang), DataToString.getXP(st), true);

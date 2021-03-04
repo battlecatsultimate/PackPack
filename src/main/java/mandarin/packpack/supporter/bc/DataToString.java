@@ -853,8 +853,31 @@ public class DataToString {
         return (star+1)+" ("+stm.stars[star]+"%) / "+stm.stars.length;
     }
 
-    public static String getEnergy(Stage st) {
-        return st.info.energy+"";
+    public static String getEnergy(Stage st, int lang) {
+        if(st.info == null)
+            return LangID.getStringByID("data_none", lang);
+
+        StageMap stm = st.getCont();
+
+        if(stm == null)
+            return st.info.energy+"";
+
+        MapColc mc = stm.getCont();
+
+        if(mc == null)
+            return st.info.energy+"";
+
+        if(mc.getSID().equals("000014")) {
+            if(st.info.energy < 1000) {
+                return LangID.getStringByID("data_catamina", lang).replace("_", st.info.energy+"")+"!!drink!!";
+            } else if(st.info.energy < 2000) {
+                return LangID.getStringByID("data_cataminb", lang).replace("_", (st.info.energy-1000)+"")+"!!drink!!";
+            } else {
+                return LangID.getStringByID("data_cataminc", lang).replace("_", (st.info.energy-2000)+"")+"!!drink!!";
+            }
+        } else {
+            return st.info.energy+"";
+        }
     }
 
     public static String getBaseHealth(Stage st) {
