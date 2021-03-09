@@ -21,6 +21,7 @@ import common.util.unit.Form;
 import discord4j.core.object.entity.Attachment;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.core.object.reaction.ReactionEmoji;
 import discord4j.rest.util.Color;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.awt.FG2D;
@@ -525,7 +526,7 @@ public class EntityHandler {
         return img;
     }
 
-    public static void showStageEmb(Stage st, MessageChannel ch, boolean isFrame, int star, int lang) throws Exception {
+    public static Message showStageEmb(Stage st, MessageChannel ch, boolean isFrame, int star, int lang) throws Exception {
         File img = generateScheme(st, isFrame, lang);
         FileInputStream fis;
 
@@ -535,7 +536,7 @@ public class EntityHandler {
             fis = null;
         }
 
-        ch.createMessage(m -> {
+        Message result = ch.createMessage(m -> {
             m.setEmbed(spec -> {
                 try {
                     int sta = Math.min(Math.max(star-1, 0), st.getCont().stars.length-1);
@@ -663,23 +664,30 @@ public class EntityHandler {
 
             if(fis != null)
                 m.addFile("scheme.png", fis);
-        }).subscribe(null, null, () -> {
-            if(fis != null) {
-                try {
-                    fis.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+        }).block();
 
-            if(img != null && img.exists()) {
-                boolean res = img.delete();
+        if(result != null) {
+            result.addReaction(ReactionEmoji.unicode(new String(Character.toChars(0x1f304)))).subscribe();
+            result.addReaction(ReactionEmoji.unicode(new String(Character.toChars(0x1f3f0)))).subscribe();
+        }
 
-                if(!res) {
-                    System.out.println("Can't delete file : "+img.getAbsolutePath());
-                }
+        if(fis != null) {
+            try {
+                fis.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        });
+        }
+
+        if(img != null && img.exists()) {
+            boolean res = img.delete();
+
+            if(!res) {
+                System.out.println("Can't delete file : "+img.getAbsolutePath());
+            }
+        }
+
+        return result;
     }
 
     private static File generateScheme(Stage st, boolean isFrame, int lang) throws Exception {

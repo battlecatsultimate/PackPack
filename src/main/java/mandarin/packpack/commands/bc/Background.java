@@ -16,8 +16,16 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 public class Background extends TimedConstraintCommand {
+    private common.util.pack.Background bg;
+
     public Background(ConstraintCommand.ROLE role, int lang, IDHolder id, long time) {
         super(role, lang, id, time);
+    }
+
+    public Background(ConstraintCommand.ROLE role, int lang, IDHolder id, long time, common.util.pack.Background bg) {
+        super(role, lang, id, time);
+
+        this.bg = bg;
     }
 
     @Override
@@ -27,33 +35,14 @@ public class Background extends TimedConstraintCommand {
         if(ch == null)
             return;
 
-        String[] msg = getContent(event).split(" ");
-
-        if(msg.length == 1) {
-            ch.createMessage(LangID.getStringByID("bg_more", lang)).subscribe();
-        } else {
-            int id = getID(getContent(event));
-
-            if(id == -1) {
-                ch.createMessage(LangID.getStringByID("bg_more", lang)).subscribe();
-                return;
-            } else if(id < 0 || id >= UserProfile.getBCData().bgs.getList().size()) {
-                ch.createMessage(LangID.getStringByID("bg_invalid", lang).replace("_", (UserProfile.getBCData().bgs.getList().size()-1)+"")).subscribe();
-                return;
-            }
-
-            int w = Math.max(1, getWidth(getContent(event)));
-            int h = Math.max(1, getHeight(getContent(event)));
-
-            common.util.pack.Background bg = UserProfile.getBCData().bgs.getList().get(id);
-
-            File img = ImageDrawing.drawBGImage(bg, w, h);
+        if(bg != null) {
+            File img = ImageDrawing.drawBGImage(bg, 960, 520);
 
             if(img != null) {
                 FileInputStream fis = new FileInputStream(img);
 
                 ch.createMessage(m -> {
-                    m.setContent(LangID.getStringByID("bg_result", lang).replace("_", Data.trio(id)).replace("WWW", w+"").replace("HHH", h+""));
+                    m.setContent(LangID.getStringByID("bg_result", lang).replace("_", Data.trio(bg.id.id)).replace("WWW", 960+"").replace("HHH", 520+""));
                     m.addFile("bg.png", fis);
                 }).subscribe(null, null, () -> {
                     try {
@@ -70,6 +59,52 @@ public class Background extends TimedConstraintCommand {
                         }
                     }
                 });
+            }
+        } else {
+            String[] msg = getContent(event).split(" ");
+
+            if(msg.length == 1) {
+                ch.createMessage(LangID.getStringByID("bg_more", lang)).subscribe();
+            } else {
+                int id = getID(getContent(event));
+
+                if(id == -1) {
+                    ch.createMessage(LangID.getStringByID("bg_more", lang)).subscribe();
+                    return;
+                } else if(id < 0 || id >= UserProfile.getBCData().bgs.getList().size()) {
+                    ch.createMessage(LangID.getStringByID("bg_invalid", lang).replace("_", (UserProfile.getBCData().bgs.getList().size()-1)+"")).subscribe();
+                    return;
+                }
+
+                int w = Math.max(1, getWidth(getContent(event)));
+                int h = Math.max(1, getHeight(getContent(event)));
+
+                common.util.pack.Background bg = UserProfile.getBCData().bgs.getList().get(id);
+
+                File img = ImageDrawing.drawBGImage(bg, w, h);
+
+                if(img != null) {
+                    FileInputStream fis = new FileInputStream(img);
+
+                    ch.createMessage(m -> {
+                        m.setContent(LangID.getStringByID("bg_result", lang).replace("_", Data.trio(id)).replace("WWW", w+"").replace("HHH", h+""));
+                        m.addFile("bg.png", fis);
+                    }).subscribe(null, null, () -> {
+                        try {
+                            fis.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        if(img.exists()) {
+                            boolean res = img.delete();
+
+                            if(!res) {
+                                System.out.println("Can't delete file : "+img.getAbsolutePath());
+                            }
+                        }
+                    });
+                }
             }
         }
     }

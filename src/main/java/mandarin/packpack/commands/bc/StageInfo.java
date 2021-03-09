@@ -17,6 +17,7 @@ import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.IDHolder;
 import mandarin.packpack.supporter.server.StageInfoHolder;
+import mandarin.packpack.supporter.server.StageReactionHolder;
 
 import java.util.ArrayList;
 
@@ -52,7 +53,14 @@ public class StageInfo extends TimedConstraintCommand {
 
                 CommonStatic.getConfig().lang = lang;
 
-                EntityHandler.showStageEmb(stages.get(0), ch, isFrame, star, lang);
+                Message result = EntityHandler.showStageEmb(stages.get(0), ch, isFrame, star, lang);
+
+                getMember(event).ifPresent(m -> {
+                    Message author = getMessage(event);
+
+                    if(author != null)
+                        StaticStore.putHolder(m.getId().asString(), new StageReactionHolder(stages.get(0), author, result, holder, lang, ch.getId().asString(), m.getId().asString()));
+                });
             } else {
                 int param = checkParameters(getContent(event));
                 int star = getStar(getContent((event)));

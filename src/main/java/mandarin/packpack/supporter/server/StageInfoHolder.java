@@ -7,6 +7,7 @@ import common.util.stage.MapColc;
 import common.util.stage.Stage;
 import common.util.stage.StageMap;
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.StaticStore;
@@ -111,7 +112,18 @@ public class StageInfoHolder extends Holder<MessageCreateEvent> {
             });
 
             try {
-                EntityHandler.showStageEmb(stage.get(id), ch, isFrame, star, lang);
+                Message msg = EntityHandler.showStageEmb(stage.get(id), ch, isFrame, star, lang);
+
+                Guild g = event.getGuild().block();
+
+                if(msg != null && g != null && StaticStore.idHolder.containsKey(g.getId().asString())) {
+                    IDHolder holder = StaticStore.idHolder.get(g.getId().asString());
+
+                    event.getMember().ifPresent(m -> {
+                        StaticStore.removeHolder(m.getId().asString(), StageInfoHolder.this);
+                        StaticStore.putHolder(m.getId().asString(), new StageReactionHolder(stage.get(id), event.getMessage(), msg, holder, lang, channelID, m.getId().asString()));
+                    });
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -120,7 +132,9 @@ public class StageInfoHolder extends Holder<MessageCreateEvent> {
 
             cleaner.add(event.getMessage());
 
-            return RESULT_FINISH;
+            clean();
+
+            return RESULT_STILL;
         } else if(content.equals("c")) {
             msg.edit(m -> {
                 m.setContent(LangID.getStringByID("formst_cancel", lang));

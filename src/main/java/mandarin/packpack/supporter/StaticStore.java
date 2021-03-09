@@ -10,14 +10,16 @@ import common.CommonStatic;
 import common.io.assets.UpdateCheck;
 import common.util.lang.MultiLangCont;
 import discord4j.common.util.Snowflake;
-import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.Attachment;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Role;
 import discord4j.rest.util.Color;
 import mandarin.packpack.supporter.event.EventHolder;
-import mandarin.packpack.supporter.server.*;
+import mandarin.packpack.supporter.server.Holder;
+import mandarin.packpack.supporter.server.IDHolder;
+import mandarin.packpack.supporter.server.ImgurDataHolder;
+import mandarin.packpack.supporter.server.TimeBoolean;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -563,8 +565,9 @@ public class StaticStore {
     synchronized public static void removeHolder(String id, Holder<? extends MessageEvent> holder) {
         Holder<? extends MessageEvent> thisHolder = holders.get(id);
 
-        if(thisHolder != null && thisHolder.equals(holder))
+        if(thisHolder != null && thisHolder.equals(holder)) {
             holders.remove(id);
+        }
     }
 
     synchronized public static Holder<? extends MessageEvent> getHolder(String id) {
