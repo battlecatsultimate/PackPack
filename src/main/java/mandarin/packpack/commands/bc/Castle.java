@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bc;
 
+import common.system.files.VFile;
 import common.util.Data;
 import common.util.stage.CastleImg;
 import common.util.stage.CastleList;
@@ -70,14 +71,6 @@ public class Castle extends ConstraintCommand {
         }
 
         if(cs != null) {
-            BufferedImage castle = (BufferedImage) cs.img.getImg().bimg();
-
-            ImageIO.write(castle, "PNG", img);
-
-            FileInputStream fis = new FileInputStream(img);
-
-            int finalId = cs.id.id;
-
             int code;
 
             switch (cs.getCont().getSID()) {
@@ -93,6 +86,27 @@ public class Castle extends ConstraintCommand {
                 default:
                     code = 0;
             }
+
+            BufferedImage castle;
+
+            if(code == 1 && lang != LangID.JP) {
+                System.out.println(cs.id.id);
+                VFile vf = VFile.get("./org/img/ec/ec"+Data.trio(cs.id.id)+"_"+getLocale()+".png");
+
+                if(vf != null) {
+                    castle = (BufferedImage) vf.getData().getImg().bimg();
+                } else {
+                    castle = (BufferedImage) cs.img.getImg().bimg();
+                }
+            } else {
+                castle = (BufferedImage) cs.img.getImg().bimg();
+            }
+
+            ImageIO.write(castle, "PNG", img);
+
+            FileInputStream fis = new FileInputStream(img);
+
+            int finalId = cs.id.id;
 
             ch.createMessage(m -> {
                 String castleCode;
@@ -165,7 +179,19 @@ public class Castle extends ConstraintCommand {
 
                 CastleImg image = imgs.get(id);
 
-                BufferedImage castle = (BufferedImage) image.img.getImg().bimg();
+                BufferedImage castle;
+
+                if(code == 1 && lang != LangID.JP) {
+                    VFile vf = VFile.get("./org/img/ec/ec"+Data.trio(image.id.id)+"_"+getLocale()+".png");
+
+                    if(vf != null) {
+                        castle = (BufferedImage) vf.getData().getImg().bimg();
+                    } else {
+                        castle = (BufferedImage) image.img.getImg().bimg();
+                    }
+                } else {
+                    castle = (BufferedImage) image.img.getImg().bimg();
+                }
 
                 ImageIO.write(castle, "PNG", img);
 
@@ -246,5 +272,16 @@ public class Castle extends ConstraintCommand {
         }
 
         return result;
+    }
+
+    private String getLocale() {
+        switch (lang) {
+            case LangID.KR:
+                return "ko";
+            case LangID.ZH:
+                return "tw";
+            default:
+                return "en";
+        }
     }
 }

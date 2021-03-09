@@ -2,7 +2,6 @@ package mandarin.packpack.commands.bc;
 
 import common.pack.UserProfile;
 import common.util.Data;
-import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;

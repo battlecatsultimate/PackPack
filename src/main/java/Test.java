@@ -7,7 +7,7 @@ import java.io.File;
 
 public class Test {
     public static void main(String[] args) throws Exception {
-
+        System.out.println("ec000.png".matches("ec[0-9]+\\.png"));
     }
 
     private static String quad(int n) {
