@@ -1,10 +1,9 @@
 package mandarin.packpack.commands.bc;
 
-import common.pack.UserProfile;
 import common.util.Data;
 import common.util.stage.CastleImg;
 import common.util.stage.CastleList;
-import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
@@ -25,97 +24,75 @@ public class Castle extends ConstraintCommand {
     private static final int PARAM_WC = 8;
     private static final int PARAM_SC = 16;
 
+    private CastleImg cs;
+
     public Castle(ROLE role, int lang, IDHolder id) {
         super(role, lang, id);
+    }
+
+    public Castle(ROLE role, int lang, IDHolder id, CastleImg cs) {
+        super(role, lang, id);
+
+        this.cs = cs;
     }
 
     private int startIndex = 1;
 
     @Override
-    public void doSomething(MessageCreateEvent event) throws Exception {
+    public void doSomething(MessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
             return;
 
-        String[] list = getMessage(event).split(" ");
+        File temp = new File("./temp");
 
-        if(list.length >= 2) {
-            File temp = new File("./temp");
+        if(!temp.exists()) {
+            boolean res = temp.mkdirs();
 
-            if(!temp.exists()) {
-                boolean res = temp.mkdirs();
-
-                if(!res) {
-                    System.out.println("Can't create folder : "+temp.getAbsolutePath());
-                    return;
-                }
-            }
-
-            int param = checkParameters(getMessage(event));
-
-            String[] messages = getMessage(event).split(" ", startIndex+1);
-
-            if(messages.length <= startIndex) {
-                ch.createMessage(LangID.getStringByID("castle_more", lang).replace("_", holder.serverPrefix)).subscribe();
+            if(!res) {
+                System.out.println("Can't create folder : "+temp.getAbsolutePath());
                 return;
             }
+        }
 
-            String msg = messages[startIndex];
+        File img = new File(temp, StaticStore.findFileName(temp, "castle", ".png"));
 
-            int id;
+        if(!img.exists()) {
+            boolean res = img.createNewFile();
 
-            if(StaticStore.isNumeric(msg)) {
-                id = StaticStore.safeParseInt(msg);
-            } else {
-                ch.createMessage(LangID.getStringByID("castle_number", lang)).subscribe();
+            if(!res) {
+                System.out.println("Can't create new file : "+img.getAbsolutePath());
                 return;
             }
+        } else {
+            return;
+        }
 
-            File img = new File(temp, StaticStore.findFileName(temp, "castle", ".png"));
-
-            if(!img.exists()) {
-                boolean res = img.createNewFile();
-
-                if(!res) {
-                    System.out.println("Can't create new file : "+img.getAbsolutePath());
-                    return;
-                }
-            } else {
-                return;
-            }
-
-            ArrayList<CastleList> castleLists = new ArrayList<>(CastleList.defset());
-
-            List<CastleImg> imgs;
-            int code;
-
-            if((param & PARAM_EC) > 0) {
-                imgs = castleLists.get(1).getList();
-                code = 1;
-            } else if((param & PARAM_WC) > 0) {
-                imgs = castleLists.get(2).getList();
-                code = 2;
-            } else if((param & PARAM_SC) > 0) {
-                imgs = castleLists.get(3).getList();
-                code = 3;
-            } else {
-                imgs = castleLists.get(0).getList();
-                code = 0;
-            }
-
-            if(id >= imgs.size())
-                id = imgs.size() - 1;
-
-            CastleImg image = imgs.get(id);
-
-            BufferedImage castle = (BufferedImage) image.img.getImg().bimg();
+        if(cs != null) {
+            BufferedImage castle = (BufferedImage) cs.img.getImg().bimg();
 
             ImageIO.write(castle, "PNG", img);
 
             FileInputStream fis = new FileInputStream(img);
 
-            int finalId = id;
+            int finalId = cs.id.id;
+
+            int code;
+
+            switch (cs.getCont().getSID()) {
+                case "000001":
+                    code = 1;
+                    break;
+                case "000002":
+                    code = 2;
+                    break;
+                case "000003":
+                    code = 3;
+                    break;
+                default:
+                    code = 0;
+            }
 
             ch.createMessage(m -> {
                 String castleCode;
@@ -141,7 +118,87 @@ public class Castle extends ConstraintCommand {
                 }
             });
         } else {
-            ch.createMessage(LangID.getStringByID("castle_argu", lang).replace("_", holder.serverPrefix)).subscribe();
+            String[] list = getContent(event).split(" ");
+
+            if(list.length >= 2) {
+                int param = checkParameters(getContent(event));
+
+                String[] messages = getContent(event).split(" ", startIndex+1);
+
+                if(messages.length <= startIndex) {
+                    ch.createMessage(LangID.getStringByID("castle_more", lang).replace("_", holder.serverPrefix)).subscribe();
+                    return;
+                }
+
+                String msg = messages[startIndex];
+
+                int id;
+
+                if(StaticStore.isNumeric(msg)) {
+                    id = StaticStore.safeParseInt(msg);
+                } else {
+                    ch.createMessage(LangID.getStringByID("castle_number", lang)).subscribe();
+                    return;
+                }
+
+                ArrayList<CastleList> castleLists = new ArrayList<>(CastleList.defset());
+
+                List<CastleImg> imgs;
+                int code;
+
+                if((param & PARAM_EC) > 0) {
+                    imgs = castleLists.get(1).getList();
+                    code = 1;
+                } else if((param & PARAM_WC) > 0) {
+                    imgs = castleLists.get(2).getList();
+                    code = 2;
+                } else if((param & PARAM_SC) > 0) {
+                    imgs = castleLists.get(3).getList();
+                    code = 3;
+                } else {
+                    imgs = castleLists.get(0).getList();
+                    code = 0;
+                }
+
+                if(id >= imgs.size())
+                    id = imgs.size() - 1;
+
+                CastleImg image = imgs.get(id);
+
+                BufferedImage castle = (BufferedImage) image.img.getImg().bimg();
+
+                ImageIO.write(castle, "PNG", img);
+
+                FileInputStream fis = new FileInputStream(img);
+
+                int finalId = id;
+
+                ch.createMessage(m -> {
+                    String castleCode;
+
+                    if(code == 0)
+                        castleCode = "RC";
+                    else if(code == 1)
+                        castleCode = "EC";
+                    else if(code == 2)
+                        castleCode = "WC";
+                    else
+                        castleCode = "SC";
+
+                    m.setContent(LangID.getStringByID("castle_result", lang).replace("_", castleCode).replace("|", Data.trio(finalId)));
+                    m.addFile("Result.png", fis);
+                }).subscribe(null, null, () -> {
+                    try {
+                        fis.close();
+
+                        StaticStore.deleteFile(img, true);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+            } else {
+                ch.createMessage(LangID.getStringByID("castle_argu", lang).replace("_", holder.serverPrefix)).subscribe();
+            }
         }
     }
 

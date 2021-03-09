@@ -1,6 +1,7 @@
 package mandarin.packpack.commands.data;
 
-import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.MessageEvent;
+import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.event.EventFactor;
@@ -18,13 +19,13 @@ public class Announcement extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageCreateEvent event) throws Exception {
+    public void doSomething(MessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
             return;
 
-        int param = checkParameter(getMessage(event));
+        int param = checkParameter(getContent(event));
 
         String loc;
         String ver;
@@ -66,7 +67,9 @@ public class Announcement extends ConstraintCommand {
                 }
         }
 
-        String time = Long.toString(event.getMessage().getTimestamp().getEpochSecond());
+        Message msg = getMessage(event);
+
+        String time = msg != null ? Long.toString(msg.getTimestamp().getEpochSecond()) : "0";
 
         String url = EventFactor.ANNOUNCEURL.replace("LL", loc).replace("VVVVVV", ver).replace("DDDDDDDDD", time);
 

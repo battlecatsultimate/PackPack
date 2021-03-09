@@ -5,6 +5,7 @@ import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Enemy;
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
@@ -34,7 +35,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
     }
 
     @Override
-    protected void doThing(MessageCreateEvent event) throws Exception {
+    protected void doThing(MessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
@@ -42,7 +43,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
 
         AtomicReference<Boolean> isDev = new AtomicReference<>(false);
 
-        event.getMember().ifPresentOrElse(m -> {
+        getMember(event).ifPresentOrElse(m -> {
             if(modID != null && StaticStore.rolesToString(m.getRoleIds()).contains(modID)) {
                 isDev.set(true);
             } else {
@@ -50,7 +51,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
             }
         }, () -> isDev.set(false));
 
-        String[] list = getMessage(event).split(" ");
+        String[] list = getContent(event).split(" ");
 
         if(list.length >= 2) {
             File temp = new File("./temp");
@@ -64,7 +65,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
                 }
             }
 
-            String search = filterCommand(getMessage(event));
+            String search = filterCommand(getContent(event));
 
             if(search.isBlank()) {
                 ch.createMessage(LangID.getStringByID("eimg_more", lang)).subscribe();
@@ -75,14 +76,14 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
             ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(search);
 
             if(enemies.isEmpty()) {
-                ch.createMessage(LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(getMessage(event)))).subscribe();
+                ch.createMessage(LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(getContent(event)))).subscribe();
                 disableTimer();
             } else if(enemies.size() == 1) {
-                int param = checkParameters(getMessage(event));
-                int mode = getMode(getMessage(event));
+                int param = checkParameters(getContent(event));
+                int mode = getMode(getContent(event));
                 boolean debug = (param & PARAM_DEBUG) > 0;
                 boolean raw = (param & PARAM_RAW) > 0;
-                int frame = getFrame(getMessage(event));
+                int frame = getFrame(getContent(event));
 
                 if(raw && !isDev.get()) {
                     ch.createMessage(LangID.getStringByID("gif_ignore", lang)).subscribe();
@@ -100,7 +101,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
                     disableTimer();
                 }
             } else {
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", filterCommand(getMessage(event))));
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", filterCommand(getContent(event))));
 
                 String check;
 
@@ -144,9 +145,9 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
 
                 Message res = ch.createMessage(sb.toString()).block();
 
-                int param = checkParameters(getMessage(event));
-                int mode = getMode(getMessage(event));
-                int frame = getFrame(getMessage(event));
+                int param = checkParameters(getContent(event));
+                int mode = getMode(getContent(event));
+                int frame = getFrame(getContent(event));
 
                 boolean raw = (param & PARAM_RAW) > 0;
 
@@ -155,7 +156,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
                 }
 
                 if(res != null) {
-                    event.getMember().ifPresent(member -> StaticStore.putHolder(member.getId().asString(), new EnemyAnimHolder(enemies, event.getMessage(), res, ch.getId().asString(), mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isDev.get())));
+                    getMember(event).ifPresent(member -> StaticStore.putHolder(member.getId().asString(), new EnemyAnimHolder(enemies, getMessage(event), res, ch.getId().asString(), mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isDev.get())));
                 }
 
                 disableTimer();
@@ -167,7 +168,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
     }
 
     @Override
-    protected void setOptionalID(MessageCreateEvent event) {
+    protected void setOptionalID(MessageEvent event) {
         optionalID = "";
     }
 

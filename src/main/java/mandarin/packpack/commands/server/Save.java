@@ -1,6 +1,6 @@
 package mandarin.packpack.commands.server;
 
-import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
@@ -14,7 +14,7 @@ public class Save extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageCreateEvent event) {
+    public void doSomething(MessageEvent event) {
         MessageChannel ch = getChannel(event);
 
         Message msg = ch.createMessage(LangID.getStringByID("save_save", lang)).block();

@@ -4,7 +4,7 @@ import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Form;
-import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
@@ -26,33 +26,33 @@ public class FormStat extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageCreateEvent event) throws Exception {
+    public void doSomething(MessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
-        String[] list = getMessage(event).split(" ",2);
+        String[] list = getContent(event).split(" ",2);
 
-        if(list.length == 1 || filterCommand(getMessage(event)).isBlank()) {
+        if(list.length == 1 || filterCommand(getContent(event)).isBlank()) {
             ch.createMessage(LangID.getStringByID("formst_noname", lang)).subscribe();
         } else {
-            ArrayList<Form> forms = EntityFilter.findUnitWithName(filterCommand(getMessage(event)));
+            ArrayList<Form> forms = EntityFilter.findUnitWithName(filterCommand(getContent(event)));
 
             if (forms.size() == 1) {
                 CommonStatic.getConfig().lang = lang;
 
-                int param = checkParameters(getMessage(event));
+                int param = checkParameters(getContent(event));
 
-                int[] lv = handleLevel(getMessage(event));
+                int[] lv = handleLevel(getContent(event));
 
                 boolean isFrame = (param & PARAM_SECOND) == 0;
                 boolean talent = (param & PARAM_TALENT) > 0;
 
                 EntityHandler.showUnitEmb(forms.get(0), ch, isFrame, talent, lv, lang);
             } else if (forms.size() == 0) {
-                ch.createMessage(LangID.getStringByID("formst_nounit", lang).replace("_", filterCommand(getMessage(event)))).subscribe();
+                ch.createMessage(LangID.getStringByID("formst_nounit", lang).replace("_", filterCommand(getContent(event)))).subscribe();
             } else {
                 CommonStatic.getConfig().lang = lang;
 
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", filterCommand(getMessage(event))));
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", filterCommand(getContent(event))));
 
                 String check;
 
@@ -90,12 +90,17 @@ public class FormStat extends ConstraintCommand {
 
                 Message res = ch.createMessage(sb.toString()).block();
 
-                int param = checkParameters(getMessage(event));
+                int param = checkParameters(getContent(event));
 
-                int[] lv = handleLevel(getMessage(event));
+                int[] lv = handleLevel(getContent(event));
 
                 if(res != null) {
-                    event.getMember().ifPresent(member -> StaticStore.putHolder(member.getId().asString(), new FormStatHolder(forms, event.getMessage(), res, ch.getId().asString(), param, lv, lang)));
+                    getMember(event).ifPresent(member -> {
+                        Message msg = getMessage(event);
+
+                        if(msg != null)
+                            StaticStore.putHolder(member.getId().asString(), new FormStatHolder(forms, msg, res, ch.getId().asString(), param, lv, lang));
+                    });
                 }
 
             }

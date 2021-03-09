@@ -6,6 +6,8 @@ import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.MessageEvent;
+import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.event.domain.role.RoleDeleteEvent;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
@@ -25,10 +27,12 @@ import mandarin.packpack.supporter.AssetDownloader;
 import mandarin.packpack.supporter.PackContext;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
+import mandarin.packpack.supporter.event.EventHolder;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.*;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -204,6 +208,83 @@ public class PackBot {
             }
         });
 
+        gate.on(ReactionAddEvent.class)
+                .filter(event -> {
+                    MessageChannel mc = event.getChannel().block();
+
+                    if(mc == null)
+                        return false;
+                    else {
+                        AtomicReference<Boolean> mandarin = new AtomicReference<>(false);
+                        AtomicReference<Boolean> isMod = new AtomicReference<>(false);
+                        AtomicReference<Boolean> canGo = new AtomicReference<>(true);
+
+                        Guild g = event.getGuild().block();
+
+                        IDHolder ids;
+
+                        if(g != null) {
+                            ids = StaticStore.idHolder.get(g.getId().asString());
+                        } else {
+                            return true;
+                        }
+
+                        event.getMember().ifPresent(m -> {
+                            mandarin.set(m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
+
+                            if(ids.MOD != null) {
+                                isMod.set(StaticStore.rolesToString(m.getRoleIds()).contains(ids.MOD));
+                            }
+
+                            ArrayList<String> channels = ids.getAllAllowedChannels(m.getRoleIds());
+
+                            if(channels == null)
+                                return;
+
+                            if(channels.isEmpty())
+                                canGo.set(false);
+                            else {
+                                MessageChannel channel = event.getChannel().block();
+
+                                if(channel == null)
+                                    return;
+
+                                canGo.set(channels.contains(channel.getId().asString()));
+                            }
+                        });
+
+                        String acc = ids.GET_ACCESS;
+
+                        return ((acc == null || !mc.getId().asString().equals(ids.GET_ACCESS)) && canGo.get()) || mandarin.get() || isMod.get();
+                    }
+                }).subscribe(event -> {
+            Message msg = event.getMessage().block();
+
+            if(msg == null)
+                return;
+
+            event.getMember().ifPresent(m -> {
+                if (StaticStore.holderContainsKey(m.getId().asString())) {
+                    Holder<? extends MessageEvent> holder = StaticStore.getHolder(m.getId().asString());
+
+                    if (holder.canCastTo(ReactionAddEvent.class)) {
+                        @SuppressWarnings("unchecked")
+                        Holder<ReactionAddEvent> h = (Holder<ReactionAddEvent>) holder;
+
+                        int result = h.handleEvent(event);
+
+                        if (result == Holder.RESULT_FINISH) {
+                            holder.clean();
+                            StaticStore.removeHolder(m.getId().asString(), holder);
+                        } else if (result == Holder.RESULT_FAIL) {
+                            System.out.println("ERROR : Expired process tried to be handled : " + m.getId().asString() + " | " + holder.getClass().getName());
+                            StaticStore.removeHolder(m.getId().asString(), holder);
+                        }
+                    }
+                }
+            });
+        });
+
         gate.on(MessageCreateEvent.class)
                 .filter(event -> {
                     MessageChannel mc = event.getMessage().getChannel().block();
@@ -277,16 +358,21 @@ public class PackBot {
                             prefix = StaticStore.serverPrefix;
 
                         if(StaticStore.holderContainsKey(m.getId().asString())) {
-                            Holder holder = StaticStore.getHolder(m.getId().asString());
+                            Holder<? extends MessageEvent> holder = StaticStore.getHolder(m.getId().asString());
 
-                            int result = holder.handleEvent(event);
+                            if(holder.canCastTo(MessageCreateEvent.class)) {
+                                @SuppressWarnings("unchecked")
+                                Holder<MessageCreateEvent> h = (Holder<MessageCreateEvent>) holder;
 
-                            if(result == Holder.RESULT_FINISH) {
-                                holder.clean();
-                                StaticStore.removeHolder(m.getId().asString(), holder);
-                            } else if(result == Holder.RESULT_FAIL) {
-                                System.out.println("ERROR : Expired process tried to be handled : "+m.getId().asString() + " | "+holder.getClass().getName());
-                                StaticStore.removeHolder(m.getId().asString(), holder);
+                                int result = h.handleEvent(event);
+
+                                if(result == Holder.RESULT_FINISH) {
+                                    holder.clean();
+                                    StaticStore.removeHolder(m.getId().asString(), holder);
+                                } else if(result == Holder.RESULT_FAIL) {
+                                    System.out.println("ERROR : Expired process tried to be handled : "+m.getId().asString() + " | "+holder.getClass().getName());
+                                    StaticStore.removeHolder(m.getId().asString(), holder);
+                                }
                             }
                         }
 
@@ -494,6 +580,10 @@ public class PackBot {
                 public void run() {
                     System.out.println("Save Process");
                     StaticStore.saveServerInfo();
+
+                    Calendar c = Calendar.getInstance();
+
+                    EventHolder.currentYear = c.get(Calendar.YEAR);
                 }
             }, 0, TimeUnit.MINUTES.toMillis(5));
 

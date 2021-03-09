@@ -16,7 +16,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
-public class FormStatHolder extends Holder {
+public class FormStatHolder extends Holder<MessageCreateEvent> {
     public static final int RESULT_FAIL = -1;
     public static final int RESULT_STILL = 0;
     public static final int RESULT_FINISH = 1;
@@ -36,6 +36,8 @@ public class FormStatHolder extends Holder {
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
     public FormStatHolder(ArrayList<Form> form, Message author, Message msg, String channelID, int param, int[] lv, int lang) {
+        super(MessageCreateEvent.class);
+
         this.form = form;
         this.msg = msg;
         this.channelID = channelID;

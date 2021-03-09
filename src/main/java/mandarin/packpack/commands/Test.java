@@ -1,9 +1,8 @@
 package mandarin.packpack.commands;
 
-import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.channel.MessageChannel;
-import mandarin.packpack.supporter.event.GachaSchedule;
-import mandarin.packpack.supporter.event.ItemSchedule;
+import discord4j.core.object.reaction.ReactionEmoji;
 import mandarin.packpack.supporter.server.IDHolder;
 
 import java.util.concurrent.TimeUnit;
@@ -15,23 +14,17 @@ public class Test extends GlobalTimedConstraintCommand {
     }
 
     @Override
-    protected void doThing(MessageCreateEvent event) {
+    protected void doThing(MessageEvent event) {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
             return;
 
-        String[] list = getMessage(event).replace("    ", "\t").split(" ", 2);
-
-        if(list.length >= 2) {
-            GachaSchedule gacha = new GachaSchedule(list[1]);
-
-            ch.createMessage(gacha.dataToString()).subscribe();
-        }
+        ch.createMessage(m -> m.setContent(":sunrise_over_mountains: ")).subscribe(m -> m.addReaction(ReactionEmoji.unicode(new String(Character.toChars(0x1f304)))).subscribe());
     }
 
     @Override
-    protected void setOptionalID(MessageCreateEvent event) {
+    protected void setOptionalID(MessageEvent event) {
         optionalID = "";
     }
 

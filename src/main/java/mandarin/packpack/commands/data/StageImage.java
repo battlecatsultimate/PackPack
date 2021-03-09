@@ -4,13 +4,12 @@ import common.system.fake.FakeImage;
 import common.system.fake.ImageBuilder;
 import common.system.files.FDFile;
 import common.util.anim.ImgCut;
-import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
-import mandarin.packpack.supporter.ImageGenerator;
 import mandarin.packpack.supporter.FontStageImageGenerator;
+import mandarin.packpack.supporter.ImageGenerator;
 import mandarin.packpack.supporter.StageImageGenerator;
-import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.IDHolder;
 
@@ -34,11 +33,11 @@ public class StageImage extends ConstraintCommand {
     private int startIndex = 1;
 
     @Override
-    public void doSomething(MessageCreateEvent event) {
+    public void doSomething(MessageEvent event) {
         try {
             MessageChannel ch = getChannel(event);
 
-            String [] list = getMessage(event).split(" ");
+            String [] list = getContent(event).split(" ");
 
             if(list.length >= 2) {
                 File temp = new File("./temp");
@@ -52,10 +51,10 @@ public class StageImage extends ConstraintCommand {
                     }
                 }
 
-                int param = checkParameters(getMessage(event));
+                int param = checkParameters(getContent(event));
 
                 ImageGenerator generator;
-                String[] messages = getMessage(event).split(" ", startIndex+1);
+                String[] messages = getContent(event).split(" ", startIndex+1);
 
                 if(messages.length <= startIndex) {
                     ch.createMessage(LangID.getStringByID("stimg_more", lang).replace("_", holder.serverPrefix)).subscribe();

@@ -14,7 +14,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
-public class MedalHolder extends Holder {
+public class MedalHolder extends Holder<MessageCreateEvent> {
     private final ArrayList<Integer> id;
     private final Message msg;
     private final int lang;
@@ -26,6 +26,8 @@ public class MedalHolder extends Holder {
     private final ArrayList<Message> cleaner = new ArrayList<>();
     
     public MedalHolder(ArrayList<Integer> id, Message author, Message msg, int lang, String channelName) {
+        super(MessageCreateEvent.class);
+
         this.id = id;
         this.msg = msg;
         this.lang = lang;

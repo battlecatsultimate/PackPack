@@ -1,11 +1,10 @@
 package mandarin.packpack.commands;
 
-import common.io.assets.AssetLoader;
 import common.io.assets.UpdateCheck;
 import common.pack.PackData;
 import common.pack.UserProfile;
 import common.util.stage.MapColc;
-import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.Attachment;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
@@ -31,12 +30,15 @@ public class Analyze extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageCreateEvent event) {
+    public void doSomething(MessageEvent event) {
         try {
-            Message msg = event.getMessage();
+            Message msg = getMessage(event);
             MessageChannel ch = getChannel(event);
 
             if(ch == null)
+                return;
+
+            if(msg == null)
                 return;
 
             if(!msg.getAttachments().isEmpty()) {

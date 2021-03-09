@@ -4,7 +4,7 @@ import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Enemy;
-import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
@@ -25,28 +25,28 @@ public class EnemyStat extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageCreateEvent event) throws Exception {
+    public void doSomething(MessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
-        String[] list = getMessage(event).split(" ", 2);
+        String[] list = getContent(event).split(" ", 2);
 
-        if(list.length == 1 || filterCommand(getMessage(event)).isBlank()) {
+        if(list.length == 1 || filterCommand(getContent(event)).isBlank()) {
             ch.createMessage(LangID.getStringByID("formst_noname", lang)).subscribe();
         } else {
-            ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(filterCommand(getMessage(event)));
+            ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(filterCommand(getContent(event)));
 
             if(enemies.size() == 1) {
-                int param = checkParameters(getMessage(event));
+                int param = checkParameters(getContent(event));
 
-                int[] magnification = handleMagnification(getMessage(event));
+                int[] magnification = handleMagnification(getContent(event));
 
                 boolean isFrame = (param & PARAM_SECOND) == 0;
 
                 EntityHandler.showEnemyEmb(enemies.get(0), ch, isFrame, magnification, lang);
             } else if(enemies.size() == 0) {
-                ch.createMessage(LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(getMessage(event)))).subscribe();
+                ch.createMessage(LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(getContent(event)))).subscribe();
             } else {
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", filterCommand(getMessage(event))));
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", filterCommand(getContent(event))));
 
                 String check;
 
@@ -84,11 +84,16 @@ public class EnemyStat extends ConstraintCommand {
 
                 Message res = ch.createMessage(sb.toString()).block();
 
-                int[] magnification = handleMagnification(getMessage(event));
-                boolean isFrame = (checkParameters(getMessage(event)) & PARAM_SECOND) == 0;
+                int[] magnification = handleMagnification(getContent(event));
+                boolean isFrame = (checkParameters(getContent(event)) & PARAM_SECOND) == 0;
 
                 if(res != null) {
-                    event.getMember().ifPresent(member -> StaticStore.putHolder(member.getId().asString(), new EnemyStatHolder(enemies, event.getMessage(), res, ch.getId().asString(), magnification, isFrame, lang)));
+                    getMember(event).ifPresent(member -> {
+                        Message msg = getMessage(event);
+
+                        if(msg != null)
+                            StaticStore.putHolder(member.getId().asString(), new EnemyStatHolder(enemies, msg, res, ch.getId().asString(), magnification, isFrame, lang));
+                    });
                 }
             }
         }

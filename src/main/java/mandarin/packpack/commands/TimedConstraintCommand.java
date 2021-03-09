@@ -1,6 +1,7 @@
 package mandarin.packpack.commands;
 
-import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.MessageEvent;
+import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
@@ -42,7 +43,7 @@ public abstract class TimedConstraintCommand implements Command {
     }
 
     @Override
-    public void execute(MessageCreateEvent event) {
+    public void execute(MessageEvent event) {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
@@ -52,7 +53,7 @@ public abstract class TimedConstraintCommand implements Command {
         AtomicReference<String> memberID = new AtomicReference<>("");
         AtomicReference<Boolean> hasRole = new AtomicReference<>(false);
 
-        event.getMember().ifPresent(m -> {
+        getMember(event).ifPresent(m -> {
             String id = m.getId().asString();
             String role = StaticStore.rolesToString(m.getRoleIds());
 
@@ -88,17 +89,13 @@ public abstract class TimedConstraintCommand implements Command {
         if(!canGo.get())
             return;
 
-        event.getMember().ifPresentOrElse(m -> {
-        }, () -> canGo.set(false));
-
-        if(!canGo.get())
-            return;
-
         if(!hasRole.get()) {
             if(constRole != null && constRole.equals("MANDARIN")) {
                 ch.createMessage(LangID.getStringByID("const_man", lang)).subscribe();
             } else {
-                String role = StaticStore.roleNameFromID(event, constRole);
+                Guild g = getGuild(event).block();
+
+                String role = g == null ? "NONE" : StaticStore.roleNameFromID(g, constRole);
                 ch.createMessage(LangID.getStringByID("const_role", lang).replace("_", role)).subscribe();
             }
         } else {

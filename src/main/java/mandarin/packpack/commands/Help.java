@@ -1,6 +1,6 @@
 package mandarin.packpack.commands;
 
-import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.spec.EmbedCreateSpec;
 import mandarin.packpack.supporter.StaticStore;
@@ -17,13 +17,13 @@ public class Help implements Command {
     }
 
     @Override
-    public void doSomething(MessageCreateEvent event) {
+    public void doSomething(MessageEvent event) {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
             return;
 
-        String[] messages = getMessage(event).split(" ");
+        String[] messages = getContent(event).split(" ");
 
         if(messages.length >= 2) {
             createEmbedOfSpecificCommand(messages[1], ch);

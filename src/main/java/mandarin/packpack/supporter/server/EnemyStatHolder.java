@@ -16,7 +16,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
-public class EnemyStatHolder extends Holder {
+public class EnemyStatHolder extends Holder<MessageCreateEvent> {
     private final ArrayList<Enemy> enemy;
     private final Message msg;
     private final String channelID;
@@ -31,6 +31,8 @@ public class EnemyStatHolder extends Holder {
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
     public EnemyStatHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, int[] magnification, boolean isFrame, int lang) {
+        super(MessageCreateEvent.class);
+
         this.enemy = enemy;
         this.msg = msg;
         this.channelID = channelID;

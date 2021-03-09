@@ -1,6 +1,6 @@
 package mandarin.packpack.commands.server;
 
-import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.Command;
@@ -20,8 +20,12 @@ public class CheckBCU implements Command {
     }
 
     @Override
-    public void doSomething(MessageCreateEvent event) {
-        Message msg = event.getMessage();
+    public void doSomething(MessageEvent event) {
+        Message msg = getMessage(event);
+
+        if(msg == null)
+            return;
+
         MessageChannel ch = msg.getChannel().block();
 
         if(ch == null)
@@ -35,7 +39,7 @@ public class CheckBCU implements Command {
             AtomicReference<StringBuilder> both = new AtomicReference<>(new StringBuilder("BOTH : "));
             AtomicReference<StringBuilder> none = new AtomicReference<>(new StringBuilder("NONE : "));
 
-            event.getGuild()
+            getGuild(event)
                     .subscribe(g -> g.getMembers()
                         .filter(m -> holder.MUTED != null && !StaticStore.rolesToString(m.getRoleIds()).contains(holder.MUTED))
                         .subscribe(m -> {

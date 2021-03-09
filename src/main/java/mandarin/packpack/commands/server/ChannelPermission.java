@@ -1,6 +1,6 @@
 package mandarin.packpack.commands.server;
 
-import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.channel.Channel;
 import discord4j.core.object.entity.channel.GuildChannel;
@@ -22,18 +22,18 @@ public class ChannelPermission extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageCreateEvent event) throws Exception {
+    public void doSomething(MessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
             return;
 
-        String pureMessage = getMessage(event).replaceAll("[ ]+,[ ]+|,[ ]+|[ ]+,", ",");
+        String pureMessage = getContent(event).replaceAll("[ ]+,[ ]+|,[ ]+|[ ]+,", ",");
 
         String[] msg = pureMessage.split(" ");
 
         if(msg.length == 1) {
-            Guild g = event.getGuild().block();
+            Guild g = getGuild(event).block();
 
             if(g == null)
                 return;
@@ -50,7 +50,7 @@ public class ChannelPermission extends ConstraintCommand {
 
             int param = checkParameter(pureMessage);
 
-            Guild g = event.getGuild().block();
+            Guild g = getGuild(event).block();
 
             if(g == null)
                 result.append(LangID.getStringByID("idset_noguild", lang));

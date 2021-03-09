@@ -11,10 +11,12 @@ import common.io.assets.UpdateCheck;
 import common.util.lang.MultiLangCont;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.Attachment;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Role;
 import discord4j.rest.util.Color;
+import mandarin.packpack.supporter.event.EventHolder;
 import mandarin.packpack.supporter.server.*;
 
 import java.io.*;
@@ -37,11 +39,13 @@ public class StaticStore {
     public static Map<String, String> langs = new HashMap<>();
     public static Map<String, Integer> locales = new HashMap<>();
 
-    private static final Map<String, Holder> holders = new HashMap<>();
+    private static final Map<String, Holder<? extends MessageEvent>> holders = new HashMap<>();
 
     public static ImgurDataHolder imgur = new ImgurDataHolder(null);
 
     public static Map<String, TimeBoolean> canDo = new HashMap<>();
+
+    public static EventHolder event = new EventHolder();
 
     public static final MultiLangCont<Integer, String> MEDNAME = new MultiLangCont<>();
     public static final MultiLangCont<Integer, String> MEDEXP = new MultiLangCont<>();
@@ -100,10 +104,10 @@ public class StaticStore {
         return builder.toString();
     }
 
-    public static String roleNameFromID(MessageCreateEvent event, String id) {
+    public static String roleNameFromID(Guild g, String id) {
         AtomicReference<String> role = new AtomicReference<>("NULL");
 
-        event.getGuild().subscribe(g -> g.getRoleById(Snowflake.of(id)).subscribe(r -> role.set(r.getName())));
+        g.getRoleById(Snowflake.of(id)).subscribe(r -> role.set(r.getName()));
 
         return role.get();
     }
@@ -546,8 +550,8 @@ public class StaticStore {
         return id.get();
     }
 
-    synchronized public static void putHolder(String id, Holder holder) {
-        Holder oldHolder = holders.get(id);
+    synchronized public static void putHolder(String id, Holder<? extends MessageEvent> holder) {
+        Holder<? extends MessageEvent> oldHolder = holders.get(id);
 
         if(oldHolder != null) {
             oldHolder.expire(id);
@@ -556,14 +560,14 @@ public class StaticStore {
         holders.put(id, holder);
     }
 
-    synchronized public static void removeHolder(String id, Holder holder) {
-        Holder thisHolder = holders.get(id);
+    synchronized public static void removeHolder(String id, Holder<? extends MessageEvent> holder) {
+        Holder<? extends MessageEvent> thisHolder = holders.get(id);
 
         if(thisHolder != null && thisHolder.equals(holder))
             holders.remove(id);
     }
 
-    synchronized public static Holder getHolder(String id) {
+    synchronized public static Holder<? extends MessageEvent> getHolder(String id) {
         return holders.get(id);
     }
 

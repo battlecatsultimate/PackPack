@@ -3,6 +3,7 @@ package mandarin.packpack.commands.bc;
 import common.CommonStatic;
 import common.util.Data;
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
@@ -21,16 +22,16 @@ public class Medal extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageCreateEvent event) throws Exception {
+    public void doSomething(MessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
             return;
 
-        String[] contents = getMessage(event).split(" ");
+        String[] contents = getContent(event).split(" ");
 
         if(contents.length >= 2) {
-            String[] realContents = getMessage(event).split(" ", 2);
+            String[] realContents = getContent(event).split(" ", 2);
 
             ArrayList<Integer> id = EntityFilter.findMedalByName(realContents[1]);
 
@@ -73,7 +74,12 @@ public class Medal extends ConstraintCommand {
                 Message res = ch.createMessage(sb.toString()).block();
 
                 if(res != null) {
-                    event.getMember().ifPresent(m -> StaticStore.putHolder(m.getId().asString(), new MedalHolder(id, event.getMessage(), res, lang, ch.getId().asString())));
+                    getMember(event).ifPresent(m -> {
+                        Message msg = getMessage(event);
+
+                        if(msg != null)
+                            StaticStore.putHolder(m.getId().asString(), new MedalHolder(id, msg, res, lang, ch.getId().asString()));
+                    });
                 }
             }
         } else {

@@ -23,7 +23,7 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class AnimHolder extends Holder {
+public class AnimHolder extends Holder<MessageCreateEvent> {
     private final AnimMixer mixer;
     private final Message msg;
     private final int lang;
@@ -50,6 +50,8 @@ public class AnimHolder extends Holder {
     private boolean expired = false;
 
     public AnimHolder(Message msg, Message target, int lang, String channelID, File container, boolean debug, MessageChannel ch, boolean raw, int len) throws Exception {
+        super(MessageCreateEvent.class);
+
         this.msg = target;
         this.lang = lang;
         this.channelID = channelID;

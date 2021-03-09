@@ -6,7 +6,7 @@ import common.util.lang.MultiLangCont;
 import common.util.stage.MapColc;
 import common.util.stage.Stage;
 import common.util.stage.StageMap;
-import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
@@ -28,15 +28,15 @@ public class StageInfo extends TimedConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageCreateEvent event) throws Exception {
+    public void doSomething(MessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
             return;
 
-        String[] list = getMessage(event).split(" ", 2);
+        String[] list = getContent(event).split(" ", 2);
 
-        String[] names = generateStageNameSeries(getMessage(event));
+        String[] names = generateStageNameSeries(getContent(event));
 
         if(list.length == 1 || allNull(names)) {
             ch.createMessage(LangID.getStringByID("stinfo_noname", lang)).subscribe();
@@ -46,16 +46,16 @@ public class StageInfo extends TimedConstraintCommand {
             if(stages.isEmpty()) {
                 ch.createMessage(LangID.getStringByID("stinfo_nores", lang).replace("_", generateSearchName(names))).subscribe();
             } else if(stages.size() == 1) {
-                int param = checkParameters(getMessage(event));
-                int star = getStar(getMessage((event)));
+                int param = checkParameters(getContent(event));
+                int star = getStar(getContent((event)));
                 boolean isFrame = (param & PARAM_SECOND) == 0;
 
                 CommonStatic.getConfig().lang = lang;
 
                 EntityHandler.showStageEmb(stages.get(0), ch, isFrame, star, lang);
             } else {
-                int param = checkParameters(getMessage(event));
-                int star = getStar(getMessage((event)));
+                int param = checkParameters(getContent(event));
+                int star = getStar(getContent((event)));
                 boolean isFrame = (param & PARAM_SECOND) == 0;
 
                 CommonStatic.getConfig().lang = lang;
@@ -155,7 +155,12 @@ public class StageInfo extends TimedConstraintCommand {
                 Message res = ch.createMessage(sb.toString()).block();
 
                 if(res != null) {
-                    event.getMember().ifPresent(member -> StaticStore.putHolder(member.getId().asString(), new StageInfoHolder(stages, event.getMessage(), res, ch.getId().asString(), star, isFrame, lang)));
+                    getMember(event).ifPresent(member -> {
+                        Message msg = getMessage(event);
+
+                        if(msg != null)
+                            StaticStore.putHolder(member.getId().asString(), new StageInfoHolder(stages, msg, res, ch.getId().asString(), star, isFrame, lang));
+                    });
                 }
             }
         }

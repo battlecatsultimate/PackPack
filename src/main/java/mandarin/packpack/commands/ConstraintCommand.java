@@ -1,6 +1,7 @@
 package mandarin.packpack.commands;
 
-import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.MessageEvent;
+import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -43,7 +44,7 @@ public abstract class ConstraintCommand implements Command {
     }
 
     @Override
-    public void execute(MessageCreateEvent event) {
+    public void execute(MessageEvent event) {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
@@ -54,7 +55,7 @@ public abstract class ConstraintCommand implements Command {
 
         AtomicReference<Boolean> canGo = new AtomicReference<>(true);
 
-        event.getMember().ifPresentOrElse(m -> {
+        getMember(event).ifPresentOrElse(m -> {
             String role = StaticStore.rolesToString(m.getRoleIds());
 
             if(constRole == null) {
@@ -78,7 +79,9 @@ public abstract class ConstraintCommand implements Command {
             if(constRole.equals("MANDARIN")) {
                 ch.createMessage(LangID.getStringByID("const_man", lang)).subscribe();
             } else {
-                String role = StaticStore.roleNameFromID(event, constRole);
+                Guild g = getGuild(event).block();
+
+                String role = g == null ? "NONE" : StaticStore.roleNameFromID(g, constRole);
                 ch.createMessage(LangID.getStringByID("const_role", lang).replace("_", role)).subscribe();
             }
         } else {

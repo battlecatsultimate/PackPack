@@ -2,7 +2,7 @@ package mandarin.packpack.commands.bc;
 
 import common.util.Data;
 import common.util.unit.Form;
-import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
@@ -26,18 +26,18 @@ public class FormSprite extends TimedConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageCreateEvent event) throws Exception {
+    public void doSomething(MessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
             return;
 
-        String[] contents = getMessage(event).split(" ");
+        String[] contents = getContent(event).split(" ");
 
         if(contents.length == 1) {
             ch.createMessage(LangID.getStringByID("fimg_more", lang)).subscribe();
         } else {
-            String search = filterCommand(getMessage(event));
+            String search = filterCommand(getContent(event));
 
             if(search.isBlank()) {
                 ch.createMessage(LangID.getStringByID("fimg_more", lang)).subscribe();
@@ -47,14 +47,14 @@ public class FormSprite extends TimedConstraintCommand {
             ArrayList<Form> forms = EntityFilter.findUnitWithName(search);
 
             if(forms.isEmpty()) {
-                ch.createMessage(LangID.getStringByID("formst_nounit", lang).replace("_", filterCommand(getMessage(event)))).subscribe();
+                ch.createMessage(LangID.getStringByID("formst_nounit", lang).replace("_", filterCommand(getContent(event)))).subscribe();
                 disableTimer();
             } else if(forms.size() == 1) {
-                int param = checkParameter(getMessage(event));
+                int param = checkParameter(getContent(event));
 
                 EntityHandler.getFormSprite(forms.get(0), ch, getModeFromParam(param), lang);
             } else {
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", filterCommand(getMessage(event))));
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", filterCommand(getContent(event))));
 
                 String check;
 
@@ -87,14 +87,19 @@ public class FormSprite extends TimedConstraintCommand {
                 sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
 
-                int param = checkParameter(getMessage(event));
+                int param = checkParameter(getContent(event));
 
                 int mode = getModeFromParam(param);
 
                 Message res = ch.createMessage(sb.toString()).block();
 
                 if(res != null) {
-                    event.getMember().ifPresent(member -> StaticStore.putHolder(member.getId().asString(), new FormSpriteHolder(forms, event.getMessage(), res, ch.getId().asString(), mode, lang)));
+                    getMember(event).ifPresent(member -> {
+                        Message msg = getMessage(event);
+
+                        if(msg != null)
+                            StaticStore.putHolder(member.getId().asString(), new FormSpriteHolder(forms, msg, res, ch.getId().asString(), mode, lang));
+                    });
                 }
 
                 disableTimer();

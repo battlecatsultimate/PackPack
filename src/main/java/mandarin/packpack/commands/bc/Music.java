@@ -3,6 +3,7 @@ package mandarin.packpack.commands.bc;
 import common.pack.UserProfile;
 import common.util.Data;
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.GlobalTimedConstraintCommand;
@@ -26,8 +27,8 @@ public class Music extends GlobalTimedConstraintCommand {
     private final Pauser waiter = new Pauser();
 
     @Override
-    protected void setOptionalID(MessageCreateEvent event) {
-        String[] command = getMessage(event).split(" ");
+    protected void setOptionalID(MessageEvent event) {
+        String[] command = getContent(event).split(" ");
 
         if(command.length == 2) {
             if (StaticStore.isNumeric(command[1])) {
@@ -55,7 +56,7 @@ public class Music extends GlobalTimedConstraintCommand {
     }
 
     @Override
-    protected void doThing(MessageCreateEvent event) throws Exception {
+    protected void doThing(MessageEvent event) throws Exception {
         int id = StaticStore.safeParseInt(optionalID);
 
         common.util.stage.Music m = UserProfile.getBCData().musics.get(id);
@@ -114,7 +115,7 @@ public class Music extends GlobalTimedConstraintCommand {
     }
 
     @Override
-    protected void onAbort(MessageCreateEvent event) {
+    protected void onAbort(MessageEvent event) {
         MessageChannel ch = getChannel(event);
 
         if(ch != null) {

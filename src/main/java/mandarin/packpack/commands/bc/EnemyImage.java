@@ -5,7 +5,7 @@ import common.util.Data;
 import common.util.anim.EAnimD;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Enemy;
-import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
@@ -32,13 +32,13 @@ public class EnemyImage extends TimedConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageCreateEvent event) throws Exception {
+    public void doSomething(MessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
             return;
 
-        String[] list = getMessage(event).split(" ");
+        String[] list = getContent(event).split(" ");
 
         if(list.length >= 2) {
             File temp = new File("./temp");
@@ -52,7 +52,7 @@ public class EnemyImage extends TimedConstraintCommand {
                 }
             }
 
-            String search = filterCommand(getMessage(event));
+            String search = filterCommand(getContent(event));
 
             if(search.isBlank()) {
                 ch.createMessage(LangID.getStringByID("eimg_more", lang)).subscribe();
@@ -62,12 +62,12 @@ public class EnemyImage extends TimedConstraintCommand {
             ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(search);
 
             if(enemies.isEmpty()) {
-                ch.createMessage(LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(getMessage(event)))).subscribe();
+                ch.createMessage(LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(getContent(event)))).subscribe();
                 disableTimer();
             } else if(enemies.size() == 1) {
-                int param = checkParameters(getMessage(event));
-                int mode = getMode(getMessage(event));
-                int frame = getFrame(getMessage(event));
+                int param = checkParameters(getContent(event));
+                int mode = getMode(getContent(event));
+                int frame = getFrame(getContent(event));
 
                 enemies.get(0).anim.load();
 
@@ -119,7 +119,7 @@ public class EnemyImage extends TimedConstraintCommand {
             } else {
                 CommonStatic.getConfig().lang = lang;
 
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", filterCommand(getMessage(event))));
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", filterCommand(getContent(event))));
 
                 String check;
 
@@ -163,12 +163,17 @@ public class EnemyImage extends TimedConstraintCommand {
 
                 Message res = ch.createMessage(sb.toString()).block();
 
-                int param = checkParameters(getMessage(event));
-                int mode = getMode(getMessage(event));
-                int frame = getFrame(getMessage(event));
+                int param = checkParameters(getContent(event));
+                int mode = getMode(getContent(event));
+                int frame = getFrame(getContent(event));
 
                 if(res != null) {
-                    event.getMember().ifPresent(member -> StaticStore.putHolder(member.getId().asString(), new EnemyAnimHolder(enemies, event.getMessage(), res, ch.getId().asString(), mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang, false, false)));
+                    getMember(event).ifPresent(member -> {
+                        Message msg = getMessage(event);
+
+                        if(msg != null)
+                            StaticStore.putHolder(member.getId().asString(), new EnemyAnimHolder(enemies, msg, res, ch.getId().asString(), mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang, false, false));
+                    });
                 }
 
                 disableTimer();

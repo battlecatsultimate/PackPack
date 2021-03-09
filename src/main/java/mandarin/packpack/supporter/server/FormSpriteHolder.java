@@ -16,7 +16,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
-public class FormSpriteHolder extends Holder {
+public class FormSpriteHolder extends Holder<MessageCreateEvent> {
     private final ArrayList<Form> form;
     private final Message msg;
     private final String channelID;
@@ -30,6 +30,8 @@ public class FormSpriteHolder extends Holder {
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
     public FormSpriteHolder(ArrayList<Form> form, Message author, Message msg, String channelID, int mode, int lang) {
+        super(MessageCreateEvent.class);
+
         this.form = form;
         this.msg = msg;
         this.channelID = channelID;

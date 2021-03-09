@@ -18,7 +18,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
-public class StageInfoHolder extends Holder {
+public class StageInfoHolder extends Holder<MessageCreateEvent> {
     private final ArrayList<Stage> stage;
     private final Message msg;
     private final String channelID;
@@ -33,6 +33,8 @@ public class StageInfoHolder extends Holder {
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
     public StageInfoHolder(ArrayList<Stage> stage, Message author, Message msg, String channelID, int star, boolean isFrame, int lang) {
+        super(MessageCreateEvent.class);
+
         this.stage = stage;
         this.msg = msg;
         this.channelID = channelID;

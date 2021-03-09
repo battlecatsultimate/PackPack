@@ -1,6 +1,6 @@
 package mandarin.packpack.commands.server;
 
-import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.Command;
@@ -23,8 +23,12 @@ public class BCUStat implements Command {
     }
 
     @Override
-    public void doSomething(MessageCreateEvent event) {
-        Message msg = event.getMessage();
+    public void doSomething(MessageEvent event) {
+        Message msg = getMessage(event);
+
+        if(msg == null)
+            return;
+
         MessageChannel ch = msg.getChannel().block();
 
         if(ch == null)
@@ -38,7 +42,7 @@ public class BCUStat implements Command {
 
         AtomicReference<Long> allUsers = new AtomicReference<>(0L);
 
-        event.getGuild().subscribe(g -> {
+        getGuild(event).subscribe(g -> {
             g.getMembers()
                     .filter(m -> !m.isBot())
                     .count()

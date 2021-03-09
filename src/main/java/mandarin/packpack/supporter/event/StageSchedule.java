@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class StageSchedule extends EventFactor {
     public enum TYPE {
-        ALWAYS,
+        DAILY,
         YEARLY,
         MONTHLY,
         WEEKLY
@@ -74,7 +74,7 @@ public class StageSchedule extends EventFactor {
                 if (date.dateEnd.equals(END) && section.weekDays.size() != 0 && type == null) {
                     type = TYPE.WEEKLY;
                 } else if (date.dateEnd.equals(END) && type == null)
-                    type = TYPE.ALWAYS;
+                    type = TYPE.DAILY;
 
                 index++;
 
@@ -154,12 +154,14 @@ public class StageSchedule extends EventFactor {
             result.append("<Monthly>\n\n");
         } else if(type == TYPE.WEEKLY) {
             result.append("<Weekly>\n\n");
-        } else if(type == TYPE.ALWAYS) {
+        } else if(type == TYPE.DAILY) {
             result.append("<Everyday>\n\n");
         } else if (type == null)
             result.append("<Normal>\n\n");
 
-        for (EventSection section : sections) {
+        for (int j = 0; j < sections.size(); j++) {
+            EventSection section = sections.get(j);
+
             if (!section.daySets.isEmpty()) {
                 for (int i = 0; i < section.daySets.size(); i++) {
                     EventDateSet set = section.daySets.get(i);
@@ -193,11 +195,17 @@ public class StageSchedule extends EventFactor {
             if (!section.days.isEmpty()) {
                 result.append("{");
 
-                for (int i = 0; i < section.days.size(); i++) {
-                    result.append(section.days.get(i)).append(getNumberExtension(section.days.get(i)));
+                if(isEvenDays(j)) {
+                    result.append("Every even day");
+                } else if(isOddDays(j)) {
+                    result.append("Every odd day");
+                } else {
+                    for (int i = 0; i < section.days.size(); i++) {
+                        result.append(section.days.get(i)).append(getNumberExtension(section.days.get(i)));
 
-                    if (i < section.days.size() - 1)
-                        result.append(", ");
+                        if (i < section.days.size() - 1)
+                            result.append(", ");
+                    }
                 }
 
                 result.append("} ");
@@ -278,6 +286,54 @@ public class StageSchedule extends EventFactor {
         }
 
         return result.toString();
+    }
+
+    public boolean isEvenDays(int index) {
+        if(index < 0 || index >= sections.size())
+            return false;
+
+        EventSection section = sections.get(index);
+
+        int startDay = date.dateStart.day;
+        int endDay = date.dateEnd.day;
+
+        if(date.dateEnd.month > date.dateStart.month) {
+            startDay = 1;
+            endDay = 31;
+        }
+
+        ArrayList<Integer> even = new ArrayList<>();
+
+        for(int i = startDay; i <= endDay; i++) {
+            if(i % 2 == 0)
+                even.add(i);
+        }
+
+        return section.days.containsAll(even);
+    }
+
+    public boolean isOddDays(int index) {
+        if(index < 0 || index >= sections.size())
+            return false;
+
+        EventSection section = sections.get(index);
+
+        int startDay = date.dateStart.day;
+        int endDay = date.dateEnd.day;
+
+        if(date.dateEnd.month > date.dateStart.month) {
+            startDay = 1;
+            endDay = 31;
+        }
+
+        ArrayList<Integer> odd = new ArrayList<>();
+
+        for(int i = startDay; i <= endDay; i++) {
+            if(i % 2 == 1)
+                odd.add(i);
+        }
+
+        return section.days.containsAll(odd);
     }
 
     private String getMonth(int mon) {

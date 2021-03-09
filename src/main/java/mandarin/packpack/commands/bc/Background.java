@@ -2,7 +2,7 @@ package mandarin.packpack.commands.bc;
 
 import common.pack.UserProfile;
 import common.util.Data;
-import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.TimedConstraintCommand;
@@ -21,18 +21,18 @@ public class Background extends TimedConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageCreateEvent event) throws Exception {
+    public void doSomething(MessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
             return;
 
-        String[] msg = getMessage(event).split(" ");
+        String[] msg = getContent(event).split(" ");
 
         if(msg.length == 1) {
             ch.createMessage(LangID.getStringByID("bg_more", lang)).subscribe();
         } else {
-            int id = getID(getMessage(event));
+            int id = getID(getContent(event));
 
             if(id == -1) {
                 ch.createMessage(LangID.getStringByID("bg_more", lang)).subscribe();
@@ -42,8 +42,8 @@ public class Background extends TimedConstraintCommand {
                 return;
             }
 
-            int w = Math.max(1, getWidth(getMessage(event)));
-            int h = Math.max(1, getHeight(getMessage(event)));
+            int w = Math.max(1, getWidth(getContent(event)));
+            int h = Math.max(1, getHeight(getContent(event)));
 
             common.util.pack.Background bg = UserProfile.getBCData().bgs.getList().get(id);
 

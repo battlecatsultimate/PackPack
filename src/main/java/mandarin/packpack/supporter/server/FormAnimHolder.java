@@ -17,7 +17,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
-public class FormAnimHolder extends Holder {
+public class FormAnimHolder extends Holder<MessageCreateEvent> {
     private final ArrayList<Form> form;
     private final Message msg;
     private final String channelID;
@@ -36,6 +36,8 @@ public class FormAnimHolder extends Holder {
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
     public FormAnimHolder(ArrayList<Form> form, Message author, Message msg, String channelID, int mode, int frame, boolean transparent, boolean debug, int lang, boolean isGif, boolean raw) {
+        super(MessageCreateEvent.class);
+
         this.form = form;
         this.msg = msg;
         this.channelID = channelID;

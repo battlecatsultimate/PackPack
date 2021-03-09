@@ -1,9 +1,8 @@
 package mandarin.packpack.commands.server;
 
-import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
-import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.IDHolder;
 
@@ -13,10 +12,10 @@ public class ServerPrefix extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageCreateEvent event) {
+    public void doSomething(MessageEvent event) {
         MessageChannel ch = getChannel(event);
 
-        String[] list = getMessage(event).split(" ");
+        String[] list = getContent(event).split(" ");
 
         if(list.length == 2) {
             if(list[1] == null || list[1].isBlank()) {

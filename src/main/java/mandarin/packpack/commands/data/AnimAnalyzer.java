@@ -1,6 +1,6 @@
 package mandarin.packpack.commands.data;
 
-import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
@@ -20,13 +20,13 @@ public class AnimAnalyzer extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageCreateEvent event) throws Exception {
+    public void doSomething(MessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
             return;
 
-        int anim = getAnimNumber(getMessage(event));
+        int anim = getAnimNumber(getContent(event));
 
         StringBuilder message = new StringBuilder("PNG : -\nIMGCUT : -\nMAMODEL : -\n");
 
@@ -42,7 +42,7 @@ public class AnimAnalyzer extends ConstraintCommand {
         if(m == null)
             return;
 
-        int param = checkParam(getMessage(event));
+        int param = checkParam(getContent(event));
 
         boolean debug = (PARAM_DEBUG & param) > 0;
         boolean raw = (PARAM_RAW & param) > 0;
@@ -69,7 +69,10 @@ public class AnimAnalyzer extends ConstraintCommand {
             }
         }
 
-        new AnimHolder(event.getMessage(), m, lang, ch.getId().asString(), container, debug, ch, raw, anim);
+        Message msg = getMessage(event);
+
+        if(msg != null)
+            new AnimHolder(msg, m, lang, ch.getId().asString(), container, debug, ch, raw, anim);
     }
 
     private int checkParam(String message) {

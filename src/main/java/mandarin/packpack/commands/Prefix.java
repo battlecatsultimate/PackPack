@@ -1,6 +1,6 @@
 package mandarin.packpack.commands;
 
-import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -14,10 +14,10 @@ public class Prefix extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageCreateEvent event) {
+    public void doSomething(MessageEvent event) {
         MessageChannel ch = getChannel(event);
 
-        String[] list = getMessage(event).split(" ");
+        String[] list = getContent(event).split(" ");
 
         if(list.length == 2) {
             if(list[1] == null || list[1].isBlank()) {
@@ -25,7 +25,7 @@ public class Prefix extends ConstraintCommand {
                 return;
             }
 
-            event.getMember().ifPresentOrElse(m -> {
+            getMember(event).ifPresentOrElse(m -> {
                 StaticStore.prefix.put(m.getId().asString(), list[1]);
 
                 ch.createMessage(LangID.getStringByID("prefix_set", lang).replace("_", list[1])).subscribe();
@@ -38,7 +38,7 @@ public class Prefix extends ConstraintCommand {
     }
 
     @Override
-    public void onFail(MessageCreateEvent event, int error) {
+    public void onFail(MessageEvent event, int error) {
         MessageChannel ch = getChannel(event);
 
         switch (error) {

@@ -17,7 +17,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
-public class EnemyAnimHolder extends Holder {
+public class EnemyAnimHolder extends Holder<MessageCreateEvent> {
     public static final int RESULT_FAIL = -1;
     public static final int RESULT_STILL = 0;
     public static final int RESULT_FINISH = 1;
@@ -41,6 +41,8 @@ public class EnemyAnimHolder extends Holder {
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
     public EnemyAnimHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, int mode, int frame, boolean transparent, boolean debug, int lang, boolean isGif, boolean raw) {
+        super(MessageCreateEvent.class);
+
         this.enemy = enemy;
         this.msg = msg;
         this.channelID = channelID;

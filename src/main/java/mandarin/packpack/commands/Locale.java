@@ -1,6 +1,6 @@
 package mandarin.packpack.commands;
 
-import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -12,18 +12,18 @@ public class Locale extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageCreateEvent event) {
+    public void doSomething(MessageEvent event) {
         MessageChannel ch = getChannel(event);
 
         if(ch != null) {
-            String[] list = getMessage(event).split(" ");
+            String[] list = getContent(event).split(" ");
 
             if(list.length == 2) {
                 if(StaticStore.isNumeric(list[1])) {
                     int lan = StaticStore.safeParseInt(list[1]) - 1;
 
                     if(lan >= 0 && lan <= 3) {
-                        event.getMember().ifPresentOrElse(m -> {
+                        getMember(event).ifPresentOrElse(m -> {
                             StaticStore.locales.put(m.getId().asString(), lan);
 
                             String locale;

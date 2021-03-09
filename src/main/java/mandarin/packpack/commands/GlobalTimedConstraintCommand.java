@@ -1,6 +1,7 @@
 package mandarin.packpack.commands;
 
-import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.event.domain.message.MessageEvent;
+import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
@@ -54,7 +55,7 @@ public abstract class GlobalTimedConstraintCommand implements Command {
     }
 
     @Override
-    public void execute(MessageCreateEvent event) {
+    public void execute(MessageEvent event) {
         prepareAborts();
 
         MessageChannel ch = getChannel(event);
@@ -68,7 +69,7 @@ public abstract class GlobalTimedConstraintCommand implements Command {
 
         AtomicReference<Boolean> canGo = new AtomicReference<>(true);
 
-        event.getMember().ifPresentOrElse(m -> {
+        getMember(event).ifPresentOrElse(m -> {
             String role = StaticStore.rolesToString(m.getRoleIds());
 
             if(constRole == null) {
@@ -93,7 +94,9 @@ public abstract class GlobalTimedConstraintCommand implements Command {
             if(constRole.equals("MANDARIN")) {
                 ch.createMessage(LangID.getStringByID("const_man", lang)).subscribe();
             } else {
-                String role = StaticStore.roleNameFromID(event, constRole);
+                Guild g = getGuild(event).block();
+
+                String role = g == null ? "NONE" : StaticStore.roleNameFromID(g, constRole);
                 ch.createMessage(LangID.getStringByID("const_role", lang).replace("_", role)).subscribe();
             }
         } else {
@@ -157,7 +160,7 @@ public abstract class GlobalTimedConstraintCommand implements Command {
     }
 
     @Override
-    public void doSomething(MessageCreateEvent event) throws Exception {
+    public void doSomething(MessageEvent event) throws Exception {
         doThing(event);
 
         pause.resume();
@@ -177,11 +180,11 @@ public abstract class GlobalTimedConstraintCommand implements Command {
         }
     }
 
-    protected abstract void doThing(MessageCreateEvent event) throws Exception;
+    protected abstract void doThing(MessageEvent event) throws Exception;
 
-    protected abstract void setOptionalID(MessageCreateEvent event);
+    protected abstract void setOptionalID(MessageEvent event);
 
     protected abstract void prepareAborts();
 
-    protected void onAbort(MessageCreateEvent event) {}
+    protected void onAbort(MessageEvent event) {}
 }
