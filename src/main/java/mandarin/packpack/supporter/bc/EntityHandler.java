@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Set;
 
@@ -121,9 +122,10 @@ public class EntityHandler {
 
                 int[] t;
 
-                if(talent && f.getPCoin() != null)
+                if(talent && f.getPCoin() != null) {
                     t = f.getPCoin().max;
-                else
+                    t[0] = lv[0];
+                } else
                     t = null;
 
                 if(t != null)
@@ -131,23 +133,22 @@ public class EntityHandler {
                 else
                     t = new int[] {lv[0], 0, 0, 0, 0, 0};
 
-                if(emptyTalent(t))
-                    t = null;
+                System.out.println(Arrays.toString(t));
 
                 spec.setTitle(DataToString.getTitle(f, lang));
 
-                if(talent && f.getPCoin() != null && t != null) {
+                if(talent && f.getPCoin() != null && talentExists(t)) {
                     spec.setDescription(LangID.getStringByID("data_talent", lang));
                 }
 
                 spec.setColor(c);
                 spec.setThumbnail("attachment://icon.png");
                 spec.addField(LangID.getStringByID("data_id", lang), DataToString.getID(f.uid.id, f.fid), false);
-                spec.addField(LangID.getStringByID("data_hp", lang), DataToString.getHP(f, lv[0], talent, t), true);
+                spec.addField(LangID.getStringByID("data_hp", lang), DataToString.getHP(f, talent, t), true);
                 spec.addField(LangID.getStringByID("data_hb", lang), DataToString.getHitback(f, talent, t), true);
                 spec.addField(LangID.getStringByID("data_level", lang), l, true);
-                spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(f, lv[0], talent, t), false);
-                spec.addField(LangID.getStringByID("data_dps", lang), DataToString.getDPS(f, lv[0], talent, t), true);
+                spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(f, talent, t), false);
+                spec.addField(LangID.getStringByID("data_dps", lang), DataToString.getDPS(f, talent, t), true);
                 spec.addField(LangID.getStringByID("data_atktime", lang), DataToString.getAtkTime(f, isFrame), true);
                 spec.addField(LangID.getStringByID("data_abilt", lang), DataToString.getAbilT(f, lang), true);
                 spec.addField(LangID.getStringByID("data_preatk", lang), DataToString.getPre(f, isFrame), true);
@@ -201,7 +202,7 @@ public class EntityHandler {
 
                 spec.setImage("attachment://cf.png");
 
-                if(t != null)
+                if(talentExists(t))
                     spec.setFooter(DataToString.getTalent(f, t, lang), null);
             });
             if(fis != null)
@@ -258,14 +259,14 @@ public class EntityHandler {
         return res;
     }
 
-    private static boolean emptyTalent(int[] t) {
+    private static boolean talentExists(int[] t) {
         boolean empty = true;
 
         for(int i = 1; i < t.length; i++) {
             empty &= t[i] == 0;
         }
 
-        return empty;
+        return !empty;
     }
 
     public static void showEnemyEmb(Enemy e, MessageChannel ch, boolean isFrame, int[] magnification, int lang) throws Exception {

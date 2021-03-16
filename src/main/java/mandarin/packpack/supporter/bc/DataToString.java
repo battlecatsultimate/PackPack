@@ -464,24 +464,21 @@ public class DataToString {
         }
     }
 
-    public static String getAtk(Form f, int lv, boolean talent, int[] lvs) {
+    public static String getAtk(Form f, boolean talent, int[] lvs) {
         if(f == null || f.du == null)
             return "";
 
         MaskUnit du;
 
-        if(lvs != null && f.getPCoin() != null)
-            if(talent)
-                du = f.getPCoin().improve(lvs);
-            else
-                du = f.du;
+        if(f.getPCoin() != null && talent)
+            du = f.getPCoin().improve(lvs);
         else
             du = f.du;
 
         if(du.rawAtkData().length > 1)
-            return getTotalAtk(f, lv, du) + " " + getAtks(f, lv, du);
+            return getTotalAtk(f, du, talent, lvs) + " " + getAtks(f, du, talent, lvs);
         else
-            return getTotalAtk(f, lv, du);
+            return getTotalAtk(f, du, talent, lvs);
     }
 
     public static String getAtk(Enemy e, int magnification) {
@@ -494,17 +491,25 @@ public class DataToString {
             return getTotalAtk(e, magnification);
     }
 
-    public static String getTotalAtk(Form f, int lv, MaskUnit du) {
+    public static String getTotalAtk(Form f, MaskUnit du, boolean talent, int[] lvs) {
         Treasure t = BasisSet.current().t();
 
-        return String.valueOf((int) (du.allAtk() * t.getAtkMulti() * f.unit.lv.getMult(lv)));
+        int result;
+
+        if(f.getPCoin() != null && talent) {
+            result = (int) ((int) (Math.round(du.allAtk() * f.unit.lv.getMult(lvs[0])) * t.getAtkMulti()) * f.getPCoin().getAtkMultiplication(lvs));
+        } else {
+            result = (int) (Math.round(du.allAtk() * f.unit.lv.getMult(lvs[0])) * t.getAtkMulti());
+        }
+
+        return String.valueOf(result);
     }
 
     public static String getTotalAtk(Enemy e, int magnification) {
         return "" + (int) (e.de.multi(BasisSet.current()) * e.de.allAtk() * magnification / 100.0);
     }
 
-    public static String getAtks(Form f, int lv, MaskUnit du) {
+    public static String getAtks(Form f, MaskUnit du, boolean talent, int[] lvs) {
         if(f == null || f.du == null)
             return "";
 
@@ -515,7 +520,15 @@ public class DataToString {
         ArrayList<Integer> damage = new ArrayList<>();
 
         for(int[] atk : raw) {
-            damage.add((int) (atk[0] * t.getAtkMulti() * f.unit.lv.getMult(lv)));
+            int result;
+
+            if(f.getPCoin() != null && talent) {
+                result = (int) ((int) (Math.round(atk[0] * f.unit.lv.getMult(lvs[0])) * t.getAtkMulti()) * f.getPCoin().getAtkMultiplication(lvs));
+            } else {
+                result = (int) (Math.round(atk[0] * f.unit.lv.getMult(lvs[0])) * t.getAtkMulti());
+            }
+
+            damage.add(result);
         }
 
         StringBuilder result = new StringBuilder("(");
@@ -554,7 +567,7 @@ public class DataToString {
         return sb.toString();
     }
 
-    public static String getDPS(Form f, int lv, boolean talent, int[] lvs) {
+    public static String getDPS(Form f, boolean talent, int[] lvs) {
         if(f == null || f.du == null)
             return "";
 
@@ -568,7 +581,7 @@ public class DataToString {
         else
             du = f.du;
 
-        return df.format(Double.parseDouble(getTotalAtk(f, lv, du)) / (du.getItv() / 30.0));
+        return df.format(Double.parseDouble(getTotalAtk(f, du, talent, lvs)) / (du.getItv() / 30.0));
     }
 
     public static String getDPS(Enemy e, int magnification) {
@@ -626,23 +639,28 @@ public class DataToString {
         return String.valueOf(e.de.getHb());
     }
 
-    public static String getHP(Form f, int lv, boolean talent, int[] lvs) {
+    public static String getHP(Form f, boolean talent, int[] lvs) {
         if(f == null || f.du == null)
             return "";
 
         MaskUnit du;
 
-        if(lvs != null && f.getPCoin() != null)
-            if(talent)
-                du = f.getPCoin().improve(lvs);
-            else
-                du = f.du;
+        if(f.getPCoin() != null && talent)
+            du = f.getPCoin().improve(lvs);
         else
             du = f.du;
 
         Treasure t = BasisSet.current().t();
 
-        return String.valueOf((int) (du.getHp() * t.getDefMulti() * f.unit.lv.getMult(lv)));
+        int result;
+
+        if(f.getPCoin() != null && talent) {
+            result = (int) ((int) (Math.round(du.getHp() * f.unit.lv.getMult(lvs[0])) * t.getDefMulti()) * f.getPCoin().getHPMultiplication(lvs));
+        } else {
+            result = (int) (Math.round(du.getHp() * f.unit.lv.getMult(lvs[0])) * t.getDefMulti());
+        }
+
+        return String.valueOf(result);
     }
 
     public static String getHP(Enemy e, int magnification) {
