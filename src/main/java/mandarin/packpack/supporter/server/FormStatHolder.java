@@ -202,7 +202,7 @@ public class FormStatHolder extends Holder<MessageCreateEvent> {
                 if(result != null) {
                     event.getMember().ifPresent(m -> {
                         StaticStore.removeHolder(m.getId().asString(), FormStatHolder.this);
-                        StaticStore.putHolder(m.getId().asString(), new FormReactionHolder(form.get(id), event.getMessage(), msg, isFrame, talent, lv, lang, ch.getId().asString(), m.getId().asString()));
+                        StaticStore.putHolder(m.getId().asString(), new FormReactionHolder(form.get(id), event.getMessage(), result, isFrame, talent, lv, lang, ch.getId().asString(), m.getId().asString()));
                     });
                 }
             } catch (Exception e) {
