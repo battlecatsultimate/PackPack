@@ -30,3 +30,4 @@ hs_err_pid*
 /data/serverinfo.json
 /temp/
 /out/
+/data/event/
