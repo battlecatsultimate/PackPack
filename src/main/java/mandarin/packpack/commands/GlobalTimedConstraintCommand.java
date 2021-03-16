@@ -122,7 +122,7 @@ public abstract class GlobalTimedConstraintCommand implements Command {
                             try {
                                 doSomething(event);
 
-                                if(timerStart) {
+                                if(timerStart && time != 0) {
                                     Timer timer = new Timer();
 
                                     timer.schedule(new TimerTask() {

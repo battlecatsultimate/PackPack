@@ -19,31 +19,44 @@ public class Music extends GlobalTimedConstraintCommand {
     private static final String OUT_RANGE = "outRange";
     private static final String ARGUMENT = "arguments";
 
+    private common.util.stage.Music ms;
+
     public Music(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID) {
         super(role, lang, id, mainID, TimeUnit.SECONDS.toMillis(10));
+    }
+
+    public Music(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID, common.util.stage.Music ms) {
+        super(role, lang, id, mainID, 0);
+        this.ms = ms;
     }
 
     private final Pauser waiter = new Pauser();
 
     @Override
     protected void setOptionalID(MessageEvent event) {
-        String[] command = getContent(event).split(" ");
+        if(ms == null) {
+            String[] command = getContent(event).split(" ");
 
-        if(command.length == 2) {
-            if (StaticStore.isNumeric(command[1])) {
-                int id = StaticStore.safeParseInt(command[1]);
+            if(command.length == 2) {
+                if (StaticStore.isNumeric(command[1])) {
+                    int id = StaticStore.safeParseInt(command[1]);
 
-                if(id < 0 || id >= UserProfile.getBCData().musics.getList().size()) {
-                    optionalID = OUT_RANGE;
-                    return;
+                    if(id < 0 || id >= UserProfile.getBCData().musics.getList().size()) {
+                        optionalID = OUT_RANGE;
+                        return;
+                    }
+
+                    optionalID = Data.trio(StaticStore.safeParseInt(command[1]));
+                } else {
+                    optionalID = NOT_NUMBER;
                 }
-
-                optionalID = Data.trio(StaticStore.safeParseInt(command[1]));
             } else {
-                optionalID = NOT_NUMBER;
+                optionalID = ARGUMENT;
             }
         } else {
-            optionalID = ARGUMENT;
+            if(ms.id != null) {
+                optionalID = Data.trio(ms.id.id);
+            }
         }
     }
 
@@ -56,60 +69,115 @@ public class Music extends GlobalTimedConstraintCommand {
 
     @Override
     protected void doThing(MessageEvent event) throws Exception {
-        int id = StaticStore.safeParseInt(optionalID);
+        if(ms != null && ms.id != null) {
+            File file = new File("./temp/", Data.trio(ms.id.id)+".ogg");
 
-        common.util.stage.Music m = UserProfile.getBCData().musics.get(id);
+            if(!file.exists()) {
+                boolean res = file.createNewFile();
 
-        File file = new File("./temp/", Data.trio(id)+".ogg");
-
-        if(!file.exists()) {
-            boolean res = file.createNewFile();
-
-            if(!res) {
-                System.out.println("Can't create file : "+file.getAbsolutePath());
-                return;
-            }
-        }
-
-        FileOutputStream fos = new FileOutputStream(file);
-        InputStream ins = m.data.getStream();
-
-        int l;
-        byte[] buffer = new byte[65535];
-
-        while((l = ins.read(buffer)) > 0) {
-            fos.write(buffer, 0, l);
-        }
-
-        ins.close();
-        fos.close();
-
-        MessageChannel ch = getChannel(event);
-
-        if(ch != null) {
-            FileInputStream fis = new FileInputStream(file);
-            ch.createMessage(msg -> {
-                msg.setContent(LangID.getStringByID("music_upload", lang).replace("_", optionalID));
-                msg.addFile(optionalID+".ogg", fis);
-            }).subscribe(null, null, () -> {
-                waiter.resume();
-
-                try {
-                    if(file.exists()) {
-                        fis.close();
-
-                        boolean res = file.delete();
-
-                        if(!res) {
-                            System.out.println("Can't delete file : "+file.getAbsolutePath());
-                        }
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if(!res) {
+                    System.out.println("Can't create file : "+file.getAbsolutePath());
+                    return;
                 }
-            });
+            }
 
-            waiter.pause(() -> onFail(event, DEFAULT_ERROR));
+            FileOutputStream fos = new FileOutputStream(file);
+            InputStream ins = ms.data.getStream();
+
+            int l;
+            byte[] buffer = new byte[65535];
+
+            while((l = ins.read(buffer)) > 0) {
+                fos.write(buffer, 0, l);
+            }
+
+            ins.close();
+            fos.close();
+
+            MessageChannel ch = getChannel(event);
+
+            if(ch != null) {
+                FileInputStream fis = new FileInputStream(file);
+                ch.createMessage(msg -> {
+                    msg.setContent(LangID.getStringByID("music_upload", lang).replace("_", optionalID));
+                    msg.addFile(optionalID+".ogg", fis);
+                }).subscribe(null, null, () -> {
+                    waiter.resume();
+
+                    try {
+                        if(file.exists()) {
+                            fis.close();
+
+                            boolean res = file.delete();
+
+                            if(!res) {
+                                System.out.println("Can't delete file : "+file.getAbsolutePath());
+                            }
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+
+                waiter.pause(() -> onFail(event, DEFAULT_ERROR));
+            }
+
+        } else if(ms == null) {
+            int id = StaticStore.safeParseInt(optionalID);
+
+            common.util.stage.Music m = UserProfile.getBCData().musics.get(id);
+
+            File file = new File("./temp/", Data.trio(id)+".ogg");
+
+            if(!file.exists()) {
+                boolean res = file.createNewFile();
+
+                if(!res) {
+                    System.out.println("Can't create file : "+file.getAbsolutePath());
+                    return;
+                }
+            }
+
+            FileOutputStream fos = new FileOutputStream(file);
+            InputStream ins = m.data.getStream();
+
+            int l;
+            byte[] buffer = new byte[65535];
+
+            while((l = ins.read(buffer)) > 0) {
+                fos.write(buffer, 0, l);
+            }
+
+            ins.close();
+            fos.close();
+
+            MessageChannel ch = getChannel(event);
+
+            if(ch != null) {
+                FileInputStream fis = new FileInputStream(file);
+                ch.createMessage(msg -> {
+                    msg.setContent(LangID.getStringByID("music_upload", lang).replace("_", optionalID));
+                    msg.addFile(optionalID+".ogg", fis);
+                }).subscribe(null, null, () -> {
+                    waiter.resume();
+
+                    try {
+                        if(file.exists()) {
+                            fis.close();
+
+                            boolean res = file.delete();
+
+                            if(!res) {
+                                System.out.println("Can't delete file : "+file.getAbsolutePath());
+                            }
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+
+                waiter.pause(() -> onFail(event, DEFAULT_ERROR));
+            }
         }
     }
 

@@ -5,6 +5,7 @@ import common.pack.UserProfile;
 import common.util.pack.Background;
 import common.util.stage.CastleImg;
 import common.util.stage.CastleList;
+import common.util.stage.Music;
 import common.util.stage.Stage;
 import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.object.entity.Message;
@@ -22,8 +23,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class StageReactionHolder extends Holder<ReactionAddEvent> {
-    private final static String BG = new String(Character.toChars(0x1f304));
-    private final static String CASTLE = new String(Character.toChars(0x1f3f0));
+    public final static String BG = "821436445242818610";
+    public final static String CASTLE = "821436460447039508";
+    public final static String MUSIC = "821436473525141588";
+    public final static String MUSIC2 = "821436484254564373";
 
     private final Message embed;
     private final IDHolder holder;
@@ -88,33 +91,68 @@ public class StageReactionHolder extends Holder<ReactionAddEvent> {
         if(!correctMember.get())
             return RESULT_STILL;
 
-        Optional<ReactionEmoji.Unicode> uni = event.getEmoji().asUnicodeEmoji();
+        Optional<ReactionEmoji.Custom> uni = event.getEmoji().asCustomEmoji();
 
         AtomicReference<Boolean> emojiClicked = new AtomicReference<>(false);
 
         uni.ifPresent(em -> {
-            if(em.getRaw().equals(CASTLE)) {
-                emojiClicked.set(true);
+            switch (em.getId().asString()) {
+                case CASTLE:
+                    emojiClicked.set(true);
 
-                CastleImg cs = Identifier.get(st.castle);
+                    CastleImg cs = Identifier.get(st.castle);
 
-                if(cs == null) {
-                    ArrayList<CastleList> lists = new ArrayList<>(CastleList.defset());
+                    if(cs == null) {
+                        ArrayList<CastleList> lists = new ArrayList<>(CastleList.defset());
 
-                    cs = lists.get(0).get(0);
-                }
+                        cs = lists.get(0).get(0);
+                    }
 
-                new Castle(ConstraintCommand.ROLE.MEMBER, lang, holder, cs).execute(event);
-            } else if(em.getRaw().equals(BG)) {
-                emojiClicked.set(true);
+                    new Castle(ConstraintCommand.ROLE.MEMBER, lang, holder, cs).execute(event);
 
-                Background bg = Identifier.get(st.bg);
+                    break;
+                case BG:
+                    emojiClicked.set(true);
 
-                if(bg == null) {
-                    bg = UserProfile.getBCData().bgs.get(0);
-                }
+                    Background bg = Identifier.get(st.bg);
 
-                new mandarin.packpack.commands.bc.Background(ConstraintCommand.ROLE.MEMBER, lang, holder, 10000, bg).execute(event);
+                    if(bg == null) {
+                        bg = UserProfile.getBCData().bgs.get(0);
+                    }
+
+                    new mandarin.packpack.commands.bc.Background(ConstraintCommand.ROLE.MEMBER, lang, holder, 10000, bg).execute(event);
+
+                    break;
+                case MUSIC:
+                    emojiClicked.set(true);
+
+                    if(st.mus0 == null)
+                        return;
+
+                    Music ms = Identifier.get(st.mus0);
+
+                    if(ms == null) {
+                        ms = UserProfile.getBCData().musics.get(0);
+                    }
+
+                    new mandarin.packpack.commands.bc.Music(ConstraintCommand.ROLE.MEMBER, lang, holder, "music_", ms).execute(event);
+                    
+                    break;
+                case MUSIC2:
+                    emojiClicked.set(true);
+
+                    if(st.mus1 == null)
+                        return;
+
+                    Music ms2 = Identifier.get(st.mus1);
+
+                    if(ms2 == null) {
+                        ms2 = UserProfile.getBCData().musics.get(0);
+                    }
+
+                    new mandarin.packpack.commands.bc.Music(ConstraintCommand.ROLE.MEMBER, lang, holder, "music_", ms2).execute(event);
+                    
+                    break;
             }
         });
 

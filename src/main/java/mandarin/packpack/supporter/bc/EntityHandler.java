@@ -18,6 +18,7 @@ import common.util.unit.AbEnemy;
 import common.util.unit.EneRand;
 import common.util.unit.Enemy;
 import common.util.unit.Form;
+import discord4j.common.util.Snowflake;
 import discord4j.core.object.entity.Attachment;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
@@ -27,6 +28,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.awt.FG2D;
 import mandarin.packpack.supporter.awt.FIBI;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.StageReactionHolder;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -667,8 +669,17 @@ public class EntityHandler {
         }).block();
 
         if(result != null) {
-            result.addReaction(ReactionEmoji.unicode(new String(Character.toChars(0x1f304)))).subscribe();
-            result.addReaction(ReactionEmoji.unicode(new String(Character.toChars(0x1f3f0)))).subscribe();
+            result.addReaction(ReactionEmoji.custom(Snowflake.of(StageReactionHolder.CASTLE), "Castle", false)).subscribe();
+            result.addReaction(ReactionEmoji.custom(Snowflake.of(StageReactionHolder.BG), "Background", false)).subscribe();
+
+            if(st.mus0 != null) {
+                result.addReaction(ReactionEmoji.custom(Snowflake.of(StageReactionHolder.MUSIC), "Music", false)).subscribe();
+            }
+
+            if(hasTwoMusic(st)) {
+                result.addReaction(ReactionEmoji.custom(Snowflake.of(StageReactionHolder.MUSIC2), "MusicBoss", false)).subscribe();
+            }
+
         }
 
         if(fis != null) {
@@ -1990,5 +2001,9 @@ public class EntityHandler {
             return "kr";
         else
             return "";
+    }
+
+    private static boolean hasTwoMusic(Stage st) {
+        return st.mush != 0 && st.mush != 100 && st.mus1 != null && st.mus0 != null && st.mus1.id != st.mus0.id;
     }
 }
