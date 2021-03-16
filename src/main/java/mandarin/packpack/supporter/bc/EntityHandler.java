@@ -134,8 +134,6 @@ public class EntityHandler {
                 else
                     t = new int[] {lv[0], 0, 0, 0, 0, 0};
 
-                System.out.println(Arrays.toString(t));
-
                 spec.setTitle(DataToString.getTitle(f, lang));
 
                 if(talent && f.getPCoin() != null && talentExists(t)) {
