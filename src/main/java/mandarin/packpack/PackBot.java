@@ -27,9 +27,10 @@ import mandarin.packpack.supporter.AssetDownloader;
 import mandarin.packpack.supporter.PackContext;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
-import mandarin.packpack.supporter.event.EventHolder;
+import mandarin.packpack.supporter.event.EventFactor;
 import mandarin.packpack.supporter.lang.LangID;
-import mandarin.packpack.supporter.server.*;
+import mandarin.packpack.supporter.server.Holder;
+import mandarin.packpack.supporter.server.IDHolder;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -556,6 +557,12 @@ public class PackBot {
 
             DataToString.initialize();
 
+            try {
+                StaticStore.event.initialize();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             if(!StaticStore.idHolder.containsKey("490262537527623692")) {
                 StaticStore.idHolder.put("490262537527623692", new IDHolder(
                         "490935132564357131",
@@ -583,7 +590,7 @@ public class PackBot {
 
                     Calendar c = Calendar.getInstance();
 
-                    EventHolder.currentYear = c.get(Calendar.YEAR);
+                    EventFactor.currentYear = c.get(Calendar.YEAR);
                 }
             }, 0, TimeUnit.MINUTES.toMillis(5));
 

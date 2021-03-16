@@ -2,9 +2,13 @@ package mandarin.packpack.commands;
 
 import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.core.object.reaction.ReactionEmoji;
+import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.event.EventFactor;
+import mandarin.packpack.supporter.event.StageSchedule;
+import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.IDHolder;
 
+import java.io.File;
 import java.util.concurrent.TimeUnit;
 
 public class Test extends GlobalTimedConstraintCommand {
@@ -14,13 +18,25 @@ public class Test extends GlobalTimedConstraintCommand {
     }
 
     @Override
-    protected void doThing(MessageEvent event) {
+    protected void doThing(MessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
             return;
 
-        ch.createMessage(m -> m.setContent(":sunrise_over_mountains: ")).subscribe(m -> m.addReaction(ReactionEmoji.unicode(new String(Character.toChars(0x1f304)))).subscribe());
+        File f = new File("./data/sale.tsv");
+
+        StaticStore.event.updateStage(f, EventFactor.GLOBAL, false);
+
+        String result = StaticStore.event.printStageEvent(EventFactor.GLOBAL);
+
+        System.out.println(result.length());
+
+        if(!result.isBlank() && result.length() < 2000) {
+            ch.createMessage(result).subscribe();
+        } else {
+            System.out.println(result);
+        }
     }
 
     @Override

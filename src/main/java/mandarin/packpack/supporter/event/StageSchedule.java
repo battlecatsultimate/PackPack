@@ -288,6 +288,166 @@ public class StageSchedule extends EventFactor {
         return result.toString();
     }
 
+    public String beautify() {
+        StringBuilder result = new StringBuilder();
+
+        result.append("[");
+
+        if(date.dateStart.year != date.dateEnd.year || date.dateStart.year != currentYear) {
+            result.append(date.dateStart.year)
+                    .append(" ");
+        }
+
+        result.append(getMonth(date.dateStart.month))
+                .append(" ")
+                .append(date.dateStart.day)
+                .append(getNumberExtension(date.dateStart.day))
+                .append(" ~ ");
+
+        if(date.dateEnd.equals(END)) {
+            result.append("] ");
+        } else {
+
+            if(date.dateStart.year != date.dateEnd.year) {
+                result.append(date.dateEnd.year)
+                        .append(" ");
+            }
+
+            if(date.dateStart.month != date.dateEnd.month) {
+                result.append(getMonth(date.dateEnd.month))
+                        .append(" ");
+            }
+
+            result.append(date.dateEnd.day)
+                    .append(getNumberExtension(date.dateEnd.day))
+                    .append("] ");
+        }
+
+        for(int i = 0; i < stages.size(); i++) {
+            StageMap map = stages.get(i);
+
+            if(map == null || map.id == null || map.getCont() == null)
+                continue;
+
+            String mapName = StaticStore.safeMultiLangGet(map, 0);
+
+            if(mapName == null || mapName.isBlank()) {
+                mapName = map.getCont().getSID()+"-"+Data.trio(map.id.id);
+            }
+
+            result.append(mapName);
+
+            if(i < stages.size() - 1) {
+                result.append(", ");
+            }
+        }
+
+        if(!stages.isEmpty() && !unknownStages.isEmpty()) {
+            result.append(", ");
+        }
+
+        for(int i = 0; i < unknownStages.size(); i++) {
+            int id = StaticStore.safeParseInt(unknownStages.get(i));
+
+            result.append(id);
+
+            if(i < unknownStages.size() - 1)
+                result.append(", ");
+        }
+
+        if(!sections.isEmpty()) {
+            result.append(" (");
+
+            for (int i = 0; i < sections.size(); i++) {
+                EventSection section = sections.get(i);
+
+                if (!section.daySets.isEmpty()) {
+                    for (int j = 0; j < section.daySets.size(); j++) {
+                        EventDateSet set = section.daySets.get(j);
+
+                        result.append(getMonth(set.dateStart.month))
+                                .append(" ")
+                                .append(set.dateStart.day)
+                                .append(getNumberExtension(set.dateStart.day))
+                                .append(" ~ ")
+                                .append(getMonth(set.dateEnd.month))
+                                .append(" ")
+                                .append(set.dateEnd.day)
+                                .append(getNumberExtension(set.dateEnd.day));
+
+                        if (j < section.daySets.size() - 1)
+                            result.append(", ");
+                    }
+
+                    if(!section.days.isEmpty() || !section.weekDays.isEmpty() || !section.times.isEmpty()) {
+                        result.append(" / ");
+                    }
+                }
+
+                if (!section.days.isEmpty()) {
+                    if (isEvenDays(i)) {
+                        result.append("Every Even Day");
+                    } else if (isOddDays(i)) {
+                        result.append("Every Odd Day");
+                    } else {
+                        for (int j = 0; j < section.days.size(); j++) {
+                            result.append(section.days.get(j))
+                                    .append(getNumberExtension(section.days.get(j)));
+
+                            if (j < section.days.size() - 1) {
+                                result.append(", ");
+                            }
+                        }
+                    }
+
+                    if(!section.weekDays.isEmpty() || !section.times.isEmpty()) {
+                        result.append(" / ");
+                    }
+                }
+
+                if (!section.weekDays.isEmpty()) {
+                    for (int j = 0; j < section.weekDays.size(); j++) {
+                        result.append(getWhichDay(section.weekDays.get(j)));
+
+                        if (j < section.weekDays.size() - 1) {
+                            result.append(", ");
+                        }
+                    }
+
+                    if(!section.times.isEmpty()) {
+                        result.append(" / ");
+                    }
+                }
+
+                if (!section.times.isEmpty()) {
+                    for (int j = 0; j < section.times.size(); j++) {
+                        EventTimeSection time = section.times.get(j);
+
+                        result.append(duo(time.start.hour))
+                                .append(":")
+                                .append(duo(time.start.minute))
+                                .append(" ~ ")
+                                .append(duo(time.end.hour))
+                                .append(":")
+                                .append(duo(time.end.minute));
+
+                        if (j < section.times.size() - 1) {
+                            result.append(", ");
+                        }
+                    }
+                }
+
+                if (i < sections.size() - 1) {
+                    result.append(" | ");
+                }
+            }
+
+            result.append(")");
+        }
+
+        return result.toString();
+    }
+
     public boolean isEvenDays(int index) {
         if(index < 0 || index >= sections.size())
             return false;
@@ -297,7 +457,7 @@ public class StageSchedule extends EventFactor {
         int startDay = date.dateStart.day;
         int endDay = date.dateEnd.day;
 
-        if(date.dateEnd.month > date.dateStart.month) {
+        if(date.dateEnd.month > date.dateStart.month || date.dateEnd.equals(END)) {
             startDay = 1;
             endDay = 31;
         }
@@ -321,7 +481,7 @@ public class StageSchedule extends EventFactor {
         int startDay = date.dateStart.day;
         int endDay = date.dateEnd.day;
 
-        if(date.dateEnd.month > date.dateStart.month) {
+        if(date.dateEnd.month > date.dateStart.month || date.dateEnd.equals(END)) {
             startDay = 1;
             endDay = 31;
         }
@@ -334,48 +494,6 @@ public class StageSchedule extends EventFactor {
         }
 
         return section.days.containsAll(odd);
-    }
-
-    private String getMonth(int mon) {
-        switch (mon) {
-            case 1:
-                return "January";
-            case 2:
-                return "February";
-            case 3:
-                return "March";
-            case 4:
-                return "April";
-            case 5:
-                return "May";
-            case 6:
-                return "June";
-            case 7:
-                return "July";
-            case 8:
-                return "August";
-            case 9:
-                return "September";
-            case 10:
-                return "October";
-            case 11:
-                return "November";
-            case 12:
-                return "December";
-            default:
-                return "Unknown Month "+mon;
-        }
-    }
-
-    private String getNumberExtension(int num) {
-        if(num != 11 && num % 10 == 1)
-            return "st";
-        else if(num != 12 && num % 10 == 2)
-            return "nd";
-        else if(num != 13 && num % 10 == 3)
-            return "rd";
-        else
-            return "th";
     }
 
     private int[] parseInts(String line) {

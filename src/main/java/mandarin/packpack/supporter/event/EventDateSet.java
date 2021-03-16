@@ -9,4 +9,8 @@ public class EventDateSet {
         this.dateEnd = new EventDate(dateEnd);
         section = new EventTimeSection(startTime, endTime);
     }
+
+    public boolean equals(EventDateSet thatSet) {
+        return dateStart.equals(thatSet.dateStart) && dateEnd.equals(thatSet.dateEnd) && section.equals(thatSet.section);
+    }
 }

@@ -268,48 +268,6 @@ public class ItemSchedule extends EventFactor {
         }
     }
 
-    private String getNumberExtension(int num) {
-        if(num != 11 && num % 10 == 1)
-            return "st";
-        else if(num != 12 && num % 10 == 2)
-            return "nd";
-        else if(num != 13 && num % 10 == 3)
-            return "rd";
-        else
-            return "th";
-    }
-
-    private String getMonth(int mon) {
-        switch (mon) {
-            case 1:
-                return "January";
-            case 2:
-                return "February";
-            case 3:
-                return "March";
-            case 4:
-                return "April";
-            case 5:
-                return "May";
-            case 6:
-                return "June";
-            case 7:
-                return "July";
-            case 8:
-                return "August";
-            case 9:
-                return "September";
-            case 10:
-                return "October";
-            case 11:
-                return "November";
-            case 12:
-                return "December";
-            default:
-                return "Unknown Month "+mon;
-        }
-    }
-
     private String getEoCName(int status) {
         if(status == 100)
             return "Moon";

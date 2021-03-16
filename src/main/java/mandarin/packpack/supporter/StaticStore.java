@@ -537,6 +537,10 @@ public class StaticStore {
         return new UpdateCheck.Downloader(url, target, temp, "", false);
     }
 
+    public static UpdateCheck.Downloader getDownloader(String url, File target, File temp) {
+        return new UpdateCheck.Downloader(url, target, temp, "", false);
+    }
+
     public static String getRoleIDByName(String name, Guild g) {
         AtomicReference<String> id = new AtomicReference<>(null);
 

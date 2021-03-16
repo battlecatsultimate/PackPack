@@ -8,4 +8,8 @@ public class EventTime {
         hour = time / 100;
         minute = time % 100;
     }
+
+    public boolean equals(EventTime thatTime) {
+        return hour == thatTime.hour && minute == thatTime.minute;
+    }
 }

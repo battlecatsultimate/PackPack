@@ -8,4 +8,8 @@ public class EventTimeSection {
         this.start = new EventTime(start);
         this.end = new EventTime(end);
     }
+
+    public boolean equals(EventTimeSection thatSection) {
+        return start.equals(thatSection.start) && end.equals(thatSection.end);
+    }
 }
