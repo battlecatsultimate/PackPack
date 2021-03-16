@@ -12,6 +12,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.FormReactionHolder;
 import mandarin.packpack.supporter.server.FormStatHolder;
 import mandarin.packpack.supporter.server.IDHolder;
 
@@ -46,7 +47,17 @@ public class FormStat extends ConstraintCommand {
                 boolean isFrame = (param & PARAM_SECOND) == 0;
                 boolean talent = (param & PARAM_TALENT) > 0;
 
-                EntityHandler.showUnitEmb(forms.get(0), ch, isFrame, talent, lv, lang);
+                Message result = EntityHandler.showUnitEmb(forms.get(0), ch, isFrame, talent, lv, lang, true);
+
+                if(result != null) {
+                    getMember(event).ifPresent(m -> {
+                        Message author = getMessage(event);
+
+                        if(author != null) {
+                            StaticStore.putHolder(m.getId().asString(), new FormReactionHolder(forms.get(0), author, result, isFrame, talent, lv, lang, ch.getId().asString(), m.getId().asString()));
+                        }
+                    });
+                }
             } else if (forms.size() == 0) {
                 ch.createMessage(LangID.getStringByID("formst_nounit", lang).replace("_", filterCommand(getContent(event)))).subscribe();
             } else {

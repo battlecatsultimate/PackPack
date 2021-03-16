@@ -28,6 +28,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.awt.FG2D;
 import mandarin.packpack.supporter.awt.FIBI;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.FormReactionHolder;
 import mandarin.packpack.supporter.server.StageReactionHolder;
 
 import javax.imageio.ImageIO;
@@ -62,7 +63,7 @@ public class EntityHandler {
         }
     }
 
-    public static void showUnitEmb(Form f, MessageChannel ch, boolean isFrame, boolean talent, int[] lv, int lang) throws Exception {
+    public static Message showUnitEmb(Form f, MessageChannel ch, boolean isFrame, boolean talent, int[] lv, int lang, boolean addEmoji) throws Exception {
         int level = lv[0];
         int levelp = 0;
 
@@ -109,7 +110,7 @@ public class EntityHandler {
         else
             cfis = null;
 
-        ch.createMessage(m -> {
+        Message msg = ch.createMessage(m -> {
             m.setEmbed(spec -> {
                 Color c;
 
@@ -209,39 +210,59 @@ public class EntityHandler {
                 m.addFile("icon.png", fis);
             if(cfis != null)
                 m.addFile("cf.png", cfis);
-        }).subscribe(null, null, () -> {
-            if(fis != null) {
-                try {
-                    fis.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        }).block();
+
+        if(msg != null && addEmoji) {
+            if(canFirstForm(f)) {
+                msg.addReaction(ReactionEmoji.custom(Snowflake.of(FormReactionHolder.TWOPREVIOUS), "FirstForm", false)).subscribe();
             }
 
-            if(cfis != null) {
-                try {
-                    cfis.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            if(canPreviousForm(f)) {
+                msg.addReaction(ReactionEmoji.custom(Snowflake.of(FormReactionHolder.PREVIOUS), "PreviousForm", false)).subscribe();
             }
 
-            if(img != null && img.exists()) {
-                boolean res = img.delete();
-
-                if(!res)
-                    System.out.println("Can't delete file : "+img.getAbsolutePath());
+            if(canNextForm(f)) {
+                msg.addReaction(ReactionEmoji.custom(Snowflake.of(FormReactionHolder.NEXT), "NextForm", false)).subscribe();
             }
 
-            if(cf != null && cf.exists()) {
-                boolean res = cf.delete();
-
-                if(!res)
-                    System.out.println("Can't delete file : "+cf.getAbsolutePath());
+            if(canFinalForm(f)) {
+                msg.addReaction(ReactionEmoji.custom(Snowflake.of(FormReactionHolder.TWONEXT), "FinalForm", false)).subscribe();
             }
-        });
+        }
+
+        if(fis != null) {
+            try {
+                fis.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if(cfis != null) {
+            try {
+                cfis.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if(img != null && img.exists()) {
+            boolean res = img.delete();
+
+            if(!res)
+                System.out.println("Can't delete file : "+img.getAbsolutePath());
+        }
+
+        if(cf != null && cf.exists()) {
+            boolean res = cf.delete();
+
+            if(!res)
+                System.out.println("Can't delete file : "+cf.getAbsolutePath());
+        }
 
         f.anim.unload();
+
+        return msg;
     }
 
     private static int[] handleTalent(int[] lv, int[] t) {
@@ -2020,5 +2041,21 @@ public class EntityHandler {
 
     private static boolean hasTwoMusic(Stage st) {
         return st.mush != 0 && st.mush != 100 && st.mus1 != null && st.mus0 != null && st.mus1.id != st.mus0.id;
+    }
+
+    private static boolean canFirstForm(Form f) {
+        return f.unit != null && f.fid - 2 >= 0;
+    }
+
+    private static boolean canPreviousForm(Form f) {
+        return f.unit != null && f.fid - 1 >= 0;
+    }
+
+    private static boolean canNextForm(Form f) {
+        return f.unit != null && f.fid + 1 < f.unit.forms.length;
+    }
+
+    private static boolean canFinalForm(Form f) {
+        return f.unit != null && f.fid + 2 < f.unit.forms.length;
     }
 }

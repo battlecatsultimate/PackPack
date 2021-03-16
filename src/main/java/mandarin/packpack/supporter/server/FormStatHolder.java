@@ -197,7 +197,14 @@ public class FormStatHolder extends Holder<MessageCreateEvent> {
             }
 
             try {
-                EntityHandler.showUnitEmb(form.get(id), ch, isFrame, talent, lv, lang);
+                Message result = EntityHandler.showUnitEmb(form.get(id), ch, isFrame, talent, lv, lang, true);
+
+                if(result != null) {
+                    event.getMember().ifPresent(m -> {
+                        StaticStore.removeHolder(m.getId().asString(), FormStatHolder.this);
+                        StaticStore.putHolder(m.getId().asString(), new FormReactionHolder(form.get(id), event.getMessage(), msg, isFrame, talent, lv, lang, ch.getId().asString(), m.getId().asString()));
+                    });
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
