@@ -817,11 +817,11 @@ public class DataToString {
             return String.valueOf(e.de.getShield());
     }
 
-    public static String getMagnification(int[] mag) {
+    public static String getMagnification(int[] mag, int star) {
         if(mag[0] == mag[1]) {
-            return mag[0] + "%";
+            return (int) (mag[0] * star / 100.0) + "%";
         } else {
-            return "["+mag[0]+", "+mag[1]+"] %";
+            return "["+(int) (mag[0] * star / 100.0)+", "+(int) (mag[1] * star / 100.0)+"] %";
         }
     }
 

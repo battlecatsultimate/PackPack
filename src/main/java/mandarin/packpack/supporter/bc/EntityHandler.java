@@ -306,7 +306,7 @@ public class EntityHandler {
                 spec.addField(LangID.getStringByID("data_id", lang), DataToString.getID(e.id.id), false);
                 spec.addField(LangID.getStringByID("data_hp", lang), DataToString.getHP(e, mag[0]), true);
                 spec.addField(LangID.getStringByID("data_hb", lang), DataToString.getHitback(e), true);
-                spec.addField(LangID.getStringByID("data_magnif", lang), DataToString.getMagnification(mag), true);
+                spec.addField(LangID.getStringByID("data_magnif", lang), DataToString.getMagnification(mag, 100), true);
                 spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(e, mag[1]), false);
                 spec.addField(LangID.getStringByID("data_dps", lang), DataToString.getDPS(e, mag[1]), true);
                 spec.addField(LangID.getStringByID("data_atktime", lang), DataToString.getAtkTime(e, isFrame), true);
@@ -529,7 +529,20 @@ public class EntityHandler {
     }
 
     public static Message showStageEmb(Stage st, MessageChannel ch, boolean isFrame, int star, int lang) throws Exception {
-        File img = generateScheme(st, isFrame, lang);
+        StageMap stm = st.getCont();
+
+        int sta;
+        int stmMagnification;
+
+        if(stm == null) {
+            sta = 0;
+            stmMagnification = 100;
+        } else {
+            sta = Math.min(Math.max(star-1, 0), st.getCont().stars.length-1);
+            stmMagnification = stm.stars[sta];
+        }
+
+        File img = generateScheme(st, isFrame, lang, stmMagnification);
         FileInputStream fis;
 
         if(img != null) {
@@ -541,7 +554,6 @@ public class EntityHandler {
         Message result = ch.createMessage(m -> {
             m.setEmbed(spec -> {
                 try {
-                    int sta = Math.min(Math.max(star-1, 0), st.getCont().stars.length-1);
 
                     if(st.info == null || st.info.diff == -1)
                         spec.setColor(Color.of(217, 217, 217));
@@ -550,7 +562,9 @@ public class EntityHandler {
 
                     String name = "";
 
-                    StageMap stm = st.getCont();
+                    if(stm == null)
+                        return;
+
                     MapColc mc = stm.getCont();
 
                     int oldConfig = CommonStatic.getConfig().lang;
@@ -701,7 +715,7 @@ public class EntityHandler {
         return result;
     }
 
-    private static File generateScheme(Stage st, boolean isFrame, int lang) throws Exception {
+    private static File generateScheme(Stage st, boolean isFrame, int lang, int star) throws Exception {
         File temp = new File("./temp/");
 
         if(!temp.exists()) {
@@ -778,7 +792,7 @@ public class EntityHandler {
 
             numbers.add(number);
 
-            String magnif = DataToString.getMagnification(new int[] {line.multiple, line.mult_atk});
+            String magnif = DataToString.getMagnification(new int[] {line.multiple, line.mult_atk}, star);
 
             magnifs.add(magnif);
 
