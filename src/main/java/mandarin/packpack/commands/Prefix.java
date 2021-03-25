@@ -28,7 +28,13 @@ public class Prefix extends ConstraintCommand {
             getMember(event).ifPresentOrElse(m -> {
                 StaticStore.prefix.put(m.getId().asString(), list[1]);
 
-                ch.createMessage(LangID.getStringByID("prefix_set", lang).replace("_", list[1])).subscribe();
+                String result = LangID.getStringByID("prefix_set", lang).replace("_", list[1].replace("`", "\\`"));
+
+                if(result.length() < 2000) {
+                    ch.createMessage(result).subscribe();
+                } else {
+                    ch.createMessage(LangID.getStringByID("prefix_setnone", lang)).subscribe();
+                }
             }, () -> onFail(event, ERR_CANT_FIND_MEMBER));
         } else if(list.length == 1) {
             ch.createMessage(LangID.getStringByID("prefix_argu", lang)).subscribe();
