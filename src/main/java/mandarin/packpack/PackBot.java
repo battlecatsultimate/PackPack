@@ -539,6 +539,8 @@ public class PackBot {
                                 case "cc":
                                     new CatCombo(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
                                     break;
+                                case "serverjson":
+                                    new ServerJson(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
                             }
                         }
                     });
