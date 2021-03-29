@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import common.CommonStatic;
 import common.battle.data.MaskUnit;
 import common.pack.PackData;
+import common.pack.UserProfile;
 import common.system.fake.FakeImage;
 import common.system.files.VFile;
 import common.util.Data;
@@ -14,10 +15,7 @@ import common.util.stage.MapColc;
 import common.util.stage.SCDef;
 import common.util.stage.Stage;
 import common.util.stage.StageMap;
-import common.util.unit.AbEnemy;
-import common.util.unit.EneRand;
-import common.util.unit.Enemy;
-import common.util.unit.Form;
+import common.util.unit.*;
 import discord4j.common.util.Snowflake;
 import discord4j.core.object.entity.Attachment;
 import discord4j.core.object.entity.Message;
@@ -40,7 +38,6 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Locale;
 import java.util.Set;
 
@@ -1926,6 +1923,135 @@ public class EntityHandler {
                 }
             });
         }
+    }
+
+    public static void showComboEmbed(MessageChannel ch, Combo c, int lang) throws Exception {
+
+        File icon = generateComboImage(c);
+
+        FileInputStream fis;
+
+        if(icon == null)
+            fis = null;
+        else
+            fis = new FileInputStream(icon);
+
+        ch.createMessage(m -> {
+            m.setEmbed(e -> {
+                int oldConfig = CommonStatic.getConfig().lang;
+                CommonStatic.getConfig().lang = lang;
+
+                String comboName = MultiLangCont.getStatic().COMNAME.getCont(c.name);
+
+                CommonStatic.getConfig().lang = oldConfig;
+
+                if(comboName == null || comboName.isBlank()) {
+                    comboName = "Combo "+c.name;
+                }
+
+                e.setTitle(comboName);
+
+                if(c.lv == 0) {
+                    e.setColor(StaticStore.rainbow[4]);
+                } else if(c.lv == 1) {
+                    e.setColor(StaticStore.rainbow[3]);
+                } else if(c.lv == 2) {
+                    e.setColor(StaticStore.rainbow[2]);
+                } else {
+                    e.setColor(StaticStore.rainbow[0]);
+                }
+
+                e.addField(DataToString.getComboType(c, lang), DataToString.getComboDescription(c, lang), false);
+
+                if(fis != null) {
+                    e.setImage("attachment://combo.png");
+                }
+            });
+
+            if(fis != null)
+                m.addFile("combo.png", fis);
+        }).subscribe(null, null, () -> {
+            try {
+                if(fis != null) {
+                    fis.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            if(icon != null && icon.exists()) {
+                boolean res = icon.delete();
+
+                if(!res) {
+                    System.out.println("Can't delete file : "+icon.getAbsolutePath());
+                }
+            }
+        });
+    }
+
+    private static File generateComboImage(Combo c) throws Exception {
+        File temp = new File("./temp");
+
+        if(!temp.exists()) {
+            boolean res = temp.mkdirs();
+
+            if(!res) {
+                System.out.println("Can't create folder : " + temp.getAbsolutePath());
+                return null;
+            }
+        }
+
+        File image = new File("./temp", StaticStore.findFileName(temp, "combo", ".png"));
+
+        if(!image.exists()) {
+            boolean res = image.createNewFile();
+
+            if(!res) {
+                System.out.println("Can't create new file : "+image.getAbsolutePath());
+                return null;
+            }
+        }
+
+        BufferedImage img = new BufferedImage(600, 95, BufferedImage.TYPE_INT_ARGB);
+        FG2D g = new FG2D(img.getGraphics());
+
+        g.setRenderingHint(3, 2);
+        g.enableAntialiasing();
+
+        g.setColor(47, 49, 54, 255);
+        g.fillRect(0, 0, 650, 105);
+
+        g.setStroke(2f);
+        g.setColor(230, 230, 230, 255);
+        g.drawRect(0, 0, 600, 95);
+
+        for(int i = 1; i < 5; i++) {
+            g.drawLine(120 * i, 0, 120 * i, 95);
+        }
+
+        for(int i = 0; i < c.units.length; i++) {
+            if(c.units[i] == null)
+                continue;
+
+            Unit u = UserProfile.getBCData().units.get(c.units[i][0]);
+
+            if(u == null)
+                continue;
+
+            Form f = u.forms[c.units[i][1]];
+
+            f.anim.load();
+
+            FakeImage icon = f.anim.getUni().getImg();
+
+            g.drawImage(icon, 120 * i + 5, 5);
+
+            f.anim.unload();
+        }
+
+        ImageIO.write(img, "PNG", image);
+
+        return image;
     }
 
     private static String getIconName(int mode, int lang) {

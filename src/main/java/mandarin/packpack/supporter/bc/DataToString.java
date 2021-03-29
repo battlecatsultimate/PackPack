@@ -15,6 +15,7 @@ import common.util.stage.Limit;
 import common.util.stage.MapColc;
 import common.util.stage.Stage;
 import common.util.stage.StageMap;
+import common.util.unit.Combo;
 import common.util.unit.Enemy;
 import common.util.unit.Form;
 import common.util.unit.Unit;
@@ -1391,5 +1392,153 @@ public class DataToString {
         }
 
         return builder.toString();
+    }
+
+    public static String getComboDescription(Combo c, int lang) {
+        int factor = getComboFactor(c);
+
+        String desc = LangID.getStringByID("data_"+getComboKeyword(c)+"combodesc", lang).replace("_", String.valueOf(factor));
+
+        if(c.type == 14) {
+            desc = desc.replace("ttt", df.format(0.5 * (100 - factor) / 100.0))
+                    .replace("TTT", df.format(0.4 * (100 - factor) / 100.0))
+                    .replace("ggg", df.format(1.5 * (100 + factor) / 100.0))
+                    .replace("GGG", df.format(1.8 * (100 + factor) / 100.0));
+        } else if(c.type == 15) {
+            desc = desc.replace("ggg", df.format(3.0 * (100 + factor) / 100.0))
+                    .replace("GGG", df.format(4.0 * (100 + factor) / 100.0));
+        } else if(c.type == 16) {
+            desc = desc.replace("ttt", df.format(0.25 * (100 - factor) / 100.0))
+                    .replace("TTT", df.format(0.2 * (100 - factor) / 100.0));
+        } else if(c.type == 22 || c.type == 23) {
+            desc = desc.replace("ttt", df.format(0.2 / ((100 + factor) / 100.0)))
+                    .replace("ggg", df.format(5 * (100 + factor) / 100.0));
+        } else if(c.type == 7 || c.type == 11) {
+            desc = desc.replace("-", df.format(factor / 30.0));
+        }
+
+        return desc;
+    }
+
+    public static String getComboType(Combo c, int lang) {
+        return LangID.getStringByID("data_"+getComboKeyword(c)+"combo", lang) + " [" + getComboLevel(c, lang)+"]";
+    }
+
+    private static String getComboLevel(Combo c, int lang) {
+        switch (c.lv) {
+            case 0:
+                return LangID.getStringByID("data_combosm", lang);
+            case 1:
+                return LangID.getStringByID("data_combom", lang);
+            case 2:
+                return LangID.getStringByID("data_combol", lang);
+            case 3:
+                return LangID.getStringByID("data_comboxl", lang);
+            default:
+                return "Lv. "+c.lv;
+        }
+    }
+
+    private static int getComboFactor(Combo c) {
+        switch (c.type) {
+            case 0:
+            case 2:
+                return 10 + c.lv * 5;
+            case 1:
+            case 20:
+            case 19:
+            case 18:
+            case 17:
+            case 16:
+            case 15:
+            case 14:
+            case 13:
+            case 12:
+            case 9:
+                return 10 + 10 * c.lv;
+            case 3:
+                return 20 + 20 * c.lv;
+            case 4:
+                return 2 + c.lv;
+            case 5:
+                if (c.lv == 0) {
+                    return 300;
+                } else if (c.lv == 1) {
+                    return 500;
+                } else {
+                    return 1000;
+                }
+            case 6:
+            case 10:
+                return 20 + 30 * c.lv;
+            case 7:
+                return 150 + 150 * c.lv;
+            case 11:
+                return 26 + 26 * c.lv;
+            case 21:
+                return 20 + 10 * c.lv;
+            case 22:
+            case 23:
+                return 100 + 100 * c.lv;
+            case 24:
+                return 1 + c.lv;
+            default:
+                return 0;
+        }
+    }
+
+    private static String getComboKeyword(Combo c) {
+        switch (c.type) {
+            case 0:
+                return "atk";
+            case 1:
+                return "health";
+            case 2:
+                return "speed";
+            case 14:
+                return "strong";
+            case 15:
+                return "massive";
+            case 16:
+                return "resistant";
+            case 17:
+                return "kb";
+            case 18:
+                return "slow";
+            case 19:
+                return "freeze";
+            case 20:
+                return "weaken";
+            case 21:
+                return "strengthen";
+            case 23:
+                return "eva";
+            case 22:
+                return "witch";
+            case 24:
+                return "critical";
+            case 3:
+                return "caninitchar";
+            case 6:
+                return "canatk";
+            case 7:
+                return "canchar";
+            case 10:
+                return "basehp";
+            case 5:
+                return "initmon";
+            case 4:
+                return "worker";
+            case 9:
+                return "wallet";
+            case 11:
+                return "cooldown";
+            case 12:
+                return "acc";
+            case 13:
+                return "study";
+            default:
+                throw new IllegalStateException("Invalid Combo Type : "+c.type);
+        }
     }
 }

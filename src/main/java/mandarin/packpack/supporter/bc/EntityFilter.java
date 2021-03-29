@@ -7,12 +7,14 @@ import common.util.lang.MultiLangCont;
 import common.util.stage.MapColc;
 import common.util.stage.Stage;
 import common.util.stage.StageMap;
+import common.util.unit.Combo;
 import common.util.unit.Enemy;
 import common.util.unit.Form;
 import common.util.unit.Unit;
 import mandarin.packpack.supporter.StaticStore;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Locale;
 
 public class EntityFilter {
@@ -250,6 +252,75 @@ public class EntityFilter {
                 }
             }
         }
+
+        return result;
+    }
+
+    @SuppressWarnings("ForLoopReplaceableByForEach")
+    public static ArrayList<Combo> filterComboWithUnit(Form f, String cName) {
+        ArrayList<Combo> result = new ArrayList<>();
+
+        System.out.println(f);
+        System.out.println(cName);
+
+        for(int i = 0; i < CommonStatic.getBCAssets().combos.length; i++) {
+            Combo[] combos = CommonStatic.getBCAssets().combos[i];
+
+            for(int j = 0; j < combos.length; j++) {
+                Combo c = combos[j];
+
+                if(f == null) {
+                    if(cName != null) {
+                        for(int l = 0; l < 4; l++) {
+                            int oldConfig = CommonStatic.getConfig().lang;
+                            CommonStatic.getConfig().lang = l;
+
+                            String comboName = MultiLangCont.getStatic().COMNAME.getCont(c.name);
+
+                            CommonStatic.getConfig().lang = oldConfig;
+
+                            if(comboName.toLowerCase(Locale.ENGLISH).contains(cName.toLowerCase(Locale.ENGLISH))) {
+                                result.add(c);
+                                break;
+                            }
+                        }
+                    } else {
+                        result.add(c);
+                    }
+                } else {
+                    for(int k = 0; k < c.units.length; k++) {
+                        boolean added = false;
+
+                        if(c.units[k][0] == f.unit.id.id && c.units[k][1] <= f.fid) {
+                            if(cName != null) {
+                                for(int l = 0; l < 4; l++) {
+                                    int oldConfig = CommonStatic.getConfig().lang;
+                                    CommonStatic.getConfig().lang = l;
+
+                                    String comboName = MultiLangCont.getStatic().COMNAME.getCont(c.name);
+
+                                    CommonStatic.getConfig().lang = oldConfig;
+
+                                    if(comboName.toLowerCase(Locale.ENGLISH).contains(cName.toLowerCase(Locale.ENGLISH))) {
+                                        result.add(c);
+                                        added = true;
+                                        break;
+                                    }
+                                }
+                            } else {
+                                result.add(c);
+                                added = true;
+                            }
+                        }
+
+                        if(added)
+                            break;
+                    }
+                }
+            }
+        }
+
+        result.sort(Comparator.comparingInt(c -> c.name));
 
         return result;
     }

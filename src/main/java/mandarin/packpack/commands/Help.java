@@ -164,6 +164,11 @@ public class Help implements Command {
             case "ann":
                 ch.createEmbed(e -> addFields(e, "announcement", true, true, false)).subscribe();
                 break;
+            case "catcombo":
+            case "combo":
+            case "cc":
+                ch.createEmbed(e -> addFields(e, "catcombo", true, true, false)).subscribe();
+                break;
             default:
                 ch.createMessage(LangID.getStringByID("help_nocomm", lang).replace("_", command)).subscribe();
         }

@@ -3,11 +3,13 @@ package mandarin.packpack.supporter.server;
 import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
+import common.util.unit.Combo;
 import common.util.unit.Form;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 
@@ -16,32 +18,30 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
-public class FormStatHolder extends Holder<MessageCreateEvent> {
+public class ComboFormHolder extends Holder<MessageCreateEvent> {
     private final ArrayList<Form> form;
     private final Message msg;
     private final String channelID;
 
+    private final int lang;
+    private final String cName;
+    private final String fName;
+
     private int page = 0;
     private boolean expired = false;
 
-    private final boolean talent;
-    private final boolean isFrame;
-    private final int[] lv;
-    private final int lang;
-
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
-    public FormStatHolder(ArrayList<Form> form, Message author, Message msg, String channelID, int param, int[] lv, int lang) {
+    public ComboFormHolder(ArrayList<Form> form, Message author, Message msg, String channelID, int lang, String cName, String fName) {
         super(MessageCreateEvent.class);
 
         this.form = form;
         this.msg = msg;
         this.channelID = channelID;
 
-        this.talent = (param & 2) > 0;
-        this.isFrame = (param & 4) == 0;
-        this.lv = lv;
         this.lang = lang;
+        this.cName = cName;
+        this.fName = fName;
 
         Timer autoFinish = new Timer();
 
@@ -53,7 +53,7 @@ public class FormStatHolder extends Holder<MessageCreateEvent> {
 
                 expired = true;
 
-                author.getAuthor().ifPresent(u -> StaticStore.removeHolder(u.getId().asString(), FormStatHolder.this));
+                author.getAuthor().ifPresent(u -> StaticStore.removeHolder(u.getId().asString(), ComboFormHolder.this));
 
                 msg.edit(m -> m.setContent(LangID.getStringByID("formst_expire", lang))).subscribe();
             }
@@ -63,9 +63,10 @@ public class FormStatHolder extends Holder<MessageCreateEvent> {
     @Override
     public int handleEvent(MessageCreateEvent event) {
         if(expired) {
-            System.out.println("Expired!!");
+            System.out.println("Expired at ComboFormHolder!!!");
             return RESULT_FAIL;
         }
+
 
         MessageChannel ch = event.getMessage().getChannel().block();
 
@@ -181,35 +182,102 @@ public class FormStatHolder extends Holder<MessageCreateEvent> {
             if(id < 0 || id >= form.size())
                 return RESULT_STILL;
 
-            msg.delete().subscribe();
-
-            if(lv[0] > form.get(id).unit.max + form.get(id).unit.maxp)
-                lv[0] = form.get(id).unit.max + form.get(id).unit.maxp;
-            else if(lv[0] <= 0) {
-                if(form.get(id).unit.rarity == 0)
-                    lv[0] = 110;
-                else
-                    lv[0] = 30;
-            }
-
             try {
-                Message result = EntityHandler.showUnitEmb(form.get(id), ch, isFrame, talent, lv, lang, true);
+                Form f = form.get(id);
 
-                if(result != null) {
-                    event.getMember().ifPresent(m -> {
-                        StaticStore.removeHolder(m.getId().asString(), FormStatHolder.this);
-                        StaticStore.putHolder(m.getId().asString(), new FormReactionHolder(form.get(id), event.getMessage(), result, isFrame, talent, lv, lang, ch.getId().asString(), m.getId().asString()));
-                    });
+                ArrayList<Combo> combos = EntityFilter.filterComboWithUnit(f, cName);
+
+                if(combos.isEmpty()) {
+                    msg.delete().subscribe();
+
+                    expired = true;
+
+                    cleaner.add(event.getMessage());
+
+                    ch.createMessage(LangID.getStringByID("combo_noname", lang).replace("_", getSearchKeywords(fName, cName, lang))).subscribe();
+
+                    return RESULT_FINISH;
+                } else if(combos.size() == 1) {
+                    event.getMember().ifPresent(m -> StaticStore.timeLimit.put(m.getId().asString(), System.currentTimeMillis()));
+
+                    msg.delete().subscribe();
+
+                    try {
+                        EntityHandler.showComboEmbed(ch, combos.get(0), lang);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    expired = true;
+
+                    cleaner.add(event.getMessage());
+
+                    return RESULT_FINISH;
+                } else {
+                    String check;
+
+                    if(combos.size() <= 20)
+                        check = "";
+                    else
+                        check = LangID.getStringByID("formst_next", lang);
+
+                    StringBuilder sb = new StringBuilder("```md\n").append(check);
+
+                    for(int i = 0; i < 20 ; i++) {
+                        if(i >= combos.size())
+                            break;
+
+                        Combo c = combos.get(i);
+
+                        String comboName = Data.trio(c.name) + " ";
+
+                        int oldConfig = CommonStatic.getConfig().lang;
+                        CommonStatic.getConfig().lang = lang;
+
+                        if(MultiLangCont.getStatic().COMNAME.getCont(c.name) != null)
+                            comboName += MultiLangCont.getStatic().COMNAME.getCont(c.name);
+
+                        CommonStatic.getConfig().lang = oldConfig;
+
+                        sb.append(i+1).append(". ").append(comboName).append("\n");
+                    }
+
+                    if(combos.size() > 20)
+                        sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(1)).replace("-", String.valueOf(combos.size()/20 + 1)));
+
+                    sb.append(LangID.getStringByID("formst_can", lang));
+                    sb.append("```");
+
+                    Message res = ch.createMessage(sb.toString()).block();
+
+                    msg.edit(m -> {
+                        String formName = StaticStore.safeMultiLangGet(form.get(id), lang);
+
+                        if(formName == null || formName.isBlank())
+                            formName = form.get(id).name;
+
+                        if(formName == null || formName.isBlank())
+                            formName = Data.trio(form.get(id).unit.id.id) +" - " + Data.trio(form.get(id).fid);
+
+                        m.setContent(LangID.getStringByID("combo_selected", lang).replace("_", formName));
+                    }).subscribe();
+
+                    if(res != null) {
+                        event.getMember().ifPresent(m -> {
+                            StaticStore.removeHolder(m.getId().asString(), ComboFormHolder.this);
+                            StaticStore.putHolder(m.getId().asString(), new ComboHolder(combos, event.getMessage(), res, msg, ch.getId().asString(), lang));
+                        });
+                    }
+
+                    cleaner.add(event.getMessage());
+
+                    clean();
+
+                    return RESULT_STILL;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-            expired = true;
-
-            cleaner.add(event.getMessage());
-
-            return RESULT_FINISH;
         } else if(content.equals("c")) {
             msg.edit(m -> {
                 m.setContent(LangID.getStringByID("formst_cancel", lang));
@@ -285,9 +353,12 @@ public class FormStatHolder extends Holder<MessageCreateEvent> {
     @Override
     public void clean() {
         for(Message m : cleaner) {
-            if(m != null)
+            if(m != null) {
                 m.delete().subscribe();
+            }
         }
+
+        cleaner.clear();
     }
 
     @Override
@@ -300,5 +371,23 @@ public class FormStatHolder extends Holder<MessageCreateEvent> {
         StaticStore.removeHolder(id, this);
 
         msg.edit(m -> m.setContent(LangID.getStringByID("formst_expire", lang))).subscribe();
+    }
+
+    private String getSearchKeywords(String fName, String cName, int lang) {
+        StringBuilder builder = new StringBuilder();
+
+        if(cName != null) {
+            builder.append(LangID.getStringByID("data_combo", lang)).append(" : `").append(cName).append("`");
+        }
+
+        if(fName != null) {
+            if(cName != null) {
+                builder.append(", ");
+            }
+
+            builder.append(LangID.getStringByID("data_unit", lang)).append(" : `").append(fName).append("`");
+        }
+
+        return builder.toString();
     }
 }

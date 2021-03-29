@@ -534,6 +534,11 @@ public class PackBot {
                                 case "ann":
                                     new Announcement(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
                                     break;
+                                case "catcombo":
+                                case "combo":
+                                case "cc":
+                                    new CatCombo(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
+                                    break;
                             }
                         }
                     });
