@@ -158,6 +158,7 @@ public class StageReactionHolder extends Holder<ReactionAddEvent> {
 
         if(emojiClicked.get()) {
             embed.removeAllReactions().subscribe();
+            expired = true;
         }
 
         return emojiClicked.get() ? RESULT_FINISH : RESULT_STILL;

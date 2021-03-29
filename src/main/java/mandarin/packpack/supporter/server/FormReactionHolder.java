@@ -171,7 +171,8 @@ public class FormReactionHolder extends Holder<ReactionAddEvent> {
         });
 
         if(emojiClicked.get()) {
-            embed.removeAllReactions().subscribe();
+            embed.delete().subscribe();
+            expired = true;
         }
 
         return emojiClicked.get() ? RESULT_FINISH : RESULT_STILL;
