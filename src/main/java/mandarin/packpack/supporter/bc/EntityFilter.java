@@ -260,9 +260,6 @@ public class EntityFilter {
     public static ArrayList<Combo> filterComboWithUnit(Form f, String cName) {
         ArrayList<Combo> result = new ArrayList<>();
 
-        System.out.println(f);
-        System.out.println(cName);
-
         for(int i = 0; i < CommonStatic.getBCAssets().combos.length; i++) {
             Combo[] combos = CommonStatic.getBCAssets().combos[i];
 
