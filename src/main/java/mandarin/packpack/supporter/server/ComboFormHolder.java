@@ -269,6 +269,8 @@ public class ComboFormHolder extends Holder<MessageCreateEvent> {
                         });
                     }
 
+                    expired = true;
+
                     cleaner.add(event.getMessage());
 
                     clean();
