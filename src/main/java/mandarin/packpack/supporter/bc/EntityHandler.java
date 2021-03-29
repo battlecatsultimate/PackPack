@@ -769,7 +769,7 @@ public class EntityHandler {
         ArrayList<String> startRespawn = new ArrayList<>();
         ArrayList<String> layers = new ArrayList<>();
 
-        for(int i = 0; i < st.data.datas.length; i++) {
+        for(int i = st.data.datas.length - 1; i >= 0; i--) {
             SCDef.Line line = st.data.datas[i];
 
             AbEnemy enemy = line.enemy.get();
@@ -827,7 +827,7 @@ public class EntityHandler {
 
             String start;
 
-            if(line.spawn_0 == line.spawn_1)
+            if(line.spawn_1 == 0)
                 if(isFrame)
                     start = line.spawn_0+"f";
                 else
@@ -1014,7 +1014,7 @@ public class EntityHandler {
         g.drawCenteredText(LangID.getStringByID("data_isboss", lang), initX, ySeg / 2);
 
         for(int i = 0; i < enemies.size(); i++) {
-            AbEnemy e = st.data.datas[i].enemy.get();
+            AbEnemy e = st.data.datas[st.data.datas.length - 1 - i].enemy.get();
 
             if(e != null) {
                 BufferedImage edi;
