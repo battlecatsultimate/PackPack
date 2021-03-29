@@ -199,6 +199,9 @@ public class ComboHolder extends Holder<MessageCreateEvent> {
 
             return RESULT_FINISH;
         } else if(content.equals("c")) {
+            if(fMsg != null)
+                fMsg.delete().subscribe();
+
             msg.edit(m -> {
                 m.setContent(LangID.getStringByID("formst_cancel" ,lang));
                 expired = true;
