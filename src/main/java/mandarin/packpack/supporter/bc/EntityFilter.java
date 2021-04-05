@@ -160,6 +160,12 @@ public class EntityFilter {
 
                 String ename = StaticStore.safeMultiLangGet(e, lang);
 
+                if(ename == null || ename.isBlank())
+                    ename = e.name;
+
+                if(ename == null || ename.isBlank())
+                    continue;
+
                 ename = ename.toLowerCase(Locale.ENGLISH);
 
                 if(lang == LangID.KR)
@@ -387,6 +393,9 @@ public class EntityFilter {
                 CommonStatic.getConfig().lang = lang;
 
                 String medalName = StaticStore.MEDNAME.getCont(i);
+
+                if(medalName == null || medalName.isBlank())
+                    continue;
 
                 CommonStatic.getConfig().lang = oldConfig;
 
