@@ -35,7 +35,7 @@ public class FormStat extends ConstraintCommand {
         if(list.length == 1 || filterCommand(getContent(event)).isBlank()) {
             ch.createMessage(LangID.getStringByID("formst_noname", lang)).subscribe();
         } else {
-            ArrayList<Form> forms = EntityFilter.findUnitWithName(filterCommand(getContent(event)));
+            ArrayList<Form> forms = EntityFilter.findUnitWithName(filterCommand(getContent(event)), lang);
 
             if (forms.size() == 1) {
                 CommonStatic.getConfig().lang = lang;

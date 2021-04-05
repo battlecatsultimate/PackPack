@@ -33,7 +33,7 @@ public class EnemyStat extends ConstraintCommand {
         if(list.length == 1 || filterCommand(getContent(event)).isBlank()) {
             ch.createMessage(LangID.getStringByID("formst_noname", lang)).subscribe();
         } else {
-            ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(filterCommand(getContent(event)));
+            ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(filterCommand(getContent(event)), lang);
 
             if(enemies.size() == 1) {
                 int param = checkParameters(getContent(event));

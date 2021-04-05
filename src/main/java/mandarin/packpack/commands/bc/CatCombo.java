@@ -91,7 +91,7 @@ public class CatCombo extends TimedConstraintCommand {
                 }
             }
         } else {
-            ArrayList<Form> forms = EntityFilter.findUnitWithName(name);
+            ArrayList<Form> forms = EntityFilter.findUnitWithName(name, lang);
 
             if(forms.isEmpty()) {
                 disableTimer();

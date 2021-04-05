@@ -11,17 +11,19 @@ import common.util.unit.Combo;
 import common.util.unit.Enemy;
 import common.util.unit.Form;
 import common.util.unit.Unit;
+import mandarin.packpack.supporter.KoreanSeparater;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.lang.LangID;
+import org.apache.commons.lang3.StringUtils;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Locale;
 
 public class EntityFilter {
-    public static ArrayList<Form> findUnitWithName(String name) {
+    public static ArrayList<Form> findUnitWithName(String name, int lang) {
         ArrayList<Form> res = new ArrayList<>();
-
-        int oldConfig = CommonStatic.getConfig().lang;
 
         for(Unit u : UserProfile.getBCData().units.getList()) {
             if(u == null)
@@ -29,13 +31,12 @@ public class EntityFilter {
 
             for(Form f : u.forms) {
                 for(int i = 0; i < 4; i++) {
-                    CommonStatic.getConfig().lang = i;
                     StringBuilder fname = new StringBuilder(Data.trio(u.id.id)+"-"+Data.trio(f.fid)+" "+Data.trio(u.id.id)+" - "+Data.trio(f.fid) + " "
                     +u.id.id+"-"+f.fid+" "+Data.trio(u.id.id)+"-"+f.fid+" ");
                     fname.append(Data.trio(u.id.id)).append(Data.trio(f.fid)).append(" ");
 
                     if(MultiLangCont.get(f) != null) {
-                        fname.append(MultiLangCont.get(f));
+                        fname.append(StaticStore.safeMultiLangGet(f, i));
                     }
 
                     if(f.name != null) {
@@ -50,27 +51,89 @@ public class EntityFilter {
             }
         }
 
-        CommonStatic.getConfig().lang = oldConfig;
+        if(res.isEmpty()) {
+            ArrayList<Form> similar = new ArrayList<>();
+            ArrayList<Integer> similarity = new ArrayList<>();
 
-        return res;
+            name = name.toLowerCase(Locale.ENGLISH);
+
+            if(lang == LangID.KR)
+                name = KoreanSeparater.separate(name);
+
+            int sMin = 10;
+
+            for(Unit u : UserProfile.getBCData().units.getList()) {
+                if(u == null)
+                    continue;
+
+                for(Form f : u.forms) {
+                    CommonStatic.getConfig().lang = lang;
+                    String fname = StaticStore.safeMultiLangGet(f, lang);
+
+                    if(fname == null || fname.isBlank()) {
+                        fname = f.name;
+                    }
+
+                    if(fname == null || fname.isBlank()) {
+                        continue;
+                    }
+
+                    fname = fname.toLowerCase(Locale.ENGLISH);
+
+                    if(lang == LangID.KR)
+                        fname = KoreanSeparater.separate(fname);
+
+                    int wordNumber = StringUtils.countMatches(name, ' ') + 1;
+
+                    String[] words;
+
+                    if(wordNumber != 1) {
+                        words = getWords(fname.split(" "), wordNumber);
+                    } else {
+                        words = fname.split(" ");
+                    }
+
+                    for (String word : words) {
+                        int s = damerauLevenshteinDistance(word, name);
+
+                        if (s <= 5) {
+                            similar.add(f);
+                            similarity.add(s);
+
+                            sMin = Math.min(s, sMin);
+
+                            break;
+                        }
+                    }
+                }
+            }
+
+            ArrayList<Form> finalResult = new ArrayList<>();
+
+            for(int i = 0; i < similar.size(); i++) {
+                if(similarity.get(i) == sMin)
+                    finalResult.add(similar.get(i));
+            }
+
+            return finalResult;
+        } else {
+            return res;
+        }
     }
 
-    public static ArrayList<Enemy> findEnemyWithName(String name) {
+    public static ArrayList<Enemy> findEnemyWithName(String name, int lang) {
         ArrayList<Enemy> res = new ArrayList<>();
-
-        int oldConfig = CommonStatic.getConfig().lang;
 
         for(Enemy e : UserProfile.getBCData().enemies.getList()) {
             if(e == null)
                 continue;
 
             for(int i = 0; i < 4; i++) {
-                CommonStatic.getConfig().lang = i;
                 StringBuilder ename = new StringBuilder(Data.trio(e.id.id))
                         .append(" ").append(duo(i)).append(" ");
 
                 if(MultiLangCont.get(e) != null) {
-                    ename.append(MultiLangCont.get(e));
+                    ename.append(StaticStore.safeMultiLangGet(e, i));
                 }
 
                 if(ename.toString().toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
@@ -80,9 +143,64 @@ public class EntityFilter {
             }
         }
 
-        CommonStatic.getConfig().lang = oldConfig;
+        if(res.isEmpty()) {
+            ArrayList<Enemy> similar = new ArrayList<>();
+            ArrayList<Integer> similarity = new ArrayList<>();
 
-        return res;
+            name = name.toLowerCase(Locale.ENGLISH);
+
+            int sMin = 10;
+
+            if(lang == LangID.KR)
+                name = KoreanSeparater.separate(name);
+
+            for(Enemy e : UserProfile.getBCData().enemies.getList()) {
+                if(e == null)
+                    continue;
+
+                String ename = StaticStore.safeMultiLangGet(e, lang);
+
+                ename = ename.toLowerCase(Locale.ENGLISH);
+
+                if(lang == LangID.KR)
+                    ename = KoreanSeparater.separate(ename);
+
+                int wordNumber = StringUtils.countMatches(name, ' ') + 1;
+
+                String[] words;
+
+                if(wordNumber != 1) {
+                    words = getWords(ename.split(" "), wordNumber);
+                } else {
+                    words = ename.split(" ");
+                }
+
+                for(String word : words) {
+                    int s = damerauLevenshteinDistance(word, name);
+
+                    if(s <=  5) {
+                        similar.add(e);
+                        similarity.add(s);
+
+                        sMin = Math.min(s, sMin);
+                    }
+                }
+            }
+
+            if(similar.isEmpty())
+                return similar;
+
+            ArrayList<Enemy> finalResult = new ArrayList<>();
+
+            for(int i = 0; i < similar.size(); i++) {
+                if(similarity.get(i) == sMin)
+                    finalResult.add(similar.get(i));
+            }
+
+            return finalResult;
+        } else {
+            return res;
+        }
     }
 
     public static ArrayList<Stage> findStageWithName(String[] names) {
@@ -228,7 +346,7 @@ public class EntityFilter {
         return res;
     }
 
-    public static ArrayList<Integer> findMedalByName(String name) {
+    public static ArrayList<Integer> findMedalByName(String name, int lang) {
         ArrayList<Integer> result = new ArrayList<>();
 
         for(int i = 0; i < StaticStore.medalNumber; i++) {
@@ -253,7 +371,69 @@ public class EntityFilter {
             }
         }
 
-        return result;
+        if(result.isEmpty()) {
+            ArrayList<Integer> similar = new ArrayList<>();
+            ArrayList<Integer> similarity = new ArrayList<>();
+
+            int sMin = 10;
+
+            name = name.toLowerCase(Locale.ENGLISH);
+
+            if(lang == LangID.KR)
+                name = KoreanSeparater.separate(name);
+
+            for(int i = 0; i < StaticStore.medalNumber; i++) {
+                int oldConfig = CommonStatic.getConfig().lang;
+                CommonStatic.getConfig().lang = lang;
+
+                String medalName = StaticStore.MEDNAME.getCont(i);
+
+                CommonStatic.getConfig().lang = oldConfig;
+
+                medalName = medalName.toLowerCase(Locale.ENGLISH);
+
+                if(lang == LangID.KR)
+                    medalName = KoreanSeparater.separate(medalName);
+
+                int wordNumber = StringUtils.countMatches(name, ' ') + 1;
+
+                String[] words;
+
+                if(wordNumber != 1) {
+                    words = getWords(medalName.split(" "), wordNumber);
+                } else {
+                    words = medalName.split(" ");
+                }
+
+                for(String word : words) {
+                    int s = damerauLevenshteinDistance(word, name);
+
+                    if(s <= 5) {
+                        similar.add(i);
+                        similarity.add(s);
+
+                        sMin = Math.min(sMin, s);
+
+                        break;
+                    }
+                }
+            }
+
+            if(similar.isEmpty())
+                return similar;
+
+            ArrayList<Integer> finalResult = new ArrayList<>();
+
+            for(int i = 0; i < similar.size(); i++) {
+                if (sMin == similarity.get(i)) {
+                    finalResult.add(similar.get(i));
+                }
+            }
+
+            return finalResult;
+        } else {
+            return result;
+        }
     }
 
     @SuppressWarnings("ForLoopReplaceableByForEach")
@@ -317,7 +497,7 @@ public class EntityFilter {
             }
         }
 
-        result.sort(Comparator.comparingInt(c -> c.name));
+        result.sort(Comparator.comparingInt(c -> c.id));
 
         return result;
     }
@@ -335,5 +515,64 @@ public class EntityFilter {
 
     private static boolean searchStageMap(String[] names) {
         return names[2] == null;
+    }
+
+    private static int damerauLevenshteinDistance(String src, String compare) {
+        int[][] table = new int[src.length() + 1][compare.length() + 1];
+
+        for(int i = 0; i < src.length() + 1; i++) {
+            table[i][0] = i;
+        }
+
+        for(int i  = 0; i < compare.length() + 1; i++) {
+            table[0][i] = i;
+        }
+
+        for(int i = 1; i < src.length() + 1; i++) {
+            for(int j = 1; j < compare.length() + 1; j++) {
+                int cost;
+
+                if(src.charAt(i-1) == compare.charAt(j-1))
+                    cost = 0;
+                else
+                    cost = 1;
+
+                table[i][j] = Math.min(Math.min(table[i-1][j] + 1, table[i][j-1] + 1), table[i-1][j-1] + cost);
+
+                if(i > 1 && j > 1 && src.charAt(i-1) == compare.charAt(j-2) && src.charAt(i-2) == compare.charAt(j-1)) {
+                    table[i][j] = Math.min(table[i][j], table[i-2][j-2]);
+                }
+            }
+        }
+
+        return table[src.length()][compare.length()];
+    }
+
+    private static String[] getWords(String[] src, int numberOfWords) {
+        int length;
+
+        if(src.length % numberOfWords == 0)
+            length = src.length / numberOfWords;
+        else
+            length = src.length / numberOfWords + 1;
+
+        String[] result = new String[length];
+
+        for(int i = 0; i < src.length; i += numberOfWords) {
+            StringBuilder builder = new StringBuilder();
+
+            for(int j = 0; j < numberOfWords; j++) {
+                if(i + j < src.length) {
+                    builder.append(src[i+j]);
+
+                    if(j < numberOfWords - 1 && i+j < src.length - 1)
+                        builder.append(" ");
+                }
+            }
+
+            result[i/numberOfWords] = builder.toString();
+        }
+
+        return result;
     }
 }

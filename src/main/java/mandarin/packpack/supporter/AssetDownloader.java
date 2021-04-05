@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Queue;
 
 public class AssetDownloader {
-    private static final String[] folder = {"en/", "jp/", "kr/", "zh/"};
+    private static final String[] folder = {"bot/", "jp/", "kr/", "zh/"};
     private static final String[] file = {"EnemyName.txt", "StageName.txt", "UnitName.txt", "UnitExplanation.txt", "EnemyExplanation.txt", "CatFruitExplanation.txt", "RewardName.txt", "ComboName.txt", "MedalName.txt", "MedalExplanation.txt"};
 
     public static void checkAssetDownload() {
@@ -130,9 +130,16 @@ public class AssetDownloader {
 
         PackData.DefPack def = UserProfile.getBCData();
 
-        for(String f : folder) {
+        for(String fo : folder) {
+            String f;
+
+            if(fo.equals("bot/"))
+                f = "en";
+            else
+                f = fo.substring(0, fo.length()-1);
+
             for(String fi : file) {
-                File g = new File("./data/assets/lang/"+f+fi);
+                File g = new File("./data/assets/lang/"+fo+fi);
 
                 if(g.exists()) {
                     VFile vf = VFile.getFile(g);
@@ -167,7 +174,7 @@ public class AssetDownloader {
                                 int j = 0;
 
                                 while(j < Math.min(str.length-1, u.forms.length)) {
-                                    MultiLangCont.getStatic().FNAME.put(f.substring(0, f.length()-1), u.forms[j], str[j+1].trim());
+                                    MultiLangCont.getStatic().FNAME.put(f, u.forms[j], str[j+1].trim());
                                     j++;
                                 }
 
@@ -193,7 +200,7 @@ public class AssetDownloader {
 
                                 while(j < Math.min(u.forms.length, str.length-1)) {
                                     String[] lines = str[j+1].trim().split("<br>");
-                                    MultiLangCont.getStatic().FEXP.put(f.substring(0, f.length()-1), u.forms[j], lines);
+                                    MultiLangCont.getStatic().FEXP.put(f, u.forms[j], lines);
                                     j++;
                                 }
 
@@ -214,7 +221,7 @@ public class AssetDownloader {
 
                                 String[] lines = str[1].split("<br>");
 
-                                MultiLangCont.getStatic().CFEXP.put(f.substring(0, f.length()-1), u.info, lines);
+                                MultiLangCont.getStatic().CFEXP.put(f, u.info, lines);
                             }
                             break;
                         case "ComboName.txt":
@@ -230,7 +237,7 @@ public class AssetDownloader {
                                 int id = Integer.parseInt(str[0].trim());
                                 String name = str[1].trim();
 
-                                MultiLangCont.getStatic().COMNAME.put(f.substring(0, f.length()-1), id, name);
+                                MultiLangCont.getStatic().COMNAME.put(f, id, name);
                             }
                             break;
                         case "EnemyName.txt":
@@ -256,7 +263,7 @@ public class AssetDownloader {
                                     name = str[1].trim();
                                 }
 
-                                MultiLangCont.getStatic().ENAME.put(f.substring(0, f.length()-1), e, name);
+                                MultiLangCont.getStatic().ENAME.put(f, e, name);
                             }
                             break;
                         case "EnemyExplanation.txt":
@@ -302,7 +309,7 @@ public class AssetDownloader {
                                     continue;
 
                                 if(ids.length == 1) {
-                                    MultiLangCont.getStatic().MCNAME.put(f.substring(0, f.length()-1), mc, name);
+                                    MultiLangCont.getStatic().MCNAME.put(f, mc, name);
                                     continue;
                                 }
 
@@ -314,7 +321,7 @@ public class AssetDownloader {
                                 StageMap stm = mc.maps.getList().get(id1);
 
                                 if(ids.length == 2) {
-                                    MultiLangCont.getStatic().SMNAME.put(f.substring(0, f.length()-1), stm, name);
+                                    MultiLangCont.getStatic().SMNAME.put(f, stm, name);
                                     continue;
                                 }
 
@@ -325,7 +332,7 @@ public class AssetDownloader {
 
                                 Stage st = stm.list.getList().get(id2);
 
-                                MultiLangCont.getStatic().STNAME.put(f.substring(0, f.length()-1), st, name);
+                                MultiLangCont.getStatic().STNAME.put(f, st, name);
                             }
                             break;
                         case "RewardName.txt":
@@ -341,7 +348,7 @@ public class AssetDownloader {
                                 String id = str[0].trim();
                                 String name = str[1].trim();
 
-                                MultiLangCont.getStatic().RWNAME.put(f.substring(0, f.length()-1), Integer.parseInt(id), name);
+                                MultiLangCont.getStatic().RWNAME.put(f, Integer.parseInt(id), name);
                             }
                             break;
                         case "MedalName.txt":
@@ -357,7 +364,7 @@ public class AssetDownloader {
                                 int id = Integer.parseInt(str[0].trim());
                                 String name = str[1].trim();
 
-                                StaticStore.MEDNAME.put(f.substring(0, f.length()-1), id, name);
+                                StaticStore.MEDNAME.put(f, id, name);
                             }
                             break;
                         case "MedalExplanation.txt":

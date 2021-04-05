@@ -59,7 +59,7 @@ public class EnemyImage extends TimedConstraintCommand {
                 return;
             }
 
-            ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(search);
+            ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(search, lang);
 
             if(enemies.isEmpty()) {
                 ch.createMessage(LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(getContent(event)))).subscribe();

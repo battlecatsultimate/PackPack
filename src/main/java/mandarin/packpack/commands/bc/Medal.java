@@ -32,7 +32,7 @@ public class Medal extends ConstraintCommand {
         if(contents.length >= 2) {
             String[] realContents = getContent(event).split(" ", 2);
 
-            ArrayList<Integer> id = EntityFilter.findMedalByName(realContents[1]);
+            ArrayList<Integer> id = EntityFilter.findMedalByName(realContents[1], lang);
 
             if(id.isEmpty()) {
                 ch.createMessage(LangID.getStringByID("medal_nomed", lang).replace("_", realContents[1])).subscribe();

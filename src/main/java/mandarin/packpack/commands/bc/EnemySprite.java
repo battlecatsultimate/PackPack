@@ -42,7 +42,7 @@ public class EnemySprite extends TimedConstraintCommand {
                 return;
             }
 
-            ArrayList<Enemy> forms = EntityFilter.findEnemyWithName(search);
+            ArrayList<Enemy> forms = EntityFilter.findEnemyWithName(search, lang);
 
             if(forms.isEmpty()) {
                 ch.createMessage(LangID.getStringByID("formst_nounit", lang).replace("_", filterCommand(getContent(event)))).subscribe();
