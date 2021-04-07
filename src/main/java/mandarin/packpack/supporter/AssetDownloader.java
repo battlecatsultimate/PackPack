@@ -280,7 +280,7 @@ public class AssetDownloader {
 
                                 String[] lines = str[1].trim().split("<br>");
 
-                                MultiLangCont.getStatic().EEXP.put(f.substring(0, f.length() -1), e, lines);
+                                MultiLangCont.getStatic().EEXP.put(f, e, lines);
                             }
                             break;
                         case "StageName.txt":
@@ -380,7 +380,7 @@ public class AssetDownloader {
                                 int id = Integer.parseInt(str[0].trim());
                                 String name = str[1].trim();
 
-                                StaticStore.MEDEXP.put(f.substring(0, f.length() - 1), id, name);
+                                StaticStore.MEDEXP.put(f, id, name);
                             }
                     }
                 }

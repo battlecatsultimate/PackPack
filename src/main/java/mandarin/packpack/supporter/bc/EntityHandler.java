@@ -1903,6 +1903,7 @@ public class EntityHandler {
 
                         e.setColor(StaticStore.grade[grade]);
                     }
+
                     e.addField(name, desc, false);
                     e.setImage("attachment://medal.png");
                 });
