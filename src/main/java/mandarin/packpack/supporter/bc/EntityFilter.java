@@ -16,7 +16,6 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import org.apache.commons.lang3.StringUtils;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Locale;
@@ -189,6 +188,8 @@ public class EntityFilter {
                         similarity.add(s);
 
                         sMin = Math.min(s, sMin);
+
+                        break;
                     }
                 }
             }
@@ -209,20 +210,18 @@ public class EntityFilter {
         }
     }
 
-    public static ArrayList<Stage> findStageWithName(String[] names) {
+    public static ArrayList<Stage> findStageWithName(String[] names, int lang) {
         ArrayList<Stage> res = new ArrayList<>();
-
-        int oldConfig = CommonStatic.getConfig().lang;
 
         for(MapColc mc : MapColc.values()) {
             if(mc == null)
                 continue;
 
             if(searchMapColc(names) && names[0] != null && !names[0].isBlank()) {
-                for(int i = 0; i < 4; i++) {
-                    CommonStatic.getConfig().lang = i;
+                ArrayList<Stage> mcStages = new ArrayList<>();
 
-                    String mcName = MultiLangCont.get(mc);
+                for(int i = 0; i < 4; i++) {
+                    String mcName = StaticStore.safeMultiLangGet(mc, lang);
 
                     if(mcName == null || mcName.isBlank())
                         continue;
@@ -237,13 +236,66 @@ public class EntityFilter {
                                     if(st == null)
                                         continue;
 
-                                    res.add(st);
+                                    mcStages.add(st);
                                 }
                             }
 
                             break;
                         }
                     }
+                }
+
+                if(mcStages.isEmpty()) {
+                    String mcName = StaticStore.safeMultiLangGet(mc, lang);
+
+                    if(mcName == null || mcName.isBlank())
+                        continue;
+
+                    mcName = mcName.toLowerCase(Locale.ENGLISH);
+
+                    if(lang == LangID.KR)
+                        mcName = KoreanSeparater.separate(mcName);
+
+                    String nam = names[0].toLowerCase(Locale.ENGLISH);
+
+                    if(lang == LangID.KR)
+                        nam = KoreanSeparater.separate(nam);
+
+                    String[] words;
+
+                    int wordNumber = StringUtils.countMatches(nam, ' ') + 1;
+
+                    if(wordNumber != 1) {
+                        words = getWords(mcName.split(" "), wordNumber);
+                    } else {
+                        words = mcName.split(" ");
+                    }
+
+                    for(String word : words) {
+                        int s = damerauLevenshteinDistance(word, nam);
+
+                        if(s <= 5) {
+                            for(StageMap stm : mc.maps.getList()) {
+                                if(stm == null)
+                                    continue;
+
+                                for(Stage st : stm.list.getList()) {
+                                    if(st == null)
+                                        continue;
+
+                                    mcStages.add(st);
+                                }
+                            }
+
+                            break;
+                        }
+                    }
+
+                    if(!mcStages.isEmpty()) {
+                        res.addAll(mcStages);
+                    }
+                } else {
+                    res.addAll(mcStages);
                 }
 
                 continue;
@@ -254,23 +306,26 @@ public class EntityFilter {
                     continue;
 
                 if(searchStageMap(names) && names[1] != null && !names[1].isBlank()) {
-                    for(int i = 0; i < 4; i++) {
-                        CommonStatic.getConfig().lang = i;
+                    ArrayList<Stage> stmStages = new ArrayList<>();
 
+                    for(int i = 0; i < 4; i++) {
                         boolean s0 = true;
 
                         if(names[0] != null && !names[0].isBlank()) {
-                            String mcName = MultiLangCont.get(mc);
+                            String mcName = StaticStore.safeMultiLangGet(mc, i);
 
                             if(mcName != null && !mcName.isBlank()) {
                                 s0 = mcName.toLowerCase(Locale.ENGLISH).contains(names[0].toLowerCase(Locale.ENGLISH));
                             }
                         }
 
+                        if(!s0)
+                            continue;
+
                         boolean s1 = true;
 
                         if(names[1] != null && !names[1].isBlank()) {
-                            String stmName = MultiLangCont.get(stm);
+                            String stmName = StaticStore.safeMultiLangGet(stm, i);
 
                             if(stmName == null || stmName.isBlank())
                                 continue;
@@ -280,29 +335,120 @@ public class EntityFilter {
                             }
                         }
 
-                        if(s0 && s1) {
+                        if(s1) {
                             for(Stage st : stm.list.getList()) {
                                 if(st == null)
                                     continue;
 
-                                res.add(st);
+                                stmStages.add(st);
                             }
 
                             break;
                         }
                     }
 
+                    if(stmStages.isEmpty()) {
+                        boolean s0 = true;
+
+                        if(names[0] != null && !names[0].isBlank()) {
+                            String mcName = StaticStore.safeMultiLangGet(mc, lang);
+
+                            if(mcName != null && !mcName.isBlank()) {
+                                mcName = mcName.toLowerCase(Locale.ENGLISH);
+                                String nam = names[0].toLowerCase(Locale.ENGLISH);
+
+                                if(lang == LangID.KR) {
+                                    mcName = KoreanSeparater.separate(mcName);
+
+                                    nam = KoreanSeparater.separate(nam);
+                                }
+
+                                String[] words;
+
+                                int wordNumber = StringUtils.countMatches(nam, ' ');
+
+                                if(wordNumber != 1) {
+                                    words = getWords(mcName.split(" "), wordNumber);
+                                } else {
+                                    words = mcName.split(" ");
+                                }
+
+                                for(String word : words) {
+                                    if(damerauLevenshteinDistance(word, nam) <= 5) {
+                                        s0 = true;
+                                        break;
+                                    }
+
+                                    s0 = false;
+                                }
+                            }
+                        }
+
+                        if(!s0)
+                            continue;
+
+                        boolean s1 = true;
+
+                        if(names[1] != null && !names[1].isBlank()) {
+                            String stmName = StaticStore.safeMultiLangGet(stm, lang);
+
+                            if(stmName != null && !stmName.isBlank()) {
+                                stmName = stmName.toLowerCase(Locale.ENGLISH);
+                                String nam = names[1].toLowerCase(Locale.ENGLISH);
+
+                                if (lang == LangID.KR) {
+                                    stmName = KoreanSeparater.separate(stmName);
+                                    nam = KoreanSeparater.separate(nam);
+                                }
+
+                                String[] words;
+
+                                int wordNumber = StringUtils.countMatches(nam, ' ' );
+
+                                if (wordNumber != 1) {
+                                    words = getWords(stmName.split(" "), wordNumber);
+                                } else {
+                                    words = stmName.split(" ");
+                                }
+
+                                for (String word : words) {
+                                    if (damerauLevenshteinDistance(word, nam) <= 3) {
+                                        s1 = true;
+                                        break;
+                                    }
+
+                                    s1 = false;
+                                }
+                            }
+                        }
+
+                        if(s1) {
+                            for(Stage st : stm.list.getList()) {
+                                if(st == null)
+                                    continue;
+
+                                stmStages.add(st);
+                            }
+                        }
+                    }
+
+                    if(!stmStages.isEmpty()) {
+                        res.addAll(stmStages);
+                    }
+
                     continue;
                 }
 
                 for(Stage st : stm.list.getList()) {
+                    boolean added = false;
+
                     for(int i = 0; i < 4; i++) {
                         CommonStatic.getConfig().lang = i;
 
                         if(names[2] == null)
                             continue;
 
-                        String stName = MultiLangCont.get(st);
+                        String stName = StaticStore.safeMultiLangGet(st, i);
 
                         if(stName == null || stName.isBlank())
                             continue;
@@ -317,6 +463,9 @@ public class EntityFilter {
                             }
                         }
 
+                        if(!s0)
+                            continue;
+
                         boolean s1 = true;
 
                         if(names[1] != null && !names[1].isBlank()) {
@@ -326,6 +475,9 @@ public class EntityFilter {
                                 s1 = stmName.toLowerCase(Locale.ENGLISH).contains(names[1].toLowerCase(Locale.ENGLISH));
                             }
                         }
+
+                        if(!s1)
+                            continue;
 
                         boolean s2 = false;
 
@@ -337,17 +489,132 @@ public class EntityFilter {
 
                         boolean s3 = id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH));
 
-                        if(s0 && s1 && (s2 || s3)) {
+                        if(s2 || s3) {
                             res.add(st);
+                            added = true;
 
                             break;
+                        }
+                    }
+
+                    if(!added) {
+                        boolean s0 = true;
+
+                        if(names[0] != null && !names[0].isBlank()) {
+                            String mcName = StaticStore.safeMultiLangGet(mc, lang);
+
+                            if(mcName != null && !mcName.isBlank()) {
+                                mcName = mcName.toLowerCase(Locale.ENGLISH);
+                                String nam = names[0].toLowerCase(Locale.ENGLISH);
+
+                                if(lang == LangID.KR) {
+                                    mcName = KoreanSeparater.separate(mcName);
+
+                                    nam = KoreanSeparater.separate(nam);
+                                }
+
+                                String[] words;
+
+                                int wordNumber = StringUtils.countMatches(nam, ' ');
+
+                                if(wordNumber != 1) {
+                                    words = getWords(mcName.split(" "), wordNumber);
+                                } else {
+                                    words = mcName.split(" ");
+                                }
+
+                                for(String word : words) {
+                                    if(damerauLevenshteinDistance(word, nam) <= 5) {
+                                        s0 = true;
+                                        break;
+                                    }
+
+                                    s0 = false;
+                                }
+                            }
+                        }
+
+                        if(!s0)
+                            continue;
+
+                        boolean s1 = true;
+
+                        if(names[1] != null && !names[1].isBlank()) {
+                            String stmName = StaticStore.safeMultiLangGet(stm, lang);
+
+                            if(stmName != null && !stmName.isBlank()) {
+                                stmName = stmName.toLowerCase(Locale.ENGLISH);
+                                String nam = names[1].toLowerCase(Locale.ENGLISH);
+
+                                if (lang == LangID.KR) {
+                                    stmName = KoreanSeparater.separate(stmName);
+                                    nam = KoreanSeparater.separate(nam);
+                                }
+
+                                String[] words;
+
+                                int wordNumber = StringUtils.countMatches(nam, ' ' );
+
+                                if (wordNumber != 1) {
+                                    words = getWords(stmName.split(" "), wordNumber);
+                                } else {
+                                    words = stmName.split(" ");
+                                }
+
+                                for (String word : words) {
+                                    if (damerauLevenshteinDistance(word, nam) <= 3) {
+                                        s1 = true;
+                                        break;
+                                    }
+
+                                    s1 = false;
+                                }
+                            }
+                        }
+
+                        if(!s1)
+                            continue;
+
+                        boolean s2 = false;
+
+                        if(names[2] != null && !names[2].isBlank()) {
+                            String stName = StaticStore.safeMultiLangGet(st, lang);
+
+                            if(stName != null && !stName.isBlank()) {
+                                stName = stName.toLowerCase(Locale.ENGLISH);
+                                String nam = names[2].toLowerCase(Locale.ENGLISH);
+
+                                if(lang == LangID.KR) {
+                                    stName = KoreanSeparater.separate(stName);
+                                    nam = KoreanSeparater.separate(nam);
+                                }
+
+                                String[] words;
+
+                                int wordNumber = StringUtils.countMatches(nam, ' ') + 1;
+
+                                if(wordNumber != 1) {
+                                    words = getWords(stName.split(" "), wordNumber);
+                                } else {
+                                    words = stName.split(" ");
+                                }
+
+                                for(String word : words) {
+                                    if(damerauLevenshteinDistance(word, nam) <= 3) {
+                                        s2 = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        if(s2) {
+                            res.add(st);
                         }
                     }
                 }
             }
         }
-
-        CommonStatic.getConfig().lang = oldConfig;
 
         return res;
     }

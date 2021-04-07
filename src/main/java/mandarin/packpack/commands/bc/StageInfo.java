@@ -42,7 +42,7 @@ public class StageInfo extends TimedConstraintCommand {
         if(list.length == 1 || allNull(names)) {
             ch.createMessage(LangID.getStringByID("stinfo_noname", lang)).subscribe();
         } else {
-            ArrayList<Stage> stages = EntityFilter.findStageWithName(names);
+            ArrayList<Stage> stages = EntityFilter.findStageWithName(names, lang);
 
             if(stages.isEmpty()) {
                 ch.createMessage(LangID.getStringByID("stinfo_nores", lang).replace("_", generateSearchName(names))).subscribe();
