@@ -291,10 +291,10 @@ public class EntityFilter {
                         }
                     }
 
-                    if(!mcStages.isEmpty()) {
-                        res.addAll(mcStages);
-                    }
-                } else {
+
+                }
+
+                if(!mcStages.isEmpty()) {
                     res.addAll(mcStages);
                 }
 
@@ -365,7 +365,7 @@ public class EntityFilter {
 
                                 String[] words;
 
-                                int wordNumber = StringUtils.countMatches(nam, ' ');
+                                int wordNumber = StringUtils.countMatches(nam, ' ') + 1;
 
                                 if(wordNumber != 1) {
                                     words = getWords(mcName.split(" "), wordNumber);
@@ -403,7 +403,7 @@ public class EntityFilter {
 
                                 String[] words;
 
-                                int wordNumber = StringUtils.countMatches(nam, ' ' );
+                                int wordNumber = StringUtils.countMatches(nam, ' ' ) + 1;
 
                                 if (wordNumber != 1) {
                                     words = getWords(stmName.split(" "), wordNumber);
@@ -412,7 +412,11 @@ public class EntityFilter {
                                 }
 
                                 for (String word : words) {
-                                    if (damerauLevenshteinDistance(word, nam) <= 3) {
+                                    int s = damerauLevenshteinDistance(word, nam);
+
+                                    System.out.println("WORD : "+word+" | NAME : "+nam+ " = " + s);
+
+                                    if (s <= 3) {
                                         s1 = true;
                                         break;
                                     }
@@ -515,7 +519,7 @@ public class EntityFilter {
 
                                 String[] words;
 
-                                int wordNumber = StringUtils.countMatches(nam, ' ');
+                                int wordNumber = StringUtils.countMatches(nam, ' ') + 1;
 
                                 if(wordNumber != 1) {
                                     words = getWords(mcName.split(" "), wordNumber);
@@ -553,7 +557,7 @@ public class EntityFilter {
 
                                 String[] words;
 
-                                int wordNumber = StringUtils.countMatches(nam, ' ' );
+                                int wordNumber = StringUtils.countMatches(nam, ' ' ) + 1;
 
                                 if (wordNumber != 1) {
                                     words = getWords(stmName.split(" "), wordNumber);
