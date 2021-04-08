@@ -32,7 +32,7 @@ jar {
         }
     }
     manifest {
-        attributes 'Main-Class': 'mandarin.packpack.PackBot'
+        attributes 'Main-Class': 'mandarin.mandarin.packpack.PackBot'
     }
 
     exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
