@@ -154,7 +154,12 @@ public class Interpret extends Data {
 
             for(int i = 0; i < PROCIND.length; i++) {
                 if(isValidProc(i, ma)) {
+                    int oldConfig = CommonStatic.getConfig().lang;
+                    CommonStatic.getConfig().lang = lang;
+
                     String f = ProcLang.get().get(PROCIND[i]).format;
+
+                    CommonStatic.getConfig().lang = oldConfig;
 
                     String ans = Formatter.format(f, getProcObject(i, ma), c);
 
