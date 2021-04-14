@@ -40,15 +40,18 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
         if(ch == null)
             return;
 
-        AtomicReference<Boolean> isDev = new AtomicReference<>(false);
+        AtomicReference<Boolean> isMod = new AtomicReference<>(false);
+        AtomicReference<Boolean> isMandarin = new AtomicReference<>(false);
 
         getMember(event).ifPresentOrElse(m -> {
             if(modID != null && StaticStore.rolesToString(m.getRoleIds()).contains(modID)) {
-                isDev.set(true);
+                isMod.set(true);
             } else {
-                isDev.set(false);
+                isMod.set(false);
             }
-        }, () -> isDev.set(false));
+
+            isMandarin.set(m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
+        }, () -> isMod.set(false));
 
         String[] list = getContent(event).split(" ");
 
@@ -84,15 +87,15 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
                 boolean raw = (param & PARAM_RAW) > 0;
                 int frame = getFrame(getContent(event));
 
-                if(raw && !isDev.get()) {
+                if(raw && !(isMod.get() || isMandarin.get())) {
                     ch.createMessage(LangID.getStringByID("gif_ignore", lang)).subscribe();
                 }
 
                 Enemy en = enemies.get(0);
 
-                boolean result = EntityHandler.generateEnemyAnim(en, ch, mode, debug, frame, lang, raw && isDev.get());
+                boolean result = EntityHandler.generateEnemyAnim(en, ch, mode, debug, frame, lang, raw && (isMod.get() || isMandarin.get()));
 
-                if(raw && isDev.get()) {
+                if(raw && (isMod.get() || isMandarin.get())) {
                     changeTime(TimeUnit.MINUTES.toMillis(1));
                 }
 
@@ -150,12 +153,12 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
 
                 boolean raw = (param & PARAM_RAW) > 0;
 
-                if(raw && !isDev.get()) {
+                if(raw && !isMod.get()) {
                     ch.createMessage(LangID.getStringByID("gif_ignore", lang)).subscribe();
                 }
 
                 if(res != null) {
-                    getMember(event).ifPresent(member -> StaticStore.putHolder(member.getId().asString(), new EnemyAnimHolder(enemies, getMessage(event), res, ch.getId().asString(), mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isDev.get())));
+                    getMember(event).ifPresent(member -> StaticStore.putHolder(member.getId().asString(), new EnemyAnimHolder(enemies, getMessage(event), res, ch.getId().asString(), mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isMod.get())));
                 }
 
                 disableTimer();
