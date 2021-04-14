@@ -40,16 +40,15 @@ public class FormGif extends GlobalTimedConstraintCommand {
             return;
 
         AtomicReference<Boolean> isDev = new AtomicReference<>(false);
-        AtomicReference<Boolean> isMandarin = new AtomicReference<>(false);
 
         getMember(event).ifPresentOrElse(m -> {
             if(modID != null && StaticStore.rolesToString(m.getRoleIds()).contains(modID)) {
                 isDev.set(true);
+            } else if(m.getId().asString().equals(StaticStore.MANDARIN_SMELL)) {
+                isDev.set(true);
             } else {
                 isDev.set(false);
             }
-
-            isMandarin.set(m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
         }, () -> isDev.set(false));
 
         String[] list = getContent(event).split(" ");
@@ -87,15 +86,15 @@ public class FormGif extends GlobalTimedConstraintCommand {
                 boolean raw = (param & PARAM_RAW) > 0;
                 int frame = getFrame(getContent(event));
 
-                if(raw && !(isDev.get() || isMandarin.get())) {
+                if(raw && !isDev.get()) {
                     ch.createMessage(LangID.getStringByID("gif_ignore", lang)).subscribe();
                 }
 
                 Form f = forms.get(0);
 
-                boolean result = EntityHandler.generateFormAnim(f, ch, mode, debug, frame, lang, raw && (isDev.get() || isMandarin.get()));
+                boolean result = EntityHandler.generateFormAnim(f, ch, mode, debug, frame, lang, raw && isDev.get());
 
-                if(raw && (isDev.get() || isMandarin.get())) {
+                if(raw && isDev.get()) {
                     changeTime(TimeUnit.MINUTES.toMillis(1));
                 }
 
