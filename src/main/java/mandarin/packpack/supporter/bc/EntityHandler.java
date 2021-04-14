@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import common.CommonStatic;
 import common.battle.data.MaskUnit;
 import common.pack.PackData;
-import common.pack.UserProfile;
 import common.system.fake.FakeImage;
 import common.system.files.VFile;
 import common.util.Data;
@@ -159,7 +158,7 @@ public class EntityHandler {
 
                 MaskUnit du;
 
-                if(t != null && f.getPCoin() != null)
+                if(f.getPCoin() != null)
                     if(talent)
                         du = f.getPCoin().improve(t);
                     else
@@ -2030,16 +2029,16 @@ public class EntityHandler {
             g.drawLine(120 * i, 0, 120 * i, 95);
         }
 
-        for(int i = 0; i < c.units.length; i++) {
-            if(c.units[i] == null)
+        for(int i = 0; i < 5; i++) {
+            if(c.units.get(i) == null)
                 continue;
 
-            Unit u = UserProfile.getBCData().units.get(c.units[i][0]);
+            Unit u = c.units.get(i).unit;
 
             if(u == null)
                 continue;
 
-            Form f = u.forms[c.units[i][1]];
+            Form f = c.units.get(i);
 
             f.anim.load();
 

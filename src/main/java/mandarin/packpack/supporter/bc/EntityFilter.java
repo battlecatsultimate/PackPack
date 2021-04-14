@@ -745,10 +745,13 @@ public class EntityFilter {
                         result.add(c);
                     }
                 } else {
-                    for(int k = 0; k < c.units.length; k++) {
+                    for(int k = 0; k < 5; k++) {
                         boolean added = false;
 
-                        if(c.units[k][0] == f.unit.id.id && c.units[k][1] <= f.fid) {
+                        if(c.units.get(k) == null || c.units.get(k).unit == null)
+                            continue;
+
+                        if(c.units.get(k).unit.id.id == f.unit.id.id && c.units.get(k).fid <= f.fid) {
                             if(cName != null) {
                                 for(int l = 0; l < 4; l++) {
                                     int oldConfig = CommonStatic.getConfig().lang;
