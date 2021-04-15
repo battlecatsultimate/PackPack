@@ -45,7 +45,7 @@ public class EnemySprite extends TimedConstraintCommand {
             ArrayList<Enemy> forms = EntityFilter.findEnemyWithName(search, lang);
 
             if(forms.isEmpty()) {
-                ch.createMessage(LangID.getStringByID("formst_nounit", lang).replace("_", filterCommand(getContent(event)))).subscribe();
+                ch.createMessage(LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(getContent(event)))).subscribe();
                 disableTimer();
             } else if(forms.size() == 1) {
                 int param = checkParameter(getContent(event));

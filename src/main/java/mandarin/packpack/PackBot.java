@@ -543,6 +543,13 @@ public class PackBot {
                                 case "json":
                                 case "sj":
                                     new ServerJson(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+                                    break;
+                                case "findstage":
+                                case "findst":
+                                case "fstage":
+                                case "fst":
+                                    new FindStage(ConstraintCommand.ROLE.MEMBER, lang, idh, 5000).execute(event);
+                                    break;
                             }
                         }
                     });

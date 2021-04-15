@@ -372,6 +372,10 @@
   "help_catcombo_exam" : "`p!cc You Will Find Happiness`\n`p!cc yesterday -u ururun`",
   "help_serverjson_use" : "`p!serverjson`",
   "help_serverjson_desc" : "Send server data as json file via DM. `json` or `sj` are also valid command. **This gives data which are collected by bot, so only moderators can use this command**",
+  "help_findstage_use" : "`p!findstage [Enemy Name]`",
+  "help_findstage_desc" : "Try to search stage with specified enemy, and upload info of it. `findst`, `fstage`, `fst` are also valid command",
+  "help_findstage_argu" : "`-s` : Display info with second unit\n`-st` : Apply star data",
+  "help_findstage_exam" : "`p!fst -s Relic Bun-Bun`\n`p!fst -s -st 4 098`",
   "prefix_space" : "Prefix can't be white spaces!",
   "prefix_set" : "Prefix is set as `_`!",
   "prefix_setnone" : "Your prefix has been updated!",
@@ -478,5 +482,7 @@
   "medal_more" : "This command requires one more argument : [Medal Name]",
   "announce_limit" : "This link has 5 minutes limit, call this command again if 5 minutes already have passed : ",
   "combo_noname" : "Searching with [_], but no such combo found!",
-  "combo_selected" : "```Unit selected as _```"
+  "combo_selected" : "```Unit selected as _```",
+  "fstage_nost" : "Searching with _, but no stage which contains such enemy found!",
+  "fstage_several" : "Searching with _, and several results found...\n"
 }

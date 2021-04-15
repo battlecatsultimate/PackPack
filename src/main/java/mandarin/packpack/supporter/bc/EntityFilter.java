@@ -5,6 +5,7 @@ import common.pack.UserProfile;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.stage.MapColc;
+import common.util.stage.SCDef;
 import common.util.stage.Stage;
 import common.util.stage.StageMap;
 import common.util.unit.Combo;
@@ -621,6 +622,34 @@ public class EntityFilter {
         }
 
         return res;
+    }
+
+    public static ArrayList<Stage> findStageByEnemy(Enemy e) {
+        ArrayList<Stage> result = new ArrayList<>();
+
+        for(MapColc mc : MapColc.values()) {
+            if(mc == null)
+                continue;
+
+            for(StageMap stm : mc.maps.getList()) {
+                if(stm == null)
+                    continue;
+
+                for(Stage st : stm.list.getList()) {
+                    if(st == null)
+                        continue;
+
+                    for(SCDef.Line line : st.data.datas) {
+                        if(line.enemy.equals(e.id)) {
+                            result.add(st);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        return result;
     }
 
     public static ArrayList<Integer> findMedalByName(String name, int lang) {
