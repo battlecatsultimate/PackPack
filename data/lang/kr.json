@@ -344,7 +344,7 @@
   "help_clearcache_desc" : "모든 캐시된 이미지 링크를 삭제합니다. **봇의 데이터를 조정하므로 서버 관리자 이상만 사용할 수 있습니다** (빠른 작업을 위해 봇은 `p!fg` 와 `p!eg` 로부터 생성된 gif/mp4 링크를 모드 저장해 놓습니다. 가급적이면 삭제하지 말아주세요)",
   "help_animanalyzer_use" : "`p!animanalyzer <파일>`",
   "help_animanalyzer_desc" : "커스텀 애니메이션 파일을 분석합니다. `c` 를 눌러 분석을 취소하거나 5분 뒤에 자동으로 분석을 정지합니다. `aa` 또한 유효한 명령어 입니다. **잘못된 사용으로 인한 잠재적 충돌이 예상되므로 서버 관리자 이상만 사용할 수 있습니다**",
-  "help_animanalyzer_argu" : "`-d` : 디버그 모드를 켭니다\n`-r` 또는 `-raw` : 높은 해상도의 결과를 위해 애니메이션을 mp4 형식으로 업로드합니다\n`-a` 또는 `-anim` : 업로드할 Maanim 파일의 개수를 정합니다. 기본값은 1 입니다",
+  "help_animanalyzer_argu" : "`-d` : 디버그 모드를 켭니다\n`-r` 또는 `-raw` : 높은 해상도의 결과를 위해 애니메이션을 mp4 형식으로 업로드합니다\n`-a` 또는 `-anim` : 업로드할 Maanim 파일의 개수를 정합니다. 기본값은 1 입니다\n'-bc' 또는 `-b` : BC 애니메이션 분석 모드를 활성화 합니다\n`-zombie` 또는 `-z` : BC 애니메이션 분석 모드가 활성화 되어있을 때 좀비 애니메이션도 같이 분석하게 합니다",
   "help_animanalyzer_tip" : "해당 명령어는 4개의 파일을 요구합니다 : Png, Imgcut, Mamodel, Maanim. 만약 유저가 이 중 하나의 파일을 업로드하면, 봇이 파일을 다운받아 파일 형식을 확인하여 애니메이션 분석 준비를 합니다. 4 종류의 파일이 모두 모이면 분석된 애니메이션을 gif 혹은 mp4 형식으로 업로드합니다",
   "help_channelpermission_use" : "`p!channelpermission <모드> <[역할] [채널 ID]> ...`",
   "help_channelpermission_desc" : "특정 역할을 가진 유저들이 봇의 명령어를 특정한 채널에서 사용하거나 사용하지 못 하도록 만듭니다. `channelperm`, `chpermission`, `chperm`, `chp` 또한 유효한 명령어 입니다. **역할의 권한을 다루는 명령어이므로 서버 관리자 이상만 사용할 수 있습니다**",

@@ -1606,6 +1606,102 @@ public class EntityHandler {
         }
     }
 
+    public static boolean generateBCAnim(MessageChannel ch, AnimMixer mixer, int lang) throws Exception {
+        boolean mix = mixer.mix();
+
+        if(!mix) {
+            ch.createMessage("Failed to mix Anim").subscribe();
+            return false;
+        }
+
+        CommonStatic.getConfig().ref = false;
+
+        Message msg = ch.createMessage(LangID.getStringByID("gif_anbox", lang)).block();
+
+        if(msg == null)
+            return false;
+
+        long start = System.currentTimeMillis();
+
+        File img = ImageDrawing.drawBCAnim(mixer, msg, 1.0, lang);
+
+        long end = System.currentTimeMillis();
+
+        String time = DataToString.df.format((end - start) / 1000.0);
+
+        FileInputStream fis;
+
+        if(img == null) {
+            ch.createMessage(LangID.getStringByID("gif_faile", lang)).subscribe();
+        } else if(img.length() >= 8 * 1024 * 1024) {
+            Message m = ch.createMessage(LangID.getStringByID("gif_filesize", lang)).block();
+
+            if(m == null) {
+                ch.createMessage(LangID.getStringByID("gif_failcommand", lang)).subscribe(null, null, () -> {
+                    if(img.exists()) {
+                        boolean res = img.delete();
+
+                        if(!res) {
+                            System.out.println("Failed to delete file : "+img.getAbsolutePath());
+                        }
+                    }
+                });
+
+                return true;
+            }
+
+            String link = StaticStore.imgur.uploadFile(img);
+
+            if(link == null) {
+                m.edit(e -> e.setContent(LangID.getStringByID("gif_failimgur", lang))).subscribe(null, null, () -> {
+                    if(img.exists()) {
+                        boolean res = img.delete();
+
+                        if(!res) {
+                            System.out.println("Failed to delete file : "+img.getAbsolutePath());
+                        }
+                    }
+                });
+            } else {
+                m.edit(e -> {
+                    long finalEnd = System.currentTimeMillis();
+
+                    e.setContent(LangID.getStringByID("gif_uploadimgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link);
+                }).subscribe(null, null, () -> {
+                    if(img.exists()) {
+                        boolean res = img.delete();
+
+                        if(!res) {
+                            System.out.println("Failed to delete file : "+img.getAbsolutePath());
+                        }
+                    }
+                });
+            }
+        } else if(img.length() < 8 * 1024 * 1024) {
+            fis = new FileInputStream(img);
+
+            ch.createMessage(
+                    m -> {
+                        m.setContent(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)));
+                        m.addFile("result.mp4", fis);
+                    }
+            ).subscribe(null, null, () -> {
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                boolean res = img.delete();
+
+                if(!res) {
+                    System.out.println("Can't delete file : "+img.getAbsolutePath());
+                }
+            });
+        }
+
+        return true;
+    }
 
     private static String getFileSize(File f) {
         String[] unit = {"B", "KB", "MB"};

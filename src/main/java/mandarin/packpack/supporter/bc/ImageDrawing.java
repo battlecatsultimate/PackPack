@@ -333,14 +333,6 @@ public class ImageDrawing {
             finCont += LangID.getStringByID("gif_adjust", lang).replace("_", DataToString.df.format(ratio * 100.0))+"\n\n";
         }
 
-        finCont += LangID.getStringByID("gif_final", lang).replace("_WWW_", ""+rect.width)
-                .replace("_HHH_", rect.height+"").replace("_XXX_", rect.x+"")
-                .replace("_YYY_", rect.x+"")+"\n";
-
-        String finalFinCont = finCont;
-
-        msg.edit(m -> m.setContent(finalFinCont)).subscribe();
-
         if(rect.height % 2 == 1) {
             rect.height -= 1;
             rect.y += 1;
@@ -350,6 +342,14 @@ public class ImageDrawing {
             rect.width -= 1;
             rect.x += 1;
         }
+
+        finCont += LangID.getStringByID("gif_final", lang).replace("_WWW_", ""+rect.width)
+                .replace("_HHH_", rect.height+"").replace("_XXX_", rect.x+"")
+                .replace("_YYY_", rect.x+"")+"\n";
+
+        String finalFinCont = finCont;
+
+        msg.edit(m -> m.setContent(finalFinCont)).subscribe();
 
         P pos = new P(-rect.x, -rect.y);
 
@@ -399,8 +399,6 @@ public class ImageDrawing {
                     g.fillRect(-rect.x + (int) (c.x * ratio) - 2, -rect.y + (int) (c.y * ratio) -2, 4, 4);
                 }
             } else {
-                anim.setTime(i);
-
                 anim.draw(g, pos, siz * ratio);
             }
 
@@ -654,6 +652,346 @@ public class ImageDrawing {
         String finalCont2 = cont;
         msg.edit(m -> {
             String content = finalCont2 + "\n\n"+LangID.getStringByID("gif_making", lang).replace("_", "100")+"\n\n"+LangID.getStringByID("gif_uploading", lang);
+
+            m.setContent(content);
+        }).subscribe();
+
+        return gif;
+    }
+
+    public static File drawBCAnim(AnimMixer mixer, Message msg, double siz, int lang) throws Exception {
+        File temp = new File("./temp");
+
+        if(!temp.exists()) {
+            boolean res = temp.mkdirs();
+
+            if(!res) {
+                System.out.println("Can't create folder : "+temp.getAbsolutePath());
+                return null;
+            }
+        }
+
+        String folderName = StaticStore.findFileName(temp, "images", "");
+
+        File folder = new File("./temp/"+folderName);
+
+        if(!folder.exists()) {
+            boolean res = folder.mkdirs();
+
+            if(!res) {
+                System.out.println("Can't create folder : "+folder.getAbsolutePath());
+
+                return null;
+            }
+        }
+
+        File gif = new File("./temp", StaticStore.findFileName(temp, "result", ".mp4"));
+
+        if(!gif.exists()) {
+            boolean res = gif.createNewFile();
+
+            if(!res) {
+                System.out.println("Can't create file : "+gif.getAbsolutePath());
+                return null;
+            }
+        }
+
+        CommonStatic.getConfig().ref = false;
+
+        Rectangle rect = new Rectangle();
+
+        for(int i = 0; i < mixer.anim.length; i++) {
+            EAnimD<?> anim = mixer.getAnim(i);
+
+            if(anim != null) {
+                anim.setTime(0);
+
+                for(int j = 0; j < anim.len(); j++) {
+                    anim.setTime(j);
+
+                    for(int k = 1; k < anim.getOrder().length; k++) {
+                        if(anim.anim().parts(anim.getOrder()[k].getVal(2)) == null)
+                            continue;
+
+                        FakeImage fi = anim.anim().parts(anim.getOrder()[k].getVal(2));
+
+                        if(fi.getWidth() == 1 && fi.getHeight() == 1)
+                            continue;
+
+                        RawPointGetter getter = new RawPointGetter(fi.getHeight(), fi.getHeight());
+
+                        getter.apply(anim.getOrder()[k], siz, false);
+
+                        int[][] result = getter.getRect();
+
+                        if(Math.abs(result[1][0]-result[0][0]) * Math.abs(result[1][1] - result[2][1]) >= (750 * siz) * (750 * siz))
+                            continue;
+
+                        int oldX = rect.x;
+                        int oldY = rect.y;
+
+                        rect.x = Math.min(minAmong(result[0][0], result[1][0], result[2][0], result[3][0]), rect.x);
+                        rect.y = Math.min(minAmong(result[0][1], result[1][1], result[2][1], result[3][1]), rect.y);
+
+                        if(oldX != rect.x) {
+                            rect.width += oldX - rect.x;
+                        }
+
+                        if(oldY != rect.y) {
+                            rect.height += oldY - rect.y;
+                        }
+
+                        rect.width = Math.max(Math.abs(maxAmong(result[0][0], result[1][0], result[2][0], result[3][0]) - rect.x), rect.width);
+                        rect.height = Math.max(Math.abs(maxAmong(result[0][1], result[1][1], result[2][1], result[3][1]) - rect.y), rect.height);
+                    }
+                }
+            }
+        }
+
+        double ratio;
+
+        String cont = LangID.getStringByID("gif_anbox", lang) + "\n"
+                + LangID.getStringByID("gif_result", lang).replace("_WWW_", ""+rect.width)
+                .replace("_HHH_", ""+rect.height).replace("_XXX_", rect.x+"")
+                .replace("_YYY_", ""+rect.y);
+
+        msg.edit(m -> m.setContent(cont)).subscribe();
+
+        if(rect.width * rect.height > 1500 * 1500) {
+            ratio = 1.0;
+
+            while(rect.width * rect.height > 1500 * 1500) {
+                ratio *= 0.5;
+
+                rect.width = (int) (0.5 * rect.width);
+                rect.height = (int) (0.5 * rect.height);
+                rect.x = (int) (0.5 * rect.x);
+                rect.y = (int) (0.5 * rect.y);
+            }
+        } else {
+            ratio = 1.0;
+        }
+
+        String finCont = cont +"\n\n";
+
+        if(ratio == 1.0) {
+            finCont += LangID.getStringByID("gif_cango", lang)+"\n\n";
+        } else {
+            finCont += LangID.getStringByID("gif_adjust", lang).replace("_", DataToString.df.format(ratio * 100.0))+"\n\n";
+        }
+
+        if(rect.height % 2 == 1) {
+            rect.height -= 1;
+            rect.y += 1;
+        }
+
+        if(rect.width % 2 == 1) {
+            rect.width -= 1;
+            rect.x += 1;
+        }
+
+        finCont += LangID.getStringByID("gif_final", lang).replace("_WWW_", ""+rect.width)
+                .replace("_HHH_", rect.height+"").replace("_XXX_", rect.x+"")
+                .replace("_YYY_", rect.x+"")+"\n";
+
+        String finalFinCont = finCont;
+
+        msg.edit(m -> m.setContent(finalFinCont)).subscribe();
+
+        P pos = new P(-rect.x, -rect.y);
+
+        long current = System.currentTimeMillis();
+
+        int totalFrame = 0;
+        int progress = 0;
+
+        for(int i = 0; i < mixer.anim.length; i++) {
+            EAnimD<?> anim = mixer.getAnim(i);
+
+            if(anim != null) {
+                switch (i) {
+                    case 0:
+                    case 1:
+                        totalFrame += Math.max(60, Math.min(150, anim.len()));
+                        break;
+                    case 2:
+                        totalFrame += Math.max(60, anim.len());
+                        break;
+                    case 3:
+                    case 5:
+                        totalFrame += 60;
+                        break;
+                    case 4:
+                    case 6:
+                        totalFrame += anim.len();
+                        break;
+                }
+            }
+        }
+
+        for(int i = 0; i < mixer.anim.length; i++) {
+            //60 ~ 150, 60 ~ 150, 60 ~, 60, one cycle, 60, one cycle
+
+            EAnimD<?> anim = mixer.getAnim(i);
+
+            if(anim != null) {
+                int frame;
+
+                switch (i) {
+                    case 0:
+                    case 1:
+                        frame = Math.max(60, Math.min(150, anim.len()));
+                        break;
+                    case 2:
+                        frame = Math.max(60, anim.len());
+                        break;
+                    case 3:
+                    case 5:
+                        frame = 60;
+                        break;
+                    case 4:
+                    case 6:
+                        frame = anim.len();
+                        break;
+                    default:
+                        frame = 0;
+                }
+
+                if(i == 2) {
+                    int stackFrame = 0;
+
+                    while(stackFrame < 60) {
+                        for(int j = 0; j < frame; j++) {
+                            if(System.currentTimeMillis() - current >= 1500) {
+                                int finalProg = progress;
+                                int finalTotal = totalFrame;
+
+                                msg.edit(m -> {
+                                    String content = finalFinCont +"\n\n";
+
+                                    content += LangID.getStringByID("gif_makepng", lang).replace("_", DataToString.df.format(finalProg * 100.0 / finalTotal));
+
+                                    m.setContent(content);
+                                }).subscribe();
+
+                                current = System.currentTimeMillis();
+                            }
+
+                            anim.setTime(j);
+
+                            BufferedImage image = new BufferedImage(rect.width, rect.height, BufferedImage.TYPE_INT_ARGB);
+                            FG2D g = new FG2D(image.getGraphics());
+
+                            g.setRenderingHint(3, 2);
+                            g.enableAntialiasing();
+
+                            g.setColor(54,57,63,255);
+                            g.fillRect(0, 0, rect.width, rect.height);
+
+                            anim.draw(g, pos, siz * ratio);
+
+                            File img = new File("./temp/"+folderName+"/", quad(progress)+".png");
+
+                            if(!img.exists()) {
+                                boolean res = img.createNewFile();
+
+                                if(!res) {
+                                    System.out.println("Can't create new file : "+img.getAbsolutePath());
+                                    return null;
+                                }
+                            } else {
+                                return null;
+                            }
+
+                            ImageIO.write(image, "PNG", img);
+
+                            progress++;
+                        }
+
+                        stackFrame += frame;
+                    }
+                } else {
+                    for(int j = 0; j < frame - 1; j++) {
+                        if(System.currentTimeMillis() - current >= 1500) {
+                            int finalProg = progress;
+                            int finalTotal = totalFrame;
+
+                            msg.edit(m -> {
+                                String content = finalFinCont +"\n\n";
+
+                                content += LangID.getStringByID("gif_makepng", lang).replace("_", DataToString.df.format(finalProg * 100.0 / finalTotal));
+
+                                m.setContent(content);
+                            }).subscribe();
+
+                            current = System.currentTimeMillis();
+                        }
+
+                        anim.setTime(j);
+
+                        BufferedImage image = new BufferedImage(rect.width, rect.height, BufferedImage.TYPE_INT_ARGB);
+                        FG2D g = new FG2D(image.getGraphics());
+
+                        g.setRenderingHint(3, 2);
+                        g.enableAntialiasing();
+
+                        g.setColor(54,57,63,255);
+                        g.fillRect(0, 0, rect.width, rect.height);
+
+                        anim.draw(g, pos, siz * ratio);
+
+                        File img = new File("./temp/"+folderName+"/", quad(progress)+".png");
+
+                        if(!img.exists()) {
+                            boolean res = img.createNewFile();
+
+                            if(!res) {
+                                System.out.println("Can't create new file : "+img.getAbsolutePath());
+                                return null;
+                            }
+                        } else {
+                            return null;
+                        }
+
+                        ImageIO.write(image, "PNG", img);
+
+                        progress++;
+                    }
+                }
+
+
+            }
+        }
+
+        msg.edit(m -> {
+            String content = finalFinCont + "\n\n" + LangID.getStringByID("gif_makepng", lang).replace("_", "100")
+                    +"\n\n"+ LangID.getStringByID("gif_converting", lang);
+
+            m.setContent(content);
+        }).subscribe();
+
+
+        ProcessBuilder builder = new ProcessBuilder(SystemUtils.IS_OS_WINDOWS ? "data/ffmpeg/bin/ffmpeg" : "ffmpeg", "-r", "30", "-f", "image2", "-s", rect.width+"x"+rect.height,
+                "-i", "temp/"+folderName+"/%04d.png", "-vcodec", "libx264", "-crf", "25", "-pix_fmt", "yuv420p", "-y", "temp/"+gif.getName());
+        builder.redirectErrorStream(true);
+
+        Process pro = builder.start();
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(pro.getInputStream()));
+
+        String line;
+
+        while((line = reader.readLine()) != null) {
+            System.out.println(line);
+        }
+
+        pro.waitFor();
+
+        StaticStore.deleteFile(folder, true);
+
+        msg.edit(m -> {
+            String content = finalFinCont + "\n\n"+LangID.getStringByID("gif_makepng", lang).replace("_", "100")+"\n\n"
+                    +LangID.getStringByID("gif_converting", lang)+"\n\n"+LangID.getStringByID("gif_uploadmp4", lang);
 
             m.setContent(content);
         }).subscribe();

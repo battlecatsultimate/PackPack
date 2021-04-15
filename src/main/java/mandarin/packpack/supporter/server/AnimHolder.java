@@ -283,10 +283,10 @@ public class AnimHolder extends Holder<MessageCreateEvent> {
                     if(expired)
                         return;
 
+                    expired = true;
+
                     target.edit(m -> {
                         m.setContent(LangID.getStringByID("animanalyze_expire", lang));
-
-                        expired = true;
 
                         target.getAuthor().ifPresent(u -> StaticStore.removeHolder(u.getId().asString(), AnimHolder.this));
                     }).subscribe();
