@@ -20,7 +20,7 @@ public class EnemySprite extends TimedConstraintCommand {
     private static final int PARAM_EDI = 2;
 
     public EnemySprite(ConstraintCommand.ROLE role, int lang, IDHolder id, long time) {
-        super(role, lang, id, time);
+        super(role, lang, id, time, StaticStore.COMMAND_ENEMYSPRITE_ID);
     }
 
     @Override

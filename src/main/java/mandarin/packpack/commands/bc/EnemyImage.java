@@ -28,7 +28,7 @@ public class EnemyImage extends TimedConstraintCommand {
     private static final int PARAM_DEBUG = 4;
 
     public EnemyImage(ConstraintCommand.ROLE role, int lang, IDHolder id, long time) {
-        super(role, lang, id, time);
+        super(role, lang, id, time, StaticStore.COMMAND_ENEMYIMAGE_ID);
     }
 
     @Override

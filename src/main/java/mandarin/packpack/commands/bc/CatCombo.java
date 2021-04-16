@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 public class CatCombo extends TimedConstraintCommand {
     public CatCombo(ConstraintCommand.ROLE role, int lang, IDHolder id) {
-        super(role, lang, id, TimeUnit.SECONDS.toMillis(5));
+        super(role, lang, id, TimeUnit.SECONDS.toMillis(5), StaticStore.COMMAND_COMBO_ID);
     }
 
     @Override

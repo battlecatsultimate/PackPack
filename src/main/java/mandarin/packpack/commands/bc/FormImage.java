@@ -28,7 +28,7 @@ public class FormImage extends TimedConstraintCommand {
     private static final int PARAM_DEBUG = 4;
 
     public FormImage(ConstraintCommand.ROLE role, int lang, IDHolder id, long time) {
-        super(role, lang, id, time);
+        super(role, lang, id, time, StaticStore.COMMAND_FORMIMAGE_ID);
     }
 
     @Override

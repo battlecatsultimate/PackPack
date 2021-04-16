@@ -22,7 +22,7 @@ public class FormSprite extends TimedConstraintCommand {
     private static final int PARAM_EDI = 8;
 
     public FormSprite(ConstraintCommand.ROLE role, int lang, IDHolder id, long time) {
-        super(role, lang, id, time);
+        super(role, lang, id, time, StaticStore.COMMAND_FORMSPRITE_ID);
     }
 
     @Override

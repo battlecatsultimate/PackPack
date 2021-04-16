@@ -19,11 +19,11 @@ public class Background extends TimedConstraintCommand {
     private common.util.pack.Background bg;
 
     public Background(ConstraintCommand.ROLE role, int lang, IDHolder id, long time) {
-        super(role, lang, id, time);
+        super(role, lang, id, time, StaticStore.COMMAND_BG_ID);
     }
 
     public Background(ConstraintCommand.ROLE role, int lang, IDHolder id, long time, common.util.pack.Background bg) {
-        super(role, lang, id, time);
+        super(role, lang, id, time, StaticStore.COMMAND_BG_ID);
 
         this.bg = bg;
     }

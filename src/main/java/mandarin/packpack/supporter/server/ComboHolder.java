@@ -11,9 +11,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 
-import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class ComboHolder extends Holder<MessageCreateEvent> {
@@ -188,7 +186,17 @@ public class ComboHolder extends Holder<MessageCreateEvent> {
             try {
                 EntityHandler.showComboEmbed(ch, combo.get(id), lang);
 
-                event.getMember().ifPresent(m -> StaticStore.timeLimit.put(m.getId().asString(), System.currentTimeMillis()));
+                event.getMember().ifPresent(m -> {
+                    if(StaticStore.timeLimit.containsKey(m.getId().asString())) {
+                        StaticStore.timeLimit.get(m.getId().asString()).put(StaticStore.COMMAND_COMBO_ID, System.currentTimeMillis());
+                    } else {
+                        Map<String, Long> memberLimit = new HashMap<>();
+
+                        memberLimit.put(StaticStore.COMMAND_COMBO_ID, System.currentTimeMillis());
+
+                        StaticStore.timeLimit.put(m.getId().asString(), memberLimit);
+                    }
+                });
             } catch (Exception e) {
                 e.printStackTrace();
             }

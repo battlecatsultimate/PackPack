@@ -8,6 +8,7 @@ import common.util.stage.Stage;
 import common.util.stage.StageMap;
 import common.util.unit.Enemy;
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.StaticStore;
@@ -15,9 +16,7 @@ import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 
-import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class StageEnemyHolder extends Holder<MessageCreateEvent> {
@@ -207,17 +206,41 @@ public class StageEnemyHolder extends Holder<MessageCreateEvent> {
 
                     return RESULT_FINISH;
                 } else if(stages.size() == 1) {
-                    event.getMember().ifPresent(m -> StaticStore.timeLimit.put(m.getId().asString(), System.currentTimeMillis()));
-
                     msg.delete().subscribe();
 
-                    EntityHandler.showStageEmb(stages.get(0), ch, isFrame, star, lang);
+                    Message result = EntityHandler.showStageEmb(stages.get(0), ch, isFrame, star, lang);
+                    Guild g = event.getGuild().block();
+
+                    if(result != null) {
+                        event.getMember().ifPresent(m -> {
+                            if(StaticStore.timeLimit.containsKey(m.getId().asString())) {
+                                StaticStore.timeLimit.get(m.getId().asString()).put(StaticStore.COMMAND_FINDSTAGE_ID, System.currentTimeMillis());
+                            } else {
+                                Map<String, Long> memberLimit = new HashMap<>();
+
+                                memberLimit.put(StaticStore.COMMAND_FINDSTAGE_ID, System.currentTimeMillis());
+
+                                StaticStore.timeLimit.put(m.getId().asString(), memberLimit);
+                            }
+
+                            if(g != null && StaticStore.idHolder.containsKey(g.getId().asString())) {
+                                IDHolder holder = StaticStore.idHolder.get(g.getId().asString());
+
+                                StaticStore.removeHolder(m.getId().asString(), StageEnemyHolder.this);
+                                StaticStore.putHolder(m.getId().asString(), new StageReactionHolder(stages.get(0), event.getMessage(), msg, holder, lang, channelID, m.getId().asString()));
+                            }
+                        });
+
+
+                    }
 
                     expired = true;
 
                     cleaner.add(event.getMessage());
 
-                    return RESULT_FINISH;
+                    clean();
+
+                    return RESULT_STILL;
                 } else {
                     String eName = StaticStore.safeMultiLangGet(e, lang);
 

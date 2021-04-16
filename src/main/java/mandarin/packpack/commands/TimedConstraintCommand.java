@@ -8,6 +8,8 @@ import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.IDHolder;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class TimedConstraintCommand implements Command {
@@ -16,19 +18,20 @@ public abstract class TimedConstraintCommand implements Command {
     protected final int lang;
     protected final long time;
     protected final IDHolder holder;
+    protected final String id;
 
     private boolean startTimer = true;
 
-    public TimedConstraintCommand(ConstraintCommand.ROLE role, int lang, IDHolder id, long time) {
+    public TimedConstraintCommand(ConstraintCommand.ROLE role, int lang, IDHolder idHolder, long time, String id) {
         switch (role) {
             case MOD:
-                constRole = id.MOD;
+                constRole = idHolder.MOD;
                 break;
             case MEMBER:
-                constRole = id.MEMBER;
+                constRole = idHolder.MEMBER;
                 break;
             case PRE_MEMBER:
-                constRole = id.PRE_MEMBER;
+                constRole = idHolder.PRE_MEMBER;
                 break;
             case MANDARIN:
                 constRole = "MANDARIN";
@@ -39,7 +42,8 @@ public abstract class TimedConstraintCommand implements Command {
 
         this.lang = lang;
         this.time = time;
-        this.holder = id;
+        this.holder = idHolder;
+        this.id = id;
     }
 
     @Override
@@ -54,21 +58,21 @@ public abstract class TimedConstraintCommand implements Command {
         AtomicReference<Boolean> hasRole = new AtomicReference<>(false);
 
         getMember(event).ifPresent(m -> {
-            String id = m.getId().asString();
+            String mID = m.getId().asString();
             String role = StaticStore.rolesToString(m.getRoleIds());
 
             boolean isMod = holder.MOD != null && role.contains(holder.MOD);
 
-            memberID.set(id);
+            memberID.set(mID);
 
-            if(id.equals(StaticStore.MANDARIN_SMELL) || isMod) {
+            if(mID.equals(StaticStore.MANDARIN_SMELL) || isMod) {
                 hasRole.set(true);
 
                 return;
             }
 
-            if (StaticStore.timeLimit.containsKey(id)) {
-                long oldTime = StaticStore.timeLimit.get(id);
+            if (StaticStore.timeLimit.containsKey(mID) && StaticStore.timeLimit.get(mID).containsKey(id)) {
+                long oldTime = StaticStore.timeLimit.get(mID).get(id);
                 long currentTime = System.currentTimeMillis();
 
                 if(currentTime-oldTime < time) {
@@ -105,7 +109,15 @@ public abstract class TimedConstraintCommand implements Command {
                         doSomething(event);
 
                         if(startTimer && !memberID.get().isBlank()) {
-                            StaticStore.timeLimit.put(memberID.get(), System.currentTimeMillis());
+                            if(!StaticStore.timeLimit.containsKey(memberID.get())) {
+                                Map<String, Long> memberLimit = new HashMap<>();
+
+                                memberLimit.put(id, System.currentTimeMillis());
+
+                                StaticStore.timeLimit.put(memberID.get(), memberLimit);
+                            } else {
+                                StaticStore.timeLimit.get(memberID.get()).put(id, System.currentTimeMillis());
+                            }
                         }
                     } catch (Exception e) {
                         e.printStackTrace();

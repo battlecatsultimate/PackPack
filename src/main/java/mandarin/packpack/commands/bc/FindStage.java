@@ -26,7 +26,7 @@ public class FindStage extends TimedConstraintCommand {
     private static final int PARAM_SECOND = 2;
 
     public FindStage(ConstraintCommand.ROLE role, int lang, IDHolder id, long time) {
-        super(role, lang, id, time);
+        super(role, lang, id, time, StaticStore.COMMAND_FINDSTAGE_ID);
     }
 
     @Override

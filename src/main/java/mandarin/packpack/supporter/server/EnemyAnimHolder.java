@@ -12,9 +12,7 @@ import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 
-import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class EnemyAnimHolder extends Holder<MessageCreateEvent> {
@@ -237,20 +235,28 @@ public class EnemyAnimHolder extends Holder<MessageCreateEvent> {
                 } else {
                     event.getMember().ifPresent(m -> {
                         try {
-                            if(StaticStore.timeLimit.containsKey(m.getId().asString())) {
-                                long time = StaticStore.timeLimit.get(m.getId().asString());
+                            if(StaticStore.timeLimit.containsKey(m.getId().asString()) && StaticStore.timeLimit.get(m.getId().asString()).containsKey(StaticStore.COMMAND_ENEMYIMAGE_ID)) {
+                                long time = StaticStore.timeLimit.get(m.getId().asString()).get(StaticStore.COMMAND_ENEMYIMAGE_ID);
 
                                 if(System.currentTimeMillis() - time > 10000) {
                                     EntityHandler.generateEnemyImage(e, ch, mode, frame, transparent, debug, lang);
 
-                                    StaticStore.timeLimit.put(m.getId().asString(), System.currentTimeMillis());
+                                    StaticStore.timeLimit.get(m.getId().asString()).put(StaticStore.COMMAND_ENEMYIMAGE_ID, System.currentTimeMillis());
                                 } else {
                                     ch.createMessage(LangID.getStringByID("command_timelimit", lang).replace("_", DataToString.df.format((System.currentTimeMillis() - time) / 1000.0))).subscribe();
                                 }
+                            } else if(StaticStore.timeLimit.containsKey(m.getId().asString())) {
+                                EntityHandler.generateEnemyImage(e, ch, mode, frame, transparent, debug, lang);
+
+                                StaticStore.timeLimit.get(m.getId().asString()).put(StaticStore.COMMAND_ENEMYIMAGE_ID, System.currentTimeMillis());
                             } else {
                                 EntityHandler.generateEnemyImage(e, ch, mode, frame, transparent, debug, lang);
 
-                                StaticStore.timeLimit.put(m.getId().asString(), System.currentTimeMillis());
+                                Map<String, Long> memberLimit = new HashMap<>();
+
+                                memberLimit.put(StaticStore.COMMAND_ENEMYIMAGE_ID, System.currentTimeMillis());
+
+                                StaticStore.timeLimit.put(m.getId().asString(), memberLimit);
                             }
                         } catch (Exception exception) {
                             exception.printStackTrace();

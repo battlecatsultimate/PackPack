@@ -37,6 +37,16 @@ public class StaticStore {
 
     public static String serverPrefix = "p!";
 
+    public static final String COMMAND_BG_ID = "bg";
+    public static final String COMMAND_COMBO_ID = "combo";
+    public static final String COMMAND_ENEMYIMAGE_ID = "eimage";
+    public static final String COMMAND_ENEMYSPRITE_ID = "esprite";
+    public static final String COMMAND_FINDSTAGE_ID = "fstage";
+    public static final String COMMAND_FORMIMAGE_ID = "fimage";
+    public static final String COMMAND_FORMSPRITE_ID = "fsprite";
+    public static final String COMMAND_STAGEINFO_ID = "stageinfo";
+    public static final String COMMAND_SUGGEST_ID = "suggest";
+
     public static Map<String, String> prefix = new HashMap<>();
     public static Map<String, String> langs = new HashMap<>();
     public static Map<String, Integer> locales = new HashMap<>();
@@ -54,7 +64,7 @@ public class StaticStore {
     public static int medalNumber = 0;
     public static JsonElement medalData;
 
-    public static final Map<String, Long> timeLimit = new HashMap<>();
+    public static final Map<String, Map<String, Long>> timeLimit = new HashMap<>();
 
     public static Timer saver = null;
 

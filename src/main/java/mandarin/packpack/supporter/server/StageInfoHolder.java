@@ -14,9 +14,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 
-import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class StageInfoHolder extends Holder<MessageCreateEvent> {
@@ -108,7 +106,15 @@ public class StageInfoHolder extends Holder<MessageCreateEvent> {
             event.getMember().ifPresent(m -> {
                 String mid = m.getId().asString();
 
-                StaticStore.timeLimit.put(mid, System.currentTimeMillis());
+                if(StaticStore.timeLimit.containsKey(mid)) {
+                    StaticStore.timeLimit.get(mid).put(StaticStore.COMMAND_STAGEINFO_ID, System.currentTimeMillis());
+                } else {
+                    Map<String, Long> memberLimit = new HashMap<>();
+
+                    memberLimit.put(StaticStore.COMMAND_STAGEINFO_ID, System.currentTimeMillis());
+
+                    StaticStore.timeLimit.put(mid, memberLimit);
+                }
             });
 
             try {
