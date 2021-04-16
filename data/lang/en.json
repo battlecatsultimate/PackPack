@@ -377,7 +377,7 @@
   "help_findstage_argu" : "`-s` : Display info with second unit\n`-st` : Apply star data",
   "help_findstage_exam" : "`p!fst -s Relic Bun-Bun`\n`p!fst -s -st 4 098`",
   "help_suggest_use" :  "`p!suggest [Suggestion Title]`",
-  "help_suggest_desc" : "Suggest your idea or report PackPack's bug directly to developer",
+  "help_suggest_desc" : "Suggest your idea or report PackPack's bug directly to developer. There is 1 hour cool down per suggestion/report individually",
   "help_suggest_argu" : "`-d` : Add description / explanation about your suggestion / report",
   "help_suggest_exam" : "`p!suggest Can we make X feature able to be used by Members?`\n`p!suggest Add X feature -d It will be useful when doing Y`",
   "help_suggest_tip" : "When you use this command, **bot directly sends what you suggested to developer via DM**. Be aware that __abusing this command will lead to ban from suggestion permanently__. This feature is implemented for fluent feedbacks from users, so if abusing case appears too much, this feature may be removed in future",
