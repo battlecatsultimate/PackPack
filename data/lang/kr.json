@@ -376,6 +376,11 @@
   "help_findstage_desc" : "제공된 적으로 스테이지를 찾고, 그 스테이지의 정보를 업로드합니다. `findst`, `fstage`, `fst` 또한 유효한 명령어 입니다",
   "help_findstage_argu" : "`-s` : 정보를 초 단위로 표시합니다\n`-st` : 별 데이터를 적용합니다",
   "help_findstage_exam" : "`p!fst -s 신 레전드 맴메`\n`p!fst -s -st 4 098`",
+  "help_suggest_use" :  "`p!suggest [제안 이름]`",
+  "help_suggest_desc" : "개발자에게 직접 버그를 보고하거나 아이디어를 제안합니다",
+  "help_suggest_argu" : "`-d` : 해당 제안/버그에 대한 설명을 추가합니다",
+  "help_suggest_exam" : "`p!suggest X 기능을 맴버들 또한 사용할 수 있도록 허용할 수 있나요?`\n`p!suggest X 기능을 추가해 주세요 -d 유저들이 Y 할 때 유용할 겁니다`",
+  "help_suggest_tip" : "해당 명령어는 **봇이 개발자에게 직접 제안된 내용을 개인 메세지로 보내게 합니다**. 따라서 __이 명령어의 부적절한 사용은 제안 금지 처리로 이어질 수 있으니 유의해 주세요__. 이 명령어는 유저와 개발자 사이의 편리한 피드백을 위해 도입되었으며, 부적절하게 사용되는 경우가 많을 경우 나중에 삭제될 수 있습니다",
   "prefix_space" : "접두사는 여백으로 설정될 수 없습니다!",
   "prefix_set" : "접두사가 `_` 로 설정되었습니다!",
   "prefix_setnone" : "접두사가 설정되었습니다!",
@@ -480,5 +485,12 @@
   "combo_noname" : "[_] 로 검색해 보았지만, 해당 냥콤보를 찾지 못했습니다!",
   "combo_selected" : "```_ 유닛으로 선택되었습니다```",
   "fstage_nost" : "_ 로 검색해 보았지만, 해당 적이 등장하는 스테이지를 찾지 못했습니다!",
-  "fstage_several" : "_ 로 검색한 결과, 여러 종류의 결과가 존재합니다...\n"
+  "fstage_several" : "_ 로 검색한 결과, 여러 종류의 결과가 존재합니다...\n",
+  "suggest_notitle" : "해당 명령어는 하나의 정보를 더 요구합니다 : [제안 이름]",
+  "suggest_banned" : "부적절한 명령어 사용으로 제안 금지 처리되어 개발자에게 보낼 수 없습니다\n이유 : _RRR_",
+  "suggest_sentwarn" : "제안을 성공적으로 보냈지만, 제안 설명이 너무 깁니다. 다음 번에는 짧게 적어주세요",
+  "suggest_sent" : "제안을 성공적으로 개발자에게 보냈습니다!",
+  "response_title" : "제안에 대한 응답",
+  "response_desc" : "개발자가 해당 제안에 대한 응답을 보냈기에 개인 메세지로 전해드립니다",
+  "response_suggestedby" : "제안한 유저 : _UUU_"
 }

@@ -36,6 +36,7 @@ public class Help implements Command {
                 emb.addField(LangID.getStringByID("help_bc", lang), "```background, castle, catcombo, enemygif, enemyimage, enemysprite, enemystat, findstage, formgif, formimage, formsprite, formstat, medal, music, stageinfo```", false);
                 emb.addField(LangID.getStringByID("help_server", lang), "```bcustat, channelpermission, checkbcu, clearcache, idset, memory, save, serverjson, serverprefix```", false);
                 emb.addField(LangID.getStringByID("help_data", lang), "```animanalyzer, announcement, stageimage, stagemapimage```", false);
+                emb.addField(LangID.getStringByID("help_packpack", lang), "```suggest```", false);
             }).subscribe();
         }
     }
@@ -179,6 +180,9 @@ public class Help implements Command {
             case "fstage":
             case "fst":
                 ch.createEmbed(e -> addFields(e, "findstage", true, true, false)).subscribe();
+                break;
+            case "suggest":
+                ch.createEmbed(e -> addFields(e, "suggest", true, true, true)).subscribe();
                 break;
             default:
                 ch.createMessage(LangID.getStringByID("help_nocomm", lang).replace("_", command)).subscribe();

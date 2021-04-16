@@ -3,6 +3,7 @@ package mandarin.packpack.supporter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -52,6 +53,8 @@ public class StaticStore {
     public static Map<String, Integer> locales = new HashMap<>();
 
     private static final Map<String, Holder<? extends MessageEvent>> holders = new HashMap<>();
+
+    public static Map<String, String> suggestBanned = new HashMap<>();
 
     public static ImgurDataHolder imgur = new ImgurDataHolder(null);
 
@@ -341,6 +344,7 @@ public class StaticStore {
         obj.add("locale", mapToJsonInt(locales));
         obj.add("imgur", imgur.getData());
         obj.add("idholder", mapToJsonIDHolder(idHolder));
+        obj.add("suggestBanned", mapToJsonString(suggestBanned));
 
         try {
             File folder = new File("./data/");
@@ -410,6 +414,10 @@ public class StaticStore {
 
             if(obj.has("idholder")) {
                 idHolder = jsonToMapIDHolder(obj.getAsJsonObject("idholder"));
+            }
+
+            if(obj.has("suggestBanned")) {
+                suggestBanned = jsonToMapString(obj.getAsJsonObject("suggestBanned"));
             }
         }
     }

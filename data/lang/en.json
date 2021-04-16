@@ -376,6 +376,11 @@
   "help_findstage_desc" : "Try to search stage with specified enemy, and upload info of it. `findst`, `fstage`, `fst` are also valid command",
   "help_findstage_argu" : "`-s` : Display info with second unit\n`-st` : Apply star data",
   "help_findstage_exam" : "`p!fst -s Relic Bun-Bun`\n`p!fst -s -st 4 098`",
+  "help_suggest_use" :  "`p!suggest [Suggestion Title]`",
+  "help_suggest_desc" : "Suggest your idea or report PackPack's bug directly to developer",
+  "help_suggest_argu" : "`-d` : Add description / explanation about your suggestion / report",
+  "help_suggest_exam" : "`p!suggest Can we make X feature able to be used by Members?`\n`p!suggest Add X feature -d It will be useful when doing Y`",
+  "help_suggest_tip" : "When you use this command, **bot directly sends what you suggested to developer via DM**. Be aware that __abusing this command will lead to ban from suggestion permanently__. This feature is implemented for fluent feedbacks from users, so if abusing case appears too much, this feature may be removed in future",
   "prefix_space" : "Prefix can't be white spaces!",
   "prefix_set" : "Prefix is set as `_`!",
   "prefix_setnone" : "Your prefix has been updated!",
@@ -484,5 +489,12 @@
   "combo_noname" : "Searching with [_], but no such combo found!",
   "combo_selected" : "```Unit selected as _```",
   "fstage_nost" : "Searching with _, but no stage which contains such enemy found!",
-  "fstage_several" : "Searching with _, and several results found...\n"
+  "fstage_several" : "Searching with _, and several results found...\n",
+  "suggest_notitle" : "This command requires one more argument : [Suggestion Title]",
+  "suggest_banned" : "You are blocked from bot, so you can't suggest to developer\nReason : _RRR_",
+  "suggest_sentwarn" : "Successfully sent suggestion, but description was too long, so it will be cut off. Try to shorten it next time?",
+  "suggest_sent" : "Successfully sent suggestion to developer!",
+  "response_title" : "Response from suggestion",
+  "response_desc" : "Developer sent response about your suggestion, so I'm sending you response via DM",
+  "response_suggestedby" : "Suggested by : _UUU_"
 }

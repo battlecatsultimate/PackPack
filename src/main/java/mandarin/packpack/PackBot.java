@@ -1,6 +1,7 @@
 package mandarin.packpack;
 
 import common.CommonStatic;
+import discord4j.common.util.Snowflake;
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
@@ -18,6 +19,10 @@ import discord4j.core.object.presence.Presence;
 import discord4j.rest.request.RouterOptions;
 import mandarin.packpack.commands.*;
 import mandarin.packpack.commands.bc.*;
+import mandarin.packpack.commands.bot.Suggest;
+import mandarin.packpack.commands.bot.SuggestBan;
+import mandarin.packpack.commands.bot.SuggestResponse;
+import mandarin.packpack.commands.bot.SuggestUnban;
 import mandarin.packpack.commands.data.AnimAnalyzer;
 import mandarin.packpack.commands.data.Announcement;
 import mandarin.packpack.commands.data.StageImage;
@@ -549,6 +554,21 @@ public class PackBot {
                                 case "fstage":
                                 case "fst":
                                     new FindStage(ConstraintCommand.ROLE.MEMBER, lang, idh, 5000).execute(event);
+                                    break;
+                                case "suggest":
+                                    new Suggest(ConstraintCommand.ROLE.MEMBER, lang, idh, TimeUnit.MINUTES.toMillis(60), gate).execute(event);
+                                    break;
+                                case "suggestban":
+                                case "sgb":
+                                    new SuggestBan(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+                                    break;
+                                case "suggestunban":
+                                case "sgub":
+                                    new SuggestUnban(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+                                    break;
+                                case "suggestresponse":
+                                case "sgr":
+                                    new SuggestResponse(ConstraintCommand.ROLE.MANDARIN, lang, idh, gate).execute(event);
                                     break;
                             }
                         }
