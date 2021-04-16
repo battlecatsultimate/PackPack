@@ -64,19 +64,14 @@ public class FindStage extends TimedConstraintCommand {
                 disableTimer();
             } else if(stages.size() == 1) {
                 Message result = EntityHandler.showStageEmb(stages.get(0), ch, isFrame, star, lang);
-                Mono<Guild> mono = getGuild(event);
 
-                if(mono != null) {
-                    Guild g = mono.block();
+                getMember(event).ifPresent(m -> {
+                    Message msg = getMessage(event);
 
-                    getMember(event).ifPresent(m -> {
-                        Message msg = getMessage(event);
-
-                        if(msg != null) {
-                            StaticStore.putHolder(m.getId().asString(), new StageReactionHolder(stages.get(0), msg, result, holder, lang, ch.getId().asString(), m.getId().asString()));
-                        }
-                    });
-                }
+                    if(msg != null) {
+                        StaticStore.putHolder(m.getId().asString(), new StageReactionHolder(stages.get(0), msg, result, holder, lang, ch.getId().asString(), m.getId().asString()));
+                    }
+                });
             } else {
                 String eName = StaticStore.safeMultiLangGet(enemies.get(0), lang);
 
