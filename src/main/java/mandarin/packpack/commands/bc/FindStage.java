@@ -8,6 +8,7 @@ import common.util.stage.Stage;
 import common.util.stage.StageMap;
 import common.util.unit.Enemy;
 import discord4j.core.event.domain.message.MessageEvent;
+import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
@@ -19,6 +20,8 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.IDHolder;
 import mandarin.packpack.supporter.server.StageEnemyHolder;
 import mandarin.packpack.supporter.server.StageInfoHolder;
+import mandarin.packpack.supporter.server.StageReactionHolder;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 
@@ -60,7 +63,20 @@ public class FindStage extends TimedConstraintCommand {
                 ch.createMessage(LangID.getStringByID("fstage_nost", lang)).subscribe();
                 disableTimer();
             } else if(stages.size() == 1) {
-                EntityHandler.showStageEmb(stages.get(0), ch, isFrame, star, lang);
+                Message result = EntityHandler.showStageEmb(stages.get(0), ch, isFrame, star, lang);
+                Mono<Guild> mono = getGuild(event);
+
+                if(mono != null) {
+                    Guild g = mono.block();
+
+                    getMember(event).ifPresent(m -> {
+                        Message msg = getMessage(event);
+
+                        if(msg != null) {
+                            StaticStore.putHolder(m.getId().asString(), new StageReactionHolder(stages.get(0), msg, result, holder, lang, ch.getId().asString(), m.getId().asString()));
+                        }
+                    });
+                }
             } else {
                 String eName = StaticStore.safeMultiLangGet(enemies.get(0), lang);
 

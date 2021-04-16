@@ -227,7 +227,7 @@ public class StageEnemyHolder extends Holder<MessageCreateEvent> {
                                 IDHolder holder = StaticStore.idHolder.get(g.getId().asString());
 
                                 StaticStore.removeHolder(m.getId().asString(), StageEnemyHolder.this);
-                                StaticStore.putHolder(m.getId().asString(), new StageReactionHolder(stages.get(0), event.getMessage(), msg, holder, lang, channelID, m.getId().asString()));
+                                StaticStore.putHolder(m.getId().asString(), new StageReactionHolder(stages.get(0), event.getMessage(), result, holder, lang, channelID, m.getId().asString()));
                             }
                         });
 
