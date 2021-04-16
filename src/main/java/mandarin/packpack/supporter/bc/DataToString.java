@@ -694,7 +694,7 @@ public class DataToString {
 
             allTrait.append(LangID.getStringByID(Interpret.TRAIT[i], lang)).append(", ");
         }
-        allTrait.append(LangID.getStringByID("data_white", lang)).append(", ").append(allColor.toString());
+        allTrait.append(LangID.getStringByID("data_white", lang)).append(", ").append(allColor);
 
         String trait = Interpret.getTrait(du.getType(), 0, lang);
 
@@ -726,7 +726,7 @@ public class DataToString {
 
             allTrait.append(LangID.getStringByID(Interpret.TRAIT[i], lang)).append(", ");
         }
-        allTrait.append(LangID.getStringByID("data_white", lang)).append(", ").append(allColor.toString());
+        allTrait.append(LangID.getStringByID("data_white", lang)).append(", ").append(allColor);
 
         String trait = Interpret.getTrait(e.de.getType(), e.de.getStar(), lang);
 
@@ -1283,7 +1283,12 @@ public class DataToString {
             else
                 chance = chances.get(i)+"%";
 
+            int oldConfig = CommonStatic.getConfig().lang;
+            CommonStatic.getConfig().lang = lang;
+
             String reward = MultiLangCont.getStatic().RWNAME.getCont(s.info.drop[i][1]);
+
+            CommonStatic.getConfig().lang = oldConfig;
 
             if(reward == null || reward.isBlank())
                 reward = LangID.getStringByID("data_dumreward", lang).replace("_", Data.trio(s.info.drop[i][1]));
