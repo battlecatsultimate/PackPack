@@ -2,6 +2,7 @@ package mandarin.packpack.commands;
 
 import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.rest.util.AllowedMentions;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.IDHolder;
@@ -31,7 +32,10 @@ public class Prefix extends ConstraintCommand {
                 String result = LangID.getStringByID("prefix_set", lang).replace("_", list[1]);
 
                 if(result.length() < 2000) {
-                    ch.createMessage(result).subscribe();
+                    ch.createMessage(me -> {
+                        me.setContent(result);
+                        me.setAllowedMentions(AllowedMentions.builder().build());
+                    }).subscribe();
                 } else {
                     ch.createMessage(LangID.getStringByID("prefix_setnone", lang)).subscribe();
                 }

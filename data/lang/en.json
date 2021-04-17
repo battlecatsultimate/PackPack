@@ -382,7 +382,7 @@
   "help_suggest_exam" : "`p!suggest Can we make X feature able to be used by Members?`\n`p!suggest Add X feature -d It will be useful when doing Y`",
   "help_suggest_tip" : "When you use this command, **bot directly sends what you suggested to developer via DM**. Be aware that __abusing this command will lead to ban from suggestion permanently__. This feature is implemented for fluent feedbacks from users, so if abusing case appears too much, this feature may be removed in future",
   "prefix_space" : "Prefix can't be white spaces!",
-  "prefix_set" : "Prefix is set as `_`!",
+  "prefix_set" : "Prefix is set as _!",
   "prefix_setnone" : "Your prefix has been updated!",
   "prefix_argu" : "This command requires one more argument : [Prefix]",
   "prefix_tooarg" : "Too many arguments! This command needs only one argument : [Prefix]",
