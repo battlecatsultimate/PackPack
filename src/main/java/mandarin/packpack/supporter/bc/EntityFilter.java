@@ -212,17 +212,18 @@ public class EntityFilter {
     }
 
     public static ArrayList<Stage> findStageWithName(String[] names, int lang) {
-        ArrayList<Stage> res = new ArrayList<>();
+        ArrayList<Stage> result = new ArrayList<>();
 
-        for(MapColc mc : MapColc.values()) {
-            if(mc == null)
-                continue;
+        if(searchMapColc(names) && names[0] != null && !names[0].isBlank()) {
+            ArrayList<Stage> mcResult = new ArrayList<>();
 
-            if(searchMapColc(names) && names[0] != null && !names[0].isBlank()) {
-                ArrayList<Stage> mcStages = new ArrayList<>();
+            //Search normally
+            for(MapColc mc : MapColc.values()) {
+                if(mc == null)
+                    continue;
 
-                for(int i = 0; i < 4; i++) {
-                    String mcName = StaticStore.safeMultiLangGet(mc, lang);
+                for(int i = 0; i < 4; i++ ) {
+                    String mcName = StaticStore.safeMultiLangGet(mc, i);
 
                     if(mcName == null || mcName.isBlank())
                         continue;
@@ -237,7 +238,7 @@ public class EntityFilter {
                                     if(st == null)
                                         continue;
 
-                                    mcStages.add(st);
+                                    mcResult.add(st);
                                 }
                             }
 
@@ -245,383 +246,599 @@ public class EntityFilter {
                         }
                     }
                 }
+            }
 
-                if(mcStages.isEmpty()) {
-                    String mcName = StaticStore.safeMultiLangGet(mc, lang);
+            //Start autocorrect mode if no map colc found
+            if(mcResult.isEmpty()) {
+                ArrayList<Integer> distances = getDistances(MapColc.values(), names[0], lang);
 
-                    if(mcName == null || mcName.isBlank())
-                        continue;
+                int disMin = Integer.MAX_VALUE;
 
-                    mcName = mcName.toLowerCase(Locale.ENGLISH);
+                for(int d : distances) {
+                    if(d != -1) {
+                        disMin = Math.min(d, disMin);
+                    }
+                }
 
-                    if(lang == LangID.KR)
-                        mcName = KoreanSeparater.separate(mcName);
+                if(disMin <= 5) {
+                    int i = 0;
 
-                    String nam = names[0].toLowerCase(Locale.ENGLISH);
+                    for(MapColc mc : MapColc.values()) {
+                        if(distances.get(i) == disMin) {
+                            for(StageMap stm : mc.maps.getList()) {
+                                mcResult.addAll(stm.list.getList());
+                            }
+                        }
 
-                    if(lang == LangID.KR)
-                        nam = KoreanSeparater.separate(nam);
-
-                    String[] words;
-
-                    int wordNumber = StringUtils.countMatches(nam, ' ') + 1;
-
-                    if(wordNumber != 1) {
-                        words = getWords(mcName.split(" "), wordNumber);
-                    } else {
-                        words = mcName.split(" ");
+                        i++;
                     }
 
-                    for(String word : words) {
-                        int s = damerauLevenshteinDistance(word, nam);
+                    result.addAll(mcResult);
+                }
+            } else {
+                result.addAll(mcResult);
+            }
+        } else if(searchStageMap(names) && names[1] != null && !names[1].isBlank()) {
+            ArrayList<Stage> stmResult = new ArrayList<>();
 
-                        if(s <= 5) {
-                            for(StageMap stm : mc.maps.getList()) {
-                                if(stm == null)
+            boolean mcContain;
+
+            if(names[0] != null && !names[0].isBlank())
+                mcContain = needToPerformContainMode(MapColc.values(), names[0]);
+            else
+                mcContain = true;
+
+            boolean stmContain = false;
+
+            for(MapColc mc : MapColc.values()) {
+                if(mc == null)
+                    continue;
+
+                stmContain |= needToPerformContainMode(mc.maps.getList(), names[1]);
+            }
+
+            if(mcContain) {
+                for(MapColc mc : MapColc.values()) {
+                    if(mc == null)
+                        continue;
+
+                    boolean s0 = false;
+
+                    if(names[0] != null && !names[0].isBlank()) {
+                        for(int i = 0; i < 4; i++) {
+                            String mcName = StaticStore.safeMultiLangGet(mc, i);
+
+                            if(mcName == null || mcName.isBlank())
+                                continue;
+
+                            if(mcName.toLowerCase(Locale.ENGLISH).contains(names[0].toLowerCase(Locale.ENGLISH))) {
+                                s0 = true;
+                                break;
+                            }
+                        }
+                    } else {
+                        s0 = true;
+                    }
+
+                    if(!s0)
+                        continue;
+
+                    if(stmContain) {
+                        for(StageMap stm : mc.maps.getList()) {
+                            if(stm == null)
+                                continue;
+
+                            boolean s1 = false;
+
+                            for(int i = 0; i < 4; i++) {
+                                String stmName = StaticStore.safeMultiLangGet(stm, i);
+
+                                if(stmName == null || stmName.isBlank())
                                     continue;
 
+                                if(stmName.toLowerCase(Locale.ENGLISH).contains(names[1].toLowerCase(Locale.ENGLISH))) {
+                                    s1 = true;
+                                    break;
+                                }
+                            }
+
+                            if(s1) {
+                                stmResult.addAll(stm.list.getList());
+                            }
+                        }
+                    } else {
+                        ArrayList<Integer> stmDistances = getDistances(mc.maps.getList(), names[1], lang);
+
+                        int disMin = Integer.MAX_VALUE;
+
+                        for(int d : stmDistances)
+                            if(d != -1)
+                                disMin = Math.min(d, disMin);
+
+                        if(disMin <= 3) {
+                            int i = 0;
+
+                            for(StageMap stm : mc.maps.getList()) {
+                                if(stmDistances.get(i) == disMin) {
+                                    stmResult.addAll(stm.list.getList());
+                                }
+
+                                i++;
+                            }
+                        }
+                    }
+                }
+            } else {
+                ArrayList<Integer> mcDistances = getDistances(MapColc.values(), names[0], lang);
+
+                int mcMin = Integer.MAX_VALUE;
+
+                for(int d : mcDistances)
+                    if(d != -1)
+                        mcMin = Math.min(d, mcMin);
+
+                if(mcMin <= 5) {
+                    int i = 0;
+
+                    for(MapColc mc : MapColc.values()) {
+                        if(mcDistances.get(i) == mcMin) {
+                            if(stmContain) {
+                                for(StageMap stm : mc.maps.getList()) {
+                                    if(stm == null)
+                                        continue;
+
+                                    boolean s1 = false;
+
+                                    for(int j = 0; j < 4; j++) {
+                                        String stmName = StaticStore.safeMultiLangGet(stm, j);
+
+                                        if(stmName == null || stmName.isBlank())
+                                            continue;
+
+                                        if(stmName.toLowerCase(Locale.ENGLISH).contains(names[1].toLowerCase(Locale.ENGLISH))) {
+                                            s1 = true;
+                                            break;
+                                        }
+                                    }
+
+                                    if(s1) {
+                                        stmResult.addAll(stm.list.getList());
+                                    }
+                                }
+                            } else {
+                                ArrayList<Integer> stmDistances = getDistances(mc.maps.getList(), names[1], lang);
+
+                                int stmMin = Integer.MAX_VALUE;
+
+                                for(int d : stmDistances)
+                                    if(d != -1)
+                                        stmMin = Math.min(d, stmMin);
+
+                                if(stmMin <= 3) {
+                                    int j = 0;
+
+                                    for(StageMap stm : mc.maps.getList()) {
+                                        if(stmDistances.get(j) == stmMin) {
+                                            stmResult.addAll(stm.list.getList());
+                                        }
+
+                                        j++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if(!stmResult.isEmpty()) {
+                result.addAll(stmResult);
+            }
+        } else if(names[2] != null && !names[2].isBlank()) {
+            ArrayList<Stage> stResult = new ArrayList<>();
+
+            boolean mcContain;
+
+            if(names[0] != null && !names[0].isBlank()) {
+                mcContain = needToPerformContainMode(MapColc.values(), names[0]);
+            } else {
+                mcContain = true;
+            }
+
+            boolean stmContain = false;
+
+            if(names[1] != null && !names[1].isBlank()) {
+                for(MapColc mc : MapColc.values()) {
+                    if(mc == null)
+                        continue;
+
+                    stmContain |= needToPerformContainMode(mc.maps.getList(), names[1]);
+                }
+            } else {
+                stmContain = true;
+            }
+
+            boolean stContain = false;
+
+            for(MapColc mc : MapColc.values()) {
+                if(mc == null)
+                    continue;
+
+                for(StageMap stm : mc.maps.getList()) {
+                    if(stm == null)
+                        continue;
+
+                    stContain |= needToPerformContainMode(stm.list.getList(), names[2]);
+                }
+            }
+
+            if(mcContain) {
+                for(MapColc mc : MapColc.values()) {
+                    if(mc == null)
+                        continue;
+
+                    boolean s0 = false;
+
+                    if(names[0] != null && !names[0].isBlank()) {
+                        for(int i = 0; i < 4; i++) {
+                            String mcName = StaticStore.safeMultiLangGet(mc, i);
+
+                            if(mcName == null || mcName.isBlank())
+                                continue;
+
+                            if(mcName.toLowerCase(Locale.ENGLISH).contains(names[0].toLowerCase(Locale.ENGLISH))) {
+                                s0 = true;
+                                break;
+                            }
+                        }
+                    } else {
+                        s0 = true;
+                    }
+
+                    if(!s0)
+                        continue;
+
+                    if(stmContain) {
+                        for(StageMap stm : mc.maps.getList()) {
+                            if(stm == null)
+                                continue;
+
+                            boolean s1 = false;
+
+                            if(names[1] != null && !names[1].isBlank()) {
+                                for(int i = 0; i < 4; i++) {
+                                    String stmName = StaticStore.safeMultiLangGet(stm, i);
+
+                                    if(stmName == null || stmName.isBlank())
+                                        continue;
+
+                                    if(stmName.toLowerCase(Locale.ENGLISH).contains(names[1].toLowerCase(Locale.ENGLISH))) {
+                                        s1 = true;
+                                        break;
+                                    }
+                                }
+                            } else {
+                                s1 = true;
+                            }
+
+                            if(!s1)
+                                continue;
+
+                            if(stContain) {
                                 for(Stage st : stm.list.getList()) {
                                     if(st == null)
                                         continue;
 
-                                    mcStages.add(st);
-                                }
-                            }
+                                    boolean s2 = false;
 
-                            break;
-                        }
-                    }
+                                    for(int i = 0; i < 4; i++) {
+                                        String stName = StaticStore.safeMultiLangGet(st, i);
 
+                                        if(stName == null || stName.isBlank())
+                                            continue;
 
-                }
-
-                if(!mcStages.isEmpty()) {
-                    res.addAll(mcStages);
-                }
-
-                continue;
-            }
-
-            for(StageMap stm : mc.maps.getList()) {
-                if(stm == null)
-                    continue;
-
-                if(searchStageMap(names) && names[1] != null && !names[1].isBlank()) {
-                    ArrayList<Stage> stmStages = new ArrayList<>();
-
-                    for(int i = 0; i < 4; i++) {
-                        boolean s0 = true;
-
-                        if(names[0] != null && !names[0].isBlank()) {
-                            String mcName = StaticStore.safeMultiLangGet(mc, i);
-
-                            if(mcName != null && !mcName.isBlank()) {
-                                s0 = mcName.toLowerCase(Locale.ENGLISH).contains(names[0].toLowerCase(Locale.ENGLISH));
-                            }
-                        }
-
-                        if(!s0)
-                            continue;
-
-                        boolean s1 = true;
-
-                        if(names[1] != null && !names[1].isBlank()) {
-                            String stmName = StaticStore.safeMultiLangGet(stm, i);
-
-                            if(stmName == null || stmName.isBlank())
-                                continue;
-
-                            if(!stmName.isBlank()) {
-                                s1 = stmName.toLowerCase(Locale.ENGLISH).contains(names[1].toLowerCase(Locale.ENGLISH));
-                            }
-                        }
-
-                        if(s1) {
-                            for(Stage st : stm.list.getList()) {
-                                if(st == null)
-                                    continue;
-
-                                stmStages.add(st);
-                            }
-
-                            break;
-                        }
-                    }
-
-                    if(stmStages.isEmpty()) {
-                        boolean s0 = true;
-
-                        if(names[0] != null && !names[0].isBlank()) {
-                            String mcName = StaticStore.safeMultiLangGet(mc, lang);
-
-                            if(mcName != null && !mcName.isBlank()) {
-                                mcName = mcName.toLowerCase(Locale.ENGLISH);
-                                String nam = names[0].toLowerCase(Locale.ENGLISH);
-
-                                if(lang == LangID.KR) {
-                                    mcName = KoreanSeparater.separate(mcName);
-
-                                    nam = KoreanSeparater.separate(nam);
-                                }
-
-                                String[] words;
-
-                                int wordNumber = StringUtils.countMatches(nam, ' ') + 1;
-
-                                if(wordNumber != 1) {
-                                    words = getWords(mcName.split(" "), wordNumber);
-                                } else {
-                                    words = mcName.split(" ");
-                                }
-
-                                for(String word : words) {
-                                    if(damerauLevenshteinDistance(word, nam) <= 5) {
-                                        s0 = true;
-                                        break;
+                                        if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
+                                            s2 = true;
+                                            break;
+                                        }
                                     }
 
-                                    s0 = false;
+                                    String id = mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id)+" "+mc.getSID()+"-"+stm.id.id+"-"+st.id.id;
+
+                                    boolean s3 = id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH));
+
+                                    if(s2 || s3) {
+                                        stResult.add(st);
+                                    }
+                                }
+                            } else {
+                                ArrayList<Integer> stDistances = getDistances(stm.list.getList(), names[2], lang);
+
+                                int stMin = Integer.MAX_VALUE;
+
+                                for(int d : stDistances)
+                                    if(d != -1)
+                                        stMin = Math.min(stMin, d);
+
+                                if(stMin <= 3) {
+                                    int stInd = 0;
+
+                                    for(Stage st : stm.list.getList()) {
+                                        if(stDistances.get(stInd) == stMin) {
+                                            stResult.add(st);
+                                        } else if(st != null) {
+                                            String id = mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id)+" "+mc.getSID()+"-"+stm.id.id+"-"+st.id.id;
+
+                                            boolean s3 = id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH));
+
+                                            if(s3)
+                                                stResult.add(st);
+                                        }
+
+                                        stInd++;
+                                    }
                                 }
                             }
                         }
+                    } else {
+                        ArrayList<Integer> stmDistances = getDistances(mc.maps.getList(), names[1], lang);
 
-                        if(!s0)
-                            continue;
+                        int stmMin = Integer.MAX_VALUE;
 
-                        boolean s1 = true;
+                        for(int d : stmDistances)
+                            if(d != -1)
+                                stmMin = Math.min(stmMin, d);
 
-                        if(names[1] != null && !names[1].isBlank()) {
-                            String stmName = StaticStore.safeMultiLangGet(stm, lang);
+                        if(stmMin <= 3) {
+                            int stmInd = 0;
 
-                            if(stmName != null && !stmName.isBlank()) {
-                                stmName = stmName.toLowerCase(Locale.ENGLISH);
-                                String nam = names[1].toLowerCase(Locale.ENGLISH);
+                            for(StageMap stm : mc.maps.getList()) {
+                                if(stmDistances.get(stmInd) == stmMin) {
+                                    if(stContain) {
+                                        for(Stage st : stm.list.getList()) {
+                                            if(st == null)
+                                                continue;
 
-                                if (lang == LangID.KR) {
-                                    stmName = KoreanSeparater.separate(stmName);
-                                    nam = KoreanSeparater.separate(nam);
+                                            boolean s2 = false;
+
+                                            for(int i = 0; i < 4; i++) {
+                                                String stName = StaticStore.safeMultiLangGet(st, i);
+
+                                                if(stName == null || stName.isBlank())
+                                                    continue;
+
+                                                if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
+                                                    s2 = true;
+                                                    break;
+                                                }
+                                            }
+
+                                            String id = mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id)+" "+mc.getSID()+"-"+stm.id.id+"-"+st.id.id;
+
+                                            boolean s3 = id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH));
+
+                                            if(s2 || s3) {
+                                                stResult.add(st);
+                                            }
+                                        }
+                                    } else {
+                                        ArrayList<Integer> stDistances = getDistances(stm.list.getList(), names[2], lang);
+
+                                        int stMin = Integer.MAX_VALUE;
+
+                                        for(int d : stDistances)
+                                            if(d != -1)
+                                                stMin = Math.min(stMin, d);
+
+                                        if(stMin <= 3) {
+                                            int stInd = 0;
+
+                                            for(Stage st : stm.list.getList()) {
+                                                if(stDistances.get(stInd) == stMin) {
+                                                    stResult.add(st);
+                                                } else if(st != null) {
+                                                    String id = mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id)+" "+mc.getSID()+"-"+stm.id.id+"-"+st.id.id;
+
+                                                    boolean s3 = id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH));
+
+                                                    if(s3)
+                                                        stResult.add(st);
+                                                }
+
+                                                stInd++;
+                                            }
+                                        }
+                                    }
                                 }
 
-                                String[] words;
+                                stmInd++;
+                            }
+                        }
+                    }
+                }
+            } else {
+                ArrayList<Integer> mcDistances = getDistances(MapColc.values(), names[0], lang);
 
-                                int wordNumber = StringUtils.countMatches(nam, ' ' ) + 1;
+                int mcMin = Integer.MAX_VALUE;
 
-                                if (wordNumber != 1) {
-                                    words = getWords(stmName.split(" "), wordNumber);
-                                } else {
-                                    words = stmName.split(" ");
-                                }
+                for(int d : mcDistances)
+                    if(d != -1)
+                        mcMin = Math.min(d, mcMin);
 
-                                for (String word : words) {
-                                    int s = damerauLevenshteinDistance(word, nam);
+                if(mcMin <= 5) {
+                    int mcInd = 0;
 
-                                    System.out.println("WORD : "+word+" | NAME : "+nam+ " = " + s);
+                    for(MapColc mc : MapColc.values()) {
+                        if(mcDistances.get(mcInd) == mcMin) {
+                            if(stmContain) {
+                                for(StageMap stm : mc.maps.getList()) {
+                                    if(stm == null)
+                                        continue;
 
-                                    if (s <= 3) {
+                                    boolean s1 = false;
+
+                                    if(names[1] != null && !names[1].isBlank()) {
+                                        for(int i = 0; i < 4; i++) {
+                                            String stmName = StaticStore.safeMultiLangGet(stm, i);
+
+                                            if(stmName == null || stmName.isBlank())
+                                                continue;
+
+                                            if(stmName.toLowerCase(Locale.ENGLISH).contains(names[1].toLowerCase(Locale.ENGLISH))) {
+                                                s1 = true;
+                                                break;
+                                            }
+                                        }
+                                    } else {
                                         s1 = true;
-                                        break;
                                     }
 
-                                    s1 = false;
-                                }
-                            }
-                        }
+                                    if(!s1)
+                                        continue;
 
-                        if(s1) {
-                            for(Stage st : stm.list.getList()) {
-                                if(st == null)
-                                    continue;
+                                    if(stContain) {
+                                        for(Stage st : stm.list.getList()) {
+                                            if(st == null)
+                                                continue;
 
-                                stmStages.add(st);
-                            }
-                        }
-                    }
+                                            boolean s2 = false;
 
-                    if(!stmStages.isEmpty()) {
-                        res.addAll(stmStages);
-                    }
+                                            for(int i = 0; i < 4; i++) {
+                                                String stName = StaticStore.safeMultiLangGet(st, i);
 
-                    continue;
-                }
+                                                if(stName == null || stName.isBlank())
+                                                    continue;
 
-                for(Stage st : stm.list.getList()) {
-                    boolean added = false;
+                                                if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
+                                                    s2 = true;
+                                                    break;
+                                                }
+                                            }
 
-                    for(int i = 0; i < 4; i++) {
-                        CommonStatic.getConfig().lang = i;
+                                            String id = mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id)+" "+mc.getSID()+"-"+stm.id.id+"-"+st.id.id;
 
-                        if(names[2] == null)
-                            continue;
+                                            boolean s3 = id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH));
 
-                        String stName = StaticStore.safeMultiLangGet(st, i);
+                                            if(s2 || s3) {
+                                                stResult.add(st);
+                                            }
+                                        }
+                                    } else {
+                                        ArrayList<Integer> stDistances = getDistances(stm.list.getList(), names[2], lang);
 
-                        if(stName == null || stName.isBlank())
-                            continue;
+                                        int stMin = Integer.MAX_VALUE;
 
-                        boolean s0 = true;
+                                        for(int d : stDistances)
+                                            if(d != -1)
+                                                stMin = Math.min(stMin, d);
 
-                        if(names[0] != null && !names[0].isBlank()) {
-                            String mcName = MultiLangCont.get(mc);
+                                        if(stMin <= 3) {
+                                            int stInd = 0;
 
-                            if(mcName != null && !mcName.isBlank()) {
-                                s0 = mcName.toLowerCase(Locale.ENGLISH).contains(names[0].toLowerCase(Locale.ENGLISH));
-                            }
-                        }
+                                            for(Stage st : stm.list.getList()) {
+                                                if(stDistances.get(stInd) == stMin) {
+                                                    stResult.add(st);
+                                                } else if(st != null) {
+                                                    String id = mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id)+" "+mc.getSID()+"-"+stm.id.id+"-"+st.id.id;
 
-                        if(!s0)
-                            continue;
+                                                    boolean s3 = id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH));
 
-                        boolean s1 = true;
+                                                    if(s3)
+                                                        stResult.add(st);
+                                                }
 
-                        if(names[1] != null && !names[1].isBlank()) {
-                            String stmName = MultiLangCont.get(stm);
-
-                            if(stmName != null && !stmName.isBlank()) {
-                                s1 = stmName.toLowerCase(Locale.ENGLISH).contains(names[1].toLowerCase(Locale.ENGLISH));
-                            }
-                        }
-
-                        if(!s1)
-                            continue;
-
-                        boolean s2 = false;
-
-                        if(!stName.isBlank()) {
-                            s2 = stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH));
-                        }
-
-                        String id = mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id)+" "+mc.getSID()+"-"+stm.id.id+"-"+st.id.id;
-
-                        boolean s3 = id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH));
-
-                        if(s2 || s3) {
-                            res.add(st);
-                            added = true;
-
-                            break;
-                        }
-                    }
-
-                    if(!added) {
-                        boolean s0 = true;
-
-                        if(names[0] != null && !names[0].isBlank()) {
-                            String mcName = StaticStore.safeMultiLangGet(mc, lang);
-
-                            if(mcName != null && !mcName.isBlank()) {
-                                mcName = mcName.toLowerCase(Locale.ENGLISH);
-                                String nam = names[0].toLowerCase(Locale.ENGLISH);
-
-                                if(lang == LangID.KR) {
-                                    mcName = KoreanSeparater.separate(mcName);
-
-                                    nam = KoreanSeparater.separate(nam);
-                                }
-
-                                String[] words;
-
-                                int wordNumber = StringUtils.countMatches(nam, ' ') + 1;
-
-                                if(wordNumber != 1) {
-                                    words = getWords(mcName.split(" "), wordNumber);
-                                } else {
-                                    words = mcName.split(" ");
-                                }
-
-                                for(String word : words) {
-                                    if(damerauLevenshteinDistance(word, nam) <= 5) {
-                                        s0 = true;
-                                        break;
+                                                stInd++;
+                                            }
+                                        }
                                     }
-
-                                    s0 = false;
                                 }
-                            }
-                        }
+                            } else {
+                                ArrayList<Integer> stmDistances = getDistances(mc.maps.getList(), names[1], lang);
 
-                        if(!s0)
-                            continue;
+                                int stmMin = Integer.MAX_VALUE;
 
-                        boolean s1 = true;
+                                for(int d : stmDistances)
+                                    if(d != -1)
+                                        stmMin = Math.min(stmMin, d);
 
-                        if(names[1] != null && !names[1].isBlank()) {
-                            String stmName = StaticStore.safeMultiLangGet(stm, lang);
+                                if(stmMin <= 3) {
+                                    int stmInd = 0;
 
-                            if(stmName != null && !stmName.isBlank()) {
-                                stmName = stmName.toLowerCase(Locale.ENGLISH);
-                                String nam = names[1].toLowerCase(Locale.ENGLISH);
+                                    for(StageMap stm : mc.maps.getList()) {
+                                        if(stmDistances.get(stmInd) == stmMin) {
+                                            if(stContain) {
+                                                for(Stage st : stm.list.getList()) {
+                                                    if(st == null)
+                                                        continue;
 
-                                if (lang == LangID.KR) {
-                                    stmName = KoreanSeparater.separate(stmName);
-                                    nam = KoreanSeparater.separate(nam);
-                                }
+                                                    boolean s2 = false;
 
-                                String[] words;
+                                                    for(int i = 0; i < 4; i++) {
+                                                        String stName = StaticStore.safeMultiLangGet(st, i);
 
-                                int wordNumber = StringUtils.countMatches(nam, ' ' ) + 1;
+                                                        if(stName == null || stName.isBlank())
+                                                            continue;
 
-                                if (wordNumber != 1) {
-                                    words = getWords(stmName.split(" "), wordNumber);
-                                } else {
-                                    words = stmName.split(" ");
-                                }
+                                                        if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
+                                                            s2 = true;
+                                                            break;
+                                                        }
+                                                    }
 
-                                for (String word : words) {
-                                    if (damerauLevenshteinDistance(word, nam) <= 3) {
-                                        s1 = true;
-                                        break;
-                                    }
+                                                    String id = mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id)+" "+mc.getSID()+"-"+stm.id.id+"-"+st.id.id;
 
-                                    s1 = false;
-                                }
-                            }
-                        }
+                                                    boolean s3 = id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH));
 
-                        if(!s1)
-                            continue;
+                                                    if(s2 || s3) {
+                                                        stResult.add(st);
+                                                    }
+                                                }
+                                            } else {
+                                                ArrayList<Integer> stDistances = getDistances(stm.list.getList(), names[2], lang);
 
-                        boolean s2 = false;
+                                                int stMin = Integer.MAX_VALUE;
 
-                        if(names[2] != null && !names[2].isBlank()) {
-                            String stName = StaticStore.safeMultiLangGet(st, lang);
+                                                for(int d : stDistances)
+                                                    if(d != -1)
+                                                        stMin = Math.min(stMin, d);
 
-                            if(stName != null && !stName.isBlank()) {
-                                stName = stName.toLowerCase(Locale.ENGLISH);
-                                String nam = names[2].toLowerCase(Locale.ENGLISH);
+                                                if(stMin <= 3) {
+                                                    int stInd = 0;
 
-                                if(lang == LangID.KR) {
-                                    stName = KoreanSeparater.separate(stName);
-                                    nam = KoreanSeparater.separate(nam);
-                                }
+                                                    for(Stage st : stm.list.getList()) {
+                                                        if(stDistances.get(stInd) == stMin) {
+                                                            stResult.add(st);
+                                                        } else if(st != null) {
+                                                            String id = mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id)+" "+mc.getSID()+"-"+stm.id.id+"-"+st.id.id;
 
-                                String[] words;
+                                                            boolean s3 = id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH));
 
-                                int wordNumber = StringUtils.countMatches(nam, ' ') + 1;
+                                                            if(s3)
+                                                                stResult.add(st);
+                                                        }
 
-                                if(wordNumber != 1) {
-                                    words = getWords(stName.split(" "), wordNumber);
-                                } else {
-                                    words = stName.split(" ");
-                                }
+                                                        stInd++;
+                                                    }
+                                                }
+                                            }
+                                        }
 
-                                for(String word : words) {
-                                    if(damerauLevenshteinDistance(word, nam) <= 3) {
-                                        s2 = true;
-                                        break;
+                                        stmInd++;
                                     }
                                 }
                             }
                         }
 
-                        if(s2) {
-                            res.add(st);
-                        }
+                        mcInd++;
                     }
                 }
             }
+
+            if(!stResult.isEmpty())
+                result.addAll(stResult);
         }
 
-        return res;
+        return result;
     }
 
     public static ArrayList<Stage> findStageByEnemy(Enemy e) {
@@ -886,5 +1103,72 @@ public class EntityFilter {
         }
 
         return result;
+    }
+
+    private static <T> boolean needToPerformContainMode(Iterable<T> set, String keyword) {
+        for(T t : set) {
+            if(t == null)
+                continue;
+
+            for(int i = 0; i < 4; i++) {
+                String name = StaticStore.safeMultiLangGet(t, i);
+
+                if(name != null && !name.isBlank()) {
+                    if(name.toLowerCase(Locale.ENGLISH).contains(keyword.toLowerCase(Locale.ENGLISH)))
+                        return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private static <T> ArrayList<Integer> getDistances(Iterable<T> set, String keyword, int lang) {
+        ArrayList<Integer> distances = new ArrayList<>();
+
+        keyword = keyword.toLowerCase(Locale.ENGLISH);
+
+        if(lang == LangID.KR)
+            keyword = KoreanSeparater.separate(keyword);
+
+        for(T t : set) {
+            if(t == null) {
+                distances.add(-1);
+                continue;
+            }
+
+            String name = StaticStore.safeMultiLangGet(t, lang);
+
+            if(name == null || name.isBlank()) {
+                distances.add(-1);
+                continue;
+            }
+
+            name = name.toLowerCase(Locale.ENGLISH);
+
+            if(lang == LangID.KR) {
+                name = KoreanSeparater.separate(name);
+            }
+
+            String[] words;
+
+            int wordNumber = StringUtils.countMatches(keyword, ' ') + 1;
+
+            if(wordNumber != 1) {
+                words = getWords(name.split(" "), wordNumber);
+            } else {
+                words = name.split(" ");
+            }
+
+            int disMin = Integer.MAX_VALUE;
+
+            for(String word : words) {
+                disMin = Math.min(disMin, damerauLevenshteinDistance(word, keyword));
+            }
+
+            distances.add(disMin);
+        }
+
+        return distances;
     }
 }
