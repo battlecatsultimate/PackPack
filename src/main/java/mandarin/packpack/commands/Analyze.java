@@ -54,7 +54,7 @@ public class Analyze extends ConstraintCommand {
                     File target = StaticStore.getDownPackFile();
                     File temp = StaticStore.getTempPackFile();
 
-                    UpdateCheck.Downloader down = new UpdateCheck.Downloader(url, target, temp, "", false);
+                    UpdateCheck.Downloader down = new UpdateCheck.Downloader(target, temp, "", false, url);
 
                     down.run(this::editMessage);
 

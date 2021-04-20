@@ -552,11 +552,11 @@ public class StaticStore {
         File target = new File(container, att.getFilename());
         File temp = new File(container, att.getFilename()+".tmp");
 
-        return new UpdateCheck.Downloader(url, target, temp, "", false);
+        return new UpdateCheck.Downloader(target, temp, "", false, url);
     }
 
     public static UpdateCheck.Downloader getDownloader(String url, File target, File temp) {
-        return new UpdateCheck.Downloader(url, target, temp, "", false);
+        return new UpdateCheck.Downloader(target, temp, "", false, url);
     }
 
     public static String getRoleIDByName(String name, Guild g) {
