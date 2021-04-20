@@ -1376,17 +1376,20 @@ public class DataToString {
         } else if(s.info.rand == -4) {
             Map<Integer, Integer> collect = new HashMap<>();
 
+            int chanceSum = 0;
+
             for(int[] d : data) {
                 if(collect.containsKey(d[0])) {
                     collect.put(d[0], collect.get(d[0])+1);
                 } else {
                     collect.put(d[0], 1);
+                    chanceSum += d[0];
                 }
             }
 
             for(int[] d : data) {
                 if(collect.containsKey(d[0])) {
-                    res.add(df.format(d[0] * 1.0 / collect.get(d[0])));
+                    res.add(df.format((100.0 / chanceSum) * d[0] / collect.get(d[0])));
                 } else {
                     res.add(df.format(d[0] * 1.0));
                 }
