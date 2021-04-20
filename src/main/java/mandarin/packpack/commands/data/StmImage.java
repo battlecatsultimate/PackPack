@@ -93,7 +93,7 @@ public class StmImage extends ConstraintCommand {
 
                 handleLast(message, f, ch, generator);
             } else {
-                ch.createMessage(LangID.getStringByID("stmimg_argu", lang)).subscribe();
+                ch.createMessage(LangID.getStringByID("stmimg_argu", lang).replace("_", holder.serverPrefix)).subscribe();
             }
         } catch (Exception e) {
             e.printStackTrace();
