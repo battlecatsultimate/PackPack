@@ -566,16 +566,16 @@ public class EntityFilter {
                                     for(Stage st : stm.list.getList()) {
                                         if(stDistances.get(stInd) == stMin) {
                                             stResult.add(st);
-                                        } else if(st != null) {
-                                            String id = mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id)+" "+mc.getSID()+"-"+stm.id.id+"-"+st.id.id;
-
-                                            boolean s3 = id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH));
-
-                                            if(s3)
-                                                stResult.add(st);
                                         }
 
                                         stInd++;
+                                    }
+                                } else {
+                                    for(Stage st : stm.list.getList()) {
+                                        String id = mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id)+" "+mc.getSID()+"-"+stm.id.id+"-"+st.id.id;
+
+                                        if(id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH)))
+                                            stResult.add(st);
                                     }
                                 }
                             }
@@ -636,16 +636,16 @@ public class EntityFilter {
                                             for(Stage st : stm.list.getList()) {
                                                 if(stDistances.get(stInd) == stMin) {
                                                     stResult.add(st);
-                                                } else if(st != null) {
-                                                    String id = mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id)+" "+mc.getSID()+"-"+stm.id.id+"-"+st.id.id;
-
-                                                    boolean s3 = id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH));
-
-                                                    if(s3)
-                                                        stResult.add(st);
                                                 }
 
                                                 stInd++;
+                                            }
+                                        } else {
+                                            for(Stage st : stm.list.getList()) {
+                                                String id = mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id)+" "+mc.getSID()+"-"+stm.id.id+"-"+st.id.id;
+
+                                                if(id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH)))
+                                                    stResult.add(st);
                                             }
                                         }
                                     }
@@ -738,16 +738,16 @@ public class EntityFilter {
                                             for(Stage st : stm.list.getList()) {
                                                 if(stDistances.get(stInd) == stMin) {
                                                     stResult.add(st);
-                                                } else if(st != null) {
-                                                    String id = mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id)+" "+mc.getSID()+"-"+stm.id.id+"-"+st.id.id;
-
-                                                    boolean s3 = id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH));
-
-                                                    if(s3)
-                                                        stResult.add(st);
                                                 }
 
                                                 stInd++;
+                                            }
+                                        } else {
+                                            for(Stage st : stm.list.getList()) {
+                                                String id = mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id)+" "+mc.getSID()+"-"+stm.id.id+"-"+st.id.id;
+
+                                                if(id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH)))
+                                                    stResult.add(st);
                                             }
                                         }
                                     }
@@ -808,16 +808,15 @@ public class EntityFilter {
                                                     for(Stage st : stm.list.getList()) {
                                                         if(stDistances.get(stInd) == stMin) {
                                                             stResult.add(st);
-                                                        } else if(st != null) {
-                                                            String id = mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id)+" "+mc.getSID()+"-"+stm.id.id+"-"+st.id.id;
-
-                                                            boolean s3 = id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH));
-
-                                                            if(s3)
-                                                                stResult.add(st);
                                                         }
-
                                                         stInd++;
+                                                    }
+                                                } else {
+                                                    for(Stage st : stm.list.getList()) {
+                                                        String id = mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id)+" "+mc.getSID()+"-"+stm.id.id+"-"+st.id.id;
+
+                                                        if(id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH)))
+                                                            stResult.add(st);
                                                     }
                                                 }
                                             }
