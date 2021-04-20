@@ -35,7 +35,7 @@ public class Medal extends ConstraintCommand {
             ArrayList<Integer> id = EntityFilter.findMedalByName(realContents[1], lang);
 
             if(id.isEmpty()) {
-                ch.createMessage(LangID.getStringByID("medal_nomed", lang).replace("_", realContents[1])).subscribe();
+                createMessageWithNoPings(ch, LangID.getStringByID("medal_nomed", lang).replace("_", realContents[1]));
             } else if(id.size() == 1) {
                 EntityHandler.showMedalEmbed(id.get(0), ch, lang);
             } else {
@@ -70,7 +70,7 @@ public class Medal extends ConstraintCommand {
                 sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
 
-                Message res = ch.createMessage(sb.toString()).block();
+                Message res = getMessageWithNoPings(ch, sb.toString());
 
                 if(res != null) {
                     getMember(event).ifPresent(m -> {

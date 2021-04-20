@@ -38,7 +38,7 @@ public class CatCombo extends TimedConstraintCommand {
 
             if(combos.isEmpty()) {
                 disableTimer();
-                ch.createMessage(LangID.getStringByID("combo_noname", lang).replace("_", getSearchKeywords(name, cName, lang))).subscribe();
+                createMessageWithNoPings(ch, LangID.getStringByID("combo_noname", lang).replace("_", getSearchKeywords(name, cName, lang)));
             } else if(combos.size() == 1) {
                 EntityHandler.showComboEmbed(ch, combos.get(0), lang);
             } else {
@@ -78,7 +78,7 @@ public class CatCombo extends TimedConstraintCommand {
                 sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
 
-                Message res = ch.createMessage(sb.toString()).block();
+                Message res = getMessageWithNoPings(ch, sb.toString());
 
                 if(res != null) {
                     getMember(event).ifPresent(m -> {
@@ -95,19 +95,17 @@ public class CatCombo extends TimedConstraintCommand {
 
             if(forms.isEmpty()) {
                 disableTimer();
-                ch.createMessage(LangID.getStringByID("combo_noname", lang).replace("_", getSearchKeywords(name, cName, lang))).subscribe();
+                createMessageWithNoPings(ch, LangID.getStringByID("combo_noname", lang).replace("_", getSearchKeywords(name, cName, lang)));
             } else if(forms.size() == 1) {
                 ArrayList<Combo> combos = EntityFilter.filterComboWithUnit(forms.get(0), cName);
 
                 if(combos.isEmpty()) {
                     disableTimer();
 
-                    ch.createMessage(LangID.getStringByID("combo_noname", lang).replace("_", getSearchKeywords(name, cName, lang))).subscribe();
+                    createMessageWithNoPings(ch, LangID.getStringByID("combo_noname", lang).replace("_", getSearchKeywords(name, cName, lang)));
                 } else if(combos.size() == 1) {
                     EntityHandler.showComboEmbed(ch, combos.get(0), lang);
                 } else {
-                    disableTimer();
-
                     disableTimer();
 
                     String check;
@@ -144,7 +142,7 @@ public class CatCombo extends TimedConstraintCommand {
                     sb.append(LangID.getStringByID("formst_can", lang));
                     sb.append("```");
 
-                    Message res = ch.createMessage(sb.toString()).block();
+                    Message res = getMessageWithNoPings(ch, sb.toString());
 
                     if(res != null) {
                         getMember(event).ifPresent(m -> {
@@ -191,7 +189,7 @@ public class CatCombo extends TimedConstraintCommand {
                 sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
 
-                Message res = ch.createMessage(sb.toString()).block();
+                Message res = getMessageWithNoPings(ch, sb.toString());
 
                 if(res != null) {
                     getMember(event).ifPresent(m -> {
@@ -245,7 +243,7 @@ public class CatCombo extends TimedConstraintCommand {
         StringBuilder builder = new StringBuilder();
 
         if(cName != null) {
-            builder.append(LangID.getStringByID("data_combo", lang)).append(" : `").append(cName).append("`");
+            builder.append(LangID.getStringByID("data_combo", lang)).append(" : ").append(cName);
         }
 
         if(fName != null) {
@@ -253,7 +251,7 @@ public class CatCombo extends TimedConstraintCommand {
                 builder.append(", ");
             }
 
-            builder.append(LangID.getStringByID("data_unit", lang)).append(" : `").append(fName).append("`");
+            builder.append(LangID.getStringByID("data_unit", lang)).append(" : ").append(fName);
         }
 
         return builder.toString();

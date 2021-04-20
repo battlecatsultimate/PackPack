@@ -11,6 +11,7 @@ import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.rest.util.AllowedMentions;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.TimedConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
@@ -54,13 +55,24 @@ public class FindStage extends TimedConstraintCommand {
         ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(enemyName, lang);
 
         if (enemies.isEmpty()) {
-            ch.createMessage(LangID.getStringByID("enemyst_noenemy", lang)).subscribe();
+            createMessageWithNoPings(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", enemyName));
             disableTimer();
         } else if(enemies.size() == 1) {
             ArrayList<Stage> stages = EntityFilter.findStageByEnemy(enemies.get(0));
 
             if(stages.isEmpty()) {
-                ch.createMessage(LangID.getStringByID("fstage_nost", lang)).subscribe();
+                String eName = StaticStore.safeMultiLangGet(enemies.get(0), lang);
+
+                if(eName == null || eName.isBlank()) {
+                    eName = enemies.get(0).name;
+                }
+
+                if(eName == null || eName.isBlank()) {
+                    eName = Data.trio(enemies.get(0).id.id);
+                }
+
+                createMessageWithNoPings(ch, LangID.getStringByID("fstage_nost", lang).replace("_", eName));
+
                 disableTimer();
             } else if(stages.size() == 1) {
                 Message result = EntityHandler.showStageEmb(stages.get(0), ch, isFrame, star, lang);
@@ -173,7 +185,7 @@ public class FindStage extends TimedConstraintCommand {
                 sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
 
-                Message res = ch.createMessage(sb.toString()).block();
+                Message res = getMessageWithNoPings(ch, sb.toString());
 
                 if(res != null) {
                     getMember(event).ifPresent(member -> {
@@ -223,7 +235,7 @@ public class FindStage extends TimedConstraintCommand {
             sb.append(LangID.getStringByID("formst_can", lang));
             sb.append("```");
 
-            Message res = ch.createMessage(sb.toString()).block();
+            Message res = getMessageWithNoPings(ch, sb.toString());
 
             if(res != null) {
                 getMember(event).ifPresent(m -> {

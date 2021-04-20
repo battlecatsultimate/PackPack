@@ -47,7 +47,7 @@ public class FormSprite extends TimedConstraintCommand {
             ArrayList<Form> forms = EntityFilter.findUnitWithName(search, lang);
 
             if(forms.isEmpty()) {
-                ch.createMessage(LangID.getStringByID("formst_nounit", lang).replace("_", filterCommand(getContent(event)))).subscribe();
+                createMessageWithNoPings(ch, LangID.getStringByID("formst_nounit", lang).replace("_", filterCommand(getContent(event))));
                 disableTimer();
             } else if(forms.size() == 1) {
                 int param = checkParameter(getContent(event));
@@ -91,7 +91,7 @@ public class FormSprite extends TimedConstraintCommand {
 
                 int mode = getModeFromParam(param);
 
-                Message res = ch.createMessage(sb.toString()).block();
+                Message res = getMessageWithNoPings(ch, sb.toString());
 
                 if(res != null) {
                     getMember(event).ifPresent(member -> {

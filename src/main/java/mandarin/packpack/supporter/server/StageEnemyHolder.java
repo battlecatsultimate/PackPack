@@ -11,6 +11,7 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.rest.util.AllowedMentions;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
@@ -342,7 +343,10 @@ public class StageEnemyHolder extends Holder<MessageCreateEvent> {
                     sb.append(LangID.getStringByID("formst_can", lang));
                     sb.append("```");
 
-                    Message res = ch.createMessage(sb.toString()).block();
+                    Message res = ch.createMessage(m -> {
+                        m.setContent(sb.toString());
+                        m.setAllowedMentions(AllowedMentions.builder().build());
+                    }).block();
 
                     if(res != null) {
                         event.getMember().ifPresent(m -> {

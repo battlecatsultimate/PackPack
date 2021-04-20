@@ -1,7 +1,6 @@
 package mandarin.packpack;
 
 import common.CommonStatic;
-import discord4j.common.util.Snowflake;
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
@@ -506,7 +505,7 @@ public class PackBot {
                                     new IDSet(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
                                     break;
                                 case "clearcache":
-                                    new ClearCache(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+                                    new ClearCache(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
                                     break;
                                 case "aa":
                                 case "animanalyzer":

@@ -8,6 +8,7 @@ import common.util.unit.Form;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.rest.util.AllowedMentions;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
@@ -192,7 +193,10 @@ public class ComboFormHolder extends Holder<MessageCreateEvent> {
 
                     cleaner.add(event.getMessage());
 
-                    ch.createMessage(LangID.getStringByID("combo_noname", lang).replace("_", getSearchKeywords(fName, cName, lang))).subscribe();
+                    ch.createMessage(m -> {
+                        m.setContent(LangID.getStringByID("combo_noname", lang).replace("_", getSearchKeywords(fName, cName, lang)));
+                        m.setAllowedMentions(AllowedMentions.builder().build());
+                    }).subscribe();
 
                     return RESULT_FINISH;
                 } else if(combos.size() == 1) {
@@ -256,7 +260,10 @@ public class ComboFormHolder extends Holder<MessageCreateEvent> {
                     sb.append(LangID.getStringByID("formst_can", lang));
                     sb.append("```");
 
-                    Message res = ch.createMessage(sb.toString()).block();
+                    Message res = ch.createMessage(m -> {
+                        m.setContent(sb.toString());
+                        m.setAllowedMentions(AllowedMentions.builder().build());
+                    }).block();
 
                     msg.edit(m -> {
                         String formName = StaticStore.safeMultiLangGet(form.get(id), lang);

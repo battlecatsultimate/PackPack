@@ -3,12 +3,10 @@ package mandarin.packpack.supporter.bc;
 import common.CommonStatic;
 import common.battle.BasisSet;
 import common.battle.Treasure;
-import common.battle.data.AtkDataModel;
-import common.battle.data.CustomEntity;
-import common.battle.data.MaskAtk;
-import common.battle.data.MaskUnit;
+import common.battle.data.*;
 import common.pack.PackData;
 import common.pack.UserProfile;
+import common.system.files.VFile;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.stage.Limit;
@@ -30,6 +28,7 @@ public class DataToString {
     public static final DecimalFormat df;
     private static final List<String> mapIds = Arrays.asList("000000", "000001", "000002", "000003", "000004", "000006", "000007", "000011", "000012", "000013", "000014", "000024", "000025", "000027");
     private static final String[] mapCodes = {"N", "S", "C", "CH", "E", "T", "V", "R", "M", "A", "B", "RA", "H", "CA"};
+    private static final Map<Integer, int[]> pCoinLevels = new HashMap<>();
 
     static {
         NumberFormat nf = NumberFormat.getInstance(Locale.US);
@@ -95,6 +94,31 @@ public class DataToString {
         talentText.put(54, "data_ressurge");
         talentText.put(55, "data_imusurge");
         talentText.put(56, "data_surge");
+
+        VFile pCoinLevel = VFile.get("./org/data/SkillLevel.csv");
+
+        if(pCoinLevel != null) {
+            Queue<String> qs = pCoinLevel.getData().readLine();
+
+            qs.poll();
+
+            String line;
+
+            while((line = qs.poll()) != null) {
+                int[] values = CommonStatic.parseIntsN(line);
+
+                if(values.length < 2)
+                    continue;
+
+                int id = values[0];
+
+                int[] costs = new int[values.length - 1];
+
+                System.arraycopy(values, 1, costs, 0, values.length - 1);
+
+                pCoinLevels.put(id, costs);
+            }
+        }
     }
 
     public static String getTitle(Form f, int lang) {

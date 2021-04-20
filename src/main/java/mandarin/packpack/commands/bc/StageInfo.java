@@ -45,7 +45,7 @@ public class StageInfo extends TimedConstraintCommand {
             ArrayList<Stage> stages = EntityFilter.findStageWithName(names, lang);
 
             if(stages.isEmpty()) {
-                ch.createMessage(LangID.getStringByID("stinfo_nores", lang).replace("_", generateSearchName(names))).subscribe();
+                createMessageWithNoPings(ch, LangID.getStringByID("stinfo_nores", lang).replace("_", generateSearchName(names)));
             } else if(stages.size() == 1) {
                 int param = checkParameters(getContent(event));
                 int star = getStar(getContent((event)));
@@ -160,7 +160,7 @@ public class StageInfo extends TimedConstraintCommand {
                 sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
 
-                Message res = ch.createMessage(sb.toString()).block();
+                Message res = getMessageWithNoPings(ch, sb.toString());
 
                 if(res != null) {
                     getMember(event).ifPresent(member -> {

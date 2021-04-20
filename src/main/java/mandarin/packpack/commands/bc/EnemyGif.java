@@ -77,7 +77,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
             ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(search, lang);
 
             if(enemies.isEmpty()) {
-                ch.createMessage(LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(getContent(event)))).subscribe();
+                createMessageWithNoPings(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(getContent(event))));
                 disableTimer();
             } else if(enemies.size() == 1) {
                 int param = checkParameters(getContent(event));
@@ -144,7 +144,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
                 sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
 
-                Message res = ch.createMessage(sb.toString()).block();
+                Message res = getMessageWithNoPings(ch, sb.toString());
 
                 int param = checkParameters(getContent(event));
                 int mode = getMode(getContent(event));

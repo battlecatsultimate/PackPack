@@ -34,7 +34,7 @@ public class Help implements Command {
                 emb.setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)]);
                 emb.addField(LangID.getStringByID("help_normal", lang), "```analyze, locale, prefix```", false);
                 emb.addField(LangID.getStringByID("help_bc", lang), "```background, castle, catcombo, enemygif, enemyimage, enemysprite, enemystat, findstage, formgif, formimage, formsprite, formstat, medal, music, stageinfo```", false);
-                emb.addField(LangID.getStringByID("help_server", lang), "```bcustat, channelpermission, checkbcu, clearcache, idset, memory, save, serverjson, serverprefix```", false);
+                emb.addField(LangID.getStringByID("help_server", lang), "```bcustat, channelpermission, checkbcu, clearcache, idset, memory, save, serverjson, serverpre```", false);
                 emb.addField(LangID.getStringByID("help_data", lang), "```animanalyzer, announcement, stageimage, stagemapimage```", false);
                 emb.addField(LangID.getStringByID("help_packpack", lang), "```suggest```", false);
             }).subscribe();
@@ -185,7 +185,7 @@ public class Help implements Command {
                 ch.createEmbed(e -> addFields(e, "suggest", true, true, true)).subscribe();
                 break;
             default:
-                ch.createMessage(LangID.getStringByID("help_nocomm", lang).replace("_", command)).subscribe();
+                createMessageWithNoPings(ch, LangID.getStringByID("help_nocomm", lang).replace("_", command));
         }
     }
 

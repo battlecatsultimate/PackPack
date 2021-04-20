@@ -59,7 +59,7 @@ public class FormStat extends ConstraintCommand {
                     });
                 }
             } else if (forms.size() == 0) {
-                ch.createMessage(LangID.getStringByID("formst_nounit", lang).replace("_", filterCommand(getContent(event)))).subscribe();
+                createMessageWithNoPings(ch, LangID.getStringByID("formst_nounit", lang).replace("_", filterCommand(getContent(event))));
             } else {
                 CommonStatic.getConfig().lang = lang;
 
@@ -99,7 +99,7 @@ public class FormStat extends ConstraintCommand {
                 sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
 
-                Message res = ch.createMessage(sb.toString()).block();
+                Message res = getMessageWithNoPings(ch, sb.toString());
 
                 int param = checkParameters(getContent(event));
 

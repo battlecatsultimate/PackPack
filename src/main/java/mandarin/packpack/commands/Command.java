@@ -5,6 +5,7 @@ import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.rest.util.AllowedMentions;
 import mandarin.packpack.supporter.Pauser;
 import mandarin.packpack.supporter.StaticStore;
 import reactor.core.publisher.Mono;
@@ -108,5 +109,19 @@ public interface Command {
         }
 
         return null;
+    }
+
+    default void createMessageWithNoPings(MessageChannel ch, String content) {
+        ch.createMessage(m -> {
+            m.setContent(content);
+            m.setAllowedMentions(AllowedMentions.builder().build());
+        }).subscribe();
+    }
+
+    default Message getMessageWithNoPings(MessageChannel ch, String content) {
+        return ch.createMessage(m -> {
+            m.setContent(content);
+            m.setAllowedMentions(AllowedMentions.builder().build());
+        }).block();
     }
 }

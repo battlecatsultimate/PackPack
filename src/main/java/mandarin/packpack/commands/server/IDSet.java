@@ -25,6 +25,7 @@ public class IDSet extends ConstraintCommand {
         holder = id;
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public void doSomething(MessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
@@ -345,7 +346,7 @@ public class IDSet extends ConstraintCommand {
 
             result.append("\n").append(LangID.getStringByID("idset_result", lang));
 
-            ch.createMessage(result.toString()).subscribe();
+            createMessageWithNoPings(ch, result.toString());
         }
     }
 

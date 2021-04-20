@@ -44,7 +44,7 @@ public class EnemyStat extends ConstraintCommand {
 
                 EntityHandler.showEnemyEmb(enemies.get(0), ch, isFrame, magnification, lang);
             } else if(enemies.size() == 0) {
-                ch.createMessage(LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(getContent(event)))).subscribe();
+                createMessageWithNoPings(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(getContent(event))));
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", filterCommand(getContent(event))));
 
@@ -82,7 +82,7 @@ public class EnemyStat extends ConstraintCommand {
                 sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
 
-                Message res = ch.createMessage(sb.toString()).block();
+                Message res = getMessageWithNoPings(ch, sb.toString());
 
                 int[] magnification = handleMagnification(getContent(event));
                 boolean isFrame = (checkParameters(getContent(event)) & PARAM_SECOND) == 0;
