@@ -25,7 +25,7 @@ public class ServerPrefix extends ConstraintCommand {
 
             holder.serverPrefix = list[1];
 
-            ch.createMessage(LangID.getStringByID("serverpre_set", lang).replace("_", holder.serverPrefix)).subscribe();
+            createMessageWithNoPings(ch, LangID.getStringByID("serverpre_set", lang).replace("_", holder.serverPrefix));
         } else if(list.length == 1) {
             ch.createMessage(LangID.getStringByID("prefix_argu", lang)).subscribe();
         } else {

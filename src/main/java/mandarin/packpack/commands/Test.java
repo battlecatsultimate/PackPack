@@ -18,25 +18,17 @@ public class Test extends GlobalTimedConstraintCommand {
     }
 
     @Override
-    protected void doThing(MessageEvent event) throws Exception {
+    protected void doThing(MessageEvent event) {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
             return;
 
-        File f = new File("./data/sale.tsv");
+        String[] texts = getContent(event).split(" ", 2);
 
-        StaticStore.event.updateStage(f, EventFactor.GLOBAL, false);
+        StageSchedule schedule = new StageSchedule(texts[1].replace("    ", "\t"));
 
-        String result = StaticStore.event.printStageEvent(EventFactor.GLOBAL);
-
-        System.out.println(result.length());
-
-        if(!result.isBlank() && result.length() < 2000) {
-            ch.createMessage(result).subscribe();
-        } else {
-            System.out.println(result);
-        }
+        ch.createMessage(schedule.dataToString()).subscribe();
     }
 
     @Override
