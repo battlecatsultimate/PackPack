@@ -9,7 +9,7 @@ import mandarin.packpack.commands.GlobalTimedConstraintCommand;
 import mandarin.packpack.supporter.Pauser;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
-import mandarin.packpack.supporter.server.IDHolder;
+import mandarin.packpack.supporter.server.data.IDHolder;
 
 import java.io.*;
 import java.util.concurrent.TimeUnit;

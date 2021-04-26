@@ -14,9 +14,9 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
-import mandarin.packpack.supporter.server.ComboFormHolder;
-import mandarin.packpack.supporter.server.ComboHolder;
-import mandarin.packpack.supporter.server.IDHolder;
+import mandarin.packpack.supporter.server.holder.ComboFormHolder;
+import mandarin.packpack.supporter.server.holder.ComboHolder;
+import mandarin.packpack.supporter.server.data.IDHolder;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;

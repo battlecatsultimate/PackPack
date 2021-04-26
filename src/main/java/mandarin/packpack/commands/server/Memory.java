@@ -3,7 +3,7 @@ package mandarin.packpack.commands.server;
 import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
-import mandarin.packpack.supporter.server.IDHolder;
+import mandarin.packpack.supporter.server.data.IDHolder;
 
 public class Memory extends ConstraintCommand {
     public Memory(ROLE role, int lang, IDHolder id) {

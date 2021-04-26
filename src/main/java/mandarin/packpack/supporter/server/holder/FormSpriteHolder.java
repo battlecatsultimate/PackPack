@@ -1,7 +1,9 @@
-package mandarin.packpack.supporter.server;
+package mandarin.packpack.supporter.server.holder;
 
 import common.CommonStatic;
 import common.util.Data;
+import common.util.lang.MultiLangCont;
+import common.util.unit.Form;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
@@ -14,42 +16,45 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
-public class MedalHolder extends Holder<MessageCreateEvent> {
-    private final ArrayList<Integer> id;
+public class FormSpriteHolder extends Holder<MessageCreateEvent> {
+    private final ArrayList<Form> form;
     private final Message msg;
-    private final int lang;
     private final String channelID;
+
+    private final int mode;
+    private final int lang;
 
     private int page = 0;
     private boolean expired = false;
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
-    
-    public MedalHolder(ArrayList<Integer> id, Message author, Message msg, int lang, String channelName) {
+
+    public FormSpriteHolder(ArrayList<Form> form, Message author, Message msg, String channelID, int mode, int lang) {
         super(MessageCreateEvent.class);
 
-        this.id = id;
+        this.form = form;
         this.msg = msg;
+        this.channelID = channelID;
+        this.mode = mode;
         this.lang = lang;
-        this.channelID = channelName;
 
         Timer autoFinish = new Timer();
-        
+
         autoFinish.schedule(new TimerTask() {
             @Override
             public void run() {
                 if(expired)
                     return;
-                
+
                 expired = true;
-                
-                author.getAuthor().ifPresent(a -> StaticStore.removeHolder(a.getId().asString(), MedalHolder.this));
-                
+
+                author.getAuthor().ifPresent(u -> StaticStore.removeHolder(u.getId().asString(), FormSpriteHolder.this));
+
                 msg.edit(m -> m.setContent(LangID.getStringByID("formst_expire", lang))).subscribe();
             }
         }, TimeUnit.MINUTES.toMillis(5));
     }
-    
+
     @Override
     public int handleEvent(MessageCreateEvent event) {
         if(expired) {
@@ -68,7 +73,7 @@ public class MedalHolder extends Holder<MessageCreateEvent> {
         String content = event.getMessage().getContent();
 
         if(content.equals("n")) {
-            if(20 * (page + 1) >= id.size())
+            if(20 * (page + 1) >= form.size())
                 return RESULT_STILL;
 
             page++;
@@ -76,33 +81,38 @@ public class MedalHolder extends Holder<MessageCreateEvent> {
             msg.edit(m -> {
                 String check;
 
-                if(id.size() <= 20)
+                if(form.size() <= 20)
                     check = "";
                 else if(page == 0)
                     check = LangID.getStringByID("formst_next", lang);
-                else if((page + 1) * 20 >= id.size())
+                else if((page + 1) * 20 >= form.size())
                     check = LangID.getStringByID("formst_pre", lang);
                 else
                     check = LangID.getStringByID("formst_nexpre", lang);
 
                 StringBuilder sb = new StringBuilder("```md\n").append(check);
 
-                for(int i = 20 * page; i < 20 * (page + 1) ; i++) {
-                    if(i >= id.size())
+                for(int i = 20 * page; i < 20 * (page +1); i++) {
+                    if(i >= form.size())
                         break;
+
+                    Form f = form.get(i);
+
+                    String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
 
                     int oldConfig = CommonStatic.getConfig().lang;
                     CommonStatic.getConfig().lang = lang;
 
-                    String medalName = Data.trio(id.get(i)) + " " + StaticStore.MEDNAME.getCont(id.get(i));
+                    if(MultiLangCont.get(f) != null)
+                        fname += MultiLangCont.get(f);
 
                     CommonStatic.getConfig().lang = oldConfig;
 
-                    sb.append(i+1).append(". ").append(medalName).append("\n");
+                    sb.append(i+1).append(". ").append(fname).append("\n");
                 }
 
-                if(id.size() > 20)
-                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(id.size()/20 + 1)));
+                if(form.size() > 20)
+                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(form.size()/20 + 1)));
 
                 sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
@@ -120,33 +130,38 @@ public class MedalHolder extends Holder<MessageCreateEvent> {
             msg.edit(m -> {
                 String check;
 
-                if(id.size() <= 20)
+                if(form.size() <= 20)
                     check = "";
                 else if(page == 0)
                     check = LangID.getStringByID("formst_next", lang);
-                else if((page + 1) * 20 >= id.size())
+                else if((page + 1) * 20 >= form.size())
                     check = LangID.getStringByID("formst_pre", lang);
                 else
                     check = LangID.getStringByID("formst_nexpre", lang);
 
                 StringBuilder sb = new StringBuilder("```md\n").append(check);
 
-                for(int i = 20 * page; i < 20 * (page + 1) ; i++) {
-                    if(i >= id.size())
+                for(int i = 20 * page; i < 20 * (page +1); i++) {
+                    if(i >= form.size())
                         break;
+
+                    Form f = form.get(i);
+
+                    String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
 
                     int oldConfig = CommonStatic.getConfig().lang;
                     CommonStatic.getConfig().lang = lang;
 
-                    String medalName = Data.trio(id.get(i)) + " " + StaticStore.MEDNAME.getCont(id.get(i));
+                    if(MultiLangCont.get(f) != null)
+                        fname += MultiLangCont.get(f);
 
                     CommonStatic.getConfig().lang = oldConfig;
 
-                    sb.append(i+1).append(". ").append(medalName).append("\n");
+                    sb.append(i+1).append(". ").append(fname).append("\n");
                 }
 
-                if(id.size() > 20)
-                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(id.size()/20 + 1)));
+                if(form.size() > 20)
+                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(form.size()/20 + 1)));
 
                 sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
@@ -156,18 +171,20 @@ public class MedalHolder extends Holder<MessageCreateEvent> {
 
             cleaner.add(event.getMessage());
         } else if(StaticStore.isNumeric(content)) {
-            int i = StaticStore.safeParseInt(content) - 1;
+            int id = StaticStore.safeParseInt(content)-1;
 
-            if(i < 0 || i >= id.size())
+            if(id < 0 || id >= form.size())
                 return RESULT_STILL;
 
-            msg.delete().subscribe();
-
             try {
-                EntityHandler.showMedalEmbed(i, ch, lang);
+                Form f = form.get(id);
+
+                EntityHandler.getFormSprite(f, ch, mode, lang);
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
+            msg.delete().subscribe();
 
             expired = true;
 
@@ -176,7 +193,7 @@ public class MedalHolder extends Holder<MessageCreateEvent> {
             return RESULT_FINISH;
         } else if(content.equals("c")) {
             msg.edit(m -> {
-                m.setContent(LangID.getStringByID("formst_cancel" ,lang));
+                m.setContent(LangID.getStringByID("formst_cancel", lang));
                 expired = true;
             }).subscribe();
 
@@ -187,10 +204,10 @@ public class MedalHolder extends Holder<MessageCreateEvent> {
             String[] contents = content.split(" ");
 
             if(contents.length == 2) {
-                if (StaticStore.isNumeric(contents[1])) {
-                    int p = StaticStore.safeParseInt(contents[1]) - 1;
+                if(StaticStore.isNumeric(contents[1])) {
+                    int p = StaticStore.safeParseInt(contents[1])-1;
 
-                    if (p < 0 || p * 20 >= id.size()) {
+                    if(p < 0 || p * 20 >= form.size()) {
                         return RESULT_STILL;
                     }
 
@@ -199,33 +216,38 @@ public class MedalHolder extends Holder<MessageCreateEvent> {
                     msg.edit(m -> {
                         String check;
 
-                        if(id.size() <= 20)
+                        if(form.size() <= 20)
                             check = "";
                         else if(page == 0)
                             check = LangID.getStringByID("formst_next", lang);
-                        else if((page + 1) * 20 >= id.size())
+                        else if((page + 1) * 20 >= form.size())
                             check = LangID.getStringByID("formst_pre", lang);
                         else
                             check = LangID.getStringByID("formst_nexpre", lang);
 
                         StringBuilder sb = new StringBuilder("```md\n").append(check);
 
-                        for(int i = 20 * page; i < 20 * (page + 1) ; i++) {
-                            if(i >= id.size())
+                        for(int i = 20 * page; i < 20 * (page +1); i++) {
+                            if(i >= form.size())
                                 break;
+
+                            Form f = form.get(i);
+
+                            String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
 
                             int oldConfig = CommonStatic.getConfig().lang;
                             CommonStatic.getConfig().lang = lang;
 
-                            String medalName = Data.trio(id.get(i)) + " " + StaticStore.MEDNAME.getCont(id.get(i));
+                            if(MultiLangCont.get(f) != null)
+                                fname += MultiLangCont.get(f);
 
                             CommonStatic.getConfig().lang = oldConfig;
 
-                            sb.append(i+1).append(". ").append(medalName).append("\n");
+                            sb.append(i+1).append(". ").append(fname).append("\n");
                         }
 
-                        if(id.size() > 20)
-                            sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(id.size()/20 + 1)));
+                        if(form.size() > 20)
+                            sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(form.size()/20 + 1)));
 
                         sb.append(LangID.getStringByID("formst_can", lang));
                         sb.append("```");
@@ -247,6 +269,8 @@ public class MedalHolder extends Holder<MessageCreateEvent> {
             if(m != null)
                 m.delete().subscribe();
         }
+
+        cleaner.clear();
     }
 
     @Override

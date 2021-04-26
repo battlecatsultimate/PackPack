@@ -1,4 +1,4 @@
-package mandarin.packpack.supporter.server;
+package mandarin.packpack.supporter.server.holder;
 
 import common.CommonStatic;
 import common.util.Data;
@@ -13,6 +13,7 @@ import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.data.IDHolder;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;

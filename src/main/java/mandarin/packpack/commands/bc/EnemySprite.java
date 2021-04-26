@@ -11,8 +11,8 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
-import mandarin.packpack.supporter.server.EnemySpriteHolder;
-import mandarin.packpack.supporter.server.IDHolder;
+import mandarin.packpack.supporter.server.holder.EnemySpriteHolder;
+import mandarin.packpack.supporter.server.data.IDHolder;
 
 import java.util.ArrayList;
 

@@ -13,8 +13,7 @@ import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.Role;
 import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.core.object.presence.Activity;
-import discord4j.core.object.presence.Presence;
+import discord4j.core.object.presence.*;
 import discord4j.rest.request.RouterOptions;
 import mandarin.packpack.commands.*;
 import mandarin.packpack.commands.bc.*;
@@ -33,8 +32,8 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.event.EventFactor;
 import mandarin.packpack.supporter.lang.LangID;
-import mandarin.packpack.supporter.server.Holder;
-import mandarin.packpack.supporter.server.IDHolder;
+import mandarin.packpack.supporter.server.holder.Holder;
+import mandarin.packpack.supporter.server.data.IDHolder;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -62,7 +61,7 @@ public class PackBot {
             return;
         }
 
-        gate.updatePresence(Presence.online(Activity.playing("p!help, but under Construction!"))).subscribe();
+        gate.updatePresence(ClientPresence.online(ClientActivity.playing("p!help, but under Construction!"))).subscribe();
 
         gate.getGuilds().collectList().subscribe(l -> {
             for (Guild guild : l) {

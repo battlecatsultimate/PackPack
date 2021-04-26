@@ -1,4 +1,4 @@
-package mandarin.packpack.supporter.server;
+package mandarin.packpack.supporter.server.holder;
 
 import common.CommonStatic;
 import common.util.Data;
@@ -8,35 +8,51 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.TimeBoolean;
 
-import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-public class EnemySpriteHolder extends Holder<MessageCreateEvent> {
+public class EnemyAnimHolder extends Holder<MessageCreateEvent> {
+    public static final int RESULT_FAIL = -1;
+    public static final int RESULT_STILL = 0;
+    public static final int RESULT_FINISH = 1;
+
     private final ArrayList<Enemy> enemy;
     private final Message msg;
-    private final String channelID;
 
     private final int mode;
+    private final int frame;
+    private final boolean transparent;
+    private final boolean debug;
     private final int lang;
+    private final boolean gif;
+    private final boolean raw;
+
+    private final String channelID;
 
     private int page = 0;
     private boolean expired = false;
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
-    public EnemySpriteHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, int mode, int lang) {
+    public EnemyAnimHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, int mode, int frame, boolean transparent, boolean debug, int lang, boolean isGif, boolean raw) {
         super(MessageCreateEvent.class);
 
         this.enemy = enemy;
         this.msg = msg;
         this.channelID = channelID;
+
         this.mode = mode;
+        this.frame = frame;
+        this.transparent = transparent;
+        this.debug = debug;
         this.lang = lang;
+        this.gif = isGif;
+        this.raw = raw;
 
         Timer autoFinish = new Timer();
 
@@ -48,7 +64,7 @@ public class EnemySpriteHolder extends Holder<MessageCreateEvent> {
 
                 expired = true;
 
-                author.getAuthor().ifPresent(u -> StaticStore.removeHolder(u.getId().asString(), EnemySpriteHolder.this));
+                author.getAuthor().ifPresent(u -> StaticStore.removeHolder(u.getId().asString(), EnemyAnimHolder.this));
 
                 msg.edit(m -> m.setContent(LangID.getStringByID("formst_expire", lang))).subscribe();
             }
@@ -92,24 +108,28 @@ public class EnemySpriteHolder extends Holder<MessageCreateEvent> {
 
                 StringBuilder sb = new StringBuilder("```md\n").append(check);
 
-                for(int i = 20 * page; i < 20 * (page + 1) ; i++) {
+                int oldConfig = CommonStatic.getConfig().lang;
+                CommonStatic.getConfig().lang = lang;
+
+                for(int i = 20 * page; i < 20 * (page +1); i++) {
                     if(i >= enemy.size())
                         break;
 
                     Enemy e = enemy.get(i);
 
-                    String ename = Data.trio(e.id.id)+" ";
+                    String fname = Data.trio(e.id.id) + " - ";
 
-                    int oldConfig = CommonStatic.getConfig().lang;
                     CommonStatic.getConfig().lang = lang;
 
                     if(MultiLangCont.get(e) != null)
-                        ename += MultiLangCont.get(e);
+                        fname += MultiLangCont.get(e);
 
                     CommonStatic.getConfig().lang = oldConfig;
 
-                    sb.append(i+1).append(". ").append(ename).append("\n");
+                    sb.append(i+1).append(". ").append(fname).append("\n");
                 }
+
+                CommonStatic.getConfig().lang = oldConfig;
 
                 if(enemy.size() > 20)
                     sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(enemy.size()/20 + 1)));
@@ -141,24 +161,28 @@ public class EnemySpriteHolder extends Holder<MessageCreateEvent> {
 
                 StringBuilder sb = new StringBuilder("```md\n").append(check);
 
-                for(int i = 20 * page; i < 20 * (page + 1) ; i++) {
+                int oldConfig = CommonStatic.getConfig().lang;
+                CommonStatic.getConfig().lang = lang;
+
+                for(int i = 20 * page; i < 20 * (page +1); i++) {
                     if(i >= enemy.size())
                         break;
 
                     Enemy e = enemy.get(i);
 
-                    String ename = Data.trio(e.id.id)+" ";
+                    String fname = Data.trio(e.id.id) + " - ";
 
-                    int oldConfig = CommonStatic.getConfig().lang;
                     CommonStatic.getConfig().lang = lang;
 
                     if(MultiLangCont.get(e) != null)
-                        ename += MultiLangCont.get(e);
+                        fname += MultiLangCont.get(e);
 
                     CommonStatic.getConfig().lang = oldConfig;
 
-                    sb.append(i+1).append(". ").append(ename).append("\n");
+                    sb.append(i+1).append(". ").append(fname).append("\n");
                 }
+
+                CommonStatic.getConfig().lang = oldConfig;
 
                 if(enemy.size() > 20)
                     sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(enemy.size()/20 + 1)));
@@ -179,7 +203,67 @@ public class EnemySpriteHolder extends Holder<MessageCreateEvent> {
             try {
                 Enemy e = enemy.get(id);
 
-                EntityHandler.getEnemySprite(e, ch, mode, lang);
+                if(gif) {
+                    TimeBoolean timeBoolean = StaticStore.canDo.get("gif");
+
+                    if(timeBoolean == null || timeBoolean.canDo) {
+                        new Thread(() -> {
+                            try {
+                                boolean result = EntityHandler.generateEnemyAnim(e, ch, mode, debug, frame, lang, raw);
+
+                                if(result) {
+                                    long time = raw ? TimeUnit.MINUTES.toMillis(1) : TimeUnit.SECONDS.toMillis(30);
+
+                                    StaticStore.canDo.put("gif", new TimeBoolean(false, time));
+
+                                    Timer timer = new Timer();
+
+                                    timer.schedule(new TimerTask() {
+                                        @Override
+                                        public void run() {
+                                            System.out.println("Remove Process : gif");
+                                            StaticStore.canDo.put("gif", new TimeBoolean(true));
+                                        }
+                                    }, time);
+                                }
+                            } catch (Exception exception) {
+                                exception.printStackTrace();
+                            }
+                        }).start();
+                    } else {
+                        ch.createMessage(LangID.getStringByID("single_wait", lang).replace("_", DataToString.df.format((timeBoolean.totalTime - (System.currentTimeMillis() - StaticStore.canDo.get("gif").time)) / 1000.0))).subscribe();
+                    }
+                } else {
+                    event.getMember().ifPresent(m -> {
+                        try {
+                            if(StaticStore.timeLimit.containsKey(m.getId().asString()) && StaticStore.timeLimit.get(m.getId().asString()).containsKey(StaticStore.COMMAND_ENEMYIMAGE_ID)) {
+                                long time = StaticStore.timeLimit.get(m.getId().asString()).get(StaticStore.COMMAND_ENEMYIMAGE_ID);
+
+                                if(System.currentTimeMillis() - time > 10000) {
+                                    EntityHandler.generateEnemyImage(e, ch, mode, frame, transparent, debug, lang);
+
+                                    StaticStore.timeLimit.get(m.getId().asString()).put(StaticStore.COMMAND_ENEMYIMAGE_ID, System.currentTimeMillis());
+                                } else {
+                                    ch.createMessage(LangID.getStringByID("command_timelimit", lang).replace("_", DataToString.df.format((System.currentTimeMillis() - time) / 1000.0))).subscribe();
+                                }
+                            } else if(StaticStore.timeLimit.containsKey(m.getId().asString())) {
+                                EntityHandler.generateEnemyImage(e, ch, mode, frame, transparent, debug, lang);
+
+                                StaticStore.timeLimit.get(m.getId().asString()).put(StaticStore.COMMAND_ENEMYIMAGE_ID, System.currentTimeMillis());
+                            } else {
+                                EntityHandler.generateEnemyImage(e, ch, mode, frame, transparent, debug, lang);
+
+                                Map<String, Long> memberLimit = new HashMap<>();
+
+                                memberLimit.put(StaticStore.COMMAND_ENEMYIMAGE_ID, System.currentTimeMillis());
+
+                                StaticStore.timeLimit.put(m.getId().asString(), memberLimit);
+                            }
+                        } catch (Exception exception) {
+                            exception.printStackTrace();
+                        }
+                    });
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -193,7 +277,7 @@ public class EnemySpriteHolder extends Holder<MessageCreateEvent> {
             return RESULT_FINISH;
         } else if(content.equals("c")) {
             msg.edit(m -> {
-                m.setContent(LangID.getStringByID("formst_cancel" ,lang));
+                m.setContent(LangID.getStringByID("formst_cancel", lang));
                 expired = true;
             }).subscribe();
 
@@ -204,10 +288,10 @@ public class EnemySpriteHolder extends Holder<MessageCreateEvent> {
             String[] contents = content.split(" ");
 
             if(contents.length == 2) {
-                if (StaticStore.isNumeric(contents[1])) {
-                    int p = StaticStore.safeParseInt(contents[1]) - 1;
+                if(StaticStore.isNumeric(contents[1])) {
+                    int p = StaticStore.safeParseInt(contents[1])-1;
 
-                    if (p < 0 || p * 20 >= enemy.size()) {
+                    if(p < 0 || p * 20 >= enemy.size()) {
                         return RESULT_STILL;
                     }
 
@@ -227,23 +311,23 @@ public class EnemySpriteHolder extends Holder<MessageCreateEvent> {
 
                         StringBuilder sb = new StringBuilder("```md\n").append(check);
 
-                        for(int i = 20 * page; i < 20 * (page + 1) ; i++) {
+                        for(int i = 20 * page; i < 20 * (page +1); i++) {
                             if(i >= enemy.size())
                                 break;
 
                             Enemy e = enemy.get(i);
 
-                            String ename = Data.trio(e.id.id)+" ";
+                            String fname = Data.trio(e.id.id) + " - ";
 
                             int oldConfig = CommonStatic.getConfig().lang;
                             CommonStatic.getConfig().lang = lang;
 
                             if(MultiLangCont.get(e) != null)
-                                ename += MultiLangCont.get(e);
+                                fname += MultiLangCont.get(e);
 
                             CommonStatic.getConfig().lang = oldConfig;
 
-                            sb.append(i+1).append(". ").append(ename).append("\n");
+                            sb.append(i+1).append(". ").append(fname).append("\n");
                         }
 
                         if(enemy.size() > 20)
@@ -269,8 +353,6 @@ public class EnemySpriteHolder extends Holder<MessageCreateEvent> {
             if(m != null)
                 m.delete().subscribe();
         }
-
-        cleaner.clear();
     }
 
     @Override

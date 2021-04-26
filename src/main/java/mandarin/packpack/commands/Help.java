@@ -5,7 +5,7 @@ import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.spec.EmbedCreateSpec;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
-import mandarin.packpack.supporter.server.IDHolder;
+import mandarin.packpack.supporter.server.data.IDHolder;
 
 public class Help implements Command {
     private final int lang;

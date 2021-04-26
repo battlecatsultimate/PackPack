@@ -10,8 +10,8 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
-import mandarin.packpack.supporter.server.IDHolder;
-import mandarin.packpack.supporter.server.MedalHolder;
+import mandarin.packpack.supporter.server.data.IDHolder;
+import mandarin.packpack.supporter.server.holder.MedalHolder;
 
 import java.util.ArrayList;
 

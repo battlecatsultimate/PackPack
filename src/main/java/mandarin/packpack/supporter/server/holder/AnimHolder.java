@@ -1,4 +1,4 @@
-package mandarin.packpack.supporter.server;
+package mandarin.packpack.supporter.server.holder;
 
 import common.io.assets.UpdateCheck;
 import common.system.files.VFile;

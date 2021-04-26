@@ -25,8 +25,8 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.awt.FG2D;
 import mandarin.packpack.supporter.awt.FIBI;
 import mandarin.packpack.supporter.lang.LangID;
-import mandarin.packpack.supporter.server.FormReactionHolder;
-import mandarin.packpack.supporter.server.StageReactionHolder;
+import mandarin.packpack.supporter.server.holder.FormReactionHolder;
+import mandarin.packpack.supporter.server.holder.StageReactionHolder;
 
 import javax.imageio.ImageIO;
 import java.awt.*;

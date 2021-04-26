@@ -4,7 +4,7 @@ import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.lang.LangID;
-import mandarin.packpack.supporter.server.IDHolder;
+import mandarin.packpack.supporter.server.data.IDHolder;
 
 public class ServerPrefix extends ConstraintCommand {
     public ServerPrefix(ROLE role, int lang, IDHolder holder) {

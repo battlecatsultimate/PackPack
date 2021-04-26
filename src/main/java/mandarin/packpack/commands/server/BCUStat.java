@@ -6,7 +6,7 @@ import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
-import mandarin.packpack.supporter.server.IDHolder;
+import mandarin.packpack.supporter.server.data.IDHolder;
 
 import java.text.DecimalFormat;
 import java.util.concurrent.atomic.AtomicBoolean;

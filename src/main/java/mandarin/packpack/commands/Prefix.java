@@ -5,7 +5,7 @@ import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.rest.util.AllowedMentions;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
-import mandarin.packpack.supporter.server.IDHolder;
+import mandarin.packpack.supporter.server.data.IDHolder;
 
 public class Prefix extends ConstraintCommand {
     private static final int ERR_CANT_FIND_MEMBER = 0;

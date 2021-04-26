@@ -1,9 +1,9 @@
-package mandarin.packpack.supporter.server;
+package mandarin.packpack.supporter.server.holder;
 
 import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
-import common.util.unit.Form;
+import common.util.unit.Enemy;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
@@ -16,26 +16,29 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
-public class FormSpriteHolder extends Holder<MessageCreateEvent> {
-    private final ArrayList<Form> form;
+public class EnemyStatHolder extends Holder<MessageCreateEvent> {
+    private final ArrayList<Enemy> enemy;
     private final Message msg;
     private final String channelID;
-
-    private final int mode;
-    private final int lang;
 
     private int page = 0;
     private boolean expired = false;
 
+    private final boolean isFrame;
+    private final int[] magnification;
+    private final int lang;
+
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
-    public FormSpriteHolder(ArrayList<Form> form, Message author, Message msg, String channelID, int mode, int lang) {
+    public EnemyStatHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, int[] magnification, boolean isFrame, int lang) {
         super(MessageCreateEvent.class);
 
-        this.form = form;
+        this.enemy = enemy;
         this.msg = msg;
         this.channelID = channelID;
-        this.mode = mode;
+
+        this.magnification = magnification;
+        this.isFrame = isFrame;
         this.lang = lang;
 
         Timer autoFinish = new Timer();
@@ -48,7 +51,7 @@ public class FormSpriteHolder extends Holder<MessageCreateEvent> {
 
                 expired = true;
 
-                author.getAuthor().ifPresent(u -> StaticStore.removeHolder(u.getId().asString(), FormSpriteHolder.this));
+                author.getAuthor().ifPresent(u -> StaticStore.removeHolder(u.getId().asString(), EnemyStatHolder.this));
 
                 msg.edit(m -> m.setContent(LangID.getStringByID("formst_expire", lang))).subscribe();
             }
@@ -73,7 +76,7 @@ public class FormSpriteHolder extends Holder<MessageCreateEvent> {
         String content = event.getMessage().getContent();
 
         if(content.equals("n")) {
-            if(20 * (page + 1) >= form.size())
+            if(20 * (page + 1) >= enemy.size())
                 return RESULT_STILL;
 
             page++;
@@ -81,38 +84,38 @@ public class FormSpriteHolder extends Holder<MessageCreateEvent> {
             msg.edit(m -> {
                 String check;
 
-                if(form.size() <= 20)
+                if(enemy.size() <= 20)
                     check = "";
                 else if(page == 0)
                     check = LangID.getStringByID("formst_next", lang);
-                else if((page + 1) * 20 >= form.size())
+                else if((page + 1) * 20 >= enemy.size())
                     check = LangID.getStringByID("formst_pre", lang);
                 else
                     check = LangID.getStringByID("formst_nexpre", lang);
 
                 StringBuilder sb = new StringBuilder("```md\n").append(check);
 
-                for(int i = 20 * page; i < 20 * (page +1); i++) {
-                    if(i >= form.size())
+                for(int i = 20 * page; i < 20 * (page + 1) ; i++) {
+                    if(i >= enemy.size())
                         break;
 
-                    Form f = form.get(i);
+                    Enemy e = enemy.get(i);
 
-                    String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
+                    String ename = Data.trio(e.id.id)+" ";
 
                     int oldConfig = CommonStatic.getConfig().lang;
                     CommonStatic.getConfig().lang = lang;
 
-                    if(MultiLangCont.get(f) != null)
-                        fname += MultiLangCont.get(f);
+                    if(MultiLangCont.get(e) != null)
+                        ename += MultiLangCont.get(e);
 
                     CommonStatic.getConfig().lang = oldConfig;
 
-                    sb.append(i+1).append(". ").append(fname).append("\n");
+                    sb.append(i+1).append(". ").append(ename).append("\n");
                 }
 
-                if(form.size() > 20)
-                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(form.size()/20 + 1)));
+                if(enemy.size() > 20)
+                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(enemy.size()/20 + 1)));
 
                 sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
@@ -130,38 +133,38 @@ public class FormSpriteHolder extends Holder<MessageCreateEvent> {
             msg.edit(m -> {
                 String check;
 
-                if(form.size() <= 20)
+                if(enemy.size() <= 20)
                     check = "";
                 else if(page == 0)
                     check = LangID.getStringByID("formst_next", lang);
-                else if((page + 1) * 20 >= form.size())
+                else if((page + 1) * 20 >= enemy.size())
                     check = LangID.getStringByID("formst_pre", lang);
                 else
                     check = LangID.getStringByID("formst_nexpre", lang);
 
                 StringBuilder sb = new StringBuilder("```md\n").append(check);
 
-                for(int i = 20 * page; i < 20 * (page +1); i++) {
-                    if(i >= form.size())
+                for(int i = 20 * page; i < 20 * (page + 1) ; i++) {
+                    if(i >= enemy.size())
                         break;
 
-                    Form f = form.get(i);
+                    Enemy e = enemy.get(i);
 
-                    String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
+                    String ename = Data.trio(e.id.id)+" ";
 
                     int oldConfig = CommonStatic.getConfig().lang;
                     CommonStatic.getConfig().lang = lang;
 
-                    if(MultiLangCont.get(f) != null)
-                        fname += MultiLangCont.get(f);
+                    if(MultiLangCont.get(e) != null)
+                        ename += MultiLangCont.get(e);
 
                     CommonStatic.getConfig().lang = oldConfig;
 
-                    sb.append(i+1).append(". ").append(fname).append("\n");
+                    sb.append(i+1).append(". ").append(ename).append("\n");
                 }
 
-                if(form.size() > 20)
-                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(form.size()/20 + 1)));
+                if(enemy.size() > 20)
+                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(enemy.size()/20 + 1)));
 
                 sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
@@ -173,18 +176,16 @@ public class FormSpriteHolder extends Holder<MessageCreateEvent> {
         } else if(StaticStore.isNumeric(content)) {
             int id = StaticStore.safeParseInt(content)-1;
 
-            if(id < 0 || id >= form.size())
+            if(id < 0 || id >= enemy.size())
                 return RESULT_STILL;
 
-            try {
-                Form f = form.get(id);
+            msg.delete().subscribe();
 
-                EntityHandler.getFormSprite(f, ch, mode, lang);
+            try {
+                EntityHandler.showEnemyEmb(enemy.get(id), ch, isFrame, magnification, lang);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-            msg.delete().subscribe();
 
             expired = true;
 
@@ -193,7 +194,7 @@ public class FormSpriteHolder extends Holder<MessageCreateEvent> {
             return RESULT_FINISH;
         } else if(content.equals("c")) {
             msg.edit(m -> {
-                m.setContent(LangID.getStringByID("formst_cancel", lang));
+                m.setContent(LangID.getStringByID("formst_cancel" ,lang));
                 expired = true;
             }).subscribe();
 
@@ -204,10 +205,10 @@ public class FormSpriteHolder extends Holder<MessageCreateEvent> {
             String[] contents = content.split(" ");
 
             if(contents.length == 2) {
-                if(StaticStore.isNumeric(contents[1])) {
-                    int p = StaticStore.safeParseInt(contents[1])-1;
+                if (StaticStore.isNumeric(contents[1])) {
+                    int p = StaticStore.safeParseInt(contents[1]) - 1;
 
-                    if(p < 0 || p * 20 >= form.size()) {
+                    if (p < 0 || p * 20 >= enemy.size()) {
                         return RESULT_STILL;
                     }
 
@@ -216,38 +217,38 @@ public class FormSpriteHolder extends Holder<MessageCreateEvent> {
                     msg.edit(m -> {
                         String check;
 
-                        if(form.size() <= 20)
+                        if(enemy.size() <= 20)
                             check = "";
                         else if(page == 0)
                             check = LangID.getStringByID("formst_next", lang);
-                        else if((page + 1) * 20 >= form.size())
+                        else if((page + 1) * 20 >= enemy.size())
                             check = LangID.getStringByID("formst_pre", lang);
                         else
                             check = LangID.getStringByID("formst_nexpre", lang);
 
                         StringBuilder sb = new StringBuilder("```md\n").append(check);
 
-                        for(int i = 20 * page; i < 20 * (page +1); i++) {
-                            if(i >= form.size())
+                        for(int i = 20 * page; i < 20 * (page + 1) ; i++) {
+                            if(i >= enemy.size())
                                 break;
 
-                            Form f = form.get(i);
+                            Enemy e = enemy.get(i);
 
-                            String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
+                            String ename = Data.trio(e.id.id)+" ";
 
                             int oldConfig = CommonStatic.getConfig().lang;
                             CommonStatic.getConfig().lang = lang;
 
-                            if(MultiLangCont.get(f) != null)
-                                fname += MultiLangCont.get(f);
+                            if(MultiLangCont.get(e) != null)
+                                ename += MultiLangCont.get(e);
 
                             CommonStatic.getConfig().lang = oldConfig;
 
-                            sb.append(i+1).append(". ").append(fname).append("\n");
+                            sb.append(i+1).append(". ").append(ename).append("\n");
                         }
 
-                        if(form.size() > 20)
-                            sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(form.size()/20 + 1)));
+                        if(enemy.size() > 20)
+                            sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(enemy.size()/20 + 1)));
 
                         sb.append(LangID.getStringByID("formst_can", lang));
                         sb.append("```");
@@ -269,8 +270,6 @@ public class FormSpriteHolder extends Holder<MessageCreateEvent> {
             if(m != null)
                 m.delete().subscribe();
         }
-
-        cleaner.clear();
     }
 
     @Override

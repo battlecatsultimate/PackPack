@@ -11,7 +11,7 @@ import mandarin.packpack.supporter.FontStageImageGenerator;
 import mandarin.packpack.supporter.ImageGenerator;
 import mandarin.packpack.supporter.StageImageGenerator;
 import mandarin.packpack.supporter.lang.LangID;
-import mandarin.packpack.supporter.server.IDHolder;
+import mandarin.packpack.supporter.server.data.IDHolder;
 
 import java.awt.*;
 import java.io.File;

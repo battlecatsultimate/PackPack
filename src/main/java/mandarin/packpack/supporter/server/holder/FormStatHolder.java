@@ -1,9 +1,9 @@
-package mandarin.packpack.supporter.server;
+package mandarin.packpack.supporter.server.holder;
 
 import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
-import common.util.unit.Enemy;
+import common.util.unit.Form;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
@@ -16,29 +16,31 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
-public class EnemyStatHolder extends Holder<MessageCreateEvent> {
-    private final ArrayList<Enemy> enemy;
+public class FormStatHolder extends Holder<MessageCreateEvent> {
+    private final ArrayList<Form> form;
     private final Message msg;
     private final String channelID;
 
     private int page = 0;
     private boolean expired = false;
 
+    private final boolean talent;
     private final boolean isFrame;
-    private final int[] magnification;
+    private final int[] lv;
     private final int lang;
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
-    public EnemyStatHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, int[] magnification, boolean isFrame, int lang) {
+    public FormStatHolder(ArrayList<Form> form, Message author, Message msg, String channelID, int param, int[] lv, int lang) {
         super(MessageCreateEvent.class);
 
-        this.enemy = enemy;
+        this.form = form;
         this.msg = msg;
         this.channelID = channelID;
 
-        this.magnification = magnification;
-        this.isFrame = isFrame;
+        this.talent = (param & 2) > 0;
+        this.isFrame = (param & 4) == 0;
+        this.lv = lv;
         this.lang = lang;
 
         Timer autoFinish = new Timer();
@@ -51,7 +53,7 @@ public class EnemyStatHolder extends Holder<MessageCreateEvent> {
 
                 expired = true;
 
-                author.getAuthor().ifPresent(u -> StaticStore.removeHolder(u.getId().asString(), EnemyStatHolder.this));
+                author.getAuthor().ifPresent(u -> StaticStore.removeHolder(u.getId().asString(), FormStatHolder.this));
 
                 msg.edit(m -> m.setContent(LangID.getStringByID("formst_expire", lang))).subscribe();
             }
@@ -76,7 +78,7 @@ public class EnemyStatHolder extends Holder<MessageCreateEvent> {
         String content = event.getMessage().getContent();
 
         if(content.equals("n")) {
-            if(20 * (page + 1) >= enemy.size())
+            if(20 * (page + 1) >= form.size())
                 return RESULT_STILL;
 
             page++;
@@ -84,38 +86,38 @@ public class EnemyStatHolder extends Holder<MessageCreateEvent> {
             msg.edit(m -> {
                 String check;
 
-                if(enemy.size() <= 20)
+                if(form.size() <= 20)
                     check = "";
                 else if(page == 0)
                     check = LangID.getStringByID("formst_next", lang);
-                else if((page + 1) * 20 >= enemy.size())
+                else if((page + 1) * 20 >= form.size())
                     check = LangID.getStringByID("formst_pre", lang);
                 else
                     check = LangID.getStringByID("formst_nexpre", lang);
 
                 StringBuilder sb = new StringBuilder("```md\n").append(check);
 
-                for(int i = 20 * page; i < 20 * (page + 1) ; i++) {
-                    if(i >= enemy.size())
+                for(int i = 20 * page; i < 20 * (page +1); i++) {
+                    if(i >= form.size())
                         break;
 
-                    Enemy e = enemy.get(i);
+                    Form f = form.get(i);
 
-                    String ename = Data.trio(e.id.id)+" ";
+                    String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
 
                     int oldConfig = CommonStatic.getConfig().lang;
                     CommonStatic.getConfig().lang = lang;
 
-                    if(MultiLangCont.get(e) != null)
-                        ename += MultiLangCont.get(e);
+                    if(MultiLangCont.get(f) != null)
+                        fname += MultiLangCont.get(f);
 
                     CommonStatic.getConfig().lang = oldConfig;
 
-                    sb.append(i+1).append(". ").append(ename).append("\n");
+                    sb.append(i+1).append(". ").append(fname).append("\n");
                 }
 
-                if(enemy.size() > 20)
-                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(enemy.size()/20 + 1)));
+                if(form.size() > 20)
+                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(form.size()/20 + 1)));
 
                 sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
@@ -133,38 +135,38 @@ public class EnemyStatHolder extends Holder<MessageCreateEvent> {
             msg.edit(m -> {
                 String check;
 
-                if(enemy.size() <= 20)
+                if(form.size() <= 20)
                     check = "";
                 else if(page == 0)
                     check = LangID.getStringByID("formst_next", lang);
-                else if((page + 1) * 20 >= enemy.size())
+                else if((page + 1) * 20 >= form.size())
                     check = LangID.getStringByID("formst_pre", lang);
                 else
                     check = LangID.getStringByID("formst_nexpre", lang);
 
                 StringBuilder sb = new StringBuilder("```md\n").append(check);
 
-                for(int i = 20 * page; i < 20 * (page + 1) ; i++) {
-                    if(i >= enemy.size())
+                for(int i = 20 * page; i < 20 * (page +1); i++) {
+                    if(i >= form.size())
                         break;
 
-                    Enemy e = enemy.get(i);
+                    Form f = form.get(i);
 
-                    String ename = Data.trio(e.id.id)+" ";
+                    String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
 
                     int oldConfig = CommonStatic.getConfig().lang;
                     CommonStatic.getConfig().lang = lang;
 
-                    if(MultiLangCont.get(e) != null)
-                        ename += MultiLangCont.get(e);
+                    if(MultiLangCont.get(f) != null)
+                        fname += MultiLangCont.get(f);
 
                     CommonStatic.getConfig().lang = oldConfig;
 
-                    sb.append(i+1).append(". ").append(ename).append("\n");
+                    sb.append(i+1).append(". ").append(fname).append("\n");
                 }
 
-                if(enemy.size() > 20)
-                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(enemy.size()/20 + 1)));
+                if(form.size() > 20)
+                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(form.size()/20 + 1)));
 
                 sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
@@ -176,13 +178,29 @@ public class EnemyStatHolder extends Holder<MessageCreateEvent> {
         } else if(StaticStore.isNumeric(content)) {
             int id = StaticStore.safeParseInt(content)-1;
 
-            if(id < 0 || id >= enemy.size())
+            if(id < 0 || id >= form.size())
                 return RESULT_STILL;
 
             msg.delete().subscribe();
 
+            if(lv[0] > form.get(id).unit.max + form.get(id).unit.maxp)
+                lv[0] = form.get(id).unit.max + form.get(id).unit.maxp;
+            else if(lv[0] <= 0) {
+                if(form.get(id).unit.rarity == 0)
+                    lv[0] = 110;
+                else
+                    lv[0] = 30;
+            }
+
             try {
-                EntityHandler.showEnemyEmb(enemy.get(id), ch, isFrame, magnification, lang);
+                Message result = EntityHandler.showUnitEmb(form.get(id), ch, isFrame, talent, lv, lang, true);
+
+                if(result != null) {
+                    event.getMember().ifPresent(m -> {
+                        StaticStore.removeHolder(m.getId().asString(), FormStatHolder.this);
+                        StaticStore.putHolder(m.getId().asString(), new FormReactionHolder(form.get(id), event.getMessage(), result, isFrame, talent, lv, lang, ch.getId().asString(), m.getId().asString()));
+                    });
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -194,7 +212,7 @@ public class EnemyStatHolder extends Holder<MessageCreateEvent> {
             return RESULT_FINISH;
         } else if(content.equals("c")) {
             msg.edit(m -> {
-                m.setContent(LangID.getStringByID("formst_cancel" ,lang));
+                m.setContent(LangID.getStringByID("formst_cancel", lang));
                 expired = true;
             }).subscribe();
 
@@ -205,10 +223,10 @@ public class EnemyStatHolder extends Holder<MessageCreateEvent> {
             String[] contents = content.split(" ");
 
             if(contents.length == 2) {
-                if (StaticStore.isNumeric(contents[1])) {
-                    int p = StaticStore.safeParseInt(contents[1]) - 1;
+                if(StaticStore.isNumeric(contents[1])) {
+                    int p = StaticStore.safeParseInt(contents[1])-1;
 
-                    if (p < 0 || p * 20 >= enemy.size()) {
+                    if(p < 0 || p * 20 >= form.size()) {
                         return RESULT_STILL;
                     }
 
@@ -217,38 +235,38 @@ public class EnemyStatHolder extends Holder<MessageCreateEvent> {
                     msg.edit(m -> {
                         String check;
 
-                        if(enemy.size() <= 20)
+                        if(form.size() <= 20)
                             check = "";
                         else if(page == 0)
                             check = LangID.getStringByID("formst_next", lang);
-                        else if((page + 1) * 20 >= enemy.size())
+                        else if((page + 1) * 20 >= form.size())
                             check = LangID.getStringByID("formst_pre", lang);
                         else
                             check = LangID.getStringByID("formst_nexpre", lang);
 
                         StringBuilder sb = new StringBuilder("```md\n").append(check);
 
-                        for(int i = 20 * page; i < 20 * (page + 1) ; i++) {
-                            if(i >= enemy.size())
+                        for(int i = 20 * page; i < 20 * (page +1); i++) {
+                            if(i >= form.size())
                                 break;
 
-                            Enemy e = enemy.get(i);
+                            Form f = form.get(i);
 
-                            String ename = Data.trio(e.id.id)+" ";
+                            String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
 
                             int oldConfig = CommonStatic.getConfig().lang;
                             CommonStatic.getConfig().lang = lang;
 
-                            if(MultiLangCont.get(e) != null)
-                                ename += MultiLangCont.get(e);
+                            if(MultiLangCont.get(f) != null)
+                                fname += MultiLangCont.get(f);
 
                             CommonStatic.getConfig().lang = oldConfig;
 
-                            sb.append(i+1).append(". ").append(ename).append("\n");
+                            sb.append(i+1).append(". ").append(fname).append("\n");
                         }
 
-                        if(enemy.size() > 20)
-                            sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(enemy.size()/20 + 1)));
+                        if(form.size() > 20)
+                            sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(form.size()/20 + 1)));
 
                         sb.append(LangID.getStringByID("formst_can", lang));
                         sb.append("```");
