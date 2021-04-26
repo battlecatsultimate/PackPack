@@ -17,9 +17,9 @@ import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Role;
 import discord4j.rest.util.Color;
 import mandarin.packpack.supporter.event.EventHolder;
-import mandarin.packpack.supporter.server.Holder;
-import mandarin.packpack.supporter.server.IDHolder;
-import mandarin.packpack.supporter.server.ImgurDataHolder;
+import mandarin.packpack.supporter.server.holder.Holder;
+import mandarin.packpack.supporter.server.data.IDHolder;
+import mandarin.packpack.supporter.server.data.ImgurDataHolder;
 import mandarin.packpack.supporter.server.TimeBoolean;
 
 import java.io.*;
@@ -171,10 +171,8 @@ public class StaticStore {
             return "";
     }
 
-    public static JsonObject mapToJsonIDHolder(Map<String, IDHolder> map) {
-        JsonObject obj = new JsonObject();
-
-        int i = 0;
+    public static JsonArray mapToJsonIDHolder(Map<String, IDHolder> map) {
+        JsonArray arr = new JsonArray();
 
         for(String key : map.keySet()) {
             IDHolder value = map.get(key);
@@ -189,45 +187,14 @@ public class StaticStore {
             id.add("val", value.jsonfy());
             id.addProperty("key", key);
 
-            obj.add(Integer.toString(i), id);
-
-            i++;
+            arr.add(id);
         }
 
-        return obj;
+        return arr;
     }
 
-    public static Map<String, IDHolder> jsonToMapIDHolder(JsonObject obj) {
-        Map<String, IDHolder> map = new HashMap<>();
-
-        int i = 0;
-
-        while(true) {
-            if(obj.has(Integer.toString(i))) {
-                JsonObject id = obj.get(Integer.toString(i)).getAsJsonObject();
-
-                if(id.has("val") && id.has("key")) {
-                    JsonObject val = id.getAsJsonObject("val");
-                    String key = id.get("key").getAsString();
-
-                    IDHolder holder = IDHolder.jsonToIDHolder(val);
-
-                    map.put(key, holder);
-                }
-
-                i++;
-            } else {
-                break;
-            }
-        }
-
-        return map;
-    }
-
-    public static JsonObject mapToJsonString(Map<String, String> map) {
-        JsonObject obj = new JsonObject();
-
-        int i = 0;
+    public static JsonArray mapToJsonString(Map<String, String> map) {
+        JsonArray arr = new JsonArray();
 
         for(String key : map.keySet()) {
             String value = map.get(key);
@@ -242,18 +209,14 @@ public class StaticStore {
             set.addProperty("key", key);
             set.addProperty("val", value);
 
-            obj.add(Integer.toString(i), set);
-
-            i++;
+            arr.add(set);
         }
 
-        return obj;
+        return arr;
     }
 
-    public static JsonObject mapToJsonInt(Map<String, Integer> map) {
-        JsonObject obj = new JsonObject();
-
-        int i = 0;
+    public static JsonArray mapToJsonInt(Map<String, Integer> map) {
+        JsonArray arr = new JsonArray();
 
         for(String key : map.keySet()) {
             int value = map.get(key);
@@ -263,56 +226,77 @@ public class StaticStore {
             set.addProperty("key", key);
             set.addProperty("val", value);
 
-            obj.add(Integer.toString(i), set);
-
-            i++;
+            arr.add(set);
         }
 
-        return obj;
+        return arr;
     }
 
-    public static Map<String, String> jsonToMapString(JsonObject obj) {
+    public static JsonArray listToJsonString(ArrayList<String> list) {
+        JsonArray arr = new JsonArray();
+
+        for(String str : list) {
+            arr.add(str);
+        }
+
+        return arr;
+    }
+
+    public static Map<String, IDHolder> jsonToMapIDHolder(JsonArray arr) {
+        Map<String, IDHolder> map = new HashMap<>();
+
+        for(int i = 0; i < arr.size(); i++) {
+            JsonObject obj = arr.get(i).getAsJsonObject();
+
+            if(obj.has("val") && obj.has("key")) {
+                JsonObject val = obj.getAsJsonObject("val");
+                String key = obj.get("key").getAsString();
+
+                IDHolder holder = IDHolder.jsonToIDHolder(val);
+
+                map.put(key, holder);
+            }
+        }
+
+        return map;
+    }
+
+    public static Map<String, String> jsonToMapString(JsonArray arr) {
         Map<String, String> map = new HashMap<>();
 
-        int i = 0;
+        for(int i = 0; i < arr.size(); i++) {
+            JsonObject obj = arr.get(i).getAsJsonObject();
 
-        while(true) {
-            if(obj.has(Integer.toString(i))) {
-                JsonObject set = obj.getAsJsonObject(Integer.toString(i));
-
-                if(set.has("key") && set.has("val")) {
-                    map.put(set.get("key").getAsString(), set.get("val").getAsString());
-                }
-
-                i++;
-            } else {
-                break;
+            if(obj.has("key") && obj.has("val")) {
+                map.put(obj.get("key").getAsString(), obj.get("val").getAsString());
             }
         }
 
         return map;
     }
 
-    public static Map<String, Integer> jsonToMapInt(JsonObject obj) {
+    public static Map<String, Integer> jsonToMapInt(JsonArray arr) {
         Map<String, Integer> map = new HashMap<>();
 
-        int i = 0;
+        for(int i = 0; i < arr.size(); i++) {
+            JsonObject obj = arr.get(i).getAsJsonObject();
 
-        while(true) {
-            if(obj.has(Integer.toString(i))) {
-                JsonObject set = obj.getAsJsonObject(Integer.toString(i));
-
-                if(set.has("key") && set.has("val")) {
-                    map.put(set.get("key").getAsString(), set.get("val").getAsInt());
-                }
-
-                i++;
-            } else {
-                break;
+            if(obj.has("key") && obj.has("val")) {
+                map.put(obj.get("key").getAsString(), obj.get("val").getAsInt());
             }
         }
 
         return map;
+    }
+
+    public static ArrayList<String> jsonToListString(JsonArray arr) {
+        ArrayList<String> result = new ArrayList<>();
+
+        for(int i = 0; i < arr.size(); i++) {
+            result.add(arr.get(i).getAsString());
+        }
+
+        return result;
     }
 
     public static JsonObject getJsonFile(String name) {
@@ -397,15 +381,15 @@ public class StaticStore {
             }
 
             if(obj.has("prefix")) {
-                prefix = jsonToMapString(obj.get("prefix").getAsJsonObject());
+                prefix = jsonToMapString(obj.get("prefix").getAsJsonArray());
             }
 
             if(obj.has("lang")) {
-                langs = jsonToMapString(obj.get("lang").getAsJsonObject());
+                langs = jsonToMapString(obj.get("lang").getAsJsonArray());
             }
 
             if(obj.has("locale")) {
-                locales = jsonToMapInt(obj.get("locale").getAsJsonObject());
+                locales = jsonToMapInt(obj.get("locale").getAsJsonArray());
             }
 
             if(obj.has("imgur")) {
@@ -413,11 +397,11 @@ public class StaticStore {
             }
 
             if(obj.has("idholder")) {
-                idHolder = jsonToMapIDHolder(obj.getAsJsonObject("idholder"));
+                idHolder = jsonToMapIDHolder(obj.getAsJsonArray("idholder"));
             }
 
             if(obj.has("suggestBanned")) {
-                suggestBanned = jsonToMapString(obj.getAsJsonObject("suggestBanned"));
+                suggestBanned = jsonToMapString(obj.getAsJsonArray("suggestBanned"));
             }
         }
     }
