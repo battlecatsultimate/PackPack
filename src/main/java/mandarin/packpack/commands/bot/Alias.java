@@ -11,11 +11,12 @@ import common.util.unit.Form;
 import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
-import mandarin.packpack.commands.Command;
+import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.AliasHolder;
+import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.alias.AliasEnemyHolder;
 import mandarin.packpack.supporter.server.holder.alias.AliasFormHolder;
 import mandarin.packpack.supporter.server.holder.alias.AliasStageHolder;
@@ -23,11 +24,10 @@ import mandarin.packpack.supporter.server.holder.alias.AliasStageHolder;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class Alias implements Command {
-    private final int lang;
+public class Alias extends ConstraintCommand {
 
-    public Alias(int lang) {
-        this.lang = lang;
+    public Alias(ROLE role, int lang, IDHolder id) {
+        super(role, lang, id);
     }
 
     @Override
