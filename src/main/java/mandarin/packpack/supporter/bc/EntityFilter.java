@@ -614,8 +614,6 @@ public class EntityFilter {
                 }
             }
 
-            System.out.println(mcContain+ " | " + stmContain+" | "+stContain);
-
             if(mcContain) {
                 for(MapColc mc : MapColc.values()) {
                     if(mc == null)
