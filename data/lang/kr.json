@@ -493,5 +493,20 @@
   "suggest_sent" : "제안을 성공적으로 개발자에게 보냈습니다!",
   "response_title" : "제안에 대한 응답",
   "response_desc" : "개발자가 해당 제안에 대한 응답을 보냈기에 개인 메세지로 전해드립니다",
-  "response_suggestedby" : "제안한 유저 : _UUU_"
+  "response_suggestedby" : "제안한 유저 : _UUU_",
+  "alias_noperm" : "보조 이름을 수정할 권한이 없습니다",
+  "alias_specify" : "수정하고 싶은 데이터의 타입을 결정해 주세요",
+  "alias_formnoname" : "유닛의 이름을 적어주세요",
+  "alias_noalias" : "_ 은(는) 아직 보조 이름을 갖고 있지 않습니다",
+  "alias_formalias" : "유닛 _FFF_ 의 보조 이름 리스트 (총 _NNN_ 개의 보조 이름) : ",
+  "alias_etc" : "... 이하 생략",
+  "alias_enemnoname" : "적의 이름을 적어주세요",
+  "alias_enemalias" : "적 _EEE_ 의 보조 이름 리스트 (총 _NNN_ 개의 보조 이름) : ",
+  "alias_stnoname" : "스테이지 이름을 적어주세요",
+  "alias_stalias" : "스테이지 _SSS_ 의 보조 이름 리스트 (총 _NNN_ 개의 보조 이름) : ",
+  "alias_aliasblank" : "보조 이름을 적어주세요",
+  "alias_added" : "_DDD_ 에게 보조 이름 _AAA_ 을(를) 추가했습니다!",
+  "alias_contain" : "_ 은(는) 이미 해당 보조 이름을 갖고 있습니다",
+  "alias_nosuch" : "_ 은(는) 해당 보조 이름을 갖고 있지 않습니다",
+  "alias_removed" : "_DDD_ 로부터 보조 이름 _AAA_ 을(를) 제거했습니다!"
 }

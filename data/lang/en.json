@@ -497,5 +497,20 @@
   "suggest_sent" : "Successfully sent suggestion to developer!",
   "response_title" : "Response from suggestion",
   "response_desc" : "Developer sent response about your suggestion, so I'm sending you response via DM",
-  "response_suggestedby" : "Suggested by : _UUU_"
+  "response_suggestedby" : "Suggested by : _UUU_",
+  "alias_noperm" : "You don't have permission to manipulate aliases",
+  "alias_specify" : "Please specify which type of data you want to manipulate",
+  "alias_formnoname" : "You have to specify unit's name",
+  "alias_noalias" : "_ doesn't have any alias yet",
+  "alias_formalias" : "List of alias of unit _FFF_ (_NNN_ aliases in total) : ",
+  "alias_etc" : "... and more",
+  "alias_enemnoname" : "You have to specify enemy's name",
+  "alias_enemalias" : "List of alias of enemy _EEE_ (_NNN_ aliases in total) : ",
+  "alias_stnoname" : "You have to specify stage's name",
+  "alias_stalias" : "List of alias of stage _SSS_ (_NNN_ in total) : ",
+  "alias_aliasblank" : "You have to specify alias name",
+  "alias_added" : "Added _AAA_ to _DDD_!",
+  "alias_contain" : "_ already has that alias",
+  "alias_nosuch" : "_ doesn't have such alias",
+  "alias_removed" : "Removed _AAA_ from _DDD_!"
 }
