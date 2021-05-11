@@ -11,8 +11,6 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 
-import java.util.Optional;
-
 public class SuggestResponse extends ConstraintCommand {
 
     private final GatewayDiscordClient client;
@@ -46,11 +44,7 @@ public class SuggestResponse extends ConstraintCommand {
                         ((TextChannel) c).createEmbed(e -> {
                             e.setTitle(LangID.getStringByID("response_title", lang));
                             e.setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)]);
-                            embed.getAuthor().ifPresentOrElse(au -> {
-                                Optional<String> authorName = au.getName();
-
-                                e.addField(authorName.isEmpty() ? "UNKNOWN" : authorName.get(), contents[5], false);
-                            }, () -> e.addField("UNKNOWN", contents[5], false));
+                            embed.getAuthor().ifPresentOrElse(au -> e.addField(au.getName() == null ? "UNKNOWN" : au.getName(), contents[5], false), () -> e.addField("UNKNOWN", contents[5], false));
 
                             client.getUserById(Snowflake.of(contents[3])).subscribe(u -> e.setFooter(LangID.getStringByID("response_suggestedby", lang).replace("_UUU_", u.getTag()), u.getAvatarUrl()));
                         }).subscribe();
@@ -68,11 +62,7 @@ public class SuggestResponse extends ConstraintCommand {
                     e.setDescription(LangID.getStringByID("response_desc", lang));
                     e.setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)]);
 
-                    embed.getAuthor().ifPresentOrElse(au -> {
-                        Optional<String> authorName = au.getName();
-
-                        e.addField(authorName.isEmpty() ? "UNKNOWN" : authorName.get(), contents[5], false);
-                    }, () -> e.addField("UNKNOWN", contents[5], false));
+                    embed.getAuthor().ifPresentOrElse(au -> e.addField(au.getName() == null ? "UNKNOWN" : au.getName(), contents[5], false), () -> e.addField("UNKNOWN", contents[5], false));
                 }).subscribe();
             }
         })))));

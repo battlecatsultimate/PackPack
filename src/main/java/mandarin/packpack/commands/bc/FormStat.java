@@ -58,11 +58,9 @@ public class FormStat extends ConstraintCommand {
                         }
                     });
                 }
-            } else if (forms.size() == 0) {
+            } else if (forms.isEmpty()) {
                 createMessageWithNoPings(ch, LangID.getStringByID("formst_nounit", lang).replace("_", filterCommand(getContent(event))));
             } else {
-                CommonStatic.getConfig().lang = lang;
-
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", filterCommand(getContent(event))));
 
                 String check;
@@ -82,13 +80,10 @@ public class FormStat extends ConstraintCommand {
 
                     String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
 
-                    int oldConfig = CommonStatic.getConfig().lang;
-                    CommonStatic.getConfig().lang = lang;
+                    String name = StaticStore.safeMultiLangGet(f, lang);
 
-                    if(MultiLangCont.get(f) != null)
-                        fname += MultiLangCont.get(f);
-
-                    CommonStatic.getConfig().lang = oldConfig;
+                    if(name != null)
+                        fname += name;
 
                     sb.append(i+1).append(". ").append(fname).append("\n");
                 }
