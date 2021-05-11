@@ -17,12 +17,14 @@ import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Role;
 import discord4j.rest.util.Color;
 import mandarin.packpack.supporter.event.EventHolder;
+import mandarin.packpack.supporter.server.data.AliasHolder;
 import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.data.ImgurDataHolder;
 import mandarin.packpack.supporter.server.TimeBoolean;
 
 import java.io.*;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -55,6 +57,8 @@ public class StaticStore {
     private static final Map<String, Holder<? extends MessageEvent>> holders = new HashMap<>();
 
     public static Map<String, String> suggestBanned = new HashMap<>();
+
+    public static ArrayList<String> contributers = new ArrayList<>();
 
     public static ImgurDataHolder imgur = new ImgurDataHolder(null);
 
@@ -96,6 +100,7 @@ public class StaticStore {
 
     public static final Random random = new Random();
     public static final BigInteger max = new BigInteger(Integer.toString(Integer.MAX_VALUE));
+    public static final BigInteger min = new BigInteger(Integer.toString(Integer.MIN_VALUE));
 
     public static final String MANDARIN_SMELL = "460409259021172781";
 
@@ -329,6 +334,7 @@ public class StaticStore {
         obj.add("imgur", imgur.getData());
         obj.add("idholder", mapToJsonIDHolder(idHolder));
         obj.add("suggestBanned", mapToJsonString(suggestBanned));
+        obj.add("alias", AliasHolder.jsonfy());
 
         try {
             File folder = new File("./data/");
@@ -365,6 +371,16 @@ public class StaticStore {
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static void postReadServerInfo() {
+        JsonObject obj = getJsonFile("serverinfo");
+
+        if(obj != null) {
+            if(obj.has("alias")) {
+                AliasHolder.parseJson(obj.getAsJsonObject("alias"));
+            }
         }
     }
 
@@ -461,23 +477,36 @@ public class StaticStore {
     }
 
     public static boolean isNumeric(String name) {
+        boolean decimalStart = false;
+        boolean eNotationStart = false;
+        boolean numberContained = false;
+
         for(int i = 0; i < name.length(); i++) {
-            if(!Character.isDigit(name.charAt(i)))
-                if(i != 0 || name.charAt(i) != '-')
+            if(!Character.isDigit(name.charAt(i))) {
+                if (!decimalStart && !eNotationStart && name.charAt(i) == '.')
+                    decimalStart = true;
+                else if (!eNotationStart && name.charAt(i) == 'E')
+                    eNotationStart = true;
+                else if (i != 0 || name.charAt(i) != '-')
                     return false;
+            } else {
+                numberContained = true;
+            }
         }
 
-        return true;
+        return numberContained;
     }
 
     public static int safeParseInt(String value) {
         if(isNumeric(value)) {
-            BigInteger big = new BigInteger(value);
+            BigInteger big = new BigDecimal(value).toBigInteger();
 
             if(big.compareTo(max) > 0) {
                 return Integer.MAX_VALUE;
+            } else if(big.compareTo(min) < 0) {
+                return Integer.MIN_VALUE;
             } else {
-                return Integer.parseInt(value);
+                return big.intValue();
             }
         } else {
             throw new IllegalStateException("Value isn't numeric! : "+value);
