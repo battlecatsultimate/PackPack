@@ -12,9 +12,6 @@ import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
 
 public class FormSpriteHolder extends Holder<MessageCreateEvent> {
     private final ArrayList<Form> form;
@@ -38,21 +35,7 @@ public class FormSpriteHolder extends Holder<MessageCreateEvent> {
         this.mode = mode;
         this.lang = lang;
 
-        Timer autoFinish = new Timer();
-
-        autoFinish.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if(expired)
-                    return;
-
-                expired = true;
-
-                author.getAuthor().ifPresent(u -> StaticStore.removeHolder(u.getId().asString(), FormSpriteHolder.this));
-
-                msg.edit(m -> m.setContent(LangID.getStringByID("formst_expire", lang))).subscribe();
-            }
-        }, TimeUnit.MINUTES.toMillis(5));
+        registerAutoFinish(this, msg, author, lang, FIVE_MIN);
     }
 
     @Override

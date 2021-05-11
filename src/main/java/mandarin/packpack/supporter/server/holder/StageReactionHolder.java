@@ -36,8 +36,6 @@ public class StageReactionHolder extends Holder<ReactionAddEvent> {
     private final String memberID;
     private final Stage st;
 
-    private boolean expired = false;
-
     public StageReactionHolder(Stage st, Message author, Message msg, IDHolder holder, int lang, String channelID, String memberID) {
         super(ReactionAddEvent.class);
 

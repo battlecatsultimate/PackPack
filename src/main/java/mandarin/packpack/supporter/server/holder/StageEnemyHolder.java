@@ -18,8 +18,9 @@ import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 
-import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class StageEnemyHolder extends Holder<MessageCreateEvent> {
     private final ArrayList<Enemy> enemy;
@@ -31,7 +32,6 @@ public class StageEnemyHolder extends Holder<MessageCreateEvent> {
     private final int star;
 
     private int page = 0;
-    private boolean expired = false;
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
@@ -46,21 +46,7 @@ public class StageEnemyHolder extends Holder<MessageCreateEvent> {
         this.isFrame = isFrame;
         this.star = star;
 
-        Timer autoFinish = new Timer();
-
-        autoFinish.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if(expired)
-                    return;
-
-                expired = true;
-
-                author.getAuthor().ifPresent(u -> StaticStore.removeHolder(u.getId().asString(), StageEnemyHolder.this));
-
-                msg.edit(m -> m.setContent(LangID.getStringByID("formst_expire", lang))).subscribe();
-            }
-        }, TimeUnit.MINUTES.toMillis(5));
+        registerAutoFinish(this, msg, author, lang, FIVE_MIN);
     }
 
     @Override

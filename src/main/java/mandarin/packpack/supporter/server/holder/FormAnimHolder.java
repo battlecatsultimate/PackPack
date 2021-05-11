@@ -30,7 +30,6 @@ public class FormAnimHolder extends Holder<MessageCreateEvent> {
     private final boolean raw;
 
     private int page = 0;
-    private boolean expired = false;
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
@@ -49,21 +48,7 @@ public class FormAnimHolder extends Holder<MessageCreateEvent> {
         this.gif = isGif;
         this.raw = raw;
 
-        Timer autoFinish = new Timer();
-
-        autoFinish.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if(expired)
-                    return;
-
-                expired = true;
-
-                author.getAuthor().ifPresent(u -> StaticStore.removeHolder(u.getId().asString(), FormAnimHolder.this));
-
-                msg.edit(m -> m.setContent(LangID.getStringByID("formst_expire", lang))).subscribe();
-            }
-        }, TimeUnit.MINUTES.toMillis(5));
+        registerAutoFinish(this, msg, author, lang, FIVE_MIN);
     }
 
     @Override

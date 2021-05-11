@@ -1,28 +1,24 @@
-package mandarin.packpack.supporter.server.holder;
+ package mandarin.packpack.supporter.server.holder;
 
-import common.CommonStatic;
-import common.util.Data;
-import common.util.lang.MultiLangCont;
-import common.util.unit.Enemy;
-import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
-import mandarin.packpack.supporter.StaticStore;
-import mandarin.packpack.supporter.bc.EntityHandler;
-import mandarin.packpack.supporter.lang.LangID;
+ import common.CommonStatic;
+ import common.util.Data;
+ import common.util.lang.MultiLangCont;
+ import common.util.unit.Enemy;
+ import discord4j.core.event.domain.message.MessageCreateEvent;
+ import discord4j.core.object.entity.Message;
+ import discord4j.core.object.entity.channel.MessageChannel;
+ import mandarin.packpack.supporter.StaticStore;
+ import mandarin.packpack.supporter.bc.EntityHandler;
+ import mandarin.packpack.supporter.lang.LangID;
 
-import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
+ import java.util.ArrayList;
 
-public class EnemyStatHolder extends Holder<MessageCreateEvent> {
+ public class EnemyStatHolder extends Holder<MessageCreateEvent> {
     private final ArrayList<Enemy> enemy;
     private final Message msg;
     private final String channelID;
 
     private int page = 0;
-    private boolean expired = false;
 
     private final boolean isFrame;
     private final int[] magnification;
@@ -41,21 +37,7 @@ public class EnemyStatHolder extends Holder<MessageCreateEvent> {
         this.isFrame = isFrame;
         this.lang = lang;
 
-        Timer autoFinish = new Timer();
-
-        autoFinish.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if(expired)
-                    return;
-
-                expired = true;
-
-                author.getAuthor().ifPresent(u -> StaticStore.removeHolder(u.getId().asString(), EnemyStatHolder.this));
-
-                msg.edit(m -> m.setContent(LangID.getStringByID("formst_expire", lang))).subscribe();
-            }
-        }, TimeUnit.MINUTES.toMillis(5));
+        registerAutoFinish(this, msg, author, lang, FIVE_MIN);
     }
 
     @Override

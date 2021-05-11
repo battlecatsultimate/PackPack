@@ -57,8 +57,6 @@ public class BCAnimHolder extends Holder<MessageCreateEvent> {
     private final AtomicReference<String> imgcut = new AtomicReference<>("IMGCUT : -");
     private final ArrayList<AtomicReference<String>> maanim = new ArrayList<>();
 
-    private boolean expired = false;
-
     public BCAnimHolder(Message msg, Message target, int lang, String channelID, File container, MessageChannel ch, boolean zombie) throws Exception {
         super(MessageCreateEvent.class);
 
@@ -136,23 +134,7 @@ public class BCAnimHolder extends Holder<MessageCreateEvent> {
         } else {
             msg.getAuthor().ifPresent(u -> StaticStore.putHolder(u.getId().asString(), this));
 
-            Timer autoFinish = new Timer();
-
-            autoFinish.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    if(expired)
-                        return;
-
-                    expired = true;
-
-                    target.edit(m -> {
-                        m.setContent(LangID.getStringByID("animanalyze_expire", lang));
-
-                        target.getAuthor().ifPresent(u -> StaticStore.removeHolder(u.getId().asString(), BCAnimHolder.this));
-                    }).subscribe();
-                }
-            }, TimeUnit.MINUTES.toMillis(5));
+            registerAutoFinish(this, target, msg, lang, "animanalyze_expire", TimeUnit.MILLISECONDS.toMillis(5));
         }
     }
 

@@ -47,8 +47,6 @@ public class AnimHolder extends Holder<MessageCreateEvent> {
     private String modelName;
     private final String[] animName;
 
-    private boolean expired = false;
-
     public AnimHolder(Message msg, Message target, int lang, String channelID, File container, boolean debug, MessageChannel ch, boolean raw, int len) throws Exception {
         super(MessageCreateEvent.class);
 
@@ -275,23 +273,7 @@ public class AnimHolder extends Holder<MessageCreateEvent> {
         } else {
             msg.getAuthor().ifPresent(u -> StaticStore.putHolder(u.getId().asString(), this));
 
-            Timer autoFinish = new Timer();
-
-            autoFinish.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    if(expired)
-                        return;
-
-                    expired = true;
-
-                    target.edit(m -> {
-                        m.setContent(LangID.getStringByID("animanalyze_expire", lang));
-
-                        target.getAuthor().ifPresent(u -> StaticStore.removeHolder(u.getId().asString(), AnimHolder.this));
-                    }).subscribe();
-                }
-            }, TimeUnit.MINUTES.toMillis(5));
+            registerAutoFinish(this, target, msg, lang, "animanalyze_expire", TimeUnit.MILLISECONDS.toMillis(5));
         }
     }
 

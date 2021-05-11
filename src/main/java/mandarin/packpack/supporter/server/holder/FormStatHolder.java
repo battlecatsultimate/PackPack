@@ -22,7 +22,6 @@ public class FormStatHolder extends Holder<MessageCreateEvent> {
     private final String channelID;
 
     private int page = 0;
-    private boolean expired = false;
 
     private final boolean talent;
     private final boolean isFrame;
@@ -43,21 +42,7 @@ public class FormStatHolder extends Holder<MessageCreateEvent> {
         this.lv = lv;
         this.lang = lang;
 
-        Timer autoFinish = new Timer();
-
-        autoFinish.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if(expired)
-                    return;
-
-                expired = true;
-
-                author.getAuthor().ifPresent(u -> StaticStore.removeHolder(u.getId().asString(), FormStatHolder.this));
-
-                msg.edit(m -> m.setContent(LangID.getStringByID("formst_expire", lang))).subscribe();
-            }
-        }, TimeUnit.MINUTES.toMillis(5));
+        registerAutoFinish(this, msg, author, lang, FIVE_MIN);
     }
 
     @Override

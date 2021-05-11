@@ -30,8 +30,6 @@ public class FormReactionHolder extends Holder<ReactionAddEvent> {
     private final boolean talent;
     private final int[] lv;
 
-    private boolean expired = false;
-
     public FormReactionHolder(Form f, Message author, Message msg, boolean isFrame, boolean talent, int[] lv, int lang, String channelID, String memberID) {
         super(ReactionAddEvent.class);
 

@@ -10,9 +10,6 @@ import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
 
 public class MedalHolder extends Holder<MessageCreateEvent> {
     private final ArrayList<Integer> id;
@@ -21,7 +18,6 @@ public class MedalHolder extends Holder<MessageCreateEvent> {
     private final String channelID;
 
     private int page = 0;
-    private boolean expired = false;
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
     
@@ -33,21 +29,7 @@ public class MedalHolder extends Holder<MessageCreateEvent> {
         this.lang = lang;
         this.channelID = channelName;
 
-        Timer autoFinish = new Timer();
-        
-        autoFinish.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if(expired)
-                    return;
-                
-                expired = true;
-                
-                author.getAuthor().ifPresent(a -> StaticStore.removeHolder(a.getId().asString(), MedalHolder.this));
-                
-                msg.edit(m -> m.setContent(LangID.getStringByID("formst_expire", lang))).subscribe();
-            }
-        }, TimeUnit.MINUTES.toMillis(5));
+        registerAutoFinish(this, msg, author, lang, FIVE_MIN);
     }
     
     @Override

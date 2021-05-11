@@ -23,7 +23,6 @@ public class ComboHolder extends Holder<MessageCreateEvent> {
     private final int lang;
 
     private int page = 0;
-    private boolean expired = false;
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
@@ -37,24 +36,10 @@ public class ComboHolder extends Holder<MessageCreateEvent> {
 
         this.lang = lang;
 
-        Timer autoFinish = new Timer();
-
-        autoFinish.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if(expired)
-                    return;
-
-                expired = true;
-
-                author.getAuthor().ifPresent(u -> StaticStore.removeHolder(u.getId().asString(), ComboHolder.this));
-
-                if(fMsg != null)
-                    fMsg.delete().subscribe();
-
-                msg.edit(m -> m.setContent(LangID.getStringByID("formst_expire", lang))).subscribe();
-            }
-        }, TimeUnit.MINUTES.toMillis(5));
+        registerAutoFinish(this, msg, author, lang, TimeUnit.MINUTES.toMillis(5), () -> {
+            if(fMsg != null)
+                fMsg.delete().subscribe();
+        });
     }
 
     @Override

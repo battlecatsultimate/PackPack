@@ -27,7 +27,6 @@ public class ComboFormHolder extends Holder<MessageCreateEvent> {
     private final String fName;
 
     private int page = 0;
-    private boolean expired = false;
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
@@ -42,21 +41,7 @@ public class ComboFormHolder extends Holder<MessageCreateEvent> {
         this.cName = cName;
         this.fName = fName;
 
-        Timer autoFinish = new Timer();
-
-        autoFinish.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if(expired)
-                    return;
-
-                expired = true;
-
-                author.getAuthor().ifPresent(u -> StaticStore.removeHolder(u.getId().asString(), ComboFormHolder.this));
-
-                msg.edit(m -> m.setContent(LangID.getStringByID("formst_expire", lang))).subscribe();
-            }
-        }, TimeUnit.MINUTES.toMillis(5));
+        registerAutoFinish(this, msg, author, lang, TimeUnit.MINUTES.toMillis(5));
     }
 
     @Override
