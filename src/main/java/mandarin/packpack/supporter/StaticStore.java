@@ -58,7 +58,7 @@ public class StaticStore {
 
     public static Map<String, String> suggestBanned = new HashMap<>();
 
-    public static ArrayList<String> contributers = new ArrayList<>();
+    public static ArrayList<String> contributors = new ArrayList<>();
 
     public static ImgurDataHolder imgur = new ImgurDataHolder(null);
 

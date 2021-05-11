@@ -635,8 +635,8 @@ public class PackBot {
                 ));
             }
 
-            if(!StaticStore.contributers.contains(StaticStore.MANDARIN_SMELL)) {
-                StaticStore.contributers.add(StaticStore.MANDARIN_SMELL);
+            if(!StaticStore.contributors.contains(StaticStore.MANDARIN_SMELL)) {
+                StaticStore.contributors.add(StaticStore.MANDARIN_SMELL);
             }
 
             StaticStore.saver = new Timer();

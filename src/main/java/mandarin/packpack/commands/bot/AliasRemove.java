@@ -39,7 +39,7 @@ public class AliasRemove implements Command {
 
         AtomicReference<Boolean> canGo = new AtomicReference<>(false);
 
-        getMember(event).ifPresent(m -> canGo.set(StaticStore.contributers.contains(m.getId().asString())));
+        getMember(event).ifPresent(m -> canGo.set(StaticStore.contributors.contains(m.getId().asString())));
 
         if(!canGo.get()) {
             ch.createMessage(LangID.getStringByID("alias_noperm", lang)).subscribe();
