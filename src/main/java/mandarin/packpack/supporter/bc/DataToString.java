@@ -1364,15 +1364,27 @@ public class DataToString {
             for(int[] d : data) {
                 res.add(String.valueOf(d[0]));
             }
-        } else if(sum > 100 && (s.info.rand == 0 || s.info.rand == 1) && data[0][0] != 100) {
+        } else if(sum > 100 && (s.info.rand == 0 || s.info.rand == 1)) {
             double rest = 100.0;
 
-            for(int[] d : data) {
-                double filter = rest * d[0] / 100.0;
+            if(data[0][0] == 100) {
+                res.add(100+"");
 
-                rest -= filter;
+                for(int i = 1; i < data.length; i++) {
+                    double filter = rest * data[i][0] / 100.0;
 
-                res.add(df.format(filter));
+                    rest -= filter;
+
+                    res.add(df.format(filter));
+                }
+            } else {
+                for(int[] d : data) {
+                    double filter = rest * d[0] / 100.0;
+
+                    rest -= filter;
+
+                    res.add(df.format(filter));
+                }
             }
         } else if(s.info.rand == -4) {
             Map<Integer, Integer> collect = new HashMap<>();
