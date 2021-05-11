@@ -17,6 +17,7 @@ import common.util.unit.Combo;
 import common.util.unit.Enemy;
 import common.util.unit.Form;
 import common.util.unit.Unit;
+import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 
 import java.text.DecimalFormat;
@@ -862,9 +863,9 @@ public class DataToString {
 
     public static String getMagnification(int[] mag, int star) {
         if(mag[0] == mag[1]) {
-            return (int) (mag[0] * star / 100.0) + "%";
+            return StaticStore.safeParseInt((mag[0] * 1.0 * star / 100)+"") + "%";
         } else {
-            return "["+(int) (mag[0] * star / 100.0)+", "+(int) (mag[1] * star / 100.0)+"] %";
+            return "["+StaticStore.safeParseInt((mag[0] * 1.0 * star / 100)+"")+", "+StaticStore.safeParseInt((mag[1] * 1.0 * star / 100)+"")+"] %";
         }
     }
 
