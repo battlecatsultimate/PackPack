@@ -52,6 +52,8 @@ public class ImageExtracter {
 
             AssetDownloader.checkAssetDownload();
 
+            StaticStore.postReadServerInfo();
+
             LangID.initialize();
 
             StaticStore.saver = new Timer();

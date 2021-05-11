@@ -15,6 +15,7 @@ import common.util.unit.Unit;
 import mandarin.packpack.supporter.KoreanSeparater;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.data.AliasHolder;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -47,6 +48,28 @@ public class EntityFilter {
                         res.add(f);
                         break;
                     }
+
+                    int oldConfig = CommonStatic.getConfig().lang;
+                    CommonStatic.getConfig().lang = i;
+
+                    ArrayList<String> alias = AliasHolder.FALIAS.getCont(f);
+
+                    CommonStatic.getConfig().lang = oldConfig;
+
+                    if(alias != null && !alias.isEmpty()) {
+                        boolean added = false;
+
+                        for(String a : alias) {
+                            if(a.toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
+                                added = true;
+                                res.add(f);
+                                break;
+                            }
+                        }
+
+                        if(added)
+                            break;
+                    }
                 }
             }
         }
@@ -67,42 +90,90 @@ public class EntityFilter {
                     continue;
 
                 for(Form f : u.forms) {
-                    CommonStatic.getConfig().lang = lang;
                     String fname = StaticStore.safeMultiLangGet(f, lang);
 
                     if(fname == null || fname.isBlank()) {
                         fname = f.name;
                     }
 
-                    if(fname == null || fname.isBlank()) {
-                        continue;
+                    boolean done = false;
+
+                    if(fname != null && !fname.isBlank()) {
+                        fname = fname.toLowerCase(Locale.ENGLISH);
+
+                        if(lang == LangID.KR)
+                            fname = KoreanSeparater.separate(fname);
+
+                        int wordNumber = StringUtils.countMatches(name, ' ') + 1;
+
+                        String[] words;
+
+                        if(wordNumber != 1) {
+                            words = getWords(fname.split(" "), wordNumber);
+                        } else {
+                            words = fname.split(" ");
+                        }
+
+                        for (String word : words) {
+                            int s = damerauLevenshteinDistance(word, name);
+
+                            if (s <= 5) {
+                                done = true;
+
+                                similar.add(f);
+                                similarity.add(s);
+
+                                sMin = Math.min(s, sMin);
+
+                                break;
+                            }
+                        }
                     }
 
-                    fname = fname.toLowerCase(Locale.ENGLISH);
+                    if(!done) {
+                        int oldConfig = CommonStatic.getConfig().lang;
+                        CommonStatic.getConfig().lang = lang;
 
-                    if(lang == LangID.KR)
-                        fname = KoreanSeparater.separate(fname);
+                        ArrayList<String> alias = AliasHolder.FALIAS.getCont(f);
 
-                    int wordNumber = StringUtils.countMatches(name, ' ') + 1;
+                        CommonStatic.getConfig().lang = oldConfig;
 
-                    String[] words;
+                        if(alias != null && !alias.isEmpty()) {
+                            for(String a : alias) {
+                                boolean added = false;
 
-                    if(wordNumber != 1) {
-                        words = getWords(fname.split(" "), wordNumber);
-                    } else {
-                        words = fname.split(" ");
-                    }
+                                a = a.toLowerCase(Locale.ENGLISH);
 
-                    for (String word : words) {
-                        int s = damerauLevenshteinDistance(word, name);
+                                if(lang == LangID.KR)
+                                    a = KoreanSeparater.separate(a);
 
-                        if (s <= 5) {
-                            similar.add(f);
-                            similarity.add(s);
+                                int wordNumber = StringUtils.countMatches(a, ' ') + 1;
 
-                            sMin = Math.min(s, sMin);
+                                String[] words;
 
-                            break;
+                                if(wordNumber != 1) {
+                                    words = getWords(a.split(" "), wordNumber);
+                                } else {
+                                    words = a.split(" ");
+                                }
+
+                                for (String word : words) {
+                                    int s = damerauLevenshteinDistance(word, name);
+
+                                    if (s <= 5) {
+                                        added = true;
+                                        similar.add(f);
+                                        similarity.add(s);
+
+                                        sMin = Math.min(s, sMin);
+
+                                        break;
+                                    }
+                                }
+
+                                if(added)
+                                    break;
+                            }
                         }
                     }
                 }
@@ -140,6 +211,28 @@ public class EntityFilter {
                     res.add(e);
                     break;
                 }
+
+                int oldConfig = CommonStatic.getConfig().lang;
+                CommonStatic.getConfig().lang = i;
+
+                ArrayList<String> alias = AliasHolder.EALIAS.getCont(e);
+
+                CommonStatic.getConfig().lang = oldConfig;
+
+                if(alias != null && !alias.isEmpty()) {
+                    boolean added = false;
+
+                    for(String a : alias) {
+                        if(a.toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
+                            added = true;
+                            res.add(e);
+                            break;
+                        }
+                    }
+
+                    if(added)
+                        break;
+                }
             }
         }
 
@@ -163,34 +256,83 @@ public class EntityFilter {
                 if(ename == null || ename.isBlank())
                     ename = e.name;
 
-                if(ename == null || ename.isBlank())
-                    continue;
+                boolean done = false;
 
-                ename = ename.toLowerCase(Locale.ENGLISH);
+                if(ename != null && !ename.isBlank()) {
+                    ename = ename.toLowerCase(Locale.ENGLISH);
 
-                if(lang == LangID.KR)
-                    ename = KoreanSeparater.separate(ename);
+                    if(lang == LangID.KR)
+                        ename = KoreanSeparater.separate(ename);
 
-                int wordNumber = StringUtils.countMatches(name, ' ') + 1;
+                    int wordNumber = StringUtils.countMatches(name, ' ') + 1;
 
-                String[] words;
+                    String[] words;
 
-                if(wordNumber != 1) {
-                    words = getWords(ename.split(" "), wordNumber);
-                } else {
-                    words = ename.split(" ");
+                    if(wordNumber != 1) {
+                        words = getWords(ename.split(" "), wordNumber);
+                    } else {
+                        words = ename.split(" ");
+                    }
+
+                    for(String word : words) {
+                        int s = damerauLevenshteinDistance(word, name);
+
+                        if(s <=  5) {
+                            done = true;
+                            similar.add(e);
+                            similarity.add(s);
+
+                            sMin = Math.min(s, sMin);
+
+                            break;
+                        }
+                    }
                 }
 
-                for(String word : words) {
-                    int s = damerauLevenshteinDistance(word, name);
+                if(!done) {
+                    int oldConfig = CommonStatic.getConfig().lang;
+                    CommonStatic.getConfig().lang = lang;
 
-                    if(s <=  5) {
-                        similar.add(e);
-                        similarity.add(s);
+                    ArrayList<String> alias = AliasHolder.EALIAS.getCont(e);
 
-                        sMin = Math.min(s, sMin);
+                    CommonStatic.getConfig().lang = oldConfig;
 
-                        break;
+                    if(alias != null && !alias.isEmpty()) {
+                        for(String a : alias) {
+                            boolean added = false;
+
+                            a = a.toLowerCase(Locale.ENGLISH);
+
+                            if(lang == LangID.KR)
+                                a = KoreanSeparater.separate(a);
+
+                            int wordNumber = StringUtils.countMatches(a, ' ') + 1;
+
+                            String[] words;
+
+                            if(wordNumber != 1) {
+                                words = getWords(a.split(" "), wordNumber);
+                            } else {
+                                words = a.split(" ");
+                            }
+
+                            for (String word : words) {
+                                int s = damerauLevenshteinDistance(word, name);
+
+                                if (s <= 5) {
+                                    added = true;
+                                    similar.add(e);
+                                    similarity.add(s);
+
+                                    sMin = Math.min(s, sMin);
+
+                                    break;
+                                }
+                            }
+
+                            if(added)
+                                break;
+                        }
                     }
                 }
             }
@@ -250,7 +392,7 @@ public class EntityFilter {
 
             //Start autocorrect mode if no map colc found
             if(mcResult.isEmpty()) {
-                ArrayList<Integer> distances = getDistances(MapColc.values(), names[0], lang);
+                ArrayList<Integer> distances = getDistances(MapColc.values(), names[0], lang, MapColc.class);
 
                 int disMin = Integer.MAX_VALUE;
 
@@ -284,7 +426,7 @@ public class EntityFilter {
             boolean mcContain;
 
             if(names[0] != null && !names[0].isBlank())
-                mcContain = needToPerformContainMode(MapColc.values(), names[0]);
+                mcContain = needToPerformContainMode(MapColc.values(), names[0], MapColc.class);
             else
                 mcContain = true;
 
@@ -294,7 +436,7 @@ public class EntityFilter {
                 if(mc == null)
                     continue;
 
-                stmContain |= needToPerformContainMode(mc.maps.getList(), names[1]);
+                stmContain |= needToPerformContainMode(mc.maps.getList(), names[1], StageMap.class);
             }
 
             if(mcContain) {
@@ -347,7 +489,7 @@ public class EntityFilter {
                             }
                         }
                     } else {
-                        ArrayList<Integer> stmDistances = getDistances(mc.maps.getList(), names[1], lang);
+                        ArrayList<Integer> stmDistances = getDistances(mc.maps.getList(), names[1], lang, StageMap.class);
 
                         int disMin = Integer.MAX_VALUE;
 
@@ -369,7 +511,7 @@ public class EntityFilter {
                     }
                 }
             } else {
-                ArrayList<Integer> mcDistances = getDistances(MapColc.values(), names[0], lang);
+                ArrayList<Integer> mcDistances = getDistances(MapColc.values(), names[0], lang, MapColc.class);
 
                 int mcMin = Integer.MAX_VALUE;
 
@@ -406,7 +548,7 @@ public class EntityFilter {
                                     }
                                 }
                             } else {
-                                ArrayList<Integer> stmDistances = getDistances(mc.maps.getList(), names[1], lang);
+                                ArrayList<Integer> stmDistances = getDistances(mc.maps.getList(), names[1], lang, StageMap.class);
 
                                 int stmMin = Integer.MAX_VALUE;
 
@@ -440,7 +582,7 @@ public class EntityFilter {
             boolean mcContain;
 
             if(names[0] != null && !names[0].isBlank()) {
-                mcContain = needToPerformContainMode(MapColc.values(), names[0]);
+                mcContain = needToPerformContainMode(MapColc.values(), names[0], MapColc.class);
             } else {
                 mcContain = true;
             }
@@ -452,7 +594,7 @@ public class EntityFilter {
                     if(mc == null)
                         continue;
 
-                    stmContain |= needToPerformContainMode(mc.maps.getList(), names[1]);
+                    stmContain |= needToPerformContainMode(mc.maps.getList(), names[1], StageMap.class);
                 }
             } else {
                 stmContain = true;
@@ -468,9 +610,11 @@ public class EntityFilter {
                     if(stm == null)
                         continue;
 
-                    stContain |= needToPerformContainMode(stm.list.getList(), names[2]);
+                    stContain |= needToPerformContainMode(stm.list.getList(), names[2], Stage.class);
                 }
             }
+
+            System.out.println(mcContain+ " | " + stmContain+" | "+stContain);
 
             if(mcContain) {
                 for(MapColc mc : MapColc.values()) {
@@ -541,18 +685,51 @@ public class EntityFilter {
                                             s2 = true;
                                             break;
                                         }
+
+                                        int oldConfig = CommonStatic.getConfig().lang;
+                                        CommonStatic.getConfig().lang = i;
+
+                                        ArrayList<String> alias = AliasHolder.SALIAS.getCont(st);
+
+                                        CommonStatic.getConfig().lang = oldConfig;
+
+                                        if(alias != null && !alias.isEmpty()) {
+                                            boolean added = false;
+
+                                            for(String a : alias) {
+                                                if(a.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
+                                                    added = true;
+                                                    s2 = true;
+                                                    break;
+                                                }
+                                            }
+
+                                            if(added)
+                                                break;
+                                        }
                                     }
 
-                                    String id = mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id)+" "+mc.getSID()+"-"+stm.id.id+"-"+st.id.id;
+                                    String[] ids = {
+                                            mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
+                                            mc.getSID()+"-"+stm.id.id+"-"+st.id.id,
+                                            DataToString.getStageCode(st)
+                                    };
 
-                                    boolean s3 = id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH));
+                                    boolean s3 = false;
+
+                                    for(String id : ids) {
+                                        if(id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
+                                            s3 = true;
+                                            break;
+                                        }
+                                    }
 
                                     if(s2 || s3) {
                                         stResult.add(st);
                                     }
                                 }
                             } else {
-                                ArrayList<Integer> stDistances = getDistances(stm.list.getList(), names[2], lang);
+                                ArrayList<Integer> stDistances = getDistances(stm.list.getList(), names[2], lang, Stage.class);
 
                                 int stMin = Integer.MAX_VALUE;
 
@@ -581,7 +758,7 @@ public class EntityFilter {
                             }
                         }
                     } else {
-                        ArrayList<Integer> stmDistances = getDistances(mc.maps.getList(), names[1], lang);
+                        ArrayList<Integer> stmDistances = getDistances(mc.maps.getList(), names[1], lang, StageMap.class);
 
                         int stmMin = Integer.MAX_VALUE;
 
@@ -611,18 +788,51 @@ public class EntityFilter {
                                                     s2 = true;
                                                     break;
                                                 }
+
+                                                int oldConfig = CommonStatic.getConfig().lang;
+                                                CommonStatic.getConfig().lang = i;
+
+                                                ArrayList<String> alias = AliasHolder.SALIAS.getCont(st);
+
+                                                CommonStatic.getConfig().lang = oldConfig;
+
+                                                if(alias != null && !alias.isEmpty()) {
+                                                    boolean added = false;
+
+                                                    for(String a : alias) {
+                                                        if(a.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
+                                                            added = true;
+                                                            s2 = true;
+                                                            break;
+                                                        }
+                                                    }
+
+                                                    if(added)
+                                                        break;
+                                                }
                                             }
 
-                                            String id = mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id)+" "+mc.getSID()+"-"+stm.id.id+"-"+st.id.id;
+                                            String[] ids = {
+                                                    mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
+                                                    mc.getSID()+"-"+stm.id.id+"-"+st.id.id,
+                                                    DataToString.getStageCode(st)
+                                            };
 
-                                            boolean s3 = id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH));
+                                            boolean s3 = false;
+
+                                            for(String id : ids) {
+                                                if(id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
+                                                    s3 = true;
+                                                    break;
+                                                }
+                                            }
 
                                             if(s2 || s3) {
                                                 stResult.add(st);
                                             }
                                         }
                                     } else {
-                                        ArrayList<Integer> stDistances = getDistances(stm.list.getList(), names[2], lang);
+                                        ArrayList<Integer> stDistances = getDistances(stm.list.getList(), names[2], lang, Stage.class);
 
                                         int stMin = Integer.MAX_VALUE;
 
@@ -642,9 +852,22 @@ public class EntityFilter {
                                             }
                                         } else {
                                             for(Stage st : stm.list.getList()) {
-                                                String id = mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id)+" "+mc.getSID()+"-"+stm.id.id+"-"+st.id.id;
+                                                String[] ids = {
+                                                        mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
+                                                        mc.getSID()+"-"+stm.id.id+"-"+st.id.id,
+                                                        DataToString.getStageCode(st)
+                                                };
 
-                                                if(id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH)))
+                                                boolean s3 = false;
+
+                                                for(String id : ids) {
+                                                    if(id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
+                                                        s3 = true;
+                                                        break;
+                                                    }
+                                                }
+
+                                                if(s3)
                                                     stResult.add(st);
                                             }
                                         }
@@ -657,7 +880,7 @@ public class EntityFilter {
                     }
                 }
             } else {
-                ArrayList<Integer> mcDistances = getDistances(MapColc.values(), names[0], lang);
+                ArrayList<Integer> mcDistances = getDistances(MapColc.values(), names[0], lang, MapColc.class);
 
                 int mcMin = Integer.MAX_VALUE;
 
@@ -715,16 +938,27 @@ public class EntityFilter {
                                                 }
                                             }
 
-                                            String id = mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id)+" "+mc.getSID()+"-"+stm.id.id+"-"+st.id.id;
+                                            String[] ids = {
+                                                    mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
+                                                    mc.getSID()+"-"+stm.id.id+"-"+st.id.id,
+                                                    DataToString.getStageCode(st)
+                                            };
 
-                                            boolean s3 = id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH));
+                                            boolean s3 = false;
+
+                                            for(String id : ids) {
+                                                if(id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
+                                                    s3 = true;
+                                                    break;
+                                                }
+                                            }
 
                                             if(s2 || s3) {
                                                 stResult.add(st);
                                             }
                                         }
                                     } else {
-                                        ArrayList<Integer> stDistances = getDistances(stm.list.getList(), names[2], lang);
+                                        ArrayList<Integer> stDistances = getDistances(stm.list.getList(), names[2], lang, Stage.class);
 
                                         int stMin = Integer.MAX_VALUE;
 
@@ -744,16 +978,29 @@ public class EntityFilter {
                                             }
                                         } else {
                                             for(Stage st : stm.list.getList()) {
-                                                String id = mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id)+" "+mc.getSID()+"-"+stm.id.id+"-"+st.id.id;
+                                                String[] ids = {
+                                                        mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
+                                                        mc.getSID()+"-"+stm.id.id+"-"+st.id.id,
+                                                        DataToString.getStageCode(st)
+                                                };
 
-                                                if(id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH)))
+                                                boolean s3 = false;
+
+                                                for(String id : ids) {
+                                                    if(id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
+                                                        s3 = true;
+                                                        break;
+                                                    }
+                                                }
+
+                                                if(s3)
                                                     stResult.add(st);
                                             }
                                         }
                                     }
                                 }
                             } else {
-                                ArrayList<Integer> stmDistances = getDistances(mc.maps.getList(), names[1], lang);
+                                ArrayList<Integer> stmDistances = getDistances(mc.maps.getList(), names[1], lang, StageMap.class);
 
                                 int stmMin = Integer.MAX_VALUE;
 
@@ -785,16 +1032,27 @@ public class EntityFilter {
                                                         }
                                                     }
 
-                                                    String id = mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id)+" "+mc.getSID()+"-"+stm.id.id+"-"+st.id.id;
+                                                    String[] ids = {
+                                                            mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
+                                                            mc.getSID()+"-"+stm.id.id+"-"+st.id.id,
+                                                            DataToString.getStageCode(st)
+                                                    };
 
-                                                    boolean s3 = id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH));
+                                                    boolean s3 = false;
+
+                                                    for(String id : ids) {
+                                                        if(id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
+                                                            s3 = true;
+                                                            break;
+                                                        }
+                                                    }
 
                                                     if(s2 || s3) {
                                                         stResult.add(st);
                                                     }
                                                 }
                                             } else {
-                                                ArrayList<Integer> stDistances = getDistances(stm.list.getList(), names[2], lang);
+                                                ArrayList<Integer> stDistances = getDistances(stm.list.getList(), names[2], lang, Stage.class);
 
                                                 int stMin = Integer.MAX_VALUE;
 
@@ -813,9 +1071,22 @@ public class EntityFilter {
                                                     }
                                                 } else {
                                                     for(Stage st : stm.list.getList()) {
-                                                        String id = mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id)+" "+mc.getSID()+"-"+stm.id.id+"-"+st.id.id;
+                                                        String[] ids = {
+                                                                mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
+                                                                mc.getSID()+"-"+stm.id.id+"-"+st.id.id,
+                                                                DataToString.getStageCode(st)
+                                                        };
 
-                                                        if(id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH)))
+                                                        boolean s3 = false;
+
+                                                        for(String id : ids) {
+                                                            if(id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
+                                                                s3 = true;
+                                                                break;
+                                                            }
+                                                        }
+
+                                                        if(s3)
                                                             stResult.add(st);
                                                     }
                                                 }
@@ -1104,17 +1375,42 @@ public class EntityFilter {
         return result;
     }
 
-    private static <T> boolean needToPerformContainMode(Iterable<T> set, String keyword) {
+    private static <T> boolean needToPerformContainMode(Iterable<T> set, String keyword, Class<T> cls) {
         for(T t : set) {
             if(t == null)
                 continue;
+
+            keyword = keyword.toLowerCase(Locale.ENGLISH);
 
             for(int i = 0; i < 4; i++) {
                 String name = StaticStore.safeMultiLangGet(t, i);
 
                 if(name != null && !name.isBlank()) {
-                    if(name.toLowerCase(Locale.ENGLISH).contains(keyword.toLowerCase(Locale.ENGLISH)))
+                    if(name.toLowerCase(Locale.ENGLISH).contains(keyword))
                         return true;
+
+                    int oldConfig = CommonStatic.getConfig().lang;
+                    CommonStatic.getConfig().lang = i;
+
+                    ArrayList<String> alias;
+
+                    if(cls == Form.class) {
+                        alias = AliasHolder.FALIAS.getCont((Form) t);
+                    } else if(cls == Enemy.class) {
+                        alias = AliasHolder.EALIAS.getCont((Enemy) t);
+                    } else if(cls == Stage.class) {
+                        alias = AliasHolder.SALIAS.getCont((Stage) t);
+                    } else {
+                        CommonStatic.getConfig().lang = oldConfig;
+                        continue;
+                    }
+
+                    if(alias != null && !alias.isEmpty()) {
+                        for(String a : alias) {
+                            if(a.toLowerCase(Locale.ENGLISH).contains(keyword))
+                                return true;
+                        }
+                    }
                 }
             }
         }
@@ -1122,8 +1418,9 @@ public class EntityFilter {
         return false;
     }
 
-    private static <T> ArrayList<Integer> getDistances(Iterable<T> set, String keyword, int lang) {
+    private static <T> ArrayList<Integer> getDistances(Iterable<T> set, String keyword, int lang, Class<T> cls) {
         ArrayList<Integer> distances = new ArrayList<>();
+        int allMin = Integer.MAX_VALUE;
 
         keyword = keyword.toLowerCase(Locale.ENGLISH);
 
@@ -1162,7 +1459,54 @@ public class EntityFilter {
             int disMin = Integer.MAX_VALUE;
 
             for(String word : words) {
-                disMin = Math.min(disMin, damerauLevenshteinDistance(word, keyword));
+                int result = damerauLevenshteinDistance(word, keyword);
+                disMin = Math.min(disMin, result);
+                allMin = Math.min(allMin, result);
+            }
+
+            if(disMin > allMin) {
+                ArrayList<String> alias;
+
+                int oldConfig = CommonStatic.getConfig().lang;
+                CommonStatic.getConfig().lang = lang;
+
+                if(cls == Form.class) {
+                    alias = AliasHolder.FALIAS.getCont((Form) t);
+                } else if(cls == Enemy.class) {
+                    alias = AliasHolder.EALIAS.getCont((Enemy) t);
+                } else if(cls == Stage.class) {
+                    alias = AliasHolder.SALIAS.getCont((Stage) t);
+                } else {
+                    CommonStatic.getConfig().lang = oldConfig;
+
+                    distances.add(disMin);
+                    continue;
+                }
+
+                CommonStatic.getConfig().lang = oldConfig;
+
+                if(alias != null && !alias.isEmpty()) {
+                    for(String a : alias) {
+                        a = a.toLowerCase(Locale.ENGLISH);
+
+                        if(lang == LangID.KR)
+                            a = KoreanSeparater.separate(a);
+
+                        wordNumber = StringUtils.countMatches(keyword, ' ') + 1;
+
+                        if(wordNumber != 1) {
+                            words = getWords(a.split(" "), wordNumber);
+                        } else {
+                            words = a.split(" ");
+                        }
+
+                        for(String word : words) {
+                            int result = damerauLevenshteinDistance(word, keyword);
+                            disMin = Math.min(disMin, result);
+                            allMin = Math.min(allMin, result);
+                        }
+                    }
+                }
             }
 
             distances.add(disMin);

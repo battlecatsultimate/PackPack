@@ -17,10 +17,7 @@ import discord4j.core.object.presence.*;
 import discord4j.rest.request.RouterOptions;
 import mandarin.packpack.commands.*;
 import mandarin.packpack.commands.bc.*;
-import mandarin.packpack.commands.bot.Suggest;
-import mandarin.packpack.commands.bot.SuggestBan;
-import mandarin.packpack.commands.bot.SuggestResponse;
-import mandarin.packpack.commands.bot.SuggestUnban;
+import mandarin.packpack.commands.bot.*;
 import mandarin.packpack.commands.data.AnimAnalyzer;
 import mandarin.packpack.commands.data.Announcement;
 import mandarin.packpack.commands.data.StageImage;
@@ -61,7 +58,7 @@ public class PackBot {
             return;
         }
 
-        gate.updatePresence(ClientPresence.online(ClientActivity.playing("p!help, but under Construction!"))).subscribe();
+        gate.updatePresence(Presence.online(Activity.playing("p!help, but under Construction!"))).subscribe();
 
         gate.getGuilds().collectList().subscribe(l -> {
             for (Guild guild : l) {
@@ -568,6 +565,18 @@ public class PackBot {
                                 case "sgr":
                                     new SuggestResponse(ConstraintCommand.ROLE.MANDARIN, lang, idh, gate).execute(event);
                                     break;
+                                case "alias":
+                                case "al":
+                                    new Alias(lang).execute(event);
+                                    break;
+                                case "aliasadd":
+                                case "ala":
+                                    new AliasAdd(lang).execute(event);
+                                    break;
+                                case "aliasremove":
+                                case "alr":
+                                    new AliasRemove(lang).execute(event);
+                                    break;
                             }
                         }
                     });
@@ -579,13 +588,16 @@ public class PackBot {
     public static void initialize(String... arg) {
         if(!StaticStore.initialized) {
             CommonStatic.ctx = new PackContext();
-            StaticStore.readServerInfo();
 
             if(arg.length >= 2) {
                 StaticStore.imgur.registerClient(arg[1]);
             }
 
+            StaticStore.readServerInfo();
+
             AssetDownloader.checkAssetDownload();
+
+            StaticStore.postReadServerInfo();
 
             LangID.initialize();
 
@@ -613,6 +625,10 @@ public class PackBot {
                         "679870744561188919", "800632019418742824",
                         null, "689333420794707984"
                 ));
+            }
+
+            if(!StaticStore.contributers.contains(StaticStore.MANDARIN_SMELL)) {
+                StaticStore.contributers.add(StaticStore.MANDARIN_SMELL);
             }
 
             StaticStore.saver = new Timer();
