@@ -567,7 +567,7 @@ public class PackBot {
                                     break;
                                 case "alias":
                                 case "al":
-                                    new Alias(lang).execute(event);
+                                    new Alias(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
                                     break;
                                 case "aliasadd":
                                 case "ala":
@@ -576,6 +576,14 @@ public class PackBot {
                                 case "aliasremove":
                                 case "alr":
                                     new AliasRemove(lang).execute(event);
+                                    break;
+                                case "contributoradd":
+                                case "coa":
+                                    new ContributorAdd(ConstraintCommand.ROLE.MANDARIN, lang, idh, gate).execute(event);
+                                    break;
+                                case "contributorremove":
+                                case "cor":
+                                    new ContributorRemove(ConstraintCommand.ROLE.MANDARIN, lang, idh, gate).execute(event);
                                     break;
                             }
                         }

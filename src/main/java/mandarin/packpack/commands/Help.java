@@ -36,7 +36,7 @@ public class Help implements Command {
                 emb.addField(LangID.getStringByID("help_bc", lang), "```background, castle, catcombo, enemygif, enemyimage, enemysprite, enemystat, findstage, formgif, formimage, formsprite, formstat, medal, music, stageinfo```", false);
                 emb.addField(LangID.getStringByID("help_server", lang), "```bcustat, channelpermission, checkbcu, clearcache, idset, memory, save, serverjson, serverpre```", false);
                 emb.addField(LangID.getStringByID("help_data", lang), "```animanalyzer, announcement, stageimage, stagemapimage```", false);
-                emb.addField(LangID.getStringByID("help_packpack", lang), "```suggest```", false);
+                emb.addField(LangID.getStringByID("help_packpack", lang), "```alias, aliasadd, aliasremove, suggest```", false);
             }).subscribe();
         }
     }
@@ -183,6 +183,18 @@ public class Help implements Command {
                 break;
             case "suggest":
                 ch.createEmbed(e -> addFields(e, "suggest", true, true, true)).subscribe();
+                break;
+            case "alias":
+            case "al":
+                ch.createEmbed(e -> addFields(e, "alias", true, true, true)).subscribe();
+                break;
+            case "aliasadd":
+            case "ala":
+                ch.createEmbed(e -> addFields(e, "aliasadd", true, true, true)).subscribe();
+                break;
+            case "aliasremove":
+            case "alr":
+                ch.createEmbed(e -> addFields(e, "aliasremove", true, true, true)).subscribe();
                 break;
             default:
                 createMessageWithNoPings(ch, LangID.getStringByID("help_nocomm", lang).replace("_", command));
