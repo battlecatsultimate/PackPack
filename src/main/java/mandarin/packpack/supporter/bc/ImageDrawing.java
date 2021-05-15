@@ -151,6 +151,12 @@ public class ImageDrawing {
             rect.height = Math.max(Math.abs(maxAmong(result[0][1], result[1][1], result[2][1], result[3][1]) - rect.y), rect.height);
         }
 
+        if(rect.width == 0)
+            rect.width = 1;
+
+        if(rect.height == 0)
+            rect.height = 1;
+
         BufferedImage result = new BufferedImage(rect.width, rect.height, BufferedImage.TYPE_INT_ARGB);
         FG2D rg = new FG2D(result.getGraphics());
 
@@ -342,6 +348,12 @@ public class ImageDrawing {
             rect.width -= 1;
             rect.x += 1;
         }
+
+        if(rect.width == 0)
+            rect.width = 2;
+
+        if(rect.height == 0)
+            rect.height = 2;
 
         finCont += LangID.getStringByID("gif_final", lang).replace("_WWW_", ""+rect.width)
                 .replace("_HHH_", rect.height+"").replace("_XXX_", rect.x+"")
@@ -574,6 +586,12 @@ public class ImageDrawing {
         rect.width = (int) (ratio * rect.width);
         rect.height = (int) (ratio* rect.height);
 
+        if(rect.width == 0)
+            rect.width = 2;
+
+        if(rect.height == 0)
+            rect.height = 2;
+
         AnimatedGifEncoder encoder = new AnimatedGifEncoder();
 
         encoder.setSize(rect.width, rect.height);
@@ -789,6 +807,12 @@ public class ImageDrawing {
             rect.width -= 1;
             rect.x += 1;
         }
+
+        if(rect.width == 0)
+            rect.width = 2;
+
+        if(rect.height == 0)
+            rect.height = 2;
 
         finCont += LangID.getStringByID("gif_final", lang).replace("_WWW_", ""+rect.width)
                 .replace("_HHH_", rect.height+"").replace("_XXX_", rect.x+"")
