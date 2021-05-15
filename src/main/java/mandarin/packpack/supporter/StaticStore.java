@@ -335,6 +335,7 @@ public class StaticStore {
         obj.add("idholder", mapToJsonIDHolder(idHolder));
         obj.add("suggestBanned", mapToJsonString(suggestBanned));
         obj.add("alias", AliasHolder.jsonfy());
+        obj.add("contributor", listToJsonString(contributors));
 
         try {
             File folder = new File("./data/");
@@ -418,6 +419,10 @@ public class StaticStore {
 
             if(obj.has("suggestBanned")) {
                 suggestBanned = jsonToMapString(obj.getAsJsonArray("suggestBanned"));
+            }
+
+            if(obj.has("contributor")) {
+                contributors = jsonToListString(obj.getAsJsonArray("contributor"));
             }
         }
     }
