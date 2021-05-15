@@ -29,6 +29,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.event.EventFactor;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.SlashBuilder;
 import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 
@@ -57,6 +58,8 @@ public class PackBot {
         if(gate == null) {
             return;
         }
+
+        SlashBuilder.build(gate);
 
         gate.updatePresence(Presence.online(Activity.playing("p!help, but under Construction!"))).subscribe();
 

@@ -1,27 +1,32 @@
 package mandarin.packpack.supporter.server;
 
 import discord4j.core.GatewayDiscordClient;
+import discord4j.core.event.ReactiveEventAdapter;
+import discord4j.core.event.domain.InteractionCreateEvent;
 import discord4j.discordjson.json.ApplicationCommandData;
 import discord4j.discordjson.json.ApplicationCommandOptionData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 import discord4j.discordjson.json.ImmutableApplicationCommandRequest;
 import discord4j.rest.RestClient;
-import discord4j.rest.interaction.Interactions;
 import discord4j.rest.util.ApplicationCommandOptionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SlashBuilder {
+    private static final ArrayList<ApplicationCommandRequest> requests = new ArrayList<>();
+
     @SuppressWarnings("ConstantConditions")
     public static void build(GatewayDiscordClient client) {
         RestClient rest = client.getRestClient();
-
         long appID = rest.getApplicationId().block();
 
-        ApplicationCommandRequest fs = getCommandCreation("fs", "Show stat of unit",
+        getCommandCreation("fs", "Show stat of unit",
                 List.of(
                         new SlashOption("name", "Name of unit", true, SlashOption.TYPE.STRING),
                         new SlashOption("frame", "Show time info with frame", false, SlashOption.TYPE.BOOLEAN),
@@ -35,10 +40,34 @@ public class SlashBuilder {
                 )
         );
 
-        Interactions formStatInteraction = Interactions.create()
-                .onGlobalCommand(fs, i -> i.acknowledge().withFollowup(r -> r.createFollowupMessage("WIP")));
+        getCommandCreation("es", "Show stat of enemy",
+                List.of(
+                        new SlashOption("name", "Name of enemy", true, SlashOption.TYPE.STRING),
+                        new SlashOption("frame", "Show time info with frame", false, SlashOption.TYPE.BOOLEAN),
+                        new SlashOption("magnification", "Set magnification of this enemy", false, SlashOption.TYPE.INT),
+                        new SlashOption("atk_magnification", "Set magnification of attack of this enemy", false, SlashOption.TYPE.INT)
+                )
+        );
 
-        formStatInteraction.createCommands(rest).block();
+        applyCreatedSlashCommands(rest, appID);
+
+        client.on(new ReactiveEventAdapter() {
+
+            @NotNull
+            @Override
+            public Publisher<?> onInteractionCreate(@NotNull InteractionCreateEvent event) {
+                String command = event.getCommandName();
+
+                switch (command) {
+                    case "fs":
+                        return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage("Working on it"));
+                    case "es":
+                        return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage("WIP2"));
+                }
+
+                return Mono.empty();
+            }
+        }).subscribe();
 
         printAllCommandData(rest);
     }
@@ -99,7 +128,7 @@ public class SlashBuilder {
         }
     }
 
-    private static ApplicationCommandRequest getCommandCreation(@NotNull String name, @NotNull String description, @Nullable List<SlashOption> options) {
+    private static void getCommandCreation(@NotNull String name, @NotNull String description, @Nullable List<SlashOption> options) {
         ImmutableApplicationCommandRequest.Builder builder = ApplicationCommandRequest.builder();
 
         builder.name(name)
@@ -111,7 +140,20 @@ public class SlashBuilder {
             }
         }
 
-        return builder.build();
+        requests.add(builder.build());
+    }
+
+    private static void applyCreatedSlashCommands(RestClient client, long appID) {
+        for(ApplicationCommandRequest request : requests) {
+            try {
+                client.getApplicationService()
+                        .createGlobalApplicationCommand(appID, request).block();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        requests.clear();
     }
 }
 
