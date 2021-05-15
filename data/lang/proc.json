@@ -163,7 +163,7 @@
         "abbr_name": "inc. atk",
         "full_name": "Attack Up",
         "tooltip": null,
-        "format": "Attack increased to (mult)% after health dropped below (health)%",
+        "format": "Attack increased by (mult)% after health dropped below (health)%",
         "class": {
             "health": {
                 "name": "health",
@@ -191,7 +191,7 @@
         "abbr_name": "burrow",
         "full_name": "Burrow",
         "tooltip": null,
-        "format": "Burrow [(count<0){infinite}(count==0){(count) time}(count==1){once}(count==2){twice}(count>1){(count) times}] with the distance of (dis)",
+        "format": "Burrow [(count<0){infinite}(count==0){(count) time}(count==1){once}(count==2){twice}(count>2){(count) times}] with the distance of (dis)",
         "class": {
             "count": {
                 "name": "burrow count",
@@ -270,7 +270,7 @@
         "abbr_name": "imu. KB",
         "full_name": "Immune/Resist to KB",
         "tooltip": null,
-        "format": "[(mult==100){Immune}(mult<100){Resist}] to Knockback[(mult<100){ (_left)Reduces (mult)% of distance(_right)}]",
+        "format": "[(mult==100){Immune}(mult<100&mult>0){Resist}(mult<0){Weak}] to Knockback[(mult<100&mult>0){ (_left)Reduces (mult)% of distance(_right)}(mult<0){ (_left)Increases distance (_abs(mult))% more(_right)}]",
         "class": {
             "mult": {
                 "name": "percent",
@@ -282,7 +282,7 @@
         "abbr_name": "imu. Stop",
         "full_name": "Immune/Resist to Stop",
         "tooltip": null,
-        "format": "[(mult==100){Immune}(mult<100){Resist}] to Stop[(mult<100){ (_left)Reduces (mult)% of time(_right)}]",
+        "format": "[(mult==100){Immune}(mult<100&mult>0){Resist}(mult<0){Weak}] to Freeze[(mult<100&mult>0){ (_left)Reduces (mult)% of time(_right)}(mult<0){ (_left)Increases time (_abs(mult))% more(_right)}]",
         "class": {
             "mult": {
                 "name": "percent",
@@ -294,7 +294,7 @@
         "abbr_name": "imu. Slow",
         "full_name": "Immune/Resist to Slow",
         "tooltip": null,
-        "format": "[(mult==100){Immune}(mult<100){Resist}] to Slow[(mult<100){ (_left)Reduces (mult)% of time(_right)}]",
+        "format": "[(mult==100){Immune}(mult<100&mult>0){Resist}(mult<0){Weak}] to Slow[(mult<100&mult>0){ (_left)Reduces (mult)% of time(_right)}(mult<0){ (_left)Increases time (_abs(mult))% more(_right)}]",
         "class": {
             "mult": {
                 "name": "percent",
@@ -306,7 +306,7 @@
         "abbr_name": "imu. Wave",
         "full_name": "Immune/Resist to Wave",
         "tooltip": null,
-        "format": "[(mult==100){Immune}(mult<100){Resist}] to Wave[(mult<100){ (_left)Reduces (mult)% of damage(_right)}]",
+        "format": "[(mult==100){Immune}(mult<100&mult>0){Resist}(mult<0){Weak}] to Wave[(mult<100&mult>0){ (_left)Reduces (mult)% of damage(_right)}(mult<0){ (_left)Increases taken damage (_abs(mult))% more(_right)}]",
         "class": {
             "mult": {
                 "name": "percent",
@@ -318,7 +318,7 @@
         "abbr_name": "imu. Weak",
         "full_name": "Immune/Resist to Weak",
         "tooltip": null,
-        "format": "[(mult==100){Immune}(mult<100){Resist}] to Weaken[(mult<100){ (_left)Reduces (mult)% of time(_right)}]",
+        "format": "[(mult==100){Immune}(mult<100&mult>0){Resist}(mult<0){Weak}] to Weaken[(mult<100&mult>0){ (_left)Reduces (mult)% of time(_right)}(mult<0){ (_left)Increases time (_abs(mult))% more(_right)}]",
         "class": {
             "mult": {
                 "name": "percent",
@@ -330,7 +330,7 @@
         "abbr_name": "imu. Warp",
         "full_name": "Immune/Resist to Warp",
         "tooltip": null,
-        "format": "[(mult==100){Immune}(mult<100){Resist}] to Warp[(mult<100){ (_left)Reduces (mult)% of time(_right)}]",
+        "format": "[(mult==100){Immune}(mult<100&mult>0){Resist}(mult<0){Weak}] to Warp[(mult<100&mult>0){ (_left)Reduces (mult)% of time(_right)}(mult<0){ (_left)Increases time (_abs(mult))% more(_right)}]",
         "class": {
             "mult": {
                 "name": "percent",
@@ -342,11 +342,23 @@
         "abbr_name": "imu. Curse",
         "full_name": "Immune/Resist to Curse",
         "tooltip": null,
-        "format": "[(mult==100){Immune}(mult<100){Resist}] to Curse[(mult<100){ (_left)Reduces (mult)% of time(_right)}]",
+        "format": "[(mult==100){Immune}(mult<100&mult>0){Resist}(mult<0){Weak}] to Curse[(mult<100&mult>0){ (_left)Reduces (mult)% of time(_right)}(mult<0){ (_left)Increases time (_abs(mult))% more(_right)}]",
         "class": {
             "mult": {
                 "name": "percent",
                 "tooltip": null
+            }
+        }
+    },
+    "IMUSUMMON": {
+        "abbr_name": "imu. Summon",
+        "full_name": "Immune/Resistant to Summon",
+        "tooltip": null,
+        "format": "[(mult==100){Immune}(mult<100&mult>0){Resistant}(mult<0){Weak}] to On Hit/On Kill Summon[(mult<100&mult>0){ (_left)Reduces (mult)% of summoned entity's strength(_right)}(mult<0){ (_left)Summoned entities will be (_abs(mult))% stronger(_right)}]",
+        "class": {
+            "mult": {
+                "name": "percent",
+                "tooltip": "Only applies to On Hit and On Kill summon."
             }
         }
     },
@@ -395,7 +407,7 @@
         }
     },
     "SUMMON": {
-        "abbr_name": "summon",
+        "abbr_name": "SUMMON",
         "full_name": "Summon",
         "tooltip": null,
         "format": [
@@ -476,6 +488,10 @@
             "time": {
                 "name": "delay",
                 "tooltip": "delay of this summon"
+            },
+            "form": {
+                "name": "Form",
+                "tooltip": "Set which form of the unit you want to summon. Only applicable on Cat Units."
             }
         }
     },
@@ -685,7 +701,7 @@
         "abbr_name": "imu. toxic",
         "full_name": "Immune/Resist to Toxic",
         "tooltip": null,
-        "format": "[(mult==100){Immune}(mult<100){Resist}] to Toxic[(mult<100){ (_left)Reduces (mult)% of damage(_right)}]",
+        "format": "[(mult==100){Immune}(mult<100&mult>0){Resist}(mult<0){Weak}] to Toxic[(mult<100&mult>0){ (_left)Reduces (mult)% of damage(_right)}(mult<0){ (_left)Increases taken damage (_abs(mult))% more(_right)}]",
         "class": {
             "mult": {
                 "name": "percent",
@@ -697,7 +713,7 @@
         "abbr_name": "imu. Surge",
         "full_name": "Immune/Resist to Surge",
         "tooltip": null,
-        "format": "[(mult==100){Immune}(mult<100){Resist}] to Surge Attack[(mult<100){ (_left)Reduces (mult)% of damage(_right)}]",
+        "format": "[(mult==100){Immune}(mult<100&mult>0){Resist}(mult<0){Weak}] to Surge Attack[(mult<100&mult>0){ (_left)Reduces (mult)% of damage(_right)}(mult<0){ (_left)Increases taken damage (_abs(mult))% more(_right)}]",
         "class": {
             "mult": {
                 "name": "percent",

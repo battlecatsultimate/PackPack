@@ -268,7 +268,7 @@
         "abbr_name": "밀치기 무효",
         "full_name": "밀치기 무효",
         "tooltip": "밀치기 능력을 약하게 받거나 무효화합니다",
-        "format": "[(mult==100){밀치기 무효}(mult<100){밀치기 내성 (_left)밀쳐나는 거리 (mult)% 감소(_right)}]",
+        "format": "[(mult==100){밀치기 무효}(mult<100&mult>0){밀치기 내성 (_left)밀쳐나는 거리 (mult)% 감소(_right)}(mult<0){밀치기에 약함 (_left)밀쳐나는 거리 (_abs(mult))% 더 증가(_right)}]",
         "class": {
             "mult": {
                 "name": "퍼센트",
@@ -280,7 +280,7 @@
         "abbr_name": "멈춘다 무효",
         "full_name": "멈춘다 무효",
         "tooltip": "멈춘다 능력을 약하게 받거나 무효화합니다",
-        "format": "[(mult==100){멈춘다 무효}(mult<100){멈춘다 내성 (_left)멈추는 시간 (mult)% 감소}]",
+        "format": "[(mult==100){멈춘다 무효}(mult<100&mult>0){멈춘다 내성 (_left)멈추는 시간 (mult)% 감소}(mult<0){멈춘다에 약함 (_left)멈추는 시간 (_abs(mult))% 더 증가(_right)}]",
         "class": {
             "mult": {
                 "name": "퍼센트",
@@ -292,7 +292,7 @@
         "abbr_name": "느리게 무효",
         "full_name": "느리게 무효",
         "tooltip": "느리게 능력을 약하게 받거나 무효화합니다",
-        "format": "[(mult==100){느리게 무효}(mult<100){느리게 내성 (_left)느려지는 시간 (mult)% 감소}]",
+        "format": "[(mult==100){느리게 무효}(mult<100&mult>0){느리게 내성 (_left)느려지는 시간 (mult)% 감소}(mult<0){느리게에 약함 (_left)느려지는 시간 (_abs(mult))% 더 증가(_right)}]",
         "class": {
             "mult": {
                 "name": "퍼센트",
@@ -304,7 +304,7 @@
         "abbr_name": "파동 무효",
         "full_name": "파동 무효",
         "tooltip": "파동 능력을 약하게 받거나 무효화합니다",
-        "format": "[(mult==100){파동 무효}(mult<100){파동 내성 (_left)파동 데미지 (mult)% 감소(_right)}]",
+        "format": "[(mult==100){파동 무효}(mult<100&mult>0){파동 내성 (_left)파동 데미지 (mult)% 감소(_right)}(mult<0){파동에 약함 (_left)파동 데미지 (_abs(mult))% 더 증가(_right)}]",
         "class": {
             "mult": {
                 "name": "퍼센트",
@@ -316,7 +316,7 @@
         "abbr_name": "약화 무효",
         "full_name": "약화 무효",
         "tooltip": "약하게 한다 능력을 약하게 받거나 무효화합니다",
-        "format": "[(mult==100){약화 무효}(mult<100){약화 내성 (_left)약화 시간 (mult)% 감소(_right)}]",
+        "format": "[(mult==100){약화 무효}(mult<100&mult>0){약화 내성 (_left)약화 시간 (mult)% 감소(_right)}(mult<0){약화에 약함 (_left)약화 시간 (_abs(mult))% 더 증가(_right)}]",
         "class": {
             "mult": {
                 "name": "퍼센트",
@@ -328,7 +328,7 @@
         "abbr_name": "워프 무효",
         "full_name": "워프 무효",
         "tooltip": "워프 능력을 약하게 받거나 무효화합니다",
-        "format": "[(mult==100){워프 무효}(mult<100){워프 내성 (_left)워프 시간 (mult)% 감소(_right)}]",
+        "format": "[(mult==100){워프 무효}(mult<100&mult>0){워프 내성 (_left)워프 시간 (mult)% 감소(_right)}(mult<0){워프에 약함 (_left)워프 시간 (_abs(mult))% 더 증가(_right)}]",
         "class": {
             "mult": {
                 "name": "퍼센트",
@@ -340,11 +340,23 @@
         "abbr_name": "저주 무효",
         "full_name": "저주 무효",
         "tooltip": "저주 능력을 약하게 받거나 무효화합니다",
-        "format": "[(mult==100){저주 무효}(mult<100){저주 내성 (_left)저주 시간 (mult)% 감소(_right)}]",
+        "format": "[(mult==100){저주 무효}(mult<100&mult>0){저주 내성 (_left)저주 시간 (mult)% 감소(_right)}(mult<0){저주에 약함 (_left)저주 시간 (_abs(mult))% 더 증가(_right)}]",
         "class": {
             "mult": {
                 "name": "퍼센트",
                 "tooltip": "저주되는 시간을 퍼센트로 감소시킵니다"
+            }
+        }
+    },
+    "IMUSUMMON": {
+        "abbr_name": "imu. Summon",
+        "full_name": "Immune/Resist to Summon",
+        "tooltip": null,
+        "format": "[(mult==100){Immune}(mult<100&mult>0){Resistant}(mult<0){Weak}] to On Hit/On Kill Summon[(mult<100&mult>0){ (_left)Reduces (mult)% of summoned entity's strength(_right)}(mult<0){ (_left)Summoned entities will be (_abs(mult))% stronger(_right)}]",
+        "class": {
+            "mult": {
+                "name": "percent",
+                "tooltip": "Only applies to On Hit and On Kill summon."
             }
         }
     },
@@ -511,7 +523,7 @@
         "abbr_name": "배경 변경",
         "full_name": "배경 변경",
         "tooltip": "전투의 배경을 바꿉니다. 타입에 따라서 전투에 있는 대부분의 개체들을 다 제거할 수 있습니다",
-        "format": "(prob)% 확률로 (_dispTime(time)) 동안 배경 (_bg(id)) (으)로 변경 [(type.kill){(_left)발동 시 필드에 있는 모든 개체 제거(_right)}]",
+        "format": "(prob)% 확률로 (_dispTime(time)) 동안 배경 (_bg(id)) (_left)으(_right)로 변경 [(type.kill){(_left)발동 시 필드에 있는 모든 개체 제거(_right)}]",
         "class": {
             "prob": {
                 "name": "확률",
@@ -670,7 +682,7 @@
         "abbr_name": "독 데미지 무효",
         "full_name": "독 데미지 무효",
         "tooltip": "독 데미지를 약하게 받거나 무효화 합니다",
-        "format": "[(mult==100){독 데미지 무효}(mult<100){독 데미지 내성 (_left)데미지 (mult)% 감소(_right)}]",
+        "format": "[(mult==100){독 데미지 무효}(mult<100&mult>0){독 데미지 내성 (_left)데미지 (mult)% 감소(_right)}(mult<0){독 데미지에 약함 (_left)데미지 (_abs(mult))% 더 증가(_right)}]",
         "class": {
             "mult": {
                 "name": "퍼센트",
@@ -682,7 +694,7 @@
         "abbr_name": "열파 공격 무효",
         "full_name": "열파 공격 무효",
         "tooltip": "열파 공격을 약하게 받거나 무효화 합니다",
-        "format": "[(mult==100){열파 공격 무효}(mult<100){열파 공격 내성 (_left)데미지 (mult)% 감소(_right)}]",
+        "format": "[(mult==100){열파 공격 무효}(mult<100&mult>0){열파 공격 내성 (_left)데미지 (mult)% 감소(_right)}(mult<0){열파 공격에 약함 (_left)데미지 (_abs(mult))% 더 증가(_right)}]",
         "class": {
             "mult": {
                 "name": "퍼센트",
