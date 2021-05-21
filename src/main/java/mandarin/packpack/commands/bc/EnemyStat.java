@@ -7,6 +7,10 @@ import common.util.unit.Enemy;
 import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.discordjson.json.ApplicationCommandInteractionData;
+import discord4j.discordjson.json.ApplicationCommandInteractionOptionData;
+import discord4j.discordjson.json.InteractionData;
+import discord4j.discordjson.json.MemberData;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
@@ -14,10 +18,71 @@ import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.holder.EnemyStatHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import mandarin.packpack.supporter.server.slash.SlashBuilder;
+import mandarin.packpack.supporter.server.slash.SlashOption;
+import mandarin.packpack.supporter.server.slash.WebhookBuilder;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class EnemyStat extends ConstraintCommand {
+    public static WebhookBuilder getInteractionWebhook(InteractionData interaction) {
+        if(interaction.data().isAbsent()) {
+            System.out.println("Data is absent in EnemyStat!");
+            return null;
+        }
+
+        ApplicationCommandInteractionData data = interaction.data().get();
+
+        if(data.options().isAbsent()) {
+            System.out.println("Options are absent!");
+            return null;
+        }
+
+        int lang = LangID.EN;
+
+        if(!interaction.guildId().isAbsent()) {
+            String gID = interaction.guildId().get();
+
+            if(gID.equals(StaticStore.BCU_KR_SERVER))
+                lang = LangID.KR;
+        }
+
+        if(!interaction.member().isAbsent()) {
+            MemberData m = interaction.member().get();
+
+            if(StaticStore.locales.containsKey(m.user().id().asString())) {
+                lang =  StaticStore.locales.get(m.user().id().asString());
+            }
+        }
+
+        List<ApplicationCommandInteractionOptionData> options = data.options().get();
+
+        String name = SlashOption.getStringOption(options, "name", "");
+
+        Enemy e = name.isBlank() ? null : EntityFilter.pickOneEnemy(name, lang);
+
+        boolean frame = SlashOption.getBooleanOption(options, "frame", true);
+        int[] magnification = {
+                SlashOption.getIntOption(options, "magnification", 100),
+                SlashOption.getIntOption(options, "atk_magnification", 100)
+        };
+
+        final int finalLang = lang;
+
+        return SlashBuilder.getWebhookRequest(w -> {
+            if(e == null) {
+                w.setContent(LangID.getStringByID("formst_specific", finalLang));
+            } else {
+                try {
+                    EntityHandler.showEnemyEmb(e, w, frame, magnification, finalLang);
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                }
+            }
+        });
+    }
+
     private static final int PARAM_SECOND = 2;
 
     public EnemyStat(ROLE role, int lang, IDHolder id) {

@@ -27,7 +27,7 @@ public class SlashOption {
         }
     }
 
-    public static ApplicationCommandInteractionOptionData getOption(List<ApplicationCommandInteractionOptionData> options, String name) {
+    public static ApplicationCommandInteractionOptionData getOption(List<ApplicationCommandInteractionOptionData> options, @NotNull String name) {
         for(ApplicationCommandInteractionOptionData option : options) {
             if(option.name().equals(name)) {
                 return option;
@@ -38,23 +38,23 @@ public class SlashOption {
     }
 
     @NotNull
-    public static String getStringOption(List<ApplicationCommandInteractionOptionData> options, String name) {
+    public static String getStringOption(List<ApplicationCommandInteractionOptionData> options, String name, String def) {
         ApplicationCommandInteractionOptionData data = getOption(options, name);
 
         if(data == null)
-            return "";
+            return def;
 
         if(data.type() == TYPE.STRING.type && !data.value().isAbsent())
             return data.value().get();
 
-        return "";
+        return def;
     }
 
-    public static boolean getBooleanOption(List<ApplicationCommandInteractionOptionData> options, String name) {
+    public static boolean getBooleanOption(List<ApplicationCommandInteractionOptionData> options, String name, boolean def) {
         ApplicationCommandInteractionOptionData data = getOption(options, name);
 
         if(data == null)
-            return false;
+            return def;
 
         if(data.type() == TYPE.BOOLEAN.type && !data.value().isAbsent()) {
             String value = data.value().get();
@@ -62,19 +62,19 @@ public class SlashOption {
             return value.toLowerCase(Locale.ENGLISH).equals("true");
         }
 
-        return false;
+        return def;
     }
 
-    public static int getIntOption(List<ApplicationCommandInteractionOptionData> options, String name) {
+    public static int getIntOption(List<ApplicationCommandInteractionOptionData> options, String name, int def) {
         ApplicationCommandInteractionOptionData data = getOption(options, name);
 
         if(data == null)
-            return -1;
+            return def;
 
         if(data.type() == TYPE.INT.type && !data.value().isAbsent())
             return StaticStore.safeParseInt(data.value().get());
 
-        return -1;
+        return def;
     }
 
     @NotNull

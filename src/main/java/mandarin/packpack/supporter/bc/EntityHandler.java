@@ -537,6 +537,93 @@ public class EntityHandler {
         e.anim.unload();
     }
 
+    public static void showEnemyEmb(Enemy e, WebhookBuilder w, boolean isFrame, int[] magnification, int lang) throws Exception {
+        File img = generateIcon(e);
+
+        FileInputStream fis;
+
+        if(img != null)
+            fis = new FileInputStream(img);
+        else
+            fis = null;
+
+        w.addEmbed(spec -> {
+            Color c = StaticStore.rainbow[0];
+
+            int[] mag = new int[2];
+
+            if(magnification.length == 1) {
+                if(magnification[0] <= 0) {
+                    mag[0] = mag[1] = 100;
+                } else {
+                    mag[0] = mag[1] = magnification[0];
+                }
+            } else if(magnification.length == 2) {
+                mag = magnification;
+
+                if(mag[0] <= 0)
+                    mag[0] = 100;
+
+                if(mag[1] < 0)
+                    mag[1] = 0;
+            }
+
+            spec.setTitle(DataToString.getTitle(e, lang));
+            spec.setColor(c);
+            spec.setThumbnail("attachment://icon.png");
+            spec.addField(LangID.getStringByID("data_id", lang), DataToString.getID(e.id.id), false);
+            spec.addField(LangID.getStringByID("data_hp", lang), DataToString.getHP(e, mag[0]), true);
+            spec.addField(LangID.getStringByID("data_hb", lang), DataToString.getHitback(e), true);
+            spec.addField(LangID.getStringByID("data_magnif", lang), DataToString.getMagnification(mag, 100), true);
+            spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(e, mag[1]), false);
+            spec.addField(LangID.getStringByID("data_dps", lang), DataToString.getDPS(e, mag[1]), true);
+            spec.addField(LangID.getStringByID("data_atktime", lang), DataToString.getAtkTime(e, isFrame), true);
+            spec.addField(LangID.getStringByID("data_abilt", lang), DataToString.getAbilT(e, lang), true);
+            spec.addField(LangID.getStringByID("data_preatk", lang), DataToString.getPre(e, isFrame), true);
+            spec.addField(LangID.getStringByID("data_postatk", lang), DataToString.getPost(e, isFrame), true);
+            spec.addField(LangID.getStringByID("data_tba", lang), DataToString.getTBA(e, isFrame), true);
+            spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(e, lang), false);
+            spec.addField(LangID.getStringByID("data_atktype", lang), DataToString.getSiMu(e, lang), true);
+            spec.addField(LangID.getStringByID("data_drop", lang), DataToString.getDrop(e), true);
+            spec.addField(LangID.getStringByID("data_range", lang), DataToString.getRange(e), true);
+            spec.addField(LangID.getStringByID("data_barrier", lang), DataToString.getBarrier(e, lang), true);
+            spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(e), true);
+
+            ArrayList<String> abis = Interpret.getAbi(e.de, lang);
+            abis.addAll(Interpret.getProc(e.de, !isFrame, lang));
+
+            StringBuilder sb = new StringBuilder();
+
+            for(int i = 0; i < abis.size(); i++) {
+                if(i == abis.size() - 1)
+                    sb.append(abis.get(i));
+                else
+                    sb.append(abis.get(i)).append("\n");
+            }
+
+            String res = sb.toString();
+
+            if(res.isBlank())
+                res = LangID.getStringByID("data_none", lang);
+
+            spec.addField(LangID.getStringByID("data_ability", lang), res, false);
+
+            String explanation = DataToString.getDescription(e, lang);
+
+            if(explanation != null) {
+                spec.addField(LangID.getStringByID("data_edesc", lang), explanation, false);
+            }
+
+            spec.setFooter(LangID.getStringByID("enemyst_source", lang), null);
+        });
+
+        if(fis != null) {
+            w.addFile("icon.png", fis, img);
+        }
+
+        e.anim.unload();
+    }
+
     private static File generateIcon(Enemy e) throws IOException {
         File temp = new File("./temp");
 

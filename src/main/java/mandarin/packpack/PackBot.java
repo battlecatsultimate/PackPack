@@ -289,6 +289,8 @@ public class PackBot {
             });
         });
 
+
+
         gate.on(MessageCreateEvent.class)
                 .filter(event -> {
                     MessageChannel mc = event.getMessage().getChannel().block();
@@ -312,6 +314,9 @@ public class PackBot {
 
                         event.getMember().ifPresent(m -> {
                             mandarin.set(m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
+
+                            if(m.getId().asString().equals(StaticStore.MANDARIN_SMELL))
+                                System.out.println("This is considered as creation");
 
                             if(ids.MOD != null) {
                                 isMod.set(StaticStore.rolesToString(m.getRoleIds()).contains(ids.MOD));

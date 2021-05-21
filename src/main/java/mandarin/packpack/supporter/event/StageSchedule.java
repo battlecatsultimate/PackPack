@@ -276,7 +276,7 @@ public class StageSchedule extends EventFactor {
             if (id >= 8000 && id < 9000) {
                 result.append("Weekly Mission Code ").append(unknownStages.get(i));
             } else if(id >= 9000 && id < 10000) {
-                result.append("Speical Mission Code ").append(unknownStages.get(i));
+                result.append("Special Mission Code ").append(unknownStages.get(i));
             } else {
                 result.append("Unknown Stage Code ").append(unknownStages.get(i));
             }

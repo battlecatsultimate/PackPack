@@ -58,9 +58,9 @@ public class FormStat extends ConstraintCommand {
 
         List<ApplicationCommandInteractionOptionData> options = data.options().get();
 
-        String name = SlashOption.getStringOption(options, "name");
-        boolean frame = SlashOption.getBooleanOption(options, "frame");
-        boolean talent = SlashOption.getBooleanOption(options, "talent");
+        String name = SlashOption.getStringOption(options, "name", "");
+        boolean frame = SlashOption.getBooleanOption(options, "frame", true);
+        boolean talent = SlashOption.getBooleanOption(options, "talent", false);
         int[] lvs = prepareLevels(options);
 
         Form f = EntityFilter.pickOneForm(name, lang);
@@ -83,12 +83,12 @@ public class FormStat extends ConstraintCommand {
     private static int[] prepareLevels(List<ApplicationCommandInteractionOptionData> options) {
         int[] levels = new int[6];
 
-        levels[0] = SlashOption.getIntOption(options, "level");
-        levels[1] = SlashOption.getIntOption(options, "talent_level_1");
-        levels[2] = SlashOption.getIntOption(options, "talent_level_2");
-        levels[3] = SlashOption.getIntOption(options, "talent_level_3");
-        levels[4] = SlashOption.getIntOption(options, "talent_level_4");
-        levels[5] = SlashOption.getIntOption(options, "talent_level_5");
+        levels[0] = SlashOption.getIntOption(options, "level", -1);
+        levels[1] = SlashOption.getIntOption(options, "talent_level_1", -1);
+        levels[2] = SlashOption.getIntOption(options, "talent_level_2", -1);
+        levels[3] = SlashOption.getIntOption(options, "talent_level_3", -1);
+        levels[4] = SlashOption.getIntOption(options, "talent_level_4", -1);
+        levels[5] = SlashOption.getIntOption(options, "talent_level_5", -1);
 
         return levels;
     }

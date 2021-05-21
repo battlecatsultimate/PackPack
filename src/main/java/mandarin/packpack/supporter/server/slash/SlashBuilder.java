@@ -7,6 +7,7 @@ import discord4j.discordjson.json.*;
 import discord4j.rest.RestClient;
 import discord4j.rest.util.ApplicationCommandOptionType;
 import discord4j.rest.util.WebhookMultipartRequest;
+import mandarin.packpack.commands.bc.EnemyStat;
 import mandarin.packpack.commands.bc.FormStat;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -64,14 +65,25 @@ public class SlashBuilder {
                         WebhookBuilder request = FormStat.getInteractionWebhook(event.getInteraction().getData());
 
                         if(request != null) {
-                            return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage(request.build(), false)).then(Mono.create(m -> request.finishJob(true))).doOnError(e -> {
+                            return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage(request.build(), true)).then(Mono.create(m -> request.finishJob(true))).doOnError(e -> {
                                 e.printStackTrace();
                                 request.finishJob(true);
                             });
                         }
                         break;
                     case "es":
-                        return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage("WIP2")).then(Mono.create(m -> System.out.println("Finished")));
+                        request = EnemyStat.getInteractionWebhook(event.getInteraction().getData());
+
+                        if(request != null) {
+                            return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage(request.build(), true))
+                                    .then(Mono.create(m -> request.finishJob(true)))
+                                    .doOnError(e -> {
+                                        e.printStackTrace();
+                                        request.finishJob(true);
+                                    });
+                        }
+
+                        break;
                 }
 
                 return Mono.empty();
