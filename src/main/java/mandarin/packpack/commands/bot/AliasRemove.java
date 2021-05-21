@@ -23,11 +23,10 @@ import mandarin.packpack.supporter.server.holder.alias.AliasStageHolder;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class AliasRemove implements Command {
-    private final int lang;
+public class AliasRemove extends Command {
 
     public AliasRemove(int lang) {
-        this.lang = lang;
+        super(lang);
     }
 
     @Override

@@ -23,11 +23,10 @@ import mandarin.packpack.supporter.server.holder.alias.AliasStageHolder;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class AliasAdd implements Command {
-    private final int lang;
+public class AliasAdd extends Command {
 
     public AliasAdd(int lang) {
-        this.lang = lang;
+        super(lang);
     }
 
     @Override

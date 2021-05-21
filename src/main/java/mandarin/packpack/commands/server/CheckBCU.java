@@ -10,12 +10,12 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-public class CheckBCU implements Command {
-    private final int lang;
+public class CheckBCU extends Command {
     private final IDHolder holder;
 
     public CheckBCU(int lang, IDHolder holder) {
-        this.lang = lang;
+        super(lang);
+
         this.holder = holder;
     }
 

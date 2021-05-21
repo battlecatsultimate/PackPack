@@ -7,12 +7,12 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 
-public class Help implements Command {
-    private final int lang;
+public class Help extends Command {
     private final IDHolder holder;
 
     public Help(int lang, IDHolder holder) {
-        this.lang = lang;
+        super(lang);
+
         this.holder = holder;
     }
 

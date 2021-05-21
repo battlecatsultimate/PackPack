@@ -12,10 +12,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
-public abstract class TimedConstraintCommand implements Command {
+public abstract class TimedConstraintCommand extends Command {
 
     final String constRole;
-    protected final int lang;
     protected final long time;
     protected final IDHolder holder;
     protected final String id;
@@ -23,6 +22,8 @@ public abstract class TimedConstraintCommand implements Command {
     private boolean startTimer = true;
 
     public TimedConstraintCommand(ConstraintCommand.ROLE role, int lang, IDHolder idHolder, long time, String id) {
+        super(lang);
+
         switch (role) {
             case MOD:
                 constRole = idHolder.MOD;
@@ -40,7 +41,6 @@ public abstract class TimedConstraintCommand implements Command {
                 throw new IllegalStateException("Invalid ROLE enum : "+role);
         }
 
-        this.lang = lang;
         this.time = time;
         this.holder = idHolder;
         this.id = id;

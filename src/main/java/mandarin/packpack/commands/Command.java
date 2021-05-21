@@ -15,11 +15,18 @@ import java.lang.reflect.Method;
 import java.util.Optional;
 
 @SuppressWarnings("unused")
-public interface Command {
-    int DEFAULT_ERROR = -1;
-    Pauser pause = new Pauser();
+public abstract class Command {
+    public int DEFAULT_ERROR = -1;
+    public Pauser pause = new Pauser();
+    public final int lang;
 
-    default void execute(MessageEvent event) {
+    public Command(int lang) {
+        this.lang = lang;
+    }
+
+    public void execute(MessageEvent event) {
+
+
         try {
             new Thread(() -> {
                 try {
@@ -35,9 +42,9 @@ public interface Command {
         }
     }
 
-    void doSomething(MessageEvent event) throws Exception;
+    public abstract void doSomething(MessageEvent event) throws Exception;
 
-    default void onFail(MessageEvent event, int error) {
+    public void onFail(MessageEvent event, int error) {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
@@ -46,17 +53,17 @@ public interface Command {
         ch.createMessage(StaticStore.ERROR_MSG).subscribe();
     }
 
-    default void onSuccess(MessageEvent event) {}
+    public void onSuccess(MessageEvent event) {}
 
-    default void onCancel(MessageEvent event) {}
+    public void onCancel(MessageEvent event) {}
 
-    default MessageChannel getChannel(MessageEvent event) {
+    public MessageChannel getChannel(MessageEvent event) {
         Message msg = getMessage(event);
 
         return msg == null ? null : msg.getChannel().block();
     }
 
-    default Message getMessage(MessageEvent event) {
+    public Message getMessage(MessageEvent event) {
         try {
             Method m = event.getClass().getMethod("getMessage");
 
@@ -73,14 +80,14 @@ public interface Command {
         return null;
     }
 
-    default String getContent(MessageEvent event) {
+    public String getContent(MessageEvent event) {
         Message msg = getMessage(event);
 
         return msg == null ? null : msg.getContent();
     }
 
     @SuppressWarnings("unchecked")
-    default Optional<Member> getMember(MessageEvent event) {
+    public Optional<Member> getMember(MessageEvent event) {
         try {
             Method m = event.getClass().getMethod("getMember");
 
@@ -96,7 +103,7 @@ public interface Command {
     }
 
     @SuppressWarnings("unchecked")
-    default Mono<Guild> getGuild(MessageEvent event) {
+    public Mono<Guild> getGuild(MessageEvent event) {
         try {
             Method m = event.getClass().getMethod("getGuild");
 
@@ -111,14 +118,14 @@ public interface Command {
         return null;
     }
 
-    default void createMessageWithNoPings(MessageChannel ch, String content) {
+    public void createMessageWithNoPings(MessageChannel ch, String content) {
         ch.createMessage(m -> {
             m.setContent(content);
             m.setAllowedMentions(AllowedMentions.builder().build());
         }).subscribe();
     }
 
-    default Message getMessageWithNoPings(MessageChannel ch, String content) {
+    public Message getMessageWithNoPings(MessageChannel ch, String content) {
         return ch.createMessage(m -> {
             m.setContent(content);
             m.setAllowedMentions(AllowedMentions.builder().build());

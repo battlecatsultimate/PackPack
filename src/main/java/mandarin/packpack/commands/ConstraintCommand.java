@@ -9,7 +9,7 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-public abstract class ConstraintCommand implements Command {
+public abstract class ConstraintCommand extends Command {
     public enum ROLE {
         MANDARIN,
         MOD,
@@ -18,10 +18,11 @@ public abstract class ConstraintCommand implements Command {
     }
 
     final String constRole;
-    protected final int lang;
     protected final IDHolder holder;
 
     public ConstraintCommand(ROLE role, int lang, IDHolder id) {
+        super(lang);
+
         switch (role) {
             case MOD:
                 constRole = id.MOD;
@@ -39,7 +40,6 @@ public abstract class ConstraintCommand implements Command {
                 throw new IllegalStateException("Invalid ROLE enum : "+role);
         }
 
-        this.lang = lang;
         this.holder = id;
     }
 

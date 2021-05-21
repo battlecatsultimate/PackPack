@@ -12,13 +12,13 @@ import java.text.DecimalFormat;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class BCUStat implements Command {
+public class BCUStat extends Command {
 
-    final int lang;
-    final IDHolder holder;
+    private final IDHolder holder;
 
     public BCUStat(int lang, IDHolder holder) {
-        this.lang = lang;
+        super(lang);
+
         this.holder = holder;
     }
 

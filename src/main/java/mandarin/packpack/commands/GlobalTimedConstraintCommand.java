@@ -14,11 +14,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicReference;
 
-public abstract class GlobalTimedConstraintCommand implements Command {
+public abstract class GlobalTimedConstraintCommand extends Command {
     static String ABORT = "ABORT";
 
     final String constRole;
-    protected final int lang;
     final String mainID;
     protected String optionalID = "";
     protected final ArrayList<String> aborts = new ArrayList<>();
@@ -29,6 +28,8 @@ public abstract class GlobalTimedConstraintCommand implements Command {
     private boolean timerStart = true;
 
     public GlobalTimedConstraintCommand(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID, long millis) {
+        super(lang);
+
         switch (role) {
             case MOD:
                 constRole = id.MOD;
@@ -46,7 +47,6 @@ public abstract class GlobalTimedConstraintCommand implements Command {
                 throw new IllegalStateException("Invalid ROLE enum : "+role);
         }
 
-        this.lang = lang;
         this.mainID = mainID;
         this.time = millis;
         this.holder = id;
