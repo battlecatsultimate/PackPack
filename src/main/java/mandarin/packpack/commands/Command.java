@@ -8,15 +8,17 @@ import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.rest.util.AllowedMentions;
 import mandarin.packpack.supporter.Pauser;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.server.SpamPrevent;
 import reactor.core.publisher.Mono;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 @SuppressWarnings("unused")
 public abstract class Command {
-    public int DEFAULT_ERROR = -1;
+    public final int DEFAULT_ERROR = -1;
     public Pauser pause = new Pauser();
     public final int lang;
 
@@ -25,7 +27,29 @@ public abstract class Command {
     }
 
     public void execute(MessageEvent event) {
+        MessageChannel ch = getChannel(event);
 
+        if(ch == null)
+            return;
+
+        AtomicReference<Boolean> prevented = new AtomicReference<>(false);
+
+        getMember(event).ifPresent(m -> {
+            SpamPrevent spam;
+
+            if(StaticStore.spamData.containsKey(m.getId().asString())) {
+                spam = StaticStore.spamData.get(m.getId().asString());
+
+                prevented.set(spam.isPrevented(ch, lang, m.getId().asString()));
+            } else {
+                spam = new SpamPrevent();
+
+                StaticStore.spamData.put(m.getId().asString(), spam);
+            }
+        });
+
+        if (prevented.get())
+            return;
 
         try {
             new Thread(() -> {

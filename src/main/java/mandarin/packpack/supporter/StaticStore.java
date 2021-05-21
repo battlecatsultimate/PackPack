@@ -17,6 +17,7 @@ import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Role;
 import discord4j.rest.util.Color;
 import mandarin.packpack.supporter.event.EventHolder;
+import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.data.AliasHolder;
 import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.data.IDHolder;
@@ -63,6 +64,8 @@ public class StaticStore {
     public static ImgurDataHolder imgur = new ImgurDataHolder(null);
 
     public static Map<String, TimeBoolean> canDo = new HashMap<>();
+
+    public static Map<String, SpamPrevent> spamData = new HashMap<>();
 
     public static EventHolder event = new EventHolder();
 
@@ -336,6 +339,7 @@ public class StaticStore {
         obj.add("suggestBanned", mapToJsonString(suggestBanned));
         obj.add("alias", AliasHolder.jsonfy());
         obj.add("contributor", listToJsonString(contributors));
+        obj.add("spam", SpamPrevent.jsonfyMap());
 
         try {
             File folder = new File("./data/");
@@ -423,6 +427,10 @@ public class StaticStore {
 
             if(obj.has("contributor")) {
                 contributors = jsonToListString(obj.getAsJsonArray("contributor"));
+            }
+
+            if(obj.has("spam")) {
+                spamData = SpamPrevent.parseJsonMap(obj.getAsJsonArray("spam"));
             }
         }
     }

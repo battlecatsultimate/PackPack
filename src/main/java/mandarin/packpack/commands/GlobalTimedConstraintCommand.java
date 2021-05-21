@@ -6,6 +6,7 @@ import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.TimeBoolean;
 
@@ -66,10 +67,26 @@ public abstract class GlobalTimedConstraintCommand extends Command {
         AtomicReference<Boolean> hasRole = new AtomicReference<>(false);
         AtomicReference<Boolean> isMandarin = new AtomicReference<>(false);
         AtomicReference<Boolean> isMod = new AtomicReference<>(false);
+        AtomicReference<Boolean> prevented = new AtomicReference<>(false);
 
         AtomicReference<Boolean> canGo = new AtomicReference<>(true);
 
         getMember(event).ifPresentOrElse(m -> {
+            SpamPrevent spam;
+
+            if(StaticStore.spamData.containsKey(m.getId().asString())) {
+                spam = StaticStore.spamData.get(m.getId().asString());
+
+                prevented.set(spam.isPrevented(ch, lang, m.getId().asString()));
+            } else {
+                spam = new SpamPrevent();
+
+                StaticStore.spamData.put(m.getId().asString(), spam);
+            }
+
+            if(prevented.get())
+                return;
+
             String role = StaticStore.rolesToString(m.getRoleIds());
 
             if(constRole == null) {
@@ -86,6 +103,9 @@ public abstract class GlobalTimedConstraintCommand extends Command {
 
             isMandarin.set(m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
         }, () -> canGo.set(false));
+
+        if(prevented.get())
+            return;
 
         if(!canGo.get())
             return;

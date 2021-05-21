@@ -6,9 +6,10 @@ import discord4j.core.event.domain.InteractionCreateEvent;
 import discord4j.discordjson.json.*;
 import discord4j.rest.RestClient;
 import discord4j.rest.util.ApplicationCommandOptionType;
-import discord4j.rest.util.WebhookMultipartRequest;
 import mandarin.packpack.commands.bc.EnemyStat;
 import mandarin.packpack.commands.bc.FormStat;
+import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.server.SpamPrevent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.reactivestreams.Publisher;
@@ -18,7 +19,6 @@ import reactor.core.publisher.Mono;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class SlashBuilder {
     private static final ArrayList<ApplicationCommandRequest> requests = new ArrayList<>();
@@ -58,6 +58,25 @@ public class SlashBuilder {
             @NotNull
             @Override
             public Publisher<?> onInteractionCreate(@NotNull InteractionCreateEvent event) {
+                if(!event.getInteraction().getData().member().isAbsent()) {
+                    SpamPrevent spam;
+
+                    MemberData m = event.getInteraction().getData().member().get();
+
+                    if(StaticStore.spamData.containsKey(m.user().id().asString())) {
+                        spam = StaticStore.spamData.get(m.user().id().asString());
+
+                        Mono<?> prevented = spam.isPrevented(event);
+
+                        if(prevented != null)
+                            return prevented;
+                    } else {
+                        spam = new SpamPrevent();
+
+                        StaticStore.spamData.put(m.user().id().asString(), spam);
+                    }
+                }
+
                 String command = event.getCommandName();
 
                 switch (command) {

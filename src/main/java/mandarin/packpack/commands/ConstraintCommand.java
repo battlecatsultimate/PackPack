@@ -5,6 +5,7 @@ import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.data.IDHolder;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -50,12 +51,29 @@ public abstract class ConstraintCommand extends Command {
         if(ch == null)
             return;
 
+        AtomicReference<Boolean> prevented = new AtomicReference<>(false);
+
         AtomicReference<Boolean> hasRole = new AtomicReference<>(false);
         AtomicReference<Boolean> isMod = new AtomicReference<>(false);
 
         AtomicReference<Boolean> canGo = new AtomicReference<>(true);
 
         getMember(event).ifPresentOrElse(m -> {
+            SpamPrevent spam;
+
+            if(StaticStore.spamData.containsKey(m.getId().asString())) {
+                spam = StaticStore.spamData.get(m.getId().asString());
+
+                prevented.set(spam.isPrevented(ch, lang, m.getId().asString()));
+            } else {
+                spam = new SpamPrevent();
+
+                StaticStore.spamData.put(m.getId().asString(), spam);
+            }
+
+            if(prevented.get())
+                return;
+
             String role = StaticStore.rolesToString(m.getRoleIds());
 
             if(constRole == null) {
@@ -71,6 +89,9 @@ public abstract class ConstraintCommand extends Command {
             }
 
         }, () -> canGo.set(false));
+
+        if (prevented.get())
+            return;
 
         if(!canGo.get())
             return;

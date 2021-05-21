@@ -29,6 +29,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.event.EventFactor;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.slash.SlashBuilder;
 import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.data.IDHolder;
@@ -44,6 +45,8 @@ import java.util.concurrent.atomic.AtomicReference;
  * Usage : java -jar JARNAME DISCORD_BOT_TOKEN IMGUR_API_ACCESS_TOKEN
  */
 public class PackBot {
+    public static int save = 0;
+
     public static void main(String[] args) {
         initialize(args);
 
@@ -314,9 +317,6 @@ public class PackBot {
 
                         event.getMember().ifPresent(m -> {
                             mandarin.set(m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
-
-                            if(m.getId().asString().equals(StaticStore.MANDARIN_SMELL))
-                                System.out.println("This is considered as creation");
 
                             if(ids.MOD != null) {
                                 isMod.set(StaticStore.rolesToString(m.getRoleIds()).contains(ids.MOD));
@@ -651,14 +651,25 @@ public class PackBot {
             StaticStore.saver.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    System.out.println("Save Process");
-                    StaticStore.saveServerInfo();
+                    if(save % 5 == 0) {
+                        System.out.println("Save Process");
+                        StaticStore.saveServerInfo();
 
-                    Calendar c = Calendar.getInstance();
+                        Calendar c = Calendar.getInstance();
 
-                    EventFactor.currentYear = c.get(Calendar.YEAR);
+                        EventFactor.currentYear = c.get(Calendar.YEAR);
+
+                        save = 0;
+                    } else {
+                        save++;
+                    }
+
+                    for(SpamPrevent spam : StaticStore.spamData.values()) {
+                        if(spam.count > 0)
+                            spam.count--;
+                    }
                 }
-            }, 0, TimeUnit.MINUTES.toMillis(5));
+            }, 0, TimeUnit.MINUTES.toMillis(1));
 
             StaticStore.initialized = true;
         }
