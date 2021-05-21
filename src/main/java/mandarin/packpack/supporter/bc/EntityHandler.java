@@ -27,6 +27,7 @@ import mandarin.packpack.supporter.awt.FIBI;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.holder.FormReactionHolder;
 import mandarin.packpack.supporter.server.holder.StageReactionHolder;
+import mandarin.packpack.supporter.server.slash.WebhookBuilder;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -57,6 +58,152 @@ public class EntityHandler {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void showUnitEmb(Form f, WebhookBuilder builder, boolean isFrame, boolean talent, int[] lv, int lang) throws Exception {
+        int level = lv[0];
+        int levelp = 0;
+
+        if(level <= 0) {
+            if(f.unit.rarity == 0)
+                level = 110;
+            else
+                level = 30;
+        }
+
+        if(level > f.unit.max) {
+            levelp = level - f.unit.max;
+            level = f.unit.max;
+
+            if(levelp > f.unit.maxp)
+                levelp = f.unit.maxp;
+
+            if(levelp < 0)
+                levelp = 0;
+        }
+
+        lv[0] = level + levelp;
+
+        String l;
+
+        if(levelp == 0)
+            l = "" + level;
+        else
+            l = level + " + " + levelp;
+
+        File img = generateIcon(f);
+        File cf = generateCatfruit(f);
+
+        FileInputStream fis;
+        FileInputStream cfis;
+
+        if(img != null)
+            fis = new FileInputStream(img);
+        else
+            fis = null;
+
+        if(cf != null)
+            cfis = new FileInputStream(cf);
+        else
+            cfis = null;
+
+        builder.addEmbed(spec -> {
+            Color c;
+
+            if(f.fid == 0)
+                c = StaticStore.rainbow[4];
+            else if(f.fid == 1)
+                c = StaticStore.rainbow[3];
+            else
+                c = StaticStore.rainbow[2];
+
+            int[] t;
+
+            if(talent && f.getPCoin() != null) {
+                t = f.getPCoin().max;
+                t[0] = lv[0];
+            } else
+                t = null;
+
+            if(t != null)
+                t = handleTalent(lv, t);
+            else
+                t = new int[] {lv[0], 0, 0, 0, 0, 0};
+
+            spec.setTitle(DataToString.getTitle(f, lang));
+
+            if(talent && f.getPCoin() != null && talentExists(t)) {
+                spec.setDescription(LangID.getStringByID("data_talent", lang));
+            }
+
+            spec.setColor(c);
+            spec.setThumbnail("attachment://icon.png");
+            spec.addField(LangID.getStringByID("data_id", lang), DataToString.getID(f.uid.id, f.fid), false);
+            spec.addField(LangID.getStringByID("data_hp", lang), DataToString.getHP(f, talent, t), true);
+            spec.addField(LangID.getStringByID("data_hb", lang), DataToString.getHitback(f, talent, t), true);
+            spec.addField(LangID.getStringByID("data_level", lang), l, true);
+            spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(f, talent, t), false);
+            spec.addField(LangID.getStringByID("data_dps", lang), DataToString.getDPS(f, talent, t), true);
+            spec.addField(LangID.getStringByID("data_atktime", lang), DataToString.getAtkTime(f, isFrame), true);
+            spec.addField(LangID.getStringByID("data_abilt", lang), DataToString.getAbilT(f, lang), true);
+            spec.addField(LangID.getStringByID("data_preatk", lang), DataToString.getPre(f, isFrame), true);
+            spec.addField(LangID.getStringByID("data_postatk", lang), DataToString.getPost(f, isFrame), true);
+            spec.addField(LangID.getStringByID("data_tba", lang), DataToString.getTBA(f, isFrame), true);
+            spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(f, talent, t, lang), false);
+            spec.addField(LangID.getStringByID("data_atktype", lang), DataToString.getSiMu(f, lang), true);
+            spec.addField(LangID.getStringByID("data_cost", lang), DataToString.getCost(f, talent, t), true);
+            spec.addField(LangID.getStringByID("data_range", lang), DataToString.getRange(f), true);
+            spec.addField(LangID.getStringByID("data_cooldown", lang), DataToString.getCD(f,isFrame, talent, t), true);
+            spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(f, talent, t), true);
+
+            MaskUnit du;
+
+            if(f.getPCoin() != null)
+                if(talent)
+                    du = f.getPCoin().improve(t);
+                else
+                    du = f.du;
+            else
+                du = f.du;
+
+            ArrayList<String> abis = Interpret.getAbi(du, lang);
+            abis.addAll(Interpret.getProc(du, !isFrame, lang));
+
+            StringBuilder sb = new StringBuilder();
+
+            for(int i = 0; i < abis.size(); i++) {
+                if(i == abis.size() - 1)
+                    sb.append(abis.get(i));
+                else
+                    sb.append(abis.get(i)).append("\n");
+            }
+
+            String res = sb.toString();
+
+            if(res.isBlank())
+                res = LangID.getStringByID("data_none", lang);
+
+            spec.addField(LangID.getStringByID("data_ability", lang), res, false);
+
+            String explanation = DataToString.getDescription(f, lang);
+
+            if(explanation != null)
+                spec.addField(LangID.getStringByID("data_udesc", lang), explanation, false);
+
+            String catfruit = DataToString.getCatruitEvolve(f, lang);
+
+            if(catfruit != null)
+                spec.addField(LangID.getStringByID("data_evolve", lang), catfruit, false);
+
+            spec.setImage("attachment://cf.png");
+
+            if(talentExists(t))
+                spec.setFooter(DataToString.getTalent(f, t, lang), null);
+        });
+        if(fis != null)
+            builder.addFile("icon.png", fis, img);
+        if(cfis != null)
+            builder.addFile("cf.png", cfis, cf);
     }
 
     public static Message showUnitEmb(Form f, MessageChannel ch, boolean isFrame, boolean talent, int[] lv, int lang, boolean addEmoji) throws Exception {
@@ -269,6 +416,9 @@ public class EntityHandler {
                 res[i] = t[i];
             else
                 res[i] = Math.min(t[i], lv[i]);
+
+            if(res[i] < 0)
+                res[i] = t[i];
         }
 
         return res;

@@ -2,23 +2,97 @@ package mandarin.packpack.commands.bc;
 
 import common.CommonStatic;
 import common.util.Data;
-import common.util.lang.MultiLangCont;
 import common.util.unit.Form;
 import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.discordjson.json.ApplicationCommandInteractionData;
+import discord4j.discordjson.json.ApplicationCommandInteractionOptionData;
+import discord4j.discordjson.json.InteractionData;
+import discord4j.discordjson.json.MemberData;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.FormReactionHolder;
 import mandarin.packpack.supporter.server.holder.FormStatHolder;
-import mandarin.packpack.supporter.server.data.IDHolder;
+import mandarin.packpack.supporter.server.slash.SlashBuilder;
+import mandarin.packpack.supporter.server.slash.SlashOption;
+import mandarin.packpack.supporter.server.slash.WebhookBuilder;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class FormStat extends ConstraintCommand {
+    public static WebhookBuilder getInteractionWebhook(InteractionData interaction) {
+        if(interaction.data().isAbsent()) {
+            System.out.println("Data is absent!");
+            return null;
+        }
+
+        ApplicationCommandInteractionData data = interaction.data().get();
+
+        if(data.options().isAbsent()) {
+            System.out.println("Options are absent!");
+            return null;
+        }
+
+        int lang = LangID.EN;
+
+        if(!interaction.guildId().isAbsent()) {
+            String gId = interaction.guildId().get();
+
+            if(gId.equals(StaticStore.BCU_KR_SERVER))
+                lang = LangID.KR;
+        }
+
+        if(!interaction.member().isAbsent()) {
+            MemberData m = interaction.member().get();
+
+            if(StaticStore.locales.containsKey(m.user().id().asString())) {
+                lang = StaticStore.locales.get(m.user().id().asString());
+            }
+        }
+
+        List<ApplicationCommandInteractionOptionData> options = data.options().get();
+
+        String name = SlashOption.getStringOption(options, "name");
+        boolean frame = SlashOption.getBooleanOption(options, "frame");
+        boolean talent = SlashOption.getBooleanOption(options, "talent");
+        int[] lvs = prepareLevels(options);
+
+        Form f = EntityFilter.pickOneForm(name, lang);
+
+        int finalLang = lang;
+
+        if(f == null) {
+            return SlashBuilder.getWebhookRequest(w -> w.setContent(LangID.getStringByID("formst_specific", finalLang)));
+        }
+
+        return SlashBuilder.getWebhookRequest(w -> {
+            try {
+                EntityHandler.showUnitEmb(f, w, frame, talent, lvs, finalLang);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private static int[] prepareLevels(List<ApplicationCommandInteractionOptionData> options) {
+        int[] levels = new int[6];
+
+        levels[0] = SlashOption.getIntOption(options, "level");
+        levels[1] = SlashOption.getIntOption(options, "talent_level_1");
+        levels[2] = SlashOption.getIntOption(options, "talent_level_2");
+        levels[3] = SlashOption.getIntOption(options, "talent_level_3");
+        levels[4] = SlashOption.getIntOption(options, "talent_level_4");
+        levels[5] = SlashOption.getIntOption(options, "talent_level_5");
+
+        return levels;
+    }
+
     private static final int PARAM_TALENT = 2;
     private static final int PARAM_SECOND = 4;
 

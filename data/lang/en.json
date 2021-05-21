@@ -257,6 +257,7 @@
   "formst_page" : "\nPage : _/-",
   "formst_cancel" : "Canceled searching process",
   "formst_expire" : "Searching process time expired...",
+  "formst_specific" : "No such data found. Or you have to provide more specific name!",
   "help_command" : "Command List",
   "help_normal" : "Normal Commands",
   "help_data" : "Data Analyzing Commands",

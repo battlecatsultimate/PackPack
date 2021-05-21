@@ -192,6 +192,40 @@ public class EntityFilter {
         }
     }
 
+    public static Form pickOneForm(String name, int lang) {
+        ArrayList<Form> forms = findUnitWithName(name, lang);
+
+        if(forms.isEmpty())
+            return null;
+        else if(forms.size() == 1)
+            return forms.get(0);
+        else {
+            ArrayList<Integer> min = getFullDistances(forms, name, lang, Form.class);
+
+            int allMin = Integer.MAX_VALUE;
+
+            for(int m : min) {
+                if(m >= 0)
+                    allMin = Math.min(allMin, m);
+            }
+
+            int num = 0;
+            int ind = 0;
+
+            for(int i = 0; i < min.size(); i++) {
+                if(min.get(i) == allMin) {
+                    num++;
+                    ind = i;
+                }
+            }
+
+            if(num > 1)
+                return null;
+            else
+                return forms.get(ind);
+        }
+    }
+
     public static ArrayList<Enemy> findEnemyWithName(String name, int lang) {
         ArrayList<Enemy> res = new ArrayList<>();
 
@@ -1414,6 +1448,83 @@ public class EntityFilter {
         }
 
         return false;
+    }
+
+    private static <T> ArrayList<Integer> getFullDistances(Iterable<T> set, String keyword, int lang, Class<T> cls) {
+        ArrayList<Integer> distances = new ArrayList<>();
+        int allMin = Integer.MAX_VALUE;
+
+        keyword = keyword.toLowerCase(Locale.ENGLISH);
+
+        if(lang == LangID.KR)
+            keyword = KoreanSeparater.separate(keyword);
+
+        for(T t : set) {
+            if(t == null) {
+                distances.add(-1);
+                continue;
+            }
+
+            String name = StaticStore.safeMultiLangGet(t, lang);
+
+            if(name == null || name.isBlank()) {
+                distances.add(-1);
+                continue;
+            }
+
+            name = name.toLowerCase(Locale.ENGLISH);
+
+            if(lang == LangID.KR) {
+                name = KoreanSeparater.separate(name);
+            }
+
+            int disMin;
+
+            int result = damerauLevenshteinDistance(name, keyword);
+
+            disMin = result;
+            allMin = Math.min(allMin, result);
+
+            if(disMin > allMin) {
+                ArrayList<String> alias;
+
+                int oldConfig = CommonStatic.getConfig().lang;
+                CommonStatic.getConfig().lang = lang;
+
+                if(cls == Form.class) {
+                    alias = AliasHolder.FALIAS.getCont((Form) t);
+                } else if(cls == Enemy.class) {
+                    alias = AliasHolder.EALIAS.getCont((Enemy) t);
+                } else if(cls == Stage.class) {
+                    alias = AliasHolder.SALIAS.getCont((Stage) t);
+                } else {
+                    CommonStatic.getConfig().lang = oldConfig;
+
+                    distances.add(disMin);
+                    continue;
+                }
+
+                CommonStatic.getConfig().lang = oldConfig;
+
+                if(alias != null && !alias.isEmpty()) {
+                    for(String a : alias) {
+                        a = a.toLowerCase(Locale.ENGLISH);
+
+                        if(lang == LangID.KR)
+                            a = KoreanSeparater.separate(a);
+
+                        int aliasResult = damerauLevenshteinDistance(a, keyword);
+
+                        disMin = Math.min(disMin, aliasResult);
+                        allMin = Math.min(allMin, aliasResult);
+                    }
+                }
+            }
+
+            distances.add(disMin);
+        }
+
+        return distances;
     }
 
     private static <T> ArrayList<Integer> getDistances(Iterable<T> set, String keyword, int lang, Class<T> cls) {

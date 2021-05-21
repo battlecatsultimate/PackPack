@@ -29,7 +29,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.event.EventFactor;
 import mandarin.packpack.supporter.lang.LangID;
-import mandarin.packpack.supporter.server.SlashBuilder;
+import mandarin.packpack.supporter.server.slash.SlashBuilder;
 import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 

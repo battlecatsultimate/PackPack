@@ -4,7 +4,7 @@ import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.rest.request.RouterOptions;
-import mandarin.packpack.supporter.server.SlashBuilder;
+import mandarin.packpack.supporter.server.slash.SlashBuilder;
 
 public class SlashCommandUpdater {
     public static void main(String[] args) {

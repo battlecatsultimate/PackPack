@@ -1,14 +1,13 @@
-package mandarin.packpack.supporter.server;
+package mandarin.packpack.supporter.server.slash;
 
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.ReactiveEventAdapter;
 import discord4j.core.event.domain.InteractionCreateEvent;
-import discord4j.discordjson.json.ApplicationCommandData;
-import discord4j.discordjson.json.ApplicationCommandOptionData;
-import discord4j.discordjson.json.ApplicationCommandRequest;
-import discord4j.discordjson.json.ImmutableApplicationCommandRequest;
+import discord4j.discordjson.json.*;
 import discord4j.rest.RestClient;
 import discord4j.rest.util.ApplicationCommandOptionType;
+import discord4j.rest.util.WebhookMultipartRequest;
+import mandarin.packpack.commands.bc.FormStat;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.reactivestreams.Publisher;
@@ -17,6 +16,8 @@ import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class SlashBuilder {
     private static final ArrayList<ApplicationCommandRequest> requests = new ArrayList<>();
@@ -60,9 +61,17 @@ public class SlashBuilder {
 
                 switch (command) {
                     case "fs":
-                        return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage("Working on it"));
+                        WebhookBuilder request = FormStat.getInteractionWebhook(event.getInteraction().getData());
+
+                        if(request != null) {
+                            return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage(request.build(), false)).then(Mono.create(m -> request.finishJob(true))).doOnError(e -> {
+                                e.printStackTrace();
+                                request.finishJob(true);
+                            });
+                        }
+                        break;
                     case "es":
-                        return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage("WIP2"));
+                        return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage("WIP2")).then(Mono.create(m -> System.out.println("Finished")));
                 }
 
                 return Mono.empty();
@@ -70,6 +79,14 @@ public class SlashBuilder {
         }).subscribe();
 
         printAllCommandData(rest);
+    }
+
+    public static WebhookBuilder getWebhookRequest(@NotNull Consumer<WebhookBuilder> handler) {
+        WebhookBuilder builder = new WebhookBuilder();
+
+        handler.accept(builder);
+
+        return builder;
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -154,46 +171,5 @@ public class SlashBuilder {
         }
 
         requests.clear();
-    }
-}
-
-class SlashOption {
-    enum TYPE {
-        INT(ApplicationCommandOptionType.INTEGER.getValue()),
-        BOOLEAN(ApplicationCommandOptionType.BOOLEAN.getValue()),
-        STRING(ApplicationCommandOptionType.STRING.getValue()),
-        ROLE(ApplicationCommandOptionType.ROLE.getValue()),
-        CHANNEL(ApplicationCommandOptionType.CHANNEL.getValue());
-
-        int type;
-
-        TYPE(int type) {
-            this.type = type;
-        }
-    }
-
-    @NotNull
-    private final String name;
-    private final boolean required;
-    @NotNull
-    private final String description;
-    @NotNull
-    private final TYPE type;
-
-    public SlashOption(@NotNull String name, @NotNull String description, boolean required, @NotNull TYPE type) {
-        this.name = name;
-        this.required = required;
-        this.description = description;
-        this.type = type;
-    }
-
-    public void apply(ImmutableApplicationCommandRequest.Builder builder) {
-        builder.addOption(ApplicationCommandOptionData.builder()
-            .name(name)
-            .description(description)
-            .type(type.type)
-            .required(required)
-            .build()
-        );
     }
 }
