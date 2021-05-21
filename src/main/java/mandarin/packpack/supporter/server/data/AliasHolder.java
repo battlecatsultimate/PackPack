@@ -144,7 +144,7 @@ public class AliasHolder {
                     JsonArray segment = formAlias.getAsJsonArray(getLangCode(i));
 
                     for(int j = 0; j < segment.size(); j++) {
-                        JsonObject container = segment.get(i).getAsJsonObject();
+                        JsonObject container = segment.get(j).getAsJsonObject();
 
                         if(container.has("key") && container.has("val") && container.has("fid")) {
                             Identifier<?> id = JsonDecoder.decode(container.get("key"), Identifier.class);
@@ -181,7 +181,7 @@ public class AliasHolder {
                     JsonArray segment = enemyAlias.getAsJsonArray(getLangCode(i));
 
                     for(int j = 0; j < segment.size(); j++) {
-                        JsonObject container = segment.get(i).getAsJsonObject();
+                        JsonObject container = segment.get(j).getAsJsonObject();
 
                         if(container.has("key") && container.has("val")) {
                             Identifier<?> id = JsonDecoder.decode(container.get("key"), Identifier.class);
@@ -211,7 +211,7 @@ public class AliasHolder {
                     JsonArray segment = enemyAlias.getAsJsonArray(getLangCode(i));
 
                     for(int j = 0; j < segment.size(); j++) {
-                        JsonObject container = segment.get(i).getAsJsonObject();
+                        JsonObject container = segment.get(j).getAsJsonObject();
 
                         if(container.has("key") && container.has("val")) {
                             Identifier<?> id = JsonDecoder.decode(container.get("key"), Identifier.class);
