@@ -81,6 +81,9 @@ public class SpamPrevent {
     long scale = 1;
 
     public boolean isPrevented(MessageChannel ch, int lang, String id) {
+        if(id.equals(StaticStore.MANDARIN_SMELL))
+            return false;
+
         long current = System.currentTimeMillis();
 
         if(preventTime > 0 && current - lastTime > preventTime) {
@@ -100,7 +103,7 @@ public class SpamPrevent {
                 preventTime = PREVENT_TIME * scale;
 
                 try {
-                    scale *= 2;
+                    scale *= 4;
                 } catch (Exception ignored) {
 
                 }
