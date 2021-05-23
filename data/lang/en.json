@@ -232,7 +232,7 @@
   "data_comboxl" : "XL",
   "data_combo" : "Combo",
   "command_timelimit" : "You can run this command after _ sec later!",
-  "command_prevent" : "Now <@_UUU_> can't use any commands for _TTT_ due to spamming of command. More spamming in future will lengthen time of ban!",
+  "command_prevent" : "Now <@_UUU_> can't use any commands for _TTT_due to spamming of command. More spamming in future will lengthen time of ban!",
   "const_man" : "This command can be only run by MandarinSmell!",
   "const_role" : "This command can be only run by _!",
   "single_wait" : "You have to wait for _sec more to use this command!",
