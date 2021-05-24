@@ -6,9 +6,11 @@ import common.util.lang.MultiLangCont;
 import common.util.stage.MapColc;
 import common.util.stage.Stage;
 import common.util.stage.StageMap;
+import discord4j.core.event.domain.InteractionCreateEvent;
 import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.discordjson.json.*;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.TimedConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
@@ -18,11 +20,103 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.StageInfoHolder;
 import mandarin.packpack.supporter.server.holder.StageReactionHolder;
+import mandarin.packpack.supporter.server.holder.StageReactionSlashHolder;
+import mandarin.packpack.supporter.server.slash.SlashBuilder;
+import mandarin.packpack.supporter.server.slash.SlashOption;
+import mandarin.packpack.supporter.server.slash.WebhookBuilder;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class StageInfo extends TimedConstraintCommand {
     private static final int PARAM_SECOND = 2;
+
+    public static WebhookBuilder getInteractionWebhook(InteractionCreateEvent event) {
+        InteractionData interaction = event.getInteraction().getData();
+
+        if(interaction.data().isAbsent()) {
+            System.out.println("Data is absent in StageInfo!");
+            return null;
+        }
+
+        ApplicationCommandInteractionData data = interaction.data().get();
+
+        if(data.options().isAbsent()) {
+            System.out.println("Options are absent in StageInfo!");
+            return null;
+        }
+
+        List<ApplicationCommandInteractionOptionData> options = data.options().get();
+
+        int lang = LangID.EN;
+
+        IDHolder holder;
+
+        if(!interaction.guildId().isAbsent()) {
+            String gID = interaction.guildId().get();
+
+            if(gID.equals(StaticStore.BCU_KR_SERVER))
+                lang = LangID.KR;
+
+            holder = StaticStore.idHolder.get(gID);
+
+            if(holder == null) {
+                return SlashBuilder.getWebhookRequest(w -> w.setContent("Bot couldn't get guild data"));
+            }
+        } else {
+            return SlashBuilder.getWebhookRequest(w -> w.setContent("Please use this command in any server where PackPack is in!"));
+        }
+
+        if(!interaction.member().isAbsent()) {
+            MemberData member = interaction.member().get();
+
+            if(StaticStore.locales.containsKey(member.user().id().asString())) {
+                lang = StaticStore.locales.get(member.user().id().asString());
+            }
+        }
+
+        String[] name = {
+                SlashOption.getStringOption(options, "map_collection", ""),
+                SlashOption.getStringOption(options, "stage_map", ""),
+                SlashOption.getStringOption(options, "name", "")
+        };
+
+        Stage st;
+
+        if(name[2].isBlank()) {
+            st = null;
+        } else {
+            st = EntityFilter.pickOneStage(name, lang);
+        }
+
+        boolean frame = SlashOption.getBooleanOption(options, "frame", true);
+        int star = SlashOption.getIntOption(options, "star", 0);
+
+        final int finalLang = lang;
+
+        return SlashBuilder.getWebhookRequest(w -> {
+            if(name[2].isBlank() || st == null) {
+                w.setContent(LangID.getStringByID("formst_specific", finalLang));
+            } else {
+                try {
+                    EntityHandler.showStageEmb(st, w, frame, star, finalLang);
+
+                    w.addPostHandler((g, m) -> {
+                        if(!interaction.member().isAbsent()) {
+                            MemberData member = interaction.member().get();
+
+                            StaticStore.putHolder(
+                                    member.user().id().asString(),
+                                    new StageReactionSlashHolder(g, st, m.id().asLong(), m.channelId().asLong(), member.user().id().asString(), holder, finalLang)
+                            );
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
 
     public StageInfo(ConstraintCommand.ROLE role, int lang, IDHolder id, long time) {
         super(role, lang, id, time, StaticStore.COMMAND_STAGEINFO_ID);

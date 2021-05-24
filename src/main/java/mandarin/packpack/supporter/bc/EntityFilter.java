@@ -1184,6 +1184,44 @@ public class EntityFilter {
         return result;
     }
 
+    public static Stage pickOneStage(String[] names, int lang) {
+        ArrayList<Stage> stages = findStageWithName(names, lang);
+
+        if(stages.isEmpty()) {
+            return null;
+        } else if(stages.size() == 1) {
+            return stages.get(0);
+        } else {
+            if(names[2] == null) {
+                return null;
+            } else {
+                ArrayList<Integer> mins = getFullDistances(stages, names[0], lang, Stage.class);
+
+                int allMin = Integer.MAX_VALUE;
+
+                for(int m : mins) {
+                    if(m >= 0)
+                        allMin = Math.min(m, allMin);
+                }
+
+                int num = 0;
+                int ind = 0;
+
+                for(int i = 0; i < stages.size(); i++) {
+                    if(mins.get(i) == allMin) {
+                        num++;
+                        ind = i;
+                    }
+                }
+
+                if(num > 1)
+                    return null;
+                else
+                    return stages.get(ind);
+            }
+        }
+    }
+
     public static ArrayList<Stage> findStageByEnemy(Enemy e) {
         ArrayList<Stage> result = new ArrayList<>();
 

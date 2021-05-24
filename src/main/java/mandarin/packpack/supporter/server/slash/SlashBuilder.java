@@ -1,18 +1,16 @@
 package mandarin.packpack.supporter.server.slash;
 
-import common.util.unit.Form;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.ReactiveEventAdapter;
 import discord4j.core.event.domain.InteractionCreateEvent;
-import discord4j.core.util.EntityUtil;
 import discord4j.discordjson.json.*;
 import discord4j.rest.RestClient;
 import discord4j.rest.util.ApplicationCommandOptionType;
 import mandarin.packpack.commands.bc.EnemyStat;
 import mandarin.packpack.commands.bc.FormStat;
+import mandarin.packpack.commands.bc.StageInfo;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.SpamPrevent;
-import mandarin.packpack.supporter.server.holder.FormReactionHolder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.reactivestreams.Publisher;
@@ -121,6 +119,18 @@ public class SlashBuilder {
                         }
 
                         break;
+                    case "si":
+                        request = StageInfo.getInteractionWebhook(event);
+
+                        if(request != null) {
+                            return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage(request.build(), true))
+                                    .flatMap(m -> Mono.create(v -> request.doAdditionalJob(client, m)))
+                                    .then(Mono.create(m -> request.finishJob(true)))
+                                    .doOnError(e -> {
+                                        e.printStackTrace();
+                                        request.finishJob(true);
+                                    });
+                        }
                 }
 
                 return Mono.empty();

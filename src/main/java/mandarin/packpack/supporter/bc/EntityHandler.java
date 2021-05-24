@@ -1147,22 +1147,6 @@ public class EntityHandler {
         if(hasTwoMusic(st)) {
             builder.addReaction(ReactionEmoji.custom(Snowflake.of(StageReactionHolder.MUSIC2), "MusicBoss", false));
         }
-
-        if(fis != null) {
-            try {
-                fis.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        if(img != null && img.exists()) {
-            boolean res = img.delete();
-
-            if(!res) {
-                System.out.println("Can't delete file : "+img.getAbsolutePath());
-            }
-        }
     }
 
     private static File generateScheme(Stage st, boolean isFrame, int lang, int star) throws Exception {

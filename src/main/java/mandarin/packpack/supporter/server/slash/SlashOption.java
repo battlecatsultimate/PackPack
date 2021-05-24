@@ -38,7 +38,7 @@ public class SlashOption {
     }
 
     @NotNull
-    public static String getStringOption(List<ApplicationCommandInteractionOptionData> options, String name, String def) {
+    public static String getStringOption(List<ApplicationCommandInteractionOptionData> options, String name, @NotNull String def) {
         ApplicationCommandInteractionOptionData data = getOption(options, name);
 
         if(data == null)
