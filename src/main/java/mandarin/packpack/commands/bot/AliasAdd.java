@@ -424,7 +424,13 @@ public class AliasAdd extends Command {
                 result.append(" ");
         }
 
-        return result.toString();
+        String res = result.toString();
+
+        if(res.endsWith(" ")) {
+            return res.substring(0, res.length() - 1);
+        }
+
+        return res;
     }
 
     private String generateSearchName(String[] names) {
