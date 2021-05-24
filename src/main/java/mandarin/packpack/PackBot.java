@@ -5,6 +5,7 @@ import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.guild.GuildCreateEvent;
+import discord4j.core.event.domain.guild.GuildDeleteEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
@@ -114,6 +115,31 @@ public class PackBot {
                     }
                 }
             }
+
+            ArrayList<String> removal = new ArrayList<>();
+
+            for(String key : StaticStore.idHolder.keySet()) {
+                boolean existing = false;
+
+                for(Guild g : l) {
+                    if(g.getId().asString().equals(key)) {
+                        existing = true;
+                        break;
+                    }
+                }
+
+                if(!existing) {
+                    removal.add(key);
+                }
+            }
+
+            removal.forEach(id -> StaticStore.idHolder.remove(id));
+
+            StaticStore.saveServerInfo();
+        });
+
+        gate.on(GuildDeleteEvent.class).subscribe(e -> {
+            e.getGuild().ifPresent(g -> StaticStore.idHolder.remove(g.getId().asString()));
 
             StaticStore.saveServerInfo();
         });
