@@ -778,8 +778,8 @@ public class EntityFilter {
                                     String[] ids = {
                                             mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
                                             mc.getSID()+"-"+stm.id.id+"-"+st.id.id,
-                                            DataToString.getStageCode(st)+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
-                                            DataToString.getStageCode(st)+"-"+stm.id.id+"-"+st.id.id
+                                            DataToString.getMapCode(mc)+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
+                                            DataToString.getMapCode(mc)+"-"+stm.id.id+"-"+st.id.id
                                     };
 
                                     boolean s3 = false;
@@ -816,9 +816,23 @@ public class EntityFilter {
                                     }
                                 } else {
                                     for(Stage st : stm.list.getList()) {
-                                        String id = mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id)+" "+mc.getSID()+"-"+stm.id.id+"-"+st.id.id;
+                                        String[] ids = {
+                                                mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
+                                                mc.getSID()+"-"+stm.id.id+"-"+st.id.id,
+                                                DataToString.getMapCode(mc)+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
+                                                DataToString.getMapCode(mc)+"-"+stm.id.id+"-"+st.id.id
+                                        };
 
-                                        if(id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH)))
+                                        boolean s3 = false;
+
+                                        for(String id : ids) {
+                                            if(id.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
+                                                s3 = true;
+                                                break;
+                                            }
+                                        }
+
+                                        if(s3)
                                             stResult.add(st);
                                     }
                                 }
@@ -882,8 +896,8 @@ public class EntityFilter {
                                             String[] ids = {
                                                     mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
                                                     mc.getSID()+"-"+stm.id.id+"-"+st.id.id,
-                                                    DataToString.getStageCode(st)+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
-                                                    DataToString.getStageCode(st)+"-"+stm.id.id+"-"+st.id.id
+                                                    DataToString.getMapCode(mc)+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
+                                                    DataToString.getMapCode(mc)+"-"+stm.id.id+"-"+st.id.id
                                             };
 
                                             boolean s3 = false;
@@ -923,8 +937,8 @@ public class EntityFilter {
                                                 String[] ids = {
                                                         mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
                                                         mc.getSID()+"-"+stm.id.id+"-"+st.id.id,
-                                                        DataToString.getStageCode(st)+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
-                                                        DataToString.getStageCode(st)+"-"+stm.id.id+"-"+st.id.id
+                                                        DataToString.getMapCode(mc)+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
+                                                        DataToString.getMapCode(mc)+"-"+stm.id.id+"-"+st.id.id
                                                 };
 
                                                 boolean s3 = false;
@@ -1010,8 +1024,8 @@ public class EntityFilter {
                                             String[] ids = {
                                                     mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
                                                     mc.getSID()+"-"+stm.id.id+"-"+st.id.id,
-                                                    DataToString.getStageCode(st)+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
-                                                    DataToString.getStageCode(st)+"-"+stm.id.id+"-"+st.id.id
+                                                    DataToString.getMapCode(mc)+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
+                                                    DataToString.getMapCode(mc)+"-"+stm.id.id+"-"+st.id.id
                                             };
 
                                             boolean s3 = false;
@@ -1051,8 +1065,8 @@ public class EntityFilter {
                                                 String[] ids = {
                                                         mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
                                                         mc.getSID()+"-"+stm.id.id+"-"+st.id.id,
-                                                        DataToString.getStageCode(st)+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
-                                                        DataToString.getStageCode(st)+"-"+stm.id.id+"-"+st.id.id
+                                                        DataToString.getMapCode(mc)+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
+                                                        DataToString.getMapCode(mc)+"-"+stm.id.id+"-"+st.id.id
                                                 };
 
                                                 boolean s3 = false;
@@ -1106,8 +1120,8 @@ public class EntityFilter {
                                                     String[] ids = {
                                                             mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
                                                             mc.getSID()+"-"+stm.id.id+"-"+st.id.id,
-                                                            DataToString.getStageCode(st)+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
-                                                            DataToString.getStageCode(st)+"-"+stm.id.id+"-"+st.id.id
+                                                            DataToString.getMapCode(mc)+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
+                                                            DataToString.getMapCode(mc)+"-"+stm.id.id+"-"+st.id.id
                                                     };
 
                                                     boolean s3 = false;
@@ -1146,8 +1160,8 @@ public class EntityFilter {
                                                         String[] ids = {
                                                                 mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
                                                                 mc.getSID()+"-"+stm.id.id+"-"+st.id.id,
-                                                                DataToString.getStageCode(st)+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
-                                                                DataToString.getStageCode(st)+"-"+stm.id.id+"-"+st.id.id
+                                                                DataToString.getMapCode(mc)+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
+                                                                DataToString.getMapCode(mc)+"-"+stm.id.id+"-"+st.id.id
                                                         };
 
                                                         boolean s3 = false;
@@ -1520,6 +1534,54 @@ public class EntityFilter {
                         for(String a : alias) {
                             if(a.toLowerCase(Locale.ENGLISH).contains(keyword))
                                 return true;
+                        }
+                    }
+                } else {
+                    int oldConfig = CommonStatic.getConfig().lang;
+                    CommonStatic.getConfig().lang = i;
+
+                    ArrayList<String> alias;
+
+                    if(cls == Form.class) {
+                        alias = AliasHolder.FALIAS.getCont((Form) t);
+                    } else if(cls == Enemy.class) {
+                        alias = AliasHolder.EALIAS.getCont((Enemy) t);
+                    } else if(cls == Stage.class) {
+                        alias = AliasHolder.SALIAS.getCont((Stage) t);
+                    } else {
+                        CommonStatic.getConfig().lang = oldConfig;
+                        continue;
+                    }
+
+                    if(alias != null && !alias.isEmpty()) {
+                        for(String a : alias) {
+                            if(a.toLowerCase(Locale.ENGLISH).contains(keyword))
+                                return true;
+                        }
+                    }
+                }
+            }
+
+            if(cls == Stage.class) {
+                Stage st = (Stage) t;
+
+                StageMap stm = st.getCont();
+
+                if(stm != null) {
+                    MapColc mc = stm.getCont();
+
+                    if(mc != null) {
+                        String[] ids = {
+                                mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
+                                mc.getSID()+"-"+stm.id.id+"-"+st.id.id,
+                                DataToString.getMapCode(mc)+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
+                                DataToString.getMapCode(mc)+"-"+stm.id.id+"-"+st.id.id
+                        };
+
+                        for(String id : ids) {
+                            if(id.toLowerCase(Locale.ENGLISH).contains(keyword)) {
+                                return true;
+                            }
                         }
                     }
                 }

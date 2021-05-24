@@ -1144,6 +1144,19 @@ public class DataToString {
         return res;
     }
 
+    public static String getMapCode(MapColc mc) {
+        int index = mapIds.indexOf(mc.getSID());
+
+        String code;
+
+        if(index == -1)
+            code = mc.getSID();
+        else
+            code = mapCodes[index];
+
+        return code;
+    }
+
     public static String getStageCode(Stage st) {
         StageMap stm = st.getCont();
         MapColc mc = stm.getCont();
