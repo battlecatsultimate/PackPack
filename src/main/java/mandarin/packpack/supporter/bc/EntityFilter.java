@@ -778,7 +778,8 @@ public class EntityFilter {
                                     String[] ids = {
                                             mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
                                             mc.getSID()+"-"+stm.id.id+"-"+st.id.id,
-                                            DataToString.getStageCode(st)
+                                            DataToString.getStageCode(st)+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
+                                            DataToString.getStageCode(st)+"-"+stm.id.id+"-"+st.id.id
                                     };
 
                                     boolean s3 = false;
@@ -881,7 +882,8 @@ public class EntityFilter {
                                             String[] ids = {
                                                     mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
                                                     mc.getSID()+"-"+stm.id.id+"-"+st.id.id,
-                                                    DataToString.getStageCode(st)
+                                                    DataToString.getStageCode(st)+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
+                                                    DataToString.getStageCode(st)+"-"+stm.id.id+"-"+st.id.id
                                             };
 
                                             boolean s3 = false;
@@ -921,7 +923,8 @@ public class EntityFilter {
                                                 String[] ids = {
                                                         mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
                                                         mc.getSID()+"-"+stm.id.id+"-"+st.id.id,
-                                                        DataToString.getStageCode(st)
+                                                        DataToString.getStageCode(st)+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
+                                                        DataToString.getStageCode(st)+"-"+stm.id.id+"-"+st.id.id
                                                 };
 
                                                 boolean s3 = false;
@@ -1007,7 +1010,8 @@ public class EntityFilter {
                                             String[] ids = {
                                                     mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
                                                     mc.getSID()+"-"+stm.id.id+"-"+st.id.id,
-                                                    DataToString.getStageCode(st)
+                                                    DataToString.getStageCode(st)+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
+                                                    DataToString.getStageCode(st)+"-"+stm.id.id+"-"+st.id.id
                                             };
 
                                             boolean s3 = false;
@@ -1047,7 +1051,8 @@ public class EntityFilter {
                                                 String[] ids = {
                                                         mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
                                                         mc.getSID()+"-"+stm.id.id+"-"+st.id.id,
-                                                        DataToString.getStageCode(st)
+                                                        DataToString.getStageCode(st)+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
+                                                        DataToString.getStageCode(st)+"-"+stm.id.id+"-"+st.id.id
                                                 };
 
                                                 boolean s3 = false;
@@ -1101,7 +1106,8 @@ public class EntityFilter {
                                                     String[] ids = {
                                                             mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
                                                             mc.getSID()+"-"+stm.id.id+"-"+st.id.id,
-                                                            DataToString.getStageCode(st)
+                                                            DataToString.getStageCode(st)+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
+                                                            DataToString.getStageCode(st)+"-"+stm.id.id+"-"+st.id.id
                                                     };
 
                                                     boolean s3 = false;
@@ -1140,7 +1146,8 @@ public class EntityFilter {
                                                         String[] ids = {
                                                                 mc.getSID()+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
                                                                 mc.getSID()+"-"+stm.id.id+"-"+st.id.id,
-                                                                DataToString.getStageCode(st)
+                                                                DataToString.getStageCode(st)+"-"+Data.trio(stm.id.id)+"-"+Data.trio(st.id.id),
+                                                                DataToString.getStageCode(st)+"-"+stm.id.id+"-"+st.id.id
                                                         };
 
                                                         boolean s3 = false;
