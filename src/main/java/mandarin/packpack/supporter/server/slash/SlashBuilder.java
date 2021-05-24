@@ -1,8 +1,10 @@
 package mandarin.packpack.supporter.server.slash;
 
+import common.util.unit.Form;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.ReactiveEventAdapter;
 import discord4j.core.event.domain.InteractionCreateEvent;
+import discord4j.core.util.EntityUtil;
 import discord4j.discordjson.json.*;
 import discord4j.rest.RestClient;
 import discord4j.rest.util.ApplicationCommandOptionType;
@@ -10,6 +12,7 @@ import mandarin.packpack.commands.bc.EnemyStat;
 import mandarin.packpack.commands.bc.FormStat;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.SpamPrevent;
+import mandarin.packpack.supporter.server.holder.FormReactionHolder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.reactivestreams.Publisher;
@@ -51,6 +54,16 @@ public class SlashBuilder {
                 )
         );
 
+        getCommandCreation("si", "Show stat of stage",
+                List.of(
+                        new SlashOption("name", "Name of stage", true, SlashOption.TYPE.STRING),
+                        new SlashOption("stage_map", "Name of stage map", false, SlashOption.TYPE.STRING),
+                        new SlashOption("map_collection", "Name of map collection", false, SlashOption.TYPE.STRING),
+                        new SlashOption("frame", "Show time info with frame", false, SlashOption.TYPE.BOOLEAN),
+                        new SlashOption("star", "Set star to this stage", false, SlashOption.TYPE.INT)
+                )
+        );
+
         applyCreatedSlashCommands(rest, appID);
 
         client.on(new ReactiveEventAdapter() {
@@ -81,14 +94,19 @@ public class SlashBuilder {
 
                 switch (command) {
                     case "fs":
-                        WebhookBuilder request = FormStat.getInteractionWebhook(event.getInteraction().getData());
+                        WebhookBuilder request = FormStat.getInteractionWebhook(event);
 
                         if(request != null) {
-                            return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage(request.build(), true)).then(Mono.create(m -> request.finishJob(true))).doOnError(e -> {
-                                e.printStackTrace();
-                                request.finishJob(true);
-                            });
+                            return event.acknowledge()
+                                    .then(event.getInteractionResponse().createFollowupMessage(request.build(), true))
+                                    .flatMap(m -> Mono.create(v -> request.doAdditionalJob(client, m)))
+                                    .then(Mono.create(m -> request.finishJob(true)))
+                                    .doOnError(e -> {
+                                        e.printStackTrace();
+                                        request.finishJob(true);
+                                    });
                         }
+
                         break;
                     case "es":
                         request = EnemyStat.getInteractionWebhook(event.getInteraction().getData());

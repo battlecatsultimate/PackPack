@@ -200,10 +200,27 @@ public class EntityHandler {
             if(talentExists(t))
                 spec.setFooter(DataToString.getTalent(f, t, lang), null);
         });
+
         if(fis != null)
             builder.addFile("icon.png", fis, img);
         if(cfis != null)
             builder.addFile("cf.png", cfis, cf);
+
+        if(canFirstForm(f)) {
+            builder.addReaction(ReactionEmoji.custom(Snowflake.of(FormReactionHolder.TWOPREVIOUS), "FirstForm", false));
+        }
+
+        if(canPreviousForm(f)) {
+            builder.addReaction(ReactionEmoji.custom(Snowflake.of(FormReactionHolder.PREVIOUS), "PreviousForm", false));
+        }
+
+        if(canNextForm(f)) {
+            builder.addReaction(ReactionEmoji.custom(Snowflake.of(FormReactionHolder.NEXT), "NextForm", false));
+        }
+
+        if(canFinalForm(f)) {
+            builder.addReaction(ReactionEmoji.custom(Snowflake.of(FormReactionHolder.TWONEXT), "FinalForm", false));
+        }
     }
 
     public static Message showUnitEmb(Form f, MessageChannel ch, boolean isFrame, boolean talent, int[] lv, int lang, boolean addEmoji) throws Exception {
@@ -966,6 +983,186 @@ public class EntityHandler {
         }
 
         return result;
+    }
+
+    public static void showStageEmb(Stage st, WebhookBuilder builder, boolean isFrame, int star, int lang) throws Exception {
+        StageMap stm = st.getCont();
+
+        int sta;
+        int stmMagnification;
+
+        if(stm == null) {
+            sta = 0;
+            stmMagnification = 100;
+        } else {
+            sta = Math.min(Math.max(star-1, 0), st.getCont().stars.length-1);
+            stmMagnification = stm.stars[sta];
+        }
+
+        File img = generateScheme(st, isFrame, lang, stmMagnification);
+        FileInputStream fis;
+
+        if(img != null) {
+            fis = new FileInputStream(img);
+        } else {
+            fis = null;
+        }
+
+        builder.addEmbed(spec -> {
+            try {
+
+                if(st.info == null || st.info.diff == -1)
+                    spec.setColor(Color.of(217, 217, 217));
+                else
+                    spec.setColor(StaticStore.coolHot[st.info.diff]);
+
+                String name = "";
+
+                if(stm == null)
+                    return;
+
+                MapColc mc = stm.getCont();
+
+                int oldConfig = CommonStatic.getConfig().lang;
+                CommonStatic.getConfig().lang = lang;
+
+                String mcName = MultiLangCont.get(mc);
+
+                CommonStatic.getConfig().lang = oldConfig;
+
+                if(mcName == null || mcName.isBlank())
+                    mcName = mc.getSID();
+
+                name += mcName+" - ";
+
+                CommonStatic.getConfig().lang = lang;
+
+                String stmName = MultiLangCont.get(stm);
+
+                CommonStatic.getConfig().lang = oldConfig;
+
+                if(stmName == null || stmName.isBlank())
+                    if(stm.id != null)
+                        stmName = Data.trio(stm.id.id);
+                    else
+                        stmName = "Unknown";
+
+                name += stmName + " - ";
+
+                CommonStatic.getConfig().lang = lang;
+
+                String stName = MultiLangCont.get(st);
+
+                CommonStatic.getConfig().lang = oldConfig;
+
+                if(stName == null || stName.isBlank())
+                    if(st.id != null)
+                        stName = Data.trio(st.id.id);
+                    else
+                        stName = "Unknown";
+
+                name += stName;
+
+                spec.setTitle(name);
+                spec.addField(LangID.getStringByID("data_id", lang), DataToString.getStageCode(st), false);
+
+                String energy = DataToString.getEnergy(st, lang);
+
+                if(energy.endsWith("!!drink!!")) {
+                    spec.addField(LangID.getStringByID("data_catamin", lang), energy.replace("!!drink!!", ""), true);
+                } else {
+                    spec.addField(LangID.getStringByID("data_energy", lang), energy, true);
+                }
+
+                spec.addField(LangID.getStringByID("data_star", lang), DataToString.getStar(st, sta), true);
+                spec.addField(LangID.getStringByID("data_base", lang), DataToString.getBaseHealth(st), true);
+                spec.addField(LangID.getStringByID("data_xp", lang), DataToString.getXP(st), true);
+                spec.addField(LangID.getStringByID("data_diff", lang), DataToString.getDifficulty(st, lang), true);
+                spec.addField(LangID.getStringByID("data_continuable", lang), DataToString.getContinuable(st, lang), true);
+                spec.addField(LangID.getStringByID("data_length", lang), DataToString.getLength(st), true);
+                spec.addField(LangID.getStringByID("data_music", lang), DataToString.getMusic(st, lang), true);
+                spec.addField(DataToString.getMusicChange(st), DataToString.getMusic1(st, lang) , true);
+                spec.addField(LangID.getStringByID("data_maxenem", lang), DataToString.getMaxEnemy(st), true);
+                spec.addField(LangID.getStringByID("data_loop0", lang), DataToString.getLoop0(st), true);
+                spec.addField(LangID.getStringByID("data_loop1", lang), DataToString.getLoop1(st) ,true);
+                spec.addField(LangID.getStringByID("data_bg", lang), DataToString.getBackground(st, lang),true);
+                spec.addField(LangID.getStringByID("data_castle", lang), DataToString.getCastle(st, lang), true);
+                spec.addField(LangID.getStringByID("data_minspawn", lang), DataToString.getMinSpawn(st, isFrame), true);
+
+                ArrayList<String> limit = DataToString.getLimit(st.getLim(sta), lang);
+
+                StringBuilder sb = new StringBuilder();
+
+                if(limit.isEmpty()) {
+                    sb.append(LangID.getStringByID("data_none", lang));
+                } else {
+                    for(int i = 0; i < limit.size(); i ++) {
+                        sb.append(limit.get(i));
+
+                        if(i < limit.size()-1)
+                            sb.append("\n");
+                    }
+                }
+
+                spec.addField(LangID.getStringByID("data_limit", lang), sb.toString(), false);
+
+                String drops = DataToString.getRewards(st, lang);
+
+                if(drops != null) {
+                    if(drops.endsWith("!!number!!")) {
+                        spec.addField(LangID.getStringByID("data_numreward", lang), drops.replace("!!number!!", ""), false);
+                    } else if(drops.endsWith("!!nofail!!")) {
+                        spec.addField(LangID.getStringByID("data_chanrewardnofail", lang), drops.replace("!!nofail!!", ""), false);
+                    } else {
+                        spec.addField(LangID.getStringByID("data_chanreward", lang), drops, false);
+                    }
+                }
+
+                String score = DataToString.getScoreDrops(st, lang);
+
+                if(score != null) {
+                    spec.addField(LangID.getStringByID("data_score", lang), score, false);
+                }
+
+                if(fis != null) {
+                    spec.addField(LangID.getStringByID("data_scheme", lang), "** **", false);
+                    spec.setImage("attachment://scheme.png");
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        if(fis != null)
+            builder.addFile("scheme.png", fis, img);
+
+        builder.addReaction(ReactionEmoji.custom(Snowflake.of(StageReactionHolder.CASTLE), "Castle", false));
+        builder.addReaction(ReactionEmoji.custom(Snowflake.of(StageReactionHolder.BG), "Background", false));
+
+        if(st.mus0 != null) {
+            builder.addReaction(ReactionEmoji.custom(Snowflake.of(StageReactionHolder.MUSIC), "Music", false));
+        }
+
+        if(hasTwoMusic(st)) {
+            builder.addReaction(ReactionEmoji.custom(Snowflake.of(StageReactionHolder.MUSIC2), "MusicBoss", false));
+        }
+
+        if(fis != null) {
+            try {
+                fis.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if(img != null && img.exists()) {
+            boolean res = img.delete();
+
+            if(!res) {
+                System.out.println("Can't delete file : "+img.getAbsolutePath());
+            }
+        }
     }
 
     private static File generateScheme(Stage st, boolean isFrame, int lang, int star) throws Exception {

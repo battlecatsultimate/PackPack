@@ -3,13 +3,11 @@ package mandarin.packpack.commands.bc;
 import common.CommonStatic;
 import common.util.Data;
 import common.util.unit.Form;
+import discord4j.core.event.domain.InteractionCreateEvent;
 import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.discordjson.json.ApplicationCommandInteractionData;
-import discord4j.discordjson.json.ApplicationCommandInteractionOptionData;
-import discord4j.discordjson.json.InteractionData;
-import discord4j.discordjson.json.MemberData;
+import discord4j.discordjson.json.*;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
@@ -17,6 +15,7 @@ import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.FormReactionHolder;
+import mandarin.packpack.supporter.server.holder.FormReactionSlashHolder;
 import mandarin.packpack.supporter.server.holder.FormStatHolder;
 import mandarin.packpack.supporter.server.slash.SlashBuilder;
 import mandarin.packpack.supporter.server.slash.SlashOption;
@@ -26,7 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FormStat extends ConstraintCommand {
-    public static WebhookBuilder getInteractionWebhook(InteractionData interaction) {
+    public static WebhookBuilder getInteractionWebhook(InteractionCreateEvent event) {
+        InteractionData interaction = event.getInteraction().getData();
+
         if(interaction.data().isAbsent()) {
             System.out.println("Data is absent!");
             return null;
@@ -74,6 +75,18 @@ public class FormStat extends ConstraintCommand {
         return SlashBuilder.getWebhookRequest(w -> {
             try {
                 EntityHandler.showUnitEmb(f, w, frame, talent, lvs, finalLang);
+
+                w.addPostHandler((g, m) -> {
+                            if (!interaction.member().isAbsent()) {
+                                MemberData member = interaction.member().get();
+
+                                StaticStore.putHolder(
+                                        member.user().id().asString(),
+                                        new FormReactionSlashHolder(g, f, member.user().id().asString(), m.channelId().asLong(), m.id().asLong(), frame, talent, lvs, finalLang)
+                                );
+                            }
+                        }
+                );
             } catch (Exception e) {
                 e.printStackTrace();
             }
