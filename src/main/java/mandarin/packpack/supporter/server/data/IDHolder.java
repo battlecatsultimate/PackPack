@@ -208,4 +208,19 @@ public class IDHolder {
 
         return map;
     }
+
+    @Override
+    public String toString() {
+        return "IDHolder{" +
+                "serverPrefix='" + serverPrefix + '\'' +
+                ", MOD='" + MOD + '\'' +
+                ", MEMBER='" + MEMBER + '\'' +
+                ", PRE_MEMBER='" + PRE_MEMBER + '\'' +
+                ", BCU_PC_USER='" + BCU_PC_USER + '\'' +
+                ", BCU_ANDROID='" + BCU_ANDROID + '\'' +
+                ", MUTED='" + MUTED + '\'' +
+                ", GET_ACCESS='" + GET_ACCESS + '\'' +
+                ", channel=" + channel +
+                '}';
+    }
 }

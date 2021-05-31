@@ -116,25 +116,6 @@ public class PackBot {
                 }
             }
 
-            ArrayList<String> removal = new ArrayList<>();
-
-            for(String key : StaticStore.idHolder.keySet()) {
-                boolean existing = false;
-
-                for(Guild g : l) {
-                    if(g.getId().asString().equals(key)) {
-                        existing = true;
-                        break;
-                    }
-                }
-
-                if(!existing) {
-                    removal.add(key);
-                }
-            }
-
-            removal.forEach(id -> StaticStore.idHolder.remove(id));
-
             StaticStore.saveServerInfo();
         });
 
@@ -317,8 +298,6 @@ public class PackBot {
                 }
             });
         });
-
-
 
         gate.on(MessageCreateEvent.class)
                 .filter(event -> {
@@ -685,7 +664,7 @@ public class PackBot {
 
                         EventFactor.currentYear = c.get(Calendar.YEAR);
 
-                        save = 0;
+                        save = 1;
                     } else {
                         save++;
                     }
