@@ -146,7 +146,7 @@ public class MedalHolder extends Holder<MessageCreateEvent> {
             msg.delete().subscribe();
 
             try {
-                EntityHandler.showMedalEmbed(i, ch, lang);
+                EntityHandler.showMedalEmbed(id.get(i), ch, lang);
             } catch (Exception e) {
                 e.printStackTrace();
             }
