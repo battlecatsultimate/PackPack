@@ -44,7 +44,8 @@ public class SpamPrevent {
             if(spam != null) {
                 JsonObject obj = new JsonObject();
 
-                obj.add(key, spam.jsonfy());
+                obj.addProperty("key", key);
+                obj.add("val", spam.jsonfy());
 
                 arr.add(obj);
             }
