@@ -49,6 +49,8 @@ public class Prefix extends ConstraintCommand {
 
     @Override
     public void onFail(MessageEvent event, int error) {
+        StaticStore.executed--;
+
         MessageChannel ch = getChannel(event);
 
         switch (error) {

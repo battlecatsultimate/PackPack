@@ -138,6 +138,8 @@ public abstract class GlobalTimedConstraintCommand extends Command {
 
                         StaticStore.canDo.put(id, new TimeBoolean(false, time));
 
+                        StaticStore.executed++;
+
                         new Thread(() -> {
                             try {
                                 doSomething(event);

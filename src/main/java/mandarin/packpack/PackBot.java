@@ -598,6 +598,10 @@ public class PackBot {
                                 case "cor":
                                     new ContributorRemove(ConstraintCommand.ROLE.MANDARIN, lang, idh, gate).execute(event);
                                     break;
+                                case "statistic":
+                                case "stat":
+                                    new Statistic(lang).execute(event);
+                                    break;
                             }
                         }
                     });

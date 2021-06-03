@@ -39,6 +39,8 @@ public class StaticStore {
 
     public static boolean initialized = false;
 
+    public static long executed = 0;
+
     public static String serverPrefix = "p!";
 
     public static final String COMMAND_BG_ID = "bg";
@@ -331,6 +333,7 @@ public class StaticStore {
 
         obj.addProperty("rating", ratingChannel);
         obj.addProperty("serverpre", serverPrefix);
+        obj.addProperty("executed", executed);
         obj.add("prefix", mapToJsonString(prefix));
         obj.add("lang", mapToJsonString(langs));
         obj.add("locale", mapToJsonInt(locales));
@@ -399,6 +402,10 @@ public class StaticStore {
 
             if (obj.has("serverpre")) {
                 serverPrefix = obj.get("serverpre").getAsString();
+            }
+
+            if(obj.has("exectued")) {
+                executed = obj.get("executed").getAsLong();
             }
 
             if(obj.has("prefix")) {

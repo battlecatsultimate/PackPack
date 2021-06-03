@@ -51,6 +51,8 @@ public abstract class Command {
         if (prevented.get())
             return;
 
+        StaticStore.executed++;
+
         try {
             new Thread(() -> {
                 try {
@@ -69,6 +71,8 @@ public abstract class Command {
     public abstract void doSomething(MessageEvent event) throws Exception;
 
     public void onFail(MessageEvent event, int error) {
+        StaticStore.executed--;
+
         MessageChannel ch = getChannel(event);
 
         if(ch == null)

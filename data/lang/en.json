@@ -407,6 +407,8 @@
   "help_aliasremove_argu" : "`-f` : Set type ad Unit mode\n`-e` : Set type as Enemy mode\n`-s` : Set type as Stage mode\n`-stm` : Specify stage map's name, only available when type is stage mode\n`-mc` : Specify map collection's name, only available when type is stage mode",
   "help_aliasremove_exam" : "`p!alr -f Ururun Wolf -> Ururun Doge`\n`p!alr -s Floor 47 -stm Heavenly Tower -> F47`",
   "help_aliasremove_tip" : "You have to specify type right next to command. For example, `p!alr -f` or `p!alr -e`. Then you have to specify name to search\n\nYou can specify alias name by typing `->`, there must be spaces between `->`. For example, `p!alr -u Ururun Wolf -> woof`, then alias name will be specified as `woof`",
+  "help_statistic_use" : "`p!statistic`",
+  "help_statistic_desc" : "Show bot's useless, but interesting information. `stat` is also valid command",
   "prefix_space" : "Prefix can't be white spaces!",
   "prefix_set" : "Prefix is set as _!",
   "prefix_setnone" : "Your prefix has been updated!",
@@ -537,5 +539,6 @@
   "alias_added" : "Added _AAA_ to _DDD_!",
   "alias_contain" : "_ already has that alias",
   "alias_nosuch" : "_ doesn't have such alias",
-  "alias_removed" : "Removed _AAA_ from _DDD_!"
+  "alias_removed" : "Removed _AAA_ from _DDD_!",
+  "stat_info" : "I'm in _SSS_ servers currently\nCommands are executed _CCC_ times so far\n_MMM_ members used one of my commands!"
 }

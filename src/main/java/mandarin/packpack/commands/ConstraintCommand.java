@@ -106,6 +106,8 @@ public abstract class ConstraintCommand extends Command {
                 ch.createMessage(LangID.getStringByID("const_role", lang).replace("_", role)).subscribe();
             }
         } else {
+            StaticStore.executed++;
+
             try {
                 new Thread(() -> {
                     try {
