@@ -404,7 +404,7 @@ public class StaticStore {
                 serverPrefix = obj.get("serverpre").getAsString();
             }
 
-            if(obj.has("exectued")) {
+            if(obj.has("executed")) {
                 executed = obj.get("executed").getAsLong();
             }
 
