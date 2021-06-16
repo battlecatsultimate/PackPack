@@ -1311,7 +1311,7 @@ public class DataToString {
         StringBuilder builder = new StringBuilder();
 
         for(int i = 0; i < s.info.drop.length; i++) {
-            if(Double.parseDouble(chances.get(i)) == 0.0)
+            if(!chances.isEmpty() && i < chances.size() && Double.parseDouble(chances.get(i)) == 0.0)
                 continue;
 
             String chance;
@@ -1417,6 +1417,8 @@ public class DataToString {
                 res.add(String.valueOf(d[0]));
             }
         }
+
+        System.out.println(res);
 
         return res;
     }
