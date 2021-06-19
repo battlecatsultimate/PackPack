@@ -273,7 +273,7 @@ public class AnimHolder extends Holder<MessageCreateEvent> {
         } else {
             msg.getAuthor().ifPresent(u -> StaticStore.putHolder(u.getId().asString(), this));
 
-            registerAutoFinish(this, target, msg, lang, "animanalyze_expire", TimeUnit.MILLISECONDS.toMillis(5));
+            registerAutoFinish(this, target, msg, lang, "animanalyze_expire", TimeUnit.MINUTES.toMillis(5));
         }
     }
 
