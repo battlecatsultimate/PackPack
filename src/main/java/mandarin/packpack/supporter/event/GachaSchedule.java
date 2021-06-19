@@ -11,7 +11,7 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class GachaSchedule extends EventFactor {
+public class GachaSchedule extends EventFactor implements Schedule {
     private static final Pattern p = Pattern.compile("<h2>.+</h2>");
 
     public ArrayList<EventSection> sections = new ArrayList<>();
@@ -135,6 +135,12 @@ public class GachaSchedule extends EventFactor {
         }
     }
 
+    @Override
+    public String beautify() {
+        return null;
+    }
+
+    @Override
     public String dataToString() {
         StringBuilder result = new StringBuilder("```");
 

@@ -5,7 +5,7 @@ import mandarin.packpack.supporter.StaticStore;
 
 import java.util.ArrayList;
 
-public class ItemSchedule extends EventFactor {
+public class ItemSchedule extends EventFactor implements Schedule {
     public ArrayList<EventSection> sections = new ArrayList<>();
     public EventDateSet date;
     public String minVersion, maxVersion;
@@ -87,6 +87,12 @@ public class ItemSchedule extends EventFactor {
         }
     }
 
+    @Override
+    public String beautify() {
+        return null;
+    }
+
+    @Override
     public String dataToString() {
         StringBuilder result = new StringBuilder("```");
 

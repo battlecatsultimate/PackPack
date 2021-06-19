@@ -7,7 +7,7 @@ import mandarin.packpack.supporter.StaticStore;
 
 import java.util.ArrayList;
 
-public class StageSchedule extends EventFactor {
+public class StageSchedule extends EventFactor implements Schedule {
     public enum TYPE {
         DAILY,
         YEARLY,
@@ -111,6 +111,7 @@ public class StageSchedule extends EventFactor {
         }
     }
 
+    @Override
     public String dataToString() {
         StringBuilder result = new StringBuilder("```");
 
