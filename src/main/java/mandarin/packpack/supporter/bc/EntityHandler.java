@@ -1660,7 +1660,7 @@ public class EntityHandler {
         if(raw) {
             img = ImageDrawing.drawAnimMp4(anim, msg, 1.0, debug, limit, lang);
         } else {
-            img = ImageDrawing.drawAnimGif(anim, msg, 1.0, debug, limit, lang);
+            img = ImageDrawing.drawAnimGif(anim, msg, 1.0, debug, false, limit, lang);
         }
 
         f.anim.unload();
@@ -1804,7 +1804,7 @@ public class EntityHandler {
         if(raw) {
             img = ImageDrawing.drawAnimMp4(anim, msg, 1.0, debug, limit, lang);
         } else {
-            img = ImageDrawing.drawAnimGif(anim, msg, 1.0, debug, limit, lang);
+            img = ImageDrawing.drawAnimGif(anim, msg, 1.0, debug, false, limit, lang);
         }
 
         long end = System.currentTimeMillis();
@@ -1897,8 +1897,8 @@ public class EntityHandler {
         return true;
     }
 
-    public static void generateAnim(MessageChannel ch, String md5, AnimMixer mixer, int lang, boolean debug, int limit, boolean raw, int index) throws Exception {
-        if(!debug) {
+    public static void generateAnim(MessageChannel ch, String md5, AnimMixer mixer, int lang, boolean debug, int limit, boolean raw, boolean transparent, int index) throws Exception {
+        if(!debug && md5 != null) {
             String link = StaticStore.imgur.get(md5);
             boolean finalized = StaticStore.imgur.finalized(md5);
 
@@ -1940,7 +1940,7 @@ public class EntityHandler {
         if(raw) {
             img = ImageDrawing.drawAnimMp4(anim, msg, 1.0, debug, limit, lang);
         } else {
-            img = ImageDrawing.drawAnimGif(anim, msg, 1.0, debug, lang, limit);
+            img = ImageDrawing.drawAnimGif(anim, msg, 1.0, debug, transparent, lang, limit);
         }
 
         long end = System.currentTimeMillis();
@@ -1980,7 +1980,7 @@ public class EntityHandler {
                     }
                 });
             } else {
-                if(!debug) {
+                if(!debug && md5 != null) {
                     StaticStore.imgur.put(md5, link, true);
                 }
 
@@ -2608,6 +2608,9 @@ public class EntityHandler {
     }
 
     private static void cacheImage(String md5, Message msg) {
+        if(md5 == null)
+            return;
+
         Set<Attachment> att = msg.getAttachments();
 
         if(att.isEmpty())

@@ -465,7 +465,7 @@ public class ImageDrawing {
         return gif;
     }
 
-    public static File drawAnimGif(EAnimD<?> anim, Message msg, double siz, boolean debug, int limit, int lang) throws Exception {
+    public static File drawAnimGif(EAnimD<?> anim, Message msg, double siz, boolean debug, boolean transparent, int limit, int lang) throws Exception {
         File temp = new File("./temp");
 
         if(!temp.exists()) {
@@ -597,6 +597,9 @@ public class ImageDrawing {
         encoder.setSize(rect.width, rect.height);
         encoder.setFrameRate(30);
         encoder.setRepeat(0);
+
+        if(transparent)
+            encoder.setTransparent(new Color(54, 57, 63, 255));
 
         FileOutputStream fos = new FileOutputStream(gif);
 

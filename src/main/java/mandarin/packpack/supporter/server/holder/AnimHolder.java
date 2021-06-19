@@ -32,6 +32,7 @@ public class AnimHolder extends Holder<MessageCreateEvent> {
 
     private final boolean debug;
     private final boolean raw;
+    private final boolean transparent;
 
     private boolean pngDone = false;
     private boolean cutDone = false;
@@ -42,12 +43,7 @@ public class AnimHolder extends Holder<MessageCreateEvent> {
     private final AtomicReference<String> mamodel = new AtomicReference<>("MAMODEL : -");
     private final ArrayList<AtomicReference<String>> maanim = new ArrayList<>();
 
-    private String pngName;
-    private String cutName;
-    private String modelName;
-    private final String[] animName;
-
-    public AnimHolder(Message msg, Message target, int lang, String channelID, File container, boolean debug, MessageChannel ch, boolean raw, int len) throws Exception {
+    public AnimHolder(Message msg, Message target, int lang, String channelID, File container, boolean debug, MessageChannel ch, boolean raw, boolean transparent, int len) throws Exception {
         super(MessageCreateEvent.class);
 
         this.msg = target;
@@ -57,9 +53,9 @@ public class AnimHolder extends Holder<MessageCreateEvent> {
 
         this.debug = debug;
         this.raw = raw;
+        this.transparent = transparent;
 
         mixer = new AnimMixer(len);
-        animName = new String[len];
 
         for(int i = 0; i < len; i++) {
             maanim.add(new AtomicReference<>("MAANIM "+i+" : -"));
@@ -97,7 +93,6 @@ public class AnimHolder extends Holder<MessageCreateEvent> {
                             if(mixer.validPng(res)) {
                                 png.set("PNG : SUCCESS");
                                 pngDone = true;
-                                pngName = a.getFilename();
 
                                 mixer.png = ImageIO.read(res);
                             } else {
@@ -137,7 +132,6 @@ public class AnimHolder extends Holder<MessageCreateEvent> {
                             if(mixer.validImgCut(res)) {
                                 imgcut.set("IMGCUT : SUCCESS");
                                 cutDone = true;
-                                cutName = a.getFilename();
 
                                 VFile vf = VFile.getFile(res);
 
@@ -181,7 +175,6 @@ public class AnimHolder extends Holder<MessageCreateEvent> {
                             if(mixer.validMamodel(res)) {
                                 mamodel.set("MAMODEL : SUCCESS");
                                 modelDone = true;
-                                modelName = a.getFilename();
 
                                 VFile vf = VFile.getFile(res);
 
@@ -229,7 +222,6 @@ public class AnimHolder extends Holder<MessageCreateEvent> {
                         if(res.exists()) {
                             if(mixer.validMaanim(res)) {
                                 maanim.get(ind).set("MAANIM "+ind+" : SUCCESS");
-                                animName[ind] = a.getFilename();
 
                                 VFile vf = VFile.getFile(res);
 
@@ -253,11 +245,7 @@ public class AnimHolder extends Holder<MessageCreateEvent> {
             new Thread(() -> {
                 try {
                     for(int i = 0; i < mixer.anim.length; i++) {
-                        String id = generateMD5ID(i);
-
-                        if(id != null) {
-                            EntityHandler.generateAnim(ch, id, mixer, lang, debug, -1, raw, i);
-                        }
+                        EntityHandler.generateAnim(ch, null, mixer, lang, debug, -1, raw, transparent, i);
                     }
 
                     new Timer().schedule(new TimerTask() {
@@ -329,7 +317,6 @@ public class AnimHolder extends Holder<MessageCreateEvent> {
                                 if(mixer.validPng(res)) {
                                     png.set("PNG : SUCCESS");
                                     pngDone = true;
-                                    pngName = a.getFilename();
 
                                     mixer.png = ImageIO.read(res);
                                 } else {
@@ -369,7 +356,6 @@ public class AnimHolder extends Holder<MessageCreateEvent> {
                                 if(mixer.validImgCut(res)) {
                                     imgcut.set("IMGCUT : SUCCESS");
                                     cutDone = true;
-                                    cutName = a.getFilename();
 
                                     VFile vf = VFile.getFile(res);
 
@@ -413,7 +399,6 @@ public class AnimHolder extends Holder<MessageCreateEvent> {
                                 if(mixer.validMamodel(res)) {
                                     mamodel.set("MAMODEL : SUCCESS");
                                     modelDone = true;
-                                    modelName = a.getFilename();
 
                                     VFile vf = VFile.getFile(res);
 
@@ -461,7 +446,6 @@ public class AnimHolder extends Holder<MessageCreateEvent> {
                             if(res.exists()) {
                                 if(mixer.validMaanim(res)) {
                                     maanim.get(ind).set("MAANIM "+ind+" : SUCCESS");
-                                    animName[ind] = a.getFilename();
 
                                     VFile vf = VFile.getFile(res);
 
@@ -486,11 +470,7 @@ public class AnimHolder extends Holder<MessageCreateEvent> {
                     new Thread(() -> {
                         try {
                             for(int i = 0; i < maanim.size(); i++) {
-                                String id = generateMD5ID(i);
-
-                                if(id != null) {
-                                    EntityHandler.generateAnim(ch, id, mixer, lang, debug, -1, raw, i);
-                                }
+                                EntityHandler.generateAnim(ch, null, mixer, lang, debug, -1, raw, transparent, i);
                             }
 
                             new Timer().schedule(new TimerTask() {
@@ -548,36 +528,6 @@ public class AnimHolder extends Holder<MessageCreateEvent> {
         }
 
         msg.edit(m -> m.setContent(content.toString())).subscribe();
-    }
-
-    public String generateMD5ID(int index) {
-        if(!container.exists() || container.isFile())
-            return null;
-
-        if(pngName == null || cutName == null || modelName == null || animName == null)
-            return null;
-
-        File png = new File(container, pngName);
-
-        if(!png.exists())
-            return null;
-
-        File cut = new File(container, cutName);
-
-        if(!cut.exists())
-            return null;
-
-        File mod = new File(container, modelName);
-
-        if(!mod.exists())
-            return null;
-
-        File anim = new File(container, animName[index]);
-
-        if(!anim.exists())
-            return null;
-
-        return "C - "+StaticStore.fileToMD5(png)+" - "+StaticStore.fileToMD5(cut)+" - "+StaticStore.fileToMD5(mod)+" - "+StaticStore.fileToMD5(anim);
     }
 
     private int getLastIndex() {

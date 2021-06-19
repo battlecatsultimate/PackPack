@@ -17,6 +17,7 @@ public class AnimAnalyzer extends ConstraintCommand {
     private static final int PARAM_RAW = 4;
     private static final int PARAM_BC = 8;
     private static final int PARAM_ZOMBIE = 16;
+    private static final int PARAM_TRANSPARENT = 32;
 
     public AnimAnalyzer(ROLE role, int lang, IDHolder id) {
         super(role, lang, id);
@@ -36,6 +37,7 @@ public class AnimAnalyzer extends ConstraintCommand {
         boolean raw = (PARAM_RAW & param) > 0;
         boolean bc = (PARAM_BC & param) > 0;
         boolean zombie = (PARAM_ZOMBIE & param) > 0;
+        boolean transparent = (PARAM_TRANSPARENT & param) > 0;
 
         int anim = getAnimNumber(getContent(event));
 
@@ -93,7 +95,7 @@ public class AnimAnalyzer extends ConstraintCommand {
             if(bc) {
                 new BCAnimHolder(msg, m, lang, ch.getId().asString(), container, ch, zombie);
             } else {
-                new AnimHolder(msg, m, lang, ch.getId().asString(), container, debug, ch, raw, anim);
+                new AnimHolder(msg, m, lang, ch.getId().asString(), container, debug, ch, raw, transparent, anim);
             }
     }
 
@@ -140,6 +142,12 @@ public class AnimAnalyzer extends ConstraintCommand {
                             break label;
                         }
                         break;
+                    case "-t":
+                        if((result & PARAM_TRANSPARENT) == 0) {
+                            result |= PARAM_TRANSPARENT;
+                        } else {
+                            break label;
+                        }
                 }
             }
         }
