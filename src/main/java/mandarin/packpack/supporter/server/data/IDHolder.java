@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import discord4j.common.util.Snowflake;
+import mandarin.packpack.supporter.lang.LangID;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,6 +18,14 @@ public class IDHolder {
 
         if(obj.has("server")) {
             id.serverPrefix = id.setOr(obj.get("server").getAsString());
+        }
+
+        if(obj.has("locale")) {
+            id.serverLocale = obj.get("locale").getAsInt();
+        }
+
+        if (obj.has("publish")) {
+            id.publish = obj.get("publish").getAsBoolean();
         }
 
         if(obj.has("mod")) {
@@ -47,6 +56,10 @@ public class IDHolder {
             id.GET_ACCESS = id.setOrNull(obj.get("acc").getAsString());
         }
 
+        if(obj.has("ann")) {
+            id.ANNOUNCE = id.setOrNull(obj.get("ann").getAsString());
+        }
+
         if(obj.has("channel")) {
             id.channel = id.toMap(obj.getAsJsonObject("channel"));
         }
@@ -55,6 +68,8 @@ public class IDHolder {
     }
 
     public String serverPrefix = "p!";
+    public int serverLocale = LangID.EN;
+    public boolean publish = false;
 
     public String MOD;
     public String MEMBER;
@@ -64,6 +79,7 @@ public class IDHolder {
     public String MUTED;
 
     public String GET_ACCESS;
+    public String ANNOUNCE;
 
     public Map<String, ArrayList<String>> channel = new HashMap<>();
 
@@ -85,6 +101,8 @@ public class IDHolder {
         JsonObject obj = new JsonObject();
 
         obj.addProperty("server", getOrNull(serverPrefix));
+        obj.addProperty("locale", serverLocale);
+        obj.addProperty("publish", publish);
         obj.addProperty("mod", getOrNull(MOD));
         obj.addProperty("mem", getOrNull(MEMBER));
         obj.addProperty("pre", getOrNull(PRE_MEMBER));
@@ -92,6 +110,7 @@ public class IDHolder {
         obj.addProperty("and", getOrNull(BCU_ANDROID));
         obj.addProperty("mut", getOrNull(MUTED));
         obj.addProperty("acc", getOrNull(GET_ACCESS));
+        obj.addProperty("ann", getOrNull(ANNOUNCE));
         obj.add("channel", jsonfyMap());
 
         return obj;
@@ -213,6 +232,8 @@ public class IDHolder {
     public String toString() {
         return "IDHolder{" +
                 "serverPrefix='" + serverPrefix + '\'' +
+                ", serverLocale=" + serverLocale +
+                ", publish=" + publish +
                 ", MOD='" + MOD + '\'' +
                 ", MEMBER='" + MEMBER + '\'' +
                 ", PRE_MEMBER='" + PRE_MEMBER + '\'' +
@@ -220,6 +241,7 @@ public class IDHolder {
                 ", BCU_ANDROID='" + BCU_ANDROID + '\'' +
                 ", MUTED='" + MUTED + '\'' +
                 ", GET_ACCESS='" + GET_ACCESS + '\'' +
+                ", ANNOUNCE='" + ANNOUNCE + '\'' +
                 ", channel=" + channel +
                 '}';
     }
