@@ -24,8 +24,9 @@ import java.util.List;
 import java.util.Queue;
 
 public class AssetDownloader {
-    private static final String[] folder = {"bot/", "jp/", "kr/", "zh/"};
+    private static final String[] folder = {"bot/", "jp/", "kr/", "zh/", "fr/", "it/", "es/", "de/"};
     private static final String[] file = {"EnemyName.txt", "StageName.txt", "UnitName.txt", "UnitExplanation.txt", "EnemyExplanation.txt", "CatFruitExplanation.txt", "RewardName.txt", "ComboName.txt", "MedalName.txt", "MedalExplanation.txt"};
+    private static final String[] extra = {"fr/StageName.txt", "it/StageName.txt", "es/StageName.txt", "de/StageName.txt"};
 
     public static void checkAssetDownload() {
         try {
@@ -42,11 +43,18 @@ public class AssetDownloader {
             langFile.add("Difficulty.txt");
             CommonStatic.getConfig().localLangMap.put("Difficulty.txt", StaticStore.langs.getOrDefault("Difficulty.txt", ""));
 
-            for(String f : folder) {
+            for(int i = 0; i < 4; i++) {
+                String f = folder[i];
+
                 for(String fi : file) {
                     langFile.add(f + fi);
                     CommonStatic.getConfig().localLangMap.put(f+fi, StaticStore.langs.getOrDefault(f+fi, ""));
                 }
+            }
+
+            for(String e : extra) {
+                langFile.add(e);
+                CommonStatic.getConfig().localLangMap.put(e, StaticStore.langs.getOrDefault(e, ""));
             }
 
             asset = UpdateCheck.checkAsset(json, "android", "bot");
@@ -62,7 +70,7 @@ public class AssetDownloader {
 
                 builder.append("--------------------\n");
 
-                System.out.println(builder.toString());
+                System.out.println(builder);
             }
 
             for(UpdateCheck.Downloader d : asset) {

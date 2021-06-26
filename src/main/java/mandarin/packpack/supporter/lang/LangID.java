@@ -10,6 +10,10 @@ public class LangID {
     public static final int ZH = 1;
     public static final int KR = 2;
     public static final int JP = 3;
+    public static final int FR = 6;
+    public static final int IT = 9;
+    public static final int ES = 8;
+    public static final int DE = 5;
 
     public static JsonObject EN_OBJ;
     public static JsonObject JP_OBJ;

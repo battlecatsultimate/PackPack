@@ -7,6 +7,17 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 
 public class Locale extends ConstraintCommand {
+    private static final int[] langIndex = {
+            LangID.EN,
+            LangID.ZH,
+            LangID.KR,
+            LangID.JP,
+            LangID.FR,
+            LangID.IT,
+            LangID.ES,
+            LangID.DE
+    };
+
     public Locale(ROLE role, int lang, IDHolder holder) {
         super(role, lang, holder);
     }
@@ -22,20 +33,39 @@ public class Locale extends ConstraintCommand {
                 if(StaticStore.isNumeric(list[1])) {
                     int lan = StaticStore.safeParseInt(list[1]) - 1;
 
-                    if(lan >= 0 && lan <= 3) {
+                    if(lan >= 0 && lan <= langIndex.length - 1) {
+                        int loc = langIndex[lan];
+
                         getMember(event).ifPresentOrElse(m -> {
-                            StaticStore.locales.put(m.getId().asString(), lan);
+                            StaticStore.locales.put(m.getId().asString(), loc);
 
                             String locale;
 
-                            if(lan == LangID.EN) {
-                                locale = LangID.getStringByID("lang_en", lan);
-                            } else if(lan == LangID.JP) {
-                                locale = LangID.getStringByID("lang_jp", lan);
-                            } else if(lan == LangID.KR) {
-                                locale = LangID.getStringByID("lang_kr", lan);
-                            } else {
-                                locale = LangID.getStringByID("lang_zh", lan);
+                            switch (loc) {
+                                case LangID.EN:
+                                    locale = LangID.getStringByID("lang_en", loc);
+                                    break;
+                                case LangID.JP:
+                                    locale = LangID.getStringByID("lang_jp", loc);
+                                    break;
+                                case LangID.KR:
+                                    locale = LangID.getStringByID("lang_kr", loc);
+                                    break;
+                                case LangID.ZH:
+                                    locale = LangID.getStringByID("lang_zh", loc);
+                                    break;
+                                case LangID.FR:
+                                    locale = LangID.getStringByID("lang_fr", loc);
+                                    break;
+                                case LangID.IT:
+                                    locale = LangID.getStringByID("lang_it", loc);
+                                    break;
+                                case LangID.ES:
+                                    locale = LangID.getStringByID("lang_es", loc);
+                                    break;
+                                default:
+                                    locale = LangID.getStringByID("lang_de", loc);
+                                    break;
                             }
 
                             ch.createMessage(LangID.getStringByID("locale_set", lan).replace("_", locale)).subscribe();
