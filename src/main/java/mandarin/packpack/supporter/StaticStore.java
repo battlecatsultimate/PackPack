@@ -17,6 +17,7 @@ import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Role;
 import discord4j.rest.util.Color;
 import mandarin.packpack.supporter.event.EventHolder;
+import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.data.AliasHolder;
 import mandarin.packpack.supporter.server.holder.Holder;
@@ -57,6 +58,8 @@ public class StaticStore {
     public static Map<String, String> langs = new HashMap<>();
     public static Map<String, Integer> locales = new HashMap<>();
 
+    public static final Map<Integer, String> announcements = new HashMap<>();
+
     private static final Map<String, Holder<? extends MessageEvent>> holders = new HashMap<>();
 
     public static Map<String, String> suggestBanned = new HashMap<>();
@@ -79,6 +82,17 @@ public class StaticStore {
     public static final Map<String, Map<String, Long>> timeLimit = new HashMap<>();
 
     public static Timer saver = null;
+
+    public static final int[] langIndex = {
+            LangID.EN,
+            LangID.ZH,
+            LangID.KR,
+            LangID.JP,
+            LangID.FR,
+            LangID.IT,
+            LangID.ES,
+            LangID.DE
+    };
 
     public static Color[] rainbow = {Color.of(217, 65, 68), Color.of(217, 128, 65), Color.of(224, 213, 85)
     , Color.of(118, 224, 85), Color.of(85, 169, 224), Color.of(185, 85, 224)};

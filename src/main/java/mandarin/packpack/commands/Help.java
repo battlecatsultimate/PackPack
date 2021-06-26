@@ -200,6 +200,12 @@ public class Help extends Command {
             case "stat":
                 ch.createEmbed(e -> addFields(e, "statistic", false, false, false)).subscribe();
                 break;
+            case "serverlocale":
+            case "slocale":
+            case "serverloc":
+            case "sloc":
+                ch.createEmbed(e -> addFields(e, "serverlocale", false, false, false)).subscribe();
+                break;
             default:
                 createMessageWithNoPings(ch, LangID.getStringByID("help_nocomm", lang).replace("_", command));
         }

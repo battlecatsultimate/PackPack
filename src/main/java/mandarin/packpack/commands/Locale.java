@@ -7,16 +7,6 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 
 public class Locale extends ConstraintCommand {
-    private static final int[] langIndex = {
-            LangID.EN,
-            LangID.ZH,
-            LangID.KR,
-            LangID.JP,
-            LangID.FR,
-            LangID.IT,
-            LangID.ES,
-            LangID.DE
-    };
 
     public Locale(ROLE role, int lang, IDHolder holder) {
         super(role, lang, holder);
@@ -33,8 +23,8 @@ public class Locale extends ConstraintCommand {
                 if(StaticStore.isNumeric(list[1])) {
                     int lan = StaticStore.safeParseInt(list[1]) - 1;
 
-                    if(lan >= 0 && lan <= langIndex.length - 1) {
-                        int loc = langIndex[lan];
+                    if(lan >= 0 && lan <= StaticStore.langIndex.length - 1) {
+                        int loc = StaticStore.langIndex[lan];
 
                         getMember(event).ifPresentOrElse(m -> {
                             StaticStore.locales.put(m.getId().asString(), loc);

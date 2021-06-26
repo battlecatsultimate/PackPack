@@ -4,6 +4,8 @@ import common.CommonStatic;
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
+import discord4j.core.event.domain.channel.NewsChannelDeleteEvent;
+import discord4j.core.event.domain.channel.TextChannelDeleteEvent;
 import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.event.domain.guild.GuildDeleteEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
@@ -172,6 +174,44 @@ public class PackBot {
             }
 
             StaticStore.saveServerInfo();
+        });
+
+        gate.on(NewsChannelDeleteEvent.class).subscribe(e -> {
+            Guild g = e.getChannel().getGuild().block();
+
+            if(g != null) {
+                IDHolder idh = StaticStore.idHolder.get(g.getId().asString());
+
+                if(idh == null)
+                    idh = new IDHolder();
+
+                if(idh.ANNOUNCE != null && idh.ANNOUNCE.equals(e.getChannel().getId().asString()))
+                    idh.ANNOUNCE = null;
+
+                if(idh.GET_ACCESS != null && idh.GET_ACCESS.equals(e.getChannel().getId().asString()))
+                    idh.GET_ACCESS = null;
+
+                StaticStore.idHolder.put(g.getId().asString(), idh);
+            }
+        });
+
+        gate.on(TextChannelDeleteEvent.class).subscribe(e -> {
+            Guild g = e.getChannel().getGuild().block();
+
+            if(g != null) {
+                IDHolder idh = StaticStore.idHolder.get(g.getId().asString());
+
+                if(idh == null)
+                    idh = new IDHolder();
+
+                if(idh.ANNOUNCE != null && idh.ANNOUNCE.equals(e.getChannel().getId().asString()))
+                    idh.ANNOUNCE = null;
+
+                if(idh.GET_ACCESS != null && idh.GET_ACCESS.equals(e.getChannel().getId().asString()))
+                    idh.GET_ACCESS = null;
+
+                StaticStore.idHolder.put(g.getId().asString(), idh);
+            }
         });
 
         gate.on(GuildCreateEvent.class).subscribe(e -> {
@@ -401,13 +441,8 @@ public class PackBot {
 
                             int lang;
 
-                            if(g != null) {
-                                if(g.getId().asString().equals(StaticStore.BCU_SERVER))
-                                    lang = LangID.EN;
-                                else if(g.getId().asString().equals(StaticStore.BCU_KR_SERVER))
-                                    lang = LangID.KR;
-                                else
-                                    lang = LangID.EN;
+                            if(idh != null) {
+                                lang = idh.serverLocale;
                             } else {
                                 lang = LangID.EN;
                             }
@@ -601,6 +636,17 @@ public class PackBot {
                                 case "statistic":
                                 case "stat":
                                     new Statistic(lang).execute(event);
+                                    break;
+                                case "serverlocale":
+                                case "serverloc":
+                                case "sloc":
+                                    new ServerLocale(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+                                    break;
+                                case "news":
+                                    new News(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+                                    break;
+                                case "publish":
+                                    new Publish(ConstraintCommand.ROLE.MANDARIN, lang, idh, gate).execute(event);
                                     break;
                             }
                         }
