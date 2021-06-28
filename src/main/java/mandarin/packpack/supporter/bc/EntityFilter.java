@@ -31,13 +31,13 @@ public class EntityFilter {
                 continue;
 
             for(Form f : u.forms) {
-                for(int i = 0; i < 4; i++) {
+                for(int i = 0; i < StaticStore.langIndex.length; i++) {
                     StringBuilder fname = new StringBuilder(Data.trio(u.id.id)+"-"+Data.trio(f.fid)+" "+Data.trio(u.id.id)+" - "+Data.trio(f.fid) + " "
                     +u.id.id+"-"+f.fid+" "+Data.trio(u.id.id)+"-"+f.fid+" ");
                     fname.append(Data.trio(u.id.id)).append(Data.trio(f.fid)).append(" ");
 
                     if(MultiLangCont.get(f) != null) {
-                        fname.append(StaticStore.safeMultiLangGet(f, i));
+                        fname.append(StaticStore.safeMultiLangGet(f, StaticStore.langIndex[i]));
                     }
 
                     if(f.name != null) {
@@ -50,7 +50,7 @@ public class EntityFilter {
                     }
 
                     int oldConfig = CommonStatic.getConfig().lang;
-                    CommonStatic.getConfig().lang = i;
+                    CommonStatic.getConfig().lang = StaticStore.langIndex[i];
 
                     ArrayList<String> alias = AliasHolder.FALIAS.getCont(f);
 
@@ -233,12 +233,12 @@ public class EntityFilter {
             if(e == null)
                 continue;
 
-            for(int i = 0; i < 4; i++) {
+            for(int i = 0; i < StaticStore.langIndex.length; i++) {
                 StringBuilder ename = new StringBuilder(Data.trio(e.id.id))
                         .append(" ").append(duo(i)).append(" ");
 
                 if(MultiLangCont.get(e) != null) {
-                    ename.append(StaticStore.safeMultiLangGet(e, i));
+                    ename.append(StaticStore.safeMultiLangGet(e, StaticStore.langIndex[i]));
                 }
 
                 if(ename.toString().toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
@@ -247,7 +247,7 @@ public class EntityFilter {
                 }
 
                 int oldConfig = CommonStatic.getConfig().lang;
-                CommonStatic.getConfig().lang = i;
+                CommonStatic.getConfig().lang = StaticStore.langIndex[i];
 
                 ArrayList<String> alias = AliasHolder.EALIAS.getCont(e);
 
@@ -432,8 +432,8 @@ public class EntityFilter {
                 if(mc == null)
                     continue;
 
-                for(int i = 0; i < 4; i++ ) {
-                    String mcName = StaticStore.safeMultiLangGet(mc, i);
+                for(int i = 0; i < StaticStore.langIndex.length; i++ ) {
+                    String mcName = StaticStore.safeMultiLangGet(mc, StaticStore.langIndex[i]);
 
                     if(mcName == null || mcName.isBlank())
                         continue;
@@ -515,8 +515,8 @@ public class EntityFilter {
                     boolean s0 = false;
 
                     if(names[0] != null && !names[0].isBlank()) {
-                        for(int i = 0; i < 4; i++) {
-                            String mcName = StaticStore.safeMultiLangGet(mc, i);
+                        for(int i = 0; i < StaticStore.langIndex.length; i++) {
+                            String mcName = StaticStore.safeMultiLangGet(mc, StaticStore.langIndex[i]);
 
                             if(mcName == null || mcName.isBlank())
                                 continue;
@@ -540,8 +540,8 @@ public class EntityFilter {
 
                             boolean s1 = false;
 
-                            for(int i = 0; i < 4; i++) {
-                                String stmName = StaticStore.safeMultiLangGet(stm, i);
+                            for(int i = 0; i < StaticStore.langIndex.length; i++) {
+                                String stmName = StaticStore.safeMultiLangGet(stm, StaticStore.langIndex[i]);
 
                                 if(stmName == null || stmName.isBlank())
                                     continue;
@@ -690,8 +690,8 @@ public class EntityFilter {
                     boolean s0 = false;
 
                     if(names[0] != null && !names[0].isBlank()) {
-                        for(int i = 0; i < 4; i++) {
-                            String mcName = StaticStore.safeMultiLangGet(mc, i);
+                        for(int i = 0; i < StaticStore.langIndex.length; i++) {
+                            String mcName = StaticStore.safeMultiLangGet(mc, StaticStore.langIndex[i]);
 
                             if(mcName == null || mcName.isBlank())
                                 continue;
@@ -716,8 +716,8 @@ public class EntityFilter {
                             boolean s1 = false;
 
                             if(names[1] != null && !names[1].isBlank()) {
-                                for(int i = 0; i < 4; i++) {
-                                    String stmName = StaticStore.safeMultiLangGet(stm, i);
+                                for(int i = 0; i < StaticStore.langIndex.length; i++) {
+                                    String stmName = StaticStore.safeMultiLangGet(stm, StaticStore.langIndex[i]);
 
                                     if(stmName == null || stmName.isBlank())
                                         continue;
@@ -741,8 +741,8 @@ public class EntityFilter {
 
                                     boolean s2 = false;
 
-                                    for(int i = 0; i < 4; i++) {
-                                        String stName = StaticStore.safeMultiLangGet(st, i);
+                                    for(int i = 0; i < StaticStore.langIndex.length; i++) {
+                                        String stName = StaticStore.safeMultiLangGet(st, StaticStore.langIndex[i]);
 
                                         if(stName == null || stName.isBlank())
                                             continue;
@@ -753,7 +753,7 @@ public class EntityFilter {
                                         }
 
                                         int oldConfig = CommonStatic.getConfig().lang;
-                                        CommonStatic.getConfig().lang = i;
+                                        CommonStatic.getConfig().lang = StaticStore.langIndex[i];
 
                                         ArrayList<String> alias = AliasHolder.SALIAS.getCont(st);
 
@@ -859,8 +859,8 @@ public class EntityFilter {
 
                                             boolean s2 = false;
 
-                                            for(int i = 0; i < 4; i++) {
-                                                String stName = StaticStore.safeMultiLangGet(st, i);
+                                            for(int i = 0; i < StaticStore.langIndex.length; i++) {
+                                                String stName = StaticStore.safeMultiLangGet(st, StaticStore.langIndex[i]);
 
                                                 if(stName == null || stName.isBlank())
                                                     continue;
@@ -871,7 +871,7 @@ public class EntityFilter {
                                                 }
 
                                                 int oldConfig = CommonStatic.getConfig().lang;
-                                                CommonStatic.getConfig().lang = i;
+                                                CommonStatic.getConfig().lang = StaticStore.langIndex[i];
 
                                                 ArrayList<String> alias = AliasHolder.SALIAS.getCont(st);
 
@@ -984,8 +984,8 @@ public class EntityFilter {
                                     boolean s1 = false;
 
                                     if(names[1] != null && !names[1].isBlank()) {
-                                        for(int i = 0; i < 4; i++) {
-                                            String stmName = StaticStore.safeMultiLangGet(stm, i);
+                                        for(int i = 0; i < StaticStore.langIndex.length; i++) {
+                                            String stmName = StaticStore.safeMultiLangGet(stm, StaticStore.langIndex[i]);
 
                                             if(stmName == null || stmName.isBlank())
                                                 continue;
@@ -1009,8 +1009,8 @@ public class EntityFilter {
 
                                             boolean s2 = false;
 
-                                            for(int i = 0; i < 4; i++) {
-                                                String stName = StaticStore.safeMultiLangGet(st, i);
+                                            for(int i = 0; i < StaticStore.langIndex.length; i++) {
+                                                String stName = StaticStore.safeMultiLangGet(st, StaticStore.langIndex[i]);
 
                                                 if(stName == null || stName.isBlank())
                                                     continue;
@@ -1105,8 +1105,8 @@ public class EntityFilter {
 
                                                     boolean s2 = false;
 
-                                                    for(int i = 0; i < 4; i++) {
-                                                        String stName = StaticStore.safeMultiLangGet(st, i);
+                                                    for(int i = 0; i < StaticStore.langIndex.length; i++) {
+                                                        String stName = StaticStore.safeMultiLangGet(st, StaticStore.langIndex[i]);
 
                                                         if(stName == null || stName.isBlank())
                                                             continue;
@@ -1507,15 +1507,15 @@ public class EntityFilter {
 
             keyword = keyword.toLowerCase(Locale.ENGLISH);
 
-            for(int i = 0; i < 4; i++) {
-                String name = StaticStore.safeMultiLangGet(t, i);
+            for(int i = 0; i < StaticStore.langIndex.length; i++) {
+                String name = StaticStore.safeMultiLangGet(t, StaticStore.langIndex[i]);
 
                 if(name != null && !name.isBlank()) {
                     if(name.toLowerCase(Locale.ENGLISH).contains(keyword))
                         return true;
 
                     int oldConfig = CommonStatic.getConfig().lang;
-                    CommonStatic.getConfig().lang = i;
+                    CommonStatic.getConfig().lang = StaticStore.langIndex[i];
 
                     ArrayList<String> alias;
 
@@ -1538,7 +1538,7 @@ public class EntityFilter {
                     }
                 } else {
                     int oldConfig = CommonStatic.getConfig().lang;
-                    CommonStatic.getConfig().lang = i;
+                    CommonStatic.getConfig().lang = StaticStore.langIndex[i];
 
                     ArrayList<String> alias;
 
