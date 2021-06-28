@@ -10,6 +10,7 @@ import discord4j.core.object.entity.channel.GuildChannel;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.entity.channel.NewsChannel;
 import discord4j.core.object.entity.channel.TextChannel;
+import discord4j.rest.util.AllowedMentions;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.data.IDHolder;
@@ -53,6 +54,8 @@ public class Publish extends ConstraintCommand {
 
             if(c instanceof NewsChannel) {
                 Message me = ((NewsChannel) c).createMessage(m -> {
+                    m.setAllowedMentions(AllowedMentions.builder().build());
+
                     int[] pref = CommonStatic.Lang.pref[holder.serverLocale];
 
                     for(int p : pref) {
@@ -73,6 +76,7 @@ public class Publish extends ConstraintCommand {
                     for(int p : pref) {
                         if(StaticStore.announcements.containsKey(p)) {
                             m.setContent(StaticStore.announcements.get(p));
+                            m.setAllowedMentions(AllowedMentions.builder().build());
                             break;
                         }
                     }
