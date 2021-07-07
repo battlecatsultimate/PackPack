@@ -793,7 +793,7 @@ public class DataToString {
 
         Treasure t = BasisSet.current().t();
 
-        return String.valueOf((int) (e.de.getDrop() * t.getDropMulti()));
+        return String.valueOf((int) (e.de.getDrop() * t.getDropMulti() / 100));
     }
 
     public static String getSiMu(Form f, int lang) {
