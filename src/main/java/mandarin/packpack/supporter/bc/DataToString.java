@@ -17,6 +17,7 @@ import common.util.unit.Combo;
 import common.util.unit.Enemy;
 import common.util.unit.Form;
 import common.util.unit.Unit;
+import discord4j.rest.util.Color;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 
@@ -30,6 +31,7 @@ public class DataToString {
     private static final List<String> mapIds = Arrays.asList("000000", "000001", "000002", "000003", "000004", "000006", "000007", "000011", "000012", "000013", "000014", "000024", "000025", "000027");
     private static final String[] mapCodes = {"N", "S", "C", "CH", "E", "T", "V", "R", "M", "A", "B", "RA", "H", "CA"};
     private static final Map<Integer, int[]> pCoinLevels = new HashMap<>();
+    private static final int maxDifficulty = 11;
 
     static {
         NumberFormat nf = NumberFormat.getInstance(Locale.US);
@@ -943,31 +945,10 @@ public class DataToString {
     }
 
     public static String getDifficulty(Stage st, int lang) {
-        if(st.info == null)
+        if(st.info == null || st.info.diff == -1)
             return LangID.getStringByID("data_none", lang);
-
-        switch (st.info.diff) {
-            case -1:
-                return LangID.getStringByID("data_none", lang);
-            case 0:
-                return LangID.getStringByID("data_easy", lang);
-            case 1:
-                return LangID.getStringByID("data_normal", lang);
-            case 2:
-                return LangID.getStringByID("data_hard", lang);
-            case 3:
-                return LangID.getStringByID("data_veteran", lang);
-            case 4:
-                return LangID.getStringByID("data_expert", lang);
-            case 5:
-                return LangID.getStringByID("data_insane", lang);
-            case 6:
-                return LangID.getStringByID("data_deadly", lang);
-            case 7:
-                return LangID.getStringByID("data_merciless", lang);
-            default:
-                return "Unknown";
-        }
+        else
+            return "★"+st.info.diff;
     }
 
     public static String getContinuable(Stage st, int lang) {
@@ -1592,5 +1573,55 @@ public class DataToString {
             default:
                 throw new IllegalStateException("Invalid Combo Type : "+c.type);
         }
+    }
+
+    public static Color getDifficultyColor(int diff) {
+        int[] rgb = HSVtoRGB((-220 * (diff - 1 - maxDifficulty) / 11.0) / 360.0);
+
+        return Color.of(rgb[0], rgb[1], rgb[2]);
+    }
+
+    private static int[] HSVtoRGB(double h) {
+        double r, g, b, i, f, p, q ,t;
+
+        i = Math.floor(h * 6);
+        f = h * 6 - i;
+        p = 1 - 0.6;
+        q = 1 - f * 0.6;
+        t = 1 - (1 - f) * 0.6;
+
+        switch ((int) (i%6)) {
+            case 1:
+                r = q;
+                g = 1.0;
+                b = p;
+                break;
+            case 2:
+                r = p;
+                g = 1.0;
+                b = t;
+                break;
+            case 3:
+                r = p;
+                g = q;
+                b = 1.0;
+                break;
+            case 4:
+                r = t;
+                g = p;
+                b = 1.0;
+                break;
+            case 5:
+                r = 1.0;
+                g = p;
+                b = q;
+                break;
+            default:
+                r = 1.0;
+                g = t;
+                b = p;
+        }
+
+        return new int[] {(int) (r * 255), (int) (g * 255), (int) (b * 255)};
     }
 }

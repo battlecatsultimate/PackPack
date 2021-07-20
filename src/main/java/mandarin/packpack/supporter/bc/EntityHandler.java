@@ -828,7 +828,7 @@ public class EntityHandler {
                     if(st.info == null || st.info.diff == -1)
                         spec.setColor(Color.of(217, 217, 217));
                     else
-                        spec.setColor(StaticStore.coolHot[st.info.diff]);
+                        spec.setColor(DataToString.getDifficultyColor(st.info.diff));
 
                     String name = "";
 
@@ -1014,7 +1014,7 @@ public class EntityHandler {
                 if(st.info == null || st.info.diff == -1)
                     spec.setColor(Color.of(217, 217, 217));
                 else
-                    spec.setColor(StaticStore.coolHot[st.info.diff]);
+                    spec.setColor(DataToString.getDifficultyColor(st.info.diff));
 
                 String name = "";
 
