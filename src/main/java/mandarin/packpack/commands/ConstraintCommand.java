@@ -15,7 +15,8 @@ public abstract class ConstraintCommand extends Command {
         MANDARIN,
         MOD,
         MEMBER,
-        PRE_MEMBER
+        PRE_MEMBER,
+        CONTRIBUTOR
     }
 
     final String constRole;
@@ -36,6 +37,9 @@ public abstract class ConstraintCommand extends Command {
                 break;
             case MANDARIN:
                 constRole = "MANDARIN";
+                break;
+            case CONTRIBUTOR:
+                constRole = "CONTRIBUTOR";
                 break;
             default:
                 throw new IllegalStateException("Invalid ROLE enum : "+role);
@@ -80,6 +84,8 @@ public abstract class ConstraintCommand extends Command {
                 hasRole.set(true);
             } else if(constRole.equals("MANDARIN")) {
                 hasRole.set(m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
+            } else if(constRole.equals("CONTRIBUTOR")) {
+                hasRole.set(StaticStore.contributors.contains(m.getId().asString()));
             } else {
                 hasRole.set(role.contains(constRole) || m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
             }
@@ -99,6 +105,8 @@ public abstract class ConstraintCommand extends Command {
         if(!hasRole.get() && !isMod.get()) {
             if(constRole.equals("MANDARIN")) {
                 ch.createMessage(LangID.getStringByID("const_man", lang)).subscribe();
+            } else if(constRole.equals("CONTRIBUTOR")) {
+                createMessageWithNoPings(ch, LangID.getStringByID("const_con", lang));
             } else {
                 Guild g = getGuild(event).block();
 

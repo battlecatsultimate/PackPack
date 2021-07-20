@@ -474,7 +474,7 @@ public class PackBot {
                                     new ServerPrefix(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
                                     break;
                                 case "save":
-                                    new Save(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+                                    new Save(ConstraintCommand.ROLE.CONTRIBUTOR, lang, idh).execute(event);
                                     break;
                                 case "stimg":
                                 case "stimage":
@@ -553,7 +553,7 @@ public class PackBot {
                                     break;
                                 case "aa":
                                 case "animanalyzer":
-                                    new AnimAnalyzer(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+                                    new AnimAnalyzer(ConstraintCommand.ROLE.CONTRIBUTOR, lang, idh).execute(event);
                                     break;
                                 case "channelpermission":
                                 case "channelperm":
@@ -590,7 +590,7 @@ public class PackBot {
                                 case "serverjson":
                                 case "json":
                                 case "sj":
-                                    new ServerJson(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+                                    new ServerJson(ConstraintCommand.ROLE.CONTRIBUTOR, lang, idh).execute(event);
                                     break;
                                 case "findstage":
                                 case "findst":
