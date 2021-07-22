@@ -522,19 +522,34 @@ public class DataToString {
     public static String getTotalAtk(Form f, MaskUnit du, boolean talent, int[] lvs) {
         Treasure t = BasisSet.current().t();
 
-        int result;
+        int result = 0;
 
-        if(f.getPCoin() != null && talent) {
-            result = (int) ((int) (Math.round(du.allAtk() * f.unit.lv.getMult(lvs[0])) * t.getAtkMulti()) * f.getPCoin().getAtkMultiplication(lvs));
-        } else {
-            result = (int) (Math.round(du.allAtk() * f.unit.lv.getMult(lvs[0])) * t.getAtkMulti());
+        int[][] raw = du.rawAtkData();
+
+        for(int[] atk : raw) {
+            if(f.getPCoin() != null && talent) {
+                result += (int) ((int) (Math.round(atk[0] * f.unit.lv.getMult(lvs[0])) * t.getAtkMulti()) * f.getPCoin().getAtkMultiplication(lvs));
+            } else {
+                result += (int) (Math.round(atk[0] * f.unit.lv.getMult(lvs[0])) * t.getAtkMulti());
+            }
         }
 
         return String.valueOf(result);
     }
 
     public static String getTotalAtk(Enemy e, int magnification) {
-        return "" + (int) (e.de.multi(BasisSet.current()) * e.de.allAtk() * magnification / 100.0);
+        if(e == null || e.de == null)
+            return "";
+
+        int[][] atks = e.de.rawAtkData();
+
+        int result = 0;
+
+        for(int[] atk : atks) {
+            result += (int) (atk[0] * e.de.multi(BasisSet.current()) * magnification / 100.0);
+        }
+
+        return String.valueOf(result);
     }
 
     public static String getAtks(Form f, MaskUnit du, boolean talent, int[] lvs) {
@@ -1398,8 +1413,6 @@ public class DataToString {
                 res.add(String.valueOf(d[0]));
             }
         }
-
-        System.out.println(res);
 
         return res;
     }
