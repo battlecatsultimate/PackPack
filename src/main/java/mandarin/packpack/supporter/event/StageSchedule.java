@@ -289,6 +289,136 @@ public class StageSchedule extends EventFactor implements Schedule {
         return result.toString();
     }
 
+    public String beautifyWithCustomName(String name) {
+        StringBuilder result = new StringBuilder();
+
+        result.append("[");
+
+        if(date.dateStart.year != date.dateEnd.year || date.dateStart.year != currentYear) {
+            result.append(date.dateStart.year)
+                    .append(" ");
+        }
+
+        result.append(getMonth(date.dateStart.month))
+                .append(" ")
+                .append(date.dateStart.day)
+                .append(getNumberExtension(date.dateStart.day))
+                .append(" ~ ");
+
+        if(date.dateEnd.equals(END)) {
+            result.append("] ");
+        } else {
+
+            if(date.dateStart.year != date.dateEnd.year) {
+                result.append(date.dateEnd.year)
+                        .append(" ");
+            }
+
+            if(date.dateStart.month != date.dateEnd.month) {
+                result.append(getMonth(date.dateEnd.month))
+                        .append(" ");
+            }
+
+            result.append(date.dateEnd.day)
+                    .append(getNumberExtension(date.dateEnd.day))
+                    .append("] ");
+        }
+
+        result.append(name);
+
+        if(!sections.isEmpty()) {
+            result.append(" (");
+
+            for (int i = 0; i < sections.size(); i++) {
+                EventSection section = sections.get(i);
+
+                if (!section.daySets.isEmpty()) {
+                    for (int j = 0; j < section.daySets.size(); j++) {
+                        EventDateSet set = section.daySets.get(j);
+
+                        result.append(getMonth(set.dateStart.month))
+                                .append(" ")
+                                .append(set.dateStart.day)
+                                .append(getNumberExtension(set.dateStart.day))
+                                .append(" ~ ")
+                                .append(getMonth(set.dateEnd.month))
+                                .append(" ")
+                                .append(set.dateEnd.day)
+                                .append(getNumberExtension(set.dateEnd.day));
+
+                        if (j < section.daySets.size() - 1)
+                            result.append(", ");
+                    }
+
+                    if(!section.days.isEmpty() || !section.weekDays.isEmpty() || !section.times.isEmpty()) {
+                        result.append(" / ");
+                    }
+                }
+
+                if (!section.days.isEmpty()) {
+                    if (isEvenDays(i)) {
+                        result.append("Every Even Day");
+                    } else if (isOddDays(i)) {
+                        result.append("Every Odd Day");
+                    } else {
+                        for (int j = 0; j < section.days.size(); j++) {
+                            result.append(section.days.get(j))
+                                    .append(getNumberExtension(section.days.get(j)));
+
+                            if (j < section.days.size() - 1) {
+                                result.append(", ");
+                            }
+                        }
+                    }
+
+                    if(!section.weekDays.isEmpty() || !section.times.isEmpty()) {
+                        result.append(" / ");
+                    }
+                }
+
+                if (!section.weekDays.isEmpty()) {
+                    for (int j = 0; j < section.weekDays.size(); j++) {
+                        result.append(getWhichDay(section.weekDays.get(j)));
+
+                        if (j < section.weekDays.size() - 1) {
+                            result.append(", ");
+                        }
+                    }
+
+                    if(!section.times.isEmpty()) {
+                        result.append(" / ");
+                    }
+                }
+
+                if (!section.times.isEmpty()) {
+                    for (int j = 0; j < section.times.size(); j++) {
+                        EventTimeSection time = section.times.get(j);
+
+                        result.append(duo(time.start.hour))
+                                .append(":")
+                                .append(duo(time.start.minute))
+                                .append(" ~ ")
+                                .append(duo(time.end.hour))
+                                .append(":")
+                                .append(duo(time.end.minute));
+
+                        if (j < section.times.size() - 1) {
+                            result.append(", ");
+                        }
+                    }
+                }
+
+                if (i < sections.size() - 1) {
+                    result.append(" | ");
+                }
+            }
+
+            result.append(")");
+        }
+
+        return result.toString();
+    }
+
     public String beautify() {
         StringBuilder result = new StringBuilder();
 
@@ -564,5 +694,10 @@ public class StageSchedule extends EventFactor implements Schedule {
             return "0"+n;
         else
             return ""+n;
+    }
+
+    @Override
+    public String toString() {
+        return "{ Type : "+type+" | Contents : " + beautify() +" }";
     }
 }

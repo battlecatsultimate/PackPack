@@ -2,6 +2,9 @@ package mandarin.packpack.commands;
 
 import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.channel.MessageChannel;
+import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.event.EventFactor;
+import mandarin.packpack.supporter.event.EventHolder;
 import mandarin.packpack.supporter.event.StageSchedule;
 import mandarin.packpack.supporter.server.data.IDHolder;
 
@@ -20,11 +23,7 @@ public class Test extends GlobalTimedConstraintCommand {
         if(ch == null)
             return;
 
-        String[] texts = getContent(event).split(" ", 2);
-
-        StageSchedule schedule = new StageSchedule(texts[1].replace("    ", "\t"));
-
-        ch.createMessage(schedule.dataToString()).subscribe();
+        System.out.println(StaticStore.event.printStageEvent(EventFactor.GLOBAL));
     }
 
     @Override

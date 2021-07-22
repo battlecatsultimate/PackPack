@@ -4,11 +4,11 @@ import common.util.stage.MapColc;
 import common.util.stage.Stage;
 import common.util.stage.StageMap;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.event.group.GroupHandler;
+import mandarin.packpack.supporter.event.group.NormalGroupHandler;
+import mandarin.packpack.supporter.event.group.SequenceGroupHandler;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
 
 public class EventFactor {
     static {
@@ -61,226 +61,60 @@ public class EventFactor {
     public static final int DRINKB = 701;
     public static final int DRINKC = 702;
 
-    public static final List<Integer> CYCLONE = Arrays.asList(1015, 1039, 1066, 1122, 1172, 118, 1189, 1193, 1198, 1247);
-    public static final List<Integer> CYCLONE2 = Arrays.asList(1014, 1016, 1043, 1096, 1157, 1169, 1176, 1187, 1195, 1203);
-    public static final List<Integer> BUILDERBLITZ = Arrays.asList(1150, 1151, 1152);
-    public static final List<Integer> XPBLITZ = Arrays.asList(1028, 1059, 1124, 1155);
-    public static final List<Integer> CATFRUITFESTIVAL = Arrays.asList(1097, 1098, 1099, 1100, 1101);
-    public static final List<Integer> CRAZEDFESTIVAL = Arrays.asList(1017, 1020, 1023, 1102, 1105, 1108);
-    public static final List<Integer> CRAZEDFESTIVAL2 = Arrays.asList(1018, 1021, 1024, 1103, 1106, 1109);
-    public static final List<Integer> CRAZEDFESTIVAL3 = Arrays.asList(1019, 1022, 1025, 1104, 1107, 1110);
-    public static final List<Integer> LILFESTIVAL = Arrays.asList(1130, 1133, 1136);
-    public static final List<Integer> LILFESTIVAL2 = Arrays.asList(1131, 1134, 1137);
-    public static final List<Integer> LILFESTIVAL3 = Arrays.asList(1132, 1135, 1138);
+    public static final GroupHandler CYCLONE = new NormalGroupHandler(
+            Arrays.asList(
+                    Arrays.asList(1015, 1039, 1066, 1122, 1172, 118, 1189, 1193, 1198, 1247),
+                    Arrays.asList(1014, 1016, 1043, 1096, 1157, 1169, 1176, 1187, 1195, 1203)
+            ),
+            "Cyclone Festival!"
+    );
+
+    public static final GroupHandler BUILDERBLITZ = new NormalGroupHandler(
+            Collections.singletonList(
+                    Arrays.asList(1150, 1151, 1152)
+            ),
+            "Builders Blitz!"
+    );
+
+    public static final GroupHandler XPBLITZ = new NormalGroupHandler(
+            Collections.singletonList(
+                    Arrays.asList(1028, 1059, 1124, 1155)
+            ),
+            "XP Blitz!"
+    );
+
+    public static final GroupHandler CATFRUITFESTIVAL = new NormalGroupHandler(
+            Collections.singletonList(
+                    Arrays.asList(1097, 1098, 1099, 1100, 1101)
+            ),
+            "Catfruit Festival!"
+    );
+
+    public static final GroupHandler CRAZEDFESTIVAL = new SequenceGroupHandler(
+            Arrays.asList(
+                    Arrays.asList(1017, 1020, 1023, 1102, 1105, 1108),
+                    Arrays.asList(1018, 1021, 1024, 1103, 1106, 1109),
+                    Arrays.asList(1019, 1022, 1025, 1104, 1107, 1110)
+            ),
+            "Crazed/Manic Festival!"
+    );
+
+    public static final GroupHandler LILFESTIVAL = new SequenceGroupHandler(
+            Arrays.asList(
+                    Arrays.asList(1130, 1133, 1136),
+                    Arrays.asList(1131, 1134, 1137),
+                    Arrays.asList(1132, 1135, 1138)
+            ),
+            "Li'l Festival!"
+    );
+
+    public static final List<GroupHandler> handlers = Arrays.asList(
+            CYCLONE, BUILDERBLITZ, XPBLITZ, CATFRUITFESTIVAL, CRAZEDFESTIVAL, LILFESTIVAL
+    );
 
     public static final String GACHAURL = "https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/gacha/rare/en/R___.html";
     public static final String ANNOUNCEURL = "https://nyanko-announcement.ponosgames.com/v1/notices?platform=google&clientVersion=VVVVVV&countryCode=LL&clearedStageJapan=100&clearedStageFuture=100&clearedUniverse=100&clientTime=DDDDDDDDD&timeDifference=1";
     public static final String EVENTURL = "https://bc-seek.godfat.org/seek/LL/FFFF";
-
-    public static boolean isBuilderBlitz(StageSchedule schedule) {
-        if(schedule.sections.isEmpty())
-            return false;
-
-        if(schedule.stages.size() != BUILDERBLITZ.size())
-            return false;
-
-        for(int i = 0; i < schedule.stages.size(); i++) {
-            int id = stageToInteger(schedule.stages.get(i));
-
-            if(id == -1 || !BUILDERBLITZ.contains(id))
-                return false;
-        }
-
-        EventSection section = schedule.sections.get(0);
-
-        return section.days.isEmpty() && section.daySets.isEmpty();
-    }
-
-    public static boolean isCycloneFestival(StageSchedule schedule) {
-        if(schedule.sections.isEmpty())
-            return false;
-
-        if(schedule.stages.size() != CYCLONE.size())
-            return false;
-
-        for(int i = 0; i < schedule.stages.size(); i++) {
-            int id = stageToInteger(schedule.stages.get(i));
-
-            if(id == -1 || !CYCLONE.contains(id))
-                return false;
-        }
-
-        EventSection section = schedule.sections.get(0);
-
-        return section.daySets.isEmpty() && section.times.isEmpty();
-    }
-
-    public static boolean isSecondCycloneFestival(StageSchedule schedule) {
-        if(schedule.sections.isEmpty())
-            return false;
-
-        if(schedule.stages.size() != CYCLONE2.size())
-            return false;
-
-        for(int i = 0; i < schedule.stages.size(); i++) {
-            int id = stageToInteger(schedule.stages.get(i));
-
-            if(id == -1 || !CYCLONE2.contains(id))
-                return false;
-        }
-
-        EventSection section = schedule.sections.get(0);
-
-        return section.daySets.isEmpty() && section.times.isEmpty();
-    }
-
-    public static boolean isCycloneFestivalConnection(StageSchedule schedule, EventDateSet date) {
-        return isSecondCycloneFestival(schedule) && date.equals(schedule.date);
-    }
-
-    public static boolean isSecondCycloneFestivalConnection(StageSchedule schedule, EventDateSet date) {
-        return isCycloneFestival(schedule) && date.equals(schedule.date);
-    }
-
-    public static boolean isXPBlitz(StageSchedule schedule) {
-        if(schedule.sections.isEmpty())
-            return false;
-
-        if(schedule.stages.size() != 1)
-            return false;
-
-        int id = stageToInteger(schedule.stages.get(0));
-
-        if(id == -1 || !XPBLITZ.contains(id))
-            return false;
-
-        EventSection section = schedule.sections.get(0);
-
-        return !section.days.isEmpty() && !section.times.isEmpty();
-    }
-
-    public static boolean isXPBlitzConnection(StageSchedule schedule, EventDateSet date) {
-        return isXPBlitz(schedule) && schedule.date.equals(date);
-    }
-
-    public static boolean isCatfruitFestival(StageSchedule schedule) {
-        if(schedule.stages.isEmpty() || schedule.stages.size() != CATFRUITFESTIVAL.size())
-            return false;
-
-        if(!schedule.sections.isEmpty())
-            return false;
-
-        for(int i = 0; i < schedule.stages.size(); i++) {
-            int id = stageToInteger(schedule.stages.get(i));
-
-            if(id == -1 || !CATFRUITFESTIVAL.contains(id))
-                return false;
-        }
-
-        return true;
-    }
-
-    public static boolean isCrazedFestival(StageSchedule schedule) {
-        if(schedule.stages.isEmpty() || schedule.stages.size() != CRAZEDFESTIVAL.size())
-            return false;
-
-        if(!schedule.sections.isEmpty())
-            return false;
-
-        for(int i = 0; i < schedule.stages.size(); i++) {
-            int id = stageToInteger(schedule.stages.get(i));
-
-            if(id == -1 || !CRAZEDFESTIVAL.contains(id))
-                return false;
-        }
-
-        return true;
-    }
-
-    public static boolean isSecondCrazedFestival(StageSchedule schedule) {
-        if(schedule.stages.isEmpty() || schedule.stages.size() != CRAZEDFESTIVAL2.size())
-            return false;
-
-        if(!schedule.sections.isEmpty())
-            return false;
-
-        for(int i = 0; i < schedule.stages.size(); i++) {
-            int id = stageToInteger(schedule.stages.get(i));
-
-            if(id == -1 || !CRAZEDFESTIVAL2.contains(id))
-                return false;
-        }
-
-        return true;
-    }
-
-    public static boolean isThirdCrazedFestival(StageSchedule schedule) {
-        if(schedule.stages.isEmpty() || schedule.stages.size() != CRAZEDFESTIVAL3.size())
-            return false;
-
-        if(!schedule.sections.isEmpty())
-            return false;
-
-        for(int i = 0; i < schedule.stages.size(); i++) {
-            int id = stageToInteger(schedule.stages.get(i));
-
-            if(id == -1 || !CRAZEDFESTIVAL3.contains(id))
-                return false;
-        }
-
-        return true;
-    }
-
-    public static boolean isLilFestival(StageSchedule schedule) {
-        if(schedule.stages.isEmpty() || schedule.stages.size() != LILFESTIVAL.size())
-            return false;
-
-        if(!schedule.sections.isEmpty())
-            return false;
-
-        for(int i = 0; i < schedule.stages.size(); i++) {
-            int id = stageToInteger(schedule.stages.get(i));
-
-            if(id == -1 || !LILFESTIVAL.contains(id))
-                return false;
-        }
-
-        return true;
-    }
-
-    public static boolean isSecondLilFestival(StageSchedule schedule) {
-        if(schedule.stages.isEmpty() || schedule.stages.size() != LILFESTIVAL2.size())
-            return false;
-
-        if(!schedule.sections.isEmpty())
-            return false;
-
-        for(int i = 0; i < schedule.stages.size(); i++) {
-            int id = stageToInteger(schedule.stages.get(i));
-
-            if(id == -1 || !LILFESTIVAL2.contains(id))
-                return false;
-        }
-
-        return true;
-    }
-
-    public static boolean isThirdLilFestival(StageSchedule schedule) {
-        if(schedule.stages.isEmpty() || schedule.stages.size() != LILFESTIVAL3.size())
-            return false;
-
-        if(!schedule.sections.isEmpty())
-            return false;
-
-        for(int i = 0; i < schedule.stages.size(); i++) {
-            int id = stageToInteger(schedule.stages.get(i));
-
-            if(id == -1 || !LILFESTIVAL3.contains(id))
-                return false;
-        }
-
-        return true;
-    }
 
     public static boolean onlyHoldMissions(StageSchedule schedule) {
         if(!schedule.stages.isEmpty())

@@ -1,9 +1,17 @@
 package mandarin.packpack.supporter.event;
 
 import common.io.assets.UpdateCheck;
+import mandarin.packpack.supporter.DateComparator;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.event.group.EventGroup;
+import mandarin.packpack.supporter.event.group.GroupHandler;
+import mandarin.packpack.supporter.event.group.NormalGroupHandler;
+import mandarin.packpack.supporter.event.group.SequenceGroupHandler;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -73,17 +81,21 @@ public class EventHolder extends EventFactor {
             reader.close();
         }
 
-        if(file.exists()) {
-            boolean res = file.delete();
+        System.out.println(file.getAbsolutePath()+"\n"+f.getAbsolutePath());
 
-            if(!res)
+        if(!file.getAbsolutePath().equals(f.getAbsolutePath())) {
+            if(file.exists()) {
+                boolean res = file.delete();
+
+                if(!res)
+                    return;
+            }
+
+            boolean result = f.renameTo(file);
+
+            if(!result)
                 return;
         }
-
-        boolean result = f.renameTo(file);
-
-        if(!result)
-            return;
 
         ArrayList<StageSchedule> stages = this.stages.containsKey(locale) ? this.stages.get(locale) : new ArrayList<>();
 
@@ -174,326 +186,78 @@ public class EventHolder extends EventFactor {
         ArrayList<String> monthlys = new ArrayList<>();
         ArrayList<String> yearlys = new ArrayList<>();
 
+        for(GroupHandler group : EventFactor.handlers)
+            group.clear();
+
+        for(StageSchedule schedule : stages) {
+            for(GroupHandler group : EventFactor.handlers) {
+                group.handleEvent(schedule);
+            }
+        }
+
         for(int i = 0; i < stages.size(); i++) {
-            if(analyzed[i])
+            StageSchedule s = stages.get(i);
+
+            for(GroupHandler group : EventFactor.handlers) {
+                for(EventGroup event : group.getGroups()) {
+                    if(event.finished) {
+                        for(Schedule schedule : event.getSchedules()) {
+                            if(schedule instanceof StageSchedule && s.equals(schedule)) {
+                                analyzed[i] = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if(analyzed[i])
+                        break;
+                }
+
+                if(analyzed[i])
+                    break;
+            }
+        }
+
+        for(GroupHandler handler : EventFactor.handlers) {
+            System.out.println(handler.getGroups());
+
+            for(EventGroup event : handler.getGroups()) {
+                if(event.finished) {
+                    if(handler instanceof NormalGroupHandler) {
+                        StageSchedule start = (StageSchedule) event.schedules[0];
+
+                        appendProperly(start, start.beautifyWithCustomName(event.name), normals, dailys, weeklys, monthlys, yearlys);
+                    } else if(handler instanceof SequenceGroupHandler) {
+                        StageSchedule start = (StageSchedule) event.schedules[0];
+                        StageSchedule end = (StageSchedule) event.schedules[event.schedules.length - 1];
+
+                        appendProperly(start, manualSchedulePrint(start.date.dateStart, end.date.dateEnd, event.name), normals, dailys, weeklys, monthlys, yearlys);
+                    }
+                }
+            }
+        }
+
+        for(int i = 0; i < stages.size(); i++) {
+            if (analyzed[i])
                 continue;
 
             StageSchedule schedule = stages.get(i);
 
-            if(onlyHoldMissions(schedule)) {
+            if (onlyHoldMissions(schedule)) {
                 analyzed[i] = true;
                 continue;
             }
 
-            if(isXPBlitz(schedule)) {
-                if(i < stages.size() - 1) {
-                    int connections = 0;
-                    ArrayList<Integer> js = new ArrayList<>();
-
-                    for(int j = i+1; j < stages.size(); j++) {
-                        StageSchedule tempSchedule = stages.get(i);
-
-                        if(isXPBlitzConnection(tempSchedule, schedule.date)) {
-                            analyzed[j] = true;
-                            js.add(j);
-                            connections++;
-                        }
-                    }
-
-                    if(connections == 3) {
-
-                        appendProperly(schedule, manualSchedulePrint(schedule.date.dateStart, schedule.date.dateEnd, "XP Blitz!"), normals, dailys, weeklys, monthlys, yearlys);
-                    } else {
-                        if(connections != 0)
-                            System.out.println("??? Something is wrong!");
-
-                        for (Integer integer : js) {
-                            analyzed[integer] = false;
-                        }
-
-                        appendProperly(schedule, schedule.beautify(), normals, dailys, weeklys, monthlys, yearlys);
-                    }
-                } else {
-                    appendProperly(schedule, schedule.beautify(), normals, dailys, weeklys, monthlys, yearlys);
-                }
-            } else if(isCycloneFestival(schedule)) {
-                if(i < stages.size() - 1) {
-                    boolean done = false;
-
-                    for(int j = i + 1; j < stages.size(); j++) {
-                        StageSchedule temp = stages.get(j);
-
-                        if(isCycloneFestivalConnection(temp, schedule.date)) {
-                            analyzed[j] = true;
-                            done = true;
-                            break;
-                        }
-                    }
-
-                    if(!done) {
-                        appendProperly(schedule, schedule.beautify(), normals, dailys, weeklys, monthlys, yearlys);
-                    } else {
-                        appendProperly(schedule, manualSchedulePrint(schedule.date.dateStart, schedule.date.dateEnd, "Cyclone Festival!"), normals, dailys, weeklys, monthlys, yearlys);
-                    }
-                } else {
-                    appendProperly(schedule, schedule.beautify(), normals, dailys, weeklys, monthlys, yearlys);
-                }
-            } else if(isSecondCycloneFestival(schedule)) {
-                if(i < stages.size() - 1) {
-                    boolean done = false;
-
-                    for(int j = i + 1; j < stages.size(); j++) {
-                        StageSchedule temp = stages.get(j);
-
-                        if(isSecondCycloneFestivalConnection(temp, schedule.date)) {
-                            analyzed[j] = true;
-                            done = true;
-                            break;
-                        }
-                    }
-
-                    if(!done) {
-                        appendProperly(schedule, schedule.beautify(), normals, dailys, weeklys, monthlys, yearlys);
-                    } else {
-                        appendProperly(schedule, manualSchedulePrint(schedule.date.dateStart, schedule.date.dateEnd, "Cyclone Festival!"), normals, dailys, weeklys, monthlys, yearlys);
-                    }
-                } else {
-                    appendProperly(schedule, schedule.beautify(), normals, dailys, weeklys, monthlys, yearlys);
-                }
-            } else if (isBuilderBlitz(schedule)) {
-                appendProperly(schedule, manualSchedulePrint(schedule.date.dateStart, schedule.date.dateEnd, "Builders Blitz!"), normals, dailys, weeklys, monthlys, yearlys);
-            } else if(isCatfruitFestival(schedule)) {
-                appendProperly(schedule, manualSchedulePrint(schedule.date.dateStart, schedule.date.dateEnd, "Catfruit Festival!"), normals, dailys, weeklys, monthlys, yearlys);
-            } else if(isCrazedFestival(schedule)) {
-                if(i < stages.size() - 1) {
-                    boolean secondCrazed = false;
-                    boolean thirdCrazed = false;
-
-                    ArrayList<Integer> id = new ArrayList<>();
-
-                    EventDate start = schedule.date.dateStart;
-                    EventDate end = null;
-
-                    for(int j = i + 1; j < stages.size(); j++) {
-                        StageSchedule temp = stages.get(j);
-
-                        if(isSecondCrazedFestival(temp) && !secondCrazed) {
-                            secondCrazed = true;
-                            analyzed[j] = true;
-                            id.add(j);
-                        } else if(isThirdCrazedFestival(temp) && !thirdCrazed) {
-                            thirdCrazed = true;
-                            analyzed[j] = true;
-                            end = temp.date.dateEnd;
-                            id.add(j);
-                        }
-                    }
-
-                    if(secondCrazed && thirdCrazed) {
-                        appendProperly(schedule, manualSchedulePrint(start, end, "Crazed/Manic Festival!"), normals, dailys, weeklys, monthlys, yearlys);
-                    } else {
-                        for(int j = 0; j < id.size(); j++) {
-                            analyzed[j] = false;
-                        }
-
-                        appendProperly(schedule, schedule.beautify(), normals, dailys, weeklys, monthlys, yearlys);
-                    }
-                } else {
-                    appendProperly(schedule, schedule.beautify(), normals, dailys, weeklys, monthlys, yearlys);
-                }
-            } else if (isSecondCrazedFestival(schedule)) {
-                if(i < stages.size() - 1) {
-                    boolean firstCrazed = false;
-                    boolean thirdCrazed = false;
-
-                    ArrayList<Integer> id = new ArrayList<>();
-
-                    EventDate start = null;
-                    EventDate end = null;
-
-                    for(int j = i + 1; j < stages.size(); j++) {
-                        StageSchedule temp = stages.get(j);
-
-                        if(isCrazedFestival(temp) && !firstCrazed) {
-                            firstCrazed = true;
-                            analyzed[j] = true;
-                            start = temp.date.dateStart;
-                            id.add(j);
-                        } else if(isThirdCrazedFestival(temp) && !thirdCrazed) {
-                            thirdCrazed = true;
-                            analyzed[j] = true;
-                            end = temp.date.dateEnd;
-                            id.add(j);
-                        }
-                    }
-
-                    if(firstCrazed && thirdCrazed) {
-                        appendProperly(schedule, manualSchedulePrint(start, end, "Crazed/Manic Festival!"), normals, dailys, weeklys, monthlys, yearlys);
-                    } else {
-                        for(int j = 0; j < id.size(); j++) {
-                            analyzed[j] = false;
-                        }
-
-                        appendProperly(schedule, schedule.beautify(), normals, dailys, weeklys, monthlys, yearlys);
-                    }
-                } else {
-                    appendProperly(schedule, schedule.beautify(), normals, dailys, weeklys, monthlys, yearlys);
-                }
-            } else if (isThirdCrazedFestival(schedule)) {
-                if(i < stages.size() - 1) {
-                    boolean firstCrazed = false;
-                    boolean secondCrazed = false;
-
-                    ArrayList<Integer> id = new ArrayList<>();
-
-                    EventDate start = null;
-                    EventDate end = schedule.date.dateEnd;
-
-                    for(int j = i + 1; j < stages.size(); j++) {
-                        StageSchedule temp = stages.get(j);
-
-                        if(isCrazedFestival(temp) && !firstCrazed) {
-                            firstCrazed = true;
-                            analyzed[j] = true;
-                            start = temp.date.dateStart;
-                            id.add(j);
-                        } else if(isSecondCrazedFestival(temp) && !secondCrazed) {
-                            secondCrazed = true;
-                            analyzed[j] = true;
-                            id.add(j);
-                        }
-                    }
-
-                    if(firstCrazed && secondCrazed) {
-                        appendProperly(schedule, manualSchedulePrint(start, end, "Crazed/Manic Festival!"), normals, dailys, weeklys, monthlys, yearlys);
-                    } else {
-                        for(int j = 0; j < id.size(); j++) {
-                            analyzed[j] = false;
-                        }
-
-                        appendProperly(schedule, schedule.beautify(), normals, dailys, weeklys, monthlys, yearlys);
-                    }
-                } else {
-                    appendProperly(schedule, schedule.beautify(), normals, dailys, weeklys, monthlys, yearlys);
-                }
-            } else if(isLilFestival(schedule)) {
-            if(i < stages.size() - 1) {
-                boolean secondLil = false;
-                boolean thirdLil = false;
-
-                ArrayList<Integer> id = new ArrayList<>();
-
-                EventDate start = schedule.date.dateStart;
-                EventDate end = null;
-
-                for(int j = i + 1; j < stages.size(); j++) {
-                    StageSchedule temp = stages.get(j);
-
-                    if(isSecondLilFestival(temp) && !secondLil) {
-                        secondLil = true;
-                        analyzed[j] = true;
-                        id.add(j);
-                    } else if(isThirdLilFestival(temp) && !thirdLil) {
-                        thirdLil = true;
-                        analyzed[j] = true;
-                        end = temp.date.dateEnd;
-                        id.add(j);
-                    }
-                }
-
-                if(secondLil && thirdLil) {
-                    appendProperly(schedule, manualSchedulePrint(start, end, "Li'l Festival!"), normals, dailys, weeklys, monthlys, yearlys);
-                } else {
-                    for(int j = 0; j < id.size(); j++) {
-                        analyzed[j] = false;
-                    }
-
-                    appendProperly(schedule, schedule.beautify(), normals, dailys, weeklys, monthlys, yearlys);
-                }
-            } else {
-                appendProperly(schedule, schedule.beautify(), normals, dailys, weeklys, monthlys, yearlys);
-            }
-        } else if (isSecondLilFestival(schedule)) {
-            if(i < stages.size() - 1) {
-                boolean firstLil = false;
-                boolean thirdLil = false;
-
-                ArrayList<Integer> id = new ArrayList<>();
-
-                EventDate start = null;
-                EventDate end = null;
-
-                for(int j = i + 1; j < stages.size(); j++) {
-                    StageSchedule temp = stages.get(j);
-
-                    if(isLilFestival(temp) && !firstLil) {
-                        firstLil = true;
-                        analyzed[j] = true;
-                        start = temp.date.dateStart;
-                        id.add(j);
-                    } else if(isThirdLilFestival(temp) && !thirdLil) {
-                        thirdLil = true;
-                        analyzed[j] = true;
-                        end = temp.date.dateEnd;
-                        id.add(j);
-                    }
-                }
-
-                if(firstLil && thirdLil) {
-                    appendProperly(schedule, manualSchedulePrint(start, end, "Li'l Festival!"), normals, dailys, weeklys, monthlys, yearlys);
-                } else {
-                    for(int j = 0; j < id.size(); j++) {
-                        analyzed[j] = false;
-                    }
-
-                    appendProperly(schedule, schedule.beautify(), normals, dailys, weeklys, monthlys, yearlys);
-                }
-            } else {
-                appendProperly(schedule, schedule.beautify(), normals, dailys, weeklys, monthlys, yearlys);
-            }
-        } else if (isThirdLilFestival(schedule)) {
-            if(i < stages.size() - 1) {
-                boolean firstLil = false;
-                boolean secondLil = false;
-
-                ArrayList<Integer> id = new ArrayList<>();
-
-                EventDate start = null;
-                EventDate end = schedule.date.dateEnd;
-
-                for(int j = i + 1; j < stages.size(); j++) {
-                    StageSchedule temp = stages.get(j);
-
-                    if(isLilFestival(temp) && !firstLil) {
-                        firstLil = true;
-                        analyzed[j] = true;
-                        start = temp.date.dateStart;
-                        id.add(j);
-                    } else if(isSecondLilFestival(temp) && !secondLil) {
-                        secondLil = true;
-                        analyzed[j] = true;
-                        id.add(j);
-                    }
-                }
-
-                if(firstLil && secondLil) {
-                    appendProperly(schedule, manualSchedulePrint(start, end, "Li'l Festival!"), normals, dailys, weeklys, monthlys, yearlys);
-                } else {
-                    for(int j = 0; j < id.size(); j++) {
-                        analyzed[j] = false;
-                    }
-
-                    appendProperly(schedule, schedule.beautify(), normals, dailys, weeklys, monthlys, yearlys);
-                }
-            } else {
-                appendProperly(schedule, schedule.beautify(), normals, dailys, weeklys, monthlys, yearlys);
-            }
-        } else {
-                appendProperly(schedule, schedule.beautify(), normals, dailys, weeklys, monthlys, yearlys);
-            }
+            appendProperly(schedule, schedule.beautify(), normals, dailys, weeklys, monthlys, yearlys);
 
             analyzed[i] = true;
         }
+
+        normals.sort(new DateComparator());
+        dailys.sort(new DateComparator());
+        weeklys.sort(new DateComparator());
+        monthlys.sort(new DateComparator());
+        yearlys.sort(new DateComparator());
 
         if(!normals.isEmpty()) {
             data.append("```less\n");
@@ -639,7 +403,7 @@ public class EventHolder extends EventFactor {
     }
 
     private String getLocaleName(int locale) {
-        if (locale == JP) {
+        if (locale == EventFactor.JP) {
             return "jp";
         }
 
@@ -668,7 +432,7 @@ public class EventHolder extends EventFactor {
     }
 
     public void initialize() throws Exception {
-        String[] loc = {"jp", "global"};
+        String[] loc = {"global", "jp"};
         String[] file = {"sale.tsv", "gatya.tsv", "item.tsv"};
 
         for(int j = 0; j < loc.length; j++) {
