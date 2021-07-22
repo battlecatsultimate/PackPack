@@ -234,36 +234,39 @@ public class AliasHolder {
     public static ArrayList<String> getAlias(TYPE type, int lang, Object data) {
         ArrayList<String> aliases;
 
-        int oldConfig = CommonStatic.getConfig().lang;
-        CommonStatic.getConfig().lang = lang;
-
         switch (type) {
             case FORM:
                 if(!(data instanceof Form)) {
                     return null;
                 }
 
-                aliases = FALIAS.getCont((Form) data);
+                Map<Form, ArrayList<String>> fMap = FALIAS.getMap(getLangCode(lang));
+
+                aliases = fMap.get((Form) data);
                 break;
             case ENEMY:
                 if(!(data instanceof Enemy)) {
                     return null;
                 }
 
-                aliases = EALIAS.getCont((Enemy) data);
+                Map<Enemy, ArrayList<String>> eMap = EALIAS.getMap(getLangCode(lang));
+
+                aliases = eMap.get((Enemy) data);
+
                 break;
             case STAGE:
                 if(!(data instanceof Stage)) {
                     return null;
                 }
 
-                aliases = SALIAS.getCont((Stage) data);
+                Map<Stage, ArrayList<String>> sMap = SALIAS.getMap(getLangCode(lang));
+
+                aliases = sMap.get((Stage) data);
+
                 break;
             default:
                 return null;
         }
-
-        CommonStatic.getConfig().lang = oldConfig;
 
         return aliases;
     }
