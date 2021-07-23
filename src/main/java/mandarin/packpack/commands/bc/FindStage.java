@@ -45,7 +45,7 @@ public class FindStage extends TimedConstraintCommand {
         }
 
         int param = checkParameters(getContent(event));
-        int star = getStar(getContent(event));
+        int star = getLevel(getContent(event));
 
         boolean isFrame = (param & PARAM_SECOND) == 0;
 
@@ -254,12 +254,12 @@ public class FindStage extends TimedConstraintCommand {
         StringBuilder result = new StringBuilder();
 
         boolean second = false;
-        boolean star = false;
+        boolean level = false;
 
         for(int i = 1; i < contents.length; i++) {
-            if(contents[i].equals("-st") && !star) {
+            if(contents[i].equals("-lv") && !level) {
                 if(i < contents.length - 1 && StaticStore.isNumeric(contents[i+1])) {
-                    star = true;
+                    level = true;
                     i++;
                 } else {
                     result.append(contents[i]);
@@ -303,20 +303,20 @@ public class FindStage extends TimedConstraintCommand {
         return result;
     }
 
-    private int getStar(String command) {
-        int star = 0;
+    private int getLevel(String command) {
+        int level = 0;
 
-        if(command.contains("-st")) {
+        if(command.contains("-lv")) {
             String[] contents = command.split(" ");
 
             for(int i = 0; i < contents.length; i++) {
-                if(contents[i].equals("-st") && i < contents.length - 1 && StaticStore.isNumeric(contents[i+1])) {
-                    star = StaticStore.safeParseInt(contents[i+1]);
+                if(contents[i].equals("-lv") && i < contents.length - 1 && StaticStore.isNumeric(contents[i+1])) {
+                    level = StaticStore.safeParseInt(contents[i+1]);
                     break;
                 }
             }
         }
 
-        return star;
+        return level;
     }
 }

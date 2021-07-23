@@ -90,7 +90,7 @@ public class StageInfo extends TimedConstraintCommand {
         }
 
         boolean frame = SlashOption.getBooleanOption(options, "frame", true);
-        int star = SlashOption.getIntOption(options, "star", 0);
+        int star = SlashOption.getIntOption(options, "level", 0);
 
         final int finalLang = lang;
 
@@ -142,7 +142,7 @@ public class StageInfo extends TimedConstraintCommand {
                 createMessageWithNoPings(ch, LangID.getStringByID("stinfo_nores", lang).replace("_", generateSearchName(names)));
             } else if(stages.size() == 1) {
                 int param = checkParameters(getContent(event));
-                int star = getStar(getContent((event)));
+                int star = getLevel(getContent((event)));
                 boolean isFrame = (param & PARAM_SECOND) == 0;
 
                 CommonStatic.getConfig().lang = lang;
@@ -157,7 +157,7 @@ public class StageInfo extends TimedConstraintCommand {
                 });
             } else {
                 int param = checkParameters(getContent(event));
-                int star = getStar(getContent((event)));
+                int star = getLevel(getContent((event)));
                 boolean isFrame = (param & PARAM_SECOND) == 0;
 
                 CommonStatic.getConfig().lang = lang;
@@ -281,7 +281,7 @@ public class StageInfo extends TimedConstraintCommand {
             String[] pureMessage = message.split(" ", 2)[1].split(" ");
 
             for(String str : pureMessage) {
-                if(str.startsWith("-s") && !str.startsWith("-st") && !str.startsWith("-stm")) {
+                if(str.startsWith("-s") && !str.startsWith("-stm")) {
                     if((result & PARAM_SECOND) == 0) {
                         result |= PARAM_SECOND;
                     } else
@@ -293,21 +293,21 @@ public class StageInfo extends TimedConstraintCommand {
         return result;
     }
 
-    private int getStar(String command) {
-        int star = 0;
+    private int getLevel(String command) {
+        int level = 0;
 
-        if(command.contains("-st")) {
+        if(command.contains("-lv")) {
             String[] contents = command.split(" ");
 
             for(int i = 0; i < contents.length; i++) {
-                if(contents[i].equals("-st") && i < contents.length - 1 && StaticStore.isNumeric(contents[i+1])) {
-                    star = StaticStore.safeParseInt(contents[i+1]);
+                if(contents[i].equals("-lv") && i < contents.length - 1 && StaticStore.isNumeric(contents[i+1])) {
+                    level = StaticStore.safeParseInt(contents[i+1]);
                     break;
                 }
             }
         }
 
-        return star;
+        return level;
     }
 
     private String[] generateStageNameSeries(String command) {
@@ -378,7 +378,7 @@ public class StageInfo extends TimedConstraintCommand {
         for(int i = start+1; i < contents.length; i++) {
             if(contents[i].equals("-stm") && !stmDone)
                 break;
-            else if(contents[i].equals("-st") && i < contents.length - 1 && StaticStore.isNumeric(contents[i+1]))
+            else if(contents[i].equals("-lv") && i < contents.length - 1 && StaticStore.isNumeric(contents[i+1]))
                 i++;
             else
                 mc.append(contents[i]).append(" ");
@@ -400,7 +400,7 @@ public class StageInfo extends TimedConstraintCommand {
         for (int i = start + 1; i < contents.length; i++) {
             if (contents[i].equals("-mc") && !mcDone)
                 break;
-            else if(contents[i].equals("-st") && i < contents.length - 1 && StaticStore.isNumeric(contents[i+1]))
+            else if(contents[i].equals("-lv") && i < contents.length - 1 && StaticStore.isNumeric(contents[i+1]))
                 i++;
             else
                 stm.append(contents[i]).append(" ");
@@ -428,7 +428,7 @@ public class StageInfo extends TimedConstraintCommand {
                 } else {
                     st.append(contents[i]).append(" ");
                 }
-            } else if(contents[i].equals("-st") && i < contents.length - 1 && StaticStore.isNumeric(contents[i+1])) {
+            } else if(contents[i].equals("-lv") && i < contents.length - 1 && StaticStore.isNumeric(contents[i+1])) {
                 i++;
             } else {
                 st.append(contents[i]).append(" ");

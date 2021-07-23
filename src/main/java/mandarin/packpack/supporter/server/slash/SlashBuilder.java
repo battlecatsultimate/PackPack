@@ -58,7 +58,7 @@ public class SlashBuilder {
                         new SlashOption("stage_map", "Name of stage map", false, SlashOption.TYPE.STRING),
                         new SlashOption("map_collection", "Name of map collection", false, SlashOption.TYPE.STRING),
                         new SlashOption("frame", "Show time info with frame", false, SlashOption.TYPE.BOOLEAN),
-                        new SlashOption("star", "Set star to this stage", false, SlashOption.TYPE.INT)
+                        new SlashOption("level", "Set level (New name of star) to this stage", false, SlashOption.TYPE.INT)
                 )
         );
 
