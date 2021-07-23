@@ -186,7 +186,7 @@ public class AliasHolder {
                         if(container.has("key") && container.has("val")) {
                             Identifier<?> id = JsonDecoder.decode(container.get("key"), Identifier.class);
 
-                            if(!id.cls.isAssignableFrom(AbEnemy.class))
+                            if(!AbEnemy.class.isAssignableFrom(id.cls))
                                 continue;
 
                             AbEnemy ae = Identifier.get((Identifier<AbEnemy>) id);
