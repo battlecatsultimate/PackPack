@@ -888,7 +888,7 @@ public class EntityHandler {
                         spec.addField(LangID.getStringByID("data_energy", lang), energy, true);
                     }
 
-                    spec.addField(LangID.getStringByID("data_star", lang), DataToString.getStar(st, sta), true);
+                    spec.addField(LangID.getStringByID("data_level", lang), DataToString.getStar(st, sta), true);
                     spec.addField(LangID.getStringByID("data_base", lang), DataToString.getBaseHealth(st), true);
                     spec.addField(LangID.getStringByID("data_xp", lang), DataToString.getXP(st), true);
                     spec.addField(LangID.getStringByID("data_diff", lang), DataToString.getDifficulty(st, lang), true);
@@ -1074,7 +1074,7 @@ public class EntityHandler {
                     spec.addField(LangID.getStringByID("data_energy", lang), energy, true);
                 }
 
-                spec.addField(LangID.getStringByID("data_star", lang), DataToString.getStar(st, sta), true);
+                spec.addField(LangID.getStringByID("data_level", lang), DataToString.getStar(st, sta), true);
                 spec.addField(LangID.getStringByID("data_base", lang), DataToString.getBaseHealth(st), true);
                 spec.addField(LangID.getStringByID("data_xp", lang), DataToString.getXP(st), true);
                 spec.addField(LangID.getStringByID("data_diff", lang), DataToString.getDifficulty(st, lang), true);
