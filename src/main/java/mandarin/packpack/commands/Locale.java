@@ -1,6 +1,7 @@
 package mandarin.packpack.commands;
 
 import discord4j.core.event.domain.message.MessageEvent;
+import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -60,6 +61,22 @@ public class Locale extends ConstraintCommand {
 
                             ch.createMessage(LangID.getStringByID("locale_set", lan).replace("_", locale)).subscribe();
                         }, () -> ch.createMessage("Can't find member!").subscribe());
+                    } else if(lan == -1) {
+                        getMember(event).ifPresent(m -> StaticStore.locales.remove(m.getId().asString()));
+
+                        Guild g = getGuild(event).block();
+
+                        if(g != null) {
+                            IDHolder holder = StaticStore.idHolder.get(g.getId().asString());
+
+                            if(holder != null) {
+                                ch.createMessage(LangID.getStringByID("locale_auto", holder.serverLocale)).subscribe();
+                            } else {
+                                ch.createMessage(LangID.getStringByID("locale_auto", lang)).subscribe();
+                            }
+                        } else {
+                            ch.createMessage(LangID.getStringByID("locale_auto", lang)).subscribe();
+                        }
                     } else {
                         ch.createMessage(LangID.getStringByID("locale_incorrect", lan)).subscribe();
                     }
