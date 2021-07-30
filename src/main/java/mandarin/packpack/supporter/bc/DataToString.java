@@ -97,6 +97,7 @@ public class DataToString {
         talentText.put(54, "data_ressurge");
         talentText.put(55, "data_imusurge");
         talentText.put(56, "data_surge");
+        talentText.put(57, "data_demon");
 
         VFile pCoinLevel = VFile.get("./org/data/SkillLevel.csv");
 
@@ -455,7 +456,7 @@ public class DataToString {
             far.add(atk.getLongPoint());
         }
 
-        if(near.isEmpty() && far.isEmpty())
+        if(near.isEmpty())
             return true;
 
         for(int i : near) {

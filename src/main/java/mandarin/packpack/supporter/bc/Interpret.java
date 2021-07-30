@@ -12,7 +12,7 @@ import mandarin.packpack.supporter.lang.LangID;
 import java.util.ArrayList;
 
 public class Interpret extends Data {
-    public static final String[] TRAIT = {"data_red", "data_float", "data_black", "data_metal", "data_angel", "data_alien", "data_zombie", "data_relic", "data_white", "data_eva", "data_witch"};
+    public static final String[] TRAIT = {"data_red", "data_float", "data_black", "data_metal", "data_angel", "data_alien", "data_zombie", "data_demon", "data_relic", "data_white", "data_eva", "data_witch"};
 
     public static final String[] ABIS = {"data_strong", "data_resistant", "data_massive", "data_attackon", "data_extramon",
             "data_basedest", "data_abimetal", "data_imumovatk", "data_waveshie", "data_imusnipe", "data_imustoptt",
@@ -20,22 +20,24 @@ public class Interpret extends Data {
             "data_imuseal", "data_imuboss", "data_insanetou", "data_insanedmg"};
 
     public static final String[] PROCIND = {"WEAK", "STOP", "SLOW", "KB", "WARP", "CURSE", "IMUATK",
-            "STRONG", "LETHAL", "CRIT", "BREAK", "SATK", "MINIWAVE", "WAVE", "VOLC", "IMUWEAK",
+            "STRONG", "LETHAL", "CRIT", "BREAK", "SHIELDBREAK", "SATK", "MINIWAVE", "WAVE", "VOLC", "IMUWEAK",
             "IMUSTOP", "IMUSLOW", "IMUKB", "IMUWAVE", "IMUVOLC", "IMUWARP", "IMUCURSE", "IMUPOIATK",
-            "POIATK", "BURROW", "REVIVE", "SNIPER", "SEAL", "TIME", "SUMMON", "MOVEWAVE", "THEME",
+            "POIATK", "DEMONSHIELD", "BURROW", "REVIVE", "SNIPER", "SEAL", "TIME", "SUMMON", "MOVEWAVE", "THEME",
             "POISON", "BOSS", "ARMOR", "SPEED", "CRITI"};
 
     public static final int[] P_INDEX = {P_WEAK, P_STOP, P_SLOW, P_KB, P_WARP, P_CURSE, P_IMUATK,
-            P_STRONG, P_LETHAL, P_CRIT, P_BREAK, P_SATK, P_MINIWAVE, P_WAVE, P_VOLC, P_IMUWEAK,
+            P_STRONG, P_LETHAL, P_CRIT, P_BREAK, P_SHIELDBREAK, P_SATK, P_MINIWAVE, P_WAVE, P_VOLC, P_IMUWEAK,
             P_IMUSTOP, P_IMUSLOW, P_IMUKB, P_IMUWAVE, P_IMUVOLC, P_IMUWARP, P_IMUCURSE, P_IMUPOIATK,
-            P_POIATK, P_BURROW, P_REVIVE, P_SNIPER, P_SEAL, P_TIME, P_SUMMON, P_MOVEWAVE, P_THEME,
+            P_POIATK, P_DEMONSHIELD, P_BURROW, P_REVIVE, P_SNIPER, P_SEAL, P_TIME, P_SUMMON, P_MOVEWAVE, P_THEME,
             P_POISON, P_BOSS, P_ARMOR, P_SPEED, P_CRITI};
+
+    private static final int[] traitMask = {0, 1, 2, 3, 4, 5, 6, 12, 7, 8, 9, 10};
 
     public static String getTrait(int type, int star, int lang) {
         StringBuilder res = new StringBuilder();
 
         for(int i = 0; i < TRAIT.length; i++) {
-            if(((type >> i) & 1) > 0)
+            if(((type >> traitMask[i]) & 1) > 0)
                 if(i == 6 && star == 1)
                     res.append(LangID.getStringByID(TRAIT[i], lang))
                     .append(" (")
@@ -116,12 +118,12 @@ public class Interpret extends Data {
         return l;
     }
 
-    public static ArrayList<String> getProc(MaskEntity du, boolean useSecond, int lang) {
+    public static ArrayList<String> getProc(MaskEntity du, boolean useSecond, int lang, double multi) {
         ArrayList<String> l = new ArrayList<>();
         ArrayList<Integer> id = new ArrayList<>();
 
         MaskAtk mr = du.getRepAtk();
-        Formatter.Context c = new Formatter.Context(true, useSecond);
+        Formatter.Context c = new Formatter.Context(true, useSecond, multi);
 
         for(int i = 0; i < PROCIND.length; i++) {
             if(isValidProc(i, mr)) {

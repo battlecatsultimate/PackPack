@@ -167,7 +167,7 @@ public class EntityHandler {
                 du = f.du;
 
             ArrayList<String> abis = Interpret.getAbi(du, lang);
-            abis.addAll(Interpret.getProc(du, !isFrame, lang));
+            abis.addAll(Interpret.getProc(du, !isFrame, lang, 1.0));
 
             StringBuilder sb = new StringBuilder();
 
@@ -331,7 +331,7 @@ public class EntityHandler {
                     du = f.du;
 
                 ArrayList<String> abis = Interpret.getAbi(du, lang);
-                abis.addAll(Interpret.getProc(du, !isFrame, lang));
+                abis.addAll(Interpret.getProc(du, !isFrame, lang, 1.0));
 
                 StringBuilder sb = new StringBuilder();
 
@@ -505,7 +505,7 @@ public class EntityHandler {
                 spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(e), true);
 
                 ArrayList<String> abis = Interpret.getAbi(e.de, lang);
-                abis.addAll(Interpret.getProc(e.de, !isFrame, lang));
+                abis.addAll(Interpret.getProc(e.de, !isFrame, lang, mag[0] / 100.0));
 
                 StringBuilder sb = new StringBuilder();
 
@@ -607,7 +607,7 @@ public class EntityHandler {
             spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(e), true);
 
             ArrayList<String> abis = Interpret.getAbi(e.de, lang);
-            abis.addAll(Interpret.getProc(e.de, !isFrame, lang));
+            abis.addAll(Interpret.getProc(e.de, !isFrame, lang, mag[0] / 100.0));
 
             StringBuilder sb = new StringBuilder();
 
