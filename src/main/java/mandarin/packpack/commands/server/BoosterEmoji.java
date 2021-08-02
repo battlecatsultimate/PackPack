@@ -234,6 +234,6 @@ public class BoosterEmoji extends ConstraintCommand {
         if(content[2].isBlank())
             return null;
 
-        return content[2].strip();
+        return content[2].strip().replace(" ", "");
     }
 }
