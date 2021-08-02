@@ -206,6 +206,32 @@ public class Help extends Command {
             case "sloc":
                 ch.createEmbed(e -> addFields(e, "serverlocale", false, false, false)).subscribe();
                 break;
+            case "boosterrole":
+            case "boosterr":
+            case "brole":
+            case "br":
+                ch.createEmbed(e -> addFields(e, "boosterrole", true, true, true)).subscribe();
+                break;
+            case "boosterroleremove":
+            case "brremove":
+            case "boosterrolerem":
+            case "brrem":
+            case "brr":
+                ch.createEmbed(e -> addFields(e, "boosterroleremove", true, false, false)).subscribe();
+                break;
+            case "boosteremoji":
+            case "boostere":
+            case "bemoji":
+            case "be":
+                ch.createEmbed(e -> addFields(e, "boosteremoji", false, true, true)).subscribe();
+                break;
+            case "boosteremojiremove":
+            case "beremove":
+            case"boosteremojirem":
+            case "berem":
+            case "ber":
+                ch.createEmbed(e -> addFields(e, "boosteremojiremove", true, false, false)).subscribe();
+                break;
             default:
                 createMessageWithNoPings(ch, LangID.getStringByID("help_nocomm", lang).replace("_", command));
         }
