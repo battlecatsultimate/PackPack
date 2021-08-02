@@ -14,12 +14,14 @@ import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.Attachment;
 import discord4j.core.object.entity.Guild;
+import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Role;
 import discord4j.rest.util.Color;
 import mandarin.packpack.supporter.event.EventHolder;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.data.AliasHolder;
+import mandarin.packpack.supporter.server.data.BoosterHolder;
 import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.data.ImgurDataHolder;
@@ -72,6 +74,8 @@ public class StaticStore {
 
     public static Map<String, SpamPrevent> spamData = new HashMap<>();
 
+    public static Map<String, BoosterHolder> boosterData = new HashMap<>();
+
     public static EventHolder event = new EventHolder();
 
     public static final MultiLangCont<Integer, String> MEDNAME = new MultiLangCont<>();
@@ -97,17 +101,6 @@ public class StaticStore {
     public static Color[] rainbow = {Color.of(217, 65, 68), Color.of(217, 128, 65), Color.of(224, 213, 85)
     , Color.of(118, 224, 85), Color.of(85, 169, 224), Color.of(185, 85, 224)};
 
-    public static Color[] coolHot = {
-            Color.of(52, 147, 235),
-            Color.of(38, 189, 178),
-            Color.of(51, 196, 106),
-            Color.of(186, 219, 53),
-            Color.of(245, 217, 42),
-            Color.of(240, 140, 53),
-            Color.of(240, 112, 60),
-            Color.of(222, 51, 60)
-    };
-
     public static Color[] grade = {
         Color.of(204,124,84),
         Color.of(206,209,210),
@@ -122,6 +115,7 @@ public class StaticStore {
     public static final BigInteger min = new BigInteger(Integer.toString(Integer.MIN_VALUE));
 
     public static final String MANDARIN_SMELL = "460409259021172781";
+    public static final String PACKPACK = "779311078412255242";
 
     public static String downPack = "./pack/download";
     public static String tempPack = "./pack/download";
@@ -256,6 +250,26 @@ public class StaticStore {
         return arr;
     }
 
+    public static JsonArray mapToJsonBoosterHolder(Map<String, BoosterHolder> map) {
+        JsonArray arr = new JsonArray();
+
+        for(String key : map.keySet()) {
+            BoosterHolder holder = map.get(key);
+
+            if(holder == null)
+                continue;
+
+            JsonObject set = new JsonObject();
+
+            set.addProperty("key", key);
+            set.add("val", holder.jsonfy());
+
+            arr.add(set);
+        }
+
+        return arr;
+    }
+
     public static JsonArray listToJsonString(ArrayList<String> list) {
         JsonArray arr = new JsonArray();
 
@@ -313,6 +327,23 @@ public class StaticStore {
         return map;
     }
 
+    public static Map<String, BoosterHolder> jsonToMapBoosterHolder(JsonArray arr) {
+        Map<String, BoosterHolder> map = new HashMap<>();
+
+        for(int i = 0; i < arr.size(); i++) {
+            JsonObject set = arr.get(i).getAsJsonObject();
+
+            if(set.has("key") && set.has("val")) {
+                String key = set.get("key").getAsString();
+                BoosterHolder val = BoosterHolder.parseJson(set.get("val").getAsJsonArray());
+
+                map.put(key, val);
+            }
+        }
+
+        return map;
+    }
+
     public static ArrayList<String> jsonToListString(JsonArray arr) {
         ArrayList<String> result = new ArrayList<>();
 
@@ -357,6 +388,7 @@ public class StaticStore {
         obj.add("alias", AliasHolder.jsonfy());
         obj.add("contributor", listToJsonString(contributors));
         obj.add("spam", SpamPrevent.jsonfyMap());
+        obj.add("booster", mapToJsonBoosterHolder(boosterData));
 
         try {
             File folder = new File("./data/");
@@ -452,6 +484,10 @@ public class StaticStore {
 
             if(obj.has("spam")) {
                 spamData = SpamPrevent.parseJsonMap(obj.getAsJsonArray("spam"));
+            }
+
+            if(obj.has("booster")) {
+                boosterData = jsonToMapBoosterHolder(obj.getAsJsonArray("booster"));
             }
         }
     }
@@ -645,5 +681,9 @@ public class StaticStore {
 
     public static boolean holderContainsKey(String id) {
         return holders.containsKey(id);
+    }
+
+    public static Member getPackPack(Guild g) {
+        return g.getMemberById(Snowflake.of(PACKPACK)).block();
     }
 }

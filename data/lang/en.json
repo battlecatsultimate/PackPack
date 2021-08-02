@@ -550,5 +550,19 @@
   "alias_contain" : "_ already has that alias",
   "alias_nosuch" : "_ doesn't have such alias",
   "alias_removed" : "Removed _AAA_ from _DDD_!",
-  "stat_info" : "I'm in _SSS_ servers currently\nCommands are executed _CCC_ times so far\n_MMM_ members used one of my commands!"
+  "stat_info" : "I'm in _SSS_ servers currently\nCommands are executed _CCC_ times so far\n_MMM_ members used one of my commands!",
+  "boorole_norole" : "No booster role is set in this server! Please specify booster role via `p!idset` command",
+  "boorole_invalidid" : "Member's ID isn't specified!",
+  "boorole_norolename" : "I can't find any role name. You have to specify role name by wrapping it with \" quotation marks, and name must not be white spaces!",
+  "boorole_already" : "This member already has assigned booster role. You have to remove role by calling `p!boosterroleremove` command first!",
+  "boorole_success" : "Added <@&_RRR_> role to <@_MMM_> as booster role! If name color didn't get changed, please move one of PackPack's role higher than before",
+  "boorole_invmem" : "There isn't such member in this server",
+  "boorole_invhex" : "Color hex code's format is invalid! (Example : `71f0f5` / `#71f0f5`)",
+  "boorole_setcolor" : "Please specify color by using `-h` or `-r & -g & -b` argument!",
+  "boorole_fullrgb" : "Please specify full rgb color to make things clarified!",
+  "boorole_noboost" : "This member doesn't have server booster role (<@&_RRR_>)!",
+  "boorolerem_nomem" : "Member's ID isn't specified!",
+  "boorolerem_norole" : "This member doesn't have any assigned booster role",
+  "boorolerem_success" : "Successfully removed booster role from <@_>!",
+  "boorolerem_nodata" : "This member doesn't have any assigned booster data"
 }

@@ -52,6 +52,7 @@ public class IDSet extends ConstraintCommand {
                     "Muted : " + (holder.MUTED == null ? "None" : getRoleIDWithName(holder.MUTED, g)) + "\n" +
                     "BCU-PC User : " + (holder.BCU_PC_USER == null ? "None" : getRoleIDWithName(holder.BCU_PC_USER, g)) + "\n" +
                     "BCU-Android User : " + (holder.BCU_ANDROID == null ? "None" : getRoleIDWithName(holder.BCU_ANDROID, g)) + "\n" +
+                    "Booster User : " + (holder.BOOSTER == null ? "None" : getRoleIDWithName(holder.BOOSTER, g)) + "\n" +
                     "Get-Access : " + (holder.GET_ACCESS == null ? "None" : getChannelIDWithName(holder.GET_ACCESS, g)) + "\n" +
                     "Announcement : " + (holder.ANNOUNCE == null ? "None" : getChannelIDWithName(holder.ANNOUNCE, g)) + "\n" +
                     "Publish : "+ holder.publish;
@@ -69,6 +70,7 @@ public class IDSet extends ConstraintCommand {
             boolean get = false;
             boolean ann = false;
             boolean pub = false;
+            boolean boo = false;
 
             for(int i = 0; i < msg.length; i++) {
                 switch (msg[i]) {
@@ -405,6 +407,49 @@ public class IDSet extends ConstraintCommand {
                             result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
                             result.append(LangID.getStringByID("idset_pubignore", lang)).append("\n");
                         }
+                        break;
+                    case "-b":
+                    case "-booster":
+                        if(!boo && i < msg.length - 1) {
+                            String id = msg[i+1];
+
+                            if(isValidID(g, id)) {
+                                String oldID = holder.BOOSTER;
+
+                                holder.BOOSTER = id;
+
+                                if(holder.channel.containsKey(oldID)) {
+                                    ArrayList<String> arr = holder.channel.get(oldID);
+
+                                    holder.channel.put(id, arr);
+                                }
+
+                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
+                                result.append(LangID.getStringByID("idset_idchange", lang).replace("_", "Booster User").replace("=", getRoleIDWithName(id, g))).append("\n");
+
+                                boo = true;
+                            } else if(id.toLowerCase(Locale.ENGLISH).equals("none")) {
+                                holder.channel.remove(holder.BOOSTER);
+
+                                holder.BOOSTER = null;
+
+                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
+                                result.append(LangID.getStringByID("idset_idchange", lang).replace("_", "Booster User").replace("=", LangID.getStringByID("idset_none", lang))).append("\n");
+
+                                boo = true;
+                            } else if(StaticStore.isNumeric(id)) {
+                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
+                                result.append(LangID.getStringByID("idset_invalid", lang).replace("_", id)).append("\n");
+                            } else {
+                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
+                                result.append(LangID.getStringByID("idset_numeric", lang).replace("_", id)).append("\n");
+                            }
+
+                            i++;
+                        } else if(i <msg.length - 1) {
+                            result.append(LangID.getStringByID("idset_ignore", lang).replace("_", "Booster User")).append("\n");
+                        }
+                        break;
                 }
             }
 

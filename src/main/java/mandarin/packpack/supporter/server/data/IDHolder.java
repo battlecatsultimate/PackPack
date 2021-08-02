@@ -60,6 +60,10 @@ public class IDHolder {
             id.ANNOUNCE = id.setOrNull(obj.get("ann").getAsString());
         }
 
+        if(obj.has("bo")) {
+            id.BOOSTER = id.setOrNull(obj.get("bo").getAsString());
+        }
+
         if(obj.has("channel")) {
             id.channel = id.toMap(obj.getAsJsonObject("channel"));
         }
@@ -77,13 +81,14 @@ public class IDHolder {
     public String BCU_PC_USER;
     public String BCU_ANDROID;
     public String MUTED;
+    public String BOOSTER;
 
     public String GET_ACCESS;
     public String ANNOUNCE;
 
     public Map<String, ArrayList<String>> channel = new HashMap<>();
 
-    public IDHolder(String m, String me, String pre, String pc, String and, String acc, String mu) {
+    public IDHolder(String m, String me, String pre, String pc, String and, String acc, String mu, String bo) {
         this.MOD = m;
         this.MEMBER = me;
         this.PRE_MEMBER = pre;
@@ -91,6 +96,7 @@ public class IDHolder {
         this.BCU_ANDROID = and;
         this.MUTED = mu;
         this.GET_ACCESS = acc;
+        this.BOOSTER = bo;
     }
 
     public IDHolder() {
@@ -111,6 +117,7 @@ public class IDHolder {
         obj.addProperty("mut", getOrNull(MUTED));
         obj.addProperty("acc", getOrNull(GET_ACCESS));
         obj.addProperty("ann", getOrNull(ANNOUNCE));
+        obj.addProperty("bo", getOrNull(BOOSTER));
         obj.add("channel", jsonfyMap());
 
         return obj;
@@ -134,7 +141,7 @@ public class IDHolder {
     }
 
     private boolean isSetAsRole(String id) {
-        return id.equals(MOD) || id.equals(MEMBER) || id.equals(PRE_MEMBER) || id.equals(BCU_PC_USER) || id.equals(BCU_ANDROID) || id.equals(MUTED);
+        return id.equals(MOD) || id.equals(MEMBER) || id.equals(PRE_MEMBER) || id.equals(BCU_PC_USER) || id.equals(BCU_ANDROID) || id.equals(MUTED) || id.equals(BOOSTER);
     }
 
     private String getOrNull(String id) {

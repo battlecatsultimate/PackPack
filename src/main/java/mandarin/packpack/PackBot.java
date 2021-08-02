@@ -1,6 +1,7 @@
 package mandarin.packpack;
 
 import common.CommonStatic;
+import discord4j.common.util.Snowflake;
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
@@ -8,11 +9,13 @@ import discord4j.core.event.domain.channel.NewsChannelDeleteEvent;
 import discord4j.core.event.domain.channel.TextChannelDeleteEvent;
 import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.event.domain.guild.GuildDeleteEvent;
+import discord4j.core.event.domain.guild.MemberUpdateEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.event.domain.role.RoleDeleteEvent;
 import discord4j.core.object.entity.Guild;
+import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.Role;
 import discord4j.core.object.entity.channel.MessageChannel;
@@ -33,6 +36,8 @@ import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.event.EventFactor;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.SpamPrevent;
+import mandarin.packpack.supporter.server.data.BoosterData;
+import mandarin.packpack.supporter.server.data.BoosterHolder;
 import mandarin.packpack.supporter.server.slash.SlashBuilder;
 import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.data.IDHolder;
@@ -338,6 +343,59 @@ public class PackBot {
                 }
             });
         });
+
+        gate.on(MemberUpdateEvent.class)
+                .filter(event -> {
+                    AtomicReference<Boolean> isBot = new AtomicReference<>(false);
+
+                    Member m = event.getMember().block();
+
+                    if(m != null) {
+                        isBot.set(m.isBot());
+                    }
+
+                    return !isBot.get();
+                }).subscribe(event -> {
+                    Guild g = event.getGuild().block();
+
+                    if(g == null)
+                        return;
+
+                    if(!StaticStore.idHolder.containsKey(g.getId().asString()))
+                        return;
+
+                    IDHolder holder = StaticStore.idHolder.get(g.getId().asString());
+
+                    if(holder.BOOSTER == null)
+                        return;
+
+                    if(!StaticStore.boosterData.containsKey(g.getId().asString()))
+                        return;
+
+                    BoosterHolder booster = StaticStore.boosterData.get(g.getId().asString());
+
+                    event.getMember().subscribe(m -> {
+                        if(!booster.serverBooster.containsKey(m.getId().asString()))
+                            return;
+
+                        BoosterData data = booster.serverBooster.get(m.getId().asString());
+
+                        if(!m.getRoleIds().contains(Snowflake.of(holder.BOOSTER))) {
+                            String role = data.getRole();
+                            String emoji = data.getEmoji();
+
+                            if(role != null) {
+                                g.getRoleById(Snowflake.of(role)).subscribe(r -> r.delete().subscribe());
+                            }
+
+                            if(emoji != null) {
+                                g.getGuildEmojiById(Snowflake.of(emoji)).subscribe(e -> e.delete().subscribe());
+                            }
+
+                            booster.serverBooster.remove(m.getId().asString());
+                        }
+                    });
+                });
 
         gate.on(MessageCreateEvent.class)
                 .filter(event -> {
@@ -648,6 +706,17 @@ public class PackBot {
                                 case "publish":
                                     new Publish(ConstraintCommand.ROLE.MANDARIN, lang, idh, gate).execute(event);
                                     break;
+                                case "boosterrole":
+                                case "br":
+                                    new BoosterRole(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+                                    break;
+                                case "boosterroleremove":
+                                case "brremove":
+                                case "boosterrolerem":
+                                case "brrem":
+                                case "brr":
+                                    new BoosterRoleRemove(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+                                    break;
                             }
                         }
                     });
@@ -678,24 +747,6 @@ public class PackBot {
                 StaticStore.event.initialize();
             } catch (Exception e) {
                 e.printStackTrace();
-            }
-
-            if(!StaticStore.idHolder.containsKey("490262537527623692")) {
-                StaticStore.idHolder.put("490262537527623692", new IDHolder(
-                        "490935132564357131",
-                        "632835571655507968", "490940081738350592",
-                        "490940151501946880", "787391428916543488",
-                        "632836623931015185", "563745009912774687"
-                ));
-            }
-
-            if(!StaticStore.idHolder.containsKey("679858366389944409")) {
-                StaticStore.idHolder.put("679858366389944409", new IDHolder(
-                        "679871555794108416",
-                        "679869691656667157", "743808872376041553",
-                        "679870744561188919", "800632019418742824",
-                        null, "689333420794707984"
-                ));
             }
 
             if(!StaticStore.contributors.contains(StaticStore.MANDARIN_SMELL)) {
