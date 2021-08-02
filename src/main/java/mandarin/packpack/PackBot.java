@@ -710,27 +710,27 @@ public class PackBot {
                                 case "boosterr":
                                 case "brole":
                                 case "br":
-                                    new BoosterRole(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+                                    new BoosterRole(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
                                     break;
                                 case "boosterroleremove":
                                 case "brremove":
                                 case "boosterrolerem":
                                 case "brrem":
                                 case "brr":
-                                    new BoosterRoleRemove(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+                                    new BoosterRoleRemove(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
                                     break;
                                 case "boosteremoji":
                                 case "boostere":
                                 case "bemoji":
                                 case "be":
-                                    new BoosterEmoji(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+                                    new BoosterEmoji(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
                                     break;
                                 case "boosteremojiremove":
                                 case "beremove":
                                 case"boosteremojirem":
                                 case "berem":
                                 case "ber":
-                                    new BoosterEmojiRemove(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+                                    new BoosterEmojiRemove(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
                                     break;
                             }
                         }
