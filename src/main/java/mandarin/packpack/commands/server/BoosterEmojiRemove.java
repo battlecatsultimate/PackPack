@@ -11,8 +11,8 @@ import mandarin.packpack.supporter.server.data.BoosterData;
 import mandarin.packpack.supporter.server.data.BoosterHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 
-public class BoosterRoleRemove extends ConstraintCommand {
-    public BoosterRoleRemove(ROLE role, int lang, IDHolder id) {
+public class BoosterEmojiRemove extends ConstraintCommand {
+    public BoosterEmojiRemove(ROLE role, int lang, IDHolder id) {
         super(role, lang, id);
     }
 
@@ -38,37 +38,36 @@ public class BoosterRoleRemove extends ConstraintCommand {
                 if(holder.serverBooster.containsKey(m.getId().asString())) {
                     BoosterData data = holder.serverBooster.get(m.getId().asString());
 
-                    if(data.getRole() == null) {
-                        createMessageWithNoPings(ch, LangID.getStringByID("boorolerem_norole", lang));
+                    if(data.getEmoji() == null) {
+                        createMessageWithNoPings(ch, LangID.getStringByID("booemorem_noemo", lang));
                     } else {
-                        String role = data.getRole();
+                        String emoji = data.getEmoji();
 
-                        boolean leave = leaveRole(getContent(event));
+                        boolean leave = leaveEmoji(getContent(event));
 
-                        if(leave) {
-                            m.removeRole(Snowflake.of(role)).subscribe();
-                        } else {
-                            g.getRoleById(Snowflake.of(role)).subscribe(r -> r.delete().subscribe());
+                        if(!leave) {
+                            g.getGuildEmojiById(Snowflake.of(emoji)).subscribe(r -> r.delete().subscribe());
                         }
 
                         data.removeRole();
 
-                        if(data.getEmoji() == null) {
+                        if(data.getRole() == null) {
                             holder.serverBooster.remove(m.getId().asString());
                         }
 
-                        createMessageWithNoPings(ch, LangID.getStringByID("boorolerem_success", lang).replace("_", m.getId().asString()));
+                        createMessageWithNoPings(ch, LangID.getStringByID("booemorem_success", lang).replace("_", m.getId().asString()));
                     }
                 } else {
-                    createMessageWithNoPings(ch, LangID.getStringByID("boorolerem_norole", lang));
+                    createMessageWithNoPings(ch, LangID.getStringByID("booemorem_noemo", lang));
                 }
             } else {
-                createMessageWithNoPings(ch, LangID.getStringByID("boorolerem_nodata", lang));
+                createMessageWithNoPings(ch, LangID.getStringByID("booemorem_noemo", lang));
             }
         });
     }
 
-    private boolean leaveRole(String message) {
+
+    private boolean leaveEmoji(String message) {
         String[] content = message.split(" ");
 
         for(String c : content) {

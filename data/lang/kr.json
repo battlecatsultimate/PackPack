@@ -549,7 +549,7 @@
   "boorole_norole" : "이 서버에는 부스터 역할이 정해져 있지 않습니다! `p!idset` 명령어로 부스터 역할을 정해주세요",
   "boorole_invalidid" : "멤버 ID를 정해주세요!",
   "boorole_norolename" : "역할 이름을 찾을 수 없습니다. 역할 이름은 공백이여서는 안되며, 역할 이름 양 끝에 \" 따옴표로 묶어줘야 합니다!",
-  "boorole_already" : "해당 멤버는 이미 지정된 부스터 전용 역할이 있습니다. `p!boosterroleremove` 명령어로 지정된 역할을 먼저 제거해 줘야 합니다!",
+  "boorole_already" : "해당 멤버는 이미 지정된 부스터 전용 역할이 있습니다. `p!boosterroleremove` 명령어로 지정되어 있는 역할을 먼저 제거해 줘야 합니다!",
   "boorole_success" : "<@&_RRR_> 역할을 <@_MMM_> 멤버에게 부스터 전용 역할로 추가했습니다! 만약 멤버 이름의 색상이 바뀌지 않았다면 봇 PackPack 의 역할 중 하나를 더 높은 위치에 둔 뒤 다시 시도해 주세요",
   "boorole_invmem" : "해당 멤버는 이 서버에 존재하지 않는 것 같습니다",
   "boorole_invhex" : "색상 헥스 코드가 올바르지 않습니다! (예시 : `71f0f5` / `#71f0f5`)",
@@ -559,5 +559,17 @@
   "boorolerem_nomem" : "멤버 ID를 정해주세요!",
   "boorolerem_norole" : "이 멤버한테 지정된 부스터 전용 역할이 없습니다",
   "boorolerem_success" : "<@_> 멤버로부터 부스터 전용 역할을 제거했습니다!",
-  "boorolerem_nodata" : "이 멤버한테는 설정된 부스터 전용 데이터가 없습니다"
+  "boorolerem_nodata" : "이 멤버한테는 설정된 부스터 전용 데이터가 없습니다",
+  "booemo_noname" : "이모지 이름을 정해주세요!",
+  "booemo_nopng" : "해당 명령어를 사용할 때 PNG 이미지도 같이 업로드 해주세요!",
+  "booemo_already" : "해당 멤버는 이미 지정된 부스터 전용 이모지가 있습니다. `p!boosteremojiremove` 명령어로 지정되어 있는 이모지를 먼저 제거해 줘야 합니다!",
+  "booemo_bigpng" : "이미지의 크기가 256KB 큰거 같습니다!",
+  "booemo_down" : "이미지 다운로드 중 : -",
+  "booemo_invpng" : "이미지가 올바른 PNG 형식을 갖고 있지 않습니다!",
+  "booemo_faildown" : "이미지 다운로드에 실패했습니다...",
+  "booemo_noimg" : "이미지 데이터 생성에 실패했습니다...",
+  "booemo_success" : "`:_EEE_:` (<:_EEE_:_III_>) 이모지를 <@_MMM_> 멤버에게 부스터 전용 이모지로 추가했습니다!",
+  "booemo_fail" : "이모지 추가에 실패했습니다... 혹시 이모지를 추가할 슬롯이 남아있나요?",
+  "booemorem_noemo" : "이 멤버한테 지정된 부스터 전용 이모지가 없습니다",
+  "booemorem_success" : "<@_> 멤버로부터 부스터 전용 이모지를 제거했습니다!"
 }

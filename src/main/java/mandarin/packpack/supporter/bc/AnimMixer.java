@@ -14,6 +14,29 @@ import java.io.FileReader;
 import java.nio.charset.StandardCharsets;
 
 public class AnimMixer implements Source.AnimLoader {
+    public static boolean validPng(File image) throws Exception {
+        if(!image.exists() || image.isDirectory())
+            return false;
+
+        FileInputStream fis = new FileInputStream(image);
+
+        int pngHeader = fis.read();
+
+        if(pngHeader != 137) {
+            return false;
+        }
+
+        int p = fis.read();
+        int n = fis.read();
+        int g = fis.read();
+
+        String png = Character.toString(p) + Character.toString(n) + Character.toString(g);
+
+        fis.close();
+
+        return png.equals("PNG");
+    }
+
     public BufferedImage png;
     public ImgCut imgCut;
     public MaModel model;
@@ -53,29 +76,6 @@ public class AnimMixer implements Source.AnimLoader {
         }
 
         return false;
-    }
-
-    public boolean validPng(File image) throws Exception {
-        if(!image.exists() || image.isDirectory())
-            return false;
-
-        FileInputStream fis = new FileInputStream(image);
-
-        int pngHeader = fis.read();
-
-        if(pngHeader != 137) {
-            return false;
-        }
-
-        int p = fis.read();
-        int n = fis.read();
-        int g = fis.read();
-
-        String png = Character.toString(p) + Character.toString(n) + Character.toString(g);
-
-        fis.close();
-
-        return png.equals("PNG");
     }
 
     public boolean validImgCut(File imgcut) throws Exception {

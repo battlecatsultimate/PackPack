@@ -707,6 +707,8 @@ public class PackBot {
                                     new Publish(ConstraintCommand.ROLE.MANDARIN, lang, idh, gate).execute(event);
                                     break;
                                 case "boosterrole":
+                                case "boosterr":
+                                case "brole":
                                 case "br":
                                     new BoosterRole(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
                                     break;
@@ -716,6 +718,19 @@ public class PackBot {
                                 case "brrem":
                                 case "brr":
                                     new BoosterRoleRemove(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+                                    break;
+                                case "boosteremoji":
+                                case "boostere":
+                                case "bemoji":
+                                case "be":
+                                    new BoosterEmoji(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+                                    break;
+                                case "boosteremojiremove":
+                                case "beremove":
+                                case"boosteremojirem":
+                                case "berem":
+                                case "ber":
+                                    new BoosterEmojiRemove(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
                                     break;
                             }
                         }

@@ -686,4 +686,19 @@ public class StaticStore {
     public static Member getPackPack(Guild g) {
         return g.getMemberById(Snowflake.of(PACKPACK)).block();
     }
+
+    public static String extractFileName(String rawName) {
+        String[] names = rawName.split("\\.");
+
+        StringBuilder builder = new StringBuilder();
+
+        for(int i = 0; i < names.length - 1; i++) {
+            builder.append(names[i]);
+
+            if(i < names.length - 2)
+                builder.append(".");
+        }
+
+        return builder.toString();
+    }
 }

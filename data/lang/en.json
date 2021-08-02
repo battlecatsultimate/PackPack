@@ -555,7 +555,7 @@
   "boorole_invalidid" : "Member's ID isn't specified!",
   "boorole_norolename" : "I can't find any role name. You have to specify role name by wrapping it with \" quotation marks, and name must not be white spaces!",
   "boorole_already" : "This member already has assigned booster role. You have to remove role by calling `p!boosterroleremove` command first!",
-  "boorole_success" : "Added <@&_RRR_> role to <@_MMM_> as booster role! If name color didn't get changed, please move one of PackPack's role higher than before",
+  "boorole_success" : "Added <@&_RRR_> role to <@_MMM_> as booster role! If name color didn't get changed, please move one of PackPack's role priority higher than before",
   "boorole_invmem" : "There isn't such member in this server",
   "boorole_invhex" : "Color hex code's format is invalid! (Example : `71f0f5` / `#71f0f5`)",
   "boorole_setcolor" : "Please specify color by using `-h` or `-r & -g & -b` argument!",
@@ -564,5 +564,18 @@
   "boorolerem_nomem" : "Member's ID isn't specified!",
   "boorolerem_norole" : "This member doesn't have any assigned booster role",
   "boorolerem_success" : "Successfully removed booster role from <@_>!",
-  "boorolerem_nodata" : "This member doesn't have any assigned booster data"
+  "boorolerem_nodata" : "This member doesn't have any assigned booster data",
+  "booemo_noname" : "Please specify emoji name!",
+  "booemo_nopng" : "Please upload png file when using this command!",
+  "booemo_already" : "This member already has assigned booster emoji. You have to remove emoji by calling `p!boosteremojiremove` command first!",
+  "booemo_bigpng" : "Image's size seems to be larger than 256KB!",
+  "booemo_down" : "Downloading image to verify : -",
+  "booemo_invpng" : "Image seems to be invalid png file!",
+  "booemo_faildown" : "Failed to download image file...",
+  "booemo_noimg" : "Couldn't create image data...",
+  "booemo_success" : "Added `:_EEE_:` (<:_EEE_:_III_>) emoji to <@_MMM_>!",
+  "booemo_gifsuccess" : "Added `:_EEE_:` (<a:_EEE_:_III_>) emoji to <@_MMM_>!",
+  "booemo_fail" : "Failed to add emoji... Did you check available emoji slot left?",
+  "booemorem_noemo" : "This member doesn't have any assigned booster emoji",
+  "booemorem_success" : "Successfully removed booster emoji from <@_>!"
 }
