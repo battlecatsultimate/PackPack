@@ -9,6 +9,7 @@ import common.util.stage.Music;
 import common.util.stage.Stage;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.message.ReactionAddEvent;
+import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.reaction.ReactionEmoji;
@@ -84,11 +85,12 @@ public class StageReactionSlashHolder extends Holder<ReactionAddEvent> {
         if(msg == null || msg.getId().asLong() != embedID)
             return RESULT_STILL;
 
-        AtomicReference<Boolean> correctMember = new AtomicReference<>(false);
+        if(event.getMember().isEmpty())
+            return RESULT_STILL;
 
-        event.getMember().ifPresent(m -> correctMember.set(m.getId().asString().equals(memberID)));
+        Member mem = event.getMember().get();
 
-        if(!correctMember.get())
+        if(!mem.getId().asString().equals(memberID))
             return RESULT_STILL;
 
         Optional<ReactionEmoji.Custom> uni = event.getEmoji().asCustomEmoji();
