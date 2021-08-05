@@ -3,7 +3,7 @@ package mandarin.packpack.commands.bc;
 import common.CommonStatic;
 import common.util.Data;
 import common.util.unit.Form;
-import discord4j.core.event.domain.InteractionCreateEvent;
+import discord4j.core.event.domain.interaction.InteractionCreateEvent;
 import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;

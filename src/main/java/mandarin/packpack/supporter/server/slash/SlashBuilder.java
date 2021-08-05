@@ -2,8 +2,9 @@ package mandarin.packpack.supporter.server.slash;
 
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.ReactiveEventAdapter;
-import discord4j.core.event.domain.InteractionCreateEvent;
+import discord4j.core.event.domain.interaction.InteractionCreateEvent;
 import discord4j.discordjson.json.*;
+import discord4j.discordjson.possible.Possible;
 import discord4j.rest.RestClient;
 import discord4j.rest.util.ApplicationCommandOptionType;
 import mandarin.packpack.commands.bc.EnemyStat;
@@ -88,7 +89,12 @@ public class SlashBuilder {
                     }
                 }
 
-                String command = event.getCommandName();
+                Possible<ApplicationCommandInteractionData> interactionData = event.getInteraction().getData().data();
+
+                if(interactionData.isAbsent())
+                    return Mono.empty();
+
+                String command = interactionData.get().name().get();
 
                 switch (command) {
                     case "fs":
@@ -96,7 +102,7 @@ public class SlashBuilder {
 
                         if(request != null) {
                             return event.acknowledge()
-                                    .then(event.getInteractionResponse().createFollowupMessage(request.build(), true))
+                                    .then(event.getInteractionResponse().createFollowupMessage(request.build()))
                                     .flatMap(m -> Mono.create(v -> request.doAdditionalJob(client, m)))
                                     .then(Mono.create(m -> request.finishJob(true)))
                                     .doOnError(e -> {
@@ -110,7 +116,7 @@ public class SlashBuilder {
                         request = EnemyStat.getInteractionWebhook(event.getInteraction().getData());
 
                         if(request != null) {
-                            return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage(request.build(), true))
+                            return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage(request.build()))
                                     .then(Mono.create(m -> request.finishJob(true)))
                                     .doOnError(e -> {
                                         e.printStackTrace();
@@ -123,7 +129,7 @@ public class SlashBuilder {
                         request = StageInfo.getInteractionWebhook(event);
 
                         if(request != null) {
-                            return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage(request.build(), true))
+                            return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage(request.build()))
                                     .flatMap(m -> Mono.create(v -> request.doAdditionalJob(client, m)))
                                     .then(Mono.create(m -> request.finishJob(true)))
                                     .doOnError(e -> {

@@ -2,7 +2,7 @@ package mandarin.packpack.supporter.server;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import discord4j.core.event.domain.InteractionCreateEvent;
+import discord4j.core.event.domain.interaction.InteractionCreateEvent;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.discordjson.json.InteractionData;
 import discord4j.discordjson.json.MemberData;
