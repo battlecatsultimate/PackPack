@@ -235,22 +235,25 @@ public class FormStat extends ConstraintCommand {
 
         StringBuilder command = new StringBuilder();
 
-        for(int i = 0; i < content.length; i++) {
-            if (i == 0)
-                continue;
+        for(int i = 1; i < content.length; i++) {
+            boolean written = false;
 
             switch (content[i]) {
                 case "-s":
                     if(!isSec)
                         isSec = true;
-                    else
+                    else {
                         command.append(content[i]);
+                        written = true;
+                    }
                     break;
                 case "-t":
                     if(!isTalent)
                         isTalent = true;
-                    else
+                    else {
                         command.append(content[i]);
+                        written = true;
+                    }
                     break;
                 case "-lv":
                     if(!isLevel && i < content.length - 1) {
@@ -265,10 +268,16 @@ public class FormStat extends ConstraintCommand {
                         isLevel = true;
                     } else {
                         command.append(content[i]);
+                        written = true;
                     }
                     break;
                 default:
                     command.append(content[i]);
+                    written = true;
+            }
+
+            if(written && i < content.length - 1) {
+                command.append(" ");
             }
         }
 
@@ -276,7 +285,7 @@ public class FormStat extends ConstraintCommand {
             return "";
         }
 
-        return command.toString();
+        return command.toString().trim();
     }
 
     private int[] handleLevel(String msg) {

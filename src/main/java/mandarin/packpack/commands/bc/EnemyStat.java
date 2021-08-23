@@ -173,12 +173,16 @@ public class EnemyStat extends ConstraintCommand {
         StringBuilder command = new StringBuilder();
 
         for(int i = 1; i < content.length; i++) {
+            boolean written = false;
+
             switch (content[i]) {
                 case "-s":
                     if(!isSec)
                         isSec = true;
-                    else
+                    else {
                         command.append(content[i]);
+                        written = true;
+                    }
                     break;
                 case "-m":
                     if(!isLevel && i < content.length -1) {
@@ -193,13 +197,15 @@ public class EnemyStat extends ConstraintCommand {
                         isLevel = true;
                     } else {
                         command.append(content[i]);
+                        written = true;
                     }
                     break;
                 default:
                     command.append(content[i]);
+                    written = true;
             }
 
-            if(i < content.length - 1) {
+            if(written && i < content.length - 1) {
                 command.append(" ");
             }
         }
@@ -207,7 +213,7 @@ public class EnemyStat extends ConstraintCommand {
         if(command.toString().isBlank())
             return "";
 
-        return command.toString();
+        return command.toString().trim();
     }
 
     private int checkParameters(String message) {

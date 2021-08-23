@@ -143,12 +143,15 @@ public class FormSprite extends TimedConstraintCommand {
         boolean edi = false;
 
         for(int i = 1; i < contents.length; i++) {
+            boolean written = false;
+
             switch (contents[i]) {
                 case "-uni":
                     if (!uni) {
                         uni = true;
                     } else {
                         result.append(contents[i]);
+                        written = true;
                     }
                     break;
                 case "-udi":
@@ -156,6 +159,7 @@ public class FormSprite extends TimedConstraintCommand {
                         udi = true;
                     } else {
                         result.append(contents[i]);
+                        written = true;
                     }
                     break;
                 case "-edi":
@@ -163,13 +167,15 @@ public class FormSprite extends TimedConstraintCommand {
                         edi = true;
                     } else {
                         result.append(contents[i]);
+                        written = true;
                     }
                     break;
                 default:
                     result.append(contents[i]);
+                    written = true;
             }
 
-            if(i < contents.length - 1)
+            if(written && i < contents.length - 1)
                 result.append(" ");
         }
 

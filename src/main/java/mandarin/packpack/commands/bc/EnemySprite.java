@@ -137,17 +137,21 @@ public class EnemySprite extends TimedConstraintCommand {
         boolean edi = false;
 
         for(int i = 1; i < contents.length; i++) {
+            boolean written = false;
+
             if(contents[i].equals("-edi")) {
                 if(!edi) {
                     edi = true;
                 } else {
                     result.append(contents[i]);
+                    written = true;
                 }
             } else {
                 result.append(contents[i]);
+                written = true;
             }
 
-            if(i < contents.length - 1)
+            if(written && i < contents.length - 1)
                 result.append(" ");
         }
 

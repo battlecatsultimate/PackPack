@@ -285,8 +285,6 @@ public class EnemyImage extends TimedConstraintCommand {
 
         StringBuilder result = new StringBuilder();
 
-        boolean preParamEnd = false;
-
         boolean debug = false;
         boolean trans = false;
 
@@ -294,65 +292,53 @@ public class EnemyImage extends TimedConstraintCommand {
         boolean frame = false;
 
         for(int i = 1; i < contents.length; i++) {
-            if(!preParamEnd) {
-                if(contents[i].equals("-t")) {
+            boolean written = false;
+
+            switch (contents[i]) {
+                case "-t":
                     if(!trans) {
                         trans = true;
                     } else {
                         result.append(contents[i]);
-
-                        if(i < contents.length - 1)
-                            result.append(" ");
-
-                        preParamEnd = true;
+                        written = true;
                     }
-                }
-                else if(contents[i].equals("-debug") || contents[i].equals("-d")) {
+                    break;
+                case "-d":
+                case "-debug":
                     if(!debug) {
                         debug = true;
                     } else {
                         result.append(contents[i]);
-
-                        if(i < contents.length - 1)
-                            result.append(" ");
-
-                        preParamEnd = true;
+                        written = true;
                     }
-                } else {
-                    result.append(contents[i]);
-
-                    if(i < contents.length - 1)
-                        result.append(" ");
-
-                    preParamEnd = true;
-                }
-            } else {
-                if(contents[i].equals("-mode") || contents[i].equals("-m")) {
-                    if(!mode) {
-                        if(i < contents.length - 1) {
-                            mode = true;
-                            i++;
-                        } else
-                            result.append(contents[i]);
-                    } else
-                        result.append(contents[i]);
-                } else if(contents[i].equals("-fr") || contents[i].equals("-f")) {
-                    if(!frame) {
-                        if(i < contents.length - 1 && StaticStore.isNumeric(contents[i+1])) {
-                            frame = true;
-                            i++;
-                        } else {
-                            result.append(contents[i]);
-                        }
+                    break;
+                case "-m":
+                case "-mode":
+                    if(!mode && i < contents.length - 1) {
+                        mode = true;
+                        i++;
                     } else {
                         result.append(contents[i]);
+                        written = true;
                     }
-                } else {
+                    break;
+                case "-f":
+                case "-fr":
+                    if(!frame && i < contents.length - 1 && StaticStore.isNumeric(contents[i + 1])) {
+                        frame = true;
+                        i++;
+                    } else {
+                        result.append(contents[i]);
+                        written = true;
+                    }
+                    break;
+                default:
                     result.append(contents[i]);
-                }
+                    written = true;
+            }
 
-                if(i < contents.length - 1)
-                    result.append(" ");
+            if(written && i < contents.length - 1) {
+                result.append(" ");
             }
         }
 

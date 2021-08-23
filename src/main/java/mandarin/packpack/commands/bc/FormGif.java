@@ -298,6 +298,8 @@ public class FormGif extends GlobalTimedConstraintCommand {
         boolean gif = false;
 
         for(int i = 1; i < contents.length; i++) {
+            boolean written = false;
+
             switch (contents[i]) {
                 case "-debug":
                 case "-d":
@@ -305,6 +307,7 @@ public class FormGif extends GlobalTimedConstraintCommand {
                         debug = true;
                     } else {
                         result.append(contents[i]);
+                        written = true;
                     }
                     break;
                 case "-r":
@@ -313,6 +316,7 @@ public class FormGif extends GlobalTimedConstraintCommand {
                         raw = true;
                     } else {
                         result.append(contents[i]);
+                        written = true;
                     }
                     break;
                 case "-mode":
@@ -322,15 +326,17 @@ public class FormGif extends GlobalTimedConstraintCommand {
                         i++;
                     } else {
                         result.append(contents[i]);
+                        written = true;
                     }
                     break;
                 case "-fr":
                 case "-f":
-                    if(!frame && i < contents.length - 1) {
+                    if(!frame && i < contents.length - 1 && StaticStore.isNumeric(contents[i + 1])) {
                         frame = true;
                         i++;
                     } else {
                         result.append(contents[i]);
+                        written = true;
                     }
                     break;
                 case "-g":
@@ -339,13 +345,15 @@ public class FormGif extends GlobalTimedConstraintCommand {
                         gif = true;
                     } else {
                         result.append(contents[i]);
+                        written = true;
                     }
                     break;
                 default:
                     result.append(contents[i]);
+                    written = true;
             }
 
-            if(i < contents.length - 1)
+            if(written && i < contents.length - 1)
                 result.append(" ");
         }
 
