@@ -5,6 +5,7 @@ import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Enemy;
 import discord4j.core.event.domain.message.MessageEvent;
+import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
@@ -25,12 +26,10 @@ import java.util.concurrent.atomic.AtomicReference;
 public class EnemyGif extends GlobalTimedConstraintCommand {
     private final int PARAM_DEBUG = 2;
     private final int PARAM_RAW = 4;
-
-    private final String modID;
+    private final int PARAM_GIF = 8;
 
     public EnemyGif(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID) {
         super(role, lang, id, mainID, TimeUnit.SECONDS.toMillis(30));
-        this.modID = id.MOD;
     }
 
     @Override
@@ -40,17 +39,22 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
         if(ch == null)
             return;
 
-        AtomicReference<Boolean> isDev = new AtomicReference<>(false);
+        Guild g = getGuild(event).block();
+
+        if(g == null)
+            return;
+
+        AtomicReference<Boolean> isTrusted = new AtomicReference<>(false);
 
         getMember(event).ifPresentOrElse(m -> {
-            if(modID != null && StaticStore.rolesToString(m.getRoleIds()).contains(modID)) {
-                isDev.set(true);
+            if(StaticStore.contributors.contains(m.getId().asString())) {
+                isTrusted.set(true);
             } else if(m.getId().asString().equals(StaticStore.MANDARIN_SMELL)) {
-                isDev.set(true);
+                isTrusted.set(true);
             } else {
-                isDev.set(false);
+                isTrusted.set(false);
             }
-        }, () -> isDev.set(false));
+        }, () -> isTrusted.set(false));
 
         String[] list = getContent(event).split(" ");
 
@@ -84,17 +88,18 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
                 int mode = getMode(getContent(event));
                 boolean debug = (param & PARAM_DEBUG) > 0;
                 boolean raw = (param & PARAM_RAW) > 0;
+                boolean gif = (param & PARAM_GIF) > 0;
                 int frame = getFrame(getContent(event));
 
-                if(raw && !isDev.get()) {
+                if(raw && !isTrusted.get()) {
                     ch.createMessage(LangID.getStringByID("gif_ignore", lang)).subscribe();
                 }
 
                 Enemy en = enemies.get(0);
 
-                boolean result = EntityHandler.generateEnemyAnim(en, ch, mode, debug, frame, lang, raw && isDev.get());
+                boolean result = EntityHandler.generateEnemyAnim(en, ch, g.getPremiumTier().getValue(), mode, debug, frame, lang, raw && isTrusted.get(), gif);
 
-                if(raw && isDev.get()) {
+                if(raw && isTrusted.get()) {
                     changeTime(TimeUnit.MINUTES.toMillis(1));
                 }
 
@@ -151,13 +156,14 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
                 int frame = getFrame(getContent(event));
 
                 boolean raw = (param & PARAM_RAW) > 0;
+                boolean gif = (param & PARAM_GIF) > 0;
 
-                if(raw && !isDev.get()) {
+                if(raw && !isTrusted.get()) {
                     ch.createMessage(LangID.getStringByID("gif_ignore", lang)).subscribe();
                 }
 
                 if(res != null) {
-                    getMember(event).ifPresent(member -> StaticStore.putHolder(member.getId().asString(), new EnemyAnimHolder(enemies, getMessage(event), res, ch.getId().asString(), mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isDev.get())));
+                    getMember(event).ifPresent(member -> StaticStore.putHolder(member.getId().asString(), new EnemyAnimHolder(enemies, getMessage(event), res, ch.getId().asString(), mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isTrusted.get(), gif)));
                 }
 
                 disableTimer();
@@ -266,6 +272,14 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
                             break label;
                         }
                         break;
+                    case "-g":
+                    case "-gif":
+                        if((result & PARAM_GIF) == 0) {
+                            result |= PARAM_GIF;
+                        } else {
+                            break label;
+                        }
+                        break;
                 }
             }
         }
@@ -281,98 +295,63 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
 
         StringBuilder result = new StringBuilder();
 
-        boolean preParamEnd = false;
-
         boolean debug = false;
         boolean raw = false;
 
         boolean mode = false;
         boolean frame = false;
+        boolean gif = false;
 
         for(int i = 1; i < contents.length; i++) {
-            if(!preParamEnd) {
-                switch (contents[i]) {
-                    case "-debug":
-                    case "-d":
-                        if (!debug) {
-                            debug = true;
-                        } else {
-                            i--;
-                            preParamEnd = true;
-                        }
-                        break;
-                    case "-r":
-                    case "-raw":
-                        if(!raw) {
-                            raw = true;
-                        } else {
-                            i--;
-                            preParamEnd = true;
-                        }
-                        break;
-                    case "-mode":
-                    case "-m":
-                        if (!mode) {
-                            if (i < contents.length - 1) {
-                                mode = true;
-                                i++;
-                            } else {
-                                i--;
-                                preParamEnd = true;
-                            }
-                        } else {
-                            i--;
-                            preParamEnd = true;
-                        }
-                        break;
-                    case "-fr":
-                    case "-f":
-                        if (!frame) {
-                            if (i < contents.length - 1 && StaticStore.isNumeric(contents[i + 1])) {
-                                frame = true;
-                                i++;
-                            } else {
-                                i--;
-                                preParamEnd = true;
-                            }
-                        } else {
-                            i--;
-                            preParamEnd = true;
-                        }
-                        break;
-                    default:
-                        i--;
-                        preParamEnd = true;
-                        break;
-                }
-            } else {
-                if(contents[i].equals("-mode") || contents[i].equals("-m")) {
-                    if(!mode) {
-                        if(i < contents.length - 1) {
-                            mode = true;
-                            i++;
-                        } else
-                            result.append(contents[i]);
-                    } else
-                        result.append(contents[i]);
-                } else if(contents[i].equals("-fr") || contents[i].equals("-f")) {
-                    if(!frame) {
-                        if(i < contents.length - 1 && StaticStore.isNumeric(contents[i+1])) {
-                            frame = true;
-                            i++;
-                        } else {
-                            result.append(contents[i]);
-                        }
+            switch (contents[i]) {
+                case "-debug":
+                case "-d":
+                    if(!debug) {
+                        debug = true;
                     } else {
                         result.append(contents[i]);
                     }
-                } else {
+                    break;
+                case "-r":
+                case "-raw":
+                    if(!raw) {
+                        raw = true;
+                    } else {
+                        result.append(contents[i]);
+                    }
+                    break;
+                case "-mode":
+                case "-m":
+                    if(!mode && i < contents.length - 1) {
+                        mode = true;
+                        i++;
+                    } else {
+                        result.append(contents[i]);
+                    }
+                    break;
+                case "-fr":
+                case "-f":
+                    if(!frame && i < contents.length - 1) {
+                        frame = true;
+                        i++;
+                    } else {
+                        result.append(contents[i]);
+                    }
+                    break;
+                case "-g":
+                case "-gif":
+                    if(!gif) {
+                        gif = true;
+                    } else {
+                        result.append(contents[i]);
+                    }
+                    break;
+                default:
                     result.append(contents[i]);
-                }
-
-                if(i < contents.length - 1)
-                    result.append(" ");
             }
+
+            if(i < contents.length - 1)
+                result.append(" ");
         }
 
         return result.toString().trim();

@@ -3,6 +3,7 @@ package mandarin.packpack.commands.bc;
 import common.util.Data;
 import common.util.unit.Form;
 import discord4j.core.event.domain.message.MessageEvent;
+import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
@@ -23,13 +24,10 @@ import java.util.concurrent.atomic.AtomicReference;
 public class FormGif extends GlobalTimedConstraintCommand {
     private final int PARAM_DEBUG = 2;
     private final int PARAM_RAW = 4;
-
-    private final String modID;
+    private final int PARAM_GIF = 8;
 
     public FormGif(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID) {
         super(role, lang, id, mainID, TimeUnit.SECONDS.toMillis(30));
-
-        modID = id.MOD;
     }
 
     @Override
@@ -39,17 +37,22 @@ public class FormGif extends GlobalTimedConstraintCommand {
         if(ch == null)
             return;
 
-        AtomicReference<Boolean> isMod = new AtomicReference<>(false);
+        Guild g = getGuild(event).block();
+
+        if(g == null)
+            return;
+
+        AtomicReference<Boolean> isTrusted = new AtomicReference<>(false);
 
         getMember(event).ifPresentOrElse(m -> {
-            if(modID != null && StaticStore.rolesToString(m.getRoleIds()).contains(modID)) {
-                isMod.set(true);
+            if(StaticStore.contributors.contains(m.getId().asString())) {
+                isTrusted.set(true);
             } else if(m.getId().asString().equals(StaticStore.MANDARIN_SMELL)) {
-                isMod.set(true);
+                isTrusted.set(true);
             } else {
-                isMod.set(false);
+                isTrusted.set(false);
             }
-        }, () -> isMod.set(false));
+        }, () -> isTrusted.set(false));
 
         String[] list = getContent(event).split(" ");
 
@@ -84,17 +87,18 @@ public class FormGif extends GlobalTimedConstraintCommand {
                 int mode = getMode(getContent(event));
                 boolean debug = (param & PARAM_DEBUG) > 0;
                 boolean raw = (param & PARAM_RAW) > 0;
+                boolean gif = (param & PARAM_GIF) > 0;
                 int frame = getFrame(getContent(event));
 
-                if(raw && !isMod.get()) {
+                if(raw && !isTrusted.get()) {
                     ch.createMessage(LangID.getStringByID("gif_ignore", lang)).subscribe();
                 }
 
                 Form f = forms.get(0);
 
-                boolean result = EntityHandler.generateFormAnim(f, ch, mode, debug, frame, lang, raw && isMod.get());
+                boolean result = EntityHandler.generateFormAnim(f, ch, g.getPremiumTier().getValue(), mode, debug, frame, lang, raw && isTrusted.get(), gif);
 
-                if(raw && isMod.get()) {
+                if(raw && isTrusted.get()) {
                     changeTime(TimeUnit.MINUTES.toMillis(1));
                 }
 
@@ -140,8 +144,9 @@ public class FormGif extends GlobalTimedConstraintCommand {
                 int frame = getFrame(getContent(event));
 
                 boolean raw = (param & PARAM_RAW) > 0;
+                boolean gif = (param &  PARAM_GIF) > 0;
 
-                if(raw && !isMod.get()) {
+                if(raw && !isTrusted.get()) {
                     ch.createMessage(LangID.getStringByID("gif_ignore", lang)).subscribe();
                 }
 
@@ -152,7 +157,7 @@ public class FormGif extends GlobalTimedConstraintCommand {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(member.getId().asString(), new FormAnimHolder(forms, msg, res, ch.getId().asString(), mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isMod.get()));
+                            StaticStore.putHolder(member.getId().asString(), new FormAnimHolder(forms, msg, res, ch.getId().asString(), mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isTrusted.get(), gif));
                     });
                 }
 
@@ -262,6 +267,14 @@ public class FormGif extends GlobalTimedConstraintCommand {
                             break label;
                         }
                         break;
+                    case "-g":
+                    case "-gif":
+                        if((result & PARAM_GIF) == 0) {
+                            result |= PARAM_GIF;
+                        } else {
+                            break label;
+                        }
+                        break;
                 }
             }
         }
@@ -277,98 +290,63 @@ public class FormGif extends GlobalTimedConstraintCommand {
 
         StringBuilder result = new StringBuilder();
 
-        boolean preParamEnd = false;
-
         boolean debug = false;
         boolean raw = false;
 
         boolean mode = false;
         boolean frame = false;
+        boolean gif = false;
 
         for(int i = 1; i < contents.length; i++) {
-            if(!preParamEnd) {
-                switch (contents[i]) {
-                    case "-debug":
-                    case "-d":
-                        if (!debug) {
-                            debug = true;
-                        } else {
-                            i--;
-                            preParamEnd = true;
-                        }
-                        break;
-                    case "-r":
-                    case "-raw":
-                        if(!raw) {
-                            raw = true;
-                        } else {
-                            i--;
-                            preParamEnd = true;
-                        }
-                        break;
-                    case "-mode":
-                    case "-m":
-                        if (!mode) {
-                            if (i < contents.length - 1) {
-                                mode = true;
-                                i++;
-                            } else {
-                                i--;
-                                preParamEnd = true;
-                            }
-                        } else {
-                            i--;
-                            preParamEnd = true;
-                        }
-                        break;
-                    case "-fr":
-                    case "-f":
-                        if (!frame) {
-                            if (i < contents.length - 1 && StaticStore.isNumeric(contents[i + 1])) {
-                                frame = true;
-                                i++;
-                            } else {
-                                i--;
-                                preParamEnd = true;
-                            }
-                        } else {
-                            i--;
-                            preParamEnd = true;
-                        }
-                        break;
-                    default:
-                        i--;
-                        preParamEnd = true;
-                        break;
-                }
-            } else {
-                if(contents[i].equals("-mode") || contents[i].equals("-m")) {
-                    if(!mode) {
-                        if(i < contents.length - 1) {
-                            mode = true;
-                            i++;
-                        } else
-                            result.append(contents[i]);
-                    } else
-                        result.append(contents[i]);
-                } else if(contents[i].equals("-fr") || contents[i].equals("-f")) {
-                    if(!frame) {
-                        if(i < contents.length - 1 && StaticStore.isNumeric(contents[i+1])) {
-                            frame = true;
-                            i++;
-                        } else {
-                            result.append(contents[i]);
-                        }
+            switch (contents[i]) {
+                case "-debug":
+                case "-d":
+                    if(!debug) {
+                        debug = true;
                     } else {
                         result.append(contents[i]);
                     }
-                } else {
+                    break;
+                case "-r":
+                case "-raw":
+                    if(!raw) {
+                        raw = true;
+                    } else {
+                        result.append(contents[i]);
+                    }
+                    break;
+                case "-mode":
+                case "-m":
+                    if(!mode && i < contents.length - 1) {
+                        mode = true;
+                        i++;
+                    } else {
+                        result.append(contents[i]);
+                    }
+                    break;
+                case "-fr":
+                case "-f":
+                    if(!frame && i < contents.length - 1) {
+                        frame = true;
+                        i++;
+                    } else {
+                        result.append(contents[i]);
+                    }
+                    break;
+                case "-g":
+                case "-gif":
+                    if(!gif) {
+                        gif = true;
+                    } else {
+                        result.append(contents[i]);
+                    }
+                    break;
+                default:
                     result.append(contents[i]);
-                }
-
-                if(i < contents.length - 1)
-                    result.append(" ");
             }
+
+            if(i < contents.length - 1)
+                result.append(" ");
         }
 
         return result.toString().trim();
