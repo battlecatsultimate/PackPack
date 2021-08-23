@@ -170,46 +170,44 @@ public class EnemyStat extends ConstraintCommand {
         boolean isSec = false;
         boolean isLevel = false;
 
-        boolean paramEnd = false;
-
         StringBuilder command = new StringBuilder();
 
-        for(int i = 0; i < content.length; i++) {
-            if (i == 0)
-                continue;
+        for(int i = 1; i < content.length; i++) {
+            switch (content[i]) {
+                case "-s":
+                    if(!isSec)
+                        isSec = true;
+                    else
+                        command.append(content[i]);
+                    break;
+                case "-m":
+                    if(!isLevel && i < content.length -1) {
+                        String text = getLevelText(content, i + 1);
 
-            if(content[i].equals("-s"))
-                if(isSec || paramEnd)
-                    command.append(content[i]).append(" ");
-                else {
-                    isSec = true;
-                }
-            else {
-                paramEnd = true;
+                        if(text.contains(" ")) {
+                            i += text.split(" ").length;
+                        } else if(msg.endsWith(text)) {
+                            i++;
+                        }
 
-                if(content[i].equals("-m") && i < content.length - 1) {
-                    if(isLevel)
-                        command.append(content[i]).append(" ");
-                    else {
                         isLevel = true;
+                    } else {
+                        command.append(content[i]);
                     }
+                    break;
+                default:
+                    command.append(content[i]);
+            }
 
-                    String text = getLevelText(content, i+1);
-
-                    if(text.contains(" ")) {
-                        i += getLevelText(content, i + 1).split(" ").length;
-                    } else if(msg.endsWith(text)) {
-                        i++;
-                    }
-                } else
-                    command.append(content[i]).append(" ");
+            if(i < content.length - 1) {
+                command.append(" ");
             }
         }
 
         if(command.toString().isBlank())
             return "";
 
-        return command.substring(0, command.length()-1);
+        return command.toString();
     }
 
     private int checkParameters(String message) {

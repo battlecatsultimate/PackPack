@@ -138,50 +138,39 @@ public class FormSprite extends TimedConstraintCommand {
 
         StringBuilder result = new StringBuilder();
 
-        boolean preParamEnd = false;
-
         boolean uni = false;
         boolean udi = false;
         boolean edi = false;
 
         for(int i = 1; i < contents.length; i++) {
-            if(!preParamEnd) {
-                switch (contents[i]) {
-                    case "-uni":
-                        if (!uni) {
-                            uni = true;
-                        } else {
-                            i--;
-                            preParamEnd = true;
-                        }
-                        break;
-                    case "-udi":
-                        if(!udi) {
-                            udi = true;
-                        } else {
-                            i--;
-                            preParamEnd = true;
-                        }
-                        break;
-                    case "-edi":
-                        if(!edi) {
-                            edi = true;
-                        } else {
-                            i--;
-                            preParamEnd = true;
-                        }
-                        break;
-                    default:
-                        i--;
-                        preParamEnd = true;
-                        break;
-                }
-            } else {
-                result.append(contents[i]);
-
-                if(i < contents.length - 1)
-                    result.append(" ");
+            switch (contents[i]) {
+                case "-uni":
+                    if (!uni) {
+                        uni = true;
+                    } else {
+                        result.append(contents[i]);
+                    }
+                    break;
+                case "-udi":
+                    if(!udi) {
+                        udi = true;
+                    } else {
+                        result.append(contents[i]);
+                    }
+                    break;
+                case "-edi":
+                    if(!edi) {
+                        edi = true;
+                    } else {
+                        result.append(contents[i]);
+                    }
+                    break;
+                default:
+                    result.append(contents[i]);
             }
+
+            if(i < contents.length - 1)
+                result.append(" ");
         }
 
         return result.toString().trim();

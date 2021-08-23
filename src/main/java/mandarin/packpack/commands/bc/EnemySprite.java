@@ -134,29 +134,21 @@ public class EnemySprite extends TimedConstraintCommand {
 
         StringBuilder result = new StringBuilder();
 
-        boolean preParamEnd = false;
-
         boolean edi = false;
 
         for(int i = 1; i < contents.length; i++) {
-            if(!preParamEnd) {
-                if ("-edi".equals(contents[i])) {
-                    if (!edi) {
-                        edi = true;
-                    } else {
-                        i--;
-                        preParamEnd = true;
-                    }
+            if(contents[i].equals("-edi")) {
+                if(!edi) {
+                    edi = true;
                 } else {
-                    i--;
-                    preParamEnd = true;
+                    result.append(contents[i]);
                 }
             } else {
                 result.append(contents[i]);
-
-                if(i < contents.length - 1)
-                    result.append(" ");
             }
+
+            if(i < contents.length - 1)
+                result.append(" ");
         }
 
         return result.toString().trim();

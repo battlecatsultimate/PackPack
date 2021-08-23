@@ -209,18 +209,16 @@ public class FormStat extends ConstraintCommand {
             String[] pureMessage = message.split(" ", 2)[1].split(" ");
 
             for(String str : pureMessage) {
-                if(str.startsWith("-t")) {
+                if(str.equals("-t")) {
                     if((result & PARAM_TALENT) == 0) {
                         result |= PARAM_TALENT;
                     } else
                         break;
-                } else if(str.startsWith("-s")) {
+                } else if(str.equals("-s")) {
                     if((result & PARAM_SECOND) == 0) {
                         result |= PARAM_SECOND;
                     } else
                         break;
-                } else {
-                    break;
                 }
             }
         }
@@ -235,45 +233,42 @@ public class FormStat extends ConstraintCommand {
         boolean isLevel = false;
         boolean isTalent = false;
 
-        boolean paramEnd = false;
-
         StringBuilder command = new StringBuilder();
 
         for(int i = 0; i < content.length; i++) {
             if (i == 0)
                 continue;
 
-            if(content[i].equals("-s"))
-                if(isSec || paramEnd)
-                    command.append(content[i]).append(" ");
-                else {
-                    isSec = true;
-                }
-            else if(content[i].equals("-t")) {
-                if(isTalent || paramEnd)
-                    command.append(content[i]).append(" ");
-                else {
-                    isTalent = true;
-                }
-            } else {
-                paramEnd = true;
+            switch (content[i]) {
+                case "-s":
+                    if(!isSec)
+                        isSec = true;
+                    else
+                        command.append(content[i]);
+                    break;
+                case "-t":
+                    if(!isTalent)
+                        isTalent = true;
+                    else
+                        command.append(content[i]);
+                    break;
+                case "-lv":
+                    if(!isLevel && i < content.length - 1) {
+                        String text = getLevelText(content, i + 1);
 
-                if(content[i].equals("-lv") && i < content.length - 1) {
-                    if(isLevel)
-                        command.append(content[i]).append(" ");
-                    else {
+                        if(text.contains(" ")) {
+                            i += getLevelText(content, i + 1).split(" ").length;
+                        } else if(msg.endsWith(text)) {
+                            i++;
+                        }
+
                         isLevel = true;
+                    } else {
+                        command.append(content[i]);
                     }
-
-                    String text = getLevelText(content, i+1);
-
-                    if(text.contains(" ")) {
-                        i += getLevelText(content, i + 1).split(" ").length;
-                    } else if(msg.endsWith(text)) {
-                        i++;
-                    }
-                } else
-                    command.append(content[i]).append(" ");
+                    break;
+                default:
+                    command.append(content[i]);
             }
         }
 
@@ -281,7 +276,7 @@ public class FormStat extends ConstraintCommand {
             return "";
         }
 
-        return command.substring(0, command.length()-1);
+        return command.toString();
     }
 
     private int[] handleLevel(String msg) {
