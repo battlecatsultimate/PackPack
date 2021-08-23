@@ -26,14 +26,18 @@ public class ImgurDataHolder {
 
     public ImgurDataHolder(JsonObject object) {
         data = Objects.requireNonNullElseGet(object, JsonObject::new);
+
+        reformatData();
     }
 
-    public void put(String md5, String url, boolean finalize) {
+    public void put(String md5, String url, boolean raw) {
         if(!data.has(md5)) {
             JsonObject obj = new JsonObject();
 
-            obj.addProperty("url", url);
-            obj.addProperty("final", finalize);
+            if(raw)
+                obj.addProperty("mp4", url);
+            else
+                obj.addProperty("gif", url);
 
             data.add(md5, obj);
         } else {
@@ -42,31 +46,26 @@ public class ImgurDataHolder {
             if(elem.isJsonObject()) {
                 JsonObject obj = elem.getAsJsonObject();
 
-                if(obj.has("final")) {
-                    boolean fin = obj.get("final").getAsBoolean();
-
-                    if(!fin) {
-                        obj.addProperty("url", url);
-                        obj.addProperty("final", finalize);
-                    }
-                } else {
-                    obj.addProperty("url", url);
-                    obj.addProperty("final", finalize);
-                }
+                if(raw && !obj.has("mp4"))
+                    obj.addProperty("mp4", url);
+                else if(!obj.has("gif"))
+                    obj.addProperty("gif", url);
 
                 data.add(md5, obj);
             } else {
                 JsonObject obj = new JsonObject();
 
-                obj.addProperty("url" , url);
-                obj.addProperty("final", finalize);
+                if(raw)
+                    obj.addProperty("mp4", url);
+                else
+                    obj.addProperty("gif", url);
 
                 data.add(md5, obj);
             }
         }
     }
 
-    public String get(String md5) {
+    public String get(String md5, boolean gif, boolean raw) {
         if(data.has(md5)) {
             JsonElement elem = data.get(md5);
 
@@ -75,9 +74,17 @@ public class ImgurDataHolder {
             } else if(elem.isJsonObject()) {
                 JsonObject obj = elem.getAsJsonObject();
 
-                if(obj.has("url")) {
-                    return obj.get("url").getAsString();
-                }
+                if(gif && !raw && obj.has("gif"))
+                    return obj.get("gif").getAsString();
+                else if(!gif && raw && obj.has("mp4"))
+                    return obj.get("mp4").getAsString();
+                else if(gif && raw && obj.has("mp4"))
+                    return obj.get("mp4").getAsString();
+                else if(!gif && !raw)
+                    if(obj.has("mp4"))
+                        return obj.get("mp4").getAsString();
+                    else if(obj.has("gif"))
+                        return obj.get("gif").getAsString();
             }
         }
 
@@ -92,24 +99,6 @@ public class ImgurDataHolder {
         for(String k : ks) {
             data.remove(k);
         }
-    }
-
-    public boolean finalized(String md5) {
-        if(data.has(md5)) {
-            JsonElement elem = data.get(md5);
-
-            if(elem.isJsonPrimitive()) {
-                return false;
-            } else if(elem.isJsonObject()) {
-                JsonObject object = elem.getAsJsonObject();
-
-                if(object.has("final")) {
-                    return object.get("final").getAsBoolean();
-                }
-            }
-        }
-
-        return false;
     }
 
     public JsonObject getData() {
@@ -176,6 +165,27 @@ public class ImgurDataHolder {
             }
         } else {
             return null;
+        }
+    }
+
+    private void reformatData() {
+        for(String key : data.keySet()) {
+            JsonObject obj = data.getAsJsonObject(key);
+
+            if(obj.has("url")) {
+                String url = obj.get("url").getAsString();
+
+                if(url.endsWith("mp4"))
+                    obj.addProperty("mp4", url);
+                else if(url.endsWith("gif"))
+                    obj.addProperty("gif", url);
+
+                obj.remove("url");
+            }
+
+            obj.remove("final");
+
+            data.add(key, obj);
         }
     }
 }

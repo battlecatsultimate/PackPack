@@ -5,6 +5,7 @@ import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Form;
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.StaticStore;
@@ -28,12 +29,13 @@ public class FormAnimHolder extends Holder<MessageCreateEvent> {
     private final int lang;
     private final boolean gif;
     private final boolean raw;
+    private final boolean gifMode;
 
     private int page = 0;
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
-    public FormAnimHolder(ArrayList<Form> form, Message author, Message msg, String channelID, int mode, int frame, boolean transparent, boolean debug, int lang, boolean isGif, boolean raw) {
+    public FormAnimHolder(ArrayList<Form> form, Message author, Message msg, String channelID, int mode, int frame, boolean transparent, boolean debug, int lang, boolean isGif, boolean raw, boolean gifMode) {
         super(MessageCreateEvent.class);
 
         this.form = form;
@@ -47,6 +49,7 @@ public class FormAnimHolder extends Holder<MessageCreateEvent> {
         this.lang = lang;
         this.gif = isGif;
         this.raw = raw;
+        this.gifMode = gifMode;
 
         registerAutoFinish(this, msg, author, lang, FIVE_MIN);
     }
@@ -180,8 +183,13 @@ public class FormAnimHolder extends Holder<MessageCreateEvent> {
 
                     if(timeBoolean == null || StaticStore.canDo.get("gif").canDo) {
                         new Thread(() -> {
+                            Guild g = event.getGuild().block();
+
+                            if(g == null)
+                                return;
+
                             try {
-                                boolean result = EntityHandler.generateFormAnim(f, ch, mode, debug, frame, lang, raw);
+                                boolean result = EntityHandler.generateFormAnim(f, ch, g.getPremiumTier().getValue(), mode, debug, frame, lang, raw, gif);
 
                                 if(result) {
                                     long time = raw ? TimeUnit.MINUTES.toMillis(1) : TimeUnit.SECONDS.toMillis(30);

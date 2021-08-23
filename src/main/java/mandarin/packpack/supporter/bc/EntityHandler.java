@@ -271,7 +271,7 @@ public class EntityHandler {
             cfis = null;
 
         Message msg = ch.createMessage(m -> {
-            m.setEmbed(spec -> {
+            m.addEmbed(spec -> {
                 Color c;
 
                 if(f.fid == 0)
@@ -462,7 +462,7 @@ public class EntityHandler {
             fis = null;
 
         ch.createMessage(m -> {
-            m.setEmbed(spec -> {
+            m.addEmbed(spec -> {
                 Color c = StaticStore.rainbow[0];
 
                 int[] mag = new int[2];
@@ -822,7 +822,7 @@ public class EntityHandler {
         }
 
         Message result = ch.createMessage(m -> {
-            m.setEmbed(spec -> {
+            m.addEmbed(spec -> {
                 try {
 
                     if(st.info == null || st.info.diff == -1)
@@ -1609,20 +1609,17 @@ public class EntityHandler {
         }
     }
 
-    public static boolean generateFormAnim(Form f, MessageChannel ch, int mode, boolean debug, int limit, int lang, boolean raw) throws Exception {
+    public static boolean generateFormAnim(Form f, MessageChannel ch, int booster, int mode, boolean debug, int limit, int lang, boolean raw, boolean gif) throws Exception {
         if(f.unit == null || f.unit.id == null)
             return false;
-        else if(!debug) {
+        else if(!debug && limit <= 0) {
             String id = generateID(f, mode);
 
-            String link = StaticStore.imgur.get(id);
-            boolean finalized = StaticStore.imgur.finalized(id);
+            String link = StaticStore.imgur.get(id, gif, raw);
 
             if(link != null) {
-                if(!raw || finalized) {
-                    ch.createMessage(LangID.getStringByID("gif_cache", lang).replace("_", link)).subscribe();
-                    return false;
-                }
+                ch.createMessage(LangID.getStringByID("gif_cache", lang).replace("_", link)).subscribe();
+                return false;
             }
         }
 
@@ -1651,8 +1648,6 @@ public class EntityHandler {
 
         long start = System.currentTimeMillis();
 
-        f.anim.load();
-
         EAnimD<?> anim = f.getEAnim(getAnimType(mode, f.anim.anims.length));
 
         File img;
@@ -1674,7 +1669,7 @@ public class EntityHandler {
         if(img == null) {
             ch.createMessage(LangID.getStringByID("gif_faile", lang)).subscribe();
             return false;
-        } else if(img.length() >= 8 * 1024 * 1024 && img.length() < (raw ? 200 * 1024 * 1024 : 10 * 1024 * 1024)) {
+        } else if(img.length() >= (long) getBoosterFileLimit(booster) * 1024 * 1024 && img.length() < (raw ? 200 * 1024 * 1024 : 10 * 1024 * 1024)) {
             Message m = ch.createMessage(LangID.getStringByID("gif_filesize", lang)).block();
 
             if(m == null) {
@@ -1706,7 +1701,7 @@ public class EntityHandler {
                 if(!debug && limit <= 0) {
                     String id = generateID(f, mode);
 
-                    StaticStore.imgur.put(id, link, true);
+                    StaticStore.imgur.put(id, link, raw);
                 }
 
                 m.edit(e -> {
@@ -1725,7 +1720,7 @@ public class EntityHandler {
             }
 
             return true;
-        } else if(img.length() < 8 * 1024 * 1024) {
+        } else if(img.length() < (long) getBoosterFileLimit(booster) * 1024 * 1024) {
             fis = new FileInputStream(img);
 
             int finalMode = mode;
@@ -1750,25 +1745,24 @@ public class EntityHandler {
                     }
                 }
             });
+        } else {
+            ch.createMessage(LangID.getStringByID("gif_toobig", lang)).subscribe();
         }
 
         return true;
     }
 
-    public static boolean generateEnemyAnim(Enemy en, MessageChannel ch, int mode, boolean debug, int limit, int lang, boolean raw) throws Exception {
+    public static boolean generateEnemyAnim(Enemy en, MessageChannel ch, int booster, int mode, boolean debug, int limit, int lang, boolean raw, boolean gif) throws Exception {
         if(en.id == null)
             return false;
         else if(!debug) {
             String id = generateID(en, mode);
 
-            String link = StaticStore.imgur.get(id);
-            boolean finalized = StaticStore.imgur.finalized(id);
+            String link = StaticStore.imgur.get(id, gif, raw);
 
             if(link != null) {
-                if(!raw || finalized) {
-                    ch.createMessage(LangID.getStringByID("gif_cache", lang).replace("_", link)).subscribe();
-                    return false;
-                }
+                ch.createMessage(LangID.getStringByID("gif_cache", lang).replace("_", link)).subscribe();
+                return false;
             }
         }
 
@@ -1816,7 +1810,7 @@ public class EntityHandler {
         if(img == null) {
             ch.createMessage(LangID.getStringByID("gif_faile", lang)).subscribe();
             return false;
-        } else if(img.length() >= 8 * 1024 * 1024 && img.length() < (raw ? 200 * 1024 * 1024 : 8 * 1024 * 1024)) {
+        } else if(img.length() >= (long) getBoosterFileLimit(booster) * 1024 * 1024 && img.length() < (raw ? 200 * 1024 * 1024 : 8 * 1024 * 1024)) {
             Message m = ch.createMessage(LangID.getStringByID("gif_filesize", lang)).block();
 
             if(m == null) {
@@ -1848,7 +1842,7 @@ public class EntityHandler {
                 if(!debug && limit <= 0) {
                     String id = generateID(en, mode);
 
-                    StaticStore.imgur.put(id, link, true);
+                    StaticStore.imgur.put(id, link, raw);
                 }
 
                 m.edit(e -> {
@@ -1867,7 +1861,7 @@ public class EntityHandler {
             }
 
             return true;
-        } else if(img.length() < 8 * 1024 * 1024) {
+        } else if(img.length() < (long) getBoosterFileLimit(booster) * 1024 * 1024) {
             fis = new FileInputStream(img);
 
             int finalMode = mode;
@@ -1897,19 +1891,7 @@ public class EntityHandler {
         return true;
     }
 
-    public static void generateAnim(MessageChannel ch, String md5, AnimMixer mixer, int lang, boolean debug, int limit, boolean raw, boolean transparent, int index) throws Exception {
-        if(!debug && md5 != null) {
-            String link = StaticStore.imgur.get(md5);
-            boolean finalized = StaticStore.imgur.finalized(md5);
-
-            if(link != null) {
-                if(!raw || finalized) {
-                    ch.createMessage(LangID.getStringByID("gif_cache", lang).replace("_", link)).subscribe();
-                    return;
-                }
-            }
-        }
-
+    public static void generateAnim(MessageChannel ch, AnimMixer mixer, int booster, int lang, boolean debug, int limit, boolean raw, boolean transparent, int index) throws Exception {
         boolean mix = mixer.mix();
 
         if(!mix) {
@@ -1951,7 +1933,7 @@ public class EntityHandler {
 
         if(img == null) {
             ch.createMessage(LangID.getStringByID("gif_faile", lang)).subscribe();
-        } else if(img.length() >= 8 * 1024 * 1024) {
+        } else if(img.length() >= (long) getBoosterFileLimit(booster) * 1024 * 1024 && img.length() < (raw ? 200 * 1024 * 1024 : 10 * 1024 * 1024)) {
             Message m = ch.createMessage(LangID.getStringByID("gif_filesize", lang)).block();
 
             if(m == null) {
@@ -1980,10 +1962,6 @@ public class EntityHandler {
                     }
                 });
             } else {
-                if(!debug && md5 != null) {
-                    StaticStore.imgur.put(md5, link, true);
-                }
-
                 m.edit(e -> {
                     long finalEnd = System.currentTimeMillis();
 
@@ -1998,7 +1976,7 @@ public class EntityHandler {
                     }
                 });
             }
-        } else if(img.length() < 8 * 1024 * 1024) {
+        } else if(img.length() < (long) getBoosterFileLimit(booster) * 1024 * 1024) {
             fis = new FileInputStream(img);
 
             ch.createMessage(
@@ -2006,7 +1984,7 @@ public class EntityHandler {
                         m.setContent(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)));
                         m.addFile(raw ? "result.mp4" : "result.gif", fis);
                     }
-            ).subscribe(m -> {if(!debug) cacheImage(md5, m);}, null, () -> {
+            ).subscribe(null, null, () -> {
                 try {
                     fis.close();
                 } catch (IOException e) {
@@ -2024,7 +2002,7 @@ public class EntityHandler {
         }
     }
 
-    public static boolean generateBCAnim(MessageChannel ch, AnimMixer mixer, int lang) throws Exception {
+    public static boolean generateBCAnim(MessageChannel ch, int booster, AnimMixer mixer, int lang) throws Exception {
         boolean mix = mixer.mix();
 
         if(!mix) {
@@ -2051,7 +2029,7 @@ public class EntityHandler {
 
         if(img == null) {
             ch.createMessage(LangID.getStringByID("gif_faile", lang)).subscribe();
-        } else if(img.length() >= 8 * 1024 * 1024) {
+        } else if(img.length() >= (long) getBoosterFileLimit(booster) * 1024 * 1024 && img.length() < 200 * 1024 * 1024) {
             Message m = ch.createMessage(LangID.getStringByID("gif_filesize", lang)).block();
 
             if(m == null) {
@@ -2095,7 +2073,7 @@ public class EntityHandler {
                     }
                 });
             }
-        } else if(img.length() < 8 * 1024 * 1024) {
+        } else if(img.length() < (long) getBoosterFileLimit(booster) * 1024 * 1024) {
             fis = new FileInputStream(img);
 
             ch.createMessage(
@@ -2400,7 +2378,7 @@ public class EntityHandler {
             FileInputStream fis = new FileInputStream(image);
 
             ch.createMessage(m -> {
-                m.setEmbed(e -> {
+                m.addEmbed(e -> {
                     int oldConfig = CommonStatic.getConfig().lang;
                     CommonStatic.getConfig().lang = lang;
 
@@ -2451,7 +2429,7 @@ public class EntityHandler {
             fis = new FileInputStream(icon);
 
         ch.createMessage(m -> {
-            m.setEmbed(e -> {
+            m.addEmbed(e -> {
                 int oldConfig = CommonStatic.getConfig().lang;
                 CommonStatic.getConfig().lang = lang;
 
@@ -2607,32 +2585,6 @@ public class EntityHandler {
         }
     }
 
-    private static void cacheImage(String md5, Message msg) {
-        if(md5 == null)
-            return;
-
-        Set<Attachment> att = msg.getAttachments();
-
-        if(att.isEmpty())
-            return;
-
-        for(Attachment a : att) {
-            if (a.getFilename().equals("result.gif")) {
-                String link = a.getUrl();
-
-                StaticStore.imgur.put(md5, link, false);
-
-                return;
-            } else if(a.getFilename().equals("result.mp4")) {
-                String link = a.getUrl();
-
-                StaticStore.imgur.put(md5, link, true);
-
-                return;
-            }
-        }
-    }
-
     private static String generateID(Enemy e, int mode) {
         if(e.id == null)
             return "";
@@ -2698,5 +2650,16 @@ public class EntityHandler {
 
     private static boolean canFinalForm(Form f) {
         return f.unit != null && f.fid + 2 < f.unit.forms.length;
+    }
+
+    private static int getBoosterFileLimit(int level) {
+        switch (level) {
+            case 2:
+                return 50;
+            case 3:
+                return 100;
+            default:
+                return 8;
+        }
     }
 }

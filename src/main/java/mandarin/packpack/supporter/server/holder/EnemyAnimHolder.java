@@ -5,6 +5,7 @@ import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Enemy;
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.StaticStore;
@@ -17,10 +18,6 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class EnemyAnimHolder extends Holder<MessageCreateEvent> {
-    public static final int RESULT_FAIL = -1;
-    public static final int RESULT_STILL = 0;
-    public static final int RESULT_FINISH = 1;
-
     private final ArrayList<Enemy> enemy;
     private final Message msg;
 
@@ -31,6 +28,7 @@ public class EnemyAnimHolder extends Holder<MessageCreateEvent> {
     private final int lang;
     private final boolean gif;
     private final boolean raw;
+    private final boolean gifMode;
 
     private final String channelID;
 
@@ -38,7 +36,7 @@ public class EnemyAnimHolder extends Holder<MessageCreateEvent> {
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
-    public EnemyAnimHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, int mode, int frame, boolean transparent, boolean debug, int lang, boolean isGif, boolean raw) {
+    public EnemyAnimHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, int mode, int frame, boolean transparent, boolean debug, int lang, boolean isGif, boolean raw, boolean gifMode) {
         super(MessageCreateEvent.class);
 
         this.enemy = enemy;
@@ -52,6 +50,7 @@ public class EnemyAnimHolder extends Holder<MessageCreateEvent> {
         this.lang = lang;
         this.gif = isGif;
         this.raw = raw;
+        this.gifMode = gifMode;
 
         registerAutoFinish(this, msg, author, lang, FIVE_MIN);
     }
@@ -193,8 +192,13 @@ public class EnemyAnimHolder extends Holder<MessageCreateEvent> {
 
                     if(timeBoolean == null || timeBoolean.canDo) {
                         new Thread(() -> {
+                            Guild g = event.getGuild().block();
+
+                            if(g == null)
+                                return;
+
                             try {
-                                boolean result = EntityHandler.generateEnemyAnim(e, ch, mode, debug, frame, lang, raw);
+                                boolean result = EntityHandler.generateEnemyAnim(e, ch, g.getPremiumTier().getValue(), mode, debug, frame, lang, raw, gifMode);
 
                                 if(result) {
                                     long time = raw ? TimeUnit.MINUTES.toMillis(1) : TimeUnit.SECONDS.toMillis(30);

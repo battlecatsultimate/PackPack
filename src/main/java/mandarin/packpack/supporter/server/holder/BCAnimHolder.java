@@ -7,6 +7,7 @@ import common.util.anim.MaAnim;
 import common.util.anim.MaModel;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Attachment;
+import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.StaticStore;
@@ -97,8 +98,13 @@ public class BCAnimHolder extends Holder<MessageCreateEvent> {
 
         if(pngDone && cutDone && modelDone && animAllDone()) {
             new Thread(() -> {
+                Guild g = msg.getGuild().block();
+
+                if(g == null)
+                    return;
+
                 try {
-                    boolean result = EntityHandler.generateBCAnim(ch, mixer, lang);
+                    boolean result = EntityHandler.generateBCAnim(ch, g.getPremiumTier().getValue(), mixer, lang);
 
                     new Timer().schedule(new TimerTask() {
                         @Override
@@ -182,8 +188,13 @@ public class BCAnimHolder extends Holder<MessageCreateEvent> {
 
                 if(pngDone && cutDone && modelDone && animAllDone()) {
                     new Thread(() -> {
+                        Guild g = event.getGuild().block();
+
+                        if(g == null)
+                            return;
+
                         try {
-                            boolean result = EntityHandler.generateBCAnim(ch, mixer, lang);
+                            boolean result = EntityHandler.generateBCAnim(ch, g.getPremiumTier().getValue(), mixer, lang);
 
                             new Timer().schedule(new TimerTask() {
                                 @Override
@@ -302,7 +313,7 @@ public class BCAnimHolder extends Holder<MessageCreateEvent> {
     private boolean validFile(FILE fileType, File file) throws Exception {
         switch (fileType) {
             case PNG:
-                return mixer.validPng(file);
+                return AnimMixer.validPng(file);
             case IMGCUT:
                 return mixer.validImgCut(file);
             case MAMODEL:

@@ -7,6 +7,7 @@ import common.util.anim.MaAnim;
 import common.util.anim.MaModel;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Attachment;
+import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.StaticStore;
@@ -90,7 +91,7 @@ public class AnimHolder extends Holder<MessageCreateEvent> {
                         File res = new File(container, a.getFilename());
 
                         if(res.exists()) {
-                            if(mixer.validPng(res)) {
+                            if(AnimMixer.validPng(res)) {
                                 png.set("PNG : SUCCESS");
                                 pngDone = true;
 
@@ -243,9 +244,14 @@ public class AnimHolder extends Holder<MessageCreateEvent> {
 
         if(pngDone && cutDone && modelDone && animAllDone()) {
             new Thread(() -> {
+                Guild g = msg.getGuild().block();
+
+                if(g == null)
+                    return;
+
                 try {
                     for(int i = 0; i < mixer.anim.length; i++) {
-                        EntityHandler.generateAnim(ch, null, mixer, lang, debug, -1, raw, transparent, i);
+                        EntityHandler.generateAnim(ch, mixer, g.getPremiumTier().getValue(), lang, debug, -1, raw, transparent, i);
                     }
 
                     new Timer().schedule(new TimerTask() {
@@ -314,7 +320,7 @@ public class AnimHolder extends Holder<MessageCreateEvent> {
                             File res = new File(container, a.getFilename());
 
                             if(res.exists()) {
-                                if(mixer.validPng(res)) {
+                                if(AnimMixer.validPng(res)) {
                                     png.set("PNG : SUCCESS");
                                     pngDone = true;
 
@@ -468,9 +474,14 @@ public class AnimHolder extends Holder<MessageCreateEvent> {
 
                 if(pngDone && cutDone && modelDone && animAllDone()) {
                     new Thread(() -> {
+                        Guild g = event.getGuild().block();
+
+                        if(g == null)
+                            return;
+
                         try {
                             for(int i = 0; i < maanim.size(); i++) {
-                                EntityHandler.generateAnim(ch, null, mixer, lang, debug, -1, raw, transparent, i);
+                                EntityHandler.generateAnim(ch, mixer, g.getPremiumTier().getValue(), lang, debug, -1, raw, transparent, i);
                             }
 
                             new Timer().schedule(new TimerTask() {
