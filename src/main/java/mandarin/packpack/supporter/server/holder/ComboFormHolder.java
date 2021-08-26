@@ -233,7 +233,7 @@ public class ComboFormHolder extends Holder<MessageCreateEvent> {
                         CommonStatic.getConfig().lang = lang;
 
                         if(MultiLangCont.getStatic().COMNAME.getCont(c.name) != null)
-                            comboName += MultiLangCont.getStatic().COMNAME.getCont(c.name) + " " + DataToString.getComboType(c, lang);
+                            comboName += MultiLangCont.getStatic().COMNAME.getCont(c.name) + " | " + DataToString.getComboType(c, lang);
 
                         CommonStatic.getConfig().lang = oldConfig;
 
