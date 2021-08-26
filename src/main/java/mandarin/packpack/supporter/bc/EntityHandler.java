@@ -337,9 +337,9 @@ public class EntityHandler {
 
                 for(int i = 0; i < abis.size(); i++) {
                     if(i == abis.size() - 1)
-                        sb.append(abis.get(i));
+                        sb.append(" ⦁ ").append(abis.get(i));
                     else
-                        sb.append(abis.get(i)).append("\n");
+                        sb.append(" ⦁ ").append(abis.get(i)).append("\n");
                 }
 
                 String res = sb.toString();
@@ -511,9 +511,9 @@ public class EntityHandler {
 
                 for(int i = 0; i < abis.size(); i++) {
                     if(i == abis.size() - 1)
-                        sb.append(abis.get(i));
+                        sb.append(" ⦁ ").append(abis.get(i));
                     else
-                        sb.append(abis.get(i)).append("\n");
+                        sb.append(" ⦁ ").append(abis.get(i)).append("\n");
                 }
 
                 String res = sb.toString();
