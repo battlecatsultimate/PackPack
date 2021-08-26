@@ -211,13 +211,13 @@
             "(_dispTime(time)) 뒤에 [(count<0){무한 번}(count>=0&count<=1){(count) 번}(count>1){(count) 번}]",
             " (health)% 체력으로 부활 ",
             "[(type.imu_zkill){(_left)좀비킬러 무효화(_right)}]",
-			"[(type.revive_others){(_left)발동자로부터 거리 (dis_0) ~ (dis_1) 사이에 있는",
-			"[(type.revive_non_zombie){ 모든 아군들은}][(!type.revive_non_zombie){ 모든 좀비 아군들은}]",
-			"[(type.range>=2){ 한번 영역에 들어가면}]",
-			"[(type.range_type==0){ 발동자가 필드에 존재하고 걷거나 기다리거나 공격하는 동안에만 부활할 수 있다}]",
-			"[(type.range_type==1){ 발동자가 적군이 인식할 수 있을 때에만 부활할 수 있다}]",
-			"[(type.range_type==2){ 발동자가 필드에 살아있을 때에만 부활할 수 있다}]",
-			"[(type.range_type==3){ 부활할 수 있다}](_right)}]"
+            "[(type.revive_others){(_left)발동자로부터 거리 (dis_0) ~ (dis_1) 사이에 있는",
+            "[(type.revive_non_zombie){ 모든 아군들은}][(!type.revive_non_zombie){ 모든 좀비 아군들은}]",
+            "[(type.range>=2){ 한번 영역에 들어가면}]",
+            "[(type.range_type==0){ 발동자가 필드에 존재하고 걷거나 기다리거나 공격하는 동안에만 부활할 수 있다}]",
+            "[(type.range_type==1){ 발동자가 적군이 인식할 수 있을 때에만 부활할 수 있다}]",
+            "[(type.range_type==2){ 발동자가 필드에 살아있을 때에만 부활할 수 있다}]",
+            "[(type.range_type==3){ 부활할 수 있다}](_right)}]"
         ],
         "class": {
             "count": {
@@ -411,14 +411,14 @@
         "format": [
             "(prob)% 확률로 (_dispTime(time)) 후에 [(!type.on_kill&!type.on_hit){거리 (dis) [(dis<0){뒤}(dis>=0){앞}]에서}] [(_isEnemy){(mult)% 배율로}] (_entity(id)) 소환 (_left)",
             "[(!type.fix_buff&_isEnemy){소환자의 배율에 상대적으로 소환되고}] ",
-			"[(type.anim_type==3){ 버로우 능력을 지우고 }]",
+            "[(type.anim_type==3){ 버로우 능력을 지우고 }]",
             "[(type.on_hit|type.on_kill){[(type.on_hit){매 공격마다}",
             "(type.on_kill&!type.on_hit){상대를 죽일 때마다}]",
             " 상대로부터 거리 (dis) [(dis<0){뒤}(dis>=0){앞}]에서 }]",
             "[(type.ignore_limit){스테이지 제한에 상관없이}] ",
             "[(!type.random_layer){소환자의 레이어와 같은 곳에}",
             "(type.random_layer){렌덤한 레이어에}] ",
-			"[(type.same_health){소환자와 같은 체력으로} ]",
+            "[(type.same_health){소환자와 같은 체력으로} ]",
             "[(type.anim_type==0){평범하게 소환}(type.anim_type==1){워프 에니메이션과 함께 소환}(type.anim_type>=2){버로우 애니메이션과 함께 소환}](_right)"
         ],
         "class": {
@@ -728,7 +728,7 @@
         "tooltip": "타겟의 속도를 빠르게 혹은 느리게 움직이도록 합니다. 값을 잘 조정하여 뒤로 가게 할 수도 있습니다. 느리게의 우선순위가 높아 느리게가 발동되면 속도는 1이 됩니다",
         "format": [
             "(prob)% 확률로 (_dispTime(time)) 동안 속도 [(speed>=0){증가}(speed<0){감소}] (_left)",
-			"타겟[(type==0){에게 속도 (_abs(speed)) [(speed>=0){부여}(speed<0){감소}]}",
+            "타겟[(type==0){에게 속도 (_abs(speed)) [(speed>=0){부여}(speed<0){감소}]}",
             "(type==1){이 (_abs(speed))% 만큼 [(speed>=0){더 빠르게}(speed<0){더 느리게}] 이동}",
             "(type==2){의 속도를 (speed) 로 변경}](_right)"
         ],
@@ -790,7 +790,7 @@
     },
     "SHIELDBREAK" : {
         "abbr_name" : "쉴드",
-        "full_name" : "쉴드를 부순다",
+        "full_name" : "쉴드를 브레이커",
         "tooltip" : "쉴드를 즉시 파괴합니다. 이 능력은 히트백시 쉴드가 다시 회복되는 것을 막을 수 없으니 유의해 주세요",
         "format" : "(prob)% 확률로 악마 쉴드를 부순다",
         "class" : {

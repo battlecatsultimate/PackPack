@@ -376,7 +376,7 @@
   "help_medal_exam" : "`p!medal 세계편 3장`\n`p!medal 086`",
   "help_announcement_use" : "`p!announcement <언어>`",
   "help_announcement_desc" : "5분 동안 연결 가능한 냥코 공지 링크를 업로드 합니다 (냥코 메인 메뉴의 \"i\" 버튼을 누르면 나오는 링크). 만약 인자가 주어지지 않았다면 유저의 언어 설정에 맞춰서 공지 링크를 제공합니다. `ann` 또한 유효한 명령어 입니다",
-  "help_announcement_argu" : "-en : 냥코 영판 공지 링크를 업로드합니다\n-jp : 냥코 일판 공지 링크를 업로드합니다\n-kr : 냥코 한판 공지 링크를 업로드합니다\n-tw : 냥코 대만판 공지 링크를 업로드합니다",
+  "help_announcement_argu" : "`-en` : 냥코 영판 공지 링크를 업로드합니다\n`-jp` : 냥코 일판 공지 링크를 업로드합니다\n`-kr` : 냥코 한판 공지 링크를 업로드합니다\n`-tw` : 냥코 대만판 공지 링크를 업로드합니다",
   "help_announcement_exam" : "`p!ann`\n`p!ann -en`",
   "help_catcombo_use" : "`p!catcombo <냥콤보>`",
   "help_catcombo_desc" : "제공된 이름으로 냥콤보를 찾고, 그 냥콤보의 정보를 업로드합니다. `combo`, `cc` 또한 유효한 명령어 입니다",
