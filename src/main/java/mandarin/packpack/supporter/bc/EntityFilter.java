@@ -1373,7 +1373,7 @@ public class EntityFilter {
                             int oldConfig = CommonStatic.getConfig().lang;
                             CommonStatic.getConfig().lang = l;
 
-                            String comboName = MultiLangCont.getStatic().COMNAME.getCont(c.name);
+                            String comboName = MultiLangCont.getStatic().COMNAME.getCont(c.name) + " " + DataToString.getComboType(c, l);
 
                             CommonStatic.getConfig().lang = oldConfig;
 

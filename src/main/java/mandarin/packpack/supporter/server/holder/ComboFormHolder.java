@@ -10,6 +10,7 @@ import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.rest.util.AllowedMentions;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
@@ -232,7 +233,7 @@ public class ComboFormHolder extends Holder<MessageCreateEvent> {
                         CommonStatic.getConfig().lang = lang;
 
                         if(MultiLangCont.getStatic().COMNAME.getCont(c.name) != null)
-                            comboName += MultiLangCont.getStatic().COMNAME.getCont(c.name);
+                            comboName += MultiLangCont.getStatic().COMNAME.getCont(c.name) + " " + DataToString.getComboType(c, lang);
 
                         CommonStatic.getConfig().lang = oldConfig;
 

@@ -8,6 +8,7 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 
@@ -91,7 +92,7 @@ public class ComboHolder extends Holder<MessageCreateEvent> {
                     CommonStatic.getConfig().lang = lang;
 
                     if(MultiLangCont.getStatic().COMNAME.getCont(c.name) != null)
-                        comboName += MultiLangCont.getStatic().COMNAME.getCont(c.name);
+                        comboName += MultiLangCont.getStatic().COMNAME.getCont(c.name) + " " + DataToString.getComboType(c, lang);
 
                     CommonStatic.getConfig().lang = oldConfig;
 
@@ -140,7 +141,7 @@ public class ComboHolder extends Holder<MessageCreateEvent> {
                     CommonStatic.getConfig().lang = lang;
 
                     if(MultiLangCont.getStatic().COMNAME.getCont(c.name) != null)
-                        comboName += MultiLangCont.getStatic().COMNAME.getCont(c.name);
+                        comboName += MultiLangCont.getStatic().COMNAME.getCont(c.name) + " " + DataToString.getComboType(c, lang);
 
                     CommonStatic.getConfig().lang = oldConfig;
 
@@ -242,7 +243,7 @@ public class ComboHolder extends Holder<MessageCreateEvent> {
                             CommonStatic.getConfig().lang = lang;
 
                             if(MultiLangCont.getStatic().COMNAME.getCont(c.name) != null)
-                                comboName += MultiLangCont.getStatic().COMNAME.getCont(c.name);
+                                comboName += MultiLangCont.getStatic().COMNAME.getCont(c.name) + " " + DataToString.getComboType(c, lang);
 
                             CommonStatic.getConfig().lang = oldConfig;
 
