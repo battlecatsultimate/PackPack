@@ -34,7 +34,7 @@ public class Help extends Command {
                 emb.setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)]);
                 emb.addField(LangID.getStringByID("help_normal", lang), "```analyze, locale, prefix```", false);
                 emb.addField(LangID.getStringByID("help_bc", lang), "```background, castle, catcombo, enemygif, enemyimage, enemysprite, enemystat, findstage, formgif, formimage, formsprite, formstat, medal, music, stageinfo```", false);
-                emb.addField(LangID.getStringByID("help_server", lang), "```bcustat, channelpermission, checkbcu, clearcache, idset, memory, save, serverjson, serverpre```", false);
+                emb.addField(LangID.getStringByID("help_server", lang), "```bcustat, boosteremoji, boosteremojiremove, boosterrole, boosterroleremove, channelpermission, checkbcu, clearcache, idset, memory, save, serverjson, serverpre```", false);
                 emb.addField(LangID.getStringByID("help_data", lang), "```animanalyzer, announcement, stageimage, stagemapimage```", false);
                 emb.addField(LangID.getStringByID("help_packpack", lang), "```alias, aliasadd, aliasremove, statistic, suggest```", false);
             }).subscribe();
