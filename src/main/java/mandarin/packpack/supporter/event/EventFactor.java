@@ -77,8 +77,11 @@ public class EventFactor {
     );
 
     public static final GroupHandler XPBLITZ = new NormalGroupHandler(
-            Collections.singletonList(
-                    Arrays.asList(1028, 1059, 1124, 1155)
+            Arrays.asList(
+                    List.of(1028),
+                    List.of(1059),
+                    List.of(1124),
+                    List.of(1155)
             ),
             "XP Blitz!"
     );

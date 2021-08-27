@@ -81,8 +81,6 @@ public class EventHolder extends EventFactor {
             reader.close();
         }
 
-        System.out.println(file.getAbsolutePath()+"\n"+f.getAbsolutePath());
-
         if(!file.getAbsolutePath().equals(f.getAbsolutePath())) {
             if(file.exists()) {
                 boolean res = file.delete();

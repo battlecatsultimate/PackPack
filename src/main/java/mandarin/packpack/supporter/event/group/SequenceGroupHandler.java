@@ -72,7 +72,7 @@ public class SequenceGroupHandler implements GroupHandler {
             for (StageMap stm : schedule.stages) {
                 int id = EventFactor.stageToInteger(stm);
 
-                if (id == -1 || !group.contains(id)) {
+                if (id == -1) {
                     return false;
                 } else {
                     data.add(id);
