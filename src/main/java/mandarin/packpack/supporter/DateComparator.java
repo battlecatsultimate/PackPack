@@ -1,5 +1,7 @@
 package mandarin.packpack.supporter;
 
+import mandarin.packpack.supporter.event.EventFactor;
+
 import java.util.Comparator;
 
 public class DateComparator implements Comparator<String> {
@@ -33,20 +35,29 @@ public class DateComparator implements Comparator<String> {
     private int[] extractDate(String value) {
         value = value.replace("[","");
 
-        String[] contents = value.split(" ", 4);
+        String[] contents = value.split(" ~ ", 2);
 
-        if(contents.length != 4)
+        if(contents.length != 2)
             throw new IllegalStateException("Content has invalid format : "+value);
+
+        String[] date = contents[0].split(" ");
 
         int[] result = new int[3];
 
-        if(StaticStore.isNumeric(contents[0]))
-            result[0] = StaticStore.safeParseInt(contents[0]);
+        if(date.length == 3) {
+            if(StaticStore.isNumeric(date[0]))
+                result[0] = StaticStore.safeParseInt(date[0]);
 
-        result[1] = monthToNumber(contents[1]);
+            result[1] = monthToNumber(date[1]);
 
-        if(StaticStore.isNumeric(contents[2]))
-            result[2] = StaticStore.safeParseInt(contents[2]);
+            result[2] = StaticStore.safeParseInt(date[2].replaceAll("st|nd|rd|th", ""));
+        } else if(date.length == 2) {
+            result[0] = EventFactor.currentYear;
+
+            result[1] = monthToNumber(date[0]);
+
+            result[2] = StaticStore.safeParseInt(date[1].replaceAll("st|nd|rd|th", ""));
+        }
 
         return result;
     }
