@@ -61,7 +61,7 @@ public class SequenceGroupHandler implements GroupHandler {
     }
 
     @Override
-    public ArrayList<EventGroup> getGroups() {
+    public List<EventGroup> getGroups() {
         return groups;
     }
 

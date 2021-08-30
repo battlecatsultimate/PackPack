@@ -4,6 +4,7 @@ import common.util.stage.MapColc;
 import common.util.stage.Stage;
 import common.util.stage.StageMap;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.event.group.ContainedGroupHandler;
 import mandarin.packpack.supporter.event.group.GroupHandler;
 import mandarin.packpack.supporter.event.group.NormalGroupHandler;
 import mandarin.packpack.supporter.event.group.SequenceGroupHandler;
@@ -111,8 +112,16 @@ public class EventFactor {
             "Li'l Festival!"
     );
 
+    public static final GroupHandler METALFESTIVAL = new ContainedGroupHandler(
+            Arrays.asList(
+                    Arrays.asList(1006, 1007),
+                    List.of(1078)
+            ),
+            "Metal Festival!"
+    );
+
     public static final List<GroupHandler> handlers = Arrays.asList(
-            CYCLONE, BUILDERBLITZ, XPBLITZ, CATFRUITFESTIVAL, CRAZEDFESTIVAL, LILFESTIVAL
+            CYCLONE, BUILDERBLITZ, XPBLITZ, CATFRUITFESTIVAL, CRAZEDFESTIVAL, LILFESTIVAL, METALFESTIVAL
     );
 
     public static final String GACHAURL = "https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/gacha/rare/en/R___.html";

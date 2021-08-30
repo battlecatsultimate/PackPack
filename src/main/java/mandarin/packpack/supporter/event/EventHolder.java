@@ -3,10 +3,7 @@ package mandarin.packpack.supporter.event;
 import common.io.assets.UpdateCheck;
 import mandarin.packpack.supporter.DateComparator;
 import mandarin.packpack.supporter.StaticStore;
-import mandarin.packpack.supporter.event.group.EventGroup;
-import mandarin.packpack.supporter.event.group.GroupHandler;
-import mandarin.packpack.supporter.event.group.NormalGroupHandler;
-import mandarin.packpack.supporter.event.group.SequenceGroupHandler;
+import mandarin.packpack.supporter.event.group.*;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -217,8 +214,6 @@ public class EventHolder extends EventFactor {
         }
 
         for(GroupHandler handler : EventFactor.handlers) {
-            System.out.println(handler.getGroups());
-
             for(EventGroup event : handler.getGroups()) {
                 if(event.finished) {
                     if(handler instanceof NormalGroupHandler) {
@@ -230,6 +225,10 @@ public class EventHolder extends EventFactor {
                         StageSchedule end = (StageSchedule) event.schedules[event.schedules.length - 1];
 
                         appendProperly(start, manualSchedulePrint(start.date.dateStart, end.date.dateEnd, event.name), normals, dailys, weeklys, monthlys, yearlys);
+                    } else if(handler instanceof ContainedGroupHandler) {
+                        StageSchedule primary = (StageSchedule) event.schedules[0];
+
+                        appendProperly(primary, primary.beautifyWithCustomName(event.name), normals, dailys, weeklys, monthlys, yearlys);
                     }
                 }
             }
