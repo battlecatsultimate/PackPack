@@ -98,6 +98,7 @@ public class DataToString {
         talentText.put(55, "data_imusurge");
         talentText.put(56, "data_surge");
         talentText.put(57, "data_demon");
+        talentText.put(58, "data_shieldbreak");
 
         VFile pCoinLevel = VFile.get("./org/data/SkillLevel.csv");
 
