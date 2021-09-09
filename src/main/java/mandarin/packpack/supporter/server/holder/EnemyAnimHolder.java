@@ -90,7 +90,7 @@ public class EnemyAnimHolder extends Holder<MessageCreateEvent> {
                 else
                     check = LangID.getStringByID("formst_nexpre", lang);
 
-                StringBuilder sb = new StringBuilder("```md\n").append(check);
+                StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
 
                 int oldConfig = CommonStatic.getConfig().lang;
                 CommonStatic.getConfig().lang = lang;
@@ -143,7 +143,7 @@ public class EnemyAnimHolder extends Holder<MessageCreateEvent> {
                 else
                     check = LangID.getStringByID("formst_nexpre", lang);
 
-                StringBuilder sb = new StringBuilder("```md\n").append(check);
+                StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
 
                 int oldConfig = CommonStatic.getConfig().lang;
                 CommonStatic.getConfig().lang = lang;
@@ -298,7 +298,7 @@ public class EnemyAnimHolder extends Holder<MessageCreateEvent> {
                         else
                             check = LangID.getStringByID("formst_nexpre", lang);
 
-                        StringBuilder sb = new StringBuilder("```md\n").append(check);
+                        StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
 
                         for(int i = 20 * page; i < 20 * (page +1); i++) {
                             if(i >= enemy.size())

@@ -81,7 +81,7 @@ public class ComboFormHolder extends Holder<MessageCreateEvent> {
                 else
                     check = LangID.getStringByID("formst_nexpre", lang);
 
-                StringBuilder sb = new StringBuilder("```md\n").append(check);
+                StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
 
                 for(int i = 20 * page; i < 20 * (page +1); i++) {
                     if(i >= form.size())
@@ -130,7 +130,7 @@ public class ComboFormHolder extends Holder<MessageCreateEvent> {
                 else
                     check = LangID.getStringByID("formst_nexpre", lang);
 
-                StringBuilder sb = new StringBuilder("```md\n").append(check);
+                StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
 
                 for(int i = 20 * page; i < 20 * (page +1); i++) {
                     if(i >= form.size())
@@ -219,7 +219,7 @@ public class ComboFormHolder extends Holder<MessageCreateEvent> {
                     else
                         check = LangID.getStringByID("formst_next", lang);
 
-                    StringBuilder sb = new StringBuilder("```md\n").append(check);
+                    StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
 
                     for(int i = 0; i < 20 ; i++) {
                         if(i >= combos.size())
@@ -315,7 +315,7 @@ public class ComboFormHolder extends Holder<MessageCreateEvent> {
                         else
                             check = LangID.getStringByID("formst_nexpre", lang);
 
-                        StringBuilder sb = new StringBuilder("```md\n").append(check);
+                        StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
 
                         for(int i = 20 * page; i < 20 * (page +1); i++) {
                             if(i >= form.size())

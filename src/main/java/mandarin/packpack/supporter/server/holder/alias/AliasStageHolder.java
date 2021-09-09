@@ -237,7 +237,7 @@ public class AliasStageHolder extends Holder<MessageCreateEvent> {
             else
                 check = LangID.getStringByID("formst_nexpre", lang);
 
-            StringBuilder sb = new StringBuilder("```md\n").append(check);
+            StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
 
             for(int i = 20 * page; i < 20 * (page + 1); i++) {
                 if(i >= stage.size())
