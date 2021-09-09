@@ -169,7 +169,10 @@ public class StageInfo extends TimedConstraintCommand {
                 else
                     check = LangID.getStringByID("formst_next", lang);
 
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("stinfo_several", lang).replace("_", generateSearchName(names))).append("```md\n").append(check);
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("stinfo_several", lang).replace("_", generateSearchName(names)))
+                        .append("```md\n")
+                        .append(LangID.getStringByID("formst_pick", lang))
+                        .append(check);
 
                 for(int i = 0; i < 20; i++) {
                     if(i >= stages.size())

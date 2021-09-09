@@ -115,7 +115,7 @@ public class FormGif extends GlobalTimedConstraintCommand {
                 else
                     check = LangID.getStringByID("formst_next", lang);
 
-                sb.append("```md\n").append(check);
+                sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
 
                 for(int i = 0; i < 20; i++) {
                     if(i >= forms.size())
