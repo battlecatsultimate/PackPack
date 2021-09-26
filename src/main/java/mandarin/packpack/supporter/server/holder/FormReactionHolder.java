@@ -70,30 +70,46 @@ public class FormReactionHolder extends Holder<ReactionAddEvent> {
 
         MessageChannel ch = event.getChannel().block();
 
-        if(ch == null)
+        if(ch == null) {
+            StaticStore.logger.uploadLog("MessageChannel was null when performing FormReactionHolder");
             return RESULT_STILL;
+        }
 
-        if(!ch.getId().asString().equals(channelID))
+        if(!ch.getId().asString().equals(channelID)) {
+            StaticStore.logger.uploadLog("MessageChannel had different channel from registered channel\nRegistered : "+channelID+" | Current : "+ch.getId().asString());
             return RESULT_STILL;
+        }
 
         Message msg = event.getMessage().block();
 
-        if(msg == null || !msg.getId().asString().equals(embed.getId().asString()))
-            return RESULT_STILL;
+        if(msg == null || !msg.getId().asString().equals(embed.getId().asString())) {
+            if(msg == null) {
+                StaticStore.logger.uploadLog("Message was null when performing FormReactionHolder");
+            } else {
+                StaticStore.logger.uploadLog("Message had different id from registered message\nRegistered : "+embed+" | Current : "+msg.getId().asString());
+            }
 
-        if(event.getMember().isEmpty())
             return RESULT_STILL;
+        }
+
+        if(event.getMember().isEmpty()) {
+            StaticStore.logger.uploadLog("Member data was empty while performing FormReactionHolder");
+            return RESULT_STILL;
+        }
 
         Member mem = event.getMember().get();
 
-        if(!mem.getId().asString().equals(memberID))
+        if(!mem.getId().asString().equals(memberID)) {
+            StaticStore.logger.uploadLog("Member had different id from registered member\nRegistered : "+memberID+" | Current : "+mem.getId().asString());
             return RESULT_STILL;
+        }
 
         Optional<ReactionEmoji.Custom> emoji = event.getEmoji().asCustomEmoji();
 
         AtomicReference<Boolean> emojiClicked = new AtomicReference<>(false);
 
         emoji.ifPresent(em -> {
+            StaticStore.logger.uploadLog("Custom emoji is present in FormReactionHolder\nClicked emoji : "+em.asFormat());
             switch (em.getId().asString()) {
                 case TWOPREVIOUS:
                     emojiClicked.set(true);

@@ -47,8 +47,8 @@ public class Logger {
             return;
 
         String errMessage = errorMessages[StaticStore.random.nextInt(errorMessages.length)] +
-                "\n\nMessage : " + message + "\n\n----- StackTrace -----\n\n" +
-                ExceptionUtils.getStackTrace(e);
+                "\n\nMessage : " + message + "\n\n----- StackTrace -----\n\n```java\n" +
+                ExceptionUtils.getStackTrace(e)+"\n```";
 
         if(errMessage.length() >= 2000) {
             errMessage = errMessage.substring(0, 1997) + "...";

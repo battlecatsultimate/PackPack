@@ -13,8 +13,6 @@ public class UnregisterLogging extends ConstraintCommand {
 
     @Override
     public void doSomething(MessageEvent event) throws Exception {
-        int i = 0/0;
-
         StaticStore.loggingChannel = "";
 
         MessageChannel ch = getChannel(event);

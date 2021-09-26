@@ -735,6 +735,18 @@ public class PackBot {
                                 case "ber":
                                     new BoosterEmojiRemove(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
                                     break;
+                                case "registerlogging":
+                                case "rlogging":
+                                case "registerl":
+                                case "rl":
+                                    new RegisterLogging(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+                                    break;
+                                case "unregisterlogging":
+                                case "urlogging":
+                                case "unregisterl":
+                                case "url":
+                                    new UnregisterLogging(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+                                    break;
                             }
                         }
                     });
