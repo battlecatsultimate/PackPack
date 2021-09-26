@@ -319,6 +319,7 @@ public class StageImageGenerator implements  ImageGenerator {
                         return null;
                     }
                 } catch (IOException e) {
+                    StaticStore.logger.uploadErrorLog(e, "Failed to create file : "+f.getAbsolutePath());
                     e.printStackTrace();
                     return null;
                 }
@@ -329,6 +330,7 @@ public class StageImageGenerator implements  ImageGenerator {
 
                 return f;
             } catch (IOException e) {
+                StaticStore.logger.uploadErrorLog(e, "Failed to write png : "+f.getAbsolutePath());
                 e.printStackTrace();
 
                 return null;
@@ -374,6 +376,7 @@ public class StageImageGenerator implements  ImageGenerator {
             try {
                 Context.check(f);
             } catch (IOException e) {
+                StaticStore.logger.uploadErrorLog(e, "Failed to check file : "+f.getAbsolutePath());
                 e.printStackTrace();
                 return null;
             }
@@ -381,6 +384,7 @@ public class StageImageGenerator implements  ImageGenerator {
             try {
                 ImageIO.write(real, "PNG", f);
             } catch (IOException e) {
+                StaticStore.logger.uploadErrorLog(e, "Failed to write png file : "+f.getAbsolutePath());
                 e.printStackTrace();
                 return null;
             }
@@ -409,6 +413,7 @@ public class StageImageGenerator implements  ImageGenerator {
             try {
                 Context.check(f);
             } catch (IOException e) {
+                StaticStore.logger.uploadErrorLog(e, "Failed to check file : "+f.getAbsolutePath());
                 e.printStackTrace();
                 return null;
             }
@@ -416,6 +421,7 @@ public class StageImageGenerator implements  ImageGenerator {
             try {
                 ImageIO.write(real, "PNG", f);
             } catch (IOException e) {
+                StaticStore.logger.uploadErrorLog(e, "Failed to write png file : "+f.getAbsolutePath());
                 e.printStackTrace();
                 return null;
             }

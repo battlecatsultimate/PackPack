@@ -42,6 +42,7 @@ public class PackContext implements Context {
                 return new FileInputStream("./data/lang/proc.json");
             }
         } catch (Exception e) {
+            StaticStore.logger.uploadErrorLog(e, "Failed to open lang file");
             e.printStackTrace();
             return null;
         }
@@ -64,6 +65,7 @@ public class PackContext implements Context {
     @Override
     public void noticeErr(Exception e, ErrType t, String str) {
         printErr(t, str);
+        StaticStore.logger.uploadErrorLog(e, t.name()+" - "+str);
         e.printStackTrace(t == ErrType.INFO ? System.out : System.err);
     }
 

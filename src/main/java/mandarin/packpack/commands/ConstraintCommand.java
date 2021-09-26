@@ -121,11 +121,13 @@ public abstract class ConstraintCommand extends Command {
                     try {
                         doSomething(event);
                     } catch (Exception e) {
+                        StaticStore.logger.uploadErrorLog(e, "Failed to perform command");
                         e.printStackTrace();
                         onFail(event, DEFAULT_ERROR);
                     }
                 }).start();
             } catch (Exception e) {
+                StaticStore.logger.uploadErrorLog(e, "Failed to perform command");
                 e.printStackTrace();
                 onFail(event, DEFAULT_ERROR);
             }
@@ -133,6 +135,7 @@ public abstract class ConstraintCommand extends Command {
             try {
                 onSuccess(event);
             } catch (Exception e) {
+                StaticStore.logger.uploadErrorLog(e, "Failed to perform onSuccess process");
                 e.printStackTrace();
             }
         }

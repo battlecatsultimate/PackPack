@@ -30,6 +30,7 @@ import mandarin.packpack.commands.data.StageImage;
 import mandarin.packpack.commands.data.StmImage;
 import mandarin.packpack.commands.server.*;
 import mandarin.packpack.supporter.AssetDownloader;
+import mandarin.packpack.supporter.Logger;
 import mandarin.packpack.supporter.PackContext;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
@@ -69,6 +70,8 @@ public class PackBot {
         if(gate == null) {
             return;
         }
+
+        StaticStore.logger = new Logger(gate);
 
         SlashBuilder.build(gate);
 

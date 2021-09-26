@@ -58,11 +58,13 @@ public abstract class Command {
                 try {
                     doSomething(event);
                 } catch (Exception e) {
+                    StaticStore.logger.uploadErrorLog(e, "Failed to perform command");
                     e.printStackTrace();
                     onFail(event, DEFAULT_ERROR);
                 }
             }).start();
         } catch (Exception e) {
+            StaticStore.logger.uploadErrorLog(e, "Failed to perform command");
             e.printStackTrace();
             onFail(event, DEFAULT_ERROR);
         }
@@ -102,6 +104,7 @@ public abstract class Command {
             } else if(obj instanceof Message)
                 return (Message) obj;
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            StaticStore.logger.uploadErrorLog(e, "Failed to get Message from this class : "+event.getClass().getName());
             e.printStackTrace();
         }
 
@@ -124,6 +127,7 @@ public abstract class Command {
             if(obj instanceof Optional)
                 return (Optional<Member>) obj;
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            StaticStore.logger.uploadErrorLog(e, "Failed to get Message from this class : "+event.getClass().getName());
             e.printStackTrace();
         }
 
@@ -140,6 +144,7 @@ public abstract class Command {
             if(obj instanceof Mono)
                 return (Mono<Guild>) obj;
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            StaticStore.logger.uploadErrorLog(e, "Failed to get Message from this class : "+event.getClass().getName());
             e.printStackTrace();
         }
 

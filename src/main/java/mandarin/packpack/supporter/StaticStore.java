@@ -38,6 +38,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
 public class StaticStore {
+    public static Logger logger = null;
+
     public static String ratingChannel = "";
 
     public static boolean initialized = false;
@@ -126,6 +128,8 @@ public class StaticStore {
 
     public static final String BCU_SERVER = "490262537527623692";
     public static final String BCU_KR_SERVER = "679858366389944409";
+
+    public static String loggingChannel = "";
 
     public static String rolesToString(Set<Snowflake> roles) {
         StringBuilder builder = new StringBuilder();
@@ -368,6 +372,7 @@ public class StaticStore {
 
             return obj == null ? null : obj.isJsonObject() ? obj.getAsJsonObject() : null;
         } catch (FileNotFoundException e) {
+            StaticStore.logger.uploadErrorLog(e, "Failed to read json file", f);
             e.printStackTrace();
             return null;
         }
@@ -389,6 +394,7 @@ public class StaticStore {
         obj.add("contributor", listToJsonString(contributors));
         obj.add("spam", SpamPrevent.jsonfyMap());
         obj.add("booster", mapToJsonBoosterHolder(boosterData));
+        obj.addProperty("logging", loggingChannel);
 
         try {
             File folder = new File("./data/");
@@ -424,6 +430,7 @@ public class StaticStore {
             writer.append(mapper.writeValueAsString(tree));
             writer.close();
         } catch (IOException e) {
+            StaticStore.logger.uploadErrorLog(e, "Failed to save server info");
             e.printStackTrace();
         }
     }
@@ -488,6 +495,10 @@ public class StaticStore {
 
             if(obj.has("booster")) {
                 boosterData = jsonToMapBoosterHolder(obj.getAsJsonArray("booster"));
+            }
+
+            if(obj.has("logging")) {
+                loggingChannel = obj.get("logging").getAsString();
             }
         }
     }
@@ -609,6 +620,7 @@ public class StaticStore {
 
             return String.format("%32s", str).replace(' ', '0');
         } catch (NoSuchAlgorithmException | IOException e) {
+            logger.uploadErrorLog(e, "Failed to parse file to md5 : "+f.getAbsolutePath());
             e.printStackTrace();
         }
 

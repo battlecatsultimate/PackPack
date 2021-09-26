@@ -166,6 +166,7 @@ public abstract class GlobalTimedConstraintCommand extends Command {
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
+                                StaticStore.logger.uploadErrorLog(e, "Failed to perform command");
                                 onFail(event, DEFAULT_ERROR);
                                 StaticStore.canDo.put(id, new TimeBoolean(true));
                             }
@@ -175,6 +176,7 @@ public abstract class GlobalTimedConstraintCommand extends Command {
                     }
                 }
             } catch (Exception e) {
+                StaticStore.logger.uploadErrorLog(e, "Failed to perform command");
                 e.printStackTrace();
                 StaticStore.canDo.put(id, new TimeBoolean(true));
                 onFail(event, DEFAULT_ERROR);
@@ -183,6 +185,7 @@ public abstract class GlobalTimedConstraintCommand extends Command {
             try {
                 onSuccess(event);
             } catch (Exception e) {
+                StaticStore.logger.uploadErrorLog(e, "Failed to perform onSuccess process");
                 e.printStackTrace();
             }
         }

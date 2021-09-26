@@ -95,12 +95,14 @@ public class AssetDownloader {
                 StaticStore.langs.put(key, CommonStatic.getConfig().localLangMap.get(key));
             }
         } catch (Exception e) {
+            StaticStore.logger.uploadErrorLog(e, "Failed to handle downloading data");
             e.printStackTrace();
         }
 
         try {
             define();
         } catch (Exception e) {
+            StaticStore.logger.uploadErrorLog(e, "Failed to define data");
             e.printStackTrace();
         }
     }

@@ -12,6 +12,7 @@ public class Pauser {
                 }
             } catch (InterruptedException e) {
                 handler.run();
+                StaticStore.logger.uploadErrorLog(e, "Failed to handle pauser");
                 e.printStackTrace();
             }
         }

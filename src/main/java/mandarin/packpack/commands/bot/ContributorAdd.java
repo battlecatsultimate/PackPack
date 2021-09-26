@@ -52,6 +52,7 @@ public class ContributorAdd extends ConstraintCommand {
 
             return true;
         } catch (Exception e) {
+            StaticStore.logger.uploadErrorLog(e, "Failed to get user ID | ID : "+id);
             e.printStackTrace();
 
             return  false;
