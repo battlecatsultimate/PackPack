@@ -333,8 +333,6 @@ public class PackBot {
             }
 
             event.getMember().ifPresent(m -> {
-                StaticStore.logger.uploadLog("Reaction Added : " + StaticStore.holderContainsKey(m.getId().asString()));
-
                 if (StaticStore.holderContainsKey(m.getId().asString())) {
                     Holder<? extends MessageEvent> holder = StaticStore.getHolder(m.getId().asString());
 
