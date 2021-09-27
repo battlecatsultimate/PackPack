@@ -39,6 +39,7 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.data.BoosterData;
 import mandarin.packpack.supporter.server.data.BoosterHolder;
+import mandarin.packpack.supporter.server.holder.FormReactionHolder;
 import mandarin.packpack.supporter.server.slash.SlashBuilder;
 import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.data.IDHolder;
@@ -322,12 +323,24 @@ public class PackBot {
                 }).subscribe(event -> {
             Message msg = event.getMessage().block();
 
-            if(msg == null)
+            if(msg == null) {
+                StaticStore.logger.uploadLog("Message is null while trying to perform ReactionAddEvent");
                 return;
+            }
+
+            if(event.getMember().isEmpty()) {
+                StaticStore.logger.uploadLog("Member is empty while trying to perform ReactionAddEvent");
+            }
 
             event.getMember().ifPresent(m -> {
+                StaticStore.logger.uploadLog("Reaction Added : " + StaticStore.holderContainsKey(m.getId().asString()));
+
                 if (StaticStore.holderContainsKey(m.getId().asString())) {
                     Holder<? extends MessageEvent> holder = StaticStore.getHolder(m.getId().asString());
+
+                    if(holder instanceof FormReactionHolder) {
+                        StaticStore.logger.uploadLog("Trying to perform FormReactionHolder : "+holder.canCastTo(ReactionAddEvent.class));
+                    }
 
                     if (holder.canCastTo(ReactionAddEvent.class)) {
                         @SuppressWarnings("unchecked")
@@ -335,10 +348,15 @@ public class PackBot {
 
                         int result = h.handleEvent(event);
 
+                        if(holder instanceof FormReactionHolder) {
+                            StaticStore.logger.uploadLog("Result is : "+result);
+                        }
+
                         if (result == Holder.RESULT_FINISH) {
                             holder.clean();
                             StaticStore.removeHolder(m.getId().asString(), holder);
                         } else if (result == Holder.RESULT_FAIL) {
+                            StaticStore.logger.uploadLog("W/ReactionEventHolder | Expired process tried to be handled : " + m.getId().asString() + " / " + holder.getClass().getName());
                             System.out.println("ERROR : Expired process tried to be handled : " + m.getId().asString() + " | " + holder.getClass().getName());
                             StaticStore.removeHolder(m.getId().asString(), holder);
                         }
