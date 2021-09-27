@@ -2362,6 +2362,8 @@ public class EntityHandler {
 
         if(id <= 13 && lang != 3) {
             medalName += "_"+getLocaleName(lang);
+        } else if(id == 90 && lang != 3) {
+            medalName += "_en";
         }
 
         medalName += ".png";
