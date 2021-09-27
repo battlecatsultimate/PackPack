@@ -10,7 +10,10 @@ import discord4j.core.event.domain.interaction.InteractionCreateEvent;
 import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.discordjson.json.*;
+import discord4j.discordjson.json.ApplicationCommandInteractionData;
+import discord4j.discordjson.json.ApplicationCommandInteractionOptionData;
+import discord4j.discordjson.json.InteractionData;
+import discord4j.discordjson.json.MemberData;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.TimedConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
@@ -18,9 +21,9 @@ import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import mandarin.packpack.supporter.server.holder.StageInfoHolder;
-import mandarin.packpack.supporter.server.holder.StageReactionHolder;
-import mandarin.packpack.supporter.server.holder.StageReactionSlashHolder;
+import mandarin.packpack.supporter.server.holder.StageInfoButtonHolder;
+import mandarin.packpack.supporter.server.holder.StageInfoMessageHolder;
+import mandarin.packpack.supporter.server.holder.StageReactionSlashMessageHolder;
 import mandarin.packpack.supporter.server.slash.SlashBuilder;
 import mandarin.packpack.supporter.server.slash.SlashOption;
 import mandarin.packpack.supporter.server.slash.WebhookBuilder;
@@ -107,7 +110,7 @@ public class StageInfo extends TimedConstraintCommand {
 
                             StaticStore.putHolder(
                                     member.user().id().asString(),
-                                    new StageReactionSlashHolder(g, st, m.id().asLong(), m.channelId().asLong(), member.user().id().asString(), holder, finalLang)
+                                    new StageReactionSlashMessageHolder(g, st, m.id().asLong(), m.channelId().asLong(), member.user().id().asString(), holder, finalLang)
                             );
                         }
                     });
@@ -153,7 +156,7 @@ public class StageInfo extends TimedConstraintCommand {
                     Message author = getMessage(event);
 
                     if(author != null)
-                        StaticStore.putHolder(m.getId().asString(), new StageReactionHolder(stages.get(0), author, result, holder, lang, ch.getId().asString(), m.getId().asString()));
+                        StaticStore.putHolder(m.getId().asString(), new StageInfoButtonHolder(stages.get(0), author, result, ch.getId().asString(), m.getId().asString()));
                 });
             } else {
                 int param = checkParameters(getContent(event));
@@ -264,7 +267,7 @@ public class StageInfo extends TimedConstraintCommand {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(member.getId().asString(), new StageInfoHolder(stages, msg, res, ch.getId().asString(), star, isFrame, lang));
+                            StaticStore.putHolder(member.getId().asString(), new StageInfoMessageHolder(stages, msg, res, ch.getId().asString(), star, isFrame, lang));
                     });
                 }
             }

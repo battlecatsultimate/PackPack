@@ -41,7 +41,7 @@ public class Logger {
             return null;
     }
 
-    public void uploadErrorLog(Exception e, String message, File... files) {
+    public void uploadErrorLog(Throwable e, String message, File... files) {
         MessageChannel ch = getLoggingChannel();
 
         if(ch == null)

@@ -14,7 +14,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
-import mandarin.packpack.supporter.server.holder.EnemyAnimHolder;
+import mandarin.packpack.supporter.server.holder.EnemyAnimMessageHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 
 import java.io.File;
@@ -163,7 +163,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
                 }
 
                 if(res != null) {
-                    getMember(event).ifPresent(member -> StaticStore.putHolder(member.getId().asString(), new EnemyAnimHolder(enemies, getMessage(event), res, ch.getId().asString(), mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isTrusted.get(), gif)));
+                    getMember(event).ifPresent(member -> StaticStore.putHolder(member.getId().asString(), new EnemyAnimMessageHolder(enemies, getMessage(event), res, ch.getId().asString(), mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isTrusted.get(), gif)));
                 }
 
                 disableTimer();

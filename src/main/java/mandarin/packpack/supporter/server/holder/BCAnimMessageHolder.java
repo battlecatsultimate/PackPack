@@ -26,7 +26,7 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class BCAnimHolder extends Holder<MessageCreateEvent> {
+public class BCAnimMessageHolder extends MessageHolder<MessageCreateEvent> {
     private enum FILE {
         PNG(-1),
         IMGCUT(-1),
@@ -59,7 +59,7 @@ public class BCAnimHolder extends Holder<MessageCreateEvent> {
     private final AtomicReference<String> imgcut = new AtomicReference<>("IMGCUT : -");
     private final ArrayList<AtomicReference<String>> maanim = new ArrayList<>();
 
-    public BCAnimHolder(Message msg, Message target, int lang, String channelID, File container, MessageChannel ch, boolean zombie) throws Exception {
+    public BCAnimMessageHolder(Message msg, Message target, int lang, String channelID, File container, MessageChannel ch, boolean zombie) throws Exception {
         super(MessageCreateEvent.class);
 
         this.msg = target;

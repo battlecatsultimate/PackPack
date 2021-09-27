@@ -11,7 +11,7 @@ import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.AliasHolder;
-import mandarin.packpack.supporter.server.holder.Holder;
+import mandarin.packpack.supporter.server.holder.MessageHolder;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
-public class AliasFormHolder extends Holder<MessageCreateEvent> {
+public class AliasFormMessageHolder extends MessageHolder<MessageCreateEvent> {
     private final ArrayList<Form> form;
     private final Message msg;
     private final String channelID;
@@ -33,7 +33,7 @@ public class AliasFormHolder extends Holder<MessageCreateEvent> {
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
-    public AliasFormHolder(ArrayList<Form> form, Message author, Message msg, String channelID, AliasHolder.MODE mode, int lang, @Nullable String aliasName) {
+    public AliasFormMessageHolder(ArrayList<Form> form, Message author, Message msg, String channelID, AliasHolder.MODE mode, int lang, @Nullable String aliasName) {
         super(MessageCreateEvent.class);
 
         this.form = form;
@@ -54,7 +54,7 @@ public class AliasFormHolder extends Holder<MessageCreateEvent> {
 
                 expired = true;
 
-                author.getAuthor().ifPresent(u -> StaticStore.removeHolder(u.getId().asString(), AliasFormHolder.this));
+                author.getAuthor().ifPresent(u -> StaticStore.removeHolder(u.getId().asString(), AliasFormMessageHolder.this));
 
                 Command.editMessage(msg, m -> m.content(wrap(LangID.getStringByID("formst_expire", lang))));
             }

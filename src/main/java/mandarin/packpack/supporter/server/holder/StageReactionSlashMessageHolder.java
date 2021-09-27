@@ -7,6 +7,7 @@ import common.util.stage.CastleImg;
 import common.util.stage.CastleList;
 import common.util.stage.Music;
 import common.util.stage.Stage;
+import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
@@ -24,28 +25,27 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class StageReactionHolder extends Holder<ReactionAddEvent> {
-    public final static String BG = "821436445242818610";
-    public final static String CASTLE = "821436460447039508";
-    public final static String MUSIC = "821436473525141588";
-    public final static String MUSIC2 = "821436484254564373";
-
-    private final Message embed;
+public class StageReactionSlashMessageHolder extends MessageHolder<ReactionAddEvent> {
+    private final long embedID;
     private final IDHolder holder;
     private final int lang;
-    private final String channelID;
+    private final long channelID;
     private final String memberID;
     private final Stage st;
 
-    public StageReactionHolder(Stage st, Message author, Message msg, IDHolder holder, int lang, String channelID, String memberID) {
+    private final GatewayDiscordClient client;
+
+    public StageReactionSlashMessageHolder(GatewayDiscordClient client, Stage st, long embedID, long channelID, String memberID, IDHolder holder, int lang) {
         super(ReactionAddEvent.class);
 
-        this.st = st;
-        embed = msg;
+        this.embedID = embedID;
         this.holder = holder;
         this.lang = lang;
         this.channelID = channelID;
         this.memberID = memberID;
+        this.st = st;
+
+        this.client = client;
 
         Timer autoFinish = new Timer();
 
@@ -57,9 +57,10 @@ public class StageReactionHolder extends Holder<ReactionAddEvent> {
 
                 expired = true;
 
-                author.getAuthor().ifPresent(u -> StaticStore.removeHolder(u.getId().asString(), StageReactionHolder.this));
+                StaticStore.removeHolder(memberID, StageReactionSlashMessageHolder.this);
 
-                embed.removeAllReactions().subscribe();
+                client.getRestClient().getChannelService()
+                        .deleteAllReactions(channelID, embedID).subscribe();
             }
         }, TimeUnit.MINUTES.toMillis(5));
     }
@@ -76,12 +77,12 @@ public class StageReactionHolder extends Holder<ReactionAddEvent> {
         if(ch == null)
             return RESULT_STILL;
 
-        if(!ch.getId().asString().equals(channelID))
+        if(ch.getId().asLong() != channelID)
             return RESULT_STILL;
 
         Message msg = event.getMessage().block();
 
-        if(msg == null || !msg.getId().asString().equals(embed.getId().asString()))
+        if(msg == null || msg.getId().asLong() != embedID)
             return RESULT_STILL;
 
         if(event.getMember().isEmpty())
@@ -98,7 +99,7 @@ public class StageReactionHolder extends Holder<ReactionAddEvent> {
 
         uni.ifPresent(em -> {
             switch (em.getId().asString()) {
-                case CASTLE:
+                case StaticStore.CASTLE:
                     emojiClicked.set(true);
 
                     CastleImg cs = Identifier.get(st.castle);
@@ -112,7 +113,7 @@ public class StageReactionHolder extends Holder<ReactionAddEvent> {
                     new Castle(ConstraintCommand.ROLE.MEMBER, lang, holder, cs).execute(event);
 
                     break;
-                case BG:
+                case StaticStore.BG:
                     emojiClicked.set(true);
 
                     Background bg = Identifier.get(st.bg);
@@ -124,7 +125,7 @@ public class StageReactionHolder extends Holder<ReactionAddEvent> {
                     new mandarin.packpack.commands.bc.Background(ConstraintCommand.ROLE.MEMBER, lang, holder, 10000, bg).execute(event);
 
                     break;
-                case MUSIC:
+                case StaticStore.MUSIC:
                     emojiClicked.set(true);
 
                     if(st.mus0 == null)
@@ -137,9 +138,9 @@ public class StageReactionHolder extends Holder<ReactionAddEvent> {
                     }
 
                     new mandarin.packpack.commands.bc.Music(ConstraintCommand.ROLE.MEMBER, lang, holder, "music_", ms).execute(event);
-                    
+
                     break;
-                case MUSIC2:
+                case StaticStore.MUSIC2:
                     emojiClicked.set(true);
 
                     if(st.mus1 == null)
@@ -152,13 +153,14 @@ public class StageReactionHolder extends Holder<ReactionAddEvent> {
                     }
 
                     new mandarin.packpack.commands.bc.Music(ConstraintCommand.ROLE.MEMBER, lang, holder, "music_", ms2).execute(event);
-                    
+
                     break;
             }
         });
 
         if(emojiClicked.get()) {
-            embed.removeAllReactions().subscribe();
+            msg.removeAllReactions().subscribe();
+
             expired = true;
         }
 
@@ -177,8 +179,9 @@ public class StageReactionHolder extends Holder<ReactionAddEvent> {
 
         expired = true;
 
-        StaticStore.removeHolder(id, this);
+        StaticStore.removeHolder(memberID, StageReactionSlashMessageHolder.this);
 
-        embed.removeAllReactions().subscribe();
+        client.getRestClient().getChannelService()
+                .deleteAllReactions(channelID, embedID).subscribe();
     }
 }

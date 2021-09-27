@@ -13,14 +13,14 @@ import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.AliasHolder;
-import mandarin.packpack.supporter.server.holder.Holder;
+import mandarin.packpack.supporter.server.holder.MessageHolder;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AliasStageHolder extends Holder<MessageCreateEvent> {
+public class AliasStageMessageHolder extends MessageHolder<MessageCreateEvent> {
     private final ArrayList<Stage> stage;
     private final Message msg;
     private final String channelID;
@@ -33,7 +33,7 @@ public class AliasStageHolder extends Holder<MessageCreateEvent> {
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
-    public AliasStageHolder(ArrayList<Stage> stage, Message author, Message msg, String channelID, AliasHolder.MODE mode, int lang, @Nullable String aliasName) {
+    public AliasStageMessageHolder(ArrayList<Stage> stage, Message author, Message msg, String channelID, AliasHolder.MODE mode, int lang, @Nullable String aliasName) {
         super(MessageCreateEvent.class);
 
         this.stage = stage;

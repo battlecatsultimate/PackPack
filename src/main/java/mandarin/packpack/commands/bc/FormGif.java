@@ -12,7 +12,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
-import mandarin.packpack.supporter.server.holder.FormAnimHolder;
+import mandarin.packpack.supporter.server.holder.FormAnimMessageHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 
 import java.io.File;
@@ -157,7 +157,7 @@ public class FormGif extends GlobalTimedConstraintCommand {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(member.getId().asString(), new FormAnimHolder(forms, msg, res, ch.getId().asString(), mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isTrusted.get(), gif));
+                            StaticStore.putHolder(member.getId().asString(), new FormAnimMessageHolder(forms, msg, res, ch.getId().asString(), mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isTrusted.get(), gif));
                     });
                 }
 

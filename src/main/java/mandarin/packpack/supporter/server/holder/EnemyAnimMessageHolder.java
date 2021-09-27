@@ -3,7 +3,7 @@ package mandarin.packpack.supporter.server.holder;
 import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
-import common.util.unit.Form;
+import common.util.unit.Enemy;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
@@ -18,10 +18,9 @@ import mandarin.packpack.supporter.server.TimeBoolean;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-public class FormAnimHolder extends Holder<MessageCreateEvent> {
-    private final ArrayList<Form> form;
+public class EnemyAnimMessageHolder extends MessageHolder<MessageCreateEvent> {
+    private final ArrayList<Enemy> enemy;
     private final Message msg;
-    private final String channelID;
 
     private final int mode;
     private final int frame;
@@ -32,14 +31,16 @@ public class FormAnimHolder extends Holder<MessageCreateEvent> {
     private final boolean raw;
     private final boolean gifMode;
 
+    private final String channelID;
+
     private int page = 0;
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
-    public FormAnimHolder(ArrayList<Form> form, Message author, Message msg, String channelID, int mode, int frame, boolean transparent, boolean debug, int lang, boolean isGif, boolean raw, boolean gifMode) {
+    public EnemyAnimMessageHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, int mode, int frame, boolean transparent, boolean debug, int lang, boolean isGif, boolean raw, boolean gifMode) {
         super(MessageCreateEvent.class);
 
-        this.form = form;
+        this.enemy = enemy;
         this.msg = msg;
         this.channelID = channelID;
 
@@ -73,7 +74,7 @@ public class FormAnimHolder extends Holder<MessageCreateEvent> {
         String content = event.getMessage().getContent();
 
         if(content.equals("n")) {
-            if(20 * (page + 1) >= form.size())
+            if(20 * (page + 1) >= enemy.size())
                 return RESULT_STILL;
 
             page++;
@@ -81,38 +82,42 @@ public class FormAnimHolder extends Holder<MessageCreateEvent> {
             Command.editMessage(msg, m -> {
                 String check;
 
-                if(form.size() <= 20)
+                if(enemy.size() <= 20)
                     check = "";
                 else if(page == 0)
                     check = LangID.getStringByID("formst_next", lang);
-                else if((page + 1) * 20 >= form.size())
+                else if((page + 1) * 20 >= enemy.size())
                     check = LangID.getStringByID("formst_pre", lang);
                 else
                     check = LangID.getStringByID("formst_nexpre", lang);
 
                 StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
 
+                int oldConfig = CommonStatic.getConfig().lang;
+                CommonStatic.getConfig().lang = lang;
+
                 for(int i = 20 * page; i < 20 * (page +1); i++) {
-                    if(i >= form.size())
+                    if(i >= enemy.size())
                         break;
 
-                    Form f = form.get(i);
+                    Enemy e = enemy.get(i);
 
-                    String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
+                    String fname = Data.trio(e.id.id) + " - ";
 
-                    int oldConfig = CommonStatic.getConfig().lang;
                     CommonStatic.getConfig().lang = lang;
 
-                    if(MultiLangCont.get(f) != null)
-                        fname += MultiLangCont.get(f);
+                    if(MultiLangCont.get(e) != null)
+                        fname += MultiLangCont.get(e);
 
                     CommonStatic.getConfig().lang = oldConfig;
 
                     sb.append(i+1).append(". ").append(fname).append("\n");
                 }
 
-                if(form.size() > 20)
-                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(form.size()/20 + 1)));
+                CommonStatic.getConfig().lang = oldConfig;
+
+                if(enemy.size() > 20)
+                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(enemy.size()/20 + 1)));
 
                 sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
@@ -130,38 +135,42 @@ public class FormAnimHolder extends Holder<MessageCreateEvent> {
             Command.editMessage(msg, m -> {
                 String check;
 
-                if(form.size() <= 20)
+                if(enemy.size() <= 20)
                     check = "";
                 else if(page == 0)
                     check = LangID.getStringByID("formst_next", lang);
-                else if((page + 1) * 20 >= form.size())
+                else if((page + 1) * 20 >= enemy.size())
                     check = LangID.getStringByID("formst_pre", lang);
                 else
                     check = LangID.getStringByID("formst_nexpre", lang);
 
                 StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
 
+                int oldConfig = CommonStatic.getConfig().lang;
+                CommonStatic.getConfig().lang = lang;
+
                 for(int i = 20 * page; i < 20 * (page +1); i++) {
-                    if(i >= form.size())
+                    if(i >= enemy.size())
                         break;
 
-                    Form f = form.get(i);
+                    Enemy e = enemy.get(i);
 
-                    String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
+                    String fname = Data.trio(e.id.id) + " - ";
 
-                    int oldConfig = CommonStatic.getConfig().lang;
                     CommonStatic.getConfig().lang = lang;
 
-                    if(MultiLangCont.get(f) != null)
-                        fname += MultiLangCont.get(f);
+                    if(MultiLangCont.get(e) != null)
+                        fname += MultiLangCont.get(e);
 
                     CommonStatic.getConfig().lang = oldConfig;
 
                     sb.append(i+1).append(". ").append(fname).append("\n");
                 }
 
-                if(form.size() > 20)
-                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(form.size()/20 + 1)));
+                CommonStatic.getConfig().lang = oldConfig;
+
+                if(enemy.size() > 20)
+                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(enemy.size()/20 + 1)));
 
                 sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
@@ -173,16 +182,16 @@ public class FormAnimHolder extends Holder<MessageCreateEvent> {
         } else if(StaticStore.isNumeric(content)) {
             int id = StaticStore.safeParseInt(content)-1;
 
-            if(id < 0 || id >= form.size())
+            if(id < 0 || id >= enemy.size())
                 return RESULT_STILL;
 
             try {
-                Form f = form.get(id);
+                Enemy e = enemy.get(id);
 
                 if(gif) {
                     TimeBoolean timeBoolean = StaticStore.canDo.get("gif");
 
-                    if(timeBoolean == null || StaticStore.canDo.get("gif").canDo) {
+                    if(timeBoolean == null || timeBoolean.canDo) {
                         new Thread(() -> {
                             Guild g = event.getGuild().block();
 
@@ -190,7 +199,7 @@ public class FormAnimHolder extends Holder<MessageCreateEvent> {
                                 return;
 
                             try {
-                                boolean result = EntityHandler.generateFormAnim(f, ch, g.getPremiumTier().getValue(), mode, debug, frame, lang, raw, gif);
+                                boolean result = EntityHandler.generateEnemyAnim(e, ch, g.getPremiumTier().getValue(), mode, debug, frame, lang, raw, gifMode);
 
                                 if(result) {
                                     long time = raw ? TimeUnit.MINUTES.toMillis(1) : TimeUnit.SECONDS.toMillis(30);
@@ -207,8 +216,8 @@ public class FormAnimHolder extends Holder<MessageCreateEvent> {
                                         }
                                     }, time);
                                 }
-                            } catch (Exception e) {
-                                e.printStackTrace();
+                            } catch (Exception exception) {
+                                exception.printStackTrace();
                             }
                         }).start();
                     } else {
@@ -217,31 +226,31 @@ public class FormAnimHolder extends Holder<MessageCreateEvent> {
                 } else {
                     event.getMember().ifPresent(m -> {
                         try {
-                            if(StaticStore.timeLimit.containsKey(m.getId().asString()) && StaticStore.timeLimit.get(m.getId().asString()).containsKey(StaticStore.COMMAND_FORMIMAGE_ID)) {
-                                long time = StaticStore.timeLimit.get(m.getId().asString()).get(StaticStore.COMMAND_FORMIMAGE_ID);
+                            if(StaticStore.timeLimit.containsKey(m.getId().asString()) && StaticStore.timeLimit.get(m.getId().asString()).containsKey(StaticStore.COMMAND_ENEMYIMAGE_ID)) {
+                                long time = StaticStore.timeLimit.get(m.getId().asString()).get(StaticStore.COMMAND_ENEMYIMAGE_ID);
 
                                 if(System.currentTimeMillis() - time > 10000) {
-                                    EntityHandler.generateFormImage(f, ch, mode, frame, transparent, debug, lang);
+                                    EntityHandler.generateEnemyImage(e, ch, mode, frame, transparent, debug, lang);
 
-                                    StaticStore.timeLimit.get(m.getId().asString()).put(StaticStore.COMMAND_FORMIMAGE_ID, System.currentTimeMillis());
+                                    StaticStore.timeLimit.get(m.getId().asString()).put(StaticStore.COMMAND_ENEMYIMAGE_ID, System.currentTimeMillis());
                                 } else {
                                     ch.createMessage(LangID.getStringByID("command_timelimit", lang).replace("_", DataToString.df.format((System.currentTimeMillis() - time) / 1000.0))).subscribe();
                                 }
                             } else if(StaticStore.timeLimit.containsKey(m.getId().asString())) {
-                                EntityHandler.generateFormImage(f, ch, mode, frame, transparent, debug, lang);
+                                EntityHandler.generateEnemyImage(e, ch, mode, frame, transparent, debug, lang);
 
-                                StaticStore.timeLimit.get(m.getId().asString()).put(StaticStore.COMMAND_FORMIMAGE_ID, System.currentTimeMillis());
+                                StaticStore.timeLimit.get(m.getId().asString()).put(StaticStore.COMMAND_ENEMYIMAGE_ID, System.currentTimeMillis());
                             } else {
-                                EntityHandler.generateFormImage(f, ch, mode, frame, transparent, debug, lang);
+                                EntityHandler.generateEnemyImage(e, ch, mode, frame, transparent, debug, lang);
 
                                 Map<String, Long> memberLimit = new HashMap<>();
 
-                                memberLimit.put(StaticStore.COMMAND_FORMIMAGE_ID, System.currentTimeMillis());
+                                memberLimit.put(StaticStore.COMMAND_ENEMYIMAGE_ID, System.currentTimeMillis());
 
                                 StaticStore.timeLimit.put(m.getId().asString(), memberLimit);
                             }
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                        } catch (Exception exception) {
+                            exception.printStackTrace();
                         }
                     });
                 }
@@ -272,7 +281,7 @@ public class FormAnimHolder extends Holder<MessageCreateEvent> {
                 if(StaticStore.isNumeric(contents[1])) {
                     int p = StaticStore.safeParseInt(contents[1])-1;
 
-                    if(p < 0 || p * 20 >= form.size()) {
+                    if(p < 0 || p * 20 >= enemy.size()) {
                         return RESULT_STILL;
                     }
 
@@ -281,38 +290,42 @@ public class FormAnimHolder extends Holder<MessageCreateEvent> {
                     Command.editMessage(msg, m -> {
                         String check;
 
-                        if(form.size() <= 20)
+                        if(enemy.size() <= 20)
                             check = "";
                         else if(page == 0)
                             check = LangID.getStringByID("formst_next", lang);
-                        else if((page + 1) * 20 >= form.size())
+                        else if((page + 1) * 20 >= enemy.size())
                             check = LangID.getStringByID("formst_pre", lang);
                         else
                             check = LangID.getStringByID("formst_nexpre", lang);
 
                         StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
 
+                        int oldConfig = CommonStatic.getConfig().lang;
+                        CommonStatic.getConfig().lang = lang;
+
                         for(int i = 20 * page; i < 20 * (page +1); i++) {
-                            if(i >= form.size())
+                            if(i >= enemy.size())
                                 break;
 
-                            Form f = form.get(i);
+                            Enemy e = enemy.get(i);
 
-                            String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
+                            String fname = Data.trio(e.id.id) + " - ";
 
-                            int oldConfig = CommonStatic.getConfig().lang;
                             CommonStatic.getConfig().lang = lang;
 
-                            if(MultiLangCont.get(f) != null)
-                                fname += MultiLangCont.get(f);
+                            if(MultiLangCont.get(e) != null)
+                                fname += MultiLangCont.get(e);
 
                             CommonStatic.getConfig().lang = oldConfig;
 
                             sb.append(i+1).append(". ").append(fname).append("\n");
                         }
 
-                        if(form.size() > 20)
-                            sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(form.size()/20 + 1)));
+                        CommonStatic.getConfig().lang = oldConfig;
+
+                        if(enemy.size() > 20)
+                            sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(enemy.size()/20 + 1)));
 
                         sb.append(LangID.getStringByID("formst_can", lang));
                         sb.append("```");

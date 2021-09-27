@@ -14,13 +14,12 @@ import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
-import mandarin.packpack.supporter.server.data.IDHolder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class StageInfoHolder extends Holder<MessageCreateEvent> {
+public class StageInfoMessageHolder extends MessageHolder<MessageCreateEvent> {
     private final ArrayList<Stage> stage;
     private final Message msg;
     private final String channelID;
@@ -33,7 +32,7 @@ public class StageInfoHolder extends Holder<MessageCreateEvent> {
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
-    public StageInfoHolder(ArrayList<Stage> stage, Message author, Message msg, String channelID, int star, boolean isFrame, int lang) {
+    public StageInfoMessageHolder(ArrayList<Stage> stage, Message author, Message msg, String channelID, int star, boolean isFrame, int lang) {
         super(MessageCreateEvent.class);
 
         this.stage = stage;
@@ -111,11 +110,9 @@ public class StageInfoHolder extends Holder<MessageCreateEvent> {
                 Guild g = event.getGuild().block();
 
                 if(msg != null && g != null && StaticStore.idHolder.containsKey(g.getId().asString())) {
-                    IDHolder holder = StaticStore.idHolder.get(g.getId().asString());
-
                     event.getMember().ifPresent(m -> {
-                        StaticStore.removeHolder(m.getId().asString(), StageInfoHolder.this);
-                        StaticStore.putHolder(m.getId().asString(), new StageReactionHolder(stage.get(id), event.getMessage(), msg, holder, lang, channelID, m.getId().asString()));
+                        StaticStore.removeHolder(m.getId().asString(), StageInfoMessageHolder.this);
+                        StaticStore.putHolder(m.getId().asString(), new StageInfoButtonHolder(stage.get(id), event.getMessage(), msg, channelID, m.getId().asString()));
                     });
                 }
             } catch (Exception e) {

@@ -16,6 +16,9 @@ import common.util.stage.Stage;
 import common.util.stage.StageMap;
 import common.util.unit.*;
 import discord4j.common.util.Snowflake;
+import discord4j.core.object.component.ActionComponent;
+import discord4j.core.object.component.ActionRow;
+import discord4j.core.object.component.Button;
 import discord4j.core.object.entity.Attachment;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
@@ -27,8 +30,6 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.awt.FG2D;
 import mandarin.packpack.supporter.awt.FIBI;
 import mandarin.packpack.supporter.lang.LangID;
-import mandarin.packpack.supporter.server.holder.FormReactionHolder;
-import mandarin.packpack.supporter.server.holder.StageReactionHolder;
 import mandarin.packpack.supporter.server.slash.WebhookBuilder;
 
 import javax.imageio.ImageIO;
@@ -210,19 +211,19 @@ public class EntityHandler {
             builder.addFile("cf.png", cfis, cf);
 
         if(canFirstForm(f)) {
-            builder.addReaction(ReactionEmoji.custom(Snowflake.of(FormReactionHolder.TWOPREVIOUS), "FirstForm", false));
+            builder.addReaction(ReactionEmoji.custom(Snowflake.of(StaticStore.TWOPREVIOUS), "FirstForm", false));
         }
 
         if(canPreviousForm(f)) {
-            builder.addReaction(ReactionEmoji.custom(Snowflake.of(FormReactionHolder.PREVIOUS), "PreviousForm", false));
+            builder.addReaction(ReactionEmoji.custom(Snowflake.of(StaticStore.PREVIOUS), "PreviousForm", false));
         }
 
         if(canNextForm(f)) {
-            builder.addReaction(ReactionEmoji.custom(Snowflake.of(FormReactionHolder.NEXT), "NextForm", false));
+            builder.addReaction(ReactionEmoji.custom(Snowflake.of(StaticStore.NEXT), "NextForm", false));
         }
 
         if(canFinalForm(f)) {
-            builder.addReaction(ReactionEmoji.custom(Snowflake.of(FormReactionHolder.TWONEXT), "FinalForm", false));
+            builder.addReaction(ReactionEmoji.custom(Snowflake.of(StaticStore.TWONEXT), "FinalForm", false));
         }
     }
 
@@ -373,25 +374,35 @@ public class EntityHandler {
 
             if(cfis != null)
                 m.addFile("cf.png", cfis);
+
+            ArrayList<ActionComponent> components = new ArrayList<>();
+
+            if(addEmoji) {
+                if(canFirstForm(f)) {
+                    components.add(Button.secondary("first", ReactionEmoji.custom(Snowflake.of(StaticStore.TWOPREVIOUS), "FirstForm", false), LangID.getStringByID("button_firf", lang)));
+                }
+
+                if(canPreviousForm(f)) {
+                    components.add(Button.secondary("pre", ReactionEmoji.custom(Snowflake.of(StaticStore.PREVIOUS), "PreviousForm", false), LangID.getStringByID("button_pref", lang)));
+                }
+
+                if(canNextForm(f)) {
+                    components.add(Button.secondary("next", ReactionEmoji.custom(Snowflake.of(StaticStore.NEXT), "NextForm", false), LangID.getStringByID("button_nexf", lang)));
+                }
+
+                if(canFinalForm(f)) {
+                    components.add(Button.secondary("final", ReactionEmoji.custom(Snowflake.of(StaticStore.TWONEXT), "FinalForm", false), LangID.getStringByID("button_finf", lang)));
+                }
+            }
+
+            if(f.unit.rarity == 4 || f.unit.rarity == 5) {
+                components.add(Button.link("https://thanksfeanor.pythonanywhere.com/UDP/"+Data.trio(f.unit.id.id), ReactionEmoji.custom(Snowflake.of(StaticStore.UDP), "UDP", false), "UDP"));
+            }
+
+            if(!components.isEmpty()) {
+                m.addComponent(ActionRow.of(components));
+            }
         });
-
-        if(msg != null && addEmoji) {
-            if(canFirstForm(f)) {
-                msg.addReaction(ReactionEmoji.custom(Snowflake.of(FormReactionHolder.TWOPREVIOUS), "FirstForm", false)).subscribe();
-            }
-
-            if(canPreviousForm(f)) {
-                msg.addReaction(ReactionEmoji.custom(Snowflake.of(FormReactionHolder.PREVIOUS), "PreviousForm", false)).subscribe();
-            }
-
-            if(canNextForm(f)) {
-                msg.addReaction(ReactionEmoji.custom(Snowflake.of(FormReactionHolder.NEXT), "NextForm", false)).subscribe();
-            }
-
-            if(canFinalForm(f)) {
-                msg.addReaction(ReactionEmoji.custom(Snowflake.of(FormReactionHolder.TWONEXT), "FinalForm", false)).subscribe();
-            }
-        }
 
         if(fis != null) {
             try {
@@ -958,21 +969,22 @@ public class EntityHandler {
 
             if(fis != null)
                 m.addFile("scheme.png", fis);
-        });
 
-        if(result != null) {
-            result.addReaction(ReactionEmoji.custom(Snowflake.of(StageReactionHolder.CASTLE), "Castle", false)).subscribe();
-            result.addReaction(ReactionEmoji.custom(Snowflake.of(StageReactionHolder.BG), "Background", false)).subscribe();
+            ArrayList<Button> buttons = new ArrayList<>();
+
+            buttons.add(Button.secondary("castle", ReactionEmoji.custom(Snowflake.of(StaticStore.CASTLE), "Castle", false), LangID.getStringByID("button_castle", lang)));
+            buttons.add(Button.secondary("bg", ReactionEmoji.custom(Snowflake.of(StaticStore.BG), "Background", false), LangID.getStringByID("button_bg", lang)));
 
             if(st.mus0 != null) {
-                result.addReaction(ReactionEmoji.custom(Snowflake.of(StageReactionHolder.MUSIC), "Music", false)).subscribe();
+                buttons.add(Button.secondary("music", ReactionEmoji.custom(Snowflake.of(StaticStore.MUSIC), "Music", false), LangID.getStringByID("button_mus", lang)));
             }
 
             if(hasTwoMusic(st)) {
-                result.addReaction(ReactionEmoji.custom(Snowflake.of(StageReactionHolder.MUSIC2), "MusicBoss", false)).subscribe();
+                buttons.add(Button.secondary("music2", ReactionEmoji.custom(Snowflake.of(StaticStore.MUSIC2), "MusicBoss", false), LangID.getStringByID("button_mus2", lang)));
             }
 
-        }
+            m.addComponent(ActionRow.of(buttons));
+        });
 
         if(fis != null) {
             try {
@@ -1145,15 +1157,15 @@ public class EntityHandler {
         if(fis != null)
             builder.addFile("scheme.png", fis, img);
 
-        builder.addReaction(ReactionEmoji.custom(Snowflake.of(StageReactionHolder.CASTLE), "Castle", false));
-        builder.addReaction(ReactionEmoji.custom(Snowflake.of(StageReactionHolder.BG), "Background", false));
+        builder.addReaction(ReactionEmoji.custom(Snowflake.of(StaticStore.CASTLE), "Castle", false));
+        builder.addReaction(ReactionEmoji.custom(Snowflake.of(StaticStore.BG), "Background", false));
 
         if(st.mus0 != null) {
-            builder.addReaction(ReactionEmoji.custom(Snowflake.of(StageReactionHolder.MUSIC), "Music", false));
+            builder.addReaction(ReactionEmoji.custom(Snowflake.of(StaticStore.MUSIC), "Music", false));
         }
 
         if(hasTwoMusic(st)) {
-            builder.addReaction(ReactionEmoji.custom(Snowflake.of(StageReactionHolder.MUSIC2), "MusicBoss", false));
+            builder.addReaction(ReactionEmoji.custom(Snowflake.of(StaticStore.MUSIC2), "MusicBoss", false));
         }
     }
 

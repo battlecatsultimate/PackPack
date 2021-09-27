@@ -14,9 +14,10 @@ import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import mandarin.packpack.supporter.server.holder.FormReactionHolder;
-import mandarin.packpack.supporter.server.holder.FormReactionSlashHolder;
-import mandarin.packpack.supporter.server.holder.FormStatHolder;
+import mandarin.packpack.supporter.server.holder.FormButtonHolder;
+import mandarin.packpack.supporter.server.holder.FormReactionMessageHolder;
+import mandarin.packpack.supporter.server.holder.FormReactionSlashMessageHolder;
+import mandarin.packpack.supporter.server.holder.FormStatMessageHolder;
 import mandarin.packpack.supporter.server.slash.SlashBuilder;
 import mandarin.packpack.supporter.server.slash.SlashOption;
 import mandarin.packpack.supporter.server.slash.WebhookBuilder;
@@ -82,7 +83,7 @@ public class FormStat extends ConstraintCommand {
 
                                 StaticStore.putHolder(
                                         member.user().id().asString(),
-                                        new FormReactionSlashHolder(g, f, member.user().id().asString(), m.channelId().asLong(), m.id().asLong(), frame, talent, lvs, finalLang)
+                                        new FormReactionSlashMessageHolder(g, f, member.user().id().asString(), m.channelId().asLong(), m.id().asLong(), frame, talent, lvs, finalLang)
                                 );
                             }
                         }
@@ -141,7 +142,7 @@ public class FormStat extends ConstraintCommand {
                         Message author = getMessage(event);
 
                         if(author != null) {
-                            StaticStore.putHolder(m.getId().asString(), new FormReactionHolder(forms.get(0), author, result, isFrame, talent, lv, lang, ch.getId().asString(), m.getId().asString()));
+                            StaticStore.putHolder(m.getId().asString(), new FormButtonHolder(forms.get(0), author, result, isFrame, talent, lv, lang, ch.getId().asString(), m.getId().asString()));
                         }
                     });
                 }
@@ -192,7 +193,7 @@ public class FormStat extends ConstraintCommand {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(member.getId().asString(), new FormStatHolder(forms, msg, res, ch.getId().asString(), param, lv, lang));
+                            StaticStore.putHolder(member.getId().asString(), new FormStatMessageHolder(forms, msg, res, ch.getId().asString(), param, lv, lang));
                     });
                 }
 

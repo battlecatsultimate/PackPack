@@ -2,6 +2,8 @@ package mandarin.packpack.supporter.server.holder;
 
 import common.CommonStatic;
 import common.util.Data;
+import common.util.lang.MultiLangCont;
+import common.util.unit.Form;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
@@ -12,27 +14,35 @@ import mandarin.packpack.supporter.lang.LangID;
 
 import java.util.ArrayList;
 
-public class MedalHolder extends Holder<MessageCreateEvent> {
-    private final ArrayList<Integer> id;
+public class FormStatMessageHolder extends MessageHolder<MessageCreateEvent> {
+    private final ArrayList<Form> form;
     private final Message msg;
-    private final int lang;
     private final String channelID;
 
     private int page = 0;
 
+    private final boolean talent;
+    private final boolean isFrame;
+    private final int[] lv;
+    private final int lang;
+
     private final ArrayList<Message> cleaner = new ArrayList<>();
-    
-    public MedalHolder(ArrayList<Integer> id, Message author, Message msg, int lang, String channelName) {
+
+    public FormStatMessageHolder(ArrayList<Form> form, Message author, Message msg, String channelID, int param, int[] lv, int lang) {
         super(MessageCreateEvent.class);
 
-        this.id = id;
+        this.form = form;
         this.msg = msg;
+        this.channelID = channelID;
+
+        this.talent = (param & 2) > 0;
+        this.isFrame = (param & 4) == 0;
+        this.lv = lv;
         this.lang = lang;
-        this.channelID = channelName;
 
         registerAutoFinish(this, msg, author, lang, FIVE_MIN);
     }
-    
+
     @Override
     public int handleEvent(MessageCreateEvent event) {
         if(expired) {
@@ -51,7 +61,7 @@ public class MedalHolder extends Holder<MessageCreateEvent> {
         String content = event.getMessage().getContent();
 
         if(content.equals("n")) {
-            if(20 * (page + 1) >= id.size())
+            if(20 * (page + 1) >= form.size())
                 return RESULT_STILL;
 
             page++;
@@ -59,33 +69,38 @@ public class MedalHolder extends Holder<MessageCreateEvent> {
             Command.editMessage(msg, m -> {
                 String check;
 
-                if(id.size() <= 20)
+                if(form.size() <= 20)
                     check = "";
                 else if(page == 0)
                     check = LangID.getStringByID("formst_next", lang);
-                else if((page + 1) * 20 >= id.size())
+                else if((page + 1) * 20 >= form.size())
                     check = LangID.getStringByID("formst_pre", lang);
                 else
                     check = LangID.getStringByID("formst_nexpre", lang);
 
                 StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
 
-                for(int i = 20 * page; i < 20 * (page + 1) ; i++) {
-                    if(i >= id.size())
+                for(int i = 20 * page; i < 20 * (page +1); i++) {
+                    if(i >= form.size())
                         break;
+
+                    Form f = form.get(i);
+
+                    String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
 
                     int oldConfig = CommonStatic.getConfig().lang;
                     CommonStatic.getConfig().lang = lang;
 
-                    String medalName = Data.trio(id.get(i)) + " " + StaticStore.MEDNAME.getCont(id.get(i));
+                    if(MultiLangCont.get(f) != null)
+                        fname += MultiLangCont.get(f);
 
                     CommonStatic.getConfig().lang = oldConfig;
 
-                    sb.append(i+1).append(". ").append(medalName).append("\n");
+                    sb.append(i+1).append(". ").append(fname).append("\n");
                 }
 
-                if(id.size() > 20)
-                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(id.size()/20 + 1)));
+                if(form.size() > 20)
+                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(form.size()/20 + 1)));
 
                 sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
@@ -103,33 +118,38 @@ public class MedalHolder extends Holder<MessageCreateEvent> {
             Command.editMessage(msg, m -> {
                 String check;
 
-                if(id.size() <= 20)
+                if(form.size() <= 20)
                     check = "";
                 else if(page == 0)
                     check = LangID.getStringByID("formst_next", lang);
-                else if((page + 1) * 20 >= id.size())
+                else if((page + 1) * 20 >= form.size())
                     check = LangID.getStringByID("formst_pre", lang);
                 else
                     check = LangID.getStringByID("formst_nexpre", lang);
 
                 StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
 
-                for(int i = 20 * page; i < 20 * (page + 1) ; i++) {
-                    if(i >= id.size())
+                for(int i = 20 * page; i < 20 * (page +1); i++) {
+                    if(i >= form.size())
                         break;
+
+                    Form f = form.get(i);
+
+                    String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
 
                     int oldConfig = CommonStatic.getConfig().lang;
                     CommonStatic.getConfig().lang = lang;
 
-                    String medalName = Data.trio(id.get(i)) + " " + StaticStore.MEDNAME.getCont(id.get(i));
+                    if(MultiLangCont.get(f) != null)
+                        fname += MultiLangCont.get(f);
 
                     CommonStatic.getConfig().lang = oldConfig;
 
-                    sb.append(i+1).append(". ").append(medalName).append("\n");
+                    sb.append(i+1).append(". ").append(fname).append("\n");
                 }
 
-                if(id.size() > 20)
-                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(id.size()/20 + 1)));
+                if(form.size() > 20)
+                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(form.size()/20 + 1)));
 
                 sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
@@ -139,15 +159,31 @@ public class MedalHolder extends Holder<MessageCreateEvent> {
 
             cleaner.add(event.getMessage());
         } else if(StaticStore.isNumeric(content)) {
-            int i = StaticStore.safeParseInt(content) - 1;
+            int id = StaticStore.safeParseInt(content)-1;
 
-            if(i < 0 || i >= id.size())
+            if(id < 0 || id >= form.size())
                 return RESULT_STILL;
 
             msg.delete().subscribe();
 
+            if(lv[0] > form.get(id).unit.max + form.get(id).unit.maxp)
+                lv[0] = form.get(id).unit.max + form.get(id).unit.maxp;
+            else if(lv[0] <= 0) {
+                if(form.get(id).unit.rarity == 0)
+                    lv[0] = 110;
+                else
+                    lv[0] = 30;
+            }
+
             try {
-                EntityHandler.showMedalEmbed(id.get(i), ch, lang);
+                Message result = EntityHandler.showUnitEmb(form.get(id), ch, isFrame, talent, lv, lang, true);
+
+                if(result != null) {
+                    event.getMember().ifPresent(m -> {
+                        StaticStore.removeHolder(m.getId().asString(), FormStatMessageHolder.this);
+                        StaticStore.putHolder(m.getId().asString(), new FormButtonHolder(form.get(id), event.getMessage(), result, isFrame, talent, lv, lang, channelID, m.getId().asString()));
+                    });
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -170,10 +206,10 @@ public class MedalHolder extends Holder<MessageCreateEvent> {
             String[] contents = content.split(" ");
 
             if(contents.length == 2) {
-                if (StaticStore.isNumeric(contents[1])) {
-                    int p = StaticStore.safeParseInt(contents[1]) - 1;
+                if(StaticStore.isNumeric(contents[1])) {
+                    int p = StaticStore.safeParseInt(contents[1])-1;
 
-                    if (p < 0 || p * 20 >= id.size()) {
+                    if(p < 0 || p * 20 >= form.size()) {
                         return RESULT_STILL;
                     }
 
@@ -182,33 +218,38 @@ public class MedalHolder extends Holder<MessageCreateEvent> {
                     Command.editMessage(msg, m -> {
                         String check;
 
-                        if(id.size() <= 20)
+                        if(form.size() <= 20)
                             check = "";
                         else if(page == 0)
                             check = LangID.getStringByID("formst_next", lang);
-                        else if((page + 1) * 20 >= id.size())
+                        else if((page + 1) * 20 >= form.size())
                             check = LangID.getStringByID("formst_pre", lang);
                         else
                             check = LangID.getStringByID("formst_nexpre", lang);
 
                         StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
 
-                        for(int i = 20 * page; i < 20 * (page + 1) ; i++) {
-                            if(i >= id.size())
+                        for(int i = 20 * page; i < 20 * (page +1); i++) {
+                            if(i >= form.size())
                                 break;
+
+                            Form f = form.get(i);
+
+                            String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
 
                             int oldConfig = CommonStatic.getConfig().lang;
                             CommonStatic.getConfig().lang = lang;
 
-                            String medalName = Data.trio(id.get(i)) + " " + StaticStore.MEDNAME.getCont(id.get(i));
+                            if(MultiLangCont.get(f) != null)
+                                fname += MultiLangCont.get(f);
 
                             CommonStatic.getConfig().lang = oldConfig;
 
-                            sb.append(i+1).append(". ").append(medalName).append("\n");
+                            sb.append(i+1).append(". ").append(fname).append("\n");
                         }
 
-                        if(id.size() > 20)
-                            sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(id.size()/20 + 1)));
+                        if(form.size() > 20)
+                            sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(form.size()/20 + 1)));
 
                         sb.append(LangID.getStringByID("formst_can", lang));
                         sb.append("```");

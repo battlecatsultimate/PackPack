@@ -17,9 +17,9 @@ import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import mandarin.packpack.supporter.server.holder.StageEnemyHolder;
-import mandarin.packpack.supporter.server.holder.StageInfoHolder;
-import mandarin.packpack.supporter.server.holder.StageReactionHolder;
+import mandarin.packpack.supporter.server.holder.StageEnemyMessageHolder;
+import mandarin.packpack.supporter.server.holder.StageInfoButtonHolder;
+import mandarin.packpack.supporter.server.holder.StageInfoMessageHolder;
 
 import java.util.ArrayList;
 
@@ -78,7 +78,7 @@ public class FindStage extends TimedConstraintCommand {
                     Message msg = getMessage(event);
 
                     if(msg != null) {
-                        StaticStore.putHolder(m.getId().asString(), new StageReactionHolder(stages.get(0), msg, result, holder, lang, ch.getId().asString(), m.getId().asString()));
+                        StaticStore.putHolder(m.getId().asString(), new StageInfoButtonHolder(stages.get(0), msg, result, ch.getId().asString(), m.getId().asString()));
                     }
                 });
             } else {
@@ -189,7 +189,7 @@ public class FindStage extends TimedConstraintCommand {
                         Message msg = getMessage(event);
 
                         if(msg != null) {
-                            StaticStore.putHolder(member.getId().asString(), new StageInfoHolder(stages, msg, res, ch.getId().asString(), star, isFrame, lang));
+                            StaticStore.putHolder(member.getId().asString(), new StageInfoMessageHolder(stages, msg, res, ch.getId().asString(), star, isFrame, lang));
                         }
                         disableTimer();
                     });
@@ -239,7 +239,7 @@ public class FindStage extends TimedConstraintCommand {
                     Message msg = getMessage(event);
 
                     if(msg != null)
-                        StaticStore.putHolder(m.getId().asString(), new StageEnemyHolder(enemies, msg, res, ch.getId().asString(), isFrame, star, lang));
+                        StaticStore.putHolder(m.getId().asString(), new StageEnemyMessageHolder(enemies, msg, res, ch.getId().asString(), isFrame, star, lang));
                 });
             }
         }

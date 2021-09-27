@@ -14,7 +14,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.ImageDrawing;
 import mandarin.packpack.supporter.lang.LangID;
-import mandarin.packpack.supporter.server.holder.FormAnimHolder;
+import mandarin.packpack.supporter.server.holder.FormAnimMessageHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 
 import java.io.File;
@@ -163,7 +163,7 @@ public class FormImage extends TimedConstraintCommand {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(member.getId().asString(), new FormAnimHolder(forms, msg, res, ch.getId().asString(), mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang, false, false, false));
+                            StaticStore.putHolder(member.getId().asString(), new FormAnimMessageHolder(forms, msg, res, ch.getId().asString(), mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang, false, false, false));
                     });
                 }
 

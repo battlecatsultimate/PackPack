@@ -14,7 +14,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.ImageDrawing;
 import mandarin.packpack.supporter.lang.LangID;
-import mandarin.packpack.supporter.server.holder.EnemyAnimHolder;
+import mandarin.packpack.supporter.server.holder.EnemyAnimMessageHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 
 import java.io.File;
@@ -173,7 +173,7 @@ public class EnemyImage extends TimedConstraintCommand {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(member.getId().asString(), new EnemyAnimHolder(enemies, msg, res, ch.getId().asString(), mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang, false, false, false));
+                            StaticStore.putHolder(member.getId().asString(), new EnemyAnimMessageHolder(enemies, msg, res, ch.getId().asString(), mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang, false, false, false));
                     });
                 }
 

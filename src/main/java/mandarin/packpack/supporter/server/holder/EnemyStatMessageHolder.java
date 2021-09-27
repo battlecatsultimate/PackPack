@@ -14,7 +14,7 @@
 
  import java.util.ArrayList;
 
- public class EnemyStatHolder extends Holder<MessageCreateEvent> {
+ public class EnemyStatMessageHolder extends MessageHolder<MessageCreateEvent> {
     private final ArrayList<Enemy> enemy;
     private final Message msg;
     private final String channelID;
@@ -27,7 +27,7 @@
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
-    public EnemyStatHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, int[] magnification, boolean isFrame, int lang) {
+    public EnemyStatMessageHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, int[] magnification, boolean isFrame, int lang) {
         super(MessageCreateEvent.class);
 
         this.enemy = enemy;

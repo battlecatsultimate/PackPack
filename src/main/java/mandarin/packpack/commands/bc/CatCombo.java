@@ -15,8 +15,8 @@ import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
-import mandarin.packpack.supporter.server.holder.ComboFormHolder;
-import mandarin.packpack.supporter.server.holder.ComboHolder;
+import mandarin.packpack.supporter.server.holder.ComboFormMessageHolder;
+import mandarin.packpack.supporter.server.holder.ComboMessageHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 
 import java.util.ArrayList;
@@ -86,7 +86,7 @@ public class CatCombo extends TimedConstraintCommand {
                         Message msg = getMessage(event);
 
                         if(msg != null) {
-                            StaticStore.putHolder(m.getId().asString(), new ComboHolder(combos, msg, res, null, ch.getId().asString(), lang));
+                            StaticStore.putHolder(m.getId().asString(), new ComboMessageHolder(combos, msg, res, null, ch.getId().asString(), lang));
                         }
                     });
                 }
@@ -150,7 +150,7 @@ public class CatCombo extends TimedConstraintCommand {
                             Message msg = getMessage(event);
 
                             if(msg != null) {
-                                StaticStore.putHolder(m.getId().asString(), new ComboHolder(combos, msg, res, null, ch.getId().asString(), lang));
+                                StaticStore.putHolder(m.getId().asString(), new ComboMessageHolder(combos, msg, res, null, ch.getId().asString(), lang));
                             }
                         });
                     }
@@ -197,7 +197,7 @@ public class CatCombo extends TimedConstraintCommand {
                         Message msg = getMessage(event);
 
                         if(msg != null) {
-                            StaticStore.putHolder(m.getId().asString(), new ComboFormHolder(forms, msg, res, ch.getId().asString(), lang, cName, name));
+                            StaticStore.putHolder(m.getId().asString(), new ComboFormMessageHolder(forms, msg, res, ch.getId().asString(), lang, cName, name));
                         }
                     });
                 }

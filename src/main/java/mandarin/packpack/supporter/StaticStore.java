@@ -11,7 +11,7 @@ import common.CommonStatic;
 import common.io.assets.UpdateCheck;
 import common.util.lang.MultiLangCont;
 import discord4j.common.util.Snowflake;
-import discord4j.core.event.domain.message.MessageEvent;
+import discord4j.core.event.domain.Event;
 import discord4j.core.object.entity.Attachment;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Member;
@@ -20,12 +20,12 @@ import discord4j.rest.util.Color;
 import mandarin.packpack.supporter.event.EventHolder;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.SpamPrevent;
+import mandarin.packpack.supporter.server.TimeBoolean;
 import mandarin.packpack.supporter.server.data.AliasHolder;
 import mandarin.packpack.supporter.server.data.BoosterHolder;
-import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.data.ImgurDataHolder;
-import mandarin.packpack.supporter.server.TimeBoolean;
+import mandarin.packpack.supporter.server.holder.Holder;
 
 import java.io.*;
 import java.math.BigDecimal;
@@ -64,7 +64,7 @@ public class StaticStore {
 
     public static final Map<Integer, String> announcements = new HashMap<>();
 
-    private static final Map<String, Holder<? extends MessageEvent>> holders = new HashMap<>();
+    private static final Map<String, Holder<? extends Event>> holders = new HashMap<>();
 
     public static Map<String, String> suggestBanned = new HashMap<>();
 
@@ -109,6 +109,16 @@ public class StaticStore {
         Color.of(213,171,98),
         Color.of(218,232,240)
     };
+
+    public static final String TWOPREVIOUS = "821449061332025404";
+    public static final String PREVIOUS = "821449028767187014";
+    public static final String NEXT = "821449099936923739";
+    public static final String TWONEXT = "821449111109894164";
+    public static final String UDP = "892124601478434817";
+    public final static String BG = "821436445242818610";
+    public final static String CASTLE = "821436460447039508";
+    public final static String MUSIC = "821436473525141588";
+    public final static String MUSIC2 = "821436484254564373";
 
     public static boolean checkingBCU = false;
 
@@ -669,25 +679,25 @@ public class StaticStore {
         return id.get();
     }
 
-    synchronized public static void putHolder(String id, Holder<? extends MessageEvent> holder) {
-        Holder<? extends MessageEvent> oldHolder = holders.get(id);
+    synchronized public static void putHolder(String id, Holder<? extends Event> messageHolder) {
+        Holder<? extends Event> oldMessageHolder = holders.get(id);
 
-        if(oldHolder != null) {
-            oldHolder.expire(id);
+        if(oldMessageHolder != null) {
+            oldMessageHolder.expire(id);
         }
 
-        holders.put(id, holder);
+        holders.put(id, messageHolder);
     }
 
-    synchronized public static void removeHolder(String id, Holder<? extends MessageEvent> holder) {
-        Holder<? extends MessageEvent> thisHolder = holders.get(id);
+    synchronized public static void removeHolder(String id, Holder<? extends Event> messageHolder) {
+        Holder<? extends Event> thisMessageHolder = holders.get(id);
 
-        if(thisHolder != null && thisHolder.equals(holder)) {
+        if(thisMessageHolder != null && thisMessageHolder.equals(messageHolder)) {
             holders.remove(id);
         }
     }
 
-    synchronized public static Holder<? extends MessageEvent> getHolder(String id) {
+    synchronized public static Holder<? extends Event> getHolder(String id) {
         return holders.get(id);
     }
 

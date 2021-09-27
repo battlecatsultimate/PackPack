@@ -11,13 +11,13 @@ import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.AliasHolder;
-import mandarin.packpack.supporter.server.holder.Holder;
+import mandarin.packpack.supporter.server.holder.MessageHolder;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
-public class AliasEnemyHolder extends Holder<MessageCreateEvent> {
+public class AliasEnemyMessageHolder extends MessageHolder<MessageCreateEvent> {
     private final ArrayList<Enemy> enemy;
     private final Message msg;
     private final String channelID;
@@ -30,7 +30,7 @@ public class AliasEnemyHolder extends Holder<MessageCreateEvent> {
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
-    public AliasEnemyHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, AliasHolder.MODE mode, int lang, @Nullable String aliasName) {
+    public AliasEnemyMessageHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, AliasHolder.MODE mode, int lang, @Nullable String aliasName) {
         super(MessageCreateEvent.class);
 
         this.enemy = enemy;

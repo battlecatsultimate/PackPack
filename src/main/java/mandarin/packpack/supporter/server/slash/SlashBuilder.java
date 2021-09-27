@@ -2,8 +2,11 @@ package mandarin.packpack.supporter.server.slash;
 
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.ReactiveEventAdapter;
+import discord4j.core.event.domain.Event;
+import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.event.domain.interaction.InteractionCreateEvent;
 import discord4j.core.object.command.ApplicationCommandOption;
+import discord4j.core.object.entity.Member;
 import discord4j.discordjson.json.*;
 import discord4j.discordjson.possible.Possible;
 import discord4j.rest.RestClient;
@@ -12,6 +15,8 @@ import mandarin.packpack.commands.bc.FormStat;
 import mandarin.packpack.commands.bc.StageInfo;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.SpamPrevent;
+import mandarin.packpack.supporter.server.holder.Holder;
+import mandarin.packpack.supporter.server.holder.InteractionHolder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.reactivestreams.Publisher;
@@ -67,6 +72,7 @@ public class SlashBuilder {
 
         client.on(new ReactiveEventAdapter() {
 
+            @SuppressWarnings("unchecked")
             @NotNull
             @Override
             public Publisher<?> onInteractionCreate(@NotNull InteractionCreateEvent event) {
@@ -89,54 +95,93 @@ public class SlashBuilder {
                     }
                 }
 
-                Possible<ApplicationCommandInteractionData> interactionData = event.getInteraction().getData().data();
+                if(event instanceof ButtonInteractionEvent) {
+                    ButtonInteractionEvent bEvent = (ButtonInteractionEvent) event;
 
-                if(interactionData.isAbsent())
-                    return Mono.empty();
+                    if(bEvent.getMessage().isEmpty())
+                        return Mono.empty();
 
-                String command = interactionData.get().name().get();
+                    if(bEvent.getInteraction().getMember().isEmpty())
+                        return Mono.empty();
 
-                switch (command) {
-                    case "fs":
-                        WebhookBuilder request = FormStat.getInteractionWebhook(event);
+                    Member mem = bEvent.getInteraction().getMember().get();
 
-                        if(request != null) {
-                            return event.deferReply()
-                                    .then(event.getInteractionResponse().createFollowupMessage(request.build()))
-                                    .flatMap(m -> Mono.create(v -> request.doAdditionalJob(client, m)))
-                                    .then(Mono.create(m -> request.finishJob(true)))
-                                    .doOnError(e -> {
-                                        e.printStackTrace();
-                                        request.finishJob(true);
-                                    });
+                    if (StaticStore.holderContainsKey(mem.getId().asString())) {
+                        Holder<? extends Event> holder = StaticStore.getHolder(mem.getId().asString());
+
+                        if(!(holder instanceof InteractionHolder))
+                            return Mono.empty();
+
+                        InteractionHolder<? extends InteractionCreateEvent> interactionHolder = (InteractionHolder<? extends InteractionCreateEvent>) holder;
+
+                        if(interactionHolder.canCastTo(ButtonInteractionEvent.class)) {
+                            InteractionHolder<ButtonInteractionEvent> h = (InteractionHolder<ButtonInteractionEvent>) interactionHolder;
+
+                            System.out.println(h.getClass().getName());
+
+                            int result = h.handleEvent(bEvent);
+
+                            if(result == Holder.RESULT_FINISH || result == Holder.RESULT_FAIL) {
+                                StaticStore.removeHolder(mem.getId().asString(), holder);
+                            }
+
+                            if(result == Holder.RESULT_FINISH) {
+                                return h.getInteraction(bEvent);
+                            } else {
+                                return Mono.empty();
+                            }
                         }
+                    }
+                } else {
+                    Possible<ApplicationCommandInteractionData> interactionData = event.getInteraction().getData().data();
 
-                        break;
-                    case "es":
-                        request = EnemyStat.getInteractionWebhook(event.getInteraction().getData());
+                    if(interactionData.isAbsent())
+                        return Mono.empty();
 
-                        if(request != null) {
-                            return event.deferReply().then(event.getInteractionResponse().createFollowupMessage(request.build()))
-                                    .then(Mono.create(m -> request.finishJob(true)))
-                                    .doOnError(e -> {
-                                        e.printStackTrace();
-                                        request.finishJob(true);
-                                    });
-                        }
+                    String command = interactionData.get().name().get();
 
-                        break;
-                    case "si":
-                        request = StageInfo.getInteractionWebhook(event);
+                    switch (command) {
+                        case "fs":
+                            WebhookBuilder request = FormStat.getInteractionWebhook(event);
 
-                        if(request != null) {
-                            return event.deferReply().then(event.getInteractionResponse().createFollowupMessage(request.build()))
-                                    .flatMap(m -> Mono.create(v -> request.doAdditionalJob(client, m)))
-                                    .then(Mono.create(m -> request.finishJob(true)))
-                                    .doOnError(e -> {
-                                        e.printStackTrace();
-                                        request.finishJob(true);
-                                    });
-                        }
+                            if(request != null) {
+                                return event.deferReply()
+                                        .then(event.getInteractionResponse().createFollowupMessage(request.build()))
+                                        .flatMap(m -> Mono.create(v -> request.doAdditionalJob(client, m)))
+                                        .then(Mono.create(m -> request.finishJob(true)))
+                                        .doOnError(e -> {
+                                            e.printStackTrace();
+                                            request.finishJob(true);
+                                        });
+                            }
+
+                            break;
+                        case "es":
+                            request = EnemyStat.getInteractionWebhook(event.getInteraction().getData());
+
+                            if(request != null) {
+                                return event.deferReply().then(event.getInteractionResponse().createFollowupMessage(request.build()))
+                                        .then(Mono.create(m -> request.finishJob(true)))
+                                        .doOnError(e -> {
+                                            e.printStackTrace();
+                                            request.finishJob(true);
+                                        });
+                            }
+
+                            break;
+                        case "si":
+                            request = StageInfo.getInteractionWebhook(event);
+
+                            if(request != null) {
+                                return event.deferReply().then(event.getInteractionResponse().createFollowupMessage(request.build()))
+                                        .flatMap(m -> Mono.create(v -> request.doAdditionalJob(client, m)))
+                                        .then(Mono.create(m -> request.finishJob(true)))
+                                        .doOnError(e -> {
+                                            e.printStackTrace();
+                                            request.finishJob(true);
+                                        });
+                            }
+                    }
                 }
 
                 return Mono.empty();

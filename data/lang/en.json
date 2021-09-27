@@ -594,5 +594,13 @@
   "booemo_gifsuccess" : "Added `:_EEE_:` (<a:_EEE_:_III_>) emoji to <@_MMM_>!",
   "booemo_fail" : "Failed to add emoji... Did you check available emoji slot left?",
   "booemorem_noemo" : "This member doesn't have any assigned booster emoji",
-  "booemorem_success" : "Successfully removed booster emoji from <@_>!"
+  "booemorem_success" : "Successfully removed booster emoji from <@_>!",
+  "button_castle" : "Castle",
+  "button_bg" : "Background",
+  "button_mus" : "Music",
+  "button_mus2" : "Second Music",
+  "button_pref" : "Previous Form",
+  "button_firf" : "First Form",
+  "button_nexf" : "Next Form",
+  "button_finf" : "Final Form"
 }

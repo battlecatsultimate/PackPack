@@ -5,11 +5,15 @@ import discord4j.common.util.Snowflake;
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
+import discord4j.core.event.domain.Event;
 import discord4j.core.event.domain.channel.NewsChannelDeleteEvent;
 import discord4j.core.event.domain.channel.TextChannelDeleteEvent;
 import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.event.domain.guild.GuildDeleteEvent;
 import discord4j.core.event.domain.guild.MemberUpdateEvent;
+import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
+import discord4j.core.event.domain.interaction.ComponentInteractionEvent;
+import discord4j.core.event.domain.interaction.InteractionCreateEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
@@ -40,9 +44,11 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.data.BoosterData;
 import mandarin.packpack.supporter.server.data.BoosterHolder;
-import mandarin.packpack.supporter.server.holder.FormReactionHolder;
-import mandarin.packpack.supporter.server.slash.SlashBuilder;
+import mandarin.packpack.supporter.server.holder.FormReactionMessageHolder;
 import mandarin.packpack.supporter.server.holder.Holder;
+import mandarin.packpack.supporter.server.holder.InteractionHolder;
+import mandarin.packpack.supporter.server.holder.MessageHolder;
+import mandarin.packpack.supporter.server.slash.SlashBuilder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 
 import java.util.ArrayList;
@@ -371,29 +377,34 @@ public class PackBot {
 
             event.getMember().ifPresent(m -> {
                 if (StaticStore.holderContainsKey(m.getId().asString())) {
-                    Holder<? extends MessageEvent> holder = StaticStore.getHolder(m.getId().asString());
+                    Holder<? extends Event> holder = StaticStore.getHolder(m.getId().asString());
 
-                    if(holder instanceof FormReactionHolder) {
-                        StaticStore.logger.uploadLog("Trying to perform FormReactionHolder : "+holder.canCastTo(ReactionAddEvent.class));
+                    if(!(holder instanceof MessageHolder))
+                        return;
+
+                    MessageHolder<? extends MessageEvent> messageHolder = (MessageHolder<? extends MessageEvent>) holder;
+
+                    if(messageHolder instanceof FormReactionMessageHolder) {
+                        StaticStore.logger.uploadLog("Trying to perform FormReactionHolder : "+ messageHolder.canCastTo(ReactionAddEvent.class));
                     }
 
-                    if (holder.canCastTo(ReactionAddEvent.class)) {
+                    if (messageHolder.canCastTo(ReactionAddEvent.class)) {
                         @SuppressWarnings("unchecked")
-                        Holder<ReactionAddEvent> h = (Holder<ReactionAddEvent>) holder;
+                        MessageHolder<ReactionAddEvent> h = (MessageHolder<ReactionAddEvent>) messageHolder;
 
                         int result = h.handleEvent(event);
 
-                        if(holder instanceof FormReactionHolder) {
+                        if(messageHolder instanceof FormReactionMessageHolder) {
                             StaticStore.logger.uploadLog("Result is : "+result);
                         }
 
                         if (result == Holder.RESULT_FINISH) {
-                            holder.clean();
-                            StaticStore.removeHolder(m.getId().asString(), holder);
+                            messageHolder.clean();
+                            StaticStore.removeHolder(m.getId().asString(), messageHolder);
                         } else if (result == Holder.RESULT_FAIL) {
-                            StaticStore.logger.uploadLog("W/ReactionEventHolder | Expired process tried to be handled : " + m.getId().asString() + " / " + holder.getClass().getName());
-                            System.out.println("ERROR : Expired process tried to be handled : " + m.getId().asString() + " | " + holder.getClass().getName());
-                            StaticStore.removeHolder(m.getId().asString(), holder);
+                            StaticStore.logger.uploadLog("W/ReactionEventHolder | Expired process tried to be handled : " + m.getId().asString() + " / " + messageHolder.getClass().getName());
+                            System.out.println("ERROR : Expired process tried to be handled : " + m.getId().asString() + " | " + messageHolder.getClass().getName());
+                            StaticStore.removeHolder(m.getId().asString(), messageHolder);
                         }
                     }
                 }
@@ -526,20 +537,24 @@ public class PackBot {
                             prefix = StaticStore.serverPrefix;
 
                         if(StaticStore.holderContainsKey(m.getId().asString())) {
-                            Holder<? extends MessageEvent> holder = StaticStore.getHolder(m.getId().asString());
+                            Holder<? extends Event> holder = StaticStore.getHolder(m.getId().asString());
 
-                            if(holder.canCastTo(MessageCreateEvent.class)) {
-                                @SuppressWarnings("unchecked")
-                                Holder<MessageCreateEvent> h = (Holder<MessageCreateEvent>) holder;
+                            if(holder instanceof MessageHolder) {
+                                MessageHolder<? extends MessageEvent> messageHolder = (MessageHolder<? extends MessageEvent>) holder;
 
-                                int result = h.handleEvent(event);
+                                if(messageHolder.canCastTo(MessageCreateEvent.class)) {
+                                    @SuppressWarnings("unchecked")
+                                    MessageHolder<MessageCreateEvent> h = (MessageHolder<MessageCreateEvent>) messageHolder;
 
-                                if(result == Holder.RESULT_FINISH) {
-                                    holder.clean();
-                                    StaticStore.removeHolder(m.getId().asString(), holder);
-                                } else if(result == Holder.RESULT_FAIL) {
-                                    System.out.println("ERROR : Expired process tried to be handled : "+m.getId().asString() + " | "+holder.getClass().getName());
-                                    StaticStore.removeHolder(m.getId().asString(), holder);
+                                    int result = h.handleEvent(event);
+
+                                    if(result == Holder.RESULT_FINISH) {
+                                        messageHolder.clean();
+                                        StaticStore.removeHolder(m.getId().asString(), messageHolder);
+                                    } else if(result == Holder.RESULT_FAIL) {
+                                        System.out.println("ERROR : Expired process tried to be handled : "+m.getId().asString() + " | "+ messageHolder.getClass().getName());
+                                        StaticStore.removeHolder(m.getId().asString(), messageHolder);
+                                    }
                                 }
                             }
                         }

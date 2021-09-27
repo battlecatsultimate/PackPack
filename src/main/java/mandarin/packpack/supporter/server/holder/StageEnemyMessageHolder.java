@@ -17,13 +17,12 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
-import mandarin.packpack.supporter.server.data.IDHolder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class StageEnemyHolder extends Holder<MessageCreateEvent> {
+public class StageEnemyMessageHolder extends MessageHolder<MessageCreateEvent> {
     private final ArrayList<Enemy> enemy;
     private final Message msg;
     private final String channelID;
@@ -36,7 +35,7 @@ public class StageEnemyHolder extends Holder<MessageCreateEvent> {
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
-    public StageEnemyHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, boolean isFrame, int star, int lang) {
+    public StageEnemyMessageHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, boolean isFrame, int star, int lang) {
         super(MessageCreateEvent.class);
 
         this.enemy = enemy;
@@ -125,10 +124,8 @@ public class StageEnemyHolder extends Holder<MessageCreateEvent> {
                             }
 
                             if(g != null && StaticStore.idHolder.containsKey(g.getId().asString())) {
-                                IDHolder holder = StaticStore.idHolder.get(g.getId().asString());
-
-                                StaticStore.removeHolder(m.getId().asString(), StageEnemyHolder.this);
-                                StaticStore.putHolder(m.getId().asString(), new StageReactionHolder(stages.get(0), event.getMessage(), result, holder, lang, channelID, m.getId().asString()));
+                                StaticStore.removeHolder(m.getId().asString(), StageEnemyMessageHolder.this);
+                                StaticStore.putHolder(m.getId().asString(), new StageInfoButtonHolder(stages.get(0), event.getMessage(), result, channelID, m.getId().asString()));
                             }
                         });
 
@@ -252,8 +249,8 @@ public class StageEnemyHolder extends Holder<MessageCreateEvent> {
                         event.getMember().ifPresent(m -> {
                             Message msg = event.getMessage();
 
-                            StaticStore.removeHolder(m.getId().asString(), StageEnemyHolder.this);
-                            StaticStore.putHolder(m.getId().asString(), new StageInfoHolder(stages, msg, res, ch.getId().asString(), star, isFrame, lang));
+                            StaticStore.removeHolder(m.getId().asString(), StageEnemyMessageHolder.this);
+                            StaticStore.putHolder(m.getId().asString(), new StageInfoMessageHolder(stages, msg, res, ch.getId().asString(), star, isFrame, lang));
                         });
                     }
 

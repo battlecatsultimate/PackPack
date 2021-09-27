@@ -25,7 +25,7 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class AnimHolder extends Holder<MessageCreateEvent> {
+public class AnimMessageHolder extends MessageHolder<MessageCreateEvent> {
     private final AnimMixer mixer;
     private final Message msg;
     private final int lang;
@@ -45,7 +45,7 @@ public class AnimHolder extends Holder<MessageCreateEvent> {
     private final AtomicReference<String> mamodel = new AtomicReference<>("MAMODEL : -");
     private final ArrayList<AtomicReference<String>> maanim = new ArrayList<>();
 
-    public AnimHolder(Message msg, Message target, int lang, String channelID, File container, boolean debug, MessageChannel ch, boolean raw, boolean transparent, int len) throws Exception {
+    public AnimMessageHolder(Message msg, Message target, int lang, String channelID, File container, boolean debug, MessageChannel ch, boolean raw, boolean transparent, int len) throws Exception {
         super(MessageCreateEvent.class);
 
         this.msg = target;

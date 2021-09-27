@@ -4,17 +4,77 @@ import common.pack.UserProfile;
 import common.util.Data;
 import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.discordjson.json.InteractionData;
+import discord4j.discordjson.json.MemberData;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.GlobalTimedConstraintCommand;
 import mandarin.packpack.supporter.Pauser;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import mandarin.packpack.supporter.server.slash.SlashBuilder;
+import mandarin.packpack.supporter.server.slash.WebhookBuilder;
 
 import java.io.*;
 import java.util.concurrent.TimeUnit;
 
 public class Music extends GlobalTimedConstraintCommand {
+    public static WebhookBuilder getInteractionWebhook(InteractionData interaction, common.util.stage.Music ms) throws Exception {
+        int lang = LangID.EN;
+
+        if(!interaction.guildId().isAbsent()) {
+            String gID = interaction.guildId().get();
+
+            if(gID.equals(StaticStore.BCU_KR_SERVER))
+                lang = LangID.KR;
+        }
+
+        if(!interaction.member().isAbsent()) {
+            MemberData m = interaction.member().get();
+
+            if(StaticStore.locales.containsKey(m.user().id().asString())) {
+                lang =  StaticStore.locales.get(m.user().id().asString());
+            }
+        }
+
+        if(ms != null && ms.id != null) {
+            File file = new File("./temp/", Data.trio(ms.id.id) + ".ogg");
+
+            if (!file.exists()) {
+                boolean res = file.createNewFile();
+
+                if (!res) {
+                    System.out.println("Can't create file : " + file.getAbsolutePath());
+                    return null;
+                }
+            }
+
+            FileOutputStream fos = new FileOutputStream(file);
+            InputStream ins = ms.data.getStream();
+
+            int l;
+            byte[] buffer = new byte[65535];
+
+            while ((l = ins.read(buffer)) > 0) {
+                fos.write(buffer, 0, l);
+            }
+
+            ins.close();
+            fos.close();
+
+            FileInputStream fis = new FileInputStream(file);
+
+            int finalLang = lang;
+
+            return SlashBuilder.getWebhookRequest(w -> {
+                w.setContent(LangID.getStringByID("music_upload", finalLang).replace("_", Data.trio(ms.id.id)));
+                w.addFile(Data.trio(ms.id.id) + ".ogg", fis, file);
+            });
+        }
+
+        return null;
+    }
+
     private static final String NOT_NUMBER = "notNumber";
     private static final String OUT_RANGE = "outRange";
     private static final String ARGUMENT = "arguments";

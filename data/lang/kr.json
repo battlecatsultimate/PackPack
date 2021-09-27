@@ -588,5 +588,13 @@
   "booemo_success" : "`:_EEE_:` (<:_EEE_:_III_>) 이모지를 <@_MMM_> 멤버에게 부스터 전용 이모지로 추가했습니다!",
   "booemo_fail" : "이모지 추가에 실패했습니다... 혹시 이모지를 추가할 슬롯이 남아있나요?",
   "booemorem_noemo" : "이 멤버한테 지정된 부스터 전용 이모지가 없습니다",
-  "booemorem_success" : "<@_> 멤버로부터 부스터 전용 이모지를 제거했습니다!"
+  "booemorem_success" : "<@_> 멤버로부터 부스터 전용 이모지를 제거했습니다!",
+  "button_castle" : "성",
+  "button_bg" : "배경",
+  "button_mus" : "음악",
+  "button_mus2" : "두번째 음악",
+  "button_pref" : "이전 형태",
+  "button_firf" : "첫번째 형태",
+  "button_nexf" : "다음 형태",
+  "button_finf" : "마지막 형태"
 }

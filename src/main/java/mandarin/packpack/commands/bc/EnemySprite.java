@@ -11,7 +11,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
-import mandarin.packpack.supporter.server.holder.EnemySpriteHolder;
+import mandarin.packpack.supporter.server.holder.EnemySpriteMessageHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 
 import java.util.ArrayList;
@@ -102,7 +102,7 @@ public class EnemySprite extends TimedConstraintCommand {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(member.getId().asString(), new EnemySpriteHolder(forms, msg, res, ch.getId().asString(), mode, lang));
+                            StaticStore.putHolder(member.getId().asString(), new EnemySpriteMessageHolder(forms, msg, res, ch.getId().asString(), mode, lang));
                     });
                 }
 

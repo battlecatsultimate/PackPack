@@ -5,8 +5,8 @@ import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
-import mandarin.packpack.supporter.server.holder.AnimHolder;
-import mandarin.packpack.supporter.server.holder.BCAnimHolder;
+import mandarin.packpack.supporter.server.holder.AnimMessageHolder;
+import mandarin.packpack.supporter.server.holder.BCAnimMessageHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 
 import java.io.File;
@@ -93,9 +93,9 @@ public class AnimAnalyzer extends ConstraintCommand {
 
         if(msg != null)
             if(bc) {
-                new BCAnimHolder(msg, m, lang, ch.getId().asString(), container, ch, zombie);
+                new BCAnimMessageHolder(msg, m, lang, ch.getId().asString(), container, ch, zombie);
             } else {
-                new AnimHolder(msg, m, lang, ch.getId().asString(), container, debug, ch, raw, transparent, anim);
+                new AnimMessageHolder(msg, m, lang, ch.getId().asString(), container, debug, ch, raw, transparent, anim);
             }
     }
 

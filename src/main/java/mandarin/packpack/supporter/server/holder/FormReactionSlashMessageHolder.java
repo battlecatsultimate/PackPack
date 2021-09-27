@@ -1,6 +1,7 @@
 package mandarin.packpack.supporter.server.holder;
 
 import common.util.unit.Form;
+import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
@@ -15,38 +16,37 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class FormReactionHolder extends Holder<ReactionAddEvent> {
-    public static final String TWOPREVIOUS = "821449061332025404";
-    public static final String PREVIOUS = "821449028767187014";
-    public static final String NEXT = "821449099936923739";
-    public static final String TWONEXT = "821449111109894164";
-
-    private final Message embed;
-    private final int lang;
-    private final String channelID;
-    private final String memberID;
+public class FormReactionSlashMessageHolder extends MessageHolder<ReactionAddEvent> {
     private final Form f;
+    private final String memberID;
+    private final long channelID;
+    private final long embID;
+    private final int lang;
 
     private final boolean isFrame;
     private final boolean talent;
     private final int[] lv;
 
-    public FormReactionHolder(Form f, Message author, Message msg, boolean isFrame, boolean talent, int[] lv, int lang, String channelID, String memberID) {
+    private final GatewayDiscordClient client;
+
+    public FormReactionSlashMessageHolder(GatewayDiscordClient client, Form f, String memberID, long channelID, long embID, boolean isFrame, boolean talent, int[] lv, int lang) {
         super(ReactionAddEvent.class);
 
-        this.embed = msg;
-        this.lang = lang;
-        this.channelID = channelID;
-        this.memberID = memberID;
         this.f = f;
+        this.memberID = memberID;
+        this.channelID = channelID;
+        this.embID = embID;
+        this.lang = lang;
 
         this.isFrame = isFrame;
         this.talent = talent;
         this.lv = lv;
 
-        Timer autoFinsh = new Timer();
+        this.client = client;
 
-        autoFinsh.schedule(new TimerTask() {
+        Timer autoFinish = new Timer();
+
+        autoFinish.schedule(new TimerTask() {
             @Override
             public void run() {
                 if(expired)
@@ -54,9 +54,10 @@ public class FormReactionHolder extends Holder<ReactionAddEvent> {
 
                 expired = true;
 
-                author.getAuthor().ifPresent(u -> StaticStore.removeHolder(u.getId().asString(), FormReactionHolder.this));
+                StaticStore.removeHolder(memberID, FormReactionSlashMessageHolder.this);
 
-                embed.removeAllReactions().subscribe();
+                client.getRestClient().getChannelService()
+                        .deleteAllReactions(channelID, embID).subscribe();
             }
         }, TimeUnit.MINUTES.toMillis(5));
     }
@@ -64,54 +65,38 @@ public class FormReactionHolder extends Holder<ReactionAddEvent> {
     @Override
     public int handleEvent(ReactionAddEvent event) {
         if(expired) {
-            System.out.println("Expired at FormReactionHolder!");
+            System.out.println("Expired at FormReactionSlashHolder!");
             return RESULT_FAIL;
         }
 
         MessageChannel ch = event.getChannel().block();
 
-        if(ch == null) {
-            StaticStore.logger.uploadLog("MessageChannel was null when performing FormReactionHolder");
+        if(ch == null)
             return RESULT_STILL;
-        }
 
-        if(!ch.getId().asString().equals(channelID)) {
-            StaticStore.logger.uploadLog("MessageChannel had different channel from registered channel\nRegistered : "+channelID+" | Current : "+ch.getId().asString());
+        if(ch.getId().asLong() != channelID)
             return RESULT_STILL;
-        }
 
         Message msg = event.getMessage().block();
 
-        if(msg == null || !msg.getId().asString().equals(embed.getId().asString())) {
-            if(msg == null) {
-                StaticStore.logger.uploadLog("Message was null when performing FormReactionHolder");
-            } else {
-                StaticStore.logger.uploadLog("Message had different id from registered message\nRegistered : "+embed+" | Current : "+msg.getId().asString());
-            }
-
+        if(msg == null || msg.getId().asLong() != embID)
             return RESULT_STILL;
-        }
 
-        if(event.getMember().isEmpty()) {
-            StaticStore.logger.uploadLog("Member data was empty while performing FormReactionHolder");
+        if(event.getMember().isEmpty())
             return RESULT_STILL;
-        }
 
         Member mem = event.getMember().get();
 
-        if(!mem.getId().asString().equals(memberID)) {
-            StaticStore.logger.uploadLog("Member had different id from registered member\nRegistered : "+memberID+" | Current : "+mem.getId().asString());
+        if(!mem.getId().asString().equals(memberID))
             return RESULT_STILL;
-        }
 
         Optional<ReactionEmoji.Custom> emoji = event.getEmoji().asCustomEmoji();
 
         AtomicReference<Boolean> emojiClicked = new AtomicReference<>(false);
 
         emoji.ifPresent(em -> {
-            StaticStore.logger.uploadLog("Custom emoji is present in FormReactionHolder\nClicked emoji : "+em.asFormat());
             switch (em.getId().asString()) {
-                case TWOPREVIOUS:
+                case StaticStore.TWOPREVIOUS:
                     emojiClicked.set(true);
 
                     if(f.fid - 2 < 0)
@@ -129,7 +114,7 @@ public class FormReactionHolder extends Holder<ReactionAddEvent> {
                     }
 
                     break;
-                case PREVIOUS:
+                case StaticStore.PREVIOUS:
                     emojiClicked.set(true);
 
                     if(f.fid - 1 < 0)
@@ -147,7 +132,7 @@ public class FormReactionHolder extends Holder<ReactionAddEvent> {
                     }
 
                     break;
-                case NEXT:
+                case StaticStore.NEXT:
                     emojiClicked.set(true);
 
                     if(f.unit == null)
@@ -165,7 +150,7 @@ public class FormReactionHolder extends Holder<ReactionAddEvent> {
                     }
 
                     break;
-                case TWONEXT:
+                case StaticStore.TWONEXT:
                     emojiClicked.set(true);
 
                     if(f.unit == null)
@@ -187,7 +172,8 @@ public class FormReactionHolder extends Holder<ReactionAddEvent> {
         });
 
         if(emojiClicked.get()) {
-            embed.delete().subscribe();
+            client.getRestClient().getChannelService()
+                    .deleteMessage(channelID, embID, null).subscribe();
             expired = true;
         }
 
@@ -208,6 +194,7 @@ public class FormReactionHolder extends Holder<ReactionAddEvent> {
 
         StaticStore.removeHolder(id, this);
 
-        embed.removeAllReactions().subscribe();
+        client.getRestClient().getChannelService()
+                .deleteAllReactions(channelID, embID).subscribe();
     }
 }

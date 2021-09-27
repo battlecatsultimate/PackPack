@@ -11,7 +11,7 @@ import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import mandarin.packpack.supporter.server.holder.MedalHolder;
+import mandarin.packpack.supporter.server.holder.MedalMessageHolder;
 
 import java.util.ArrayList;
 
@@ -77,7 +77,7 @@ public class Medal extends ConstraintCommand {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(m.getId().asString(), new MedalHolder(id, msg, res, lang, ch.getId().asString()));
+                            StaticStore.putHolder(m.getId().asString(), new MedalMessageHolder(id, msg, res, lang, ch.getId().asString()));
                     });
                 }
             }

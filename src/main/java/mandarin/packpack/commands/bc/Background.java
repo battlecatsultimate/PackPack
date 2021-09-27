@@ -4,18 +4,56 @@ import common.pack.UserProfile;
 import common.util.Data;
 import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.discordjson.json.InteractionData;
+import discord4j.discordjson.json.MemberData;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.TimedConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.ImageDrawing;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import mandarin.packpack.supporter.server.slash.SlashBuilder;
+import mandarin.packpack.supporter.server.slash.WebhookBuilder;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
 public class Background extends TimedConstraintCommand {
+    public static WebhookBuilder getInteractionWebhook(InteractionData interaction, common.util.pack.Background bg) throws Exception {
+        int lang = LangID.EN;
+
+        if(!interaction.guildId().isAbsent()) {
+            String gID = interaction.guildId().get();
+
+            if(gID.equals(StaticStore.BCU_KR_SERVER))
+                lang = LangID.KR;
+        }
+
+        if(!interaction.member().isAbsent()) {
+            MemberData m = interaction.member().get();
+
+            if(StaticStore.locales.containsKey(m.user().id().asString())) {
+                lang =  StaticStore.locales.get(m.user().id().asString());
+            }
+        }
+
+        File img = ImageDrawing.drawBGImage(bg, 960, 520);
+
+        if(img != null) {
+            FileInputStream fis = new FileInputStream(img);
+
+            int finalLang = lang;
+
+            return SlashBuilder.getWebhookRequest(w -> {
+                w.setContent(LangID.getStringByID("bg_result", finalLang).replace("_", Data.trio(bg.id.id)).replace("WWW", 960+"").replace("HHH", 520+""));
+                w.addFile("bg.png", fis, img);
+            });
+        }
+
+        return null;
+    }
+
     private common.util.pack.Background bg;
 
     public Background(ConstraintCommand.ROLE role, int lang, IDHolder id, long time) {

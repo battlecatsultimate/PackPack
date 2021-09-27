@@ -6,10 +6,14 @@ import common.util.stage.CastleImg;
 import common.util.stage.CastleList;
 import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.discordjson.json.InteractionData;
+import discord4j.discordjson.json.MemberData;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import mandarin.packpack.supporter.server.slash.SlashBuilder;
+import mandarin.packpack.supporter.server.slash.WebhookBuilder;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -20,6 +24,117 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Castle extends ConstraintCommand {
+    public static WebhookBuilder getInteractionWebhook(InteractionData interaction, CastleImg cs) throws Exception {
+        int lang = LangID.EN;
+
+        if(!interaction.guildId().isAbsent()) {
+            String gID = interaction.guildId().get();
+
+            if(gID.equals(StaticStore.BCU_KR_SERVER))
+                lang = LangID.KR;
+        }
+
+        if(!interaction.member().isAbsent()) {
+            MemberData m = interaction.member().get();
+
+            if(StaticStore.locales.containsKey(m.user().id().asString())) {
+                lang =  StaticStore.locales.get(m.user().id().asString());
+            }
+        }
+
+        File temp = new File("./temp");
+
+        if(!temp.exists()) {
+            boolean res = temp.mkdirs();
+
+            if(!res) {
+                System.out.println("Can't create folder : "+temp.getAbsolutePath());
+                return null;
+            }
+        }
+
+        File img = new File(temp, StaticStore.findFileName(temp, "castle", ".png"));
+
+        if(!img.exists()) {
+            boolean res = img.createNewFile();
+
+            if(!res) {
+                System.out.println("Can't create new file : "+img.getAbsolutePath());
+                return null;
+            }
+        } else {
+            return null;
+        }
+
+        if(cs != null) {
+            int code;
+
+            switch (cs.getCont().getSID()) {
+                case "000001":
+                    code = 1;
+                    break;
+                case "000002":
+                    code = 2;
+                    break;
+                case "000003":
+                    code = 3;
+                    break;
+                default:
+                    code = 0;
+            }
+
+            BufferedImage castle;
+
+            if (code == 1 && lang != LangID.JP) {
+                VFile vf = VFile.get("./org/img/ec/ec" + Data.trio(cs.id.id) + "_" + getLocale(lang) + ".png");
+
+                if (vf != null) {
+                    castle = (BufferedImage) vf.getData().getImg().bimg();
+                } else {
+                    castle = (BufferedImage) cs.img.getImg().bimg();
+                }
+            } else {
+                castle = (BufferedImage) cs.img.getImg().bimg();
+            }
+
+            ImageIO.write(castle, "PNG", img);
+
+            FileInputStream fis = new FileInputStream(img);
+
+            int finalId = cs.id.id;
+            int finalLang = lang;
+
+            return SlashBuilder.getWebhookRequest(w -> {
+                String castleCode;
+
+                if (code == 0)
+                    castleCode = "RC";
+                else if (code == 1)
+                    castleCode = "EC";
+                else if (code == 2)
+                    castleCode = "WC";
+                else
+                    castleCode = "SC";
+
+                w.setContent(LangID.getStringByID("castle_result", finalLang).replace("_", castleCode).replace("|", Data.trio(finalId)));
+                w.addFile("result.png", fis, img);
+            });
+        }
+
+        return null;
+    }
+
+    private static String getLocale(int lang) {
+        switch (lang) {
+            case LangID.KR:
+                return "ko";
+            case LangID.ZH:
+                return "tw";
+            default:
+                return "en";
+        }
+    }
+
     private static final int PARAM_RC = 2;
     private static final int PARAM_EC = 4;
     private static final int PARAM_WC = 8;
@@ -91,7 +206,7 @@ public class Castle extends ConstraintCommand {
 
             if(code == 1 && lang != LangID.JP) {
                 System.out.println(cs.id.id);
-                VFile vf = VFile.get("./org/img/ec/ec"+Data.trio(cs.id.id)+"_"+getLocale()+".png");
+                VFile vf = VFile.get("./org/img/ec/ec"+Data.trio(cs.id.id)+"_"+getLocale(lang)+".png");
 
                 if(vf != null) {
                     castle = (BufferedImage) vf.getData().getImg().bimg();
@@ -182,7 +297,7 @@ public class Castle extends ConstraintCommand {
                 BufferedImage castle;
 
                 if(code == 1 && lang != LangID.JP) {
-                    VFile vf = VFile.get("./org/img/ec/ec"+Data.trio(image.id.id)+"_"+getLocale()+".png");
+                    VFile vf = VFile.get("./org/img/ec/ec"+Data.trio(image.id.id)+"_"+getLocale(lang)+".png");
 
                     if(vf != null) {
                         castle = (BufferedImage) vf.getData().getImg().bimg();
@@ -272,16 +387,5 @@ public class Castle extends ConstraintCommand {
         }
 
         return result;
-    }
-
-    private String getLocale() {
-        switch (lang) {
-            case LangID.KR:
-                return "ko";
-            case LangID.ZH:
-                return "tw";
-            default:
-                return "en";
-        }
     }
 }

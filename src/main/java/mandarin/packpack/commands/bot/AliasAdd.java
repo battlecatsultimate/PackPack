@@ -16,9 +16,9 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.AliasHolder;
-import mandarin.packpack.supporter.server.holder.alias.AliasEnemyHolder;
-import mandarin.packpack.supporter.server.holder.alias.AliasFormHolder;
-import mandarin.packpack.supporter.server.holder.alias.AliasStageHolder;
+import mandarin.packpack.supporter.server.holder.alias.AliasEnemyMessageHolder;
+import mandarin.packpack.supporter.server.holder.alias.AliasFormMessageHolder;
+import mandarin.packpack.supporter.server.holder.alias.AliasStageMessageHolder;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
@@ -137,7 +137,7 @@ public class AliasAdd extends Command {
                             Message msg = getMessage(event);
 
                             if(msg != null)
-                                StaticStore.putHolder(m.getId().asString(), new AliasFormHolder(forms, msg, res, ch.getId().asString(), AliasHolder.MODE.ADD, lang, getAliasName(getContent(event))));
+                                StaticStore.putHolder(m.getId().asString(), new AliasFormMessageHolder(forms, msg, res, ch.getId().asString(), AliasHolder.MODE.ADD, lang, getAliasName(getContent(event))));
                         });
                     }
                 }
@@ -229,7 +229,7 @@ public class AliasAdd extends Command {
                             Message msg = getMessage(event);
 
                             if(msg != null)
-                                StaticStore.putHolder(member.getId().asString(), new AliasEnemyHolder(enemies, msg, res, ch.getId().asString(), AliasHolder.MODE.ADD, lang, getAliasName(getContent(event))));
+                                StaticStore.putHolder(member.getId().asString(), new AliasEnemyMessageHolder(enemies, msg, res, ch.getId().asString(), AliasHolder.MODE.ADD, lang, getAliasName(getContent(event))));
                         });
                     }
                 }
@@ -377,7 +377,7 @@ public class AliasAdd extends Command {
                             Message msg = getMessage(event);
 
                             if(msg != null)
-                                StaticStore.putHolder(member.getId().asString(), new AliasStageHolder(stages, msg, res, ch.getId().asString(), AliasHolder.MODE.ADD, lang, getAliasName(getContent(event))));
+                                StaticStore.putHolder(member.getId().asString(), new AliasStageMessageHolder(stages, msg, res, ch.getId().asString(), AliasHolder.MODE.ADD, lang, getAliasName(getContent(event))));
                         });
                     }
                 }

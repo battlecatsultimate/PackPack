@@ -16,7 +16,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
-import mandarin.packpack.supporter.server.holder.EnemyStatHolder;
+import mandarin.packpack.supporter.server.holder.EnemyStatMessageHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.slash.SlashBuilder;
 import mandarin.packpack.supporter.server.slash.SlashOption;
@@ -157,7 +157,7 @@ public class EnemyStat extends ConstraintCommand {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(member.getId().asString(), new EnemyStatHolder(enemies, msg, res, ch.getId().asString(), magnification, isFrame, lang));
+                            StaticStore.putHolder(member.getId().asString(), new EnemyStatMessageHolder(enemies, msg, res, ch.getId().asString(), magnification, isFrame, lang));
                     });
                 }
             }
