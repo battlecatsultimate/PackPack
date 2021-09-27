@@ -10,6 +10,7 @@ import discord4j.core.object.entity.Attachment;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
+import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.AnimMixer;
 import mandarin.packpack.supporter.bc.DataToString;
@@ -224,7 +225,7 @@ public class BCAnimHolder extends Holder<MessageCreateEvent> {
                     return RESULT_FINISH;
                 }
             } else if(m.getContent().equals("c")) {
-                msg.edit(e -> e.setContent(LangID.getStringByID("animanalyze_cancel", lang))).subscribe();
+                Command.editMessage(msg, mes -> mes.content(wrap(LangID.getStringByID("animanalyze_cancel", lang))));
 
                 StaticStore.deleteFile(container, true);
 
@@ -252,7 +253,7 @@ public class BCAnimHolder extends Holder<MessageCreateEvent> {
 
         StaticStore.removeHolder(id, this);
 
-        msg.edit(m -> m.setContent(LangID.getStringByID("formst_expire", lang))).subscribe();
+        Command.editMessage(msg, m -> m.content(wrap(LangID.getStringByID("formst_expire", lang))));
     }
 
     private int getIndexFromFileName(String fileName) {
@@ -307,7 +308,7 @@ public class BCAnimHolder extends Holder<MessageCreateEvent> {
             }
         }
 
-        msg.edit(m -> m.setContent(content.toString())).subscribe();
+        Command.editMessage(msg, m -> m.content(wrap(content.toString())));
     }
 
     private boolean validFile(FILE fileType, File file) throws Exception {

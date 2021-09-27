@@ -20,7 +20,9 @@ import discord4j.core.object.entity.Attachment;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.reaction.ReactionEmoji;
+import discord4j.discordjson.possible.Possible;
 import discord4j.rest.util.Color;
+import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.awt.FG2D;
 import mandarin.packpack.supporter.awt.FIBI;
@@ -38,8 +40,9 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
-import java.util.Set;
+import java.util.Optional;
 
 public class EntityHandler {
     private static final DecimalFormat df;
@@ -270,8 +273,8 @@ public class EntityHandler {
         else
             cfis = null;
 
-        Message msg = ch.createMessage(m -> {
-            m.addEmbed(spec -> {
+        Message msg = Command.createMessage(ch, m -> {
+            m.addEmbed(Command.createEmbed(spec -> {
                 Color c;
 
                 if(f.fid == 0)
@@ -294,14 +297,14 @@ public class EntityHandler {
                 else
                     t = new int[] {lv[0], 0, 0, 0, 0, 0};
 
-                spec.setTitle(DataToString.getTitle(f, lang));
+                spec.title(DataToString.getTitle(f, lang));
 
                 if(talent && f.getPCoin() != null && talentExists(t)) {
-                    spec.setDescription(LangID.getStringByID("data_talent", lang));
+                    spec.description(LangID.getStringByID("data_talent", lang));
                 }
 
-                spec.setColor(c);
-                spec.setThumbnail("attachment://icon.png");
+                spec.color(c);
+                spec.thumbnail("attachment://icon.png");
                 spec.addField(LangID.getStringByID("data_id", lang), DataToString.getID(f.uid.id, f.fid), false);
                 spec.addField(LangID.getStringByID("data_hp", lang), DataToString.getHP(f, talent, t), true);
                 spec.addField(LangID.getStringByID("data_hb", lang), DataToString.getHitback(f, talent, t), true);
@@ -359,16 +362,18 @@ public class EntityHandler {
                 if(catfruit != null)
                     spec.addField(LangID.getStringByID("data_evolve", lang), catfruit, false);
 
-                spec.setImage("attachment://cf.png");
+                spec.image("attachment://cf.png");
 
                 if(talentExists(t))
-                    spec.setFooter(DataToString.getTalent(f, t, lang), null);
-            });
+                    spec.footer(DataToString.getTalent(f, t, lang), null);
+            }));
+
             if(fis != null)
                 m.addFile("icon.png", fis);
+
             if(cfis != null)
                 m.addFile("cf.png", cfis);
-        }).block();
+        });
 
         if(msg != null && addEmoji) {
             if(canFirstForm(f)) {
@@ -461,8 +466,8 @@ public class EntityHandler {
         else
             fis = null;
 
-        ch.createMessage(m -> {
-            m.addEmbed(spec -> {
+        Command.createMessage(ch, m -> {
+            m.addEmbed(Command.createEmbed(spec -> {
                 Color c = StaticStore.rainbow[0];
 
                 int[] mag = new int[2];
@@ -483,9 +488,9 @@ public class EntityHandler {
                         mag[1] = 0;
                 }
 
-                spec.setTitle(DataToString.getTitle(e, lang));
-                spec.setColor(c);
-                spec.setThumbnail("attachment://icon.png");
+                spec.title(DataToString.getTitle(e, lang));
+                spec.color(c);
+                spec.thumbnail("attachment://icon.png");
                 spec.addField(LangID.getStringByID("data_id", lang), DataToString.getID(e.id.id), false);
                 spec.addField(LangID.getStringByID("data_hp", lang), DataToString.getHP(e, mag[0]), true);
                 spec.addField(LangID.getStringByID("data_hb", lang), DataToString.getHitback(e), true);
@@ -529,12 +534,13 @@ public class EntityHandler {
                     spec.addField(LangID.getStringByID("data_edesc", lang), explanation, false);
                 }
 
-                spec.setFooter(LangID.getStringByID("enemyst_source", lang), null);
-            });
+                spec.footer(LangID.getStringByID("enemyst_source", lang), null);
+            }));
+
             if(fis != null) {
                 m.addFile("icon.png", fis);
             }
-        }).subscribe(null, null, () -> {
+        }, () -> {
             if(fis != null) {
                 try {
                     fis.close();
@@ -546,8 +552,10 @@ public class EntityHandler {
             if(img != null && img.exists()) {
                 boolean res = img.delete();
 
-                if(!res)
-                    System.out.println("Can't delete file : "+img.getAbsolutePath());
+                if(!res) {
+                    System.out.println("Can't delete file : " + img.getAbsolutePath());
+                    StaticStore.logger.uploadLog("W/EntityHandlerEnemyEmb | Can't delete file : "+img.getAbsolutePath());
+                }
             }
         });
 
@@ -821,14 +829,14 @@ public class EntityHandler {
             fis = null;
         }
 
-        Message result = ch.createMessage(m -> {
-            m.addEmbed(spec -> {
+        Message result = Command.createMessage(ch, m -> {
+            m.addEmbed(Command.createEmbed(spec -> {
                 try {
 
                     if(st.info == null || st.info.diff == -1)
-                        spec.setColor(Color.of(217, 217, 217));
+                        spec.color(Color.of(217, 217, 217));
                     else
-                        spec.setColor(DataToString.getDifficultyColor(st.info.diff));
+                        spec.color(DataToString.getDifficultyColor(st.info.diff));
 
                     String name = "";
 
@@ -877,7 +885,7 @@ public class EntityHandler {
 
                     name += stName;
 
-                    spec.setTitle(name);
+                    spec.title(name);
                     spec.addField(LangID.getStringByID("data_id", lang), DataToString.getStageCode(st), false);
 
                     String energy = DataToString.getEnergy(st, lang);
@@ -940,17 +948,17 @@ public class EntityHandler {
 
                     if(fis != null) {
                         spec.addField(LangID.getStringByID("data_scheme", lang), "** **", false);
-                        spec.setImage("attachment://scheme.png");
+                        spec.image("attachment://scheme.png");
                     }
 
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            });
+            }));
 
             if(fis != null)
                 m.addFile("scheme.png", fis);
-        }).block();
+        });
 
         if(result != null) {
             result.addReaction(ReactionEmoji.custom(Snowflake.of(StageReactionHolder.CASTLE), "Castle", false)).subscribe();
@@ -1502,7 +1510,7 @@ public class EntityHandler {
 
             int finalMode = mode;
 
-            ch.createMessage(m -> {
+            Command.createMessage(ch, m -> {
                 int oldConfig = CommonStatic.getConfig().lang;
                 CommonStatic.getConfig().lang = lang;
 
@@ -1516,9 +1524,9 @@ public class EntityHandler {
                 if(fName == null || fName.isBlank())
                     fName = LangID.getStringByID("data_unit", lang)+" "+ Data.trio(f.uid.id)+" "+Data.trio(f.fid);
 
-                m.setContent(LangID.getStringByID("fimg_result", lang).replace("_", fName).replace(":::", getModeName(finalMode, f.anim.anims.length, lang)).replace("=", String.valueOf(frame)));
+                m.content(LangID.getStringByID("fimg_result", lang).replace("_", fName).replace(":::", getModeName(finalMode, f.anim.anims.length, lang)).replace("=", String.valueOf(frame)));
                 m.addFile("result.png", fis);
-            }).subscribe(null, null, () -> {
+            }, () -> {
                 try {
                     fis.close();
                 } catch (IOException e) {
@@ -1530,6 +1538,7 @@ public class EntityHandler {
 
                     if(!res) {
                         System.out.println("Can't delete file : "+img.getAbsolutePath());
+                        StaticStore.logger.uploadLog("W/EntityHandlerFormImage | Can't delete file : "+img.getAbsolutePath());
                     }
                 }
             });
@@ -1553,7 +1562,8 @@ public class EntityHandler {
             CommonStatic.getConfig().lang = lang;
 
             int finalMode = mode;
-            ch.createMessage(m -> {
+
+            Command.createMessage(ch, m -> {
                 int oldConfig = CommonStatic.getConfig().lang;
                 CommonStatic.getConfig().lang = lang;
 
@@ -1567,9 +1577,9 @@ public class EntityHandler {
                 if(fName == null || fName.isBlank())
                     fName = LangID.getStringByID("data_enemy", lang)+" "+ Data.trio(en.id.id);
 
-                m.setContent(LangID.getStringByID("fimg_result", lang).replace("_", fName).replace(":::", getModeName(finalMode, en.anim.anims.length, lang)).replace("=", String.valueOf(frame)));
+                m.content(LangID.getStringByID("fimg_result", lang).replace("_", fName).replace(":::", getModeName(finalMode, en.anim.anims.length, lang)).replace("=", String.valueOf(frame)));
                 m.addFile("result.png", fis);
-            }).subscribe(null, null, () -> {
+            }, () -> {
                 try {
                     fis.close();
                 } catch (IOException e) {
@@ -1581,6 +1591,7 @@ public class EntityHandler {
 
                     if(!res) {
                         System.out.println("Can't delete file : "+img.getAbsolutePath());
+                        StaticStore.logger.uploadLog("W/EntityHandlerEnemyImage | Can't delete file : "+img.getAbsolutePath());
                     }
                 }
             });
@@ -1688,7 +1699,7 @@ public class EntityHandler {
             String link = StaticStore.imgur.uploadFile(img);
 
             if(link == null) {
-                m.edit(e -> e.setContent(LangID.getStringByID("gif_failimgur", lang))).subscribe(null, null, () -> {
+                Command.editMessage(m, e -> e.content(wrap(LangID.getStringByID("gif_failimgur", lang))), () -> {
                     if(img.exists()) {
                         boolean res = img.delete();
 
@@ -1704,11 +1715,11 @@ public class EntityHandler {
                     StaticStore.imgur.put(id, link, raw);
                 }
 
-                m.edit(e -> {
+                Command.editMessage(m, e -> {
                     long finalEnd = System.currentTimeMillis();
 
-                    e.setContent(LangID.getStringByID("gif_uploadimgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link);
-                }).subscribe(null, null, () -> {
+                    e.content(wrap(LangID.getStringByID("gif_uploadimgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link));
+                }, () -> {
                     if(img.exists()) {
                         boolean res = img.delete();
 
@@ -1723,14 +1734,10 @@ public class EntityHandler {
         } else if(img.length() < (long) getBoosterFileLimit(booster) * 1024 * 1024) {
             fis = new FileInputStream(img);
 
-            int finalMode = mode;
-
-            ch.createMessage(
-                    m -> {
-                        m.setContent(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)));
-                        m.addFile(raw ? "result.mp4" : "result.gif", fis);
-                    }
-            ).subscribe(m -> {if(!debug && limit <= 0) cacheImage(f, finalMode, m);}, null, () -> {
+            Message message = Command.createMessage(ch, m -> {
+                m.content(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)));
+                m.addFile(raw ? "result.mp4" : "result.gif", fis);
+            }, () -> {
                 try {
                     fis.close();
                 } catch (IOException e) {
@@ -1745,6 +1752,9 @@ public class EntityHandler {
                     }
                 }
             });
+
+            if(!debug && limit <= 0)
+                cacheImage(f, mode, message);
         } else {
             ch.createMessage(LangID.getStringByID("gif_toobig", lang)).subscribe();
         }
@@ -1820,6 +1830,7 @@ public class EntityHandler {
 
                         if(!res) {
                             System.out.println("Failed to delete file : "+img.getAbsolutePath());
+                            StaticStore.logger.uploadLog("W/EntityHandlerEnemyAnim | Can't delete file : "+img.getAbsolutePath());
                         }
                     }
                 });
@@ -1829,12 +1840,13 @@ public class EntityHandler {
             String link = StaticStore.imgur.uploadFile(img);
 
             if(link == null) {
-                m.edit(e -> e.setContent(LangID.getStringByID("gif_failimgur", lang))).subscribe(null, null, () -> {
+                Command.editMessage(m, e -> e.content(wrap(LangID.getStringByID("gif_failimgur", lang))), () -> {
                     if(img.exists()) {
                         boolean res = img.delete();
 
                         if(!res) {
                             System.out.println("Failed to delete file : "+img.getAbsolutePath());
+                            StaticStore.logger.uploadLog("W/EntityHandlerEnemyAnim | Can't delete file : "+img.getAbsolutePath());
                         }
                     }
                 });
@@ -1845,16 +1857,17 @@ public class EntityHandler {
                     StaticStore.imgur.put(id, link, raw);
                 }
 
-                m.edit(e -> {
+                Command.editMessage(m, e -> {
                     long finalEnd = System.currentTimeMillis();
 
-                    e.setContent(LangID.getStringByID("gif_uploadimgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link);
-                }).subscribe(null, null, () -> {
+                    e.content(wrap(LangID.getStringByID("gif_uploadimgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link));
+                }, () -> {
                     if(img.exists()) {
                         boolean res = img.delete();
 
                         if(!res) {
                             System.out.println("Failed to delete file : "+img.getAbsolutePath());
+                            StaticStore.logger.uploadLog("W/EntityHandlerEnemyAnim | Can't delete file : "+img.getAbsolutePath());
                         }
                     }
                 });
@@ -1864,14 +1877,10 @@ public class EntityHandler {
         } else if(img.length() < (long) getBoosterFileLimit(booster) * 1024 * 1024) {
             fis = new FileInputStream(img);
 
-            int finalMode = mode;
-
-            ch.createMessage(
-                    m -> {
-                        m.setContent(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)));
-                        m.addFile(raw ? "result.mp4" : "result.gif", fis);
-                    }
-            ).subscribe(m -> {if(!debug && limit <= 0) cacheImage(en, finalMode, m);}, null, () -> {
+            Message message = Command.createMessage(ch, m -> {
+                m.content(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)));
+                m.addFile(raw ? "result.mp4" : "result.gif", fis);
+            }, () -> {
                 try {
                     fis.close();
                 } catch (IOException e) {
@@ -1883,9 +1892,13 @@ public class EntityHandler {
 
                     if(!res) {
                         System.out.println("Can't delete file : "+img.getAbsolutePath());
+                        StaticStore.logger.uploadLog("W/EntityHandlerEnemyAnim | Can't delete file : "+img.getAbsolutePath());
                     }
                 }
             });
+
+            if(!debug && limit <= 0)
+                cacheImage(en, mode, message);
         }
 
         return true;
@@ -1943,6 +1956,7 @@ public class EntityHandler {
 
                         if(!res) {
                             System.out.println("Failed to delete file : "+img.getAbsolutePath());
+                            StaticStore.logger.uploadLog("W/EntityHandlerAnim | Can't delete file : "+img.getAbsolutePath());
                         }
                     }
                 });
@@ -1952,26 +1966,28 @@ public class EntityHandler {
             String link = StaticStore.imgur.uploadFile(img);
 
             if(link == null) {
-                m.edit(e -> e.setContent(LangID.getStringByID("gif_failimgur", lang))).subscribe(null, null, () -> {
+                Command.editMessage(m, e -> e.content(wrap(LangID.getStringByID("gif_failimgur", lang))), () -> {
                     if(img.exists()) {
                         boolean res = img.delete();
 
                         if(!res) {
                             System.out.println("Failed to delete file : "+img.getAbsolutePath());
+                            StaticStore.logger.uploadLog("W/EntityHandlerAnim | Can't delete file : "+img.getAbsolutePath());
                         }
                     }
                 });
             } else {
-                m.edit(e -> {
+                Command.editMessage(m, e -> {
                     long finalEnd = System.currentTimeMillis();
 
-                    e.setContent(LangID.getStringByID("gif_uploadimgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link);
-                }).subscribe(null, null, () -> {
+                    e.content(wrap(LangID.getStringByID("gif_uploadimgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link));
+                }, () -> {
                     if(img.exists()) {
                         boolean res = img.delete();
 
                         if(!res) {
                             System.out.println("Failed to delete file : "+img.getAbsolutePath());
+                            StaticStore.logger.uploadLog("W/EntityHandlerAnim | Can't delete file : "+img.getAbsolutePath());
                         }
                     }
                 });
@@ -1979,12 +1995,10 @@ public class EntityHandler {
         } else if(img.length() < (long) getBoosterFileLimit(booster) * 1024 * 1024) {
             fis = new FileInputStream(img);
 
-            ch.createMessage(
-                    m -> {
-                        m.setContent(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)));
-                        m.addFile(raw ? "result.mp4" : "result.gif", fis);
-                    }
-            ).subscribe(null, null, () -> {
+            Command.createMessage(ch, m -> {
+                m.content(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)));
+                m.addFile(raw ? "result.mp4" : "result.gif", fis);
+            }, () -> {
                 try {
                     fis.close();
                 } catch (IOException e) {
@@ -1996,6 +2010,7 @@ public class EntityHandler {
 
                     if(!res) {
                         System.out.println("Can't delete file : "+img.getAbsolutePath());
+                        StaticStore.logger.uploadLog("W/EntityHandlerAnim | Can't delete file : "+img.getAbsolutePath());
                     }
                 }
             });
@@ -2039,6 +2054,7 @@ public class EntityHandler {
 
                         if(!res) {
                             System.out.println("Failed to delete file : "+img.getAbsolutePath());
+                            StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
                         }
                     }
                 });
@@ -2049,26 +2065,28 @@ public class EntityHandler {
             String link = StaticStore.imgur.uploadFile(img);
 
             if(link == null) {
-                m.edit(e -> e.setContent(LangID.getStringByID("gif_failimgur", lang))).subscribe(null, null, () -> {
+                Command.editMessage(m, e -> e.content(wrap(LangID.getStringByID("gif_failimgur", lang))), () -> {
                     if(img.exists()) {
                         boolean res = img.delete();
 
                         if(!res) {
                             System.out.println("Failed to delete file : "+img.getAbsolutePath());
+                            StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
                         }
                     }
                 });
             } else {
-                m.edit(e -> {
+                Command.editMessage(m, e -> {
                     long finalEnd = System.currentTimeMillis();
 
-                    e.setContent(LangID.getStringByID("gif_uploadimgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link);
-                }).subscribe(null, null, () -> {
+                    e.content(wrap(LangID.getStringByID("gif_uploadimgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link));
+                }, () -> {
                     if(img.exists()) {
                         boolean res = img.delete();
 
                         if(!res) {
                             System.out.println("Failed to delete file : "+img.getAbsolutePath());
+                            StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
                         }
                     }
                 });
@@ -2076,12 +2094,10 @@ public class EntityHandler {
         } else if(img.length() < (long) getBoosterFileLimit(booster) * 1024 * 1024) {
             fis = new FileInputStream(img);
 
-            ch.createMessage(
-                    m -> {
-                        m.setContent(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)));
-                        m.addFile("result.mp4", fis);
-                    }
-            ).subscribe(null, null, () -> {
+            Command.createMessage(ch, m -> {
+                m.content(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)));
+                m.addFile("result.mp4", fis);
+            }, () -> {
                 try {
                     fis.close();
                 } catch (IOException e) {
@@ -2092,6 +2108,7 @@ public class EntityHandler {
 
                 if(!res) {
                     System.out.println("Can't delete file : "+img.getAbsolutePath());
+                    StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
                 }
             });
         }
@@ -2121,7 +2138,7 @@ public class EntityHandler {
 
         String id = generateID(f, mode);
 
-        Set<Attachment> att = msg.getAttachments();
+        List<Attachment> att = msg.getAttachments();
 
         if(att.isEmpty())
             return;
@@ -2222,16 +2239,16 @@ public class EntityHandler {
 
         FileInputStream fis = new FileInputStream(image);
 
-        ch.createMessage(m -> {
+        Command.createMessage(ch, m -> {
             String fName = StaticStore.safeMultiLangGet(f, lang);
 
             if(fName == null || fName.isBlank()) {
                 fName = Data.trio(f.unit.id.id)+"-"+Data.trio(f.fid);
             }
 
-            m.setContent(LangID.getStringByID("fsp_result", lang).replace("_", fName).replace("===", getIconName(mode, lang)));
+            m.content(LangID.getStringByID("fsp_result", lang).replace("_", fName).replace("===", getIconName(mode, lang)));
             m.addFile("result.png", fis);
-        }).subscribe(null, null, () -> {
+        }, () -> {
             try {
                 fis.close();
             } catch (IOException e) {
@@ -2243,6 +2260,7 @@ public class EntityHandler {
 
                 if(!res) {
                     System.out.println("Can't delete file : "+image.getAbsolutePath());
+                    StaticStore.logger.uploadLog("W/EntityHandlerFormSprite | Can't delete file : "+image.getAbsolutePath());
                 }
             }
         });
@@ -2307,16 +2325,16 @@ public class EntityHandler {
 
         FileInputStream fis = new FileInputStream(image);
 
-        ch.createMessage(m -> {
+        Command.createMessage(ch, m -> {
             String fName = StaticStore.safeMultiLangGet(e, lang);
 
             if(fName == null || fName.isBlank()) {
                 fName = Data.trio(e.id.id);
             }
 
-            m.setContent(LangID.getStringByID("fsp_result", lang).replace("_", fName).replace("===", getIconName(mode, lang)));
+            m.content(LangID.getStringByID("fsp_result", lang).replace("_", fName).replace("===", getIconName(mode, lang)));
             m.addFile("result.png", fis);
-        }).subscribe(null, null, () -> {
+        }, () -> {
             try {
                 fis.close();
             } catch (IOException err) {
@@ -2328,6 +2346,7 @@ public class EntityHandler {
 
                 if(!res) {
                     System.out.println("Can't delete file : "+image.getAbsolutePath());
+                    StaticStore.logger.uploadLog("W/EntityHandlerEnemySprite | Can't delete file : "+image.getAbsolutePath());
                 }
             }
         });
@@ -2379,8 +2398,8 @@ public class EntityHandler {
 
             FileInputStream fis = new FileInputStream(image);
 
-            ch.createMessage(m -> {
-                m.addEmbed(e -> {
+            Command.createMessage(ch, m -> {
+                m.addEmbed(Command.createEmbed(e -> {
                     int oldConfig = CommonStatic.getConfig().lang;
                     CommonStatic.getConfig().lang = lang;
 
@@ -2394,14 +2413,14 @@ public class EntityHandler {
 
                         int grade = obj.get("grade").getAsInt();
 
-                        e.setColor(StaticStore.grade[grade]);
+                        e.color(StaticStore.grade[grade]);
                     }
 
                     e.addField(name, desc, false);
-                    e.setImage("attachment://medal.png");
-                });
+                    e.image("attachment://medal.png");
+                }));
                 m.addFile("medal.png", fis);
-            }).subscribe(null, null, () -> {
+            }, () -> {
                 try {
                     fis.close();
                 } catch (IOException e) {
@@ -2413,6 +2432,7 @@ public class EntityHandler {
 
                     if(!res) {
                         System.out.println("Can't delete file : "+image.getAbsolutePath());
+                        StaticStore.logger.uploadLog("W/EntityHandlerMedal | Can't delete file : "+image.getAbsolutePath());
                     }
                 }
             });
@@ -2430,8 +2450,8 @@ public class EntityHandler {
         else
             fis = new FileInputStream(icon);
 
-        ch.createMessage(m -> {
-            m.addEmbed(e -> {
+        Command.createMessage(ch, m -> {
+            m.addEmbed(Command.createEmbed(e -> {
                 int oldConfig = CommonStatic.getConfig().lang;
                 CommonStatic.getConfig().lang = lang;
 
@@ -2443,28 +2463,28 @@ public class EntityHandler {
                     comboName = "Combo "+c.name;
                 }
 
-                e.setTitle(comboName);
+                e.title(comboName);
 
                 if(c.lv == 0) {
-                    e.setColor(StaticStore.rainbow[4]);
+                    e.color(StaticStore.rainbow[4]);
                 } else if(c.lv == 1) {
-                    e.setColor(StaticStore.rainbow[3]);
+                    e.color(StaticStore.rainbow[3]);
                 } else if(c.lv == 2) {
-                    e.setColor(StaticStore.rainbow[2]);
+                    e.color(StaticStore.rainbow[2]);
                 } else {
-                    e.setColor(StaticStore.rainbow[0]);
+                    e.color(StaticStore.rainbow[0]);
                 }
 
                 e.addField(DataToString.getComboType(c, lang), DataToString.getComboDescription(c, lang), false);
 
                 if(fis != null) {
-                    e.setImage("attachment://combo.png");
+                    e.image("attachment://combo.png");
                 }
-            });
+            }));
 
             if(fis != null)
                 m.addFile("combo.png", fis);
-        }).subscribe(null, null, () -> {
+        }, () -> {
             try {
                 if(fis != null) {
                     fis.close();
@@ -2478,6 +2498,7 @@ public class EntityHandler {
 
                 if(!res) {
                     System.out.println("Can't delete file : "+icon.getAbsolutePath());
+                    StaticStore.logger.uploadLog("W/EntityHandlerCombo | Can't delete file : "+icon.getAbsolutePath());
                 }
             }
         });
@@ -2565,7 +2586,7 @@ public class EntityHandler {
 
         String id = generateID(e, mode);
 
-        Set<Attachment> att = msg.getAttachments();
+        List<Attachment> att = msg.getAttachments();
 
         if(att.isEmpty())
             return;
@@ -2663,5 +2684,9 @@ public class EntityHandler {
             default:
                 return 8;
         }
+    }
+
+    private static Possible<Optional<String>> wrap(String content) {
+        return Possible.of(Optional.of(content));
     }
 }

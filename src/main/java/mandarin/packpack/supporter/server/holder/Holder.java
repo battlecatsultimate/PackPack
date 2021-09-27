@@ -3,11 +3,14 @@ package mandarin.packpack.supporter.server.holder;
 import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.discordjson.possible.Possible;
 import discord4j.rest.util.AllowedMentions;
+import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -42,17 +45,17 @@ public abstract class Holder<T extends MessageEvent> {
     }
 
     public void createMessageWithNoPings(MessageChannel ch, String content) {
-        ch.createMessage(m -> {
-            m.setContent(content);
-            m.setAllowedMentions(AllowedMentions.builder().build());
-        }).subscribe();
+        Command.createMessage(ch, m -> {
+            m.content(content);
+            m.allowedMentions(AllowedMentions.builder().build());
+        });
     }
 
     public Message getMessageWithNoPings(MessageChannel ch, String content) {
-        return ch.createMessage(m -> {
-            m.setContent(content);
-            m.setAllowedMentions(AllowedMentions.builder().build());
-        }).block();
+        return Command.createMessage(ch, m -> {
+            m.content(content);
+            m.allowedMentions(AllowedMentions.builder().build());
+        });
     }
 
     public void registerAutoFinish(Holder<?> holder, Message msg, Message author, int lang, long millis) {
@@ -68,7 +71,7 @@ public abstract class Holder<T extends MessageEvent> {
 
                 author.getAuthor().ifPresent(au -> StaticStore.removeHolder(au.getId().asString(), holder));
 
-                msg.edit(m -> m.setContent(LangID.getStringByID("formst_expire", lang))).subscribe();
+                Command.editMessage(msg, m -> m.content(wrap(LangID.getStringByID("formst_expire", lang))));
             }
         }, millis);
     }
@@ -86,7 +89,7 @@ public abstract class Holder<T extends MessageEvent> {
 
                 author.getAuthor().ifPresent(au -> StaticStore.removeHolder(au.getId().asString(), holder));
 
-                msg.edit(m -> m.setContent(LangID.getStringByID("formst_expire", lang))).subscribe();
+                Command.editMessage(msg, m -> m.content(wrap(LangID.getStringByID("formst_expire", lang))));
 
                 if(run != null)
                     run.run();
@@ -107,7 +110,7 @@ public abstract class Holder<T extends MessageEvent> {
 
                 author.getAuthor().ifPresent(au -> StaticStore.removeHolder(au.getId().asString(), holder));
 
-                msg.edit(m -> m.setContent(LangID.getStringByID(langID, lang))).subscribe();
+                Command.editMessage(msg, m -> m.content(wrap(LangID.getStringByID(langID, lang))));
             }
         }, millis);
     }
@@ -125,11 +128,15 @@ public abstract class Holder<T extends MessageEvent> {
 
                 author.getAuthor().ifPresent(au -> StaticStore.removeHolder(au.getId().asString(), holder));
 
-                msg.edit(m -> m.setContent(LangID.getStringByID(langID, lang))).subscribe();
+                Command.editMessage(msg, m -> m.content(wrap(LangID.getStringByID(langID, lang))));
 
                 if(run != null)
                     run.run();
             }
         }, millis);
+    }
+
+    public Possible<Optional<String>> wrap(String content) {
+        return Possible.of(Optional.of(content));
     }
 }

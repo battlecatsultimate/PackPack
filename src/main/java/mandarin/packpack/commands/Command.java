@@ -5,6 +5,11 @@ import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.core.spec.EmbedCreateSpec;
+import discord4j.core.spec.GuildEmojiCreateSpec;
+import discord4j.core.spec.MessageCreateSpec;
+import discord4j.core.spec.MessageEditSpec;
+import discord4j.discordjson.possible.Possible;
 import discord4j.rest.util.AllowedMentions;
 import mandarin.packpack.supporter.Pauser;
 import mandarin.packpack.supporter.StaticStore;
@@ -15,9 +20,82 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 @SuppressWarnings("unused")
 public abstract class Command {
+    public static void editMessage(Message m, Consumer<MessageEditSpec.Builder> consumer) {
+        MessageEditSpec.Builder builder = MessageEditSpec.builder();
+
+        consumer.accept(builder);
+
+        m.edit(builder.build()).subscribe();
+    }
+
+    public static void editMessage(Message m, Consumer<MessageEditSpec.Builder> consumer, Runnable postProcess) {
+        MessageEditSpec.Builder builder = MessageEditSpec.builder();
+
+        consumer.accept(builder);
+
+        m.edit(builder.build()).subscribe();
+
+        postProcess.run();
+    }
+
+    public static Message createMessage(MessageChannel ch, Consumer<MessageCreateSpec.Builder> consumer) {
+        MessageCreateSpec.Builder builder = MessageCreateSpec.builder();
+
+        consumer.accept(builder);
+
+        return ch.createMessage(builder.build()).block();
+    }
+
+    public static Message createMessage(MessageChannel ch, Consumer<MessageCreateSpec.Builder> consumer, Runnable onSuccess) {
+        MessageCreateSpec.Builder builder = MessageCreateSpec.builder();
+
+        consumer.accept(builder);
+
+        Message m = ch.createMessage(builder.build()).block();
+
+        onSuccess.run();
+
+        return m;
+    }
+
+    public static Message createMessage(MessageChannel ch, Consumer<MessageCreateSpec.Builder> consumer, Consumer<Throwable> onFailed, Runnable onSuccess) {
+        try {
+            MessageCreateSpec.Builder builder = MessageCreateSpec.builder();
+
+            consumer.accept(builder);
+
+            Message m = ch.createMessage(builder.build()).block();
+
+            onSuccess.run();
+
+            return m;
+        } catch (Exception e) {
+            onFailed.accept(e);
+
+            return null;
+        }
+    }
+
+    public static EmbedCreateSpec createEmbed(Consumer<EmbedCreateSpec.Builder> consumer) {
+        EmbedCreateSpec.Builder builder = EmbedCreateSpec.builder();
+
+        consumer.accept(builder);
+
+        return builder.build();
+    }
+
+    public static GuildEmojiCreateSpec createEmoji(Consumer<GuildEmojiCreateSpec.Builder> consumer) {
+        GuildEmojiCreateSpec.Builder builder = GuildEmojiCreateSpec.builder();
+
+        consumer.accept(builder);
+
+        return builder.build();
+    }
+
     public final int DEFAULT_ERROR = -1;
     public Pauser pause = new Pauser();
     public final int lang;
@@ -152,16 +230,14 @@ public abstract class Command {
     }
 
     public void createMessageWithNoPings(MessageChannel ch, String content) {
-        ch.createMessage(m -> {
-            m.setContent(content);
-            m.setAllowedMentions(AllowedMentions.builder().build());
-        }).subscribe();
+        createMessage(ch, m -> m.content(content).allowedMentions(AllowedMentions.builder().build()));
     }
 
     public Message getMessageWithNoPings(MessageChannel ch, String content) {
-        return ch.createMessage(m -> {
-            m.setContent(content);
-            m.setAllowedMentions(AllowedMentions.builder().build());
-        }).block();
+        return createMessage(ch, m -> m.content(content).allowedMentions(AllowedMentions.builder().build()));
+    }
+
+    public Possible<Optional<String>> wrap(String content) {
+        return Possible.of(Optional.of(content));
     }
 }

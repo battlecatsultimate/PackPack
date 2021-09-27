@@ -6,7 +6,7 @@ import discord4j.core.util.EntityUtil;
 import discord4j.discordjson.json.ImmutableWebhookExecuteRequest;
 import discord4j.discordjson.json.MessageData;
 import discord4j.discordjson.json.WebhookExecuteRequest;
-import discord4j.rest.util.WebhookMultipartRequest;
+import discord4j.rest.util.MultipartRequest;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import reactor.util.function.Tuple2;
@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-@SuppressWarnings("deprecation")
 public class WebhookBuilder {
     private final ImmutableWebhookExecuteRequest.Builder builder = WebhookExecuteRequest.builder();
     private final ArrayList<Tuple2<String, InputStream>> files = new ArrayList<>();
@@ -57,13 +56,13 @@ public class WebhookBuilder {
         postHandler.add(consumer);
     }
 
-    public WebhookMultipartRequest build() {
+    public MultipartRequest<WebhookExecuteRequest> build() {
         WebhookExecuteRequest executor = builder.build();
 
         if(!files.isEmpty()) {
-            return new WebhookMultipartRequest(executor, files);
+            return MultipartRequest.ofRequestAndFiles(executor, files);
         } else {
-            return new WebhookMultipartRequest(executor);
+            return MultipartRequest.ofRequest(executor);
         }
     }
 

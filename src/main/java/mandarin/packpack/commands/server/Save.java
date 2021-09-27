@@ -22,7 +22,7 @@ public class Save extends ConstraintCommand {
         if(msg != null) {
             StaticStore.saveServerInfo();
 
-            msg.edit(e -> e.setContent(LangID.getStringByID("save_done", lang))).subscribe();
+            editMessage(msg, e -> e.content(wrap(LangID.getStringByID("save_done", lang))));
         } else {
             onFail(event, DEFAULT_ERROR);
         }

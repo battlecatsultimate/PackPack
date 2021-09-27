@@ -8,6 +8,7 @@ import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.Attachment;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.core.spec.EmbedCreateSpec;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
@@ -58,12 +59,12 @@ public class Analyze extends ConstraintCommand {
 
                     down.run(this::editMessage);
 
-                    this.msg.edit(m -> m.setContent(LangID.getStringByID("analyz_pack", lang))).subscribe();
+                    editMessage(this.msg, m -> m.content(wrap(LangID.getStringByID("analyz_pack", lang))));
 
                     PackData.UserPack pack = UserProfile.readZipPack(target);
 
                     if(!canAdd(pack)) {
-                        this.msg.edit(m -> m.setContent(LangID.getStringByID("analyz_parent", lang))).subscribe();
+                        editMessage(this.msg, m -> m.content(wrap(LangID.getStringByID("analyz_parent", lang))));
                         return;
                     }
 
@@ -75,17 +76,19 @@ public class Analyze extends ConstraintCommand {
 
                     this.msg.delete().subscribe();
 
-                    ch.createEmbed(emb -> {
-                        emb.setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)]);
-                        emb.setTitle(pack.desc.name);
-                        emb.addField("ID", pack.desc.id, false);
-                        emb.addField(LangID.getStringByID("analyz_unit", lang), Integer.toString(pack.units.getList().size()), true);
-                        emb.addField(LangID.getStringByID("analyz_enemy", lang), Integer.toString(pack.enemies.getList().size()), true);
-                        emb.addField(LangID.getStringByID("analyz_stage", lang), Integer.toString(MapColc.get(pack.desc.id).maps.size()), true);
-                        emb.addField(LangID.getStringByID("analyz_bg", lang), Integer.toString(pack.bgs.getList().size()), true);
-                        emb.addField(LangID.getStringByID("analyz_music", lang), Integer.toString(pack.musics.getList().size()), true);
-                        emb.setDescription(at.getFilename()+" ("+getFileSize(target.length())+")");
-                    }).subscribe();
+                    EmbedCreateSpec.Builder builder = EmbedCreateSpec.builder();
+
+                    builder.color(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)])
+                            .title(pack.desc.name)
+                            .addField("ID", pack.desc.id, false)
+                            .addField(LangID.getStringByID("analyz_unit", lang), Integer.toString(pack.units.getList().size()), true)
+                            .addField(LangID.getStringByID("analyz_enemy", lang), Integer.toString(pack.enemies.getList().size()), true)
+                            .addField(LangID.getStringByID("analyz_stage", lang), Integer.toString(MapColc.get(pack.desc.id).maps.size()), true)
+                            .addField(LangID.getStringByID("analyz_bg", lang), Integer.toString(pack.bgs.getList().size()), true)
+                            .addField(LangID.getStringByID("analyz_music", lang), Integer.toString(pack.musics.getList().size()), true)
+                            .description(at.getFilename()+" ("+getFileSize(target.length())+")");
+
+                    ch.createMessage(builder.build()).subscribe();
 
                     this.msg = null;
 
@@ -116,7 +119,7 @@ public class Analyze extends ConstraintCommand {
         NOW = System.currentTimeMillis();
 
         if(msg != null) {
-            msg.edit(m -> m.setContent(LangID.getStringByID("analyz_down", lang).replace("_", df.format(prog*100)))).subscribe();
+            editMessage(msg, m -> m.content(wrap(LangID.getStringByID("analyz_down", lang).replace("_", df.format(prog*100)))));
         }
     }
 

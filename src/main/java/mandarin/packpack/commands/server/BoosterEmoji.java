@@ -97,10 +97,10 @@ public class BoosterEmoji extends ConstraintCommand {
                             createMessageWithNoPings(ch, LangID.getStringByID("booemo_bigpng", lang));
                             return;
                         } else {
-                            Message mes = ch.createMessage(mess -> {
-                                mess.setAllowedMentions(AllowedMentions.builder().build());
-                                mess.setContent(LangID.getStringByID("booemo_down", lang));
-                            }).block();
+                            Message mes = createMessage(ch, mess -> {
+                                mess.allowedMentions(AllowedMentions.builder().build());
+                                mess.content(LangID.getStringByID("booemo_down", lang));
+                            });
 
                             if(mes == null)
                                 return;
@@ -122,7 +122,7 @@ public class BoosterEmoji extends ConstraintCommand {
                                 if(current - currentTime.get() > 1500) {
                                     currentTime.set(current);
 
-                                    mes.edit(mess -> mess.setContent(LangID.getStringByID("booemo_down", lang).replace("-", DataToString.df.format(p * 100)))).subscribe();
+                                    editMessage(mes, mess -> mess.content(wrap(LangID.getStringByID("booemo_down", lang).replace("-", DataToString.df.format(p * 100)))));
                                 }
                             });
 
@@ -165,10 +165,10 @@ public class BoosterEmoji extends ConstraintCommand {
                 }
 
                 boolean finalGif = gif;
-                g.createEmoji(e -> {
-                    e.setName(name);
-                    e.setImage(img);
-                }).subscribe(e -> {
+                g.createEmoji(createEmoji(e -> {
+                    e.name(name);
+                    e.image(img);
+                })).subscribe(e -> {
                     if(StaticStore.boosterData.containsKey(g.getId().asString())) {
                         BoosterHolder bHolder = StaticStore.boosterData.get(g.getId().asString());
 

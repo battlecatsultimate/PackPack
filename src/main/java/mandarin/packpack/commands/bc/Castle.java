@@ -108,7 +108,7 @@ public class Castle extends ConstraintCommand {
 
             int finalId = cs.id.id;
 
-            ch.createMessage(m -> {
+            createMessage(ch, m -> {
                 String castleCode;
 
                 if(code == 0)
@@ -120,9 +120,9 @@ public class Castle extends ConstraintCommand {
                 else
                     castleCode = "SC";
 
-                m.setContent(LangID.getStringByID("castle_result", lang).replace("_", castleCode).replace("|", Data.trio(finalId)));
+                m.content(LangID.getStringByID("castle_result", lang).replace("_", castleCode).replace("|", Data.trio(finalId)));
                 m.addFile("Result.png", fis);
-            }).subscribe(null, null, () -> {
+            }, () -> {
                 try {
                     fis.close();
 
@@ -199,7 +199,7 @@ public class Castle extends ConstraintCommand {
 
                 int finalId = id;
 
-                ch.createMessage(m -> {
+                createMessage(ch, m -> {
                     String castleCode;
 
                     if(code == 0)
@@ -211,9 +211,9 @@ public class Castle extends ConstraintCommand {
                     else
                         castleCode = "SC";
 
-                    m.setContent(LangID.getStringByID("castle_result", lang).replace("_", castleCode).replace("|", Data.trio(finalId)));
+                    m.content(LangID.getStringByID("castle_result", lang).replace("_", castleCode).replace("|", Data.trio(finalId)));
                     m.addFile("Result.png", fis);
-                }).subscribe(null, null, () -> {
+                }, () -> {
                     try {
                         fis.close();
 

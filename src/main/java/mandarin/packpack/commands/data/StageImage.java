@@ -123,10 +123,11 @@ public class StageImage extends ConstraintCommand {
     private void handleLast(String message, MessageChannel ch, ImageGenerator generator) throws Exception {
         if(f != null) {
             fis = new FileInputStream(f);
-            ch.createMessage(m -> {
+
+            createMessage(ch, m -> {
                 m.addFile(f.getName(),fis);
-                m.setContent(LangID.getStringByID("stimg_result", lang));
-            }).subscribe(null, null, () -> {
+                m.content(LangID.getStringByID("stimg_result", lang));
+            }, () -> {
                 try {
                     if(f.exists()) {
                         fis.close();

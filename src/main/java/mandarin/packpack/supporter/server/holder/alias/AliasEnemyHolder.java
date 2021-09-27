@@ -7,6 +7,7 @@ import common.util.unit.Enemy;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
+import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.AliasHolder;
@@ -66,47 +67,7 @@ public class AliasEnemyHolder extends Holder<MessageCreateEvent> {
 
             page++;
 
-            msg.edit(m -> {
-                String check;
-
-                if(enemy.size() <= 20)
-                    check = "";
-                else if(page == 0)
-                    check = LangID.getStringByID("formst_next", lang);
-                else if((page + 1) * 20 >= enemy.size())
-                    check = LangID.getStringByID("formst_pre", lang);
-                else
-                    check = LangID.getStringByID("formst_nexpre", lang);
-
-                StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
-
-                for(int i = 20 * page; i < 20 * (page + 1) ; i++) {
-                    if(i >= enemy.size())
-                        break;
-
-                    Enemy e = enemy.get(i);
-
-                    String ename = Data.trio(e.id.id)+" ";
-
-                    int oldConfig = CommonStatic.getConfig().lang;
-                    CommonStatic.getConfig().lang = lang;
-
-                    if(MultiLangCont.get(e) != null)
-                        ename += MultiLangCont.get(e);
-
-                    CommonStatic.getConfig().lang = oldConfig;
-
-                    sb.append(i+1).append(". ").append(ename).append("\n");
-                }
-
-                if(enemy.size() > 20)
-                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(enemy.size()/20 + 1)));
-
-                sb.append(LangID.getStringByID("formst_can", lang));
-                sb.append("```");
-
-                m.setContent(sb.toString());
-            }).subscribe();
+            showPage();
 
             cleaner.add(event.getMessage());
         } else if(content.equals("p")) {
@@ -115,47 +76,7 @@ public class AliasEnemyHolder extends Holder<MessageCreateEvent> {
 
             page--;
 
-            msg.edit(m -> {
-                String check;
-
-                if(enemy.size() <= 20)
-                    check = "";
-                else if(page == 0)
-                    check = LangID.getStringByID("formst_next", lang);
-                else if((page + 1) * 20 >= enemy.size())
-                    check = LangID.getStringByID("formst_pre", lang);
-                else
-                    check = LangID.getStringByID("formst_nexpre", lang);
-
-                StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
-
-                for(int i = 20 * page; i < 20 * (page + 1) ; i++) {
-                    if(i >= enemy.size())
-                        break;
-
-                    Enemy e = enemy.get(i);
-
-                    String ename = Data.trio(e.id.id)+" ";
-
-                    int oldConfig = CommonStatic.getConfig().lang;
-                    CommonStatic.getConfig().lang = lang;
-
-                    if(MultiLangCont.get(e) != null)
-                        ename += MultiLangCont.get(e);
-
-                    CommonStatic.getConfig().lang = oldConfig;
-
-                    sb.append(i+1).append(". ").append(ename).append("\n");
-                }
-
-                if(enemy.size() > 20)
-                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(enemy.size()/20 + 1)));
-
-                sb.append(LangID.getStringByID("formst_can", lang));
-                sb.append("```");
-
-                m.setContent(sb.toString());
-            }).subscribe();
+            showPage();
 
             cleaner.add(event.getMessage());
         } else if(StaticStore.isNumeric(content)) {
@@ -253,10 +174,10 @@ public class AliasEnemyHolder extends Holder<MessageCreateEvent> {
 
             return RESULT_FINISH;
         } else if(content.equals("c")) {
-            msg.edit(m -> {
-                m.setContent(LangID.getStringByID("formst_cancel" ,lang));
+            Command.editMessage(msg, m -> {
+                m.content(wrap(LangID.getStringByID("formst_cancel", lang)));
                 expired = true;
-            }).subscribe();
+            });
 
             cleaner.add(event.getMessage());
 
@@ -274,47 +195,7 @@ public class AliasEnemyHolder extends Holder<MessageCreateEvent> {
 
                     page = p;
 
-                    msg.edit(m -> {
-                        String check;
-
-                        if(enemy.size() <= 20)
-                            check = "";
-                        else if(page == 0)
-                            check = LangID.getStringByID("formst_next", lang);
-                        else if((page + 1) * 20 >= enemy.size())
-                            check = LangID.getStringByID("formst_pre", lang);
-                        else
-                            check = LangID.getStringByID("formst_nexpre", lang);
-
-                        StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
-
-                        for(int i = 20 * page; i < 20 * (page + 1) ; i++) {
-                            if(i >= enemy.size())
-                                break;
-
-                            Enemy e = enemy.get(i);
-
-                            String ename = Data.trio(e.id.id)+" ";
-
-                            int oldConfig = CommonStatic.getConfig().lang;
-                            CommonStatic.getConfig().lang = lang;
-
-                            if(MultiLangCont.get(e) != null)
-                                ename += MultiLangCont.get(e);
-
-                            CommonStatic.getConfig().lang = oldConfig;
-
-                            sb.append(i+1).append(". ").append(ename).append("\n");
-                        }
-
-                        if(enemy.size() > 20)
-                            sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(enemy.size()/20 + 1)));
-
-                        sb.append(LangID.getStringByID("formst_can", lang));
-                        sb.append("```");
-
-                        m.setContent(sb.toString());
-                    }).subscribe();
+                    showPage();
 
                     cleaner.add(event.getMessage());
                 }
@@ -341,6 +222,50 @@ public class AliasEnemyHolder extends Holder<MessageCreateEvent> {
 
         StaticStore.removeHolder(id, this);
 
-        msg.edit(m -> m.setContent(LangID.getStringByID("formst_expire", lang))).subscribe();
+        Command.editMessage(msg, m -> m.content(wrap(LangID.getStringByID("formst_expire", lang))));
+    }
+
+    private void showPage() {
+        Command.editMessage(msg, m -> {
+            String check;
+
+            if(enemy.size() <= 20)
+                check = "";
+            else if(page == 0)
+                check = LangID.getStringByID("formst_next", lang);
+            else if((page + 1) * 20 >= enemy.size())
+                check = LangID.getStringByID("formst_pre", lang);
+            else
+                check = LangID.getStringByID("formst_nexpre", lang);
+
+            StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
+
+            for(int i = 20 * page; i < 20 * (page + 1) ; i++) {
+                if(i >= enemy.size())
+                    break;
+
+                Enemy e = enemy.get(i);
+
+                String ename = Data.trio(e.id.id)+" ";
+
+                int oldConfig = CommonStatic.getConfig().lang;
+                CommonStatic.getConfig().lang = lang;
+
+                if(MultiLangCont.get(e) != null)
+                    ename += MultiLangCont.get(e);
+
+                CommonStatic.getConfig().lang = oldConfig;
+
+                sb.append(i+1).append(". ").append(ename).append("\n");
+            }
+
+            if(enemy.size() > 20)
+                sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(enemy.size()/20 + 1)));
+
+            sb.append(LangID.getStringByID("formst_can", lang));
+            sb.append("```");
+
+            m.content(wrap(sb.toString()));
+        });
     }
 }

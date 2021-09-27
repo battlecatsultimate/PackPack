@@ -3,10 +3,10 @@ package mandarin.packpack.supporter.server.slash;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.ReactiveEventAdapter;
 import discord4j.core.event.domain.interaction.InteractionCreateEvent;
+import discord4j.core.object.command.ApplicationCommandOption;
 import discord4j.discordjson.json.*;
 import discord4j.discordjson.possible.Possible;
 import discord4j.rest.RestClient;
-import discord4j.rest.util.ApplicationCommandOptionType;
 import mandarin.packpack.commands.bc.EnemyStat;
 import mandarin.packpack.commands.bc.FormStat;
 import mandarin.packpack.commands.bc.StageInfo;
@@ -101,7 +101,7 @@ public class SlashBuilder {
                         WebhookBuilder request = FormStat.getInteractionWebhook(event);
 
                         if(request != null) {
-                            return event.acknowledge()
+                            return event.deferReply()
                                     .then(event.getInteractionResponse().createFollowupMessage(request.build()))
                                     .flatMap(m -> Mono.create(v -> request.doAdditionalJob(client, m)))
                                     .then(Mono.create(m -> request.finishJob(true)))
@@ -116,7 +116,7 @@ public class SlashBuilder {
                         request = EnemyStat.getInteractionWebhook(event.getInteraction().getData());
 
                         if(request != null) {
-                            return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage(request.build()))
+                            return event.deferReply().then(event.getInteractionResponse().createFollowupMessage(request.build()))
                                     .then(Mono.create(m -> request.finishJob(true)))
                                     .doOnError(e -> {
                                         e.printStackTrace();
@@ -129,7 +129,7 @@ public class SlashBuilder {
                         request = StageInfo.getInteractionWebhook(event);
 
                         if(request != null) {
-                            return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage(request.build()))
+                            return event.deferReply().then(event.getInteractionResponse().createFollowupMessage(request.build()))
                                     .flatMap(m -> Mono.create(v -> request.doAdditionalJob(client, m)))
                                     .then(Mono.create(m -> request.finishJob(true)))
                                     .doOnError(e -> {
@@ -180,21 +180,21 @@ public class SlashBuilder {
                     for(ApplicationCommandOptionData option : options) {
                         String type;
 
-                        if(option.type() == ApplicationCommandOptionType.BOOLEAN.getValue())
+                        if(option.type() == ApplicationCommandOption.Type.BOOLEAN.getValue())
                             type = "Boolean";
-                        else if(option.type() == ApplicationCommandOptionType.INTEGER.getValue())
+                        else if(option.type() == ApplicationCommandOption.Type.INTEGER.getValue())
                             type = "Integer";
-                        else if(option.type() == ApplicationCommandOptionType.STRING.getValue())
+                        else if(option.type() == ApplicationCommandOption.Type.STRING.getValue())
                             type = "String";
-                        else if(option.type() == ApplicationCommandOptionType.SUB_COMMAND_GROUP.getValue())
+                        else if(option.type() == ApplicationCommandOption.Type.SUB_COMMAND_GROUP.getValue())
                             type = "Subcommand Group";
-                        else if(option.type() == ApplicationCommandOptionType.SUB_COMMAND.getValue())
+                        else if(option.type() == ApplicationCommandOption.Type.SUB_COMMAND.getValue())
                             type = "Subcommand";
-                        else if(option.type() == ApplicationCommandOptionType.CHANNEL.getValue())
+                        else if(option.type() == ApplicationCommandOption.Type.CHANNEL.getValue())
                             type = "Channel";
-                        else if(option.type() == ApplicationCommandOptionType.ROLE.getValue())
+                        else if(option.type() == ApplicationCommandOption.Type.ROLE.getValue())
                             type = "Role";
-                        else if(option.type() == ApplicationCommandOptionType.USER.getValue())
+                        else if(option.type() == ApplicationCommandOption.Type.USER.getValue())
                             type = "User";
                         else
                             type = "Unknown : "+option.type();

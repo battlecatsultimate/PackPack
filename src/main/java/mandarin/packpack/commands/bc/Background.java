@@ -41,10 +41,10 @@ public class Background extends TimedConstraintCommand {
             if(img != null) {
                 FileInputStream fis = new FileInputStream(img);
 
-                ch.createMessage(m -> {
-                    m.setContent(LangID.getStringByID("bg_result", lang).replace("_", Data.trio(bg.id.id)).replace("WWW", 960+"").replace("HHH", 520+""));
+                createMessage(ch, m -> {
+                    m.content(LangID.getStringByID("bg_result", lang).replace("_", Data.trio(bg.id.id)).replace("WWW", 960+"").replace("HHH", 520+""));
                     m.addFile("bg.png", fis);
-                }).subscribe(null, null, () -> {
+                }, () -> {
                     try {
                         fis.close();
                     } catch (IOException e) {
@@ -86,10 +86,10 @@ public class Background extends TimedConstraintCommand {
                 if(img != null) {
                     FileInputStream fis = new FileInputStream(img);
 
-                    ch.createMessage(m -> {
-                        m.setContent(LangID.getStringByID("bg_result", lang).replace("_", Data.trio(id)).replace("WWW", w+"").replace("HHH", h+""));
+                    createMessage(ch, m -> {
+                        m.content(LangID.getStringByID("bg_result", lang).replace("_", Data.trio(id)).replace("WWW", w+"").replace("HHH", h+""));
                         m.addFile("bg.png", fis);
-                    }).subscribe(null, null, () -> {
+                    }, () -> {
                         try {
                             fis.close();
                         } catch (IOException e) {

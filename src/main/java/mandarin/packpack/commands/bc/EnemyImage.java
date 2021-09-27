@@ -84,7 +84,8 @@ public class EnemyImage extends TimedConstraintCommand {
                     FileInputStream fis = new FileInputStream(img);
 
                     int finalMode = mode;
-                    ch.createMessage(m -> {
+
+                    createMessage(ch, m -> {
                         int oldConfig = CommonStatic.getConfig().lang;
                         CommonStatic.getConfig().lang = lang;
 
@@ -98,9 +99,9 @@ public class EnemyImage extends TimedConstraintCommand {
                         if(fName == null || fName.isBlank())
                             fName = LangID.getStringByID("data_enemy", lang)+" "+ Data.trio(enemies.get(0).id.id);
 
-                        m.setContent(LangID.getStringByID("eimg_result", lang).replace("_", fName).replace(":::", getModeName(finalMode, enemies.get(0).anim.anims.length)).replace("=", String.valueOf(frame)));
+                        m.content(LangID.getStringByID("eimg_result", lang).replace("_", fName).replace(":::", getModeName(finalMode, enemies.get(0).anim.anims.length)).replace("=", String.valueOf(frame)));
                         m.addFile("result.png", fis);
-                    }).subscribe(null, null, () -> {
+                    }, () -> {
                         try {
                             fis.close();
                         } catch (IOException e) {

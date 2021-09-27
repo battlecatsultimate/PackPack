@@ -8,6 +8,7 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
+import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityHandler;
@@ -78,7 +79,7 @@ public class EnemyAnimHolder extends Holder<MessageCreateEvent> {
 
             page++;
 
-            msg.edit(m -> {
+            Command.editMessage(msg, m -> {
                 String check;
 
                 if(enemy.size() <= 20)
@@ -121,8 +122,8 @@ public class EnemyAnimHolder extends Holder<MessageCreateEvent> {
                 sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
 
-                m.setContent(sb.toString());
-            }).subscribe();
+                m.content(wrap(sb.toString()));
+            });
 
             cleaner.add(event.getMessage());
         } else if(content.equals("p")) {
@@ -131,7 +132,7 @@ public class EnemyAnimHolder extends Holder<MessageCreateEvent> {
 
             page--;
 
-            msg.edit(m -> {
+            Command.editMessage(msg, m -> {
                 String check;
 
                 if(enemy.size() <= 20)
@@ -174,8 +175,8 @@ public class EnemyAnimHolder extends Holder<MessageCreateEvent> {
                 sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
 
-                m.setContent(sb.toString());
-            }).subscribe();
+                m.content(wrap(sb.toString()));
+            });
 
             cleaner.add(event.getMessage());
         } else if(StaticStore.isNumeric(content)) {
@@ -265,10 +266,10 @@ public class EnemyAnimHolder extends Holder<MessageCreateEvent> {
 
             return RESULT_FINISH;
         } else if(content.equals("c")) {
-            msg.edit(m -> {
-                m.setContent(LangID.getStringByID("formst_cancel", lang));
+            Command.editMessage(msg, m -> {
+                m.content(wrap(LangID.getStringByID("formst_cancel", lang)));
                 expired = true;
-            }).subscribe();
+            });
 
             cleaner.add(event.getMessage());
 
@@ -286,7 +287,7 @@ public class EnemyAnimHolder extends Holder<MessageCreateEvent> {
 
                     page = p;
 
-                    msg.edit(m -> {
+                    Command.editMessage(msg, m -> {
                         String check;
 
                         if(enemy.size() <= 20)
@@ -300,6 +301,9 @@ public class EnemyAnimHolder extends Holder<MessageCreateEvent> {
 
                         StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
 
+                        int oldConfig = CommonStatic.getConfig().lang;
+                        CommonStatic.getConfig().lang = lang;
+
                         for(int i = 20 * page; i < 20 * (page +1); i++) {
                             if(i >= enemy.size())
                                 break;
@@ -308,7 +312,6 @@ public class EnemyAnimHolder extends Holder<MessageCreateEvent> {
 
                             String fname = Data.trio(e.id.id) + " - ";
 
-                            int oldConfig = CommonStatic.getConfig().lang;
                             CommonStatic.getConfig().lang = lang;
 
                             if(MultiLangCont.get(e) != null)
@@ -319,14 +322,16 @@ public class EnemyAnimHolder extends Holder<MessageCreateEvent> {
                             sb.append(i+1).append(". ").append(fname).append("\n");
                         }
 
+                        CommonStatic.getConfig().lang = oldConfig;
+
                         if(enemy.size() > 20)
                             sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(enemy.size()/20 + 1)));
 
                         sb.append(LangID.getStringByID("formst_can", lang));
                         sb.append("```");
 
-                        m.setContent(sb.toString());
-                    }).subscribe();
+                        m.content(wrap(sb.toString()));
+                    });
 
                     cleaner.add(event.getMessage());
                 }
@@ -353,6 +358,6 @@ public class EnemyAnimHolder extends Holder<MessageCreateEvent> {
 
         StaticStore.removeHolder(id, this);
 
-        msg.edit(m -> m.setContent(LangID.getStringByID("formst_expire", lang))).subscribe();
+        Command.editMessage(msg, m -> m.content(wrap(LangID.getStringByID("formst_expire", lang))));
     }
 }

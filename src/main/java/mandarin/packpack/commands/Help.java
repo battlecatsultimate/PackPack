@@ -28,231 +28,236 @@ public class Help extends Command {
         if(messages.length >= 2) {
             createEmbedOfSpecificCommand(messages[1], ch);
         } else {
-            ch.createEmbed(emb -> {
-                emb.setTitle(LangID.getStringByID("help_command", lang));
-                emb.setDescription(LangID.getStringByID("help_explain", lang));
-                emb.setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)]);
-                emb.addField(LangID.getStringByID("help_normal", lang), "```analyze, locale, prefix```", false);
-                emb.addField(LangID.getStringByID("help_bc", lang), "```background, castle, catcombo, enemygif, enemyimage, enemysprite, enemystat, findstage, formgif, formimage, formsprite, formstat, medal, music, stageinfo```", false);
-                emb.addField(LangID.getStringByID("help_server", lang), "```bcustat, boosteremoji, boosteremojiremove, boosterrole, boosterroleremove, channelpermission, checkbcu, clearcache, idset, memory, save, serverjson, serverpre```", false);
-                emb.addField(LangID.getStringByID("help_data", lang), "```animanalyzer, announcement, stageimage, stagemapimage```", false);
-                emb.addField(LangID.getStringByID("help_packpack", lang), "```alias, aliasadd, aliasremove, statistic, suggest```", false);
-            }).subscribe();
+            EmbedCreateSpec.Builder builder = EmbedCreateSpec.builder();
+
+            builder.title(LangID.getStringByID("help_command", lang))
+                    .description(LangID.getStringByID("help_explain", lang))
+                    .color(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)])
+                    .addField(LangID.getStringByID("help_normal", lang), "```analyze, locale, prefix```", false)
+                    .addField(LangID.getStringByID("help_bc", lang), "```background, castle, catcombo, enemygif, enemyimage, enemysprite, enemystat, findstage, formgif, formimage, formsprite, formstat, medal, music, stageinfo```", false)
+                    .addField(LangID.getStringByID("help_server", lang), "```bcustat, boosteremoji, boosteremojiremove, boosterrole, boosterroleremove, channelpermission, checkbcu, clearcache, idset, memory, save, serverjson, serverpre```", false)
+                    .addField(LangID.getStringByID("help_data", lang), "```animanalyzer, announcement, stageimage, stagemapimage```", false)
+                    .addField(LangID.getStringByID("help_packpack", lang), "```alias, aliasadd, aliasremove, statistic, suggest```", false);
+
+            ch.createMessage(builder.build()).subscribe();
         }
     }
 
     public void createEmbedOfSpecificCommand(String command, MessageChannel ch) {
         switch (command) {
             case "checkbcu":
-                ch.createEmbed(e -> addFields(e, "checkbcu", false, false, false)).subscribe();
+                ch.createMessage(addFields("checkbcu", false, false, false)).subscribe();
                 break;
             case "bcustat":
-                ch.createEmbed(e -> addFields(e, "bcustat", false, false, false)).subscribe();
+                ch.createMessage(addFields( "bcustat", false, false, false)).subscribe();
                 break;
-
             case "analyze":
-                ch.createEmbed(e -> addFields(e, "analyze", false, false, false)).subscribe();
+                ch.createMessage(addFields( "analyze", false, false, false)).subscribe();
                 break;
             case "prefix":
-                ch.createEmbed(e -> addFields(e, "prefix", false, false, false)).subscribe();
+                ch.createMessage(addFields( "prefix", false, false, false)).subscribe();
                 break;
             case "serverpre":
-                ch.createEmbed(e -> addFields(e, "serverpre", false, false, false)).subscribe();
+                ch.createMessage(addFields( "serverpre", false, false, false)).subscribe();
                 break;
             case "save":
-                ch.createEmbed(e -> addFields(e, "save", false, false, false)).subscribe();
+                ch.createMessage(addFields( "save", false, false, false)).subscribe();
                 break;
             case "stimg":
             case "stimage":
             case "stageimg":
             case "stageimage":
-                ch.createEmbed(e -> addFields(e, "stageimage", true, true, false)).subscribe();
+                ch.createMessage(addFields( "stageimage", true, true, false)).subscribe();
                 break;
             case "stmimg":
             case "stmimage":
             case "stagemapimg":
             case "stagemapimage":
-                ch.createEmbed(e -> addFields(e, "stagemapimage", true, true, false)).subscribe();
+                ch.createMessage(addFields( "stagemapimage", true, true, false)).subscribe();
                 break;
             case "formstat":
             case "fs":
-                ch.createEmbed(e -> addFields(e, "formstat", true, true, false)).subscribe();
+                ch.createMessage(addFields( "formstat", true, true, false)).subscribe();
                 break;
             case "locale":
             case "loc":
-                ch.createEmbed(e -> addFields(e, "locale", false, false, false)).subscribe();
+                ch.createMessage(addFields( "locale", false, false, false)).subscribe();
                 break;
             case "music":
             case "ms":
-                ch.createEmbed(e -> addFields(e, "music", false, false, false)).subscribe();
+                ch.createMessage(addFields( "music", false, false, false)).subscribe();
                 break;
             case "enemystat":
             case "es":
-                ch.createEmbed(e -> addFields(e, "enemystat", true, true, false)).subscribe();
+                ch.createMessage(addFields( "enemystat", true, true, false)).subscribe();
                 break;
             case "castle":
             case "cs":
-                ch.createEmbed(e -> addFields(e, "castle", true, true, false)).subscribe();
+                ch.createMessage(addFields( "castle", true, true, false)).subscribe();
                 break;
             case "stageinfo":
             case "si":
-                ch.createEmbed(e -> addFields(e, "stageinfo", true, true, false)).subscribe();
+                ch.createMessage(addFields( "stageinfo", true, true, false)).subscribe();
                 break;
             case "memory":
             case "mm":
-                ch.createEmbed(e -> addFields(e, "memory", false, false,false)).subscribe();
+                ch.createMessage(addFields( "memory", false, false,false)).subscribe();
                 break;
             case "formimage":
             case "formimg":
             case "fimage":
             case "fimg":
-                ch.createEmbed(e -> addFields(e, "formimage", true, true, true)).subscribe();
+                ch.createMessage(addFields( "formimage", true, true, true)).subscribe();
                 break;
             case "enemyimage":
             case "enemyimg":
             case "eimage":
             case "eimg":
-                ch.createEmbed(e -> addFields(e, "enemyimage", true, true, true)).subscribe();
+                ch.createMessage(addFields( "enemyimage", true, true, true)).subscribe();
                 break;
             case "background":
             case "bg":
-                ch.createEmbed(e -> addFields(e, "background", true, true, false)).subscribe();
+                ch.createMessage(addFields( "background", true, true, false)).subscribe();
                 break;
             case "formgif":
             case "fgif":
             case "fg":
-                ch.createEmbed(e -> addFields(e, "formgif", true, true, true)).subscribe();
+                ch.createMessage(addFields( "formgif", true, true, true)).subscribe();
                 break;
             case "enemygif":
             case "egif":
             case "eg":
-                ch.createEmbed(e -> addFields(e, "enemygif", true, true, true)).subscribe();
+                ch.createMessage(addFields( "enemygif", true, true, true)).subscribe();
                 break;
             case "idset":
-                ch.createEmbed(e -> addFields(e, "idset", true, true, true)).subscribe();
+                ch.createMessage(addFields( "idset", true, true, true)).subscribe();
                 break;
             case "clearcache":
-                ch.createEmbed(e -> addFields(e, "clearcache", false, false, false)).subscribe();
+                ch.createMessage(addFields( "clearcache", false, false, false)).subscribe();
                 break;
             case "aa":
             case "animanalyzer":
-                ch.createEmbed(e -> addFields(e, "animanalyzer", true, false, true)).subscribe();
+                ch.createMessage(addFields( "animanalyzer", true, false, true)).subscribe();
                 break;
             case "channelpermission":
             case "channelperm":
             case "chpermission":
             case "chperm":
             case "chp":
-                ch.createEmbed(e -> addFields(e, "channelpermission", true, true, true)).subscribe();
+                ch.createMessage(addFields( "channelpermission", true, true, true)).subscribe();
                 break;
             case "formsprite":
             case "fsprite":
             case "formsp":
             case "fsp":
-                ch.createEmbed(e -> addFields(e, "formsprite", true, true, false)).subscribe();
+                ch.createMessage(addFields( "formsprite", true, true, false)).subscribe();
                 break;
             case "enemysprite":
             case "esprite":
             case "enemysp":
             case "esp":
-                ch.createEmbed(e -> addFields(e, "enemysprite", true, true, false)).subscribe();
+                ch.createMessage(addFields( "enemysprite", true, true, false)).subscribe();
                 break;
             case "medal":
             case "md":
-                ch.createEmbed(e -> addFields(e, "medal", false, true, false)).subscribe();
+                ch.createMessage(addFields( "medal", false, true, false)).subscribe();
                 break;
             case "announcement":
             case "ann":
-                ch.createEmbed(e -> addFields(e, "announcement", true, true, false)).subscribe();
+                ch.createMessage(addFields( "announcement", true, true, false)).subscribe();
                 break;
             case "catcombo":
             case "combo":
             case "cc":
-                ch.createEmbed(e -> addFields(e, "catcombo", true, true, false)).subscribe();
+                ch.createMessage(addFields( "catcombo", true, true, false)).subscribe();
                 break;
             case "serverjson":
             case "json":
             case "sj":
-                ch.createEmbed(e -> addFields(e, "serverjson", false, false ,false)).subscribe();
+                ch.createMessage(addFields( "serverjson", false, false ,false)).subscribe();
                 break;
             case "findstage":
             case "findst":
             case "fstage":
             case "fst":
-                ch.createEmbed(e -> addFields(e, "findstage", true, true, false)).subscribe();
+                ch.createMessage(addFields( "findstage", true, true, false)).subscribe();
                 break;
             case "suggest":
-                ch.createEmbed(e -> addFields(e, "suggest", true, true, true)).subscribe();
+                ch.createMessage(addFields( "suggest", true, true, true)).subscribe();
                 break;
             case "alias":
             case "al":
-                ch.createEmbed(e -> addFields(e, "alias", true, true, true)).subscribe();
+                ch.createMessage(addFields( "alias", true, true, true)).subscribe();
                 break;
             case "aliasadd":
             case "ala":
-                ch.createEmbed(e -> addFields(e, "aliasadd", true, true, true)).subscribe();
+                ch.createMessage(addFields( "aliasadd", true, true, true)).subscribe();
                 break;
             case "aliasremove":
             case "alr":
-                ch.createEmbed(e -> addFields(e, "aliasremove", true, true, true)).subscribe();
+                ch.createMessage(addFields( "aliasremove", true, true, true)).subscribe();
                 break;
             case "statistic":
             case "stat":
-                ch.createEmbed(e -> addFields(e, "statistic", false, false, false)).subscribe();
+                ch.createMessage(addFields( "statistic", false, false, false)).subscribe();
                 break;
             case "serverlocale":
             case "slocale":
             case "serverloc":
             case "sloc":
-                ch.createEmbed(e -> addFields(e, "serverlocale", false, false, false)).subscribe();
+                ch.createMessage(addFields( "serverlocale", false, false, false)).subscribe();
                 break;
             case "boosterrole":
             case "boosterr":
             case "brole":
             case "br":
-                ch.createEmbed(e -> addFields(e, "boosterrole", true, true, true)).subscribe();
+                ch.createMessage(addFields( "boosterrole", true, true, true)).subscribe();
                 break;
             case "boosterroleremove":
             case "brremove":
             case "boosterrolerem":
             case "brrem":
             case "brr":
-                ch.createEmbed(e -> addFields(e, "boosterroleremove", true, false, false)).subscribe();
+                ch.createMessage(addFields( "boosterroleremove", true, false, false)).subscribe();
                 break;
             case "boosteremoji":
             case "boostere":
             case "bemoji":
             case "be":
-                ch.createEmbed(e -> addFields(e, "boosteremoji", false, true, true)).subscribe();
+                ch.createMessage(addFields( "boosteremoji", false, true, true)).subscribe();
                 break;
             case "boosteremojiremove":
             case "beremove":
             case"boosteremojirem":
             case "berem":
             case "ber":
-                ch.createEmbed(e -> addFields(e, "boosteremojiremove", true, false, false)).subscribe();
+                ch.createMessage(addFields( "boosteremojiremove", true, false, false)).subscribe();
                 break;
             default:
                 createMessageWithNoPings(ch, LangID.getStringByID("help_nocomm", lang).replace("_", command));
         }
     }
 
-    private void addFields(EmbedCreateSpec e, String mainCommand, boolean argument, boolean example, boolean tip) {
-        e.setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)]);
-        e.setTitle(holder.serverPrefix+mainCommand);
-        e.addField(LangID.getStringByID("help_use", lang), LangID.getStringByID("help_"+mainCommand+"_use", lang).replace("_", holder.serverPrefix), false);
-        e.addField(LangID.getStringByID("help_desc", lang), LangID.getStringByID("help_"+mainCommand+"_desc", lang), false);
+    private EmbedCreateSpec addFields(String mainCommand, boolean argument, boolean example, boolean tip) {
+        EmbedCreateSpec.Builder builder = EmbedCreateSpec.builder();
+
+        builder.color(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)]);
+        builder.title(holder.serverPrefix+mainCommand);
+        builder.addField(LangID.getStringByID("help_use", lang), LangID.getStringByID("help_"+mainCommand+"_use", lang).replace("_", holder.serverPrefix), false);
+        builder.addField(LangID.getStringByID("help_desc", lang), LangID.getStringByID("help_"+mainCommand+"_desc", lang), false);
 
         if(argument) {
-            e.addField(LangID.getStringByID("help_argu", lang), LangID.getStringByID("help_"+mainCommand+"_argu", lang), false);
+            builder.addField(LangID.getStringByID("help_argu", lang), LangID.getStringByID("help_"+mainCommand+"_argu", lang), false);
         }
 
         if(example) {
-            e.addField(LangID.getStringByID("help_exam", lang), LangID.getStringByID("help_"+mainCommand+"_exam", lang), false);
+            builder.addField(LangID.getStringByID("help_exam", lang), LangID.getStringByID("help_"+mainCommand+"_exam", lang), false);
         }
 
         if(tip) {
-            e.addField(LangID.getStringByID("help_tip", lang), LangID.getStringByID("help_"+mainCommand+"_tip", lang), false);
+            builder.addField(LangID.getStringByID("help_tip", lang), LangID.getStringByID("help_"+mainCommand+"_tip", lang), false);
         }
+
+        return builder.build();
     }
 }

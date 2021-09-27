@@ -6,6 +6,7 @@ import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.core.spec.EmbedCreateSpec;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.TimedConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
@@ -61,27 +62,29 @@ public class Suggest extends TimedConstraintCommand {
             Mono<User> me = client.getUserById(Snowflake.of(StaticStore.MANDARIN_SMELL));
 
             String finalTitle = title;
-            me.subscribe(u -> u.getPrivateChannel().subscribe(pc -> pc.createEmbed(e -> {
-                e.setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)]);
+            me.subscribe(u -> u.getPrivateChannel().subscribe(pc -> {
+                EmbedCreateSpec.Builder builder = EmbedCreateSpec.builder();
+
+                builder.color(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)]);
 
                 if(!desc.isBlank()) {
                     if(desc.length() >= 1024) {
                         String newDesc = desc.substring(0, 1004) + "... (too long)";
 
 
-                        e.addField("Description", newDesc, false);
+                        builder.addField("Description", newDesc, false);
                     } else {
-                        e.addField("Description", desc, false);
+                        builder.addField("Description", desc, false);
                     }
                 }
 
                 getMember(event).ifPresentOrElse(m -> {
-                    e.addField("Member ID", m.getId().asString(), true);
-                    e.addField("Member Name", m.getUsername(), true);
-                    e.setAuthor(finalTitle, null, m.getAvatarUrl());
-                }, () -> e.setTitle(finalTitle));
+                    builder.addField("Member ID", m.getId().asString(), true);
+                    builder.addField("Member Name", m.getUsername(), true);
+                    builder.author(finalTitle, null, m.getAvatarUrl());
+                }, () -> builder.title(finalTitle));
 
-                e.addField("Channel ID" , ch.getId().asString(), false);
+                builder.addField("Channel ID" , ch.getId().asString(), false);
 
                 Mono<Guild> mono = getGuild(event);
 
@@ -89,10 +92,12 @@ public class Suggest extends TimedConstraintCommand {
                     Guild g = mono.block();
 
                     if(g != null) {
-                        e.setFooter("From "+g.getName()+" | "+g.getId().asString(), null);
+                        builder.footer("From "+g.getName()+" | "+g.getId().asString(), null);
                     }
                 }
-            }).subscribe()));
+
+                pc.createMessage(builder.build()).subscribe();
+            }));
 
             System.out.println(desc);
 

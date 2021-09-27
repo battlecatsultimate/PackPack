@@ -7,6 +7,7 @@
  import discord4j.core.event.domain.message.MessageCreateEvent;
  import discord4j.core.object.entity.Message;
  import discord4j.core.object.entity.channel.MessageChannel;
+ import mandarin.packpack.commands.Command;
  import mandarin.packpack.supporter.StaticStore;
  import mandarin.packpack.supporter.bc.EntityHandler;
  import mandarin.packpack.supporter.lang.LangID;
@@ -63,7 +64,7 @@
 
             page++;
 
-            msg.edit(m -> {
+            Command.editMessage(msg, m -> {
                 String check;
 
                 if(enemy.size() <= 20)
@@ -102,8 +103,8 @@
                 sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
 
-                m.setContent(sb.toString());
-            }).subscribe();
+                m.content(wrap(sb.toString()));
+            });
 
             cleaner.add(event.getMessage());
         } else if(content.equals("p")) {
@@ -112,7 +113,7 @@
 
             page--;
 
-            msg.edit(m -> {
+            Command.editMessage(msg, m -> {
                 String check;
 
                 if(enemy.size() <= 20)
@@ -151,8 +152,8 @@
                 sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
 
-                m.setContent(sb.toString());
-            }).subscribe();
+                m.content(wrap(sb.toString()));
+            });
 
             cleaner.add(event.getMessage());
         } else if(StaticStore.isNumeric(content)) {
@@ -175,10 +176,10 @@
 
             return RESULT_FINISH;
         } else if(content.equals("c")) {
-            msg.edit(m -> {
-                m.setContent(LangID.getStringByID("formst_cancel" ,lang));
+            Command.editMessage(msg, m -> {
+                m.content(wrap(LangID.getStringByID("formst_cancel" ,lang)));
                 expired = true;
-            }).subscribe();
+            });
 
             cleaner.add(event.getMessage());
 
@@ -196,7 +197,7 @@
 
                     page = p;
 
-                    msg.edit(m -> {
+                    Command.editMessage(msg, m -> {
                         String check;
 
                         if(enemy.size() <= 20)
@@ -235,8 +236,8 @@
                         sb.append(LangID.getStringByID("formst_can", lang));
                         sb.append("```");
 
-                        m.setContent(sb.toString());
-                    }).subscribe();
+                        m.content(wrap(sb.toString()));
+                    });
 
                     cleaner.add(event.getMessage());
                 }
@@ -263,6 +264,6 @@
 
         StaticStore.removeHolder(id, this);
 
-        msg.edit(m -> m.setContent(LangID.getStringByID("formst_expire", lang))).subscribe();
+        Command.editMessage(msg, m -> m.content(wrap(LangID.getStringByID("formst_expire", lang))));
     }
 }

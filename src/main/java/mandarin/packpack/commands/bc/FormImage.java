@@ -85,7 +85,8 @@ public class FormImage extends TimedConstraintCommand {
                     FileInputStream fis = new FileInputStream(img);
 
                     int finalMode = mode;
-                    ch.createMessage(m -> {
+
+                    createMessage(ch, m -> {
                         int oldConfig = CommonStatic.getConfig().lang;
                         CommonStatic.getConfig().lang = lang;
 
@@ -99,9 +100,9 @@ public class FormImage extends TimedConstraintCommand {
                         if(fName == null || fName.isBlank())
                             fName = LangID.getStringByID("data_unit", lang)+" "+ Data.trio(forms.get(0).uid.id)+" "+Data.trio(forms.get(0).fid);
 
-                        m.setContent(LangID.getStringByID("fimg_result", lang).replace("_", fName).replace(":::", getModeName(finalMode, forms.get(0).anim.anims.length)).replace("=", String.valueOf(frame)));
+                        m.content(LangID.getStringByID("fimg_result", lang).replace("_", fName).replace(":::", getModeName(finalMode, forms.get(0).anim.anims.length)).replace("=", String.valueOf(frame)));
                         m.addFile("result.png", fis);
-                    }).subscribe(null, null, () -> {
+                    }, () -> {
                         try {
                             fis.close();
                         } catch (IOException e) {

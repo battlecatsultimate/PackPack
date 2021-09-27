@@ -5,6 +5,7 @@ import discord4j.core.GatewayDiscordClient;
 import discord4j.core.object.entity.channel.Channel;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.rest.util.AllowedMentions;
+import mandarin.packpack.commands.Command;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.io.File;
@@ -67,10 +68,10 @@ public class Logger {
     }
 
     private void createMessageWithNoPings(MessageChannel ch, String content) {
-        ch.createMessage(m -> {
-            m.setContent(content);
-            m.setAllowedMentions(AllowedMentions.builder().build());
-        }).subscribe();
+        Command.createMessage(ch, m -> {
+            m.content(content);
+            m.allowedMentions(AllowedMentions.builder().build());
+        });
     }
 
     private void createMessageWithNoPingsWithFile(MessageChannel ch, String content, File... files) {
@@ -89,13 +90,13 @@ public class Logger {
             }
         }
 
-        ch.createMessage(m -> {
-            m.setContent(content);
-            m.setAllowedMentions(AllowedMentions.builder().build());
+        Command.createMessage(ch, m -> {
+            m.content(content);
+            m.allowedMentions(AllowedMentions.builder().build());
             for(int i = 0; i < files.length; i++) {
                 m.addFile(files[i].getName(), fis.get(i));
             }
-        }).subscribe(null, (e) -> {
+        }, (e) -> {
             for(FileInputStream fi : fis) {
                 try {
                     fi.close();

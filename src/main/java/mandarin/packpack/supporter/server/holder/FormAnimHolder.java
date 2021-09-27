@@ -8,6 +8,7 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
+import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityHandler;
@@ -77,7 +78,7 @@ public class FormAnimHolder extends Holder<MessageCreateEvent> {
 
             page++;
 
-            msg.edit(m -> {
+            Command.editMessage(msg, m -> {
                 String check;
 
                 if(form.size() <= 20)
@@ -116,8 +117,8 @@ public class FormAnimHolder extends Holder<MessageCreateEvent> {
                 sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
 
-                m.setContent(sb.toString());
-            }).subscribe();
+                m.content(wrap(sb.toString()));
+            });
 
             cleaner.add(event.getMessage());
         } else if(content.equals("p")) {
@@ -126,7 +127,7 @@ public class FormAnimHolder extends Holder<MessageCreateEvent> {
 
             page--;
 
-            msg.edit(m -> {
+            Command.editMessage(msg, m -> {
                 String check;
 
                 if(form.size() <= 20)
@@ -165,8 +166,8 @@ public class FormAnimHolder extends Holder<MessageCreateEvent> {
                 sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
 
-                m.setContent(sb.toString());
-            }).subscribe();
+                m.content(wrap(sb.toString()));
+            });
 
             cleaner.add(event.getMessage());
         } else if(StaticStore.isNumeric(content)) {
@@ -256,10 +257,10 @@ public class FormAnimHolder extends Holder<MessageCreateEvent> {
 
             return RESULT_FINISH;
         } else if(content.equals("c")) {
-            msg.edit(m -> {
-                m.setContent(LangID.getStringByID("formst_cancel", lang));
+            Command.editMessage(msg, m -> {
+                m.content(wrap(LangID.getStringByID("formst_cancel", lang)));
                 expired = true;
-            }).subscribe();
+            });
 
             cleaner.add(event.getMessage());
 
@@ -277,7 +278,7 @@ public class FormAnimHolder extends Holder<MessageCreateEvent> {
 
                     page = p;
 
-                    msg.edit(m -> {
+                    Command.editMessage(msg, m -> {
                         String check;
 
                         if(form.size() <= 20)
@@ -316,8 +317,8 @@ public class FormAnimHolder extends Holder<MessageCreateEvent> {
                         sb.append(LangID.getStringByID("formst_can", lang));
                         sb.append("```");
 
-                        m.setContent(sb.toString());
-                    }).subscribe();
+                        m.content(wrap(sb.toString()));
+                    });
 
                     cleaner.add(event.getMessage());
                 }
@@ -344,6 +345,6 @@ public class FormAnimHolder extends Holder<MessageCreateEvent> {
 
         StaticStore.removeHolder(id, this);
 
-        msg.edit(m -> m.setContent(LangID.getStringByID("formst_expire", lang))).subscribe();
+        Command.editMessage(msg, m -> m.content(wrap(LangID.getStringByID("formst_expire", lang))));
     }
 }

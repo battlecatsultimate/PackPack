@@ -10,6 +10,7 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
+import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
@@ -129,10 +130,10 @@ public class StageInfoHolder extends Holder<MessageCreateEvent> {
 
             return RESULT_STILL;
         } else if(content.equals("c")) {
-            msg.edit(m -> {
-                m.setContent(LangID.getStringByID("formst_cancel", lang));
+            Command.editMessage(msg, m -> {
+                m.content(wrap(LangID.getStringByID("formst_cancel", lang)));
                 expired = true;
-            }).subscribe();
+            });
 
             cleaner.add(event.getMessage());
 
@@ -161,7 +162,7 @@ public class StageInfoHolder extends Holder<MessageCreateEvent> {
     }
 
     private void showPage() {
-        msg.edit(m -> {
+        Command.editMessage(msg, m -> {
             String check;
 
             if(stage.size() <= 20)
@@ -258,8 +259,8 @@ public class StageInfoHolder extends Holder<MessageCreateEvent> {
             sb.append(LangID.getStringByID("formst_can", lang));
             sb.append("```");
 
-            m.setContent(sb.toString());
-        }).subscribe();
+            m.content(wrap(sb.toString()));
+        });
     }
 
     @Override
@@ -279,6 +280,6 @@ public class StageInfoHolder extends Holder<MessageCreateEvent> {
 
         StaticStore.removeHolder(id, this);
 
-        msg.edit(m -> m.setContent(LangID.getStringByID("formst_expire", lang))).subscribe();
+        Command.editMessage(msg, m -> m.content(wrap(LangID.getStringByID("formst_expire", lang))));
     }
 }

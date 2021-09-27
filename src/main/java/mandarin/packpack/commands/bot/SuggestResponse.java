@@ -6,6 +6,7 @@ import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.Embed;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.entity.channel.TextChannel;
+import discord4j.core.spec.EmbedCreateSpec;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -41,13 +42,18 @@ public class SuggestResponse extends ConstraintCommand {
                     if(!emb.getEmbeds().isEmpty()) {
                         Embed embed = emb.getEmbeds().get(0);
 
-                        ((TextChannel) c).createEmbed(e -> {
-                            e.setTitle(LangID.getStringByID("response_title", lang));
-                            e.setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)]);
-                            embed.getAuthor().ifPresentOrElse(au -> e.addField(au.getName() == null ? "UNKNOWN" : au.getName(), contents[5], false), () -> e.addField("UNKNOWN", contents[5], false));
+                        EmbedCreateSpec.Builder builder = EmbedCreateSpec.builder()
+                                .title(LangID.getStringByID("response_title", lang))
+                                .color(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)]);
 
-                            client.getUserById(Snowflake.of(contents[3])).subscribe(u -> e.setFooter(LangID.getStringByID("response_suggestedby", lang).replace("_UUU_", u.getTag()), u.getAvatarUrl()));
-                        }).subscribe();
+                        embed.getAuthor().ifPresentOrElse(
+                                au -> builder.addField(au.getName().orElse("Unknown"), contents[5], false),
+                                () -> builder.addField("UNKNOWN", contents[5], false)
+                        );
+
+                        client.getUserById(Snowflake.of(contents[3])).subscribe(u -> builder.footer(LangID.getStringByID("response_suggestedby", lang).replace("_UUU_", u.getTag()), u.getAvatarUrl()));
+
+                        ((TextChannel) c).createMessage(builder.build());
                     }
                 })));
             }
@@ -57,13 +63,18 @@ public class SuggestResponse extends ConstraintCommand {
             if(!emb.getEmbeds().isEmpty()) {
                 Embed embed = emb.getEmbeds().get(0);
 
-                pc.createEmbed(e -> {
-                    e.setTitle(LangID.getStringByID("response_title", lang));
-                    e.setDescription(LangID.getStringByID("response_desc", lang));
-                    e.setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)]);
+                EmbedCreateSpec.Builder builder = EmbedCreateSpec.builder();
 
-                    embed.getAuthor().ifPresentOrElse(au -> e.addField(au.getName() == null ? "UNKNOWN" : au.getName(), contents[5], false), () -> e.addField("UNKNOWN", contents[5], false));
-                }).subscribe();
+                builder.title(LangID.getStringByID("response_title", lang))
+                        .description(LangID.getStringByID("response_desc", lang))
+                        .color(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)]);
+
+                embed.getAuthor().ifPresentOrElse(
+                        au -> builder.addField(au.getName().orElse("UNKNOWN"), contents[5], false),
+                        () -> builder.addField("UNKNOWN", contents[5], false)
+                );
+
+                pc.createMessage(builder.build()).subscribe();
             }
         })))));
     }

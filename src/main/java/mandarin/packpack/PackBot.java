@@ -20,6 +20,7 @@ import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.Role;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.presence.*;
+import discord4j.core.spec.RoleCreateSpec;
 import discord4j.rest.request.RouterOptions;
 import mandarin.packpack.commands.*;
 import mandarin.packpack.commands.bc.*;
@@ -76,7 +77,7 @@ public class PackBot {
 
         SlashBuilder.build(gate);
 
-        gate.updatePresence(Presence.online(Activity.playing("p!help, but under Construction!"))).subscribe();
+        gate.updatePresence(ClientPresence.online(ClientActivity.playing("p!help, but under Construction!"))).subscribe();
 
         gate.getGuilds().collectList().subscribe(l -> {
             for (Guild guild : l) {
@@ -89,7 +90,11 @@ public class PackBot {
                         String modID = StaticStore.getRoleIDByName("PackPackMod", guild);
 
                         if(modID == null) {
-                            guild.createRole(r -> r.setName("PackPackMod")).subscribe(r -> idh.MOD = r.getId().asString());
+                            RoleCreateSpec.Builder roleBuilder = RoleCreateSpec.builder();
+
+                            roleBuilder.name("PackPackMod");
+
+                            guild.createRole(roleBuilder.build()).subscribe(r -> idh.MOD = r.getId().asString());
                         } else {
                             idh.MOD = modID;
                         }
@@ -103,7 +108,11 @@ public class PackBot {
                             String modID = StaticStore.getRoleIDByName("PackPackMod", guild);
 
                             if(modID == null) {
-                                guild.createRole(r -> r.setName("PackPackMod")).subscribe(r -> id.MOD = r.getId().asString());
+                                RoleCreateSpec.Builder roleBuilder = RoleCreateSpec.builder();
+
+                                roleBuilder.name("PackPackMod");
+
+                                guild.createRole(roleBuilder.build()).subscribe(r -> id.MOD = r.getId().asString());
                             } else {
                                 id.MOD = modID;
                             }
@@ -117,7 +126,11 @@ public class PackBot {
                                 String modID = StaticStore.getRoleIDByName("PackPackMod", guild);
 
                                 if(modID == null) {
-                                    guild.createRole(r -> r.setName("PackPackMod")).subscribe(r -> id.MOD = r.getId().asString());
+                                    RoleCreateSpec.Builder roleBuilder = RoleCreateSpec.builder();
+
+                                    roleBuilder.name("PackPackMod");
+
+                                    guild.createRole(roleBuilder.build()).subscribe(r -> id.MOD = r.getId().asString());
                                 } else {
                                     id.MOD = modID;
                                 }
@@ -151,7 +164,11 @@ public class PackBot {
                     String modID = StaticStore.getRoleIDByName("PackPackMod", guild);
 
                     if(modID == null) {
-                        guild.createRole(r -> r.setName("PackPackMod")).subscribe(r -> holder.MOD = r.getId().asString());
+                        RoleCreateSpec.Builder roleBuilder = RoleCreateSpec.builder();
+
+                        roleBuilder.name("PackPackMod");
+
+                        guild.createRole(roleBuilder.build()).subscribe(r -> holder.MOD = r.getId().asString());
                     } else {
                         holder.MOD = modID;
                     }
@@ -161,7 +178,11 @@ public class PackBot {
                             String modID = StaticStore.getRoleIDByName("PackPackMod", guild);
 
                             if(modID == null) {
-                                guild.createRole(ro -> ro.setName("PackPackMod")).subscribe(ro -> holder.MOD = r.getId().asString());
+                                RoleCreateSpec.Builder roleBuilder = RoleCreateSpec.builder();
+
+                                roleBuilder.name("PackPackMod");
+
+                                guild.createRole(roleBuilder.build()).subscribe(ro -> holder.MOD = r.getId().asString());
                             } else {
                                 holder.MOD = modID;
                             }
@@ -174,7 +195,11 @@ public class PackBot {
                 String modID = StaticStore.getRoleIDByName("PackPackMod", guild);
 
                 if(modID == null) {
-                    guild.createRole(r -> r.setName("PackPackMod")).subscribe(r -> idh.MOD = r.getId().asString());
+                    RoleCreateSpec.Builder roleBuilder = RoleCreateSpec.builder();
+
+                    roleBuilder.name("PackPackMod");
+
+                    guild.createRole(roleBuilder.build()).subscribe(r -> idh.MOD = r.getId().asString());
                 } else {
                     idh.MOD = modID;
                 }
@@ -234,7 +259,11 @@ public class PackBot {
                 String modID = StaticStore.getRoleIDByName("PackPackMod", guild);
 
                 if(modID == null) {
-                    guild.createRole(r -> r.setName("PackPackMod")).subscribe(r -> idh.MOD = r.getId().asString());
+                    RoleCreateSpec.Builder roleBuilder = RoleCreateSpec.builder();
+
+                    roleBuilder.name("PackPackMod");
+
+                    guild.createRole(roleBuilder.build()).subscribe(r -> idh.MOD = r.getId().asString());
                 } else {
                     idh.MOD = modID;
                 }
@@ -248,7 +277,11 @@ public class PackBot {
                     String modID = StaticStore.getRoleIDByName("PackPackMod", guild);
 
                     if(modID == null) {
-                        guild.createRole(r -> r.setName("PackPackMod")).subscribe(r -> id.MOD = r.getId().asString());
+                        RoleCreateSpec.Builder roleBuilder = RoleCreateSpec.builder();
+
+                        roleBuilder.name("PackPackMod");
+
+                        guild.createRole(roleBuilder.build()).subscribe(r -> id.MOD = r.getId().asString());
                     } else {
                         id.MOD = modID;
                     }
@@ -262,7 +295,11 @@ public class PackBot {
                         String modID = StaticStore.getRoleIDByName("PackPackMod", guild);
 
                         if(modID == null) {
-                            guild.createRole(r -> r.setName("PackPackMod")).subscribe(r -> id.MOD = r.getId().asString());
+                            RoleCreateSpec.Builder roleBuilder = RoleCreateSpec.builder();
+
+                            roleBuilder.name("PackPackMod");
+
+                            guild.createRole(roleBuilder.build()).subscribe(r -> id.MOD = r.getId().asString());
                         } else {
                             id.MOD = modID;
                         }

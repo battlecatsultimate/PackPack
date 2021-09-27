@@ -98,10 +98,11 @@ public class Music extends GlobalTimedConstraintCommand {
 
             if(ch != null) {
                 FileInputStream fis = new FileInputStream(file);
-                ch.createMessage(msg -> {
-                    msg.setContent(LangID.getStringByID("music_upload", lang).replace("_", optionalID));
+
+                createMessage(ch, msg -> {
+                    msg.content(LangID.getStringByID("music_upload", lang).replace("_", optionalID));
                     msg.addFile(optionalID+".ogg", fis);
-                }).subscribe(null, null, () -> {
+                }, () -> {
                     waiter.resume();
 
                     try {
@@ -155,10 +156,11 @@ public class Music extends GlobalTimedConstraintCommand {
 
             if(ch != null) {
                 FileInputStream fis = new FileInputStream(file);
-                ch.createMessage(msg -> {
-                    msg.setContent(LangID.getStringByID("music_upload", lang).replace("_", optionalID));
+
+                createMessage(ch, msg -> {
+                    msg.content(LangID.getStringByID("music_upload", lang).replace("_", optionalID));
                     msg.addFile(optionalID+".ogg", fis);
-                }).subscribe(null, null, () -> {
+                }, () -> {
                     waiter.resume();
 
                     try {

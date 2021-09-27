@@ -7,12 +7,15 @@ import common.util.unit.Combo;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
+import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class ComboHolder extends Holder<MessageCreateEvent> {
@@ -66,7 +69,7 @@ public class ComboHolder extends Holder<MessageCreateEvent> {
 
             page++;
 
-            msg.edit(m -> {
+            Command.editMessage(msg, m -> {
                 String check;
 
                 if(combo.size() <= 20)
@@ -105,8 +108,8 @@ public class ComboHolder extends Holder<MessageCreateEvent> {
                 sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
 
-                m.setContent(sb.toString());
-            }).subscribe();
+                m.content(wrap(sb.toString()));
+            });
 
             cleaner.add(event.getMessage());
         } else if(content.equals("p")) {
@@ -115,7 +118,7 @@ public class ComboHolder extends Holder<MessageCreateEvent> {
 
             page--;
 
-            msg.edit(m -> {
+            Command.editMessage(msg, m -> {
                 String check;
 
                 if(combo.size() <= 20)
@@ -154,8 +157,8 @@ public class ComboHolder extends Holder<MessageCreateEvent> {
                 sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
 
-                m.setContent(sb.toString());
-            }).subscribe();
+                m.content(wrap(sb.toString()));
+            });
 
             cleaner.add(event.getMessage());
         } else if(StaticStore.isNumeric(content)) {
@@ -196,10 +199,10 @@ public class ComboHolder extends Holder<MessageCreateEvent> {
             if(fMsg != null)
                 fMsg.delete().subscribe();
 
-            msg.edit(m -> {
-                m.setContent(LangID.getStringByID("formst_cancel" ,lang));
+            Command.editMessage(msg, m -> {
+                m.content(wrap(LangID.getStringByID("formst_cancel" ,lang)));
                 expired = true;
-            }).subscribe();
+            });
 
             cleaner.add(event.getMessage());
 
@@ -217,7 +220,7 @@ public class ComboHolder extends Holder<MessageCreateEvent> {
 
                     page = p;
 
-                    msg.edit(m -> {
+                    Command.editMessage(msg, m -> {
                         String check;
 
                         if(combo.size() <= 20)
@@ -256,8 +259,8 @@ public class ComboHolder extends Holder<MessageCreateEvent> {
                         sb.append(LangID.getStringByID("formst_can", lang));
                         sb.append("```");
 
-                        m.setContent(sb.toString());
-                    }).subscribe();
+                        m.content(wrap(sb.toString()));
+                    });
 
                     cleaner.add(event.getMessage());
                 }
@@ -289,6 +292,6 @@ public class ComboHolder extends Holder<MessageCreateEvent> {
         if(fMsg != null)
             fMsg.delete().subscribe();
 
-        msg.edit(m -> m.setContent(LangID.getStringByID("formst_expire", lang))).subscribe();
+        Command.editMessage(msg, m -> m.content(wrap(LangID.getStringByID("formst_expire", lang))));
     }
 }

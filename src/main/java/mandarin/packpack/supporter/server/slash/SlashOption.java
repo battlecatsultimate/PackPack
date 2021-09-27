@@ -1,9 +1,9 @@
 package mandarin.packpack.supporter.server.slash;
 
+import discord4j.core.object.command.ApplicationCommandOption;
 import discord4j.discordjson.json.ApplicationCommandInteractionOptionData;
 import discord4j.discordjson.json.ApplicationCommandOptionData;
 import discord4j.discordjson.json.ImmutableApplicationCommandRequest;
-import discord4j.rest.util.ApplicationCommandOptionType;
 import mandarin.packpack.supporter.StaticStore;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,13 +12,13 @@ import java.util.Locale;
 
 public class SlashOption {
     enum TYPE {
-        INT(ApplicationCommandOptionType.INTEGER.getValue()),
-        BOOLEAN(ApplicationCommandOptionType.BOOLEAN.getValue()),
-        STRING(ApplicationCommandOptionType.STRING.getValue()),
-        ROLE(ApplicationCommandOptionType.ROLE.getValue()),
-        CHANNEL(ApplicationCommandOptionType.CHANNEL.getValue()),
-        SUB_COMMAND(ApplicationCommandOptionType.SUB_COMMAND.getValue()),
-        GROUP(ApplicationCommandOptionType.SUB_COMMAND_GROUP.getValue());
+        INT(ApplicationCommandOption.Type.INTEGER.getValue()),
+        BOOLEAN(ApplicationCommandOption.Type.BOOLEAN.getValue()),
+        STRING(ApplicationCommandOption.Type.STRING.getValue()),
+        ROLE(ApplicationCommandOption.Type.ROLE.getValue()),
+        CHANNEL(ApplicationCommandOption.Type.CHANNEL.getValue()),
+        SUB_COMMAND(ApplicationCommandOption.Type.SUB_COMMAND.getValue()),
+        GROUP(ApplicationCommandOption.Type.SUB_COMMAND_GROUP.getValue());
 
         int type;
 

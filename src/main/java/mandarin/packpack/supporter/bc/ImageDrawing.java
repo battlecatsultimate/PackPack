@@ -8,6 +8,8 @@ import common.util.anim.AnimU;
 import common.util.anim.EAnimD;
 import common.util.pack.Background;
 import discord4j.core.object.entity.Message;
+import discord4j.discordjson.possible.Possible;
+import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.awt.FG2D;
 import mandarin.packpack.supporter.lang.LangID;
@@ -22,6 +24,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class ImageDrawing {
     public static File drawBGImage(Background bg, int w, int h) throws Exception {
@@ -314,7 +317,7 @@ public class ImageDrawing {
                 .replace("_HHH_", rect.height+"").replace("_XXX_", rect.x+"")
                 .replace("_YYY_", rect.x+"");
 
-        msg.edit(m -> m.setContent(cont)).subscribe();
+        Command.editMessage(msg, m -> m.content(wrap(cont)));
 
         if(rect.width * rect.height > 1500 * 1500) {
             ratio = 1.0;
@@ -361,7 +364,7 @@ public class ImageDrawing {
 
         String finalFinCont = finCont;
 
-        msg.edit(m -> m.setContent(finalFinCont)).subscribe();
+        Command.editMessage(msg, m -> m.content(wrap(finalFinCont)));
 
         P pos = new P(-rect.x, -rect.y);
 
@@ -371,13 +374,15 @@ public class ImageDrawing {
             if(System.currentTimeMillis() - current >= 1500) {
                 int finalI = i;
                 int finalFrame = frame;
-                msg.edit(m -> {
+
+                Command.editMessage(msg, m -> {
                     String content = finalFinCont +"\n\n";
 
                     content += LangID.getStringByID("gif_makepng", lang).replace("_", DataToString.df.format(finalI * 100.0 / finalFrame));
 
-                    m.setContent(content);
-                }).subscribe();
+                    m.content(wrap(content));
+                });
+
                 current = System.currentTimeMillis();
             }
 
@@ -430,12 +435,12 @@ public class ImageDrawing {
             ImageIO.write(image, "PNG", img);
         }
 
-        msg.edit(m -> {
+        Command.editMessage(msg, m -> {
             String content = finalFinCont + "\n\n" + LangID.getStringByID("gif_makepng", lang).replace("_", "100")
                     +"\n\n"+ LangID.getStringByID("gif_converting", lang);
 
-            m.setContent(content);
-        }).subscribe();
+            m.content(wrap(content));
+        });
 
         ProcessBuilder builder = new ProcessBuilder(SystemUtils.IS_OS_WINDOWS ? "data/ffmpeg/bin/ffmpeg" : "ffmpeg", "-r", "30", "-f", "image2", "-s", rect.width+"x"+rect.height,
                 "-i", "temp/"+folderName+"/%04d.png", "-vcodec", "libx264", "-crf", "25", "-pix_fmt", "yuv420p", "-y", "temp/"+gif.getName());
@@ -455,12 +460,12 @@ public class ImageDrawing {
 
         StaticStore.deleteFile(folder, true);
 
-        msg.edit(m -> {
+        Command.editMessage(msg, m -> {
             String content = finalFinCont + "\n\n"+LangID.getStringByID("gif_makepng", lang).replace("_", "100")+"\n\n"
                     +LangID.getStringByID("gif_converting", lang)+"\n\n"+LangID.getStringByID("gif_uploadmp4", lang);
 
-            m.setContent(content);
-        }).subscribe();
+            m.content(wrap(content));
+        });
 
         return gif;
     }
@@ -579,7 +584,8 @@ public class ImageDrawing {
                 .replace("_YYY_", (int) (ratio * rect.y)+"");
 
         String finalCont = cont;
-        msg.edit(m -> m.setContent(finalCont)).subscribe();
+
+        Command.editMessage(msg, m -> m.content(wrap(finalCont)));
 
         rect.x = (int) (ratio * rect.x);
         rect.y = (int) (ratio * rect.y);
@@ -617,13 +623,13 @@ public class ImageDrawing {
 
                 int finalFrame = frame;
 
-                msg.edit(m -> {
+                Command.editMessage(msg, m -> {
                     String content = finalCont1 +"\n\n";
 
                     content += LangID.getStringByID("gif_making", lang).replace("_", DataToString.df.format(finalI * 100.0 / Math.min(300, finalFrame)));
 
-                    m.setContent(content);
-                }).subscribe();
+                    m.content(wrap(content));
+                });
 
                 current = System.currentTimeMillis();
             }
@@ -671,11 +677,12 @@ public class ImageDrawing {
         fos.close();
 
         String finalCont2 = cont;
-        msg.edit(m -> {
+
+        Command.editMessage(msg, m -> {
             String content = finalCont2 + "\n\n"+LangID.getStringByID("gif_making", lang).replace("_", "100")+"\n\n"+LangID.getStringByID("gif_uploading", lang);
 
-            m.setContent(content);
-        }).subscribe();
+            m.content(wrap(content));
+        });
 
         return gif;
     }
@@ -776,7 +783,7 @@ public class ImageDrawing {
                 .replace("_HHH_", ""+rect.height).replace("_XXX_", rect.x+"")
                 .replace("_YYY_", ""+rect.y);
 
-        msg.edit(m -> m.setContent(cont)).subscribe();
+        Command.editMessage(msg, m -> m.content(wrap(cont)));
 
         if(rect.width * rect.height > 1500 * 1500) {
             ratio = 1.0;
@@ -823,7 +830,7 @@ public class ImageDrawing {
 
         String finalFinCont = finCont;
 
-        msg.edit(m -> m.setContent(finalFinCont)).subscribe();
+        Command.editMessage(msg, m -> m.content(wrap(finalFinCont)));
 
         P pos = new P(-rect.x, -rect.y);
 
@@ -893,13 +900,13 @@ public class ImageDrawing {
                                 int finalProg = progress;
                                 int finalTotal = totalFrame;
 
-                                msg.edit(m -> {
+                                Command.editMessage(msg, m -> {
                                     String content = finalFinCont +"\n\n";
 
                                     content += LangID.getStringByID("gif_makepng", lang).replace("_", DataToString.df.format(finalProg * 100.0 / finalTotal));
 
-                                    m.setContent(content);
-                                }).subscribe();
+                                    m.content(wrap(content));
+                                });
 
                                 current = System.currentTimeMillis();
                             }
@@ -943,13 +950,13 @@ public class ImageDrawing {
                             int finalProg = progress;
                             int finalTotal = totalFrame;
 
-                            msg.edit(m -> {
+                            Command.editMessage(msg, m -> {
                                 String content = finalFinCont +"\n\n";
 
                                 content += LangID.getStringByID("gif_makepng", lang).replace("_", DataToString.df.format(finalProg * 100.0 / finalTotal));
 
-                                m.setContent(content);
-                            }).subscribe();
+                                m.content(wrap(content));
+                            });
 
                             current = System.currentTimeMillis();
                         }
@@ -990,13 +997,12 @@ public class ImageDrawing {
             }
         }
 
-        msg.edit(m -> {
+        Command.editMessage(msg, m -> {
             String content = finalFinCont + "\n\n" + LangID.getStringByID("gif_makepng", lang).replace("_", "100")
                     +"\n\n"+ LangID.getStringByID("gif_converting", lang);
 
-            m.setContent(content);
-        }).subscribe();
-
+            m.content(wrap(content));
+        });
 
         ProcessBuilder builder = new ProcessBuilder(SystemUtils.IS_OS_WINDOWS ? "data/ffmpeg/bin/ffmpeg" : "ffmpeg", "-r", "30", "-f", "image2", "-s", rect.width+"x"+rect.height,
                 "-i", "temp/"+folderName+"/%04d.png", "-vcodec", "libx264", "-crf", "25", "-pix_fmt", "yuv420p", "-y", "temp/"+gif.getName());
@@ -1016,12 +1022,12 @@ public class ImageDrawing {
 
         StaticStore.deleteFile(folder, true);
 
-        msg.edit(m -> {
+        Command.editMessage(msg, m -> {
             String content = finalFinCont + "\n\n"+LangID.getStringByID("gif_makepng", lang).replace("_", "100")+"\n\n"
                     +LangID.getStringByID("gif_converting", lang)+"\n\n"+LangID.getStringByID("gif_uploadmp4", lang);
 
-            m.setContent(content);
-        }).subscribe();
+            m.content(wrap(content));
+        });
 
         return gif;
     }
@@ -1094,5 +1100,9 @@ public class ImageDrawing {
         } else {
             return ""+n;
         }
+    }
+
+    private static Possible<Optional<String>> wrap(String content) {
+        return Possible.of(Optional.of(content));
     }
 }

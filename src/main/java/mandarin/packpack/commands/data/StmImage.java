@@ -104,18 +104,19 @@ public class StmImage extends ConstraintCommand {
     private void handleLast(String message, File f, MessageChannel ch, ImageGenerator generator) throws Exception {
         if(f != null) {
             FileInputStream fis = new FileInputStream(f);
-            ch.createMessage(m -> {
+
+            createMessage(ch, m -> {
                 m.addFile(f.getName(), fis);
-                m.setContent(LangID.getStringByID("stimg_result", lang));
-            }).subscribe(null, null, () -> {
+                m.content(LangID.getStringByID("stimg_result", lang));
+            }, () -> {
                 try {
-                    if(f.exists()) {
+                    if (f.exists()) {
                         fis.close();
 
                         boolean res = f.delete();
 
-                        if(!res) {
-                            System.out.println("Can't delete file : "+f.getAbsolutePath());
+                        if (!res) {
+                            System.out.println("Can't delete file : " + f.getAbsolutePath());
                         }
                     }
                 } catch (Exception e) {

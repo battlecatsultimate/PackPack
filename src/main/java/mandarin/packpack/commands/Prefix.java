@@ -32,10 +32,10 @@ public class Prefix extends ConstraintCommand {
                 String result = LangID.getStringByID("prefix_set", lang).replace("_", list[1]);
 
                 if(result.length() < 2000) {
-                    ch.createMessage(me -> {
-                        me.setContent(result);
-                        me.setAllowedMentions(AllowedMentions.builder().build());
-                    }).subscribe();
+                    createMessage(ch, me -> {
+                        me.content(result);
+                        me.allowedMentions(AllowedMentions.builder().build());
+                    });
                 } else {
                     ch.createMessage(LangID.getStringByID("prefix_setnone", lang)).subscribe();
                 }
