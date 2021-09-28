@@ -52,7 +52,7 @@ public class StageInfoButtonHolder extends InteractionHolder<ButtonInteractionEv
 
                 author.getAuthor().ifPresent(u -> StaticStore.removeHolder(u.getId().asString(), StageInfoButtonHolder.this));
 
-                embed.removeAllReactions().subscribe();
+                expire("");
             }
         }, TimeUnit.MINUTES.toMillis(5));
     }
@@ -236,5 +236,7 @@ public class StageInfoButtonHolder extends InteractionHolder<ButtonInteractionEv
 
             m.addComponent(ActionRow.of(buttons));
         });
+
+        expired = true;
     }
 }

@@ -54,6 +54,8 @@ public class FormButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
                 expired = true;
 
                 author.getAuthor().ifPresent(u -> StaticStore.removeHolder(u.getId().asString(), FormButtonHolder.this));
+
+                expire("");
             }
         }, FIVE_MIN);
     }
@@ -152,5 +154,7 @@ public class FormButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
 
             m.addComponent(ActionRow.of(buttons));
         });
+
+        expired = true;
     }
 }
