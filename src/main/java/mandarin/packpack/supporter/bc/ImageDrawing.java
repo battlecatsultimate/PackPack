@@ -746,7 +746,7 @@ public class ImageDrawing {
                         if(fi.getWidth() == 1 && fi.getHeight() == 1)
                             continue;
 
-                        RawPointGetter getter = new RawPointGetter(fi.getHeight(), fi.getHeight());
+                        RawPointGetter getter = new RawPointGetter(fi.getWidth(), fi.getHeight());
 
                         getter.apply(anim.getOrder()[k], siz, false);
 
