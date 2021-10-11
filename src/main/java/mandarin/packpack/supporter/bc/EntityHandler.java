@@ -2557,7 +2557,7 @@ public class EntityHandler {
         }
 
         for(int i = 0; i < 5; i++) {
-            if(c.forms[i] == null)
+            if(i >= c.forms.length || c.forms[i] == null)
                 continue;
 
             Unit u = c.forms[i].unit;

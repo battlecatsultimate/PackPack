@@ -20,6 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
 
 public class EntityFilter {
@@ -1361,62 +1362,60 @@ public class EntityFilter {
     public static ArrayList<Combo> filterComboWithUnit(Form f, String cName) {
         ArrayList<Combo> result = new ArrayList<>();
 
-        for(int i = 0; i < CommonStatic.getBCAssets().combos.length; i++) {
-            Combo[] combos = CommonStatic.getBCAssets().combos[i];
+        List<Combo> fullCombo = UserProfile.getBCData().combos.getList();
 
-            for(int j = 0; j < combos.length; j++) {
-                Combo c = combos[j];
+        for(int i = 0; i < fullCombo.size(); i++) {
+            Combo c = fullCombo.get(i);
 
-                if(f == null) {
-                    if(cName != null) {
-                        for(int l = 0; l < 4; l++) {
-                            int oldConfig = CommonStatic.getConfig().lang;
-                            CommonStatic.getConfig().lang = l;
+            if(f == null) {
+                if(cName != null) {
+                    for(int l = 0; l < 4; l++) {
+                        int oldConfig = CommonStatic.getConfig().lang;
+                        CommonStatic.getConfig().lang = l;
 
-                            String comboName = MultiLangCont.getStatic().COMNAME.getCont(c) + " | " + DataToString.getComboType(c, l);
+                        String comboName = MultiLangCont.getStatic().COMNAME.getCont(c) + " | " + DataToString.getComboType(c, l);
 
-                            CommonStatic.getConfig().lang = oldConfig;
+                        CommonStatic.getConfig().lang = oldConfig;
 
-                            if(comboName.toLowerCase(Locale.ENGLISH).contains(cName.toLowerCase(Locale.ENGLISH))) {
-                                result.add(c);
-                                break;
-                            }
+                        if(comboName.toLowerCase(Locale.ENGLISH).contains(cName.toLowerCase(Locale.ENGLISH))) {
+                            result.add(c);
+                            break;
                         }
-                    } else {
-                        result.add(c);
                     }
                 } else {
-                    for(int k = 0; k < 5; k++) {
-                        boolean added = false;
+                    result.add(c);
+                }
+            } else {
+                for(int k = 0; k < 5; k++) {
+                    boolean added = false;
 
-                        if(c.forms[k] == null || c.forms[k].unit == null)
-                            continue;
+                    if(k >= c.forms.length || c.forms[k] == null || c.forms[k].unit == null)
+                        continue;
 
-                        if(c.forms[k].unit.id.id == f.unit.id.id && c.forms[k].fid <= f.fid) {
-                            if(cName != null) {
-                                for(int l = 0; l < 4; l++) {
-                                    int oldConfig = CommonStatic.getConfig().lang;
-                                    CommonStatic.getConfig().lang = l;
+                    if(c.forms[k].unit.id.id == f.unit.id.id && c.forms[k].fid <= f.fid) {
+                        if(cName != null) {
+                            for(int l = 0; l < 4; l++) {
+                                int oldConfig = CommonStatic.getConfig().lang;
+                                CommonStatic.getConfig().lang = l;
 
-                                    String comboName = MultiLangCont.getStatic().COMNAME.getCont(c) + " | " + DataToString.getComboType(c, l);
+                                String comboName = MultiLangCont.getStatic().COMNAME.getCont(c) + " | " + DataToString.getComboType(c, l);
 
-                                    CommonStatic.getConfig().lang = oldConfig;
+                                CommonStatic.getConfig().lang = oldConfig;
 
-                                    if(comboName.toLowerCase(Locale.ENGLISH).contains(cName.toLowerCase(Locale.ENGLISH))) {
-                                        result.add(c);
-                                        added = true;
-                                        break;
-                                    }
+                                if(comboName.toLowerCase(Locale.ENGLISH).contains(cName.toLowerCase(Locale.ENGLISH))) {
+                                    result.add(c);
+                                    added = true;
+                                    break;
                                 }
-                            } else {
-                                result.add(c);
-                                added = true;
                             }
+                        } else {
+                            result.add(c);
+                            added = true;
                         }
-
-                        if(added)
-                            break;
                     }
+
+                    if(added)
+                        break;
                 }
             }
         }
