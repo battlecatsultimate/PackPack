@@ -456,7 +456,7 @@
   "enemyst_noenemy" : "Searching with _, but no such enemy found!",
   "castle_more" : "It seems there isn't id in command!\nUsage : `_castle [ID]`",
   "castle_number" : "ID must be number!",
-  "castle_result" : "Uploaded _-|",
+  "castle_result" : "Uploaded _CCC_-_III_\nBoss spawn point = _BBB_",
   "castle_argu" : "This command requires one more argument : [ID]",
   "stinfo_mc" : "Map Collection : _",
   "stinfo_stm" : "Stage Map : _",

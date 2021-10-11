@@ -454,7 +454,7 @@
   "enemyst_noenemy" : "_로 검색을 시도해 보았지만, 해당 적을 찾지 못했습니다!",
   "castle_more" : "명령어에 ID가 없는거 같습니다!\n용도 : `_castle [ID]`",
   "castle_number" : "ID는 숫자여야만 합니다!",
-  "castle_result" : "_-| 업로드 성공",
+  "castle_result" : "_CCC_-_III_ 업로드 성공\n보스 스폰 위치 = _BBB_",
   "castle_argu" : "해당 명령어는 하나의 정보를 더 요구합니다 : [ID]",
   "stinfo_mc" : "맵 콜래션 : _",
   "stinfo_stm" : "맵 : _",

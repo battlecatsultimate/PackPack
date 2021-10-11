@@ -116,7 +116,7 @@ public class Castle extends ConstraintCommand {
                 else
                     castleCode = "SC";
 
-                w.setContent(LangID.getStringByID("castle_result", finalLang).replace("_", castleCode).replace("|", Data.trio(finalId)));
+                w.setContent(LangID.getStringByID("castle_result", finalLang).replace("_CCC_", castleCode).replace("_III_", Data.trio(finalId)).replace("_BBB_", cs.boss_spawn+""));
                 w.addFile("result.png", fis, img);
             });
         }
@@ -235,7 +235,7 @@ public class Castle extends ConstraintCommand {
                 else
                     castleCode = "SC";
 
-                m.content(LangID.getStringByID("castle_result", lang).replace("_", castleCode).replace("|", Data.trio(finalId)));
+                m.content(LangID.getStringByID("castle_result", lang).replace("_CCC_", castleCode).replace("_III_", Data.trio(finalId)).replace("_BBB_", cs.boss_spawn+""));
                 m.addFile("Result.png", fis);
             }, () -> {
                 try {
@@ -326,7 +326,7 @@ public class Castle extends ConstraintCommand {
                     else
                         castleCode = "SC";
 
-                    m.content(LangID.getStringByID("castle_result", lang).replace("_", castleCode).replace("|", Data.trio(finalId)));
+                    m.content(LangID.getStringByID("castle_result", lang).replace("_CCC_", castleCode).replace("_III_", Data.trio(finalId)).replace("_BBB_", image.boss_spawn+""));
                     m.addFile("Result.png", fis);
                 }, () -> {
                     try {
