@@ -1373,7 +1373,7 @@ public class EntityFilter {
                             int oldConfig = CommonStatic.getConfig().lang;
                             CommonStatic.getConfig().lang = l;
 
-                            String comboName = MultiLangCont.getStatic().COMNAME.getCont(c.name) + " | " + DataToString.getComboType(c, l);
+                            String comboName = MultiLangCont.getStatic().COMNAME.getCont(c) + " | " + DataToString.getComboType(c, l);
 
                             CommonStatic.getConfig().lang = oldConfig;
 
@@ -1389,16 +1389,16 @@ public class EntityFilter {
                     for(int k = 0; k < 5; k++) {
                         boolean added = false;
 
-                        if(c.units.get(k) == null || c.units.get(k).unit == null)
+                        if(c.forms[k] == null || c.forms[k].unit == null)
                             continue;
 
-                        if(c.units.get(k).unit.id.id == f.unit.id.id && c.units.get(k).fid <= f.fid) {
+                        if(c.forms[k].unit.id.id == f.unit.id.id && c.forms[k].fid <= f.fid) {
                             if(cName != null) {
                                 for(int l = 0; l < 4; l++) {
                                     int oldConfig = CommonStatic.getConfig().lang;
                                     CommonStatic.getConfig().lang = l;
 
-                                    String comboName = MultiLangCont.getStatic().COMNAME.getCont(c.name) + " | " + DataToString.getComboType(c, l);
+                                    String comboName = MultiLangCont.getStatic().COMNAME.getCont(c) + " | " + DataToString.getComboType(c, l);
 
                                     CommonStatic.getConfig().lang = oldConfig;
 
@@ -1421,7 +1421,7 @@ public class EntityFilter {
             }
         }
 
-        result.sort(Comparator.comparingInt(c -> c.id));
+        result.sort(Comparator.comparingInt(c -> c.id.id));
 
         return result;
     }

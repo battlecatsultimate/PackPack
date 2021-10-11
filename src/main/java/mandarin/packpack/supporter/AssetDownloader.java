@@ -13,6 +13,7 @@ import common.util.lang.MultiLangCont;
 import common.util.stage.MapColc;
 import common.util.stage.Stage;
 import common.util.stage.StageMap;
+import common.util.unit.Combo;
 import common.util.unit.Enemy;
 import common.util.unit.Unit;
 import mandarin.packpack.supporter.awt.PCIB;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 
+@SuppressWarnings("ForLoopReplaceableByForEach")
 public class AssetDownloader {
     private static final String[] folder = {"bot/", "jp/", "kr/", "zh/", "fr/", "it/", "es/", "de/"};
     private static final String[] file = {"EnemyName.txt", "StageName.txt", "UnitName.txt", "UnitExplanation.txt", "EnemyExplanation.txt", "CatFruitExplanation.txt", "RewardName.txt", "ComboName.txt", "MedalName.txt", "MedalExplanation.txt"};
@@ -237,9 +239,15 @@ public class AssetDownloader {
                                     continue;
 
                                 int id = Integer.parseInt(str[0].trim());
+
+                                Combo c = findComboWithID(id);
+
+                                if(c == null)
+                                    continue;
+
                                 String name = str[1].trim();
 
-                                MultiLangCont.getStatic().COMNAME.put(f, id, name);
+                                MultiLangCont.getStatic().COMNAME.put(f, c, name);
                             }
                             break;
                         case "EnemyName.txt":
@@ -456,5 +464,16 @@ public class AssetDownloader {
                 }
             }
         }
+    }
+
+    private static Combo findComboWithID(int id) {
+        List<Combo> combos = UserProfile.getBCData().combos.getList();
+
+        for(int i = 0; i < combos.size(); i++) {
+            if(Integer.parseInt(combos.get(i).name) == id)
+                return combos.get(i);
+        }
+
+        return null;
     }
 }

@@ -479,9 +479,9 @@ public class DataToString {
 
         MaskUnit du;
 
-        if(lvs != null && f.getPCoin() != null) {
+        if(lvs != null && f.du.getPCoin() != null) {
             if(talent)
-                du = f.getPCoin().improve(lvs);
+                du = f.du.getPCoin().improve(lvs);
             else
                 du = f.du;
         } else
@@ -500,8 +500,8 @@ public class DataToString {
 
         MaskUnit du;
 
-        if(f.getPCoin() != null && talent)
-            du = f.getPCoin().improve(lvs);
+        if(f.du.getPCoin() != null && talent)
+            du = f.du.getPCoin().improve(lvs);
         else
             du = f.du;
 
@@ -529,8 +529,8 @@ public class DataToString {
         int[][] raw = du.rawAtkData();
 
         for(int[] atk : raw) {
-            if(f.getPCoin() != null && talent) {
-                result += (int) ((int) (Math.round(atk[0] * f.unit.lv.getMult(lvs[0])) * t.getAtkMulti()) * f.getPCoin().getAtkMultiplication(lvs));
+            if(f.du.getPCoin() != null && talent) {
+                result += (int) ((int) (Math.round(atk[0] * f.unit.lv.getMult(lvs[0])) * t.getAtkMulti()) * f.du.getPCoin().getAtkMultiplication(lvs));
             } else {
                 result += (int) (Math.round(atk[0] * f.unit.lv.getMult(lvs[0])) * t.getAtkMulti());
             }
@@ -567,8 +567,8 @@ public class DataToString {
         for(int[] atk : raw) {
             int result;
 
-            if(f.getPCoin() != null && talent) {
-                result = (int) ((int) (Math.round(atk[0] * f.unit.lv.getMult(lvs[0])) * t.getAtkMulti()) * f.getPCoin().getAtkMultiplication(lvs));
+            if(f.du.getPCoin() != null && talent) {
+                result = (int) ((int) (Math.round(atk[0] * f.unit.lv.getMult(lvs[0])) * t.getAtkMulti()) * f.du.getPCoin().getAtkMultiplication(lvs));
             } else {
                 result = (int) (Math.round(atk[0] * f.unit.lv.getMult(lvs[0])) * t.getAtkMulti());
             }
@@ -618,9 +618,9 @@ public class DataToString {
 
         MaskUnit du;
 
-        if(lvs != null && f.getPCoin() != null)
+        if(lvs != null && f.du.getPCoin() != null)
             if(talent)
-                du = f.getPCoin().improve(lvs);
+                du = f.du.getPCoin().improve(lvs);
             else
                 du = f.du;
         else
@@ -642,9 +642,9 @@ public class DataToString {
 
         MaskUnit du;
 
-        if(lvs != null && f.getPCoin() != null)
+        if(lvs != null && f.du.getPCoin() != null)
             if(talent)
-                du = f.getPCoin().improve(lvs);
+                du = f.du.getPCoin().improve(lvs);
             else
                 du = f.du;
         else
@@ -666,9 +666,9 @@ public class DataToString {
 
         MaskUnit du;
 
-        if(lvs != null && f.getPCoin() != null)
+        if(lvs != null && f.du.getPCoin() != null)
             if(talent)
-                du = f.getPCoin().improve(lvs);
+                du = f.du.getPCoin().improve(lvs);
             else
                 du = f.du;
         else
@@ -690,8 +690,8 @@ public class DataToString {
 
         MaskUnit du;
 
-        if(f.getPCoin() != null && talent)
-            du = f.getPCoin().improve(lvs);
+        if(f.du.getPCoin() != null && talent)
+            du = f.du.getPCoin().improve(lvs);
         else
             du = f.du;
 
@@ -699,8 +699,8 @@ public class DataToString {
 
         int result;
 
-        if(f.getPCoin() != null && talent) {
-            result = (int) ((int) (Math.round(du.getHp() * f.unit.lv.getMult(lvs[0])) * t.getDefMulti()) * f.getPCoin().getHPMultiplication(lvs));
+        if(f.du.getPCoin() != null && talent) {
+            result = (int) ((int) (Math.round(du.getHp() * f.unit.lv.getMult(lvs[0])) * t.getDefMulti()) * f.du.getPCoin().getHPMultiplication(lvs));
         } else {
             result = (int) (Math.round(du.getHp() * f.unit.lv.getMult(lvs[0])) * t.getDefMulti());
         }
@@ -721,9 +721,9 @@ public class DataToString {
 
         MaskUnit du;
 
-        if(lvs != null & f.getPCoin() != null)
+        if(lvs != null & f.du.getPCoin() != null)
             if(talent)
-                du = f.getPCoin().improve(lvs);
+                du = f.du.getPCoin().improve(lvs);
             else
                 du = f.du;
         else
@@ -740,7 +740,7 @@ public class DataToString {
         }
         allTrait.append(LangID.getStringByID("data_white", lang)).append(", ").append(allColor);
 
-        String trait = Interpret.getTrait(du.getType(), 0, lang);
+        String trait = Interpret.getTrait(du.getTraits(), 0, lang);
 
         if(trait.isBlank())
             trait = LangID.getStringByID("data_none", lang);
@@ -772,7 +772,7 @@ public class DataToString {
         }
         allTrait.append(LangID.getStringByID("data_white", lang)).append(", ").append(allColor);
 
-        String trait = Interpret.getTrait(e.de.getType(), e.de.getStar(), lang);
+        String trait = Interpret.getTrait(e.de.getTraits(), e.de.getStar(), lang);
 
         if(trait.isBlank())
             trait = LangID.getStringByID("data_none", lang);
@@ -795,9 +795,9 @@ public class DataToString {
 
         MaskUnit du;
 
-        if(lvs != null & f.getPCoin() != null)
+        if(lvs != null & f.du.getPCoin() != null)
             if(talent)
-                du = f.getPCoin().improve(lvs);
+                du = f.du.getPCoin().improve(lvs);
             else
                 du = f.du;
         else
@@ -836,17 +836,17 @@ public class DataToString {
     }
 
     public static String getTalent(Form f, int[] lv, int lang) {
-        if(f == null || f.getPCoin() == null)
+        if(f == null || f.du.getPCoin() == null)
             return LangID.getStringByID("data_notalent", lang);
 
-        int[][] info = f.getPCoin().info;
+        ArrayList<int[]> info = f.du.getPCoin().info;
 
         StringBuilder sb = new StringBuilder(LangID.getStringByID("data_talen", lang));
 
-        if(f.getPCoin().type != 0) {
+        if(f.du.getPCoin().trait.size() != 0) {
             sb.append("[");
 
-            String trait = Interpret.getTrait(f.getPCoin().type, 0, lang);
+            String trait = Interpret.getTrait(f.du.getPCoin().trait, 0, lang);
 
             if(trait.endsWith(", "))
                 trait = trait.substring(0, trait.length() - 2);
@@ -854,8 +854,8 @@ public class DataToString {
             sb.append(trait).append("] ");
         }
 
-        for(int i = 0; i < info.length; i++) {
-            int[] data = info[i];
+        for(int i = 0; i < info.size(); i++) {
+            int[] data = info.get(i);
 
             if(talentText.containsKey(data[0])) {
                 sb.append(LangID.getStringByID(talentText.get(data[0]), lang)).append(" [").append(lv[i+1]).append("]");
@@ -863,7 +863,7 @@ public class DataToString {
                 sb.append("??? [").append(lv[i+1]).append("]");
             }
 
-            if(i != info.length - 1)
+            if(i != info.size() - 1)
                 sb.append(", ");
         }
 
@@ -874,10 +874,10 @@ public class DataToString {
         if(e == null || e.de == null)
             return "";
 
-        if(e.de.getShield() == 0)
+        if(e.de.getProc().BARRIER.health == 0)
             return LangID.getStringByID("data_none", lang);
         else
-            return String.valueOf(e.de.getShield());
+            return String.valueOf(e.de.getProc().BARRIER.health);
     }
 
     public static String getMagnification(int[] mag, int star) {

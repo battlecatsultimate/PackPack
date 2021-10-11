@@ -123,8 +123,8 @@ public class EntityHandler {
 
             int[] t;
 
-            if(talent && f.getPCoin() != null) {
-                t = f.getPCoin().max;
+            if(talent && f.du.getPCoin() != null) {
+                t = f.du.getPCoin().max;
                 t[0] = lv[0];
             } else
                 t = null;
@@ -136,7 +136,7 @@ public class EntityHandler {
 
             spec.setTitle(DataToString.getTitle(f, lang));
 
-            if(talent && f.getPCoin() != null && talentExists(t)) {
+            if(talent && f.du.getPCoin() != null && talentExists(t)) {
                 spec.setDescription(LangID.getStringByID("data_talent", lang));
             }
 
@@ -162,16 +162,16 @@ public class EntityHandler {
 
             MaskUnit du;
 
-            if(f.getPCoin() != null)
+            if(f.du.getPCoin() != null)
                 if(talent)
-                    du = f.getPCoin().improve(t);
+                    du = f.du.getPCoin().improve(t);
                 else
                     du = f.du;
             else
                 du = f.du;
 
             ArrayList<String> abis = Interpret.getAbi(du, lang);
-            abis.addAll(Interpret.getProc(du, !isFrame, lang, 1.0));
+            abis.addAll(Interpret.getProc(du, !isFrame, lang, 1.0, 1.0));
 
             StringBuilder sb = new StringBuilder();
 
@@ -287,8 +287,8 @@ public class EntityHandler {
 
                 int[] t;
 
-                if(talent && f.getPCoin() != null) {
-                    t = f.getPCoin().max;
+                if(talent && f.du.getPCoin() != null) {
+                    t = f.du.getPCoin().max;
                     t[0] = lv[0];
                 } else
                     t = null;
@@ -300,7 +300,7 @@ public class EntityHandler {
 
                 spec.title(DataToString.getTitle(f, lang));
 
-                if(talent && f.getPCoin() != null && talentExists(t)) {
+                if(talent && f.du.getPCoin() != null && talentExists(t)) {
                     spec.description(LangID.getStringByID("data_talent", lang));
                 }
 
@@ -326,16 +326,16 @@ public class EntityHandler {
 
                 MaskUnit du;
 
-                if(f.getPCoin() != null)
+                if(f.du.getPCoin() != null)
                     if(talent)
-                        du = f.getPCoin().improve(t);
+                        du = f.du.getPCoin().improve(t);
                     else
                         du = f.du;
                 else
                     du = f.du;
 
                 ArrayList<String> abis = Interpret.getAbi(du, lang);
-                abis.addAll(Interpret.getProc(du, !isFrame, lang, 1.0));
+                abis.addAll(Interpret.getProc(du, !isFrame, lang, 1.0, 1.0));
 
                 StringBuilder sb = new StringBuilder();
 
@@ -521,7 +521,7 @@ public class EntityHandler {
                 spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(e), true);
 
                 ArrayList<String> abis = Interpret.getAbi(e.de, lang);
-                abis.addAll(Interpret.getProc(e.de, !isFrame, lang, mag[0] / 100.0));
+                abis.addAll(Interpret.getProc(e.de, !isFrame, lang, mag[0] / 100.0, mag[1] / 100.0));
 
                 StringBuilder sb = new StringBuilder();
 
@@ -626,7 +626,7 @@ public class EntityHandler {
             spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(e), true);
 
             ArrayList<String> abis = Interpret.getAbi(e.de, lang);
-            abis.addAll(Interpret.getProc(e.de, !isFrame, lang, mag[0] / 100.0));
+            abis.addAll(Interpret.getProc(e.de, !isFrame, lang, mag[0] / 100.0, mag[1] / 100.0));
 
             StringBuilder sb = new StringBuilder();
 
@@ -2467,7 +2467,7 @@ public class EntityHandler {
                 int oldConfig = CommonStatic.getConfig().lang;
                 CommonStatic.getConfig().lang = lang;
 
-                String comboName = MultiLangCont.getStatic().COMNAME.getCont(c.name);
+                String comboName = MultiLangCont.getStatic().COMNAME.getCont(c);
 
                 CommonStatic.getConfig().lang = oldConfig;
 
@@ -2557,15 +2557,15 @@ public class EntityHandler {
         }
 
         for(int i = 0; i < 5; i++) {
-            if(c.units.get(i) == null)
+            if(c.forms[i] == null)
                 continue;
 
-            Unit u = c.units.get(i).unit;
+            Unit u = c.forms[i].unit;
 
             if(u == null)
                 continue;
 
-            Form f = c.units.get(i);
+            Form f = c.forms[i];
 
             f.anim.load();
 

@@ -227,13 +227,13 @@ public class ComboFormMessageHolder extends MessageHolder<MessageCreateEvent> {
 
                         Combo c = combos.get(i);
 
-                        String comboName = Data.trio(c.name) + " ";
+                        String comboName = Data.trio(Integer.parseInt(c.name)) + " ";
 
                         int oldConfig = CommonStatic.getConfig().lang;
                         CommonStatic.getConfig().lang = lang;
 
-                        if(MultiLangCont.getStatic().COMNAME.getCont(c.name) != null)
-                            comboName += MultiLangCont.getStatic().COMNAME.getCont(c.name) + " | " + DataToString.getComboType(c, lang);
+                        if(MultiLangCont.getStatic().COMNAME.getCont(c) != null)
+                            comboName += MultiLangCont.getStatic().COMNAME.getCont(c) + " | " + DataToString.getComboType(c, lang);
 
                         CommonStatic.getConfig().lang = oldConfig;
 

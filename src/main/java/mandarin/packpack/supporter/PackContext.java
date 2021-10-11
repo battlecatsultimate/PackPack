@@ -1,6 +1,7 @@
 package mandarin.packpack.supporter;
 
 import common.CommonStatic;
+import common.io.Backup;
 import common.io.PackLoader;
 import common.io.assets.Admin;
 import common.pack.Context;
@@ -8,6 +9,7 @@ import common.pack.Context;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.function.Consumer;
 
 public class PackContext implements Context {
 
@@ -59,6 +61,16 @@ public class PackContext implements Context {
     }
 
     @Override
+    public File getBackupFile(String string) {
+        return null;
+    }
+
+    @Override
+    public String getAuthor() {
+        return null;
+    }
+
+    @Override
     public void initProfile() {
     }
 
@@ -82,6 +94,11 @@ public class PackContext implements Context {
     @Override
     public void loadProg(String str) {
 
+    }
+
+    @Override
+    public boolean restore(Backup b, Consumer<Double> prog) {
+        return false;
     }
 
 }

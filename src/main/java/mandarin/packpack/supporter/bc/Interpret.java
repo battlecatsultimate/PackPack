@@ -4,13 +4,17 @@ import common.CommonStatic;
 import common.battle.data.MaskAtk;
 import common.battle.data.MaskEntity;
 import common.battle.data.MaskUnit;
+import common.pack.Identifier;
 import common.util.Data;
 import common.util.lang.Formatter;
 import common.util.lang.ProcLang;
+import common.util.unit.Trait;
 import mandarin.packpack.supporter.lang.LangID;
 
 import java.util.ArrayList;
+import java.util.List;
 
+@SuppressWarnings("ForLoopReplaceableByForEach")
 public class Interpret extends Data {
     public static final String[] TRAIT = {"data_red", "data_float", "data_black", "data_metal", "data_angel", "data_alien", "data_zombie", "data_demon", "data_relic", "data_white", "data_eva", "data_witch"};
 
@@ -33,19 +37,26 @@ public class Interpret extends Data {
 
     private static final int[] traitMask = {0, 1, 2, 3, 4, 5, 6, 12, 7, 8, 9, 10};
 
-    public static String getTrait(int type, int star, int lang) {
+    public static String getTrait(List<Trait> traits, int star, int lang) {
         StringBuilder res = new StringBuilder();
 
-        for(int i = 0; i < TRAIT.length; i++) {
-            if(((type >> traitMask[i]) & 1) > 0)
-                if(i == 6 && star == 1)
-                    res.append(LangID.getStringByID(TRAIT[i], lang))
-                    .append(" (")
-                    .append(LangID.getStringByID("data_starred", lang))
-                    .append("), ");
-                else
-                    res.append(LangID.getStringByID(TRAIT[i], lang))
-                    .append(", ");
+        for(int i = 0; i < traits.size(); i++) {
+            Trait trait = traits.get(i);
+
+            if(trait.id.pack.equals(Identifier.DEF)) {
+                if(trait.id.id == 6 && star == 1) {
+                    res.append(LangID.getStringByID(TRAIT[trait.id.id], lang))
+                            .append(" (")
+                            .append(LangID.getStringByID("data_starred", lang))
+                            .append("), ");
+                } else {
+                    res.append(LangID.getStringByID(TRAIT[trait.id.id], lang))
+                            .append(", ");
+                }
+            } else {
+                res.append(trait.name)
+                        .append(", ");
+            }
         }
 
         return res.toString();
@@ -118,12 +129,12 @@ public class Interpret extends Data {
         return l;
     }
 
-    public static ArrayList<String> getProc(MaskEntity du, boolean useSecond, int lang, double multi) {
+    public static ArrayList<String> getProc(MaskEntity du, boolean useSecond, int lang, double multi, double amulti) {
         ArrayList<String> l = new ArrayList<>();
         ArrayList<Integer> id = new ArrayList<>();
 
         MaskAtk mr = du.getRepAtk();
-        Formatter.Context c = new Formatter.Context(true, useSecond, multi);
+        Formatter.Context c = new Formatter.Context(true, useSecond, new double[] { multi, amulti });
 
         for(int i = 0; i < PROCIND.length; i++) {
             if(isValidProc(i, mr)) {
