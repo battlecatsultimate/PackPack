@@ -3,6 +3,7 @@ package mandarin.packpack.supporter.bc;
 import common.CommonStatic;
 import common.system.P;
 import common.util.anim.EPart;
+import common.util.anim.MaModel;
 
 public class RawPointGetter {
     P rightUp, rightDown, leftUp, leftDown, center;
@@ -135,6 +136,32 @@ public class RawPointGetter {
         return getSize(p.getFa()).times(new P(p.getVal(9), p.getVal(10))).times(p.getVal(8) * mi * mi);
     }
 
+    public P getBaseSize(EPart p, MaModel model, boolean parent) {
+        if(model.confs.length > 0) {
+            if(parent) {
+                if(p.getFa() != null) {
+                    return getBaseSize(p.getFa(), model, true).times(Math.signum(model.parts[p.getInd()][8]), Math.signum(model.parts[p.getInd()][9]));
+                } else {
+                    return P.newP(Math.signum(model.parts[p.getInd()][8]), Math.signum(model.parts[p.getInd()][9]));
+                }
+            } else {
+                double mi = 1.0 / model.ints[0];
+
+                if(model.confs[0][0] == -1) {
+                    return P.newP(model.parts[0][8] * mi, model.parts[0][9] * mi);
+                } else {
+                    if(model.confs[0][0] == p.getInd()) {
+                        return P.newP(model.parts[model.confs[0][0]][8] * mi, model.parts[model.confs[0][0]][9] * mi);
+                    } else {
+                        return getBaseSize(p.getParts()[model.confs[0][0]], model, true).times(model.parts[model.confs[0][0]][8] * mi, model.parts[model.confs[0][0]][9] * mi);
+                    }
+                }
+            }
+        } else {
+            return P.newP(1.0, 1.0);
+        }
+    }
+
     public void apply(EPart p, double size, boolean parent) {
         if(p.opa() <  CommonStatic.getConfig().deadOpa * 0.01 + 1e-5) {
             rightUp = new P(0, 0);
@@ -161,16 +188,21 @@ public class RawPointGetter {
         } else {
             if(p.getModel().confs.length > 0) {
                 int[] data = p.getModel().confs[0];
-                P p0 = getSize(p);
-                P shi = new P(data[2], data[3]).times(p0);
-                P p3 = shi.times(siz);
-                translate(-p3.x, -p3.y);
+                P p0 = getBaseSize(p, p.getModel(), false);
+
+                P shi = P.newP(data[2], data[3]).times(p0).times(siz);
+                P.delete(p0);
+                translate(-shi.x, -shi.y);
+                P.delete(shi);
             }
 
             P p0 = getSize(p);
-            P p1 = new P(p.getVal(6), p.getVal(7)).times(p0).times(siz);
+            P p1 = P.newP(p.getVal(6), p.getVal(7)).times(p0).times(siz);
 
             translate(p1.x, p1.y);
+
+            P.delete(p0);
+            P.delete(p1);
         }
 
         if(p.getVal(11) != 0) {
@@ -178,12 +210,15 @@ public class RawPointGetter {
         }
 
         if(!parent) {
-            P piv = new P(p.getVal(6), p.getVal(7));
+            P piv = P.newP(p.getVal(6), p.getVal(7));
             P scale = getSize(p);
 
             translatePivot(piv.x, piv.y);
             finalSize(scale.x, scale.y);
             wholeScale(size);
+
+            P.delete(piv);
+            P.delete(scale);
         }
     }
 
