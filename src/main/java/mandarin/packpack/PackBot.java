@@ -11,9 +11,6 @@ import discord4j.core.event.domain.channel.TextChannelDeleteEvent;
 import discord4j.core.event.domain.guild.GuildCreateEvent;
 import discord4j.core.event.domain.guild.GuildDeleteEvent;
 import discord4j.core.event.domain.guild.MemberUpdateEvent;
-import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
-import discord4j.core.event.domain.interaction.ComponentInteractionEvent;
-import discord4j.core.event.domain.interaction.InteractionCreateEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
@@ -23,7 +20,8 @@ import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.Role;
 import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.core.object.presence.*;
+import discord4j.core.object.presence.ClientActivity;
+import discord4j.core.object.presence.ClientPresence;
 import discord4j.core.spec.RoleCreateSpec;
 import discord4j.rest.request.RouterOptions;
 import mandarin.packpack.commands.*;
@@ -44,12 +42,11 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.data.BoosterData;
 import mandarin.packpack.supporter.server.data.BoosterHolder;
+import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.FormReactionMessageHolder;
 import mandarin.packpack.supporter.server.holder.Holder;
-import mandarin.packpack.supporter.server.holder.InteractionHolder;
 import mandarin.packpack.supporter.server.holder.MessageHolder;
 import mandarin.packpack.supporter.server.slash.SlashBuilder;
-import mandarin.packpack.supporter.server.data.IDHolder;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -826,6 +823,7 @@ public class PackBot {
     public static void initialize(String... arg) {
         if(!StaticStore.initialized) {
             CommonStatic.ctx = new PackContext();
+            CommonStatic.getConfig().ref = false;
 
             if(arg.length >= 2) {
                 StaticStore.imgur.registerClient(arg[1]);

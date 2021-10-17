@@ -7,6 +7,7 @@ import common.system.fake.FakeImage;
 import common.util.anim.AnimU;
 import common.util.anim.EAnimD;
 import common.util.pack.Background;
+import common.util.pack.bgeffect.BackgroundEffect;
 import discord4j.core.object.entity.Message;
 import discord4j.discordjson.possible.Possible;
 import mandarin.packpack.commands.Command;
@@ -27,7 +28,43 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 public class ImageDrawing {
-    public static File drawBGImage(Background bg, int w, int h) throws Exception {
+    private static final int bgAnimTime = 450;
+    private static final int bgAnimHeight = 720;
+    private static final double bgAnimRatio = bgAnimHeight * 0.8 / 2 / 512.0;
+    private static final int[] preferredBGAnimWidth = {
+            5000,
+            5000,
+            5000,
+            5000,
+            5000,
+            5000,
+            5000,
+            5000,
+            5000,
+            5000,
+            5000,
+            3900,
+            4400,
+            5000,
+            3900,
+            5400,
+            4400,
+            5400,
+            3900,
+            3900,
+            5400,
+            4600,
+            3600,
+            4400,
+            4100,
+            5400,
+            5400,
+            4700,
+            6200,
+            5400
+    };
+
+    public static File drawBGImage(Background bg, int w, int h, boolean eff) throws Exception {
         File temp = new File("./temp");
 
         if(!temp.exists()) {
@@ -57,9 +94,8 @@ public class ImageDrawing {
         g.enableAntialiasing();
 
         double groundRatio = 0.1;
-        double skyRatio = 0.1;
 
-        double ratio = h * (1.0 - groundRatio - skyRatio) / 2.0 / 512.0;
+        double ratio = h * (1.0 - groundRatio * 2) / 2.0 / 512.0;
 
         int groundHeight = (int) (groundRatio * h);
 
@@ -67,7 +103,7 @@ public class ImageDrawing {
 
         g.gradRect(0, h - groundHeight, w, groundHeight, 0, h - groundHeight, bg.cs[2], 0, h, bg.cs[3]);
 
-        int pos = (int) ((-bg.parts[Background.BG].getWidth()+256) * ratio);
+        int pos = (int) ((-bg.parts[Background.BG].getWidth()+200) * ratio);
 
         int y = h - groundHeight;
 
@@ -100,9 +136,209 @@ public class ImageDrawing {
             g.gradRect(0, 0, w, h - groundHeight - lowHeight, 0, 0, bg.cs[0], 0, h - groundHeight - lowHeight, bg.cs[1]);
         }
 
+        if(eff && bg.effect != -1) {
+            BackgroundEffect effect = CommonStatic.getBCAssets().bgEffects.get(bg.effect);
+
+            int len = (int) ((w / ratio - 400) / CommonStatic.BattleConst.ratio);
+            double bgHeight = h / ratio;
+            double midH = h * groundRatio / ratio;
+
+            effect.initialize(len, bgHeight, midH, bg);
+
+            for(int i = 0; i < 30; i++) {
+                effect.update(len, bgHeight, midH);
+            }
+
+            P base = P.newP(0, BackgroundEffect.BGHeight * 3 * ratio - h * 0.9);
+
+            effect.preDraw(g, base, ratio, midH);
+            effect.postDraw(g, base, ratio, midH);
+
+            P.delete(base);
+        }
+
+        if(eff && bg.overlay != null) {
+            g.gradRectAlpha(0, 0, w, h, 0, 0, bg.overlayAlpha, bg.overlay[1], 0, h, bg.overlayAlpha, bg.overlay[0]);
+        }
+
         ImageIO.write(img, "PNG", image);
 
         return image;
+    }
+
+    public static File drawBGAnimEffect(Background bg, Message msg, int lang) throws Exception {
+        File temp = new File("./temp");
+
+        if(!temp.exists() && !temp.mkdirs()) {
+            StaticStore.logger.uploadLog("Can't create folder : "+temp.getAbsolutePath());
+            return null;
+        }
+
+        String folderName = StaticStore.findFileName(temp, "images", "");
+
+        File folder = new File("./temp", folderName);
+
+        if(!folder.exists() && !folder.mkdirs()) {
+            StaticStore.logger.uploadLog("Can't create folder : "+folder.getAbsolutePath());
+            return null;
+        }
+
+        File mp4 = new File("./temp", StaticStore.findFileName(temp, "result", ".mp4"));
+
+        if(!mp4.exists() && !mp4.createNewFile()) {
+            StaticStore.logger.uploadLog("Can't create file : "+mp4.getAbsolutePath());
+            return null;
+        }
+
+        int h = bgAnimHeight;
+        int w = (int) ((400 + preferredBGAnimWidth[bg.effect] * CommonStatic.BattleConst.ratio) * bgAnimRatio);
+
+        if(w % 2 == 1)
+            w -= 1;
+
+        double groundRatio = 0.1;
+
+        int groundHeight = (int) (groundRatio * h);
+
+        BackgroundEffect eff = CommonStatic.getBCAssets().bgEffects.get(bg.effect);
+
+        int len = (int) ((w / bgAnimRatio - 400) / CommonStatic.BattleConst.ratio);
+        double bgHeight = h / bgAnimRatio;
+        double midH = h * groundRatio / bgAnimRatio;
+
+        eff.initialize(len, bgHeight, midH, bg);
+
+        String cont = LangID.getStringByID("bg_dimen", lang).replace("_WWW_", w+"").replace("_HHH_", bgAnimHeight+"") +"\n\n"+
+                LangID.getStringByID("bg_prog", lang)
+                        .replace("_PPP_", "  0")
+                        .replace("_BBB_", getProgressBar(0))
+                        .replace("_VVV_", 0.0 + "")
+                        .replace("_SSS_", "-");
+
+        Command.editMessage(msg, m -> m.content(wrap(cont)));
+
+        long start = System.currentTimeMillis();
+        long current = System.currentTimeMillis();
+        final int finalW = w;
+
+        for(int i = 0; i < bgAnimTime; i++) {
+            if(System.currentTimeMillis() - current >= 1500) {
+                int finalI = i;
+
+                Command.editMessage(msg, m -> {
+                    String prog = DataToString.df.format(finalI * 100.0 / bgAnimTime);
+                    String eta = getETA(start, System.currentTimeMillis(), finalI);
+                    String ind = ""+finalI;
+                    String content = LangID.getStringByID("bg_dimen", lang).replace("_WWW_", finalW+"").replace("_HHH_", bgAnimHeight+"") +"\n\n"+
+                            LangID.getStringByID("bg_prog", lang)
+                                    .replace("_PPP_", " ".repeat(Math.max(0, 3 - ind.length()))+ind)
+                                    .replace("_BBB_", getProgressBar(finalI))
+                                    .replace("_VVV_", " ".repeat(Math.max(0, 6 - prog.length()))+prog)
+                                    .replace("_SSS_", " ".repeat(Math.max(0, 6 - eta.length()))+eta);
+
+                    m.content(wrap(content));
+                });
+
+                current = System.currentTimeMillis();
+            }
+
+            BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+            FG2D g = new FG2D(image.getGraphics());
+
+            g.setRenderingHint(3, 2);
+            g.enableAntialiasing();
+
+            bg.load();
+
+            g.gradRect(0, h - groundHeight, w, groundHeight, 0, h - groundHeight, bg.cs[2], 0, h, bg.cs[3]);
+
+            int pos = (int) ((-bg.parts[Background.BG].getWidth()+200) * bgAnimRatio);
+
+            int y = h - groundHeight;
+
+            int lowHeight = (int) (bg.parts[Background.BG].getHeight() * bgAnimRatio);
+            int lowWidth = (int) (bg.parts[Background.BG].getWidth() * bgAnimRatio);
+
+            while(pos < w) {
+                g.drawImage(bg.parts[Background.BG], pos, y - lowHeight, lowWidth, lowHeight);
+
+                pos += Math.max(1, (int) (bg.parts[0].getWidth() * bgAnimRatio));
+            }
+
+            if(bg.top) {
+                int topHeight = (int) (bg.parts[Background.TOP].getHeight() * bgAnimRatio);
+                int topWidth = (int) (bg.parts[Background.TOP].getWidth() * bgAnimRatio);
+
+                pos = (int) ((-bg.parts[Background.BG].getWidth() + 256) * bgAnimRatio);
+                y = h - groundHeight - lowHeight;
+
+                while(pos < w) {
+                    g.drawImage(bg.parts[Background.TOP], pos, y - topHeight, topWidth, topHeight);
+
+                    pos += Math.max(1, (int) (bg.parts[0].getWidth() * bgAnimRatio));
+                }
+
+                if(y - topHeight > 0) {
+                    g.gradRect(0, 0, w, h - groundHeight - lowHeight - topHeight, 0, 0, bg.cs[0], 0, h - groundHeight - lowHeight - topHeight, bg.cs[1]);
+                }
+            } else {
+                g.gradRect(0, 0, w, h - groundHeight - lowHeight, 0, 0, bg.cs[0], 0, h - groundHeight - lowHeight, bg.cs[1]);
+            }
+
+            P base = P.newP(0, BackgroundEffect.BGHeight * 3 * bgAnimRatio - h * 0.9);
+
+            eff.preDraw(g, base, bgAnimRatio, midH);
+            eff.postDraw(g, base, bgAnimRatio, midH);
+
+            P.delete(base);
+
+            if(bg.overlay != null) {
+                g.gradRectAlpha(0, 0, w, h, 0, 0, bg.overlayAlpha, bg.overlay[1], 0, h, bg.overlayAlpha, bg.overlay[0]);
+            }
+
+            File img = new File("./temp/"+folderName+"/", quad(i)+".png");
+
+            if(!img.exists() && !img.createNewFile()) {
+                StaticStore.logger.uploadLog("Can't create file : "+img.getAbsolutePath());
+                return null;
+            }
+
+            ImageIO.write(image, "PNG", img);
+
+            eff.update(len, bgHeight, midH);
+        }
+
+        Command.editMessage(msg, m -> {
+            String content = LangID.getStringByID("bg_dimen", lang).replace("_WWW_", finalW+"").replace("_HHH_", bgAnimHeight+"") +"\n\n"+
+                    LangID.getStringByID("bg_prog", lang)
+                            .replace("_PPP_", bgAnimTime +"")
+                            .replace("_BBB_", getProgressBar(bgAnimTime))
+                            .replace("_VVV_", "100.00")
+                            .replace("_SSS_", "0") + "\n\n"+
+                    LangID.getStringByID("bg_upload", lang);
+
+            m.content(wrap(content));
+        });
+
+        ProcessBuilder builder = new ProcessBuilder(SystemUtils.IS_OS_WINDOWS ? "data/ffmpeg/bin/ffmpeg" : "ffmpeg", "-r", "30", "-f", "image2", "-s", w+"x"+h,
+                "-i", "temp/"+folderName+"/%04d.png", "-vcodec", "libx264", "-crf", "25", "-pix_fmt", "yuv420p", "-y", "temp/"+mp4.getName());
+        builder.redirectErrorStream(true);
+
+        Process pro = builder.start();
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(pro.getInputStream()));
+
+        String line;
+
+        while((line = reader.readLine()) != null) {
+            System.out.println(line);
+        }
+
+        pro.waitFor();
+
+        StaticStore.deleteFile(folder, true);
+
+        return mp4;
     }
 
     public static File drawAnimImage(EAnimD<?> anim, int frame, double siz, boolean transparent, boolean debug) throws Exception {
@@ -1100,6 +1336,19 @@ public class ImageDrawing {
         } else {
             return ""+n;
         }
+    }
+
+    private static String getProgressBar(int prog) {
+        int ratio = (int) (prog * 40.0 / bgAnimTime);
+
+        return "▓".repeat(Math.max(0, ratio)) +
+                "░".repeat(Math.max(0, 40 - ratio));
+    }
+
+    private static String getETA(long start, long current, int prog) {
+        double unit = (current - start) / 1000.0 / prog;
+
+        return DataToString.df.format(unit * (bgAnimTime - prog));
     }
 
     private static Possible<Optional<String>> wrap(String content) {

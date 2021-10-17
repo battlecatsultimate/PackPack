@@ -3,12 +3,16 @@ package mandarin.packpack.commands.bc;
 import common.pack.UserProfile;
 import common.util.Data;
 import discord4j.core.event.domain.message.MessageEvent;
+import discord4j.core.object.entity.Guild;
+import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.discordjson.json.InteractionData;
 import discord4j.discordjson.json.MemberData;
+import mandarin.packpack.commands.Command;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.TimedConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.bc.ImageDrawing;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
@@ -18,7 +22,9 @@ import mandarin.packpack.supporter.server.slash.WebhookBuilder;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Optional;
 
+@SuppressWarnings("ForLoopReplaceableByForEach")
 public class Background extends TimedConstraintCommand {
     public static WebhookBuilder getInteractionWebhook(InteractionData interaction, common.util.pack.Background bg) throws Exception {
         int lang = LangID.EN;
@@ -38,7 +44,7 @@ public class Background extends TimedConstraintCommand {
             }
         }
 
-        File img = ImageDrawing.drawBGImage(bg, 960, 520);
+        File img = ImageDrawing.drawBGImage(bg, 960, 520, false);
 
         if(img != null) {
             FileInputStream fis = new FileInputStream(img);
@@ -69,19 +75,20 @@ public class Background extends TimedConstraintCommand {
     @Override
     public void doSomething(MessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
+        Guild g = getGuild(event).block();
 
-        if(ch == null)
+        if(ch == null || g == null)
             return;
 
         if(bg != null) {
-            File img = ImageDrawing.drawBGImage(bg, 960, 520);
+            File img = ImageDrawing.drawBGImage(bg, 960, 520, false);
 
             if(img != null) {
                 FileInputStream fis = new FileInputStream(img);
 
-                createMessage(ch, m -> {
-                    m.content(LangID.getStringByID("bg_result", lang).replace("_", Data.trio(bg.id.id)).replace("WWW", 960+"").replace("HHH", 520+""));
-                    m.addFile("bg.png", fis);
+                createMessage(ch, ms -> {
+                    ms.content(LangID.getStringByID("bg_result", lang).replace("_", Data.trio(bg.id.id)).replace("WWW", 960+"").replace("HHH", 520+""));
+                    ms.addFile("bg.png", fis);
                 }, () -> {
                     try {
                         fis.close();
@@ -114,34 +121,66 @@ public class Background extends TimedConstraintCommand {
                     return;
                 }
 
+                Optional<Member> om = getMember(event);
+
+                if(om.isEmpty())
+                    return;
+
+                Member m = om.get();
+
                 int w = Math.max(1, getWidth(getContent(event)));
                 int h = Math.max(1, getHeight(getContent(event)));
+                boolean eff = drawEffect(getContent(event));
+                boolean anim = generateAnim(getContent(event));
+                boolean isTrusted = StaticStore.contributors.contains(m.getId().asString());
 
                 common.util.pack.Background bg = UserProfile.getBCData().bgs.getList().get(id);
 
-                File img = ImageDrawing.drawBGImage(bg, w, h);
+                String cache = StaticStore.imgur.get("BG - "+Data.trio(bg.id.id), false, true);
 
-                if(img != null) {
-                    FileInputStream fis = new FileInputStream(img);
-
-                    createMessage(ch, m -> {
-                        m.content(LangID.getStringByID("bg_result", lang).replace("_", Data.trio(id)).replace("WWW", w+"").replace("HHH", h+""));
-                        m.addFile("bg.png", fis);
-                    }, () -> {
-                        try {
-                            fis.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                if(anim && bg.effect != -1 && cache == null && isTrusted) {
+                    if(!EntityHandler.generateBGAnim(ch, g.getPremiumTier().getValue(), bg, lang)) {
+                        StaticStore.logger.uploadLog("W/Background | Failed to generate bg effect animation");
+                    }
+                } else {
+                    if(anim && bg.effect != -1) {
+                        if(cache != null) {
+                            Command.createMessage(ch, ms -> ms.content(LangID.getStringByID("gif_cache", lang).replace("_", cache)));
+                            return;
+                        } else {
+                            createMessage(ch, ms -> ms.content(LangID.getStringByID("bg_ignore", lang)));
                         }
+                    }
 
-                        if(img.exists()) {
-                            boolean res = img.delete();
+                    if(eff && bg.effect != -1)
+                        w = w * 5 / 6;
 
-                            if(!res) {
-                                System.out.println("Can't delete file : "+img.getAbsolutePath());
+                    File img = ImageDrawing.drawBGImage(bg, w, h, eff);
+
+                    if(img != null) {
+                        FileInputStream fis = new FileInputStream(img);
+
+                        int finalW = w;
+
+                        createMessage(ch, ms -> {
+                            ms.content(LangID.getStringByID("bg_result", lang).replace("_", Data.trio(id)).replace("WWW", finalW +"").replace("HHH", h+""));
+                            ms.addFile("bg.png", fis);
+                        }, () -> {
+                            try {
+                                fis.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
                             }
-                        }
-                    });
+
+                            if(img.exists()) {
+                                boolean res = img.delete();
+
+                                if(!res) {
+                                    System.out.println("Can't delete file : "+img.getAbsolutePath());
+                                }
+                            }
+                        });
+                    }
                 }
             }
         }
@@ -175,6 +214,36 @@ public class Background extends TimedConstraintCommand {
         }
 
         return 520;
+    }
+
+    private boolean drawEffect(String message) {
+        String[] contents = message.split(" ");
+
+        if(contents.length == 1)
+            return false;
+
+        for(int i = 0; i < contents.length; i++) {
+            if(contents[i].equals("-e") || contents[i].equals("-effect")) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean generateAnim(String message) {
+        String[] contents = message.split(" ");
+
+        if(contents.length == 1)
+            return false;
+
+        for(int i = 0; i < contents.length; i++) {
+            if(contents[i].equals("-a") || contents[i].equals("-anim")) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private int getID(String message) {

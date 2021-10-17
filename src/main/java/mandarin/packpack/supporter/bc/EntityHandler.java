@@ -10,6 +10,7 @@ import common.util.Data;
 import common.util.anim.AnimU;
 import common.util.anim.EAnimD;
 import common.util.lang.MultiLangCont;
+import common.util.pack.Background;
 import common.util.stage.MapColc;
 import common.util.stage.SCDef;
 import common.util.stage.Stage;
@@ -45,6 +46,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
+@SuppressWarnings("ForLoopReplaceableByForEach")
 public class EntityHandler {
     private static final DecimalFormat df;
     private static Font font;
@@ -2121,6 +2123,65 @@ public class EntityHandler {
                 if(!res) {
                     System.out.println("Can't delete file : "+img.getAbsolutePath());
                     StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
+                }
+            });
+        }
+
+        return true;
+    }
+
+    public static boolean generateBGAnim(MessageChannel ch, int booster, Background bg, int lang) throws Exception {
+        Message message = Command.createMessage(ch, ms -> ms.content(LangID.getStringByID("bg_prepare", lang)));
+
+        if(message == null)
+            return false;
+
+        long start = System.currentTimeMillis();
+
+        File result = ImageDrawing.drawBGAnimEffect(bg, message, lang);
+
+        long end = System.currentTimeMillis();
+
+        if(result == null) {
+            Command.createMessage(ch, m -> m.content(LangID.getStringByID("bg_fail", lang)));
+        } else if(result.length() >= (long) getBoosterFileLimit(booster) * 1024 * 1024) {
+            Command.createMessage(ch, m -> m.content(LangID.getStringByID("bg_toobig", lang).replace("_SSS_", getFileSize(result))));
+        } else {
+            FileInputStream fis = new FileInputStream(result);
+
+            Command.createMessage(ch, m -> {
+                m.content(LangID.getStringByID("bg_animres", lang).replace("_SSS_", getFileSize(result)).replace("_TTT_", DataToString.df.format((end - start) / 1000.0)));
+                m.addFile("result.mp4", fis);
+            }, (e) -> {
+                try {
+                    fis.close();
+                } catch (IOException ioException) {
+                    StaticStore.logger.uploadErrorLog(e, "Failed to close stream");
+                }
+
+                if(result.exists() && !result.delete()) {
+                    StaticStore.logger.uploadLog("Failed to delete file : "+result.getAbsolutePath());
+                }
+            } ,(m) -> {
+                List<Attachment> attachments = m.getAttachments();
+
+                for(int i = 0; i < attachments.size(); i++) {
+                    Attachment attachment = attachments.get(i);
+
+                    if(attachment.getFilename().equals("result.mp4")) {
+                        StaticStore.imgur.put("BG - "+Data.trio(bg.id.id), attachment.getUrl(), true);
+                        break;
+                    }
+                }
+
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                if(result.exists() && !result.delete()) {
+                    StaticStore.logger.uploadLog("Failed to delete file : "+result.getAbsolutePath());
                 }
             });
         }

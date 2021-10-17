@@ -80,6 +80,24 @@ public abstract class Command {
         }
     }
 
+    public static Message createMessage(MessageChannel ch, Consumer<MessageCreateSpec.Builder> consumer, Consumer<Throwable> onFailed, Consumer<Message> onSuccess) {
+        try {
+            MessageCreateSpec.Builder builder = MessageCreateSpec.builder();
+
+            consumer.accept(builder);
+
+            Message m = ch.createMessage(builder.build()).block();
+
+            onSuccess.accept(m);
+
+            return m;
+        } catch (Exception e) {
+            onFailed.accept(e);
+
+            return null;
+        }
+    }
+
     public static EmbedCreateSpec createEmbed(Consumer<EmbedCreateSpec.Builder> consumer) {
         EmbedCreateSpec.Builder builder = EmbedCreateSpec.builder();
 
