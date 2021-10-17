@@ -484,7 +484,7 @@
   "bg_prepare" : "Preparing background animation generation",
   "bg_dimen" : "Generating background animation (15 sec) : _WWW_x_HHH_",
   "bg_ignore" : "Ignoring animation generation flag because you aren't trusted",
-  "bg_prog" : "```py\n<_PPP_/900> _BBB_ _VVV_% | ETA : _SSS_s\n```",
+  "bg_prog" : "```py\n<_PPP_/450> _BBB_ _VVV_% | ETA : _SSS_s\n```",
   "bg_animres" : "Uploaded background animation mp4 (_SSS_) [_TTT_s]",
   "bg_fail" : "Failed to generate background animation mp4",
   "bg_toobig" : "Result mp4 file was too big! (_SSS_)",
