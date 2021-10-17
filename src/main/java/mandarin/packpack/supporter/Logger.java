@@ -59,6 +59,8 @@ public class Logger {
     }
 
     public void uploadLog(String content) {
+        System.out.println(content);
+
         MessageChannel ch = getLoggingChannel();
 
         if(ch == null)
