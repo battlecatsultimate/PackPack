@@ -103,7 +103,7 @@ public abstract class GlobalTimedConstraintCommand extends Command {
             }
 
             if(!hasRole.get()) {
-                isMod.set(holder.MOD != null && role.contains(holder.MOD));
+                isMod.set((constRole != null && !constRole.equals("MANDARIN") && !constRole.equals("CONTRIBUTOR")) && holder.MOD != null && role.contains(holder.MOD));
             }
 
             isMandarin.set(m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
