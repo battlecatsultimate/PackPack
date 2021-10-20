@@ -55,6 +55,7 @@
   "data_relic" : "Relic",
   "data_eva" : "EVA Angel",
   "data_witch" : "Witch",
+  "data_baset": "Base (Infinite health)",
   "data_none" : "None",
   "data_allcolor"  : "All Colors",
   "data_alltrait" : "All Traits",

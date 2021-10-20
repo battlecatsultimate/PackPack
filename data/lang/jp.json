@@ -55,6 +55,7 @@
   "data_relic" : "古代種",
   "data_eva" : "使徒",
   "data_witch" : "魔女",
+  "data_baset": "Base (Infinite health)",
   "data_none" : "無属性",
   "data_allcolor"  : "すべての色",
   "data_alltrait" : "すべての属性",
