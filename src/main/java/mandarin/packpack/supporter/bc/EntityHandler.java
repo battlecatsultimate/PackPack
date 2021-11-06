@@ -30,6 +30,7 @@ import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.awt.FG2D;
 import mandarin.packpack.supporter.awt.FIBI;
+import mandarin.packpack.supporter.bc.cell.*;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.slash.WebhookBuilder;
 
@@ -145,22 +146,22 @@ public class EntityHandler {
             spec.setColor(c);
             spec.setThumbnail("attachment://icon.png");
             spec.addField(LangID.getStringByID("data_id", lang), DataToString.getID(f.uid.id, f.fid), false);
-            spec.addField(LangID.getStringByID("data_hp", lang), DataToString.getHP(f, talent, t), true);
-            spec.addField(LangID.getStringByID("data_hb", lang), DataToString.getHitback(f, talent, t), true);
+            spec.addField(LangID.getStringByID("data_hp", lang), DataToString.getHP(f.du, f.unit.lv, talent, t), true);
+            spec.addField(LangID.getStringByID("data_hb", lang), DataToString.getHitback(f.du, talent, t), true);
             spec.addField(LangID.getStringByID("data_level", lang), l, true);
-            spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(f, talent, t), false);
-            spec.addField(LangID.getStringByID("data_dps", lang), DataToString.getDPS(f, talent, t), true);
-            spec.addField(LangID.getStringByID("data_atktime", lang), DataToString.getAtkTime(f, isFrame), true);
-            spec.addField(LangID.getStringByID("data_abilt", lang), DataToString.getAbilT(f, lang), true);
-            spec.addField(LangID.getStringByID("data_preatk", lang), DataToString.getPre(f, isFrame), true);
-            spec.addField(LangID.getStringByID("data_postatk", lang), DataToString.getPost(f, isFrame), true);
-            spec.addField(LangID.getStringByID("data_tba", lang), DataToString.getTBA(f, isFrame), true);
-            spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(f, talent, t, lang), false);
-            spec.addField(LangID.getStringByID("data_atktype", lang), DataToString.getSiMu(f, lang), true);
-            spec.addField(LangID.getStringByID("data_cost", lang), DataToString.getCost(f, talent, t), true);
-            spec.addField(LangID.getStringByID("data_range", lang), DataToString.getRange(f), true);
-            spec.addField(LangID.getStringByID("data_cooldown", lang), DataToString.getCD(f,isFrame, talent, t), true);
-            spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(f, talent, t), true);
+            spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(f.du, f.unit.lv, talent, t), false);
+            spec.addField(LangID.getStringByID("data_dps", lang), DataToString.getDPS(f.du, f.unit.lv, talent, t), true);
+            spec.addField(LangID.getStringByID("data_atktime", lang), DataToString.getAtkTime(f.du, isFrame), true);
+            spec.addField(LangID.getStringByID("data_abilt", lang), DataToString.getAbilT(f.du, lang), true);
+            spec.addField(LangID.getStringByID("data_preatk", lang), DataToString.getPre(f.du, isFrame), true);
+            spec.addField(LangID.getStringByID("data_postatk", lang), DataToString.getPost(f.du, isFrame), true);
+            spec.addField(LangID.getStringByID("data_tba", lang), DataToString.getTBA(f.du, isFrame), true);
+            spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(f.du, talent, t, lang), false);
+            spec.addField(LangID.getStringByID("data_atktype", lang), DataToString.getSiMu(f.du, lang), true);
+            spec.addField(LangID.getStringByID("data_cost", lang), DataToString.getCost(f.du, talent, t), true);
+            spec.addField(LangID.getStringByID("data_range", lang), DataToString.getRange(f.du), true);
+            spec.addField(LangID.getStringByID("data_cooldown", lang), DataToString.getCD(f.du,isFrame, talent, t), true);
+            spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(f.du, talent, t), true);
 
             MaskUnit du;
 
@@ -204,7 +205,7 @@ public class EntityHandler {
             spec.setImage("attachment://cf.png");
 
             if(talentExists(t))
-                spec.setFooter(DataToString.getTalent(f, t, lang), null);
+                spec.setFooter(DataToString.getTalent(f.du, t, lang), null);
         });
 
         if(fis != null)
@@ -309,22 +310,22 @@ public class EntityHandler {
                 spec.color(c);
                 spec.thumbnail("attachment://icon.png");
                 spec.addField(LangID.getStringByID("data_id", lang), DataToString.getID(f.uid.id, f.fid), false);
-                spec.addField(LangID.getStringByID("data_hp", lang), DataToString.getHP(f, talent, t), true);
-                spec.addField(LangID.getStringByID("data_hb", lang), DataToString.getHitback(f, talent, t), true);
+                spec.addField(LangID.getStringByID("data_hp", lang), DataToString.getHP(f.du, f.unit.lv, talent, t), true);
+                spec.addField(LangID.getStringByID("data_hb", lang), DataToString.getHitback(f.du, talent, t), true);
                 spec.addField(LangID.getStringByID("data_level", lang), l, true);
-                spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(f, talent, t), false);
-                spec.addField(LangID.getStringByID("data_dps", lang), DataToString.getDPS(f, talent, t), true);
-                spec.addField(LangID.getStringByID("data_atktime", lang), DataToString.getAtkTime(f, isFrame), true);
-                spec.addField(LangID.getStringByID("data_abilt", lang), DataToString.getAbilT(f, lang), true);
-                spec.addField(LangID.getStringByID("data_preatk", lang), DataToString.getPre(f, isFrame), true);
-                spec.addField(LangID.getStringByID("data_postatk", lang), DataToString.getPost(f, isFrame), true);
-                spec.addField(LangID.getStringByID("data_tba", lang), DataToString.getTBA(f, isFrame), true);
-                spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(f, talent, t, lang), false);
-                spec.addField(LangID.getStringByID("data_atktype", lang), DataToString.getSiMu(f, lang), true);
-                spec.addField(LangID.getStringByID("data_cost", lang), DataToString.getCost(f, talent, t), true);
-                spec.addField(LangID.getStringByID("data_range", lang), DataToString.getRange(f), true);
-                spec.addField(LangID.getStringByID("data_cooldown", lang), DataToString.getCD(f,isFrame, talent, t), true);
-                spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(f, talent, t), true);
+                spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(f.du, f.unit.lv, talent, t), false);
+                spec.addField(LangID.getStringByID("data_dps", lang), DataToString.getDPS(f.du, f.unit.lv, talent, t), true);
+                spec.addField(LangID.getStringByID("data_atktime", lang), DataToString.getAtkTime(f.du, isFrame), true);
+                spec.addField(LangID.getStringByID("data_abilt", lang), DataToString.getAbilT(f.du, lang), true);
+                spec.addField(LangID.getStringByID("data_preatk", lang), DataToString.getPre(f.du, isFrame), true);
+                spec.addField(LangID.getStringByID("data_postatk", lang), DataToString.getPost(f.du, isFrame), true);
+                spec.addField(LangID.getStringByID("data_tba", lang), DataToString.getTBA(f.du, isFrame), true);
+                spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(f.du, talent, t, lang), false);
+                spec.addField(LangID.getStringByID("data_atktype", lang), DataToString.getSiMu(f.du, lang), true);
+                spec.addField(LangID.getStringByID("data_cost", lang), DataToString.getCost(f.du, talent, t), true);
+                spec.addField(LangID.getStringByID("data_range", lang), DataToString.getRange(f.du), true);
+                spec.addField(LangID.getStringByID("data_cooldown", lang), DataToString.getCD(f.du,isFrame, talent, t), true);
+                spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(f.du, talent, t), true);
 
                 MaskUnit du;
 
@@ -368,7 +369,7 @@ public class EntityHandler {
                 spec.image("attachment://cf.png");
 
                 if(talentExists(t))
-                    spec.footer(DataToString.getTalent(f, t, lang), null);
+                    spec.footer(DataToString.getTalent(f.du, t, lang), null);
             }));
 
             if(fis != null)
@@ -505,22 +506,22 @@ public class EntityHandler {
                 spec.color(c);
                 spec.thumbnail("attachment://icon.png");
                 spec.addField(LangID.getStringByID("data_id", lang), DataToString.getID(e.id.id), false);
-                spec.addField(LangID.getStringByID("data_hp", lang), DataToString.getHP(e, mag[0]), true);
-                spec.addField(LangID.getStringByID("data_hb", lang), DataToString.getHitback(e), true);
+                spec.addField(LangID.getStringByID("data_hp", lang), DataToString.getHP(e.de, mag[0]), true);
+                spec.addField(LangID.getStringByID("data_hb", lang), DataToString.getHitback(e.de), true);
                 spec.addField(LangID.getStringByID("data_magnif", lang), DataToString.getMagnification(mag, 100), true);
-                spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(e, mag[1]), false);
-                spec.addField(LangID.getStringByID("data_dps", lang), DataToString.getDPS(e, mag[1]), true);
-                spec.addField(LangID.getStringByID("data_atktime", lang), DataToString.getAtkTime(e, isFrame), true);
-                spec.addField(LangID.getStringByID("data_abilt", lang), DataToString.getAbilT(e, lang), true);
-                spec.addField(LangID.getStringByID("data_preatk", lang), DataToString.getPre(e, isFrame), true);
-                spec.addField(LangID.getStringByID("data_postatk", lang), DataToString.getPost(e, isFrame), true);
-                spec.addField(LangID.getStringByID("data_tba", lang), DataToString.getTBA(e, isFrame), true);
-                spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(e, lang), false);
-                spec.addField(LangID.getStringByID("data_atktype", lang), DataToString.getSiMu(e, lang), true);
-                spec.addField(LangID.getStringByID("data_drop", lang), DataToString.getDrop(e), true);
-                spec.addField(LangID.getStringByID("data_range", lang), DataToString.getRange(e), true);
-                spec.addField(LangID.getStringByID("data_barrier", lang), DataToString.getBarrier(e, lang), true);
-                spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(e), true);
+                spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(e.de, mag[1]), false);
+                spec.addField(LangID.getStringByID("data_dps", lang), DataToString.getDPS(e.de, mag[1]), true);
+                spec.addField(LangID.getStringByID("data_atktime", lang), DataToString.getAtkTime(e.de, isFrame), true);
+                spec.addField(LangID.getStringByID("data_abilt", lang), DataToString.getAbilT(e.de, lang), true);
+                spec.addField(LangID.getStringByID("data_preatk", lang), DataToString.getPre(e.de, isFrame), true);
+                spec.addField(LangID.getStringByID("data_postatk", lang), DataToString.getPost(e.de, isFrame), true);
+                spec.addField(LangID.getStringByID("data_tba", lang), DataToString.getTBA(e.de, isFrame), true);
+                spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(e.de, lang), false);
+                spec.addField(LangID.getStringByID("data_atktype", lang), DataToString.getSiMu(e.de, lang), true);
+                spec.addField(LangID.getStringByID("data_drop", lang), DataToString.getDrop(e.de), true);
+                spec.addField(LangID.getStringByID("data_range", lang), DataToString.getRange(e.de), true);
+                spec.addField(LangID.getStringByID("data_barrier", lang), DataToString.getBarrier(e.de, lang), true);
+                spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(e.de), true);
 
                 ArrayList<String> abis = Interpret.getAbi(e.de, lang);
                 abis.addAll(Interpret.getProc(e.de, !isFrame, lang, mag[0] / 100.0, mag[1] / 100.0));
@@ -610,22 +611,22 @@ public class EntityHandler {
             spec.setColor(c);
             spec.setThumbnail("attachment://icon.png");
             spec.addField(LangID.getStringByID("data_id", lang), DataToString.getID(e.id.id), false);
-            spec.addField(LangID.getStringByID("data_hp", lang), DataToString.getHP(e, mag[0]), true);
-            spec.addField(LangID.getStringByID("data_hb", lang), DataToString.getHitback(e), true);
+            spec.addField(LangID.getStringByID("data_hp", lang), DataToString.getHP(e.de, mag[0]), true);
+            spec.addField(LangID.getStringByID("data_hb", lang), DataToString.getHitback(e.de), true);
             spec.addField(LangID.getStringByID("data_magnif", lang), DataToString.getMagnification(mag, 100), true);
-            spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(e, mag[1]), false);
-            spec.addField(LangID.getStringByID("data_dps", lang), DataToString.getDPS(e, mag[1]), true);
-            spec.addField(LangID.getStringByID("data_atktime", lang), DataToString.getAtkTime(e, isFrame), true);
-            spec.addField(LangID.getStringByID("data_abilt", lang), DataToString.getAbilT(e, lang), true);
-            spec.addField(LangID.getStringByID("data_preatk", lang), DataToString.getPre(e, isFrame), true);
-            spec.addField(LangID.getStringByID("data_postatk", lang), DataToString.getPost(e, isFrame), true);
-            spec.addField(LangID.getStringByID("data_tba", lang), DataToString.getTBA(e, isFrame), true);
-            spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(e, lang), false);
-            spec.addField(LangID.getStringByID("data_atktype", lang), DataToString.getSiMu(e, lang), true);
-            spec.addField(LangID.getStringByID("data_drop", lang), DataToString.getDrop(e), true);
-            spec.addField(LangID.getStringByID("data_range", lang), DataToString.getRange(e), true);
-            spec.addField(LangID.getStringByID("data_barrier", lang), DataToString.getBarrier(e, lang), true);
-            spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(e), true);
+            spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(e.de, mag[1]), false);
+            spec.addField(LangID.getStringByID("data_dps", lang), DataToString.getDPS(e.de, mag[1]), true);
+            spec.addField(LangID.getStringByID("data_atktime", lang), DataToString.getAtkTime(e.de, isFrame), true);
+            spec.addField(LangID.getStringByID("data_abilt", lang), DataToString.getAbilT(e.de, lang), true);
+            spec.addField(LangID.getStringByID("data_preatk", lang), DataToString.getPre(e.de, isFrame), true);
+            spec.addField(LangID.getStringByID("data_postatk", lang), DataToString.getPost(e.de, isFrame), true);
+            spec.addField(LangID.getStringByID("data_tba", lang), DataToString.getTBA(e.de, isFrame), true);
+            spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(e.de, lang), false);
+            spec.addField(LangID.getStringByID("data_atktype", lang), DataToString.getSiMu(e.de, lang), true);
+            spec.addField(LangID.getStringByID("data_drop", lang), DataToString.getDrop(e.de), true);
+            spec.addField(LangID.getStringByID("data_range", lang), DataToString.getRange(e.de), true);
+            spec.addField(LangID.getStringByID("data_barrier", lang), DataToString.getBarrier(e.de, lang), true);
+            spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(e.de), true);
 
             ArrayList<String> abis = Interpret.getAbi(e.de, lang);
             abis.addAll(Interpret.getProc(e.de, !isFrame, lang, mag[0] / 100.0, mag[1] / 100.0));
@@ -2575,6 +2576,224 @@ public class EntityHandler {
                 }
             }
         });
+    }
+
+    public static boolean generateStatImage(MessageChannel ch, List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilData, List<FlagCellData> traitData, CustomMaskUnit[] units, String[] name, File container, int lv, boolean isFrame, int uid, int lang) throws Exception {
+        List<List<CellDrawer>> cellGroup = new ArrayList<>();
+
+        for(int i = 0; i < units.length; i++) {
+            cellGroup.add(addCell(data, procData, abilData, traitData, units[i], lang, lv, isFrame));
+        }
+
+        String type = getRarity(units[0].rarity, lang);
+
+        File result = ImageDrawing.drawStatImage(units, cellGroup, lv, name, type, container, uid);
+
+        if(result == null) {
+            Command.createMessage(ch, m -> m.content(LangID.getStringByID("stat_fail", lang)));
+        } else {
+            FileInputStream fis = new FileInputStream(result);
+
+            Command.createMessage(ch, m -> {
+                m.content(LangID.getStringByID("stat_success", lang));
+                m.addFile("stat.png", fis);
+            }, (e) -> {
+                StaticStore.logger.uploadErrorLog(e, "Failed to create stat image");
+
+                try {
+                    fis.close();
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
+
+                if(result.exists() && !result.delete()) {
+                    StaticStore.logger.uploadLog("Failed to delete file : "+result.getAbsolutePath());
+                }
+            }, () -> {
+                try {
+                    fis.close();
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                }
+
+                if(result.exists() && !result.delete()) {
+                    StaticStore.logger.uploadLog("Failed to delete file : "+result.getAbsolutePath());
+                }
+            });
+        }
+
+        return true;
+    }
+
+    private static List<CellDrawer> addCell(List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilData, List<FlagCellData> traitData, CustomMaskUnit u, int lang, int lv, boolean isFrame) {
+        List<CellDrawer> cells = new ArrayList<>();
+
+        int[] lvs = {lv, 0, 0, 0, 0, 0};
+
+        cells.add(new NormalCellDrawer(
+                new String[] {"HP", "Hitbacks", "Speed"},
+                new String[] {DataToString.getHP(u, u.curve, false, lvs), DataToString.getHitback(u, false, lvs), DataToString.getSpeed(u, false , lvs)}
+        ));
+
+        cells.add(new NormalCellDrawer(new String[] {"Attack"}, new String[] {DataToString.getTotalAtk(u.curve, u, false, lvs)}));
+
+        cells.add(new NormalCellDrawer(
+                new String[] {"DPS", "Attack Time", "Use Ability"},
+                new String[] {DataToString.getDPS(u, u.curve, false, lvs), DataToString.getAtkTime(u, isFrame), DataToString.getAbilT(u, lang)}
+        ));
+
+        cells.add(new NormalCellDrawer(
+                new String[] {"Pre-Atk", "Post-Atk", "TBA"},
+                new String[] {DataToString.getPre(u, isFrame), DataToString.getPost(u, isFrame), DataToString.getTBA(u, isFrame)}
+        ));
+
+        StringBuilder trait = new StringBuilder(DataToString.getTrait(u, false, lvs, lang));
+
+        for(int i = 0; i < traitData.size(); i++) {
+            String t = traitData.get(i).dataToString(u.data);
+
+            if(!t.isBlank()) {
+                trait.append(", ").append(t);
+            }
+        }
+
+        cells.add(new NormalCellDrawer(
+                new String[] {"Trait"},
+                new String[] {trait.toString()}
+        ));
+
+        cells.add(new NormalCellDrawer(
+                new String[] {"Attack Type", "Cost", "Range"},
+                new String[] {DataToString.getSiMu(u, lang), DataToString.getCost(u, false, lvs), DataToString.getRange(u)}
+        ));
+
+        cells.add(new NormalCellDrawer(
+                new String[] {"Cooldown"},
+                new String[] {DataToString.getCD(u, isFrame, false, lvs)}
+        ));
+
+        List<List<CellData>> cellGroup = new ArrayList<>();
+
+        for(int i = 0; i < data.size(); i++) {
+            CellData d = data.get(i);
+
+            List<CellData> group = new ArrayList<>();
+
+            if(d.oneLine) {
+                group.add(d);
+
+                cellGroup.add(group);
+            } else {
+                int j = i;
+
+                while(group.size() < 3 && !data.get(j).oneLine) {
+                    group.add(data.get(j));
+
+                    j++;
+
+                    if(j >= data.size()) {
+                        break;
+                    }
+                }
+
+                j--;
+
+                cellGroup.add(group);
+
+                if(j > i) {
+                    i = j;
+                }
+            }
+        }
+
+        for(int i = 0; i < cellGroup.size(); i++) {
+            List<CellData> group = cellGroup.get(i);
+
+            String[] names = new String[group.size()];
+            String[] contents = new String[group.size()];
+
+            for(int j = 0; j < group.size(); j++) {
+                names[j] = group.get(j).name;
+                String c = group.get(j).dataToString(u.data, isFrame);
+
+                if(c.isBlank()) {
+                    contents[j] = LangID.getStringByID("data_none", lang);
+                } else {
+                    contents[j] = c;
+                }
+            }
+
+            cells.add(new NormalCellDrawer(names, contents));
+        }
+
+        List<String> abil = Interpret.getAbi(u, lang);
+
+        for(int i = 0; i < abilData.size(); i++) {
+            String a = abilData.get(i).dataToString(u.data);
+
+            if(!a.isBlank()) {
+                abil.add(a);
+            }
+        }
+
+        abil.addAll(Interpret.getProc(u, !isFrame, lang, 1.0, 1.0));
+
+        for(int i = 0; i < procData.size(); i++) {
+            String p = procData.get(i).beautify(u.data, isFrame);
+
+            if(!p.isBlank()) {
+                abil.add(p);
+            }
+        }
+
+        if(abil.isEmpty()) {
+            cells.add(new NormalCellDrawer(new String[] {"Ability"}, new String[] {"None"}));
+        } else {
+            List<String> finalAbil = new ArrayList<>();
+
+            for(int i = 0; i < abil.size(); i++) {
+                finalAbil.add(" · " + abil.get(i));
+            }
+
+            cells.add(new AbilityCellDrawer("Ability", finalAbil.toArray(new String[0])));
+        }
+
+        return cells;
+    }
+
+    private static String getRarity(int type, int lang) {
+        String rarity;
+
+        if(type == 0)
+            rarity = LangID.getStringByID("data_basic", lang);
+        else if(type == 1)
+            rarity = LangID.getStringByID("data_ex", lang);
+        else if(type == 2)
+            rarity = LangID.getStringByID("data_rare", lang);
+        else if(type == 3)
+            rarity = LangID.getStringByID("data_sr", lang);
+        else if(type == 4)
+            rarity = LangID.getStringByID("data_ur", lang);
+        else if(type == 5)
+            rarity = LangID.getStringByID("data_lr", lang);
+        else
+            rarity = "Unknown";
+
+        return rarity;
+    }
+
+    private static String parseTime(String v, boolean isFrame) {
+        if(StaticStore.isNumeric(v)) {
+            int iv = StaticStore.safeParseInt(v);
+
+            if(isFrame) {
+                return iv+"f";
+            } else {
+                return DataToString.df.format(iv / 30.0)+"s";
+            }
+        }
+
+        return "Not a number";
     }
 
     private static File generateComboImage(Combo c) throws Exception {

@@ -320,7 +320,7 @@ public class BCAnimMessageHolder extends MessageHolder<MessageCreateEvent> {
             case MAMODEL:
                 return mixer.validMamodel(file);
             default:
-                return mixer.validMaanim(file);
+                return AnimMixer.validMaanim(file);
         }
     }
 

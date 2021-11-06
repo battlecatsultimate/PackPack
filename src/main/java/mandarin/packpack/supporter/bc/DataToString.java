@@ -13,10 +13,7 @@ import common.util.stage.Limit;
 import common.util.stage.MapColc;
 import common.util.stage.Stage;
 import common.util.stage.StageMap;
-import common.util.unit.Combo;
-import common.util.unit.Enemy;
-import common.util.unit.Form;
-import common.util.unit.Unit;
+import common.util.unit.*;
 import discord4j.rest.util.Color;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -184,36 +181,33 @@ public class DataToString {
         }
     }
 
-    public static String getAtkTime(Form f, boolean isFrame) {
-        if(f == null || f.du == null)
-            return "";
-
-        if(isFrame) {
-            return f.du.getItv()+"f";
-        } else {
-            return df.format(f.du.getItv()/30.0)+"s";
-        }
-    }
-
-    public static String getAtkTime(Enemy e, boolean isFrame) {
-        if(e == null || e.de == null)
-            return "";
-
-        if(isFrame) {
-            return e.de.getItv()+"f";
-        } else {
-            return df.format(e.de.getItv()/30.0)+"s";
-        }
-    }
-
-    public static String getAbilT(Form f, int lang) {
+    public static String getAtkTime(MaskUnit f, boolean isFrame) {
         if(f == null)
             return "";
 
-        if(f.du == null)
+        if(isFrame) {
+            return f.getItv()+"f";
+        } else {
+            return df.format(f.getItv()/30.0)+"s";
+        }
+    }
+
+    public static String getAtkTime(MaskEnemy e, boolean isFrame) {
+        if(e == null)
             return "";
 
-        int[][] raw = f.du.rawAtkData();
+        if(isFrame) {
+            return e.getItv()+"f";
+        } else {
+            return df.format(e.getItv()/30.0)+"s";
+        }
+    }
+
+    public static String getAbilT(MaskUnit f, int lang) {
+        if(f == null)
+            return "";
+
+        int[][] raw = f.rawAtkData();
 
         StringBuilder sb = new StringBuilder();
 
@@ -231,11 +225,11 @@ public class DataToString {
         return sb.toString();
     }
 
-    public static String getAbilT(Enemy e, int lang) {
-        if(e == null || e.de == null)
+    public static String getAbilT(MaskEnemy e, int lang) {
+        if(e == null)
             return "";
 
-        int[][] raw = e.de.rawAtkData();
+        int[][] raw = e.rawAtkData();
 
         StringBuilder sb = new StringBuilder();
 
@@ -252,55 +246,55 @@ public class DataToString {
         return sb.toString();
     }
 
-    public static String getPost(Form f, boolean isFrame) {
-        if(f == null || f.du == null)
+    public static String getPost(MaskUnit f, boolean isFrame) {
+        if(f == null)
             return "";
 
         if(isFrame) {
-            return f.du.getPost()+"f";
+            return f.getPost()+"f";
         } else {
-            return df.format(f.du.getPost()/30.0)+"s";
+            return df.format(f.getPost()/30.0)+"s";
         }
     }
 
-    public static String getPost(Enemy e, boolean isFrame) {
-        if(e == null || e.de == null)
+    public static String getPost(MaskEnemy e, boolean isFrame) {
+        if(e == null)
             return "";
 
         if(isFrame) {
-            return e.de.getPost()+"f";
+            return e.getPost()+"f";
         } else {
-            return df.format(e.de.getPost()/30.0)+"s";
+            return df.format(e.getPost()/30.0)+"s";
         }
     }
 
-    public static String getTBA(Form f, boolean isFrame) {
-        if(f == null || f.du == null)
+    public static String getTBA(MaskUnit f, boolean isFrame) {
+        if(f == null)
             return "";
 
         if(isFrame) {
-            return f.du.getTBA()+"f";
+            return f.getTBA()+"f";
         } else {
-            return df.format(f.du.getTBA()/30.0)+"s";
+            return df.format(f.getTBA()/30.0)+"s";
         }
     }
 
-    public static String getTBA(Enemy e, boolean isFrame) {
-        if(e == null || e.de == null)
+    public static String getTBA(MaskEnemy e, boolean isFrame) {
+        if(e == null)
             return "";
 
         if(isFrame) {
-            return e.de.getTBA()+"f";
+            return e.getTBA()+"f";
         } else {
-            return df.format(e.de.getTBA()/30.0)+"s";
+            return df.format(e.getTBA()/30.0)+"s";
         }
     }
 
-    public static String getPre(Form f, boolean isFrame) {
-        if(f == null || f.du == null)
+    public static String getPre(MaskUnit f, boolean isFrame) {
+        if(f == null)
             return "";
 
-        int[][] raw = f.du.rawAtkData();
+        int[][] raw = f.rawAtkData();
 
         if(isFrame) {
             if(raw.length > 1) {
@@ -335,11 +329,11 @@ public class DataToString {
         }
     }
 
-    public static String getPre(Enemy e, boolean isFrame) {
-        if(e == null || e.de == null)
+    public static String getPre(MaskEnemy e, boolean isFrame) {
+        if(e == null)
             return "";
 
-        int[][] raw = e.de.rawAtkData();
+        int[][] raw = e.rawAtkData();
 
         if(isFrame) {
             if(raw.length > 1) {
@@ -382,24 +376,24 @@ public class DataToString {
         return Data.trio(eid);
     }
 
-    public static String getRange(Form f) {
-        if(f == null || f.du == null)
+    public static String getRange(MaskUnit f) {
+        if(f == null)
             return "";
 
-        int r = f.du.getRange();
+        int r = f.getRange();
 
         MaskAtk atk;
 
-        if(f.du.getAtkCount() == 1)
-            atk = f.du.getAtkModel(0);
+        if(f.getAtkCount() == 1)
+            atk = f.getAtkModel(0);
         else
-        if(f.du instanceof CustomEntity) {
-            if(allRangeSame((CustomEntity) f.du))
-                atk = f.du.getAtkModel(0);
+        if(f instanceof CustomEntity) {
+            if(allRangeSame((CustomEntity) f))
+                atk = f.getAtkModel(0);
             else
-                atk = f.du.getRepAtk();
+                atk = f.getRepAtk();
         } else {
-            atk = f.du.getRepAtk();
+            atk = f.getRepAtk();
         }
 
         int lds = atk.getShortPoint();
@@ -408,31 +402,31 @@ public class DataToString {
         int start = Math.min(lds, lds+ldr);
         int end = Math.max(lds, lds+ldr);
 
-        if(f.du.isLD() || f.du.isOmni()) {
+        if(f.isLD() || f.isOmni()) {
             return r +" / "+start+" ~ "+end;
         } else {
             return String.valueOf(r);
         }
     }
 
-    public static String getRange(Enemy e) {
-        if(e == null || e.de == null)
+    public static String getRange(MaskEnemy e) {
+        if(e == null)
             return "";
 
-        int r = e.de.getRange();
+        int r = e.getRange();
 
         MaskAtk atk;
 
-        if(e.de.getAtkCount() == 1)
-            atk = e.de.getAtkModel(0);
+        if(e.getAtkCount() == 1)
+            atk = e.getAtkModel(0);
         else {
-            if (e.de instanceof CustomEntity) {
-                if (allRangeSame((CustomEntity) e.de))
-                    atk = e.de.getAtkModel(0);
+            if (e instanceof CustomEntity) {
+                if (allRangeSame((CustomEntity) e))
+                    atk = e.getAtkModel(0);
                 else
-                    atk = e.de.getRepAtk();
+                    atk = e.getRepAtk();
             } else {
-                atk = e.de.getRepAtk();
+                atk = e.getRepAtk();
             }
         }
 
@@ -442,7 +436,7 @@ public class DataToString {
         int start = Math.min(lds, lds+ldr);
         int end = Math.max(lds, lds+ldr);
 
-        if(e.de.isLD() || e.de.isOmni()) {
+        if(e.isLD() || e.isOmni()) {
             return r + " / "+start+" ~ "+end;
         } else
             return String.valueOf(r);
@@ -473,19 +467,19 @@ public class DataToString {
         return true;
     }
 
-    public static String getCD(Form f, boolean isFrame, boolean talent, int[] lvs) {
-        if(f == null || f.du == null)
+    public static String getCD(MaskUnit f, boolean isFrame, boolean talent, int[] lvs) {
+        if(f == null)
             return "";
 
         MaskUnit du;
 
-        if(lvs != null && f.du.getPCoin() != null) {
+        if(lvs != null && f.getPCoin() != null) {
             if(talent)
-                du = f.du.getPCoin().improve(lvs);
+                du = f.getPCoin().improve(lvs);
             else
-                du = f.du;
+                du = f;
         } else
-            du = f.du;
+            du = f;
 
         if(isFrame) {
             return BasisSet.current().t().getFinRes(du.getRespawn())+"f";
@@ -494,34 +488,34 @@ public class DataToString {
         }
     }
 
-    public static String getAtk(Form f, boolean talent, int[] lvs) {
-        if(f == null || f.du == null)
+    public static String getAtk(MaskUnit f, UnitLevel lv, boolean talent, int[] lvs) {
+        if(f == null)
             return "";
 
         MaskUnit du;
 
-        if(f.du.getPCoin() != null && talent)
-            du = f.du.getPCoin().improve(lvs);
+        if(f.getPCoin() != null && talent)
+            du = f.getPCoin().improve(lvs);
         else
-            du = f.du;
+            du = f;
 
         if(du.rawAtkData().length > 1)
-            return getTotalAtk(f, du, talent, lvs) + " " + getAtks(f, du, talent, lvs);
+            return getTotalAtk(lv, du, talent, lvs) + " " + getAtks(lv, du, talent, lvs);
         else
-            return getTotalAtk(f, du, talent, lvs);
+            return getTotalAtk(lv, du, talent, lvs);
     }
 
-    public static String getAtk(Enemy e, int magnification) {
-        if(e == null || e.de == null)
+    public static String getAtk(MaskEnemy e, int magnification) {
+        if(e == null)
             return "";
 
-        if(e.de.rawAtkData().length > 1)
+        if(e.rawAtkData().length > 1)
             return getTotalAtk(e, magnification)+" " +getAtks(e, magnification);
         else
             return getTotalAtk(e, magnification);
     }
 
-    public static String getTotalAtk(Form f, MaskUnit du, boolean talent, int[] lvs) {
+    public static String getTotalAtk(UnitLevel lv, MaskUnit du, boolean talent, int[] lvs) {
         Treasure t = BasisSet.current().t();
 
         int result = 0;
@@ -529,33 +523,33 @@ public class DataToString {
         int[][] raw = du.rawAtkData();
 
         for(int[] atk : raw) {
-            if(f.du.getPCoin() != null && talent) {
-                result += (int) ((int) (Math.round(atk[0] * f.unit.lv.getMult(lvs[0])) * t.getAtkMulti()) * f.du.getPCoin().getAtkMultiplication(lvs));
+            if(du.getPCoin() != null && talent) {
+                result += (int) ((int) (Math.round(atk[0] * lv.getMult(lvs[0])) * t.getAtkMulti()) * du.getPCoin().getAtkMultiplication(lvs));
             } else {
-                result += (int) (Math.round(atk[0] * f.unit.lv.getMult(lvs[0])) * t.getAtkMulti());
+                result += (int) (Math.round(atk[0] * lv.getMult(lvs[0])) * t.getAtkMulti());
             }
         }
 
         return String.valueOf(result);
     }
 
-    public static String getTotalAtk(Enemy e, int magnification) {
-        if(e == null || e.de == null)
+    public static String getTotalAtk(MaskEnemy e, int magnification) {
+        if(e == null)
             return "";
 
-        int[][] atks = e.de.rawAtkData();
+        int[][] atks = e.rawAtkData();
 
         int result = 0;
 
         for(int[] atk : atks) {
-            result += (int) (atk[0] * e.de.multi(BasisSet.current()) * magnification / 100.0);
+            result += (int) (atk[0] * e.multi(BasisSet.current()) * magnification / 100.0);
         }
 
         return String.valueOf(result);
     }
 
-    public static String getAtks(Form f, MaskUnit du, boolean talent, int[] lvs) {
-        if(f == null || f.du == null)
+    public static String getAtks(UnitLevel lv, MaskUnit du, boolean talent, int[] lvs) {
+        if(du == null)
             return "";
 
         int[][] raw = du.rawAtkData();
@@ -567,10 +561,10 @@ public class DataToString {
         for(int[] atk : raw) {
             int result;
 
-            if(f.du.getPCoin() != null && talent) {
-                result = (int) ((int) (Math.round(atk[0] * f.unit.lv.getMult(lvs[0])) * t.getAtkMulti()) * f.du.getPCoin().getAtkMultiplication(lvs));
+            if(du.getPCoin() != null && talent) {
+                result = (int) ((int) (Math.round(atk[0] * lv.getMult(lvs[0])) * t.getAtkMulti()) * du.getPCoin().getAtkMultiplication(lvs));
             } else {
-                result = (int) (Math.round(atk[0] * f.unit.lv.getMult(lvs[0])) * t.getAtkMulti());
+                result = (int) (Math.round(atk[0] * lv.getMult(lvs[0])) * t.getAtkMulti());
             }
 
             damage.add(result);
@@ -588,16 +582,16 @@ public class DataToString {
         return result.toString();
     }
 
-    public static String getAtks(Enemy e, int magnification) {
-        if(e == null || e.de == null)
+    public static String getAtks(MaskEnemy e, int magnification) {
+        if(e == null)
             return "";
 
-        int[][] atks = e.de.rawAtkData();
+        int[][] atks = e.rawAtkData();
 
         ArrayList<Integer> damages = new ArrayList<>();
 
         for(int[] atk : atks) {
-            damages.add((int) (atk[0] * e.de.multi(BasisSet.current()) * magnification / 100.0));
+            damages.add((int) (atk[0] * e.multi(BasisSet.current()) * magnification / 100.0));
         }
 
         StringBuilder sb = new StringBuilder("(");
@@ -612,122 +606,122 @@ public class DataToString {
         return sb.toString();
     }
 
-    public static String getDPS(Form f, boolean talent, int[] lvs) {
-        if(f == null || f.du == null)
+    public static String getDPS(MaskUnit f, UnitLevel lv, boolean talent, int[] lvs) {
+        if(f == null)
             return "";
 
         MaskUnit du;
 
-        if(lvs != null && f.du.getPCoin() != null)
+        if(lvs != null && f.getPCoin() != null)
             if(talent)
-                du = f.du.getPCoin().improve(lvs);
+                du = f.getPCoin().improve(lvs);
             else
-                du = f.du;
+                du = f;
         else
-            du = f.du;
+            du = f;
 
-        return df.format(Double.parseDouble(getTotalAtk(f, du, talent, lvs)) / (du.getItv() / 30.0));
+        return df.format(Double.parseDouble(getTotalAtk(lv, du, talent, lvs)) / (du.getItv() / 30.0));
     }
 
-    public static String getDPS(Enemy e, int magnification) {
-        if(e == null || e.de == null)
+    public static String getDPS(MaskEnemy e, int magnification) {
+        if(e == null)
             return "";
 
-        return df.format(Double.parseDouble(getTotalAtk(e, magnification)) / (e.de.getItv() / 30.0));
+        return df.format(Double.parseDouble(getTotalAtk(e, magnification)) / (e.getItv() / 30.0));
     }
 
-    public static String getSpeed(Form f, boolean talent, int[] lvs) {
-        if(f == null || f.du == null)
+    public static String getSpeed(MaskUnit f, boolean talent, int[] lvs) {
+        if(f == null)
             return "";
 
         MaskUnit du;
 
-        if(lvs != null && f.du.getPCoin() != null)
+        if(lvs != null && f.getPCoin() != null)
             if(talent)
-                du = f.du.getPCoin().improve(lvs);
+                du = f.getPCoin().improve(lvs);
             else
-                du = f.du;
+                du = f;
         else
-            du = f.du;
+            du = f;
 
         return String.valueOf(du.getSpeed());
     }
 
-    public static String getSpeed(Enemy e) {
-        if(e == null || e.de == null)
+    public static String getSpeed(MaskEnemy e) {
+        if(e == null)
             return "";
 
-        return String.valueOf(e.de.getSpeed());
+        return String.valueOf(e.getSpeed());
     }
 
-    public static String getHitback(Form f, boolean talent, int[] lvs) {
-        if(f == null || f.du == null)
+    public static String getHitback(MaskUnit f, boolean talent, int[] lvs) {
+        if(f == null)
             return "";
 
         MaskUnit du;
 
-        if(lvs != null && f.du.getPCoin() != null)
+        if(lvs != null && f.getPCoin() != null)
             if(talent)
-                du = f.du.getPCoin().improve(lvs);
+                du = f.getPCoin().improve(lvs);
             else
-                du = f.du;
+                du = f;
         else
-            du = f.du;
+            du = f;
 
         return String.valueOf(du.getHb());
     }
 
-    public static String getHitback(Enemy e) {
-        if(e == null || e.de == null)
+    public static String getHitback(MaskEnemy e) {
+        if(e == null)
             return "";
 
-        return String.valueOf(e.de.getHb());
+        return String.valueOf(e.getHb());
     }
 
-    public static String getHP(Form f, boolean talent, int[] lvs) {
-        if(f == null || f.du == null)
+    public static String getHP(MaskUnit f, UnitLevel lv, boolean talent, int[] lvs) {
+        if(f == null)
             return "";
 
         MaskUnit du;
 
-        if(f.du.getPCoin() != null && talent)
-            du = f.du.getPCoin().improve(lvs);
+        if(f.getPCoin() != null && talent)
+            du = f.getPCoin().improve(lvs);
         else
-            du = f.du;
+            du = f;
 
         Treasure t = BasisSet.current().t();
 
         int result;
 
-        if(f.du.getPCoin() != null && talent) {
-            result = (int) ((int) (Math.round(du.getHp() * f.unit.lv.getMult(lvs[0])) * t.getDefMulti()) * f.du.getPCoin().getHPMultiplication(lvs));
+        if(f.getPCoin() != null && talent) {
+            result = (int) ((int) (Math.round(du.getHp() * lv.getMult(lvs[0])) * t.getDefMulti()) * f.getPCoin().getHPMultiplication(lvs));
         } else {
-            result = (int) (Math.round(du.getHp() * f.unit.lv.getMult(lvs[0])) * t.getDefMulti());
+            result = (int) (Math.round(du.getHp() * lv.getMult(lvs[0])) * t.getDefMulti());
         }
 
         return String.valueOf(result);
     }
 
-    public static String getHP(Enemy e, int magnification) {
-        if(e == null || e.de == null)
+    public static String getHP(MaskEnemy e, int magnification) {
+        if( e == null)
             return "";
 
-        return "" + (int) (e.de.multi(BasisSet.current()) * e.de.getHp() * magnification / 100.0);
+        return "" + (int) (e.multi(BasisSet.current()) * e.getHp() * magnification / 100.0);
     }
 
-    public static String getTrait(Form f, boolean talent, int[] lvs, int lang) {
-        if(f == null || f.du == null)
+    public static String getTrait(MaskUnit f, boolean talent, int[] lvs, int lang) {
+        if(f == null)
             return "";
 
         MaskUnit du;
 
-        if(lvs != null & f.du.getPCoin() != null)
+        if(lvs != null & f.getPCoin() != null)
             if(talent)
-                du = f.du.getPCoin().improve(lvs);
+                du = f.getPCoin().improve(lvs);
             else
-                du = f.du;
+                du = f;
         else
-            du = f.du;
+            du = f;
 
         StringBuilder allColor = new StringBuilder();
         StringBuilder allTrait = new StringBuilder();
@@ -757,8 +751,8 @@ public class DataToString {
         return trait;
     }
 
-    public static String getTrait(Enemy e, int lang) {
-        if(e == null || e.de == null)
+    public static String getTrait(MaskEnemy e, int lang) {
+        if(e == null)
             return "";
 
         StringBuilder allColor = new StringBuilder();
@@ -772,7 +766,7 @@ public class DataToString {
         }
         allTrait.append(LangID.getStringByID("data_white", lang)).append(", ").append(allColor);
 
-        String trait = Interpret.getTrait(e.de.getTraits(), e.de.getStar(), lang);
+        String trait = Interpret.getTrait(e.getTraits(), e.getStar(), lang);
 
         if(trait.isBlank())
             trait = LangID.getStringByID("data_none", lang);
@@ -789,64 +783,64 @@ public class DataToString {
         return trait;
     }
 
-    public static String getCost(Form f, boolean talent, int[] lvs) {
-        if(f == null || f.du == null)
+    public static String getCost(MaskUnit f, boolean talent, int[] lvs) {
+        if(f == null)
             return "";
 
         MaskUnit du;
 
-        if(lvs != null & f.du.getPCoin() != null)
+        if(lvs != null & f.getPCoin() != null)
             if(talent)
-                du = f.du.getPCoin().improve(lvs);
+                du = f.getPCoin().improve(lvs);
             else
-                du = f.du;
+                du = f;
         else
-            du = f.du;
+            du = f;
 
         return String.valueOf((int)(du.getPrice()*1.5));
     }
 
-    public static String getDrop(Enemy e) {
-        if(e == null || e.de == null)
+    public static String getDrop(MaskEnemy e) {
+        if(e == null)
             return "";
 
         Treasure t = BasisSet.current().t();
 
-        return String.valueOf((int) (e.de.getDrop() * t.getDropMulti() / 100));
+        return String.valueOf((int) (e.getDrop() * t.getDropMulti() / 100));
     }
 
-    public static String getSiMu(Form f, int lang) {
-        if(f == null || f.du == null)
+    public static String getSiMu(MaskUnit f, int lang) {
+        if(f == null)
             return "";
 
-        if(Interpret.isType(f.du, 1))
+        if(Interpret.isType(f, 1))
             return LangID.getStringByID("data_area", lang);
         else
             return LangID.getStringByID("data_single", lang);
     }
 
-    public static String getSiMu(Enemy e, int lang) {
-        if(e == null || e.de == null)
+    public static String getSiMu(MaskEnemy e, int lang) {
+        if(e == null)
             return "";
 
-        if(Interpret.isType(e.de, 1))
+        if(Interpret.isType(e, 1))
             return LangID.getStringByID("data_area", lang);
         else
             return LangID.getStringByID("data_single", lang);
     }
 
-    public static String getTalent(Form f, int[] lv, int lang) {
-        if(f == null || f.du.getPCoin() == null)
+    public static String getTalent(MaskUnit f, int[] lv, int lang) {
+        if(f == null || f.getPCoin() == null)
             return LangID.getStringByID("data_notalent", lang);
 
-        ArrayList<int[]> info = f.du.getPCoin().info;
+        ArrayList<int[]> info = f.getPCoin().info;
 
         StringBuilder sb = new StringBuilder(LangID.getStringByID("data_talen", lang));
 
-        if(f.du.getPCoin().trait.size() != 0) {
+        if(f.getPCoin().trait.size() != 0) {
             sb.append("[");
 
-            String trait = Interpret.getTrait(f.du.getPCoin().trait, 0, lang);
+            String trait = Interpret.getTrait(f.getPCoin().trait, 0, lang);
 
             if(trait.endsWith(", "))
                 trait = trait.substring(0, trait.length() - 2);
@@ -870,14 +864,14 @@ public class DataToString {
         return sb.toString();
     }
 
-    public static String getBarrier(Enemy e, int lang) {
-        if(e == null || e.de == null)
+    public static String getBarrier(MaskEnemy e, int lang) {
+        if(e == null)
             return "";
 
-        if(e.de.getProc().BARRIER.health == 0)
+        if(e.getProc().BARRIER.health == 0)
             return LangID.getStringByID("data_none", lang);
         else
-            return String.valueOf(e.de.getProc().BARRIER.health);
+            return String.valueOf(e.getProc().BARRIER.health);
     }
 
     public static String getMagnification(int[] mag, int star) {

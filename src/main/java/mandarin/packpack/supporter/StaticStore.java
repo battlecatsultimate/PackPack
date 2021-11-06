@@ -518,7 +518,7 @@ public class StaticStore {
             boolean res = f.delete();
 
             if(!res) {
-                System.out.println("Failed to delete file : "+f.getAbsolutePath());
+                logger.uploadLog("Failed to delete file : "+f.getAbsolutePath());
             }
         } else if(f.isDirectory()) {
             File[] files = f.listFiles();
@@ -529,7 +529,7 @@ public class StaticStore {
                         boolean res = g.delete();
 
                         if(!res) {
-                            System.out.println("Failed to delete file : "+g.getAbsolutePath());
+                            logger.uploadLog("Failed to delete file : "+g.getAbsolutePath());
                         }
                     } else if(g.isDirectory()) {
                         deleteFile(g, true);
@@ -541,7 +541,7 @@ public class StaticStore {
                 boolean res = f.delete();
 
                 if(!res) {
-                    System.out.println("Failed to delete folder : "+f.getAbsolutePath());
+                    logger.uploadLog("Failed to delete folder : "+f.getAbsolutePath());
                 }
             }
         }
@@ -549,6 +549,9 @@ public class StaticStore {
 
     public static String findFileName(File folder, String name, String extension) {
         int n = 0;
+
+        if(!extension.isBlank() && !extension.startsWith("."))
+            extension = "." + extension.strip();
 
         while(true) {
             String fileName;

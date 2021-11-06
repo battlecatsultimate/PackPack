@@ -11,6 +11,7 @@ import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 
 import static java.awt.AlphaComposite.SRC_OVER;
 
@@ -57,9 +58,17 @@ public class FG2D implements FakeGraphics {
 		g.drawImage((Image) bimg.bimg(), (int) i, (int) j, null);
 	}
 
+	public void drawImage(BufferedImage bimg, double i, double j) {
+		g.drawImage(bimg, (int) i, (int) j, null);
+	}
+
 	@Override
 	public void drawImage(FakeImage bimg, double ix, double iy, double iw, double ih) {
 		g.drawImage((Image) bimg.bimg(), (int) ix, (int) iy, (int) iw, (int) ih, null);
+	}
+
+	public void drawImage(BufferedImage bimg, double ix, double iy, double iw, double ih) {
+		g.drawImage(bimg, (int) ix, (int) iy, (int) iw, (int) ih, null);
 	}
 
 	@Override
@@ -175,6 +184,18 @@ public class FG2D implements FakeGraphics {
 
 	public void setStroke(float f) {
 		g.setStroke(new BasicStroke(f,BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER));
+	}
+
+	public void setStroke(float f, int mode, int joinMode) {
+		g.setStroke(new BasicStroke(f, mode, joinMode));
+	}
+
+	public void roundRect(int x, int y, int w, int h, int aw, int ah) {
+		g.drawRoundRect(x, y, w, h, aw, ah);
+	}
+
+	public void fillRoundRect(int x, int y, int w, int h, int aw, int ah) {
+		g.fillRoundRect(x, y, w, h, aw, ah);
 	}
 
 	@Override

@@ -222,7 +222,7 @@ public class AnimMessageHolder extends MessageHolder<MessageCreateEvent> {
                         File res = new File(container, a.getFilename());
 
                         if(res.exists()) {
-                            if(mixer.validMaanim(res)) {
+                            if(AnimMixer.validMaanim(res)) {
                                 maanim.get(ind).set("MAANIM "+ind+" : SUCCESS");
 
                                 VFile vf = VFile.getFile(res);
@@ -451,7 +451,7 @@ public class AnimMessageHolder extends MessageHolder<MessageCreateEvent> {
                             File res = new File(container, a.getFilename());
 
                             if(res.exists()) {
-                                if(mixer.validMaanim(res)) {
+                                if(AnimMixer.validMaanim(res)) {
                                     maanim.get(ind).set("MAANIM "+ind+" : SUCCESS");
 
                                     VFile vf = VFile.getFile(res);

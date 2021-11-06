@@ -37,6 +37,24 @@ public class AnimMixer implements Source.AnimLoader {
         return png.equals("PNG");
     }
 
+    public static boolean validMaanim(File maanim) throws Exception {
+        if(!maanim.exists() || maanim.isDirectory())
+            return false;
+
+        BufferedReader reader = new BufferedReader(new FileReader(maanim));
+
+        String line = reader.readLine();
+
+        if(line == null)
+            return false;
+
+        line = line.trim();
+
+        reader.close();
+
+        return line.contains("[modelanim:animation") || line.contains("[maanim]");
+    }
+
     public BufferedImage png;
     public ImgCut imgCut;
     public MaModel model;
@@ -112,24 +130,6 @@ public class AnimMixer implements Source.AnimLoader {
         reader.close();
 
         return line.contains("[modelanim:model") || line.contains("[mamodel]");
-    }
-
-    public boolean validMaanim(File maanim) throws Exception {
-        if(!maanim.exists() || maanim.isDirectory())
-            return false;
-
-        BufferedReader reader = new BufferedReader(new FileReader(maanim));
-
-        String line = reader.readLine();
-
-        if(line == null)
-            return false;
-
-        line = line.trim();
-
-        reader.close();
-
-        return line.contains("[modelanim:animation") || line.contains("[maanim]");
     }
 
     @Override
