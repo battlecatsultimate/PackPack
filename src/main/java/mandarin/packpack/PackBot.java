@@ -23,6 +23,7 @@ import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.presence.ClientActivity;
 import discord4j.core.object.presence.ClientPresence;
 import discord4j.core.spec.RoleCreateSpec;
+import discord4j.gateway.intent.IntentSet;
 import discord4j.rest.request.RouterOptions;
 import mandarin.packpack.commands.*;
 import mandarin.packpack.commands.bc.*;
@@ -69,8 +70,7 @@ public class PackBot {
         DiscordClientBuilder<DiscordClient, RouterOptions> builder = DiscordClientBuilder.create(TOKEN);
 
         DiscordClient client = builder.build();
-
-        GatewayDiscordClient gate = client.gateway().login().block();
+        GatewayDiscordClient gate = client.gateway().setEnabledIntents(IntentSet.all()).login().block();
 
         if(gate == null) {
             return;
@@ -811,6 +811,9 @@ public class PackBot {
                                 case "unregisterl":
                                 case "url":
                                     new UnregisterLogging(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+                                    break;
+                                case "setup":
+                                    new Setup(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
                                     break;
                             }
                         }

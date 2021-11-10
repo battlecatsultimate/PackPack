@@ -35,7 +35,7 @@ public class Help extends Command {
                     .color(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)])
                     .addField(LangID.getStringByID("help_normal", lang), "```analyze, locale, prefix```", false)
                     .addField(LangID.getStringByID("help_bc", lang), "```background, castle, catcombo, enemygif, enemyimage, enemysprite, enemystat, findstage, formgif, formimage, formsprite, formstat, medal, music, stageinfo```", false)
-                    .addField(LangID.getStringByID("help_server", lang), "```bcustat, boosteremoji, boosteremojiremove, boosterrole, boosterroleremove, channelpermission, checkbcu, clearcache, idset, memory, save, serverjson, serverpre```", false)
+                    .addField(LangID.getStringByID("help_server", lang), "```bcustat, boosteremoji, boosteremojiremove, boosterrole, boosterroleremove, channelpermission, checkbcu, clearcache, idset, memory, save, serverjson, serverpre, setup```", false)
                     .addField(LangID.getStringByID("help_data", lang), "```animanalyzer, announcement, stageimage, stagemapimage```", false)
                     .addField(LangID.getStringByID("help_packpack", lang), "```alias, aliasadd, aliasremove, statistic, suggest```", false);
 
@@ -232,6 +232,9 @@ public class Help extends Command {
             case "berem":
             case "ber":
                 ch.createMessage(addFields( "boosteremojiremove", true, false, false)).subscribe();
+                break;
+            case "setup":
+                ch.createMessage(addFields("setup", false, false, true)).subscribe();
                 break;
             default:
                 createMessageWithNoPings(ch, LangID.getStringByID("help_nocomm", lang).replace("_", command));

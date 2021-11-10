@@ -4,6 +4,7 @@ import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.ReactiveEventAdapter;
 import discord4j.core.event.domain.Event;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
+import discord4j.core.event.domain.interaction.ComponentInteractionEvent;
 import discord4j.core.event.domain.interaction.InteractionCreateEvent;
 import discord4j.core.object.command.ApplicationCommandOption;
 import discord4j.core.object.entity.Member;
@@ -95,8 +96,8 @@ public class SlashBuilder {
                     }
                 }
 
-                if(event instanceof ButtonInteractionEvent) {
-                    ButtonInteractionEvent bEvent = (ButtonInteractionEvent) event;
+                if(event instanceof ComponentInteractionEvent) {
+                    ComponentInteractionEvent bEvent = (ComponentInteractionEvent) event;
 
                     if(bEvent.getMessage().isEmpty())
                         return Mono.empty();
@@ -117,13 +118,21 @@ public class SlashBuilder {
                         if(interactionHolder.canCastTo(ButtonInteractionEvent.class)) {
                             InteractionHolder<ButtonInteractionEvent> h = (InteractionHolder<ButtonInteractionEvent>) interactionHolder;
 
-                            System.out.println(h.getClass().getName());
-
-                            int result = h.handleEvent(bEvent);
+                            int result = h.handleEvent((ButtonInteractionEvent) bEvent);
 
                             if(result == Holder.RESULT_FINISH || result == Holder.RESULT_FAIL) {
                                 StaticStore.removeHolder(mem.getId().asString(), holder);
                             }
+
+                            if(result == Holder.RESULT_FINISH) {
+                                return h.getInteraction((ButtonInteractionEvent) bEvent);
+                            } else {
+                                return Mono.empty();
+                            }
+                        } else if(interactionHolder.canCastTo(ComponentInteractionEvent.class)) {
+                            InteractionHolder<ComponentInteractionEvent> h = (InteractionHolder<ComponentInteractionEvent>) interactionHolder;
+
+                            int result = h.handleEvent(bEvent);
 
                             if(result == Holder.RESULT_FINISH) {
                                 return h.getInteraction(bEvent);

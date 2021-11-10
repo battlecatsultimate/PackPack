@@ -247,6 +247,7 @@ public class IDHolder {
                 ", BCU_PC_USER='" + BCU_PC_USER + '\'' +
                 ", BCU_ANDROID='" + BCU_ANDROID + '\'' +
                 ", MUTED='" + MUTED + '\'' +
+                ", BOOSTER='" + BOOSTER + '\'' +
                 ", GET_ACCESS='" + GET_ACCESS + '\'' +
                 ", ANNOUNCE='" + ANNOUNCE + '\'' +
                 ", channel=" + channel +

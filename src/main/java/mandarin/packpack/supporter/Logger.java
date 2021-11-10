@@ -52,7 +52,7 @@ public class Logger {
                 ExceptionUtils.getStackTrace(e)+"\n```";
 
         if(errMessage.length() >= 2000) {
-            errMessage = errMessage.substring(0, 1997) + "...";
+            errMessage = errMessage.substring(0, 1993) + "...\n```";
         }
 
         createMessageWithNoPingsWithFile(ch, errMessage, files);

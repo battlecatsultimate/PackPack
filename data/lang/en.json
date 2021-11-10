@@ -429,6 +429,9 @@
   "help_boosteremojiremove_use" : "`p!boosteremojiremove [User ID]`",
   "help_boosteremojiremove_desc" : "Remove assigned custom booster emoji from booster member if possible. Only moderators can use this command because this command manages server's emoji. `boosteremojirem`, `beremove`, `berem`, `ber` are also valid command",
   "help_boosteremojiremove_argu" : "`-l` or `-leave` : Make bot not remove custom booster emoji, and only remove assigned data of this booster member",
+  "help_setup_use" : "`p!setup`",
+  "help_setup_desc" : "Setup PackPack, so users in this server can use commands properly. **This affects permission of commands for users, so only moderator of this server can use this command**",
+  "help_setup_tip" : "Most of PackPack commands require specific role to be used, so moderators need to give permission to specific role for using these commands. PackPack adds role called `PackPackMod` if there isn't any specified moderator role or member role set. Moderator can add this role and call this command to themselves to firstly initialize role data to restrict uses of commands for users",
   "prefix_space" : "Prefix can't be white spaces!",
   "prefix_set" : "Prefix is set as _!",
   "prefix_setnone" : "Your prefix has been updated!",
@@ -611,5 +614,17 @@
   "button_pref" : "Previous Form",
   "button_firf" : "First Form",
   "button_nexf" : "Next Form",
-  "button_finf" : "Final Form"
+  "button_finf" : "Final Form",
+  "button_confirm" : "Confirm",
+  "button_cancel": "Cancel",
+  "confirm_expired" : "Confirmation expired",
+  "setup_select" : "Select role",
+  "setup_confirm" : "It seems this server already has set up ID data, are you sure that you want to override these data?",
+  "setup_cancel" : "Canceled setup",
+  "setup_expire" : "Setup expired",
+  "setup_mod" : "Select moderator role",
+  "setup_modsele" : "Moderator role is selected as <@&_RRR_>",
+  "setup_mem" : "Select member role",
+  "setup_memsele" : "Member role is selected as <@&_RRR_>",
+  "setup_done" : "Done!\n\nUsers who have <@&_MOD_> will be able to use moderator-only commands\nUsers who have <@&_MEM_> will be able to use member-only commands.\n\nYou can use `p!channelpermission` to make users able to use commands only in specific channels, call `p!help chp` for detailed info about it"
 }
