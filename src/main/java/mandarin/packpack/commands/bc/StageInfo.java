@@ -141,6 +141,14 @@ public class StageInfo extends TimedConstraintCommand {
         } else {
             ArrayList<Stage> stages = EntityFilter.findStageWithName(names, lang);
 
+            if(stages.isEmpty() && names[0] == null && names[1] == null) {
+                stages = EntityFilter.findStageWithMapName(names[2]);
+
+                if(!stages.isEmpty()) {
+                    ch.createMessage(LangID.getStringByID("stinfo_smart", lang)).subscribe();
+                }
+            }
+
             if(stages.isEmpty()) {
                 createMessageWithNoPings(ch, LangID.getStringByID("stinfo_nores", lang).replace("_", generateSearchName(names)));
             } else if(stages.size() == 1) {
@@ -152,11 +160,13 @@ public class StageInfo extends TimedConstraintCommand {
 
                 Message result = EntityHandler.showStageEmb(stages.get(0), ch, isFrame, star, lang);
 
+                ArrayList<Stage> finalStages = stages;
+
                 getMember(event).ifPresent(m -> {
                     Message author = getMessage(event);
 
                     if(author != null)
-                        StaticStore.putHolder(m.getId().asString(), new StageInfoButtonHolder(stages.get(0), author, result, ch.getId().asString(), m.getId().asString()));
+                        StaticStore.putHolder(m.getId().asString(), new StageInfoButtonHolder(finalStages.get(0), author, result, ch.getId().asString(), m.getId().asString()));
                 });
             } else {
                 int param = checkParameters(getContent(event));
@@ -263,11 +273,13 @@ public class StageInfo extends TimedConstraintCommand {
                 Message res = getMessageWithNoPings(ch, sb.toString());
 
                 if(res != null) {
+                    ArrayList<Stage> finalStages1 = stages;
+
                     getMember(event).ifPresent(member -> {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(member.getId().asString(), new StageInfoMessageHolder(stages, msg, res, ch.getId().asString(), star, isFrame, lang));
+                            StaticStore.putHolder(member.getId().asString(), new StageInfoMessageHolder(finalStages1, msg, res, ch.getId().asString(), star, isFrame, lang));
                     });
                 }
             }

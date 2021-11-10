@@ -468,6 +468,7 @@
   "stinfo_nores" : "Searching with [_], but no such stage found!",
   "stinfo_several" : "Searching with [_], and several results found...\n",
   "stinfo_noname" : "This command requires one more argument : [Stage Name]",
+  "stinfo_smart" : "Smart search activated, searched data with specified name as map name automatically",
   "fimg_walk" : "Walking",
   "fimg_idle" : "Idle",
   "fimg_atk" : "Attack",

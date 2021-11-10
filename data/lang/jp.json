@@ -465,6 +465,7 @@
   "stinfo_nores" : "[_]で検索しましたが、 そのようなステージは見つかりませんでした!",
   "stinfo_several" : "[_]で検索しましたが、 複数見つかりました...\n",
   "stinfo_noname" : "このコマンドはもう一つ引数が必要です! : [ステージの名前]",
+  "stinfo_smart" : "Smart search activated, searched data with specified name as map name automatically",
   "fimg_walk" : "Walking 移動",
   "fimg_idle" : "Idle 待機",
   "fimg_atk" : "Attack 攻撃",

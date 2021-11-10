@@ -129,6 +129,16 @@ public class EntityFilter {
                                 break;
                             }
                         }
+
+                        int s = damerauLevenshteinDistance(fname, name);
+
+                        if(s <= 5) {
+                            done = true;
+                            similar.add(f);
+                            similarity.add(s);
+
+                            sMin = Math.min(s, sMin);
+                        }
                     }
 
                     if(!done) {
@@ -170,6 +180,16 @@ public class EntityFilter {
 
                                         break;
                                     }
+                                }
+
+                                int s = damerauLevenshteinDistance(a, name);
+
+                                if(s <= 5) {
+                                    added = true;
+                                    similar.add(f);
+                                    similarity.add(s);
+
+                                    sMin = Math.min(s, sMin);
                                 }
 
                                 if(added)
@@ -322,6 +342,16 @@ public class EntityFilter {
                             break;
                         }
                     }
+
+                    int s = damerauLevenshteinDistance(ename, name);
+
+                    if(s <= 5) {
+                        done = true;
+                        similar.add(e);
+                        similarity.add(s);
+
+                        sMin = Math.min(s, sMin);
+                    }
                 }
 
                 if(!done) {
@@ -363,6 +393,16 @@ public class EntityFilter {
 
                                     break;
                                 }
+                            }
+
+                            int s = damerauLevenshteinDistance(a, name);
+
+                            if(s <= 5) {
+                                added = true;
+                                similar.add(e);
+                                similarity.add(s);
+
+                                sMin = Math.min(s, sMin);
                             }
 
                             if(added)
@@ -1199,8 +1239,46 @@ public class EntityFilter {
         return result;
     }
 
+    public static ArrayList<Stage> findStageWithMapName(String name) {
+        ArrayList<Stage> stmResult = new ArrayList<>();
+
+        for(MapColc mc : MapColc.values()) {
+            if(mc == null)
+                continue;
+
+            for(StageMap stm : mc.maps.getList()) {
+                if(stm == null)
+                    continue;
+
+                boolean s1 = false;
+
+                for(int i = 0; i < StaticStore.langIndex.length; i++) {
+                    String stmName = StaticStore.safeMultiLangGet(stm, StaticStore.langIndex[i]);
+
+                    if(stmName == null || stmName.isBlank())
+                        continue;
+
+                    if(stmName.toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
+                        s1 = true;
+                        break;
+                    }
+                }
+
+                if(s1) {
+                    stmResult.addAll(stm.list.getList());
+                }
+            }
+        }
+
+        return stmResult;
+    }
+
     public static Stage pickOneStage(String[] names, int lang) {
         ArrayList<Stage> stages = findStageWithName(names, lang);
+
+        if(stages.isEmpty() && names[0] == null && names[1] == null) {
+            stages = EntityFilter.findStageWithMapName(names[2]);
+        }
 
         if(stages.isEmpty()) {
             return null;
@@ -1339,6 +1417,8 @@ public class EntityFilter {
                         break;
                     }
                 }
+
+                sMin = Math.min(sMin, damerauLevenshteinDistance(medalName, name));
             }
 
             if(similar.isEmpty())
@@ -1792,6 +1872,9 @@ public class EntityFilter {
                     }
                 }
             }
+
+            disMin = Math.min(disMin, damerauLevenshteinDistance(name, keyword));
+            allMin = Math.min(allMin, damerauLevenshteinDistance(name, keyword));
 
             distances.add(disMin);
         }

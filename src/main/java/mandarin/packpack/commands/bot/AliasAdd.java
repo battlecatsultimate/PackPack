@@ -244,6 +244,14 @@ public class AliasAdd extends Command {
 
                 ArrayList<Stage> stages = EntityFilter.findStageWithName(names, lang);
 
+                if(stages.isEmpty() && names[0] == null && names[1] == null) {
+                    stages = EntityFilter.findStageWithMapName(names[2]);
+
+                    if(!stages.isEmpty()) {
+                        ch.createMessage(LangID.getStringByID("stinfo_smart", lang)).subscribe();
+                    }
+                }
+
                 if(stages.isEmpty()) {
                     createMessageWithNoPings(ch, LangID.getStringByID("stinfo_nores", lang).replace("_", generateSearchName(names)));
                 } else if(stages.size() == 1) {
@@ -373,11 +381,13 @@ public class AliasAdd extends Command {
                     Message res = getMessageWithNoPings(ch, sb.toString());
 
                     if(res != null) {
+                        ArrayList<Stage> fStage = stages;
+
                         getMember(event).ifPresent(member -> {
                             Message msg = getMessage(event);
 
                             if(msg != null)
-                                StaticStore.putHolder(member.getId().asString(), new AliasStageMessageHolder(stages, msg, res, ch.getId().asString(), AliasHolder.MODE.ADD, lang, getAliasName(getContent(event))));
+                                StaticStore.putHolder(member.getId().asString(), new AliasStageMessageHolder(fStage, msg, res, ch.getId().asString(), AliasHolder.MODE.ADD, lang, getAliasName(getContent(event))));
                         });
                     }
                 }
