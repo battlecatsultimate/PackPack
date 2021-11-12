@@ -4,11 +4,9 @@ import common.CommonStatic;
 import common.system.P;
 import common.system.fake.FakeGraphics;
 import common.system.fake.FakeImage;
-import common.system.files.VFile;
 import common.util.Data;
 import common.util.anim.AnimU;
 import common.util.anim.EAnimD;
-import common.util.anim.MaAnim;
 import common.util.pack.Background;
 import common.util.pack.bgeffect.BackgroundEffect;
 import discord4j.core.object.entity.Message;
@@ -28,8 +26,10 @@ import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.io.*;
-import java.nio.charset.StandardCharsets;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -69,7 +69,10 @@ public class ImageDrawing {
             5400,
             4700,
             6200,
-            5400
+            5400,
+            4900,
+            5200,
+            4400
     };
 
     private static Font titleFont;
