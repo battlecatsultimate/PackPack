@@ -15,7 +15,6 @@ public abstract class ConstraintCommand extends Command {
         MANDARIN,
         MOD,
         MEMBER,
-        PRE_MEMBER,
         CONTRIBUTOR
     }
 
@@ -31,9 +30,6 @@ public abstract class ConstraintCommand extends Command {
                 break;
             case MEMBER:
                 constRole = id.MEMBER;
-                break;
-            case PRE_MEMBER:
-                constRole = id.PRE_MEMBER;
                 break;
             case MANDARIN:
                 constRole = "MANDARIN";

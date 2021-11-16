@@ -31,9 +31,6 @@ public abstract class TimedConstraintCommand extends Command {
             case MEMBER:
                 constRole = idHolder.MEMBER;
                 break;
-            case PRE_MEMBER:
-                constRole = idHolder.PRE_MEMBER;
-                break;
             case MANDARIN:
                 constRole = "MANDARIN";
                 break;

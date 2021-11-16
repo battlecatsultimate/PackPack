@@ -38,9 +38,6 @@ public abstract class GlobalTimedConstraintCommand extends Command {
             case MEMBER:
                 constRole = id.MEMBER;
                 break;
-            case PRE_MEMBER:
-                constRole = id.PRE_MEMBER;
-                break;
             case MANDARIN:
                 constRole = "MANDARIN";
                 break;

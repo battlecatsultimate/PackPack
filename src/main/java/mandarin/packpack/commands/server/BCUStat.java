@@ -43,38 +43,51 @@ public class BCUStat extends Command {
         AtomicReference<Long> allUsers = new AtomicReference<>(0L);
 
         getGuild(event).subscribe(g -> {
-            g.getMembers()
+            System.out.println(result.get());
+
+            Long human = g.getMembers()
                     .filter(m -> !m.isBot())
                     .count()
-                    .subscribe(l -> {
-                        result.get().append(LangID.getStringByID("bcustat_human", lang).replace("_", Long.toString(l)));
-                        allUsers.set(l);
-                    });
+                    .block();
 
-            g.getMembers()
-                    .filter(m -> !m.isBot())
-                    .filter(m -> holder.PRE_MEMBER != null && StaticStore.rolesToString(m.getRoleIds()).contains(holder.PRE_MEMBER))
-                    .count()
-                    .subscribe(l -> result.get().append(LangID.getStringByID("bcustat_prem", lang).replace("_", String.valueOf(l)).replace("=", df.format(l * 100.0 / allUsers.get()))));
+            if(human == null)
+                return;
 
-            g.getMembers()
+            result.get().append(LangID.getStringByID("bcustat_human", lang).replace("_", Long.toString(human)));
+            allUsers.set(human);
+
+            Long member = g.getMembers()
                     .filter(m -> !m.isBot())
                     .filter(m -> holder.MEMBER != null && StaticStore.rolesToString(m.getRoleIds()).contains(holder.MEMBER))
                     .count()
-                    .subscribe(l -> result.get().append(LangID.getStringByID("bcustat_mem", lang).replace("_", String.valueOf(l)).replace("=", df.format(l * 100.0 / allUsers.get()))));
+                    .block();
 
-            g.getMembers()
-                    .filter(m -> !m.isBot())
-                    .filter(m -> holder.BCU_PC_USER != null && StaticStore.rolesToString(m.getRoleIds()).contains(holder.BCU_PC_USER))
-                    .count()
-                    .subscribe(l -> result.get().append(LangID.getStringByID("bcustat_pc", lang).replace("_", String.valueOf(l)).replace("=", df.format(l * 100.0 / allUsers.get()))));
+            if(member == null)
+                return;
 
-            g.getMembers()
-                    .filter(m -> !m.isBot())
-                    .filter(m -> holder.BCU_ANDROID != null && StaticStore.rolesToString(m.getRoleIds()).contains(holder.BCU_ANDROID))
-                    .count()
-                    .subscribe(l -> result.get().append(LangID.getStringByID("bcustat_and", lang).replace("_", String.valueOf(l)).replace("=",df.format(l * 100.0 / allUsers.get()))));
+            result.get().append(LangID.getStringByID("bcustat_mem", lang).replace("_", String.valueOf(member)).replace("=", df.format(member * 100.0 / allUsers.get())));
+
+            for(String name : holder.ID.keySet()) {
+                String id = holder.ID.get(name);
+
+                if(id == null)
+                    continue;
+
+                Long c = g.getMembers()
+                        .filter(m -> !m.isBot())
+                        .filter(m -> StaticStore.rolesToString(m.getRoleIds()).contains(id))
+                        .count()
+                        .block();
+
+                if(c == null)
+                    continue;
+
+                result.get().append(LangID.getStringByID("bcustat_role", lang).replace("_MMM_", String.valueOf(c)).replace("=", df.format(c * 100.0 / allUsers.get())).replace("_NNN_", limitName(name)));
+
+                System.out.println(result.get());
+            }
         }, e -> {
+            StaticStore.logger.uploadErrorLog(e, "Error during perform BCUStat command");
             ch.createMessage(StaticStore.ERROR_MSG).subscribe();
             error.set(true);
         }, pause::resume);
@@ -86,5 +99,13 @@ public class BCUStat extends Command {
 
         if(!error.get())
             ch.createMessage(result.get().toString()).subscribe();
+    }
+
+    private String limitName(String name) {
+        if(name.length() > 20) {
+            return name.substring(0, 17) + "...";
+        }
+
+        return name;
     }
 }

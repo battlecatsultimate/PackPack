@@ -11,6 +11,7 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class ChannelPermission extends ConstraintCommand {
@@ -38,13 +39,22 @@ public class ChannelPermission extends ConstraintCommand {
             if(g == null)
                 return;
 
-            String result = "Member : " + printChannels(holder.MEMBER) + "\n" +
-                    "Pre-Member : " + printChannels(holder.PRE_MEMBER) + "\n" +
-                    "Muted : " + printChannels(holder.MUTED) + "\n" +
-                    "BCU-PC User : " + printChannels(holder.BCU_PC_USER) + "\n" +
-                    "BCU-Android User : " + printChannels(holder.BCU_ANDROID);
+            StringBuilder result = new StringBuilder("Member : " + printChannels(holder.MEMBER) + "\n");
 
-            ch.createMessage(result).subscribe();
+            for(String name : holder.ID.keySet()) {
+                String id = holder.ID.get(name);
+
+                if(id == null)
+                    continue;
+
+                result.append(limitName(name)).append(" : ").append(printChannels(id)).append("\n");
+            }
+
+            if(result.length() < 2000) {
+                ch.createMessage(result.toString()).subscribe();
+            } else {
+                ch.createMessage(LangID.getStringByID("idset_toobig", lang)).subscribe();
+            }
         } else {
             StringBuilder result = new StringBuilder(LangID.getStringByID("idset_result", lang));
 
@@ -56,10 +66,8 @@ public class ChannelPermission extends ConstraintCommand {
                 result.append(LangID.getStringByID("idset_noguild", lang));
             else {
                 boolean mem = false;
-                boolean pre = false;
-                boolean pc = false;
-                boolean and = false;
-                boolean mut = false;
+
+                List<String> customName = new ArrayList<>();
 
                 for(int i = 0; i < msg.length; i++) {
                     switch (msg[i]) {
@@ -123,246 +131,93 @@ public class ChannelPermission extends ConstraintCommand {
                                 result.append(LangID.getStringByID("channelpermission_ignore", lang).replace("_", "Member")).append("\n");
                             }
                             break;
-                        case "-p":
-                        case "-premember":
-                            if(!pre && i < msg.length - 1) {
-                                String id = msg[i+1];
+                        case "-c":
+                        case "-custom":
+                            if(i < msg.length - 1 && msg[i + 1].startsWith("\"")) {
+                                Object[] set = getName(msg, i + 1);
 
-                                if(holder.PRE_MEMBER != null) {
-                                    ArrayList<String> channels = getChannelList(g, id, (param & PARAM_ADD) > 0);
-
-                                    if(channels == null) {
-                                        holder.channel.put(holder.PRE_MEMBER, null);
-                                    } else if(channels.isEmpty() && id.contains("all")) {
-                                        holder.channel.put(holder.PRE_MEMBER, channels);
-                                    } else {
-                                        ArrayList<String> oldChannels = holder.channel.get(holder.PRE_MEMBER);
-
-                                        if(oldChannels == null && (param & PARAM_ADD) > 0) {
-                                            holder.channel.put(holder.PRE_MEMBER, channels);
-                                        } else if(oldChannels != null) {
-                                            if((param & PARAM_ADD) > 0) {
-                                                oldChannels.addAll(channels);
-                                            } else {
-                                                oldChannels.removeAll(channels);
-                                            }
-
-                                            holder.channel.put(holder.PRE_MEMBER, oldChannels);
-                                        }
-                                    }
-
-                                    String allNone;
-
-                                    if(channels == null)
-                                        allNone = LangID.getStringByID("channelpermission_all", lang);
-                                    else if(channels.isEmpty() && id.contains("all")) {
-                                        allNone = LangID.getStringByID("channelpermission_all", lang);
-                                    } else {
-                                        allNone = printChannels(channels);
-                                    }
-
-                                    result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-
-                                    if((param & PARAM_ADD) > 0) {
-                                        result.append(LangID.getStringByID("channelpermission_added", lang).replace("_", "Pre-Member").replace("=", allNone).replace("::", printChannels(holder.PRE_MEMBER)));
-                                    } else {
-                                        result.append(LangID.getStringByID("channelpermission_removed", lang).replace("_", "Pre-Member").replace("=", allNone).replace("::", printChannels(holder.PRE_MEMBER)));
-                                    }
-
-                                    result.append("\n");
-                                } else {
-                                    result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                    result.append(LangID.getStringByID("channelpermission_noid", lang).replace("_", "Pre-Member")).append("\n");
+                                if(set == null) {
+                                    result.append(msg[i]).append(" : ");
+                                    result.append(LangID.getStringByID("idset_opened", lang));
+                                    continue;
                                 }
 
-                                pre = true;
+                                String name = (String) set[0];
 
-                                i++;
-                            } else if(i <msg.length - 1) {
-                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                result.append(LangID.getStringByID("channelpermission_ignore", lang).replace("_", "Pre-Member")).append("\n");
-                            }
-                            break;
-                        case "-mu":
-                        case "-muted":
-                            if(!mut && i < msg.length - 1) {
-                                String id = msg[i+1];
-
-                                if(holder.MUTED != null) {
-                                    ArrayList<String> channels = getChannelList(g, id, (param & PARAM_ADD) > 0);
-
-                                    if(channels == null) {
-                                        holder.channel.put(holder.MUTED, null);
-                                    } else if(channels.isEmpty() && id.contains("all")) {
-                                        holder.channel.put(holder.MUTED, channels);
-                                    } else {
-                                        ArrayList<String> oldChannels = holder.channel.get(holder.MUTED);
-
-                                        if(oldChannels == null && (param & PARAM_ADD) > 0) {
-                                            holder.channel.put(holder.MUTED, channels);
-                                        } else if(oldChannels != null) {
-                                            if((param & PARAM_ADD) > 0) {
-                                                oldChannels.addAll(channels);
-                                            } else {
-                                                oldChannels.removeAll(channels);
-                                            }
-
-                                            holder.channel.put(holder.MUTED, oldChannels);
-                                        }
-                                    }
-
-                                    String allNone;
-
-                                    if(channels == null)
-                                        allNone = LangID.getStringByID("channelpermission_all", lang);
-                                    else if(channels.isEmpty() && id.contains("all")) {
-                                        allNone = LangID.getStringByID("channelpermission_all", lang);
-                                    } else {
-                                        allNone = printChannels(channels);
-                                    }
-
-                                    result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-
-                                    if((param & PARAM_ADD) > 0) {
-                                        result.append(LangID.getStringByID("channelpermission_added", lang).replace("_", "Muted").replace("=", allNone).replace("::", printChannels(holder.MUTED)));
-                                    } else {
-                                        result.append(LangID.getStringByID("channelpermission_removed", lang).replace("_", "Muted").replace("=", allNone).replace("::", printChannels(holder.MUTED)));
-                                    }
-
-                                    result.append("\n");
-                                } else {
-                                    result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                    result.append(LangID.getStringByID("channelpermission_noid", lang).replace("_", "Muted")).append("\n");
+                                if(!holder.ID.containsKey(name)) {
+                                    result.append(msg[i]).append(" ").append(limitName(name)).append(" : ");
+                                    result.append(LangID.getStringByID("channelpermission_noname", lang)).append("\n");
+                                    continue;
                                 }
 
-                                mut = true;
+                                int index = (int) set[1];
 
-                                i++;
-                            } else if(i <msg.length - 1) {
-                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                result.append(LangID.getStringByID("channelpermission_ignore", lang).replace("_", "Muted")).append("\n");
-                            }
-                            break;
-                        case "-pc":
-                        case "-bcupc":
-                            if(!pc && i < msg.length - 1) {
-                                String id = msg[i+1];
-
-                                if(holder.BCU_PC_USER != null) {
-                                    ArrayList<String> channels = getChannelList(g, id, (param & PARAM_ADD) > 0);
-
-                                    if(channels == null) {
-                                        holder.channel.put(holder.BCU_PC_USER, null);
-                                    } else if(channels.isEmpty() && id.contains("all")) {
-                                        holder.channel.put(holder.BCU_PC_USER, channels);
-                                    } else {
-                                        ArrayList<String> oldChannels = holder.channel.get(holder.BCU_PC_USER);
-
-                                        if(oldChannels == null && (param & PARAM_ADD) > 0) {
-                                            holder.channel.put(holder.BCU_PC_USER, channels);
-                                        } else if(oldChannels != null) {
-                                            if((param & PARAM_ADD) > 0) {
-                                                oldChannels.addAll(channels);
-                                            } else {
-                                                oldChannels.removeAll(channels);
-                                            }
-
-                                            holder.channel.put(holder.BCU_PC_USER, oldChannels);
-                                        }
-                                    }
-
-                                    String allNone;
-
-                                    if(channels == null)
-                                        allNone = LangID.getStringByID("channelpermission_all", lang);
-                                    else if(channels.isEmpty() && id.contains("all")) {
-                                        allNone = LangID.getStringByID("channelpermission_all", lang);
-                                    } else {
-                                        allNone = printChannels(channels);
-                                    }
-
-                                    result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-
-                                    if((param & PARAM_ADD) > 0) {
-                                        result.append(LangID.getStringByID("channelpermission_added", lang).replace("_", "BCU-PC User").replace("=", allNone).replace("::", printChannels(holder.BCU_PC_USER)));
-                                    } else {
-                                        result.append(LangID.getStringByID("channelpermission_removed", lang).replace("_", "BCU-PC User").replace("=", allNone).replace("::", printChannels(holder.BCU_PC_USER)));
-                                    }
-
-                                    result.append("\n");
-                                } else {
-                                    result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                    result.append(LangID.getStringByID("channelpermission_noid", lang).replace("_", "BCU-PC User")).append("\n");
+                                if(index >= msg.length) {
+                                    result.append(msg[i]).append(" ").append(limitName(name)).append(" : ");
+                                    result.append(LangID.getStringByID("channelpermission_nochannel", lang)).append("\n");
+                                    continue;
                                 }
 
-                                pc = true;
-
-                                i++;
-                            } else if(i <msg.length - 1) {
-                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                result.append(LangID.getStringByID("channelpermission_ignore", lang).replace("_", "BCU-PC User")).append("\n");
-                            }
-                            break;
-                        case "-an":
-                        case "-bcuandroid":
-                            if(!and && i < msg.length - 1) {
-                                String id = msg[i+1];
-
-                                if(holder.BCU_ANDROID != null) {
-                                    ArrayList<String> channels = getChannelList(g, id, (param & PARAM_ADD) > 0);
-
-                                    if(channels == null) {
-                                        holder.channel.put(holder.BCU_ANDROID, null);
-                                    } else if(channels.isEmpty() && id.contains("all")) {
-                                        holder.channel.put(holder.BCU_ANDROID, channels);
-                                    } else {
-                                        ArrayList<String> oldChannels = holder.channel.get(holder.BCU_ANDROID);
-
-                                        if(oldChannels == null && (param & PARAM_ADD) > 0) {
-                                            holder.channel.put(holder.BCU_ANDROID, channels);
-                                        } else if(oldChannels != null) {
-                                            if((param & PARAM_ADD) > 0) {
-                                                oldChannels.addAll(channels);
-                                            } else {
-                                                oldChannels.removeAll(channels);
-                                            }
-
-                                            holder.channel.put(holder.BCU_ANDROID, oldChannels);
-                                        }
-                                    }
-
-                                    String allNone;
-
-                                    if(channels == null)
-                                        allNone = LangID.getStringByID("channelpermission_all", lang);
-                                    else if(channels.isEmpty() && id.contains("all")) {
-                                        allNone = LangID.getStringByID("channelpermission_all", lang);
-                                    } else {
-                                        allNone = printChannels(channels);
-                                    }
-
-                                    result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-
-                                    if((param & PARAM_ADD) > 0) {
-                                        result.append(LangID.getStringByID("channelpermission_added", lang).replace("_", "BCU-Android User").replace("=", allNone).replace("::", printChannels(holder.BCU_ANDROID)));
-                                    } else {
-                                        result.append(LangID.getStringByID("channelpermission_removed", lang).replace("_", "BCU-Android User").replace("=", allNone).replace("::", printChannels(holder.BCU_ANDROID)));
-                                    }
-
-                                    result.append("\n");
-                                } else {
-                                    result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                    result.append(LangID.getStringByID("channelpermission_noid", lang).replace("_", "BCU-Android User")).append("\n");
+                                if(customName.contains(name)) {
+                                    result.append(msg[i]).append(" ").append(limitName(name)).append(" : ");
+                                    result.append(LangID.getStringByID("channelpermission_ignorecu", lang)).append("\n");
+                                    i = index;
+                                    continue;
                                 }
 
-                                and = true;
+                                String id = msg[index];
 
-                                i++;
-                            } else if(i <msg.length - 1) {
-                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                result.append(LangID.getStringByID("channelpermission_ignore", lang).replace("_", "BCU-Android User")).append("\n");
+                                String chID = holder.ID.get(name);
+
+                                ArrayList<String> channels = getChannelList(g, id, (param & PARAM_ADD) > 0);
+
+                                if(channels == null) {
+                                    holder.channel.put(chID, null);
+                                } else if(channels.isEmpty() && id.contains("all")) {
+                                    holder.channel.put(chID, channels);
+                                } else {
+                                    ArrayList<String> oldChannels = holder.channel.get(chID);
+
+                                    if(oldChannels == null && (param & PARAM_ADD) > 0) {
+                                        holder.channel.put(chID, channels);
+                                    } else if(oldChannels != null) {
+                                        if((param & PARAM_ADD) > 0) {
+                                            oldChannels.addAll(channels);
+                                        } else {
+                                            oldChannels.removeAll(channels);
+                                        }
+
+                                        holder.channel.put(chID, oldChannels);
+                                    }
+                                }
+
+                                String allNone;
+
+                                if(channels == null)
+                                    allNone = LangID.getStringByID("channelpermission_all", lang);
+                                else if(channels.isEmpty() && id.contains("all")) {
+                                    allNone = LangID.getStringByID("channelpermission_all", lang);
+                                } else {
+                                    allNone = printChannels(channels);
+                                }
+
+                                result.append(msg[i]).append(" ").append(limitName(name)).append(" : ");
+
+                                if((param & PARAM_ADD) > 0) {
+                                    result.append(LangID.getStringByID("channelpermission_added", lang).replace("=", allNone).replace("::", printChannels(chID)).replace("_", limitName(name)));
+                                } else {
+                                    result.append(LangID.getStringByID("channelpermission_removed", lang).replace("=", allNone).replace("::", printChannels(holder.MEMBER)).replace("_", limitName(name)));
+                                }
+
+                                result.append("\n");
+
+                                i = index;
+
+                                customName.add(name);
+                            } else if(i < msg.length - 1 && !msg[i + 1].startsWith("\"")) {
+                                result.append(msg[i]).append(" ").append(" : ");
+                                result.append(LangID.getStringByID("channelpermission_format", lang)).append("\n");
                             }
-                            break;
                     }
                 }
 
@@ -484,5 +339,44 @@ public class ChannelPermission extends ConstraintCommand {
 
     private String getIDFromMention(String mention) {
         return mention.replace("<#", "").replace(">", "");
+    }
+
+    private String limitName(String name) {
+        if(name.length() > 20) {
+            return name.substring(0, 17) + "...";
+        }
+
+        return name;
+    }
+
+    private Object[] getName(String[] contents, int start) {
+        StringBuilder res = new StringBuilder();
+
+        res.append(contents[start]);
+
+        if(contents[start].endsWith("\""))
+            return new Object[] {res.substring(1, res.length() - 1), start + 1};
+        else
+            res.append(" ");
+
+        int last;
+        boolean ended = false;
+
+        for(last = start + 1; last < contents.length; last++) {
+            res.append(contents[last]);
+
+            if(contents[last].endsWith("\"")) {
+                ended = true;
+                break;
+            } else {
+                res.append(" ");
+            }
+        }
+
+
+        if(!ended)
+            return null;
+
+        return new Object[] {res.substring(1, res.length() - 1), last + 1};
     }
 }
