@@ -25,7 +25,7 @@ public class IDSet extends ConstraintCommand {
 
         holder = id;
     }
-    
+
     @Override
     public void doSomething(MessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
