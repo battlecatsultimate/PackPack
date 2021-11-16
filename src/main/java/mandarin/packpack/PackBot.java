@@ -810,7 +810,7 @@ public class PackBot {
                                 case "urlogging":
                                 case "unregisterl":
                                 case "url":
-                                    new UnregisterLogging(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+                                    new UnregisterLogging(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
                                     break;
                                 case "setup":
                                     new Setup(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
