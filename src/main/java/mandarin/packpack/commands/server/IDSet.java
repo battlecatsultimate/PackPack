@@ -25,8 +25,7 @@ public class IDSet extends ConstraintCommand {
 
         holder = id;
     }
-
-    @SuppressWarnings("ConstantConditions")
+    
     @Override
     public void doSomething(MessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
@@ -127,7 +126,7 @@ public class IDSet extends ConstraintCommand {
 
                                 holder.MEMBER = id;
 
-                                if(holder.channel.containsKey(oldID)) {
+                                if(oldID != null && holder.channel.containsKey(oldID)) {
                                     ArrayList<String> arr = holder.channel.get(oldID);
 
                                     holder.channel.put(id, arr);
@@ -271,7 +270,7 @@ public class IDSet extends ConstraintCommand {
 
                                 holder.BOOSTER = id;
 
-                                if(holder.channel.containsKey(oldID)) {
+                                if(oldID != null && holder.channel.containsKey(oldID)) {
                                     ArrayList<String> arr = holder.channel.get(oldID);
 
                                     holder.channel.put(id, arr);
