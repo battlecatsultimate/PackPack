@@ -33,38 +33,6 @@ public class IDHolder {
             id.MEMBER = id.setOrNull(obj.get("mem").getAsString());
         }
 
-        if(obj.has("pre")) {
-            String content = obj.get("pre").getAsString();
-
-            if(!content.equals("null")) {
-                id.ID.put("Pre Member", content);
-            }
-        }
-
-        if(obj.has("pc")) {
-            String content = obj.get("pc").getAsString();
-
-            if(!content.equals("null")) {
-                id.ID.put("BCU PC User", content);
-            }
-        }
-
-        if(obj.has("and")) {
-            String content = obj.get("and").getAsString();
-
-            if(!content.equals("null")) {
-                id.ID.put("BCU Android User", content);
-            }
-        }
-
-        if(obj.has("mut")) {
-            String content = obj.get("mut").getAsString();
-
-            if(!content.equals("null")) {
-                id.ID.put("Muted", content);
-            }
-        }
-
         if(obj.has("acc")) {
             id.GET_ACCESS = id.setOrNull(obj.get("acc").getAsString());
         }
