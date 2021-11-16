@@ -130,14 +130,16 @@ public class EntityFilter {
                             }
                         }
 
-                        int s = damerauLevenshteinDistance(fname, name);
+                        if(!done) {
+                            int s = damerauLevenshteinDistance(fname, name);
 
-                        if(s <= 5) {
-                            done = true;
-                            similar.add(f);
-                            similarity.add(s);
+                            if(s <= 5) {
+                                done = true;
+                                similar.add(f);
+                                similarity.add(s);
 
-                            sMin = Math.min(s, sMin);
+                                sMin = Math.min(s, sMin);
+                            }
                         }
                     }
 
@@ -182,14 +184,16 @@ public class EntityFilter {
                                     }
                                 }
 
-                                int s = damerauLevenshteinDistance(a, name);
+                                if(!added) {
+                                    int s = damerauLevenshteinDistance(a, name);
 
-                                if(s <= 5) {
-                                    added = true;
-                                    similar.add(f);
-                                    similarity.add(s);
+                                    if(s <= 5) {
+                                        added = true;
+                                        similar.add(f);
+                                        similarity.add(s);
 
-                                    sMin = Math.min(s, sMin);
+                                        sMin = Math.min(s, sMin);
+                                    }
                                 }
 
                                 if(added)
@@ -343,14 +347,16 @@ public class EntityFilter {
                         }
                     }
 
-                    int s = damerauLevenshteinDistance(ename, name);
+                    if(!done) {
+                        int s = damerauLevenshteinDistance(ename, name);
 
-                    if(s <= 5) {
-                        done = true;
-                        similar.add(e);
-                        similarity.add(s);
+                        if(s <= 5) {
+                            done = true;
+                            similar.add(e);
+                            similarity.add(s);
 
-                        sMin = Math.min(s, sMin);
+                            sMin = Math.min(s, sMin);
+                        }
                     }
                 }
 
@@ -395,14 +401,16 @@ public class EntityFilter {
                                 }
                             }
 
-                            int s = damerauLevenshteinDistance(a, name);
+                            if(!added) {
+                                int s = damerauLevenshteinDistance(a, name);
 
-                            if(s <= 5) {
-                                added = true;
-                                similar.add(e);
-                                similarity.add(s);
+                                if(s <= 5) {
+                                    added = true;
+                                    similar.add(e);
+                                    similarity.add(s);
 
-                                sMin = Math.min(s, sMin);
+                                    sMin = Math.min(s, sMin);
+                                }
                             }
 
                             if(added)
