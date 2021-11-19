@@ -119,6 +119,8 @@ public class StaticStore {
     public final static String CASTLE = "821436460447039508";
     public final static String MUSIC = "821436473525141588";
     public final static String MUSIC2 = "821436484254564373";
+    public final static String CROWNON = "911286793293414491";
+    public final static String CROWNOFF = "911286831985885215";
 
     public static boolean checkingBCU = false;
 

@@ -907,7 +907,19 @@ public class DataToString {
     public static String getStar(Stage st, int star) {
         StageMap stm = st.getCont();
 
-        return (star+1)+" ("+stm.stars[star]+"%) / "+stm.stars.length;
+        StringBuilder res = new StringBuilder();
+
+        for(int i = 0; i < stm.stars.length; i++) {
+            if(i <= star) {
+                res.append("<:CrownOn:").append(StaticStore.CROWNON).append(">");
+            } else {
+                res.append("<:CrwonOff:").append(StaticStore.CROWNOFF).append(">");
+            }
+        }
+
+        res.append(" (").append(stm.stars[star]).append("%)");
+
+        return res.toString();
     }
 
     public static String getEnergy(Stage st, int lang) {
