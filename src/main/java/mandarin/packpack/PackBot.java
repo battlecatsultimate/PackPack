@@ -815,6 +815,18 @@ public class PackBot {
                                 case "setup":
                                     new Setup(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
                                     break;
+                                case "fixrole":
+                                case "fr":
+                                    new FixRole(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+                                    break;
+                                case "registerfixing":
+                                case "rf":
+                                    new RegisterFixing(ConstraintCommand.ROLE.MANDARIN, lang, idh, client).execute(event);
+                                    break;
+                                case "unregisterfixing":
+                                case "urf":
+                                    new UnregisterFixing(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+                                    break;
                             }
                         }
                     });

@@ -52,7 +52,7 @@ public class CheckBCU extends Command {
 
             getGuild(event)
                     .subscribe(g -> g.getMembers()
-                        .filter(m -> holder.ID.containsKey("Muted") && !StaticStore.rolesToString(m.getRoleIds()).contains(holder.ID.get("Muted")))
+                        .filter(m -> !m.isBot() && (!holder.ID.containsKey("Muted") || !StaticStore.rolesToString(m.getRoleIds()).contains(holder.ID.get("Muted"))))
                         .subscribe(m -> {
                             boolean pre = false;
                             boolean mem = false;

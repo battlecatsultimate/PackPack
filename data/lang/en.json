@@ -255,6 +255,7 @@
   "bcustat_role" : "There are _MMM_ users who has _NNN_ role in this server. It takes about =% of the total number of people\n",
   "bcustat_mem" : "There are _ members in this server. It takes about =% of the total number of people\n",
   "chbcu_perform" : "I'm already performing this command! Wait for me to finish this",
+  "chbcu_pre" : "Couldn't find `Pre Member` role data. Register this role via `p!idset -c \"Pre Member\" [ID]` command, or specify this role manually by using `-p` or `-pre` argument",
   "formst_noname" : "You didn't specify ID or name!",
   "formst_nounit" : "Searching with _, but no such unit found!",
   "formst_several" : "Searching with _, and several results found...\n",
@@ -431,6 +432,11 @@
   "help_setup_use" : "`p!setup`",
   "help_setup_desc" : "Setup PackPack, so users in this server can use commands properly. **This affects permission of commands for users, so only moderator of this server can use this command**",
   "help_setup_tip" : "Most of PackPack commands require specific role to be used, so moderators need to give permission to specific role for using these commands. PackPack adds role called `PackPackMod` if there isn't any specified moderator role or member role set. Moderator can add this role and call this command to themselves to firstly initialize role data to restrict uses of commands for users",
+  "help_fixrole_use" : "`p!fixrole`",
+  "help_fixrole_desc" : "If this server is registered as server where requires role data maintenance, **moderators** can fix incorrect user role data for PackPack. `fr` is also valid command",
+  "help_fixrole_argu" : "`-p` or `-pre` : Manually decide role which will be added\n`-i` or `-ignore` : Decide role which will trigger ignoring. If this role is specified, even though user has none of two roles, bot will ignore them",
+  "help_fixrole_exam" : "`p!fr -p 12345`\n`p!fr -p 12345 -i 67890`",
+  "help_fixrole_tip" : "Let's say users in server must have one of member or pre-member role. There must not be users who have none of these roles. But sometimes, since usually these role system is managed by other bots, some users may have none of these roles due to inactivity of bot, etc. In that case, moderators can call this command to make such users have correct role data. Moderators must provide role ID. If server isn't registered as server where requires role data maintenance, moderators can't use this command. Ask creator of bot to register this server by using `p!suggest` command or manually contacting",
   "prefix_space" : "Prefix can't be white spaces!",
   "prefix_set" : "Prefix is set as _!",
   "prefix_setnone" : "Your prefix has been updated!",
@@ -638,5 +644,9 @@
   "setup_modsele" : "Moderator role is selected as <@&_RRR_>",
   "setup_mem" : "Select member role",
   "setup_memsele" : "Member role is selected as <@&_RRR_>",
-  "setup_done" : "Done!\n\nUsers who have <@&_MOD_> will be able to use moderator-only commands\nUsers who have <@&_MEM_> will be able to use member-only commands.\n\nYou can use `p!channelpermission` to make users able to use commands only in specific channels, call `p!help chp` for detailed info about it"
+  "setup_done" : "Done!\n\nUsers who have <@&_MOD_> will be able to use moderator-only commands\nUsers who have <@&_MEM_> will be able to use member-only commands.\n\nYou can use `p!channelpermission` to make users able to use commands only in specific channels, call `p!help chp` for detailed info about it",
+  "fixrole_confirm" : "If user doesn't have neither of <@&_PPP_> nor <@&_MMM_>, bot will add <@&_PPP_> to this user. This cannot be undone, are you sure?",
+  "fixrole_nofixing" : "This server isn't registered as server which requires role data maintenance. Ask bot creator <@_> (_) to register this server via manually contacting or using `p!suggest` command",
+  "fixrole_noneed" : "All users had proper role data",
+  "fixrole_fixed" : "Fixed _ users who had incorrect role data"
 }

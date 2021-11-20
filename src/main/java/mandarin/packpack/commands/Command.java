@@ -1,6 +1,9 @@
 package mandarin.packpack.commands;
 
 import discord4j.core.event.domain.message.MessageEvent;
+import discord4j.core.object.component.ActionComponent;
+import discord4j.core.object.component.ActionRow;
+import discord4j.core.object.component.Button;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
@@ -13,11 +16,14 @@ import discord4j.discordjson.possible.Possible;
 import discord4j.rest.util.AllowedMentions;
 import mandarin.packpack.supporter.Pauser;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.SpamPrevent;
 import reactor.core.publisher.Mono;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -112,6 +118,15 @@ public abstract class Command {
         consumer.accept(builder);
 
         return builder.build();
+    }
+
+    public static void registerConfirmButtons(MessageCreateSpec.Builder m, int lang) {
+        List<ActionComponent> components = new ArrayList<>();
+
+        components.add(Button.success("confirm", LangID.getStringByID("button_confirm", lang)));
+        components.add(Button.danger("cancel", LangID.getStringByID("button_cancel", lang)));
+
+        m.addComponent(ActionRow.of(components));
     }
 
     public final int DEFAULT_ERROR = -1;

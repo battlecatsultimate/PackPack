@@ -253,6 +253,7 @@
   "bcustat_role" : "There are _MMM_ users who has _NNN_ role in this server. It takes about =% of the total number of people\n",
   "bcustat_mem" : "このサーバのmembersの人数は_人です。   この数はすべてのユーザーの中で=%です。\n",
   "chbcu_perform" : "コマンドが実行中です! これが終わるまで待ってください。",
+  "chbcu_pre" : "Couldn't find `Pre Member` role data. Register this role via `p!idset -c \"Pre Member\" [ID]` command, or specify this role manually by using `-p` or `-pre` argument",
   "formst_noname" : "正確なIDや名前を設定してください!",
   "formst_nounit" : "_で探したのですが、そんなキャラは見つかりませんでした!",
   "formst_several" : "_で探したのですが、結果が複数あります...\n",
@@ -428,6 +429,11 @@
   "help_setup_use" : "`p!setup`",
   "help_setup_desc" : "PackPackを設定する時、このコマンドを使えば正しく設定できるでしょう。 **これはユーザーの権限に関わることなので、管理者のみがこのコマンドを実行できます。**",
   "help_setup_tip" : "PackPackにはそれぞれ専用のロールが設けられており、コマンドを使うためにはロールの設定を行わなければなりません。もし設定されていない場合に、PackPackは自動的に`PackPackMod`というロールを作成します。管理者はこのロールを自分につけることができるのでユーザーにコマンドを実行させるかどうか決定することができます。",
+  "help_fixrole_use" : "`p!fixrole`",
+  "help_fixrole_desc" : "If this server is registered as server where requires role data maintenance, **moderators** can fix incorrect user role data for PackPack. `fr` is also valid command",
+  "help_fixrole_argu" : "`-p` or `-pre` : Manually decide role which will be added\n`-i` or `-ignore` : Decide role which will trigger ignoring. If this role is specified, even though user has none of two roles, bot will ignore them",
+  "help_fixrole_exam" : "`p!fr -p 12345`\n`p!fr -p 12345 -i 67890`",
+  "help_fixrole_tip" : "Let's say users in server must have one of member or pre-member role. There must not be users who have none of these roles. But sometimes, since usually these role system is managed by other bots, some users may have none of these roles due to inactivity of bot, etc. In that case, moderators can call this command to make such users have correct role data. Moderators must provide role ID. If server isn't registered as server where requires role data maintenance, moderators can't use this command. Ask creator of bot to register this server by using `p!suggest` command or manually contacting",
   "prefix_space" : "Prefixはスペースにはできません!",
   "prefix_set" : "Prefixは _ にセットされました!",
   "prefix_setnone" : "あなたのPrefixはアップデートされました!",
@@ -627,5 +633,9 @@
   "setup_modsele" : "管理者のロールは<@&_RRR_>が選択されました！",
   "setup_mem" : "メンバーのロールを選択してください。",
   "setup_memsele" : "メンバーのロールは<@&_RRR_>が選択されました！",
-  "setup_done" : "完了!\n\n<@&_MOD_>のロールを持っている人は管理者専用のコマンドを使うことができます。\n<@&_MEM_>のロールを持っている人はPackPackの基本的なコマンドを使うことができます。\n\n`p!channelpermission`コマンドで一部のチャンネルだけでコマンドを使用するように設定することもできます。`p!help chp`コマンドで詳細を確認してください。"
+  "setup_done" : "完了!\n\n<@&_MOD_>のロールを持っている人は管理者専用のコマンドを使うことができます。\n<@&_MEM_>のロールを持っている人はPackPackの基本的なコマンドを使うことができます。\n\n`p!channelpermission`コマンドで一部のチャンネルだけでコマンドを使用するように設定することもできます。`p!help chp`コマンドで詳細を確認してください。",
+  "fixrole_confirm" : "If user doesn't have neither of <@&_PPP_> nor <@&_MMM_>, bot will add <@&_PPP_> to this user. This cannot be undone, are you sure?",
+  "fixrole_nofixing" : "This server isn't registered as server which requires role data maintenance. Ask bot creator <@_> (_) to register this server via manually contacting or using `p!suggest` command",
+  "fixrole_noneed" : "All users had proper role data",
+  "fixrole_fixed" : "Fixed _ users who had incorrect role data"
 }

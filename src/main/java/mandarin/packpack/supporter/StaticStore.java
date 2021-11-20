@@ -78,6 +78,8 @@ public class StaticStore {
 
     public static Map<String, BoosterHolder> boosterData = new HashMap<>();
 
+    public static ArrayList<String> needFixing = new ArrayList<>();
+
     public static EventHolder event = new EventHolder();
 
     public static final MultiLangCont<Integer, String> MEDNAME = new MultiLangCont<>();
@@ -407,6 +409,7 @@ public class StaticStore {
         obj.add("spam", SpamPrevent.jsonfyMap());
         obj.add("booster", mapToJsonBoosterHolder(boosterData));
         obj.addProperty("logging", loggingChannel);
+        obj.add("needFixing", listToJsonString(needFixing));
 
         try {
             File folder = new File("./data/");
@@ -511,6 +514,10 @@ public class StaticStore {
 
             if(obj.has("logging")) {
                 loggingChannel = obj.get("logging").getAsString();
+            }
+
+            if(obj.has("needFixing")) {
+                needFixing = jsonToListString(obj.getAsJsonArray("needFixing"));
             }
         }
     }
