@@ -57,7 +57,11 @@ public class FixRole extends ConstraintCommand {
         String ignore = getIgnore(getContent(event));
 
         Message msg = createMessage(ch, m -> {
-            m.content(LangID.getStringByID("fixrole_confirm", lang).replace("_PPP_", finalPre).replace("_MMM_", holder.MEMBER));
+            if(ignore == null) {
+                m.content(LangID.getStringByID("fixrole_confirm", lang).replace("_PPP_", finalPre).replace("_MMM_", holder.MEMBER));
+            } else {
+                m.content(LangID.getStringByID("fixrole_confirmig", lang).replace("_PPP_", finalPre).replace("_MMM_", holder.MEMBER).replace("_III_", ignore));
+            }
             m.allowedMentions(AllowedMentions.builder().build());
             registerConfirmButtons(m, lang);
         });
