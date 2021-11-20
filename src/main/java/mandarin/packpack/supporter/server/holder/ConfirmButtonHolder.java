@@ -105,10 +105,8 @@ public class ConfirmButtonHolder extends InteractionHolder<ButtonInteractionEven
         expired = true;
 
         Command.editMessage(msg, m -> {
-            ArrayList<Button> buttons = new ArrayList<>();
-
-            m.addComponent(ActionRow.of(buttons));
-            m.content(wrap(LangID.getStringByID("confirm_expire", lang)));
+            m.components(new ArrayList<>());
+            m.content(wrap(LangID.getStringByID("confirm_expired", lang)));
         });
     }
 }
