@@ -283,6 +283,7 @@
   "help_bcustat_desc" : "Display user statistics of BCU server with percentage data. This command will show number of human, members, pre-members, bcu-pc users, bcu-android users",
   "help_checkbcu_use" : "`_checkbcu`",
   "help_checkbcu_desc" : "Display users who have both member and pre-member roles or have none of them. Usually will be used for moderating server",
+  "help_checkbcu_argu" : "`-p` or `-pre` : Set `Pre Member` role ID manually, must be number ID. Format is `-p/-pre [ID]`",
   "help_analyze_use" : "`_analyze [Files]`",
   "help_analyze_desc" : "Must be used with attached pack.bcuzip file. Under construction",
   "help_prefix_use" : "`_prefix [Prefix]`",

@@ -283,6 +283,7 @@
   "help_bcustat_desc" : "BCU 서버의 유저 현황을 표시합니다. 이 명어는 준멤버, 멤버, BCU PC 유저, BCU 안드로이드 유저에 대한 정보도 표시합니다",
   "help_checkbcu_use" : "`_checkbcu`",
   "help_checkbcu_desc" : "준멤버와 멤버 역할을 동시에 갖거나 둘 다 갖지 않는 유저들을 찾습니다. 주로 서버 관리를 위해 이용됩니다",
+  "help_checkbcu_argu" : "`-p` 또느 `-pre` : `Pre Member` 역할 ID 를 정합니다, 숫자 ID 를 적어야 합니다. 형식은 `-p/-pre [ID]` 입니다",
   "help_analyze_use" : "`_analyze [파일]`",
   "help_analyze_desc" : "pack.bcuzip를 업로드하여 함께 사용해야 합니다. 준비중",
   "help_prefix_use" : "`_prefix [접두사]`",

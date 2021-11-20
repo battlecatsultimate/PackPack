@@ -46,7 +46,7 @@ public class Help extends Command {
     public void createEmbedOfSpecificCommand(String command, MessageChannel ch) {
         switch (command) {
             case "checkbcu":
-                ch.createMessage(addFields("checkbcu", false, false, false)).subscribe();
+                ch.createMessage(addFields("checkbcu", true, false, false)).subscribe();
                 break;
             case "bcustat":
                 ch.createMessage(addFields( "bcustat", false, false, false)).subscribe();

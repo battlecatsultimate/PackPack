@@ -280,6 +280,7 @@
   "help_bcustat_desc" : "BCUサーバーのユーザーの統計を%で表示します。 このコマンドは、ユーザー、Members、Pre-members、BCU-PC Users、BCU-Android Usersの数を表示します。",
   "help_checkbcu_use" : "`_checkbcu`",
   "help_checkbcu_desc" : "MembersロールとPre-membersロールの両方を持っている、または持っていないユーザーを表示します。 通常、サーバーのモデレートに使用されます。",
+  "help_checkbcu_argu" : "`-p` or `-pre` : Set `Pre Member` role ID manually, must be number ID. Format is `-p/-pre [ID]`",
   "help_analyze_use" : "`_analyze [ファイル]`",
   "help_analyze_desc" : "pack.bcuzipファイルを添付してから使います。ただし準備中です。",
   "help_prefix_use" : "`_prefix [Prefix]`",

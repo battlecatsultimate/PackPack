@@ -31,6 +31,17 @@ public class CheckBCU extends Command {
         if(ch == null)
             return;
 
+        String preID = getPreMemberID(getContent(event));
+
+        if(preID == null && !holder.ID.containsKey("Pre Member")) {
+            createMessage(ch, m -> m.content(LangID.getStringByID("chbcu_pre", lang)));
+            return;
+        } else if(preID == null && holder.ID.containsKey("Pre Member")) {
+            preID = holder.ID.get("Pre Member");
+        }
+
+        final String finalPre = preID;
+
         if(StaticStore.checkingBCU) {
             ch.createMessage(LangID.getStringByID("chbcu_perform", lang)).subscribe();
         } else {
@@ -48,7 +59,7 @@ public class CheckBCU extends Command {
 
                             String role = StaticStore.rolesToString(m.getRoleIds());
 
-                            if(holder.ID.containsKey("Per Member") && role.contains(holder.ID.get("Pre Member")))
+                            if(role.contains(finalPre))
                                 pre = true;
 
                             if(holder.MEMBER != null && role.contains(holder.MEMBER))
@@ -67,5 +78,16 @@ public class CheckBCU extends Command {
 
             StaticStore.checkingBCU = false;
         }
+    }
+
+    private String getPreMemberID(String content) {
+        String[] contents = content.split(" ");
+
+        for(int i = 0; i < contents.length; i++) {
+            if((contents[i].equals("-p") || contents[i].equals("-pre")) && i < contents.length - 1 && StaticStore.isNumeric(contents[i + 1]))
+                return contents[i + 1];
+        }
+
+        return null;
     }
 }
