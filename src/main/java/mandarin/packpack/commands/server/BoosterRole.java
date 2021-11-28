@@ -6,6 +6,7 @@ import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Role;
 import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.core.spec.RoleCreateSpec;
 import discord4j.rest.util.Color;
 import discord4j.rest.util.PermissionSet;
 import mandarin.packpack.commands.ConstraintCommand;
@@ -83,13 +84,14 @@ public class BoosterRole extends ConstraintCommand {
                 }
             }
 
-            g.createRole(r -> {
-                r.setHoist(false);
-                r.setColor(c);
-                r.setName(name);
-                r.setMentionable(false);
-                r.setPermissions(PermissionSet.none());
-            }).subscribe(r -> {
+            g.createRole(RoleCreateSpec.builder()
+                    .hoist(false)
+                    .color(c)
+                    .name(name)
+                    .mentionable(false)
+                    .permissions(PermissionSet.none())
+                    .build()
+            ).subscribe(r -> {
                 r.changePosition(getPackPackPosition(g)-1).subscribe(null, e -> createMessageWithNoPings(ch, LangID.getStringByID("boorole_failmove", lang)));
 
                 if(StaticStore.boosterData.containsKey(g.getId().asString())) {
