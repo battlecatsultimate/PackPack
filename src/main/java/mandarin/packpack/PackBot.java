@@ -15,16 +15,19 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.event.domain.role.RoleDeleteEvent;
-import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.Member;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.Role;
+import discord4j.core.object.entity.*;
+import discord4j.core.object.entity.channel.Channel;
 import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.core.object.entity.channel.PrivateChannel;
 import discord4j.core.object.presence.ClientActivity;
 import discord4j.core.object.presence.ClientPresence;
+import discord4j.core.spec.EmbedCreateFields;
+import discord4j.core.spec.EmbedCreateSpec;
+import discord4j.core.spec.MessageCreateSpec;
 import discord4j.core.spec.RoleCreateSpec;
 import discord4j.gateway.intent.IntentSet;
 import discord4j.rest.request.RouterOptions;
+import mandarin.packpack.commands.Locale;
 import mandarin.packpack.commands.*;
 import mandarin.packpack.commands.bc.*;
 import mandarin.packpack.commands.bot.*;
@@ -49,10 +52,7 @@ import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.holder.MessageHolder;
 import mandarin.packpack.supporter.server.slash.SlashBuilder;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -61,6 +61,10 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class PackBot {
     public static int save = 0;
+    public static boolean develop = true;
+
+    public static final String normal = "p!help, but under Construction!";
+    public static final String dev = "p!help, being developed, bot may not response";
 
     public static void main(String[] args) {
         initialize(args);
@@ -80,7 +84,7 @@ public class PackBot {
 
         SlashBuilder.build(gate);
 
-        gate.updatePresence(ClientPresence.online(ClientActivity.playing("p!help, but under Construction!"))).subscribe();
+        gate.updatePresence(ClientPresence.online(ClientActivity.playing(develop ? dev : normal))).subscribe();
 
         gate.getGuilds().collectList().subscribe(l -> {
             for (Guild guild : l) {
@@ -466,7 +470,7 @@ public class PackBot {
                     MessageChannel mc = event.getMessage().getChannel().block();
 
                     if(mc == null)
-                        return false;
+                        return true;
                     else {
                         AtomicReference<Boolean> mandarin = new AtomicReference<>(false);
                         AtomicReference<Boolean> isMod = new AtomicReference<>(false);
@@ -511,52 +515,52 @@ public class PackBot {
                         return ((acc == null || !mc.getId().asString().equals(ids.GET_ACCESS)) && canGo.get()) || mandarin.get() || isMod.get();
                     }
                 }).subscribe(event -> {
-                    Guild g = event.getGuild().block();
-                    IDHolder ids;
-
-                    if(g != null) {
-                        ids = StaticStore.idHolder.get(g.getId().asString());
-                    } else {
-                        ids = new IDHolder();
-                    }
-
                     Message msg = event.getMessage();
 
-                    MessageChannel ch = msg.getChannel().block();
+                    event.getMember().ifPresentOrElse(m -> {
+                        MessageChannel ch = msg.getChannel().block();
 
-                    event.getMember().ifPresent(m -> {
-                        String prefix = StaticStore.getPrefix(m.getId().asString());
+                        if(ch != null && !(ch instanceof PrivateChannel)) {
+                            Guild g = event.getGuild().block();
+                            IDHolder ids;
 
-                        if(msg.getContent().startsWith(ids.serverPrefix))
-                            prefix = ids.serverPrefix;
+                            if(g != null) {
+                                ids = StaticStore.idHolder.get(g.getId().asString());
+                            } else {
+                                ids = new IDHolder();
+                            }
 
-                        if(msg.getContent().startsWith(StaticStore.serverPrefix))
-                            prefix = StaticStore.serverPrefix;
+                            String prefix = StaticStore.getPrefix(m.getId().asString());
 
-                        if(StaticStore.holderContainsKey(m.getId().asString())) {
-                            Holder<? extends Event> holder = StaticStore.getHolder(m.getId().asString());
+                            if(msg.getContent().startsWith(ids.serverPrefix))
+                                prefix = ids.serverPrefix;
 
-                            if(holder instanceof MessageHolder) {
-                                MessageHolder<? extends MessageEvent> messageHolder = (MessageHolder<? extends MessageEvent>) holder;
+                            if(msg.getContent().startsWith(StaticStore.serverPrefix))
+                                prefix = StaticStore.serverPrefix;
 
-                                if(messageHolder.canCastTo(MessageCreateEvent.class)) {
-                                    @SuppressWarnings("unchecked")
-                                    MessageHolder<MessageCreateEvent> h = (MessageHolder<MessageCreateEvent>) messageHolder;
+                            if(StaticStore.holderContainsKey(m.getId().asString())) {
+                                Holder<? extends Event> holder = StaticStore.getHolder(m.getId().asString());
 
-                                    int result = h.handleEvent(event);
+                                if(holder instanceof MessageHolder) {
+                                    MessageHolder<? extends MessageEvent> messageHolder = (MessageHolder<? extends MessageEvent>) holder;
 
-                                    if(result == Holder.RESULT_FINISH) {
-                                        messageHolder.clean();
-                                        StaticStore.removeHolder(m.getId().asString(), messageHolder);
-                                    } else if(result == Holder.RESULT_FAIL) {
-                                        System.out.println("ERROR : Expired process tried to be handled : "+m.getId().asString() + " | "+ messageHolder.getClass().getName());
-                                        StaticStore.removeHolder(m.getId().asString(), messageHolder);
+                                    if(messageHolder.canCastTo(MessageCreateEvent.class)) {
+                                        @SuppressWarnings("unchecked")
+                                        MessageHolder<MessageCreateEvent> h = (MessageHolder<MessageCreateEvent>) messageHolder;
+
+                                        int result = h.handleEvent(event);
+
+                                        if(result == Holder.RESULT_FINISH) {
+                                            messageHolder.clean();
+                                            StaticStore.removeHolder(m.getId().asString(), messageHolder);
+                                        } else if(result == Holder.RESULT_FAIL) {
+                                            System.out.println("ERROR : Expired process tried to be handled : "+m.getId().asString() + " | "+ messageHolder.getClass().getName());
+                                            StaticStore.removeHolder(m.getId().asString(), messageHolder);
+                                        }
                                     }
                                 }
                             }
-                        }
 
-                        if(ch != null) {
                             IDHolder idh;
 
                             if(g != null) {
@@ -827,6 +831,26 @@ public class PackBot {
                                 case "urf":
                                     new UnregisterFixing(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
                                     break;
+                                case "watchdm":
+                                case "wd":
+                                    new WatchDM(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+                                    break;
+                            }
+                        }
+                    }, () -> {
+                        MessageChannel ch = msg.getChannel().block();
+
+                        if(ch instanceof PrivateChannel) {
+                            String content = msg.getContent();
+
+                            if(content.contains("http")) {
+                                if(content.length() > 1000) {
+                                    content = content.substring(0, 997)+"...";
+                                }
+
+                                String finalContent = content;
+
+                                msg.getAuthor().ifPresent(a -> notifyModerators(a, finalContent, gate));
                             }
                         }
                     });
@@ -889,6 +913,43 @@ public class PackBot {
             }, 0, TimeUnit.MINUTES.toMillis(1));
 
             StaticStore.initialized = true;
+        }
+    }
+
+    public static void notifyModerators(User u, String content, GatewayDiscordClient gate) {
+        List<Guild> guilds = gate.getGuilds().collectList().block();
+
+        if(guilds == null)
+            return;
+
+        for(Guild g : guilds) {
+            String gID = g.getId().asString();
+
+            u.asMember(g.getId()).subscribe(m -> {
+                IDHolder holder = StaticStore.idHolder.get(gID);
+
+                if(holder == null) {
+                    StaticStore.logger.uploadLog("No ID Holder found for guild ID : "+gID);
+                    return;
+                }
+
+                if(StaticStore.isNumeric(holder.logDM)) {
+                    Channel ch = gate.getChannelById(Snowflake.of(holder.logDM)).block();
+
+                    if(ch instanceof MessageChannel) {
+                        MessageCreateSpec.Builder builder = MessageCreateSpec.builder()
+                                .addEmbed(EmbedCreateSpec.builder()
+                                        .color(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)])
+                                        .description(LangID.getStringByID("watdm_suslink", holder.serverLocale))
+                                        .author(m.getDisplayName()+" ("+m.getId().asString()+")", null, m.getAvatarUrl())
+                                        .addField(EmbedCreateFields.Field.of(LangID.getStringByID("watdm_content", holder.serverLocale), content, true))
+                                        .build()
+                                );
+
+                        ((MessageChannel) ch).createMessage(builder.build()).subscribe();
+                    }
+                }
+            }, (e) -> {});
         }
     }
 }

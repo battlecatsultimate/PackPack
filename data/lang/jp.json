@@ -434,6 +434,9 @@
   "help_fixrole_argu" : "`-p` or `-pre` : Manually decide role which will be added\n`-i` or `-ignore` : Decide role which will trigger ignoring. If this role is specified, even though user has none of two roles, bot will ignore them",
   "help_fixrole_exam" : "`p!fr -p 12345`\n`p!fr -p 12345 -i 67890`",
   "help_fixrole_tip" : "Let's say users in server must have one of member or pre-member role. There must not be users who have none of these roles. But sometimes, since usually these role system is managed by other bots, some users may have none of these roles due to inactivity of bot, etc. In that case, moderators can call this command to make such users have correct role data. Moderators must provide role ID. If server isn't registered as server where requires role data maintenance, moderators can't use this command. Ask creator of bot to register this server by using `p!suggest` command or manually contacting",
+  "help_watchdm_use" : "`p!watchdm [Channel ID]`",
+  "help_watchdm_desc" : "Activate DM monitor reporting feature, and set channel where reports will be uploaded. **Only moderators can use this command**. `wd` is also valid command",
+  "help_watchdm_tip" : "As spam link spreading is becoming serious, I decided to add test feature, which monitors bot's DM. If bot gets DM with http link (It can't distinguish if it's scam link or not), it will report to specified channel if user who sent DM is in this server\n\nTo deactivate this report, call `p!watchdm`, but without channel ID",
   "prefix_space" : "Prefixはスペースにはできません!",
   "prefix_set" : "Prefixは _ にセットされました!",
   "prefix_setnone" : "あなたのPrefixはアップデートされました!",
@@ -638,5 +641,12 @@
   "fixrole_confirmig" : "If user doesn't have neither of <@&_PPP_> nor <@&_MMM_>, bot will add <@&_PPP_> to this user. However, even though this user have none of these two roles, if user has <@&_III_>, bot won't add role. This cannot be undone, are you sure that you want to run this command?",
   "fixrole_nofixing" : "This server isn't registered as server which requires role data maintenance. Ask bot creator <@_> (_) to register this server via manually contacting or using `p!suggest` command",
   "fixrole_noneed" : "All users had proper role data",
-  "fixrole_fixed" : "Fixed _ users who had incorrect role data"
+  "fixrole_fixed" : "Fixed _ users who had incorrect role data",
+  "watdm_remove" : "Removed DM monitor reporting channel data!",
+  "watdm_nochan" : "No channel is specified. Specify the channel via mention or passing channel ID",
+  "watdm_nonum" : "Channel ID is not a number",
+  "watdm_invalid" : "Invalid channel ID, no such channel found in this server",
+  "watdm_set" : "DM monitor reporting channel is set as <#_> (_)!",
+  "watdm_suslink" : "I got DM which may contain suspicious link",
+  "watdm_content" : "Message content"
 }

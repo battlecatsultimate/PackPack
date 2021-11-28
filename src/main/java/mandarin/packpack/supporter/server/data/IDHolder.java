@@ -53,12 +53,17 @@ public class IDHolder {
             id.ID = id.toIDMap(obj.getAsJsonObject("id"));
         }
 
+        if(obj.has("logDM")) {
+            id.logDM = id.setOrNull(obj.get("logDM").getAsString());
+        }
+
         return id;
     }
 
     public String serverPrefix = "p!";
     public int serverLocale = LangID.EN;
     public boolean publish = false;
+    public String logDM = null;
 
     public String MOD;
     public String MEMBER;
@@ -95,6 +100,7 @@ public class IDHolder {
         obj.addProperty("bo", getOrNull(BOOSTER));
         obj.add("channel", jsonfyMap());
         obj.add("id", jsonfyIDs());
+        obj.addProperty("logDM", getOrNull(logDM));
 
         return obj;
     }

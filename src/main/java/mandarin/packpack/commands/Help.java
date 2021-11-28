@@ -240,6 +240,10 @@ public class Help extends Command {
             case "fr":
                 ch.createMessage(addFields("fixrole", true, true, true)).subscribe();
                 break;
+            case "watchdm":
+            case "wd":
+                ch.createMessage(addFields("watchdm", false, false, true)).subscribe();
+                break;
             default:
                 createMessageWithNoPings(ch, LangID.getStringByID("help_nocomm", lang).replace("_", command));
         }
