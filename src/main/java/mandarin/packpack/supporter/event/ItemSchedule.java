@@ -88,17 +88,17 @@ public class ItemSchedule extends EventFactor implements Schedule {
     }
 
     @Override
-    public String beautify() {
+    public String beautify(int lang) {
         return null;
     }
 
     @Override
-    public String dataToString() {
+    public String dataToString(int lang) {
         StringBuilder result = new StringBuilder("```");
 
         result.append(date.dateStart.year)
                 .append("-")
-                .append(getMonth(date.dateStart.month))
+                .append(getMonth(date.dateStart.month, lang))
                 .append("-")
                 .append(duo(date.dateStart.day))
                 .append(" ")
@@ -112,7 +112,7 @@ public class ItemSchedule extends EventFactor implements Schedule {
         } else {
             result.append(date.dateEnd.year)
                     .append("-")
-                    .append(getMonth(date.dateEnd.month))
+                    .append(getMonth(date.dateEnd.month, lang))
                     .append("-")
                     .append(duo(date.dateEnd.day))
                     .append(" ")
@@ -136,7 +136,7 @@ public class ItemSchedule extends EventFactor implements Schedule {
                     EventDateSet set = section.daySets.get(i);
 
                     result.append("[")
-                            .append(getMonth(set.dateStart.month))
+                            .append(getMonth(set.dateStart.month, lang))
                             .append("-")
                             .append(duo(set.dateStart.day))
                             .append(" ")
@@ -144,7 +144,7 @@ public class ItemSchedule extends EventFactor implements Schedule {
                             .append(":")
                             .append(duo(set.section.start.minute))
                             .append(" ~ ")
-                            .append(getMonth(set.dateEnd.month))
+                            .append(getMonth(set.dateEnd.month, lang))
                             .append("-")
                             .append(duo(set.dateEnd.day))
                             .append(" ")
@@ -165,7 +165,7 @@ public class ItemSchedule extends EventFactor implements Schedule {
                 result.append("{");
 
                 for (int i = 0; i < section.days.size(); i++) {
-                    result.append(section.days.get(i)).append(getNumberExtension(section.days.get(i)));
+                    result.append(section.days.get(i)).append(getNumberExtension(section.days.get(i), lang));
 
                     if (i < section.days.size() - 1)
                         result.append(", ");
@@ -178,7 +178,7 @@ public class ItemSchedule extends EventFactor implements Schedule {
                 result.append("{");
 
                 for(int i = 0; i < section.weekDays.size(); i++) {
-                    result.append(getWhichDay(section.weekDays.get(i)));
+                    result.append(getWhichDay(section.weekDays.get(i), lang));
 
                     if(i < section.weekDays.size() - 1)
                         result.append(", ");
@@ -249,29 +249,6 @@ public class ItemSchedule extends EventFactor implements Schedule {
             return "0"+n;
         else
             return ""+n;
-    }
-
-    private String getWhichDay(int data) {
-        switch (data) {
-            case MONDAY:
-                return "Monday";
-            case TUESDAY:
-                return "Tuesday";
-            case WEDNESDAY:
-                return "Wednesday";
-            case THURSDAY:
-                return "Thursday";
-            case FRIDAY:
-                return "Friday";
-            case SATURDAY:
-                return "Saturday";
-            case SUNDAY:
-                return "Sunday";
-            case WEEKEND:
-                return "Weekend";
-            default:
-                return "Unknown day "+data;
-        }
     }
 
     private String getEoCName(int status) {

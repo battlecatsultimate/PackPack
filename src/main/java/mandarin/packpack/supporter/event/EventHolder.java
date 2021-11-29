@@ -1,14 +1,11 @@
 package mandarin.packpack.supporter.event;
 
-import common.io.assets.UpdateCheck;
 import mandarin.packpack.supporter.DateComparator;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.event.group.*;
+import mandarin.packpack.supporter.lang.LangID;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.InputStream;
+import java.io.*;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -27,10 +24,6 @@ public class EventHolder extends EventFactor {
     public Map<Integer, ArrayList<StageSchedule>> gachas = new HashMap<>();
     public Map<Integer, ArrayList<StageSchedule>> items = new HashMap<>();
 
-    public Map<Integer, String> stageMD5 = new HashMap<>();
-    public Map<Integer, String> gachaMD5 = new HashMap<>();
-    public Map<Integer, String> itemMD5 = new HashMap<>();
-
     public void updateStage(File f, int locale, boolean init) throws Exception {
         if(!prepareFiles(locale))
             return;
@@ -39,20 +32,23 @@ public class EventHolder extends EventFactor {
 
         boolean needToAnalyze = false;
 
-        if(stageMD5.containsKey(locale)) {
-            String md5 = StaticStore.fileToMD5(f);
-
-            if(!stageMD5.get(locale).equals(md5)) {
-                stageMD5.put(locale, md5);
-                needToAnalyze = true;
-            }
-        } else {
-            stageMD5.put(locale, StaticStore.fileToMD5(f));
+        if(!file.exists()) {
             needToAnalyze = true;
+        } else {
+            String newMd5 = StaticStore.fileToMD5(f);
+            String md5 = StaticStore.fileToMD5(file);
+
+            if(newMd5 != null && !newMd5.equals(md5))
+                needToAnalyze = true;
         }
 
-        if(!needToAnalyze)
+        if(!needToAnalyze) {
+            if(f.exists() && !f.delete()) {
+                StaticStore.logger.uploadLog("Failed to delete file : "+f.getAbsolutePath());
+            }
+
             return;
+        }
 
         ArrayList<String> newLines;
 
@@ -171,7 +167,7 @@ public class EventHolder extends EventFactor {
         if(stages == null || stages.isEmpty())
             return "";
 
-        StringBuilder data = new StringBuilder();
+        StringBuilder data = new StringBuilder(LangID.getStringByID("event_stage", locale)).append("\n\n");
 
         boolean[] analyzed = new boolean[stages.size()];
 
@@ -219,16 +215,16 @@ public class EventHolder extends EventFactor {
                     if(handler instanceof NormalGroupHandler) {
                         StageSchedule start = (StageSchedule) event.schedules[0];
 
-                        appendProperly(start, start.beautifyWithCustomName(event.name), normals, dailys, weeklys, monthlys, yearlys);
+                        appendProperly(start, start.beautifyWithCustomName(event.name, locale), normals, dailys, weeklys, monthlys, yearlys);
                     } else if(handler instanceof SequenceGroupHandler) {
                         StageSchedule start = (StageSchedule) event.schedules[0];
                         StageSchedule end = (StageSchedule) event.schedules[event.schedules.length - 1];
 
-                        appendProperly(start, manualSchedulePrint(start.date.dateStart, end.date.dateEnd, event.name), normals, dailys, weeklys, monthlys, yearlys);
+                        appendProperly(start, manualSchedulePrint(start.date.dateStart, end.date.dateEnd, event.name, locale), normals, dailys, weeklys, monthlys, yearlys);
                     } else if(handler instanceof ContainedGroupHandler) {
                         StageSchedule primary = (StageSchedule) event.schedules[0];
 
-                        appendProperly(primary, primary.beautifyWithCustomName(event.name), normals, dailys, weeklys, monthlys, yearlys);
+                        appendProperly(primary, primary.beautifyWithCustomName(event.name, locale), normals, dailys, weeklys, monthlys, yearlys);
                     }
                 }
             }
@@ -245,16 +241,16 @@ public class EventHolder extends EventFactor {
                 continue;
             }
 
-            appendProperly(schedule, schedule.beautify(), normals, dailys, weeklys, monthlys, yearlys);
+            appendProperly(schedule, schedule.beautify(locale), normals, dailys, weeklys, monthlys, yearlys);
 
             analyzed[i] = true;
         }
 
-        normals.sort(new DateComparator());
-        dailys.sort(new DateComparator());
-        weeklys.sort(new DateComparator());
-        monthlys.sort(new DateComparator());
-        yearlys.sort(new DateComparator());
+        normals.sort(new DateComparator(locale));
+        dailys.sort(new DateComparator(locale));
+        weeklys.sort(new DateComparator(locale));
+        monthlys.sort(new DateComparator(locale));
+        yearlys.sort(new DateComparator(locale));
 
         if(!normals.isEmpty()) {
             data.append("```less\n");
@@ -268,7 +264,7 @@ public class EventHolder extends EventFactor {
         }
 
         if(!dailys.isEmpty()) {
-            data.append("New Daily Schedule Found\n\n");
+            data.append(LangID.getStringByID("printstage_daily", locale)).append("\n\n");
 
             data.append("```less\n");
 
@@ -281,7 +277,7 @@ public class EventHolder extends EventFactor {
         }
 
         if(!weeklys.isEmpty()) {
-            data.append("New Weekly Schedule Found\n\n");
+            data.append(LangID.getStringByID("printstage_weekly", locale)).append("\n\n");
 
             data.append("```less\n");
 
@@ -294,7 +290,7 @@ public class EventHolder extends EventFactor {
         }
 
         if(!monthlys.isEmpty()) {
-            data.append("New Monthly Schedule Found\n\n");
+            data.append(LangID.getStringByID("printstage_monthly", locale)).append("\n\n");
 
             data.append("```less\n");
 
@@ -307,7 +303,7 @@ public class EventHolder extends EventFactor {
         }
 
         if(!yearlys.isEmpty()) {
-            data.append("New Yearly Schedule Found\n\n");
+            data.append(LangID.getStringByID("printstage_yearly", locale)).append("\n\n");
 
             data.append("```less\n");
 
@@ -366,6 +362,9 @@ public class EventHolder extends EventFactor {
         newReader.close();
         oldReader.close();
 
+        System.out.println(newLines);
+        System.out.println(oldLines);
+
         newLines.removeAll(oldLines);
 
         return newLines;
@@ -400,11 +399,16 @@ public class EventHolder extends EventFactor {
     }
 
     private String getLocaleName(int locale) {
-        if (locale == EventFactor.JP) {
-            return "jp";
+        switch (locale) {
+            case EN:
+                return "en";
+            case ZH:
+                return "zh";
+            case KR:
+                return "kr";
+            default:
+                return "jp";
         }
-
-        return "global";
     }
 
     private void appendProperly(StageSchedule schedule, String val, ArrayList<String> normal, ArrayList<String> daily, ArrayList<String> weekly, ArrayList<String> monthly, ArrayList<String> yearly) {
@@ -429,8 +433,8 @@ public class EventHolder extends EventFactor {
     }
 
     public void initialize() throws Exception {
-        String[] loc = {"global", "jp"};
-        String[] file = {"sale.tsv", "gatya.tsv", "item.tsv"};
+        String[] loc = {"en", "zh", "kr", "jp"};
+        String[] file = {"gatya.tsv", "item.tsv", "sale.tsv"};
 
         for(int j = 0; j < loc.length; j++) {
             String locale = loc[j];
@@ -441,14 +445,14 @@ public class EventHolder extends EventFactor {
                 if(!f.exists())
                     continue;
 
-                if(i == 0) {
+                if(i == 2) {
                     updateStage(f, j, true);
                 }
             }
         }
     }
 
-    private String manualSchedulePrint(EventDate dateStart, EventDate dateEnd, String scheduleName) {
+    private String manualSchedulePrint(EventDate dateStart, EventDate dateEnd, String scheduleName, int lang) {
         StringBuilder result = new StringBuilder("[");
 
         if(dateStart.year != dateEnd.year || dateStart.year != currentYear) {
@@ -456,10 +460,10 @@ public class EventHolder extends EventFactor {
                     .append(" ");
         }
 
-        result.append(getMonth(dateStart.month))
+        result.append(getMonth(dateStart.month, lang))
                 .append(" ")
                 .append(dateStart.day)
-                .append(getNumberExtension(dateStart.day))
+                .append(getNumberExtension(dateStart.day, lang))
                 .append(" ~ ");
 
         if(dateEnd.equals(END)) {
@@ -471,12 +475,12 @@ public class EventHolder extends EventFactor {
             }
 
             if(dateStart.month != dateEnd.month) {
-                result.append(getMonth(dateEnd.month))
+                result.append(getMonth(dateEnd.month, lang))
                         .append(" ");
             }
 
             result.append(dateEnd.day)
-                    .append(getNumberExtension(dateEnd.day))
+                    .append(getNumberExtension(dateEnd.day, lang))
                     .append("] ");
         }
 
@@ -486,7 +490,7 @@ public class EventHolder extends EventFactor {
     }
 
     public boolean[][] checkUpdates() throws Exception {
-        boolean[][] updates = new boolean[2][3];
+        boolean[][] updates = new boolean[4][3];
 
         File temp = new File("./temp");
 
@@ -498,21 +502,23 @@ public class EventHolder extends EventFactor {
             }
         }
 
-        String[] loc = {"jp", "en"};
-        String[] file = {"sale.tsv", "gatya.tsv", "item.tsv"};
+        String[] file = {"gatya.tsv", "item.tsv", "sale.tsv"};
 
-        for(int i = 0; i < loc.length; i++) {
-            String locale = loc[i];
-
+        for(int i = 0; i < 4; i++) {
             for(int j = 0; j < file.length; j++) {
                 String fi = file[j];
-                File f = new File("./data/"+getLocaleName(i)+"/"+fi);
+                File f = new File("./data/event/"+getLocaleName(i)+"/"+fi);
 
-                String url = EVENTURL.replace("LL", locale).replace("FFFF", fi);
+                String url = EventFileGrabber.getLink(i, j);
+
+                if(url == null)
+                    continue;
 
                 if(f.exists()) {
                     String oldMD5 = StaticStore.fileToMD5(f);
                     String newMD5 = getMD5fromURL(url);
+
+                    System.out.println(getLocaleName(i)+"/"+fi+" : "+oldMD5 + " | " + newMD5);
 
                     if(oldMD5 == null || !oldMD5.equals(newMD5)) {
                         updates[i][j] = true;
@@ -520,16 +526,47 @@ public class EventHolder extends EventFactor {
                         File temporary = new File("./temp", StaticStore.findFileName(temp, fi, ".tmp"));
                         File target = new File("./temp", StaticStore.findFileName(temp, fi.split("\\.")[0], ".tsv"));
 
-                        UpdateCheck.Downloader down = StaticStore.getDownloader(url, target, temporary);
+                        if(!temporary.exists() && !temporary.createNewFile()) {
+                            StaticStore.logger.uploadLog("Failed to create file : "+temporary.getAbsolutePath());
+                            continue;
+                        }
 
-                        down.run(d -> {});
+                        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+                        connection.setRequestMethod("GET");
+
+                        connection.connect();
+
+                        FileOutputStream fos = new FileOutputStream(temporary);
+                        InputStream ins = connection.getInputStream();
+
+                        byte[] buffer = new byte[1024];
+                        int n;
+
+                        while((n = ins.read(buffer)) != -1) {
+                            fos.write(buffer, 0, n);
+                        }
+
+                        fos.close();
+                        ins.close();
+
+                        connection.disconnect();
+
+                        if(!temporary.renameTo(target)) {
+                            StaticStore.logger.uploadLog("Failed to rename file\nSrc : "+temporary.getAbsolutePath()+"\nDst : "+target.getAbsolutePath());
+                            continue;
+                        }
 
                         switch (j) {
-                            case 0:
+                            case SALE:
                                 updateStage(target, i, false);
                                 break;
-                            case 1:
+                            default:
+                                File dst = new File("./data/event/"+getLocaleName(i)+"/"+fi);
 
+                                if(!target.renameTo(dst)) {
+                                    StaticStore.logger.uploadLog("Failed to rename file\nSrc : "+target.getAbsolutePath()+"\nDst : "+dst.getAbsolutePath());
+                                }
+                                break;
                         }
                     }
                 } else {
@@ -538,16 +575,47 @@ public class EventHolder extends EventFactor {
                     File temporary = new File("./temp", StaticStore.findFileName(temp, fi, ".tmp"));
                     File target = new File("./temp", StaticStore.findFileName(temp, fi.split("\\.")[0], ".tsv"));
 
-                    UpdateCheck.Downloader down = StaticStore.getDownloader(url, target, temporary);
+                    if(!temporary.exists() && !temporary.createNewFile()) {
+                        StaticStore.logger.uploadLog("Failed to create file : "+temporary.getAbsolutePath());
+                        continue;
+                    }
 
-                    down.run(d -> {});
+                    HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+                    connection.setRequestMethod("GET");
+
+                    connection.connect();
+
+                    FileOutputStream fos = new FileOutputStream(temporary);
+                    InputStream ins = connection.getInputStream();
+
+                    byte[] buffer = new byte[1024];
+                    int n;
+
+                    while((n = ins.read(buffer)) != -1) {
+                        fos.write(buffer, 0, n);
+                    }
+
+                    fos.close();
+                    ins.close();
+
+                    connection.disconnect();
+
+                    if(!temporary.renameTo(target)) {
+                        StaticStore.logger.uploadLog("Failed to rename file\nSrc : "+temporary.getAbsolutePath()+"\nDst : "+target.getAbsolutePath());
+                        continue;
+                    }
 
                     switch (j) {
-                        case 0:
+                        case SALE:
                             updateStage(target, i, false);
                             break;
-                        case 1:
+                        default:
+                            File dst = new File("./data/event/"+getLocaleName(i)+"/"+fi);
 
+                            if(!target.renameTo(dst)) {
+                                StaticStore.logger.uploadLog("Failed to rename file\nSrc : "+target.getAbsolutePath()+"\nDst : "+dst.getAbsolutePath());
+                            }
+                            break;
                     }
                 }
             }

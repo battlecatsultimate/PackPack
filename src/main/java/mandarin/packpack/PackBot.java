@@ -21,20 +21,14 @@ import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.entity.channel.PrivateChannel;
 import discord4j.core.object.presence.ClientActivity;
 import discord4j.core.object.presence.ClientPresence;
-import discord4j.core.spec.EmbedCreateFields;
-import discord4j.core.spec.EmbedCreateSpec;
-import discord4j.core.spec.MessageCreateSpec;
-import discord4j.core.spec.RoleCreateSpec;
+import discord4j.core.spec.*;
 import discord4j.gateway.intent.IntentSet;
 import discord4j.rest.request.RouterOptions;
 import mandarin.packpack.commands.Locale;
 import mandarin.packpack.commands.*;
 import mandarin.packpack.commands.bc.*;
 import mandarin.packpack.commands.bot.*;
-import mandarin.packpack.commands.data.AnimAnalyzer;
-import mandarin.packpack.commands.data.Announcement;
-import mandarin.packpack.commands.data.StageImage;
-import mandarin.packpack.commands.data.StmImage;
+import mandarin.packpack.commands.data.*;
 import mandarin.packpack.commands.server.*;
 import mandarin.packpack.supporter.AssetDownloader;
 import mandarin.packpack.supporter.Logger;
@@ -42,6 +36,7 @@ import mandarin.packpack.supporter.PackContext;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.event.EventFactor;
+import mandarin.packpack.supporter.event.EventFileGrabber;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.data.BoosterData;
@@ -52,6 +47,8 @@ import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.holder.MessageHolder;
 import mandarin.packpack.supporter.server.slash.SlashBuilder;
 
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -61,6 +58,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class PackBot {
     public static int save = 0;
+    public static int event = 0;
     public static boolean develop = true;
 
     public static final String normal = "p!help, but under Construction!";
@@ -79,6 +77,62 @@ public class PackBot {
         if(gate == null) {
             return;
         }
+
+        StaticStore.saver = new Timer();
+        StaticStore.saver.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if(save % 5 == 0) {
+                    System.out.println("Save Process");
+                    StaticStore.saveServerInfo();
+
+                    Calendar c = Calendar.getInstance();
+
+                    EventFactor.currentYear = c.get(Calendar.YEAR);
+
+                    save = 1;
+                } else {
+                    save++;
+                }
+
+                if(event % 20 == 0) {
+                    System.out.println("Checking event data");
+
+                    try {
+                        boolean[][] result = StaticStore.event.checkUpdates();
+
+                        boolean doNotify = false;
+
+                        for(int i = 0; i < result.length; i++) {
+                            for(int j = 0; j < result[i].length; j++) {
+                                if(result[i][j]) {
+                                    doNotify = true;
+                                    break;
+                                }
+                            }
+
+                            if(doNotify)
+                                break;
+                        }
+
+                        if(doNotify) {
+                            notifyEvent(gate, result);
+                        }
+                    } catch (Exception e) {
+                        StaticStore.logger.uploadErrorLog(e, "Error happened while trying to check event data");
+                    }
+
+                    event = 1;
+                } else {
+                    event++;
+                }
+
+                for(SpamPrevent spam : StaticStore.spamData.values()) {
+                    if(spam.count > 0)
+                        spam.count--;
+                }
+            }
+        }, 0, TimeUnit.MINUTES.toMillis(1));
 
         StaticStore.logger = new Logger(gate);
 
@@ -835,6 +889,18 @@ public class PackBot {
                                 case "wd":
                                     new WatchDM(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
                                     break;
+                                case "checkeventupdate":
+                                case "ceu":
+                                    new CheckEventUpdate(ConstraintCommand.ROLE.MANDARIN, lang, idh, gate).execute(event);
+                                    break;
+                                case "printstageevent":
+                                case "pse":
+                                    new PrintStageEvent(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+                                    break;
+                                case "subscribeevent":
+                                case "se":
+                                    new SubscribeEvent(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+                                    break;
                             }
                         }
                     }, () -> {
@@ -879,6 +945,7 @@ public class PackBot {
             DataToString.initialize();
 
             try {
+                EventFileGrabber.initialize();
                 StaticStore.event.initialize();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -887,30 +954,6 @@ public class PackBot {
             if(!StaticStore.contributors.contains(StaticStore.MANDARIN_SMELL)) {
                 StaticStore.contributors.add(StaticStore.MANDARIN_SMELL);
             }
-
-            StaticStore.saver = new Timer();
-            StaticStore.saver.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    if(save % 5 == 0) {
-                        System.out.println("Save Process");
-                        StaticStore.saveServerInfo();
-
-                        Calendar c = Calendar.getInstance();
-
-                        EventFactor.currentYear = c.get(Calendar.YEAR);
-
-                        save = 1;
-                    } else {
-                        save++;
-                    }
-
-                    for(SpamPrevent spam : StaticStore.spamData.values()) {
-                        if(spam.count > 0)
-                            spam.count--;
-                    }
-                }
-            }, 0, TimeUnit.MINUTES.toMillis(1));
 
             StaticStore.initialized = true;
         }
@@ -951,5 +994,120 @@ public class PackBot {
                 }
             }, (e) -> {});
         }
+    }
+
+    public static void notifyEvent(GatewayDiscordClient gate, boolean[][] r) throws Exception {
+        List<Guild> guilds = gate.getGuilds().collectList().block();
+
+        if(guilds == null)
+            return;
+
+        for(Guild g : guilds) {
+            String gID = g.getId().asString();
+
+            IDHolder holder = StaticStore.idHolder.get(gID);
+
+            if(holder == null) {
+                StaticStore.logger.uploadLog("No ID Holder found for guild ID : "+gID);
+                continue;
+            }
+
+            boolean done = false;
+
+            for(int i = 0; i < r.length; i++) {
+                for(int j = 0; j < r[i].length; j++) {
+                    if(r[i][j] && i == parseLocale(holder.serverLocale) && holder.event != null) {
+                        Channel ch = gate.getChannelById(Snowflake.of(holder.event)).block();
+
+                        if(ch instanceof MessageChannel) {
+                            switch (j) {
+                                case EventFactor.SALE:
+                                    String result = StaticStore.event.printStageEvent(holder.serverLocale);
+
+                                    if(result.isBlank()) {
+                                        continue;
+                                    }
+
+                                    done = true;
+
+                                    MessageCreateSpec.Builder builder = MessageCreateSpec.builder();
+
+                                    if(result.length() >= 2000) {
+                                        File temp = new File("./temp");
+
+                                        if(!temp.exists() && !temp.mkdirs()) {
+                                            StaticStore.logger.uploadLog("Failed to create folder : "+temp.getAbsolutePath());
+                                            return;
+                                        }
+
+                                        File res = new File(temp, StaticStore.findFileName(temp, "saleEvent", ".txt"));
+
+                                        if(!res.exists() && !res.createNewFile()) {
+                                            StaticStore.logger.uploadLog("Failed to create file : "+res.getAbsolutePath());
+                                            return;
+                                        }
+
+                                        BufferedWriter writer = new BufferedWriter(new FileWriter(res, StandardCharsets.UTF_8));
+
+                                        writer.write(result);
+
+                                        writer.close();
+
+                                        FileInputStream fis = new FileInputStream(res);
+
+                                        builder.content(LangID.getStringByID("printstage_toolong", holder.serverLocale))
+                                                .addFile(MessageCreateFields.File.of("stageAndEvent.txt", fis));
+
+                                        ((MessageChannel) ch).createMessage(builder.build()).subscribe(null, (e) -> {
+                                            StaticStore.logger.uploadErrorLog(e, "Failed to perform uploading stage event data");
+
+                                            try {
+                                                fis.close();
+                                            } catch (IOException ex) {
+                                                StaticStore.logger.uploadErrorLog(ex, "Failed close stream while uploading stage event data");
+                                            }
+
+                                            if(res.exists() && !res.delete()) {
+                                                StaticStore.logger.uploadLog("Failed to delete file : "+res.getAbsolutePath());
+                                            }
+                                        }, () -> {
+                                            try {
+                                                fis.close();
+                                            } catch (IOException e) {
+                                                StaticStore.logger.uploadErrorLog(e, "Failed close stream while uploading stage event data");
+                                            }
+
+                                            if(res.exists() && !res.delete()) {
+                                                StaticStore.logger.uploadLog("Failed to delete file : "+res.getAbsolutePath());
+                                            }
+                                        });
+                                    } else {
+                                        builder.content(result);
+
+                                        ((MessageChannel) ch).createMessage(builder.build()).subscribe();
+                                    }
+
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if(done && gID.equals(StaticStore.BCU_SERVER) && holder.event != null) {
+                Channel ch = gate.getChannelById(Snowflake.of(holder.event)).block();
+
+                if(ch != null) {
+                    ((MessageChannel) ch).createMessage(MessageCreateSpec.builder().content("<@"+StaticStore.MANDARIN_SMELL+"> Check the result").build()).subscribe();
+                }
+            }
+        }
+    }
+
+    private static int parseLocale(int l) {
+        if(l == 0 || l > LangID.JP)
+            return 0;
+        else
+            return l;
     }
 }

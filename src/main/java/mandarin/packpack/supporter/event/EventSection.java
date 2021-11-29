@@ -9,6 +9,11 @@ public class EventSection {
     public ArrayList<Integer> weekDays = new ArrayList<>();
 
     public void parseWeekDay(int mask) {
+        if(mask == 65) {
+            weekDays.add(65);
+            return;
+        }
+
         for(int i = 0; i < 7; i++) {
             if(((mask >> i) & 1) > 0)
                 weekDays.add(1 << i);

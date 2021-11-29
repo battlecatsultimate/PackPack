@@ -4,6 +4,7 @@ import common.util.Data;
 import common.util.stage.MapColc;
 import common.util.stage.StageMap;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.lang.LangID;
 
 import java.util.ArrayList;
 
@@ -112,12 +113,12 @@ public class StageSchedule extends EventFactor implements Schedule {
     }
 
     @Override
-    public String dataToString() {
+    public String dataToString(int lang) {
         StringBuilder result = new StringBuilder("```");
 
         result.append(date.dateStart.year)
                 .append("-")
-                .append(getMonth(date.dateStart.month))
+                .append(getMonth(date.dateStart.month, lang))
                 .append("-")
                 .append(duo(date.dateStart.day))
                 .append(" ")
@@ -131,7 +132,7 @@ public class StageSchedule extends EventFactor implements Schedule {
         } else {
             result.append(date.dateEnd.year)
                     .append("-")
-                    .append(getMonth(date.dateEnd.month))
+                    .append(getMonth(date.dateEnd.month, lang))
                     .append("-")
                     .append(duo(date.dateEnd.day))
                     .append(" ")
@@ -168,7 +169,7 @@ public class StageSchedule extends EventFactor implements Schedule {
                     EventDateSet set = section.daySets.get(i);
 
                     result.append("[")
-                            .append(getMonth(set.dateStart.month))
+                            .append(getMonth(set.dateStart.month, lang))
                             .append("-")
                             .append(duo(set.dateStart.day))
                             .append(" ")
@@ -176,7 +177,7 @@ public class StageSchedule extends EventFactor implements Schedule {
                             .append(":")
                             .append(duo(set.section.start.minute))
                             .append(" ~ ")
-                            .append(getMonth(set.dateEnd.month))
+                            .append(getMonth(set.dateEnd.month, lang))
                             .append("-")
                             .append(duo(set.dateEnd.day))
                             .append(" ")
@@ -202,7 +203,7 @@ public class StageSchedule extends EventFactor implements Schedule {
                     result.append("Every odd day");
                 } else {
                     for (int i = 0; i < section.days.size(); i++) {
-                        result.append(section.days.get(i)).append(getNumberExtension(section.days.get(i)));
+                        result.append(section.days.get(i)).append(getNumberExtension(section.days.get(i), lang));
 
                         if (i < section.days.size() - 1)
                             result.append(", ");
@@ -216,7 +217,7 @@ public class StageSchedule extends EventFactor implements Schedule {
                 result.append("{");
 
                 for(int i = 0; i < section.weekDays.size(); i++) {
-                    result.append(getWhichDay(section.weekDays.get(i)));
+                    result.append(getWhichDay(section.weekDays.get(i), lang));
 
                     if(i < section.weekDays.size() - 1)
                         result.append(", ");
@@ -255,7 +256,7 @@ public class StageSchedule extends EventFactor implements Schedule {
             if(map == null)
                 continue;
 
-            String mapName = StaticStore.safeMultiLangGet(map, 0);
+            String mapName = StaticStore.safeMultiLangGet(map, lang);
 
             if(mapName == null || mapName.isBlank()) {
                 mapName = map.getCont().getSID()+"-"+Data.trio(map.id.id);
@@ -289,7 +290,7 @@ public class StageSchedule extends EventFactor implements Schedule {
         return result.toString();
     }
 
-    public String beautifyWithCustomName(String name) {
+    public String beautifyWithCustomName(String name, int lang) {
         StringBuilder result = new StringBuilder();
 
         result.append("[");
@@ -299,10 +300,10 @@ public class StageSchedule extends EventFactor implements Schedule {
                     .append(" ");
         }
 
-        result.append(getMonth(date.dateStart.month))
+        result.append(getMonth(date.dateStart.month, lang))
                 .append(" ")
                 .append(date.dateStart.day)
-                .append(getNumberExtension(date.dateStart.day))
+                .append(getNumberExtension(date.dateStart.day, lang))
                 .append(" ~ ");
 
         if(date.dateEnd.equals(END)) {
@@ -315,12 +316,12 @@ public class StageSchedule extends EventFactor implements Schedule {
             }
 
             if(date.dateStart.month != date.dateEnd.month) {
-                result.append(getMonth(date.dateEnd.month))
+                result.append(getMonth(date.dateEnd.month, lang))
                         .append(" ");
             }
 
             result.append(date.dateEnd.day)
-                    .append(getNumberExtension(date.dateEnd.day))
+                    .append(getNumberExtension(date.dateEnd.day, lang))
                     .append("] ");
         }
 
@@ -329,7 +330,8 @@ public class StageSchedule extends EventFactor implements Schedule {
         return result.toString();
     }
 
-    public String beautify() {
+    @Override
+    public String beautify(int lang) {
         StringBuilder result = new StringBuilder();
 
         result.append("[");
@@ -339,10 +341,10 @@ public class StageSchedule extends EventFactor implements Schedule {
                     .append(" ");
         }
 
-        result.append(getMonth(date.dateStart.month))
+        result.append(getMonth(date.dateStart.month, lang))
                 .append(" ")
                 .append(date.dateStart.day)
-                .append(getNumberExtension(date.dateStart.day))
+                .append(getNumberExtension(date.dateStart.day, lang))
                 .append(" ~ ");
 
         if(date.dateEnd.equals(END)) {
@@ -355,12 +357,12 @@ public class StageSchedule extends EventFactor implements Schedule {
             }
 
             if(date.dateStart.month != date.dateEnd.month) {
-                result.append(getMonth(date.dateEnd.month))
+                result.append(getMonth(date.dateEnd.month, lang))
                         .append(" ");
             }
 
             result.append(date.dateEnd.day)
-                    .append(getNumberExtension(date.dateEnd.day))
+                    .append(getNumberExtension(date.dateEnd.day, lang))
                     .append("] ");
         }
 
@@ -370,7 +372,7 @@ public class StageSchedule extends EventFactor implements Schedule {
             if(map == null || map.id == null || map.getCont() == null)
                 continue;
 
-            String mapName = StaticStore.safeMultiLangGet(map, 0);
+            String mapName = StaticStore.safeMultiLangGet(map, lang);
 
             if(mapName == null || mapName.isBlank()) {
                 mapName = map.getCont().getSID()+"-"+Data.trio(map.id.id);
@@ -390,7 +392,15 @@ public class StageSchedule extends EventFactor implements Schedule {
         for(int i = 0; i < unknownStages.size(); i++) {
             int id = StaticStore.safeParseInt(unknownStages.get(i));
 
-            result.append(id);
+            String langID = "event_"+id;
+
+            String temp = LangID.getStringByID(langID, lang);
+
+            if(!temp.equals(langID)) {
+                result.append(temp);
+            } else {
+                result.append(id);
+            }
 
             if(i < unknownStages.size() - 1)
                 result.append(", ");
@@ -406,15 +416,15 @@ public class StageSchedule extends EventFactor implements Schedule {
                     for (int j = 0; j < section.daySets.size(); j++) {
                         EventDateSet set = section.daySets.get(j);
 
-                        result.append(getMonth(set.dateStart.month))
+                        result.append(getMonth(set.dateStart.month, lang))
                                 .append(" ")
                                 .append(set.dateStart.day)
-                                .append(getNumberExtension(set.dateStart.day))
+                                .append(getNumberExtension(set.dateStart.day, lang))
                                 .append(" ~ ")
-                                .append(getMonth(set.dateEnd.month))
+                                .append(getMonth(set.dateEnd.month, lang))
                                 .append(" ")
                                 .append(set.dateEnd.day)
-                                .append(getNumberExtension(set.dateEnd.day));
+                                .append(getNumberExtension(set.dateEnd.day, lang));
 
                         if (j < section.daySets.size() - 1)
                             result.append(", ");
@@ -433,7 +443,7 @@ public class StageSchedule extends EventFactor implements Schedule {
                     } else {
                         for (int j = 0; j < section.days.size(); j++) {
                             result.append(section.days.get(j))
-                                    .append(getNumberExtension(section.days.get(j)));
+                                    .append(getNumberExtension(section.days.get(j), lang));
 
                             if (j < section.days.size() - 1) {
                                 result.append(", ");
@@ -448,7 +458,7 @@ public class StageSchedule extends EventFactor implements Schedule {
 
                 if (!section.weekDays.isEmpty()) {
                     for (int j = 0; j < section.weekDays.size(); j++) {
-                        result.append(getWhichDay(section.weekDays.get(j)));
+                        result.append(getWhichDay(section.weekDays.get(j), lang));
 
                         if (j < section.weekDays.size() - 1) {
                             result.append(", ");
@@ -564,29 +574,6 @@ public class StageSchedule extends EventFactor implements Schedule {
         return main+"."+major+"."+minor;
     }
 
-    private String getWhichDay(int data) {
-        switch (data) {
-            case MONDAY:
-                return "Monday";
-            case TUESDAY:
-                return "Tuesday";
-            case WEDNESDAY:
-                return "Wednesday";
-            case THURSDAY:
-                return "Thursday";
-            case FRIDAY:
-                return "Friday";
-            case SATURDAY:
-                return "Saturday";
-            case SUNDAY:
-                return "Sunday";
-            case WEEKEND:
-                return "Weekend";
-            default:
-                return "Unknown day "+data;
-        }
-    }
-
     private StageMap tryToGetMap(int value) {
         int mc = value/1000;
         int map = value % 1000;
@@ -608,6 +595,6 @@ public class StageSchedule extends EventFactor implements Schedule {
 
     @Override
     public String toString() {
-        return "{ Type : "+type+" | Contents : " + beautify() +" }";
+        return "{ Type : "+type+" | Contents : " + beautify(0) +" }";
     }
 }

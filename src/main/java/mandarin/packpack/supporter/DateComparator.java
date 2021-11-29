@@ -1,10 +1,17 @@
 package mandarin.packpack.supporter;
 
 import mandarin.packpack.supporter.event.EventFactor;
+import mandarin.packpack.supporter.lang.LangID;
 
 import java.util.Comparator;
 
 public class DateComparator implements Comparator<String> {
+    private final int lang;
+
+    public DateComparator(int lang) {
+        this.lang = lang;
+    }
+
     @Override
     public int compare(String o1, String o2) {
         if(o1 == null)
@@ -48,46 +55,46 @@ public class DateComparator implements Comparator<String> {
             if(StaticStore.isNumeric(date[0]))
                 result[0] = StaticStore.safeParseInt(date[0]);
 
-            result[1] = monthToNumber(date[1]);
+            result[1] = monthToNumber(date[1], lang);
 
-            result[2] = StaticStore.safeParseInt(date[2].replaceAll("st|nd|rd|th", ""));
+            result[2] = StaticStore.safeParseInt(date[2].replaceAll("st|nd|rd|th|일", ""));
         } else if(date.length == 2) {
             result[0] = EventFactor.currentYear;
 
-            result[1] = monthToNumber(date[0]);
+            result[1] = monthToNumber(date[0], lang);
 
-            result[2] = StaticStore.safeParseInt(date[1].replaceAll("st|nd|rd|th", ""));
+            result[2] = StaticStore.safeParseInt(date[1].replaceAll("st|nd|rd|th|일", ""));
         }
 
         return result;
     }
 
-    private int monthToNumber(String month) {
-        switch (month) {
-            case "January":
-                return 1;
-            case "February":
-                return 2;
-            case "March":
-                return 3;
-            case "April":
-                return 4;
-            case "May":
-                return 5;
-            case "June":
-                return 6;
-            case "July":
-                return 7;
-            case "August":
-                return 8;
-            case "September":
-                return 9;
-            case "October":
-                return 10;
-            case "November":
-                return 11;
-            default:
-                return 12;
-        }
+    private int monthToNumber(String month, int lang) {
+        if(month.equals(LangID.getStringByID("january", lang)))
+            return 1;
+        else if(month.equals(LangID.getStringByID("february", lang)))
+            return 2;
+        else if(month.equals(LangID.getStringByID("march", lang)))
+            return 3;
+        else if(month.equals(LangID.getStringByID("april", lang)))
+            return 4;
+        else if(month.equals(LangID.getStringByID("may", lang)))
+            return 5;
+        else if(month.equals(LangID.getStringByID("june", lang)))
+            return 6;
+        else if(month.equals(LangID.getStringByID("july", lang)))
+            return 7;
+        else if(month.equals(LangID.getStringByID("august", lang)))
+            return 8;
+        else if(month.equals(LangID.getStringByID("september", lang)))
+            return 9;
+        else if(month.equals(LangID.getStringByID("october", lang)))
+            return 10;
+        else if(month.equals(LangID.getStringByID("november", lang)))
+            return 11;
+        else if(month.equals(LangID.getStringByID("december", lang)))
+            return 12;
+        else
+            return -1;
     }
 }

@@ -1,6 +1,7 @@
 package mandarin.packpack.supporter.event.group;
 
 import common.util.stage.StageMap;
+import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.event.EventFactor;
 import mandarin.packpack.supporter.event.Schedule;
 import mandarin.packpack.supporter.event.StageSchedule;
@@ -11,11 +12,13 @@ import java.util.List;
 
 public class SequenceGroupHandler implements GroupHandler {
     public final String name;
+    private final boolean raw;
 
     private final List<List<Integer>> sequenceGroup;
     private final ArrayList<EventGroup> groups = new ArrayList<>();
 
-    public SequenceGroupHandler(@NotNull List<List<Integer>> sequenceGroup, @NotNull String name) {
+    public SequenceGroupHandler(@NotNull List<List<Integer>> sequenceGroup, @NotNull String name, boolean raw) {
+        this.raw = raw;
         this.sequenceGroup = sequenceGroup;
         this.name = name;
     }
@@ -23,7 +26,9 @@ public class SequenceGroupHandler implements GroupHandler {
     @Override
     public boolean handleEvent(Schedule schedule) {
         if(schedule instanceof StageSchedule) {
-            if(((StageSchedule) schedule).stages.isEmpty())
+            if(!raw && ((StageSchedule) schedule).stages.isEmpty())
+                return false;
+            else if(raw && ((StageSchedule) schedule).unknownStages.isEmpty())
                 return false;
 
             if(containsOnlyValidStages((StageSchedule) schedule)) {
@@ -34,14 +39,14 @@ public class SequenceGroupHandler implements GroupHandler {
                         continue;
 
                     if(sequenceCanBeApplied(group.schedules, (StageSchedule) schedule)) {
-                        added |= group.addStage((StageSchedule) schedule);
+                        added |= group.addStage((StageSchedule) schedule, raw);
                     }
                 }
 
                 if(!added) {
                     EventGroup newGroup = new EventGroup(sequenceGroup, name);
 
-                    boolean result = newGroup.addStage((StageSchedule) schedule);
+                    boolean result = newGroup.addStage((StageSchedule) schedule, raw);
 
                     groups.add(newGroup);
 
@@ -69,13 +74,24 @@ public class SequenceGroupHandler implements GroupHandler {
         for (List<Integer> group : sequenceGroup) {
             ArrayList<Integer> data = new ArrayList<>();
 
-            for (StageMap stm : schedule.stages) {
-                int id = EventFactor.stageToInteger(stm);
+            if(raw) {
+                for (String unknown : schedule.unknownStages) {
+                    if(!StaticStore.isNumeric(unknown))
+                        return false;
 
-                if (id == -1) {
-                    return false;
-                } else {
+                    int id = StaticStore.safeParseInt(unknown);
+
                     data.add(id);
+                }
+            } else {
+                for (StageMap stm : schedule.stages) {
+                    int id = EventFactor.stageToInteger(stm);
+
+                    if (id == -1) {
+                        return false;
+                    } else {
+                        data.add(id);
+                    }
                 }
             }
 

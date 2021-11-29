@@ -1,6 +1,7 @@
 package mandarin.packpack.supporter.event.group;
 
 import common.util.stage.StageMap;
+import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.event.EventDateSet;
 import mandarin.packpack.supporter.event.EventFactor;
 import mandarin.packpack.supporter.event.Schedule;
@@ -24,8 +25,14 @@ public class EventGroup extends EventFactor {
         schedules = new Schedule[segmentID.size()];
     }
 
-    public boolean addStage(StageSchedule schedule) {
-        int index = findIdenticalGroup(schedule);
+    public boolean addStage(StageSchedule schedule, boolean raw) {
+        int index;
+
+        if(!raw) {
+            index = findIdenticalGroup(schedule);
+        } else {
+            index = findRawGroup(schedule);
+        }
 
         //No valid segment found
         if(index == -1)
@@ -88,6 +95,32 @@ public class EventGroup extends EventFactor {
 
                 if(id == -1)
                     return -1;
+
+                if(!ids.contains(id)) {
+                    canGo = false;
+                    break;
+                }
+            }
+
+            if(canGo) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    private int findRawGroup(StageSchedule schedule) {
+        for(int i = 0; i < segmentID.size(); i++) {
+            List<Integer> ids = segmentID.get(i);
+
+            boolean canGo = true;
+
+            for(String unknown : schedule.unknownStages) {
+                if(!StaticStore.isNumeric(unknown))
+                    return -1;
+
+                int id = StaticStore.safeParseInt(unknown);
 
                 if(!ids.contains(id)) {
                     canGo = false;

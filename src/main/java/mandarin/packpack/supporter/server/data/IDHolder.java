@@ -57,6 +57,10 @@ public class IDHolder {
             id.logDM = id.setOrNull(obj.get("logDM").getAsString());
         }
 
+        if(obj.has("event")) {
+            id.event = id.setOrNull(obj.get("event").getAsString());
+        }
+
         return id;
     }
 
@@ -64,6 +68,7 @@ public class IDHolder {
     public int serverLocale = LangID.EN;
     public boolean publish = false;
     public String logDM = null;
+    public String event = null;
 
     public String MOD;
     public String MEMBER;
@@ -71,7 +76,6 @@ public class IDHolder {
 
     public String GET_ACCESS;
     public String ANNOUNCE;
-
 
     public Map<String, String> ID = new TreeMap<>();
     public Map<String, ArrayList<String>> channel = new TreeMap<>();
@@ -101,6 +105,7 @@ public class IDHolder {
         obj.add("channel", jsonfyMap());
         obj.add("id", jsonfyIDs());
         obj.addProperty("logDM", getOrNull(logDM));
+        obj.addProperty("event", getOrNull(event));
 
         return obj;
     }
