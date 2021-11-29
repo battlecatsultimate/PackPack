@@ -28,6 +28,8 @@ public class WatchDM extends ConstraintCommand {
         String channel = getChannelID(getContent(event));
 
         if(channel == null && holder.logDM != null) {
+            holder.logDM = null;
+            StaticStore.idHolder.put(g.getId().asString(), holder);
             createMessage(ch, m -> m.content(LangID.getStringByID("watdm_remove", lang)));
             return;
         } else if(channel == null) {
