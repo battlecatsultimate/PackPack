@@ -21,11 +21,11 @@ public class EventHolder extends EventFactor {
     public Map<Integer, ArrayList<Integer>> daily = new HashMap<>();
 
     public Map<Integer, ArrayList<StageSchedule>> stages = new HashMap<>();
-    public Map<Integer, ArrayList<StageSchedule>> gachas = new HashMap<>();
-    public Map<Integer, ArrayList<StageSchedule>> items = new HashMap<>();
+    public Map<Integer, ArrayList<GachaSchedule>> gachas = new HashMap<>();
+    public Map<Integer, ArrayList<ItemSchedule>> items = new HashMap<>();
 
     public void updateStage(File f, int locale, boolean init) throws Exception {
-        if(!prepareFiles(locale))
+        if(failedToPrepareFile(locale))
             return;
 
         File file = new File("./data/event/"+getLocaleName(locale), "sale.tsv");
@@ -159,6 +159,84 @@ public class EventHolder extends EventFactor {
         this.weekly.put(locale, weekly);
         this.monthly.put(locale, monthly);
         this.yearly.put(locale, yearly);
+    }
+
+    public void updateGacha(File f, int locale, boolean init) throws Exception {
+        if(failedToPrepareFile(locale))
+            return;
+
+        File file = new File("./data/event/"+getLocaleName(locale), "gatya.tsv");
+
+        boolean needToAnalyze = false;
+
+        if(!file.exists()) {
+            needToAnalyze = true;
+        } else {
+            String newMd5 = StaticStore.fileToMD5(f);
+            String md5 = StaticStore.fileToMD5(file);
+
+            if(newMd5 != null && !newMd5.equals(md5))
+                needToAnalyze = true;
+        }
+
+        if(!needToAnalyze) {
+            if(f.exists() && !f.delete()) {
+                StaticStore.logger.uploadLog("Failed to delete file : "+f.getAbsolutePath());
+            }
+
+            return;
+        }
+
+        ArrayList<String> newLines;
+
+        if(file.exists() && !init) {
+            newLines = getOnlyNewLine(file, f);
+        } else {
+            newLines = new ArrayList<>();
+
+            BufferedReader reader = new BufferedReader(new FileReader(f));
+
+            String line = reader.readLine();
+
+            if(line != null && line.contains("[start]")) {
+                while((line = reader.readLine()) != null) {
+                    if(line.contains("[end]"))
+                        break;
+                    else {
+                        newLines.add(line);
+                    }
+                }
+            }
+
+            reader.close();
+        }
+
+        if(!file.getAbsolutePath().equals(f.getAbsolutePath())) {
+            if(file.exists()) {
+                boolean res = file.delete();
+
+                if(!res)
+                    return;
+            }
+
+            boolean result = f.renameTo(file);
+
+            if(!result)
+                return;
+        }
+
+        ArrayList<GachaSchedule> g = gachas.containsKey(locale) ? gachas.get(locale) : new ArrayList<>();
+
+        if(!g.isEmpty())
+            g.clear();
+
+        for(String line : newLines) {
+            g.add(new GachaSchedule(line));
+        }
+
+        g.removeIf(ga -> ga.gacha.isEmpty());
+
+        this.gachas.put(locale, g);
     }
 
     public String printStageEvent(int locale) {
@@ -318,6 +396,38 @@ public class EventHolder extends EventFactor {
         return data.toString();
     }
 
+    public String printGachaEvent(int locale) {
+        ArrayList<GachaSchedule> gachas = this.gachas.get(locale);
+
+        StringBuilder data = new StringBuilder(LangID.getStringByID("event_gacha", locale)).append("\n\n");
+
+        ArrayList<String> normals = new ArrayList<>();
+
+        for(int i = 0; i < gachas.size(); i++) {
+            GachaSchedule schedule = gachas.get(i);
+
+            String beauty = schedule.beautify(locale);
+
+            normals.add(beauty);
+        }
+
+        normals.sort(new DateComparator(locale));
+
+        if(normals.isEmpty()) {
+           return "";
+        }
+
+        data.append("```less\n");
+
+        for(int i = 0; i < normals.size(); i++) {
+            data.append(normals.get(i)).append("\n");
+        }
+
+        data.append("```");
+
+        return data.toString();
+    }
+
     private ArrayList<String> getOnlyNewLine(File src, File newSrc) throws Exception {
         ArrayList<String> oldLines = new ArrayList<>();
         ArrayList<String> newLines = new ArrayList<>();
@@ -362,15 +472,12 @@ public class EventHolder extends EventFactor {
         newReader.close();
         oldReader.close();
 
-        System.out.println(newLines);
-        System.out.println(oldLines);
-
         newLines.removeAll(oldLines);
 
         return newLines;
     }
 
-    private boolean prepareFiles(int locale) {
+    private boolean failedToPrepareFile(int locale) {
         File event = new File("./data/event/");
 
         if(!event.exists()) {
@@ -378,7 +485,7 @@ public class EventHolder extends EventFactor {
 
             if(!res) {
                 System.out.println("Can't create folder : "+event.getAbsolutePath());
-                return false;
+                return true;
             }
         }
 
@@ -391,11 +498,11 @@ public class EventHolder extends EventFactor {
 
             if(!res) {
                 System.out.println("Can't create folder : "+loc.getAbsolutePath());
-                return false;
+                return true;
             }
         }
 
-        return true;
+        return false;
     }
 
     private String getLocaleName(int locale) {
@@ -445,8 +552,14 @@ public class EventHolder extends EventFactor {
                 if(!f.exists())
                     continue;
 
-                if(i == 2) {
-                    updateStage(f, j, true);
+
+                switch (i) {
+                    case GATYA:
+                        updateGacha(f, j, true);
+                        break;
+                    case SALE:
+                        updateStage(f, j, true);
+                        break;
                 }
             }
         }
@@ -560,6 +673,9 @@ public class EventHolder extends EventFactor {
                             case SALE:
                                 updateStage(target, i, false);
                                 break;
+                            case GATYA:
+                                updateGacha(target, i, false);
+                                break;
                             default:
                                 File dst = new File("./data/event/"+getLocaleName(i)+"/"+fi);
 
@@ -608,6 +724,9 @@ public class EventHolder extends EventFactor {
                     switch (j) {
                         case SALE:
                             updateStage(target, i, false);
+                            break;
+                        case GATYA:
+                            updateGacha(target, i, false);
                             break;
                         default:
                             File dst = new File("./data/event/"+getLocaleName(i)+"/"+fi);

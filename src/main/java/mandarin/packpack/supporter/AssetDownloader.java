@@ -27,7 +27,7 @@ import java.util.Queue;
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class AssetDownloader {
     private static final String[] folder = {"bot/", "jp/", "kr/", "zh/", "fr/", "it/", "es/", "de/"};
-    private static final String[] file = {"EnemyName.txt", "StageName.txt", "UnitName.txt", "UnitExplanation.txt", "EnemyExplanation.txt", "CatFruitExplanation.txt", "RewardName.txt", "ComboName.txt", "MedalName.txt", "MedalExplanation.txt"};
+    private static final String[] file = {"EnemyName.txt", "StageName.txt", "UnitName.txt", "UnitExplanation.txt", "EnemyExplanation.txt", "CatFruitExplanation.txt", "RewardName.txt", "ComboName.txt", "MedalName.txt", "MedalExplanation.txt", "GachaName.txt"};
 
     public static void checkAssetDownload() {
         try {
@@ -131,6 +131,7 @@ public class AssetDownloader {
         MultiLangCont.getStatic().RWNAME.clear();
         StaticStore.MEDNAME.clear();
         StaticStore.MEDEXP.clear();
+        StaticStore.GACHANAME.clear();
 
         PackData.DefPack def = UserProfile.getBCData();
 
@@ -391,6 +392,22 @@ public class AssetDownloader {
                                 String name = str[1].trim();
 
                                 StaticStore.MEDEXP.put(f, id, name);
+                            }
+                            break;
+                        case "GachaName.txt":
+                            for(String line : qs) {
+                                if(line == null)
+                                    continue;
+
+                                String[] str = line.trim().split("\t");
+
+                                if(str.length == 1)
+                                    continue;
+
+                                int id = Integer.parseInt(str[0].trim());
+                                String name = str[1].trim();
+
+                                StaticStore.GACHANAME.put(f, id, name);
                             }
                     }
                 }

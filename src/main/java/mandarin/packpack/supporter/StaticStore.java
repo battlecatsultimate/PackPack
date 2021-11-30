@@ -84,6 +84,7 @@ public class StaticStore {
 
     public static final MultiLangCont<Integer, String> MEDNAME = new MultiLangCont<>();
     public static final MultiLangCont<Integer, String> MEDEXP = new MultiLangCont<>();
+    public static final MultiLangCont<Integer, String> GACHANAME = new MultiLangCont<>();
     public static int medalNumber = 0;
     public static JsonElement medalData;
 

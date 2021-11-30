@@ -677,5 +677,11 @@
   "chevent_noup" : "No event date updates found!",
   "chevent_done" : "Updated new event data below : ",
   "subevent_remove" : "Successfully unsubscribed event uploading!",
-  "subevent_set" : "Successfully subscribed event data news! New event data will be uploaded in <#_> (_)!"
+  "subevent_set" : "Successfully subscribed event data news! New event data will be uploaded in <#_> (_)!",
+  "printstage_toolong" : "Uploading raw file because stage/event data was too long",
+  "printstage_daily" : "New Daily Schedule Found",
+  "printstage_weekly" : "New Weekly Schedule Found",
+  "printstage_monthly" : "New Monthly Schedule Found",
+  "printstage_yearly" : "New Yearly Schedule Found",
+  "printgacha_toolong" : "Uploading raw file because gacha dat was too long"
 }

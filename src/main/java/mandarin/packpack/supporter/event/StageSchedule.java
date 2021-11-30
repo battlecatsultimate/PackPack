@@ -392,7 +392,7 @@ public class StageSchedule extends EventFactor implements Schedule {
         for(int i = 0; i < unknownStages.size(); i++) {
             int id = StaticStore.safeParseInt(unknownStages.get(i));
 
-            String langID = "event_"+id;
+            String langID = "sale_"+id;
 
             String temp = LangID.getStringByID(langID, lang);
 

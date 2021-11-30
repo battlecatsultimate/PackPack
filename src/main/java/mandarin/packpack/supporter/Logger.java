@@ -42,6 +42,8 @@ public class Logger {
     }
 
     public void uploadErrorLog(Throwable e, String message, File... files) {
+        e.printStackTrace();
+
         MessageChannel ch = getLoggingChannel();
 
         if(ch == null)

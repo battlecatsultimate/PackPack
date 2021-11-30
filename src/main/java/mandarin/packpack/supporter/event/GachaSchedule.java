@@ -3,6 +3,7 @@ package mandarin.packpack.supporter.event;
 import common.util.Data;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
+import mandarin.packpack.supporter.lang.LangID;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -78,13 +79,11 @@ public class GachaSchedule extends EventFactor implements Schedule {
                 sections.add(section);
             }
 
-            int existingGacha = parse(data[index]);
+            int gachaType = parse(data[index]);
 
             index++;
 
             int categoryNum = parse(data[index]);
-
-            int checker = 0;
 
             index++;
 
@@ -92,7 +91,11 @@ public class GachaSchedule extends EventFactor implements Schedule {
                 int gachaID = parse(data[index]);
 
                 if(gachaID == -1) {
-                    index += 15;
+                    if(gachaType == 4) {
+                        index += 17;
+                    } else {
+                        index += 15;
+                    }
                 } else {
                     GachaSection section = new GachaSection();
 
@@ -120,24 +123,89 @@ public class GachaSchedule extends EventFactor implements Schedule {
 
                     index += 10;
 
-                    section.message = data[index];
+                    if(index < data.length) {
+                        section.message = data[index];
+                    } else {
+                        section.message = "";
+                    }
 
                     gacha.add(section);
 
                     index++;
-                    checker++;
                 }
-            }
-
-            if(checker != existingGacha) {
-                System.out.println("Warning : Existing number of gacha doesn't match : "+checker+" | "+existingGacha);
             }
         }
     }
 
     @Override
     public String beautify(int lang) {
-        return null;
+        StringBuilder result = new StringBuilder();
+
+        result.append("[");
+
+        if(date.dateStart.year != currentYear) {
+            result.append(date.dateStart.year)
+                    .append(" ");
+        }
+
+        result.append(getMonth(date.dateStart.month, lang))
+                .append(" ")
+                .append(date.dateStart.day)
+                .append(getNumberExtension(date.dateStart.day, lang))
+                .append(" ~ ");
+
+        if(date.dateEnd.equals(END)) {
+            result.append("] ");
+        } else {
+
+            if(date.dateStart.year != date.dateEnd.year) {
+                result.append(date.dateEnd.year)
+                        .append(" ");
+            }
+
+            if(date.dateStart.month != date.dateEnd.month) {
+                result.append(getMonth(date.dateEnd.month, lang))
+                        .append(" ");
+            }
+
+            result.append(date.dateEnd.day)
+                    .append(getNumberExtension(date.dateEnd.day, lang))
+                    .append("] ");
+        }
+
+        for(int i = 0; i < gacha.size(); i++) {
+            GachaSection section = gacha.get(i);
+
+            if(section == null)
+                continue;
+
+            String g = StaticStore.GACHANAME.getCont(section.gachaID);
+
+            if(g == null)
+                g = tryGetGachaName(section.gachaID);
+
+            if(g == null) {
+                g = "Gacha " + Data.trio(section.gachaID);
+            }
+
+            result.append(g);
+
+            if(section.rarityChances.length > 3 && section.rarityChances[3] == 1)
+                result.append(" ").append(LangID.getStringByID("event_gua", lang));
+
+            if(section.rarityChances.length > 4 && section.rarityChances[4] == 1) {
+                if(section.rarityChances[3] == 1)
+                    result.append(" |");
+
+                result.append(" ").append(LangID.getStringByID("event_leggua", lang));
+            }
+
+            if(i < gacha.size() - 1) {
+                result.append(", ");
+            }
+        }
+
+        return result.toString();
     }
 
     @Override
