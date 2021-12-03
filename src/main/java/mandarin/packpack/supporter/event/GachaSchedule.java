@@ -91,7 +91,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
             for(int i = 0; i < categoryNum; i++) {
                 int gachaID = parse(data[index]);
 
-                if(gachaID == -1) {
+                if(gachaID == -1 || gachaID == 0 || (gachaID > 5 && gachaID < 100)) {
                     if(gachaType == 4) {
                         index += 17;
                     } else {
