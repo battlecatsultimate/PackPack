@@ -677,10 +677,13 @@ public class EventHolder extends EventFactor {
                                 updateGacha(target, i, false);
                                 break;
                             default:
-                                File dst = new File("./data/event/"+getLocaleName(i)+"/"+fi);
+                                if(f.exists() && !f.delete()) {
+                                    StaticStore.logger.uploadLog("Failed to delete file : "+f.getAbsolutePath());
+                                    break;
+                                }
 
-                                if(!target.renameTo(dst)) {
-                                    StaticStore.logger.uploadLog("Failed to rename file\nSrc : "+target.getAbsolutePath()+"\nDst : "+dst.getAbsolutePath());
+                                if(!target.renameTo(f)) {
+                                    StaticStore.logger.uploadLog("Failed to rename file\nSrc : "+target.getAbsolutePath()+"\nDst : "+f.getAbsolutePath());
                                 }
                                 break;
                         }
@@ -729,10 +732,13 @@ public class EventHolder extends EventFactor {
                             updateGacha(target, i, false);
                             break;
                         default:
-                            File dst = new File("./data/event/"+getLocaleName(i)+"/"+fi);
+                            if(f.exists() && !f.delete()) {
+                                StaticStore.logger.uploadLog("Failed to delete file : "+f.getAbsolutePath());
+                                break;
+                            }
 
-                            if(!target.renameTo(dst)) {
-                                StaticStore.logger.uploadLog("Failed to rename file\nSrc : "+target.getAbsolutePath()+"\nDst : "+dst.getAbsolutePath());
+                            if(!target.renameTo(f)) {
+                                StaticStore.logger.uploadLog("Failed to rename file\nSrc : "+target.getAbsolutePath()+"\nDst : "+f.getAbsolutePath());
                             }
                             break;
                     }
