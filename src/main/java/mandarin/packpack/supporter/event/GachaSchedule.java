@@ -211,7 +211,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
             }
         }
 
-        if(getVersionNumber(minVersion) >= StaticStore.safeParseInt(StaticStore.getVersion(lang))) {
+        if(getVersionNumber(minVersion) > StaticStore.safeParseInt(StaticStore.getVersion(lang))) {
             result.append(" <").append(LangID.getStringByID("event_newver", lang).replace("_", beautifyVersion(minVersion))).append(">");
         }
 
