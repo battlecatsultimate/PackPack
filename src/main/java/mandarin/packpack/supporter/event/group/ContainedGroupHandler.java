@@ -35,16 +35,13 @@ public class ContainedGroupHandler implements GroupHandler {
                 boolean added = false;
 
                 for(EventGroup group : groups) {
-                    if(group.finished)
-                        continue;
-
                     if(groupCanBeApplied(group.schedules, (StageSchedule) schedule)) {
                         added |= group.addStage((StageSchedule) schedule, raw);
                     }
                 }
 
                 if(!added && isPrimarySchedule((StageSchedule) schedule)) {
-                    EventGroup newGroup = new EventGroup(containedGroup, name);
+                    EventGroup newGroup = new ContainedEventGroup(containedGroup, name);
 
                     boolean result = newGroup.addStage((StageSchedule) schedule, raw);
 
@@ -133,10 +130,6 @@ public class ContainedGroupHandler implements GroupHandler {
     }
 
     private boolean groupCanBeApplied(Schedule[] schedules, StageSchedule schedule) {
-        if(schedules.length == 1 && schedules[0] != null) {
-            return false;
-        }
-
         if(schedules[0] == null && isPrimarySchedule(schedule))
             return true;
         else if(schedules[0] != null && schedules[0] instanceof StageSchedule) {
@@ -145,5 +138,15 @@ public class ContainedGroupHandler implements GroupHandler {
         }
 
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return "ContainedGroupHandler{" +
+                "name='" + name + '\'' +
+                ", raw=" + raw +
+                ", containedGroup=" + containedGroup +
+                ", groups=" + groups +
+                '}';
     }
 }

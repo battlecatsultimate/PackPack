@@ -50,7 +50,7 @@ public class NormalGroupHandler implements GroupHandler {
                 if(!added) {
                     //No group where can put this schedule found
 
-                    EventGroup newGroup = new EventGroup(groupData, name);
+                    EventGroup newGroup = new NormalEventGroup(groupData, name);
 
                     boolean result = newGroup.addStage((StageSchedule) schedule, raw);
 

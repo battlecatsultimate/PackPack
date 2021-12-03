@@ -44,7 +44,7 @@ public class SequenceGroupHandler implements GroupHandler {
                 }
 
                 if(!added) {
-                    EventGroup newGroup = new EventGroup(sequenceGroup, name);
+                    EventGroup newGroup = new NormalEventGroup(sequenceGroup, name);
 
                     boolean result = newGroup.addStage((StageSchedule) schedule, raw);
 

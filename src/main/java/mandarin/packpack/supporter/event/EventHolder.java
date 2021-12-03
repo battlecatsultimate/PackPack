@@ -12,6 +12,7 @@ import java.net.URL;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class EventHolder extends EventFactor {
@@ -274,6 +275,20 @@ public class EventHolder extends EventFactor {
                             if(schedule instanceof StageSchedule && s.equals(schedule)) {
                                 analyzed[i] = true;
                                 break;
+                            }
+                        }
+
+                        if(event instanceof ContainedEventGroup) {
+                            for(List<Schedule> schedules : ((ContainedEventGroup) event).getSubSchedules()) {
+                                for(Schedule schedule : schedules) {
+                                    if(schedule instanceof StageSchedule && s.equals(schedule)) {
+                                        analyzed[i] = true;
+                                        break;
+                                    }
+                                }
+
+                                if(analyzed[i])
+                                    break;
                             }
                         }
                     }
