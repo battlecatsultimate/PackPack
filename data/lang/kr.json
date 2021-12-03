@@ -688,7 +688,7 @@
   "subevent_set" : "이벤트 데이터를 성공적으로 구독했습니다! 새로운 이벤트 데이터가 <#_> (_) 채널에 올라옵니다!",
   "printstage_toolong" : "스테이지/이벤트 데이터 메세지 길이가 너무 길어 파일로 업로드합니다",
   "printstage_daily" : "새로운 일간 스케줄이 발견되었습니다",
-  "printstage_weekly" : "새로운 즈간 스케줄이 발견되었습니다",
+  "printstage_weekly" : "새로운 주간 스케줄이 발견되었습니다",
   "printstage_monthly" : "새로운 월간 스케줄이 발견되었습니다",
   "printstage_yearly" : "새로운 연간 스케줄이 발견되었습니다",
   "printgacha_toolong" : "가챠 데이터 메세지 길이가 너무 길어 파일로 업로드합니다"
