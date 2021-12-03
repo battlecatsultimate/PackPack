@@ -49,14 +49,14 @@ public class EventFactor {
                     Arrays.asList(1015, 1039, 1066, 1122, 1172, 118, 1189, 1193, 1198, 1247),
                     Arrays.asList(1014, 1016, 1043, 1096, 1157, 1169, 1176, 1187, 1195, 1203)
             ),
-            "Cyclone Festival", false
+            "group_0", false
     );
 
     public static final GroupHandler BUILDERBLITZ = new NormalGroupHandler(
             Collections.singletonList(
                     Arrays.asList(1150, 1151, 1152)
             ),
-            "Builders Festival", false
+            "group_1", false
     );
 
     public static final GroupHandler XPBLITZ = new NormalGroupHandler(
@@ -66,14 +66,14 @@ public class EventFactor {
                     List.of(1124),
                     List.of(1155)
             ),
-            "XP Festival", false
+            "group_2", false
     );
 
     public static final GroupHandler CATFRUITFESTIVAL = new NormalGroupHandler(
             Collections.singletonList(
                     Arrays.asList(1097, 1098, 1099, 1100, 1101)
             ),
-            "Catfruit Festival", false
+            "group_3", false
     );
 
     public static final GroupHandler CRAZEDFESTIVAL = new SequenceGroupHandler(
@@ -82,7 +82,7 @@ public class EventFactor {
                     Arrays.asList(1018, 1021, 1024, 1103, 1106, 1109),
                     Arrays.asList(1019, 1022, 1025, 1104, 1107, 1110)
             ),
-            "Crazed/Manic Festival", false
+            "group_4", false
     );
 
     public static final GroupHandler LILFESTIVAL = new SequenceGroupHandler(
@@ -91,7 +91,7 @@ public class EventFactor {
                     Arrays.asList(1131, 1134, 1137),
                     Arrays.asList(1132, 1135, 1138)
             ),
-            "Li'l Festival", false
+            "group_5", false
     );
 
     public static final GroupHandler METALFESTIVAL = new ContainedGroupHandler(
@@ -99,21 +99,21 @@ public class EventFactor {
                     Arrays.asList(1006, 1007),
                     List.of(1078)
             ),
-            "Metal Festival", false
+            "group_6", false
     );
 
     public static final GroupHandler GAMATOTOXP = new NormalGroupHandler(
             List.of(
                     Arrays.asList(5000, 5001, 5002)
             ),
-            "Gamatoto XP Harvest", true
+            "group_7", true
     );
 
     public static final GroupHandler ITEMDISCOUNT = new NormalGroupHandler(
             List.of(
                     Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 51, 700, 701, 702)
             ),
-            "Item Half Discount", true
+            "group_8", true
     );
 
     public static final GroupHandler EOCHALFENERGY = new NormalGroupHandler(
@@ -144,9 +144,16 @@ public class EventFactor {
             "group_12", true
     );
 
+    public static final GroupHandler GAMATOTOGRANDXP = new NormalGroupHandler(
+            List.of(
+                    Arrays.asList(5008, 5009, 5010)
+            ),
+            "group_13" , true
+    );
+
     public static final List<GroupHandler> handlers = Arrays.asList(
             CYCLONE, BUILDERBLITZ, XPBLITZ, CATFRUITFESTIVAL, CRAZEDFESTIVAL, LILFESTIVAL, METALFESTIVAL, GAMATOTOXP,
-            ITEMDISCOUNT, EOCHALFENERGY, ITFHALFENERGY, COTCHALFENERGY, HALFENERGY
+            ITEMDISCOUNT, EOCHALFENERGY, ITFHALFENERGY, COTCHALFENERGY, HALFENERGY, GAMATOTOGRANDXP
     );
 
     public static final String GACHAURL = "https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/gacha/rare/en/R___.html";

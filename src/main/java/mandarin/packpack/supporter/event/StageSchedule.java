@@ -579,7 +579,7 @@ public class StageSchedule extends EventFactor implements Schedule {
     }
 
     private StageMap tryToGetMap(int value) {
-        if(value / 1000 == 0)
+        if(value / 1000 == 0 || value / 1000 == 3)
             return null;
 
         int mc = value/1000;

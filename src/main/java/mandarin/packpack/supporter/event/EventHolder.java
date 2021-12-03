@@ -308,16 +308,16 @@ public class EventHolder extends EventFactor {
                     if(handler instanceof NormalGroupHandler) {
                         StageSchedule start = (StageSchedule) event.schedules[0];
 
-                        appendProperly(start, start.beautifyWithCustomName(event.name, locale), normals, dailys, weeklys, monthlys, yearlys);
+                        appendProperly(start, start.beautifyWithCustomName(LangID.getStringByID(event.name, locale), locale), normals, dailys, weeklys, monthlys, yearlys);
                     } else if(handler instanceof SequenceGroupHandler) {
                         StageSchedule start = (StageSchedule) event.schedules[0];
                         StageSchedule end = (StageSchedule) event.schedules[event.schedules.length - 1];
 
-                        appendProperly(start, manualSchedulePrint(start.date.dateStart, end.date.dateEnd, event.name, locale), normals, dailys, weeklys, monthlys, yearlys);
+                        appendProperly(start, manualSchedulePrint(start.date.dateStart, end.date.dateEnd, LangID.getStringByID(event.name, locale), locale), normals, dailys, weeklys, monthlys, yearlys);
                     } else if(handler instanceof ContainedGroupHandler) {
                         StageSchedule primary = (StageSchedule) event.schedules[0];
 
-                        appendProperly(primary, primary.beautifyWithCustomName(event.name, locale), normals, dailys, weeklys, monthlys, yearlys);
+                        appendProperly(primary, primary.beautifyWithCustomName(LangID.getStringByID(event.name, locale), locale), normals, dailys, weeklys, monthlys, yearlys);
                     }
                 }
             }
