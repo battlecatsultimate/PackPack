@@ -909,6 +909,10 @@ public class PackBot {
                                 case "pge":
                                     new PrintGachaEvent(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
                                     break;
+                                case "setbcversion":
+                                case "sbv":
+                                    new SetBCVersion(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+                                    break;
                             }
                         }
                     }, () -> {

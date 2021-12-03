@@ -58,6 +58,11 @@ public class StaticStore {
     public static final String COMMAND_STAGEINFO_ID = "stageinfo";
     public static final String COMMAND_SUGGEST_ID = "suggest";
 
+    public static String englishVersion = "110000";
+    public static String taiwaneseVersion = "110000";
+    public static String koreanVersion = "110000";
+    public static String japaneseVersion = "110000";
+
     public static Map<String, String> prefix = new HashMap<>();
     public static Map<String, String> langs = new HashMap<>();
     public static Map<String, Integer> locales = new HashMap<>();
@@ -411,6 +416,10 @@ public class StaticStore {
         obj.add("booster", mapToJsonBoosterHolder(boosterData));
         obj.addProperty("logging", loggingChannel);
         obj.add("needFixing", listToJsonString(needFixing));
+        obj.addProperty("englishVersion", englishVersion);
+        obj.addProperty("taiwaneseVersion", taiwaneseVersion);
+        obj.addProperty("koreanVersion", koreanVersion);
+        obj.addProperty("japaneseVersion", japaneseVersion);
 
         try {
             File folder = new File("./data/");
@@ -519,6 +528,22 @@ public class StaticStore {
 
             if(obj.has("needFixing")) {
                 needFixing = jsonToListString(obj.getAsJsonArray("needFixing"));
+            }
+
+            if(obj.has("englishVersion")) {
+                englishVersion = obj.get("englishVersion").getAsString();
+            }
+
+            if(obj.has("japaneseVersion")) {
+                japaneseVersion = obj.get("japaneseVersion").getAsString();
+            }
+
+            if(obj.has("koreanVersion")) {
+                koreanVersion = obj.get("koreanVersion").getAsString();
+            }
+
+            if(obj.has("taiwaneseVersion")) {
+                taiwaneseVersion = obj.get("taiwaneseVersion").getAsString();
             }
         }
     }
@@ -734,5 +759,18 @@ public class StaticStore {
         }
 
         return builder.toString();
+    }
+
+    public static String getVersion(int lang) {
+        switch (lang) {
+            case 0:
+                return englishVersion;
+            case 1:
+                return taiwaneseVersion;
+            case 2:
+                return koreanVersion;
+            default:
+                return japaneseVersion;
+        }
     }
 }

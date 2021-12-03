@@ -496,6 +496,10 @@ public class StageSchedule extends EventFactor implements Schedule {
             result.append(")");
         }
 
+        if(getVersionNumber(minVersion) >= StaticStore.safeParseInt(StaticStore.getVersion(lang))) {
+            result.append(" <").append(LangID.getStringByID("event_newver", lang).replace("_", beautifyVersion(minVersion))).append(">");
+        }
+
         return result.toString();
     }
 
@@ -584,6 +588,9 @@ public class StageSchedule extends EventFactor implements Schedule {
         MapColc mapColc = MapColc.get(Data.hex(mc));
 
         if(mapColc == null)
+            return null;
+
+        if(map >= mapColc.maps.size())
             return null;
 
         return mapColc.maps.get(map);

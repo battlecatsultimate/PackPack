@@ -57,13 +57,13 @@ public class DateComparator implements Comparator<String> {
 
             result[1] = monthToNumber(date[1], lang);
 
-            result[2] = StaticStore.safeParseInt(date[2].replaceAll("st|nd|rd|th|일", ""));
+            result[2] = StaticStore.safeParseInt(date[2].replaceAll("st|nd|rd|th|일|日", ""));
         } else if(date.length == 2) {
             result[0] = EventFactor.currentYear;
 
             result[1] = monthToNumber(date[0], lang);
 
-            result[2] = StaticStore.safeParseInt(date[1].replaceAll("st|nd|rd|th|일", ""));
+            result[2] = StaticStore.safeParseInt(date[1].replaceAll("st|nd|rd|th|일|日", ""));
         }
 
         return result;

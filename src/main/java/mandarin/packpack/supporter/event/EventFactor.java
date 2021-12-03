@@ -25,8 +25,6 @@ public class EventFactor {
 
     public static EventDate END = new EventDate(20300101);
     public static String NOMAX = "99.99.99";
-    public static String currentGlobalVersion = "100300";
-    public static String currentJapaneseVersion = "100300";
 
     public static final int EN = 0;
     public static final int ZH = 1;
@@ -132,7 +130,7 @@ public class EventFactor {
         for(String id : schedule.unknownStages) {
             int realID = StaticStore.safeParseInt(id);
 
-            if(realID > 9999 || realID < 8000)
+            if((realID < 9000 || realID >= 10000) && (realID < 15000 || realID >= 16000))
                 return false;
         }
 
@@ -223,8 +221,41 @@ public class EventFactor {
                     return "th";
             case KR:
                 return "일";
+            case ZH:
+            case JP:
+                return "日";
             default:
                 return "";
         }
+    }
+
+    public static String beautifyVersion(String ver) {
+        String[] numbers = ver.split("\\.");
+
+        StringBuilder result = new StringBuilder();
+
+        for(int i = 0; i < numbers.length; i++) {
+            if(i == 0){
+                result.append(numbers[i]).append(".");
+            } else if(StaticStore.safeParseInt(numbers[i]) != 0){
+                result.append(numbers[i]).append(".");
+            } else {
+                break;
+            }
+        }
+
+        return result.substring(0, result.length() - 1);
+    }
+
+    public static int getVersionNumber(String ver) {
+        String[] numbers = ver.split("\\.");
+
+        int v = 0;
+
+        for(int i = numbers.length - 1; i >= 0; i--) {
+            v += StaticStore.safeParseInt(numbers[i]) * Math.pow(10, (numbers.length - 1 - i) * 2);
+        }
+
+        return v;
     }
 }

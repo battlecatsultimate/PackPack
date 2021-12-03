@@ -4,6 +4,7 @@ import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
+import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.event.EventFactor;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
@@ -33,37 +34,37 @@ public class Announcement extends ConstraintCommand {
         switch (param) {
             case PARAM_EN:
                 loc = "en";
-                ver = EventFactor.currentGlobalVersion;
+                ver = StaticStore.englishVersion;
                 break;
             case PARAM_JP:
                 loc = "ja";
-                ver = EventFactor.currentJapaneseVersion;
+                ver = StaticStore.japaneseVersion;
                 break;
             case PARAM_KR:
                 loc = "ko";
-                ver = EventFactor.currentGlobalVersion;
+                ver = StaticStore.koreanVersion;
                 break;
             case PARAM_TW:
                 loc = "tw";
-                ver = EventFactor.currentGlobalVersion;
+                ver = StaticStore.taiwaneseVersion;
                 break;
             default:
                 switch (lang) {
                     case 1:
                         loc = "tw";
-                        ver = EventFactor.currentGlobalVersion;
+                        ver = StaticStore.taiwaneseVersion;
                         break;
                     case 2:
                         loc = "ko";
-                        ver = EventFactor.currentGlobalVersion;
+                        ver = StaticStore.koreanVersion;
                         break;
                     case 3:
                         loc = "ja";
-                        ver = EventFactor.currentJapaneseVersion;
+                        ver = StaticStore.japaneseVersion;
                         break;
                     default:
                         loc = "en";
-                        ver = EventFactor.currentGlobalVersion;
+                        ver = StaticStore.englishVersion;
                 }
         }
 
