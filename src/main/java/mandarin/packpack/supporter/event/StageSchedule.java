@@ -575,6 +575,9 @@ public class StageSchedule extends EventFactor implements Schedule {
     }
 
     private StageMap tryToGetMap(int value) {
+        if(value / 1000 == 0)
+            return null;
+
         int mc = value/1000;
         int map = value % 1000;
 
