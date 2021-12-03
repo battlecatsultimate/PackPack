@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.event;
 
+import common.CommonStatic;
 import common.util.Data;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
@@ -179,7 +180,12 @@ public class GachaSchedule extends EventFactor implements Schedule {
             if(section == null)
                 continue;
 
+            int oldConfig = CommonStatic.getConfig().lang;
+            CommonStatic.getConfig().lang = lang;
+
             String g = StaticStore.GACHANAME.getCont(section.gachaID);
+
+            CommonStatic.getConfig().lang = oldConfig;
 
             if(g == null)
                 g = tryGetGachaName(section.gachaID);
@@ -190,11 +196,11 @@ public class GachaSchedule extends EventFactor implements Schedule {
 
             result.append(g);
 
-            if(section.rarityChances.length > 3 && section.rarityChances[3] == 1)
+            if(section.rarityGuarantees.length > 3 && section.rarityGuarantees[3] == 1)
                 result.append(" ").append(LangID.getStringByID("event_gua", lang));
 
-            if(section.rarityChances.length > 4 && section.rarityChances[4] == 1) {
-                if(section.rarityChances[3] == 1)
+            if(section.rarityGuarantees.length > 4 && section.rarityGuarantees[4] == 1) {
+                if(section.rarityGuarantees[3] == 1)
                     result.append(" |");
 
                 result.append(" ").append(LangID.getStringByID("event_leggua", lang));
