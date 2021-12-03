@@ -111,8 +111,15 @@ public class EventFactor {
             "Gamatoto XP Harvest", true
     );
 
+    public static final GroupHandler ITEMDISCOUNT = new NormalGroupHandler(
+            List.of(
+                    Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 51, 700, 701, 702)
+            ),
+            "Item Half Discount", true
+    );
+
     public static final List<GroupHandler> handlers = Arrays.asList(
-            CYCLONE, BUILDERBLITZ, XPBLITZ, CATFRUITFESTIVAL, CRAZEDFESTIVAL, LILFESTIVAL, METALFESTIVAL, GAMATOTOXP
+            CYCLONE, BUILDERBLITZ, XPBLITZ, CATFRUITFESTIVAL, CRAZEDFESTIVAL, LILFESTIVAL, METALFESTIVAL, GAMATOTOXP, ITEMDISCOUNT
     );
 
     public static final String GACHAURL = "https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/gacha/rare/en/R___.html";
