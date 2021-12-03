@@ -838,5 +838,21 @@
   "printstage_weekly" : "New Weekly Schedule Found",
   "printstage_monthly" : "New Monthly Schedule Found",
   "printstage_yearly" : "New Yearly Schedule Found",
-  "printgacha_toolong" : "Uploading raw file because gacha dat was too long"
+  "printgacha_toolong" : "Uploading raw file because gacha dat was too long",
+  "printgacha_g" : "G",
+  "printgacha_lg" : "LG",
+  "printgacha_gr" : "GR",
+  "printgacha_p" : "P",
+  "printgacha_s" : "S",
+  "printgacha_n" : "N",
+  "printgacha_r" : "R",
+  "printgacha_l" : "L",
+  "printgacha_gua" : "Guaranteed",
+  "printgacha_legendgua" : "LR Guaranteed",
+  "printgacha_gran" : "Grandon",
+  "printgacha_plat" : "Platinum Shard",
+  "printgacha_step" : "Step Up",
+  "printgacha_neneko" : "Neneko Gang",
+  "printgacha_rein" : "Reinforcement",
+  "printgacha_lucky" : "Lucky Ticket per roll"
 }

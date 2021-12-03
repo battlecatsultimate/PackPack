@@ -109,11 +109,23 @@ public class GachaSchedule extends EventFactor implements Schedule {
 
                     index++;
 
-                    section.addition[0] = parse(data[index]);
+                    section.addition = parse(data[index]);
 
                     index++;
 
-                    section.addition[1] = parse(data[index]);
+                    section.additionalMask = parse(data[index]);
+
+                    if((section.additionalMask & 4) > 0) {
+                        section.additional.add(GachaSection.ADDITIONAL.STEP);
+                    }
+
+                    if((section.additionalMask & 4216) > 0) {
+                        section.additional.add(GachaSection.ADDITIONAL.LUCKY);
+                    }
+
+                    if((section.additionalMask & 16384) > 0) {
+                        section.additional.add(GachaSection.ADDITIONAL.SHARD);
+                    }
 
                     index++;
 
@@ -188,7 +200,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
             CommonStatic.getConfig().lang = oldConfig;
 
             if(g == null)
-                g = tryGetGachaName(section.gachaID);
+                g = tryGetGachaName(section.gachaID, lang);
 
             if(g == null) {
                 g = "Gacha " + Data.trio(section.gachaID);
@@ -196,14 +208,24 @@ public class GachaSchedule extends EventFactor implements Schedule {
 
             result.append(g);
 
-            if(section.rarityGuarantees.length > 3 && section.rarityGuarantees[3] == 1)
-                result.append(" ").append(LangID.getStringByID("event_gua", lang));
+            if(hasAdditionalData(section)) {
+                result.append(" (");
 
-            if(section.rarityGuarantees.length > 4 && section.rarityGuarantees[4] == 1) {
-                if(section.rarityGuarantees[3] == 1)
-                    result.append(" |");
+                if(section.rarityGuarantees.length > 3 && section.rarityGuarantees[3] == 1) {
+                    result.append(LangID.getStringByID("printgacha_g", lang));
 
-                result.append(" ").append(LangID.getStringByID("event_leggua", lang));
+                    if(!section.additional.isEmpty())
+                        result.append("|");
+                }
+
+                for(int j = 0; j < section.additional.size(); j++) {
+                    result.append(getAdditionalCode(section.additional.get(j), lang));
+
+                    if(j < section.additional.size() - 1)
+                        result.append("|");
+                }
+
+                result.append(")");
             }
 
             if(i < gacha.size() - 1) {
@@ -340,7 +362,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
         for (GachaSection section : gacha) {
             result.append("<").append(section.index + 1).append(getNumberExtension(section.index + 1, lang)).append(" Gacha>\n\n");
 
-            result.append("Gacha Name : ").append(tryGetGachaName(section.gachaID)).append("\n");
+            result.append("Gacha Name : ").append(tryGetGachaName(section.gachaID, lang)).append("\n");
             result.append("Cf per roll : ").append(section.requiredCatFruit).append("\n");
             result.append("Rarity Data : ");
 
@@ -393,11 +415,28 @@ public class GachaSchedule extends EventFactor implements Schedule {
             return ""+n;
     }
 
-    public String tryGetGachaName(int gachaID) {
+    public String tryGetGachaName(int gachaID, int lang) {
         if(gachaID <= 100)
             return "Gacha Code "+Data.trio(gachaID);
 
-        String url = GACHAURL.replace("___", Data.trio(gachaID));
+        String loc;
+
+        switch (lang) {
+            case EN:
+                loc = "/en/";
+                break;
+            case ZH:
+                loc = "/tw/";
+                break;
+            case KR:
+                loc = "/kr/";
+                break;
+            default:
+                loc = "/";
+        }
+
+
+        String url = GACHAURL.replace("_ID_", Data.trio(gachaID)).replace("_LLL_", loc);
 
         try {
             String html = getHtmlFromUrl(url);
@@ -413,7 +452,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
                 return "Gacha Code " + Data.trio(gachaID);
             }
 
-            return m.group(0).replace("<h2>", "").replace("</h2>", "").replaceAll("<span.+</span>", "") + " ["+Data.trio(gachaID)+"]";
+            return m.group(0).replace("<h2>", "").replace("</h2>", "").replaceAll("<span.+</span>", "");
         } catch (Exception e) {
             e.printStackTrace();
 
@@ -436,5 +475,28 @@ public class GachaSchedule extends EventFactor implements Schedule {
         scan.close();
 
         return content;
+    }
+
+    private boolean hasAdditionalData(GachaSection section) {
+        return (section.rarityGuarantees.length > 3 && section.rarityGuarantees[3] == 1) ||
+                (section.rarityGuarantees.length > 4 && section.rarityGuarantees[4] == 1) ||
+                !section.additional.isEmpty();
+    }
+
+    private String getAdditionalCode(GachaSection.ADDITIONAL a, int lang) {
+        switch (a) {
+            case GRANDON:
+                return LangID.getStringByID("printgacha_gr", lang);
+            case STEP:
+                return LangID.getStringByID("printgacha_s", lang);
+            case LUCKY:
+                return LangID.getStringByID("printgacha_l", lang);
+            case SHARD:
+                return LangID.getStringByID("printgacha_p", lang);
+            case NENEKO:
+                return LangID.getStringByID("printgacha_n", lang);
+            default:
+                return LangID.getStringByID("printgacha_r", lang);
+        }
     }
 }

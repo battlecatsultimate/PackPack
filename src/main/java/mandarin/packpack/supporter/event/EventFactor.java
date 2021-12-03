@@ -156,7 +156,7 @@ public class EventFactor {
             ITEMDISCOUNT, EOCHALFENERGY, ITFHALFENERGY, COTCHALFENERGY, HALFENERGY, GAMATOTOGRANDXP
     );
 
-    public static final String GACHAURL = "https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/gacha/rare/en/R___.html";
+    public static final String GACHAURL = "https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/gacha/rare_LLL_R_ID_.html";
     public static final String ANNOUNCEURL = "https://nyanko-announcement.ponosgames.com/v1/notices?platform=google&clientVersion=VVVVVV&countryCode=LL&clearedStageJapan=300&clearedStageFuture=300&clearedUniverse=300&clientTime=DDDDDDDDD&timeDifference=1";
 
     public static boolean onlyHoldMissions(StageSchedule schedule) {

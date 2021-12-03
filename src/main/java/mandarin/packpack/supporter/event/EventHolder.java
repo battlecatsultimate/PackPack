@@ -438,6 +438,37 @@ public class EventHolder extends EventFactor {
             data.append(normals.get(i)).append("\n");
         }
 
+        data.append("\n");
+
+        data.append(LangID.getStringByID("printgacha_g", locale))
+                .append(" : ")
+                .append(LangID.getStringByID("printgacha_gua", locale))
+                .append(" | ")
+                .append(LangID.getStringByID("printgacha_s", locale))
+                .append(" : ")
+                .append(LangID.getStringByID("printgacha_step", locale))
+                .append(" | ")
+                .append(LangID.getStringByID("printgacha_p", locale))
+                .append(" : ")
+                .append(LangID.getStringByID("printgacha_plat", locale))
+                .append(" | ")
+                .append(LangID.getStringByID("printgacha_l", locale))
+                .append(" : ")
+                .append(LangID.getStringByID("printgacha_lucky", locale))
+                .append(" | ")
+                .append(LangID.getStringByID("printgacha_n", locale))
+                .append(" : ")
+                .append(LangID.getStringByID("printgacha_neneko", locale))
+                .append(" | ")
+                .append(LangID.getStringByID("printgacha_gr", locale))
+                .append(" : ")
+                .append(LangID.getStringByID("printgacha_gran", locale))
+                .append(" | ")
+                .append(LangID.getStringByID("printgacha_r", locale))
+                .append(" : ")
+                .append(LangID.getStringByID("printgacha_rein", locale))
+                .append("\n");
+
         data.append("```");
 
         return data.toString();
