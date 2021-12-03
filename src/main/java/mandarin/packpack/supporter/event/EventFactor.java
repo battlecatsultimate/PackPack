@@ -116,8 +116,37 @@ public class EventFactor {
             "Item Half Discount", true
     );
 
+    public static final GroupHandler EOCHALFENERGY = new NormalGroupHandler(
+            List.of(
+                    Arrays.asList(3000, 3001, 3002)
+            ),
+            "group_9", true
+    );
+
+    public static final GroupHandler ITFHALFENERGY = new NormalGroupHandler(
+            List.of(
+                    Arrays.asList(3003, 3004, 3005)
+            ),
+            "group_10", true
+    );
+
+    public static final GroupHandler COTCHALFENERGY = new NormalGroupHandler(
+            List.of(
+                    Arrays.asList(3006, 3007, 3008)
+            ),
+            "group_11", true
+    );
+
+    public static final GroupHandler HALFENERGY = new NormalGroupHandler(
+            List.of(
+                    Arrays.asList(102, 3000, 3001, 3002, 3003, 3004, 3005, 3006, 3007, 3008)
+            ),
+            "group_12", true
+    );
+
     public static final List<GroupHandler> handlers = Arrays.asList(
-            CYCLONE, BUILDERBLITZ, XPBLITZ, CATFRUITFESTIVAL, CRAZEDFESTIVAL, LILFESTIVAL, METALFESTIVAL, GAMATOTOXP, ITEMDISCOUNT
+            CYCLONE, BUILDERBLITZ, XPBLITZ, CATFRUITFESTIVAL, CRAZEDFESTIVAL, LILFESTIVAL, METALFESTIVAL, GAMATOTOXP,
+            ITEMDISCOUNT, EOCHALFENERGY, ITFHALFENERGY, COTCHALFENERGY, HALFENERGY
     );
 
     public static final String GACHAURL = "https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/gacha/rare/en/R___.html";
