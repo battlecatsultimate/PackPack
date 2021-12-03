@@ -59,11 +59,19 @@ public class PrintGachaEvent extends ConstraintCommand {
                 } catch (IOException ex) {
                     StaticStore.logger.uploadErrorLog(ex, "Failed to perform PrintStageEvent while uploading sale event result");
                 }
+
+                if(res.exists() && !res.delete()) {
+                    StaticStore.logger.uploadLog("Faield to delte file : "+res.getAbsolutePath());
+                }
             }, () -> {
                 try {
                     fis.close();
                 } catch (IOException e) {
                     StaticStore.logger.uploadErrorLog(e, "Failed to perform PrintStageEvent while uploading sale event result");
+                }
+
+                if(res.exists() && !res.delete()) {
+                    StaticStore.logger.uploadLog("Faield to delte file : "+res.getAbsolutePath());
                 }
             });
         } else {
