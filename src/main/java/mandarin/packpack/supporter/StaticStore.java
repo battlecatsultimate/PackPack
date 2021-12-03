@@ -644,7 +644,6 @@ public class StaticStore {
             return String.format("%32s", str).replace(' ', '0');
         } catch (NoSuchAlgorithmException | IOException e) {
             logger.uploadErrorLog(e, "Failed to parse file to md5 : "+f.getAbsolutePath());
-            e.printStackTrace();
         }
 
         return null;
