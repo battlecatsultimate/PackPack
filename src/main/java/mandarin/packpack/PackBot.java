@@ -59,6 +59,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class PackBot {
     public static int save = 0;
     public static int event = 0;
+    public static boolean eventInit = false;
     public static boolean develop = true;
 
     public static final String normal = "p!help, but under Construction!";
@@ -116,7 +117,10 @@ public class PackBot {
                         }
 
                         if(doNotify) {
-                            notifyEvent(gate, result);
+                            if(!eventInit)
+                                eventInit = true;
+                            else
+                                notifyEvent(gate, result);
                         }
                     } catch (Exception e) {
                         StaticStore.logger.uploadErrorLog(e, "Error happened while trying to check event data");
