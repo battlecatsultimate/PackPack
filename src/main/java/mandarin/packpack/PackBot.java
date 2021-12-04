@@ -100,7 +100,7 @@ public class PackBot {
                     save++;
                 }
 
-                if(event % 20 == 0) {
+                if(event % 30 == 0) {
                     System.out.println("Checking event data");
 
                     try {
@@ -962,6 +962,8 @@ public class PackBot {
             DataToString.initialize();
 
             GachaSet.initialize();
+
+            EventFactor.readMissionReward();
 
             try {
                 EventFileGrabber.initialize();

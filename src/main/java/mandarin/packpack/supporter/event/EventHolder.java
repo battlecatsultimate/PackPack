@@ -255,6 +255,7 @@ public class EventHolder extends EventFactor {
         ArrayList<String> weeklys = new ArrayList<>();
         ArrayList<String> monthlys = new ArrayList<>();
         ArrayList<String> yearlys = new ArrayList<>();
+        ArrayList<String> missions = new ArrayList<>();
 
         for(GroupHandler group : EventFactor.handlers)
             group.clear();
@@ -308,16 +309,16 @@ public class EventHolder extends EventFactor {
                     if(handler instanceof NormalGroupHandler) {
                         StageSchedule start = (StageSchedule) event.schedules[0];
 
-                        appendProperly(start, start.beautifyWithCustomName(LangID.getStringByID(event.name, locale), locale), normals, dailys, weeklys, monthlys, yearlys);
+                        appendProperly(start, start.beautifyWithCustomName(LangID.getStringByID(event.name, locale), locale), normals, dailys, weeklys, monthlys, yearlys, missions);
                     } else if(handler instanceof SequenceGroupHandler) {
                         StageSchedule start = (StageSchedule) event.schedules[0];
                         StageSchedule end = (StageSchedule) event.schedules[event.schedules.length - 1];
 
-                        appendProperly(start, manualSchedulePrint(start.date.dateStart, end.date.dateEnd, LangID.getStringByID(event.name, locale), locale), normals, dailys, weeklys, monthlys, yearlys);
+                        appendProperly(start, manualSchedulePrint(start.date.dateStart, end.date.dateEnd, LangID.getStringByID(event.name, locale), locale), normals, dailys, weeklys, monthlys, yearlys, missions);
                     } else if(handler instanceof ContainedGroupHandler) {
                         StageSchedule primary = (StageSchedule) event.schedules[0];
 
-                        appendProperly(primary, primary.beautifyWithCustomName(LangID.getStringByID(event.name, locale), locale), normals, dailys, weeklys, monthlys, yearlys);
+                        appendProperly(primary, primary.beautifyWithCustomName(LangID.getStringByID(event.name, locale), locale), normals, dailys, weeklys, monthlys, yearlys, missions);
                     }
                 }
             }
@@ -329,12 +330,12 @@ public class EventHolder extends EventFactor {
 
             StageSchedule schedule = stages.get(i);
 
-            if (onlyHoldMissions(schedule)) {
+            if(schedule.isMission && isWeeklyAndMonthlyMission(schedule)) {
                 analyzed[i] = true;
                 continue;
             }
 
-            appendProperly(schedule, schedule.beautify(locale), normals, dailys, weeklys, monthlys, yearlys);
+            appendProperly(schedule, schedule.beautify(locale), normals, dailys, weeklys, monthlys, yearlys, missions);
 
             analyzed[i] = true;
         }
@@ -402,11 +403,22 @@ public class EventHolder extends EventFactor {
         if(!yearlys.isEmpty()) {
             StringBuilder data = new StringBuilder(LangID.getStringByID("printstage_yearly", locale)).append("\n\n```less\n");
 
-            data.append("```less\n");
-
             for (String year : yearlys) {
                 data.append(year)
                         .append("\n");
+            }
+
+            data.append("```");
+
+            result.add(data.toString());
+        }
+
+        if(!missions.isEmpty()) {
+            StringBuilder data = new StringBuilder(LangID.getStringByID("event_mission", locale)).append("\n\n```less\n");
+
+            for (String mission : missions) {
+                data.append(mission)
+                        .append("\n\n");
             }
 
             data.append("```");
@@ -570,8 +582,10 @@ public class EventHolder extends EventFactor {
         }
     }
 
-    private void appendProperly(StageSchedule schedule, String val, ArrayList<String> normal, ArrayList<String> daily, ArrayList<String> weekly, ArrayList<String> monthly, ArrayList<String> yearly) {
-        if(schedule.type == null)
+    private void appendProperly(StageSchedule schedule, String val, ArrayList<String> normal, ArrayList<String> daily, ArrayList<String> weekly, ArrayList<String> monthly, ArrayList<String> yearly, ArrayList<String> missions) {
+        if(schedule.isMission)
+            missions.add(val);
+        else if(schedule.type == null)
             normal.add(val);
         else {
             switch (schedule.type) {

@@ -1,8 +1,12 @@
 package mandarin.packpack.supporter.event;
 
+import common.CommonStatic;
+import common.pack.UserProfile;
 import common.util.Data;
+import common.util.lang.MultiLangCont;
 import common.util.stage.MapColc;
 import common.util.stage.StageMap;
+import common.util.unit.Unit;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 
@@ -20,6 +24,7 @@ public class StageSchedule extends EventFactor implements Schedule {
     public EventDateSet date;
     public String minVersion, maxVersion;
     public TYPE type;
+    public boolean isMission;
 
     public ArrayList<StageMap> stages = new ArrayList<>();
     public ArrayList<String> unknownStages = new ArrayList<>();
@@ -109,6 +114,8 @@ public class StageSchedule extends EventFactor implements Schedule {
 
                 index++;
             }
+
+            isMission = onlyHoldMissions(this);
         }
     }
 
@@ -366,48 +373,53 @@ public class StageSchedule extends EventFactor implements Schedule {
                     .append("] ");
         }
 
-        for(int i = 0; i < stages.size(); i++) {
-            StageMap map = stages.get(i);
+        if(!isMission) {
+            for(int i = 0; i < stages.size(); i++) {
+                StageMap map = stages.get(i);
 
-            if(map == null || map.id == null || map.getCont() == null)
-                continue;
+                if(map == null || map.id == null || map.getCont() == null)
+                    continue;
 
-            String mapName = StaticStore.safeMultiLangGet(map, lang);
+                String mapName = StaticStore.safeMultiLangGet(map, lang);
 
-            if(mapName == null || mapName.isBlank()) {
-                mapName = map.getCont().getSID()+"-"+Data.trio(map.id.id);
+                if(mapName == null || mapName.isBlank()) {
+                    mapName = map.getCont().getSID()+"-"+Data.trio(map.id.id);
+                }
+
+                result.append(mapName);
+
+                if(i < stages.size() - 1) {
+                    result.append(", ");
+                }
             }
 
-            result.append(mapName);
-
-            if(i < stages.size() - 1) {
+            if(!stages.isEmpty() && !unknownStages.isEmpty()) {
                 result.append(", ");
             }
-        }
 
-        if(!stages.isEmpty() && !unknownStages.isEmpty()) {
-            result.append(", ");
-        }
+            for(int i = 0; i < unknownStages.size(); i++) {
+                int id = StaticStore.safeParseInt(unknownStages.get(i));
 
-        for(int i = 0; i < unknownStages.size(); i++) {
-            int id = StaticStore.safeParseInt(unknownStages.get(i));
+                String langID = "sale_"+id;
 
-            String langID = "sale_"+id;
+                String temp = LangID.getStringByID(langID, lang);
 
-            String temp = LangID.getStringByID(langID, lang);
+                if(!temp.equals(langID)) {
+                    result.append(temp);
+                } else {
+                    result.append(id);
+                }
 
-            if(!temp.equals(langID)) {
-                result.append(temp);
-            } else {
-                result.append(id);
+                if(i < unknownStages.size() - 1)
+                    result.append(", ");
             }
-
-            if(i < unknownStages.size() - 1)
-                result.append(", ");
         }
 
         if(!sections.isEmpty()) {
-            result.append(" (");
+            if(!isMission)
+                result.append(" ");
+
+            result.append("(");
 
             for (int i = 0; i < sections.size(); i++) {
                 EventSection section = sections.get(i);
@@ -498,6 +510,97 @@ public class StageSchedule extends EventFactor implements Schedule {
 
         if(getVersionNumber(minVersion) > StaticStore.safeParseInt(StaticStore.getVersion(lang))) {
             result.append(" <").append(LangID.getStringByID("event_newver", lang).replace("_", beautifyVersion(minVersion))).append(">");
+        }
+
+        if(isMission) {
+            result.append("\n\n");
+
+            for(int i = 0; i < unknownStages.size(); i++) {
+                int id = StaticStore.safeParseInt(unknownStages.get(i));
+
+                boolean permanent = id >= 15000;
+
+                if(permanent)
+                    id -= 15000;
+
+                int oldConfig = CommonStatic.getConfig().lang;
+                CommonStatic.getConfig().lang = lang;
+
+                String mission = StaticStore.MISSIONNAME.getCont(id);
+
+                CommonStatic.getConfig().lang = oldConfig;
+
+                if(mission == null) {
+                    mission = LangID.getStringByID("printstage_mission", lang).replace("_", unknownStages.get(i));
+                }
+
+                result.append("\t").append(mission);
+
+                if(missionReward.containsKey(id)) {
+                    result.append(" -> ");
+
+                    int[] data = missionReward.get(id);
+
+                    switch (data[0]) {
+                        case REWARDNORMAL:
+                            CommonStatic.getConfig().lang = lang;
+
+                            String reward = MultiLangCont.getStatic().RWNAME.getCont(data[1]);
+
+                            CommonStatic.getConfig().lang = oldConfig;
+
+                            if(reward == null || reward.isBlank()) {
+                                reward = LangID.getStringByID("printstage_reward", lang).replace("_", ""+data[1]);
+                            }
+
+                            result.append(data[2]).append(" ").append(reward);
+                            break;
+                        case REWARDUNIT:
+                            Unit u = UserProfile.getBCData().units.get(data[1]);
+
+                            String unit;
+
+                            if(u == null) {
+                                unit = LangID.getStringByID("printstage_unit", lang).replace("_", "" + data[1]);
+                            } else {
+                                unit = StaticStore.safeMultiLangGet(u.forms[0], lang);
+
+                                if(unit == null || unit.isBlank()) {
+                                    unit = LangID.getStringByID("printstage_unit", lang).replace("_", "" + data[1]);
+                                }
+                            }
+
+                            result.append(unit);
+                            break;
+                        case REWARDTRUE:
+                            u = UserProfile.getBCData().units.get(data[1]);
+
+                            if(u == null) {
+                                unit = LangID.getStringByID("printstage_true", lang).replace("_", "" + data[1]);
+                            } else {
+                                if(u.forms.length == 3) {
+                                    unit  = StaticStore.safeMultiLangGet(u.forms[2], lang);
+
+                                    if(unit == null || unit.isBlank()) {
+                                        unit = LangID.getStringByID("printstage_true", lang).replace("_", "" + data[1]);
+                                    }
+                                } else {
+                                    unit = LangID.getStringByID("printstage_true", lang).replace("_", "" + data[1]);
+                                }
+                            }
+
+                            result.append(unit);
+                            break;
+                    }
+                }
+
+                if(permanent) {
+                    result.append(" ").append(LangID.getStringByID("printstage_perma", lang));
+                }
+
+                if(i < unknownStages.size() - 1)
+                    result.append("\n");
+            }
         }
 
         return result.toString();

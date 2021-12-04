@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.event;
 
+import common.system.files.VFile;
 import common.util.stage.MapColc;
 import common.util.stage.StageMap;
 import mandarin.packpack.supporter.StaticStore;
@@ -9,10 +10,7 @@ import mandarin.packpack.supporter.event.group.NormalGroupHandler;
 import mandarin.packpack.supporter.event.group.SequenceGroupHandler;
 import mandarin.packpack.supporter.lang.LangID;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class EventFactor {
     static {
@@ -43,6 +41,12 @@ public class EventFactor {
     public static final int FRIDAY = 32;
     public static final int SATURDAY = 64;
     public static final int WEEKEND = 65;
+
+    public static final int REWARDNORMAL = 0;
+    public static final int REWARDUNIT = 1;
+    public static final int REWARDTRUE = 2;
+
+    public static final Map<Integer, int[]> missionReward = new HashMap<>();
 
     public static final GroupHandler CYCLONE = new NormalGroupHandler(
             Arrays.asList(
@@ -159,6 +163,36 @@ public class EventFactor {
     public static final String GACHAURL = "https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/gacha/rare_LLL_R_ID_.html";
     public static final String ANNOUNCEURL = "https://nyanko-announcement.ponosgames.com/v1/notices?platform=google&clientVersion=VVVVVV&countryCode=LL&clearedStageJapan=300&clearedStageFuture=300&clearedUniverse=300&clientTime=DDDDDDDDD&timeDifference=1";
 
+    public static void readMissionReward() {
+        VFile vf = VFile.get("./org/data/Mission_Data.csv");
+
+        if(vf == null)
+            return;
+
+        Queue<String> q = vf.getData().readLine();
+
+        q.poll();
+
+        String line;
+
+        while((line = q.poll()) != null) {
+            String[] data = line.split(",");
+
+            if(data.length < 7)
+                continue;
+
+            int missionID = StaticStore.safeParseInt(data[0]);
+
+            int[] missionData = new int[] {
+                    StaticStore.safeParseInt(data[4]),
+                    StaticStore.safeParseInt(data[5]),
+                    StaticStore.safeParseInt(data[6])
+            };
+
+            missionReward.put(missionID, missionData);
+        }
+    }
+
     public static boolean onlyHoldMissions(StageSchedule schedule) {
         if(!schedule.stages.isEmpty())
             return false;
@@ -171,6 +205,20 @@ public class EventFactor {
         }
 
         return true;
+    }
+
+    public static boolean isWeeklyAndMonthlyMission(StageSchedule schedule) {
+        if(!schedule.isMission)
+            return false;
+
+        for(String id : schedule.unknownStages) {
+            int realID = StaticStore.safeParseInt(id);
+
+            if((realID >= 8000 && realID < 9000) || (realID >= 17000 && realID < 18000))
+                return true;
+        }
+
+        return false;
     }
 
     public static int stageToInteger(StageMap map) {
