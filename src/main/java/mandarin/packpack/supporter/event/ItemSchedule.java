@@ -138,7 +138,7 @@ public class ItemSchedule extends EventFactor implements Schedule {
             }
         }
 
-        if (itemID < 800 || itemID >= 1000) {
+        if (itemID >= 300) {
             result.append(itemAmount).append(" ").append(item);
         } else {
             result.append(item);
