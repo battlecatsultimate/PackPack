@@ -37,6 +37,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.event.EventFactor;
 import mandarin.packpack.supporter.event.EventFileGrabber;
+import mandarin.packpack.supporter.event.GachaSet;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.data.BoosterData;
@@ -78,6 +79,8 @@ public class PackBot {
         if(gate == null) {
             return;
         }
+
+        StaticStore.logger = new Logger(gate);
 
         StaticStore.saver = new Timer();
         StaticStore.saver.schedule(new TimerTask() {
@@ -137,8 +140,6 @@ public class PackBot {
                 }
             }
         }, 0, TimeUnit.MINUTES.toMillis(1));
-
-        StaticStore.logger = new Logger(gate);
 
         SlashBuilder.build(gate);
 
@@ -913,6 +914,9 @@ public class PackBot {
                                 case "sbv":
                                     new SetBCVersion(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
                                     break;
+                                case "logout":
+                                    new LogOut(ConstraintCommand.ROLE.MANDARIN, lang, idh, gate).execute(event);
+                                    break;
                             }
                         }
                     }, () -> {
@@ -955,6 +959,8 @@ public class PackBot {
             LangID.initialize();
 
             DataToString.initialize();
+
+            GachaSet.initialize();
 
             try {
                 EventFileGrabber.initialize();
