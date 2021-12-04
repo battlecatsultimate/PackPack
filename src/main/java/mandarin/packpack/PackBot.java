@@ -24,6 +24,7 @@ import discord4j.core.object.presence.ClientPresence;
 import discord4j.core.spec.*;
 import discord4j.gateway.intent.IntentSet;
 import discord4j.rest.request.RouterOptions;
+import discord4j.rest.util.AllowedMentions;
 import mandarin.packpack.commands.Locale;
 import mandarin.packpack.commands.*;
 import mandarin.packpack.commands.bc.*;
@@ -1037,81 +1038,208 @@ public class PackBot {
                     if(r[i][j] && i == parseLocale(holder.serverLocale) && holder.event != null) {
                         Channel ch = gate.getChannelById(Snowflake.of(holder.event)).block();
 
-                        String result;
-
                         if(ch instanceof MessageChannel) {
-                            switch (j) {
-                                case EventFactor.GATYA:
-                                    result = StaticStore.event.printGachaEvent(holder.serverLocale);
-                                    break;
-                                case EventFactor.SALE:
-                                    result = StaticStore.event.printStageEvent(holder.serverLocale);
-                                    break;
-                                default:
-                                    result = "";
-                            }
+                            if(j == EventFactor.SALE) {
+                                ArrayList<String> result = StaticStore.event.printStageEvent(holder.serverLocale);
 
-                            if(result.isBlank()) {
-                                continue;
-                            }
+                                if(result.isEmpty())
+                                    continue;
 
-                            done = true;
+                                boolean wasDone = done;
 
-                            MessageCreateSpec.Builder builder = MessageCreateSpec.builder();
+                                done = true;
 
-                            if(result.length() >= 2000) {
-                                File temp = new File("./temp");
+                                boolean goWithFile = false;
 
-                                if(!temp.exists() && !temp.mkdirs()) {
-                                    StaticStore.logger.uploadLog("Failed to create folder : "+temp.getAbsolutePath());
-                                    return;
+                                for(int k = 0; k < result.size(); k++) {
+                                    if(result.get(k).length() >= 1950) {
+                                        goWithFile = true;
+                                        break;
+                                    }
                                 }
 
-                                File res = new File(temp, StaticStore.findFileName(temp, "event", ".txt"));
+                                if(goWithFile) {
+                                    MessageCreateSpec.Builder builder = MessageCreateSpec.builder();
 
-                                if(!res.exists() && !res.createNewFile()) {
-                                    StaticStore.logger.uploadLog("Failed to create file : "+res.getAbsolutePath());
-                                    return;
+                                    StringBuilder total = new StringBuilder(LangID.getStringByID("event_stage", holder.serverLocale).replace("**", "")).append("\n\n");
+
+                                    for(int k = 0; k < result.size(); k++) {
+                                        total.append(result.get(k).replace("```less\n", "").replace("```", ""));
+
+                                        if(k < result.size() - 1)
+                                            total.append("\n");
+                                    }
+
+                                    File temp = new File("./temp");
+
+                                    if(!temp.exists() && !temp.mkdirs()) {
+                                        StaticStore.logger.uploadLog("Failed to create folder : "+temp.getAbsolutePath());
+                                        return;
+                                    }
+
+                                    File res = new File(temp, StaticStore.findFileName(temp, "event", ".txt"));
+
+                                    if(!res.exists() && !res.createNewFile()) {
+                                        StaticStore.logger.uploadLog("Failed to create file : "+res.getAbsolutePath());
+                                        return;
+                                    }
+
+                                    BufferedWriter writer = new BufferedWriter(new FileWriter(res, StandardCharsets.UTF_8));
+
+                                    writer.write(total.toString());
+
+                                    writer.close();
+
+                                    FileInputStream fis = new FileInputStream(res);
+
+                                    builder.content((wasDone ? "** **\n" : "") + LangID.getStringByID("printstage_toolong", holder.serverLocale))
+                                            .addFile(MessageCreateFields.File.of("stageAndEvent.txt", fis));
+
+                                    ((MessageChannel) ch).createMessage(builder.build()).subscribe(null, (e) -> {
+                                        StaticStore.logger.uploadErrorLog(e, "Failed to perform uploading stage event data");
+
+                                        try {
+                                            fis.close();
+                                        } catch (IOException ex) {
+                                            StaticStore.logger.uploadErrorLog(ex, "Failed close stream while uploading stage event data");
+                                        }
+
+                                        if(res.exists() && !res.delete()) {
+                                            StaticStore.logger.uploadLog("Failed to delete file : "+res.getAbsolutePath());
+                                        }
+                                    }, () -> {
+                                        try {
+                                            fis.close();
+                                        } catch (IOException e) {
+                                            StaticStore.logger.uploadErrorLog(e, "Failed close stream while uploading stage event data");
+                                        }
+
+                                        if(res.exists() && !res.delete()) {
+                                            StaticStore.logger.uploadLog("Failed to delete file : "+res.getAbsolutePath());
+                                        }
+                                    });
+                                } else {
+                                    for(int k = 0; k < result.size(); k++) {
+                                        MessageCreateSpec.Builder builder = MessageCreateSpec.builder();
+
+                                        StringBuilder merge = new StringBuilder();
+
+                                        if(k == 0) {
+                                            if(wasDone) {
+                                                merge.append("** **\n");
+                                            }
+
+                                            merge.append(LangID.getStringByID("event_stage", holder.serverLocale)).append("\n\n");
+                                        } else {
+                                            merge.append("** **\n");
+                                        }
+
+                                        while(merge.length() < 2000) {
+                                            if(k >= result.size())
+                                                break;
+
+                                            if(result.get(k).length() + merge.length() >= 2000) {
+                                                k--;
+                                                break;
+                                            }
+
+                                            merge.append(result.get(k));
+
+                                            if(k < result.size() - 1) {
+                                                merge.append("\n");
+                                            }
+
+                                            k++;
+                                        }
+
+                                        builder.content(merge.toString());
+                                        builder.allowedMentions(AllowedMentions.builder().build());
+
+                                        ((MessageChannel) ch).createMessage(builder.build()).subscribe();
+                                    }
                                 }
-
-                                BufferedWriter writer = new BufferedWriter(new FileWriter(res, StandardCharsets.UTF_8));
-
-                                writer.write(result);
-
-                                writer.close();
-
-                                FileInputStream fis = new FileInputStream(res);
-
-                                builder.content(LangID.getStringByID("printstage_toolong", holder.serverLocale))
-                                        .addFile(MessageCreateFields.File.of("stageAndEvent.txt", fis));
-
-                                ((MessageChannel) ch).createMessage(builder.build()).subscribe(null, (e) -> {
-                                    StaticStore.logger.uploadErrorLog(e, "Failed to perform uploading stage event data");
-
-                                    try {
-                                        fis.close();
-                                    } catch (IOException ex) {
-                                        StaticStore.logger.uploadErrorLog(ex, "Failed close stream while uploading stage event data");
-                                    }
-
-                                    if(res.exists() && !res.delete()) {
-                                        StaticStore.logger.uploadLog("Failed to delete file : "+res.getAbsolutePath());
-                                    }
-                                }, () -> {
-                                    try {
-                                        fis.close();
-                                    } catch (IOException e) {
-                                        StaticStore.logger.uploadErrorLog(e, "Failed close stream while uploading stage event data");
-                                    }
-
-                                    if(res.exists() && !res.delete()) {
-                                        StaticStore.logger.uploadLog("Failed to delete file : "+res.getAbsolutePath());
-                                    }
-                                });
                             } else {
-                                builder.content(result);
+                                String result;
 
-                                ((MessageChannel) ch).createMessage(builder.build()).subscribe();
+                                if(j == EventFactor.GATYA)
+                                    result = StaticStore.event.printGachaEvent(holder.serverLocale);
+                                else
+                                    result = "";
+
+                                if(result.isBlank()) {
+                                    continue;
+                                }
+
+                                boolean wasDone = done;
+
+                                done = true;
+
+                                MessageCreateSpec.Builder builder = MessageCreateSpec.builder();
+
+                                builder.allowedMentions(AllowedMentions.builder().build());
+
+                                if(result.length() >= 1980) {
+                                    File temp = new File("./temp");
+
+                                    if(!temp.exists() && !temp.mkdirs()) {
+                                        StaticStore.logger.uploadLog("Failed to create folder : "+temp.getAbsolutePath());
+                                        return;
+                                    }
+
+                                    File res = new File(temp, StaticStore.findFileName(temp, "event", ".txt"));
+
+                                    if(!res.exists() && !res.createNewFile()) {
+                                        StaticStore.logger.uploadLog("Failed to create file : "+res.getAbsolutePath());
+                                        return;
+                                    }
+
+                                    BufferedWriter writer = new BufferedWriter(new FileWriter(res, StandardCharsets.UTF_8));
+
+                                    writer.write(result);
+
+                                    writer.close();
+
+                                    FileInputStream fis = new FileInputStream(res);
+
+                                    String lID;
+
+                                    if(j == EventFactor.GATYA) {
+                                        lID = "printgacha_toolong";
+                                    } else {
+                                        lID = "printstage_toolong";
+                                    }
+
+                                    builder.content((wasDone ? "** **\n" : "") + LangID.getStringByID(lID, holder.serverLocale))
+                                            .addFile(MessageCreateFields.File.of("stageAndEvent.txt", fis));
+
+                                    ((MessageChannel) ch).createMessage(builder.build()).subscribe(null, (e) -> {
+                                        StaticStore.logger.uploadErrorLog(e, "Failed to perform uploading stage event data");
+
+                                        try {
+                                            fis.close();
+                                        } catch (IOException ex) {
+                                            StaticStore.logger.uploadErrorLog(ex, "Failed close stream while uploading stage event data");
+                                        }
+
+                                        if(res.exists() && !res.delete()) {
+                                            StaticStore.logger.uploadLog("Failed to delete file : "+res.getAbsolutePath());
+                                        }
+                                    }, () -> {
+                                        try {
+                                            fis.close();
+                                        } catch (IOException e) {
+                                            StaticStore.logger.uploadErrorLog(e, "Failed close stream while uploading stage event data");
+                                        }
+
+                                        if(res.exists() && !res.delete()) {
+                                            StaticStore.logger.uploadLog("Failed to delete file : "+res.getAbsolutePath());
+                                        }
+                                    });
+                                } else {
+                                    builder.content((wasDone ? "** **\n" : "") + result);
+
+                                    ((MessageChannel) ch).createMessage(builder.build()).subscribe();
+                                }
                             }
                         }
                     }

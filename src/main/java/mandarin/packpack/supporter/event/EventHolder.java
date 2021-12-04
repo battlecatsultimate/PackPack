@@ -240,13 +240,13 @@ public class EventHolder extends EventFactor {
         this.gachas.put(locale, g);
     }
 
-    public String printStageEvent(int locale) {
+    public ArrayList<String> printStageEvent(int locale) {
+        ArrayList<String> result = new ArrayList<>();
+
         ArrayList<StageSchedule> stages = this.stages.get(locale);
 
         if(stages == null || stages.isEmpty())
-            return "";
-
-        StringBuilder data = new StringBuilder(LangID.getStringByID("event_stage", locale)).append("\n\n");
+            return result;
 
         boolean[] analyzed = new boolean[stages.size()];
 
@@ -346,6 +346,8 @@ public class EventHolder extends EventFactor {
         yearlys.sort(new DateComparator(locale));
 
         if(!normals.isEmpty()) {
+            StringBuilder data = new StringBuilder();
+
             data.append("```less\n");
 
             for (String normal : normals) {
@@ -353,50 +355,52 @@ public class EventHolder extends EventFactor {
                         .append("\n");
             }
 
-            data.append("```\n");
+            data.append("```");
+
+            result.add(data.toString());
         }
 
         if(!dailys.isEmpty()) {
-            data.append(LangID.getStringByID("printstage_daily", locale)).append("\n\n");
-
-            data.append("```less\n");
+            StringBuilder data = new StringBuilder(LangID.getStringByID("printstage_daily", locale)).append("\n\n```less\n");
 
             for (String day : dailys) {
                 data.append(day)
                         .append("\n");
             }
 
-            data.append("```\n");
+            data.append("```");
+
+            result.add(data.toString());
         }
 
         if(!weeklys.isEmpty()) {
-            data.append(LangID.getStringByID("printstage_weekly", locale)).append("\n\n");
-
-            data.append("```less\n");
+            StringBuilder data = new StringBuilder(LangID.getStringByID("printstage_weekly", locale)).append("\n\n```less\n");
 
             for (String week : weeklys) {
                 data.append(week)
                         .append("\n");
             }
 
-            data.append("```\n");
+            data.append("```");
+
+            result.add(data.toString());
         }
 
         if(!monthlys.isEmpty()) {
-            data.append(LangID.getStringByID("printstage_monthly", locale)).append("\n\n");
-
-            data.append("```less\n");
+            StringBuilder data = new StringBuilder(LangID.getStringByID("printstage_monthly", locale)).append("\n\n```less\n");
 
             for (String month : monthlys) {
                 data.append(month)
                         .append("\n");
             }
 
-            data.append("```\n");
+            data.append("```");
+
+            result.add(data.toString());
         }
 
         if(!yearlys.isEmpty()) {
-            data.append(LangID.getStringByID("printstage_yearly", locale)).append("\n\n");
+            StringBuilder data = new StringBuilder(LangID.getStringByID("printstage_yearly", locale)).append("\n\n```less\n");
 
             data.append("```less\n");
 
@@ -405,10 +409,12 @@ public class EventHolder extends EventFactor {
                         .append("\n");
             }
 
-            data.append("```\n");
+            data.append("```");
+
+            result.add(data.toString());
         }
 
-        return data.toString();
+        return result;
     }
 
     public String printGachaEvent(int locale) {
