@@ -852,5 +852,7 @@
   "printgacha_step" : "Step Up",
   "printgacha_neneko" : "Neneko Gang",
   "printgacha_rein" : "Reinforcement",
-  "printgacha_lucky" : "Lucky Ticket per roll"
+  "printgacha_lucky" : "Lucky Ticket per roll",
+  "printgacha_dummy" : "Unit _",
+  "printgacha_buff" : "_BBB_x rate for _UUU_"
 }

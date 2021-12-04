@@ -836,15 +836,17 @@
   "printgacha_gr" : "그",
   "printgacha_p" : "플",
   "printgacha_s" : "스",
-  "printgacha_n" : "귀",
-  "printgacha_r" : "강",
+  "printgacha_n" : "캠",
+  "printgacha_r" : "지",
   "printgacha_l" : "럭",
   "printgacha_gua" : "확정",
   "printgacha_legendgua" : "레레 확정",
   "printgacha_gran" : "그란돈 부대",
   "printgacha_plat" : "플래티넘 조각",
   "printgacha_step" : "스탭 업",
-  "printgacha_neneko" : "귀여미 그룹",
-  "printgacha_rein" : "강화(?)",
-  "printgacha_lucky" : "뽑기 당 럭키티켓 1장"
+  "printgacha_neneko" : "캠페인 한정 캐릭터 (귀요미, 등)",
+  "printgacha_rein" : "지원 부대 캐릭터 (고양이 도령, 등)",
+  "printgacha_lucky" : "뽑기 당 럭키티켓 1장",
+  "printgacha_dummy" : "유닛 _",
+  "printgacha_buff" : "_UUU_ 유닛에게 _BBB_x 확률 업"
 }

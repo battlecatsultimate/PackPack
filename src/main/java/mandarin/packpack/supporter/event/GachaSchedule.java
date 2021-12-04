@@ -9,6 +9,8 @@ import mandarin.packpack.supporter.lang.LangID;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -127,6 +129,19 @@ public class GachaSchedule extends EventFactor implements Schedule {
                         section.additional.add(GachaSection.ADDITIONAL.SHARD);
                     }
 
+                    if(GachaSet.gachaSet.containsKey(gachaID)) {
+                        GachaSet set = GachaSet.gachaSet.get(gachaID);
+
+                        if(containAll(set.data, 200, 144, 131, 129))
+                            section.additional.add(GachaSection.ADDITIONAL.NENEKO);
+
+                        if(containAll(set.data, 447, 446, 445, 444, 443))
+                            section.additional.add(GachaSection.ADDITIONAL.GRANDON);
+
+                        if(containAll(set.data, 239, 238, 237))
+                            section.additional.add(GachaSection.ADDITIONAL.REINFORCE);
+                    }
+
                     index++;
 
                     for(int j = 0; j < 5; j++) {
@@ -202,10 +217,6 @@ public class GachaSchedule extends EventFactor implements Schedule {
             if(g == null)
                 g = tryGetGachaName(section.gachaID, lang);
 
-            if(g == null) {
-                g = "Gacha " + Data.trio(section.gachaID);
-            }
-
             result.append(g);
 
             if(hasAdditionalData(section)) {
@@ -226,6 +237,30 @@ public class GachaSchedule extends EventFactor implements Schedule {
                 }
 
                 result.append(")");
+            }
+
+            if(GachaSet.gachaSet.containsKey(section.gachaID)) {
+                GachaSet set = GachaSet.gachaSet.get(section.gachaID);
+
+                if(!set.buffUnits.isEmpty()) {
+                    result.append(" { ");
+
+                    for(int j = 0; j < set.buffUnits.size(); j++) {
+                        String unitName = StaticStore.safeMultiLangGet(set.buffUnits.get(j), lang);
+
+                        if(unitName == null) {
+                            unitName = LangID.getStringByID("printgacha_dummy", lang).replace("_", Data.trio(set.buffUnits.get(j).id.id));
+                        }
+
+                        result.append(LangID.getStringByID("printgacha_buff", lang).replace("_BBB_", set.buffParameter.get(j)+"").replace("_UUU_", unitName));
+
+                        if(j < set.buffUnits.size() - 1) {
+                            result.append(", ");
+                        }
+                    }
+
+                    result.append(" }");
+                }
             }
 
             if(i < gacha.size() - 1) {
@@ -498,5 +533,23 @@ public class GachaSchedule extends EventFactor implements Schedule {
             default:
                 return LangID.getStringByID("printgacha_r", lang);
         }
+    }
+
+    private boolean containAll(int[] data, int... ids) {
+        for(int i = 0; i < ids.length; i++) {
+            boolean found = false;
+
+            for(int j = 0; j < data.length; j++) {
+                if(data[j] == ids[i]) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if(!found)
+                return false;
+        }
+
+        return true;
     }
 }
