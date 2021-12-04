@@ -23,7 +23,7 @@ public class PrintGachaEvent extends ConstraintCommand {
         if(ch == null)
             return;
 
-        String result = StaticStore.event.printGachaEvent(lang);
+        String result = StaticStore.event.printGachaEvent(getLang());
 
         if(result.length() >= 2000) {
             File temp = new File("./temp");
@@ -76,6 +76,14 @@ public class PrintGachaEvent extends ConstraintCommand {
             });
         } else {
             createMessage(ch, m -> m.content(result));
+        }
+    }
+
+    private int getLang() {
+        if(lang >= 1 && lang < 4) {
+            return lang;
+        } else {
+            return 0;
         }
     }
 }

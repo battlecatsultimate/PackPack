@@ -26,7 +26,7 @@ public class PrintStageEvent extends ConstraintCommand {
         if(ch == null)
             return;
 
-        ArrayList<String> result = StaticStore.event.printStageEvent(holder.serverLocale);
+        ArrayList<String> result = StaticStore.event.printStageEvent(getLang());
 
         if(result.isEmpty()) {
             createMessage(ch, m -> m.content(LangID.getStringByID("chevent_noup", lang)));
@@ -137,6 +137,14 @@ public class PrintStageEvent extends ConstraintCommand {
 
                 ch.createMessage(builder.build()).subscribe();
             }
+        }
+    }
+
+    private int getLang() {
+        if(lang >= 1 && lang < 4) {
+            return lang;
+        } else {
+            return 0;
         }
     }
 }
