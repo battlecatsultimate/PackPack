@@ -87,7 +87,7 @@ public class ConfirmButtonHolder extends InteractionHolder<ButtonInteractionEven
 
         switch (event.getCustomId()) {
             case "confirm":
-                action.run();
+                return event.deferEdit().then(event.getInteractionResponse().deleteInitialResponse()).then(Mono.create(v -> action.run()));
             case "cancel":
                 return event.deferEdit().then(event.getInteractionResponse().deleteInitialResponse());
         }
