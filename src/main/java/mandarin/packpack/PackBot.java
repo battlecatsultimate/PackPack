@@ -918,6 +918,10 @@ public class PackBot {
                                 case "logout":
                                     new LogOut(ConstraintCommand.ROLE.MANDARIN, lang, idh, gate).execute(event);
                                     break;
+                                case "printitemevent":
+                                case "pie":
+                                    new PrintItemEvent(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+                                    break;
                             }
                         }
                     }, () -> {
@@ -1095,7 +1099,7 @@ public class PackBot {
                                     FileInputStream fis = new FileInputStream(res);
 
                                     builder.content((wasDone ? "** **\n" : "") + LangID.getStringByID("printstage_toolong", holder.serverLocale))
-                                            .addFile(MessageCreateFields.File.of("stageAndEvent.txt", fis));
+                                            .addFile(MessageCreateFields.File.of("event.txt", fis));
 
                                     ((MessageChannel) ch).createMessage(builder.build()).subscribe(null, (e) -> {
                                         StaticStore.logger.uploadErrorLog(e, "Failed to perform uploading stage event data");
@@ -1166,7 +1170,7 @@ public class PackBot {
                                 if(j == EventFactor.GATYA)
                                     result = StaticStore.event.printGachaEvent(holder.serverLocale);
                                 else
-                                    result = "";
+                                    result = StaticStore.event.printItemEvent(holder.serverLocale);
 
                                 if(result.isBlank()) {
                                     continue;
@@ -1208,11 +1212,11 @@ public class PackBot {
                                     if(j == EventFactor.GATYA) {
                                         lID = "printgacha_toolong";
                                     } else {
-                                        lID = "printstage_toolong";
+                                        lID = "printitem_toolong";
                                     }
 
                                     builder.content((wasDone ? "** **\n" : "") + LangID.getStringByID(lID, holder.serverLocale))
-                                            .addFile(MessageCreateFields.File.of("stageAndEvent.txt", fis));
+                                            .addFile(MessageCreateFields.File.of("event.txt", fis));
 
                                     ((MessageChannel) ch).createMessage(builder.build()).subscribe(null, (e) -> {
                                         StaticStore.logger.uploadErrorLog(e, "Failed to perform uploading stage event data");

@@ -2,6 +2,7 @@ package mandarin.packpack.supporter.event;
 
 import common.util.stage.MapColc;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.lang.LangID;
 
 import java.util.ArrayList;
 
@@ -89,7 +90,65 @@ public class ItemSchedule extends EventFactor implements Schedule {
 
     @Override
     public String beautify(int lang) {
-        return null;
+        StringBuilder result = new StringBuilder();
+
+        result.append("[");
+
+        if(date.dateStart.year != currentYear) {
+            result.append(date.dateStart.year)
+                    .append(" ");
+        }
+
+        result.append(getMonth(date.dateStart.month, lang))
+                .append(" ")
+                .append(date.dateStart.day)
+                .append(getNumberExtension(date.dateStart.day, lang))
+                .append(" ~ ");
+
+        if(date.dateEnd.equals(END)) {
+            result.append("] ");
+        } else {
+
+            if(date.dateStart.year != date.dateEnd.year) {
+                result.append(date.dateEnd.year)
+                        .append(" ");
+            }
+
+            if(date.dateStart.month != date.dateEnd.month) {
+                result.append(getMonth(date.dateEnd.month, lang))
+                        .append(" ");
+            }
+
+            result.append(date.dateEnd.day)
+                    .append(getNumberExtension(date.dateEnd.day, lang))
+                    .append("] ");
+        }
+
+        String id = "item_"+itemID;
+
+        String item = LangID.getStringByID(id, lang);
+
+        if(item.equals(id)) {
+            if(itemID >= 800 && itemID < 900) {
+                item = LangID.getStringByID("printitem_sale", lang).replace("_", "" + itemID);
+            } else if(itemID >= 900 && itemID < 1000) {
+                item = LangID.getStringByID("printitem_stamp", lang).replace("_", "" + itemID);
+            } else {
+                item = LangID.getStringByID("printitem_item", lang).replace("_", "" + itemID);
+            }
+        }
+
+        if (itemID < 800 || itemID >= 1000) {
+            result.append(itemAmount).append(" ").append(item);
+        } else {
+            result.append(item);
+        }
+
+        if(1000 <= categoryID && categoryID < 5000 && everyday) {
+            result.append(" [").append(LangID.getStringByID("printitem_daily", lang)).append("]");
+        }
+
+        return result.toString();
     }
 
     @Override

@@ -248,6 +248,7 @@
   "event_stage" : "**Stage/Event**",
   "event_gacha" : "**Gacha**",
   "event_mission" : "**Mission**",
+  "event_item" : "**Item/Sale**",
   "event_newver" : "_ required",
   "group_0" : "Cyclone Festival",
   "group_1" : "Builders Festival",
@@ -849,5 +850,10 @@
   "printgacha_rein" : "Reinforcement",
   "printgacha_lucky" : "Lucky Ticket per roll",
   "printgacha_dummy" : "Unit _",
-  "printgacha_buff" : "_BBB_x rate for _UUU_"
+  "printgacha_buff" : "_BBB_x rate for _UUU_",
+  "printitem_daily" : "Daily",
+  "printitem_item" : "Item _",
+  "printitem_stamp" : "Stamp _",
+  "printitem_sale" : "Sale _",
+  "printitem_toolong" : "Uploading raw file because item/sale data was too long"
 }

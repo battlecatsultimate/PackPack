@@ -250,6 +250,7 @@
   "event_stage" : "**스테이지/이벤트**",
   "event_gacha" : "**가챠**",
   "event_mission" : "**미션**",
+  "event_item" : "**아이템/세일**",
   "event_newver" : "_ 버전 필요",
   "group_0" : "사이클론 페스티벌",
   "group_1" : "성재료 발굴제",
@@ -854,5 +855,10 @@
   "printgacha_rein" : "지원 부대 캐릭터 (고양이 도령, 등)",
   "printgacha_lucky" : "뽑기 당 럭키티켓 1장",
   "printgacha_dummy" : "유닛 _",
-  "printgacha_buff" : "_UUU_ 유닛에게 _BBB_x 확률 업"
+  "printgacha_buff" : "_UUU_ 유닛에게 _BBB_x 확률 업",
+  "printitem_daily" : "매일 지급",
+  "printitem_item" : "아이템 _",
+  "printitem_stamp" : "스탬프 _",
+  "printitem_sale" : "세일 _",
+  "printitem_toolong" : "아이템/세일 데이터 메세지 길이가 너무 길어 파일로 업로드합니다"
 }

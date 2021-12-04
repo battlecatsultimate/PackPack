@@ -79,14 +79,18 @@ public class EventHolder extends EventFactor {
             if(file.exists()) {
                 boolean res = file.delete();
 
-                if(!res)
+                if(!res) {
+                    StaticStore.logger.uploadLog("Failed to delete file : "+file.getAbsolutePath());
                     return;
+                }
             }
 
             boolean result = f.renameTo(file);
 
-            if(!result)
+            if(!result) {
+                StaticStore.logger.uploadLog("Failed to rename file\n"+"Src : "+f.getAbsolutePath()+"\nDst : "+file.getAbsolutePath());
                 return;
+            }
         }
 
         ArrayList<StageSchedule> stages = this.stages.containsKey(locale) ? this.stages.get(locale) : new ArrayList<>();
@@ -216,14 +220,18 @@ public class EventHolder extends EventFactor {
             if(file.exists()) {
                 boolean res = file.delete();
 
-                if(!res)
+                if(!res) {
+                    StaticStore.logger.uploadLog("Failed to delete file : "+file.getAbsolutePath());
                     return;
+                }
             }
 
             boolean result = f.renameTo(file);
 
-            if(!result)
+            if(!result) {
+                StaticStore.logger.uploadLog("Failed to rename file\n"+"Src : "+f.getAbsolutePath()+"\nDst : "+file.getAbsolutePath());
                 return;
+            }
         }
 
         ArrayList<GachaSchedule> g = gachas.containsKey(locale) ? gachas.get(locale) : new ArrayList<>();
@@ -238,6 +246,86 @@ public class EventHolder extends EventFactor {
         g.removeIf(ga -> ga.gacha.isEmpty());
 
         this.gachas.put(locale, g);
+    }
+
+    public void updateItem(File f, int locale, boolean init) throws Exception {
+        if(failedToPrepareFile(locale))
+            return;
+
+        File file = new File("./data/event/"+getLocaleName(locale), "item.tsv");
+
+        boolean needToAnalyze = false;
+
+        if(!file.exists()) {
+            needToAnalyze = true;
+        } else {
+            String newMd5 = StaticStore.fileToMD5(f);
+            String md5 = StaticStore.fileToMD5(file);
+
+            if(newMd5 != null && !newMd5.equals(md5))
+                needToAnalyze = true;
+        }
+
+        if(!needToAnalyze) {
+            if(f.exists() && !f.delete()) {
+                StaticStore.logger.uploadLog("Failed to delete file : "+f.getAbsolutePath());
+            }
+
+            return;
+        }
+
+        ArrayList<String> newLines;
+
+        if(file.exists() && !init) {
+            newLines = getOnlyNewLine(file, f);
+        } else {
+            newLines = new ArrayList<>();
+
+            BufferedReader reader = new BufferedReader(new FileReader(f));
+
+            String line = reader.readLine();
+
+            if(line != null && line.contains("[start]")) {
+                while((line = reader.readLine()) != null) {
+                    if(line.contains("[end]"))
+                        break;
+                    else {
+                        newLines.add(line);
+                    }
+                }
+            }
+
+            reader.close();
+        }
+
+        if(!file.getAbsolutePath().equals(f.getAbsolutePath())) {
+            if(file.exists()) {
+                boolean res = file.delete();
+
+                if(!res) {
+                    StaticStore.logger.uploadLog("Failed to delete file : "+file.getAbsolutePath());
+                    return;
+                }
+            }
+
+            boolean result = f.renameTo(file);
+
+            if(!result) {
+                StaticStore.logger.uploadLog("Failed to rename file\n"+"Src : "+f.getAbsolutePath()+"\nDst : "+file.getAbsolutePath());
+                return;
+            }
+        }
+
+        ArrayList<ItemSchedule> i = items.containsKey(locale) ? items.get(locale) : new ArrayList<>();
+
+        if(!i.isEmpty())
+            i.clear();
+
+        for(String line : newLines) {
+            i.add(new ItemSchedule(line));
+        }
+
+        this.items.put(locale, i);
     }
 
     public ArrayList<String> printStageEvent(int locale) {
@@ -492,6 +580,39 @@ public class EventHolder extends EventFactor {
         return data.toString();
     }
 
+    public String printItemEvent(int locale) {
+        System.out.println(items);
+        ArrayList<ItemSchedule> items = this.items.get(locale);
+
+        StringBuilder data = new StringBuilder(LangID.getStringByID("event_item", locale)).append("\n\n");
+
+        ArrayList<String> normals = new ArrayList<>();
+
+        for(int i = 0; i < items.size(); i++) {
+            ItemSchedule schedule = items.get(i);
+
+            String beauty = schedule.beautify(locale);
+
+            normals.add(beauty);
+        }
+
+        normals.sort(new DateComparator(locale));
+
+        if(normals.isEmpty()) {
+            return "";
+        }
+
+        data.append("```less\n");
+
+        for(int i = 0; i < normals.size(); i++) {
+            data.append(normals.get(i)).append("\n");
+        }
+
+        data.append("```");
+
+        return data.toString();
+    }
+
     private ArrayList<String> getOnlyNewLine(File src, File newSrc) throws Exception {
         ArrayList<String> oldLines = new ArrayList<>();
         ArrayList<String> newLines = new ArrayList<>();
@@ -626,6 +747,9 @@ public class EventHolder extends EventFactor {
                     case SALE:
                         updateStage(f, j, true);
                         break;
+                    case ITEM:
+                        updateItem(f, j, true);
+                        break;
                 }
             }
         }
@@ -742,6 +866,9 @@ public class EventHolder extends EventFactor {
                             case GATYA:
                                 updateGacha(target, i, false);
                                 break;
+                            case ITEM:
+                                updateItem(target, i, false);
+                                break;
                             default:
                                 if(f.exists() && !f.delete()) {
                                     StaticStore.logger.uploadLog("Failed to delete file : "+f.getAbsolutePath());
@@ -796,6 +923,9 @@ public class EventHolder extends EventFactor {
                             break;
                         case GATYA:
                             updateGacha(target, i, false);
+                            break;
+                        case ITEM:
+                            updateItem(target, i, false);
                             break;
                         default:
                             if(f.exists() && !f.delete()) {
