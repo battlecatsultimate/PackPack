@@ -166,7 +166,7 @@ public class EventFactor {
         for(String id : schedule.unknownStages) {
             int realID = StaticStore.safeParseInt(id);
 
-            if((realID < 9000 || realID >= 10000) && (realID < 15000 || realID >= 16000) && (realID < 17000 || realID >= 18000))
+            if((realID < 8000 || realID >= 10000) && (realID < 15000 || realID >= 16000) && (realID < 17000 || realID >= 18000))
                 return false;
         }
 
