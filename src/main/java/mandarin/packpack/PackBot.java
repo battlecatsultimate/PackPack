@@ -62,7 +62,7 @@ public class PackBot {
     public static int save = 0;
     public static int event = 0;
     public static boolean eventInit = false;
-    public static boolean develop = true;
+    public static boolean develop = false;
 
     public static final String normal = "p!help, but under Construction!";
     public static final String dev = "p!help, being developed, bot may not response";
@@ -897,11 +897,11 @@ public class PackBot {
                                     break;
                                 case "checkeventupdate":
                                 case "ceu":
-                                    new CheckEventUpdate(ConstraintCommand.ROLE.MANDARIN, lang, idh, gate).execute(event);
+                                    new CheckEventUpdate(ConstraintCommand.ROLE.CONTRIBUTOR, lang, idh, gate).execute(event);
                                     break;
                                 case "printstageevent":
                                 case "pse":
-                                    new PrintStageEvent(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+                                    new PrintStageEvent(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
                                     break;
                                 case "subscribeevent":
                                 case "se":
@@ -909,7 +909,7 @@ public class PackBot {
                                     break;
                                 case "printgachaevent":
                                 case "pge":
-                                    new PrintGachaEvent(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+                                    new PrintGachaEvent(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
                                     break;
                                 case "setbcversion":
                                 case "sbv":
