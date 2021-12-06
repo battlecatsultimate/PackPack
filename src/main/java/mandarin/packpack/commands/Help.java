@@ -35,8 +35,8 @@ public class Help extends Command {
                     .color(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)])
                     .addField(LangID.getStringByID("help_normal", lang), "```analyze, locale, prefix```", false)
                     .addField(LangID.getStringByID("help_bc", lang), "```background, castle, catcombo, enemygif, enemyimage, enemysprite, enemystat, findstage, formgif, formimage, formsprite, formstat, medal, music, stageinfo```", false)
-                    .addField(LangID.getStringByID("help_server", lang), "```bcustat, boosteremoji, boosteremojiremove, boosterrole, boosterroleremove, channelpermission, checkbcu, clearcache, fixrole, idset, memory, save, serverjson, serverpre, setup, watchdm```", false)
-                    .addField(LangID.getStringByID("help_data", lang), "```animanalyzer, announcement, stageimage, stagemapimage```", false)
+                    .addField(LangID.getStringByID("help_server", lang), "```bcustat, boosteremoji, boosteremojiremove, boosterrole, boosterroleremove, channelpermission, checkbcu, clearcache, fixrole, idset, memory, save, serverjson, serverpre, setup, subscribeevent, watchdm```", false)
+                    .addField(LangID.getStringByID("help_data", lang), "```animanalyzer, announcement, checkeventupdate, printgachaevent, printitemevent, printstageevent, stageimage, stagemapimage```", false)
                     .addField(LangID.getStringByID("help_packpack", lang), "```alias, aliasadd, aliasremove, statistic, suggest```", false);
 
             ch.createMessage(builder.build()).subscribe();
@@ -243,6 +243,26 @@ public class Help extends Command {
             case "watchdm":
             case "wd":
                 ch.createMessage(addFields("watchdm", false, false, true)).subscribe();
+                break;
+            case "checkeventupdate":
+            case "ceu":
+                ch.createMessage(addFields("checkeventupdate", false, false, false)).subscribe();
+                break;
+            case "printgachaevent":
+            case "pge":
+                ch.createMessage(addFields("printgachaevent", true, true, false)).subscribe();
+                break;
+            case "printitemevent":
+            case "pie":
+                ch.createMessage(addFields("printitemevent", true, true, false)).subscribe();
+                break;
+            case "printstageevent":
+            case "pse":
+                ch.createMessage(addFields("printstageevent", true, true, false)).subscribe();
+                break;
+            case "subscribeevent":
+            case "se":
+                ch.createMessage(addFields("subscribeevent", false, true, true)).subscribe();
                 break;
             default:
                 createMessageWithNoPings(ch, LangID.getStringByID("help_nocomm", lang).replace("_", command));
