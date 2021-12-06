@@ -23,7 +23,7 @@ public class PrintGachaEvent extends ConstraintCommand {
         if(ch == null)
             return;
 
-        String result = StaticStore.event.printGachaEvent(getLang());
+        String result = StaticStore.event.printGachaEvent(getLocale(getContent(event)), lang);
 
         if(result.length() >= 2000) {
             File temp = new File("./temp");
@@ -85,5 +85,24 @@ public class PrintGachaEvent extends ConstraintCommand {
         } else {
             return 0;
         }
+    }
+
+    private int getLocale(String content) {
+        String[] contents = content.split(" ");
+
+        for(int i = 0; i < contents.length; i++) {
+            switch (contents[i]) {
+                case "-en":
+                    return LangID.EN;
+                case "-tw":
+                    return LangID.ZH;
+                case "-kr":
+                    return LangID.KR;
+                case "-jp":
+                    return LangID.JP;
+            }
+        }
+
+        return getLang();
     }
 }

@@ -1040,13 +1040,15 @@ public class PackBot {
             boolean done = false;
 
             for(int i = 0; i < r.length; i++) {
+                boolean eventDone = false;
+
                 for(int j = 0; j < r[i].length; j++) {
-                    if(r[i][j] && i == parseLocale(holder.serverLocale) && holder.event != null) {
+                    if(r[i][j] && holder.eventLocale.contains(i) && holder.event != null) {
                         Channel ch = gate.getChannelById(Snowflake.of(holder.event)).block();
 
                         if(ch instanceof MessageChannel) {
                             if(j == EventFactor.SALE) {
-                                ArrayList<String> result = StaticStore.event.printStageEvent(holder.serverLocale);
+                                ArrayList<String> result = StaticStore.event.printStageEvent(i, holder.serverLocale);
 
                                 if(result.isEmpty())
                                     continue;
@@ -1054,6 +1056,11 @@ public class PackBot {
                                 boolean wasDone = done;
 
                                 done = true;
+
+                                if(!eventDone) {
+                                    eventDone = true;
+                                    ((MessageChannel) ch).createMessage(MessageCreateSpec.builder().content((wasDone ? "** **\n" : "") + LangID.getStringByID("event_loc"+i, holder.serverLocale)).build()).subscribe();
+                                }
 
                                 boolean goWithFile = false;
 
@@ -1168,9 +1175,9 @@ public class PackBot {
                                 String result;
 
                                 if(j == EventFactor.GATYA)
-                                    result = StaticStore.event.printGachaEvent(holder.serverLocale);
+                                    result = StaticStore.event.printGachaEvent(i, holder.serverLocale);
                                 else
-                                    result = StaticStore.event.printItemEvent(holder.serverLocale);
+                                    result = StaticStore.event.printItemEvent(i, holder.serverLocale);
 
                                 if(result.isBlank()) {
                                     continue;
@@ -1179,6 +1186,11 @@ public class PackBot {
                                 boolean wasDone = done;
 
                                 done = true;
+
+                                if(!eventDone) {
+                                    eventDone = true;
+                                    ((MessageChannel) ch).createMessage(MessageCreateSpec.builder().content((wasDone ? "** **\n" : "") + LangID.getStringByID("event_loc"+i, holder.serverLocale)).build()).subscribe();
+                                }
 
                                 MessageCreateSpec.Builder builder = MessageCreateSpec.builder();
 
@@ -1260,12 +1272,5 @@ public class PackBot {
                 }
             }
         }
-    }
-
-    private static int parseLocale(int l) {
-        if(l == 0 || l > LangID.JP)
-            return 0;
-        else
-            return l;
     }
 }

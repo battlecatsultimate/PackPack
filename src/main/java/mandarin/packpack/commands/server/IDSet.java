@@ -127,7 +127,7 @@ public class IDSet extends ConstraintCommand {
                                 holder.MEMBER = id;
 
                                 if(oldID != null && holder.channel.containsKey(oldID)) {
-                                    ArrayList<String> arr = holder.channel.get(oldID);
+                                    List<String> arr = holder.channel.get(oldID);
 
                                     holder.channel.put(id, arr);
                                     holder.channel.remove(oldID);
@@ -271,7 +271,7 @@ public class IDSet extends ConstraintCommand {
                                 holder.BOOSTER = id;
 
                                 if(oldID != null && holder.channel.containsKey(oldID)) {
-                                    ArrayList<String> arr = holder.channel.get(oldID);
+                                    List<String> arr = holder.channel.get(oldID);
 
                                     holder.channel.put(id, arr);
                                     holder.channel.remove(oldID);
@@ -365,7 +365,7 @@ public class IDSet extends ConstraintCommand {
                                 } else {
                                     holder.ID.put(name, id);
 
-                                    ArrayList<String> channel = holder.channel.get(oldID);
+                                    List<String> channel = holder.channel.get(oldID);
 
                                     holder.channel.put(id, channel);
                                 }

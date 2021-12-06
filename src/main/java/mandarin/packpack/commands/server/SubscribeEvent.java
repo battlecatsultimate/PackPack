@@ -10,6 +10,8 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class SubscribeEvent extends ConstraintCommand {
@@ -29,6 +31,7 @@ public class SubscribeEvent extends ConstraintCommand {
 
         if(channel == null && holder.logDM != null) {
             holder.event = null;
+            holder.eventLocale.clear();
             StaticStore.idHolder.put(g.getId().asString(), holder);
             createMessage(ch, m -> m.content(LangID.getStringByID("subevent_remove", lang)));
             return;
@@ -43,11 +46,29 @@ public class SubscribeEvent extends ConstraintCommand {
             return;
         }
 
+        List<Integer> locales = getLocales(getContent(event).replaceAll("[ ]+,[ ]+|,[ ]+|[ ]+,", ","));
+
+        if(locales.isEmpty()) {
+            locales.add(filterLocale());
+        }
+
+        holder.eventLocale.clear();
+
+        for(int i = 0; i < locales.size(); i++) {
+            int l = locales.get(i);
+
+            if(l >= 0 && l <= 3) {
+                holder.eventLocale.add(l);
+            }
+        }
+
+        holder.eventLocale.sort(Integer::compare);
+
         holder.event = channel;
 
         StaticStore.idHolder.put(g.getId().asString(), holder);
 
-        createMessage(ch, m -> m.content(LangID.getStringByID("subevent_set", lang).replace("_", channel)));
+        createMessage(ch, m -> m.content(LangID.getStringByID("subevent_set", lang).replace("_CCC_", channel).replace("_BC_", getBCList(holder.eventLocale))));
     }
 
     private String getChannelID(String content) {
@@ -73,5 +94,68 @@ public class SubscribeEvent extends ConstraintCommand {
         });
 
         return valid.get();
+    }
+
+    private List<Integer> getLocales(String content) {
+        List<Integer> result = new ArrayList<>();
+
+        String[] contents = content.split(" ");
+
+        if(contents.length >= 3) {
+            String[] numbers = contents[2].split(",");
+
+            for(int i = 0; i < numbers.length; i++) {
+                if(!StaticStore.isNumeric(numbers[i]))
+                    continue;
+
+                int loc = StaticStore.safeParseInt(numbers[i]) - 1;
+
+                if(loc >= 0 && loc <= 3 && !result.contains(loc)) {
+                    result.add(loc);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private int filterLocale() {
+        switch (holder.serverLocale) {
+            case LangID.ZH:
+                return LangID.ZH;
+            case LangID.KR:
+                return LangID.KR;
+            case LangID.JP:
+                return LangID.JP;
+            default:
+                return LangID.EN;
+        }
+    }
+
+    private String getBCList(List<Integer> locales) {
+        StringBuilder builder = new StringBuilder();
+
+        for(int i = 0; i < locales.size(); i++) {
+            switch (locales.get(i)) {
+                case LangID.EN:
+                    builder.append(LangID.getStringByID("subevent_en", lang));
+                    break;
+                case LangID.ZH:
+                    builder.append(LangID.getStringByID("subevent_zh", lang));
+                    break;
+                case LangID.KR:
+                    builder.append(LangID.getStringByID("subevent_kr", lang));
+                    break;
+                case LangID.JP:
+                    builder.append(LangID.getStringByID("subevent_jp", lang));
+                    break;
+            }
+
+            if(i < locales.size() - 1) {
+                builder.append(", ");
+            }
+        }
+
+        return builder.toString();
     }
 }

@@ -61,6 +61,10 @@ public class IDHolder {
             id.event = id.setOrNull(obj.get("event").getAsString());
         }
 
+        if(obj.has("eventLocale")) {
+            id.eventLocale = id.jsonObjectToListInteger(obj.getAsJsonArray("eventLocale"));
+        }
+
         return id;
     }
 
@@ -78,7 +82,8 @@ public class IDHolder {
     public String ANNOUNCE;
 
     public Map<String, String> ID = new TreeMap<>();
-    public Map<String, ArrayList<String>> channel = new TreeMap<>();
+    public Map<String, List<String>> channel = new TreeMap<>();
+    public List<Integer> eventLocale = new ArrayList<>();
 
     public IDHolder(String m, String me, String bo, String acc) {
         this.MOD = m;
@@ -106,6 +111,7 @@ public class IDHolder {
         obj.add("id", jsonfyIDs());
         obj.addProperty("logDM", getOrNull(logDM));
         obj.addProperty("event", getOrNull(event));
+        obj.add("eventLocale", listIntegerToJsonObject(eventLocale));
 
         return obj;
     }
@@ -115,7 +121,7 @@ public class IDHolder {
 
         for(Snowflake id : ids) {
             if(isSetAsRole(id.asString())) {
-                ArrayList<String> channels = channel.get(id.asString());
+                List<String> channels = channel.get(id.asString());
 
                 if(channels == null)
                     return null;
@@ -152,7 +158,7 @@ public class IDHolder {
         return id.equals("null") ? "p!" : id;
     }
 
-    private JsonElement arrayListToJsonObject(ArrayList<String> arr) {
+    private JsonElement listStringToJsonObject(List<String> arr) {
         if(arr == null) {
             return JsonNull.INSTANCE;
         }
@@ -166,7 +172,21 @@ public class IDHolder {
         return array;
     }
 
-    private ArrayList<String> jsonObjectToArrayList(JsonElement obj) {
+    private JsonElement listIntegerToJsonObject(List<Integer> arr) {
+        if(arr == null) {
+            return JsonNull.INSTANCE;
+        }
+
+        JsonArray array = new JsonArray();
+
+        for(int i : arr) {
+            array.add(i);
+        }
+
+        return array;
+    }
+
+    private List<String> jsonObjectToListString(JsonElement obj) {
         if(obj.isJsonArray()) {
             JsonArray ele = obj.getAsJsonArray();
 
@@ -174,6 +194,22 @@ public class IDHolder {
 
             for(int i = 0; i < ele.size(); i++) {
                 arr.add(ele.get(i).getAsString());
+            }
+
+            return arr;
+        }
+
+        return null;
+    }
+
+    private List<Integer> jsonObjectToListInteger(JsonElement obj) {
+        if(obj.isJsonArray()) {
+            JsonArray ele = obj.getAsJsonArray();
+
+            List<Integer> arr = new ArrayList<>();
+
+            for(int i = 0; i < ele.size(); i++) {
+                arr.add(ele.get(i).getAsInt());
             }
 
             return arr;
@@ -190,7 +226,7 @@ public class IDHolder {
         int i = 0;
 
         for(String key : keys) {
-            ArrayList<String> arr = channel.get(key);
+            List<String> arr = channel.get(key);
 
             if(arr == null)
                 continue;
@@ -198,7 +234,7 @@ public class IDHolder {
             JsonObject container = new JsonObject();
 
             container.addProperty("key", key);
-            container.add("val" , arrayListToJsonObject(arr));
+            container.add("val" , listStringToJsonObject(arr));
 
             obj.add(Integer.toString(i), container);
 
@@ -234,8 +270,8 @@ public class IDHolder {
         return obj;
     }
 
-    private TreeMap<String, ArrayList<String>> toMap(JsonObject obj) {
-        TreeMap<String, ArrayList<String>> map = new TreeMap<>();
+    private TreeMap<String, List<String>> toMap(JsonObject obj) {
+        TreeMap<String, List<String>> map = new TreeMap<>();
 
         int i = 0;
 
@@ -244,7 +280,7 @@ public class IDHolder {
                 JsonObject container = obj.getAsJsonObject(Integer.toString(i));
 
                 String key = container.get("key").getAsString();
-                ArrayList<String> arr = jsonObjectToArrayList(container.get("val"));
+                List<String> arr = jsonObjectToListString(container.get("val"));
 
                 map.put(key, arr);
 

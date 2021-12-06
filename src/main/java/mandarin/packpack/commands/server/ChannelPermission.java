@@ -84,7 +84,7 @@ public class ChannelPermission extends ConstraintCommand {
                                     } else if(channels.isEmpty() && id.contains("all")) {
                                         holder.channel.put(holder.MEMBER, channels);
                                     } else {
-                                        ArrayList<String> oldChannels = holder.channel.get(holder.MEMBER);
+                                        List<String> oldChannels = holder.channel.get(holder.MEMBER);
 
                                         if(oldChannels == null && (param & PARAM_ADD) > 0) {
                                             holder.channel.put(holder.MEMBER, channels);
@@ -176,7 +176,7 @@ public class ChannelPermission extends ConstraintCommand {
                                 } else if(channels.isEmpty() && id.contains("all")) {
                                     holder.channel.put(chID, channels);
                                 } else {
-                                    ArrayList<String> oldChannels = holder.channel.get(chID);
+                                    List<String> oldChannels = holder.channel.get(chID);
 
                                     if(oldChannels == null && (param & PARAM_ADD) > 0) {
                                         holder.channel.put(chID, channels);
@@ -249,7 +249,7 @@ public class ChannelPermission extends ConstraintCommand {
         if(id == null)
             return LangID.getStringByID("channelpermission_all", lang);
 
-        ArrayList<String> channels = holder.channel.get(id);
+        List<String> channels = holder.channel.get(id);
 
         if(channels == null) {
             return LangID.getStringByID("channelpermission_all", lang);
