@@ -437,7 +437,7 @@ public class EventHolder extends EventFactor {
         if(!normals.isEmpty()) {
             StringBuilder data = new StringBuilder();
 
-            data.append("```less\n");
+            data.append("```scss\n");
 
             for (String normal : normals) {
                 data.append(normal)
@@ -450,7 +450,7 @@ public class EventHolder extends EventFactor {
         }
 
         if(!dailys.isEmpty()) {
-            StringBuilder data = new StringBuilder(LangID.getStringByID("printstage_daily", locale)).append("\n\n```less\n");
+            StringBuilder data = new StringBuilder(LangID.getStringByID("printstage_daily", locale)).append("\n\n```scss\n");
 
             for (String day : dailys) {
                 data.append(day)
@@ -463,7 +463,7 @@ public class EventHolder extends EventFactor {
         }
 
         if(!weeklys.isEmpty()) {
-            StringBuilder data = new StringBuilder(LangID.getStringByID("printstage_weekly", locale)).append("\n\n```less\n");
+            StringBuilder data = new StringBuilder(LangID.getStringByID("printstage_weekly", locale)).append("\n\n```scss\n");
 
             for (String week : weeklys) {
                 data.append(week)
@@ -476,7 +476,7 @@ public class EventHolder extends EventFactor {
         }
 
         if(!monthlys.isEmpty()) {
-            StringBuilder data = new StringBuilder(LangID.getStringByID("printstage_monthly", locale)).append("\n\n```less\n");
+            StringBuilder data = new StringBuilder(LangID.getStringByID("printstage_monthly", locale)).append("\n\n```scss\n");
 
             for (String month : monthlys) {
                 data.append(month)
@@ -489,7 +489,7 @@ public class EventHolder extends EventFactor {
         }
 
         if(!yearlys.isEmpty()) {
-            StringBuilder data = new StringBuilder(LangID.getStringByID("printstage_yearly", locale)).append("\n\n```less\n");
+            StringBuilder data = new StringBuilder(LangID.getStringByID("printstage_yearly", locale)).append("\n\n```scss\n");
 
             for (String year : yearlys) {
                 data.append(year)
@@ -502,7 +502,7 @@ public class EventHolder extends EventFactor {
         }
 
         if(!missions.isEmpty()) {
-            StringBuilder data = new StringBuilder(LangID.getStringByID("event_mission", locale)).append("\n\n```less\n");
+            StringBuilder data = new StringBuilder(LangID.getStringByID("event_mission", locale)).append("\n\n```scss\n");
 
             for (String mission : missions) {
                 data.append(mission)
@@ -538,7 +538,7 @@ public class EventHolder extends EventFactor {
            return "";
         }
 
-        data.append("```less\n");
+        data.append("```scss\n");
 
         for(int i = 0; i < normals.size(); i++) {
             data.append(normals.get(i)).append("\n");
@@ -602,7 +602,7 @@ public class EventHolder extends EventFactor {
             return "";
         }
 
-        data.append("```less\n");
+        data.append("```scss\n");
 
         for(int i = 0; i < normals.size(); i++) {
             data.append(normals.get(i)).append("\n");

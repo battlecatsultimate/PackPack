@@ -272,7 +272,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
             result.append(" <").append(LangID.getStringByID("event_newver", lang).replace("_", beautifyVersion(minVersion))).append(">");
         }
 
-        return result.toString();
+        return result.toString().replace("1s", "1\u200Bs").replace("'", "’");
     }
 
     @Override

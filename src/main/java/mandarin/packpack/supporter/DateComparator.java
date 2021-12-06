@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter;
 
+import common.CommonStatic;
 import mandarin.packpack.supporter.event.EventFactor;
 import mandarin.packpack.supporter.lang.LangID;
 
@@ -57,13 +58,13 @@ public class DateComparator implements Comparator<String> {
 
             result[1] = monthToNumber(date[1], lang);
 
-            result[2] = StaticStore.safeParseInt(date[2].replaceAll("st|nd|rd|th|일|日", ""));
+            result[2] = CommonStatic.parseIntN(date[2]);
         } else if(date.length == 2) {
             result[0] = EventFactor.currentYear;
 
             result[1] = monthToNumber(date[0], lang);
 
-            result[2] = StaticStore.safeParseInt(date[1].replaceAll("st|nd|rd|th|일|日", ""));
+            result[2] = CommonStatic.parseIntN(date[1]);
         }
 
         return result;
