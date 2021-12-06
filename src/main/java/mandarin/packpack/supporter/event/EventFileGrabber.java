@@ -26,7 +26,7 @@ public class EventFileGrabber {
 
     public static final String link = "https://nyanko-events-prd.s3.ap-northeast-1.amazonaws.com/battlecats{1}_production/{2}";
     public static final String[] locale = {"en", "tw", "kr", ""};
-    public static final String[] file = {"gatya.tsv", "item.tsv", "sale.tsv"};
+    public static final String[] file = {"gatya.tsv", "item.tsv",  "sale.tsv"};
 
     public static String id = null;
     public static String key = null;
