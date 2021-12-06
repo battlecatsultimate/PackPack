@@ -905,7 +905,7 @@ public class PackBot {
                                     break;
                                 case "subscribeevent":
                                 case "se":
-                                    new SubscribeEvent(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+                                    new SubscribeEvent(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
                                     break;
                                 case "printgachaevent":
                                 case "pge":
@@ -913,14 +913,14 @@ public class PackBot {
                                     break;
                                 case "setbcversion":
                                 case "sbv":
-                                    new SetBCVersion(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+                                    new SetBCVersion(ConstraintCommand.ROLE.CONTRIBUTOR, lang, idh).execute(event);
                                     break;
                                 case "logout":
                                     new LogOut(ConstraintCommand.ROLE.MANDARIN, lang, idh, gate).execute(event);
                                     break;
                                 case "printitemevent":
                                 case "pie":
-                                    new PrintItemEvent(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+                                    new PrintItemEvent(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
                                     break;
                             }
                         }
