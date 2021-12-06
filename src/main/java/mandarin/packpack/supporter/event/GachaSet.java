@@ -29,8 +29,7 @@ public class GachaSet {
     }
 
     public final int[] data;
-    public List<Unit> buffUnits = new ArrayList<>();
-    public List<Integer> buffParameter = new ArrayList<>();
+    public Map<Integer, List<Unit>> buffUnits = new HashMap<>();
 
     public GachaSet(String line) {
         String[] data = line.split(",");
@@ -70,8 +69,17 @@ public class GachaSet {
             if(u == null)
                 continue;
 
-            buffUnits.add(u);
-            buffParameter.add(collection.get(id));
+            if(buffUnits.containsKey(collection.get(id))) {
+                buffUnits.get(collection.get(id)).add(u);
+
+                buffUnits.get(collection.get(id)).sort(Comparator.comparingInt(un -> un.id.id));
+            } else {
+                List<Unit> unitList = new ArrayList<>();
+
+                unitList.add(u);
+
+                buffUnits.put(collection.get(id), unitList);
+            }
         }
     }
 }
