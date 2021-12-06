@@ -468,7 +468,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
 
     public String tryGetGachaName(int gachaID, int lang) {
         if(gachaID <= 100)
-            return "Gacha Code "+Data.trio(gachaID);
+            return LangID.getStringByID("printgacha_gacha", lang).replace("_", Data.trio(gachaID));
 
         String loc;
 
@@ -493,21 +493,19 @@ public class GachaSchedule extends EventFactor implements Schedule {
             String html = getHtmlFromUrl(url);
 
             if(html == null)
-                return "Gacha code "+Data.trio(gachaID);
+                return LangID.getStringByID("printgacha_gacha", lang).replace("_", Data.trio(gachaID));
 
             Matcher m = p.matcher(html);
 
             boolean res = m.find();
 
             if(!res) {
-                return "Gacha code " + Data.trio(gachaID);
+                return LangID.getStringByID("printgacha_gacha", lang).replace("_", Data.trio(gachaID));
             }
 
             return m.group(0).replace("<h2>", "").replace("</h2>", "").replaceAll("<span.+</span>", "");
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            return "Gacha code " + Data.trio(gachaID);
+        } catch (Exception ignored) {
+            return LangID.getStringByID("printgacha_gacha", lang).replace("_", Data.trio(gachaID));
         }
     }
 

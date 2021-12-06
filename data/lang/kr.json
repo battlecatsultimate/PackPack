@@ -842,6 +842,7 @@
   "printgacha_lucky" : "뽑기 당 럭키티켓 1장",
   "printgacha_dummy" : "유닛 _",
   "printgacha_buff" : "_UUU_ 유닛에게 _BBB_x 확률 업",
+  "printgacha_gacha" : "가챠 _",
   "printitem_daily" : "매일 지급",
   "printitem_item" : "아이템 _",
   "printitem_stamp" : "스탬프 _",
