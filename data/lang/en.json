@@ -256,7 +256,7 @@
   "event_loc1" : "**__TW Event Data Found__**\n** **",
   "event_loc2" : "**__KR Event Data Found__**\n** **",
   "event_loc3" : "**__JP Event Data Found__**\n** **",
-  "event_warning" : ":warning: This is done by computer anyway, there can be incorrect information or missing data. It will be quite accurate, but still don't trust it too much",
+  "event_warning" : "** **\n:warning: This is done by computer anyway, there can be incorrect information or missing data. It will be quite accurate, but still don't trust it too much",
   "group_0" : "Cyclone Festival",
   "group_1" : "Builders Festival",
   "group_2" : "XP Festival",

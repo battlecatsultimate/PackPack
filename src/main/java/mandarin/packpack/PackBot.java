@@ -1027,6 +1027,8 @@ public class PackBot {
         if(guilds == null)
             return;
 
+        boolean sent = false;
+
         for(Guild g : guilds) {
             String gID = g.getId().asString();
 
@@ -1264,13 +1266,63 @@ public class PackBot {
                 }
             }
 
-            if(done && gID.equals(StaticStore.BCU_SERVER) && holder.event != null) {
+            if(done && holder.event != null) {
+                sent = true;
+
                 Channel ch = gate.getChannelById(Snowflake.of(holder.event)).block();
 
-                if(ch != null) {
-                    ((MessageChannel) ch).createMessage(MessageCreateSpec.builder().content("<@"+StaticStore.MANDARIN_SMELL+"> Check the result").build()).subscribe();
+                if(ch instanceof MessageChannel) {
+                    ((MessageChannel) ch).createMessage(MessageCreateSpec.builder().content(LangID.getStringByID("event_warning", holder.serverLocale)).build()).subscribe();
                 }
             }
+        }
+
+        if(sent) {
+            StaticStore.logger.uploadLog("<@"+StaticStore.MANDARIN_SMELL+"> I caught new event data and successfully announced analyzed data to servers. Below is the updated list : \n\n"+parseResult(r));
+        }
+    }
+
+    private static String parseResult(boolean[][] result) {
+        StringBuilder r = new StringBuilder();
+
+        for(int i = 0; i < result.length; i++) {
+            for(int j = 0; j < result[i].length; j++) {
+                if(result[i][j]) {
+                    r.append(getLocale(i)).append(" : ").append(getFile(j)).append("\n");
+                }
+            }
+        }
+
+        String res = r.toString();
+
+        if(!res.isBlank()) {
+            return res.substring(0, res.length() - 1);
+        } else {
+            return "";
+        }
+    }
+
+    private static String getLocale(int loc) {
+        switch (loc) {
+            case EventFactor.EN:
+                return "en";
+            case EventFactor.ZH:
+                return "tw";
+            case EventFactor.KR:
+                return "kr";
+            default:
+                return "jp";
+        }
+    }
+
+    private static String getFile(int f) {
+        switch (f) {
+            case EventFactor.GATYA:
+                return "gatya";
+            case EventFactor.ITEM:
+                return "item";
+            default:
+                return "sale";
         }
     }
 }
