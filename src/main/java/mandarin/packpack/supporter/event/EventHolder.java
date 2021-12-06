@@ -581,7 +581,6 @@ public class EventHolder extends EventFactor {
     }
 
     public String printItemEvent(int locale, int lang) {
-        System.out.println(items);
         ArrayList<ItemSchedule> items = this.items.get(locale);
 
         StringBuilder data = new StringBuilder(LangID.getStringByID("event_item", lang)).append("\n\n");
@@ -820,8 +819,6 @@ public class EventHolder extends EventFactor {
                 if(f.exists()) {
                     String oldMD5 = StaticStore.fileToMD5(f);
                     String newMD5 = getMD5fromURL(url);
-
-                    System.out.println(getLocaleName(i)+"/"+fi+" : "+oldMD5 + " | " + newMD5);
 
                     if(oldMD5 == null || !oldMD5.equals(newMD5)) {
                         updates[i][j] = true;
