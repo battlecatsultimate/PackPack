@@ -860,5 +860,7 @@
   "printitem_toolong" : "Uploading raw file because item/sale data was too long",
   "printitem_format" : "_NNN_ _III_",
   "printitem_formattic" : "_NNN_ _III_",
-  "printitem_formatxp" : "_NNN_ _III_"
+  "printitem_formatxp" : "_NNN_ _III_",
+  "printitem_plural" : "s",
+  "printitem_plurales" : "es"
 }

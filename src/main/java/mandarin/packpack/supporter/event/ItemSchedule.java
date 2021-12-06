@@ -331,12 +331,23 @@ public class ItemSchedule extends EventFactor implements Schedule {
             return item;
         }
 
+        if(itemAmount > 1 && lang == LangID.EN && !item.endsWith("XP") && !item.endsWith("s") && !item.endsWith("Choco"))
+            item = getPlural(item);
+
         if(itemID == 202 || itemID == 203) {
             return LangID.getStringByID("printitem_formattic", lang).replace("_NNN_", "" + itemAmount).replace("_III_", item);
         } else if(itemID == 201) {
             return LangID.getStringByID("printitem_formatxp", lang).replace("_NNN_", "" + itemAmount).replace("_III_", item);
         } else {
             return LangID.getStringByID("printitem_format", lang).replace("_NNN_", "" + itemAmount).replace("_III_", item);
+        }
+    }
+
+    private String getPlural(String item) {
+        if (item.endsWith("ch") || item.endsWith("sh") || item.endsWith("s") || item.endsWith("x") || item.endsWith("z")) {
+            return item + "es";
+        } else {
+            return item + "s";
         }
     }
 }
