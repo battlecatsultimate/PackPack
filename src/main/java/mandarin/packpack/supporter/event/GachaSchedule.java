@@ -9,8 +9,6 @@ import mandarin.packpack.supporter.lang.LangID;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -246,7 +244,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
                     result.append(" { ");
 
                     for(int j = 0; j < set.buffUnits.size(); j++) {
-                        String unitName = StaticStore.safeMultiLangGet(set.buffUnits.get(j), lang);
+                        String unitName = StaticStore.safeMultiLangGet(set.buffUnits.get(j).forms[0], lang);
 
                         if(unitName == null) {
                             unitName = LangID.getStringByID("printgacha_dummy", lang).replace("_", Data.trio(set.buffUnits.get(j).id.id));
