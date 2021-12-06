@@ -326,6 +326,7 @@
   "item_201" : "XP",
   "item_202" : "냥코 티켓",
   "item_203" : "레어 티켓",
+  "item_220" : "리더쉽",
   "item_300" : "긴 팝업",
   "item_301" : "1회 뽑기 초회 할인",
   "item_302" : "10+1회 뽑기 초회 할인",
@@ -860,5 +861,8 @@
   "printitem_item" : "아이템 _",
   "printitem_stamp" : "스탬프 _",
   "printitem_sale" : "세일 _",
-  "printitem_toolong" : "아이템/세일 데이터 메세지 길이가 너무 길어 파일로 업로드합니다"
+  "printitem_toolong" : "아이템/세일 데이터 메세지 길이가 너무 길어 파일로 업로드합니다",
+  "printitem_format" : "_III_ _NNN_개",
+  "printitem_formattic" : "_III_ _NNN_장",
+  "printitem_formatxp" : "_NNN_ _III_"
 }

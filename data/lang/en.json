@@ -322,10 +322,16 @@
   "item_3" : "Cat CPU",
   "item_4" : "Cat Jobs",
   "item_5" : "Sniper Cat",
+  "item_6" : "5000 XP",
+  "item_7" : "12000 XP",
+  "item_8" : "40000 XP",
+  "item_9" : "100000 XP",
+  "item_10" : "200000 XP",
   "item_200" : "Cat Food",
   "item_201" : "XP",
   "item_202" : "Silver Ticket",
   "item_203" : "Gold Ticket",
+  "item_220" : "Leadership",
   "item_300" : "Long Pop Up",
   "item_301" : "Single Gacha Half Discount",
   "item_302" : "10+1 Gacha Half Discount",
@@ -866,5 +872,8 @@
   "printitem_item" : "Item _",
   "printitem_stamp" : "Stamp _",
   "printitem_sale" : "Sale _",
-  "printitem_toolong" : "Uploading raw file because item/sale data was too long"
+  "printitem_toolong" : "Uploading raw file because item/sale data was too long",
+  "printitem_format" : "_NNN_ _III_",
+  "printitem_formattic" : "_NNN_ _III_",
+  "printitem_formatxp" : "_NNN_ _III_"
 }
