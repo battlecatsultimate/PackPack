@@ -100,7 +100,7 @@ public class PackBot {
                     save++;
                 }
 
-                if(event % 30 == 0) {
+                if(event % 10 == 0) {
                     System.out.println("Checking event data");
 
                     try {
