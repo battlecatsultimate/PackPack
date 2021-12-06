@@ -255,7 +255,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
                         List<Unit> units = set.buffUnits.get(param);
 
                         for(int j = 0; j < units.size(); j++) {
-                            String unitName = StaticStore.safeMultiLangGet(units.get(i).forms[0], lang);
+                            String unitName = StaticStore.safeMultiLangGet(units.get(j).forms[0], lang);
 
                             if(unitName == null) {
                                 unitName = LangID.getStringByID("printgacha_dummy", lang).replace("_", Data.trio(units.get(j).id.id));
