@@ -138,7 +138,7 @@ public class ItemSchedule extends EventFactor implements Schedule {
             result.append(" <").append(LangID.getStringByID("event_newver", lang).replace("_", beautifyVersion(minVersion))).append(">");
         }
 
-        return preventDotDecimal(result.toString().replace("1s", "1\u200Bs").replace("'", "’"));
+        return preventDotDecimal(result.toString().replace("1s", "1\u200Bs").replace("'", "’").replace(":", "："));
     }
 
     @Override
