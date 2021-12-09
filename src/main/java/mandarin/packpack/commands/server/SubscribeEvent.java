@@ -29,7 +29,7 @@ public class SubscribeEvent extends ConstraintCommand {
 
         String channel = getChannelID(getContent(event));
 
-        if(channel == null && holder.logDM != null) {
+        if(channel == null && holder.event != null) {
             holder.event = null;
             holder.eventLocale.clear();
             StaticStore.idHolder.put(g.getId().asString(), holder);
