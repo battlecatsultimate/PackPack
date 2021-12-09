@@ -26,7 +26,7 @@ public class PrintStageEvent extends ConstraintCommand {
         if(ch == null)
             return;
 
-        ArrayList<String> result = StaticStore.event.printStageEvent(getLocale(getContent(event)), lang);
+        ArrayList<String> result = StaticStore.event.printStageEvent(getLocale(getContent(event)), lang, isFull(getContent(event)));
 
         if(result.isEmpty()) {
             createMessage(ch, m -> m.content(LangID.getStringByID("chevent_noup", lang)));
@@ -165,5 +165,16 @@ public class PrintStageEvent extends ConstraintCommand {
         }
 
         return getLang();
+    }
+
+    private boolean isFull(String content) {
+        String[] contents = content.split(" ");
+
+        for(int i = 0; i < contents.length; i++) {
+            if(contents[i].equals("-f") || contents[i].equals("-full"))
+                return true;
+        }
+
+        return false;
     }
 }

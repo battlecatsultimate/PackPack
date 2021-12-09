@@ -77,20 +77,6 @@ public class EventHolder extends EventFactor {
             }
 
             reader.close();
-
-            if(stageCache.containsKey(locale)) {
-                List<Integer> cache = stageCache.get(locale);
-
-                ArrayList<String> filteredLines = new ArrayList<>();
-
-                for(int i = 0; i < cache.size(); i++) {
-                    filteredLines.add(newLines.get(cache.get(i)));
-                }
-
-                if(!filteredLines.isEmpty()) {
-                    newLines = filteredLines;
-                }
-            }
         }
 
         if(!file.getAbsolutePath().equals(f.getAbsolutePath())) {
@@ -174,8 +160,6 @@ public class EventHolder extends EventFactor {
             }
         }
 
-        stages.removeIf(schedule -> schedule.unknownStages.isEmpty() && schedule.stages.isEmpty());
-
         this.stages.put(locale, stages);
 
         this.daily.put(locale, daily);
@@ -232,20 +216,6 @@ public class EventHolder extends EventFactor {
             }
 
             reader.close();
-
-            if(gachaCache.containsKey(locale)) {
-                List<Integer> cache = gachaCache.get(locale);
-
-                ArrayList<String> filteredLines = new ArrayList<>();
-
-                for(int i = 0; i < cache.size(); i++) {
-                    filteredLines.add(newLines.get(cache.get(i)));
-                }
-
-                if(!filteredLines.isEmpty()) {
-                    newLines = filteredLines;
-                }
-            }
         }
 
         if(!file.getAbsolutePath().equals(f.getAbsolutePath())) {
@@ -274,8 +244,6 @@ public class EventHolder extends EventFactor {
         for(String line : newLines) {
             g.add(new GachaSchedule(line));
         }
-
-        g.removeIf(ga -> ga.gacha.isEmpty());
 
         this.gachas.put(locale, g);
     }
@@ -328,20 +296,6 @@ public class EventHolder extends EventFactor {
             }
 
             reader.close();
-
-            if(itemCache.containsKey(locale)) {
-                List<Integer> cache = itemCache.get(locale);
-
-                ArrayList<String> filteredLines = new ArrayList<>();
-
-                for(int i = 0; i < cache.size(); i++) {
-                    filteredLines.add(newLines.get(cache.get(i)));
-                }
-
-                if(!filteredLines.isEmpty()) {
-                    newLines = filteredLines;
-                }
-            }
         }
 
         if(!file.getAbsolutePath().equals(f.getAbsolutePath())) {
@@ -374,13 +328,33 @@ public class EventHolder extends EventFactor {
         this.items.put(locale, i);
     }
 
-    public ArrayList<String> printStageEvent(int locale, int lang) {
+    public ArrayList<String> printStageEvent(int locale, int lang, boolean full) {
         ArrayList<String> result = new ArrayList<>();
 
-        List<StageSchedule> stages = this.stages.get(locale);
+        List<StageSchedule> fullStages = this.stages.get(locale);
+
+        List<StageSchedule> stages;
+
+        if(full) {
+            stages = fullStages;
+        } else {
+            if(!stageCache.containsKey(locale)) {
+                stages = fullStages;
+            } else {
+                List<Integer> cache = stageCache.get(locale);
+
+                stages = new ArrayList<>();
+
+                for(int i = 0; i < cache.size(); i++) {
+                    stages.add(fullStages.get(cache.get(i)));
+                }
+            }
+        }
 
         if(stages == null || stages.isEmpty())
             return result;
+
+        stages.removeIf(schedule -> schedule.unknownStages.isEmpty() && schedule.stages.isEmpty());
 
         boolean[] analyzed = new boolean[stages.size()];
 
@@ -563,8 +537,28 @@ public class EventHolder extends EventFactor {
         return result;
     }
 
-    public String printGachaEvent(int locale, int lang) {
-        List<GachaSchedule> gachas = this.gachas.get(locale);
+    public String printGachaEvent(int locale, int lang, boolean full) {
+        List<GachaSchedule> fullGachas = this.gachas.get(locale);
+
+        List<GachaSchedule> gachas;
+
+        if(full) {
+            gachas = fullGachas;
+        } else {
+            if(!gachaCache.containsKey(locale)) {
+                gachas = fullGachas;
+            } else {
+                List<Integer> cache = gachaCache.get(locale);
+
+                gachas = new ArrayList<>();
+
+                for(int i = 0; i < cache.size(); i++) {
+                    gachas.add(fullGachas.get(cache.get(i)));
+                }
+            }
+        }
+
+        gachas.removeIf(g -> g.gacha.isEmpty());
 
         StringBuilder data = new StringBuilder(LangID.getStringByID("event_gacha", lang)).append("\n\n");
 
@@ -626,8 +620,26 @@ public class EventHolder extends EventFactor {
         return data.toString();
     }
 
-    public String printItemEvent(int locale, int lang) {
-        List<ItemSchedule> items = this.items.get(locale);
+    public String printItemEvent(int locale, int lang, boolean full) {
+        List<ItemSchedule> fullItems = this.items.get(locale);
+
+        List<ItemSchedule> items;
+
+        if(full) {
+            items = fullItems;
+        } else {
+            if(!itemCache.containsKey(locale)) {
+                items = fullItems;
+            } else {
+                List<Integer> cache = itemCache.get(locale);
+
+                items = new ArrayList<>();
+
+                for(int i = 0; i < cache.size(); i++) {
+                    items.add(fullItems.get(cache.get(i)));
+                }
+            }
+        }
 
         StringBuilder data = new StringBuilder(LangID.getStringByID("event_item", lang)).append("\n\n");
 
@@ -714,8 +726,6 @@ public class EventHolder extends EventFactor {
                 newIndex.remove(Integer.valueOf(index));
             }
         }
-
-        newLines.removeAll(oldLines);
 
         switch (newSrc.getName()) {
             case "gatya.tsv":
