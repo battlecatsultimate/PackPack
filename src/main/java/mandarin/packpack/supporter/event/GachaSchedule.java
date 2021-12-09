@@ -1,6 +1,7 @@
 package mandarin.packpack.supporter.event;
 
 import common.CommonStatic;
+import common.pack.UserProfile;
 import common.util.Data;
 import common.util.unit.Unit;
 import mandarin.packpack.supporter.StaticStore;
@@ -219,8 +220,35 @@ public class GachaSchedule extends EventFactor implements Schedule {
 
             result.append(g);
 
+            if(newUnits.containsKey(section.gachaID)) {
+                int[] units = newUnits.get(section.gachaID);
+
+                result.append(" (+");
+
+                for(int j = 0; j < units.length; j++) {
+                    Unit u = UserProfile.getBCData().units.get(units[j]);
+
+                    if(u == null)
+                        continue;
+
+                    String unit = StaticStore.safeMultiLangGet(u.forms[0], lang);
+
+                    if(unit == null || unit.isBlank()) {
+                        unit = LangID.getStringByID("printgacha_dummy", lang).replace("_", Data.trio(u.id.id));
+                    }
+
+                    result.append(unit);
+
+                    if(j < units.length - 1) {
+                        result.append(", ");
+                    }
+                }
+
+                result.append(")");
+            }
+
             if(hasAdditionalData(section)) {
-                result.append(" (");
+                result.append(" [");
 
                 if(section.rarityGuarantees.length > 3 && section.rarityGuarantees[3] == 1) {
                     result.append(LangID.getStringByID("printgacha_g", lang));
@@ -236,7 +264,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
                         result.append("|");
                 }
 
-                result.append(")");
+                result.append("]");
             }
 
             if(GachaSet.gachaSet.containsKey(section.gachaID)) {
