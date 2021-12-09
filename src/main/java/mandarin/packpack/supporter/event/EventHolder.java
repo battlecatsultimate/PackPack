@@ -674,6 +674,9 @@ public class EventHolder extends EventFactor {
         ArrayList<String> oldLines = new ArrayList<>();
         ArrayList<String> newLines = new ArrayList<>();
 
+        ArrayList<String> oldData = new ArrayList<>();
+        ArrayList<String> newData = new ArrayList<>();
+
         List<Integer> newIndex = new ArrayList<>();
 
         BufferedReader oldReader = new BufferedReader(new FileReader(src));
@@ -716,13 +719,51 @@ public class EventHolder extends EventFactor {
         newReader.close();
         oldReader.close();
 
+        for(int i = 0; i < oldLines.size(); i++) {
+            String[] data = oldLines.get(i).split("\t");
+
+            StringBuilder filtered = new StringBuilder();
+
+            for(int j = 0; j < data.length; j++) {
+                if(StaticStore.isNumeric(data[j])) {
+                    filtered.append(data[j]);
+                } else {
+                    continue;
+                }
+
+                if(j < data.length -1) {
+                    filtered.append("\t");
+                }
+            }
+
+            oldData.add(filtered.toString());
+        }
+
         for(int i = 0; i < newLines.size(); i++) {
             newIndex.add(i);
+
+            String[] data = newLines.get(i).split("\t");
+
+            StringBuilder filtered = new StringBuilder();
+
+            for(int j = 0; j < data.length; j++) {
+                if(StaticStore.isNumeric(data[j])) {
+                    filtered.append(data[j]);
+                } else {
+                    continue;
+                }
+
+                if(j < data.length -1) {
+                    filtered.append("\t");
+                }
+            }
+
+            newData.add(filtered.toString());
         }
 
         for(int i = 0; i < oldLines.size(); i++) {
-            if(newLines.contains(oldLines.get(i))) {
-                int index = newLines.indexOf(oldLines.get(i));
+            if(newData.contains(oldData.get(i))) {
+                int index = newData.indexOf(oldData.get(i));
                 newIndex.remove(Integer.valueOf(index));
             }
         }
