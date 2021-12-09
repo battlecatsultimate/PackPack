@@ -47,6 +47,7 @@ public class EventFactor {
     public static final int REWARDTRUE = 2;
 
     public static final Map<Integer, int[]> missionReward = new HashMap<>();
+    public static final Map<Integer, int[]> newUnits = new HashMap<>();
 
     public static final GroupHandler CYCLONE = new NormalGroupHandler(
             Arrays.asList(

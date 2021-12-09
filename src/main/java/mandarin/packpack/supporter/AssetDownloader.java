@@ -17,6 +17,7 @@ import common.util.unit.Combo;
 import common.util.unit.Enemy;
 import common.util.unit.Unit;
 import mandarin.packpack.supporter.awt.PCIB;
+import mandarin.packpack.supporter.event.EventFactor;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -27,6 +28,7 @@ import java.util.Queue;
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class AssetDownloader {
     private static final String[] folder = {"bot/", "jp/", "kr/", "zh/", "fr/", "it/", "es/", "de/"};
+    private static final int[] loc = {0, 3, 2, 1, 6, 9, 8, 5};
     private static final String[] file = {"EnemyName.txt", "StageName.txt", "UnitName.txt", "UnitExplanation.txt", "EnemyExplanation.txt", "CatFruitExplanation.txt", "RewardName.txt", "ComboName.txt", "MedalName.txt", "MedalExplanation.txt", "GachaName.txt", "MissionName.txt"};
 
     public static void checkAssetDownload() {
@@ -133,7 +135,8 @@ public class AssetDownloader {
 
         PackData.DefPack def = UserProfile.getBCData();
 
-        for(String fo : folder) {
+        for(int n = 0; n < folder.length; n++) {
+            String fo = folder[n];
             String f;
 
             if(fo.equals("bot/"))
@@ -393,6 +396,9 @@ public class AssetDownloader {
                             }
                             break;
                         case "GachaName.txt":
+                            int oldConfig = CommonStatic.getConfig().lang;
+                            CommonStatic.getConfig().lang = loc[n];
+
                             for(String line : qs) {
                                 if(line == null)
                                     continue;
@@ -405,8 +411,20 @@ public class AssetDownloader {
                                 int id = Integer.parseInt(str[0].trim());
                                 String name = str[1].trim();
 
+                                if(StaticStore.isNumeric(name) && StaticStore.safeParseInt(name) < 0) {
+                                    name = StaticStore.GACHANAME.getCont(StaticStore.safeParseInt(name));
+                                }
+
+                                if(str.length == 3 && name != null) {
+                                    int[] units = CommonStatic.parseIntsN(str[2]);
+
+                                    EventFactor.newUnits.put(id, units);
+                                }
+
                                 StaticStore.GACHANAME.put(f, id, name);
                             }
+
+                            CommonStatic.getConfig().lang = oldConfig;
                         case "MissionName.txt":
                             for(String line : qs) {
                                 if(line == null)
@@ -418,6 +436,7 @@ public class AssetDownloader {
                                     continue;
 
                                 int id = Integer.parseInt(str[0].trim());
+
                                 String name = str[1].trim();
 
                                 StaticStore.MISSIONNAME.put(f, id, name);
