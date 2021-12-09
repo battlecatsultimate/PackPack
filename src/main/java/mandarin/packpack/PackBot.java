@@ -121,6 +121,8 @@ public class PackBot {
                         }
 
                         if(doNotify) {
+                            StaticStore.saveServerInfo();
+
                             if(!eventInit)
                                 eventInit = true;
                             else

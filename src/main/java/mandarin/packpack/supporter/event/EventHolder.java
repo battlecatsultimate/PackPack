@@ -16,14 +16,18 @@ import java.util.List;
 import java.util.Map;
 
 public class EventHolder extends EventFactor {
-    public Map<Integer, ArrayList<Integer>> yearly = new HashMap<>();
-    public Map<Integer, ArrayList<Integer>> monthly = new HashMap<>();
-    public Map<Integer, ArrayList<Integer>> weekly = new HashMap<>();
-    public Map<Integer, ArrayList<Integer>> daily = new HashMap<>();
+    public Map<Integer, List<Integer>> yearly = new HashMap<>();
+    public Map<Integer, List<Integer>> monthly = new HashMap<>();
+    public Map<Integer, List<Integer>> weekly = new HashMap<>();
+    public Map<Integer, List<Integer>> daily = new HashMap<>();
 
-    public Map<Integer, ArrayList<StageSchedule>> stages = new HashMap<>();
-    public Map<Integer, ArrayList<GachaSchedule>> gachas = new HashMap<>();
-    public Map<Integer, ArrayList<ItemSchedule>> items = new HashMap<>();
+    public Map<Integer, List<StageSchedule>> stages = new HashMap<>();
+    public Map<Integer, List<GachaSchedule>> gachas = new HashMap<>();
+    public Map<Integer, List<ItemSchedule>> items = new HashMap<>();
+
+    public Map<Integer, List<Integer>> stageCache = new HashMap<>();
+    public Map<Integer, List<Integer>> gachaCache = new HashMap<>();
+    public Map<Integer, List<Integer>> itemCache = new HashMap<>();
 
     public void updateStage(File f, int locale, boolean init) throws Exception {
         if(failedToPrepareFile(locale))
@@ -54,7 +58,7 @@ public class EventHolder extends EventFactor {
         ArrayList<String> newLines;
 
         if(file.exists() && !init) {
-            newLines = getOnlyNewLine(file, f);
+            newLines = getOnlyNewLine(file, f, locale);
         } else {
             newLines = new ArrayList<>();
 
@@ -73,6 +77,20 @@ public class EventHolder extends EventFactor {
             }
 
             reader.close();
+
+            if(stageCache.containsKey(locale)) {
+                List<Integer> cache = stageCache.get(locale);
+
+                ArrayList<String> filteredLines = new ArrayList<>();
+
+                for(int i = 0; i < cache.size(); i++) {
+                    filteredLines.add(newLines.get(cache.get(i)));
+                }
+
+                if(!filteredLines.isEmpty()) {
+                    newLines = filteredLines;
+                }
+            }
         }
 
         if(!file.getAbsolutePath().equals(f.getAbsolutePath())) {
@@ -93,12 +111,12 @@ public class EventHolder extends EventFactor {
             }
         }
 
-        ArrayList<StageSchedule> stages = this.stages.containsKey(locale) ? this.stages.get(locale) : new ArrayList<>();
+        List<StageSchedule> stages = this.stages.containsKey(locale) ? this.stages.get(locale) : new ArrayList<>();
 
-        ArrayList<Integer> daily = this.daily.containsKey(locale) ? this.daily.get(locale) : new ArrayList<>();
-        ArrayList<Integer> weekly = this.weekly.containsKey(locale) ? this.weekly.get(locale) : new ArrayList<>();
-        ArrayList<Integer> monthly = this.monthly.containsKey(locale) ? this.monthly.get(locale) : new ArrayList<>();
-        ArrayList<Integer> yearly = this.yearly.containsKey(locale) ? this.yearly.get(locale) : new ArrayList<>();
+        List<Integer> daily = this.daily.containsKey(locale) ? this.daily.get(locale) : new ArrayList<>();
+        List<Integer> weekly = this.weekly.containsKey(locale) ? this.weekly.get(locale) : new ArrayList<>();
+        List<Integer> monthly = this.monthly.containsKey(locale) ? this.monthly.get(locale) : new ArrayList<>();
+        List<Integer> yearly = this.yearly.containsKey(locale) ? this.yearly.get(locale) : new ArrayList<>();
 
         if(!stages.isEmpty()) {
             stages.clear();
@@ -195,7 +213,7 @@ public class EventHolder extends EventFactor {
         ArrayList<String> newLines;
 
         if(file.exists() && !init) {
-            newLines = getOnlyNewLine(file, f);
+            newLines = getOnlyNewLine(file, f, locale);
         } else {
             newLines = new ArrayList<>();
 
@@ -214,6 +232,20 @@ public class EventHolder extends EventFactor {
             }
 
             reader.close();
+
+            if(gachaCache.containsKey(locale)) {
+                List<Integer> cache = gachaCache.get(locale);
+
+                ArrayList<String> filteredLines = new ArrayList<>();
+
+                for(int i = 0; i < cache.size(); i++) {
+                    filteredLines.add(newLines.get(cache.get(i)));
+                }
+
+                if(!filteredLines.isEmpty()) {
+                    newLines = filteredLines;
+                }
+            }
         }
 
         if(!file.getAbsolutePath().equals(f.getAbsolutePath())) {
@@ -234,7 +266,7 @@ public class EventHolder extends EventFactor {
             }
         }
 
-        ArrayList<GachaSchedule> g = gachas.containsKey(locale) ? gachas.get(locale) : new ArrayList<>();
+        List<GachaSchedule> g = gachas.containsKey(locale) ? gachas.get(locale) : new ArrayList<>();
 
         if(!g.isEmpty())
             g.clear();
@@ -277,7 +309,7 @@ public class EventHolder extends EventFactor {
         ArrayList<String> newLines;
 
         if(file.exists() && !init) {
-            newLines = getOnlyNewLine(file, f);
+            newLines = getOnlyNewLine(file, f, locale);
         } else {
             newLines = new ArrayList<>();
 
@@ -296,6 +328,20 @@ public class EventHolder extends EventFactor {
             }
 
             reader.close();
+
+            if(itemCache.containsKey(locale)) {
+                List<Integer> cache = itemCache.get(locale);
+
+                ArrayList<String> filteredLines = new ArrayList<>();
+
+                for(int i = 0; i < cache.size(); i++) {
+                    filteredLines.add(newLines.get(cache.get(i)));
+                }
+
+                if(!filteredLines.isEmpty()) {
+                    newLines = filteredLines;
+                }
+            }
         }
 
         if(!file.getAbsolutePath().equals(f.getAbsolutePath())) {
@@ -316,7 +362,7 @@ public class EventHolder extends EventFactor {
             }
         }
 
-        ArrayList<ItemSchedule> i = items.containsKey(locale) ? items.get(locale) : new ArrayList<>();
+        List<ItemSchedule> i = items.containsKey(locale) ? items.get(locale) : new ArrayList<>();
 
         if(!i.isEmpty())
             i.clear();
@@ -331,7 +377,7 @@ public class EventHolder extends EventFactor {
     public ArrayList<String> printStageEvent(int locale, int lang) {
         ArrayList<String> result = new ArrayList<>();
 
-        ArrayList<StageSchedule> stages = this.stages.get(locale);
+        List<StageSchedule> stages = this.stages.get(locale);
 
         if(stages == null || stages.isEmpty())
             return result;
@@ -518,7 +564,7 @@ public class EventHolder extends EventFactor {
     }
 
     public String printGachaEvent(int locale, int lang) {
-        ArrayList<GachaSchedule> gachas = this.gachas.get(locale);
+        List<GachaSchedule> gachas = this.gachas.get(locale);
 
         StringBuilder data = new StringBuilder(LangID.getStringByID("event_gacha", lang)).append("\n\n");
 
@@ -581,7 +627,7 @@ public class EventHolder extends EventFactor {
     }
 
     public String printItemEvent(int locale, int lang) {
-        ArrayList<ItemSchedule> items = this.items.get(locale);
+        List<ItemSchedule> items = this.items.get(locale);
 
         StringBuilder data = new StringBuilder(LangID.getStringByID("event_item", lang)).append("\n\n");
 
@@ -612,9 +658,11 @@ public class EventHolder extends EventFactor {
         return data.toString();
     }
 
-    private ArrayList<String> getOnlyNewLine(File src, File newSrc) throws Exception {
+    private ArrayList<String> getOnlyNewLine(File src, File newSrc, int loc) throws Exception {
         ArrayList<String> oldLines = new ArrayList<>();
         ArrayList<String> newLines = new ArrayList<>();
+
+        List<Integer> newIndex = new ArrayList<>();
 
         BufferedReader oldReader = new BufferedReader(new FileReader(src));
         BufferedReader newReader = new BufferedReader(new FileReader(newSrc));
@@ -656,7 +704,30 @@ public class EventHolder extends EventFactor {
         newReader.close();
         oldReader.close();
 
+        for(int i = 0; i < newLines.size(); i++) {
+            newIndex.add(i);
+        }
+
+        for(int i = 0; i < oldLines.size(); i++) {
+            if(newLines.contains(oldLines.get(i))) {
+                int index = newLines.indexOf(oldLines.get(i));
+                newIndex.remove(Integer.valueOf(index));
+            }
+        }
+
         newLines.removeAll(oldLines);
+
+        switch (newSrc.getName()) {
+            case "gatya.tsv":
+                gachaCache.put(loc, newIndex);
+                break;
+            case "item.tsv":
+                itemCache.put(loc, newIndex);
+                break;
+            case "sale.tsv":
+                stageCache.put(loc, newIndex);
+                break;
+        }
 
         return newLines;
     }

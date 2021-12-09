@@ -305,6 +305,36 @@ public class StaticStore {
         return arr;
     }
 
+    public static JsonArray listToJsonInteger(List<Integer> list) {
+        JsonArray arr = new JsonArray();
+
+        for(int i : list) {
+            arr.add(i);
+        }
+
+        return arr;
+    }
+
+    public static JsonArray mapToJsonIntegerList(Map<Integer, List<Integer>> map) {
+        JsonArray arr = new JsonArray();
+
+        for(int key : map.keySet()) {
+            List<Integer> list = map.get(key);
+
+            if(list == null || list.isEmpty())
+                continue;
+
+            JsonObject set = new JsonObject();
+
+            set.addProperty("key", key);
+            set.add("val", listToJsonInteger(list));
+
+            arr.add(set);
+        }
+
+        return arr;
+    }
+
     public static Map<String, IDHolder> jsonToMapIDHolder(JsonArray arr) {
         Map<String, IDHolder> map = new HashMap<>();
 
@@ -369,11 +399,38 @@ public class StaticStore {
         return map;
     }
 
+    public static Map<Integer, List<Integer>> jsonToMapIntegerList(JsonArray arr) {
+        Map<Integer, List<Integer>> map = new HashMap<>();
+
+        for(int i = 0; i < arr.size(); i++) {
+            JsonObject set = arr.get(i).getAsJsonObject();
+
+            if(set.has("key") && set.has("val")) {
+                int key = set.get("key").getAsInt();
+                List<Integer> val = jsonToListInteger(set.get("val").getAsJsonArray());
+
+                map.put(key, val);
+            }
+        }
+
+        return map;
+    }
+
     public static ArrayList<String> jsonToListString(JsonArray arr) {
         ArrayList<String> result = new ArrayList<>();
 
         for(int i = 0; i < arr.size(); i++) {
             result.add(arr.get(i).getAsString());
+        }
+
+        return result;
+    }
+
+    public static List<Integer> jsonToListInteger(JsonArray arr) {
+        ArrayList<Integer> result = new ArrayList<>();
+
+        for(int i = 0; i < arr.size(); i++) {
+            result.add(arr.get(i).getAsInt());
         }
 
         return result;
@@ -405,6 +462,10 @@ public class StaticStore {
         obj.addProperty("rating", ratingChannel);
         obj.addProperty("serverpre", serverPrefix);
         obj.addProperty("executed", executed);
+        obj.addProperty("englishVersion", englishVersion);
+        obj.addProperty("taiwaneseVersion", taiwaneseVersion);
+        obj.addProperty("koreanVersion", koreanVersion);
+        obj.addProperty("japaneseVersion", japaneseVersion);
         obj.add("prefix", mapToJsonString(prefix));
         obj.add("lang", mapToJsonString(langs));
         obj.add("locale", mapToJsonInt(locales));
@@ -417,10 +478,9 @@ public class StaticStore {
         obj.add("booster", mapToJsonBoosterHolder(boosterData));
         obj.addProperty("logging", loggingChannel);
         obj.add("needFixing", listToJsonString(needFixing));
-        obj.addProperty("englishVersion", englishVersion);
-        obj.addProperty("taiwaneseVersion", taiwaneseVersion);
-        obj.addProperty("koreanVersion", koreanVersion);
-        obj.addProperty("japaneseVersion", japaneseVersion);
+        obj.add("gachaCache", mapToJsonIntegerList(event.gachaCache));
+        obj.add("itemCache", mapToJsonIntegerList(event.itemCache));
+        obj.add("stageCache", mapToJsonIntegerList(event.stageCache));
 
         try {
             File folder = new File("./data/");
@@ -545,6 +605,18 @@ public class StaticStore {
 
             if(obj.has("taiwaneseVersion")) {
                 taiwaneseVersion = obj.get("taiwaneseVersion").getAsString();
+            }
+
+            if(obj.has("gachaCache")) {
+                event.gachaCache = jsonToMapIntegerList(obj.getAsJsonArray("gachaCache"));
+            }
+
+            if(obj.has("itemCache")) {
+                event.itemCache = jsonToMapIntegerList(obj.getAsJsonArray("itemCache"));
+            }
+
+            if(obj.has("stageCache")) {
+                event.stageCache = jsonToMapIntegerList(obj.getAsJsonArray("stageCache"));
             }
         }
     }
