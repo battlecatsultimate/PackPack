@@ -344,15 +344,20 @@ public class EventFactor {
     }
 
     public static String preventDotDecimal(String result) {
+        if(result.isBlank())
+            return "";
+
         StringBuilder b = new StringBuilder();
 
-        String[] contents = result.split("\\.");
+        String[] contents = result.trim().split("\\.");
 
         for(int i = 0; i < contents.length; i++) {
             if(i == 0) {
                 b.append(contents[i]);
             } else {
-                if(Character.isDigit(contents[i].charAt(0))) {
+                if(contents[i].isBlank()) {
+                    b.append(contents[i]);
+                } else if(Character.isDigit(contents[i].charAt(0))) {
                     b.append("\u200B").append(contents[i]);
                 } else {
                     b.append(contents[i]);
