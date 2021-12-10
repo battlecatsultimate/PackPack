@@ -116,7 +116,7 @@ public class EventFactor {
             "group_7", true
     );
 
-    public static final GroupHandler ITEMDISCOUNT = new NormalGroupHandler(
+    public static final GroupHandler ITEMEXDISCOUNT = new NormalGroupHandler(
             List.of(
                     Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 51, 700, 701, 702)
             ),
@@ -158,9 +158,16 @@ public class EventFactor {
             "group_13" , true
     );
 
+    public static final GroupHandler ITEMDISCOUNT = new NormalGroupHandler(
+            List.of(
+                    Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 700, 701, 702)
+            ),
+            "group_14", true
+    );
+
     public static final List<GroupHandler> handlers = Arrays.asList(
             CYCLONE, BUILDERBLITZ, XPBLITZ, CATFRUITFESTIVAL, CRAZEDFESTIVAL, LILFESTIVAL, METALFESTIVAL, GAMATOTOXP,
-            ITEMDISCOUNT, EOCHALFENERGY, ITFHALFENERGY, COTCHALFENERGY, HALFENERGY, GAMATOTOGRANDXP
+            ITEMEXDISCOUNT, EOCHALFENERGY, ITFHALFENERGY, COTCHALFENERGY, HALFENERGY, GAMATOTOGRANDXP, ITEMDISCOUNT
     );
 
     public static final String GACHAURL = "https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/gacha/rare_LLL_R_ID_.html";

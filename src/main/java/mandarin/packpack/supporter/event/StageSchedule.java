@@ -3,6 +3,7 @@ package mandarin.packpack.supporter.event;
 import common.CommonStatic;
 import common.pack.UserProfile;
 import common.util.Data;
+import common.util.lang.MultiLangCont;
 import common.util.stage.MapColc;
 import common.util.stage.StageMap;
 import common.util.unit.Unit;
@@ -396,21 +397,64 @@ public class StageSchedule extends EventFactor implements Schedule {
                 result.append(", ");
             }
 
-            for(int i = 0; i < unknownStages.size(); i++) {
-                int id = StaticStore.safeParseInt(unknownStages.get(i));
+            if(isOnlyTrueForm()) {
+                StringBuilder units = new StringBuilder();
 
-                String langID = "sale_"+id;
+                for(int i = 0; i < unknownStages.size(); i++) {
+                    int id = StaticStore.safeParseInt(unknownStages.get(i)) - 13000;
 
-                String temp = LangID.getStringByID(langID, lang);
+                    int oldConfig = CommonStatic.getConfig().lang;
+                    CommonStatic.getConfig().lang = lang;
 
-                if(!temp.equals(langID)) {
-                    result.append(temp);
-                } else {
-                    result.append(id);
+                    String trueForm = MultiLangCont.getStatic().RWNAME.getCont(id);
+
+                    CommonStatic.getConfig().lang = oldConfig;
+
+                    if(trueForm == null || trueForm.isBlank()) {
+                        trueForm = Integer.toString(id + 13000);
+                    }
+
+                    units.append(trueForm);
+
+                    if(i < unknownStages.size() - 1)
+                        units.append(", ");
                 }
 
-                if(i < unknownStages.size() - 1)
-                    result.append(", ");
+                result.append(LangID.getStringByID("printstage_unlock", lang).replace("_", units.toString()));
+            } else {
+                for(int i = 0; i < unknownStages.size(); i++) {
+                    int id = StaticStore.safeParseInt(unknownStages.get(i));
+
+                    if(id >= 28000 && id < 29000) {
+                        id -= 13000;
+
+                        int oldConfig = CommonStatic.getConfig().lang;
+                        CommonStatic.getConfig().lang = lang;
+
+                        String trueForm = MultiLangCont.getStatic().RWNAME.getCont(id);
+
+                        CommonStatic.getConfig().lang = oldConfig;
+
+                        if(trueForm == null || trueForm.isBlank()) {
+                            trueForm = Integer.toString(id + 13000);
+                        }
+
+                        result.append(LangID.getStringByID("printstage_unlock", lang).replace("_", trueForm));
+                    } else {
+                        String langID = "sale_"+id;
+
+                        String temp = LangID.getStringByID(langID, lang);
+
+                        if(!temp.equals(langID)) {
+                            result.append(temp);
+                        } else {
+                            result.append(id);
+                        }
+                    }
+
+                    if(i < unknownStages.size() - 1)
+                        result.append(", ");
+                }
             }
         }
 
@@ -693,6 +737,24 @@ public class StageSchedule extends EventFactor implements Schedule {
             return "0"+n;
         else
             return ""+n;
+    }
+
+    private boolean isOnlyTrueForm() {
+        if(unknownStages.isEmpty())
+            return false;
+
+        for(int i = 0; i < unknownStages.size(); i++) {
+            if (!StaticStore.isNumeric(unknownStages.get(i))) {
+                return false;
+            }
+
+            int id = StaticStore.safeParseInt(unknownStages.get(i));
+
+            if(id < 28000 || id >= 29000)
+                return false;
+        }
+
+        return true;
     }
 
     @Override
