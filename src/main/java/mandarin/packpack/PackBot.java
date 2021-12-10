@@ -22,9 +22,11 @@ import discord4j.core.object.entity.channel.PrivateChannel;
 import discord4j.core.object.presence.ClientActivity;
 import discord4j.core.object.presence.ClientPresence;
 import discord4j.core.spec.*;
+import discord4j.discordjson.json.UserModifyRequest;
 import discord4j.gateway.intent.IntentSet;
 import discord4j.rest.request.RouterOptions;
 import discord4j.rest.util.AllowedMentions;
+import discord4j.rest.util.Image;
 import mandarin.packpack.commands.Locale;
 import mandarin.packpack.commands.*;
 import mandarin.packpack.commands.bc.*;
@@ -61,6 +63,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class PackBot {
     public static int save = 0;
     public static int event = 0;
+    public static int pfp = 0;
     public static boolean eventInit = false;
     public static boolean develop = false;
 
@@ -87,17 +90,79 @@ public class PackBot {
         StaticStore.saver.schedule(new TimerTask() {
             @Override
             public void run() {
+                Calendar c = Calendar.getInstance();
+
                 if(save % 5 == 0) {
                     System.out.println("Save Process");
                     StaticStore.saveServerInfo();
-
-                    Calendar c = Calendar.getInstance();
 
                     EventFactor.currentYear = c.get(Calendar.YEAR);
 
                     save = 1;
                 } else {
                     save++;
+                }
+
+                if(pfp % 720 == 0) {
+                    try {
+                        switch (c.get(Calendar.MONTH) + 1) {
+                            case 12:
+                                File f = new File("./data/bot/BotDec.png");
+
+                                if(!f.exists())
+                                    break;
+
+                                FileInputStream fis = new FileInputStream(f);
+
+                                gate.edit(UserEditSpec.builder().avatar(Image.ofRaw(fis.readAllBytes(), Image.Format.PNG)).build()).subscribe();
+
+                                fis.close();
+                                break;
+                            case 1:
+                                f = new File("./data/bot/BotJan.png");
+
+                                if(!f.exists())
+                                    break;
+
+                                fis = new FileInputStream(f);
+
+                                gate.edit(UserEditSpec.builder().avatar(Image.ofRaw(fis.readAllBytes(), Image.Format.PNG)).build()).subscribe();
+
+                                fis.close();
+                                break;
+                            case 2:
+                                f = new File("./data/bot/BotFeb.png");
+
+                                if(!f.exists())
+                                    break;
+
+                                fis = new FileInputStream(f);
+
+                                gate.edit(UserEditSpec.builder().avatar(Image.ofRaw(fis.readAllBytes(), Image.Format.PNG)).build()).subscribe();
+
+                                fis.close();
+                                break;
+                            default:
+                                f = new File("./data/bot/Bot.png");
+
+                                if(!f.exists())
+                                    break;
+
+                                fis = new FileInputStream(f);
+
+                                gate.edit(UserEditSpec.builder().avatar(Image.ofRaw(fis.readAllBytes(), Image.Format.PNG)).build()).subscribe();
+
+                                fis.close();
+                                break;
+                        }
+
+                    } catch (IOException exception) {
+                        exception.printStackTrace();
+                    }
+
+                    pfp = 1;
+                } else {
+                    pfp++;
                 }
 
                 if(event % 10 == 0) {
