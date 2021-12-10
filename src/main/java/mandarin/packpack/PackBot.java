@@ -924,6 +924,10 @@ public class PackBot {
                                 case "pie":
                                     new PrintItemEvent(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
                                     break;
+                                case "printevent":
+                                case "pe":
+                                    new PrintEvent(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+                                    break;
                             }
                         }
                     }, () -> {
