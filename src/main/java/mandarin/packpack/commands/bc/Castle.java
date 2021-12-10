@@ -292,6 +292,9 @@ public class Castle extends ConstraintCommand {
                 if(id >= imgs.size())
                     id = imgs.size() - 1;
 
+                if(id < 0)
+                    id = 0;
+
                 CastleImg image = imgs.get(id);
 
                 BufferedImage castle;
