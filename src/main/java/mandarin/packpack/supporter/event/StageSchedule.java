@@ -205,9 +205,9 @@ public class StageSchedule extends EventFactor implements Schedule {
                 result.append("{");
 
                 if(isEvenDays(j)) {
-                    result.append("Every even day");
+                    result.append(LangID.getStringByID("event_even", lang));
                 } else if(isOddDays(j)) {
-                    result.append("Every odd day");
+                    result.append(LangID.getStringByID("event_odd", lang));
                 } else {
                     for (int i = 0; i < section.days.size(); i++) {
                         result.append(section.days.get(i)).append(getNumberExtension(section.days.get(i), lang));
@@ -449,9 +449,9 @@ public class StageSchedule extends EventFactor implements Schedule {
 
                 if (!section.days.isEmpty()) {
                     if (isEvenDays(i)) {
-                        result.append("Every Even Day");
+                        result.append(LangID.getStringByID("event_even", lang));
                     } else if (isOddDays(i)) {
-                        result.append("Every Odd Day");
+                        result.append(LangID.getStringByID("event_odd", lang));
                     } else {
                         for (int j = 0; j < section.days.size(); j++) {
                             result.append(section.days.get(j))
