@@ -124,7 +124,7 @@ public class ItemSchedule extends EventFactor implements Schedule {
                     .append("] ");
         }
 
-        result.append(beautifyItem(lang));
+        result.append(beautifyItem(lang, itemID, itemAmount));
 
         if(1000 <= categoryID && categoryID < 5000 && everyday) {
             result.append(" [").append(LangID.getStringByID("printitem_daily", lang)).append("]");
@@ -309,45 +309,6 @@ public class ItemSchedule extends EventFactor implements Schedule {
             return "None";
         } else {
             return "Code "+status;
-        }
-    }
-
-    private String beautifyItem(int lang) {
-        String id = "item_"+itemID;
-
-        String item = LangID.getStringByID(id, lang);
-
-        if(item.equals(id)) {
-            if(itemID >= 800 && itemID < 900) {
-                item = LangID.getStringByID("printitem_sale", lang).replace("_", "" + itemID);
-            } else if(itemID >= 900 && itemID < 1000) {
-                item = LangID.getStringByID("printitem_stamp", lang).replace("_", "" + itemID);
-            } else {
-                item = LangID.getStringByID("printitem_item", lang).replace("_", "" + itemID);
-            }
-        }
-
-        if(itemID >= 300) {
-            return item;
-        }
-
-        if(itemAmount > 1 && lang == LangID.EN && !item.endsWith("XP") && !item.endsWith("s") && !item.endsWith("Choco"))
-            item = getPlural(item);
-
-        if(itemID == 202 || itemID == 203) {
-            return LangID.getStringByID("printitem_formattic", lang).replace("_NNN_", "" + itemAmount).replace("_III_", item);
-        } else if(itemID == 201) {
-            return LangID.getStringByID("printitem_formatxp", lang).replace("_NNN_", "" + itemAmount).replace("_III_", item);
-        } else {
-            return LangID.getStringByID("printitem_format", lang).replace("_NNN_", "" + itemAmount).replace("_III_", item);
-        }
-    }
-
-    private String getPlural(String item) {
-        if (item.endsWith("ch") || item.endsWith("sh") || item.endsWith("s") || item.endsWith("x") || item.endsWith("z")) {
-            return item + "es";
-        } else {
-            return item + "s";
         }
     }
 }

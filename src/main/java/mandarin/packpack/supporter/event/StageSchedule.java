@@ -3,7 +3,6 @@ package mandarin.packpack.supporter.event;
 import common.CommonStatic;
 import common.pack.UserProfile;
 import common.util.Data;
-import common.util.lang.MultiLangCont;
 import common.util.stage.MapColc;
 import common.util.stage.StageMap;
 import common.util.unit.Unit;
@@ -543,17 +542,7 @@ public class StageSchedule extends EventFactor implements Schedule {
 
                     switch (data[0]) {
                         case REWARDNORMAL:
-                            CommonStatic.getConfig().lang = lang;
-
-                            String reward = MultiLangCont.getStatic().RWNAME.getCont(data[1]);
-
-                            CommonStatic.getConfig().lang = oldConfig;
-
-                            if(reward == null || reward.isBlank()) {
-                                reward = LangID.getStringByID("printstage_reward", lang).replace("_", ""+data[1]);
-                            }
-
-                            result.append(data[2]).append(" ").append(reward);
+                            result.append(beautifyGameItem(lang, data[1], data[2]));
                             break;
                         case REWARDUNIT:
                             Unit u = UserProfile.getBCData().units.get(data[1]);

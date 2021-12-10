@@ -1,6 +1,8 @@
 package mandarin.packpack.supporter.event;
 
+import common.CommonStatic;
 import common.system.files.VFile;
+import common.util.lang.MultiLangCont;
 import common.util.stage.MapColc;
 import common.util.stage.StageMap;
 import mandarin.packpack.supporter.StaticStore;
@@ -370,5 +372,68 @@ public class EventFactor {
         }
 
         return b.toString();
+    }
+
+    public static String beautifyItem(int lang, int itemID, int itemAmount) {
+        String id = "item_"+itemID;
+
+        String item = LangID.getStringByID(id, lang);
+
+        if(item.equals(id)) {
+            if(itemID >= 800 && itemID < 900) {
+                item = LangID.getStringByID("printitem_sale", lang).replace("_", "" + itemID);
+            } else if(itemID >= 900 && itemID < 1000) {
+                item = LangID.getStringByID("printitem_stamp", lang).replace("_", "" + itemID);
+            } else {
+                item = LangID.getStringByID("printitem_item", lang).replace("_", "" + itemID);
+            }
+        }
+
+        if(itemID >= 300) {
+            return item;
+        }
+
+        if(itemAmount > 1 && lang == LangID.EN && !item.endsWith("XP") && !item.endsWith("s") && !item.endsWith("Choco"))
+            item = getPlural(item);
+
+        if(itemID == 202 || itemID == 203) {
+            return LangID.getStringByID("printitem_formattic", lang).replace("_NNN_", "" + itemAmount).replace("_III_", item);
+        } else if(itemID == 201) {
+            return LangID.getStringByID("printitem_formatxp", lang).replace("_NNN_", "" + itemAmount).replace("_III_", item);
+        } else {
+            return LangID.getStringByID("printitem_format", lang).replace("_NNN_", "" + itemAmount).replace("_III_", item);
+        }
+    }
+
+    public static String beautifyGameItem(int lang, int itemID, int itemAmount) {
+        int oldConfig = CommonStatic.getConfig().lang;
+        CommonStatic.getConfig().lang = lang;
+
+        String item = MultiLangCont.getStatic().RWNAME.getCont(itemID);
+
+        CommonStatic.getConfig().lang = oldConfig;
+
+        if(item == null || item.isBlank()) {
+            item = LangID.getStringByID("printitem_item", lang).replace("_", "" + itemID);
+        }
+
+        if(itemAmount > 1 && lang == LangID.EN && !item.endsWith("XP") && !item.endsWith("s") && !item.endsWith("Choco"))
+            item = getPlural(item);
+
+        if(itemID == 11 || itemID == 12 || itemID == 20 || itemID == 21) {
+            return LangID.getStringByID("printitem_formattic", lang).replace("_NNN_", "" + itemAmount).replace("_III_", item);
+        } else if(itemID == 6) {
+            return LangID.getStringByID("printitem_formatxp", lang).replace("_NNN_", "" + itemAmount).replace("_III_", item);
+        } else {
+            return LangID.getStringByID("printitem_format", lang).replace("_NNN_", "" + itemAmount).replace("_III_", item);
+        }
+    }
+
+    public static String getPlural(String item) {
+        if (item.endsWith("ch") || item.endsWith("sh") || item.endsWith("s") || item.endsWith("x") || item.endsWith("z")) {
+            return item + "es";
+        } else {
+            return item + "s";
+        }
     }
 }
