@@ -25,6 +25,11 @@ public class PrintItemEvent extends ConstraintCommand {
 
         String result = StaticStore.event.printItemEvent(getLocale(getContent(event)), lang, isFull(getContent(event)));
 
+        if(result.isBlank()) {
+            createMessage(ch, m -> m.content(LangID.getStringByID("chevent_noup", lang)));
+            return;
+        }
+
         if(result.length() >= 2000) {
             File temp = new File("./temp");
 
