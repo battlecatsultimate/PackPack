@@ -20,6 +20,8 @@ public class StageSchedule extends EventFactor implements Schedule {
         WEEKLY
     }
 
+    private final int locale;
+
     public ArrayList<EventSection> sections = new ArrayList<>();
     public EventDateSet date;
     public String minVersion, maxVersion;
@@ -29,7 +31,9 @@ public class StageSchedule extends EventFactor implements Schedule {
     public ArrayList<StageMap> stages = new ArrayList<>();
     public ArrayList<String> unknownStages = new ArrayList<>();
 
-    public StageSchedule(String line) {
+    public StageSchedule(String line, int locale) {
+        this.locale = locale;
+
         int[] data = parseInts(line);
 
         date = new EventDateSet(data[0], data[2], data[1], data[3]);
@@ -551,7 +555,7 @@ public class StageSchedule extends EventFactor implements Schedule {
             result.append(")");
         }
 
-        if(getVersionNumber(minVersion) > StaticStore.safeParseInt(StaticStore.getVersion(lang))) {
+        if(getVersionNumber(minVersion) > StaticStore.safeParseInt(StaticStore.getVersion(locale))) {
             result.append(" <").append(LangID.getStringByID("event_newver", lang).replace("_", beautifyVersion(minVersion))).append(">");
         }
 

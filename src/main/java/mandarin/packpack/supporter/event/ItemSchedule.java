@@ -7,6 +7,8 @@ import mandarin.packpack.supporter.lang.LangID;
 import java.util.ArrayList;
 
 public class ItemSchedule extends EventFactor implements Schedule {
+    private final int locale;
+
     public ArrayList<EventSection> sections = new ArrayList<>();
     public EventDateSet date;
     public String minVersion, maxVersion;
@@ -19,7 +21,9 @@ public class ItemSchedule extends EventFactor implements Schedule {
     public String title;
     public String messsage;
 
-    public ItemSchedule(String line) {
+    public ItemSchedule(String line, int locale) {
+        this.locale = locale;
+
         String[] data = line.split("\t");
 
         date = new EventDateSet(parse(data[0]), parse(data[2]), parse(data[1]), parse(data[3]));
@@ -134,7 +138,7 @@ public class ItemSchedule extends EventFactor implements Schedule {
             result.append(" {").append(title).append("}");
         }
 
-        if(getVersionNumber(minVersion) > StaticStore.safeParseInt(StaticStore.getVersion(lang))) {
+        if(getVersionNumber(minVersion) > StaticStore.safeParseInt(StaticStore.getVersion(locale))) {
             result.append(" <").append(LangID.getStringByID("event_newver", lang).replace("_", beautifyVersion(minVersion))).append(">");
         }
 

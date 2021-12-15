@@ -109,7 +109,7 @@ public class EventHolder extends EventFactor {
         }
 
         for(String line : newLines) {
-            stages.add(new StageSchedule(line));
+            stages.add(new StageSchedule(line, locale));
         }
 
         for(StageSchedule schedule : stages) {
@@ -242,7 +242,7 @@ public class EventHolder extends EventFactor {
             g.clear();
 
         for(String line : newLines) {
-            g.add(new GachaSchedule(line));
+            g.add(new GachaSchedule(line, locale));
         }
 
         this.gachas.put(locale, g);
@@ -322,7 +322,7 @@ public class EventHolder extends EventFactor {
             i.clear();
 
         for(String line : newLines) {
-            i.add(new ItemSchedule(line));
+            i.add(new ItemSchedule(line, locale));
         }
 
         this.items.put(locale, i);

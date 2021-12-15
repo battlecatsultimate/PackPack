@@ -19,13 +19,17 @@ import java.util.regex.Pattern;
 public class GachaSchedule extends EventFactor implements Schedule {
     private static final Pattern p = Pattern.compile("<h2>.+</h2>");
 
+    private int locale;
+
     public ArrayList<EventSection> sections = new ArrayList<>();
     public EventDateSet date;
     public String minVersion, maxVersion;
 
     public ArrayList<GachaSection> gacha = new ArrayList<>();
 
-    public GachaSchedule(String line) {
+    public GachaSchedule(String line, int locale) {
+        this.locale = locale;
+
         String[] data = line.split("\t");
 
         date = new EventDateSet(parse(data[0]), parse(data[2]), parse(data[1]), parse(data[3]));
@@ -312,7 +316,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
             }
         }
 
-        if(getVersionNumber(minVersion) > StaticStore.safeParseInt(StaticStore.getVersion(lang))) {
+        if(getVersionNumber(minVersion) > StaticStore.safeParseInt(StaticStore.getVersion(locale))) {
             result.append(" <").append(LangID.getStringByID("event_newver", lang).replace("_", beautifyVersion(minVersion))).append(">");
         }
 
