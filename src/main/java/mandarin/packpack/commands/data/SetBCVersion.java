@@ -22,7 +22,19 @@ public class SetBCVersion extends ConstraintCommand {
         String[] contents = getContent(event).split(" ");
 
         if(contents.length != 3) {
-            createMessage(ch, m -> m.content("Format : p!sbv [Locale] [Version]"));
+            String versions = "BCEN : " +
+                    convertVersion(StaticStore.safeParseInt(StaticStore.getVersion(0))) +
+                    "\n" +
+                    "BCTW : " +
+                    convertVersion(StaticStore.safeParseInt(StaticStore.getVersion(1))) +
+                    "\n" +
+                    "BCKR : " +
+                    convertVersion(StaticStore.safeParseInt(StaticStore.getVersion(2))) +
+                    "\n" +
+                    "BCJP : " +
+                    convertVersion(StaticStore.safeParseInt(StaticStore.getVersion(3)));
+
+            createMessage(ch, m -> m.content("Format : p!sbv [Locale] [Version]\n\n"+versions));
             return;
         }
 
