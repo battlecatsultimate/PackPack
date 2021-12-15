@@ -102,7 +102,7 @@ public class PackBot {
                     save++;
                 }
 
-                if(pfp % 720 == 0) {
+                if(pfp % 60 == 0) {
                     try {
                         String fileName;
 
