@@ -22,7 +22,6 @@ import discord4j.core.object.entity.channel.PrivateChannel;
 import discord4j.core.object.presence.ClientActivity;
 import discord4j.core.object.presence.ClientPresence;
 import discord4j.core.spec.*;
-import discord4j.discordjson.json.UserModifyRequest;
 import discord4j.gateway.intent.IntentSet;
 import discord4j.rest.request.RouterOptions;
 import discord4j.rest.util.AllowedMentions;
@@ -65,7 +64,7 @@ public class PackBot {
     public static int event = 0;
     public static int pfp = 0;
     public static boolean eventInit = false;
-    public static boolean develop = false;
+    public static boolean develop = true;
 
     public static final String normal = "p!help, but under Construction!";
     public static final String dev = "p!help, being developed, bot may not response";
@@ -105,57 +104,38 @@ public class PackBot {
 
                 if(pfp % 720 == 0) {
                     try {
+                        String fileName;
+
                         switch (c.get(Calendar.MONTH) + 1) {
                             case 12:
-                                File f = new File("./data/bot/BotDec.png");
-
-                                if(!f.exists())
-                                    break;
-
-                                FileInputStream fis = new FileInputStream(f);
-
-                                gate.edit(UserEditSpec.builder().avatar(Image.ofRaw(fis.readAllBytes(), Image.Format.PNG)).build()).subscribe();
-
-                                fis.close();
+                                fileName = "BotDec.png";
                                 break;
                             case 1:
-                                f = new File("./data/bot/BotJan.png");
-
-                                if(!f.exists())
-                                    break;
-
-                                fis = new FileInputStream(f);
-
-                                gate.edit(UserEditSpec.builder().avatar(Image.ofRaw(fis.readAllBytes(), Image.Format.PNG)).build()).subscribe();
-
-                                fis.close();
+                                fileName = "BotJan.png";
                                 break;
                             case 2:
-                                f = new File("./data/bot/BotFeb.png");
-
-                                if(!f.exists())
-                                    break;
-
-                                fis = new FileInputStream(f);
-
-                                gate.edit(UserEditSpec.builder().avatar(Image.ofRaw(fis.readAllBytes(), Image.Format.PNG)).build()).subscribe();
-
-                                fis.close();
+                                fileName = "BotFeb.png";
+                                break;
+                            case 3:
+                                fileName = "BotMar.png";
+                                break;
+                            case 4:
+                                fileName = "BotApr.png";
                                 break;
                             default:
-                                f = new File("./data/bot/Bot.png");
-
-                                if(!f.exists())
-                                    break;
-
-                                fis = new FileInputStream(f);
-
-                                gate.edit(UserEditSpec.builder().avatar(Image.ofRaw(fis.readAllBytes(), Image.Format.PNG)).build()).subscribe();
-
-                                fis.close();
+                                fileName = "Bot.png";
                                 break;
                         }
 
+                        File f = new File("./data/bot/", fileName);
+
+                        if(f.exists()) {
+                            FileInputStream fis = new FileInputStream(f);
+
+                            gate.edit(UserEditSpec.builder().avatar(Image.ofRaw(fis.readAllBytes(), Image.Format.PNG)).build()).subscribe();
+
+                            fis.close();
+                        }
                     } catch (IOException exception) {
                         exception.printStackTrace();
                     }
