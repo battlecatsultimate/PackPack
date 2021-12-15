@@ -400,7 +400,7 @@ public class EventFactor {
             return item;
         }
 
-        if(itemAmount > 1 && lang == LangID.EN && !item.endsWith("XP") && !item.endsWith("s") && !item.endsWith("Choco"))
+        if(itemAmount > 1 && lang == LangID.EN && Character.isAlphabetic(item.charAt(item.length() - 1)) && !item.endsWith("XP") && !item.endsWith("s") && !item.endsWith("Choco"))
             item = getPlural(item);
 
         if(itemID == 202 || itemID == 203) {
@@ -424,7 +424,7 @@ public class EventFactor {
             item = LangID.getStringByID("printitem_item", lang).replace("_", "" + itemID);
         }
 
-        if(itemAmount > 1 && lang == LangID.EN && !item.endsWith("XP") && !item.endsWith("s") && !item.endsWith("Choco"))
+        if(itemAmount > 1 && lang == LangID.EN && Character.isAlphabetic(item.charAt(item.length() - 1)) && !item.endsWith("XP") && !item.endsWith("s") && !item.endsWith("Choco"))
             item = getPlural(item);
 
         if(itemID == 11 || itemID == 12 || itemID == 20 || itemID == 21) {
