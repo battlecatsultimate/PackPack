@@ -165,9 +165,17 @@ public class EventFactor {
             "group_14", true
     );
 
+    public static final GroupHandler CATFRUITFESTIVALJP = new SequenceGroupHandler(
+            Arrays.asList(
+                    Arrays.asList(1097, 1098, 1099),
+                    Arrays.asList(1100, 1101)
+            ),
+            "group_3", false
+    );
+
     public static final List<GroupHandler> handlers = Arrays.asList(
             CYCLONE, BUILDERBLITZ, XPBLITZ, CATFRUITFESTIVAL, CRAZEDFESTIVAL, LILFESTIVAL, METALFESTIVAL, GAMATOTOXP,
-            ITEMEXDISCOUNT, EOCHALFENERGY, ITFHALFENERGY, COTCHALFENERGY, HALFENERGY, GAMATOTOGRANDXP, ITEMDISCOUNT
+            ITEMEXDISCOUNT, EOCHALFENERGY, ITFHALFENERGY, COTCHALFENERGY, HALFENERGY, GAMATOTOGRANDXP, ITEMDISCOUNT, CATFRUITFESTIVALJP
     );
 
     public static final String GACHAURL = "https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/gacha/rare_LLL_R_ID_.html";
