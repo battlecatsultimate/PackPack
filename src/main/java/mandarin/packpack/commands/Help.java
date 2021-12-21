@@ -268,6 +268,19 @@ public class Help extends Command {
             case "pe":
                 ch.createMessage(addFields("printevent", true, true, false)).subscribe();
                 break;
+            case "statanalyzer":
+            case "sa":
+                ch.createMessage(addFields("statanalyzer", true, true, true)).subscribe();
+                createMessage(ch, m -> m.addEmbed(EmbedCreateSpec.builder()
+                        .color(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)])
+                        .description(LangID.getStringByID("help_statanalyzer_adddesc", lang))
+                        .addField("-name", LangID.getStringByID("help_statanalyzer_name", lang), false)
+                        .addField("-trait", LangID.getStringByID("help_statanalyzer_trait", lang), false)
+                        .addField("-cell", LangID.getStringByID("help_statanalyzer_cell", lang), false)
+                        .addField("-abil", LangID.getStringByID("help_statanalyzer_abil", lang), false)
+                        .addField("-proc", LangID.getStringByID("help_statanalyzer_proc", lang), false)
+                        .build()));
+                break;
             default:
                 createMessageWithNoPings(ch, LangID.getStringByID("help_nocomm", lang).replace("_", command));
         }

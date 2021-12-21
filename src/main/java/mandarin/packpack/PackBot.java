@@ -973,6 +973,10 @@ public class PackBot {
                                 case "pe":
                                     new PrintEvent(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
                                     break;
+                                case "statanalyzer":
+                                case "sa":
+                                    new StatAnalyzer(ConstraintCommand.ROLE.CONTRIBUTOR, lang, idh).execute(event);
+                                    break;
                             }
                         }
                     }, () -> {
