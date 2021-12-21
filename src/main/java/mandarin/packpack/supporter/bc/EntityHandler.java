@@ -2578,7 +2578,7 @@ public class EntityHandler {
         });
     }
 
-    public static boolean generateStatImage(MessageChannel ch, List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilData, List<FlagCellData> traitData, CustomMaskUnit[] units, String[] name, File container, int lv, boolean isFrame, int uid, int lang) throws Exception {
+    public static void generateStatImage(MessageChannel ch, List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilData, List<FlagCellData> traitData, CustomMaskUnit[] units, String[] name, File container, int lv, boolean isFrame, int uid, int lang) throws Exception {
         List<List<CellDrawer>> cellGroup = new ArrayList<>();
 
         for(int i = 0; i < units.length; i++) {
@@ -2622,7 +2622,6 @@ public class EntityHandler {
             });
         }
 
-        return true;
     }
 
     private static List<CellDrawer> addCell(List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilData, List<FlagCellData> traitData, CustomMaskUnit u, int lang, int lv, boolean isFrame) {
@@ -2635,7 +2634,7 @@ public class EntityHandler {
                 new String[] {DataToString.getHP(u, u.curve, false, lvs), DataToString.getHitback(u, false, lvs), DataToString.getSpeed(u, false , lvs)}
         ));
 
-        cells.add(new NormalCellDrawer(new String[] {"Attack"}, new String[] {DataToString.getTotalAtk(u.curve, u, false, lvs)}));
+        cells.add(new NormalCellDrawer(new String[] {"Attack"}, new String[] {DataToString.getAtk(u, u.curve, false, lvs)}));
 
         cells.add(new NormalCellDrawer(
                 new String[] {"DPS", "Attack Time", "Use Ability"},
@@ -2780,20 +2779,6 @@ public class EntityHandler {
             rarity = "Unknown";
 
         return rarity;
-    }
-
-    private static String parseTime(String v, boolean isFrame) {
-        if(StaticStore.isNumeric(v)) {
-            int iv = StaticStore.safeParseInt(v);
-
-            if(isFrame) {
-                return iv+"f";
-            } else {
-                return DataToString.df.format(iv / 30.0)+"s";
-            }
-        }
-
-        return "Not a number";
     }
 
     private static File generateComboImage(Combo c) throws Exception {
