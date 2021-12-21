@@ -30,7 +30,9 @@ import mandarin.packpack.supporter.server.holder.Holder;
 import java.io.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -623,10 +625,14 @@ public class StaticStore {
 
     public static void deleteFile(File f, boolean selfDelete) {
         if(f.isFile()) {
-            boolean res = f.delete();
+            try {
+                boolean res = Files.deleteIfExists(f.toPath());
 
-            if(!res) {
-                logger.uploadLog("Failed to delete file : "+f.getAbsolutePath());
+                if(!res) {
+                    logger.uploadLog("Failed to delete file : "+f.getAbsolutePath());
+                }
+            } catch (Exception e) {
+                logger.uploadErrorLog(e, "E/StaticStore::deleteFile : Failed to delete file/folders\nWritable : "+f.canWrite()+"\nReadable : "+f.canRead());
             }
         } else if(f.isDirectory()) {
             File[] files = f.listFiles();
@@ -634,11 +640,15 @@ public class StaticStore {
             if(files != null) {
                 for(File g : files) {
                     if(g.isFile()) {
-                        boolean res = g.delete();
+                       try {
+                           boolean res = Files.deleteIfExists(g.toPath());
 
-                        if(!res) {
-                            logger.uploadLog("Failed to delete file : "+g.getAbsolutePath());
-                        }
+                           if(!res) {
+                               logger.uploadLog("Failed to delete file : "+g.getAbsolutePath());
+                           }
+                       } catch (Exception e) {
+                           logger.uploadErrorLog(e, "E/StaticStore::deleteFile : Failed to delete file/folders\nWritable : "+g.canWrite()+"\nReadable : "+g.canRead());
+                       }
                     } else if(g.isDirectory()) {
                         deleteFile(g, true);
                     }
@@ -646,10 +656,14 @@ public class StaticStore {
             }
 
             if(selfDelete) {
-                boolean res = f.delete();
+                try {
+                    boolean res = Files.deleteIfExists(f.toPath());
 
-                if(!res) {
-                    logger.uploadLog("Failed to delete folder : "+f.getAbsolutePath());
+                    if(!res) {
+                        logger.uploadLog("Failed to delete folder : "+f.getAbsolutePath());
+                    }
+                } catch (Exception e) {
+                    logger.uploadErrorLog(e, "E/StaticStore::deleteFile : Failed to delete file/folders");
                 }
             }
         }
