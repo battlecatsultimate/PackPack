@@ -1338,8 +1338,16 @@ public class ImageDrawing {
                     int tempH = ((NormalCellDrawer) group.get(j)).h;
                     int tempUw = ((NormalCellDrawer) group.get(j)).uw;
 
-                    uh = Math.max(tempH, uh);
-                    uw = Math.max(tempUw, uw);
+                    if(((NormalCellDrawer) group.get(j)).isSingleData()) {
+                        uh = Math.max(tempH, uh);
+
+                        if(tempUw > uw * 3 + CellDrawer.lineOffset * 4) {
+                            uw = (tempUw - CellDrawer.lineOffset * 4) / 3;
+                        }
+                    } else {
+                        uh = Math.max(tempH, uh);
+                        uw = Math.max(tempUw, uw);
+                    }
                 } else {
                     int tempH = ((AbilityCellDrawer) group.get(j)).h;
                     int tempUw = ((AbilityCellDrawer) group.get(j)).w;

@@ -34,7 +34,6 @@ public class NormalCellDrawer implements CellDrawer {
             }
         }
 
-
         this.names = names;
         this.contents = contents;
         this.yTextOffset = new int[names.length][2];
@@ -125,5 +124,9 @@ public class NormalCellDrawer implements CellDrawer {
             g.drawText(contents[i], rx - xTextOffset[i][1], Math.round(y + offset - yTextOffset[i][1]));
             rx += uw + lineOffset * 2;
         }
+    }
+
+    public boolean isSingleData() {
+        return names.length == 1;
     }
 }
