@@ -104,8 +104,8 @@ public class StatAnalyzerMessageHolder extends MessageHolder<MessageCreateEvent>
 
         AtomicReference<Long> now = new AtomicReference<>(System.currentTimeMillis());
 
-        if(!msg.getAttachments().isEmpty()) {
-            for(Attachment a : msg.getAttachments()) {
+        if(!author.getAttachments().isEmpty()) {
+            for(Attachment a : author.getAttachments()) {
                 if(a.getFilename().equals("unit"+ Data.trio(uID+1)+".csv") && !statDone) {
                     downloadAndValidate("STAT (unit"+ Data.trio(uID+1)+".csv) : ", a, FILE.STAT, now);
                 } else if(a.getFilename().equals("unitlevel.csv") && !levelDone) {
@@ -116,14 +116,26 @@ public class StatAnalyzerMessageHolder extends MessageHolder<MessageCreateEvent>
                     if(index != -1) {
                         FILE.ANIM.setIndex(index);
 
-                        downloadAndValidate(getMaanimTitle(index), a, FILE.ANIM, now);
+                        if(index == 0 && a.getFilename().equals(Data.trio(uID)+"_f02.maanim")) {
+                            downloadAndValidate(getMaanimTitle(index), a, FILE.ANIM, now);
+                        } else if(index == 1 && a.getFilename().equals(Data.trio(uID)+"_c02.maanim")) {
+                            downloadAndValidate(getMaanimTitle(index), a, FILE.ANIM, now);
+                        } else if(index == 2 && a.getFilename().equals(Data.trio(uID)+"_s02.maanim")) {
+                            downloadAndValidate(getMaanimTitle(index), a, FILE.ANIM, now);
+                        }
                     }
                 } else if(a.getFilename().endsWith(".png") && getIndexOfIcon(a.getFilename()) != -1) {
                     int index = getIndexOfIcon(a.getFilename());
 
                     FILE.ICON.setIndex(index);
 
-                    downloadAndValidate(getIconTitle(index), a, FILE.ICON, now);
+                    if(index == 0 && a.getFilename().equals("uni"+ Data.trio(uID)+"_f00.png")) {
+                        downloadAndValidate(getIconTitle(index), a, FILE.ICON, now);
+                    } else if(index == 1 && a.getFilename().equals("uni"+ Data.trio(uID)+"_c00.png")) {
+                        downloadAndValidate(getIconTitle(index), a, FILE.ICON, now);
+                    } else if(index == 2 && a.getFilename().equals("uni"+ Data.trio(uID)+"_s00.png")) {
+                        downloadAndValidate(getIconTitle(index), a, FILE.ICON, now);
+                    }
                 } else if(a.getFilename().equals("unitbuy.csv") && !buyDone) {
                     downloadAndValidate("BUY (unitbuy.csv) : ", a, FILE.BUY, now);
                 }
@@ -208,6 +220,8 @@ public class StatAnalyzerMessageHolder extends MessageHolder<MessageCreateEvent>
 
                     levelReader.close();
                     buyReader.close();
+
+                    System.gc();
 
                     for(int i = 0; i < units.length; i++) {
                         File maanim = new File(container, getMaanimFileName(i));
@@ -407,6 +421,8 @@ public class StatAnalyzerMessageHolder extends MessageHolder<MessageCreateEvent>
 
                             levelReader.close();
                             buyReader.close();
+
+                            System.gc();
 
                             for(int i = 0; i < units.length; i++) {
                                 File maanim = new File(container, getMaanimFileName(i));
@@ -673,11 +689,11 @@ public class StatAnalyzerMessageHolder extends MessageHolder<MessageCreateEvent>
     private String getMaanimTitle(int ind) {
         switch (ind) {
             case 0:
-                return "MAANIM F ATK : ";
+                return "MAANIM F ATK ("+ Data.trio(uID)+"_f02.maanim) : ";
             case 1:
-                return "MAANIM C ATK : ";
+                return "MAANIM C ATK ("+ Data.trio(uID)+"_c02.maanim) : ";
             case 2:
-                return "MAANIM S ATK : ";
+                return "MAANIM S ATK ("+ Data.trio(uID)+"_s02.maanim) : ";
             default:
                 return "MAANIM " + ind + " ATK : ";
         }
@@ -686,11 +702,11 @@ public class StatAnalyzerMessageHolder extends MessageHolder<MessageCreateEvent>
     private String getIconTitle(int ind) {
         switch (ind) {
             case 0:
-                return "ICON F : ";
+                return "ICON F (uni"+Data.trio(uID)+"_f00.png) : ";
             case 1:
-                return "ICON C : ";
+                return "ICON C (uni"+Data.trio(uID)+"_c00.png) : ";
             case 2:
-                return "ICON S : ";
+                return "ICON S (uni"+Data.trio(uID)+"_s00.png) : ";
             default:
                 return "ICON " + ind + " : ";
         }

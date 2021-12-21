@@ -17,6 +17,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -134,14 +135,22 @@ public class Test extends GlobalTimedConstraintCommand {
         for(int i = 0; i < len; i++) {
             sb.append("MAANIM ")
                     .append(getUnitCode(i))
-                    .append(" ATK : -")
+                    .append(" ATK (")
+                    .append(Data.trio(uid))
+                    .append("_")
+                    .append(getUnitCode(i).toLowerCase(Locale.ENGLISH))
+                    .append("02.maanim) : -")
                     .append("\n");
         }
 
         for(int i = 0; i < len; i++) {
             sb.append("ICON ")
                     .append(getUnitCode(i))
-                    .append(" : -");
+                    .append(" (uni")
+                    .append(Data.trio(uid))
+                    .append("_")
+                    .append(getUnitCode(i).toLowerCase(Locale.ENGLISH))
+                    .append("00.png) : -");
 
             if(i < len - 1) {
                 sb.append("\n");
