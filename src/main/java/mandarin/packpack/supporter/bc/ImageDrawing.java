@@ -1356,6 +1356,26 @@ public class ImageDrawing {
 
         List<BufferedImage[]> images = new ArrayList<>();
 
+        for(int i = 0; i < units.length; i++) {
+            BufferedImage[] imgs = new BufferedImage[2];
+
+            FontMetrics bf = cv.getFontMetrics(titleFont);
+            FontMetrics sf = cv.getFontMetrics(typeFont);
+            FontMetrics lf = cv.getFontMetrics(levelFont);
+
+            File icon = new File(container, "uni"+Data.trio(uID)+"_"+getUnitCode(i)+"00.png");
+
+            BufferedImage title = getUnitTitleImage(icon, name[i], type, lv, bf, sf, lf);
+
+            imgs[1] = title;
+
+            images.add(imgs);
+
+            if(uw * 3 + CellDrawer.lineOffset * 4 + statPanelMargin * 2 < title.getWidth()) {
+                uw = (title.getWidth() - statPanelMargin * 2 - CellDrawer.lineOffset * 4) / 3;
+            }
+        }
+
         int h = 0;
         int w = uw * 3 + CellDrawer.lineOffset * 4;
 
@@ -1398,15 +1418,7 @@ public class ImageDrawing {
                     y += cellMargin;
             }
 
-            FontMetrics bf = cv.getFontMetrics(titleFont);
-            FontMetrics sf = cv.getFontMetrics(typeFont);
-            FontMetrics lf = cv.getFontMetrics(levelFont);
-
-            File icon = new File(container, "uni"+Data.trio(uID)+"_"+getUnitCode(j)+"00.png");
-
-            BufferedImage title = getUnitTitleImage(icon, name[j], type, lv, bf, sf, lf);
-
-            images.add(new BufferedImage[] {img, title});
+            images.get(j)[0] = img;
         }
 
         int titleW = 0;
