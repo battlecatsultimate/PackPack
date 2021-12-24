@@ -5,9 +5,10 @@ public class EventDateSet {
     public final EventTimeSection section;
 
     public EventDateSet(int dateStart, int dateEnd, int startTime, int endTime) {
-        this.dateStart = new EventDate(dateStart, false);
-        this.dateEnd = new EventDate(dateEnd, endTime == 0);
         section = new EventTimeSection(startTime, endTime);
+
+        this.dateStart = new EventDate(dateStart, false, section, false);
+        this.dateEnd = new EventDate(dateEnd, endTime == 0, section, true);
     }
 
     public boolean equals(EventDateSet thatSet) {

@@ -5,7 +5,11 @@ public class EventDate {
     public final int month;
     public final int day;
 
-    public EventDate(int value, boolean minus) {
+    public final EventTimeSection section;
+
+    public final boolean end;
+
+    public EventDate(int value, boolean minus, EventTimeSection section, boolean end) {
         int[] temp = new int[3];
 
         temp[0] = value / 10000;
@@ -19,25 +23,38 @@ public class EventDate {
         temp[2] = value;
 
         if(minus)
-            purifyData(temp);
+            subtractOneDay(temp);
 
         year = temp[0];
         month = temp[1];
         day = temp[2];
+
+        this.section = section;
+        this.end = end;
     }
 
     public int compare(EventDate date) {
-        int thisDate = year * 10000 + month * 100 + day;
-        int thatDate = date.year * 10000 + date.month * 100 + date.day;
+        int thisDate = getRawValue();
+        int thatDate = date.getRawValue();
 
         return Integer.compare(thisDate, thatDate);
+    }
+
+    public int getRawValue() {
+        int[] temp = {year, month, day};
+
+        if(end && section.end.hour == 23 && section.end.minute == 59) {
+            addOneDay(temp);
+        }
+
+        return temp[0] * 10000 + temp[1] * 100 + temp[2];
     }
 
     public boolean equals(EventDate date) {
         return compare(date) == 0;
     }
 
-    private void purifyData(int[] temp) {
+    private void subtractOneDay(int[] temp) {
         if(temp[0] == 2030 && temp[1] == 1 && temp[2] == 1)
             return;
 
@@ -52,6 +69,23 @@ public class EventDate {
                 temp[2] = 31;
             } else {
                 temp[2] = getMaxMonthDay(temp[0], temp[1]);
+            }
+        }
+    }
+
+    private void addOneDay(int[] temp) {
+        if(temp[0] == 2030 && temp[1] == 1 && temp[2] == 1)
+            return;
+
+        temp[2]++;
+
+        if(temp[2] > getMaxMonthDay(temp[0], temp[1])) {
+            temp[2] = 1;
+            temp[1]++;
+
+            if(temp[1] > 12) {
+                temp[0]++;
+                temp[1] = 1;
             }
         }
     }
