@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 public class GachaSchedule extends EventFactor implements Schedule {
     private static final Pattern p = Pattern.compile("<h2>.+</h2>");
 
-    private int locale;
+    private final int locale;
 
     public ArrayList<EventSection> sections = new ArrayList<>();
     public EventDateSet date;
@@ -184,13 +184,18 @@ public class GachaSchedule extends EventFactor implements Schedule {
         result.append(getMonth(date.dateStart.month, lang))
                 .append(" ")
                 .append(date.dateStart.day)
-                .append(getNumberExtension(date.dateStart.day, lang))
-                .append(" ~ ");
+                .append(getNumberExtension(date.dateStart.day, lang));
 
-        if(date.dateEnd.equals(END)) {
-            result.append("] ");
-        } else {
+        if(date.section.start.hour != 11 && date.section.start.minute != 0) {
+            result.append(" ")
+                    .append(date.section.start.hour)
+                    .append(":")
+                    .append(date.section.start.minute);
+        }
 
+        result.append(" ~ ");
+
+        if(!date.dateEnd.equals(END)) {
             if(date.dateStart.year != date.dateEnd.year) {
                 result.append(date.dateEnd.year)
                         .append(" ");
@@ -202,9 +207,17 @@ public class GachaSchedule extends EventFactor implements Schedule {
             }
 
             result.append(date.dateEnd.day)
-                    .append(getNumberExtension(date.dateEnd.day, lang))
-                    .append("] ");
+                    .append(getNumberExtension(date.dateEnd.day, lang));
+
+            if(date.section.end.hour != 11 && date.section.end.minute != 0) {
+                result.append(" ")
+                        .append(date.section.end.hour)
+                        .append(":")
+                        .append(date.section.end.minute);
+            }
         }
+
+        result.append("] ");
 
         for(int i = 0; i < gacha.size(); i++) {
             GachaSection section = gacha.get(i);

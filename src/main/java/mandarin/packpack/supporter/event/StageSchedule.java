@@ -355,13 +355,18 @@ public class StageSchedule extends EventFactor implements Schedule {
         result.append(getMonth(date.dateStart.month, lang))
                 .append(" ")
                 .append(date.dateStart.day)
-                .append(getNumberExtension(date.dateStart.day, lang))
-                .append(" ~ ");
+                .append(getNumberExtension(date.dateStart.day, lang));
 
-        if(date.dateEnd.equals(END)) {
-            result.append("] ");
-        } else {
+        if(date.section.start.hour != 11 && date.section.start.minute != 0) {
+            result.append(" ")
+                    .append(date.section.start.hour)
+                    .append(":")
+                    .append(date.section.start.minute);
+        }
 
+        result.append(" ~ ");
+
+        if(!date.dateEnd.equals(END)) {
             if(date.dateStart.year != date.dateEnd.year) {
                 result.append(date.dateEnd.year)
                         .append(" ");
@@ -373,9 +378,17 @@ public class StageSchedule extends EventFactor implements Schedule {
             }
 
             result.append(date.dateEnd.day)
-                    .append(getNumberExtension(date.dateEnd.day, lang))
-                    .append("] ");
+                    .append(getNumberExtension(date.dateEnd.day, lang));
+
+            if(date.section.end.hour != 11 && date.section.end.minute != 0) {
+                result.append(" ")
+                        .append(date.section.end.hour)
+                        .append(":")
+                        .append(date.section.end.minute);
+            }
         }
+
+        result.append("] ");
 
         if(!isMission) {
             for(int i = 0; i < stages.size(); i++) {
@@ -652,7 +665,7 @@ public class StageSchedule extends EventFactor implements Schedule {
         int startDay = date.dateStart.day;
         int endDay = date.dateEnd.day;
 
-        if(date.dateEnd.month > date.dateStart.month || date.dateEnd.equals(END)) {
+        if(date.dateEnd.month > date.dateStart.month || date.dateEnd.equals(END) || date.dateEnd.year > date.dateStart.year) {
             startDay = 1;
             endDay = 31;
         }
@@ -673,19 +686,44 @@ public class StageSchedule extends EventFactor implements Schedule {
 
         EventSection section = sections.get(index);
 
-        int startDay = date.dateStart.day;
-        int endDay = date.dateEnd.day;
-
-        if(date.dateEnd.month > date.dateStart.month || date.dateEnd.equals(END)) {
-            startDay = 1;
-            endDay = 31;
-        }
-
         ArrayList<Integer> odd = new ArrayList<>();
 
-        for(int i = startDay; i <= endDay; i++) {
-            if(i % 2 == 1)
-                odd.add(i);
+        if(date.dateStart.year == date.dateEnd.year) {
+            int startDay = date.dateStart.day;
+            int endDay = date.dateEnd.day;
+
+            if(date.dateEnd.month > date.dateStart.month || date.dateEnd.equals(END)) {
+                startDay = 1;
+                endDay = 31;
+            }
+
+            for(int i = startDay; i <= endDay; i++) {
+                if(i % 2 == 1)
+                    odd.add(i);
+            }
+        } else {
+            if(date.dateEnd.month + 12 - date.dateStart.month > 1) {
+                for(int i = 1; i <= 31; i++) {
+                    if(i % 2 == 1)
+                        odd.add(i);
+                }
+            } else {
+                int startStart = date.dateStart.day;
+                int startEnd = getMaxMonthDay(date.dateStart.year, date.dateStart.month);
+
+                int endStart = 1;
+                int endEnd = date.dateEnd.day;
+
+                for(int i = startStart; i <= startEnd; i++) {
+                    if(i % 2 == 1)
+                        odd.add(i);
+                }
+
+                for(int i = endStart; i <= endEnd; i++) {
+                    if(i % 2 == 1 && !odd.contains(i))
+                        odd.add(i);
+                }
+            }
         }
 
         return section.days.containsAll(odd);
@@ -759,6 +797,31 @@ public class StageSchedule extends EventFactor implements Schedule {
         }
 
         return true;
+    }
+
+    private int getMaxMonthDay(int year, int month) {
+        switch (month) {
+            case 1:
+            case 3:
+            case 5:
+            case 7:
+            case 8:
+            case 10:
+            case 12:
+                return 31;
+            case 2:
+                if(year % 4 == 0)
+                    return 29;
+                else
+                    return 28;
+            case 4:
+            case 6:
+            case 9:
+            case 11:
+                return 30;
+            default:
+                throw new IllegalStateException("Wrong month value : "+month);
+        }
     }
 
     @Override
