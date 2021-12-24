@@ -48,7 +48,7 @@ public class PrintStageEvent extends ConstraintCommand {
             StringBuilder total = new StringBuilder(LangID.getStringByID("event_stage", holder.serverLocale).replace("**", "")).append("\n");
 
             for(int k = 0; k < result.size(); k++) {
-                total.append(result.get(k).replace("```less\n", "").replace("```", ""));
+                total.append(result.get(k).replace("```scss\n", "").replace("```", ""));
 
                 if(k < result.size() - 1)
                     total.append("\n");
