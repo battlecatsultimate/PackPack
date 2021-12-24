@@ -364,27 +364,29 @@ public class StageSchedule extends EventFactor implements Schedule {
                     .append(duo(date.section.start.minute));
         }
 
-        result.append(" ~ ");
+        if(!date.dateStart.equals(date.dateEnd)) {
+            result.append(" ~ ");
 
-        if(!date.dateEnd.equals(END)) {
-            if(date.dateStart.year != date.dateEnd.year) {
-                result.append(date.dateEnd.year)
-                        .append(" ");
-            }
+            if(!date.dateEnd.equals(END)) {
+                if(date.dateStart.year != date.dateEnd.year) {
+                    result.append(date.dateEnd.year)
+                            .append(" ");
+                }
 
-            if(date.dateStart.month != date.dateEnd.month) {
-                result.append(getMonth(date.dateEnd.month, lang))
-                        .append(" ");
-            }
+                if(date.dateStart.month != date.dateEnd.month) {
+                    result.append(getMonth(date.dateEnd.month, lang))
+                            .append(" ");
+                }
 
-            result.append(date.dateEnd.day)
-                    .append(getNumberExtension(date.dateEnd.day, lang));
+                result.append(date.dateEnd.day)
+                        .append(getNumberExtension(date.dateEnd.day, lang));
 
-            if(date.section.end.hour * 100 + date.section.end.minute != 1100) {
-                result.append(" ")
-                        .append(duo(date.section.end.hour))
-                        .append(":")
-                        .append(duo(date.section.end.minute));
+                if(date.section.end.hour * 100 + date.section.end.minute != 1100 && date.section.end.hour * 100 + date.section.end.minute != 2359) {
+                    result.append(" ")
+                            .append(duo(date.section.end.hour))
+                            .append(":")
+                            .append(duo(date.section.end.minute));
+                }
             }
         }
 

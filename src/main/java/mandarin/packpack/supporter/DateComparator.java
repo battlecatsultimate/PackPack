@@ -45,8 +45,12 @@ public class DateComparator implements Comparator<String> {
 
         String[] contents = value.split(" ~ ", 2);
 
-        if(contents.length != 2)
-            throw new IllegalStateException("Content has invalid format : "+value);
+        if(contents.length != 2) {
+            contents = value.split("]", 2);
+
+            if(contents.length != 2)
+                throw new IllegalStateException("Content has invalid format : "+value);
+        }
 
         String[] date = contents[0].split(" ");
 
