@@ -662,19 +662,32 @@ public class StageSchedule extends EventFactor implements Schedule {
 
         EventSection section = sections.get(index);
 
-        int startDay = date.dateStart.day;
-        int endDay = date.dateEnd.day;
-
-        if(date.dateEnd.month > date.dateStart.month || date.dateEnd.equals(END) || date.dateEnd.year > date.dateStart.year) {
-            startDay = 1;
-            endDay = 31;
-        }
-
         ArrayList<Integer> even = new ArrayList<>();
 
-        for(int i = startDay; i <= endDay; i++) {
-            if(i % 2 == 0)
-                even.add(i);
+        if((date.dateStart.year == date.dateEnd.year && date.dateEnd.month - date.dateStart.month > 1) || (date.dateEnd.year - date.dateStart.year == 1  && date.dateEnd.month + 12 - date.dateStart.month > 1) || date.dateEnd.year - date.dateStart.year > 1 || date.dateEnd.equals(END)) {
+            for(int i = 1; i <= 31; i++) {
+                if(i % 2 == 0)
+                    even.add(i);
+            }
+        } else {
+            int startStart = date.dateStart.day;
+            int startEnd = getMaxMonthDay(date.dateStart.year, date.dateStart.month);
+
+            int endStart = 1;
+            int endEnd = date.dateEnd.day;
+
+            if(date.section.end.hour == 0 && date.section.end.minute == 0)
+                endEnd--;
+
+            for(int i = startStart; i <= startEnd; i++) {
+                if(i % 2 == 0)
+                    even.add(i);
+            }
+
+            for(int i = endStart; i <= endEnd; i++) {
+                if(i % 2 == 0 && !even.contains(i))
+                    even.add(i);
+            }
         }
 
         return section.days.containsAll(even);
@@ -688,41 +701,29 @@ public class StageSchedule extends EventFactor implements Schedule {
 
         ArrayList<Integer> odd = new ArrayList<>();
 
-        if(date.dateStart.year == date.dateEnd.year) {
-            int startDay = date.dateStart.day;
-            int endDay = date.dateEnd.day;
-
-            if(date.dateEnd.month > date.dateStart.month || date.dateEnd.equals(END)) {
-                startDay = 1;
-                endDay = 31;
-            }
-
-            for(int i = startDay; i <= endDay; i++) {
+        if((date.dateStart.year == date.dateEnd.year && date.dateEnd.month - date.dateStart.month > 1) || (date.dateEnd.year - date.dateStart.year == 1  && date.dateEnd.month + 12 - date.dateStart.month > 1) || date.dateEnd.year - date.dateStart.year > 1 || date.dateEnd.equals(END)) {
+            for(int i = 1; i <= 31; i++) {
                 if(i % 2 == 1)
                     odd.add(i);
             }
         } else {
-            if(date.dateEnd.month + 12 - date.dateStart.month > 1) {
-                for(int i = 1; i <= 31; i++) {
-                    if(i % 2 == 1)
-                        odd.add(i);
-                }
-            } else {
-                int startStart = date.dateStart.day;
-                int startEnd = getMaxMonthDay(date.dateStart.year, date.dateStart.month);
+            int startStart = date.dateStart.day;
+            int startEnd = getMaxMonthDay(date.dateStart.year, date.dateStart.month);
 
-                int endStart = 1;
-                int endEnd = date.dateEnd.day;
+            int endStart = 1;
+            int endEnd = date.dateEnd.day;
 
-                for(int i = startStart; i <= startEnd; i++) {
-                    if(i % 2 == 1)
-                        odd.add(i);
-                }
+            if(date.section.end.hour == 0 && date.section.end.minute == 0)
+                endEnd--;
 
-                for(int i = endStart; i <= endEnd; i++) {
-                    if(i % 2 == 1 && !odd.contains(i))
-                        odd.add(i);
-                }
+            for(int i = startStart; i <= startEnd; i++) {
+                if(i % 2 == 1)
+                    odd.add(i);
+            }
+
+            for(int i = endStart; i <= endEnd; i++) {
+                if(i % 2 == 1 && !odd.contains(i))
+                    odd.add(i);
             }
         }
 
