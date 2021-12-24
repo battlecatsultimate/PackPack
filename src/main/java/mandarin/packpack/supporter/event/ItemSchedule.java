@@ -149,7 +149,7 @@ public class ItemSchedule extends EventFactor implements Schedule {
             result.append(" [").append(LangID.getStringByID("printitem_daily", lang)).append("]");
         }
 
-        if(!title.isBlank()) {
+        if(!title.isBlank() && !title.startsWith("←全画面")) {
             result.append(" {").append(title).append("}");
         }
 
