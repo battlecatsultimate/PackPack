@@ -108,11 +108,11 @@ public class ItemSchedule extends EventFactor implements Schedule {
                 .append(date.dateStart.day)
                 .append(getNumberExtension(date.dateStart.day, lang));
 
-        if(date.section.start.hour != 11 && date.section.start.minute != 0) {
+        if(date.section.start.hour * 100 + date.section.start.minute != 1100 && date.section.start.hour * 100 + date.section.start.minute != 0) {
             result.append(" ")
-                    .append(date.section.start.hour)
+                    .append(duo(date.section.start.hour))
                     .append(":")
-                    .append(date.section.start.minute);
+                    .append(duo(date.section.start.minute));
         }
 
         result.append(" ~ ");
@@ -131,11 +131,11 @@ public class ItemSchedule extends EventFactor implements Schedule {
             result.append(date.dateEnd.day)
                     .append(getNumberExtension(date.dateEnd.day, lang));
 
-            if(date.section.end.hour != 11 && date.section.end.minute != 0) {
+            if(date.section.end.hour * 100 + date.section.end.minute != 1100) {
                 result.append(" ")
-                        .append(date.section.end.hour)
+                        .append(duo(date.section.end.hour))
                         .append(":")
-                        .append(date.section.end.minute);
+                        .append(duo(date.section.end.minute));
             }
         }
 
