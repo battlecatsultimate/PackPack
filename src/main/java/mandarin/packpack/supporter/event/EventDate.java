@@ -54,6 +54,13 @@ public class EventDate {
         return compare(date) == 0;
     }
 
+    public boolean notSame(EventDate date) {
+        int thisDate = year * 10000 + month * 100 + day;
+        int thatDate = date.year * 10000 + date.month * 100 + date.day;
+
+        return thisDate != thatDate;
+    }
+
     private void subtractOneDay(int[] temp) {
         if(temp[0] == 2030 && temp[1] == 1 && temp[2] == 1)
             return;

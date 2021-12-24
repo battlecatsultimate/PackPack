@@ -115,7 +115,7 @@ public class ItemSchedule extends EventFactor implements Schedule {
                     .append(duo(date.section.start.minute));
         }
 
-        if(!date.dateStart.equals(date.dateEnd)) {
+        if(date.dateStart.notSame(date.dateEnd)) {
             result.append(" ~ ");
 
             if(!date.dateEnd.equals(END)) {
