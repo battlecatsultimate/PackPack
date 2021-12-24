@@ -23,7 +23,7 @@ public class EventFactor {
 
     public static int currentYear;
 
-    public static EventDate END = new EventDate(20300101);
+    public static EventDate END = new EventDate(20300101, false);
     public static String NOMAX = "99.99.99";
 
     public static final int EN = 0;

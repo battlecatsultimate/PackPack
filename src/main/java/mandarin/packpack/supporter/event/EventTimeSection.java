@@ -5,6 +5,9 @@ public class EventTimeSection {
     public final EventTime end;
 
     public EventTimeSection(int start, int end) {
+        if(end == 0)
+            end = 2359;
+
         this.start = new EventTime(start);
         this.end = new EventTime(end);
     }
