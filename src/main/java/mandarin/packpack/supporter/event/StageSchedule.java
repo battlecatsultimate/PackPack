@@ -214,7 +214,7 @@ public class StageSchedule extends EventFactor implements Schedule {
                     result.append(LangID.getStringByID("event_odd", lang));
                 } else {
                     for (int i = 0; i < section.days.size(); i++) {
-                        result.append(section.days.get(i)).append(getNumberExtension(section.days.get(i), lang));
+                        result.append(section.days.get(i)).append(getNumberWithDayFormat(section.days.get(i), lang));
 
                         if (i < section.days.size() - 1)
                             result.append(", ");
@@ -314,7 +314,7 @@ public class StageSchedule extends EventFactor implements Schedule {
         result.append(getMonth(date.dateStart.month, lang))
                 .append(" ")
                 .append(date.dateStart.day)
-                .append(getNumberExtension(date.dateStart.day, lang))
+                .append(getNumberWithDayFormat(date.dateStart.day, lang))
                 .append(" ~ ");
 
         if(date.dateEnd.equals(END)) {
@@ -332,7 +332,7 @@ public class StageSchedule extends EventFactor implements Schedule {
             }
 
             result.append(date.dateEnd.day)
-                    .append(getNumberExtension(date.dateEnd.day, lang))
+                    .append(getNumberWithDayFormat(date.dateEnd.day, lang))
                     .append("] ");
         }
 
@@ -355,7 +355,7 @@ public class StageSchedule extends EventFactor implements Schedule {
         result.append(getMonth(date.dateStart.month, lang))
                 .append(" ")
                 .append(date.dateStart.day)
-                .append(getNumberExtension(date.dateStart.day, lang));
+                .append(getNumberWithDayFormat(date.dateStart.day, lang));
 
         if(date.section.start.hour * 100 + date.section.start.minute != 1100 && date.section.start.hour * 100 + date.section.start.minute != 0) {
             result.append(" ")
@@ -379,7 +379,7 @@ public class StageSchedule extends EventFactor implements Schedule {
                 }
 
                 result.append(date.dateEnd.day)
-                        .append(getNumberExtension(date.dateEnd.day, lang));
+                        .append(getNumberWithDayFormat(date.dateEnd.day, lang));
 
                 if(date.section.end.hour * 100 + date.section.end.minute != 1100 && date.section.end.hour * 100 + date.section.end.minute != 2359) {
                     result.append(" ")
@@ -459,6 +459,10 @@ public class StageSchedule extends EventFactor implements Schedule {
                         }
 
                         result.append(LangID.getStringByID("printstage_unlock", lang).replace("_", trueForm));
+                    } else if(id >= 18000 && id < 18100) {
+                        int year = id - 18000 + 7;
+
+                        result.append(LangID.getStringByID("sale_18xxx", lang).replace("_", year + getNumberExtension(year, lang)));
                     } else {
                         String langID = "sale_"+id;
 
@@ -493,12 +497,12 @@ public class StageSchedule extends EventFactor implements Schedule {
                         result.append(getMonth(set.dateStart.month, lang))
                                 .append(" ")
                                 .append(set.dateStart.day)
-                                .append(getNumberExtension(set.dateStart.day, lang))
+                                .append(getNumberWithDayFormat(set.dateStart.day, lang))
                                 .append(" ~ ")
                                 .append(getMonth(set.dateEnd.month, lang))
                                 .append(" ")
                                 .append(set.dateEnd.day)
-                                .append(getNumberExtension(set.dateEnd.day, lang));
+                                .append(getNumberWithDayFormat(set.dateEnd.day, lang));
 
                         if (j < section.daySets.size() - 1)
                             result.append(", ");
@@ -517,7 +521,7 @@ public class StageSchedule extends EventFactor implements Schedule {
                     } else {
                         for (int j = 0; j < section.days.size(); j++) {
                             result.append(section.days.get(j))
-                                    .append(getNumberExtension(section.days.get(j), lang));
+                                    .append(getNumberWithDayFormat(section.days.get(j), lang));
 
                             if (j < section.days.size() - 1) {
                                 result.append(", ");

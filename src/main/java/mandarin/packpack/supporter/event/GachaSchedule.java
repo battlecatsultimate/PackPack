@@ -184,7 +184,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
         result.append(getMonth(date.dateStart.month, lang))
                 .append(" ")
                 .append(date.dateStart.day)
-                .append(getNumberExtension(date.dateStart.day, lang));
+                .append(getNumberWithDayFormat(date.dateStart.day, lang));
 
         if(date.section.start.hour * 100 + date.section.start.minute != 1100 && date.section.start.hour * 100 + date.section.start.minute != 0) {
             result.append(" ")
@@ -208,7 +208,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
                 }
 
                 result.append(date.dateEnd.day)
-                        .append(getNumberExtension(date.dateEnd.day, lang));
+                        .append(getNumberWithDayFormat(date.dateEnd.day, lang));
 
                 if(date.section.end.hour * 100 + date.section.end.minute != 1100 && date.section.end.hour * 100 + date.section.end.minute != 2359) {
                     result.append(" ")
@@ -411,7 +411,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
                 result.append("{");
 
                 for (int i = 0; i < section.days.size(); i++) {
-                    result.append(section.days.get(i)).append(getNumberExtension(section.days.get(i), lang));
+                    result.append(section.days.get(i)).append(getNumberWithDayFormat(section.days.get(i), lang));
 
                     if (i < section.days.size() - 1)
                         result.append(", ");
@@ -458,7 +458,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
         }
 
         for (GachaSection section : gacha) {
-            result.append("<").append(section.index + 1).append(getNumberExtension(section.index + 1, lang)).append(" Gacha>\n\n");
+            result.append("<").append(section.index + 1).append(getNumberWithDayFormat(section.index + 1, lang)).append(" Gacha>\n\n");
 
             result.append("Gacha Name : ").append(tryGetGachaName(section.gachaID, lang)).append("\n");
             result.append("Cf per roll : ").append(section.requiredCatFruit).append("\n");

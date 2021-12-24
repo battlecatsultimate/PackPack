@@ -310,7 +310,7 @@ public class EventFactor {
         }
     }
 
-    public static String getNumberExtension(int num, int lang) {
+    public static String getNumberWithDayFormat(int num, int lang) {
         switch (lang) {
             case EN:
                 if(num != 11 && num % 10 == 1)
@@ -328,6 +328,21 @@ public class EventFactor {
                 return "日";
             default:
                 return "";
+        }
+    }
+
+    public static String getNumberExtension(int num, int lang) {
+        if(lang == LangID.EN) {
+            if(num != 11 && num % 10 == 1)
+                return "st";
+            else if(num != 12 && num % 10 == 2)
+                return "nd";
+            else if(num != 13 && num % 10 == 3)
+                return "rd";
+            else
+                return "th";
+        } else {
+            return "";
         }
     }
 

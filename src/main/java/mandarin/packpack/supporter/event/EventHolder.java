@@ -887,7 +887,7 @@ public class EventHolder extends EventFactor {
         result.append(getMonth(dateStart.month, lang))
                 .append(" ")
                 .append(dateStart.day)
-                .append(getNumberExtension(dateStart.day, lang))
+                .append(getNumberWithDayFormat(dateStart.day, lang))
                 .append(" ~ ");
 
         if(dateEnd.equals(END)) {
@@ -904,7 +904,7 @@ public class EventHolder extends EventFactor {
             }
 
             result.append(dateEnd.day)
-                    .append(getNumberExtension(dateEnd.day, lang))
+                    .append(getNumberWithDayFormat(dateEnd.day, lang))
                     .append("] ");
         }
 

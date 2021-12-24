@@ -106,7 +106,7 @@ public class ItemSchedule extends EventFactor implements Schedule {
         result.append(getMonth(date.dateStart.month, lang))
                 .append(" ")
                 .append(date.dateStart.day)
-                .append(getNumberExtension(date.dateStart.day, lang));
+                .append(getNumberWithDayFormat(date.dateStart.day, lang));
 
         if(date.section.start.hour * 100 + date.section.start.minute != 1100 && date.section.start.hour * 100 + date.section.start.minute != 0) {
             result.append(" ")
@@ -130,7 +130,7 @@ public class ItemSchedule extends EventFactor implements Schedule {
                 }
 
                 result.append(date.dateEnd.day)
-                        .append(getNumberExtension(date.dateEnd.day, lang));
+                        .append(getNumberWithDayFormat(date.dateEnd.day, lang));
 
                 if(date.section.end.hour * 100 + date.section.end.minute != 1100 && date.section.end.hour * 100 + date.section.end.minute != 2359) {
                     result.append(" ")
@@ -233,7 +233,7 @@ public class ItemSchedule extends EventFactor implements Schedule {
                 result.append("{");
 
                 for (int i = 0; i < section.days.size(); i++) {
-                    result.append(section.days.get(i)).append(getNumberExtension(section.days.get(i), lang));
+                    result.append(section.days.get(i)).append(getNumberWithDayFormat(section.days.get(i), lang));
 
                     if (i < section.days.size() - 1)
                         result.append(", ");
