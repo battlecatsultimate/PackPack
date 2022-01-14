@@ -51,10 +51,10 @@ public class EventFactor {
     public static final Map<Integer, int[]> missionReward = new HashMap<>();
     public static final Map<Integer, int[]> newUnits = new HashMap<>();
 
-    public static final GroupHandler CYCLONE = new NormalGroupHandler(
+    public static final GroupHandler CYCLONE = new ContainedGroupHandler(
             Arrays.asList(
-                    Arrays.asList(1015, 1039, 1066, 1122, 1172, 118, 1189, 1193, 1198, 1247),
-                    Arrays.asList(1014, 1016, 1043, 1096, 1157, 1169, 1176, 1187, 1195, 1203)
+                    Arrays.asList(1014, 1016, 1043, 1096, 1157, 1169, 1176, 1187, 1195, 1203),
+                    Arrays.asList(1015, 1039, 1066, 1122, 1172, 1185, 1189, 1193, 1198, 1247)
             ),
             "group_0", false
     );
@@ -182,9 +182,22 @@ public class EventFactor {
             "group_4", false
     );
 
+    public static final GroupHandler ALLSTARSTAGES = new SequenceGroupHandler(
+            Arrays.asList(
+                    List.of(1033),
+                    List.of(1034),
+                    List.of(1035),
+                    List.of(1070),
+                    List.of(1079),
+                    List.of(1146)
+            ),
+            "group_15", false
+    );
+
     public static final List<GroupHandler> handlers = Arrays.asList(
             CYCLONE, BUILDERBLITZ, XPBLITZ, CATFRUITFESTIVAL, CRAZEDFESTIVAL, LILFESTIVAL, METALFESTIVAL, GAMATOTOXP,
-            ITEMEXDISCOUNT, EOCHALFENERGY, ITFHALFENERGY, COTCHALFENERGY, HALFENERGY, GAMATOTOGRANDXP, ITEMDISCOUNT, CATFRUITFESTIVALJP, CRAZEDFESTIVALJP
+            ITEMEXDISCOUNT, EOCHALFENERGY, ITFHALFENERGY, COTCHALFENERGY, HALFENERGY, GAMATOTOGRANDXP, ITEMDISCOUNT,
+            CATFRUITFESTIVALJP, CRAZEDFESTIVALJP, ALLSTARSTAGES
     );
 
     public static final String GACHAURL = "https://ponos.s3.dualstack.ap-northeast-1.amazonaws.com/information/appli/battlecats/gacha/rare_LLL_R_ID_.html";
