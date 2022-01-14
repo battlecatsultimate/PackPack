@@ -2,8 +2,10 @@ package mandarin.packpack.supporter.event;
 
 import common.CommonStatic;
 import common.system.files.VFile;
+import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.stage.MapColc;
+import common.util.stage.Stage;
 import common.util.stage.StageMap;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.event.group.ContainedGroupHandler;
@@ -427,6 +429,34 @@ public class EventFactor {
     }
 
     public static String beautifyItem(int lang, int itemID, int itemAmount) {
+        if (itemID >= 11000 && itemID < 12000) {
+            MapColc mc = MapColc.get(Data.hex(11));
+
+            if(mc != null) {
+                StageMap map = mc.maps.get(itemID % 11000);
+
+                if(map != null) {
+                    Stage st = map.list.get(0);
+
+                    if(st != null) {
+                        String stageName = StaticStore.safeMultiLangGet(st, lang);
+
+                        if(stageName != null && !stageName.isBlank()) {
+                            return stageName;
+                        } else {
+                            return LangID.getStringByID("item_ranking", lang).replace("_", Data.trio(itemID - 11000));
+                        }
+                    } else {
+                        return LangID.getStringByID("item_ranking", lang).replace("_", Data.trio(itemID - 11000));
+                    }
+                } else {
+                    return LangID.getStringByID("item_ranking", lang).replace("_", Data.trio(itemID - 11000));
+                }
+            } else {
+                return LangID.getStringByID("item_ranking", lang).replace("_", Data.trio(itemID - 11000));
+            }
+        }
+
         String id = "item_"+itemID;
 
         String item = LangID.getStringByID(id, lang);
