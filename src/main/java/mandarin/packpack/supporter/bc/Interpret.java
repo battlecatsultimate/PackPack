@@ -16,12 +16,12 @@ import java.util.List;
 
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class Interpret extends Data {
-    public static final String[] TRAIT = {"data_red", "data_float", "data_black", "data_metal", "data_angel", "data_alien", "data_zombie", "data_demon", "data_relic", "data_white", "data_eva", "data_witch", "data_baset"};
+    public static final String[] TRAIT = {"data_red", "data_float", "data_black", "data_metal", "data_angel", "data_alien", "data_zombie", "data_demon", "data_relic", "data_white", "data_eva", "data_witch", "data_baron", "data_baset"};
 
     public static final String[] ABIS = {"data_strong", "data_resistant", "data_massive", "data_attackon", "data_extramon",
             "data_basedest", "data_abimetal", "data_waveshie", "data_imusnipe", "data_imustoptt",
             "data_ghost", "data_zombiekill", "data_witchkill", "data_suicide", "data_imutheme", "data_evakill",
-            "data_imuboss", "data_insanetou", "data_insanedmg"};
+            "data_imuboss", "data_insanetou", "data_insanedmg", "data_baronkiller"};
 
     public static final String[] PROCIND = {"WEAK", "STOP", "SLOW", "KB", "WARP", "CURSE", "IMUATK",
             "STRONG", "LETHAL", "CRIT", "BREAK", "SHIELDBREAK", "SATK", "MINIWAVE", "WAVE", "VOLC", "IMUWEAK",
@@ -36,8 +36,6 @@ public class Interpret extends Data {
             P_POIATK, P_DEMONSHIELD, P_DEATHSURGE, P_BURROW, P_REVIVE, P_SNIPER, P_SEAL, P_TIME, P_SUMMON, P_MOVEWAVE, P_THEME,
             P_POISON, P_BOSS, P_ARMOR, P_COUNTER, P_DMGCUT, P_DMGCUT, P_SPEED, P_CRITI, P_IMUSEAL, P_IMUPOI, P_IMUSUMMON, P_IMUMOVING,
             P_IMUARMOR, P_IMUSPEED};
-
-    private static final int[] traitMask = {0, 1, 2, 3, 4, 5, 6, 12, 7, 8, 9, 10};
 
     public static String getTrait(List<Trait> traits, int star, int lang) {
         StringBuilder res = new StringBuilder();
