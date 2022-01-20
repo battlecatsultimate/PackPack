@@ -926,5 +926,11 @@
   "printitem_formattic" : "_NNN_ _III_",
   "printitem_formatxp" : "_NNN_ _III_",
   "printitem_plural" : "s",
-  "printitem_plurales" : "es"
+  "printitem_plurales" : "es",
+  "stat_uid" : "Please specify ID of the unit you want to analyze",
+  "stat_name" : "Not enough names | Number of forms : _RRR_ | Number of names : _PPP_",
+  "stat_cancel" : "Canceled analyzing stat file",
+  "stat_expire" : "Stat analyzing time expired...",
+  "stat_fail" : "Failed to analyze stat data...",
+  "stat_success" : "Successfully analyzed stat data"
 }

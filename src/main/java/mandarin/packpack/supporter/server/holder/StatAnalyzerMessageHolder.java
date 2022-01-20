@@ -286,7 +286,7 @@ public class StatAnalyzerMessageHolder extends MessageHolder<MessageCreateEvent>
         } else {
             author.getAuthor().ifPresent(u -> StaticStore.putHolder(u.getId().asString(), StatAnalyzerMessageHolder.this));
 
-            registerAutoFinish(this, msg, author, lang, "animanalyze_expire", TimeUnit.MINUTES.toMillis(5));
+            registerAutoFinish(this, msg, author, lang, "stat_expire", TimeUnit.MINUTES.toMillis(5));
         }
     }
 
@@ -487,7 +487,7 @@ public class StatAnalyzerMessageHolder extends MessageHolder<MessageCreateEvent>
                 }
 
             } else if(m.getContent().equals("c")) {
-                Command.editMessage(msg, me -> me.content(wrap(LangID.getStringByID("animanalyze_cancel", lang))));
+                Command.editMessage(msg, me -> me.content(wrap(LangID.getStringByID("stat_cancel", lang))));
 
                 StaticStore.deleteFile(container, true);
 

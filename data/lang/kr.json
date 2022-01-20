@@ -913,5 +913,11 @@
   "printitem_toolong" : "아이템/세일 데이터 메세지 길이가 너무 길어 파일로 업로드합니다",
   "printitem_format" : "_III_ _NNN_개",
   "printitem_formattic" : "_III_ _NNN_장",
-  "printitem_formatxp" : "_NNN_ _III_"
+  "printitem_formatxp" : "_NNN_ _III_",
+  "stat_uid" : "분석하고 싶으신 유닛의 ID를 제공해 주세요",
+  "stat_name" : "이름 데이터가 부족합니다 | 분석될 형태 개수 : _RRR_ | 이름 개수 : _PPP_",
+  "stat_cancel" : "스탯 분석을 취소했습니다",
+  "stat_expire" : "분석 시관 초과...",
+  "stat_fail" : "스탯 데이터 분석 실패...",
+  "stat_success" : "성공적으로 스탯 데이터를 분석했습니다"
 }

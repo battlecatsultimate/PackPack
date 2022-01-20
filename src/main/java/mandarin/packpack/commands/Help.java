@@ -36,7 +36,7 @@ public class Help extends Command {
                     .addField(LangID.getStringByID("help_normal", lang), "```analyze, locale, prefix```", false)
                     .addField(LangID.getStringByID("help_bc", lang), "```background, castle, catcombo, enemygif, enemyimage, enemysprite, enemystat, findstage, formgif, formimage, formsprite, formstat, medal, music, stageinfo```", false)
                     .addField(LangID.getStringByID("help_server", lang), "```bcustat, boosteremoji, boosteremojiremove, boosterrole, boosterroleremove, channelpermission, checkbcu, clearcache, fixrole, idset, memory, save, serverjson, serverpre, setup, subscribeevent, watchdm```", false)
-                    .addField(LangID.getStringByID("help_data", lang), "```animanalyzer, announcement, checkeventupdate, printevent, printgachaevent, printitemevent, printstageevent, stageimage, stagemapimage```", false)
+                    .addField(LangID.getStringByID("help_data", lang), "```animanalyzer, announcement, checkeventupdate, printevent, printgachaevent, printitemevent, printstageevent, stageimage, statanalyzer, stagemapimage```", false)
                     .addField(LangID.getStringByID("help_packpack", lang), "```alias, aliasadd, aliasremove, statistic, suggest```", false);
 
             ch.createMessage(builder.build()).subscribe();
