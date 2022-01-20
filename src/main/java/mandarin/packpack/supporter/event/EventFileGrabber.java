@@ -60,14 +60,16 @@ public class EventFileGrabber {
 
         String l = link.replace("{1}", locale[loc]).replace("{2}", file[f]);
 
+        String amz = getAmzDate();
+
         try {
             return l +
                     "?X-Amz-Algorithm=" + algorithm +
                     "&X-Amz-Credential=" + id + slash + getDate() + slash + region + slash + service + slash + request +
-                    "&X-Amz-Date=" + getAmzDate() +
+                    "&X-Amz-Date=" + amz +
                     "&X-Amz-Expires=600" +
                     "&X-Amz-SignedHeaders=host" +
-                    "&X-Amz-Signature="+getSigningKey(l);
+                    "&X-Amz-Signature="+getSigningKey(l, amz);
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "Failed to parse event data link");
 
@@ -75,29 +77,29 @@ public class EventFileGrabber {
         }
     }
 
-    private static String getSigningKey(String l) throws Exception {
+    private static String getSigningKey(String l, String amz) throws Exception {
         byte[] k = ("AWS4" + key).getBytes(StandardCharsets.UTF_8);
         byte[] dateKey = hmacSha256(k, getDate());
         byte[] dateRegionKey = hmacSha256(dateKey, region);
         byte[] dateRegionServiceKey = hmacSha256(dateRegionKey, service);
         byte[] signingKey = hmacSha256(dateRegionServiceKey, request);
 
-        return Hex.encodeHexString(hmacSha256(signingKey, getStringToSign(l)));
+        return Hex.encodeHexString(hmacSha256(signingKey, getStringToSign(l, amz)));
     }
 
-    private static String getStringToSign(String l) {
+    private static String getStringToSign(String l, String amz) {
         return algorithm + "\n" +
-                getAmzDate() + "\n" +
+                amz + "\n" +
                 getDate() + "/" + region + "/" + service + "/" + request + "\n" +
-                DigestUtils.sha256Hex(getCanonical(l));
+                DigestUtils.sha256Hex(getCanonical(l, amz));
     }
 
-    private static String getCanonical(String l) {
+    private static String getCanonical(String l, String amz) {
         return "GET\n" +
                 getUri(l) + "\n" +
                 "X-Amz-Algorithm=" + algorithm + "&" +
                 "X-Amz-Credential=" + id + slash + getDate() + slash + region + slash + service + slash + request + "&" +
-                "X-Amz-Date=" + getAmzDate() + "&" +
+                "X-Amz-Date=" + amz + "&" +
                 "X-Amz-Expires=600&" +
                 "X-Amz-SignedHeaders=host\n" +
                 "host:" + domain + "\n" +
