@@ -1006,11 +1006,12 @@ public class PackBot {
             CommonStatic.ctx = new PackContext();
             CommonStatic.getConfig().ref = false;
 
+            StaticStore.readServerInfo();
+
             if(arg.length >= 2) {
                 StaticStore.imgur.registerClient(arg[1]);
             }
 
-            StaticStore.readServerInfo();
             LangID.initialize();
 
             AssetDownloader.checkAssetDownload();
