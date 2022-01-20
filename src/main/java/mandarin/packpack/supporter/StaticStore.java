@@ -17,6 +17,7 @@ import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Role;
 import discord4j.rest.util.Color;
+import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.event.EventHolder;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.SpamPrevent;
@@ -859,5 +860,21 @@ public class StaticStore {
             default:
                 return japaneseVersion;
         }
+    }
+
+    public static String beautifyFileSize(File f) {
+        String[] unit = {"B", "KB", "MB"};
+
+        double size = f.length();
+
+        for (String s : unit) {
+            if (size < 1024) {
+                return DataToString.df.format(size) + s;
+            } else {
+                size /= 1024.0;
+            }
+        }
+
+        return DataToString.df.format(size)+unit[2];
     }
 }

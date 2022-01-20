@@ -3,6 +3,7 @@ package mandarin.packpack.supporter.server.data;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import mandarin.packpack.supporter.StaticStore;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -154,6 +155,8 @@ public class ImgurDataHolder {
         }
 
         JsonObject obj = JsonParser.parseString(result.toString()).getAsJsonObject();
+
+        StaticStore.logger.uploadLog("Tried to upload file to imgur\nPath : "+image.getAbsolutePath()+"\nSize : "+StaticStore.beautifyFileSize(image)+"\nResult : \n```json\n"+ result +"\n```");
 
         if (obj.has("data")) {
             JsonObject data = obj.get("data").getAsJsonObject();
