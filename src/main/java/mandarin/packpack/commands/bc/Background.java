@@ -116,8 +116,12 @@ public class Background extends TimedConstraintCommand {
                 if(id == -1) {
                     ch.createMessage(LangID.getStringByID("bg_more", lang)).subscribe();
                     return;
-                } else if(id < 0 || id >= UserProfile.getBCData().bgs.getList().size()) {
-                    ch.createMessage(LangID.getStringByID("bg_invalid", lang).replace("_", (UserProfile.getBCData().bgs.getList().size()-1)+"")).subscribe();
+                }
+
+                common.util.pack.Background bg = UserProfile.getBCData().bgs.getRaw(id);
+
+                if(bg == null) {
+                    ch.createMessage(LangID.getStringByID("bg_invalid", lang).replace("_", (UserProfile.getBCData().bgs.getList().size()-2)+"")).subscribe();
                     return;
                 }
 
@@ -133,8 +137,6 @@ public class Background extends TimedConstraintCommand {
                 boolean eff = drawEffect(getContent(event));
                 boolean anim = generateAnim(getContent(event));
                 boolean isTrusted = StaticStore.contributors.contains(m.getId().asString());
-
-                common.util.pack.Background bg = UserProfile.getBCData().bgs.getList().get(id);
 
                 String cache = StaticStore.imgur.get("BG - "+Data.trio(bg.id.id), false, true);
 
@@ -163,7 +165,7 @@ public class Background extends TimedConstraintCommand {
                         int finalW = w;
 
                         createMessage(ch, ms -> {
-                            ms.content(LangID.getStringByID("bg_result", lang).replace("_", Data.trio(id)).replace("WWW", finalW +"").replace("HHH", h+""));
+                            ms.content(LangID.getStringByID("bg_result", lang).replace("_", Data.trio(bg.id.id)).replace("WWW", finalW +"").replace("HHH", h+""));
                             ms.addFile("bg.png", fis);
                         }, () -> {
                             try {
