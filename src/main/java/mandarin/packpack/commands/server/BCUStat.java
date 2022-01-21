@@ -43,8 +43,6 @@ public class BCUStat extends Command {
         AtomicReference<Long> allUsers = new AtomicReference<>(0L);
 
         getGuild(event).subscribe(g -> {
-            System.out.println(result.get());
-
             Long human = g.getMembers()
                     .filter(m -> !m.isBot())
                     .count()

@@ -22,16 +22,12 @@ import mandarin.packpack.supporter.event.EventHolder;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.TimeBoolean;
-import mandarin.packpack.supporter.server.data.AliasHolder;
-import mandarin.packpack.supporter.server.data.BoosterHolder;
-import mandarin.packpack.supporter.server.data.IDHolder;
-import mandarin.packpack.supporter.server.data.ImgurDataHolder;
+import mandarin.packpack.supporter.server.data.*;
 import mandarin.packpack.supporter.server.holder.Holder;
 
 import java.io.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.MessageDigest;
@@ -89,6 +85,9 @@ public class StaticStore {
     public static ArrayList<String> needFixing = new ArrayList<>();
 
     public static EventHolder event = new EventHolder();
+
+    public static ScamLinkHolder scamLink = new ScamLinkHolder();
+    public static ScamLinkHandlerHolder scamLinkHandlers = new ScamLinkHandlerHolder();
 
     public static final MultiLangCont<Integer, String> MEDNAME = new MultiLangCont<>();
     public static final MultiLangCont<Integer, String> MEDEXP = new MultiLangCont<>();
@@ -484,6 +483,8 @@ public class StaticStore {
         obj.add("gachaCache", mapToJsonIntegerList(event.gachaCache));
         obj.add("itemCache", mapToJsonIntegerList(event.itemCache));
         obj.add("stageCache", mapToJsonIntegerList(event.stageCache));
+        obj.add("scamLink", scamLink.jsonfy());
+        obj.add("scamLinkHandlers", scamLinkHandlers.jsonfy());
 
         try {
             File folder = new File("./data/");
@@ -620,6 +621,14 @@ public class StaticStore {
 
             if(obj.has("stageCache")) {
                 event.stageCache = jsonToMapIntegerList(obj.getAsJsonArray("stageCache"));
+            }
+
+            if(obj.has("scamLink")) {
+                scamLink.readData(obj.getAsJsonObject("scamLink"));
+            }
+
+            if(obj.has("scamLinkHandlers")) {
+                scamLinkHandlers.readData(obj.getAsJsonArray("scamLinkHandlers"));
             }
         }
     }

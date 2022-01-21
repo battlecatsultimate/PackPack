@@ -27,7 +27,6 @@ import java.util.Optional;
 
 public class SetupMemberButtonHolder extends InteractionHolder<ComponentInteractionEvent> {
     private final Message msg;
-    private final Message author;
     private final String channelID;
     private final String memberID;
 
@@ -37,11 +36,10 @@ public class SetupMemberButtonHolder extends InteractionHolder<ComponentInteract
 
     private String roleID;
 
-    public SetupMemberButtonHolder(Message msg, Message author, String channelID, String memberID, IDHolder holder, String modID, int lang) {
+    public SetupMemberButtonHolder(Message msg, String channelID, String memberID, IDHolder holder, String modID, int lang) {
         super(ComponentInteractionEvent.class);
 
         this.msg = msg;
-        this.author = author;
         this.channelID = channelID;
         this.memberID = memberID;
 

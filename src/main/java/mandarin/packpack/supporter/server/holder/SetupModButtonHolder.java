@@ -1,6 +1,5 @@
 package mandarin.packpack.supporter.server.holder;
 
-import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.event.domain.interaction.ComponentInteractionEvent;
 import discord4j.core.event.domain.interaction.SelectMenuInteractionEvent;
 import discord4j.core.object.component.ActionRow;
@@ -146,7 +145,7 @@ public class SetupModButtonHolder extends InteractionHolder<ComponentInteraction
 
                 expired = true;
                 StaticStore.removeHolder(memberID, this);
-                StaticStore.putHolder(memberID, new SetupMemberButtonHolder(m, author, channelID, memberID, holder, roleID, lang));
+                StaticStore.putHolder(memberID, new SetupMemberButtonHolder(m, channelID, memberID, holder, roleID, lang));
 
                 return event.deferEdit().then(event.getInteractionResponse().editInitialResponse(
                         WebhookMessageEditRequest.builder()

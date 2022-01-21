@@ -41,6 +41,7 @@ import mandarin.packpack.supporter.event.EventFactor;
 import mandarin.packpack.supporter.event.EventFileGrabber;
 import mandarin.packpack.supporter.event.GachaSet;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.ScamLinkHandler;
 import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.data.BoosterData;
 import mandarin.packpack.supporter.server.data.BoosterHolder;
@@ -64,7 +65,7 @@ public class PackBot {
     public static int event = 0;
     public static int pfp = 0;
     public static boolean eventInit = false;
-    public static boolean develop = false;
+    public static boolean develop = true;
 
     public static final String normal = "p!help, but under Construction!";
     public static final String dev = "p!help, being developed, bot may not response";
@@ -574,6 +575,24 @@ public class PackBot {
 
         gate.on(MessageCreateEvent.class)
                 .filter(event -> {
+                    event.getMember().ifPresent(m -> {
+                        Guild g = event.getGuild().block();
+                        Message msg = event.getMessage();
+
+                        if(!m.isBot() && g != null && StaticStore.scamLinkHandlers.servers.containsKey(g.getId().asString()) && ScamLinkHandler.validScammingUser(msg.getContent())) {
+                            String link = ScamLinkHandler.getLinkFromMessage(msg.getContent());
+
+                            if(link != null) {
+                                link = link.replace("http://", "").replace("https://", "");
+                            }
+
+                            StaticStore.scamLinkHandlers.servers.get(g.getId().asString()).takeAction(gate, link, m, g);
+                            StaticStore.logger.uploadLog("I caught compromised user\nLINK : "+link+"\nGUILD : "+g.getName()+" ("+g.getId().asString()+")\nMEMBER : "+m.getDisplayName()+" ("+m.getId().asString()+")");
+
+                            msg.delete().subscribe();
+                        }
+                    });
+
                     MessageChannel mc = event.getMessage().getChannel().block();
 
                     if(mc == null)
@@ -976,6 +995,34 @@ public class PackBot {
                                 case "statanalyzer":
                                 case "sa":
                                     new StatAnalyzer(ConstraintCommand.ROLE.CONTRIBUTOR, lang, idh).execute(event);
+                                    break;
+                                case "addscamlinkhelpingserver":
+                                case "aslhs":
+                                case "ashs":
+                                    new AddScamLinkHelpingServer(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+                                    break;
+                                case "removescamlinkhelpingserver":
+                                case "rslhs":
+                                case "rshs":
+                                    new RemoveScamLinkHelpingServer(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+                                    break;
+                                case "registerscamlink":
+                                case "rsl":
+                                    new RegisterScamLink(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+                                    break;
+                                case "unregisterscamlink":
+                                case "usl":
+                                    new UnregisterScamLink(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+                                    break;
+                                case "subscribescamlinkdetector":
+                                case "ssld":
+                                case "ssd":
+                                    new SubscribeScamLinkDetector(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+                                    break;
+                                case "unsubscribescamlinkdetector":
+                                case "usld":
+                                case "usd":
+                                    new UnsubscribeScamLinkDetector(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
                                     break;
                             }
                         }
