@@ -36,7 +36,7 @@ public class UnregisterScamLink extends ConstraintCommand {
 
         String link = contents[1];
 
-        if(!link.startsWith("http://") | !link.startsWith("https://")) {
+        if(!link.startsWith("http://") && !link.startsWith("https://")) {
             createMessage(ch, m -> m.content(LangID.getStringByID("scamreg_invlink", lang)));
             return;
         }
