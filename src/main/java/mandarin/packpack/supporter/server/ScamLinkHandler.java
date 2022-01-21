@@ -23,7 +23,7 @@ import java.util.Set;
 public class ScamLinkHandler {
     public static boolean validScammingUser(String content) {
         for(String link : StaticStore.scamLink.links) {
-            if(content.contains(link))
+            if(content.contains(link) && !content.matches("(unregisterscamlink|usl|registerscamlink|rsl) +"+link+"$"))
                 return true;
         }
 
