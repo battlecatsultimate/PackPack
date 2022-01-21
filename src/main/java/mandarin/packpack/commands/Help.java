@@ -35,9 +35,9 @@ public class Help extends Command {
                     .color(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)])
                     .addField(LangID.getStringByID("help_normal", lang), "```analyze, locale, prefix```", false)
                     .addField(LangID.getStringByID("help_bc", lang), "```background, castle, catcombo, enemygif, enemyimage, enemysprite, enemystat, findstage, formgif, formimage, formsprite, formstat, medal, music, stageinfo```", false)
-                    .addField(LangID.getStringByID("help_server", lang), "```bcustat, boosteremoji, boosteremojiremove, boosterrole, boosterroleremove, channelpermission, checkbcu, clearcache, fixrole, idset, memory, save, serverjson, serverpre, setup, subscribeevent, watchdm```", false)
+                    .addField(LangID.getStringByID("help_server", lang), "```bcustat, boosteremoji, boosteremojiremove, boosterrole, boosterroleremove, channelpermission, checkbcu, clearcache, fixrole, idset, memory, save, serverjson, serverpre, setup, subscribeevent, subscribescamlinkdetector, unsubscribescamlinkdetector, watchdm```", false)
                     .addField(LangID.getStringByID("help_data", lang), "```animanalyzer, announcement, checkeventupdate, printevent, printgachaevent, printitemevent, printstageevent, stageimage, statanalyzer, stagemapimage```", false)
-                    .addField(LangID.getStringByID("help_packpack", lang), "```alias, aliasadd, aliasremove, statistic, suggest```", false);
+                    .addField(LangID.getStringByID("help_packpack", lang), "```alias, aliasadd, aliasremove, registerscamlink, statistic, suggest, unregisterscamlink```", false);
 
             ch.createMessage(builder.build()).subscribe();
         }
@@ -280,6 +280,24 @@ public class Help extends Command {
                         .addField("-abil", LangID.getStringByID("help_statanalyzer_abil", lang), false)
                         .addField("-proc", LangID.getStringByID("help_statanalyzer_proc", lang), false)
                         .build()));
+                break;
+            case "registerscamlink":
+            case "rsl":
+                ch.createMessage(addFields("registerscamlink", false, false, true)).subscribe();
+                break;
+            case "unregisterscamlink":
+            case "usl":
+                ch.createMessage(addFields("unregisterscamlink", false, false, false)).subscribe();
+                break;
+            case "subscribescamlinkdetector":
+            case "ssld":
+            case "ssd":
+                ch.createMessage(addFields("subscribescamlinkdetector", true, false, true)).subscribe();
+                break;
+            case "unsubscribescamlinkdetector":
+            case "usld":
+            case "usd":
+                ch.createMessage(addFields("unsubscribescamlinkdetector", false, false, false)).subscribe();
                 break;
             default:
                 createMessageWithNoPings(ch, LangID.getStringByID("help_nocomm", lang).replace("_", command));

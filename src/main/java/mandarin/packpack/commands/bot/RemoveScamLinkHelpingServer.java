@@ -1,4 +1,4 @@
-package mandarin.packpack.commands.server;
+package mandarin.packpack.commands.bot;
 
 import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.channel.MessageChannel;
