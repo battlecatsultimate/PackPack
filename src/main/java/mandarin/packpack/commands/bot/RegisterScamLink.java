@@ -34,7 +34,7 @@ public class RegisterScamLink extends ConstraintCommand {
             return;
         }
 
-        String link = contents[1];
+        String link = contents[1].replaceAll("/$", "");
 
         if(!link.startsWith("http://") && !link.startsWith("https://")) {
             createMessage(ch, m -> m.content(LangID.getStringByID("scamreg_invlink", lang)));
