@@ -22,6 +22,7 @@ import discord4j.core.object.entity.channel.PrivateChannel;
 import discord4j.core.object.presence.ClientActivity;
 import discord4j.core.object.presence.ClientPresence;
 import discord4j.core.spec.*;
+import discord4j.gateway.intent.Intent;
 import discord4j.gateway.intent.IntentSet;
 import discord4j.rest.request.RouterOptions;
 import discord4j.rest.util.AllowedMentions;
@@ -78,7 +79,7 @@ public class PackBot {
         DiscordClientBuilder<DiscordClient, RouterOptions> builder = DiscordClientBuilder.create(TOKEN);
 
         DiscordClient client = builder.build();
-        GatewayDiscordClient gate = client.gateway().setEnabledIntents(IntentSet.all()).login().block();
+        GatewayDiscordClient gate = client.gateway().setEnabledIntents(IntentSet.of(Intent.GUILDS, Intent.GUILD_MEMBERS, Intent.GUILD_EMOJIS, Intent.GUILD_INTEGRATIONS, Intent.GUILD_MESSAGES, Intent.GUILD_MESSAGE_REACTIONS, Intent.DIRECT_MESSAGES, Intent.DIRECT_MESSAGE_REACTIONS)).login().block();
 
         if(gate == null) {
             return;
