@@ -62,6 +62,8 @@ public class SubscribeEvent extends ConstraintCommand {
             }
         }
 
+        holder.eventRaw = isRaw(getContent(event));
+
         holder.eventLocale.sort(Integer::compare);
 
         holder.event = channel;
@@ -157,5 +159,16 @@ public class SubscribeEvent extends ConstraintCommand {
         }
 
         return builder.toString();
+    }
+
+    private boolean isRaw(String content) {
+        String[] contents = content.split(" ");
+
+        for(int i = 0; i < contents.length; i++) {
+            if(contents[i].equals("-r") || contents[i].equals("-raw"))
+                return true;
+        }
+
+        return false;
     }
 }
