@@ -328,7 +328,7 @@ public class EventHolder extends EventFactor {
         this.items.put(locale, i);
     }
 
-    public ArrayList<String> printStageEvent(int locale, int lang, boolean full) {
+    public ArrayList<String> printStageEvent(int locale, int lang, boolean full, boolean raw) {
         ArrayList<String> result = new ArrayList<>();
 
         List<StageSchedule> fullStages = this.stages.get(locale);
@@ -448,11 +448,13 @@ public class EventHolder extends EventFactor {
             analyzed[i] = true;
         }
 
-        normals.sort(new DateComparator(lang));
-        dailys.sort(new DateComparator(lang));
-        weeklys.sort(new DateComparator(lang));
-        monthlys.sort(new DateComparator(lang));
-        yearlys.sort(new DateComparator(lang));
+        if(!raw) {
+            normals.sort(new DateComparator(lang));
+            dailys.sort(new DateComparator(lang));
+            weeklys.sort(new DateComparator(lang));
+            monthlys.sort(new DateComparator(lang));
+            yearlys.sort(new DateComparator(lang));
+        }
 
         if(!normals.isEmpty()) {
             StringBuilder data = new StringBuilder();
@@ -537,7 +539,7 @@ public class EventHolder extends EventFactor {
         return result;
     }
 
-    public String printGachaEvent(int locale, int lang, boolean full) {
+    public String printGachaEvent(int locale, int lang, boolean full, boolean raw) {
         List<GachaSchedule> fullGachas = this.gachas.get(locale);
 
         List<GachaSchedule> gachas;
@@ -572,7 +574,8 @@ public class EventHolder extends EventFactor {
             normals.add(beauty);
         }
 
-        normals.sort(new DateComparator(lang));
+        if(!raw)
+            normals.sort(new DateComparator(lang));
 
         if(normals.isEmpty()) {
            return "";
@@ -620,7 +623,7 @@ public class EventHolder extends EventFactor {
         return data.toString();
     }
 
-    public String printItemEvent(int locale, int lang, boolean full) {
+    public String printItemEvent(int locale, int lang, boolean full, boolean raw) {
         List<ItemSchedule> fullItems = this.items.get(locale);
 
         List<ItemSchedule> items;
@@ -653,7 +656,8 @@ public class EventHolder extends EventFactor {
             normals.add(beauty);
         }
 
-        normals.sort(new DateComparator(lang));
+        if(!raw)
+            normals.sort(new DateComparator(lang));
 
         if(normals.isEmpty()) {
             return "";

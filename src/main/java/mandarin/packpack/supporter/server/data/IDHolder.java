@@ -84,6 +84,7 @@ public class IDHolder {
     public Map<String, String> ID = new TreeMap<>();
     public Map<String, List<String>> channel = new TreeMap<>();
     public List<Integer> eventLocale = new ArrayList<>();
+    public boolean eventRaw = false;
 
     public IDHolder(String m, String me, String bo, String acc) {
         this.MOD = m;

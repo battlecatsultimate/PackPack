@@ -1153,7 +1153,7 @@ public class PackBot {
 
                         if(ch instanceof MessageChannel) {
                             if(j == EventFactor.SALE) {
-                                ArrayList<String> result = StaticStore.event.printStageEvent(i, holder.serverLocale, false);
+                                ArrayList<String> result = StaticStore.event.printStageEvent(i, holder.serverLocale, false, holder.eventRaw);
 
                                 if(result.isEmpty())
                                     continue;
@@ -1280,9 +1280,9 @@ public class PackBot {
                                 String result;
 
                                 if(j == EventFactor.GATYA)
-                                    result = StaticStore.event.printGachaEvent(i, holder.serverLocale, false);
+                                    result = StaticStore.event.printGachaEvent(i, holder.serverLocale, false, holder.eventRaw);
                                 else
-                                    result = StaticStore.event.printItemEvent(i, holder.serverLocale, false);
+                                    result = StaticStore.event.printItemEvent(i, holder.serverLocale, false, holder.eventRaw);
 
                                 if(result.isBlank()) {
                                     continue;

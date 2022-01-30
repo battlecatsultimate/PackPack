@@ -30,10 +30,11 @@ public class PrintEvent extends ConstraintCommand {
         int loc = getLocale(getContent(event));
         int l = followServerLocale(getContent(event)) ? holder.serverLocale : lang;
         boolean full = isFull(getContent(event));
+        boolean raw = isRaw(getContent(event));
 
-        String gacha = StaticStore.event.printGachaEvent(loc, l , full);
-        String item = StaticStore.event.printItemEvent(loc, l, full);
-        List<String> stage = StaticStore.event.printStageEvent(loc, l, full);
+        String gacha = StaticStore.event.printGachaEvent(loc, l , full, raw);
+        String item = StaticStore.event.printItemEvent(loc, l, full, raw);
+        List<String> stage = StaticStore.event.printStageEvent(loc, l, full, raw);
 
         if(gacha.isBlank() && item.isBlank() && stage.isEmpty()) {
             createMessage(ch, m -> m.content(LangID.getStringByID("chevent_noup", lang)));
@@ -305,6 +306,17 @@ public class PrintEvent extends ConstraintCommand {
 
         for(int i = 0; i < contents.length; i++) {
             if(contents[i].equals("-f") || contents[i].equals("-full"))
+                return true;
+        }
+
+        return false;
+    }
+
+    private boolean isRaw(String content) {
+        String[] contents = content.split(" ");
+
+        for(int i = 0; i < contents.length; i++) {
+            if(contents[i].equals("-r") || contents[i].equals("-raw"))
                 return true;
         }
 

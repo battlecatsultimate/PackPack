@@ -23,7 +23,7 @@ public class PrintItemEvent extends ConstraintCommand {
         if(ch == null)
             return;
 
-        String result = StaticStore.event.printItemEvent(getLocale(getContent(event)), lang, isFull(getContent(event)));
+        String result = StaticStore.event.printItemEvent(getLocale(getContent(event)), lang, isFull(getContent(event)), isRaw(getContent(event)));
 
         if(result.isBlank()) {
             createMessage(ch, m -> m.content(LangID.getStringByID("chevent_noup", lang)));
@@ -116,6 +116,17 @@ public class PrintItemEvent extends ConstraintCommand {
 
         for(int i = 0; i < contents.length; i++) {
             if(contents[i].equals("-f") || contents[i].equals("-full"))
+                return true;
+        }
+
+        return false;
+    }
+
+    private boolean isRaw(String content) {
+        String[] contents = content.split(" ");
+
+        for(int i = 0; i < contents.length; i++) {
+            if(contents[i].equals("-r") || contents[i].equals("-raw"))
                 return true;
         }
 
