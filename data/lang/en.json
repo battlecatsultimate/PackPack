@@ -670,6 +670,9 @@
   "help_subscribescamlinkdetector_tip" : "This feature was made to establish scam link database, and help moderators to moderate compromised accounts. Moderators can choose 3 kinds of action for them : \n\n - Mute\n - Kick (Need reconsidering)\n - Ban (Not recommended)\n\nModerators must provide mute role ID via `-m` argument if they want to choose mute action. If bot could catch compromised account and if this user is in this server, it will report user to specified report channel. Moderators also can decide to make bot upload info about those who aren't in server as well\n\nBe aware that don't rely on this bot too much. It can do false moderation to users, so too strong action such as ban may lead to bad situation",
   "help_unsubscribescamlinkdetector_use" : "`p!unsubscribescamlinkdetector`",
   "help_unsubscribescamlinkdetector_desc" : "Unsubscribe from feature of bot, which detects scam link automatically and auto-moderate users who sent these kinds of links. **Only moderators can use this command**. `usld` or `usd` are also valid command",
+  "help_timezone_use" : "`p!timezone [Time]`",
+  "help_timezone_desc" : "Register your timezone, so bot can consider your time when using some commands. Timezone relies on GMT format. For example, if you passed 3, then it means GMT+3. If you passed -2, then it means GMT-2. Timezone range is from -12 to 12. `tz` is also valid command",
+  "help_timezone_exam" : "`p!tz 3`\n`p!tz -10`",
   "prefix_space" : "Prefix can't be white spaces!",
   "prefix_set" : "Prefix is set as _!",
   "prefix_setnone" : "Your prefix has been updated!",
@@ -899,6 +902,7 @@
   "subevent_zh" : "BCTW",
   "subevent_kr" : "BCKR",
   "subevent_jp" : "BCJP",
+  "printevent_time" : "Uploading event data with considering timezone GMT_",
   "printstage_toolong" : "Uploading raw file because stage/event data was too long",
   "printstage_daily" : "New Daily Schedule Found",
   "printstage_weekly" : "New Weekly Schedule Found",
@@ -984,5 +988,9 @@
   "scamhandle_dm" : "Bot took action because it detected that you sent scam link in message. If this is false, contact moderator manually\n\nServer : _NNN_ (_III_)",
   "scamhandle_report" : "Compromised Account Report",
   "scamhandle_reportdesc" : "Bot detected compromised account in the other server, and this user is in this server as well. Please take action to them before they spread more scam links to others\n\nCaught link : _",
-  "scamhandle_reportdescall" : "Bot detected compromised account in the other server, but this user isn't in this server for now\n\nCaught link : _"
+  "scamhandle_reportdescall" : "Bot detected compromised account in the other server, but this user isn't in this server for now\n\nCaught link : _",
+  "timezone_noval" : "Not enough parameter! You have to specify the timezone you want to set. Timezone must be GMT (i.e `p!tz 3` = GMT+3, `p!tz -10` = GMT-10)",
+  "timezone_notnum" : "Timezone value must be numeric! (i.e `p!tz 3` = GMT+3, `p!tz -10` = GMT-10)",
+  "timezone_done" : "Your timezone is now set as GMT_!",
+  "timezone_nomem" : "Couldn't register timezone because bot couldn't get your member information"
 }
