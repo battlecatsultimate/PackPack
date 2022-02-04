@@ -65,6 +65,7 @@ public class StaticStore {
     public static Map<String, String> prefix = new HashMap<>();
     public static Map<String, String> langs = new HashMap<>();
     public static Map<String, Integer> locales = new HashMap<>();
+    public static Map<String, Integer> timeZones = new HashMap<>();
 
     public static final Map<Integer, String> announcements = new HashMap<>();
 

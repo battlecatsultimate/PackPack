@@ -12,4 +12,11 @@ public class EventTime {
     public boolean equals(EventTime thatTime) {
         return hour == thatTime.hour && minute == thatTime.minute;
     }
+
+    public int compare(EventTime time) {
+        int thatTime = time.hour * 100 + time.minute;
+        int thisTime = hour * 100 + minute;
+
+        return Integer.compare(thisTime, thatTime);
+    }
 }

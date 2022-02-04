@@ -1,6 +1,7 @@
 package mandarin.packpack.commands.data;
 
 import discord4j.core.event.domain.message.MessageEvent;
+import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.spec.MessageCreateFields;
 import discord4j.core.spec.MessageCreateSpec;
@@ -14,6 +15,7 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Optional;
 
 public class PrintEvent extends ConstraintCommand {
     public PrintEvent(ROLE role, int lang, IDHolder id) {
@@ -32,9 +34,9 @@ public class PrintEvent extends ConstraintCommand {
         boolean full = isFull(getContent(event));
         boolean raw = isRaw(getContent(event));
 
-        String gacha = StaticStore.event.printGachaEvent(loc, l , full, raw);
-        String item = StaticStore.event.printItemEvent(loc, l, full, raw);
-        List<String> stage = StaticStore.event.printStageEvent(loc, l, full, raw);
+        String gacha = StaticStore.event.printGachaEvent(loc, l , full, raw, false, 0);
+        String item = StaticStore.event.printItemEvent(loc, l, full, raw, false, 0);
+        List<String> stage = StaticStore.event.printStageEvent(loc, l, full, raw, false, 0);
 
         if(gacha.isBlank() && item.isBlank() && stage.isEmpty()) {
             createMessage(ch, m -> m.content(LangID.getStringByID("chevent_noup", lang)));

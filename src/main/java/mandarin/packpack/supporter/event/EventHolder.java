@@ -10,10 +10,7 @@ import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.MessageDigest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class EventHolder extends EventFactor {
     public Map<Integer, List<Integer>> yearly = new HashMap<>();
@@ -328,7 +325,7 @@ public class EventHolder extends EventFactor {
         this.items.put(locale, i);
     }
 
-    public ArrayList<String> printStageEvent(int locale, int lang, boolean full, boolean raw) {
+    public ArrayList<String> printStageEvent(int locale, int lang, boolean full, boolean raw, boolean now, int time) {
         ArrayList<String> result = new ArrayList<>();
 
         List<StageSchedule> fullStages = this.stages.get(locale);
@@ -336,7 +333,7 @@ public class EventHolder extends EventFactor {
         List<StageSchedule> stages;
 
         if(full) {
-            stages = fullStages;
+            stages = new ArrayList<>(fullStages);
         } else {
             if(!stageCache.containsKey(locale)) {
                 stages = fullStages;
@@ -350,6 +347,9 @@ public class EventHolder extends EventFactor {
                 }
             }
         }
+
+        if(stages != null && now)
+            filterScheduleByTimeZone(stages, time);
 
         if(stages == null || stages.isEmpty())
             return result;
@@ -539,13 +539,13 @@ public class EventHolder extends EventFactor {
         return result;
     }
 
-    public String printGachaEvent(int locale, int lang, boolean full, boolean raw) {
+    public String printGachaEvent(int locale, int lang, boolean full, boolean raw, boolean now, int time) {
         List<GachaSchedule> fullGachas = this.gachas.get(locale);
 
         List<GachaSchedule> gachas;
 
         if(full) {
-            gachas = fullGachas;
+            gachas = new ArrayList<>(fullGachas);
         } else {
             if(!gachaCache.containsKey(locale)) {
                 gachas = fullGachas;
@@ -559,6 +559,9 @@ public class EventHolder extends EventFactor {
                 }
             }
         }
+
+        if(now)
+            filterScheduleByTimeZone(gachas, time);
 
         gachas.removeIf(g -> g.gacha.isEmpty());
 
@@ -623,7 +626,7 @@ public class EventHolder extends EventFactor {
         return data.toString();
     }
 
-    public String printItemEvent(int locale, int lang, boolean full, boolean raw) {
+    public String printItemEvent(int locale, int lang, boolean full, boolean raw, boolean now, int time) {
         List<ItemSchedule> fullItems = this.items.get(locale);
 
         List<ItemSchedule> items;
@@ -632,7 +635,7 @@ public class EventHolder extends EventFactor {
             items = fullItems;
         } else {
             if(!itemCache.containsKey(locale)) {
-                items = fullItems;
+                items = new ArrayList<>(fullItems);
             } else {
                 List<Integer> cache = itemCache.get(locale);
 
@@ -643,6 +646,9 @@ public class EventHolder extends EventFactor {
                 }
             }
         }
+
+        if(now)
+            filterScheduleByTimeZone(items, time);
 
         StringBuilder data = new StringBuilder(LangID.getStringByID("event_item", lang)).append("\n\n");
 
@@ -1094,5 +1100,32 @@ public class EventHolder extends EventFactor {
         String str = big.toString(16);
 
         return String.format("%32s", str).replace(' ', '0');
+    }
+
+    private <T extends Schedule> void filterScheduleByTimeZone(List<T> original, int time) {
+        Calendar c = Calendar.getInstance(TimeZone.getTimeZone(getTimeZoneCode(time)));
+
+        int t = c.get(Calendar.HOUR_OF_DAY) * 100 + c.get(Calendar.MINUTE);
+
+        EventDate date = new EventDate(c.get(Calendar.YEAR) * 10000 + (c.get(Calendar.MONTH) + 1) * 100 + c.get(Calendar.DATE), t == 0, new EventTimeSection(t, t), false);
+
+        original.removeIf(s -> {
+            if(s instanceof GachaSchedule)
+                return !((GachaSchedule) s).date.inRange(date);
+            else if(s instanceof ItemSchedule)
+                return !((ItemSchedule) s).date.inRange(date);
+            else if(s instanceof StageSchedule)
+                return !((StageSchedule) s).date.inRange(date);
+
+            return false;
+        });
+    }
+
+    private String getTimeZoneCode(int time) {
+        if(time > 0) {
+            return "GMT+"+time;
+        } else {
+            return "GMT"+time;
+        }
     }
 }

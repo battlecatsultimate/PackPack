@@ -29,6 +29,7 @@ import discord4j.rest.util.AllowedMentions;
 import discord4j.rest.util.Image;
 import mandarin.packpack.commands.Locale;
 import mandarin.packpack.commands.*;
+import mandarin.packpack.commands.TimeZone;
 import mandarin.packpack.commands.bc.*;
 import mandarin.packpack.commands.bot.*;
 import mandarin.packpack.commands.data.*;
@@ -134,7 +135,7 @@ public class PackBot {
                         if(f.exists()) {
                             FileInputStream fis = new FileInputStream(f);
 
-                            gate.edit(UserEditSpec.builder().avatar(Image.ofRaw(fis.readAllBytes(), Image.Format.PNG)).build()).subscribe();
+                            gate.edit(UserEditSpec.builder().avatar(Image.ofRaw(fis.readAllBytes(), Image.Format.PNG)).build()).subscribe(null, e -> {});
 
                             fis.close();
                         }
@@ -1076,6 +1077,10 @@ public class PackBot {
                                 case "usd":
                                     new UnsubscribeScamLinkDetector(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
                                     break;
+                                case "timezone":
+                                case "tz":
+                                    new TimeZone(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
+                                    break;
                             }
                         }
                     }, () -> {
@@ -1204,7 +1209,7 @@ public class PackBot {
 
                         if(ch instanceof MessageChannel) {
                             if(j == EventFactor.SALE) {
-                                ArrayList<String> result = StaticStore.event.printStageEvent(i, holder.serverLocale, false, holder.eventRaw);
+                                ArrayList<String> result = StaticStore.event.printStageEvent(i, holder.serverLocale, false, holder.eventRaw, false, 0);
 
                                 if(result.isEmpty())
                                     continue;
@@ -1331,9 +1336,9 @@ public class PackBot {
                                 String result;
 
                                 if(j == EventFactor.GATYA)
-                                    result = StaticStore.event.printGachaEvent(i, holder.serverLocale, false, holder.eventRaw);
+                                    result = StaticStore.event.printGachaEvent(i, holder.serverLocale, false, holder.eventRaw, false, 0);
                                 else
-                                    result = StaticStore.event.printItemEvent(i, holder.serverLocale, false, holder.eventRaw);
+                                    result = StaticStore.event.printItemEvent(i, holder.serverLocale, false, holder.eventRaw, false, 0);
 
                                 if(result.isBlank()) {
                                     continue;

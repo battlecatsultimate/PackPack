@@ -1,6 +1,7 @@
 package mandarin.packpack.commands.data;
 
 import discord4j.core.event.domain.message.MessageEvent;
+import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.spec.MessageCreateFields;
 import mandarin.packpack.commands.ConstraintCommand;
@@ -10,6 +11,7 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 public class PrintItemEvent extends ConstraintCommand {
     public PrintItemEvent(ROLE role, int lang, IDHolder id) {
@@ -23,7 +25,27 @@ public class PrintItemEvent extends ConstraintCommand {
         if(ch == null)
             return;
 
-        String result = StaticStore.event.printItemEvent(getLocale(getContent(event)), lang, isFull(getContent(event)), isRaw(getContent(event)));
+        boolean now = isNow(getContent(event));
+         int t = 0;
+
+        if(now) {
+            Optional<Member> m = getMember(event);
+
+            if(m.isPresent()) {
+                t = StaticStore.timeZones.getOrDefault(m.get().getId().asString(), 0);
+
+                String content;
+
+                if(t >= 0)
+                    content = "+" + t;
+                else
+                    content = "" + t;
+
+                createMessage(ch, me -> me.content(LangID.getStringByID("printevent_time", lang).replace("_", content)));
+            }
+        }
+
+        String result = StaticStore.event.printItemEvent(getLocale(getContent(event)), lang, isFull(getContent(event)), isRaw(getContent(event)), now, t);
 
         if(result.isBlank()) {
             createMessage(ch, m -> m.content(LangID.getStringByID("chevent_noup", lang)));
@@ -128,6 +150,18 @@ public class PrintItemEvent extends ConstraintCommand {
         for(int i = 0; i < contents.length; i++) {
             if(contents[i].equals("-r") || contents[i].equals("-raw"))
                 return true;
+        }
+
+        return false;
+    }
+
+    private boolean isNow(String content) {
+        String[] contents = content.split(" ");
+
+        for(int i = 0; i < contents.length; i++) {
+            if (contents[i].equals("-n") || contents[i].equals("-now")) {
+                return true;
+            }
         }
 
         return false;
