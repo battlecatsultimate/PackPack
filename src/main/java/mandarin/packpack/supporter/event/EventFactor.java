@@ -501,8 +501,6 @@ public class EventFactor {
             item = LangID.getStringByID("printitem_item", lang).replace("_", "" + itemID);
         }
 
-        System.out.println(item.charAt(item.length() - 1));
-
         char c = item.charAt(item.length() - 1);
 
         if(itemAmount > 1 && lang == LangID.EN && ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || Character.isDigit(c)) && !item.endsWith("XP") && !item.endsWith("s") && !item.endsWith("Choco"))
