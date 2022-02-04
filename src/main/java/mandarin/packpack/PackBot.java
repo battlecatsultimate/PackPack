@@ -200,6 +200,8 @@ public class PackBot {
                 if (guild != null) {
                     IDHolder id = StaticStore.idHolder.get(guild.getId().asString());
 
+                    AtomicReference<Boolean> warned = new AtomicReference<>(false);
+
                     if (id == null) {
                         final IDHolder idh = new IDHolder();
 
@@ -210,7 +212,12 @@ public class PackBot {
 
                             roleBuilder.name("PackPackMod");
 
-                            guild.createRole(roleBuilder.build()).subscribe(r -> idh.MOD = r.getId().asString());
+                            guild.createRole(roleBuilder.build()).subscribe(r -> idh.MOD = r.getId().asString(), err -> {
+                                if(!warned.get()) {
+                                    guild.getOwner().subscribe(o -> o.getPrivateChannel().subscribe(po -> po.createMessage(LangID.getStringByID("needroleperm", idh.serverLocale).replace("_", guild.getName())).subscribe()));
+                                    warned.set(true);
+                                }
+                            });
                         } else {
                             idh.MOD = modID;
                         }
@@ -228,7 +235,12 @@ public class PackBot {
 
                                 roleBuilder.name("PackPackMod");
 
-                                guild.createRole(roleBuilder.build()).subscribe(r -> id.MOD = r.getId().asString());
+                                guild.createRole(roleBuilder.build()).subscribe(r -> id.MOD = r.getId().asString(), err -> {
+                                    if(!warned.get()) {
+                                        guild.getOwner().subscribe(o -> o.getPrivateChannel().subscribe(po -> po.createMessage(LangID.getStringByID("needroleperm", id.serverLocale).replace("_", guild.getName())).subscribe()));
+                                        warned.set(true);
+                                    }
+                                });
                             } else {
                                 id.MOD = modID;
                             }
@@ -246,7 +258,12 @@ public class PackBot {
 
                                     roleBuilder.name("PackPackMod");
 
-                                    guild.createRole(roleBuilder.build()).subscribe(r -> id.MOD = r.getId().asString());
+                                    guild.createRole(roleBuilder.build()).subscribe(r -> id.MOD = r.getId().asString(), err -> {
+                                        if(!warned.get()) {
+                                            guild.getOwner().subscribe(o -> o.getPrivateChannel().subscribe(po -> po.createMessage(LangID.getStringByID("needroleperm", id.serverLocale).replace("_", guild.getName())).subscribe()));
+                                            warned.set(true);
+                                        }
+                                    });
                                 } else {
                                     id.MOD = modID;
                                 }
@@ -273,6 +290,8 @@ public class PackBot {
 
             IDHolder holder = StaticStore.idHolder.get(guild.getId().asString());
 
+            AtomicReference<Boolean> warned = new AtomicReference<>(false);
+
             if(holder != null) {
                 String mod = holder.MOD;
 
@@ -284,7 +303,12 @@ public class PackBot {
 
                         roleBuilder.name("PackPackMod");
 
-                        guild.createRole(roleBuilder.build()).subscribe(r -> holder.MOD = r.getId().asString());
+                        guild.createRole(roleBuilder.build()).subscribe(r -> holder.MOD = r.getId().asString(), err -> {
+                            if(!warned.get()) {
+                                guild.getOwner().subscribe(o -> o.getPrivateChannel().subscribe(po -> po.createMessage(LangID.getStringByID("needroleperm", holder.serverLocale).replace("_", guild.getName())).subscribe()));
+                                warned.set(true);
+                            }
+                        });
                     } else {
                         holder.MOD = modID;
                     }
@@ -298,7 +322,12 @@ public class PackBot {
 
                                 roleBuilder.name("PackPackMod");
 
-                                guild.createRole(roleBuilder.build()).subscribe(ro -> holder.MOD = r.getId().asString());
+                                guild.createRole(roleBuilder.build()).subscribe(ro -> holder.MOD = ro.getId().asString(), err -> {
+                                    if(!warned.get()) {
+                                        guild.getOwner().subscribe(o -> o.getPrivateChannel().subscribe(po -> po.createMessage(LangID.getStringByID("needroleperm", holder.serverLocale).replace("_", guild.getName())).subscribe()));
+                                        warned.set(true);
+                                    }
+                                });
                             } else {
                                 holder.MOD = modID;
                             }
@@ -315,7 +344,12 @@ public class PackBot {
 
                     roleBuilder.name("PackPackMod");
 
-                    guild.createRole(roleBuilder.build()).subscribe(r -> idh.MOD = r.getId().asString());
+                    guild.createRole(roleBuilder.build()).subscribe(r -> idh.MOD = r.getId().asString(), err -> {
+                        if(!warned.get()) {
+                            guild.getOwner().subscribe(o -> o.getPrivateChannel().subscribe(po -> po.createMessage(LangID.getStringByID("needroleperm", idh.serverLocale).replace("_", guild.getName())).subscribe()));
+                            warned.set(true);
+                        }
+                    });
                 } else {
                     idh.MOD = modID;
                 }
@@ -369,6 +403,8 @@ public class PackBot {
 
             IDHolder id = StaticStore.idHolder.get(guild.getId().asString());
 
+            AtomicReference<Boolean> warned = new AtomicReference<>(false);
+
             if (id == null) {
                 final IDHolder idh = new IDHolder();
 
@@ -379,7 +415,12 @@ public class PackBot {
 
                     roleBuilder.name("PackPackMod");
 
-                    guild.createRole(roleBuilder.build()).subscribe(r -> idh.MOD = r.getId().asString());
+                    guild.createRole(roleBuilder.build()).subscribe(r -> idh.MOD = r.getId().asString(), err -> {
+                        if(!warned.get()) {
+                            guild.getOwner().subscribe(o -> o.getPrivateChannel().subscribe(po -> po.createMessage(LangID.getStringByID("needroleperm", idh.serverLocale).replace("_", guild.getName())).subscribe()));
+                            warned.set(true);
+                        }
+                    });
                 } else {
                     idh.MOD = modID;
                 }
@@ -397,7 +438,12 @@ public class PackBot {
 
                         roleBuilder.name("PackPackMod");
 
-                        guild.createRole(roleBuilder.build()).subscribe(r -> id.MOD = r.getId().asString());
+                        guild.createRole(roleBuilder.build()).subscribe(r -> id.MOD = r.getId().asString(), err -> {
+                            if(!warned.get()) {
+                                guild.getOwner().subscribe(o -> o.getPrivateChannel().subscribe(po -> po.createMessage(LangID.getStringByID("needroleperm", id.serverLocale).replace("_", guild.getName())).subscribe()));
+                                warned.set(true);
+                            }
+                        });
                     } else {
                         id.MOD = modID;
                     }
@@ -415,7 +461,12 @@ public class PackBot {
 
                             roleBuilder.name("PackPackMod");
 
-                            guild.createRole(roleBuilder.build()).subscribe(r -> id.MOD = r.getId().asString());
+                            guild.createRole(roleBuilder.build()).subscribe(r -> id.MOD = r.getId().asString(), err -> {
+                                if(!warned.get()) {
+                                    guild.getOwner().subscribe(o -> o.getPrivateChannel().subscribe(po -> po.createMessage(LangID.getStringByID("needroleperm", id.serverLocale).replace("_", guild.getName())).subscribe()));
+                                    warned.set(true);
+                                }
+                            });
                         } else {
                             id.MOD = modID;
                         }
