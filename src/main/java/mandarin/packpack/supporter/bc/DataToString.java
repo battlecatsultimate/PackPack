@@ -441,7 +441,7 @@ public class DataToString {
             int start = Math.min(lds, lds+ldr);
             int end = Math.max(lds, lds+ldr);
 
-            return r + " | "+start+" ~ "+end;
+            return r + " | "+start+"~"+end;
         } else {
             StringBuilder builder = new StringBuilder()
                     .append(r)
@@ -457,7 +457,7 @@ public class DataToString {
                 int end = Math.max(lds, lds+ldr);
 
                 builder.append(start)
-                        .append(" ~ ")
+                        .append("~")
                         .append(end);
 
                 if(i < e.getAtkCount() - 1) {
