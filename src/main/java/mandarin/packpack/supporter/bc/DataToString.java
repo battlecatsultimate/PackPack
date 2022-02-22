@@ -96,6 +96,7 @@ public class DataToString {
         talentText.put(56, "data_surge");
         talentText.put(57, "data_demon");
         talentText.put(58, "data_shieldbreak");
+        talentText.put(59, "data_baronkiller");
 
         VFile pCoinLevel = VFile.get("./org/data/SkillLevel.csv");
 
@@ -382,30 +383,43 @@ public class DataToString {
 
         int r = f.getRange();
 
-        MaskAtk atk;
+        if(!f.isLD() && !f.isOmni())
+            return r + "";
 
-        if(f.getAtkCount() == 1)
-            atk = f.getAtkModel(0);
-        else
-        if(f instanceof CustomEntity) {
-            if(allRangeSame((CustomEntity) f))
-                atk = f.getAtkModel(0);
-            else
-                atk = f.getRepAtk();
+        if(f.getAtkCount() == 0 || allRangeSame(f)) {
+            MaskAtk ma = f.getAtkModel(0);
+
+            int lds = ma.getShortPoint();
+            int ldr = ma.getLongPoint();
+
+            int start = Math.min(lds, lds + ldr);
+            int end = Math.max(lds, lds + ldr);
+
+            return r + " | " + start + " ~ " + end;
         } else {
-            atk = f.getRepAtk();
-        }
+            StringBuilder builder = new StringBuilder()
+                    .append(r)
+                    .append(" | ");
 
-        int lds = atk.getShortPoint();
-        int ldr = atk.getLongPoint() - atk.getShortPoint();
+            for(int i = 0; i < f.getAtkCount(); i++) {
+                MaskAtk ma = f.getAtkModel(i);
 
-        int start = Math.min(lds, lds+ldr);
-        int end = Math.max(lds, lds+ldr);
+                int lds = ma.getShortPoint();
+                int ldr = ma.getLongPoint();
 
-        if(f.isLD() || f.isOmni()) {
-            return r +" / "+start+" ~ "+end;
-        } else {
-            return String.valueOf(r);
+                int start = Math.min(lds, lds + ldr);
+                int end = Math.max(lds, lds + ldr);
+
+                builder.append(start)
+                        .append(" ~ ")
+                        .append(end);
+
+                if(i < f.getAtkCount() - 1) {
+                    builder.append(" / ");
+                }
+            }
+
+            return builder.toString();
         }
     }
 
@@ -415,38 +429,51 @@ public class DataToString {
 
         int r = e.getRange();
 
-        MaskAtk atk;
+        if(!e.isLD() && !e.isOmni())
+            return r + "";
 
-        if(e.getAtkCount() == 1)
-            atk = e.getAtkModel(0);
-        else {
-            if (e instanceof CustomEntity) {
-                if (allRangeSame((CustomEntity) e))
-                    atk = e.getAtkModel(0);
-                else
-                    atk = e.getRepAtk();
-            } else {
-                atk = e.getRepAtk();
+        if(e.getAtkCount() == 0 || allRangeSame(e)) {
+            MaskAtk atk = e.getAtkModel(0);
+
+            int lds = atk.getShortPoint();
+            int ldr = atk.getLongPoint() - atk.getShortPoint();
+
+            int start = Math.min(lds, lds+ldr);
+            int end = Math.max(lds, lds+ldr);
+
+            return r + " | "+start+" ~ "+end;
+        } else {
+            StringBuilder builder = new StringBuilder()
+                    .append(r)
+                    .append(" | ");
+
+            for(int i = 0; i < e.getAtkCount(); i++) {
+                MaskAtk atk = e.getAtkModel(i);
+
+                int lds = atk.getShortPoint();
+                int ldr = atk.getLongPoint() - atk.getShortPoint();
+
+                int start = Math.min(lds, lds+ldr);
+                int end = Math.max(lds, lds+ldr);
+
+                builder.append(start)
+                        .append(" ~ ")
+                        .append(end);
+
+                if(i < e.getAtkCount() - 1) {
+                    builder.append(" / ");
+                }
             }
+
+            return builder.toString();
         }
-
-        int lds = atk.getShortPoint();
-        int ldr = atk.getLongPoint() - atk.getShortPoint();
-
-        int start = Math.min(lds, lds+ldr);
-        int end = Math.max(lds, lds+ldr);
-
-        if(e.isLD() || e.isOmni()) {
-            return r + " / "+start+" ~ "+end;
-        } else
-            return String.valueOf(r);
     }
 
-    private static boolean allRangeSame(CustomEntity du) {
+    private static boolean allRangeSame(MaskEntity du) {
         ArrayList<Integer> near = new ArrayList<>();
         ArrayList<Integer> far = new ArrayList<>();
 
-        for(AtkDataModel atk : du.atks) {
+        for(MaskAtk atk : du.getAtks()) {
             near.add(atk.getShortPoint());
             far.add(atk.getLongPoint());
         }
@@ -467,7 +494,7 @@ public class DataToString {
         return true;
     }
 
-    public static String getCD(MaskUnit f, boolean isFrame, boolean talent, int[] lvs) {
+    public static String getCD(MaskUnit f, boolean isFrame, boolean talent, ArrayList<Integer> lvs) {
         if(f == null)
             return "";
 
@@ -488,7 +515,7 @@ public class DataToString {
         }
     }
 
-    public static String getAtk(MaskUnit f, UnitLevel lv, boolean talent, int[] lvs) {
+    public static String getAtk(MaskUnit f, UnitLevel lv, boolean talent, ArrayList<Integer> lvs) {
         if(f == null)
             return "";
 
@@ -515,7 +542,7 @@ public class DataToString {
             return getTotalAtk(e, magnification);
     }
 
-    public static String getTotalAtk(UnitLevel lv, MaskUnit du, boolean talent, int[] lvs) {
+    public static String getTotalAtk(UnitLevel lv, MaskUnit du, boolean talent, ArrayList<Integer> lvs) {
         Treasure t = BasisSet.current().t();
 
         int result = 0;
@@ -524,9 +551,9 @@ public class DataToString {
 
         for(int[] atk : raw) {
             if(du.getPCoin() != null && talent) {
-                result += (int) ((int) (Math.round(atk[0] * lv.getMult(lvs[0])) * t.getAtkMulti()) * du.getPCoin().getAtkMultiplication(lvs));
+                result += (int) ((int) (Math.round(atk[0] * lv.getMult(lvs.get(0))) * t.getAtkMulti()) * du.getPCoin().getAtkMultiplication(lvs));
             } else {
-                result += (int) (Math.round(atk[0] * lv.getMult(lvs[0])) * t.getAtkMulti());
+                result += (int) (Math.round(atk[0] * lv.getMult(lvs.get(0))) * t.getAtkMulti());
             }
         }
 
@@ -548,7 +575,7 @@ public class DataToString {
         return String.valueOf(result);
     }
 
-    public static String getAtks(UnitLevel lv, MaskUnit du, boolean talent, int[] lvs) {
+    public static String getAtks(UnitLevel lv, MaskUnit du, boolean talent, ArrayList<Integer> lvs) {
         if(du == null)
             return "";
 
@@ -562,9 +589,9 @@ public class DataToString {
             int result;
 
             if(du.getPCoin() != null && talent) {
-                result = (int) ((int) (Math.round(atk[0] * lv.getMult(lvs[0])) * t.getAtkMulti()) * du.getPCoin().getAtkMultiplication(lvs));
+                result = (int) ((int) (Math.round(atk[0] * lv.getMult(lvs.get(0))) * t.getAtkMulti()) * du.getPCoin().getAtkMultiplication(lvs));
             } else {
-                result = (int) (Math.round(atk[0] * lv.getMult(lvs[0])) * t.getAtkMulti());
+                result = (int) (Math.round(atk[0] * lv.getMult(lvs.get(0))) * t.getAtkMulti());
             }
 
             damage.add(result);
@@ -606,7 +633,7 @@ public class DataToString {
         return sb.toString();
     }
 
-    public static String getDPS(MaskUnit f, UnitLevel lv, boolean talent, int[] lvs) {
+    public static String getDPS(MaskUnit f, UnitLevel lv, boolean talent, ArrayList<Integer> lvs) {
         if(f == null)
             return "";
 
@@ -630,7 +657,7 @@ public class DataToString {
         return df.format(Double.parseDouble(getTotalAtk(e, magnification)) / (e.getItv() / 30.0));
     }
 
-    public static String getSpeed(MaskUnit f, boolean talent, int[] lvs) {
+    public static String getSpeed(MaskUnit f, boolean talent, ArrayList<Integer> lvs) {
         if(f == null)
             return "";
 
@@ -654,7 +681,7 @@ public class DataToString {
         return String.valueOf(e.getSpeed());
     }
 
-    public static String getHitback(MaskUnit f, boolean talent, int[] lvs) {
+    public static String getHitback(MaskUnit f, boolean talent, ArrayList<Integer> lvs) {
         if(f == null)
             return "";
 
@@ -678,7 +705,7 @@ public class DataToString {
         return String.valueOf(e.getHb());
     }
 
-    public static String getHP(MaskUnit f, UnitLevel lv, boolean talent, int[] lvs) {
+    public static String getHP(MaskUnit f, UnitLevel lv, boolean talent, ArrayList<Integer> lvs) {
         if(f == null)
             return "";
 
@@ -694,9 +721,9 @@ public class DataToString {
         int result;
 
         if(f.getPCoin() != null && talent) {
-            result = (int) ((int) (Math.round(du.getHp() * lv.getMult(lvs[0])) * t.getDefMulti()) * f.getPCoin().getHPMultiplication(lvs));
+            result = (int) ((int) (Math.round(du.getHp() * lv.getMult(lvs.get(0))) * t.getDefMulti()) * f.getPCoin().getHPMultiplication(lvs));
         } else {
-            result = (int) (Math.round(du.getHp() * lv.getMult(lvs[0])) * t.getDefMulti());
+            result = (int) (Math.round(du.getHp() * lv.getMult(lvs.get(0))) * t.getDefMulti());
         }
 
         return String.valueOf(result);
@@ -709,7 +736,7 @@ public class DataToString {
         return "" + (int) (e.multi(BasisSet.current()) * e.getHp() * magnification / 100.0);
     }
 
-    public static String getTrait(MaskUnit f, boolean talent, int[] lvs, int lang) {
+    public static String getTrait(MaskUnit f, boolean talent, ArrayList<Integer> lvs, int lang) {
         if(f == null)
             return "";
 
@@ -783,7 +810,7 @@ public class DataToString {
         return trait;
     }
 
-    public static String getCost(MaskUnit f, boolean talent, int[] lvs) {
+    public static String getCost(MaskUnit f, boolean talent, ArrayList<Integer> lvs) {
         if(f == null)
             return "";
 
@@ -829,7 +856,7 @@ public class DataToString {
             return LangID.getStringByID("data_single", lang);
     }
 
-    public static String getTalent(MaskUnit f, int[] lv, int lang) {
+    public static String getTalent(MaskUnit f, ArrayList<Integer> lv, int lang) {
         if(f == null || f.getPCoin() == null)
             return LangID.getStringByID("data_notalent", lang);
 
@@ -852,9 +879,9 @@ public class DataToString {
             int[] data = info.get(i);
 
             if(talentText.containsKey(data[0])) {
-                sb.append(LangID.getStringByID(talentText.get(data[0]), lang)).append(" [").append(lv[i+1]).append("]");
+                sb.append(LangID.getStringByID(talentText.get(data[0]), lang)).append(" [").append(lv.get(i + 1)).append("]");
             } else {
-                sb.append("??? [").append(lv[i+1]).append("]");
+                sb.append("??? [").append(lv.get(i + 1)).append("]");
             }
 
             if(i != info.size() - 1)

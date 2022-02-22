@@ -23,12 +23,12 @@ public class FormStatMessageHolder extends MessageHolder<MessageCreateEvent> {
 
     private final boolean talent;
     private final boolean isFrame;
-    private final int[] lv;
+    private final ArrayList<Integer> lv;
     private final int lang;
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
-    public FormStatMessageHolder(ArrayList<Form> form, Message author, Message msg, String channelID, int param, int[] lv, int lang) {
+    public FormStatMessageHolder(ArrayList<Form> form, Message author, Message msg, String channelID, int param, ArrayList<Integer> lv, int lang) {
         super(MessageCreateEvent.class);
 
         this.form = form;
@@ -166,13 +166,13 @@ public class FormStatMessageHolder extends MessageHolder<MessageCreateEvent> {
 
             msg.delete().subscribe();
 
-            if(lv[0] > form.get(id).unit.max + form.get(id).unit.maxp)
-                lv[0] = form.get(id).unit.max + form.get(id).unit.maxp;
-            else if(lv[0] <= 0) {
+            if(lv.get(0) > form.get(id).unit.max + form.get(id).unit.maxp)
+                lv.set(0, form.get(id).unit.max + form.get(id).unit.maxp);
+            else if(lv.get(0) <= 0) {
                 if(form.get(id).unit.rarity == 0)
-                    lv[0] = 110;
+                    lv.set(0, 110);
                 else
-                    lv[0] = 30;
+                    lv.set(0, 30);
             }
 
             try {

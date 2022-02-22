@@ -67,8 +67,8 @@ public class EntityHandler {
         }
     }
 
-    public static void showUnitEmb(Form f, WebhookBuilder builder, boolean isFrame, boolean talent, int[] lv, int lang) throws Exception {
-        int level = lv[0];
+    public static void showUnitEmb(Form f, WebhookBuilder builder, boolean isFrame, boolean talent, ArrayList<Integer> lv, int lang) throws Exception {
+        int level = lv.get(0);
         int levelp = 0;
 
         if(level <= 0) {
@@ -89,7 +89,7 @@ public class EntityHandler {
                 levelp = 0;
         }
 
-        lv[0] = level + levelp;
+        lv.set(0, level + levelp);
 
         String l;
 
@@ -124,18 +124,21 @@ public class EntityHandler {
             else
                 c = StaticStore.rainbow[2];
 
-            int[] t;
+            ArrayList<Integer> t;
 
             if(talent && f.du.getPCoin() != null) {
-                t = f.du.getPCoin().max;
-                t[0] = lv[0];
+                t = new ArrayList<>(f.du.getPCoin().max);
+                t.set(0, lv.get(0));
             } else
                 t = null;
 
             if(t != null)
                 t = handleTalent(lv, t);
-            else
-                t = new int[] {lv[0], 0, 0, 0, 0, 0};
+            else {
+                t = new ArrayList<>();
+
+                t.add(lv.get(0));
+            }
 
             spec.setTitle(DataToString.getTitle(f, lang));
 
@@ -230,8 +233,8 @@ public class EntityHandler {
         }
     }
 
-    public static Message showUnitEmb(Form f, MessageChannel ch, boolean isFrame, boolean talent, int[] lv, int lang, boolean addEmoji) throws Exception {
-        int level = lv[0];
+    public static Message showUnitEmb(Form f, MessageChannel ch, boolean isFrame, boolean talent, ArrayList<Integer> lv, int lang, boolean addEmoji) throws Exception {
+        int level = lv.get(0);
         int levelp = 0;
 
         if(level <= 0) {
@@ -252,7 +255,7 @@ public class EntityHandler {
                 levelp = 0;
         }
 
-        lv[0] = level + levelp;
+        lv.set(0, level + levelp);
 
         String l;
 
@@ -288,18 +291,21 @@ public class EntityHandler {
                 else
                     c = StaticStore.rainbow[2];
 
-                int[] t;
+                ArrayList<Integer> t;
 
                 if(talent && f.du.getPCoin() != null) {
-                    t = f.du.getPCoin().max;
-                    t[0] = lv[0];
+                    t = new ArrayList<>(f.du.getPCoin().max);
+                    t.set(0, lv.get(0));
                 } else
                     t = null;
 
                 if(t != null)
                     t = handleTalent(lv, t);
-                else
-                    t = new int[] {lv[0], 0, 0, 0, 0, 0};
+                else {
+                    t = new ArrayList<>();
+
+                    t.add(lv.get(0));
+                }
 
                 spec.title(DataToString.getTitle(f, lang));
 
@@ -442,29 +448,29 @@ public class EntityHandler {
         return msg;
     }
 
-    private static int[] handleTalent(int[] lv, int[] t) {
-        int[] res = new int[6];
+    private static ArrayList<Integer> handleTalent(ArrayList<Integer> lv, ArrayList<Integer> t) {
+        ArrayList<Integer> res = new ArrayList<>(t);
 
-        res[0] = lv[0];
+        res.set(0, lv.get(0));
 
-        for(int i = 0; i < t.length; i++) {
-            if(i >= lv.length)
-                res[i] = t[i];
+        for(int i = 0; i < t.size(); i++) {
+            if(i >= lv.size())
+                res.set(i, t.get(i));
             else
-                res[i] = Math.min(t[i], lv[i]);
+                res.set(i, Math.min(t.get(i), lv.get(i)));
 
-            if(res[i] < 0)
-                res[i] = t[i];
+            if(res.get(i) < 0)
+                res.set(i, t.get(i));
         }
 
         return res;
     }
 
-    private static boolean talentExists(int[] t) {
+    private static boolean talentExists(ArrayList<Integer> t) {
         boolean empty = true;
 
-        for(int i = 1; i < t.length; i++) {
-            empty &= t[i] == 0;
+        for(int i = 1; i < t.size(); i++) {
+            empty &= t.get(i) == 0;
         }
 
         return !empty;
@@ -2627,7 +2633,9 @@ public class EntityHandler {
     private static List<CellDrawer> addCell(List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilData, List<FlagCellData> traitData, CustomMaskUnit u, int lang, int lv, boolean isFrame) {
         List<CellDrawer> cells = new ArrayList<>();
 
-        int[] lvs = {lv, 0, 0, 0, 0, 0};
+        ArrayList<Integer> lvs = new ArrayList<>();
+
+        lvs.add(lv);
 
         cells.add(new NormalCellDrawer(
                 new String[] {"HP", "Hitbacks", "Speed"},

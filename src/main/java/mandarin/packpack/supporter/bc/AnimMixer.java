@@ -79,10 +79,10 @@ public class AnimMixer implements Source.AnimLoader {
             if(!result) {
                 return null;
             } else {
-                return new EAnimD<>(mixture, model, anim[index]);
+                return new EAnimD<>(mixture, model, anim[index], null);
             }
         } else {
-            return new EAnimD<>(mixture, model, anim[index]);
+            return new EAnimD<>(mixture, model, anim[index], null);
         }
     }
 

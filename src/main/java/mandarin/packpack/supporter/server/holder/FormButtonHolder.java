@@ -28,9 +28,9 @@ public class FormButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
     private final boolean talent;
     private final String channelID;
     private final String memberID;
-    private final int[] lv;
+    private final ArrayList<Integer> lv;
 
-    public FormButtonHolder(Form f, Message author, Message msg, boolean isFrame, boolean talent, int[] lv, int lang, String channelID, String memberID) {
+    public FormButtonHolder(Form f, Message author, Message msg, boolean isFrame, boolean talent, ArrayList<Integer> lv, int lang, String channelID, String memberID) {
         super(ButtonInteractionEvent.class);
 
         this.embed = msg;

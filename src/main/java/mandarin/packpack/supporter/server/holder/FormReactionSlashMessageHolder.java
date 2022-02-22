@@ -10,6 +10,7 @@ import discord4j.core.object.reaction.ReactionEmoji;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -25,11 +26,11 @@ public class FormReactionSlashMessageHolder extends MessageHolder<ReactionAddEve
 
     private final boolean isFrame;
     private final boolean talent;
-    private final int[] lv;
+    private final ArrayList<Integer> lv;
 
     private final GatewayDiscordClient client;
 
-    public FormReactionSlashMessageHolder(GatewayDiscordClient client, Form f, String memberID, long channelID, long embID, boolean isFrame, boolean talent, int[] lv, int lang) {
+    public FormReactionSlashMessageHolder(GatewayDiscordClient client, Form f, String memberID, long channelID, long embID, boolean isFrame, boolean talent, ArrayList<Integer> lv, int lang) {
         super(ReactionAddEvent.class);
 
         this.f = f;

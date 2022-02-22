@@ -7,7 +7,10 @@ import discord4j.core.event.domain.interaction.InteractionCreateEvent;
 import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.discordjson.json.*;
+import discord4j.discordjson.json.ApplicationCommandInteractionData;
+import discord4j.discordjson.json.ApplicationCommandInteractionOptionData;
+import discord4j.discordjson.json.InteractionData;
+import discord4j.discordjson.json.MemberData;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
@@ -15,7 +18,6 @@ import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.FormButtonHolder;
-import mandarin.packpack.supporter.server.holder.FormReactionMessageHolder;
 import mandarin.packpack.supporter.server.holder.FormReactionSlashMessageHolder;
 import mandarin.packpack.supporter.server.holder.FormStatMessageHolder;
 import mandarin.packpack.supporter.server.slash.SlashBuilder;
@@ -63,7 +65,7 @@ public class FormStat extends ConstraintCommand {
         String name = SlashOption.getStringOption(options, "name", "");
         boolean frame = SlashOption.getBooleanOption(options, "frame", true);
         boolean talent = SlashOption.getBooleanOption(options, "talent", false);
-        int[] lvs = prepareLevels(options);
+        ArrayList<Integer> lvs = prepareLevels(options);
 
         Form f = EntityFilter.pickOneForm(name, lang);
 
@@ -94,15 +96,15 @@ public class FormStat extends ConstraintCommand {
         });
     }
 
-    private static int[] prepareLevels(List<ApplicationCommandInteractionOptionData> options) {
-        int[] levels = new int[6];
+    private static ArrayList<Integer> prepareLevels(List<ApplicationCommandInteractionOptionData> options) {
+        ArrayList<Integer> levels = new ArrayList<>();
 
-        levels[0] = SlashOption.getIntOption(options, "level", -1);
-        levels[1] = SlashOption.getIntOption(options, "talent_level_1", -1);
-        levels[2] = SlashOption.getIntOption(options, "talent_level_2", -1);
-        levels[3] = SlashOption.getIntOption(options, "talent_level_3", -1);
-        levels[4] = SlashOption.getIntOption(options, "talent_level_4", -1);
-        levels[5] = SlashOption.getIntOption(options, "talent_level_5", -1);
+        for(int i = 0; i < 7; i++) {
+            if(i == 0)
+                levels.add(SlashOption.getIntOption(options, "level", -1));
+            else
+                levels.add(SlashOption.getIntOption(options, "talent_level_"+i, -1));
+        }
 
         return levels;
     }
@@ -130,7 +132,7 @@ public class FormStat extends ConstraintCommand {
 
                 int param = checkParameters(getContent(event));
 
-                int[] lv = handleLevel(getContent(event));
+                ArrayList<Integer> lv = handleLevel(getContent(event));
 
                 boolean isFrame = (param & PARAM_SECOND) == 0;
                 boolean talent = (param & PARAM_TALENT) > 0;
@@ -186,7 +188,7 @@ public class FormStat extends ConstraintCommand {
 
                 int param = checkParameters(getContent(event));
 
-                int[] lv = handleLevel(getContent(event));
+                ArrayList<Integer> lv = handleLevel(getContent(event));
 
                 if(res != null) {
                     getMember(event).ifPresent(member -> {
@@ -289,7 +291,7 @@ public class FormStat extends ConstraintCommand {
         return command.toString().trim();
     }
 
-    private int[] handleLevel(String msg) {
+    private ArrayList<Integer> handleLevel(String msg) {
         if(msg.contains("-lv")) {
             String[] content = msg.split(" ");
 
@@ -306,13 +308,18 @@ public class FormStat extends ConstraintCommand {
                             break;
                     }
 
-                    if(length == 0)
-                        return new int[] {-1};
+                    if(length == 0) {
+                        ArrayList<Integer> res = new ArrayList<>();
+
+                        res.add(-1);
+
+                        return res;
+                    }
                     else {
-                        int[] lv = new int[length];
+                        ArrayList<Integer> lv = new ArrayList<>();
 
                         for (int j = 0; j < length; j++) {
-                            lv[j] = StaticStore.safeParseInt(trial[j]);
+                            lv.add(StaticStore.safeParseInt(trial[j]));
                         }
 
                         return lv;
@@ -320,10 +327,18 @@ public class FormStat extends ConstraintCommand {
                 }
             }
         } else {
-            return new int[] {-1};
+            ArrayList<Integer> res = new ArrayList<>();
+
+            res.add(-1);
+
+            return res;
         }
 
-        return new int[] {-1};
+        ArrayList<Integer> res = new ArrayList<>();
+
+        res.add(-1);
+
+        return res;
     }
 
     private String getLevelText(String[] trial, int index) {
