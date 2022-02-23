@@ -96,7 +96,7 @@ public class DataToString {
         talentText.put(56, "data_surge");
         talentText.put(57, "data_demon");
         talentText.put(58, "data_shieldbreak");
-        talentText.put(59, "data_baronkiller");
+        talentText.put(59, "data_corpsekiller");
 
         VFile pCoinLevel = VFile.get("./org/data/SkillLevel.csv");
 
@@ -395,7 +395,7 @@ public class DataToString {
             int start = Math.min(lds, lds + ldr);
             int end = Math.max(lds, lds + ldr);
 
-            return r + " | " + start + " ~ " + end;
+            return r + " | " + start + "~" + end;
         } else {
             StringBuilder builder = new StringBuilder()
                     .append(r)
@@ -411,7 +411,7 @@ public class DataToString {
                 int end = Math.max(lds, lds + ldr);
 
                 builder.append(start)
-                        .append(" ~ ")
+                        .append("~")
                         .append(end);
 
                 if(i < f.getAtkCount() - 1) {
