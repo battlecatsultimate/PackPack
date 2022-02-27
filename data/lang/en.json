@@ -732,7 +732,7 @@
   "eimg_result" : "Uploaded _ | ::: | Frame : =",
   "eimg_more" : "This command requires one more argument! : [Enemy Name]",
   "bg_more" : "This command requires one more argument! : [BG ID]",
-  "bg_invalid" : "Invalid ID range, only 0 ~ _, and 1000 can be accepted",
+  "bg_invalid" : "Invalid ID range, only 0 ~ _, and 1000 ~ - can be accepted",
   "bg_result" : "Uploaded BG-_ (WWWXHHH)",
   "bg_prepare" : "Preparing background animation generation",
   "bg_dimen" : "Generating background animation (15 sec) : _WWW_x_HHH_",

@@ -22,6 +22,7 @@ import mandarin.packpack.supporter.server.slash.WebhookBuilder;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 @SuppressWarnings("ForLoopReplaceableByForEach")
@@ -121,7 +122,9 @@ public class Background extends TimedConstraintCommand {
                 common.util.pack.Background bg = UserProfile.getBCData().bgs.getRaw(id);
 
                 if(bg == null) {
-                    ch.createMessage(LangID.getStringByID("bg_invalid", lang).replace("_", (UserProfile.getBCData().bgs.getList().size()-2)+"")).subscribe();
+                    int[] size = getBGSize();
+
+                    ch.createMessage(LangID.getStringByID("bg_invalid", lang).replace("_", size[0]+"").replace("-", size[1] + "")).subscribe();
                     return;
                 }
 
@@ -274,5 +277,20 @@ public class Background extends TimedConstraintCommand {
         }
 
         return -1;
+    }
+
+    private int[] getBGSize() {
+        List<common.util.pack.Background> bgs = UserProfile.getBCData().bgs.getList();
+
+        int[] res = {0, 0};
+
+        for(int i = 0; i < bgs.size(); i++) {
+            if(bgs.get(i).id.id < 1000)
+                res[0] = Math.max(res[0], bgs.get(i).id.id);
+            else
+                res[1] = Math.max(res[1], bgs.get(i).id.id);
+        }
+
+        return res;
     }
 }
