@@ -628,7 +628,7 @@
   "help_subscribeevent_use" : "`p!subscribeevent [채널] <냥코 버전>",
   "help_subscribeevent_desc" : "이벤트 데이터를 구독하고 봇이 새로운 이벤트 데이터를 올릴 채널을 정합니다. 한번에 여러 냥코 버전의 이벤트 데이터를 구독할 수 있습니다 (한국판, 영어판, 대만판, 일본판). **서버 관리자들만 이 명령어를 사용할 수 있습니다**. `se` 또한 유효한 명령어 입니다",
   "help_subscribeevent_argu" : "`-r` 또는 `-raw` : 이벤트 데이터를 날짜순으로 정렬하지 않고 그대로 올립니다",
-  "help_subscribeevent_exam" : "`p!se 123456789012345678`\n`p!se #예시채널`\n`p!se #예시채널 1,4\n`p!se #예시채널 -r 1,4`",
+  "help_subscribeevent_exam" : "`p!se 123456789012345678`\n`p!se #예시채널`\n`p!se #예시채널 1,4`\n`p!se #예시채널 -r 1,4`",
   "help_subscribeevent_tip" : "채널을 제공한 뒤, 숫자를 적어 여러 냥코 버전의 이벤트 데이터를 구독할 수 있습니다\n\n1 : 냥코 영어판\n2 : 냥코 대만판\n3 : 냥코 한국판\n4 : 냥코 일본판\n\n아무런 인자를 제공하지 않고 `p!se` 를 불러 구독을 취소할 수 있습니다",
   "help_printstageevent_use" : "`p!printstageevent <언어>`",
   "help_printstageevent_desc" : "분석된 스테이지/이벤트 이벤트 데이터를 업로드합니다. 만약 언어가 따로 정해지지 않았다면 서버에 설정된 언어를 따릅니다. `pse` 또한 유효한 명령어 입니다",
