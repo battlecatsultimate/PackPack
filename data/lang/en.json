@@ -417,6 +417,8 @@
   "item_959" : "New Years Stamp",
   "item_960" : "Valentine Stamp",
   "item_961" : "White Day Stamp",
+  "item_962" : "70M Download Stamp",
+  "item_963" : "Gold Brick Cat Stamp",
   "command_timelimit" : "You can run this command after _ sec later!",
   "command_prevent" : "Now <@_UUU_> can't use any commands for _TTT_due to spamming of command. More spamming in future will lengthen time of ban!",
   "const_man" : "This command can be only run by MandarinSmell!",
