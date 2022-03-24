@@ -107,9 +107,9 @@ public class AliasFormMessageHolder extends MessageHolder<MessageCreateEvent> {
             String fname = StaticStore.safeMultiLangGet(form.get(id), lang);
 
             if(fname == null || fname.isBlank())
-                fname = form.get(id).name;
+                fname = form.get(id).names.toString();
 
-            if(fname == null || fname.isBlank())
+            if(fname.isBlank())
                 fname = Data.trio(form.get(id).unit.id.id)+"-"+Data.trio(form.get(id).fid);
 
             ArrayList<String> alias = AliasHolder.getAlias(AliasHolder.TYPE.FORM, lang, form.get(id));

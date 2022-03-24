@@ -90,9 +90,9 @@ public class AliasEnemyMessageHolder extends MessageHolder<MessageCreateEvent> {
             String eName = StaticStore.safeMultiLangGet(enemy.get(id), lang);
 
             if(eName == null || eName.isBlank())
-                eName = enemy.get(id).name;
+                eName = enemy.get(id).names.toString();
 
-            if(eName == null || eName.isBlank())
+            if(eName.isBlank())
                 eName = Data.trio(enemy.get(id).id.id);
 
             ArrayList<String> alias = AliasHolder.getAlias(AliasHolder.TYPE.ENEMY, lang, enemy.get(id));

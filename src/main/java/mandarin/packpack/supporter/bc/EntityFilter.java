@@ -41,8 +41,8 @@ public class EntityFilter {
                         fname.append(StaticStore.safeMultiLangGet(f, StaticStore.langIndex[i]));
                     }
 
-                    if(f.name != null) {
-                        fname.append(" ").append(f.name);
+                    if(!f.names.toString().isBlank()) {
+                        fname.append(" ").append(f.names.toString());
                     }
 
                     if(fname.toString().toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
@@ -94,12 +94,12 @@ public class EntityFilter {
                     String fname = StaticStore.safeMultiLangGet(f, lang);
 
                     if(fname == null || fname.isBlank()) {
-                        fname = f.name;
+                        fname = f.names.toString();
                     }
 
                     boolean done = false;
 
-                    if(fname != null && !fname.isBlank()) {
+                    if(!fname.isBlank()) {
                         fname = fname.toLowerCase(Locale.ENGLISH);
 
                         if(lang == LangID.KR)
@@ -313,11 +313,11 @@ public class EntityFilter {
                 String ename = StaticStore.safeMultiLangGet(e, lang);
 
                 if(ename == null || ename.isBlank())
-                    ename = e.name;
+                    ename = e.names.toString();
 
                 boolean done = false;
 
-                if(ename != null && !ename.isBlank()) {
+                if(!ename.isBlank()) {
                     ename = ename.toLowerCase(Locale.ENGLISH);
 
                     if(lang == LangID.KR)

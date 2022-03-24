@@ -95,9 +95,9 @@ public class FormImage extends TimedConstraintCommand {
                         CommonStatic.getConfig().lang = oldConfig;
 
                         if(fName == null || fName.isBlank())
-                            fName = forms.get(0).name;
+                            fName = forms.get(0).names.toString();
 
-                        if(fName == null || fName.isBlank())
+                        if(fName.isBlank())
                             fName = LangID.getStringByID("data_unit", lang)+" "+ Data.trio(forms.get(0).uid.id)+" "+Data.trio(forms.get(0).fid);
 
                         m.content(LangID.getStringByID("fimg_result", lang).replace("_", fName).replace(":::", getModeName(finalMode, forms.get(0).anim.anims.length)).replace("=", String.valueOf(frame)));

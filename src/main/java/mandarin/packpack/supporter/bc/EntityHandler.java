@@ -1229,9 +1229,9 @@ public class EntityHandler {
                 CommonStatic.getConfig().lang = oldConfig;
 
                 if(eName == null || eName.isBlank())
-                    eName = ((Enemy) enemy).name;
+                    eName = ((Enemy) enemy).names.toString();
 
-                if(eName == null || eName.isBlank())
+                if(eName.isBlank())
                     eName = DataToString.getPackName(((Enemy) enemy).id.pack, lang)+" - "+Data.trio(((Enemy) enemy).id.id);
 
                 enemies.add(eName);
@@ -1540,9 +1540,9 @@ public class EntityHandler {
                 CommonStatic.getConfig().lang = oldConfig;
 
                 if(fName == null || fName.isBlank())
-                    fName = f.name;
+                    fName = f.names.toString();
 
-                if(fName == null || fName.isBlank())
+                if(fName.isBlank())
                     fName = LangID.getStringByID("data_unit", lang)+" "+ Data.trio(f.uid.id)+" "+Data.trio(f.fid);
 
                 m.content(LangID.getStringByID("fimg_result", lang).replace("_", fName).replace(":::", getModeName(finalMode, f.anim.anims.length, lang)).replace("=", String.valueOf(frame)));
@@ -1593,9 +1593,9 @@ public class EntityHandler {
                 CommonStatic.getConfig().lang = oldConfig;
 
                 if(fName == null || fName.isBlank())
-                    fName = en.name;
+                    fName = en.names.toString();
 
-                if(fName == null || fName.isBlank())
+                if(fName.isBlank())
                     fName = LangID.getStringByID("data_enemy", lang)+" "+ Data.trio(en.id.id);
 
                 m.content(LangID.getStringByID("fimg_result", lang).replace("_", fName).replace(":::", getModeName(finalMode, en.anim.anims.length, lang)).replace("=", String.valueOf(frame)));

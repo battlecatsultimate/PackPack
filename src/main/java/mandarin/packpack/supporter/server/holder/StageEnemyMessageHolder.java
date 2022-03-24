@@ -143,9 +143,9 @@ public class StageEnemyMessageHolder extends MessageHolder<MessageCreateEvent> {
                     String eName = StaticStore.safeMultiLangGet(e, lang);
 
                     if(eName == null || eName.isBlank())
-                        eName = e.name;
+                        eName = e.names.toString();
 
-                    if(eName == null || eName.isBlank())
+                    if(eName.isBlank())
                         eName = Data.trio(e.id.id);
 
                     String check;

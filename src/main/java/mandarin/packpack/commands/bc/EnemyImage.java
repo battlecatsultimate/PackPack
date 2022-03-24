@@ -94,9 +94,9 @@ public class EnemyImage extends TimedConstraintCommand {
                         CommonStatic.getConfig().lang = oldConfig;
 
                         if(fName == null || fName.isBlank())
-                            fName = enemies.get(0).name;
+                            fName = enemies.get(0).names.toString();
 
-                        if(fName == null || fName.isBlank())
+                        if(fName.isBlank())
                             fName = LangID.getStringByID("data_enemy", lang)+" "+ Data.trio(enemies.get(0).id.id);
 
                         m.content(LangID.getStringByID("eimg_result", lang).replace("_", fName).replace(":::", getModeName(finalMode, enemies.get(0).anim.anims.length)).replace("=", String.valueOf(frame)));

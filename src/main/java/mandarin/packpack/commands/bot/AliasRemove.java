@@ -69,9 +69,9 @@ public class AliasRemove extends Command {
                     String fname = StaticStore.safeMultiLangGet(forms.get(0), lang);
 
                     if(fname == null || fname.isBlank())
-                        fname = forms.get(0).name;
+                        fname = forms.get(0).names.toString();
 
-                    if(fname == null || fname.isBlank())
+                    if(fname.isBlank())
                         fname = Data.trio(forms.get(0).unit.id.id)+"-"+Data.trio(forms.get(0).fid);
 
                     ArrayList<String> alias = AliasHolder.getAlias(type, lang, forms.get(0));
@@ -160,9 +160,9 @@ public class AliasRemove extends Command {
                     String eName = StaticStore.safeMultiLangGet(enemies.get(0), lang);
 
                     if(eName == null || eName.isBlank())
-                        eName = enemies.get(0).name;
+                        eName = enemies.get(0).names.toString();
 
-                    if(eName == null || eName.isBlank())
+                    if(eName.isBlank())
                         eName = Data.trio(enemies.get(0).id.id);
 
                     ArrayList<String> alias = AliasHolder.getAlias(type, lang, enemies.get(0));

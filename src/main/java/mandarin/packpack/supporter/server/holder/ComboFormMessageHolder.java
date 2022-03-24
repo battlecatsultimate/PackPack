@@ -255,9 +255,9 @@ public class ComboFormMessageHolder extends MessageHolder<MessageCreateEvent> {
                         String formName = StaticStore.safeMultiLangGet(form.get(id), lang);
 
                         if(formName == null || formName.isBlank())
-                            formName = form.get(id).name;
+                            formName = form.get(id).names.toString();
 
-                        if(formName == null || formName.isBlank())
+                        if(formName.isBlank())
                             formName = Data.trio(form.get(id).unit.id.id) +" - " + Data.trio(form.get(id).fid);
 
                         m.content(wrap(LangID.getStringByID("combo_selected", lang).replace("_", formName)));

@@ -61,10 +61,10 @@ public class FindStage extends TimedConstraintCommand {
                 String eName = StaticStore.safeMultiLangGet(enemies.get(0), lang);
 
                 if(eName == null || eName.isBlank()) {
-                    eName = enemies.get(0).name;
+                    eName = enemies.get(0).names.toString();
                 }
 
-                if(eName == null || eName.isBlank()) {
+                if(eName.isBlank()) {
                     eName = Data.trio(enemies.get(0).id.id);
                 }
 
@@ -85,9 +85,9 @@ public class FindStage extends TimedConstraintCommand {
                 String eName = StaticStore.safeMultiLangGet(enemies.get(0), lang);
 
                 if(eName == null || eName.isBlank())
-                    eName = enemies.get(0).name;
+                    eName = enemies.get(0).names.toString();
 
-                if(eName == null || eName.isBlank())
+                if(eName.isBlank())
                     eName = Data.trio(enemies.get(0).id.id);
 
                 String check;

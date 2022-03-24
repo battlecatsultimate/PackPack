@@ -9,10 +9,7 @@ import common.pack.UserProfile;
 import common.system.files.VFile;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
-import common.util.stage.Limit;
-import common.util.stage.MapColc;
-import common.util.stage.Stage;
-import common.util.stage.StageMap;
+import common.util.stage.*;
 import common.util.unit.*;
 import discord4j.rest.util.Color;
 import mandarin.packpack.supporter.StaticStore;
@@ -1059,11 +1056,23 @@ public class DataToString {
     }
 
     public static String getLoop0(Stage st) {
-        return convertTime(st.loop0);
+        Music ms = st.mus0.get();
+
+        if(ms != null) {
+            return convertTime(ms.loop);
+        } else {
+            return convertTime(0);
+        }
     }
 
     public static String getLoop1(Stage st) {
-        return convertTime(st.loop1);
+        Music ms = st.mus1.get();
+
+        if(ms != null) {
+            return convertTime(ms.loop);
+        } else {
+            return convertTime(0);
+        }
     }
 
     public static String getBackground(Stage st, int lang) {
@@ -1149,9 +1158,9 @@ public class DataToString {
                 CommonStatic.getConfig().lang = oldConfig;
 
                 if(f == null)
-                    f = u.get(i).forms[0].name;
+                    f = u.get(i).forms[0].names.toString();
 
-                if(f == null)
+                if(f.isBlank())
                     f = LangID.getStringByID("data_unit", lang)+Data.trio(u.get(i).id.id);
 
                 if(i == l.group.set.size() - 1) {
