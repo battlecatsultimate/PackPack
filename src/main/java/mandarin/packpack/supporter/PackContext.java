@@ -40,6 +40,8 @@ public class PackContext implements Context {
                 return new FileInputStream("./data/lang/proc_kr.json");
             } else if(CommonStatic.getConfig().lang == 3) {
                 return new FileInputStream("./data/lang/proc_jp.json");
+            } else if(CommonStatic.getConfig().lang == 8) {
+                return new FileInputStream("./data/lang/proc_es.json");
             } else {
                 return new FileInputStream("./data/lang/proc.json");
             }
