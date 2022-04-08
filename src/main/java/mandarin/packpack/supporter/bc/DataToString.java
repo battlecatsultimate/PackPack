@@ -387,7 +387,7 @@ public class DataToString {
             MaskAtk ma = f.getAtkModel(0);
 
             int lds = ma.getShortPoint();
-            int ldr = ma.getLongPoint();
+            int ldr = ma.getLongPoint() - ma.getShortPoint();
 
             int start = Math.min(lds, lds + ldr);
             int end = Math.max(lds, lds + ldr);
@@ -402,7 +402,7 @@ public class DataToString {
                 MaskAtk ma = f.getAtkModel(i);
 
                 int lds = ma.getShortPoint();
-                int ldr = ma.getLongPoint();
+                int ldr = ma.getLongPoint() - ma.getShortPoint();
 
                 int start = Math.min(lds, lds + ldr);
                 int end = Math.max(lds, lds + ldr);
