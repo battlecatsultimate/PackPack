@@ -5,6 +5,7 @@ import discord4j.core.event.ReactiveEventAdapter;
 import discord4j.core.event.domain.Event;
 import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
 import discord4j.core.event.domain.interaction.ComponentInteractionEvent;
+import discord4j.core.event.domain.interaction.DeferrableInteractionEvent;
 import discord4j.core.event.domain.interaction.InteractionCreateEvent;
 import discord4j.core.object.command.ApplicationCommandOption;
 import discord4j.core.object.entity.Member;
@@ -149,48 +150,54 @@ public class SlashBuilder {
 
                     String command = interactionData.get().name().get();
 
-                    switch (command) {
-                        case "fs":
-                            WebhookBuilder request = FormStat.getInteractionWebhook(event);
+                    if(event instanceof DeferrableInteractionEvent) {
+                        DeferrableInteractionEvent dEvent = (DeferrableInteractionEvent) event;
 
-                            if(request != null) {
-                                return event.deferReply()
-                                        .then(event.getInteractionResponse().createFollowupMessage(request.build()))
-                                        .flatMap(m -> Mono.create(v -> request.doAdditionalJob(client, m)))
-                                        .then(Mono.create(m -> request.finishJob(true)))
-                                        .doOnError(e -> {
-                                            e.printStackTrace();
-                                            request.finishJob(true);
-                                        });
-                            }
+                        switch (command) {
+                            case "fs":
+                                WebhookBuilder request = FormStat.getInteractionWebhook(event);
 
-                            break;
-                        case "es":
-                            request = EnemyStat.getInteractionWebhook(event.getInteraction().getData());
+                                if(request != null) {
+                                    return dEvent.deferReply()
+                                            .then(dEvent.getInteractionResponse().createFollowupMessage(request.build()))
+                                            .flatMap(m -> Mono.create(v -> request.doAdditionalJob(client, m)))
+                                            .then(Mono.create(m -> request.finishJob(true)))
+                                            .doOnError(e -> {
+                                                e.printStackTrace();
+                                                request.finishJob(true);
+                                            });
+                                }
 
-                            if(request != null) {
-                                return event.deferReply().then(event.getInteractionResponse().createFollowupMessage(request.build()))
-                                        .then(Mono.create(m -> request.finishJob(true)))
-                                        .doOnError(e -> {
-                                            e.printStackTrace();
-                                            request.finishJob(true);
-                                        });
-                            }
+                                break;
+                            case "es":
+                                request = EnemyStat.getInteractionWebhook(event.getInteraction().getData());
 
-                            break;
-                        case "si":
-                            request = StageInfo.getInteractionWebhook(event);
+                                if(request != null) {
+                                    return dEvent.deferReply().then(dEvent.getInteractionResponse().createFollowupMessage(request.build()))
+                                            .then(Mono.create(m -> request.finishJob(true)))
+                                            .doOnError(e -> {
+                                                e.printStackTrace();
+                                                request.finishJob(true);
+                                            });
+                                }
 
-                            if(request != null) {
-                                return event.deferReply().then(event.getInteractionResponse().createFollowupMessage(request.build()))
-                                        .flatMap(m -> Mono.create(v -> request.doAdditionalJob(client, m)))
-                                        .then(Mono.create(m -> request.finishJob(true)))
-                                        .doOnError(e -> {
-                                            e.printStackTrace();
-                                            request.finishJob(true);
-                                        });
-                            }
+                                break;
+                            case "si":
+                                request = StageInfo.getInteractionWebhook(event);
+
+                                if(request != null) {
+                                    return dEvent.deferReply().then(dEvent.getInteractionResponse().createFollowupMessage(request.build()))
+                                            .flatMap(m -> Mono.create(v -> request.doAdditionalJob(client, m)))
+                                            .then(Mono.create(m -> request.finishJob(true)))
+                                            .doOnError(e -> {
+                                                e.printStackTrace();
+                                                request.finishJob(true);
+                                            });
+                                }
+                        }
                     }
+
+
                 }
 
                 return Mono.empty();

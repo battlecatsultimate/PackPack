@@ -2,6 +2,7 @@ package mandarin.packpack.supporter.server;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import discord4j.core.event.domain.interaction.DeferrableInteractionEvent;
 import discord4j.core.event.domain.interaction.InteractionCreateEvent;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.discordjson.json.InteractionData;
@@ -160,10 +161,20 @@ public class SpamPrevent {
                         lang =  StaticStore.locales.get(m.user().id().asString());
                     }
 
-                    return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage(LangID.getStringByID("command_prevent", lang).replace("_TTT_", beautifyMillis(lang)).replace("_UUU_", m.user().id().asString())));
+                    if(event instanceof DeferrableInteractionEvent) {
+                        DeferrableInteractionEvent dEvent = (DeferrableInteractionEvent) event;
+
+                        return dEvent.reply(LangID.getStringByID("command_prevent", lang).replace("_TTT_", beautifyMillis(lang)).replace("_UUU_", m.user().id().asString()));
+                    }
                 }
 
-                return event.acknowledge().then(event.getInteractionResponse().createFollowupMessage("You can't use command for "+beautifyMillis(lang)));
+                if(event instanceof DeferrableInteractionEvent) {
+                    DeferrableInteractionEvent dEvent = (DeferrableInteractionEvent) event;
+
+                    return dEvent.reply("You can't use command for "+beautifyMillis(lang));
+                } else {
+                    return Mono.empty();
+                }
             }
         }
 
