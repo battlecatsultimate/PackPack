@@ -646,52 +646,58 @@ public class PackBot {
                         }
                     });
 
-                    MessageChannel mc = event.getMessage().getChannel().block();
+                    try {
+                        MessageChannel mc = event.getMessage().getChannel().block();
 
-                    if(mc == null)
-                        return true;
-                    else {
-                        AtomicReference<Boolean> mandarin = new AtomicReference<>(false);
-                        AtomicReference<Boolean> isMod = new AtomicReference<>(false);
-                        AtomicReference<Boolean> canGo = new AtomicReference<>(true);
-
-                        Guild g = event.getGuild().block();
-
-                        IDHolder ids;
-
-                        if(g != null) {
-                            ids = StaticStore.idHolder.get(g.getId().asString());
-                        } else {
+                        if(mc == null)
                             return true;
-                        }
+                        else {
+                            AtomicReference<Boolean> mandarin = new AtomicReference<>(false);
+                            AtomicReference<Boolean> isMod = new AtomicReference<>(false);
+                            AtomicReference<Boolean> canGo = new AtomicReference<>(true);
 
-                        event.getMember().ifPresent(m -> {
-                            mandarin.set(m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
+                            Guild g = event.getGuild().block();
 
-                            if(ids.MOD != null) {
-                                isMod.set(StaticStore.rolesToString(m.getRoleIds()).contains(ids.MOD));
+                            IDHolder ids;
+
+                            if(g != null) {
+                                ids = StaticStore.idHolder.get(g.getId().asString());
+                            } else {
+                                return true;
                             }
 
-                            ArrayList<String> channels = ids.getAllAllowedChannels(m.getRoleIds());
+                            event.getMember().ifPresent(m -> {
+                                mandarin.set(m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
 
-                            if(channels == null)
-                                return;
+                                if(ids.MOD != null) {
+                                    isMod.set(StaticStore.rolesToString(m.getRoleIds()).contains(ids.MOD));
+                                }
 
-                            if(channels.isEmpty())
-                                canGo.set(false);
-                            else {
-                                MessageChannel channel = event.getMessage().getChannel().block();
+                                ArrayList<String> channels = ids.getAllAllowedChannels(m.getRoleIds());
 
-                                if(channel == null)
+                                if(channels == null)
                                     return;
 
-                                canGo.set(channels.contains(channel.getId().asString()));
-                            }
-                        });
+                                if(channels.isEmpty())
+                                    canGo.set(false);
+                                else {
+                                    MessageChannel channel = event.getMessage().getChannel().block();
 
-                        String acc = ids.GET_ACCESS;
+                                    if(channel == null)
+                                        return;
 
-                        return ((acc == null || !mc.getId().asString().equals(ids.GET_ACCESS)) && canGo.get()) || mandarin.get() || isMod.get();
+                                    canGo.set(channels.contains(channel.getId().asString()));
+                                }
+                            });
+
+                            String acc = ids.GET_ACCESS;
+
+                            return ((acc == null || !mc.getId().asString().equals(ids.GET_ACCESS)) && canGo.get()) || mandarin.get() || isMod.get();
+                        }
+                    } catch (Exception e) {
+                        StaticStore.logger.uploadErrorLog(e, "Something went wrong");
+
+                        return false;
                     }
                 }).subscribe(event -> {
                     Message msg = event.getMessage();
@@ -842,7 +848,7 @@ public class PackBot {
                                     new Background(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
                                     break;
                                 case "test":
-                                    new Test(ConstraintCommand.ROLE.MANDARIN, lang, idh, "test").execute(event);
+                                    new Test(ConstraintCommand.ROLE.MANDARIN, lang, idh, "test", gate).execute(event);
                                     break;
                                 case "formgif":
                                 case "fgif":
