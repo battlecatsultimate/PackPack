@@ -87,6 +87,8 @@ public class StaticStore {
 
     public static EventHolder event = new EventHolder();
 
+    public static ArrayList<String> optoutMembers = new ArrayList<>();
+
     public static ScamLinkHolder scamLink = new ScamLinkHolder();
     public static ScamLinkHandlerHolder scamLinkHandlers = new ScamLinkHandlerHolder();
 

@@ -677,6 +677,8 @@
   "help_subscribescamlinkdetector_tip" : "This feature was made to establish scam link database, and help moderators to moderate compromised accounts. Moderators can choose 3 kinds of action for them : \n\n - Mute\n - Kick (Need reconsidering)\n - Ban (Not recommended)\n\nModerators must provide mute role ID via `-m` argument if they want to choose mute action. If bot could catch compromised account and if this user is in this server, it will report user to specified report channel. Moderators also can decide to make bot upload info about those who aren't in server as well\n\nBe aware that don't rely on this bot too much. It can do false moderation to users, so too strong action such as ban may lead to bad situation",
   "help_unsubscribescamlinkdetector_use" : "`p!unsubscribescamlinkdetector`",
   "help_unsubscribescamlinkdetector_desc" : "Unsubscribe from feature of bot, which detects scam link automatically and auto-moderate users who sent these kinds of links. **Only moderators can use this command**. `usld` or `usd` are also valid command",
+  "help_optout_use" : "`p!optout`",
+  "help_optout_desc" : "Server may be using DM monitor system or scam link detecting feature of this bot. This means that your message may be being tracked, and users should be able to decide whether they will allow bot to track their messages or not. With this command, you can make bot not track your message anymore, but be aware that it's good to help moderators to moderate their server. If you already opted out, call this command again to opt in back",
   "help_timezone_use" : "`p!timezone [Time]`",
   "help_timezone_desc" : "Register your timezone, so bot can consider your time when using some commands. Timezone relies on GMT format. For example, if you passed 3, then it means GMT+3. If you passed -2, then it means GMT-2. Timezone range is from -12 to 12. `tz` is also valid command",
   "help_timezone_exam" : "`p!tz 3`\n`p!tz -10`",
@@ -999,5 +1001,8 @@
   "timezone_noval" : "Not enough parameter! You have to specify the timezone you want to set. Timezone must be GMT (i.e `p!tz 3` = GMT+3, `p!tz -10` = GMT-10)",
   "timezone_notnum" : "Timezone value must be numeric! (i.e `p!tz 3` = GMT+3, `p!tz -10` = GMT-10)",
   "timezone_done" : "Your timezone is now set as GMT_!",
-  "timezone_nomem" : "Couldn't register timezone because bot couldn't get your member information"
+  "timezone_nomem" : "Couldn't register timezone because bot couldn't get your member information",
+  "optout_in" : "You decided to opt in, so bot will be able to monitor your message for monitoring DM and auto scam link detector",
+  "optout_out" : "You decided to opt out, so bot won't be able to monitor your message for monitoring DM and auto scam link detector\nBut it's recommended to keep your message able to be monitored, so moderators can moderator their server easily",
+  "optout_nomem" : "Failed to bring member data..."
 }

@@ -658,7 +658,7 @@ public class PackBot {
                         Guild g = event.getGuild().block();
                         Message msg = event.getMessage();
 
-                        if(!m.isBot() && g != null && StaticStore.scamLinkHandlers.servers.containsKey(g.getId().asString()) && ScamLinkHandler.validScammingUser(msg.getContent())) {
+                        if(!m.isBot() && !StaticStore.optoutMembers.contains(m.getId().asString()) && g != null && StaticStore.scamLinkHandlers.servers.containsKey(g.getId().asString()) && ScamLinkHandler.validScammingUser(msg.getContent())) {
                             String link = ScamLinkHandler.getLinkFromMessage(msg.getContent());
 
                             if(link != null) {
@@ -1113,6 +1113,9 @@ public class PackBot {
                                 case "tz":
                                     new TimeZone(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
                                     break;
+                                case "optout":
+                                    new OptOut(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
+                                    break;
                             }
                         }
                     }, () -> {
@@ -1128,7 +1131,10 @@ public class PackBot {
 
                                 String finalContent = content;
 
-                                msg.getAuthor().ifPresent(a -> notifyModerators(a, finalContent, gate));
+                                msg.getAuthor().ifPresent(a -> {
+                                    if(!StaticStore.optoutMembers.contains(a.getId().asString()))
+                                        notifyModerators(a, finalContent, gate);
+                                });
                             }
                         }
                     });
