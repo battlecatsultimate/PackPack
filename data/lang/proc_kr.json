@@ -571,6 +571,10 @@
                 "name": "배경 ID",
                 "tooltip": "능력 발동 시 변경될 배경을 정합니다"
             },
+            "mus": {
+                "name": "BGM ID",
+                "tooltip": null
+            },
             "type.kill": {
                 "name": "개체 제거",
                 "tooltip": "능력 발동 시 해당 필드의 모든 개체를 제거합니다"
@@ -610,6 +614,14 @@
             "type.unstackable": {
                 "name": "중첩 불가능",
                 "tooltip": "해당 특성이 활성화되면 중첩이 불가능해집니다"
+            },
+            "type.ignoreMetal": {
+                "name": "Bypass Metal",
+                "tooltip": "Activate this to deal regular damage to metal enemies."
+            },
+            "type.modifAffected": {
+                "name": "Consider Abilities",
+                "tooltip": "Toggle this to make poison damage affected by damage-modifying abilities such as strong against or critical."
             }
         }
     },
@@ -696,7 +708,7 @@
         "abbr_name": "열파 공격",
         "full_name": "열파 공격",
         "tooltip": "한 자리에서 계속 일정 간격으로 공격하는 열파를 만들어냅니다",
-        "format": "(prob)% 확률로 (_dispTime(time)) 동안 열파 공격 (_left) (dis_0) ~ (dis_1) 사이에서 랜덤으로 생성(_right)",
+        "format": "(prob)% 확률로 Lv. (time/20) 열파 공격 (_left) (_dispTime(time)) 동안 발동되며 (dis_0) ~ (dis_1) 사이에서 랜덤으로 생성(_right)",
         "class": {
             "prob": {
                 "name": "확률",
@@ -923,7 +935,7 @@
         "abbr_name" : "베리어",
         "full_name" : "베리어",
         "tooltip" : "베리어의 체력보다 낮은 모든 공격을 무효화 합니다. 만약 베리어의 체력보다 높은 공격을 맞을 경우 베리어는 부숴집니다",
-        "format" : ["베리어 (_left)(health) 체력을 갖고 있[(regentime>0|timeout>0){고, }(regentime==0&timeout==0){다}][(regentime>0){파괴 후 (_dispTime(regentime)) 후에 다시 생성[(timeout==0){된다}(timeout>0){되며, }]}][(timeout>0){생성 후 (_dispTime(timeout)) 후에 파괴된다}](_right)"
+        "format" : ["베리어 (_left)[(type.magnif){(_shield(health))}(!type.magnif){(health)}] 체력을 갖고 있[(regentime>0|timeout>0){고, }(regentime==0&timeout==0){다}][(regentime>0){파괴 후 (_dispTime(regentime)) 후에 다시 생성[(timeout==0){된다}(timeout>0){되며, }]}][(timeout>0){생성 후 (_dispTime(timeout)) 후에 파괴된다}](_right)"
         ],
         "class" : {
             "health" : {
@@ -937,6 +949,10 @@
             "timeout" : {
                 "name" : "시간 초과",
                 "tooltip" : "특정 시간이 지나면 베리어가 자동으로 부숴집니다. 0으로 설정하여 비활성화할 수 있습니다"
+            },
+            "type.magnif" : {
+                "name" : "배율 고려",
+                "tooltip" : "개체의 체력 배율에 따라서 베리어의 체력도 같이 증가하게 만듭니다"
             }
         }
     },
@@ -944,7 +960,7 @@
         "abbr_name" : "슈퍼 아머",
         "full_name" : "슈퍼 아머",
         "tooltip" : "설정된 값보다 낮은 공격력을 무효화 합니다. 설정된 값에 따라 공격력만 무시하고 능력은 받아들일 수도 있습니다",
-        "format" : "(prob)% 확률로 (dmg)보다 낮은 공격력을 [(type.traitIgnore&!_isEnemy){적 속성에 상관 없이 }][(type.procs){공격의 능력과 함께 }]무효화한다",
+        "format" : "(prob)% 확률로 [(type.magnif){(_shield(dmg))}(!type.magnif){(dmg)}]보다 낮은 공격력을 [(type.traitIgnore&!_isEnemy){적 속성에 상관 없이 }][(type.procs){공격의 능력과 함께 }]무효화한다",
         "class" : {
             "prob" : {
                 "name" : "확률",
@@ -961,6 +977,10 @@
             "type.procs" : {
                 "name" : "능력 무시",
                 "tooltip" : "켜져 있을 경우 받은 공격의 능력 또한 같이 무효화됩니다"
+            },
+            "type.magnif" : {
+                "name" : "배율 고려",
+                "tooltip" : "개체의 체력 배율에 따라서 베리어의 체력도 같이 증가하게 만듭니다"
             }
         }
     },
@@ -968,7 +988,7 @@
         "abbr_name" : "마법 쉴드",
         "full_name" : "마법 쉴드",
         "tooltip" : "설정된 값보다 높은 공격을 무시하거나 그 설정된 값의 공격력으로 받아들입니다",
-        "format" : "(prob)% 확률료 (dmg) 보다 높은 공격력을 [(type.traitIgnore){속성에 상관없이 }][(type.procs){공격의 능력을 무효화한 채로 }]공격력을 [(type.nullify){무시한다}(!type.nullify){(dmg) 로 받아들인다}]",
+        "format" : "(prob)% 확률료 [(type.magnif){(_shield(dmg))}(!type.magnif){(dmg)}] 보다 높은 공격력을 [(type.traitIgnore){속성에 상관없이 }][(type.procs){공격의 능력을 무효화한 채로 }]공격력을 [(type.nullify){무시한다}(!type.nullify){(dmg) 로 받아들인다}]",
         "class" : {
             "prob" : {
                 "name" : "확률",
@@ -989,6 +1009,10 @@
             "type.procs" : {
                 "name" : "능력 무시",
                 "tooltip" : "켜져 있을 경우 받은 공격의 능력 또한 같이 무효화됩니다"
+            },
+            "type.magnif" : {
+                "name" : "배율 고려",
+                "tooltip" : "개체의 체력 배율에 따라서 베리어의 체력도 같이 증가하게 만듭니다"
             }
         }
     },
@@ -1108,6 +1132,24 @@
             "block": {
                 "name": "봉인 삭제",
                 "tooltip": "받은 공격 자체의 봉인 시간을 퍼센트로 조정하여 다른 아군들한테도 영향을 줍니다. 100으로 설정하여 완전히 막아냅니다"
+            }
+        }
+    },
+    "IMUCANNON": {
+        "abbr_name": "성 파동 무효",
+        "full_name": "성 파동 무효",
+        "tooltip": null,
+        "format": ["[(type!=127){[(type#1){일반 성 파동[(type>2){, }]}",
+            "(type&2>0){슬로우포[(type>4){, }]}",
+            "(type&4>0){천둥포[(type>8){, }]}",
+            "(type&8>0){물총포[(type>16){, }]}",
+            "(type&16>0){천사포[(type>32){, }]}",
+            "(type&32>0){캐논포[(type>64){, and}]}",
+            "(type&64>0){저주포}]}(type==127){모든 성 파동}] 에 무효"],
+        "class": {
+            "type": {
+                "name": "타입",
+                "tooltip": "1을 더하여 일반 성 파동으로부터, 2를 더하여 슬로우포로부터, 4를 더하여 천둥포로부터, 8을 더하여 물총포로부터, 16을 더하여 천사포로부터, 32를 더하여 캐논포로부터, 64를 더하여 저주포로부터의 무효를 활성화 시킵니다"
             }
         }
     }
