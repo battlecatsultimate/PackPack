@@ -1,5 +1,7 @@
 # Privacy Policy
 
+Updated - 2022, April, 16th
+
 Using this application, also known as Discord Bot, PackPack, requires the collection of some user data. To use this bot, users need to agree that bot is allowed to collect user data and read or monitor user's messages in Discord.
 
 ## Terminiology
@@ -30,7 +32,7 @@ Server may be using DM monitoring feature, or auto scam link detector of this bo
 
 ## Underage Users
 
-This Application, Bot follows [Discord Terms of Service](https://discord.com/terms), so developer doesn't allow users whose age is lower than 13 to use this application. As written above, any information about these users will be stored. Developer will remove private information about them as soon as possible if such are found.
+This Application and Bot follows [Discord Terms of Service](https://discord.com/terms), so developer doesn't allow users whose age is lower than 13 to use this application. As written above, any information about these users will be stored. Developer will remove private information about them as soon as possible if such are found.
 
 ## Contact
 
