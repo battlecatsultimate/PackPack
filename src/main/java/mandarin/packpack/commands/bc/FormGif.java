@@ -2,6 +2,7 @@ package mandarin.packpack.commands.bc;
 
 import common.util.Data;
 import common.util.unit.Form;
+import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
@@ -26,8 +27,12 @@ public class FormGif extends GlobalTimedConstraintCommand {
     private final int PARAM_RAW = 4;
     private final int PARAM_GIF = 8;
 
-    public FormGif(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID) {
+    private final GatewayDiscordClient client;
+
+    public FormGif(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID, GatewayDiscordClient client) {
         super(role, lang, id, mainID, TimeUnit.SECONDS.toMillis(30));
+
+        this.client = client;
     }
 
     @Override
@@ -96,7 +101,7 @@ public class FormGif extends GlobalTimedConstraintCommand {
 
                 Form f = forms.get(0);
 
-                boolean result = EntityHandler.generateFormAnim(f, ch, g.getPremiumTier().getValue(), mode, debug, frame, lang, raw && isTrusted.get(), gif);
+                boolean result = EntityHandler.generateFormAnim(f, ch, client, g.getPremiumTier().getValue(), mode, debug, frame, lang, raw && isTrusted.get(), gif);
 
                 if(raw && isTrusted.get()) {
                     changeTime(TimeUnit.MINUTES.toMillis(1));
@@ -157,7 +162,7 @@ public class FormGif extends GlobalTimedConstraintCommand {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(member.getId().asString(), new FormAnimMessageHolder(forms, msg, res, ch.getId().asString(), mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isTrusted.get(), gif));
+                            StaticStore.putHolder(member.getId().asString(), new FormAnimMessageHolder(forms, msg, res, client, ch.getId().asString(), mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isTrusted.get(), gif));
                     });
                 }
 

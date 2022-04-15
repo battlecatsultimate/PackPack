@@ -4,6 +4,7 @@ import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Form;
+import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
@@ -30,13 +31,13 @@ public class FormAnimMessageHolder extends MessageHolder<MessageCreateEvent> {
     private final int lang;
     private final boolean gif;
     private final boolean raw;
-    private final boolean gifMode;
+    private final GatewayDiscordClient client;
 
     private int page = 0;
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
-    public FormAnimMessageHolder(ArrayList<Form> form, Message author, Message msg, String channelID, int mode, int frame, boolean transparent, boolean debug, int lang, boolean isGif, boolean raw, boolean gifMode) {
+    public FormAnimMessageHolder(ArrayList<Form> form, Message author, Message msg, GatewayDiscordClient client, String channelID, int mode, int frame, boolean transparent, boolean debug, int lang, boolean isGif, boolean raw, boolean gifMode) {
         super(MessageCreateEvent.class);
 
         this.form = form;
@@ -50,7 +51,7 @@ public class FormAnimMessageHolder extends MessageHolder<MessageCreateEvent> {
         this.lang = lang;
         this.gif = isGif;
         this.raw = raw;
-        this.gifMode = gifMode;
+        this.client = client;
 
         registerAutoFinish(this, msg, author, lang, FIVE_MIN);
     }
@@ -190,7 +191,7 @@ public class FormAnimMessageHolder extends MessageHolder<MessageCreateEvent> {
                                 return;
 
                             try {
-                                boolean result = EntityHandler.generateFormAnim(f, ch, g.getPremiumTier().getValue(), mode, debug, frame, lang, raw, gif);
+                                boolean result = EntityHandler.generateFormAnim(f, ch, client, g.getPremiumTier().getValue(), mode, debug, frame, lang, raw, gif);
 
                                 if(result) {
                                     long time = raw ? TimeUnit.MINUTES.toMillis(1) : TimeUnit.SECONDS.toMillis(30);

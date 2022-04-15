@@ -4,6 +4,7 @@ import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Enemy;
+import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Message;
@@ -28,8 +29,12 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
     private final int PARAM_RAW = 4;
     private final int PARAM_GIF = 8;
 
-    public EnemyGif(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID) {
+    private final GatewayDiscordClient client;
+
+    public EnemyGif(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID, GatewayDiscordClient client) {
         super(role, lang, id, mainID, TimeUnit.SECONDS.toMillis(30));
+
+        this.client = client;
     }
 
     @Override
@@ -97,7 +102,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
 
                 Enemy en = enemies.get(0);
 
-                boolean result = EntityHandler.generateEnemyAnim(en, ch, g.getPremiumTier().getValue(), mode, debug, frame, lang, raw && isTrusted.get(), gif);
+                boolean result = EntityHandler.generateEnemyAnim(en, ch, client, g.getPremiumTier().getValue(), mode, debug, frame, lang, raw && isTrusted.get(), gif);
 
                 if(raw && isTrusted.get()) {
                     changeTime(TimeUnit.MINUTES.toMillis(1));
@@ -163,7 +168,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
                 }
 
                 if(res != null) {
-                    getMember(event).ifPresent(member -> StaticStore.putHolder(member.getId().asString(), new EnemyAnimMessageHolder(enemies, getMessage(event), res, ch.getId().asString(), mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isTrusted.get(), gif)));
+                    getMember(event).ifPresent(member -> StaticStore.putHolder(member.getId().asString(), new EnemyAnimMessageHolder(enemies, getMessage(event), res, client, ch.getId().asString(), mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isTrusted.get(), gif)));
                 }
 
                 disableTimer();

@@ -173,7 +173,7 @@ public class EnemyImage extends TimedConstraintCommand {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(member.getId().asString(), new EnemyAnimMessageHolder(enemies, msg, res, ch.getId().asString(), mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang, false, false, false));
+                            StaticStore.putHolder(member.getId().asString(), new EnemyAnimMessageHolder(enemies, msg, res, null, ch.getId().asString(), mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang, false, false, false));
                     });
                 }
 

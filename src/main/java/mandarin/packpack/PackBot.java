@@ -871,7 +871,7 @@ public class PackBot {
                                     break;
                                 case "background":
                                 case "bg":
-                                    new Background(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
+                                    new Background(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000, gate).execute(event);
                                     break;
                                 case "test":
                                     new Test(ConstraintCommand.ROLE.MANDARIN, lang, idh, "test", gate).execute(event);
@@ -879,12 +879,12 @@ public class PackBot {
                                 case "formgif":
                                 case "fgif":
                                 case "fg":
-                                    new FormGif(ConstraintCommand.ROLE.MEMBER, lang, idh, "gif").execute(event);
+                                    new FormGif(ConstraintCommand.ROLE.MEMBER, lang, idh, "gif", gate).execute(event);
                                     break;
                                 case "enemygif":
                                 case "egif":
                                 case "eg":
-                                    new EnemyGif(ConstraintCommand.ROLE.MEMBER, lang, idh, "gif").execute(event);
+                                    new EnemyGif(ConstraintCommand.ROLE.MEMBER, lang, idh, "gif", gate).execute(event);
                                     break;
                                 case "idset":
                                     new IDSet(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);

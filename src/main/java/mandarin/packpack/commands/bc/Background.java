@@ -2,6 +2,7 @@ package mandarin.packpack.commands.bc;
 
 import common.pack.UserProfile;
 import common.util.Data;
+import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Member;
@@ -62,15 +63,19 @@ public class Background extends TimedConstraintCommand {
     }
 
     private common.util.pack.Background bg;
+    private final GatewayDiscordClient client;
 
-    public Background(ConstraintCommand.ROLE role, int lang, IDHolder id, long time) {
+    public Background(ConstraintCommand.ROLE role, int lang, IDHolder id, long time, GatewayDiscordClient client) {
         super(role, lang, id, time, StaticStore.COMMAND_BG_ID);
+
+        this.client = client;
     }
 
     public Background(ConstraintCommand.ROLE role, int lang, IDHolder id, long time, common.util.pack.Background bg) {
         super(role, lang, id, time, StaticStore.COMMAND_BG_ID);
 
         this.bg = bg;
+        client = null;
     }
 
     @Override
@@ -144,7 +149,7 @@ public class Background extends TimedConstraintCommand {
                 String cache = StaticStore.imgur.get("BG - "+Data.trio(bg.id.id), false, true);
 
                 if(anim && bg.effect != -1 && cache == null && isTrusted) {
-                    if(!EntityHandler.generateBGAnim(ch, g.getPremiumTier().getValue(), bg, lang)) {
+                    if(!EntityHandler.generateBGAnim(ch, client, g.getPremiumTier().getValue(), bg, lang)) {
                         StaticStore.logger.uploadLog("W/Background | Failed to generate bg effect animation");
                     }
                 } else {

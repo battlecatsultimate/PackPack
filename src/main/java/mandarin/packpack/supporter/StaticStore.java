@@ -136,6 +136,10 @@ public class StaticStore {
     public final static String CROWNON = "911286793293414491";
     public final static String CROWNOFF = "911286831985885215";
 
+    public final static String UNITARCHIVE = "964536593715200112";
+    public final static String ENEMYARCHIVE = "964536611276738641";
+    public final static String MISCARCHIVE = "964536641526067310";
+
     public static boolean checkingBCU = false;
 
     public static final Random random = new Random();
