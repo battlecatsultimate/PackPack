@@ -19,3 +19,7 @@ This project uses [FFMPEG](https://ffmpeg.org/) to generate mp4 from `The Battle
 ---
 
 Thanks to user called Xerpy, you can follow [this guide](https://docs.google.com/document/d/1QIUDE4jfYU3EUi8AFR5gYtfv_bS5LJ1jNV7iofGXSMs/edit?usp=sharing) to implement bot with your own tokens.
+
+---
+
+[Privacy Policy](Privacy%20Policy.md)
