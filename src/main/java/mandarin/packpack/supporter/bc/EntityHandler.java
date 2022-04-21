@@ -1783,6 +1783,14 @@ public class EntityHandler {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+
+                    if(img.exists()) {
+                        boolean res = img.delete();
+
+                        if(!res) {
+                            StaticStore.logger.uploadLog("W/EntityHandlerEnemyAnim | Can't delete file : "+img.getAbsolutePath());
+                        }
+                    }
                 });
             } else {
                 client.getChannelById(Snowflake.of(StaticStore.UNITARCHIVE)).subscribe(chan -> {
@@ -1803,7 +1811,7 @@ public class EntityHandler {
                                 boolean res = img.delete();
 
                                 if(!res) {
-                                    System.out.println("Can't delete file : "+img.getAbsolutePath());
+                                    StaticStore.logger.uploadLog("W/EntityHandlerEnemyAnim | Can't delete file : "+img.getAbsolutePath());
                                 }
                             }
                         });
@@ -1901,7 +1909,6 @@ public class EntityHandler {
                         boolean res = img.delete();
 
                         if(!res) {
-                            System.out.println("Failed to delete file : "+img.getAbsolutePath());
                             StaticStore.logger.uploadLog("W/EntityHandlerEnemyAnim | Can't delete file : "+img.getAbsolutePath());
                         }
                     }
@@ -1917,7 +1924,6 @@ public class EntityHandler {
                         boolean res = img.delete();
 
                         if(!res) {
-                            System.out.println("Failed to delete file : "+img.getAbsolutePath());
                             StaticStore.logger.uploadLog("W/EntityHandlerEnemyAnim | Can't delete file : "+img.getAbsolutePath());
                         }
                     }
@@ -1938,7 +1944,6 @@ public class EntityHandler {
                         boolean res = img.delete();
 
                         if(!res) {
-                            System.out.println("Failed to delete file : "+img.getAbsolutePath());
                             StaticStore.logger.uploadLog("W/EntityHandlerEnemyAnim | Can't delete file : "+img.getAbsolutePath());
                         }
                     }
@@ -1981,6 +1986,8 @@ public class EntityHandler {
             } else {
                 client.getChannelById(Snowflake.of(StaticStore.ENEMYARCHIVE)).subscribe(chan -> {
                     if(chan instanceof MessageChannel) {
+                        String siz = getFileSize(img);
+
                         Message me = Command.createMessage((MessageChannel) chan, m -> {
                             m.content(generateID(en, fMode));
                             m.addFile(raw ? "result.mp4" : "result.gif", fis);
@@ -2004,7 +2011,7 @@ public class EntityHandler {
                             Attachment at = me.getAttachments().get(i);
 
                             if(at.getFilename().startsWith("result.")) {
-                                Command.createMessage(ch, m -> m.content(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img))+"\n\n"+at.getUrl()));
+                                Command.createMessage(ch, m -> m.content(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", siz)+"\n\n"+at.getUrl()));
                             }
                         }
 
