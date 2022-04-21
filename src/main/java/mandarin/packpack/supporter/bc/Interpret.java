@@ -16,7 +16,7 @@ import java.util.List;
 
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class Interpret extends Data {
-    public static final String[] TRAIT = {"data_red", "data_float", "data_black", "data_metal", "data_angel", "data_alien", "data_zombie", "data_demon", "data_relic", "data_white", "data_eva", "data_witch", "data_baron", "data_baset"};
+    public static final String[] TRAIT = {"data_red", "data_float", "data_black", "data_metal", "data_angel", "data_alien", "data_zombie", "data_demon", "data_relic", "data_white", "data_eva", "data_witch", "data_baron", "data_beast", "data_baset"};
 
     public static final String[] ABIS = {"data_strong", "data_resistant", "data_massive", "data_attackon", "data_extramon",
             "data_basedest", "data_abimetal", "data_waveshie", "data_imusnipe", "data_imustoptt",
