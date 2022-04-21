@@ -984,7 +984,7 @@
   "timezone_notnum" : "Timezone value must be numeric! (i.e `p!tz 3` = GMT+3, `p!tz -10` = GMT-10)",
   "timezone_done" : "Your timezone is now set as GMT_!",
   "timezone_nomem" : "Couldn't register timezone because bot couldn't get your member information",
-  "optout_warn" : "**__Read this warning__**\n\nYou called this command because you didn't want your data to be collected (your Discord ID number). Bot won't collect your data anymore, but this means that bot won't be able to function normally for you, and won't recognize you even though you call commands of it\n\n**__This cannot be undone__**, you can undo it only by contacting developer of PackPack manually (Support server link in privacy policy below). Are you sure that you want to opt out?",
+  "optout_warn" : "**__Read this warning__**\n\nYou called this command because you didn't want your data to be collected (your Discord ID number). Bot won't collect your data anymore, but this means that bot won't be able to function normally for you, and won't recognize you even though you call commands of it\n\n**__This cannot be undone__**, you can undo it only by contacting developer of PackPack manually (Support server link in privacy policy below). Are you sure that you want to opt out?\n\nLink : https://github.com/battlecatsultimate/PackPack/blob/main/Privacy%20Policy.md",
   "outout_success" : "Opt-out process successfully done",
   "optout_nomem" : "Failed to bring member data..."
 }
