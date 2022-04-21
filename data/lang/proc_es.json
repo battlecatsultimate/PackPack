@@ -1039,7 +1039,7 @@
         "format" : ["Barrera (_left)La barrera tiene [(type.magnif){(_shield(health))}(!type.magnif){(health)}] HP",
             "[(regentime>0){, se regenera (_dispTime(regentime)) después de ser quebrada}]",
             "[(timeout>0){, la barrera se rompe después de (_dispTime(timeout))}](_right)"
-            ],
+        ],
         "class" : {
             "health" : {
                 "name" : "Salud",
@@ -1092,10 +1092,10 @@
         "full_name": "Contraataque",
         "tooltip": "Inflige daño tras ser atacado.",
         "format": ["Probabilidad del (prob)% de contraatacar, infligiendo un (damage)% [(!type.useOwnDamage){del daño recibido de un ataque. }(type.useOwnDamage){del ataque de esta entidad. }]",
-                    "[(type.counterWave!=0){ Esta entidad también [(type.counterWave==1){contraatacará}(type.counterWave==2){reflejará}] oleadas/réplicas. }][(type.procType!=0){Este contraataque ",
-                    "[(type.procType==1|type.procType==3){tendrá}(type.procType==2){reemplazará}] las habilidades del ataque original[(type.procType==2){ con las habilidades de esta entidad}(type.procType==3){ y las habilidades de esta entidad}]. }]",
-                    "El contraataque golpeará a [(type.areaAttack){ todos los enemigos}(!type.areaAttack){ solo el atacante}][(type.areaAttack|!type.outRange){[(!type.areaAttack){ si se encuentran}]",
-                    "[(minRange!=0|maxRange!=0){ de (minRange) a (maxRange) unidades de esta entidad}(minRange==0&maxRange==0){ en el alcance de esta entidad}]}]."],
+            "[(type.counterWave!=0){ Esta entidad también [(type.counterWave==1){contraatacará}(type.counterWave==2){reflejará}] oleadas/réplicas. }][(type.procType!=0){Este contraataque ",
+            "[(type.procType==1|type.procType==3){tendrá}(type.procType==2){reemplazará}] las habilidades del ataque original[(type.procType==2){ con las habilidades de esta entidad}(type.procType==3){ y las habilidades de esta entidad}]. }]",
+            "El contraataque golpeará a [(type.areaAttack){ todos los enemigos}(!type.areaAttack){ solo el atacante}][(type.areaAttack|!type.outRange){[(!type.areaAttack){ si se encuentran}]",
+            "[(minRange!=0|maxRange!=0){ de (minRange) a (maxRange) unidades de esta entidad}(minRange==0&maxRange==0){ en el alcance de esta entidad}]}]."],
         "class": {
             "prob": {
                 "name": "probabilidad",
@@ -1180,6 +1180,50 @@
             "type": {
                 "name": "categoría",
                 "tooltip": "+1 para inmunidad ante el cañón normal, +2 para inmunidad ante el cañón ralentizador, +4 para inmunidad ante el cañón inmovilizador, +8 para inmunidad ante la chorrimanguera, +16 para inmunidad ante el cañón de ráfagas, +32 para inmunidad ante el cañón rompebarreras, +64 para inmunidad ante el cañón maldecidor"
+            }
+        }
+    },
+    "BOUNTY": {
+        "abbr_name": "2x Money",
+        "full_name": "Money Multiplier",
+        "tooltip": null,
+        "format": "[(mult>0){Extra Money}(mult<0){Theft}] (_left)(_abs(mult))% [(mult>0){more}(mult<0){less}] money received upon defeating enemies(_right)",
+        "class": {
+            "mult": {
+                "name": "percent",
+                "tooltip": null
+            }
+        }
+    },
+    "ATKBASE": {
+        "abbr_name": "Vs. Base",
+        "full_name": "Base Destroyer",
+        "tooltip": null,
+        "format": "[(mult>0){Good}(mult<0){Bad}] at castle destruction (_left)Deals (_abs(mult))% [(mult>0){more}(mult<0){less}] damage to the Enemy Base(_right)",
+        "class": {
+            "mult": {
+                "name": "percent",
+                "tooltip": null
+            }
+        }
+    },
+    "BSTHUNT": {
+        "abbr_name": "BST Kill",
+        "full_name": "Beast Hunter",
+        "tooltip": null,
+        "format": "Super Beast Hunter (_left)Deals 2.5x damage to Beasts and only takes 0.6x damage from Beasts[(prob>0){, and (prob)% chance to dodge their attacks for (_dispTime(time))}](_right)",
+        "class": {
+            "type.active": {
+                "name": "Stronger Vs. Beast",
+                "tooltip": null
+            },
+            "prob": {
+                "name": "dodge chance",
+                "tooltip": null
+            },
+            "time": {
+                "name": "duration",
+                "tooltip": null
             }
         }
     }
