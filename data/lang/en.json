@@ -683,7 +683,7 @@
   "help_unsubscribescamlinkdetector_use" : "`p!unsubscribescamlinkdetector`",
   "help_unsubscribescamlinkdetector_desc" : "Unsubscribe from feature of bot, which detects scam link automatically and auto-moderate users who sent these kinds of links. **Only moderators can use this command**. `usld` or `usd` are also valid command",
   "help_optout_use" : "`p!optout`",
-  "help_optout_desc" : "Server may be using DM monitor system or scam link detecting feature of this bot. This means that your message may be being tracked, and users should be able to decide whether they will allow bot to track their messages or not. With this command, you can make bot not track your message anymore, but be aware that it's good to help moderators to moderate their server. If you already opted out, call this command again to opt in back",
+  "help_optout_desc" : "Server may be using DM monitor system or scam link detecting feature of this bot. This means that your message may be being tracked, and users should be able to decide whether they will allow bot to track their messages or not. With this command, you can make bot not track your message anymore, but this will make bot not recognize you, and **it cannot be undone**",
   "help_timezone_use" : "`p!timezone [Time]`",
   "help_timezone_desc" : "Register your timezone, so bot can consider your time when using some commands. Timezone relies on GMT format. For example, if you passed 3, then it means GMT+3. If you passed -2, then it means GMT-2. Timezone range is from -12 to 12. `tz` is also valid command",
   "help_timezone_exam" : "`p!tz 3`\n`p!tz -10`",
