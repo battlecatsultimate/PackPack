@@ -1,6 +1,6 @@
 # Privacy Policy
 
-Updated - 2022, April, 16th
+Updated - 2022, April, 22nd
 
 Using this application, also known as Discord Bot, PackPack, requires the collection of some user data. To use this bot, users need to agree that bot is allowed to collect user data and read or monitor user's messages in Discord.
 
@@ -13,7 +13,7 @@ Using this application, also known as Discord Bot, PackPack, requires the collec
 
 ## Access to Data
 
-Accessing data is only permitted to bot's developer, and will never be used for any other purposes than developing bot, and testing. Data won't be sold, provided, or shared with any third party, except where required by law or a Terms of Service agreement.
+Accessing data is only permitted to bot's developer, and will never be used for any other purposes than developing bot, and testing. Data won't be sold, provided, or shared with any third party, except where required by law or a Terms of Service agreement. Users can request developer of bot to show how it stores user's data by contacting developer in support server  directly.
 
 ## Data Collected By Bot
 
@@ -28,11 +28,11 @@ Other than these 4 types of data, it's guaranteed that bot will never store them
 
 ## Rights to Opt-Out
 
-Server may be using DM monitoring feature, or auto scam link detector of this bot, and users must have right to opt-out from this. Users can opt-out at any time without restrictions, by calling command `p!optout`, so bot won't monitor user's message. However, bot will be able to still detect user's message, and get content of it if they need to (i.e. performing commands). Developer will have responsibilities that bot will never store users' message's contents with any purposes, thus contents will be released after performing commands.
+Server may be using DM monitoring feature, or auto scam link detector of this bot, and users must have right to opt-out from this. Users can opt-out at any time without restrictions, by calling command `p!optout`, so bot won't monitor user's message. However, bot won't recognize you once command is called. Developer will have responsibilities that bot will never store users' message's contents with any purposes, thus contents will be released after performing commands.
 
 ## Underage Users
 
-This Application and Bot follows [Discord Terms of Service](https://discord.com/terms), so developer doesn't allow users whose age is lower than 13 to use this application. As written above, any information about these users will be stored. Developer will remove private information about them as soon as possible if such are found.
+This Application and Bot follows [Discord Terms of Service](https://discord.com/terms) and law regarding privacy policy strictly, so developer doesn't allow users whose age is lower than 13 to use this application. As written above, any information about these users will never be stored. Developer will remove private information about them as soon as possible if such are found.
 
 ## Contact
 
