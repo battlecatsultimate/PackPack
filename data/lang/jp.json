@@ -148,6 +148,7 @@
   "data_baronkiller" : "超生命体特効",
   "data_corpsekiller" : "魂攻撃",
   "data_beastkiller" : "超獣特効",
+  "data_curse" :  "呪い",
   "data_talent" : "本能の情報があります",
   "data_talen" : "本能 : ",
   "data_notalent" : "本能 : 存在しません",
