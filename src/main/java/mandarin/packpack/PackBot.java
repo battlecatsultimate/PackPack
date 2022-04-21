@@ -654,7 +654,14 @@ public class PackBot {
 
         gate.on(MessageCreateEvent.class)
                 .filter(event -> {
+                    AtomicReference<Boolean> isOptedOut = new AtomicReference<>(false);
+
                     event.getMember().ifPresent(m -> {
+                        if(StaticStore.optoutMembers.contains(m.getId().asString())) {
+                            isOptedOut.set(true);
+                            return;
+                        }
+
                         Guild g = event.getGuild().block();
                         Message msg = event.getMessage();
 
@@ -671,6 +678,9 @@ public class PackBot {
                             msg.delete().subscribe();
                         }
                     });
+
+                    if(isOptedOut.get())
+                        return false;
 
                     try {
                         MessageChannel mc = event.getMessage().getChannel().block();
