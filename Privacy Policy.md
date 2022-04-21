@@ -13,7 +13,7 @@ Using this application, also known as Discord Bot, PackPack, requires the collec
 
 ## Access to Data
 
-Accessing data is only permitted to bot's developer, and will never be used for any other purposes than developing bot, and testing. Data won't be sold, provided, or shared with any third party, except where required by law or a Terms of Service agreement. Users can request developer of bot to show how it stores user's data by contacting developer in support server  directly.
+Accessing data is only permitted to bot's developer, and will never be used for any other purposes than developing bot, and testing. Data won't be sold, provided, or shared with any third party, except where required by law or a Terms of Service agreement. Users can request developer of bot to show how it stores user's data, or to remove data related with user by contacting developer in support server directly.
 
 ## Data Collected By Bot
 
