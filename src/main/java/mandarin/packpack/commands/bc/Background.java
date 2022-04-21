@@ -149,7 +149,7 @@ public class Background extends TimedConstraintCommand {
                 String cache = StaticStore.imgur.get("BG - "+Data.trio(bg.id.id), false, true);
 
                 if(anim && bg.effect != -1 && cache == null && isTrusted) {
-                    if(!EntityHandler.generateBGAnim(ch, client, g.getPremiumTier().getValue(), bg, lang)) {
+                    if(!EntityHandler.generateBGAnim(ch, client, bg, lang)) {
                         StaticStore.logger.uploadLog("W/Background | Failed to generate bg effect animation");
                     }
                 } else {

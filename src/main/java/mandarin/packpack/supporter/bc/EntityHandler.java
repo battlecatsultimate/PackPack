@@ -1699,10 +1699,17 @@ public class EntityHandler {
 
         FileInputStream fis;
 
+        long max;
+
+        if(debug || limit > 0)
+            max = getBoosterFileLimit(booster) * 1024L * 1024;
+        else
+            max = 8 * 1024 * 1024;
+
         if(img == null) {
             ch.createMessage(LangID.getStringByID("gif_faile", lang)).subscribe();
             return false;
-        } else if(img.length() >= (long) getBoosterFileLimit(booster) * 1024 * 1024 && img.length() < (raw ? 200 * 1024 * 1024 : 10 * 1024 * 1024)) {
+        } else if(img.length() >= max && img.length() < (raw ? 200 * 1024 * 1024 : 10 * 1024 * 1024)) {
             Message m = ch.createMessage(LangID.getStringByID("gif_filesize", lang)).block();
 
             if(m == null) {
@@ -1761,44 +1768,58 @@ public class EntityHandler {
             }
 
             return true;
-        } else if(img.length() < (long) getBoosterFileLimit(booster) * 1024 * 1024) {
+        } else if(img.length() < max) {
             fis = new FileInputStream(img);
 
             final int fMode = mode;
 
-            client.getChannelById(Snowflake.of(StaticStore.UNITARCHIVE)).subscribe(chan -> {
-                if(chan instanceof MessageChannel) {
-                    Message me = Command.createMessage((MessageChannel) chan, m -> {
-                        m.content(generateID(f, fMode));
-                        m.addFile(raw ? "result.mp4" : "result.gif", fis);
-                    }, () -> {
-                        try {
-                            fis.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+            if(debug || limit > 0) {
+                Command.createMessage(ch, m -> {
+                    m.content(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)));
+                    m.addFile(raw ? "result.mp4" : "result.gif", fis);
+                }, () -> {
+                    try {
+                        fis.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+            } else {
+                client.getChannelById(Snowflake.of(StaticStore.UNITARCHIVE)).subscribe(chan -> {
+                    if(chan instanceof MessageChannel) {
+                        String siz = getFileSize(img);
 
-                        if(img.exists()) {
-                            boolean res = img.delete();
+                        Message me = Command.createMessage((MessageChannel) chan, m -> {
+                            m.content(generateID(f, fMode));
+                            m.addFile(raw ? "result.mp4" : "result.gif", fis);
+                        }, () -> {
+                            try {
+                                fis.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
 
-                            if(!res) {
-                                System.out.println("Can't delete file : "+img.getAbsolutePath());
+                            if(img.exists()) {
+                                boolean res = img.delete();
+
+                                if(!res) {
+                                    System.out.println("Can't delete file : "+img.getAbsolutePath());
+                                }
+                            }
+                        });
+
+                        for(int i = 0; i < me.getAttachments().size(); i++) {
+                            Attachment at = me.getAttachments().get(i);
+
+                            if(at.getFilename().startsWith("result.")) {
+                                Command.createMessage(ch, m -> m.content(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", siz)+"\n\n"+at.getUrl()));
                             }
                         }
-                    });
 
-                    for(int i = 0; i < me.getAttachments().size(); i++) {
-                        Attachment at = me.getAttachments().get(i);
-
-                        if(at.getFilename().startsWith("result.")) {
-                            Command.createMessage(ch, m -> m.content(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img))+"\n\n"+at.getUrl()));
-                        }
-                    }
-
-                    if(!debug && limit <= 0)
                         cacheImage(f, fMode, me);
-                }
-            }, (e) -> StaticStore.logger.uploadErrorLog(e, "Failed to upload gif file into unit archive channel"));
+                    }
+                }, (e) -> StaticStore.logger.uploadErrorLog(e, "Failed to upload gif file into unit archive channel"));
+            }
         } else {
             ch.createMessage(LangID.getStringByID("gif_toobig", lang)).subscribe();
         }
@@ -1849,6 +1870,13 @@ public class EntityHandler {
 
         File img;
 
+        long max;
+
+        if(debug || limit > 0)
+            max = getBoosterFileLimit(booster) * 1024L * 1024;
+        else
+            max = 8 * 1024 * 1024;
+
         if(raw) {
             img = ImageDrawing.drawAnimMp4(anim, msg, 1.0, debug, limit, lang);
         } else {
@@ -1864,7 +1892,7 @@ public class EntityHandler {
         if(img == null) {
             ch.createMessage(LangID.getStringByID("gif_faile", lang)).subscribe();
             return false;
-        } else if(img.length() >= (long) getBoosterFileLimit(booster) * 1024 * 1024 && img.length() < (raw ? 200 * 1024 * 1024 : 8 * 1024 * 1024)) {
+        } else if(img.length() >= max && img.length() < (raw ? 200 * 1024 * 1024 : 8 * 1024 * 1024)) {
             Message m = ch.createMessage(LangID.getStringByID("gif_filesize", lang)).block();
 
             if(m == null) {
@@ -1926,44 +1954,64 @@ public class EntityHandler {
             }
 
             return true;
-        } else if(img.length() < (long) getBoosterFileLimit(booster) * 1024 * 1024) {
+        } else if(img.length() < max) {
             fis = new FileInputStream(img);
 
             final int fMode = mode;
 
-            client.getChannelById(Snowflake.of(StaticStore.ENEMYARCHIVE)).subscribe(chan -> {
-                if(chan instanceof MessageChannel) {
-                    Message me = Command.createMessage((MessageChannel) chan, m -> {
-                        m.content(generateID(en, fMode));
-                        m.addFile(raw ? "result.mp4" : "result.gif", fis);
-                    }, () -> {
-                        try {
-                            fis.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-                        if(img.exists()) {
-                            boolean res = img.delete();
-
-                            if(!res) {
-                                System.out.println("Can't delete file : "+img.getAbsolutePath());
-                            }
-                        }
-                    });
-
-                    for(int i = 0; i < me.getAttachments().size(); i++) {
-                        Attachment at = me.getAttachments().get(i);
-
-                        if(at.getFilename().startsWith("result.")) {
-                            Command.createMessage(ch, m -> m.content(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img))+"\n\n"+at.getUrl()));
-                        }
+            if(debug || limit > 0) {
+                Command.createMessage(ch, m -> {
+                    m.content(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)));
+                    m.addFile(raw ? "result.mp4" : "result.gif", fis);
+                }, () -> {
+                    try {
+                        fis.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
 
-                    if(!debug && limit <= 0)
+                    if(img.exists()) {
+                        boolean res = img.delete();
+
+                        if(!res) {
+                            StaticStore.logger.uploadLog("Can't delete file : "+img.getAbsolutePath());
+                        }
+                    }
+                });
+            } else {
+                client.getChannelById(Snowflake.of(StaticStore.ENEMYARCHIVE)).subscribe(chan -> {
+                    if(chan instanceof MessageChannel) {
+                        Message me = Command.createMessage((MessageChannel) chan, m -> {
+                            m.content(generateID(en, fMode));
+                            m.addFile(raw ? "result.mp4" : "result.gif", fis);
+                        }, () -> {
+                            try {
+                                fis.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                            if(img.exists()) {
+                                boolean res = img.delete();
+
+                                if(!res) {
+                                    StaticStore.logger.uploadLog("Can't delete file : "+img.getAbsolutePath());
+                                }
+                            }
+                        });
+
+                        for(int i = 0; i < me.getAttachments().size(); i++) {
+                            Attachment at = me.getAttachments().get(i);
+
+                            if(at.getFilename().startsWith("result.")) {
+                                Command.createMessage(ch, m -> m.content(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img))+"\n\n"+at.getUrl()));
+                            }
+                        }
+
                         cacheImage(en, fMode, me);
-                }
-            }, (e) -> StaticStore.logger.uploadErrorLog(e, "Failed to upload gif file into unit archive channel"));
+                    }
+                }, (e) -> StaticStore.logger.uploadErrorLog(e, "Failed to upload gif file into unit archive channel"));
+            }
         }
 
         return true;
@@ -2181,7 +2229,7 @@ public class EntityHandler {
         return true;
     }
 
-    public static boolean generateBGAnim(MessageChannel ch, GatewayDiscordClient client, int booster, Background bg, int lang) throws Exception {
+    public static boolean generateBGAnim(MessageChannel ch, GatewayDiscordClient client, Background bg, int lang) throws Exception {
         Message message = Command.createMessage(ch, ms -> ms.content(LangID.getStringByID("bg_prepare", lang)));
 
         if(message == null)
@@ -2195,13 +2243,15 @@ public class EntityHandler {
 
         if(result == null) {
             Command.createMessage(ch, m -> m.content(LangID.getStringByID("bg_fail", lang)));
-        } else if(result.length() >= (long) getBoosterFileLimit(booster) * 1024 * 1024) {
+        } else if(result.length() >= 8 * 1024 * 1024) {
             Command.createMessage(ch, m -> m.content(LangID.getStringByID("bg_toobig", lang).replace("_SSS_", getFileSize(result))));
         } else {
             FileInputStream fis = new FileInputStream(result);
 
             client.getChannelById(Snowflake.of(StaticStore.MISCARCHIVE)).subscribe(chan -> {
                 if(chan instanceof MessageChannel) {
+                    String siz = getFileSize(result);
+
                     Message me = Command.createMessage((MessageChannel) chan, m -> {
                         m.content("BG - "+Data.trio(bg.id.id));
                         m.addFile("result.mp4", fis);
@@ -2221,7 +2271,7 @@ public class EntityHandler {
                         Attachment at = me.getAttachments().get(i);
 
                         if(at.getFilename().startsWith("result.")) {
-                            Command.createMessage(ch, m -> m.content(LangID.getStringByID("bg_animres", lang).replace("_SSS_", getFileSize(result)).replace("_TTT_", DataToString.df.format((end - start) / 1000.0))+"\n\n"+at.getUrl()));
+                            Command.createMessage(ch, m -> m.content(LangID.getStringByID("bg_animres", lang).replace("_SSS_", siz).replace("_TTT_", DataToString.df.format((end - start) / 1000.0))+"\n\n"+at.getUrl()));
                             StaticStore.imgur.put("BG - "+Data.trio(bg.id.id), at.getUrl(), true);
                         }
                     }
