@@ -1,39 +1,39 @@
 # Privacy Policy
 
-Updated - 2022, April, 22nd
+Updated - 2022, April 22nd
 
-Using this application, also known as Discord Bot, PackPack, requires the collection of some user data. To use this bot, users need to agree that bot is allowed to collect user data and read or monitor user's messages in Discord.
+PackPack is a Discord Bot whose interface adapts to Users, Channels, and Servers according to their (explicitly specified) needs. For this purpose, it needs to collect some of its Users' data, if they want to use specific features. This is not a legally binding contract, simply a description of PackPack's data collection practices.
 
 ## Terminiology
 
-* **Server** - The Discord server where user and bot, PackPack are in
-* **Developer** - The developer of Discord bot, PackPack, also known as `MandarinSmell#8906 (460409259021172781)`
-* **User** - You and any people who are in the server
-* **Moderator** - The user who has permission of managing the server where user is in
+* **Server** - The Discord server that user and PackPack are in.
+* **Developer** - The developer of Discord bot, PackPack. `MandarinSmell#8906 (460409259021172781)`.
+* **User** - Anyone in a server where the bot is present, using the bot in a channel that it is allowed Read Messages access to.
+* **Moderator** - A user who has Manage Server permissions in a server that PackPack is in.
 
 ## Access to Data
 
-Accessing data is only permitted to bot's developer, and will never be used for any other purposes than developing bot, and testing. Data won't be sold, provided, or shared with any third party, except where required by law or a Terms of Service agreement. Users can request developer of bot to show how it stores user's data, or to remove data related with user by contacting developer in support server directly.
+Data Access is restricted to the Developer, and will never be used for any purposes other than development, evaluation, or testing. User data will not be sold to any third party. It will not be shared by anyone besides the Developer, unless required by Law or a Terms of Service agreement. Users may request the Developer to show where their data is being stored, and what exactly is being stored. They may also request for data to be deleted.
 
 ## Data Collected By Bot
 
-Items below will be collected by bot for maintaining bot's performance. Some of them will be stored temporarily as long as bot can reach user, while others will be stored permanently (until developer decides to stop maintaining the bot)
+The datapoints below will be collected by PackPack, and are critical for it to provide its features. Some of these datapoints will be deleted when the User stops sharing any Server with PackPack, while others will be stored till PackPack's End of Service.
 
-* **User ID** - User ID is stored to make bot able to memorize the situation when user spammed command, the preferences of this user such as locale, prefix, etc.
-* **Role ID** - Role ID is stored for role system. Role system is for making only users who have specific role assigned able to use specific commands. It will be also used to perform booster-only perks (`p!boosteremoji`, `p!boosterrole`)
-* **Server ID** - As role IDs are stored, server ID also will be stored, so bot can apply specific role system fitting with this server
-* **Channel ID** - Due to DM monitoring feature, auto scam link detector, and channel permission feature, Channel ID will be saved depending on moderators' decision
+* **User ID** - User ID is mandatory to enforce rate limits on the User. It is also needed to store any preferences of the User. These include their preferred language and their desired prefix. These preferences will only be stored if the User explicitly wants it, otherwise they will use the Server Defaults.
+* **Role ID** - PackPack is also used for regulating Booster Emoji and Booster Role services. For this reason, storing Role IDs of Booster Roles is mandatory.
+* **Server ID** - PackPack needs to store Server Defaults, and Booster Roles in each Server. For these services, storing the Server ID is critical.
+* **Channel ID** - PackPack also provides light moderation features. These include DM monitoring, Scam Link Detection, and Channel Permission Management. If a Moderator explicitly say they want to use these features, Channel IDs will be stored for the channels where these services are required.
 
-Other than these 4 types of data, it's guaranteed that bot will never store them unless there will be needs for developing bot, or implementing new feature to it. It's guaranteed that Role ID, Server ID, Channel ID will be removed from data file once moderators decided to kick this bot from their server. User ID which are stored for managing spamming commands, and preferences will be stored permanently, so that bot can recognize user in other server, in other time.
+Besides these four categories of data, the bot will never store any data, besides for development purposes. Role IDs, Server ID, and Channel IDs are removed immediately from PackPack's database when it leaves a server. User preferences are stored permanently, so as to sync them across servers.
 
 ## Rights to Opt-Out
 
-Server may be using DM monitoring feature, or auto scam link detector of this bot, and users must have right to opt-out from this. Users can opt-out at any time without restrictions, by calling command `p!optout`, so bot won't monitor user's message. However, bot won't recognize you once command is called. Developer will have responsibilities that bot will never store users' message's contents with any purposes, thus contents will be released after performing commands.
+Servers may use Moderation Features mentioned above, or they may not use them. Users can opt out of data collection at any time with `p!optout`. After this, the bot will not monitor any message from the User. However, bot won't recognize you once command is called. The Developer takes responsibility to ensure that User's messages aren't being collected at this point, so message contents are purged from the database immediately after performing commands.
 
 ## Underage Users
 
-This Application and Bot follows [Discord Terms of Service](https://discord.com/terms) and law regarding privacy policy strictly, so developer doesn't allow users whose age is lower than 13 to use this application. As written above, any information about these users will never be stored. Developer will remove private information about them as soon as possible if such are found.
+This Application and Bot follows [Discord Terms of Service](https://discord.com/terms) and laws regarding privacy policy strictly. If the Developer is informed with evidence that any User is underage, they will remove all information stored about the User. Additionally, they will be prohibited from using any of PackPack's services.
 
 ## Contact
 
-For any types of questions regarding this application and bot, contact developer, `@MandarinSmell`, by joining [PackPack support Discord server](https://discord.gg/eb2NRCs9)
+For any types of questions regarding PckPack, contact the developer, `@MandarinSmell`, by joining the [PackPack support Discord server](https://discord.gg/eb2NRCs9)
