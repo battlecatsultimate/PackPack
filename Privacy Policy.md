@@ -4,7 +4,7 @@ Updated - 2022, April 22nd
 
 PackPack is a Discord Bot whose interface adapts to Users, Channels, and Servers according to their (voluntarily specified) needs. To provide customised services, it needs to collect some of its Users' data, if they want to use specific features. This is not a legally binding contract, simply a description of PackPack's data collection practices. These policies are subject to change, and will be updated if there is any such change.
 
-## Terminiology
+## Terminology
 
 * **Server** - The Discord server that the User and PackPack are in.
 * **Developer** - The developer of Discord bot, PackPack. `MandarinSmell#8906 (460409259021172781)`.
@@ -24,7 +24,7 @@ The datapoints below will be collected by PackPack, and are critical for it to p
 * **Server ID** - PackPack needs to store Server Defaults, and Booster Roles in each Server. For these services, storing the Server ID is critical.
 * **Channel ID** - PackPack also provides (optional) light moderation features. These include Monitoring of DMs (sent to PackPack), Scam Link Detection (in Channels), and Channel Permission Management. If a Moderator explicitly says they want to use these features, Channel IDs will be stored for the channels where these services are required.
 
-Besides these four categories of data, the bot will never store any data. Role IDs, Server ID, and Channel IDs are removed immediately from PackPack's database when it leaves a Server. User preferences are stored indefinitely, so as to sync them across servers.
+Besides, these four categories of data, the bot will never store any data. Role IDs, Server ID, and Channel IDs are removed immediately from PackPack's database when it leaves a Server. User preferences are stored indefinitely, so as to sync them across servers.
 
 ## Rights to Opt-Out
 
@@ -32,7 +32,7 @@ Servers may use Moderation Features mentioned above, or they may not use them. U
 
 ## Underage Users
 
-This Application and Bot follow [Discord's Terms of Service](https://discord.com/terms) and laws regarding Privacy strictly. If the Developer is informed with definitive evidence that a User is underage, they will remove all information stored about the User. Additionally, thee User will be prohibited from using any of PackPack's services.
+This Application and Bot follow [Discord's Terms of Service](https://discord.com/terms) and laws regarding Privacy strictly. If the Developer is informed with definitive evidence that a User is underage, they will remove all information stored about the User. Additionally, the User will be prohibited from using any of PackPack's services.
 
 ## Contact
 
