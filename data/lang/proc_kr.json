@@ -1169,7 +1169,7 @@
         "abbr_name": "성 파괴가 특기",
         "full_name": "성 파괴가 특기",
         "tooltip": "적 성에게 추가 혹은 감소된 데미지를 가하도록 하는 능력입니다",
-        "format": "[(mult>0){Good}(mult<0){Bad}] at castle destruction (_left)적 성에게 (_abs(mult))% 만큼 [(mult>0){추가}(mult<0){감소된}] 데미지(_right)",
+        "format": "[성 파괴(mult>0){가 특기}(mult<0){에 약함}] (_left)적 성에게 (_abs(mult))% 만큼 [(mult>0){추가}(mult<0){감소된}] 데미지(_right)",
         "class": {
             "mult": {
                 "name": "퍼센트",
