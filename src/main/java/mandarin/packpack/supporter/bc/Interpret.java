@@ -29,8 +29,8 @@ public class Interpret extends Data {
     };
 
     public static final String[] PROCIND = {
-            "WEAK", "STOP", "SLOW", "KB", "WARP", "CURSE", "IMUATK", "STRONG", "LETHAL", "CRIT", "BREAK", "SHIELDBREAK",
-            "SATK", "MINIWAVE", "WAVE", "VOLC", "BSTHUNT", "IMUWEAK", "IMUSTOP", "IMUSLOW", "IMUKB", "IMUWAVE", "IMUVOLC",
+            "WEAK", "STOP", "SLOW", "KB", "WARP", "CURSE", "IMUATK", "STRONG", "LETHAL", "ATKBASE", "CRIT", "BREAK", "SHIELDBREAK",
+            "SATK", "BOUNTY", "MINIWAVE", "WAVE", "VOLC", "BSTHUNT", "IMUWEAK", "IMUSTOP", "IMUSLOW", "IMUKB", "IMUWAVE", "IMUVOLC",
             "IMUWARP", "IMUCURSE", "IMUPOIATK", "POIATK", "DEMONSHIELD", "DEATHSURGE", "BURROW", "REVIVE", "SNIPER", "SEAL",
             "TIME", "SUMMON", "MOVEWAVE", "THEME", "POISON", "BOSS", "ARMOR", "SPEED", "COUNTER", "DMGCUT", "DMGCAP",
             "CRITI", "IMUSEAL", "IMUPOI", "IMUSUMMON", "IMUMOVING", "IMUARMOR", "IMUSPEED"
