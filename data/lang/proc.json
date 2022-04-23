@@ -1203,7 +1203,7 @@
         "abbr_name": "Vs. Base",
         "full_name": "Base Destroyer",
         "tooltip": null,
-        "format": "[(mult>0){Good}(mult<0){Bad}] at castle destruction (_left)Deals (_abs(mult))% [(mult>0){more}(mult<0){less}] damage to the Enemy Base(_right)",
+        "format": "[(mult>0){Base Destroyer}(mult<0){Bad at castle destruction}] (_left)Deals (_abs(mult))% [(mult>0){more}(mult<0){less}] damage to the Enemy Base(_right)",
         "class": {
             "mult": {
                 "name": "percent",
