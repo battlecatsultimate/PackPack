@@ -492,6 +492,7 @@ public class StaticStore {
         obj.add("stageCache", mapToJsonIntegerList(event.stageCache));
         obj.add("scamLink", scamLink.jsonfy());
         obj.add("scamLinkHandlers", scamLinkHandlers.jsonfy());
+        obj.add("optoutMembers", listToJsonString(optoutMembers));
 
         try {
             File folder = new File("./data/");
@@ -636,6 +637,10 @@ public class StaticStore {
 
             if(obj.has("scamLinkHandlers")) {
                 scamLinkHandlers.readData(obj.getAsJsonArray("scamLinkHandlers"));
+            }
+
+            if(obj.has("optoutMembers")) {
+                optoutMembers = jsonToListString(obj.getAsJsonArray("optoutMembers"));
             }
         }
     }
