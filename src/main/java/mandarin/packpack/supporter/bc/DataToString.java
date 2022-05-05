@@ -1057,6 +1057,9 @@ public class DataToString {
     }
 
     public static String getLoop0(Stage st) {
+        if(st.mus0 == null)
+            return convertTime(0);
+
         Music ms = st.mus0.get();
 
         if(ms != null) {
@@ -1067,6 +1070,9 @@ public class DataToString {
     }
 
     public static String getLoop1(Stage st) {
+        if(st.mus1 == null)
+            return convertTime(0);
+
         Music ms = st.mus1.get();
 
         if(ms != null) {
