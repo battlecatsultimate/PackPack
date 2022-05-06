@@ -172,7 +172,7 @@ public class ImageDrawing {
             int topHeight = (int) (bg.parts[Background.TOP].getHeight() * ratio);
             int topWidth = (int) (bg.parts[Background.TOP].getWidth() * ratio);
 
-            pos = (int) ((-bg.parts[Background.BG].getWidth() + 256) * ratio);
+            pos = (int) ((-bg.parts[Background.BG].getWidth() + 200) * ratio);
             y = h - groundHeight - lowHeight;
 
             while(pos < w) {
@@ -321,7 +321,7 @@ public class ImageDrawing {
                 int topHeight = (int) (bg.parts[Background.TOP].getHeight() * bgAnimRatio);
                 int topWidth = (int) (bg.parts[Background.TOP].getWidth() * bgAnimRatio);
 
-                pos = (int) ((-bg.parts[Background.BG].getWidth() + 256) * bgAnimRatio);
+                pos = (int) ((-bg.parts[Background.BG].getWidth() + 200) * bgAnimRatio);
                 y = h - groundHeight - lowHeight;
 
                 while(pos < w) {
