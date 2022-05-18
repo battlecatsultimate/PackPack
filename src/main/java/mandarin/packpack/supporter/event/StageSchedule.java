@@ -471,7 +471,10 @@ public class StageSchedule extends EventFactor implements Schedule {
                         if(!temp.equals(langID)) {
                             result.append(temp);
                         } else {
-                            result.append(id);
+                            if(id >= 18100 && id < 18200)
+                                result.append(LangID.getStringByID("sale_181xx", lang));
+                            else
+                                result.append(id);
                         }
                     }
 
