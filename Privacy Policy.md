@@ -36,4 +36,4 @@ This Application and Bot follow [Discord's Terms of Service](https://discord.com
 
 ## Contact
 
-For any types of questions regarding PackPack, you may contact the Developer, `@MandarinSmell`, on the [PackPack Support Discord Server](https://discord.gg/eb2NRCs9)
+For any types of questions regarding PackPack, you may contact the Developer, `@MandarinSmell`, on the [PackPack Support Discord Server](https://discord.gg/hnRBMpmrqW)
