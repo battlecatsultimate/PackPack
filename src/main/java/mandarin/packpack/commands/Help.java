@@ -33,7 +33,7 @@ public class Help extends Command {
             builder.title(LangID.getStringByID("help_command", lang))
                     .description(LangID.getStringByID("help_explain", lang))
                     .color(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)])
-                    .addField(LangID.getStringByID("help_normal", lang), "```analyze, locale, optout, prefix, timezone```", false)
+                    .addField(LangID.getStringByID("help_normal", lang), "```analyze, config, locale, optout, prefix, timezone```", false)
                     .addField(LangID.getStringByID("help_bc", lang), "```background, castle, catcombo, enemygif, enemyimage, enemysprite, enemystat, findstage, formgif, formimage, formsprite, formstat, medal, music, stageinfo```", false)
                     .addField(LangID.getStringByID("help_server", lang), "```bcustat, boosteremoji, boosteremojiremove, boosterrole, boosterroleremove, channelpermission, checkbcu, clearcache, fixrole, idset, memory, save, serverjson, serverpre, setup, subscribeevent, subscribescamlinkdetector, unsubscribescamlinkdetector, watchdm```", false)
                     .addField(LangID.getStringByID("help_data", lang), "```animanalyzer, announcement, checkeventupdate, printevent, printgachaevent, printitemevent, printstageevent, stageimage, statanalyzer, stagemapimage```", false)
@@ -301,6 +301,9 @@ public class Help extends Command {
                 break;
             case "optout":
                 ch.createMessage(addFields("optout", false, false, false)).subscribe();
+                break;
+            case "config":
+                ch.createMessage(addFields("config", false, false, true)).subscribe();
                 break;
             default:
                 createMessageWithNoPings(ch, LangID.getStringByID("help_nocomm", lang).replace("_", command));
