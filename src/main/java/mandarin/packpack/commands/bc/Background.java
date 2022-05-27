@@ -41,8 +41,8 @@ public class Background extends TimedConstraintCommand {
         if(!interaction.member().isAbsent()) {
             MemberData m = interaction.member().get();
 
-            if(StaticStore.locales.containsKey(m.user().id().asString())) {
-                lang =  StaticStore.locales.get(m.user().id().asString());
+            if(StaticStore.config.containsKey(m.user().id().asString())) {
+                lang =  StaticStore.config.get(m.user().id().asString()).lang;
             }
         }
 

@@ -5,6 +5,7 @@ import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 
 public class Locale extends ConstraintCommand {
@@ -28,7 +29,16 @@ public class Locale extends ConstraintCommand {
                         int loc = StaticStore.langIndex[lan];
 
                         getMember(event).ifPresentOrElse(m -> {
-                            StaticStore.locales.put(m.getId().asString(), loc);
+                            ConfigHolder holder;
+
+                            if(StaticStore.config.containsKey(m.getId().asString()))
+                                holder = StaticStore.config.get(m.getId().asString());
+                            else
+                                holder = new ConfigHolder();
+
+                            holder.lang = loc;
+
+                            StaticStore.config.put(m.getId().asString(), holder);
 
                             String locale;
 
@@ -62,7 +72,15 @@ public class Locale extends ConstraintCommand {
                             ch.createMessage(LangID.getStringByID("locale_set", lan).replace("_", locale)).subscribe();
                         }, () -> ch.createMessage("Can't find member!").subscribe());
                     } else if(lan == -1) {
-                        getMember(event).ifPresent(m -> StaticStore.locales.remove(m.getId().asString()));
+                        getMember(event).ifPresent(m -> {
+                            if(StaticStore.config.containsKey(m.getId().asString())) {
+                                ConfigHolder holder = StaticStore.config.get(m.getId().asString());
+
+                                holder.lang = -1;
+
+                                StaticStore.config.put(m.getId().asString(), holder);
+                            }
+                        });
 
                         Guild g = getGuild(event).block();
 

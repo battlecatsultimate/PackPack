@@ -25,9 +25,10 @@ public class FormReactionMessageHolder extends MessageHolder<ReactionAddEvent> {
 
     private final boolean isFrame;
     private final boolean talent;
+    private final boolean extra;
     private final ArrayList<Integer> lv;
 
-    public FormReactionMessageHolder(Form f, Message author, Message msg, boolean isFrame, boolean talent, ArrayList<Integer> lv, int lang, String channelID, String memberID) {
+    public FormReactionMessageHolder(Form f, Message author, Message msg, boolean isFrame, boolean talent, boolean extra, ArrayList<Integer> lv, int lang, String channelID, String memberID) {
         super(ReactionAddEvent.class);
 
         this.embed = msg;
@@ -38,6 +39,7 @@ public class FormReactionMessageHolder extends MessageHolder<ReactionAddEvent> {
 
         this.isFrame = isFrame;
         this.talent = talent;
+        this.extra  =extra;
         this.lv = lv;
 
         Timer autoFinsh = new Timer();
@@ -119,7 +121,7 @@ public class FormReactionMessageHolder extends MessageHolder<ReactionAddEvent> {
                     Form newForm = f.unit.forms[f.fid - 2];
 
                     try {
-                        EntityHandler.showUnitEmb(newForm, ch, isFrame, talent, lv, lang, false);
+                        EntityHandler.showUnitEmb(newForm, ch, isFrame, talent, extra, lv, lang, false);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -137,7 +139,7 @@ public class FormReactionMessageHolder extends MessageHolder<ReactionAddEvent> {
                     newForm = f.unit.forms[f.fid - 1];
 
                     try {
-                        EntityHandler.showUnitEmb(newForm, ch, isFrame, talent, lv, lang, false);
+                        EntityHandler.showUnitEmb(newForm, ch, isFrame, talent, extra, lv, lang, false);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -155,7 +157,7 @@ public class FormReactionMessageHolder extends MessageHolder<ReactionAddEvent> {
                     newForm = f.unit.forms[f.fid + 1];
 
                     try {
-                        EntityHandler.showUnitEmb(newForm, ch, isFrame, talent, lv, lang, false);
+                        EntityHandler.showUnitEmb(newForm, ch, isFrame, talent, extra, lv, lang, false);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -173,7 +175,7 @@ public class FormReactionMessageHolder extends MessageHolder<ReactionAddEvent> {
                     newForm = f.unit.forms[f.fid + 2];
 
                     try {
-                        EntityHandler.showUnitEmb(newForm, ch, isFrame, talent, lv, lang, false);
+                        EntityHandler.showUnitEmb(newForm, ch, isFrame, talent, extra, lv, lang, false);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

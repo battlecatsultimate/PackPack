@@ -16,6 +16,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.FormButtonHolder;
 import mandarin.packpack.supporter.server.holder.FormReactionSlashMessageHolder;
@@ -55,8 +56,8 @@ public class FormStat extends ConstraintCommand {
         if(!interaction.member().isAbsent()) {
             MemberData m = interaction.member().get();
 
-            if(StaticStore.locales.containsKey(m.user().id().asString())) {
-                lang = StaticStore.locales.get(m.user().id().asString());
+            if(StaticStore.config.containsKey(m.user().id().asString())) {
+                lang = StaticStore.config.get(m.user().id().asString()).lang;
             }
         }
 
@@ -65,6 +66,7 @@ public class FormStat extends ConstraintCommand {
         String name = SlashOption.getStringOption(options, "name", "");
         boolean frame = SlashOption.getBooleanOption(options, "frame", true);
         boolean talent = SlashOption.getBooleanOption(options, "talent", false);
+        boolean extra = SlashOption.getBooleanOption(options, "extra", false);
         ArrayList<Integer> lvs = prepareLevels(options);
 
         Form f = EntityFilter.pickOneForm(name, lang);
@@ -77,7 +79,7 @@ public class FormStat extends ConstraintCommand {
 
         return SlashBuilder.getWebhookRequest(w -> {
             try {
-                EntityHandler.showUnitEmb(f, w, frame, talent, lvs, finalLang);
+                EntityHandler.showUnitEmb(f, w, frame, talent, extra, lvs, finalLang);
 
                 w.addPostHandler((g, m) -> {
                             if (!interaction.member().isAbsent()) {
@@ -85,7 +87,7 @@ public class FormStat extends ConstraintCommand {
 
                                 StaticStore.putHolder(
                                         member.user().id().asString(),
-                                        new FormReactionSlashMessageHolder(g, f, member.user().id().asString(), m.channelId().asLong(), m.id().asLong(), frame, talent, lvs, finalLang)
+                                        new FormReactionSlashMessageHolder(g, f, member.user().id().asString(), m.channelId().asLong(), m.id().asLong(), frame, talent, extra, lvs, finalLang)
                                 );
                             }
                         }
@@ -111,9 +113,14 @@ public class FormStat extends ConstraintCommand {
 
     private static final int PARAM_TALENT = 2;
     private static final int PARAM_SECOND = 4;
+    private static final int PARAM_EXTRA = 8;
 
-    public FormStat(ROLE role, int lang, IDHolder holder) {
+    private final ConfigHolder config;
+
+    public FormStat(ROLE role, int lang, IDHolder holder, ConfigHolder config) {
         super(role, lang, holder);
+
+        this.config = config;
     }
 
     @Override
@@ -134,17 +141,23 @@ public class FormStat extends ConstraintCommand {
 
                 ArrayList<Integer> lv = handleLevel(getContent(event));
 
-                boolean isFrame = (param & PARAM_SECOND) == 0;
-                boolean talent = (param & PARAM_TALENT) > 0;
+                if(lv.get(0) == -1) {
+                    if(forms.get(0).unit.rarity != 0)
+                        lv.set(0, config.defLevel);
+                }
 
-                Message result = EntityHandler.showUnitEmb(forms.get(0), ch, isFrame, talent, lv, lang, true);
+                boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
+                boolean talent = (param & PARAM_TALENT) > 0;
+                boolean extra = (param & PARAM_EXTRA) > 0 || config.extra;
+
+                Message result = EntityHandler.showUnitEmb(forms.get(0), ch, isFrame, talent, extra, lv, lang, true);
 
                 if(result != null) {
                     getMember(event).ifPresent(m -> {
                         Message author = getMessage(event);
 
                         if(author != null) {
-                            StaticStore.putHolder(m.getId().asString(), new FormButtonHolder(forms.get(0), author, result, isFrame, talent, lv, lang, ch.getId().asString(), m.getId().asString()));
+                            StaticStore.putHolder(m.getId().asString(), new FormButtonHolder(forms.get(0), author, result, isFrame, talent, extra, lv, lang, ch.getId().asString(), m.getId().asString()));
                         }
                     });
                 }
@@ -195,7 +208,7 @@ public class FormStat extends ConstraintCommand {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(member.getId().asString(), new FormStatMessageHolder(forms, msg, res, ch.getId().asString(), param, lv, lang));
+                            StaticStore.putHolder(member.getId().asString(), new FormStatMessageHolder(forms, msg, config, res, ch.getId().asString(), param, lv, lang));
                     });
                 }
 
@@ -211,16 +224,27 @@ public class FormStat extends ConstraintCommand {
         if(msg.length >= 2) {
             String[] pureMessage = message.split(" ", 2)[1].split(" ");
 
+            label:
             for(String str : pureMessage) {
-                if(str.equals("-t")) {
-                    if((result & PARAM_TALENT) == 0) {
-                        result |= PARAM_TALENT;
-                    } else
+                switch (str) {
+                    case "-t":
+                        if ((result & PARAM_TALENT) == 0) {
+                            result |= PARAM_TALENT;
+                        } else
+                            break label;
                         break;
-                } else if(str.equals("-s")) {
-                    if((result & PARAM_SECOND) == 0) {
-                        result |= PARAM_SECOND;
-                    } else
+                    case "-s":
+                        if ((result & PARAM_SECOND) == 0) {
+                            result |= PARAM_SECOND;
+                        } else
+                            break label;
+                        break;
+                    case "-e":
+                    case "-extra":
+                        if ((result & PARAM_EXTRA) == 0) {
+                            result |= PARAM_EXTRA;
+                        } else
+                            break label;
                         break;
                 }
             }
@@ -235,6 +259,7 @@ public class FormStat extends ConstraintCommand {
         boolean isSec = false;
         boolean isLevel = false;
         boolean isTalent = false;
+        boolean isExtra = false;
 
         StringBuilder command = new StringBuilder();
 
@@ -253,6 +278,15 @@ public class FormStat extends ConstraintCommand {
                 case "-t":
                     if(!isTalent)
                         isTalent = true;
+                    else {
+                        command.append(content[i]);
+                        written = true;
+                    }
+                    break;
+                case "-e":
+                case "-extra":
+                    if(!isExtra)
+                        isExtra = true;
                     else {
                         command.append(content[i]);
                         written = true;

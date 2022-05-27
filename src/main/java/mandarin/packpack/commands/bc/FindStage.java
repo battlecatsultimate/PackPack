@@ -16,6 +16,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.StageEnemyMessageHolder;
 import mandarin.packpack.supporter.server.holder.StageInfoButtonHolder;
@@ -25,9 +26,14 @@ import java.util.ArrayList;
 
 public class FindStage extends TimedConstraintCommand {
     private static final int PARAM_SECOND = 2;
+    private static final int PARAM_EXTRA = 4;
 
-    public FindStage(ConstraintCommand.ROLE role, int lang, IDHolder id, long time) {
+    private final ConfigHolder config;
+
+    public FindStage(ConstraintCommand.ROLE role, int lang, IDHolder id, ConfigHolder config, long time) {
         super(role, lang, id, time, StaticStore.COMMAND_FINDSTAGE_ID);
+
+        this.config = config;
     }
 
     @Override
@@ -47,7 +53,8 @@ public class FindStage extends TimedConstraintCommand {
         int param = checkParameters(getContent(event));
         int star = getLevel(getContent(event));
 
-        boolean isFrame = (param & PARAM_SECOND) == 0;
+        boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
+        boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
 
         ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(enemyName, lang);
 
@@ -72,7 +79,7 @@ public class FindStage extends TimedConstraintCommand {
 
                 disableTimer();
             } else if(stages.size() == 1) {
-                Message result = EntityHandler.showStageEmb(stages.get(0), ch, isFrame, star, lang);
+                Message result = EntityHandler.showStageEmb(stages.get(0), ch, isFrame, isExtra, star, lang);
 
                 getMember(event).ifPresent(m -> {
                     Message msg = getMessage(event);
@@ -189,7 +196,7 @@ public class FindStage extends TimedConstraintCommand {
                         Message msg = getMessage(event);
 
                         if(msg != null) {
-                            StaticStore.putHolder(member.getId().asString(), new StageInfoMessageHolder(stages, msg, res, ch.getId().asString(), star, isFrame, lang));
+                            StaticStore.putHolder(member.getId().asString(), new StageInfoMessageHolder(stages, msg, res, ch.getId().asString(), star, isFrame, isExtra, lang));
                         }
                         disableTimer();
                     });
@@ -239,7 +246,7 @@ public class FindStage extends TimedConstraintCommand {
                     Message msg = getMessage(event);
 
                     if(msg != null)
-                        StaticStore.putHolder(m.getId().asString(), new StageEnemyMessageHolder(enemies, msg, res, ch.getId().asString(), isFrame, star, lang));
+                        StaticStore.putHolder(m.getId().asString(), new StageEnemyMessageHolder(enemies, msg, res, ch.getId().asString(), isFrame, isExtra, star, lang));
                 });
             }
         }
@@ -294,6 +301,11 @@ public class FindStage extends TimedConstraintCommand {
                 if(str.equals("-s")) {
                     if((result & PARAM_SECOND) == 0) {
                         result |= PARAM_SECOND;
+                    } else
+                        break;
+                } else if(str.equals("-e") || str.equals("-extra")) {
+                    if((result & PARAM_EXTRA) == 0) {
+                        result |= PARAM_EXTRA;
                     } else
                         break;
                 }

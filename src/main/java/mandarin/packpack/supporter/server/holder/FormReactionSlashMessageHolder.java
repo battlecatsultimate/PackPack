@@ -26,11 +26,12 @@ public class FormReactionSlashMessageHolder extends MessageHolder<ReactionAddEve
 
     private final boolean isFrame;
     private final boolean talent;
+    private final boolean extra;
     private final ArrayList<Integer> lv;
 
     private final GatewayDiscordClient client;
 
-    public FormReactionSlashMessageHolder(GatewayDiscordClient client, Form f, String memberID, long channelID, long embID, boolean isFrame, boolean talent, ArrayList<Integer> lv, int lang) {
+    public FormReactionSlashMessageHolder(GatewayDiscordClient client, Form f, String memberID, long channelID, long embID, boolean isFrame, boolean talent, boolean extra, ArrayList<Integer> lv, int lang) {
         super(ReactionAddEvent.class);
 
         this.f = f;
@@ -41,6 +42,7 @@ public class FormReactionSlashMessageHolder extends MessageHolder<ReactionAddEve
 
         this.isFrame = isFrame;
         this.talent = talent;
+        this.extra = extra;
         this.lv = lv;
 
         this.client = client;
@@ -109,7 +111,7 @@ public class FormReactionSlashMessageHolder extends MessageHolder<ReactionAddEve
                     Form newForm = f.unit.forms[f.fid - 2];
 
                     try {
-                        EntityHandler.showUnitEmb(newForm, ch, isFrame, talent, lv, lang, false);
+                        EntityHandler.showUnitEmb(newForm, ch, isFrame, talent, extra, lv, lang, false);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -127,7 +129,7 @@ public class FormReactionSlashMessageHolder extends MessageHolder<ReactionAddEve
                     newForm = f.unit.forms[f.fid - 1];
 
                     try {
-                        EntityHandler.showUnitEmb(newForm, ch, isFrame, talent, lv, lang, false);
+                        EntityHandler.showUnitEmb(newForm, ch, isFrame, talent, extra, lv, lang, false);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -145,7 +147,7 @@ public class FormReactionSlashMessageHolder extends MessageHolder<ReactionAddEve
                     newForm = f.unit.forms[f.fid + 1];
 
                     try {
-                        EntityHandler.showUnitEmb(newForm, ch, isFrame, talent, lv, lang, false);
+                        EntityHandler.showUnitEmb(newForm, ch, isFrame, talent, extra, lv, lang, false);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -163,7 +165,7 @@ public class FormReactionSlashMessageHolder extends MessageHolder<ReactionAddEve
                     newForm = f.unit.forms[f.fid + 2];
 
                     try {
-                        EntityHandler.showUnitEmb(newForm, ch, isFrame, talent, lv, lang, false);
+                        EntityHandler.showUnitEmb(newForm, ch, isFrame, talent, extra, lv, lang, false);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

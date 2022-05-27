@@ -26,11 +26,12 @@ public class FormButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
 
     private final boolean isFrame;
     private final boolean talent;
+    private final boolean extra;
     private final String channelID;
     private final String memberID;
     private final ArrayList<Integer> lv;
 
-    public FormButtonHolder(Form f, Message author, Message msg, boolean isFrame, boolean talent, ArrayList<Integer> lv, int lang, String channelID, String memberID) {
+    public FormButtonHolder(Form f, Message author, Message msg, boolean isFrame, boolean talent, boolean extra, ArrayList<Integer> lv, int lang, String channelID, String memberID) {
         super(ButtonInteractionEvent.class);
 
         this.embed = msg;
@@ -41,6 +42,7 @@ public class FormButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
 
         this.isFrame = isFrame;
         this.talent = talent;
+        this.extra = extra;
         this.lv = lv;
 
         Timer autoFinsh = new Timer();
@@ -117,7 +119,7 @@ public class FormButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
         Form newForm = f.unit.forms[f.fid + diff];
 
         try {
-            EntityHandler.showUnitEmb(newForm, ch, isFrame, talent, lv, lang, false);
+            EntityHandler.showUnitEmb(newForm, ch, isFrame, talent, extra, lv, lang, false);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -64,8 +64,8 @@ public class StaticStore {
 
     public static Map<String, String> prefix = new HashMap<>();
     public static Map<String, String> langs = new HashMap<>();
-    public static Map<String, Integer> locales = new HashMap<>();
     public static Map<String, Integer> timeZones = new HashMap<>();
+    public static Map<String, ConfigHolder> config = new HashMap<>();
 
     public static final Map<Integer, String> announcements = new HashMap<>();
 
@@ -112,6 +112,17 @@ public class StaticStore {
             LangID.IT,
             LangID.ES,
             LangID.DE
+    };
+
+    public static final String[] langCode = {
+            "en",
+            "zh",
+            "kr",
+            "jp",
+            "fr",
+            "it",
+            "es",
+            "de"
     };
 
     public static Color[] rainbow = {Color.of(217, 65, 68), Color.of(217, 128, 65), Color.of(224, 213, 85)
@@ -304,6 +315,26 @@ public class StaticStore {
         return arr;
     }
 
+    public static JsonArray mapToJsonConfigHolder(Map<String, ConfigHolder> map) {
+        JsonArray arr = new JsonArray();
+
+        for(String key : map.keySet()) {
+            ConfigHolder holder = map.get(key);
+
+            if(holder == null)
+                continue;
+
+            JsonObject set = new JsonObject();
+
+            set.addProperty("key", key);
+            set.add("val", holder.jsonfy());
+
+            arr.add(set);
+        }
+
+        return arr;
+    }
+
     public static JsonArray listToJsonString(ArrayList<String> list) {
         JsonArray arr = new JsonArray();
 
@@ -408,6 +439,23 @@ public class StaticStore {
         return map;
     }
 
+    public static Map<String, ConfigHolder> jsonToMapConfigHolder(JsonArray arr) {
+        Map<String, ConfigHolder> map = new HashMap<>();
+
+        for(int i = 0; i < arr.size(); i++) {
+            JsonObject set = arr.get(i).getAsJsonObject();
+
+            if(set.has("key") && set.has("val")) {
+                String key = set.get("key").getAsString();
+                ConfigHolder val = ConfigHolder.parseJson(set.get("val").getAsJsonObject());
+
+                map.put(key, val);
+            }
+        }
+
+        return map;
+    }
+
     public static Map<Integer, List<Integer>> jsonToMapIntegerList(JsonArray arr) {
         Map<Integer, List<Integer>> map = new HashMap<>();
 
@@ -477,7 +525,7 @@ public class StaticStore {
         obj.addProperty("japaneseVersion", japaneseVersion);
         obj.add("prefix", mapToJsonString(prefix));
         obj.add("lang", mapToJsonString(langs));
-        obj.add("locale", mapToJsonInt(locales));
+        obj.add("config", mapToJsonConfigHolder(config));
         obj.add("imgur", imgur.getData());
         obj.add("idholder", mapToJsonIDHolder(idHolder));
         obj.add("suggestBanned", mapToJsonString(suggestBanned));
@@ -567,8 +615,26 @@ public class StaticStore {
                 langs = jsonToMapString(obj.get("lang").getAsJsonArray());
             }
 
+            if(obj.has("config")) {
+                config = jsonToMapConfigHolder(obj.getAsJsonArray("config"));
+            }
+
             if(obj.has("locale")) {
-                locales = jsonToMapInt(obj.get("locale").getAsJsonArray());
+                Map<String, Integer> locales = jsonToMapInt(obj.get("locale").getAsJsonArray());
+
+                for(String key : locales.keySet()) {
+                    ConfigHolder c;
+
+                    if(config.containsKey(key)) {
+                        c = config.get(key);
+                    } else {
+                        c = new ConfigHolder();
+                    }
+
+                    c.lang = locales.get(key);
+
+                    config.put(key, c);
+                }
             }
 
             if(obj.has("imgur")) {

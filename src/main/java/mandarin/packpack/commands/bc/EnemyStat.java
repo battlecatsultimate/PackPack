@@ -16,6 +16,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.holder.EnemyStatMessageHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.slash.SlashBuilder;
@@ -51,8 +52,8 @@ public class EnemyStat extends ConstraintCommand {
         if(!interaction.member().isAbsent()) {
             MemberData m = interaction.member().get();
 
-            if(StaticStore.locales.containsKey(m.user().id().asString())) {
-                lang =  StaticStore.locales.get(m.user().id().asString());
+            if(StaticStore.config.containsKey(m.user().id().asString())) {
+                lang =  StaticStore.config.get(m.user().id().asString()).lang;
             }
         }
 
@@ -63,6 +64,8 @@ public class EnemyStat extends ConstraintCommand {
         Enemy e = name.isBlank() ? null : EntityFilter.pickOneEnemy(name, lang);
 
         boolean frame = SlashOption.getBooleanOption(options, "frame", true);
+        boolean extra = SlashOption.getBooleanOption(options, "extra", false);
+
         int[] magnification = {
                 SlashOption.getIntOption(options, "magnification", 100),
                 SlashOption.getIntOption(options, "atk_magnification", 100)
@@ -75,7 +78,7 @@ public class EnemyStat extends ConstraintCommand {
                 w.setContent(LangID.getStringByID("formst_specific", finalLang));
             } else {
                 try {
-                    EntityHandler.showEnemyEmb(e, w, frame, magnification, finalLang);
+                    EntityHandler.showEnemyEmb(e, w, frame, extra, magnification, finalLang);
                 } catch (Exception exception) {
                     exception.printStackTrace();
                 }
@@ -84,9 +87,14 @@ public class EnemyStat extends ConstraintCommand {
     }
 
     private static final int PARAM_SECOND = 2;
+    private static final int PARAM_EXTRA = 4;
 
-    public EnemyStat(ROLE role, int lang, IDHolder id) {
+    private final ConfigHolder config;
+
+    public EnemyStat(ROLE role, int lang, IDHolder id, ConfigHolder config) {
         super(role, lang, id);
+
+        this.config = config;
     }
 
     @Override
@@ -105,9 +113,10 @@ public class EnemyStat extends ConstraintCommand {
 
                 int[] magnification = handleMagnification(getContent(event));
 
-                boolean isFrame = (param & PARAM_SECOND) == 0;
+                boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
+                boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
 
-                EntityHandler.showEnemyEmb(enemies.get(0), ch, isFrame, magnification, lang);
+                EntityHandler.showEnemyEmb(enemies.get(0), ch, isFrame, isExtra, magnification, lang);
             } else if(enemies.size() == 0) {
                 createMessageWithNoPings(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(getContent(event))));
             } else {
@@ -150,14 +159,18 @@ public class EnemyStat extends ConstraintCommand {
                 Message res = getMessageWithNoPings(ch, sb.toString());
 
                 int[] magnification = handleMagnification(getContent(event));
-                boolean isFrame = (checkParameters(getContent(event)) & PARAM_SECOND) == 0;
+
+                int param = checkParameters(getContent(event));
+
+                boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
+                boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
 
                 if(res != null) {
                     getMember(event).ifPresent(member -> {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(member.getId().asString(), new EnemyStatMessageHolder(enemies, msg, res, ch.getId().asString(), magnification, isFrame, lang));
+                            StaticStore.putHolder(member.getId().asString(), new EnemyStatMessageHolder(enemies, msg, res, ch.getId().asString(), magnification, isFrame, isExtra, lang));
                     });
                 }
             }
@@ -168,6 +181,7 @@ public class EnemyStat extends ConstraintCommand {
         String[] content = msg.split(" ");
 
         boolean isSec = false;
+        boolean isExtra = false;
         boolean isLevel = false;
 
         StringBuilder command = new StringBuilder();
@@ -184,6 +198,14 @@ public class EnemyStat extends ConstraintCommand {
                         written = true;
                     }
                     break;
+                case "-e":
+                case "-extra":
+                    if(!isExtra)
+                        isExtra = true;
+                    else {
+                        command.append(content[i]);
+                        written = true;
+                    }
                 case "-m":
                     if(!isLevel && i < content.length -1) {
                         String text = getLevelText(content, i + 1);
@@ -230,6 +252,12 @@ public class EnemyStat extends ConstraintCommand {
                         result |= PARAM_SECOND;
                     } else
                         break;
+                } else if(str.startsWith("-e") || str.startsWith("-extra")) {
+                    if((result & PARAM_EXTRA) == 0) {
+                        result |= PARAM_EXTRA;
+                    } else {
+                        break;
+                    }
                 }
             }
         }

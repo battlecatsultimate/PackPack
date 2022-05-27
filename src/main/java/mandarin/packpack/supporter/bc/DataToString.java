@@ -1688,4 +1688,98 @@ public class DataToString {
 
         return new int[] {(int) (r * 255), (int) (g * 255), (int) (b * 255)};
     }
+
+    public static List<String> getMiscellaneous(Stage st, int lang) {
+        List<String> result = new ArrayList<>();
+
+        if(st.getCont() == null || st.getCont().info == null)
+            return result;
+
+        StageMap.StageMapInfo info = st.getCont().info;
+
+        if(info.resetMode != -1) {
+            if(info.resetMode > 0 && info.resetMode < 4)
+                result.add(LangID.getStringByID("data_reset"+info.resetMode, lang));
+            else
+                result.add(LangID.getStringByID("data_resetx", lang));
+        }
+
+        if(info.clearLimit != -1) {
+            result.add(LangID.getStringByID("data_numberplay", lang).replace("_", ""+info.clearLimit));
+        }
+
+        if(info.waitTime != -1) {
+            String min;
+
+            if(info.waitTime > 1)
+                min = LangID.getStringByID("smins", lang);
+            else
+                min = LangID.getStringByID("smin", lang);
+
+            result.add(LangID.getStringByID("data_waittime", lang).replace("_NNN_", ""+info.waitTime).replace("_TTT_", min));
+        }
+
+        if(info.hiddenUponClear) {
+            result.add(LangID.getStringByID("data_hiddenclear", lang));
+        }
+
+        return result;
+    }
+
+    private static String getMapStageName(Stage st, int lang) {
+        int oldConfig = CommonStatic.getConfig().lang;
+        CommonStatic.getConfig().lang = lang;
+
+        String map = MultiLangCont.get(st.getCont());
+        String stage = MultiLangCont.get(st);
+
+        CommonStatic.getConfig().lang = oldConfig;
+
+        if(map == null || map.isBlank()) {
+            map = st.getCont().getCont().getSID()+"/"+Data.trio(st.getCont().id.id);
+        }
+
+        if(stage == null || stage.isBlank()) {
+            stage = Data.trio(st.id.id);
+        }
+
+        return map + " - " + stage;
+    }
+
+    public static String getEXStage(Stage st, int lang) {
+        if(st.info == null || (!st.info.exConnection && st.info.exStages == null)) {
+            return LangID.getStringByID("data_none", lang);
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        if(st.info.exConnection) {
+            StageMap sm = MapColc.DefMapColc.getMap(4000 + st.info.exMapID);
+
+            if(sm == null)
+                return LangID.getStringByID("data_none", lang);
+
+            int n = st.info.exStageIDMax - st.info.exStageIDMin + 1;
+
+            for(int i = st.info.exStageIDMin; i <= st.info.exStageIDMax; i++) {
+                Stage s = sm.list.get(i);
+
+                if(s != null) {
+                    sb.append(df.format(st.info.exChance * 1.0 / n)).append("% | ").append(getMapStageName(s, lang));
+
+                    if(i < st.info.exStageIDMax)
+                        sb.append("\n");
+                }
+            }
+        } else {
+            for(int i = 0; i < st.info.exStages.length; i++) {
+                sb.append(df.format(st.info.exChances[i])).append("% | ").append(getMapStageName(st.info.exStages[i], lang));
+
+                if(i < st.info.exStages.length - 1)
+                    sb.append("\n");
+            }
+        }
+
+        return sb.toString();
+    }
 }

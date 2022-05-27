@@ -11,6 +11,7 @@ import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 
 import java.util.ArrayList;
 
@@ -23,12 +24,13 @@ public class FormStatMessageHolder extends MessageHolder<MessageCreateEvent> {
 
     private final boolean talent;
     private final boolean isFrame;
+    private final boolean extra;
     private final ArrayList<Integer> lv;
     private final int lang;
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
-    public FormStatMessageHolder(ArrayList<Form> form, Message author, Message msg, String channelID, int param, ArrayList<Integer> lv, int lang) {
+    public FormStatMessageHolder(ArrayList<Form> form, Message author, ConfigHolder config, Message msg, String channelID, int param, ArrayList<Integer> lv, int lang) {
         super(MessageCreateEvent.class);
 
         this.form = form;
@@ -36,7 +38,8 @@ public class FormStatMessageHolder extends MessageHolder<MessageCreateEvent> {
         this.channelID = channelID;
 
         this.talent = (param & 2) > 0;
-        this.isFrame = (param & 4) == 0;
+        this.isFrame = (param & 4) == 0 && config.useFrame;
+        this.extra = (param & 8) == 0 || config.extra;
         this.lv = lv;
         this.lang = lang;
 
@@ -176,12 +179,12 @@ public class FormStatMessageHolder extends MessageHolder<MessageCreateEvent> {
             }
 
             try {
-                Message result = EntityHandler.showUnitEmb(form.get(id), ch, isFrame, talent, lv, lang, true);
+                Message result = EntityHandler.showUnitEmb(form.get(id), ch, isFrame, talent, extra, lv, lang, true);
 
                 if(result != null) {
                     event.getMember().ifPresent(m -> {
                         StaticStore.removeHolder(m.getId().asString(), FormStatMessageHolder.this);
-                        StaticStore.putHolder(m.getId().asString(), new FormButtonHolder(form.get(id), event.getMessage(), result, isFrame, talent, lv, lang, channelID, m.getId().asString()));
+                        StaticStore.putHolder(m.getId().asString(), new FormButtonHolder(form.get(id), event.getMessage(), result, isFrame, talent, extra, lv, lang, channelID, m.getId().asString()));
                     });
                 }
             } catch (Exception e) {

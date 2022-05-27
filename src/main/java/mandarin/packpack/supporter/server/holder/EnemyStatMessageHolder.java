@@ -11,6 +11,7 @@
  import mandarin.packpack.supporter.StaticStore;
  import mandarin.packpack.supporter.bc.EntityHandler;
  import mandarin.packpack.supporter.lang.LangID;
+ import mandarin.packpack.supporter.server.data.ConfigHolder;
 
  import java.util.ArrayList;
 
@@ -19,15 +20,16 @@
     private final Message msg;
     private final String channelID;
 
-    private int page = 0;
+     private int page = 0;
 
     private final boolean isFrame;
+    private final boolean isExtra;
     private final int[] magnification;
     private final int lang;
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
-    public EnemyStatMessageHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, int[] magnification, boolean isFrame, int lang) {
+    public EnemyStatMessageHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, int[] magnification, boolean isFrame, boolean isExtra, int lang) {
         super(MessageCreateEvent.class);
 
         this.enemy = enemy;
@@ -36,6 +38,7 @@
 
         this.magnification = magnification;
         this.isFrame = isFrame;
+        this.isExtra = isExtra;
         this.lang = lang;
 
         registerAutoFinish(this, msg, author, lang, FIVE_MIN);
@@ -165,7 +168,7 @@
             msg.delete().subscribe();
 
             try {
-                EntityHandler.showEnemyEmb(enemy.get(id), ch, isFrame, magnification, lang);
+                EntityHandler.showEnemyEmb(enemy.get(id), ch, isFrame, isExtra, magnification, lang);
             } catch (Exception e) {
                 e.printStackTrace();
             }

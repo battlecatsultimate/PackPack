@@ -57,8 +57,10 @@ public class Test extends GlobalTimedConstraintCommand {
 
                     if(c instanceof VoiceChannel) {
                         createMessage(ch, m -> m.content("Channel Name : "+((VoiceChannel) c).getName()));
+                        createMessage(ch, m -> m.content("Server name : "+((VoiceChannel) c).getGuild().block().getName()));
                     } else if(c instanceof MessageChannel) {
                         createMessage(ch, m -> m.content("Channel Name : "+c.getRestChannel().getData().block().name().get()));
+                        createMessage(ch, m -> m.content("Server name : "+(c.getRestChannel().getData().block().guildId().isAbsent() ? "None" : c.getRestChannel().getData().block().guildId().get())));
                     }
                 });
 

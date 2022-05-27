@@ -27,12 +27,13 @@ public class StageInfoMessageHolder extends MessageHolder<MessageCreateEvent> {
     private int page = 0;
 
     private final boolean isFrame;
+    private final boolean isExtra;
     private final int star;
     private final int lang;
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
-    public StageInfoMessageHolder(ArrayList<Stage> stage, Message author, Message msg, String channelID, int star, boolean isFrame, int lang) {
+    public StageInfoMessageHolder(ArrayList<Stage> stage, Message author, Message msg, String channelID, int star, boolean isFrame, boolean isExtra, int lang) {
         super(MessageCreateEvent.class);
 
         this.stage = stage;
@@ -41,6 +42,7 @@ public class StageInfoMessageHolder extends MessageHolder<MessageCreateEvent> {
 
         this.star = star;
         this.isFrame = isFrame;
+        this.isExtra = isExtra;
         this.lang = lang;
 
         registerAutoFinish(this, msg, author, lang, FIVE_MIN);
@@ -105,7 +107,7 @@ public class StageInfoMessageHolder extends MessageHolder<MessageCreateEvent> {
             });
 
             try {
-                Message msg = EntityHandler.showStageEmb(stage.get(id), ch, isFrame, star, lang);
+                Message msg = EntityHandler.showStageEmb(stage.get(id), ch, isFrame, isExtra, star, lang);
 
                 Guild g = event.getGuild().block();
 

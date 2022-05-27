@@ -20,6 +20,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.StageInfoButtonHolder;
 import mandarin.packpack.supporter.server.holder.StageInfoMessageHolder;
@@ -33,6 +34,7 @@ import java.util.List;
 
 public class StageInfo extends TimedConstraintCommand {
     private static final int PARAM_SECOND = 2;
+    private static final int PARAM_EXTRA = 4;
 
     public static WebhookBuilder getInteractionWebhook(InteractionCreateEvent event) {
         InteractionData interaction = event.getInteraction().getData();
@@ -73,8 +75,8 @@ public class StageInfo extends TimedConstraintCommand {
         if(!interaction.member().isAbsent()) {
             MemberData member = interaction.member().get();
 
-            if(StaticStore.locales.containsKey(member.user().id().asString())) {
-                lang = StaticStore.locales.get(member.user().id().asString());
+            if(StaticStore.config.containsKey(member.user().id().asString())) {
+                lang = StaticStore.config.get(member.user().id().asString()).lang;
             }
         }
 
@@ -93,6 +95,7 @@ public class StageInfo extends TimedConstraintCommand {
         }
 
         boolean frame = SlashOption.getBooleanOption(options, "frame", true);
+        boolean extra = SlashOption.getBooleanOption(options, "extra", false);
         int star = SlashOption.getIntOption(options, "level", 0);
 
         final int finalLang = lang;
@@ -102,7 +105,7 @@ public class StageInfo extends TimedConstraintCommand {
                 w.setContent(LangID.getStringByID("formst_specific", finalLang));
             } else {
                 try {
-                    EntityHandler.showStageEmb(st, w, frame, star, finalLang);
+                    EntityHandler.showStageEmb(st, w, frame, extra, star, finalLang);
 
                     w.addPostHandler((g, m) -> {
                         if(!interaction.member().isAbsent()) {
@@ -121,8 +124,12 @@ public class StageInfo extends TimedConstraintCommand {
         });
     }
 
-    public StageInfo(ConstraintCommand.ROLE role, int lang, IDHolder id, long time) {
+    private final ConfigHolder config;
+
+    public StageInfo(ConstraintCommand.ROLE role, int lang, IDHolder id, ConfigHolder config, long time) {
         super(role, lang, id, time, StaticStore.COMMAND_STAGEINFO_ID);
+
+        this.config = config;
     }
 
     @Override
@@ -154,11 +161,12 @@ public class StageInfo extends TimedConstraintCommand {
             } else if(stages.size() == 1) {
                 int param = checkParameters(getContent(event));
                 int star = getLevel(getContent((event)));
-                boolean isFrame = (param & PARAM_SECOND) == 0;
+                boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
+                boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
 
                 CommonStatic.getConfig().lang = lang;
 
-                Message result = EntityHandler.showStageEmb(stages.get(0), ch, isFrame, star, lang);
+                Message result = EntityHandler.showStageEmb(stages.get(0), ch, isFrame, isExtra, star, lang);
 
                 ArrayList<Stage> finalStages = stages;
 
@@ -171,7 +179,8 @@ public class StageInfo extends TimedConstraintCommand {
             } else {
                 int param = checkParameters(getContent(event));
                 int star = getLevel(getContent((event)));
-                boolean isFrame = (param & PARAM_SECOND) == 0;
+                boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
+                boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
 
                 CommonStatic.getConfig().lang = lang;
 
@@ -279,7 +288,7 @@ public class StageInfo extends TimedConstraintCommand {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(member.getId().asString(), new StageInfoMessageHolder(finalStages1, msg, res, ch.getId().asString(), star, isFrame, lang));
+                            StaticStore.putHolder(member.getId().asString(), new StageInfoMessageHolder(finalStages1, msg, res, ch.getId().asString(), star, isFrame, isExtra, lang));
                     });
                 }
             }
@@ -302,6 +311,11 @@ public class StageInfo extends TimedConstraintCommand {
                 if(str.startsWith("-s") && !str.startsWith("-stm")) {
                     if((result & PARAM_SECOND) == 0) {
                         result |= PARAM_SECOND;
+                    } else
+                        break;
+                } else if(str.equals("-e") || str.equals("-extra")) {
+                    if((result & PARAM_EXTRA) == 0) {
+                        result |= PARAM_EXTRA;
                     } else
                         break;
                 }
@@ -434,6 +448,7 @@ public class StageInfo extends TimedConstraintCommand {
 
     private String getStageName(String[] contents) {
         boolean isSecond = false;
+        boolean isExtra = false;
 
         StringBuilder st = new StringBuilder();
 
@@ -443,6 +458,12 @@ public class StageInfo extends TimedConstraintCommand {
             else if(contents[i].equals("-s")) {
                 if(!isSecond) {
                     isSecond = true;
+                } else {
+                    st.append(contents[i]).append(" ");
+                }
+            } else if(contents[i].equals("-e") || contents[i].equals("-extra")) {
+                if(!isExtra) {
+                    isExtra = true;
                 } else {
                     st.append(contents[i]).append(" ");
                 }

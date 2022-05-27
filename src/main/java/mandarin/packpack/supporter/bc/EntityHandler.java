@@ -68,7 +68,7 @@ public class EntityHandler {
         }
     }
 
-    public static void showUnitEmb(Form f, WebhookBuilder builder, boolean isFrame, boolean talent, ArrayList<Integer> lv, int lang) throws Exception {
+    public static void showUnitEmb(Form f, WebhookBuilder builder, boolean isFrame, boolean talent, boolean extra, ArrayList<Integer> lv, int lang) throws Exception {
         int level = lv.get(0);
         int levelp = 0;
 
@@ -100,7 +100,12 @@ public class EntityHandler {
             l = level + " + " + levelp;
 
         File img = generateIcon(f);
-        File cf = generateCatfruit(f);
+        File cf;
+
+        if(extra)
+            cf = generateCatfruit(f);
+        else
+            cf = null;
 
         FileInputStream fis;
         FileInputStream cfis;
@@ -196,17 +201,19 @@ public class EntityHandler {
 
             spec.addField(LangID.getStringByID("data_ability", lang), res, false);
 
-            String explanation = DataToString.getDescription(f, lang);
+            if(extra) {
+                String explanation = DataToString.getDescription(f, lang);
 
-            if(explanation != null)
-                spec.addField(LangID.getStringByID("data_udesc", lang), explanation, false);
+                if(explanation != null)
+                    spec.addField(LangID.getStringByID("data_udesc", lang), explanation, false);
 
-            String catfruit = DataToString.getCatruitEvolve(f, lang);
+                String catfruit = DataToString.getCatruitEvolve(f, lang);
 
-            if(catfruit != null)
-                spec.addField(LangID.getStringByID("data_evolve", lang), catfruit, false);
+                if(catfruit != null)
+                    spec.addField(LangID.getStringByID("data_evolve", lang), catfruit, false);
 
-            spec.setImage("attachment://cf.png");
+                spec.setImage("attachment://cf.png");
+            }
 
             if(talentExists(t))
                 spec.setFooter(DataToString.getTalent(f.du, t, lang), null);
@@ -234,7 +241,7 @@ public class EntityHandler {
         }
     }
 
-    public static Message showUnitEmb(Form f, MessageChannel ch, boolean isFrame, boolean talent, ArrayList<Integer> lv, int lang, boolean addEmoji) throws Exception {
+    public static Message showUnitEmb(Form f, MessageChannel ch, boolean isFrame, boolean talent, boolean extra, ArrayList<Integer> lv, int lang, boolean addEmoji) throws Exception {
         int level = lv.get(0);
         int levelp = 0;
 
@@ -266,15 +273,22 @@ public class EntityHandler {
             l = level + " + " + levelp;
 
         File img = generateIcon(f);
-        File cf = generateCatfruit(f);
 
         FileInputStream fis;
-        FileInputStream cfis;
 
         if(img != null)
             fis = new FileInputStream(img);
         else
             fis = null;
+
+        File cf;
+
+        if(extra)
+            cf = generateCatfruit(f);
+        else
+            cf = null;
+
+        FileInputStream cfis;
 
         if(cf != null)
             cfis = new FileInputStream(cf);
@@ -363,17 +377,19 @@ public class EntityHandler {
 
                 spec.addField(LangID.getStringByID("data_ability", lang), res, false);
 
-                String explanation = DataToString.getDescription(f, lang);
+                if(extra) {
+                    String explanation = DataToString.getDescription(f, lang);
 
-                if(explanation != null)
-                    spec.addField(LangID.getStringByID("data_udesc", lang), explanation, false);
+                    if(explanation != null)
+                        spec.addField(LangID.getStringByID("data_udesc", lang), explanation, false);
 
-                String catfruit = DataToString.getCatruitEvolve(f, lang);
+                    String catfruit = DataToString.getCatruitEvolve(f, lang);
 
-                if(catfruit != null)
-                    spec.addField(LangID.getStringByID("data_evolve", lang), catfruit, false);
+                    if(catfruit != null)
+                        spec.addField(LangID.getStringByID("data_evolve", lang), catfruit, false);
 
-                spec.image("attachment://cf.png");
+                    spec.image("attachment://cf.png");
+                }
 
                 if(talentExists(t))
                     spec.footer(DataToString.getTalent(f.du, t, lang), null);
@@ -477,7 +493,7 @@ public class EntityHandler {
         return !empty;
     }
 
-    public static void showEnemyEmb(Enemy e, MessageChannel ch, boolean isFrame, int[] magnification, int lang) throws Exception {
+    public static void showEnemyEmb(Enemy e, MessageChannel ch, boolean isFrame, boolean extra, int[] magnification, int lang) throws Exception {
         File img = generateIcon(e);
 
         FileInputStream fis;
@@ -549,10 +565,12 @@ public class EntityHandler {
 
                 spec.addField(LangID.getStringByID("data_ability", lang), res, false);
 
-                String explanation = DataToString.getDescription(e, lang);
+                if(extra) {
+                    String explanation = DataToString.getDescription(e, lang);
 
-                if(explanation != null) {
-                    spec.addField(LangID.getStringByID("data_edesc", lang), explanation, false);
+                    if(explanation != null) {
+                        spec.addField(LangID.getStringByID("data_edesc", lang), explanation, false);
+                    }
                 }
 
                 spec.footer(LangID.getStringByID("enemyst_source", lang), null);
@@ -583,7 +601,7 @@ public class EntityHandler {
         e.anim.unload();
     }
 
-    public static void showEnemyEmb(Enemy e, WebhookBuilder w, boolean isFrame, int[] magnification, int lang) throws Exception {
+    public static void showEnemyEmb(Enemy e, WebhookBuilder w, boolean isFrame, boolean extra, int[] magnification, int lang) throws Exception {
         File img = generateIcon(e);
 
         FileInputStream fis;
@@ -654,10 +672,12 @@ public class EntityHandler {
 
             spec.addField(LangID.getStringByID("data_ability", lang), res, false);
 
-            String explanation = DataToString.getDescription(e, lang);
+            if(extra) {
+                String explanation = DataToString.getDescription(e, lang);
 
-            if(explanation != null) {
-                spec.addField(LangID.getStringByID("data_edesc", lang), explanation, false);
+                if(explanation != null) {
+                    spec.addField(LangID.getStringByID("data_edesc", lang), explanation, false);
+                }
             }
 
             spec.setFooter(LangID.getStringByID("enemyst_source", lang), null);
@@ -827,7 +847,7 @@ public class EntityHandler {
         return img;
     }
 
-    public static Message showStageEmb(Stage st, MessageChannel ch, boolean isFrame, int star, int lang) throws Exception {
+    public static Message showStageEmb(Stage st, MessageChannel ch, boolean isFrame, boolean isExtra, int star, int lang) throws Exception {
         StageMap stm = st.getCont();
 
         int sta;
@@ -926,8 +946,6 @@ public class EntityHandler {
                     spec.addField(LangID.getStringByID("data_music", lang), DataToString.getMusic(st, lang), true);
                     spec.addField(DataToString.getMusicChange(st), DataToString.getMusic1(st, lang) , true);
                     spec.addField(LangID.getStringByID("data_maxenem", lang), DataToString.getMaxEnemy(st), true);
-                    spec.addField(LangID.getStringByID("data_loop0", lang), DataToString.getLoop0(st), true);
-                    spec.addField(LangID.getStringByID("data_loop1", lang), DataToString.getLoop1(st) ,true);
                     spec.addField(LangID.getStringByID("data_bg", lang), DataToString.getBackground(st, lang),true);
                     spec.addField(LangID.getStringByID("data_castle", lang), DataToString.getCastle(st, lang), true);
                     spec.addField(LangID.getStringByID("data_minspawn", lang), DataToString.getMinSpawn(st, isFrame), true);
@@ -948,6 +966,26 @@ public class EntityHandler {
                     }
 
                     spec.addField(LangID.getStringByID("data_limit", lang), sb.toString(), false);
+
+                    if(isExtra) {
+                        List<String> misc = DataToString.getMiscellaneous(st, lang);
+
+                        if(!misc.isEmpty()) {
+                            StringBuilder sbuilder = new StringBuilder();
+
+                            for(int i = 0; i < misc.size(); i++) {
+                                sbuilder.append("⦁ ").append(misc.get(i));
+
+                                if(i < misc.size() - 1) {
+                                    sbuilder.append("\n");
+                                }
+                            }
+
+                            spec.addField(LangID.getStringByID("data_misc", lang), sbuilder.toString(), false);
+                        }
+
+                        spec.addField(LangID.getStringByID("data_exstage", lang), DataToString.getEXStage(st, lang), false);
+                    }
 
                     String drops = DataToString.getRewards(st, lang);
 
@@ -1015,7 +1053,7 @@ public class EntityHandler {
         return result;
     }
 
-    public static void showStageEmb(Stage st, WebhookBuilder builder, boolean isFrame, int star, int lang) throws Exception {
+    public static void showStageEmb(Stage st, WebhookBuilder builder, boolean isFrame, boolean isExtra, int star, int lang) throws Exception {
         StageMap stm = st.getCont();
 
         int sta;
@@ -1135,6 +1173,26 @@ public class EntityHandler {
                 }
 
                 spec.addField(LangID.getStringByID("data_limit", lang), sb.toString(), false);
+
+                if(isExtra) {
+                    List<String> misc = DataToString.getMiscellaneous(st, lang);
+
+                    if(!misc.isEmpty()) {
+                        StringBuilder sbuilder = new StringBuilder();
+
+                        for(int i = 0; i < misc.size(); i++) {
+                            sbuilder.append("⦁ ").append(misc.get(i));
+
+                            if(i < misc.size() - 1) {
+                                sbuilder.append("\n");
+                            }
+                        }
+
+                        spec.addField(LangID.getStringByID("data_misc", lang), sbuilder.toString(), false);
+                    }
+
+                    spec.addField(LangID.getStringByID("data_exstage", lang), DataToString.getEXStage(st, lang), false);
+                }
 
                 String drops = DataToString.getRewards(st, lang);
 

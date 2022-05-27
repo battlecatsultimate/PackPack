@@ -29,13 +29,14 @@ public class StageEnemyMessageHolder extends MessageHolder<MessageCreateEvent> {
 
     private final int lang;
     private final boolean isFrame;
+    private final boolean isExtra;
     private final int star;
 
     private int page = 0;
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
-    public StageEnemyMessageHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, boolean isFrame, int star, int lang) {
+    public StageEnemyMessageHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, boolean isFrame, boolean isExtra, int star, int lang) {
         super(MessageCreateEvent.class);
 
         this.enemy = enemy;
@@ -44,6 +45,7 @@ public class StageEnemyMessageHolder extends MessageHolder<MessageCreateEvent> {
 
         this.lang = lang;
         this.isFrame = isFrame;
+        this.isExtra = isExtra;
         this.star = star;
 
         registerAutoFinish(this, msg, author, lang, FIVE_MIN);
@@ -108,7 +110,7 @@ public class StageEnemyMessageHolder extends MessageHolder<MessageCreateEvent> {
                 } else if(stages.size() == 1) {
                     msg.delete().subscribe();
 
-                    Message result = EntityHandler.showStageEmb(stages.get(0), ch, isFrame, star, lang);
+                    Message result = EntityHandler.showStageEmb(stages.get(0), ch, isFrame, isExtra, star, lang);
                     Guild g = event.getGuild().block();
 
                     if(result != null) {
@@ -250,7 +252,7 @@ public class StageEnemyMessageHolder extends MessageHolder<MessageCreateEvent> {
                             Message msg = event.getMessage();
 
                             StaticStore.removeHolder(m.getId().asString(), StageEnemyMessageHolder.this);
-                            StaticStore.putHolder(m.getId().asString(), new StageInfoMessageHolder(stages, msg, res, ch.getId().asString(), star, isFrame, lang));
+                            StaticStore.putHolder(m.getId().asString(), new StageInfoMessageHolder(stages, msg, res, ch.getId().asString(), star, isFrame, isExtra, lang));
                         });
                     }
 

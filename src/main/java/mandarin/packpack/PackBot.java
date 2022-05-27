@@ -47,6 +47,7 @@ import mandarin.packpack.supporter.server.ScamLinkHandler;
 import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.data.BoosterData;
 import mandarin.packpack.supporter.server.data.BoosterHolder;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.FormReactionMessageHolder;
 import mandarin.packpack.supporter.server.holder.Holder;
@@ -798,12 +799,22 @@ public class PackBot {
                                 lang = LangID.EN;
                             }
 
-                            if(StaticStore.locales.containsKey(m.getId().asString())) {
-                                lang = StaticStore.locales.get(m.getId().asString());
+                            if(StaticStore.config.containsKey(m.getId().asString())) {
+                                lang = StaticStore.config.get(m.getId().asString()).lang;
                             }
 
                             if(idh == null)
                                 idh = StaticStore.idHolder.get(StaticStore.BCU_SERVER);
+
+                            if(lang == -1)
+                                lang = idh.serverLocale;
+
+                            ConfigHolder c;
+
+                            if(StaticStore.config.containsKey(m.getId().asString()))
+                                c = StaticStore.config.get(m.getId().asString());
+                            else
+                                c = new ConfigHolder();
 
                             switch (StaticStore.getCommand(msg.getContent(), prefix)) {
                                 case "checkbcu":
@@ -841,7 +852,7 @@ public class PackBot {
                                     break;
                                 case "formstat":
                                 case "fs":
-                                    new FormStat(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
+                                    new FormStat(ConstraintCommand.ROLE.MEMBER, lang, idh, c).execute(event);
                                     break;
                                 case "locale":
                                 case "loc":
@@ -853,7 +864,7 @@ public class PackBot {
                                     break;
                                 case "enemystat":
                                 case "es":
-                                    new EnemyStat(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
+                                    new EnemyStat(ConstraintCommand.ROLE.MEMBER, lang, idh, c).execute(event);
                                     break;
                                 case "castle":
                                 case "cs":
@@ -861,7 +872,7 @@ public class PackBot {
                                     break;
                                 case "stageinfo":
                                 case "si":
-                                    new StageInfo(ConstraintCommand.ROLE.MEMBER, lang, idh, 5000).execute(event);
+                                    new StageInfo(ConstraintCommand.ROLE.MEMBER, lang, idh, c,5000).execute(event);
                                     break;
                                 case "memory":
                                 case "mm":
@@ -947,7 +958,7 @@ public class PackBot {
                                 case "findst":
                                 case "fstage":
                                 case "fst":
-                                    new FindStage(ConstraintCommand.ROLE.MEMBER, lang, idh, 5000).execute(event);
+                                    new FindStage(ConstraintCommand.ROLE.MEMBER, lang, idh, c, 5000).execute(event);
                                     break;
                                 case "suggest":
                                     new Suggest(ConstraintCommand.ROLE.MEMBER, lang, idh, TimeUnit.MINUTES.toMillis(60), gate).execute(event);
@@ -1125,6 +1136,9 @@ public class PackBot {
                                     break;
                                 case "optout":
                                     new OptOut(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
+                                    break;
+                                case "config":
+                                    new Config(ConstraintCommand.ROLE.MEMBER, lang, idh, c).execute(event);
                                     break;
                             }
                         }
