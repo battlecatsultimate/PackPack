@@ -39,7 +39,7 @@ public class FormStatMessageHolder extends MessageHolder<MessageCreateEvent> {
 
         this.talent = (param & 2) > 0;
         this.isFrame = (param & 4) == 0 && config.useFrame;
-        this.extra = (param & 8) == 0 || config.extra;
+        this.extra = (param & 8) > 0 || config.extra;
         this.lv = lv;
         this.lang = lang;
 
