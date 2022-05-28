@@ -263,6 +263,8 @@
   "data_waittime" : "You have to wait _NNN_ _TTT_ to play each stage in this map",
   "data_hiddenclear" : "This map will be hidden when you fully clear all stages",
   "data_exstage" : "EX Stage (Chance|Map - Stage)",
+  "data_immune" : "Immune to ",
+  "data_comma" : ", ",
   "event_stage" : "**Stage/Event**",
   "event_gacha" : "**Gacha**",
   "event_mission" : "**Mission**",

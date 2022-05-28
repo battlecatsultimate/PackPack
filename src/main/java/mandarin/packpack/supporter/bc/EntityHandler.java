@@ -154,10 +154,12 @@ public class EntityHandler {
 
             spec.setColor(c);
             spec.setThumbnail("attachment://icon.png");
-            spec.addField(LangID.getStringByID("data_id", lang), DataToString.getID(f.uid.id, f.fid), false);
+            spec.addField(LangID.getStringByID("data_id", lang), DataToString.getID(f.uid.id, f.fid), true);
+            spec.addField(LangID.getStringByID("data_level", lang), l, true);
             spec.addField(LangID.getStringByID("data_hp", lang), DataToString.getHP(f.du, f.unit.lv, talent, t), true);
             spec.addField(LangID.getStringByID("data_hb", lang), DataToString.getHitback(f.du, talent, t), true);
-            spec.addField(LangID.getStringByID("data_level", lang), l, true);
+            spec.addField(LangID.getStringByID("data_cooldown", lang), DataToString.getCD(f.du,isFrame, talent, t), true);
+            spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(f.du, talent, t), true);
             spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(f.du, f.unit.lv, talent, t), false);
             spec.addField(LangID.getStringByID("data_dps", lang), DataToString.getDPS(f.du, f.unit.lv, talent, t), true);
             spec.addField(LangID.getStringByID("data_atktime", lang), DataToString.getAtkTime(f.du, isFrame), true);
@@ -169,8 +171,6 @@ public class EntityHandler {
             spec.addField(LangID.getStringByID("data_atktype", lang), DataToString.getSiMu(f.du, lang), true);
             spec.addField(LangID.getStringByID("data_cost", lang), DataToString.getCost(f.du, talent, t), true);
             spec.addField(LangID.getStringByID("data_range", lang), DataToString.getRange(f.du), true);
-            spec.addField(LangID.getStringByID("data_cooldown", lang), DataToString.getCD(f.du,isFrame, talent, t), true);
-            spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(f.du, talent, t), true);
 
             MaskUnit du;
 
@@ -182,8 +182,10 @@ public class EntityHandler {
             else
                 du = f.du;
 
-            ArrayList<String> abis = Interpret.getAbi(du, lang);
+            List<String> abis = Interpret.getAbi(du, lang);
             abis.addAll(Interpret.getProc(du, !isFrame, lang, 1.0, 1.0));
+
+            abis = mergeImmune(abis, lang);
 
             StringBuilder sb = new StringBuilder();
 
@@ -330,23 +332,23 @@ public class EntityHandler {
 
                 spec.color(c);
                 spec.thumbnail("attachment://icon.png");
-                spec.addField(LangID.getStringByID("data_id", lang), DataToString.getID(f.uid.id, f.fid), false);
+                spec.addField(LangID.getStringByID("data_id", lang), DataToString.getID(f.uid.id, f.fid), true);
+                spec.addField(LangID.getStringByID("data_level", lang), l, true);
                 spec.addField(LangID.getStringByID("data_hp", lang), DataToString.getHP(f.du, f.unit.lv, talent, t), true);
                 spec.addField(LangID.getStringByID("data_hb", lang), DataToString.getHitback(f.du, talent, t), true);
-                spec.addField(LangID.getStringByID("data_level", lang), l, true);
-                spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(f.du, f.unit.lv, talent, t), false);
+                spec.addField(LangID.getStringByID("data_cooldown", lang), DataToString.getCD(f.du,isFrame, talent, t), true);
+                spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(f.du, talent, t), true);
                 spec.addField(LangID.getStringByID("data_dps", lang), DataToString.getDPS(f.du, f.unit.lv, talent, t), true);
                 spec.addField(LangID.getStringByID("data_atktime", lang), DataToString.getAtkTime(f.du, isFrame), true);
                 spec.addField(LangID.getStringByID("data_abilt", lang), DataToString.getAbilT(f.du, lang), true);
                 spec.addField(LangID.getStringByID("data_preatk", lang), DataToString.getPre(f.du, isFrame), true);
                 spec.addField(LangID.getStringByID("data_postatk", lang), DataToString.getPost(f.du, isFrame), true);
                 spec.addField(LangID.getStringByID("data_tba", lang), DataToString.getTBA(f.du, isFrame), true);
-                spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(f.du, talent, t, lang), false);
                 spec.addField(LangID.getStringByID("data_atktype", lang), DataToString.getSiMu(f.du, lang), true);
                 spec.addField(LangID.getStringByID("data_cost", lang), DataToString.getCost(f.du, talent, t), true);
                 spec.addField(LangID.getStringByID("data_range", lang), DataToString.getRange(f.du), true);
-                spec.addField(LangID.getStringByID("data_cooldown", lang), DataToString.getCD(f.du,isFrame, talent, t), true);
-                spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(f.du, talent, t), true);
+                spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(f.du, f.unit.lv, talent, t), true);
+                spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(f.du, talent, t, lang), true);
 
                 MaskUnit du;
 
@@ -358,8 +360,10 @@ public class EntityHandler {
                 else
                     du = f.du;
 
-                ArrayList<String> abis = Interpret.getAbi(du, lang);
+                List<String> abis = Interpret.getAbi(du, lang);
                 abis.addAll(Interpret.getProc(du, !isFrame, lang, 1.0, 1.0));
+
+                abis = mergeImmune(abis, lang);
 
                 StringBuilder sb = new StringBuilder();
 
@@ -546,8 +550,10 @@ public class EntityHandler {
                 spec.addField(LangID.getStringByID("data_barrier", lang), DataToString.getBarrier(e.de, lang), true);
                 spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(e.de), true);
 
-                ArrayList<String> abis = Interpret.getAbi(e.de, lang);
+                List<String> abis = Interpret.getAbi(e.de, lang);
                 abis.addAll(Interpret.getProc(e.de, !isFrame, lang, mag[0] / 100.0, mag[1] / 100.0));
+
+                abis = mergeImmune(abis, lang);
 
                 StringBuilder sb = new StringBuilder();
 
@@ -653,8 +659,10 @@ public class EntityHandler {
             spec.addField(LangID.getStringByID("data_barrier", lang), DataToString.getBarrier(e.de, lang), true);
             spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(e.de), true);
 
-            ArrayList<String> abis = Interpret.getAbi(e.de, lang);
+            List<String> abis = Interpret.getAbi(e.de, lang);
             abis.addAll(Interpret.getProc(e.de, !isFrame, lang, mag[0] / 100.0, mag[1] / 100.0));
+
+            abis = mergeImmune(abis, lang);
 
             StringBuilder sb = new StringBuilder();
 
@@ -3124,5 +3132,56 @@ public class EntityHandler {
 
     private static Possible<Optional<String>> wrap(String content) {
         return Possible.of(Optional.of(content));
+    }
+
+    private static List<String> mergeImmune(List<String> abilities, int lang) {
+        List<String> result = new ArrayList<>();
+        List<String> immunes = new ArrayList<>();
+
+        for(int i = 0; i < abilities.size(); i++) {
+            switch (lang) {
+                case LangID.KR:
+                case LangID.JP:
+                    if(abilities.get(i).endsWith(LangID.getStringByID("data_immune", lang))) {
+                        immunes.add(abilities.get(i));
+                    } else {
+                        result.add(abilities.get(i));
+                    }
+                    break;
+                default:
+                    if(abilities.get(i).startsWith(LangID.getStringByID("data_immune", lang))) {
+                        immunes.add(abilities.get(i));
+                    } else {
+                        result.add(abilities.get(i));
+                    }
+            }
+        }
+
+        if(immunes.isEmpty())
+            return result;
+
+        StringBuilder sb = new StringBuilder();
+
+        for(int i = 0; i < immunes.size(); i++) {
+            String segment = immunes.get(i).replace(LangID.getStringByID("data_immune", lang), "");
+
+            sb.append(segment);
+
+            if(i < immunes.size() - 1)
+                sb.append(LangID.getStringByID("data_comma", lang));
+        }
+
+
+
+        switch (lang) {
+            case LangID.KR:
+            case LangID.JP:
+                result.add(sb + LangID.getStringByID("data_immune", lang));
+                break;
+            default:
+                result.add(LangID.getStringByID("data_immune", lang) + sb);
+        }
+
+        return result;
     }
 }
