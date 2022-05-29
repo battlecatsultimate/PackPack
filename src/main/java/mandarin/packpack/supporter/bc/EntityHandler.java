@@ -160,17 +160,17 @@ public class EntityHandler {
             spec.addField(LangID.getStringByID("data_hb", lang), DataToString.getHitback(f.du, talent, t), true);
             spec.addField(LangID.getStringByID("data_cooldown", lang), DataToString.getCD(f.du,isFrame, talent, t), true);
             spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(f.du, talent, t), true);
-            spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(f.du, f.unit.lv, talent, t), false);
-            spec.addField(LangID.getStringByID("data_dps", lang), DataToString.getDPS(f.du, f.unit.lv, talent, t), true);
+            spec.addField(LangID.getStringByID("data_cost", lang), DataToString.getCost(f.du, talent, t), true);
+            spec.addField(LangID.getStringByID("data_range", lang), DataToString.getRange(f.du), true);
             spec.addField(LangID.getStringByID("data_atktime", lang), DataToString.getAtkTime(f.du, isFrame), true);
-            spec.addField(LangID.getStringByID("data_abilt", lang), DataToString.getAbilT(f.du, lang), true);
             spec.addField(LangID.getStringByID("data_preatk", lang), DataToString.getPre(f.du, isFrame), true);
             spec.addField(LangID.getStringByID("data_postatk", lang), DataToString.getPost(f.du, isFrame), true);
             spec.addField(LangID.getStringByID("data_tba", lang), DataToString.getTBA(f.du, isFrame), true);
-            spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(f.du, talent, t, lang), false);
             spec.addField(LangID.getStringByID("data_atktype", lang), DataToString.getSiMu(f.du, lang), true);
-            spec.addField(LangID.getStringByID("data_cost", lang), DataToString.getCost(f.du, talent, t), true);
-            spec.addField(LangID.getStringByID("data_range", lang), DataToString.getRange(f.du), true);
+            spec.addField(LangID.getStringByID("data_dps", lang), DataToString.getDPS(f.du, f.unit.lv, talent, t), true);
+            spec.addField(LangID.getStringByID("data_abilt", lang), DataToString.getAbilT(f.du, lang), true);
+            spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(f.du, f.unit.lv, talent, t), true);
+            spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(f.du, talent, t, lang), true);
 
             MaskUnit du;
 
@@ -338,15 +338,15 @@ public class EntityHandler {
                 spec.addField(LangID.getStringByID("data_hb", lang), DataToString.getHitback(f.du, talent, t), true);
                 spec.addField(LangID.getStringByID("data_cooldown", lang), DataToString.getCD(f.du,isFrame, talent, t), true);
                 spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(f.du, talent, t), true);
-                spec.addField(LangID.getStringByID("data_dps", lang), DataToString.getDPS(f.du, f.unit.lv, talent, t), true);
+                spec.addField(LangID.getStringByID("data_cost", lang), DataToString.getCost(f.du, talent, t), true);
+                spec.addField(LangID.getStringByID("data_range", lang), DataToString.getRange(f.du), true);
                 spec.addField(LangID.getStringByID("data_atktime", lang), DataToString.getAtkTime(f.du, isFrame), true);
-                spec.addField(LangID.getStringByID("data_abilt", lang), DataToString.getAbilT(f.du, lang), true);
                 spec.addField(LangID.getStringByID("data_preatk", lang), DataToString.getPre(f.du, isFrame), true);
                 spec.addField(LangID.getStringByID("data_postatk", lang), DataToString.getPost(f.du, isFrame), true);
                 spec.addField(LangID.getStringByID("data_tba", lang), DataToString.getTBA(f.du, isFrame), true);
                 spec.addField(LangID.getStringByID("data_atktype", lang), DataToString.getSiMu(f.du, lang), true);
-                spec.addField(LangID.getStringByID("data_cost", lang), DataToString.getCost(f.du, talent, t), true);
-                spec.addField(LangID.getStringByID("data_range", lang), DataToString.getRange(f.du), true);
+                spec.addField(LangID.getStringByID("data_dps", lang), DataToString.getDPS(f.du, f.unit.lv, talent, t), true);
+                spec.addField(LangID.getStringByID("data_abilt", lang), DataToString.getAbilT(f.du, lang), true);
                 spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(f.du, f.unit.lv, talent, t), true);
                 spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(f.du, talent, t, lang), true);
 
@@ -532,23 +532,23 @@ public class EntityHandler {
                 spec.title(DataToString.getTitle(e, lang));
                 spec.color(c);
                 spec.thumbnail("attachment://icon.png");
-                spec.addField(LangID.getStringByID("data_id", lang), DataToString.getID(e.id.id), false);
+                spec.addField(LangID.getStringByID("data_id", lang), DataToString.getID(e.id.id), true);
+                spec.addField(LangID.getStringByID("data_magnif", lang), DataToString.getMagnification(mag, 100), true);
                 spec.addField(LangID.getStringByID("data_hp", lang), DataToString.getHP(e.de, mag[0]), true);
                 spec.addField(LangID.getStringByID("data_hb", lang), DataToString.getHitback(e.de), true);
-                spec.addField(LangID.getStringByID("data_magnif", lang), DataToString.getMagnification(mag, 100), true);
-                spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(e.de, mag[1]), false);
-                spec.addField(LangID.getStringByID("data_dps", lang), DataToString.getDPS(e.de, mag[1]), true);
+                spec.addField(LangID.getStringByID("data_barrier", lang), DataToString.getBarrier(e.de, lang), true);
+                spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(e.de), true);
                 spec.addField(LangID.getStringByID("data_atktime", lang), DataToString.getAtkTime(e.de, isFrame), true);
-                spec.addField(LangID.getStringByID("data_abilt", lang), DataToString.getAbilT(e.de, lang), true);
                 spec.addField(LangID.getStringByID("data_preatk", lang), DataToString.getPre(e.de, isFrame), true);
                 spec.addField(LangID.getStringByID("data_postatk", lang), DataToString.getPost(e.de, isFrame), true);
                 spec.addField(LangID.getStringByID("data_tba", lang), DataToString.getTBA(e.de, isFrame), true);
-                spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(e.de, lang), false);
-                spec.addField(LangID.getStringByID("data_atktype", lang), DataToString.getSiMu(e.de, lang), true);
                 spec.addField(LangID.getStringByID("data_drop", lang), DataToString.getDrop(e.de), true);
                 spec.addField(LangID.getStringByID("data_range", lang), DataToString.getRange(e.de), true);
-                spec.addField(LangID.getStringByID("data_barrier", lang), DataToString.getBarrier(e.de, lang), true);
-                spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(e.de), true);
+                spec.addField(LangID.getStringByID("data_atktype", lang), DataToString.getSiMu(e.de, lang), true);
+                spec.addField(LangID.getStringByID("data_dps", lang), DataToString.getDPS(e.de, mag[1]), true);
+                spec.addField(LangID.getStringByID("data_abilt", lang), DataToString.getAbilT(e.de, lang), true);
+                spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(e.de, mag[1]), true);
+                spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(e.de, lang), true);
 
                 List<String> abis = Interpret.getAbi(e.de, lang);
                 abis.addAll(Interpret.getProc(e.de, !isFrame, lang, mag[0] / 100.0, mag[1] / 100.0));
@@ -641,23 +641,23 @@ public class EntityHandler {
             spec.setTitle(DataToString.getTitle(e, lang));
             spec.setColor(c);
             spec.setThumbnail("attachment://icon.png");
-            spec.addField(LangID.getStringByID("data_id", lang), DataToString.getID(e.id.id), false);
+            spec.addField(LangID.getStringByID("data_id", lang), DataToString.getID(e.id.id), true);
+            spec.addField(LangID.getStringByID("data_magnif", lang), DataToString.getMagnification(mag, 100), true);
             spec.addField(LangID.getStringByID("data_hp", lang), DataToString.getHP(e.de, mag[0]), true);
             spec.addField(LangID.getStringByID("data_hb", lang), DataToString.getHitback(e.de), true);
-            spec.addField(LangID.getStringByID("data_magnif", lang), DataToString.getMagnification(mag, 100), true);
-            spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(e.de, mag[1]), false);
-            spec.addField(LangID.getStringByID("data_dps", lang), DataToString.getDPS(e.de, mag[1]), true);
+            spec.addField(LangID.getStringByID("data_barrier", lang), DataToString.getBarrier(e.de, lang), true);
+            spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(e.de), true);
             spec.addField(LangID.getStringByID("data_atktime", lang), DataToString.getAtkTime(e.de, isFrame), true);
-            spec.addField(LangID.getStringByID("data_abilt", lang), DataToString.getAbilT(e.de, lang), true);
             spec.addField(LangID.getStringByID("data_preatk", lang), DataToString.getPre(e.de, isFrame), true);
             spec.addField(LangID.getStringByID("data_postatk", lang), DataToString.getPost(e.de, isFrame), true);
             spec.addField(LangID.getStringByID("data_tba", lang), DataToString.getTBA(e.de, isFrame), true);
-            spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(e.de, lang), false);
-            spec.addField(LangID.getStringByID("data_atktype", lang), DataToString.getSiMu(e.de, lang), true);
             spec.addField(LangID.getStringByID("data_drop", lang), DataToString.getDrop(e.de), true);
             spec.addField(LangID.getStringByID("data_range", lang), DataToString.getRange(e.de), true);
-            spec.addField(LangID.getStringByID("data_barrier", lang), DataToString.getBarrier(e.de, lang), true);
-            spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(e.de), true);
+            spec.addField(LangID.getStringByID("data_atktype", lang), DataToString.getSiMu(e.de, lang), true);
+            spec.addField(LangID.getStringByID("data_dps", lang), DataToString.getDPS(e.de, mag[1]), true);
+            spec.addField(LangID.getStringByID("data_abilt", lang), DataToString.getAbilT(e.de, lang), true);
+            spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(e.de, mag[1]), true);
+            spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(e.de, lang), true);
 
             List<String> abis = Interpret.getAbi(e.de, lang);
             abis.addAll(Interpret.getProc(e.de, !isFrame, lang, mag[0] / 100.0, mag[1] / 100.0));
@@ -935,7 +935,8 @@ public class EntityHandler {
                     name += stName;
 
                     spec.title(name);
-                    spec.addField(LangID.getStringByID("data_id", lang), DataToString.getStageCode(st), false);
+                    spec.addField(LangID.getStringByID("data_id", lang), DataToString.getStageCode(st), true);
+                    spec.addField(LangID.getStringByID("data_level", lang), DataToString.getStar(st, sta), true);
 
                     String energy = DataToString.getEnergy(st, lang);
 
@@ -945,17 +946,16 @@ public class EntityHandler {
                         spec.addField(LangID.getStringByID("data_energy", lang), energy, true);
                     }
 
-                    spec.addField(LangID.getStringByID("data_level", lang), DataToString.getStar(st, sta), true);
                     spec.addField(LangID.getStringByID("data_base", lang), DataToString.getBaseHealth(st), true);
                     spec.addField(LangID.getStringByID("data_xp", lang), DataToString.getXP(st), true);
                     spec.addField(LangID.getStringByID("data_diff", lang), DataToString.getDifficulty(st, lang), true);
                     spec.addField(LangID.getStringByID("data_continuable", lang), DataToString.getContinuable(st, lang), true);
-                    spec.addField(LangID.getStringByID("data_length", lang), DataToString.getLength(st), true);
                     spec.addField(LangID.getStringByID("data_music", lang), DataToString.getMusic(st, lang), true);
                     spec.addField(DataToString.getMusicChange(st), DataToString.getMusic1(st, lang) , true);
                     spec.addField(LangID.getStringByID("data_maxenem", lang), DataToString.getMaxEnemy(st), true);
                     spec.addField(LangID.getStringByID("data_bg", lang), DataToString.getBackground(st, lang),true);
                     spec.addField(LangID.getStringByID("data_castle", lang), DataToString.getCastle(st, lang), true);
+                    spec.addField(LangID.getStringByID("data_length", lang), DataToString.getLength(st), true);
                     spec.addField(LangID.getStringByID("data_minspawn", lang), DataToString.getMinSpawn(st, isFrame), true);
 
                     ArrayList<String> limit = DataToString.getLimit(st.getLim(sta), lang);
@@ -1140,7 +1140,8 @@ public class EntityHandler {
                 name += stName;
 
                 spec.setTitle(name);
-                spec.addField(LangID.getStringByID("data_id", lang), DataToString.getStageCode(st), false);
+                spec.addField(LangID.getStringByID("data_id", lang), DataToString.getStageCode(st), true);
+                spec.addField(LangID.getStringByID("data_level", lang), DataToString.getStar(st, sta), true);
 
                 String energy = DataToString.getEnergy(st, lang);
 
@@ -1150,19 +1151,16 @@ public class EntityHandler {
                     spec.addField(LangID.getStringByID("data_energy", lang), energy, true);
                 }
 
-                spec.addField(LangID.getStringByID("data_level", lang), DataToString.getStar(st, sta), true);
                 spec.addField(LangID.getStringByID("data_base", lang), DataToString.getBaseHealth(st), true);
                 spec.addField(LangID.getStringByID("data_xp", lang), DataToString.getXP(st), true);
                 spec.addField(LangID.getStringByID("data_diff", lang), DataToString.getDifficulty(st, lang), true);
                 spec.addField(LangID.getStringByID("data_continuable", lang), DataToString.getContinuable(st, lang), true);
-                spec.addField(LangID.getStringByID("data_length", lang), DataToString.getLength(st), true);
                 spec.addField(LangID.getStringByID("data_music", lang), DataToString.getMusic(st, lang), true);
                 spec.addField(DataToString.getMusicChange(st), DataToString.getMusic1(st, lang) , true);
                 spec.addField(LangID.getStringByID("data_maxenem", lang), DataToString.getMaxEnemy(st), true);
-                spec.addField(LangID.getStringByID("data_loop0", lang), DataToString.getLoop0(st), true);
-                spec.addField(LangID.getStringByID("data_loop1", lang), DataToString.getLoop1(st) ,true);
                 spec.addField(LangID.getStringByID("data_bg", lang), DataToString.getBackground(st, lang),true);
                 spec.addField(LangID.getStringByID("data_castle", lang), DataToString.getCastle(st, lang), true);
+                spec.addField(LangID.getStringByID("data_length", lang), DataToString.getLength(st), true);
                 spec.addField(LangID.getStringByID("data_minspawn", lang), DataToString.getMinSpawn(st, isFrame), true);
 
                 ArrayList<String> limit = DataToString.getLimit(st.getLim(sta), lang);
