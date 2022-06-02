@@ -54,6 +54,20 @@ public class EnemyStat extends ConstraintCommand {
 
             if(StaticStore.config.containsKey(m.user().id().asString())) {
                 lang =  StaticStore.config.get(m.user().id().asString()).lang;
+
+                if(lang == -1) {
+                    if(interaction.guildId().isAbsent()) {
+                        lang = LangID.EN;
+                    } else {
+                        IDHolder idh = StaticStore.idHolder.get(interaction.guildId().get());
+
+                        if(idh == null) {
+                            lang = LangID.EN;
+                        } else {
+                            lang = idh.serverLocale;
+                        }
+                    }
+                }
             }
         }
 
