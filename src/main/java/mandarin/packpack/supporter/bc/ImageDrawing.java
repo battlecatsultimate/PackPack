@@ -194,8 +194,8 @@ public class ImageDrawing {
             BackgroundEffect effect = CommonStatic.getBCAssets().bgEffects.get(bg.effect);
 
             int len = (int) ((w / ratio - 400) / CommonStatic.BattleConst.ratio);
-            int bgHeight = (int) (h / bgAnimRatio);
-            int midH = (int) (h * groundRatio / bgAnimRatio);
+            int bgHeight = (int) (h / ratio);
+            int midH = (int) (h * groundRatio / ratio);
 
             effect.initialize(len, bgHeight, midH, bg);
 
@@ -203,7 +203,7 @@ public class ImageDrawing {
                 effect.update(len, bgHeight, midH);
             }
 
-            P base = P.newP((int) (h * 0.0025), (int) (BackgroundEffect.BGHeight * 3 * bgAnimRatio - h * 0.905));
+            P base = P.newP((int) (h * 0.0025), (int) (BackgroundEffect.BGHeight * 3 * ratio - h * 0.905));
 
             effect.preDraw(g, base, ratio, midH);
             effect.postDraw(g, base, ratio, midH);
