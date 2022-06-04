@@ -1140,6 +1140,10 @@ public class PackBot {
                                 case "config":
                                     new Config(ConstraintCommand.ROLE.MEMBER, lang, idh, c).execute(event);
                                     break;
+                                case "removecache":
+                                case "rc":
+                                    new RemoveCache(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+                                    break;
                             }
                         }
                     }, () -> {

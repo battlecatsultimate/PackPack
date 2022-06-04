@@ -92,6 +92,18 @@ public class ImgurDataHolder {
         return null;
     }
 
+    public boolean removeCache(String code) {
+        for(String k : data.keySet()) {
+            if(k.equals(code)) {
+                data.remove(k);
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public void clear() {
         Set<String> keys = data.keySet();
 
