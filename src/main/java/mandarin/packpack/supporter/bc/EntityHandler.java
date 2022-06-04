@@ -15,6 +15,7 @@ import common.util.stage.MapColc;
 import common.util.stage.SCDef;
 import common.util.stage.Stage;
 import common.util.stage.StageMap;
+import common.util.stage.info.DefStageInfo;
 import common.util.unit.*;
 import discord4j.common.util.Snowflake;
 import discord4j.core.GatewayDiscordClient;
@@ -891,10 +892,10 @@ public class EntityHandler {
             m.addEmbed(Command.createEmbed(spec -> {
                 try {
 
-                    if(st.info == null || st.info.diff == -1)
+                    if(!(st.info instanceof DefStageInfo) || ((DefStageInfo) st.info).diff == -1)
                         spec.color(Color.of(217, 217, 217));
                     else
-                        spec.color(DataToString.getDifficultyColor(st.info.diff));
+                        spec.color(DataToString.getDifficultyColor(((DefStageInfo) st.info).diff));
 
                     String name = "";
 
@@ -1096,10 +1097,10 @@ public class EntityHandler {
         builder.addEmbed(spec -> {
             try {
 
-                if(st.info == null || st.info.diff == -1)
+                if(!(st.info instanceof DefStageInfo) || ((DefStageInfo) st.info).diff == -1)
                     spec.setColor(Color.of(217, 217, 217));
                 else
-                    spec.setColor(DataToString.getDifficultyColor(st.info.diff));
+                    spec.setColor(DataToString.getDifficultyColor(((DefStageInfo) st.info).diff));
 
                 String name = "";
 

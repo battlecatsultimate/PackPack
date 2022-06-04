@@ -10,6 +10,7 @@ import common.system.files.VFile;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.stage.*;
+import common.util.stage.info.DefStageInfo;
 import common.util.unit.*;
 import discord4j.rest.util.Color;
 import mandarin.packpack.supporter.StaticStore;
@@ -948,29 +949,31 @@ public class DataToString {
     }
 
     public static String getEnergy(Stage st, int lang) {
-        if(st.info == null)
+        if(!(st.info instanceof DefStageInfo))
             return LangID.getStringByID("data_none", lang);
+
+        DefStageInfo info = (DefStageInfo) st.info;
 
         StageMap stm = st.getCont();
 
         if(stm == null)
-            return st.info.energy+"";
+            return info.energy+"";
 
         MapColc mc = stm.getCont();
 
         if(mc == null)
-            return st.info.energy+"";
+            return info.energy+"";
 
         if(mc.getSID().equals("000014")) {
-            if(st.info.energy < 1000) {
-                return LangID.getStringByID("data_catamina", lang).replace("_", st.info.energy+"")+"!!drink!!";
-            } else if(st.info.energy < 2000) {
-                return LangID.getStringByID("data_cataminb", lang).replace("_", (st.info.energy-1000)+"")+"!!drink!!";
+            if(info.energy < 1000) {
+                return LangID.getStringByID("data_catamina", lang).replace("_", info.energy+"")+"!!drink!!";
+            } else if(info.energy < 2000) {
+                return LangID.getStringByID("data_cataminb", lang).replace("_", (info.energy-1000)+"")+"!!drink!!";
             } else {
-                return LangID.getStringByID("data_cataminc", lang).replace("_", (st.info.energy-2000)+"")+"!!drink!!";
+                return LangID.getStringByID("data_cataminc", lang).replace("_", (info.energy-2000)+"")+"!!drink!!";
             }
         } else {
-            return st.info.energy+"";
+            return info.energy+"";
         }
     }
 
@@ -979,24 +982,26 @@ public class DataToString {
     }
 
     public static String getXP(Stage st) {
-        if(st.info == null)
+        if(!(st.info instanceof DefStageInfo))
             return "" + 0;
+
+        DefStageInfo info = (DefStageInfo) st.info;
 
         Treasure t = BasisSet.current().t();
 
         MapColc mc = st.getCont().getCont();
 
         if(mc.getSID().equals("000000") || mc.getSID().equals("000013"))
-            return "" + (int) (st.info.xp * t.getXPMult() * 9);
+            return "" + (int) (info.xp * t.getXPMult() * 9);
         else
-            return "" + (int) (st.info.xp * t.getXPMult());
+            return "" + (int) (info.xp * t.getXPMult());
     }
 
     public static String getDifficulty(Stage st, int lang) {
-        if(st.info == null || st.info.diff == -1)
+        if(!(st.info instanceof DefStageInfo) || ((DefStageInfo) st.info).diff == -1)
             return LangID.getStringByID("data_none", lang);
         else
-            return "★"+st.info.diff;
+            return "★"+((DefStageInfo) st.info).diff;
     }
 
     public static String getContinuable(Stage st, int lang) {
@@ -1032,53 +1037,6 @@ public class DataToString {
             return LangID.getStringByID("data_none", lang);
         } else {
             return getPackName(st.getCont().getCont().getSID(), lang)+" - "+Data.trio(st.mus1.id);
-        }
-    }
-
-    private static String convertTime(long t) {
-        long min = t / 1000 / 60;
-        double time = ((double) t - min * 60.0 * 1000.0) / 1000.0;
-
-        DecimalFormat d = (DecimalFormat) NumberFormat.getInstance(Locale.US);
-        d.applyPattern("#.###");
-
-        time = Double.parseDouble(d.format(time));
-
-        if(time >= 60) {
-            time -= 60.0;
-            min += 1;
-        }
-
-        if(time < 10) {
-            return min+":0"+d.format(time);
-        } else {
-            return min+":"+d.format(time);
-        }
-    }
-
-    public static String getLoop0(Stage st) {
-        if(st.mus0 == null)
-            return convertTime(0);
-
-        Music ms = st.mus0.get();
-
-        if(ms != null) {
-            return convertTime(ms.loop);
-        } else {
-            return convertTime(0);
-        }
-    }
-
-    public static String getLoop1(Stage st) {
-        if(st.mus1 == null)
-            return convertTime(0);
-
-        Music ms = st.mus1.get();
-
-        if(ms != null) {
-            return convertTime(ms.loop);
-        } else {
-            return convertTime(0);
         }
     }
 
@@ -1347,8 +1305,10 @@ public class DataToString {
     }
 
     public static String getRewards(Stage s, int lang) {
-        if(s == null || s.info == null || s.info.drop == null || s.info.drop.length == 0)
+        if(s == null || !(s.info instanceof DefStageInfo) || ((DefStageInfo) s.info).drop == null || ((DefStageInfo) s.info).drop.length == 0)
             return null;
+
+        DefStageInfo info = (DefStageInfo) s.info;
 
         ArrayList<String> chances = getDropData(s);
 
@@ -1357,7 +1317,7 @@ public class DataToString {
 
         StringBuilder builder = new StringBuilder();
 
-        for(int i = 0; i < s.info.drop.length; i++) {
+        for(int i = 0; i < info.drop.length; i++) {
             if(!chances.isEmpty() && i < chances.size() && Double.parseDouble(chances.get(i)) == 0.0)
                 continue;
 
@@ -1371,30 +1331,30 @@ public class DataToString {
             int oldConfig = CommonStatic.getConfig().lang;
             CommonStatic.getConfig().lang = lang;
 
-            String reward = MultiLangCont.getStatic().RWNAME.getCont(s.info.drop[i][1]);
+            String reward = MultiLangCont.getStatic().RWNAME.getCont(info.drop[i][1]);
 
             CommonStatic.getConfig().lang = oldConfig;
 
             if(reward == null || reward.isBlank())
-                reward = LangID.getStringByID("data_dumreward", lang).replace("_", Data.trio(s.info.drop[i][1]));
+                reward = LangID.getStringByID("data_dumreward", lang).replace("_", Data.trio(info.drop[i][1]));
 
             builder.append(chance).append("  |  ").append(reward);
 
-            if(i == 0 && (s.info.rand == 1 || (s.info.drop[i][1] >= 1000 && s.info.drop[i][1] < 30000)))
+            if(i == 0 && (info.rand == 1 || (info.drop[i][1] >= 1000 && info.drop[i][1] < 30000)))
                 builder.append(LangID.getStringByID("data_once", lang));
 
-            if(i == 0 && s.info.drop[i][0] != 100 && s.info.rand != -4)
+            if(i == 0 && info.drop[i][0] != 100 && info.rand != -4)
                 builder.append(" <:treasureRadar:810007545355173889>");
 
-            builder.append("  |  ").append(s.info.drop[i][2]);
+            builder.append("  |  ").append(info.drop[i][2]);
 
-            if(i != s.info.drop.length - 1)
+            if(i != info.drop.length - 1)
                 builder.append("\n");
         }
 
         if(chances.isEmpty())
             builder.append("!!number!!");
-        else if(s.info.rand == -4)
+        else if(info.rand == -4)
             builder.append("!!nofail!!");
 
         return builder.toString();
@@ -1403,7 +1363,12 @@ public class DataToString {
     private static ArrayList<String> getDropData(Stage s) {
         ArrayList<String> res = new ArrayList<>();
 
-        int[][] data = s.info.drop;
+        if(!(s.info instanceof DefStageInfo))
+            return res;
+
+        DefStageInfo info = (DefStageInfo) s.info;
+
+        int[][] data = info.drop;
 
         int sum = 0;
 
@@ -1418,13 +1383,13 @@ public class DataToString {
             for(int[] d : data) {
                 res.add(df.format(d[0]/10.0));
             }
-        } else if((sum == data.length && sum != 1) || s.info.rand == -3) {
+        } else if((sum == data.length && sum != 1) || info.rand == -3) {
             return res;
         } else if(sum == 100) {
             for(int[] d : data) {
                 res.add(String.valueOf(d[0]));
             }
-        } else if(sum > 100 && (s.info.rand == 0 || s.info.rand == 1)) {
+        } else if(sum > 100 && (info.rand == 0 || info.rand == 1)) {
             double rest = 100.0;
 
             if(data[0][0] == 100) {
@@ -1446,7 +1411,7 @@ public class DataToString {
                     res.add(df.format(filter));
                 }
             }
-        } else if(s.info.rand == -4) {
+        } else if(info.rand == -4) {
             int total = 0;
 
             for(int[] d : data) {
@@ -1469,14 +1434,16 @@ public class DataToString {
     }
 
     public static String getScoreDrops(Stage st, int lang) {
-        if(st == null || st.info == null || st.info.time == null || st.info.time.length == 0)
+        if(st == null || !(st.info instanceof DefStageInfo) || ((DefStageInfo) st.info).time == null || ((DefStageInfo) st.info).time.length == 0)
             return null;
+
+        DefStageInfo info = (DefStageInfo) st.info;
 
         StringBuilder builder = new StringBuilder();
 
-        int[][] data = st.info.time;
+        int[][] data = info.time;
 
-        for(int i = 0; i < st.info.time.length; i++) {
+        for(int i = 0; i < info.time.length; i++) {
             String reward = MultiLangCont.getStatic().RWNAME.getCont(data[i][1]);
 
             if(reward == null || reward.isBlank())
@@ -1484,7 +1451,7 @@ public class DataToString {
 
             builder.append(data[i][0]).append("  |  ").append(reward).append("  |  ").append(data[i][2]);
 
-            if(i != st.info.time.length - 1)
+            if(i != info.time.length - 1)
                 builder.append("\n");
         }
 
@@ -1747,35 +1714,37 @@ public class DataToString {
     }
 
     public static String getEXStage(Stage st, int lang) {
-        if(st.info == null || (!st.info.exConnection && st.info.exStages == null)) {
+        if(!(st.info instanceof DefStageInfo) || (!((DefStageInfo) st.info).exConnection && ((DefStageInfo) st.info).exStages == null)) {
             return LangID.getStringByID("data_none", lang);
         }
 
+        DefStageInfo info = (DefStageInfo) st.info;
+
         StringBuilder sb = new StringBuilder();
 
-        if(st.info.exConnection) {
-            StageMap sm = MapColc.DefMapColc.getMap(4000 + st.info.exMapID);
+        if(info.exConnection) {
+            StageMap sm = MapColc.DefMapColc.getMap(4000 + info.exMapID);
 
             if(sm == null)
                 return LangID.getStringByID("data_none", lang);
 
-            int n = st.info.exStageIDMax - st.info.exStageIDMin + 1;
+            int n = info.exStageIDMax - info.exStageIDMin + 1;
 
-            for(int i = st.info.exStageIDMin; i <= st.info.exStageIDMax; i++) {
+            for(int i = info.exStageIDMin; i <= info.exStageIDMax; i++) {
                 Stage s = sm.list.get(i);
 
                 if(s != null) {
-                    sb.append(df.format(st.info.exChance * 1.0 / n)).append("% | ").append(getMapStageName(s, lang));
+                    sb.append(df.format(info.exChance * 1.0 / n)).append("% | ").append(getMapStageName(s, lang));
 
-                    if(i < st.info.exStageIDMax)
+                    if(i < info.exStageIDMax)
                         sb.append("\n");
                 }
             }
         } else {
-            for(int i = 0; i < st.info.exStages.length; i++) {
-                sb.append(df.format(st.info.exChances[i])).append("% | ").append(getMapStageName(st.info.exStages[i], lang));
+            for(int i = 0; i < info.exStages.length; i++) {
+                sb.append(df.format(info.exChances[i])).append("% | ").append(getMapStageName(info.exStages[i], lang));
 
-                if(i < st.info.exStages.length - 1)
+                if(i < info.exStages.length - 1)
                     sb.append("\n");
             }
         }

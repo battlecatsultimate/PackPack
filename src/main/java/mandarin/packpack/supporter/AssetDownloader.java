@@ -13,6 +13,7 @@ import common.util.lang.MultiLangCont;
 import common.util.stage.MapColc;
 import common.util.stage.Stage;
 import common.util.stage.StageMap;
+import common.util.stage.info.DefStageInfo;
 import common.util.unit.Combo;
 import common.util.unit.Enemy;
 import common.util.unit.Unit;
@@ -507,8 +508,8 @@ public class AssetDownloader {
 
                     Stage st = stm.list.getList().get(id2);
 
-                    if(st.info != null) {
-                        st.info.diff = Integer.parseInt(num);
+                    if(st.info instanceof DefStageInfo) {
+                        ((DefStageInfo) st.info).diff = Integer.parseInt(num);
                     }
                 }
             }
