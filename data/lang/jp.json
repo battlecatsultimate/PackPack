@@ -30,6 +30,8 @@
   "november" : "November",
   "december" : "December",
   "needroleperm" : "Bot noticed that it doesn't have permission to create role. To make bot work properly, you have to allow bot to create role, or it won't react to any users\n\nBot needs to add initial role called `PackPackMod` which makes it able to recognize moderators. Usually moderators will have permission to assign roles to themselves, so they need to assign this role. After assigning role, call `p!idset` to modify registered role data such as changing moderator role from `PackPackMod` to your server's real moderator role, and making other normal members able to use commands as well\n\nThis message is from server named **_**, and automatically sent from bot",
+  "no_perm" : "This message is from server : **_SSS_**\n\nBot noticed that it couldn't send message in the channel where you used the command. Please contact owner or the moderators of this server to adjust bot's permission, or if you are one of them, adjust permission of this bot, so it can send messages",
+  "no_permch" : "This message is from server : **_SSS_**\n\nBot noticed that it couldn't send message in the channel called **#_CCC_**. Please contact the owner or the moderators of this server to adjust bot's permission, or if you are one of them, adjust permission of this bot, so it can send messages",
   "data_id" : "ID",
   "data_hp" : "体力",
   "data_hb" : "KB",

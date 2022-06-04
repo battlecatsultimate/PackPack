@@ -1,5 +1,6 @@
 package mandarin.packpack.commands;
 
+import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.component.ActionComponent;
 import discord4j.core.object.component.ActionRow;
@@ -7,13 +8,19 @@ import discord4j.core.object.component.Button;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.Role;
+import discord4j.core.object.entity.channel.GuildChannel;
 import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.core.object.entity.channel.TextChannel;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.core.spec.GuildEmojiCreateSpec;
 import discord4j.core.spec.MessageCreateSpec;
 import discord4j.core.spec.MessageEditSpec;
+import discord4j.discordjson.json.UserData;
 import discord4j.discordjson.possible.Possible;
 import discord4j.rest.util.AllowedMentions;
+import discord4j.rest.util.Permission;
+import discord4j.rest.util.PermissionSet;
 import mandarin.packpack.supporter.Pauser;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -25,6 +32,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
@@ -139,8 +147,9 @@ public abstract class Command {
 
     public void execute(MessageEvent event) {
         MessageChannel ch = getChannel(event);
+        Guild g = getGuild(event).block();
 
-        if(ch == null)
+        if(ch == null || g == null)
             return;
 
         AtomicReference<Boolean> prevented = new AtomicReference<>(false);
@@ -163,6 +172,40 @@ public abstract class Command {
             return;
 
         StaticStore.executed++;
+
+        AtomicBoolean canTry = new AtomicBoolean(true);
+
+        if(ch instanceof GuildChannel) {
+            GuildChannel tc = ((GuildChannel) ch);
+
+            Optional<PermissionSet> op = tc.getEffectivePermissions(Snowflake.of(StaticStore.PACKPACK)).blockOptional();
+
+            op.ifPresent(permissions -> canTry.set(permissions.contains(Permission.SEND_MESSAGES)));
+        }
+
+        if(!canTry.get()) {
+            getMember(event).ifPresent(m -> {
+                String serverName = g.getName();
+                String channelName;
+
+                if(ch instanceof GuildChannel)
+                    channelName = ((GuildChannel) ch).getName();
+                else
+                    channelName = null;
+
+                String content;
+
+                if(channelName == null) {
+                    content = LangID.getStringByID("no_perm", lang).replace("_SSS_", serverName);
+                } else {
+                    content = LangID.getStringByID("no_permch", lang).replace("_SSS_", serverName).replace("_CCC_", channelName);
+                }
+
+                m.getPrivateChannel().subscribe(pc -> pc.createMessage(MessageCreateSpec.builder().content(content).build()).subscribe(null, e -> {}));
+            });
+
+            return;
+        }
 
         try {
             new Thread(() -> {

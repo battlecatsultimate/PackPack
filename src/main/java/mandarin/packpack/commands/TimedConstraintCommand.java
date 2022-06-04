@@ -1,8 +1,13 @@
 package mandarin.packpack.commands;
 
+import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.object.entity.Guild;
+import discord4j.core.object.entity.channel.GuildChannel;
 import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.core.spec.MessageCreateSpec;
+import discord4j.rest.util.Permission;
+import discord4j.rest.util.PermissionSet;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.lang.LangID;
@@ -10,6 +15,8 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class TimedConstraintCommand extends Command {
@@ -46,8 +53,9 @@ public abstract class TimedConstraintCommand extends Command {
     @Override
     public void execute(MessageEvent event) {
         MessageChannel ch = getChannel(event);
+        Guild g = getGuild(event).block();
 
-        if(ch == null)
+        if(ch == null || g == null)
             return;
 
         AtomicReference<Boolean> canGo = new AtomicReference<>(true);
@@ -90,14 +98,45 @@ public abstract class TimedConstraintCommand extends Command {
         if(!canGo.get())
             return;
 
+        AtomicBoolean canTry = new AtomicBoolean(true);
+
+        if(ch instanceof GuildChannel) {
+            GuildChannel tc = ((GuildChannel) ch);
+
+            Optional<PermissionSet> op = tc.getEffectivePermissions(Snowflake.of(StaticStore.PACKPACK)).blockOptional();
+
+            op.ifPresent(permissions -> canTry.set(permissions.contains(Permission.SEND_MESSAGES)));
+        }
+
+        if(!canTry.get()) {
+            getMember(event).ifPresent(m -> {
+                String serverName = g.getName();
+                String channelName;
+
+                if(ch instanceof GuildChannel)
+                    channelName = ((GuildChannel) ch).getName();
+                else
+                    channelName = null;
+
+                String content;
+
+                if(channelName == null) {
+                    content = LangID.getStringByID("no_perm", lang).replace("_SSS_", serverName);
+                } else {
+                    content = LangID.getStringByID("no_permch", lang).replace("_SSS_", serverName).replace("_CCC_", channelName);
+                }
+
+                m.getPrivateChannel().subscribe(pc -> pc.createMessage(MessageCreateSpec.builder().content(content).build()).subscribe(null, e -> {}));
+            });
+
+            return;
+        }
+
         if(!hasRole.get()) {
             if(constRole != null && constRole.equals("MANDARIN")) {
                 ch.createMessage(LangID.getStringByID("const_man", lang)).subscribe();
             } else {
-                Guild g = getGuild(event).block();
-
-                String role = g == null ? "NONE" : StaticStore.roleNameFromID(g, constRole);
-                ch.createMessage(LangID.getStringByID("const_role", lang).replace("_", role)).subscribe();
+                ch.createMessage(LangID.getStringByID("const_role", lang).replace("_", StaticStore.roleNameFromID(g, constRole))).subscribe();
             }
         } else {
             try {
