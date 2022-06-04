@@ -1,7 +1,6 @@
 package mandarin.packpack.commands.bc;
 
 import common.CommonStatic;
-import common.system.P;
 import common.util.Data;
 import common.util.unit.Form;
 import discord4j.core.event.domain.interaction.InteractionCreateEvent;
