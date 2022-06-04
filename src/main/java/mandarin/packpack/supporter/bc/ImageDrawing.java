@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -405,8 +406,8 @@ public class ImageDrawing {
         ArrayList<int[][]> rects = new ArrayList<>();
         ArrayList<P> centers = new ArrayList<>();
 
-        for(int i = 1; i < anim.getOrder().length; i++) {
-            if(anim.anim().parts(anim.getOrder()[i].getVal(2)) == null)
+        for(int i = 0; i < anim.getOrder().length; i++) {
+            if(anim.anim().parts(anim.getOrder()[i].getVal(2)) == null || anim.getOrder()[i].getVal(1) == 0)
                 continue;
 
             FakeImage fi = anim.anim().parts(anim.getOrder()[i].getVal(2));
@@ -557,8 +558,8 @@ public class ImageDrawing {
             ArrayList<int[][]> rects = new ArrayList<>();
             ArrayList<P> centers = new ArrayList<>();
 
-            for(int j = 1; j < anim.getOrder().length; j++) {
-                if(anim.anim().parts(anim.getOrder()[j].getVal(2)) == null)
+            for(int j = 0; j < anim.getOrder().length; j++) {
+                if(anim.anim().parts(anim.getOrder()[i].getVal(2)) == null || anim.getOrder()[i].getVal(1) == 0)
                     continue;
 
                 FakeImage fi = anim.anim().parts(anim.getOrder()[j].getVal(2));
@@ -803,8 +804,8 @@ public class ImageDrawing {
             ArrayList<int[][]> rects = new ArrayList<>();
             ArrayList<P> centers = new ArrayList<>();
 
-            for(int j = 1; j < anim.getOrder().length; j++) {
-                if(anim.anim().parts(anim.getOrder()[j].getVal(2)) == null)
+            for(int j = 0; j < anim.getOrder().length; j++) {
+                if(anim.anim().parts(anim.getOrder()[i].getVal(2)) == null || anim.getOrder()[i].getVal(1) == 0)
                     continue;
 
                 FakeImage fi = anim.anim().parts(anim.getOrder()[j].getVal(2));
@@ -1027,8 +1028,8 @@ public class ImageDrawing {
                 for(int j = 0; j < anim.len(); j++) {
                     anim.setTime(j);
 
-                    for(int k = 1; k < anim.getOrder().length; k++) {
-                        if(anim.anim().parts(anim.getOrder()[k].getVal(2)) == null)
+                    for(int k = 0; k < anim.getOrder().length; k++) {
+                        if(anim.anim().parts(anim.getOrder()[i].getVal(2)) == null || anim.getOrder()[i].getVal(1) == 0)
                             continue;
 
                         FakeImage fi = anim.anim().parts(anim.getOrder()[k].getVal(2));
