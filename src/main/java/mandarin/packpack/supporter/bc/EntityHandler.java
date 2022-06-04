@@ -33,6 +33,7 @@ import mandarin.packpack.supporter.awt.FG2D;
 import mandarin.packpack.supporter.awt.FIBI;
 import mandarin.packpack.supporter.bc.cell.*;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.slash.WebhookBuilder;
 
 import javax.imageio.ImageIO;
@@ -68,15 +69,19 @@ public class EntityHandler {
         }
     }
 
-    public static void showUnitEmb(Form f, WebhookBuilder builder, boolean isFrame, boolean talent, boolean extra, ArrayList<Integer> lv, int lang) throws Exception {
+    public static void showUnitEmb(Form f, WebhookBuilder builder, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, ArrayList<Integer> lv, int lang) throws Exception {
         int level = lv.get(0);
         int levelp = 0;
 
         if(level <= 0) {
             if(f.unit.rarity == 0)
                 level = 110;
-            else
-                level = 30;
+            else {
+                if(config == null)
+                    level = 30;
+                else
+                    level = config.defLevel;
+            }
         }
 
         if(level > f.unit.max) {
@@ -243,15 +248,19 @@ public class EntityHandler {
         }
     }
 
-    public static Message showUnitEmb(Form f, MessageChannel ch, boolean isFrame, boolean talent, boolean extra, ArrayList<Integer> lv, int lang, boolean addEmoji) throws Exception {
+    public static Message showUnitEmb(Form f, MessageChannel ch, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, ArrayList<Integer> lv, int lang, boolean addEmoji) throws Exception {
         int level = lv.get(0);
         int levelp = 0;
 
         if(level <= 0) {
             if(f.unit.rarity == 0)
                 level = 110;
-            else
-                level = 30;
+            else {
+                if(config == null)
+                    level = 30;
+                else
+                    level = config.defLevel;
+            }
         }
 
         if(level > f.unit.max) {

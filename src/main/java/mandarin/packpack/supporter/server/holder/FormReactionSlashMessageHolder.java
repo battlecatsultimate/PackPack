@@ -9,6 +9,7 @@ import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.reaction.ReactionEmoji;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -22,6 +23,7 @@ public class FormReactionSlashMessageHolder extends MessageHolder<ReactionAddEve
     private final String memberID;
     private final long channelID;
     private final long embID;
+    private final ConfigHolder config;
     private final int lang;
 
     private final boolean isFrame;
@@ -31,13 +33,14 @@ public class FormReactionSlashMessageHolder extends MessageHolder<ReactionAddEve
 
     private final GatewayDiscordClient client;
 
-    public FormReactionSlashMessageHolder(GatewayDiscordClient client, Form f, String memberID, long channelID, long embID, boolean isFrame, boolean talent, boolean extra, ArrayList<Integer> lv, int lang) {
+    public FormReactionSlashMessageHolder(GatewayDiscordClient client, Form f, String memberID, long channelID, long embID, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, ArrayList<Integer> lv, int lang) {
         super(ReactionAddEvent.class);
 
         this.f = f;
         this.memberID = memberID;
         this.channelID = channelID;
         this.embID = embID;
+        this.config = config;
         this.lang = lang;
 
         this.isFrame = isFrame;
@@ -111,7 +114,7 @@ public class FormReactionSlashMessageHolder extends MessageHolder<ReactionAddEve
                     Form newForm = f.unit.forms[f.fid - 2];
 
                     try {
-                        EntityHandler.showUnitEmb(newForm, ch, isFrame, talent, extra, lv, lang, false);
+                        EntityHandler.showUnitEmb(newForm, ch, config, isFrame, talent, extra, lv, lang, false);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -129,7 +132,7 @@ public class FormReactionSlashMessageHolder extends MessageHolder<ReactionAddEve
                     newForm = f.unit.forms[f.fid - 1];
 
                     try {
-                        EntityHandler.showUnitEmb(newForm, ch, isFrame, talent, extra, lv, lang, false);
+                        EntityHandler.showUnitEmb(newForm, ch, config, isFrame, talent, extra, lv, lang, false);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -147,7 +150,7 @@ public class FormReactionSlashMessageHolder extends MessageHolder<ReactionAddEve
                     newForm = f.unit.forms[f.fid + 1];
 
                     try {
-                        EntityHandler.showUnitEmb(newForm, ch, isFrame, talent, extra, lv, lang, false);
+                        EntityHandler.showUnitEmb(newForm, ch, config, isFrame, talent, extra, lv, lang, false);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -165,7 +168,7 @@ public class FormReactionSlashMessageHolder extends MessageHolder<ReactionAddEve
                     newForm = f.unit.forms[f.fid + 2];
 
                     try {
-                        EntityHandler.showUnitEmb(newForm, ch, isFrame, talent, extra, lv, lang, false);
+                        EntityHandler.showUnitEmb(newForm, ch, config, isFrame, talent, extra, lv, lang, false);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

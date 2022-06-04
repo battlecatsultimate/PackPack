@@ -12,6 +12,7 @@ import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import java.util.TimerTask;
 public class FormButtonHolder extends InteractionHolder<ButtonInteractionEvent> {
 
     private final Message embed;
+    private final ConfigHolder config;
     private final int lang;
     private final Form f;
 
@@ -31,10 +33,11 @@ public class FormButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
     private final String memberID;
     private final ArrayList<Integer> lv;
 
-    public FormButtonHolder(Form f, Message author, Message msg, boolean isFrame, boolean talent, boolean extra, ArrayList<Integer> lv, int lang, String channelID, String memberID) {
+    public FormButtonHolder(Form f, Message author, Message msg, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, ArrayList<Integer> lv, int lang, String channelID, String memberID) {
         super(ButtonInteractionEvent.class);
 
         this.embed = msg;
+        this.config = config;
         this.lang = lang;
         this.channelID = channelID;
         this.memberID = memberID;
@@ -119,7 +122,7 @@ public class FormButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
         Form newForm = f.unit.forms[f.fid + diff];
 
         try {
-            EntityHandler.showUnitEmb(newForm, ch, isFrame, talent, extra, lv, lang, false);
+            EntityHandler.showUnitEmb(newForm, ch, config, isFrame, talent, extra, lv, lang, false);
         } catch (Exception e) {
             e.printStackTrace();
         }

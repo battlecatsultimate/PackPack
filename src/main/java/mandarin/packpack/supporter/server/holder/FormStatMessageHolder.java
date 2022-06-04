@@ -19,6 +19,7 @@ public class FormStatMessageHolder extends MessageHolder<MessageCreateEvent> {
     private final ArrayList<Form> form;
     private final Message msg;
     private final String channelID;
+    private final ConfigHolder config;
 
     private int page = 0;
 
@@ -36,6 +37,7 @@ public class FormStatMessageHolder extends MessageHolder<MessageCreateEvent> {
         this.form = form;
         this.msg = msg;
         this.channelID = channelID;
+        this.config = config;
 
         this.talent = (param & 2) > 0;
         this.isFrame = (param & 4) == 0 && config.useFrame;
@@ -179,12 +181,12 @@ public class FormStatMessageHolder extends MessageHolder<MessageCreateEvent> {
             }
 
             try {
-                Message result = EntityHandler.showUnitEmb(form.get(id), ch, isFrame, talent, extra, lv, lang, true);
+                Message result = EntityHandler.showUnitEmb(form.get(id), ch, config, isFrame, talent, extra, lv, lang, true);
 
                 if(result != null) {
                     event.getMember().ifPresent(m -> {
                         StaticStore.removeHolder(m.getId().asString(), FormStatMessageHolder.this);
-                        StaticStore.putHolder(m.getId().asString(), new FormButtonHolder(form.get(id), event.getMessage(), result, isFrame, talent, extra, lv, lang, channelID, m.getId().asString()));
+                        StaticStore.putHolder(m.getId().asString(), new FormButtonHolder(form.get(id), event.getMessage(), result, config, isFrame, talent, extra, lv, lang, channelID, m.getId().asString()));
                     });
                 }
             } catch (Exception e) {

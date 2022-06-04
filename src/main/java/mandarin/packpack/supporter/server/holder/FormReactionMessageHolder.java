@@ -8,6 +8,7 @@ import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.reaction.ReactionEmoji;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -21,6 +22,7 @@ public class FormReactionMessageHolder extends MessageHolder<ReactionAddEvent> {
     private final int lang;
     private final String channelID;
     private final String memberID;
+    private final ConfigHolder config;
     private final Form f;
 
     private final boolean isFrame;
@@ -28,13 +30,14 @@ public class FormReactionMessageHolder extends MessageHolder<ReactionAddEvent> {
     private final boolean extra;
     private final ArrayList<Integer> lv;
 
-    public FormReactionMessageHolder(Form f, Message author, Message msg, boolean isFrame, boolean talent, boolean extra, ArrayList<Integer> lv, int lang, String channelID, String memberID) {
+    public FormReactionMessageHolder(Form f, Message author, Message msg, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, ArrayList<Integer> lv, int lang, String channelID, String memberID) {
         super(ReactionAddEvent.class);
 
         this.embed = msg;
         this.lang = lang;
         this.channelID = channelID;
         this.memberID = memberID;
+        this.config = config;
         this.f = f;
 
         this.isFrame = isFrame;
@@ -121,7 +124,7 @@ public class FormReactionMessageHolder extends MessageHolder<ReactionAddEvent> {
                     Form newForm = f.unit.forms[f.fid - 2];
 
                     try {
-                        EntityHandler.showUnitEmb(newForm, ch, isFrame, talent, extra, lv, lang, false);
+                        EntityHandler.showUnitEmb(newForm, ch, config, isFrame, talent, extra, lv, lang, false);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -139,7 +142,7 @@ public class FormReactionMessageHolder extends MessageHolder<ReactionAddEvent> {
                     newForm = f.unit.forms[f.fid - 1];
 
                     try {
-                        EntityHandler.showUnitEmb(newForm, ch, isFrame, talent, extra, lv, lang, false);
+                        EntityHandler.showUnitEmb(newForm, ch, config, isFrame, talent, extra, lv, lang, false);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -157,7 +160,7 @@ public class FormReactionMessageHolder extends MessageHolder<ReactionAddEvent> {
                     newForm = f.unit.forms[f.fid + 1];
 
                     try {
-                        EntityHandler.showUnitEmb(newForm, ch, isFrame, talent, extra, lv, lang, false);
+                        EntityHandler.showUnitEmb(newForm, ch, config, isFrame, talent, extra, lv, lang, false);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -175,7 +178,7 @@ public class FormReactionMessageHolder extends MessageHolder<ReactionAddEvent> {
                     newForm = f.unit.forms[f.fid + 2];
 
                     try {
-                        EntityHandler.showUnitEmb(newForm, ch, isFrame, talent, extra, lv, lang, false);
+                        EntityHandler.showUnitEmb(newForm, ch, config, isFrame, talent, extra, lv, lang, false);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
