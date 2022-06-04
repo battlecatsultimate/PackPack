@@ -1911,7 +1911,7 @@ public class EntityHandler {
     public static boolean generateEnemyAnim(Enemy en, MessageChannel ch, GatewayDiscordClient client, int booster, int mode, boolean debug, int limit, int lang, boolean raw, boolean gif) throws Exception {
         if(en.id == null)
             return false;
-        else if(!debug) {
+        else if(!debug && limit <= 0) {
             String id = generateID(en, mode);
 
             String link = StaticStore.imgur.get(id, gif, raw);
