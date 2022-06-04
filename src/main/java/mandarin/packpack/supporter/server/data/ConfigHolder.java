@@ -26,7 +26,7 @@ public class ConfigHolder implements Cloneable {
         return holder;
     }
 
-    public int lang = 0, defLevel = 30;
+    public int lang = -1, defLevel = 30;
     public boolean useFrame = true, extra = false;
 
     public JsonObject jsonfy() {
