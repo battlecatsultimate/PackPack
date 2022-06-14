@@ -1144,6 +1144,10 @@ public class PackBot {
                                 case "rc":
                                     new RemoveCache(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
                                     break;
+                                case "sendmessage":
+                                case "sm":
+                                    new SendMessage(ConstraintCommand.ROLE.MANDARIN, lang, idh, gate).execute(event);
+                                    break;
                             }
                         }
                     }, () -> {
