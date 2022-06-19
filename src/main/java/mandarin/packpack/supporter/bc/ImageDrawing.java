@@ -265,6 +265,7 @@ public class ImageDrawing {
         String cont = LangID.getStringByID("bg_dimen", lang).replace("_WWW_", w+"").replace("_HHH_", bgAnimHeight+"") +"\n\n"+
                 LangID.getStringByID("bg_prog", lang)
                         .replace("_PPP_", "  0")
+                        .replace("_LLL_", bgAnimTime + "")
                         .replace("_BBB_", getProgressBar(0, bgAnimTime))
                         .replace("_VVV_", 0.0 + "")
                         .replace("_SSS_", "-");

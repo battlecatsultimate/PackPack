@@ -1148,6 +1148,10 @@ public class PackBot {
                                 case "sm":
                                     new SendMessage(ConstraintCommand.ROLE.MANDARIN, lang, idh, gate).execute(event);
                                     break;
+                                case "analyzeserver":
+                                case "as":
+                                    new AnalyzeServer(ConstraintCommand.ROLE.MANDARIN, lang, idh, gate).execute(event);
+                                    break;
                             }
                         }
                     }, () -> {
