@@ -271,7 +271,12 @@ public class ImageDrawing {
 
         int groundHeight = (int) (groundRatio * h);
 
-        BackgroundEffect eff = CommonStatic.getBCAssets().bgEffects.get(bg.effect);
+        BackgroundEffect eff;
+
+        if(bg.effect < 0)
+            eff = BackgroundEffect.mixture.get(-bg.effect);
+        else
+            eff = CommonStatic.getBCAssets().bgEffects.get(bg.effect);
 
         int len = (int) ((w / bgAnimRatio - 400) / CommonStatic.BattleConst.ratio);
         int bgHeight = (int) (h / bgAnimRatio);
