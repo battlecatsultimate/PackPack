@@ -85,7 +85,9 @@ public class ImageDrawing {
             4900,
             4400,
             5400,
-            5000
+            5000,
+            5200,
+            3000
     };
 
     private static Font titleFont;
@@ -371,7 +373,7 @@ public class ImageDrawing {
                             .replace("_LLL_", bgAnimTime + "")
                             .replace("_BBB_", getProgressBar(bgAnimTime, bgAnimTime))
                             .replace("_VVV_", "100.00")
-                            .replace("_SSS_", "0") + "\n\n"+
+                            .replace("_SSS_", "     0") + "\n"+
                     LangID.getStringByID("bg_upload", lang);
 
             m.content(wrap(content));
@@ -774,7 +776,7 @@ public class ImageDrawing {
                             .replace("_LLL_", finalFrame + "")
                             .replace("_BBB_", getProgressBar(finalFrame, finalFrame))
                             .replace("_VVV_", "100.00")
-                            .replace("_SSS_", "0") + "\n\n" +
+                            .replace("_SSS_", "     0") + "\n" +
                     LangID.getStringByID("gif_uploadmp4", lang);
 
             m.content(wrap(content));
@@ -1010,7 +1012,7 @@ public class ImageDrawing {
                             .replace("_LLL_", finalFrame + "")
                             .replace("_BBB_", getProgressBar(finalFrame, finalFrame))
                             .replace("_VVV_", "100.00")
-                            .replace("_SSS_", "0") + "\n\n"+
+                            .replace("_SSS_", "     0") + "\n"+
                     LangID.getStringByID("gif_uploading", lang);
 
             m.content(wrap(content));
@@ -1070,7 +1072,7 @@ public class ImageDrawing {
                     anim.setTime(j);
 
                     for(int k = 0; k < anim.getOrder().length; k++) {
-                        if(anim.anim().parts(anim.getOrder()[k].getVal(2)) == null || anim.getOrder()[k].getVal(1) == 0)
+                        if(anim.anim().parts(anim.getOrder()[k].getVal(2)) == null || anim.getOrder()[k].getVal(1) == -1)
                             continue;
 
                         FakeImage fi = anim.anim().parts(anim.getOrder()[k].getVal(2));
@@ -1195,6 +1197,8 @@ public class ImageDrawing {
             }
         }
 
+        long start = System.currentTimeMillis();
+
         for(int i = 0; i < mixer.anim.length; i++) {
             //60 ~ 150, 60 ~ 150, 60 ~, 60, one cycle, 60, one cycle
 
@@ -1235,7 +1239,16 @@ public class ImageDrawing {
                                 Command.editMessage(msg, m -> {
                                     String content = finalFinCont +"\n\n";
 
-                                    content += LangID.getStringByID("gif_makepng", lang).replace("_", DataToString.df.format(finalProg * 100.0 / finalTotal));
+                                    String prog = DataToString.df.format(finalProg * 100.0 / finalTotal);
+                                    String eta = getETA(start, System.currentTimeMillis(), finalProg, finalTotal);
+
+                                    content += LangID.getStringByID("gif_makepng", lang) +
+                                            LangID.getStringByID("bg_prog", lang)
+                                                    .replace("_PPP_", finalProg + "")
+                                                    .replace("_LLL_", finalTotal + "")
+                                                    .replace("_BBB_", getProgressBar(finalProg, finalTotal))
+                                                    .replace("_VVV_", " ".repeat(Math.max(0, 6 - prog.length())) + prog)
+                                                    .replace("_SSS_", " ".repeat(Math.max(0, 6 - eta.length())) + eta);
 
                                     m.content(wrap(content));
                                 });
@@ -1285,7 +1298,16 @@ public class ImageDrawing {
                             Command.editMessage(msg, m -> {
                                 String content = finalFinCont +"\n\n";
 
-                                content += LangID.getStringByID("gif_makepng", lang).replace("_", DataToString.df.format(finalProg * 100.0 / finalTotal));
+                                String prog = DataToString.df.format(finalProg * 100.0 / finalTotal);
+                                String eta = getETA(start, System.currentTimeMillis(), finalProg, finalTotal);
+
+                                content += LangID.getStringByID("gif_makepng", lang) +
+                                        LangID.getStringByID("bg_prog", lang)
+                                                .replace("_PPP_", finalProg + "")
+                                                .replace("_LLL_", finalTotal + "")
+                                                .replace("_BBB_", getProgressBar(finalProg, finalTotal))
+                                                .replace("_VVV_", " ".repeat(Math.max(0, 6 - prog.length())) + prog)
+                                                .replace("_SSS_", " ".repeat(Math.max(0, 6 - eta.length())) + eta);
 
                                 m.content(wrap(content));
                             });
@@ -1329,9 +1351,18 @@ public class ImageDrawing {
             }
         }
 
+        int finalTotalFrame = totalFrame;
+
         Command.editMessage(msg, m -> {
-            String content = finalFinCont + "\n\n" + LangID.getStringByID("gif_makepng", lang).replace("_", "100")
-                    +"\n\n"+ LangID.getStringByID("gif_converting", lang);
+            String content = finalFinCont + "\n\n" +
+                    LangID.getStringByID("gif_makepng", lang) +
+                    LangID.getStringByID("bg_prog", lang)
+                            .replace("_PPP_", finalTotalFrame + "")
+                            .replace("_LLL_", finalTotalFrame + "")
+                            .replace("_BBB_", getProgressBar(finalTotalFrame, finalTotalFrame))
+                            .replace("_VVV_", "100.00")
+                            .replace("_SSS_", "     0") + "\n" +
+                    LangID.getStringByID("gif_converting", lang);
 
             m.content(wrap(content));
         });
@@ -1355,8 +1386,16 @@ public class ImageDrawing {
         StaticStore.deleteFile(folder, true);
 
         Command.editMessage(msg, m -> {
-            String content = finalFinCont + "\n\n"+LangID.getStringByID("gif_makepng", lang).replace("_", "100")+"\n\n"
-                    +LangID.getStringByID("gif_converting", lang)+"\n\n"+LangID.getStringByID("gif_uploadmp4", lang);
+            String content = finalFinCont + "\n\n" +
+                    LangID.getStringByID("gif_makepng", lang) +
+                    LangID.getStringByID("bg_prog", lang)
+                            .replace("_PPP_", finalTotalFrame + "")
+                            .replace("_LLL_", finalTotalFrame + "")
+                            .replace("_BBB_", getProgressBar(finalTotalFrame, finalTotalFrame))
+                            .replace("_VVV_", "100.00")
+                            .replace("_SSS_", "     0") + "\n" +
+                    LangID.getStringByID("gif_converting", lang) + "\n\n" +
+                    LangID.getStringByID("gif_uploadmp4", lang);
 
             m.content(wrap(content));
         });
