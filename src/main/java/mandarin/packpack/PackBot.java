@@ -1378,6 +1378,10 @@ public class PackBot {
                                 case "as":
                                     new AnalyzeServer(ConstraintCommand.ROLE.MANDARIN, lang, idh, gate).execute(event);
                                     break;
+                                case "cleartemp":
+                                case "ct":
+                                    new ClearTemp(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+                                    break;
                             }
                         }
                     }, () -> {
