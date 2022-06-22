@@ -258,7 +258,7 @@ public class ImageDrawing {
         int pw;
 
         if(bg.effect < 0)
-            pw = handleMixedBGEffect(bg.effect);
+            pw = preferredBGAnimWidth[handleMixedBGEffect(bg.effect)];
         else
             pw = preferredBGAnimWidth[bg.effect];
 
