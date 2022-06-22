@@ -40,54 +40,55 @@ public class ImageDrawing {
     private static final int bgAnimHeight = 720;
     private static final double bgAnimRatio = bgAnimHeight * 0.8 / 2 / 512.0;
     private static final int[] preferredBGAnimWidth = {
-            5000,
-            5000,
-            5000,
-            5000,
-            5000,
-            5000,
-            5000,
-            5000,
-            5000,
-            5000,
-            5000,
-            3900,
-            4400,
-            5000,
-            3900,
-            5400,
-            4400,
-            5400,
-            3900,
-            3900,
-            5400,
-            4600,
-            3600,
-            4400,
-            4100,
-            5400,
-            5400,
-            4700,
-            6200,
-            5400,
-            4900,
-            5200,
-            4400,
-            3900,
-            3900,
-            3900,
-            4400,
-            3900,
-            4600,
-            4900,
-            4400,
-            5400,
-            4900,
-            4400,
-            5400,
-            5000,
-            5200,
-            3000
+            5000, //star
+            5000, //rain
+            5000, //bubble
+            5000, //falling snow
+            5000, //snow
+            5000, //snow star
+            5000, //blizzard
+            5000, //shining
+            5000, //balloon
+            5000, //rock
+            5000, //102
+            3900, //103
+            4400, //110
+            5000, //117
+            3900, //121
+            5400, //128
+            4400, //132
+            5400, //137
+            3900, //141
+            3900, //142
+            5400, //145
+            4600, //148
+            3600, //153
+            4400, //154
+            4100, //155
+            5400, //157
+            5400, //158
+            4700, //159
+            6200, //164
+            5400, //166
+            4900, //172
+            5200, //173
+            4400, //174
+            3900, //180
+            3900, //181
+            3900, //182
+            4400, //183
+            4400, //184
+            3900, //1000
+            4600, //1002
+            4900, //1003
+            4400, //1004
+            5400, //1005
+            4900, //1006
+            4400, //1007
+            5400, //1008
+            5000, //1009
+            5200, //1010
+            3000 //1011
     };
 
     private static Font titleFont;
@@ -193,7 +194,13 @@ public class ImageDrawing {
         }
 
         if(eff && bg.effect != -1) {
-            BackgroundEffect effect = CommonStatic.getBCAssets().bgEffects.get(bg.effect);
+            BackgroundEffect effect;
+
+            if(bg.effect < 0) {
+                effect = BackgroundEffect.mixture.get(-bg.effect);
+            } else {
+                effect = CommonStatic.getBCAssets().bgEffects.get(bg.effect);
+            }
 
             int len = (int) ((w / ratio - 400) / CommonStatic.BattleConst.ratio);
             int bgHeight = (int) (h / ratio);
@@ -247,7 +254,15 @@ public class ImageDrawing {
         }
 
         int h = bgAnimHeight;
-        int w = (int) ((400 + preferredBGAnimWidth[bg.effect] * CommonStatic.BattleConst.ratio) * bgAnimRatio);
+
+        int pw;
+
+        if(bg.effect < 0)
+            pw = handleMixedBGEffect(bg.effect);
+        else
+            pw = preferredBGAnimWidth[bg.effect];
+
+        int w = (int) ((400 + pw * CommonStatic.BattleConst.ratio) * bgAnimRatio);
 
         if(w % 2 == 1)
             w -= 1;
@@ -1723,5 +1738,14 @@ public class ImageDrawing {
 
     private static Possible<Optional<String>> wrap(String content) {
         return Possible.of(Optional.of(content));
+    }
+
+    private static int handleMixedBGEffect(int ind) {
+        for(int i = 0; i < BackgroundEffect.jsonList.length; i++) {
+            if(BackgroundEffect.jsonList[i] == -ind)
+                return 10 + i;
+        }
+
+        return -1;
     }
 }
