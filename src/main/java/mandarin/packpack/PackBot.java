@@ -8,9 +8,7 @@ import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.Event;
 import discord4j.core.event.domain.channel.NewsChannelDeleteEvent;
 import discord4j.core.event.domain.channel.TextChannelDeleteEvent;
-import discord4j.core.event.domain.guild.GuildCreateEvent;
-import discord4j.core.event.domain.guild.GuildDeleteEvent;
-import discord4j.core.event.domain.guild.MemberUpdateEvent;
+import discord4j.core.event.domain.guild.*;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.MessageEvent;
 import discord4j.core.event.domain.message.ReactionAddEvent;
@@ -27,6 +25,8 @@ import discord4j.gateway.intent.IntentSet;
 import discord4j.rest.request.RouterOptions;
 import discord4j.rest.util.AllowedMentions;
 import discord4j.rest.util.Image;
+import discord4j.rest.util.Permission;
+import discord4j.rest.util.PermissionSet;
 import mandarin.packpack.commands.Locale;
 import mandarin.packpack.commands.*;
 import mandarin.packpack.commands.TimeZone;
@@ -279,7 +279,11 @@ public class PackBot {
         });
 
         gate.on(GuildDeleteEvent.class).subscribe(e -> {
-            e.getGuild().ifPresent(g -> StaticStore.idHolder.remove(g.getId().asString()));
+            e.getGuild().ifPresent(g -> {
+                StaticStore.logger.uploadLog("Left server : "+g.getName()+ " ("+g.getId()+")");
+
+                StaticStore.idHolder.remove(g.getId().asString());
+            });
 
             StaticStore.saveServerInfo();
         });
@@ -443,7 +447,45 @@ public class PackBot {
 
                     roleBuilder.name("PackPackMod");
 
-                    guild.createRole(roleBuilder.build()).subscribe(r -> idh.MOD = r.getId().asString(), err -> {
+                    guild.createRole(roleBuilder.build()).subscribe(r -> {
+                        idh.MOD = r.getId().asString();
+
+                        Optional<List<Role>> or = guild.getRoles().collectList().blockOptional();
+
+                        Role role = null;
+
+                        if(or.isPresent()) {
+                            List<Role> roles = or.get();
+
+                            for(int i = 0; i < roles.size(); i++) {
+                                Role rol = roles.get(i);
+
+                                if(!rol.isManaged() && !rol.isEveryone() && isModerator(rol.getPermissions())) {
+                                    role = rol;
+                                    break;
+                                }
+                            }
+                        }
+
+                        String roleName = role != null ? role.getName() : null;
+                        String roleID = role != null ? role.getId().asString() : null;
+
+                        guild.getOwner().subscribe(o -> o.getPrivateChannel().subscribe(pc -> Command.createMessage(pc, msg -> {
+                            String message;
+
+                            if(roleName != null) {
+                                message = LangID.getStringByID("first_joinmod", idh.serverLocale)
+                                        .replace("_III_", roleID)
+                                        .replace("_MMM_", roleName)
+                                        .replace("_SSS_", guild.getName());
+                            } else {
+                                message = LangID.getStringByID("first_join", idh.serverLocale)
+                                        .replace("_SSS_", guild.getName());
+                            }
+
+                            msg.content(message);
+                        }), err -> {}));
+                    }, err -> {
                         if(!warned.get()) {
                             guild.getOwner().subscribe(o -> o.getPrivateChannel().subscribe(po -> po.createMessage(LangID.getStringByID("needroleperm", idh.serverLocale).replace("_", guild.getName())).subscribe()));
                             warned.set(true);
@@ -451,6 +493,42 @@ public class PackBot {
                     });
                 } else {
                     idh.MOD = modID;
+
+                    Optional<List<Role>> or = guild.getRoles().collectList().blockOptional();
+
+                    Role role = null;
+
+                    if(or.isPresent()) {
+                        List<Role> roles = or.get();
+
+                        for(int i = 0; i < roles.size(); i++) {
+                            Role rol = roles.get(i);
+
+                            if(!rol.isManaged() && !rol.isEveryone() && isModerator(rol.getPermissions())) {
+                                role = rol;
+                                break;
+                            }
+                        }
+                    }
+
+                    String roleName = role != null ? role.getName() : null;
+                    String roleID = role != null ? role.getId().asString() : null;
+
+                    guild.getOwner().subscribe(o -> o.getPrivateChannel().subscribe(pc -> Command.createMessage(pc, msg -> {
+                        String message;
+
+                        if(roleName != null) {
+                            message = LangID.getStringByID("first_joinmod", idh.serverLocale)
+                                    .replace("_III_", roleID)
+                                    .replace("_MMM_", roleName)
+                                    .replace("_SSS_", guild.getName());
+                        } else {
+                            message = LangID.getStringByID("first_join", idh.serverLocale)
+                                    .replace("_SSS_", guild.getName());
+                        }
+
+                        msg.content(message);
+                    }), err -> {}));
                 }
 
                 StaticStore.idHolder.put(guild.getId().asString(), idh);
@@ -466,7 +544,45 @@ public class PackBot {
 
                         roleBuilder.name("PackPackMod");
 
-                        guild.createRole(roleBuilder.build()).subscribe(r -> id.MOD = r.getId().asString(), err -> {
+                        guild.createRole(roleBuilder.build()).subscribe(r -> {
+                            id.MOD = r.getId().asString();
+
+                            Optional<List<Role>> or = guild.getRoles().collectList().blockOptional();
+
+                            Role role = null;
+
+                            if(or.isPresent()) {
+                                List<Role> roles = or.get();
+
+                                for(int i = 0; i < roles.size(); i++) {
+                                    Role rol = roles.get(i);
+
+                                    if(!rol.isManaged() && !rol.isEveryone() && isModerator(rol.getPermissions())) {
+                                        role = rol;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            String roleName = role != null ? role.getName() : null;
+                            String roleID = role != null ? role.getId().asString() : null;
+
+                            guild.getOwner().subscribe(o -> o.getPrivateChannel().subscribe(pc -> Command.createMessage(pc, msg -> {
+                                String message;
+
+                                if(roleName != null) {
+                                    message = LangID.getStringByID("first_joinmod", id.serverLocale)
+                                            .replace("_III_", roleID)
+                                            .replace("_MMM_", roleName)
+                                            .replace("_SSS_", guild.getName());
+                                } else {
+                                    message = LangID.getStringByID("first_join", id.serverLocale)
+                                            .replace("_SSS_", guild.getName());
+                                }
+
+                                msg.content(message);
+                            }), err -> {}));
+                        }, err -> {
                             if(!warned.get()) {
                                 guild.getOwner().subscribe(o -> o.getPrivateChannel().subscribe(po -> po.createMessage(LangID.getStringByID("needroleperm", id.serverLocale).replace("_", guild.getName())).subscribe()));
                                 warned.set(true);
@@ -474,6 +590,42 @@ public class PackBot {
                         });
                     } else {
                         id.MOD = modID;
+
+                        Optional<List<Role>> or = guild.getRoles().collectList().blockOptional();
+
+                        Role role = null;
+
+                        if(or.isPresent()) {
+                            List<Role> roles = or.get();
+
+                            for(int i = 0; i < roles.size(); i++) {
+                                Role rol = roles.get(i);
+
+                                if(!rol.isManaged() && !rol.isEveryone() && isModerator(rol.getPermissions())) {
+                                    role = rol;
+                                    break;
+                                }
+                            }
+                        }
+
+                        String roleName = role != null ? role.getName() : null;
+                        String roleID = role != null ? role.getId().asString() : null;
+
+                        guild.getOwner().subscribe(o -> o.getPrivateChannel().subscribe(pc -> Command.createMessage(pc, msg -> {
+                            String message;
+
+                            if(roleName != null) {
+                                message = LangID.getStringByID("first_joinmod", id.serverLocale)
+                                        .replace("_III_", roleID)
+                                        .replace("_MMM_", roleName)
+                                        .replace("_SSS_", guild.getName());
+                            } else {
+                                message = LangID.getStringByID("first_join", id.serverLocale)
+                                        .replace("_SSS_", guild.getName());
+                            }
+
+                            msg.content(message);
+                        }), err -> {}));
                     }
                 } else {
                     guild.getRoles().collectList().subscribe(ro -> {
@@ -489,7 +641,45 @@ public class PackBot {
 
                             roleBuilder.name("PackPackMod");
 
-                            guild.createRole(roleBuilder.build()).subscribe(r -> id.MOD = r.getId().asString(), err -> {
+                            guild.createRole(roleBuilder.build()).subscribe(r -> {
+                                id.MOD = r.getId().asString();
+
+                                Optional<List<Role>> or = guild.getRoles().collectList().blockOptional();
+
+                                Role role = null;
+
+                                if(or.isPresent()) {
+                                    List<Role> roles = or.get();
+
+                                    for(int i = 0; i < roles.size(); i++) {
+                                        Role rol = roles.get(i);
+
+                                        if(!rol.isManaged() && !rol.isEveryone() && isModerator(rol.getPermissions())) {
+                                            role = rol;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                String roleName = role != null ? role.getName() : null;
+                                String roleID = role != null ? role.getId().asString() : null;
+
+                                guild.getOwner().subscribe(o -> o.getPrivateChannel().subscribe(pc -> Command.createMessage(pc, msg -> {
+                                    String message;
+
+                                    if(roleName != null) {
+                                        message = LangID.getStringByID("first_joinmod", id.serverLocale)
+                                                .replace("_III_", roleID)
+                                                .replace("_MMM_", roleName)
+                                                .replace("_SSS_", guild.getName());
+                                    } else {
+                                        message = LangID.getStringByID("first_join", id.serverLocale)
+                                                .replace("_SSS_", guild.getName());
+                                    }
+
+                                    msg.content(message);
+                                }), err -> {}));
+                            }, err -> {
                                 if(!warned.get()) {
                                     guild.getOwner().subscribe(o -> o.getPrivateChannel().subscribe(po -> po.createMessage(LangID.getStringByID("needroleperm", id.serverLocale).replace("_", guild.getName())).subscribe()));
                                     warned.set(true);
@@ -497,6 +687,42 @@ public class PackBot {
                             });
                         } else {
                             id.MOD = modID;
+
+                            Optional<List<Role>> or = guild.getRoles().collectList().blockOptional();
+
+                            Role role = null;
+
+                            if(or.isPresent()) {
+                                List<Role> roles = or.get();
+
+                                for(int i = 0; i < roles.size(); i++) {
+                                    Role rol = roles.get(i);
+
+                                    if(!rol.isManaged() && !rol.isEveryone() && isModerator(rol.getPermissions())) {
+                                        role = rol;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            String roleName = role != null ? role.getName() : null;
+                            String roleID = role != null ? role.getId().asString() : null;
+
+                            guild.getOwner().subscribe(o -> o.getPrivateChannel().subscribe(pc -> Command.createMessage(pc, msg -> {
+                                String message;
+
+                                if(roleName != null) {
+                                    message = LangID.getStringByID("first_joinmod", id.serverLocale)
+                                            .replace("_III_", roleID)
+                                            .replace("_MMM_", roleName)
+                                            .replace("_SSS_", guild.getName());
+                                } else {
+                                    message = LangID.getStringByID("first_join", id.serverLocale)
+                                            .replace("_SSS_", guild.getName());
+                                }
+
+                                msg.content(message);
+                            }), err -> {}));
                         }
                     });
                 }
@@ -1561,5 +1787,16 @@ public class PackBot {
             default:
                 return "sale";
         }
+    }
+
+    private static boolean isModerator(PermissionSet set) {
+        return set.contains(Permission.MODERATE_MEMBERS) ||
+                set.contains(Permission.ADMINISTRATOR) ||
+                set.contains(Permission.BAN_MEMBERS) ||
+                set.contains(Permission.MUTE_MEMBERS) ||
+                set.contains(Permission.KICK_MEMBERS) ||
+                set.contains(Permission.MANAGE_CHANNELS) ||
+                set.contains(Permission.MANAGE_GUILD) ||
+                set.contains(Permission.MANAGE_ROLES);
     }
 }
