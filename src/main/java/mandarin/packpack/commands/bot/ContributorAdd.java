@@ -1,29 +1,27 @@
 package mandarin.packpack.commands.bot;
 
-import discord4j.common.util.Snowflake;
-import discord4j.core.GatewayDiscordClient;
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class ContributorAdd extends ConstraintCommand {
 
-    private final GatewayDiscordClient client;
-
-    public ContributorAdd(ROLE role, int lang, IDHolder id, GatewayDiscordClient client) {
+    public ContributorAdd(ROLE role, int lang, IDHolder id) {
         super(role, lang, id);
-
-        this.client = client;
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
             return;
+
+        JDA client = event.getJDA();
 
         String[] contents = getContent(event).split(" ");
 
@@ -32,7 +30,7 @@ public class ContributorAdd extends ConstraintCommand {
             return;
         }
 
-        if(validUser(contents[1])) {
+        if(validUser(contents[1], client)) {
             String id = contents[1].replaceAll("<@!|<@|>", "");
 
             if(!StaticStore.contributors.contains(id))
@@ -44,18 +42,11 @@ public class ContributorAdd extends ConstraintCommand {
         }
     }
 
-    private boolean validUser(String id) {
+    private boolean validUser(String id, JDA client) {
         id = id.replaceAll("<@!|<@|>", "");
 
-        try {
-            client.getUserById(Snowflake.of(id)).block();
+        User u = client.getUserById(id);
 
-            return true;
-        } catch (Exception e) {
-            StaticStore.logger.uploadErrorLog(e, "Failed to get user ID | ID : "+id);
-            e.printStackTrace();
-
-            return  false;
-        }
+        return u != null;
     }
 }

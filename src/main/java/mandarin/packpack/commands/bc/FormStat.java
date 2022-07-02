@@ -3,14 +3,6 @@ package mandarin.packpack.commands.bc;
 import common.CommonStatic;
 import common.util.Data;
 import common.util.unit.Form;
-import discord4j.core.event.domain.interaction.InteractionCreateEvent;
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.discordjson.json.ApplicationCommandInteractionData;
-import discord4j.discordjson.json.ApplicationCommandInteractionOptionData;
-import discord4j.discordjson.json.InteractionData;
-import discord4j.discordjson.json.MemberData;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
@@ -21,49 +13,40 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.FormButtonHolder;
 import mandarin.packpack.supporter.server.holder.FormReactionSlashMessageHolder;
 import mandarin.packpack.supporter.server.holder.FormStatMessageHolder;
-import mandarin.packpack.supporter.server.slash.SlashBuilder;
 import mandarin.packpack.supporter.server.slash.SlashOption;
-import mandarin.packpack.supporter.server.slash.WebhookBuilder;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
+import net.dv8tion.jda.api.interactions.Interaction;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class FormStat extends ConstraintCommand {
-    public static WebhookBuilder getInteractionWebhook(InteractionCreateEvent event) {
-        InteractionData interaction = event.getInteraction().getData();
+    public static void performInteraction(GenericCommandInteractionEvent event) {
+        Interaction interaction = event.getInteraction();
 
-        if(interaction.data().isAbsent()) {
-            System.out.println("Data is absent!");
-            return null;
-        }
-
-        ApplicationCommandInteractionData data = interaction.data().get();
-
-        if(data.options().isAbsent()) {
-            System.out.println("Options are absent!");
-            return null;
+        if(event.getOptions().isEmpty()) {
+            StaticStore.logger.uploadLog("E/FormStat::performInteraction - Options are absent!");
+            return;
         }
 
         int lang = LangID.EN;
 
-        if(!interaction.guildId().isAbsent()) {
-            String gId = interaction.guildId().get();
+        if(interaction.getMember() != null) {
+            Member m = interaction.getMember();
 
-            if(gId.equals(StaticStore.BCU_KR_SERVER))
-                lang = LangID.KR;
-        }
-
-        if(!interaction.member().isAbsent()) {
-            MemberData m = interaction.member().get();
-
-            if(StaticStore.config.containsKey(m.user().id().asString())) {
-                lang = StaticStore.config.get(m.user().id().asString()).lang;
+            if(StaticStore.config.containsKey(m.getUser().getId())) {
+                lang = StaticStore.config.get(m.getUser().getId()).lang;
 
                 if(lang == -1) {
-                    if(interaction.guildId().isAbsent()) {
+                    if(interaction.getGuild() == null) {
                         lang = LangID.EN;
                     } else {
-                        IDHolder idh = StaticStore.idHolder.get(interaction.guildId().get());
+                        IDHolder idh = StaticStore.idHolder.get(interaction.getGuild().getId());
 
                         if(idh == null) {
                             lang = LangID.EN;
@@ -75,7 +58,7 @@ public class FormStat extends ConstraintCommand {
             }
         }
 
-        List<ApplicationCommandInteractionOptionData> options = data.options().get();
+        List<OptionMapping> options = event.getOptions();
 
         String name = SlashOption.getStringOption(options, "name", "");
         boolean frame = SlashOption.getBooleanOption(options, "frame", true);
@@ -88,42 +71,39 @@ public class FormStat extends ConstraintCommand {
         int finalLang = lang;
 
         if(f == null) {
-            return SlashBuilder.getWebhookRequest(w -> w.setContent(LangID.getStringByID("formst_specific", finalLang)));
+            event.deferReply()
+                    .allowedMentions(new ArrayList<>())
+                    .setContent(LangID.getStringByID("formst_specific", finalLang))
+                    .queue();
+
+            return;
         }
 
-        return SlashBuilder.getWebhookRequest(w -> {
-            try {
-                ConfigHolder config;
+        try {
+            ConfigHolder config;
 
-                if(!interaction.member().isAbsent()) {
-                    MemberData member = interaction.member().get();
+            if(interaction.getMember() != null) {
+                Member member = interaction.getMember();
 
-                    config = StaticStore.config.getOrDefault(member.user().id().asString(), null);
-                } else {
-                    config = null;
-                }
-
-
-                EntityHandler.showUnitEmb(f, w, config, frame, talent, extra, lvs, finalLang);
-
-                w.addPostHandler((g, m) -> {
-                            if (!interaction.member().isAbsent()) {
-                                MemberData member = interaction.member().get();
-
-                                StaticStore.putHolder(
-                                        member.user().id().asString(),
-                                        new FormReactionSlashMessageHolder(g, f, member.user().id().asString(), m.channelId().asLong(), m.id().asLong(), config, frame, talent, extra, lvs, finalLang)
-                                );
-                            }
-                        }
-                );
-            } catch (Exception e) {
-                e.printStackTrace();
+                config = StaticStore.config.getOrDefault(member.getUser().getId(), new ConfigHolder());
+            } else {
+                config = new ConfigHolder();
             }
-        });
+
+            Message m = EntityHandler.performUnitEmb(f, event, config, frame, talent, extra, lvs, finalLang);
+
+            if(m != null && interaction.getMember() != null) {
+                StaticStore.putHolder(
+                        interaction.getMember().getId(),
+                        new FormReactionSlashMessageHolder(m, f, interaction.getMember().getId(), m.getChannel().getId(), m.getId(), config, frame && config.useFrame, talent, extra || config.extra, lvs, finalLang)
+                );
+            }
+        } catch (Exception e) {
+            StaticStore.logger.uploadErrorLog(e, "E/FormStat::performInteraction - Failed to show unit embed");
+        }
     }
 
-    private static ArrayList<Integer> prepareLevels(List<ApplicationCommandInteractionOptionData> options) {
+    private static ArrayList<Integer> prepareLevels(List<OptionMapping> options) {
         ArrayList<Integer> levels = new ArrayList<>();
 
         for(int i = 0; i < 7; i++) {
@@ -149,13 +129,13 @@ public class FormStat extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         String[] list = getContent(event).split(" ",2);
 
         if(list.length == 1 || filterCommand(getContent(event)).isBlank()) {
-            ch.createMessage(LangID.getStringByID("formst_noname", lang)).subscribe();
+            ch.sendMessage(LangID.getStringByID("formst_noname", lang)).queue();
         } else {
             ArrayList<Form> forms = EntityFilter.findUnitWithName(filterCommand(getContent(event)), lang);
 
@@ -175,16 +155,18 @@ public class FormStat extends ConstraintCommand {
                 boolean talent = (param & PARAM_TALENT) > 0;
                 boolean extra = (param & PARAM_EXTRA) > 0 || config.extra;
 
-                Message result = EntityHandler.showUnitEmb(forms.get(0), ch, config, isFrame, talent, extra, lv, lang, true);
+                Message result = EntityHandler.performUnitEmb(forms.get(0), ch, config, isFrame, talent, extra, lv, lang, true);
 
                 if(result != null) {
-                    getMember(event).ifPresent(m -> {
+                    Member m = getMember(event);
+
+                    if (m != null) {
                         Message author = getMessage(event);
 
                         if(author != null) {
-                            StaticStore.putHolder(m.getId().asString(), new FormButtonHolder(forms.get(0), author, result, config, isFrame, talent, extra, lv, lang, ch.getId().asString(), m.getId().asString()));
+                            StaticStore.putHolder(m.getId(), new FormButtonHolder(forms.get(0), author, result, config, isFrame, talent, extra, lv, lang, ch.getId(), m.getId()));
                         }
-                    });
+                    }
                 }
             } else if (forms.isEmpty()) {
                 createMessageWithNoPings(ch, LangID.getStringByID("formst_nounit", lang).replace("_", filterCommand(getContent(event))));
@@ -229,12 +211,14 @@ public class FormStat extends ConstraintCommand {
                 ArrayList<Integer> lv = handleLevel(getContent(event));
 
                 if(res != null) {
-                    getMember(event).ifPresent(member -> {
+                    Member m = getMember(event);
+
+                    if(m != null) {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(member.getId().asString(), new FormStatMessageHolder(forms, msg, config, res, ch.getId().asString(), param, lv, lang));
-                    });
+                            StaticStore.putHolder(m.getId(), new FormStatMessageHolder(forms, msg, config, res, ch.getId(), param, lv, lang));
+                    }
                 }
 
             }

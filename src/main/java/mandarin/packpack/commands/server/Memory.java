@@ -1,9 +1,9 @@
 package mandarin.packpack.commands.server;
 
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class Memory extends ConstraintCommand {
     public Memory(ROLE role, int lang, IDHolder id) {
@@ -11,7 +11,7 @@ public class Memory extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
@@ -22,6 +22,6 @@ public class Memory extends ConstraintCommand {
         long m = Runtime.getRuntime().maxMemory();
         double per = 100.0 * (t - f) / m;
 
-        ch.createMessage("Memory used: " + (t - f >> 20) + " MB / " + (m >> 20) + " MB, " + (int) per + "%").subscribe();
+        ch.sendMessage("Memory used: " + (t - f >> 20) + " MB / " + (m >> 20) + " MB, " + (int) per + "%").queue();
     }
 }

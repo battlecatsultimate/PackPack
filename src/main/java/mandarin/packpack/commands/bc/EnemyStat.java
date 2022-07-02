@@ -4,62 +4,52 @@ import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Enemy;
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.discordjson.json.ApplicationCommandInteractionData;
-import discord4j.discordjson.json.ApplicationCommandInteractionOptionData;
-import discord4j.discordjson.json.InteractionData;
-import discord4j.discordjson.json.MemberData;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
-import mandarin.packpack.supporter.server.holder.EnemyStatMessageHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import mandarin.packpack.supporter.server.slash.SlashBuilder;
+import mandarin.packpack.supporter.server.holder.EnemyStatMessageHolder;
 import mandarin.packpack.supporter.server.slash.SlashOption;
-import mandarin.packpack.supporter.server.slash.WebhookBuilder;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class EnemyStat extends ConstraintCommand {
-    public static WebhookBuilder getInteractionWebhook(InteractionData interaction) {
-        if(interaction.data().isAbsent()) {
-            System.out.println("Data is absent in EnemyStat!");
-            return null;
-        }
-
-        ApplicationCommandInteractionData data = interaction.data().get();
-
-        if(data.options().isAbsent()) {
-            System.out.println("Options are absent!");
-            return null;
+    public static void performInteraction(GenericCommandInteractionEvent interaction) {
+        if(interaction.getOptions().isEmpty()) {
+            StaticStore.logger.uploadLog("W/EnemyStat::performInteraction - Options are absent!");
+            return;
         }
 
         int lang = LangID.EN;
 
-        if(!interaction.guildId().isAbsent()) {
-            String gID = interaction.guildId().get();
+        if(interaction.getGuild() != null) {
+            String gID = interaction.getGuild().getId();
 
             if(gID.equals(StaticStore.BCU_KR_SERVER))
                 lang = LangID.KR;
         }
 
-        if(!interaction.member().isAbsent()) {
-            MemberData m = interaction.member().get();
+        if(interaction.getMember() != null) {
+            Member m = interaction.getMember();
 
-            if(StaticStore.config.containsKey(m.user().id().asString())) {
-                lang =  StaticStore.config.get(m.user().id().asString()).lang;
+            if(StaticStore.config.containsKey(m.getId())) {
+                lang =  StaticStore.config.get(m.getId()).lang;
 
                 if(lang == -1) {
-                    if(interaction.guildId().isAbsent()) {
+                    if(interaction.getGuild() == null) {
                         lang = LangID.EN;
                     } else {
-                        IDHolder idh = StaticStore.idHolder.get(interaction.guildId().get());
+                        IDHolder idh = StaticStore.idHolder.get(interaction.getGuild().getId());
 
                         if(idh == null) {
                             lang = LangID.EN;
@@ -71,7 +61,7 @@ public class EnemyStat extends ConstraintCommand {
             }
         }
 
-        List<ApplicationCommandInteractionOptionData> options = data.options().get();
+        List<OptionMapping> options = interaction.getOptions();
 
         String name = SlashOption.getStringOption(options, "name", "");
 
@@ -87,17 +77,15 @@ public class EnemyStat extends ConstraintCommand {
 
         final int finalLang = lang;
 
-        return SlashBuilder.getWebhookRequest(w -> {
-            if(e == null) {
-                w.setContent(LangID.getStringByID("formst_specific", finalLang));
-            } else {
-                try {
-                    EntityHandler.showEnemyEmb(e, w, frame, extra, magnification, finalLang);
-                } catch (Exception exception) {
-                    exception.printStackTrace();
-                }
+        if(e == null) {
+            interaction.deferReply().allowedMentions(new ArrayList<>()).setContent(LangID.getStringByID("formst_specific", finalLang)).queue();
+        } else {
+            try {
+                EntityHandler.performEnemyEmb(e, interaction, frame, extra, magnification, finalLang);
+            } catch (Exception exception) {
+                StaticStore.logger.uploadErrorLog(exception, "E/EnemyStat::performInteraction - Failed to show enemy embed");
             }
-        });
+        }
     }
 
     private static final int PARAM_SECOND = 2;
@@ -112,13 +100,13 @@ public class EnemyStat extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         String[] list = getContent(event).split(" ", 2);
 
         if(list.length == 1 || filterCommand(getContent(event)).isBlank()) {
-            ch.createMessage(LangID.getStringByID("formst_noname", lang)).subscribe();
+            ch.sendMessage(LangID.getStringByID("formst_noname", lang)).queue();
         } else {
             ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(filterCommand(getContent(event)), lang);
 
@@ -180,12 +168,14 @@ public class EnemyStat extends ConstraintCommand {
                 boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
 
                 if(res != null) {
-                    getMember(event).ifPresent(member -> {
+                    Member member = getMember(event);
+
+                    if(member != null) {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(member.getId().asString(), new EnemyStatMessageHolder(enemies, msg, res, ch.getId().asString(), magnification, isFrame, isExtra, lang));
-                    });
+                            StaticStore.putHolder(member.getId(), new EnemyStatMessageHolder(enemies, msg, res, ch.getId(), magnification, isFrame, isExtra, lang));
+                    }
                 }
             }
         }

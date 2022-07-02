@@ -1,12 +1,13 @@
 package mandarin.packpack.commands;
 
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.ConfirmButtonHolder;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class OptOut extends ConstraintCommand {
     public OptOut(ROLE role, int lang, IDHolder id) {
@@ -14,29 +15,30 @@ public class OptOut extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
             return;
 
-        getMember(event).ifPresentOrElse(me -> {
-            String id = me.getId().asString();
+        Member me = getMember(event);
 
-            Message m = createMessage(ch, c -> {
-                c.content(LangID.getStringByID("optout_warn", lang));
-                registerConfirmButtons(c, lang);
-            });
+        if(me != null) {
+            String id = me.getId();
 
-            StaticStore.putHolder(id, new ConfirmButtonHolder(m, getMessage(event), ch.getId().asString(), id, () -> {
+            Message m = registerConfirmButtons(ch.sendMessage(LangID.getStringByID("optout_warn", lang)), lang).complete();
+
+            StaticStore.putHolder(id, new ConfirmButtonHolder(m, getMessage(event), ch.getId(), id, () -> {
                 StaticStore.optoutMembers.add(id);
 
                 StaticStore.spamData.remove(id);
                 StaticStore.prefix.remove(id);
                 StaticStore.timeZones.remove(id);
 
-                createMessage(ch, co -> co.content(LangID.getStringByID("optout_success", lang)));
+                ch.sendMessage(LangID.getStringByID("optout_success", lang)).queue();
             }, lang));
-        }, () -> createMessage(ch, m -> m.content(LangID.getStringByID("optout_nomem", lang))));
+        } else {
+            ch.sendMessage(LangID.getStringByID("optout_nomem", lang)).queue();
+        }
     }
 }

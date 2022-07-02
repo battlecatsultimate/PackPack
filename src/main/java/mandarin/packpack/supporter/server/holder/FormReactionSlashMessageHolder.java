@@ -1,40 +1,36 @@
 package mandarin.packpack.supporter.server.holder;
 
 import common.util.unit.Form;
-import discord4j.core.GatewayDiscordClient;
-import discord4j.core.event.domain.message.ReactionAddEvent;
-import discord4j.core.object.entity.Member;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.core.object.reaction.ReactionEmoji;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.MessageReaction;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
-public class FormReactionSlashMessageHolder extends MessageHolder<ReactionAddEvent> {
+public class FormReactionSlashMessageHolder extends MessageHolder<MessageReactionAddEvent> {
     private final Form f;
     private final String memberID;
-    private final long channelID;
-    private final long embID;
+    private final String channelID;
+    private final String embID;
     private final ConfigHolder config;
     private final int lang;
+    private final Message m;
 
     private final boolean isFrame;
     private final boolean talent;
     private final boolean extra;
     private final ArrayList<Integer> lv;
 
-    private final GatewayDiscordClient client;
-
-    public FormReactionSlashMessageHolder(GatewayDiscordClient client, Form f, String memberID, long channelID, long embID, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, ArrayList<Integer> lv, int lang) {
-        super(ReactionAddEvent.class);
+    public FormReactionSlashMessageHolder(Message m, Form f, String memberID, String channelID, String embID, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, ArrayList<Integer> lv, int lang) {
+        super(MessageReactionAddEvent.class);
 
         this.f = f;
         this.memberID = memberID;
@@ -48,7 +44,7 @@ public class FormReactionSlashMessageHolder extends MessageHolder<ReactionAddEve
         this.extra = extra;
         this.lv = lv;
 
-        this.client = client;
+        this.m = m;
 
         Timer autoFinish = new Timer();
 
@@ -62,128 +58,120 @@ public class FormReactionSlashMessageHolder extends MessageHolder<ReactionAddEve
 
                 StaticStore.removeHolder(memberID, FormReactionSlashMessageHolder.this);
 
-                client.getRestClient().getChannelService()
-                        .deleteAllReactions(channelID, embID).subscribe();
+                m.clearReactions().queue();
             }
         }, TimeUnit.MINUTES.toMillis(5));
     }
 
     @Override
-    public int handleEvent(ReactionAddEvent event) {
+    public int handleEvent(MessageReactionAddEvent event) {
         if(expired) {
             System.out.println("Expired at FormReactionSlashHolder!");
             return RESULT_FAIL;
         }
 
-        MessageChannel ch = event.getChannel().block();
+        MessageChannel ch = event.getChannel();
 
-        if(ch == null)
+        if(!ch.getId().equals(channelID))
             return RESULT_STILL;
 
-        if(ch.getId().asLong() != channelID)
+        if(!event.getMessageId().equals(embID))
             return RESULT_STILL;
 
-        Message msg = event.getMessage().block();
-
-        if(msg == null || msg.getId().asLong() != embID)
+        if(event.getMember() == null)
             return RESULT_STILL;
 
-        if(event.getMember().isEmpty())
+        Member mem = event.getMember();
+
+        if(!mem.getId().equals(memberID))
             return RESULT_STILL;
 
-        Member mem = event.getMember().get();
+        boolean emojiClicked = false;
 
-        if(!mem.getId().asString().equals(memberID))
-            return RESULT_STILL;
+        MessageReaction.ReactionEmote emoji = event.getReactionEmote();
 
-        Optional<ReactionEmoji.Custom> emoji = event.getEmoji().asCustomEmoji();
+        switch (emoji.getId()) {
+            case StaticStore.TWOPREVIOUS:
+                emojiClicked = true;
 
-        AtomicReference<Boolean> emojiClicked = new AtomicReference<>(false);
-
-        emoji.ifPresent(em -> {
-            switch (em.getId().asString()) {
-                case StaticStore.TWOPREVIOUS:
-                    emojiClicked.set(true);
-
-                    if(f.fid - 2 < 0)
-                        return;
-
-                    if(f.unit == null)
-                        return;
-
-                    Form newForm = f.unit.forms[f.fid - 2];
-
-                    try {
-                        EntityHandler.showUnitEmb(newForm, ch, config, isFrame, talent, extra, lv, lang, false);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
+                if(f.fid - 2 < 0)
                     break;
-                case StaticStore.PREVIOUS:
-                    emojiClicked.set(true);
 
-                    if(f.fid - 1 < 0)
-                        return;
-
-                    if(f.unit == null)
-                        return;
-
-                    newForm = f.unit.forms[f.fid - 1];
-
-                    try {
-                        EntityHandler.showUnitEmb(newForm, ch, config, isFrame, talent, extra, lv, lang, false);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
+                if(f.unit == null)
                     break;
-                case StaticStore.NEXT:
-                    emojiClicked.set(true);
 
-                    if(f.unit == null)
-                        return;
+                Form newForm = f.unit.forms[f.fid - 2];
 
-                    if(f.fid + 1 >= f.unit.forms.length)
-                        return;
+                try {
+                    EntityHandler.performUnitEmb(newForm, ch, config, isFrame, talent, extra, lv, lang, false);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
-                    newForm = f.unit.forms[f.fid + 1];
+                break;
+            case StaticStore.PREVIOUS:
+                emojiClicked = true;
 
-                    try {
-                        EntityHandler.showUnitEmb(newForm, ch, config, isFrame, talent, extra, lv, lang, false);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
+                if(f.fid - 1 < 0)
                     break;
-                case StaticStore.TWONEXT:
-                    emojiClicked.set(true);
 
-                    if(f.unit == null)
-                        return;
-
-                    if(f.fid + 2 >= f.unit.forms.length)
-                        return;
-
-                    newForm = f.unit.forms[f.fid + 2];
-
-                    try {
-                        EntityHandler.showUnitEmb(newForm, ch, config, isFrame, talent, extra, lv, lang, false);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
+                if(f.unit == null)
                     break;
-            }
-        });
 
-        if(emojiClicked.get()) {
-            client.getRestClient().getChannelService()
-                    .deleteMessage(channelID, embID, null).subscribe();
+                newForm = f.unit.forms[f.fid - 1];
+
+                try {
+                    EntityHandler.performUnitEmb(newForm, ch, config, isFrame, talent, extra, lv, lang, false);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                break;
+            case StaticStore.NEXT:
+                emojiClicked = true;
+
+                if(f.unit == null)
+                    break;
+
+                if(f.fid + 1 >= f.unit.forms.length)
+                    break;
+
+                newForm = f.unit.forms[f.fid + 1];
+
+                try {
+                    EntityHandler.performUnitEmb(newForm, ch, config, isFrame, talent, extra, lv, lang, false);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                break;
+            case StaticStore.TWONEXT:
+                emojiClicked = true;
+
+                if(f.unit == null)
+                    break;
+
+                if(f.fid + 2 >= f.unit.forms.length)
+                    break;
+
+                newForm = f.unit.forms[f.fid + 2];
+
+                try {
+                    EntityHandler.performUnitEmb(newForm, ch, config, isFrame, talent, extra, lv, lang, false);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                break;
+        }
+
+        if(emojiClicked) {
+            m.clearReactions().queue();
+
             expired = true;
         }
 
-        return emojiClicked.get() ? RESULT_FINISH : RESULT_STILL;
+        return emojiClicked ? RESULT_FINISH : RESULT_STILL;
     }
 
     @Override
@@ -200,7 +188,6 @@ public class FormReactionSlashMessageHolder extends MessageHolder<ReactionAddEve
 
         StaticStore.removeHolder(id, this);
 
-        client.getRestClient().getChannelService()
-                .deleteAllReactions(channelID, embID).subscribe();
+        m.clearReactions().queue();
     }
 }

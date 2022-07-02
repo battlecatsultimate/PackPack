@@ -4,62 +4,48 @@ import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Enemy;
-import discord4j.core.GatewayDiscordClient;
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.GlobalTimedConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
-import mandarin.packpack.supporter.server.holder.EnemyAnimMessageHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import mandarin.packpack.supporter.server.holder.EnemyAnimMessageHolder;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class EnemyGif extends GlobalTimedConstraintCommand {
     private final int PARAM_DEBUG = 2;
     private final int PARAM_RAW = 4;
     private final int PARAM_GIF = 8;
 
-    private final GatewayDiscordClient client;
-
-    public EnemyGif(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID, GatewayDiscordClient client) {
+    public EnemyGif(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID) {
         super(role, lang, id, mainID, TimeUnit.SECONDS.toMillis(30));
-
-        this.client = client;
     }
 
     @Override
-    protected void doThing(MessageEvent event) throws Exception {
+    protected void doThing(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
             return;
 
-        Guild g = getGuild(event).block();
+        Guild g = getGuild(event);
+        Member m = getMember(event);
 
-        if(g == null)
+        if(g == null || m == null)
             return;
 
-        AtomicReference<Boolean> isTrusted = new AtomicReference<>(false);
-
-        getMember(event).ifPresentOrElse(m -> {
-            if(StaticStore.contributors.contains(m.getId().asString())) {
-                isTrusted.set(true);
-            } else if(m.getId().asString().equals(StaticStore.MANDARIN_SMELL)) {
-                isTrusted.set(true);
-            } else {
-                isTrusted.set(false);
-            }
-        }, () -> isTrusted.set(false));
+        boolean isTrusted = StaticStore.contributors.contains(m.getId()) || m.getId().equals(StaticStore.MANDARIN_SMELL);
 
         String[] list = getContent(event).split(" ");
 
@@ -78,7 +64,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
             String search = filterCommand(getContent(event));
 
             if(search.isBlank()) {
-                ch.createMessage(LangID.getStringByID("eimg_more", lang)).subscribe();
+                ch.sendMessage(LangID.getStringByID("eimg_more", lang)).queue();
                 disableTimer();
                 return;
             }
@@ -96,15 +82,15 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
                 boolean gif = (param & PARAM_GIF) > 0;
                 int frame = getFrame(getContent(event));
 
-                if(raw && !isTrusted.get()) {
-                    ch.createMessage(LangID.getStringByID("gif_ignore", lang)).subscribe();
+                if(raw && !isTrusted) {
+                    ch.sendMessage(LangID.getStringByID("gif_ignore", lang)).queue();
                 }
 
                 Enemy en = enemies.get(0);
 
-                boolean result = EntityHandler.generateEnemyAnim(en, ch, client, g.getPremiumTier().getValue(), mode, debug, frame, lang, raw && isTrusted.get(), gif);
+                boolean result = EntityHandler.generateEnemyAnim(en, ch, g.getBoostTier().getKey(), mode, debug, frame, lang, raw && isTrusted, gif);
 
-                if(raw && isTrusted.get()) {
+                if(raw && isTrusted) {
                     changeTime(TimeUnit.MINUTES.toMillis(1));
                 }
 
@@ -163,24 +149,24 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
                 boolean raw = (param & PARAM_RAW) > 0;
                 boolean gif = (param & PARAM_GIF) > 0;
 
-                if(raw && !isTrusted.get()) {
-                    ch.createMessage(LangID.getStringByID("gif_ignore", lang)).subscribe();
+                if(raw && !isTrusted) {
+                    ch.sendMessage(LangID.getStringByID("gif_ignore", lang)).queue();
                 }
 
                 if(res != null) {
-                    getMember(event).ifPresent(member -> StaticStore.putHolder(member.getId().asString(), new EnemyAnimMessageHolder(enemies, getMessage(event), res, client, ch.getId().asString(), mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isTrusted.get(), gif)));
+                    StaticStore.putHolder(m.getId(), new EnemyAnimMessageHolder(enemies, getMessage(event), res, ch.getId(), mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isTrusted, gif));
                 }
 
                 disableTimer();
             }
         } else {
-            ch.createMessage(LangID.getStringByID("eimg_more", lang)).subscribe();
+            ch.sendMessage(LangID.getStringByID("eimg_more", lang)).queue();
             disableTimer();
         }
     }
 
     @Override
-    protected void setOptionalID(MessageEvent event) {
+    protected void setOptionalID(GenericMessageEvent event) {
         optionalID = "";
     }
 

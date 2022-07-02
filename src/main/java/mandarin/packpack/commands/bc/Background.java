@@ -2,14 +2,6 @@ package mandarin.packpack.commands.bc;
 
 import common.pack.UserProfile;
 import common.util.Data;
-import discord4j.core.GatewayDiscordClient;
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.Member;
-import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.discordjson.json.InteractionData;
-import discord4j.discordjson.json.MemberData;
-import mandarin.packpack.commands.Command;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.TimedConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
@@ -17,71 +9,76 @@ import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.bc.ImageDrawing;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import mandarin.packpack.supporter.server.slash.SlashBuilder;
-import mandarin.packpack.supporter.server.slash.WebhookBuilder;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
+import net.dv8tion.jda.api.interactions.Interaction;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class Background extends TimedConstraintCommand {
-    public static WebhookBuilder getInteractionWebhook(InteractionData interaction, common.util.pack.Background bg) throws Exception {
+    public static void performButton(ButtonInteractionEvent event, common.util.pack.Background bg) throws Exception {
+        Interaction interaction = event.getInteraction();
+
         int lang = LangID.EN;
 
-        if(!interaction.guildId().isAbsent()) {
-            String gID = interaction.guildId().get();
+        if(interaction.getGuild() != null) {
+            String gID = interaction.getGuild().getId();
 
             if(gID.equals(StaticStore.BCU_KR_SERVER))
                 lang = LangID.KR;
         }
 
-        if(!interaction.member().isAbsent()) {
-            MemberData m = interaction.member().get();
+        if(interaction.getMember() != null) {
+            Member m = interaction.getMember();
 
-            if(StaticStore.config.containsKey(m.user().id().asString())) {
-                lang =  StaticStore.config.get(m.user().id().asString()).lang;
+            if(StaticStore.config.containsKey(m.getId())) {
+                lang =  StaticStore.config.get(m.getId()).lang;
             }
         }
 
         File img = ImageDrawing.drawBGImage(bg, 960, 520, false);
 
         if(img != null) {
-            FileInputStream fis = new FileInputStream(img);
+            event.deferReply()
+                    .allowedMentions(new ArrayList<>())
+                    .setContent(LangID.getStringByID("bg_result", lang).replace("_", Data.trio(bg.id.id)).replace("WWW", 960+"").replace("HHH", 520+""))
+                    .addFile(img, "bg.png")
+                    .queue(m -> {
+                        if(img.exists() && !img.delete()) {
+                            StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                        }
+                    }, e -> {
+                        StaticStore.logger.uploadErrorLog(e, "E/Background::performButton - Failed to upload bg image");
 
-            int finalLang = lang;
-
-            return SlashBuilder.getWebhookRequest(w -> {
-                w.setContent(LangID.getStringByID("bg_result", finalLang).replace("_", Data.trio(bg.id.id)).replace("WWW", 960+"").replace("HHH", 520+""));
-                w.addFile("bg.png", fis, img);
-            });
+                        if(img.exists() && !img.delete()) {
+                            StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                        }
+                    });
         }
-
-        return null;
     }
 
     private common.util.pack.Background bg;
-    private final GatewayDiscordClient client;
 
-    public Background(ConstraintCommand.ROLE role, int lang, IDHolder id, long time, GatewayDiscordClient client) {
+    public Background(ConstraintCommand.ROLE role, int lang, IDHolder id, long time) {
         super(role, lang, id, time, StaticStore.COMMAND_BG_ID);
-
-        this.client = client;
     }
 
     public Background(ConstraintCommand.ROLE role, int lang, IDHolder id, long time, common.util.pack.Background bg) {
         super(role, lang, id, time, StaticStore.COMMAND_BG_ID);
 
         this.bg = bg;
-        client = null;
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
-        Guild g = getGuild(event).block();
+        Guild g = getGuild(event);
 
         if(ch == null || g == null)
             return;
@@ -90,37 +87,30 @@ public class Background extends TimedConstraintCommand {
             File img = ImageDrawing.drawBGImage(bg, 960, 520, false);
 
             if(img != null) {
-                FileInputStream fis = new FileInputStream(img);
+                ch.sendMessage(LangID.getStringByID("bg_result", lang).replace("_", Data.trio(bg.id.id)).replace("WWW", 960+"").replace("HHH", 520+""))
+                        .addFile(img, "bg.png")
+                        .queue(m -> {
+                            if(img.exists() && !img.delete()) {
+                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                            }
+                        }, e -> {
+                            StaticStore.logger.uploadErrorLog(e, "E/Background - Failed to upload bg image");
 
-                createMessage(ch, ms -> {
-                    ms.content(LangID.getStringByID("bg_result", lang).replace("_", Data.trio(bg.id.id)).replace("WWW", 960+"").replace("HHH", 520+""));
-                    ms.addFile("bg.png", fis);
-                }, () -> {
-                    try {
-                        fis.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    if(img.exists()) {
-                        boolean res = img.delete();
-
-                        if(!res) {
-                            System.out.println("Can't delete file : "+img.getAbsolutePath());
-                        }
-                    }
-                });
+                            if(img.exists() && !img.delete()) {
+                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                            }
+                        });
             }
         } else {
             String[] msg = getContent(event).split(" ");
 
             if(msg.length == 1) {
-                ch.createMessage(LangID.getStringByID("bg_more", lang)).subscribe();
+                ch.sendMessage(LangID.getStringByID("bg_more", lang)).queue();
             } else {
                 int id = getID(getContent(event));
 
                 if(id == -1) {
-                    ch.createMessage(LangID.getStringByID("bg_more", lang)).subscribe();
+                    ch.sendMessage(LangID.getStringByID("bg_more", lang)).queue();
                     return;
                 }
 
@@ -129,36 +119,35 @@ public class Background extends TimedConstraintCommand {
                 if(bg == null) {
                     int[] size = getBGSize();
 
-                    ch.createMessage(LangID.getStringByID("bg_invalid", lang).replace("_", size[0]+"").replace("-", size[1] + "")).subscribe();
+                    ch.sendMessage(LangID.getStringByID("bg_invalid", lang).replace("_", size[0]+"").replace("-", size[1] + "")).queue();
                     return;
                 }
 
-                Optional<Member> om = getMember(event);
+                Member m = getMember(event);
 
-                if(om.isEmpty())
+                if(m == null)
                     return;
-
-                Member m = om.get();
 
                 int w = Math.max(1, getWidth(getContent(event)));
                 int h = Math.max(1, getHeight(getContent(event)));
                 boolean eff = drawEffect(getContent(event));
                 boolean anim = generateAnim(getContent(event));
-                boolean isTrusted = StaticStore.contributors.contains(m.getId().asString());
+                boolean isTrusted = StaticStore.contributors.contains(m.getId());
 
                 String cache = StaticStore.imgur.get("BG - "+Data.trio(bg.id.id), false, true);
 
                 if(anim && bg.effect != -1 && cache == null && isTrusted) {
-                    if(!EntityHandler.generateBGAnim(ch, client, bg, lang)) {
+                    if(!EntityHandler.generateBGAnim(ch, bg, lang)) {
                         StaticStore.logger.uploadLog("W/Background | Failed to generate bg effect animation");
                     }
                 } else {
                     if(anim && bg.effect != -1) {
                         if(cache != null) {
-                            Command.createMessage(ch, ms -> ms.content(LangID.getStringByID("gif_cache", lang).replace("_", cache)));
+                            ch.sendMessage(LangID.getStringByID("gif_cache", lang).replace("_", cache)).queue();
+
                             return;
                         } else {
-                            createMessage(ch, ms -> ms.content(LangID.getStringByID("bg_ignore", lang)));
+                            ch.sendMessage(LangID.getStringByID("bg_ignore", lang)).queue();
                         }
                     }
 
@@ -168,28 +157,19 @@ public class Background extends TimedConstraintCommand {
                     File img = ImageDrawing.drawBGImage(bg, w, h, eff);
 
                     if(img != null) {
-                        FileInputStream fis = new FileInputStream(img);
+                        ch.sendMessage(LangID.getStringByID("bg_result", lang).replace("_", Data.trio(bg.id.id)).replace("WWW", w +"").replace("HHH", h+""))
+                                .addFile(img, "bg.png")
+                                .queue(message -> {
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                    }
+                                }, e -> {
+                                    StaticStore.logger.uploadErrorLog(e, "E/Background - Failed to upload bg image");
 
-                        int finalW = w;
-
-                        createMessage(ch, ms -> {
-                            ms.content(LangID.getStringByID("bg_result", lang).replace("_", Data.trio(bg.id.id)).replace("WWW", finalW +"").replace("HHH", h+""));
-                            ms.addFile("bg.png", fis);
-                        }, () -> {
-                            try {
-                                fis.close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-
-                            if(img.exists()) {
-                                boolean res = img.delete();
-
-                                if(!res) {
-                                    System.out.println("Can't delete file : "+img.getAbsolutePath());
-                                }
-                            }
-                        });
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                    }
+                                });
                     }
                 }
             }

@@ -10,13 +10,6 @@ import com.google.gson.JsonParser;
 import common.CommonStatic;
 import common.io.assets.UpdateCheck;
 import common.util.lang.MultiLangCont;
-import discord4j.common.util.Snowflake;
-import discord4j.core.event.domain.Event;
-import discord4j.core.object.entity.Attachment;
-import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.Member;
-import discord4j.core.object.entity.Role;
-import discord4j.rest.util.Color;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.event.EventHolder;
 import mandarin.packpack.supporter.lang.LangID;
@@ -24,7 +17,11 @@ import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.TimeBoolean;
 import mandarin.packpack.supporter.server.data.*;
 import mandarin.packpack.supporter.server.holder.Holder;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.Event;
 
+import java.awt.*;
 import java.io.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -33,6 +30,7 @@ import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
@@ -125,14 +123,14 @@ public class StaticStore {
             "de"
     };
 
-    public static Color[] rainbow = {Color.of(217, 65, 68), Color.of(217, 128, 65), Color.of(224, 213, 85)
-    , Color.of(118, 224, 85), Color.of(85, 169, 224), Color.of(185, 85, 224)};
+    public static int[] rainbow = {rgb(217, 65, 68), rgb(217, 128, 65), rgb(224, 213, 85)
+    , rgb(118, 224, 85), rgb(85, 169, 224), rgb(185, 85, 224)};
 
-    public static Color[] grade = {
-        Color.of(204,124,84),
-        Color.of(206,209,210),
-        Color.of(213,171,98),
-        Color.of(218,232,240)
+    public static int[] grade = {
+        rgb(204,124,84),
+        rgb(206,209,210),
+        rgb(213,171,98),
+        rgb(218,232,240)
     };
 
     public static final String TWOPREVIOUS = "821449061332025404";
@@ -172,22 +170,23 @@ public class StaticStore {
 
     public static String loggingChannel = "";
 
-    public static String rolesToString(Set<Snowflake> roles) {
+    public static String rolesToString(List<Role> roles) {
         StringBuilder builder = new StringBuilder();
 
-        for(Snowflake role : roles) {
-            builder.append(role.asString()).append(", ");
+        for(Role role : roles) {
+            builder.append(role.getId()).append(", ");
         }
 
         return builder.toString();
     }
 
     public static String roleNameFromID(Guild g, String id) {
-        AtomicReference<String> role = new AtomicReference<>("NULL");
+        Role r = g.getRoleById(id);
 
-        g.getRoleById(Snowflake.of(id)).subscribe(r -> role.set(r.getName()));
-
-        return role.get();
+        if(r == null)
+            return "NULL";
+        else
+            return r.getName();
     }
 
     public static File getDownPackFile() {
@@ -860,14 +859,14 @@ public class StaticStore {
         return res;
     }
 
-    public static UpdateCheck.Downloader getDownloader(Attachment att, File container) {
+    public static UpdateCheck.Downloader getDownloader(Message.Attachment att, File container) {
         if(!container.exists() || container.isFile())
             return null;
 
         String url = att.getUrl();
 
-        File target = new File(container, att.getFilename());
-        File temp = new File(container, att.getFilename()+".tmp");
+        File target = new File(container, att.getFileName());
+        File temp = new File(container, att.getFileName()+".tmp");
 
         return new UpdateCheck.Downloader(target, temp, "", false, url);
     }
@@ -879,14 +878,14 @@ public class StaticStore {
     public static String getRoleIDByName(String name, Guild g) {
         AtomicReference<String> id = new AtomicReference<>(null);
 
-        g.getRoles().collectList().subscribe(l -> {
-            for(Role r : l) {
-                if(r.getName().equals(name)) {
-                    id.set(r.getId().asString());
-                    return;
-                }
+        List<Role> l = g.getRoles();
+
+        for(Role r : l) {
+            if(r.getName().equals(name)) {
+                id.set(r.getId());
+                break;
             }
-        });
+        }
 
         return id.get();
     }
@@ -918,7 +917,7 @@ public class StaticStore {
     }
 
     public static Member getPackPack(Guild g) {
-        return g.getMemberById(Snowflake.of(PACKPACK)).block();
+        return g.getMemberById(PACKPACK);
     }
 
     public static String extractFileName(String rawName) {
@@ -963,5 +962,23 @@ public class StaticStore {
         }
 
         return DataToString.df.format(size)+unit[2];
+    }
+
+    public static Emote getEmoteWitNameAndID(JDA jda, String name, String id, boolean animated) {
+        List<Emote> emotes = jda.getEmotesByName(name, false);
+
+        if(emotes.isEmpty())
+            return null;
+
+        for(Emote e : emotes) {
+            if(e.getId().equals(id) && e.isAnimated() == animated)
+                return e;
+        }
+
+        return null;
+    }
+
+    private static int rgb(int r, int g, int b) {
+        return new Color(r, g, b).getRGB();
     }
 }

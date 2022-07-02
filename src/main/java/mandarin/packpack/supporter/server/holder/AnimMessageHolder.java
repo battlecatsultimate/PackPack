@@ -5,17 +5,15 @@ import common.system.files.VFile;
 import common.util.anim.ImgCut;
 import common.util.anim.MaAnim;
 import common.util.anim.MaModel;
-import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.entity.Attachment;
-import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
-import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.AnimMixer;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import javax.imageio.ImageIO;
 import java.io.File;
@@ -25,7 +23,7 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class AnimMessageHolder extends MessageHolder<MessageCreateEvent> {
+public class AnimMessageHolder extends MessageHolder<MessageReceivedEvent> {
     private final AnimMixer mixer;
     private final Message msg;
     private final int lang;
@@ -46,7 +44,7 @@ public class AnimMessageHolder extends MessageHolder<MessageCreateEvent> {
     private final ArrayList<AtomicReference<String>> maanim = new ArrayList<>();
 
     public AnimMessageHolder(Message msg, Message target, int lang, String channelID, File container, boolean debug, MessageChannel ch, boolean raw, boolean transparent, int len) throws Exception {
-        super(MessageCreateEvent.class);
+        super(MessageReceivedEvent.class);
 
         this.msg = target;
         this.lang = lang;
@@ -66,8 +64,8 @@ public class AnimMessageHolder extends MessageHolder<MessageCreateEvent> {
         AtomicReference<Long> now = new AtomicReference<>(System.currentTimeMillis());
 
         if(!msg.getAttachments().isEmpty()) {
-            for(Attachment a : msg.getAttachments()) {
-                if(a.getFilename().endsWith(".png") && mixer.png == null) {
+            for(Message.Attachment a : msg.getAttachments()) {
+                if(a.getFileName().endsWith(".png") && mixer.png == null) {
                     UpdateCheck.Downloader down = StaticStore.getDownloader(a, container);
 
                     if(down != null) {
@@ -89,7 +87,7 @@ public class AnimMessageHolder extends MessageHolder<MessageCreateEvent> {
                             }
                         });
 
-                        File res = new File(container, a.getFilename());
+                        File res = new File(container, a.getFileName());
 
                         if(res.exists()) {
                             if(AnimMixer.validPng(res)) {
@@ -106,7 +104,7 @@ public class AnimMessageHolder extends MessageHolder<MessageCreateEvent> {
 
                         edit();
                     }
-                } else if((a.getFilename().endsWith(".imgcut") || a.getFilename().contains("imgcut.txt")) && mixer.imgCut == null) {
+                } else if((a.getFileName().endsWith(".imgcut") || a.getFileName().contains("imgcut.txt")) && mixer.imgCut == null) {
                     UpdateCheck.Downloader down = StaticStore.getDownloader(a, container);
 
                     if(down != null) {
@@ -128,7 +126,7 @@ public class AnimMessageHolder extends MessageHolder<MessageCreateEvent> {
                             }
                         });
 
-                        File res = new File(container, a.getFilename());
+                        File res = new File(container, a.getFileName());
 
                         if(res.exists()) {
                             if(mixer.validImgCut(res)) {
@@ -149,7 +147,7 @@ public class AnimMessageHolder extends MessageHolder<MessageCreateEvent> {
 
                         edit();
                     }
-                } else if((a.getFilename().endsWith(".mamodel") || a.getFilename().contains("mamodel.txt")) && mixer.model == null) {
+                } else if((a.getFileName().endsWith(".mamodel") || a.getFileName().contains("mamodel.txt")) && mixer.model == null) {
                     UpdateCheck.Downloader down = StaticStore.getDownloader(a, container);
 
                     if(down != null) {
@@ -171,7 +169,7 @@ public class AnimMessageHolder extends MessageHolder<MessageCreateEvent> {
                             }
                         });
 
-                        File res = new File(container, a.getFilename());
+                        File res = new File(container, a.getFileName());
 
                         if(res.exists()) {
                             if(mixer.validMamodel(res)) {
@@ -192,7 +190,7 @@ public class AnimMessageHolder extends MessageHolder<MessageCreateEvent> {
 
                         edit();
                     }
-                } else if((a.getFilename().endsWith(".maanim") || (a.getFilename().startsWith("maanim") && a.getFilename().endsWith(".txt"))) && !animAllDone()) {
+                } else if((a.getFileName().endsWith(".maanim") || (a.getFileName().startsWith("maanim") && a.getFileName().endsWith(".txt"))) && !animAllDone()) {
                     int ind = getLastIndex();
 
                     if(ind == -1)
@@ -219,7 +217,7 @@ public class AnimMessageHolder extends MessageHolder<MessageCreateEvent> {
                             }
                         });
 
-                        File res = new File(container, a.getFilename());
+                        File res = new File(container, a.getFileName());
 
                         if(res.exists()) {
                             if(AnimMixer.validMaanim(res)) {
@@ -245,14 +243,11 @@ public class AnimMessageHolder extends MessageHolder<MessageCreateEvent> {
 
         if(pngDone && cutDone && modelDone && animAllDone()) {
             new Thread(() -> {
-                Guild g = msg.getGuild().block();
-
-                if(g == null)
-                    return;
+                Guild g = msg.getGuild();
 
                 try {
                     for(int i = 0; i < mixer.anim.length; i++) {
-                        EntityHandler.generateAnim(ch, mixer, g.getPremiumTier().getValue(), lang, debug, -1, raw, transparent, i);
+                        EntityHandler.generateAnim(ch, mixer, g.getBoostTier().getKey(), lang, debug, -1, raw, transparent, i);
                     }
 
                     new Timer().schedule(new TimerTask() {
@@ -266,27 +261,23 @@ public class AnimMessageHolder extends MessageHolder<MessageCreateEvent> {
                 }
             }).start();
         } else {
-            msg.getAuthor().ifPresent(u -> StaticStore.putHolder(u.getId().asString(), this));
+            StaticStore.putHolder(msg.getAuthor().getId(), this);
 
             registerAutoFinish(this, target, msg, lang, "animanalyze_expire", TimeUnit.MINUTES.toMillis(5));
         }
     }
 
     @Override
-    public int handleEvent(MessageCreateEvent event) {
+    public int handleEvent(MessageReceivedEvent event) {
         try {
             if(expired) {
                 System.out.println("Expired!!");
                 return RESULT_FAIL;
             }
 
-            MessageChannel ch = event.getMessage().getChannel().block();
+            MessageChannel ch = event.getMessage().getChannel();
 
-            if(ch == null) {
-                return RESULT_STILL;
-            }
-
-            if(!ch.getId().asString().equals(channelID)) {
+            if(!ch.getId().equals(channelID)) {
                 return RESULT_STILL;
             }
 
@@ -295,8 +286,8 @@ public class AnimMessageHolder extends MessageHolder<MessageCreateEvent> {
             Message m = event.getMessage();
 
             if(!m.getAttachments().isEmpty()) {
-                for(Attachment a : m.getAttachments()) {
-                    if(a.getFilename().endsWith(".png") && mixer.png == null) {
+                for(Message.Attachment a : m.getAttachments()) {
+                    if(a.getFileName().endsWith(".png") && mixer.png == null) {
                         UpdateCheck.Downloader down = StaticStore.getDownloader(a, container);
 
                         if(down != null) {
@@ -318,7 +309,7 @@ public class AnimMessageHolder extends MessageHolder<MessageCreateEvent> {
                                 }
                             });
 
-                            File res = new File(container, a.getFilename());
+                            File res = new File(container, a.getFileName());
 
                             if(res.exists()) {
                                 if(AnimMixer.validPng(res)) {
@@ -335,7 +326,7 @@ public class AnimMessageHolder extends MessageHolder<MessageCreateEvent> {
 
                             edit();
                         }
-                    } else if((a.getFilename().endsWith(".imgcut") || a.getFilename().contains("imgcut.txt")) && mixer.imgCut == null) {
+                    } else if((a.getFileName().endsWith(".imgcut") || a.getFileName().contains("imgcut.txt")) && mixer.imgCut == null) {
                         UpdateCheck.Downloader down = StaticStore.getDownloader(a, container);
 
                         if(down != null) {
@@ -357,7 +348,7 @@ public class AnimMessageHolder extends MessageHolder<MessageCreateEvent> {
                                 }
                             });
 
-                            File res = new File(container, a.getFilename());
+                            File res = new File(container, a.getFileName());
 
                             if(res.exists()) {
                                 if(mixer.validImgCut(res)) {
@@ -378,7 +369,7 @@ public class AnimMessageHolder extends MessageHolder<MessageCreateEvent> {
 
                             edit();
                         }
-                    } else if((a.getFilename().endsWith(".mamodel") || a.getFilename().contains("mamodel.txt")) && mixer.model == null) {
+                    } else if((a.getFileName().endsWith(".mamodel") || a.getFileName().contains("mamodel.txt")) && mixer.model == null) {
                         UpdateCheck.Downloader down = StaticStore.getDownloader(a, container);
 
                         if(down != null) {
@@ -400,7 +391,7 @@ public class AnimMessageHolder extends MessageHolder<MessageCreateEvent> {
                                 }
                             });
 
-                            File res = new File(container, a.getFilename());
+                            File res = new File(container, a.getFileName());
 
                             if(res.exists()) {
                                 if(mixer.validMamodel(res)) {
@@ -421,7 +412,7 @@ public class AnimMessageHolder extends MessageHolder<MessageCreateEvent> {
 
                             edit();
                         }
-                    } else if((a.getFilename().endsWith(".maanim") || (a.getFilename().startsWith("maanim") && a.getFilename().endsWith(".txt"))) && !animAllDone()) {
+                    } else if((a.getFileName().endsWith(".maanim") || (a.getFileName().startsWith("maanim") && a.getFileName().endsWith(".txt"))) && !animAllDone()) {
                         int ind = getLastIndex();
 
                         if(ind == -1)
@@ -448,7 +439,7 @@ public class AnimMessageHolder extends MessageHolder<MessageCreateEvent> {
                                 }
                             });
 
-                            File res = new File(container, a.getFilename());
+                            File res = new File(container, a.getFileName());
 
                             if(res.exists()) {
                                 if(AnimMixer.validMaanim(res)) {
@@ -471,18 +462,15 @@ public class AnimMessageHolder extends MessageHolder<MessageCreateEvent> {
                     }
                 }
 
-                m.delete().subscribe();
+                m.delete().queue();
 
                 if(pngDone && cutDone && modelDone && animAllDone()) {
                     new Thread(() -> {
-                        Guild g = event.getGuild().block();
-
-                        if(g == null)
-                            return;
+                        Guild g = event.getGuild();
 
                         try {
                             for(int i = 0; i < maanim.size(); i++) {
-                                EntityHandler.generateAnim(ch, mixer, g.getPremiumTier().getValue(), lang, debug, -1, raw, transparent, i);
+                                EntityHandler.generateAnim(ch, mixer, g.getBoostTier().getKey(), lang, debug, -1, raw, transparent, i);
                             }
 
                             new Timer().schedule(new TimerTask() {
@@ -498,8 +486,8 @@ public class AnimMessageHolder extends MessageHolder<MessageCreateEvent> {
 
                     return RESULT_FINISH;
                 }
-            } else if(m.getContent().equals("c")) {
-                Command.editMessage(msg, mes -> mes.content(wrap(LangID.getStringByID("animanalyze_cancel", lang))));
+            } else if(m.getContentRaw().equals("c")) {
+                msg.editMessage(LangID.getStringByID("animanalyze_cancel", lang)).queue();
 
                 StaticStore.deleteFile(container, true);
 
@@ -526,7 +514,7 @@ public class AnimMessageHolder extends MessageHolder<MessageCreateEvent> {
 
         StaticStore.removeHolder(id, this);
 
-        Command.editMessage(msg, m -> m.content(wrap(LangID.getStringByID("formst_expire", lang))));
+        msg.editMessage(LangID.getStringByID("formst_expire", lang)).queue();
     }
 
     private void edit() {
@@ -539,7 +527,7 @@ public class AnimMessageHolder extends MessageHolder<MessageCreateEvent> {
                 content.append("\n");
         }
 
-        Command.editMessage(msg, m -> m.content(wrap(content.toString())));
+        msg.editMessage(content.toString()).queue();
     }
 
     private int getLastIndex() {

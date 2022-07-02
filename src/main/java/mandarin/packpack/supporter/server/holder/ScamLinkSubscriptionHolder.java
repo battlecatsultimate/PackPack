@@ -1,31 +1,24 @@
 package mandarin.packpack.supporter.server.holder;
 
-import discord4j.core.event.domain.interaction.ComponentInteractionEvent;
-import discord4j.core.event.domain.interaction.SelectMenuInteractionEvent;
-import discord4j.core.object.component.ActionComponent;
-import discord4j.core.object.component.ActionRow;
-import discord4j.core.object.component.Button;
-import discord4j.core.object.component.SelectMenu;
-import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.Member;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.discordjson.json.AllowedMentionsData;
-import discord4j.discordjson.json.ComponentData;
-import discord4j.discordjson.json.WebhookMessageEditRequest;
-import discord4j.discordjson.possible.Possible;
-import discord4j.rest.util.AllowedMentions;
-import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.ScamLinkHandler;
-import reactor.core.publisher.Mono;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
+import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
+import net.dv8tion.jda.api.interactions.components.ActionComponent;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
+import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-public class ScamLinkSubscriptionHolder extends InteractionHolder<ComponentInteractionEvent> {
+public class ScamLinkSubscriptionHolder extends InteractionHolder<GenericComponentInteractionCreateEvent> {
     private final Message msg;
     private final String channelID;
     private final String memberID;
@@ -38,7 +31,7 @@ public class ScamLinkSubscriptionHolder extends InteractionHolder<ComponentInter
     private boolean noticeAll = false;
 
     public ScamLinkSubscriptionHolder(Message msg, String channelID, String memberID, int lang, String targetChannel, String mute) {
-        super(ComponentInteractionEvent.class);
+        super(GenericComponentInteractionCreateEvent.class);
 
         this.msg = msg;
         this.channelID = channelID;
@@ -50,49 +43,40 @@ public class ScamLinkSubscriptionHolder extends InteractionHolder<ComponentInter
     }
 
     @Override
-    public int handleEvent(ComponentInteractionEvent event) {
-        MessageChannel ch = msg.getChannel().block();
+    public int handleEvent(GenericComponentInteractionCreateEvent event) {
+        MessageChannel ch = msg.getChannel();
 
-        if(ch == null)
-            return RESULT_STILL;
-
-        if(!ch.getId().asString().equals(channelID)) {
+        if(!ch.getId().equals(channelID)) {
             return RESULT_STILL;
         }
 
-        if(event.getInteraction().getMember().isEmpty())
+        if(event.getInteraction().getMember() == null)
             return RESULT_STILL;
 
-        Member m = event.getInteraction().getMember().get();
+        Member m = event.getInteraction().getMember();
 
-        if(!m.getId().asString().equals(memberID))
+        if(!m.getId().equals(memberID))
             return RESULT_STILL;
 
-        if(event.getMessage().isEmpty())
-            return RESULT_STILL;
+        Message me = event.getMessage();
 
-        Message me = event.getMessage().get();
-
-        if(!me.getId().asString().equals(msg.getId().asString()))
+        if(!me.getId().equals(msg.getId()))
             return RESULT_STILL;
 
         return RESULT_FINISH;
     }
 
     @Override
-    public Mono<?> getInteraction(ComponentInteractionEvent event) {
-        MessageChannel ch = msg.getChannel().block();
-        Guild g = msg.getGuild().block();
+    public void performInteraction(GenericComponentInteractionCreateEvent event) {
+        MessageChannel ch = msg.getChannel();
+        Guild g = msg.getGuild();
 
-        if(ch == null || g == null)
-            return Mono.empty();
-
-        switch (event.getCustomId()) {
+        switch (event.getComponentId()) {
             case "action":
                 SelectMenuInteractionEvent es = (SelectMenuInteractionEvent) event;
 
                 if(es.getValues().size() != 1)
-                    return Mono.empty();
+                    return;
 
                 switch (es.getValues().get(0)) {
                     case "mute":
@@ -105,73 +89,64 @@ public class ScamLinkSubscriptionHolder extends InteractionHolder<ComponentInter
                         action = ScamLinkHandler.ACTION.BAN;
                         break;
                 }
+                
+                event.deferEdit()
+                        .setContent(parseMessage())
+                        .setActionRows(getComponents())
+                        .queue();
 
-                return event.deferEdit().then(event.getInteractionResponse().editInitialResponse(
-                        WebhookMessageEditRequest.builder()
-                                .content(wrap(parseMessage()))
-                                .allowedMentions(Possible.of(Optional.of(AllowedMentionsData.builder().build())))
-                                .components(getComponents())
-                                .build()
-                ));
+                break;
             case "notice":
                 es = (SelectMenuInteractionEvent) event;
 
                 if(es.getValues().size() != 1)
-                    return Mono.empty();
+                    return;
 
                 noticeAll = es.getValues().get(0).equals("noticeAll");
 
-                return event.deferEdit().then(event.getInteractionResponse().editInitialResponse(
-                        WebhookMessageEditRequest.builder()
-                                .content(wrap(parseMessage()))
-                                .allowedMentions(Possible.of(Optional.of(AllowedMentionsData.builder().build())))
-                                .components(getComponents())
-                                .build()
-                ));
+                event.deferEdit()
+                        .setContent(parseMessage())
+                        .setActionRows(getComponents())
+                        .queue();
+
+                break;
             case "confirm":
                 if(action != ScamLinkHandler.ACTION.MUTE || mute != null) {
                     expired = true;
                     StaticStore.removeHolder(memberID, this);
 
-                    ScamLinkHandler handler = new ScamLinkHandler(memberID, g.getId().asString(), targetChannel, mute, action, noticeAll);
+                    ScamLinkHandler handler = new ScamLinkHandler(memberID, g.getId(), targetChannel, mute, action, noticeAll);
 
-                    StaticStore.scamLinkHandlers.servers.put(g.getId().asString(), handler);
+                    StaticStore.scamLinkHandlers.servers.put(g.getId(), handler);
 
-                    Command.createMessage(ch, m -> {
-                        m.messageReference(msg.getId());
-                        m.allowedMentions(AllowedMentions.builder().build());
-                        m.content(LangID.getStringByID("subscam_done", lang).replace("_", targetChannel));
-                    });
+                    ch.sendMessage(LangID.getStringByID("subscam_done", lang).replace("_", targetChannel))
+                            .reference(msg)
+                            .allowedMentions(new ArrayList<>())
+                            .queue();
 
-                    return event.deferEdit().then(event.getInteractionResponse().editInitialResponse(
-                            WebhookMessageEditRequest.builder()
-                                    .content(wrap(parseMessage()))
-                                    .allowedMentions(Possible.of(Optional.of(AllowedMentionsData.builder().build())))
-                                    .components(new ArrayList<>())
-                                    .build()
-                    ));
+                    event.deferEdit()
+                            .setContent(parseMessage())
+                            .setActionRows()
+                            .queue();
                 } else {
-                    return event.deferEdit().then(event.getInteractionResponse().editInitialResponse(
-                            WebhookMessageEditRequest.builder()
-                                    .content(wrap(LangID.getStringByID("subscam_nomute", lang)))
-                                    .allowedMentions(Possible.of(Optional.of(AllowedMentionsData.builder().build())))
-                                    .components(new ArrayList<>())
-                                    .build()
-                    ));
+                    event.deferEdit()
+                            .setContent(LangID.getStringByID("subscam_nomute", lang))
+                            .setActionRows()
+                            .queue();
                 }
+
+                break;
             case "cancel":
                 expired = true;
                 StaticStore.removeHolder(memberID, this);
 
-                return event.deferEdit().then(event.getInteractionResponse().editInitialResponse(
-                        WebhookMessageEditRequest.builder()
-                                .content(wrap(LangID.getStringByID("subscam_cancel", lang)))
-                                .components(new ArrayList<>())
-                                .build()
-                ));
-        }
+                event.deferEdit()
+                        .setContent(LangID.getStringByID("subscam_cancel", lang))
+                        .setActionRows()
+                        .queue();
 
-        return Mono.empty();
+                break;
+        }
     }
 
     @Override
@@ -183,10 +158,7 @@ public class ScamLinkSubscriptionHolder extends InteractionHolder<ComponentInter
     public void expire(String id) {
         expired = true;
 
-        Command.editMessage(msg, m -> {
-            m.components(new ArrayList<>());
-            m.content(wrap(LangID.getStringByID("subscam_expire", lang)));
-        });
+        msg.editMessage(LangID.getStringByID("subscam_expire", lang)).allowedMentions(new ArrayList<>()).queue();
     }
 
     private String parseMessage() {
@@ -212,49 +184,49 @@ public class ScamLinkSubscriptionHolder extends InteractionHolder<ComponentInter
         return result;
     }
 
-    private List<ComponentData> getComponents() {
-        List<ComponentData> m = new ArrayList<>();
+    private List<ActionRow> getComponents() {
+        List<ActionRow> m = new ArrayList<>();
 
-        List<SelectMenu.Option> options = new ArrayList<>();
+        List<SelectOption> options = new ArrayList<>();
 
         if(action == ScamLinkHandler.ACTION.MUTE) {
-            options.add(SelectMenu.Option.ofDefault(LangID.getStringByID("mute", lang), "mute"));
+            options.add(SelectOption.of(LangID.getStringByID("mute", lang), "mute").withDefault(true));
         } else {
-            options.add(SelectMenu.Option.of(LangID.getStringByID("mute", lang), "mute"));
+            options.add(SelectOption.of(LangID.getStringByID("mute", lang), "mute"));
         }
 
         if(action == ScamLinkHandler.ACTION.KICK) {
-            options.add(SelectMenu.Option.ofDefault(LangID.getStringByID("kick", lang), "kick"));
+            options.add(SelectOption.of(LangID.getStringByID("kick", lang), "kick").withDefault(true));
         } else {
-            options.add(SelectMenu.Option.of(LangID.getStringByID("kick", lang), "kick"));
+            options.add(SelectOption.of(LangID.getStringByID("kick", lang), "kick"));
         }
 
         if(action == ScamLinkHandler.ACTION.BAN) {
-            options.add(SelectMenu.Option.ofDefault(LangID.getStringByID("ban", lang), "ban"));
+            options.add(SelectOption.of(LangID.getStringByID("ban", lang), "ban").withDefault(true));
         } else {
-            options.add(SelectMenu.Option.of(LangID.getStringByID("ban", lang), "ban"));
+            options.add(SelectOption.of(LangID.getStringByID("ban", lang), "ban"));
         }
 
-        m.add(ActionRow.of(SelectMenu.of("action", options)).getData());
+        m.add(ActionRow.of(SelectMenu.create("action").addOptions(options).build()));
 
-        List<SelectMenu.Option> notices = new ArrayList<>();
+        List<SelectOption> notices = new ArrayList<>();
 
         if(!noticeAll) {
-            notices.add(SelectMenu.Option.ofDefault(LangID.getStringByID("noticex", lang), "noticeX"));
-            notices.add(SelectMenu.Option.of(LangID.getStringByID("noticeall", lang), "noticeAll"));
+            notices.add(SelectOption.of(LangID.getStringByID("noticex", lang), "noticeX").withDefault(true));
+            notices.add(SelectOption.of(LangID.getStringByID("noticeall", lang), "noticeAll"));
         } else {
-            notices.add(SelectMenu.Option.ofDefault(LangID.getStringByID("noticeall", lang), "noticeAll"));
-            notices.add(SelectMenu.Option.of(LangID.getStringByID("noticex", lang), "noticeX"));
+            notices.add(SelectOption.of(LangID.getStringByID("noticeall", lang), "noticeAll").withDefault(true));
+            notices.add(SelectOption.of(LangID.getStringByID("noticex", lang), "noticeX"));
         }
 
-        m.add(ActionRow.of(SelectMenu.of("notice", notices)).getData());
+        m.add(ActionRow.of(SelectMenu.create("notice").addOptions(notices).build()));
 
         List<ActionComponent> components = new ArrayList<>();
 
         components.add(Button.success("confirm", LangID.getStringByID("button_confirm", lang)));
         components.add(Button.danger("cancel", LangID.getStringByID("button_cancel", lang)));
 
-        m.add(ActionRow.of(components).getData());
+        m.add(ActionRow.of(components));
 
         return m;
     }

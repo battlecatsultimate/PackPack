@@ -1,10 +1,11 @@
 package mandarin.packpack.commands;
 
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class TimeZone extends ConstraintCommand {
     public TimeZone(ROLE role, int lang, IDHolder id) {
@@ -12,7 +13,7 @@ public class TimeZone extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
@@ -21,25 +22,31 @@ public class TimeZone extends ConstraintCommand {
         String[] contents = getContent(event).split(" ");
 
         if(contents.length < 2) {
-            createMessage(ch, m -> m.content(LangID.getStringByID("timezone_noval", lang)));
+            ch.sendMessage(LangID.getStringByID("timezone_noval", lang)).queue();
+
             return;
         }
 
         if(!StaticStore.isNumeric(contents[1])) {
-            createMessage(ch, m -> m.content(LangID.getStringByID("timezone_notnum", lang)));
+            ch.sendMessage(LangID.getStringByID("timezone_notnum", lang)).queue();
+
             return;
         }
 
         int timeZone = Math.min(12, Math.max(-12, StaticStore.safeParseInt(contents[1])));
 
-        getMember(event).ifPresentOrElse(m -> {
-            StaticStore.timeZones.put(m.getId().asString(), timeZone);
+        Member m = getMember(event);
+
+        if(m != null) {
+            StaticStore.timeZones.put(m.getId(), timeZone);
 
             if(timeZone >= 0) {
-                createMessage(ch, me -> me.content(LangID.getStringByID("timezone_done", lang).replace("_", "+" + timeZone)));
+                ch.sendMessage(LangID.getStringByID("timezone_done", lang).replace("_", "+" + timeZone)).queue();
             } else {
-                createMessage(ch, me -> me.content(LangID.getStringByID("timezone_done", lang).replace("_", timeZone + "")));
+                ch.sendMessage(LangID.getStringByID("timezone_done", lang).replace("_", timeZone + "")).queue();
             }
-        }, () -> createMessage(ch, m -> m.content(LangID.getStringByID("timezone_nomem", lang))));
+        } else {
+            ch.sendMessage(LangID.getStringByID("timezone_nomem", lang)).queue();
+        }
     }
 }

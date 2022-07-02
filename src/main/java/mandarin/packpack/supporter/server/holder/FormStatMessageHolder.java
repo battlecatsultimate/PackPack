@@ -4,18 +4,18 @@ import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Form;
-import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
-import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.ArrayList;
 
-public class FormStatMessageHolder extends MessageHolder<MessageCreateEvent> {
+public class FormStatMessageHolder extends MessageHolder<MessageReceivedEvent> {
     private final ArrayList<Form> form;
     private final Message msg;
     private final String channelID;
@@ -32,7 +32,7 @@ public class FormStatMessageHolder extends MessageHolder<MessageCreateEvent> {
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
     public FormStatMessageHolder(ArrayList<Form> form, Message author, ConfigHolder config, Message msg, String channelID, int param, ArrayList<Integer> lv, int lang) {
-        super(MessageCreateEvent.class);
+        super(MessageReceivedEvent.class);
 
         this.form = form;
         this.msg = msg;
@@ -49,21 +49,18 @@ public class FormStatMessageHolder extends MessageHolder<MessageCreateEvent> {
     }
 
     @Override
-    public int handleEvent(MessageCreateEvent event) {
+    public int handleEvent(MessageReceivedEvent event) {
         if(expired) {
             System.out.println("Expired!!");
             return RESULT_FAIL;
         }
 
-        MessageChannel ch = event.getMessage().getChannel().block();
+        MessageChannel ch = event.getMessage().getChannel();
 
-        if(ch == null)
+        if(!ch.getId().equals(channelID))
             return RESULT_STILL;
 
-        if(!ch.getId().asString().equals(channelID))
-            return RESULT_STILL;
-
-        String content = event.getMessage().getContent();
+        String content = event.getMessage().getContentRaw();
 
         if(content.equals("n")) {
             if(20 * (page + 1) >= form.size())
@@ -71,47 +68,7 @@ public class FormStatMessageHolder extends MessageHolder<MessageCreateEvent> {
 
             page++;
 
-            Command.editMessage(msg, m -> {
-                String check;
-
-                if(form.size() <= 20)
-                    check = "";
-                else if(page == 0)
-                    check = LangID.getStringByID("formst_next", lang);
-                else if((page + 1) * 20 >= form.size())
-                    check = LangID.getStringByID("formst_pre", lang);
-                else
-                    check = LangID.getStringByID("formst_nexpre", lang);
-
-                StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
-
-                for(int i = 20 * page; i < 20 * (page +1); i++) {
-                    if(i >= form.size())
-                        break;
-
-                    Form f = form.get(i);
-
-                    String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
-
-                    int oldConfig = CommonStatic.getConfig().lang;
-                    CommonStatic.getConfig().lang = lang;
-
-                    if(MultiLangCont.get(f) != null)
-                        fname += MultiLangCont.get(f);
-
-                    CommonStatic.getConfig().lang = oldConfig;
-
-                    sb.append(i+1).append(". ").append(fname).append("\n");
-                }
-
-                if(form.size() > 20)
-                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(form.size()/20 + 1)));
-
-                sb.append(LangID.getStringByID("formst_can", lang));
-                sb.append("```");
-
-                m.content(wrap(sb.toString()));
-            });
+            edit();
 
             cleaner.add(event.getMessage());
         } else if(content.equals("p")) {
@@ -120,47 +77,7 @@ public class FormStatMessageHolder extends MessageHolder<MessageCreateEvent> {
 
             page--;
 
-            Command.editMessage(msg, m -> {
-                String check;
-
-                if(form.size() <= 20)
-                    check = "";
-                else if(page == 0)
-                    check = LangID.getStringByID("formst_next", lang);
-                else if((page + 1) * 20 >= form.size())
-                    check = LangID.getStringByID("formst_pre", lang);
-                else
-                    check = LangID.getStringByID("formst_nexpre", lang);
-
-                StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
-
-                for(int i = 20 * page; i < 20 * (page +1); i++) {
-                    if(i >= form.size())
-                        break;
-
-                    Form f = form.get(i);
-
-                    String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
-
-                    int oldConfig = CommonStatic.getConfig().lang;
-                    CommonStatic.getConfig().lang = lang;
-
-                    if(MultiLangCont.get(f) != null)
-                        fname += MultiLangCont.get(f);
-
-                    CommonStatic.getConfig().lang = oldConfig;
-
-                    sb.append(i+1).append(". ").append(fname).append("\n");
-                }
-
-                if(form.size() > 20)
-                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(form.size()/20 + 1)));
-
-                sb.append(LangID.getStringByID("formst_can", lang));
-                sb.append("```");
-
-                m.content(wrap(sb.toString()));
-            });
+            edit();
 
             cleaner.add(event.getMessage());
         } else if(StaticStore.isNumeric(content)) {
@@ -169,7 +86,7 @@ public class FormStatMessageHolder extends MessageHolder<MessageCreateEvent> {
             if(id < 0 || id >= form.size())
                 return RESULT_STILL;
 
-            msg.delete().subscribe();
+            msg.delete().queue();
 
             if(lv.get(0) > form.get(id).unit.max + form.get(id).unit.maxp)
                 lv.set(0, form.get(id).unit.max + form.get(id).unit.maxp);
@@ -181,13 +98,16 @@ public class FormStatMessageHolder extends MessageHolder<MessageCreateEvent> {
             }
 
             try {
-                Message result = EntityHandler.showUnitEmb(form.get(id), ch, config, isFrame, talent, extra, lv, lang, true);
+                Message result = EntityHandler.performUnitEmb(form.get(id), ch, config, isFrame, talent, extra, lv, lang, true);
 
                 if(result != null) {
-                    event.getMember().ifPresent(m -> {
-                        StaticStore.removeHolder(m.getId().asString(), FormStatMessageHolder.this);
-                        StaticStore.putHolder(m.getId().asString(), new FormButtonHolder(form.get(id), event.getMessage(), result, config, isFrame, talent, extra, lv, lang, channelID, m.getId().asString()));
-                    });
+                    Member m = event.getMember();
+
+                    if(m != null) {
+                        StaticStore.removeHolder(m.getId(), FormStatMessageHolder.this);
+
+                        StaticStore.putHolder(m.getId(), new FormButtonHolder(form.get(id), event.getMessage(), result, config, isFrame, talent, extra, lv, lang, channelID, m.getId()));
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -199,10 +119,9 @@ public class FormStatMessageHolder extends MessageHolder<MessageCreateEvent> {
 
             return RESULT_FINISH;
         } else if(content.equals("c")) {
-            Command.editMessage(msg, m -> {
-                m.content(wrap(LangID.getStringByID("formst_cancel", lang)));
-                expired = true;
-            });
+            msg.editMessage(LangID.getStringByID("formst_cancel", lang)).queue();
+
+            expired = true;
 
             cleaner.add(event.getMessage());
 
@@ -220,47 +139,7 @@ public class FormStatMessageHolder extends MessageHolder<MessageCreateEvent> {
 
                     page = p;
 
-                    Command.editMessage(msg, m -> {
-                        String check;
-
-                        if(form.size() <= 20)
-                            check = "";
-                        else if(page == 0)
-                            check = LangID.getStringByID("formst_next", lang);
-                        else if((page + 1) * 20 >= form.size())
-                            check = LangID.getStringByID("formst_pre", lang);
-                        else
-                            check = LangID.getStringByID("formst_nexpre", lang);
-
-                        StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
-
-                        for(int i = 20 * page; i < 20 * (page +1); i++) {
-                            if(i >= form.size())
-                                break;
-
-                            Form f = form.get(i);
-
-                            String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
-
-                            int oldConfig = CommonStatic.getConfig().lang;
-                            CommonStatic.getConfig().lang = lang;
-
-                            if(MultiLangCont.get(f) != null)
-                                fname += MultiLangCont.get(f);
-
-                            CommonStatic.getConfig().lang = oldConfig;
-
-                            sb.append(i+1).append(". ").append(fname).append("\n");
-                        }
-
-                        if(form.size() > 20)
-                            sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(form.size()/20 + 1)));
-
-                        sb.append(LangID.getStringByID("formst_can", lang));
-                        sb.append("```");
-
-                        m.content(wrap(sb.toString()));
-                    });
+                    edit();
 
                     cleaner.add(event.getMessage());
                 }
@@ -272,9 +151,10 @@ public class FormStatMessageHolder extends MessageHolder<MessageCreateEvent> {
 
     @Override
     public void clean() {
+
         for(Message m : cleaner) {
             if(m != null)
-                m.delete().subscribe();
+                m.delete().queue();
         }
     }
 
@@ -287,6 +167,48 @@ public class FormStatMessageHolder extends MessageHolder<MessageCreateEvent> {
 
         StaticStore.removeHolder(id, this);
 
-        Command.editMessage(msg, m -> m.content(wrap(LangID.getStringByID("formst_expire", lang))));
+        msg.editMessage(LangID.getStringByID("formst_expire", lang)).queue();
+    }
+
+    private void edit() {
+        String check;
+
+        if(form.size() <= 20)
+            check = "";
+        else if(page == 0)
+            check = LangID.getStringByID("formst_next", lang);
+        else if((page + 1) * 20 >= form.size())
+            check = LangID.getStringByID("formst_pre", lang);
+        else
+            check = LangID.getStringByID("formst_nexpre", lang);
+
+        StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
+
+        for(int i = 20 * page; i < 20 * (page +1); i++) {
+            if(i >= form.size())
+                break;
+
+            Form f = form.get(i);
+
+            String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
+
+            int oldConfig = CommonStatic.getConfig().lang;
+            CommonStatic.getConfig().lang = lang;
+
+            if(MultiLangCont.get(f) != null)
+                fname += MultiLangCont.get(f);
+
+            CommonStatic.getConfig().lang = oldConfig;
+
+            sb.append(i+1).append(". ").append(fname).append("\n");
+        }
+
+        if(form.size() > 20)
+            sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(form.size()/20 + 1)));
+
+        sb.append(LangID.getStringByID("formst_can", lang));
+        sb.append("```");
+
+        msg.editMessage(sb.toString()).queue();
     }
 }

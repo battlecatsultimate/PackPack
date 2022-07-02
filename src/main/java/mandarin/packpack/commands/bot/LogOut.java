@@ -1,46 +1,47 @@
 package mandarin.packpack.commands.bot;
 
-import discord4j.core.GatewayDiscordClient;
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.ConfirmButtonHolder;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class LogOut extends ConstraintCommand {
-    private final GatewayDiscordClient gate;
-
-    public LogOut(ROLE role, int lang, IDHolder id, GatewayDiscordClient gate) {
+    public LogOut(ROLE role, int lang, IDHolder id) {
         super(role, lang, id);
-
-        this.gate = gate;
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
+        JDA client = event.getJDA();
 
         if(ch != null) {
-            Message msg = createMessage(ch, m -> {
-                m.content("Are you sure that you want to turn off the bot?");
-                registerConfirmButtons(m, 0);
-            });
+            Message msg = registerConfirmButtons(ch.sendMessage("Are you sure that you want to turn off the bot?"), 0).complete();
 
-            getMember(event).ifPresent(m -> StaticStore.putHolder(m.getId().asString(), new ConfirmButtonHolder(msg, getMessage(event), ch.getId().asString(), m.getId().asString(), () -> {
-                createMessage(ch, ms -> ms.content("Good bye!"));
+            Member m = getMember(event);
 
-                StaticStore.saver.cancel();
-                StaticStore.saver.purge();
-                StaticStore.saveServerInfo();
-                gate.logout().subscribe();
-            }, lang)));
+            if(m != null) {
+                StaticStore.putHolder(m.getId(), new ConfirmButtonHolder(msg, getMessage(event), ch.getId(), m.getId(), () -> {
+                    ch.sendMessage("Good bye!").queue();
+
+                    StaticStore.saver.cancel();
+                    StaticStore.saver.purge();
+                    StaticStore.saveServerInfo();
+                    client.shutdown();
+                    System.exit(0);
+                }, lang));
+            }
         } else {
             StaticStore.saver.cancel();
             StaticStore.saver.purge();
             StaticStore.saveServerInfo();
-            gate.logout().subscribe();
+            client.shutdown();
+            System.exit(0);
         }
     }
 }

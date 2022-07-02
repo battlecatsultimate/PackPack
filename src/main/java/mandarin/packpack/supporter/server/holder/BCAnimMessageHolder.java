@@ -5,18 +5,16 @@ import common.system.files.VFile;
 import common.util.anim.ImgCut;
 import common.util.anim.MaAnim;
 import common.util.anim.MaModel;
-import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.entity.Attachment;
-import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
-import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.AnimMixer;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.TimeBoolean;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import javax.imageio.ImageIO;
 import java.io.File;
@@ -26,7 +24,7 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class BCAnimMessageHolder extends MessageHolder<MessageCreateEvent> {
+public class BCAnimMessageHolder extends MessageHolder<MessageReceivedEvent> {
     private enum FILE {
         PNG(-1),
         IMGCUT(-1),
@@ -60,7 +58,7 @@ public class BCAnimMessageHolder extends MessageHolder<MessageCreateEvent> {
     private final ArrayList<AtomicReference<String>> maanim = new ArrayList<>();
 
     public BCAnimMessageHolder(Message msg, Message target, int lang, String channelID, File container, MessageChannel ch, boolean zombie) throws Exception {
-        super(MessageCreateEvent.class);
+        super(MessageReceivedEvent.class);
 
         this.msg = target;
         this.lang = lang;
@@ -78,15 +76,15 @@ public class BCAnimMessageHolder extends MessageHolder<MessageCreateEvent> {
         AtomicReference<Long> now = new AtomicReference<>(System.currentTimeMillis());
 
         if(!msg.getAttachments().isEmpty()) {
-            for(Attachment a : msg.getAttachments()) {
-                if(a.getFilename().endsWith(".png") && mixer.png == null) {
+            for(Message.Attachment a : msg.getAttachments()) {
+                if(a.getFileName().endsWith(".png") && mixer.png == null) {
                     downloadAndValidate("PNG : ", a, FILE.PNG, now);
-                } else if(a.getFilename().endsWith(".imgcut") && mixer.imgCut == null) {
+                } else if(a.getFileName().endsWith(".imgcut") && mixer.imgCut == null) {
                     downloadAndValidate("IMGCUT : ", a, FILE.IMGCUT, now);
-                } else if(a.getFilename().endsWith(".mamodel") && mixer.model == null) {
+                } else if(a.getFileName().endsWith(".mamodel") && mixer.model == null) {
                     downloadAndValidate("MAMODEL : ", a, FILE.MAMODEL, now);
-                } else if(a.getFilename().endsWith(".maanim")) {
-                    int index = getIndexFromFileName(a.getFilename());
+                } else if(a.getFileName().endsWith(".maanim")) {
+                    int index = getIndexFromFileName(a.getFileName());
 
                     if(index != -1) {
                         FILE.ANIM.setIndex(index);
@@ -99,13 +97,10 @@ public class BCAnimMessageHolder extends MessageHolder<MessageCreateEvent> {
 
         if(pngDone && cutDone && modelDone && animAllDone()) {
             new Thread(() -> {
-                Guild g = msg.getGuild().block();
-
-                if(g == null)
-                    return;
+                Guild g = msg.getGuild();
 
                 try {
-                    boolean result = EntityHandler.generateBCAnim(ch, g.getPremiumTier().getValue(), mixer, lang);
+                    boolean result = EntityHandler.generateBCAnim(ch, g.getBoostTier().getKey(), mixer, lang);
 
                     new Timer().schedule(new TimerTask() {
                         @Override
@@ -139,26 +134,23 @@ public class BCAnimMessageHolder extends MessageHolder<MessageCreateEvent> {
                 }, 1000);
             }).start();
         } else {
-            msg.getAuthor().ifPresent(u -> StaticStore.putHolder(u.getId().asString(), this));
+            StaticStore.putHolder(msg.getAuthor().getId(), this);
 
             registerAutoFinish(this, target, msg, lang, "animanalyze_expire", TimeUnit.MINUTES.toMillis(5));
         }
     }
 
     @Override
-    public int handleEvent(MessageCreateEvent event) {
+    public int handleEvent(MessageReceivedEvent event) {
         try {
             if(expired) {
                 System.out.println("Expired!!");
                 return RESULT_FAIL;
             }
 
-            MessageChannel ch = event.getMessage().getChannel().block();
+            MessageChannel ch = event.getMessage().getChannel();
 
-            if(ch == null)
-                return RESULT_STILL;
-
-            if(!ch.getId().asString().equals(channelID))
+            if(!ch.getId().equals(channelID))
                 return RESULT_STILL;
 
             AtomicReference<Long> now = new AtomicReference<>(System.currentTimeMillis());
@@ -166,16 +158,16 @@ public class BCAnimMessageHolder extends MessageHolder<MessageCreateEvent> {
             Message m = event.getMessage();
 
             if(!m.getAttachments().isEmpty()) {
-                for(Attachment a : m.getAttachments()) {
-                    if(a.getFilename().endsWith(".png") && mixer.png == null) {
+                for(Message.Attachment a : m.getAttachments()) {
+                    if(a.getFileName().endsWith(".png") && mixer.png == null) {
                         System.out.println("PNG");
                         downloadAndValidate("PNG : ", a, FILE.PNG, now);
-                    } else if(a.getFilename().endsWith(".imgcut") && mixer.imgCut == null) {
+                    } else if(a.getFileName().endsWith(".imgcut") && mixer.imgCut == null) {
                         downloadAndValidate("IMGCUT : ", a, FILE.IMGCUT, now);
-                    } else if(a.getFilename().endsWith(".mamodel") && mixer.model == null) {
+                    } else if(a.getFileName().endsWith(".mamodel") && mixer.model == null) {
                         downloadAndValidate("MAMODEL : ", a, FILE.MAMODEL, now);
-                    } else if(a.getFilename().endsWith(".maanim")) {
-                        int index = getIndexFromFileName(a.getFilename());
+                    } else if(a.getFileName().endsWith(".maanim")) {
+                        int index = getIndexFromFileName(a.getFileName());
 
                         if(index != -1) {
                             FILE.ANIM.setIndex(index);
@@ -185,17 +177,14 @@ public class BCAnimMessageHolder extends MessageHolder<MessageCreateEvent> {
                     }
                 }
 
-                m.delete().subscribe();
+                m.delete().queue();
 
                 if(pngDone && cutDone && modelDone && animAllDone()) {
                     new Thread(() -> {
-                        Guild g = event.getGuild().block();
-
-                        if(g == null)
-                            return;
+                        Guild g = event.getGuild();
 
                         try {
-                            boolean result = EntityHandler.generateBCAnim(ch, g.getPremiumTier().getValue(), mixer, lang);
+                            boolean result = EntityHandler.generateBCAnim(ch, g.getBoostTier().getKey(), mixer, lang);
 
                             new Timer().schedule(new TimerTask() {
                                 @Override
@@ -224,8 +213,8 @@ public class BCAnimMessageHolder extends MessageHolder<MessageCreateEvent> {
 
                     return RESULT_FINISH;
                 }
-            } else if(m.getContent().equals("c")) {
-                Command.editMessage(msg, mes -> mes.content(wrap(LangID.getStringByID("animanalyze_cancel", lang))));
+            } else if(m.getContentRaw().equals("c")) {
+                msg.editMessage(LangID.getStringByID("animanalyze_cancel", lang)).queue();
 
                 StaticStore.deleteFile(container, true);
 
@@ -253,7 +242,7 @@ public class BCAnimMessageHolder extends MessageHolder<MessageCreateEvent> {
 
         StaticStore.removeHolder(id, this);
 
-        Command.editMessage(msg, m -> m.content(wrap(LangID.getStringByID("formst_expire", lang))));
+        msg.editMessage(LangID.getStringByID("formst_expire", lang)).queue();
     }
 
     private int getIndexFromFileName(String fileName) {
@@ -308,7 +297,7 @@ public class BCAnimMessageHolder extends MessageHolder<MessageCreateEvent> {
             }
         }
 
-        Command.editMessage(msg, m -> m.content(wrap(content.toString())));
+        msg.editMessage(content.toString()).queue();
     }
 
     private boolean validFile(FILE fileType, File file) throws Exception {
@@ -337,7 +326,7 @@ public class BCAnimMessageHolder extends MessageHolder<MessageCreateEvent> {
         }
     }
 
-    private void downloadAndValidate(String prefix, Attachment attachment, FILE fileType, AtomicReference<Long> now) throws Exception {
+    private void downloadAndValidate(String prefix, Message.Attachment attachment, FILE fileType, AtomicReference<Long> now) throws Exception {
         UpdateCheck.Downloader down = StaticStore.getDownloader(attachment, container);
 
         if(down != null) {
@@ -361,7 +350,7 @@ public class BCAnimMessageHolder extends MessageHolder<MessageCreateEvent> {
                 }
             });
 
-            File res = new File(container, attachment.getFilename());
+            File res = new File(container, attachment.getFileName());
 
             if(res.exists()) {
                 if(validFile(fileType, res)) {

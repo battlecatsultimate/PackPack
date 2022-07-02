@@ -5,21 +5,20 @@ import common.util.Data;
 import common.util.anim.EAnimD;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Enemy;
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.TimedConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.ImageDrawing;
 import mandarin.packpack.supporter.lang.LangID;
-import mandarin.packpack.supporter.server.holder.EnemyAnimMessageHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import mandarin.packpack.supporter.server.holder.EnemyAnimMessageHolder;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -32,7 +31,7 @@ public class EnemyImage extends TimedConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
@@ -55,7 +54,7 @@ public class EnemyImage extends TimedConstraintCommand {
             String search = filterCommand(getContent(event));
 
             if(search.isBlank()) {
-                ch.createMessage(LangID.getStringByID("eimg_more", lang)).subscribe();
+                ch.sendMessage(LangID.getStringByID("eimg_more", lang)).queue();
                 return;
             }
 
@@ -81,41 +80,25 @@ public class EnemyImage extends TimedConstraintCommand {
                 enemies.get(0).anim.unload();
 
                 if(img != null) {
-                    FileInputStream fis = new FileInputStream(img);
 
-                    int finalMode = mode;
+                    int oldConfig = CommonStatic.getConfig().lang;
+                    CommonStatic.getConfig().lang = lang;
 
-                    createMessage(ch, m -> {
-                        int oldConfig = CommonStatic.getConfig().lang;
-                        CommonStatic.getConfig().lang = lang;
+                    String fName = MultiLangCont.get(enemies.get(0));
 
-                        String fName = MultiLangCont.get(enemies.get(0));
+                    CommonStatic.getConfig().lang = oldConfig;
 
-                        CommonStatic.getConfig().lang = oldConfig;
+                    if(fName == null || fName.isBlank())
+                        fName = enemies.get(0).names.toString();
 
-                        if(fName == null || fName.isBlank())
-                            fName = enemies.get(0).names.toString();
+                    if(fName.isBlank())
+                        fName = LangID.getStringByID("data_enemy", lang)+" "+ Data.trio(enemies.get(0).id.id);
 
-                        if(fName.isBlank())
-                            fName = LangID.getStringByID("data_enemy", lang)+" "+ Data.trio(enemies.get(0).id.id);
-
-                        m.content(LangID.getStringByID("eimg_result", lang).replace("_", fName).replace(":::", getModeName(finalMode, enemies.get(0).anim.anims.length)).replace("=", String.valueOf(frame)));
-                        m.addFile("result.png", fis);
-                    }, () -> {
-                        try {
-                            fis.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-                        if(img.exists()) {
-                            boolean res = img.delete();
-
-                            if(!res) {
-                                System.out.println("Can't delete file : "+img.getAbsolutePath());
-                            }
-                        }
-                    });
+                    sendMessageWithFile(
+                            ch,
+                            LangID.getStringByID("eimg_result", lang).replace("_", fName).replace(":::", getModeName(mode, enemies.get(0).anim.anims.length)).replace("=", String.valueOf(frame)),
+                            img
+                    );
                 }
             } else {
                 CommonStatic.getConfig().lang = lang;
@@ -169,18 +152,20 @@ public class EnemyImage extends TimedConstraintCommand {
                 int frame = getFrame(getContent(event));
 
                 if(res != null) {
-                    getMember(event).ifPresent(member -> {
+                    Member member = getMember(event);
+
+                    if(member != null) {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(member.getId().asString(), new EnemyAnimMessageHolder(enemies, msg, res, null, ch.getId().asString(), mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang, false, false, false));
-                    });
+                            StaticStore.putHolder(member.getId(), new EnemyAnimMessageHolder(enemies, msg, res, ch.getId(), mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang, false, false, false));
+                    }
                 }
 
                 disableTimer();
             }
         } else {
-            ch.createMessage(LangID.getStringByID("eimg_more", lang)).subscribe();
+            ch.sendMessage(LangID.getStringByID("eimg_more", lang)).queue();
             disableTimer();
         }
     }

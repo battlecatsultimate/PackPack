@@ -1,56 +1,49 @@
 package mandarin.packpack.commands.bot;
 
-import discord4j.common.util.Snowflake;
-import discord4j.core.GatewayDiscordClient;
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.User;
-import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.core.spec.EmbedCreateSpec;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.TimedConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import reactor.core.publisher.Mono;
-
-import java.util.concurrent.atomic.AtomicReference;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class Suggest extends TimedConstraintCommand {
-    private final GatewayDiscordClient client;
-
-    public Suggest(ConstraintCommand.ROLE role, int lang, IDHolder id, long time, GatewayDiscordClient client) {
+    public Suggest(ConstraintCommand.ROLE role, int lang, IDHolder id, long time) {
         super(role, lang, id, time, StaticStore.COMMAND_SUGGEST_ID);
-
-        this.client = client;
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
             return;
 
-        AtomicReference<Boolean> canGo = new AtomicReference<>(true);
+        JDA client = event.getJDA();
 
-        getMember(event).ifPresent(m -> {
-            canGo.set(!StaticStore.suggestBanned.containsKey(m.getId().asString()));
+        Member m = getMember(event);
 
-            if(StaticStore.suggestBanned.containsKey(m.getId().asString())) {
-                ch.createMessage(LangID.getStringByID("suggest_banned", lang).replace("_RRR_", StaticStore.suggestBanned.get(m.getId().asString()))).subscribe();
-            }
-        });
+        if(m == null)
+            return;
 
-        if(!canGo.get()) {
+        if(StaticStore.suggestBanned.containsKey(m.getId())) {
+            ch.sendMessage(LangID.getStringByID("suggest_banned", lang).replace("_RRR_", StaticStore.suggestBanned.get(m.getId()))).queue();
+
             disableTimer();
+
             return;
         }
 
         String title = getTitle(getContent(event));
 
         if(title.isBlank()) {
-            ch.createMessage(LangID.getStringByID("suggest_notitle", lang)).subscribe();
+            ch.sendMessage(LangID.getStringByID("suggest_notitle", lang)).queue();
             disableTimer();
         } else {
             if(title.length() >= 256) {
@@ -59,13 +52,12 @@ public class Suggest extends TimedConstraintCommand {
 
             String desc = getDescription(getContent(event));
 
-            Mono<User> me = client.getUserById(Snowflake.of(StaticStore.MANDARIN_SMELL));
+            User me = client.getUserById(StaticStore.MANDARIN_SMELL);
 
-            String finalTitle = title;
-            me.subscribe(u -> u.getPrivateChannel().subscribe(pc -> {
-                EmbedCreateSpec.Builder builder = EmbedCreateSpec.builder();
+            if(me != null) {
+                EmbedBuilder builder = new EmbedBuilder();
 
-                builder.color(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)]);
+                builder.setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)]);
 
                 if(!desc.isBlank()) {
                     if(desc.length() >= 1024) {
@@ -78,33 +70,25 @@ public class Suggest extends TimedConstraintCommand {
                     }
                 }
 
-                getMember(event).ifPresentOrElse(m -> {
-                    builder.addField("Member ID", m.getId().asString(), true);
-                    builder.addField("Member Name", m.getUsername(), true);
-                    builder.author(finalTitle, null, m.getAvatarUrl());
-                }, () -> builder.title(finalTitle));
+                builder.addField("Member ID", m.getId(), true);
+                builder.addField("Member Name", m.getNickname(), true);
+                builder.setAuthor(title, null, m.getAvatarUrl());
 
-                builder.addField("Channel ID" , ch.getId().asString(), false);
+                builder.addField("Channel ID" , ch.getId(), false);
 
-                Mono<Guild> mono = getGuild(event);
+                Guild g = getGuild(event);
 
-                if(mono != null) {
-                    Guild g = mono.block();
-
-                    if(g != null) {
-                        builder.footer("From "+g.getName()+" | "+g.getId().asString(), null);
-                    }
+                if(g != null) {
+                    builder.setFooter("From "+g.getName()+" | "+g.getId(), null);
                 }
 
-                pc.createMessage(builder.build()).subscribe();
-            }));
-
-            System.out.println(desc);
+                me.openPrivateChannel().flatMap(pc -> pc.sendMessageEmbeds(builder.build())).queue();
+            }
 
             if(desc.length() >= 1024) {
-                ch.createMessage(LangID.getStringByID("suggest_sentwarn", lang)).subscribe();
+                ch.sendMessage(LangID.getStringByID("suggest_sentwarn", lang)).queue();
             } else {
-                ch.createMessage(LangID.getStringByID("suggest_sent", lang)).subscribe();
+                ch.sendMessage(LangID.getStringByID("suggest_sent", lang)).queue();
             }
         }
     }

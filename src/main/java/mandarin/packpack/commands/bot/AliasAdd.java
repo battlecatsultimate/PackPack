@@ -8,9 +8,6 @@ import common.util.stage.Stage;
 import common.util.stage.StageMap;
 import common.util.unit.Enemy;
 import common.util.unit.Form;
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
@@ -19,9 +16,12 @@ import mandarin.packpack.supporter.server.data.AliasHolder;
 import mandarin.packpack.supporter.server.holder.alias.AliasEnemyMessageHolder;
 import mandarin.packpack.supporter.server.holder.alias.AliasFormMessageHolder;
 import mandarin.packpack.supporter.server.holder.alias.AliasStageMessageHolder;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class AliasAdd extends Command {
 
@@ -30,25 +30,17 @@ public class AliasAdd extends Command {
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
+        Member m = getMember(event);
 
-        if(ch == null)
+        if(ch == null || m == null)
             return;
-
-        AtomicReference<Boolean> canGo = new AtomicReference<>(false);
-
-        getMember(event).ifPresent(m -> canGo.set(StaticStore.contributors.contains(m.getId().asString())));
-
-        if(!canGo.get()) {
-            ch.createMessage(LangID.getStringByID("alias_noperm", lang)).subscribe();
-            return;
-        }
 
         AliasHolder.TYPE type = getType(getContent(event));
 
         if(type == AliasHolder.TYPE.UNSPECIFIED) {
-            ch.createMessage(LangID.getStringByID("alias_specify", lang)).subscribe();
+            ch.sendMessage(LangID.getStringByID("alias_specify", lang)).queue();
             return;
         }
 
@@ -133,12 +125,10 @@ public class AliasAdd extends Command {
                     Message res = getMessageWithNoPings(ch, sb.toString());
 
                     if(res != null) {
-                        getMember(event).ifPresent(m -> {
-                            Message msg = getMessage(event);
+                        Message msg = getMessage(event);
 
-                            if(msg != null)
-                                StaticStore.putHolder(m.getId().asString(), new AliasFormMessageHolder(forms, msg, res, ch.getId().asString(), AliasHolder.MODE.ADD, lang, getAliasName(getContent(event))));
-                        });
+                        if(msg != null)
+                            StaticStore.putHolder(m.getId(), new AliasFormMessageHolder(forms, msg, res, ch.getId(), AliasHolder.MODE.ADD, lang, getAliasName(getContent(event))));
                     }
                 }
                 break;
@@ -225,12 +215,10 @@ public class AliasAdd extends Command {
                     Message res = getMessageWithNoPings(ch, sb.toString());
 
                     if(res != null) {
-                        getMember(event).ifPresent(member -> {
-                            Message msg = getMessage(event);
+                        Message msg = getMessage(event);
 
-                            if(msg != null)
-                                StaticStore.putHolder(member.getId().asString(), new AliasEnemyMessageHolder(enemies, msg, res, ch.getId().asString(), AliasHolder.MODE.ADD, lang, getAliasName(getContent(event))));
-                        });
+                        if(msg != null)
+                            StaticStore.putHolder(m.getId(), new AliasEnemyMessageHolder(enemies, msg, res, ch.getId(), AliasHolder.MODE.ADD, lang, getAliasName(getContent(event))));
                     }
                 }
                 break;
@@ -248,7 +236,7 @@ public class AliasAdd extends Command {
                     stages = EntityFilter.findStageWithMapName(names[2]);
 
                     if(!stages.isEmpty()) {
-                        ch.createMessage(LangID.getStringByID("stinfo_smart", lang)).subscribe();
+                        ch.sendMessage(LangID.getStringByID("stinfo_smart", lang)).queue();
                     }
                 }
 
@@ -381,14 +369,10 @@ public class AliasAdd extends Command {
                     Message res = getMessageWithNoPings(ch, sb.toString());
 
                     if(res != null) {
-                        ArrayList<Stage> fStage = stages;
+                        Message msg = getMessage(event);
 
-                        getMember(event).ifPresent(member -> {
-                            Message msg = getMessage(event);
-
-                            if(msg != null)
-                                StaticStore.putHolder(member.getId().asString(), new AliasStageMessageHolder(fStage, msg, res, ch.getId().asString(), AliasHolder.MODE.ADD, lang, getAliasName(getContent(event))));
-                        });
+                        if(msg != null)
+                            StaticStore.putHolder(m.getId(), new AliasStageMessageHolder(stages, msg, res, ch.getId(), AliasHolder.MODE.ADD, lang, getAliasName(getContent(event))));
                     }
                 }
                 break;

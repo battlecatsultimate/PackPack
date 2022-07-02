@@ -1,26 +1,17 @@
 package mandarin.packpack;
 
-import discord4j.core.DiscordClient;
-import discord4j.core.DiscordClientBuilder;
-import discord4j.core.GatewayDiscordClient;
-import discord4j.rest.request.RouterOptions;
 import mandarin.packpack.supporter.server.slash.SlashBuilder;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
+
+import javax.security.auth.login.LoginException;
 
 public class SlashCommandUpdater {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws LoginException {
         final String TOKEN = args[0];
 
-        DiscordClientBuilder<DiscordClient, RouterOptions> builder = DiscordClientBuilder.create(TOKEN);
+        JDA client = JDABuilder.createDefault(TOKEN).build();
 
-        DiscordClient client = builder.build();
-
-        GatewayDiscordClient gate = client.gateway().login().block();
-
-        if(gate == null) {
-            System.out.println("Gate is null");
-            return;
-        }
-
-        SlashBuilder.build(gate);
+        SlashBuilder.build(client);
     }
 }

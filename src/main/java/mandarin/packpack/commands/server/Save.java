@@ -1,12 +1,12 @@
 package mandarin.packpack.commands.server;
 
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class Save extends ConstraintCommand {
     public Save(ROLE role, int lang, IDHolder holder) {
@@ -14,15 +14,15 @@ public class Save extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) {
+    public void doSomething(GenericMessageEvent event) {
         MessageChannel ch = getChannel(event);
 
-        Message msg = ch.createMessage(LangID.getStringByID("save_save", lang)).block();
+        Message msg = ch.sendMessage(LangID.getStringByID("save_save", lang)).complete();
 
         if(msg != null) {
             StaticStore.saveServerInfo();
 
-            editMessage(msg, e -> e.content(wrap(LangID.getStringByID("save_done", lang))));
+            msg.editMessage(LangID.getStringByID("save_done", lang)).queue();
         } else {
             onFail(event, DEFAULT_ERROR);
         }

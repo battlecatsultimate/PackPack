@@ -1,10 +1,10 @@
 package mandarin.packpack.commands.bot;
 
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class AddScamLinkHelpingServer extends ConstraintCommand {
     public AddScamLinkHelpingServer(ROLE role, int lang, IDHolder id) {
@@ -12,7 +12,7 @@ public class AddScamLinkHelpingServer extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
@@ -21,22 +21,25 @@ public class AddScamLinkHelpingServer extends ConstraintCommand {
         String[] contents = getContent(event).split(" ");
 
         if(contents.length < 2) {
-            createMessage(ch, m -> m.content("Usage : p!ashs [Server ID]"));
+            ch.sendMessage("Usage : p!ashs [Server ID]").queue();
+
             return;
         }
 
         if(!StaticStore.isNumeric(contents[1])) {
-            createMessage(ch, m -> m.content("Server ID must be numeric!"));
+            ch.sendMessage("Server ID must be numeric!").queue();
+
             return;
         }
 
 
         if(StaticStore.scamLink.servers.contains(contents[1])) {
-            createMessage(ch, m -> m.content("This server is already registered as helping server"));
+            ch.sendMessage("This server is already registered as helping server").queue();
+
             return;
         }
 
         StaticStore.scamLink.servers.add(contents[1]);
-        createMessage(ch, m -> m.content("Added server "+contents[1]));
+        ch.sendMessage("Added server "+contents[1]).queue();
     }
 }

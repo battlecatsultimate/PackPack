@@ -1,11 +1,11 @@
 package mandarin.packpack.commands.server;
 
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class ServerLocale extends ConstraintCommand {
     public ServerLocale(ROLE role, int lang, IDHolder id) {
@@ -13,7 +13,7 @@ public class ServerLocale extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch != null) {
@@ -57,15 +57,15 @@ public class ServerLocale extends ConstraintCommand {
                                 break;
                         }
 
-                        ch.createMessage(LangID.getStringByID("serverlocale_set", lan).replace("_", locale)).subscribe();
+                        ch.sendMessage(LangID.getStringByID("serverlocale_set", lan).replace("_", locale)).queue();
                     } else {
-                        ch.createMessage(LangID.getStringByID("locale_incorrect", lan)).subscribe();
+                        ch.sendMessage(LangID.getStringByID("locale_incorrect", lan)).queue();
                     }
                 } else {
-                    ch.createMessage(LangID.getStringByID("locale_number", lang)).subscribe();
+                    ch.sendMessage(LangID.getStringByID("locale_number", lang)).queue();
                 }
             } else {
-                ch.createMessage(LangID.getStringByID("locale_argu", lang)).subscribe();
+                ch.sendMessage(LangID.getStringByID("locale_argu", lang)).queue();
             }
         }
     }

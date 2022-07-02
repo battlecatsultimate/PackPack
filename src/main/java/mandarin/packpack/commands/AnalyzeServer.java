@@ -1,34 +1,28 @@
 package mandarin.packpack.commands;
 
-import discord4j.common.util.Snowflake;
-import discord4j.core.GatewayDiscordClient;
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.Member;
-import discord4j.core.object.entity.Role;
-import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.core.spec.MessageCreateFields;
-import discord4j.discordjson.json.UserData;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 
 public class AnalyzeServer extends ConstraintCommand {
-    private final GatewayDiscordClient client;
-
-    public AnalyzeServer(ROLE role, int lang, IDHolder id, GatewayDiscordClient client) {
+    public AnalyzeServer(ROLE role, int lang, IDHolder id) {
         super(role, lang, id);
-
-        this.client = client;
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
             return;
+
+        JDA client = event.getJDA();
 
         StringBuilder builder = new StringBuilder("----- SERVER ANALYSIS -----\n\n");
 
@@ -37,7 +31,7 @@ public class AnalyzeServer extends ConstraintCommand {
         for(String id : StaticStore.idHolder.keySet()) {
             try {
                 IDHolder idHolder = StaticStore.idHolder.get(id);
-                Guild g = client.getGuildById(Snowflake.of(id)).block();
+                Guild g = client.getGuildById(id);
 
                 if(g != null) {
                     String size;
@@ -65,7 +59,7 @@ public class AnalyzeServer extends ConstraintCommand {
                             .append(")\n")
                             .append("Owner : ");
 
-                    Member owner = g.getOwner().block();
+                    Member owner = g.retrieveOwner().complete();
 
                     if(owner == null) {
                         builder.append("Unknown\n\n");
@@ -75,17 +69,17 @@ public class AnalyzeServer extends ConstraintCommand {
                         continue;
                     }
 
-                    UserData user = owner.getUserData();
+                    User user = owner.getUser();
 
-                    builder.append(user.username())
+                    builder.append(user.getName())
                             .append("#")
-                            .append(user.discriminator())
+                            .append(user.getDiscriminator())
                             .append(" (")
-                            .append(user.id().asString())
+                            .append(user.getId())
                             .append(")")
                             .append("\n");
 
-                    Role role = g.getRoleById(Snowflake.of(idHolder.MOD)).block();
+                    Role role = g.getRoleById(idHolder.MOD);
 
                     if(role == null) {
                         builder.append("\nisProperlySet? : Unknown\n\n");
@@ -134,19 +128,6 @@ public class AnalyzeServer extends ConstraintCommand {
 
         writer.close();
 
-        FileInputStream fis = new FileInputStream(text);
-
-        createMessage(ch, m -> {
-            m.content("Analyzed " + StaticStore.idHolder.size() + " servers");
-            m.addFile(MessageCreateFields.File.of("Analysis.txt", fis));
-        }, () -> {
-            try {
-                fis.close();
-
-                StaticStore.deleteFile(analysis, true);
-            } catch (IOException exception) {
-                exception.printStackTrace();
-            }
-        });
+        sendMessageWithFile(ch, "Analyzed " + StaticStore.idHolder.size() + " servers", text, "Analysis.txt");
     }
 }

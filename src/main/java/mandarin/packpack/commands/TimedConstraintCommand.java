@@ -1,23 +1,17 @@
 package mandarin.packpack.commands;
 
-import discord4j.common.util.Snowflake;
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.channel.GuildChannel;
-import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.core.spec.MessageCreateSpec;
-import discord4j.rest.util.Permission;
-import discord4j.rest.util.PermissionSet;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.GuildMessageChannel;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class TimedConstraintCommand extends Command {
 
@@ -41,6 +35,9 @@ public abstract class TimedConstraintCommand extends Command {
             case MANDARIN:
                 constRole = "MANDARIN";
                 break;
+            case CONTRIBUTOR:
+                constRole = "CONTRIBUTOR";
+                break;
             default:
                 throw new IllegalStateException("Invalid ROLE enum : "+role);
         }
@@ -51,92 +48,73 @@ public abstract class TimedConstraintCommand extends Command {
     }
 
     @Override
-    public void execute(MessageEvent event) {
+    public void execute(GenericMessageEvent event) {
         MessageChannel ch = getChannel(event);
-        Guild g = getGuild(event).block();
+        Guild g = getGuild(event);
 
         if(ch == null || g == null)
             return;
 
-        AtomicReference<Boolean> canGo = new AtomicReference<>(true);
-        AtomicReference<String> memberID = new AtomicReference<>("");
-        AtomicReference<Boolean> hasRole = new AtomicReference<>(false);
+        Member m = getMember(event);
 
-        getMember(event).ifPresent(m -> {
-            String mID = m.getId().asString();
-            String role = StaticStore.rolesToString(m.getRoleIds());
+        if(m == null)
+            return;
 
-            boolean isMod = holder.MOD != null && role.contains(holder.MOD);
+        String memberID = m.getId();
+        boolean hasRole;
+        boolean canBypass = memberID.equals(StaticStore.MANDARIN_SMELL);
 
-            memberID.set(mID);
+        String role = StaticStore.rolesToString(m.getRoles());
 
-            if(mID.equals(StaticStore.MANDARIN_SMELL) || isMod) {
-                hasRole.set(true);
+        boolean isMod = holder.MOD != null && role.contains(holder.MOD);
+
+        if (!canBypass && StaticStore.timeLimit.containsKey(memberID) && StaticStore.timeLimit.get(memberID).containsKey(id)) {
+            long oldTime = StaticStore.timeLimit.get(memberID).get(id);
+            long currentTime = System.currentTimeMillis();
+
+            if(currentTime-oldTime < time) {
+                ch.sendMessage(LangID.getStringByID("command_timelimit", lang).replace("_", getCooldown(time - (currentTime-oldTime)))).queue();
 
                 return;
             }
-
-            if (StaticStore.timeLimit.containsKey(mID) && StaticStore.timeLimit.get(mID).containsKey(id)) {
-                long oldTime = StaticStore.timeLimit.get(mID).get(id);
-                long currentTime = System.currentTimeMillis();
-
-                if(currentTime-oldTime < time) {
-                    ch.createMessage(LangID.getStringByID("command_timelimit", lang).replace("_", getCooldown(time - (currentTime-oldTime)))).subscribe();
-                    canGo.set(false);
-                }
-            }
-
-            if(constRole == null) {
-                hasRole.set(true);
-            } else if(constRole.equals("MANDARIN")) {
-                hasRole.set(m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
-            } else {
-                hasRole.set(role.contains(constRole) || m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
-            }
-        });
-
-        if(!canGo.get())
-            return;
-
-        AtomicBoolean canTry = new AtomicBoolean(true);
-
-        if(ch instanceof GuildChannel) {
-            GuildChannel tc = ((GuildChannel) ch);
-
-            Optional<PermissionSet> op = tc.getEffectivePermissions(Snowflake.of(StaticStore.PACKPACK)).blockOptional();
-
-            op.ifPresent(permissions -> canTry.set(permissions.contains(Permission.SEND_MESSAGES)));
         }
 
-        if(!canTry.get()) {
-            getMember(event).ifPresent(m -> {
-                String serverName = g.getName();
-                String channelName;
+        if(constRole == null) {
+            hasRole = true;
+        } else if(constRole.equals("MANDARIN")) {
+            hasRole = memberID.equals(StaticStore.MANDARIN_SMELL);
+        } else if(constRole.equals("CONTRIBUTOR")) {
+            hasRole = StaticStore.contributors.contains(memberID);
+        } else {
+            hasRole = isMod || role.contains(constRole) || m.getId().equals(StaticStore.MANDARIN_SMELL);
+        }
 
-                if(ch instanceof GuildChannel)
-                    channelName = ((GuildChannel) ch).getName();
-                else
-                    channelName = null;
+        boolean canTry = true;
 
-                String content;
+        if(ch instanceof GuildMessageChannel) {
+            GuildMessageChannel tc = ((GuildMessageChannel) ch);
 
-                if(channelName == null) {
-                    content = LangID.getStringByID("no_perm", lang).replace("_SSS_", serverName);
-                } else {
-                    content = LangID.getStringByID("no_permch", lang).replace("_SSS_", serverName).replace("_CCC_", channelName);
-                }
+            canTry = tc.canTalk();
+        }
 
-                m.getPrivateChannel().subscribe(pc -> pc.createMessage(MessageCreateSpec.builder().content(content).build()).subscribe(null, e -> {}));
-            });
+        if(!canTry) {
+            String serverName = g.getName();
+            String channelName = ch.getName();
+
+            String content = LangID.getStringByID("no_permch", lang).replace("_SSS_", serverName).replace("_CCC_", channelName);
+
+            m.getUser().openPrivateChannel().flatMap(pc -> pc.sendMessage(content)).queue();
 
             return;
         }
 
-        if(!hasRole.get()) {
-            if(constRole != null && constRole.equals("MANDARIN")) {
-                ch.createMessage(LangID.getStringByID("const_man", lang)).subscribe();
+        if(!hasRole) {
+            if(constRole.equals("MANDARIN")) {
+                ch.sendMessage(LangID.getStringByID("const_man", lang)).queue();
+            } else if(constRole.equals("CONTRIBUTOR")) {
+                createMessageWithNoPings(ch, LangID.getStringByID("const_con", lang));
             } else {
-                ch.createMessage(LangID.getStringByID("const_role", lang).replace("_", StaticStore.roleNameFromID(g, constRole))).subscribe();
+                ch.sendMessage(LangID.getStringByID("const_role", lang).replace("_", StaticStore.roleNameFromID(g, constRole))).queue();
             }
         } else {
             try {
@@ -144,15 +122,15 @@ public abstract class TimedConstraintCommand extends Command {
                     try {
                         doSomething(event);
 
-                        if(startTimer && !memberID.get().isBlank()) {
-                            if(!StaticStore.timeLimit.containsKey(memberID.get())) {
+                        if(startTimer && !memberID.isBlank()) {
+                            if(!StaticStore.timeLimit.containsKey(memberID)) {
                                 Map<String, Long> memberLimit = new HashMap<>();
 
                                 memberLimit.put(id, System.currentTimeMillis());
 
-                                StaticStore.timeLimit.put(memberID.get(), memberLimit);
+                                StaticStore.timeLimit.put(memberID, memberLimit);
                             } else {
-                                StaticStore.timeLimit.get(memberID.get()).put(id, System.currentTimeMillis());
+                                StaticStore.timeLimit.get(memberID).put(id, System.currentTimeMillis());
                             }
                         }
                     } catch (Exception e) {

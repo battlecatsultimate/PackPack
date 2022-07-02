@@ -2,17 +2,18 @@ package mandarin.packpack.commands.bc;
 
 import common.util.Data;
 import common.util.unit.Form;
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.TimedConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
-import mandarin.packpack.supporter.server.holder.FormSpriteMessageHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import mandarin.packpack.supporter.server.holder.FormSpriteMessageHolder;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.util.ArrayList;
 
@@ -26,7 +27,7 @@ public class FormSprite extends TimedConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
@@ -35,12 +36,12 @@ public class FormSprite extends TimedConstraintCommand {
         String[] contents = getContent(event).split(" ");
 
         if(contents.length == 1) {
-            ch.createMessage(LangID.getStringByID("fimg_more", lang)).subscribe();
+            ch.sendMessage(LangID.getStringByID("fimg_more", lang)).queue();
         } else {
             String search = filterCommand(getContent(event));
 
             if(search.isBlank()) {
-                ch.createMessage(LangID.getStringByID("fimg_more", lang)).subscribe();
+                ch.sendMessage(LangID.getStringByID("fimg_more", lang)).queue();
                 return;
             }
 
@@ -94,12 +95,14 @@ public class FormSprite extends TimedConstraintCommand {
                 Message res = getMessageWithNoPings(ch, sb.toString());
 
                 if(res != null) {
-                    getMember(event).ifPresent(member -> {
+                    Member m = getMember(event);
+
+                    if(m != null) {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(member.getId().asString(), new FormSpriteMessageHolder(forms, msg, res, ch.getId().asString(), mode, lang));
-                    });
+                            StaticStore.putHolder(m.getId(), new FormSpriteMessageHolder(forms, msg, res, ch.getId(), mode, lang));
+                    }
                 }
 
                 disableTimer();

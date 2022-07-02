@@ -1,10 +1,10 @@
 package mandarin.packpack.commands.bot;
 
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.io.File;
 
@@ -14,7 +14,7 @@ public class ClearTemp extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
@@ -24,6 +24,6 @@ public class ClearTemp extends ConstraintCommand {
 
         StaticStore.deleteFile(temp, false);
 
-        createMessage(ch, m -> m.content("Tried to clean temp folder"));
+        ch.sendMessage("Tried to clean temp folder").queue();
     }
 }

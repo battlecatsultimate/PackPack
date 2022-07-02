@@ -1,10 +1,10 @@
 package mandarin.packpack.commands.bot;
 
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class RemoveCache extends ConstraintCommand {
     public RemoveCache(ROLE role, int lang, IDHolder id) {
@@ -12,7 +12,7 @@ public class RemoveCache extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
@@ -21,14 +21,15 @@ public class RemoveCache extends ConstraintCommand {
         String[] contents = getContent(event).split(" ",  2);
 
         if(contents.length < 2) {
-            createMessage(ch, m -> m.content("Format `p!rc [Cache Name]`"));
+            ch.sendMessage("Format `p!rc [Cache Name]`").queue();
+
             return;
         }
 
         if(StaticStore.imgur.removeCache(contents[1])) {
-            createMessage(ch, m -> m.content("Successfully removed cache : "+contents[1]));
+            ch.sendMessage("Successfully removed cache : "+contents[1]).queue();
         } else {
-            createMessage(ch, m -> m.content("No such cache found : "+contents[1]));
+            ch.sendMessage("No such cache found : "+contents[1]).queue();
         }
     }
 }

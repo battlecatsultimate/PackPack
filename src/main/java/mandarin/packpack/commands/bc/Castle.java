@@ -4,66 +4,57 @@ import common.system.files.VFile;
 import common.util.Data;
 import common.util.stage.CastleImg;
 import common.util.stage.CastleList;
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.discordjson.json.InteractionData;
-import discord4j.discordjson.json.MemberData;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import mandarin.packpack.supporter.server.slash.SlashBuilder;
-import mandarin.packpack.supporter.server.slash.WebhookBuilder;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
+import net.dv8tion.jda.api.interactions.Interaction;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Castle extends ConstraintCommand {
-    public static WebhookBuilder getInteractionWebhook(InteractionData interaction, CastleImg cs) throws Exception {
+    public static void performButton(ButtonInteractionEvent event, CastleImg cs) throws Exception {
+        Interaction interaction = event.getInteraction();
+
         int lang = LangID.EN;
 
-        if(!interaction.guildId().isAbsent()) {
-            String gID = interaction.guildId().get();
+        if(interaction.getGuild() != null) {
+            String gID = interaction.getGuild().getId();
 
             if(gID.equals(StaticStore.BCU_KR_SERVER))
                 lang = LangID.KR;
         }
 
-        if(!interaction.member().isAbsent()) {
-            MemberData m = interaction.member().get();
+        if(interaction.getMember() != null) {
+            Member m = interaction.getMember();
 
-            if(StaticStore.config.containsKey(m.user().id().asString())) {
-                lang =  StaticStore.config.get(m.user().id().asString()).lang;
+            if(StaticStore.config.containsKey(m.getId())) {
+                lang =  StaticStore.config.get(m.getId()).lang;
             }
         }
 
         File temp = new File("./temp");
 
-        if(!temp.exists()) {
-            boolean res = temp.mkdirs();
+        if(!temp.exists() && !temp.mkdirs()) {
+            StaticStore.logger.uploadLog("Can't create folder : "+temp.getAbsolutePath());
 
-            if(!res) {
-                System.out.println("Can't create folder : "+temp.getAbsolutePath());
-                return null;
-            }
+            return;
         }
 
         File img = new File(temp, StaticStore.findFileName(temp, "castle", ".png"));
 
-        if(!img.exists()) {
-            boolean res = img.createNewFile();
+        if(!img.exists() && !img.createNewFile()) {
+            StaticStore.logger.uploadLog("Can't create new file : "+img.getAbsolutePath());
 
-            if(!res) {
-                System.out.println("Can't create new file : "+img.getAbsolutePath());
-                return null;
-            }
-        } else {
-            return null;
+            return;
         }
 
         if(cs != null) {
@@ -99,29 +90,33 @@ public class Castle extends ConstraintCommand {
 
             ImageIO.write(castle, "PNG", img);
 
-            FileInputStream fis = new FileInputStream(img);
+            String castleCode;
 
-            int finalId = cs.id.id;
-            int finalLang = lang;
+            if (code == 0)
+                castleCode = "RC";
+            else if (code == 1)
+                castleCode = "EC";
+            else if (code == 2)
+                castleCode = "WC";
+            else
+                castleCode = "SC";
 
-            return SlashBuilder.getWebhookRequest(w -> {
-                String castleCode;
+            event.deferReply()
+                    .allowedMentions(new ArrayList<>())
+                    .setContent(LangID.getStringByID("castle_result", lang).replace("_CCC_", castleCode).replace("_III_", Data.trio(cs.id.id)).replace("_BBB_", cs.boss_spawn+""))
+                    .addFile(img, "result.png")
+                    .queue(m -> {
+                        if(img.exists() && !img.delete()) {
+                            StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                        }
+                    }, e -> {
+                        StaticStore.logger.uploadErrorLog(e, "E/Castle::performButton - Failed to upload castle image");
 
-                if (code == 0)
-                    castleCode = "RC";
-                else if (code == 1)
-                    castleCode = "EC";
-                else if (code == 2)
-                    castleCode = "WC";
-                else
-                    castleCode = "SC";
-
-                w.setContent(LangID.getStringByID("castle_result", finalLang).replace("_CCC_", castleCode).replace("_III_", Data.trio(finalId)).replace("_BBB_", cs.boss_spawn+""));
-                w.addFile("result.png", fis, img);
-            });
+                        if(img.exists() && !img.delete()) {
+                            StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                        }
+                    });
         }
-
-        return null;
     }
 
     private static String getLocale(int lang) {
@@ -155,7 +150,7 @@ public class Castle extends ConstraintCommand {
     private int startIndex = 1;
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
@@ -219,33 +214,32 @@ public class Castle extends ConstraintCommand {
 
             ImageIO.write(castle, "PNG", img);
 
-            FileInputStream fis = new FileInputStream(img);
-
             int finalId = cs.id.id;
 
-            createMessage(ch, m -> {
-                String castleCode;
+            String castleCode;
 
-                if(code == 0)
-                    castleCode = "RC";
-                else if(code == 1)
-                    castleCode = "EC";
-                else if(code == 2)
-                    castleCode = "WC";
-                else
-                    castleCode = "SC";
+            if(code == 0)
+                castleCode = "RC";
+            else if(code == 1)
+                castleCode = "EC";
+            else if(code == 2)
+                castleCode = "WC";
+            else
+                castleCode = "SC";
 
-                m.content(LangID.getStringByID("castle_result", lang).replace("_CCC_", castleCode).replace("_III_", Data.trio(finalId)).replace("_BBB_", cs.boss_spawn+""));
-                m.addFile("Result.png", fis);
-            }, () -> {
-                try {
-                    fis.close();
+            ch.sendMessage(LangID.getStringByID("castle_result", lang).replace("_CCC_", castleCode).replace("_III_", Data.trio(finalId)).replace("_BBB_", cs.boss_spawn+""))
+                    .addFile(img, "result.png")
+                    .queue(m -> {
+                        if(img.exists() && !img.delete()) {
+                            StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                        }
+                    }, e -> {
+                        StaticStore.logger.uploadErrorLog(e, "E/Castle - Failed to upload castle image");
 
-                    StaticStore.deleteFile(img, true);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
+                        if(img.exists() && !img.delete()) {
+                            StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                        }
+                    });
         } else {
             String[] list = getContent(event).split(" ");
 
@@ -255,7 +249,7 @@ public class Castle extends ConstraintCommand {
                 String[] messages = getContent(event).split(" ", startIndex+1);
 
                 if(messages.length <= startIndex) {
-                    ch.createMessage(LangID.getStringByID("castle_more", lang).replace("_", holder.serverPrefix)).subscribe();
+                    ch.sendMessage(LangID.getStringByID("castle_more", lang).replace("_", holder.serverPrefix)).queue();
                     return;
                 }
 
@@ -266,7 +260,8 @@ public class Castle extends ConstraintCommand {
                 if(StaticStore.isNumeric(msg)) {
                     id = StaticStore.safeParseInt(msg);
                 } else {
-                    ch.createMessage(LangID.getStringByID("castle_number", lang)).subscribe();
+                    ch.sendMessage(LangID.getStringByID("castle_number", lang)).queue();
+
                     return;
                 }
 
@@ -313,35 +308,32 @@ public class Castle extends ConstraintCommand {
 
                 ImageIO.write(castle, "PNG", img);
 
-                FileInputStream fis = new FileInputStream(img);
+                String castleCode;
 
-                int finalId = id;
+                if(code == 0)
+                    castleCode = "RC";
+                else if(code == 1)
+                    castleCode = "EC";
+                else if(code == 2)
+                    castleCode = "WC";
+                else
+                    castleCode = "SC";
 
-                createMessage(ch, m -> {
-                    String castleCode;
+                ch.sendMessage(LangID.getStringByID("castle_result", lang).replace("_CCC_", castleCode).replace("_III_", Data.trio(id)).replace("_BBB_", image.boss_spawn+""))
+                        .addFile(img, "result.png")
+                        .queue(m -> {
+                            if(img.exists() && !img.delete()) {
+                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                            }
+                        }, e -> {
+                            StaticStore.logger.uploadErrorLog(e, "E/Castle - Failed to upload castle image");
 
-                    if(code == 0)
-                        castleCode = "RC";
-                    else if(code == 1)
-                        castleCode = "EC";
-                    else if(code == 2)
-                        castleCode = "WC";
-                    else
-                        castleCode = "SC";
-
-                    m.content(LangID.getStringByID("castle_result", lang).replace("_CCC_", castleCode).replace("_III_", Data.trio(finalId)).replace("_BBB_", image.boss_spawn+""));
-                    m.addFile("Result.png", fis);
-                }, () -> {
-                    try {
-                        fis.close();
-
-                        StaticStore.deleteFile(img, true);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
+                            if(img.exists() && !img.delete()) {
+                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                            }
+                        });
             } else {
-                ch.createMessage(LangID.getStringByID("castle_argu", lang).replace("_", holder.serverPrefix)).subscribe();
+                ch.sendMessage(LangID.getStringByID("castle_argu", lang).replace("_", holder.serverPrefix)).queue();
             }
         }
     }

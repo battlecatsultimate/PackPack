@@ -5,23 +5,22 @@ import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Combo;
 import common.util.unit.Form;
-import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.rest.util.AllowedMentions;
-import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public class ComboFormMessageHolder extends MessageHolder<MessageCreateEvent> {
+public class ComboFormMessageHolder extends MessageHolder<MessageReceivedEvent> {
     private final ArrayList<Form> form;
     private final Message msg;
     private final String channelID;
@@ -35,7 +34,7 @@ public class ComboFormMessageHolder extends MessageHolder<MessageCreateEvent> {
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
     public ComboFormMessageHolder(ArrayList<Form> form, Message author, Message msg, String channelID, int lang, String cName, String fName) {
-        super(MessageCreateEvent.class);
+        super(MessageReceivedEvent.class);
 
         this.form = form;
         this.msg = msg;
@@ -49,22 +48,18 @@ public class ComboFormMessageHolder extends MessageHolder<MessageCreateEvent> {
     }
 
     @Override
-    public int handleEvent(MessageCreateEvent event) {
+    public int handleEvent(MessageReceivedEvent event) {
         if(expired) {
             System.out.println("Expired at ComboFormHolder!!!");
             return RESULT_FAIL;
         }
 
+        MessageChannel ch = event.getMessage().getChannel();
 
-        MessageChannel ch = event.getMessage().getChannel().block();
-
-        if(ch == null)
+        if(!ch.getId().equals(channelID))
             return RESULT_STILL;
 
-        if(!ch.getId().asString().equals(channelID))
-            return RESULT_STILL;
-
-        String content = event.getMessage().getContent();
+        String content = event.getMessage().getContentRaw();
 
         if(content.equals("n")) {
             if(20 * (page + 1) >= form.size())
@@ -72,47 +67,7 @@ public class ComboFormMessageHolder extends MessageHolder<MessageCreateEvent> {
 
             page++;
 
-            Command.editMessage(msg, m -> {
-                String check;
-
-                if(form.size() <= 20)
-                    check = "";
-                else if(page == 0)
-                    check = LangID.getStringByID("formst_next", lang);
-                else if((page + 1) * 20 >= form.size())
-                    check = LangID.getStringByID("formst_pre", lang);
-                else
-                    check = LangID.getStringByID("formst_nexpre", lang);
-
-                StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
-
-                for(int i = 20 * page; i < 20 * (page +1); i++) {
-                    if(i >= form.size())
-                        break;
-
-                    Form f = form.get(i);
-
-                    String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
-
-                    int oldConfig = CommonStatic.getConfig().lang;
-                    CommonStatic.getConfig().lang = lang;
-
-                    if(MultiLangCont.get(f) != null)
-                        fname += MultiLangCont.get(f);
-
-                    CommonStatic.getConfig().lang = oldConfig;
-
-                    sb.append(i+1).append(". ").append(fname).append("\n");
-                }
-
-                if(form.size() > 20)
-                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(form.size()/20 + 1)));
-
-                sb.append(LangID.getStringByID("formst_can", lang));
-                sb.append("```");
-
-                m.content(wrap(sb.toString()));
-            });
+            edit();
 
             cleaner.add(event.getMessage());
         } else if(content.equals("p")) {
@@ -121,47 +76,7 @@ public class ComboFormMessageHolder extends MessageHolder<MessageCreateEvent> {
 
             page--;
 
-            Command.editMessage(msg, m -> {
-                String check;
-
-                if(form.size() <= 20)
-                    check = "";
-                else if(page == 0)
-                    check = LangID.getStringByID("formst_next", lang);
-                else if((page + 1) * 20 >= form.size())
-                    check = LangID.getStringByID("formst_pre", lang);
-                else
-                    check = LangID.getStringByID("formst_nexpre", lang);
-
-                StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
-
-                for(int i = 20 * page; i < 20 * (page +1); i++) {
-                    if(i >= form.size())
-                        break;
-
-                    Form f = form.get(i);
-
-                    String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
-
-                    int oldConfig = CommonStatic.getConfig().lang;
-                    CommonStatic.getConfig().lang = lang;
-
-                    if(MultiLangCont.get(f) != null)
-                        fname += MultiLangCont.get(f);
-
-                    CommonStatic.getConfig().lang = oldConfig;
-
-                    sb.append(i+1).append(". ").append(fname).append("\n");
-                }
-
-                if(form.size() > 20)
-                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(form.size()/20 + 1)));
-
-                sb.append(LangID.getStringByID("formst_can", lang));
-                sb.append("```");
-
-                m.content(wrap(sb.toString()));
-            });
+            edit();
 
             cleaner.add(event.getMessage());
         } else if(StaticStore.isNumeric(content)) {
@@ -176,7 +91,7 @@ public class ComboFormMessageHolder extends MessageHolder<MessageCreateEvent> {
                 ArrayList<Combo> combos = EntityFilter.filterComboWithUnit(f, cName);
 
                 if(combos.isEmpty()) {
-                    msg.delete().subscribe();
+                    msg.delete().queue();
 
                     expired = true;
 
@@ -186,19 +101,21 @@ public class ComboFormMessageHolder extends MessageHolder<MessageCreateEvent> {
 
                     return RESULT_FINISH;
                 } else if(combos.size() == 1) {
-                    event.getMember().ifPresent(m -> {
-                        if(StaticStore.timeLimit.containsKey(m.getId().asString())) {
-                            StaticStore.timeLimit.get(m.getId().asString()).put(StaticStore.COMMAND_COMBO_ID, System.currentTimeMillis());
+                    Member m = event.getMember();
+
+                    if(m != null) {
+                        if(StaticStore.timeLimit.containsKey(m.getId())) {
+                            StaticStore.timeLimit.get(m.getId()).put(StaticStore.COMMAND_COMBO_ID, System.currentTimeMillis());
                         } else {
                             Map<String, Long> memberLimit = new HashMap<>();
 
                             memberLimit.put(StaticStore.COMMAND_COMBO_ID, System.currentTimeMillis());
 
-                            StaticStore.timeLimit.put(m.getId().asString(), memberLimit);
+                            StaticStore.timeLimit.put(m.getId(), memberLimit);
                         }
-                    });
+                    }
 
-                    msg.delete().subscribe();
+                    msg.delete().queue();
 
                     try {
                         EntityHandler.showComboEmbed(ch, combos.get(0), lang);
@@ -246,28 +163,30 @@ public class ComboFormMessageHolder extends MessageHolder<MessageCreateEvent> {
                     sb.append(LangID.getStringByID("formst_can", lang));
                     sb.append("```");
 
-                    Message res = Command.createMessage(ch, m -> {
-                        m.content(sb.toString());
-                        m.allowedMentions(AllowedMentions.builder().build());
-                    });
 
-                    Command.editMessage(msg, m -> {
-                        String formName = StaticStore.safeMultiLangGet(form.get(id), lang);
 
-                        if(formName == null || formName.isBlank())
-                            formName = form.get(id).names.toString();
+                    Message res = ch.sendMessage(sb.toString())
+                            .allowedMentions(new ArrayList<>())
+                            .complete();
 
-                        if(formName.isBlank())
-                            formName = Data.trio(form.get(id).unit.id.id) +" - " + Data.trio(form.get(id).fid);
+                    String formName = StaticStore.safeMultiLangGet(form.get(id), lang);
 
-                        m.content(wrap(LangID.getStringByID("combo_selected", lang).replace("_", formName)));
-                    });
+                    if(formName == null || formName.isBlank())
+                        formName = form.get(id).names.toString();
+
+                    if(formName.isBlank())
+                        formName = Data.trio(form.get(id).unit.id.id) +" - " + Data.trio(form.get(id).fid);
+
+                    msg.editMessage(LangID.getStringByID("combo_selected", lang).replace("_", formName)).queue();
 
                     if(res != null) {
-                        event.getMember().ifPresent(m -> {
-                            StaticStore.removeHolder(m.getId().asString(), ComboFormMessageHolder.this);
-                            StaticStore.putHolder(m.getId().asString(), new ComboMessageHolder(combos, event.getMessage(), res, msg, ch.getId().asString(), lang));
-                        });
+                        Member m = event.getMember();
+
+                        if(m != null) {
+                            StaticStore.removeHolder(m.getId(), ComboFormMessageHolder.this);
+
+                            StaticStore.putHolder(m.getId(), new ComboMessageHolder(combos, event.getMessage(), res, msg, ch.getId(), lang));
+                        }
                     }
 
                     expired = true;
@@ -282,10 +201,9 @@ public class ComboFormMessageHolder extends MessageHolder<MessageCreateEvent> {
                 e.printStackTrace();
             }
         } else if(content.equals("c")) {
-            Command.editMessage(msg, m -> {
-                m.content(wrap(LangID.getStringByID("formst_cancel", lang)));
-                expired = true;
-            });
+            msg.editMessage(LangID.getStringByID("formst_cancel", lang)).queue();
+
+            expired = true;
 
             cleaner.add(event.getMessage());
 
@@ -303,47 +221,7 @@ public class ComboFormMessageHolder extends MessageHolder<MessageCreateEvent> {
 
                     page = p;
 
-                    Command.editMessage(msg, m -> {
-                        String check;
-
-                        if(form.size() <= 20)
-                            check = "";
-                        else if(page == 0)
-                            check = LangID.getStringByID("formst_next", lang);
-                        else if((page + 1) * 20 >= form.size())
-                            check = LangID.getStringByID("formst_pre", lang);
-                        else
-                            check = LangID.getStringByID("formst_nexpre", lang);
-
-                        StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
-
-                        for(int i = 20 * page; i < 20 * (page +1); i++) {
-                            if(i >= form.size())
-                                break;
-
-                            Form f = form.get(i);
-
-                            String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
-
-                            int oldConfig = CommonStatic.getConfig().lang;
-                            CommonStatic.getConfig().lang = lang;
-
-                            if(MultiLangCont.get(f) != null)
-                                fname += MultiLangCont.get(f);
-
-                            CommonStatic.getConfig().lang = oldConfig;
-
-                            sb.append(i+1).append(". ").append(fname).append("\n");
-                        }
-
-                        if(form.size() > 20)
-                            sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(form.size()/20 + 1)));
-
-                        sb.append(LangID.getStringByID("formst_can", lang));
-                        sb.append("```");
-
-                        m.content(wrap(sb.toString()));
-                    });
+                    edit();
 
                     cleaner.add(event.getMessage());
                 }
@@ -357,7 +235,7 @@ public class ComboFormMessageHolder extends MessageHolder<MessageCreateEvent> {
     public void clean() {
         for(Message m : cleaner) {
             if(m != null) {
-                m.delete().subscribe();
+                m.delete().queue();
             }
         }
 
@@ -373,7 +251,7 @@ public class ComboFormMessageHolder extends MessageHolder<MessageCreateEvent> {
 
         StaticStore.removeHolder(id, this);
 
-        Command.editMessage(msg, m -> m.content(wrap(LangID.getStringByID("formst_expire", lang))));
+        msg.editMessage(LangID.getStringByID("formst_expire", lang)).queue();
     }
 
     private String getSearchKeywords(String fName, String cName, int lang) {
@@ -392,5 +270,47 @@ public class ComboFormMessageHolder extends MessageHolder<MessageCreateEvent> {
         }
 
         return builder.toString();
+    }
+
+    private void edit() {
+        String check;
+
+        if(form.size() <= 20)
+            check = "";
+        else if(page == 0)
+            check = LangID.getStringByID("formst_next", lang);
+        else if((page + 1) * 20 >= form.size())
+            check = LangID.getStringByID("formst_pre", lang);
+        else
+            check = LangID.getStringByID("formst_nexpre", lang);
+
+        StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
+
+        for(int i = 20 * page; i < 20 * (page +1); i++) {
+            if(i >= form.size())
+                break;
+
+            Form f = form.get(i);
+
+            String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
+
+            int oldConfig = CommonStatic.getConfig().lang;
+            CommonStatic.getConfig().lang = lang;
+
+            if(MultiLangCont.get(f) != null)
+                fname += MultiLangCont.get(f);
+
+            CommonStatic.getConfig().lang = oldConfig;
+
+            sb.append(i+1).append(". ").append(fname).append("\n");
+        }
+
+        if(form.size() > 20)
+            sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(form.size()/20 + 1)));
+
+        sb.append(LangID.getStringByID("formst_can", lang));
+        sb.append("```");
+
+        msg.editMessage(sb.toString()).queue();
     }
 }

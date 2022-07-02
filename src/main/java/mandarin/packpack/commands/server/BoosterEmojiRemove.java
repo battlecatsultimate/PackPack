@@ -1,15 +1,16 @@
 package mandarin.packpack.commands.server;
 
-import discord4j.common.util.Snowflake;
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.BoosterData;
 import mandarin.packpack.supporter.server.data.BoosterHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.entities.Emote;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class BoosterEmojiRemove extends ConstraintCommand {
     public BoosterEmojiRemove(ROLE role, int lang, IDHolder id) {
@@ -17,8 +18,8 @@ public class BoosterEmojiRemove extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
-        Guild g = getGuild(event).block();
+    public void doSomething(GenericMessageEvent event) throws Exception {
+        Guild g = getGuild(event);
         MessageChannel ch = getChannel(event);
 
         if(ch == null || g == null)
@@ -31,12 +32,14 @@ public class BoosterEmojiRemove extends ConstraintCommand {
             return;
         }
 
-        g.getMemberById(Snowflake.of(id)).subscribe(m -> {
-            if(StaticStore.boosterData.containsKey(g.getId().asString())) {
-                BoosterHolder holder = StaticStore.boosterData.get(g.getId().asString());
+        Member m = g.getMemberById(id);
 
-                if(holder.serverBooster.containsKey(m.getId().asString())) {
-                    BoosterData data = holder.serverBooster.get(m.getId().asString());
+        if(m != null) {
+            if(StaticStore.boosterData.containsKey(g.getId())) {
+                BoosterHolder holder = StaticStore.boosterData.get(g.getId());
+
+                if(holder.serverBooster.containsKey(m.getId())) {
+                    BoosterData data = holder.serverBooster.get(m.getId());
 
                     if(data.getEmoji() == null) {
                         createMessageWithNoPings(ch, LangID.getStringByID("booemorem_noemo", lang));
@@ -46,16 +49,19 @@ public class BoosterEmojiRemove extends ConstraintCommand {
                         boolean leave = leaveEmoji(getContent(event));
 
                         if(!leave) {
-                            g.getGuildEmojiById(Snowflake.of(emoji)).subscribe(r -> r.delete().subscribe());
+                            Emote e = g.getEmoteById(emoji);
+
+                            if(e != null)
+                                e.delete().queue();
                         }
 
                         data.removeRole();
 
                         if(data.getRole() == null) {
-                            holder.serverBooster.remove(m.getId().asString());
+                            holder.serverBooster.remove(m.getId());
                         }
 
-                        createMessageWithNoPings(ch, LangID.getStringByID("booemorem_success", lang).replace("_", m.getId().asString()));
+                        createMessageWithNoPings(ch, LangID.getStringByID("booemorem_success", lang).replace("_", m.getId()));
                     }
                 } else {
                     createMessageWithNoPings(ch, LangID.getStringByID("booemorem_noemo", lang));
@@ -63,7 +69,7 @@ public class BoosterEmojiRemove extends ConstraintCommand {
             } else {
                 createMessageWithNoPings(ch, LangID.getStringByID("booemorem_noemo", lang));
             }
-        });
+        }
     }
 
 

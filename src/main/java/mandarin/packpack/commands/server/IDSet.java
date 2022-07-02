@@ -1,21 +1,15 @@
 package mandarin.packpack.commands.server;
 
-import discord4j.common.util.Snowflake;
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.channel.Channel;
-import discord4j.core.object.entity.channel.GuildChannel;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class IDSet extends ConstraintCommand {
     private final IDHolder holder;
@@ -27,19 +21,19 @@ public class IDSet extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
             return;
 
-        Guild g = getGuild(event).block();
+        Guild g = getGuild(event);
 
         StringBuilder result = new StringBuilder();
 
         if(g == null) {
             result.append(LangID.getStringByID("idset_noguild", lang));
-            ch.createMessage(result.toString()).subscribe();
+            ch.sendMessage(result.toString()).queue();
             return;
         }
 
@@ -402,10 +396,10 @@ public class IDSet extends ConstraintCommand {
     }
 
     private boolean isValidID(Guild g, String id) {
-        Set<Snowflake> ids = g.getRoleIds();
+        List<Role> roles = g.getRoles();
 
-        for(Snowflake snow : ids) {
-            if(snow.asString().equals(id))
+        for(Role role : roles) {
+            if(role.getId().equals(id))
                 return true;
         }
 
@@ -413,18 +407,15 @@ public class IDSet extends ConstraintCommand {
     }
 
     private boolean isValidChannel(Guild g, String id) {
-        AtomicReference<Boolean> valid = new AtomicReference<>(false);
+        List<GuildChannel> channels = g.getChannels();
 
-        g.getChannels().collectList().subscribe(l -> {
-            for(GuildChannel gc : l) {
-                if((gc.getType() == Channel.Type.GUILD_TEXT || gc.getType() == Channel.Type.GUILD_NEWS) && id.equals(gc.getId().asString())) {
-                    valid.set(true);
-                    return;
-                }
+        for(GuildChannel gc : channels) {
+            if((gc.getType() == ChannelType.TEXT || gc.getType() == ChannelType.NEWS) && id.equals(gc.getId())) {
+                return true;
             }
-        });
+        }
 
-        return valid.get();
+        return false;
     }
 
     private String getRoleIDWithName(String id) {
@@ -432,7 +423,7 @@ public class IDSet extends ConstraintCommand {
     }
 
     private String getChannelIDWithName(String id, Guild g) {
-        GuildChannel gc = g.getChannelById(Snowflake.of(id)).block();
+        GuildChannel gc = g.getGuildChannelById(id);
 
         if(gc == null) {
             return id;

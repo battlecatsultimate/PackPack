@@ -2,9 +2,6 @@ package mandarin.packpack.commands.bc;
 
 import common.CommonStatic;
 import common.util.Data;
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
@@ -12,6 +9,10 @@ import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.MedalMessageHolder;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.util.ArrayList;
 
@@ -21,7 +22,7 @@ public class Medal extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
@@ -73,16 +74,18 @@ public class Medal extends ConstraintCommand {
                 Message res = getMessageWithNoPings(ch, sb.toString());
 
                 if(res != null) {
-                    getMember(event).ifPresent(m -> {
+                    Member m = getMember(event);
+
+                    if(m != null) {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(m.getId().asString(), new MedalMessageHolder(id, msg, res, lang, ch.getId().asString()));
-                    });
+                            StaticStore.putHolder(m.getId(), new MedalMessageHolder(id, msg, res, lang, ch.getId()));
+                    }
                 }
             }
         } else {
-            ch.createMessage(LangID.getStringByID("medal_more", lang)).subscribe();
+            ch.sendMessage(LangID.getStringByID("medal_more", lang)).queue();
         }
     }
 }

@@ -1,20 +1,18 @@
 package mandarin.packpack.commands.data;
 
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Member;
-import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.core.spec.MessageCreateFields;
-import discord4j.core.spec.MessageCreateSpec;
-import discord4j.rest.util.AllowedMentions;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Optional;
 
 public class PrintStageEvent extends ConstraintCommand {
     public PrintStageEvent(ROLE role, int lang, IDHolder id) {
@@ -22,7 +20,7 @@ public class PrintStageEvent extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
@@ -32,10 +30,10 @@ public class PrintStageEvent extends ConstraintCommand {
         int t = 0;
 
         if(now) {
-            Optional<Member> m = getMember(event);
+            Member m = getMember(event);
 
-            if(m.isPresent()) {
-                t = StaticStore.timeZones.getOrDefault(m.get().getId().asString(), 0);
+            if(m != null) {
+                t = StaticStore.timeZones.getOrDefault(m.getId(), 0);
 
                 String content;
 
@@ -44,14 +42,15 @@ public class PrintStageEvent extends ConstraintCommand {
                 else
                     content = "" + t;
 
-                createMessage(ch, me -> me.content(LangID.getStringByID("printevent_time", lang).replace("_", content)));
+                ch.sendMessage(LangID.getStringByID("printevent_time", lang).replace("_", content)).queue();
             }
         }
 
         ArrayList<String> result = StaticStore.event.printStageEvent(getLocale(getContent(event)), lang, isFull(getContent(event)), isRaw(getContent(event)), now, t);
 
         if(result.isEmpty()) {
-            createMessage(ch, m -> m.content(LangID.getStringByID("chevent_noup", lang)));
+            ch.sendMessage(LangID.getStringByID("chevent_noup", lang)).queue();
+
             return;
         }
 
@@ -65,8 +64,6 @@ public class PrintStageEvent extends ConstraintCommand {
         }
 
         if(goWithFile) {
-            MessageCreateSpec.Builder builder = MessageCreateSpec.builder();
-
             StringBuilder total = new StringBuilder(LangID.getStringByID("event_stage", holder.serverLocale).replace("**", "")).append("\n");
 
             for(int k = 0; k < result.size(); k++) {
@@ -96,38 +93,9 @@ public class PrintStageEvent extends ConstraintCommand {
 
             writer.close();
 
-            FileInputStream fis = new FileInputStream(res);
-
-            builder.content(LangID.getStringByID("printstage_toolong", holder.serverLocale))
-                    .addFile(MessageCreateFields.File.of("stageAndEvent.txt", fis));
-
-            ch.createMessage(builder.build()).subscribe(null, (e) -> {
-                StaticStore.logger.uploadErrorLog(e, "Failed to perform uploading stage event data");
-
-                try {
-                    fis.close();
-                } catch (IOException ex) {
-                    StaticStore.logger.uploadErrorLog(ex, "Failed close stream while uploading stage event data");
-                }
-
-                if(res.exists() && !res.delete()) {
-                    StaticStore.logger.uploadLog("Failed to delete file : "+res.getAbsolutePath());
-                }
-            }, () -> {
-                try {
-                    fis.close();
-                } catch (IOException e) {
-                    StaticStore.logger.uploadErrorLog(e, "Failed close stream while uploading stage event data");
-                }
-
-                if(res.exists() && !res.delete()) {
-                    StaticStore.logger.uploadLog("Failed to delete file : "+res.getAbsolutePath());
-                }
-            });
+            sendMessageWithFile(ch, LangID.getStringByID("printstage_toolong", holder.serverLocale), res, "stageAndEvent.txt");
         } else {
             for(int k = 0; k < result.size(); k++) {
-                MessageCreateSpec.Builder builder = MessageCreateSpec.builder();
-
                 StringBuilder merge = new StringBuilder();
 
                 if(k == 0) {
@@ -154,10 +122,9 @@ public class PrintStageEvent extends ConstraintCommand {
                     k++;
                 }
 
-                builder.content(merge.toString());
-                builder.allowedMentions(AllowedMentions.builder().build());
-
-                ch.createMessage(builder.build()).subscribe();
+                ch.sendMessage(merge.toString())
+                        .allowedMentions(new ArrayList<>())
+                        .queue();
             }
         }
     }

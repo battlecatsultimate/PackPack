@@ -1,19 +1,15 @@
 package mandarin.packpack.supporter.server.holder;
 
 import common.util.unit.Form;
-import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
-import discord4j.core.object.component.ActionRow;
-import discord4j.core.object.component.Button;
-import discord4j.core.object.component.LayoutComponent;
-import discord4j.core.object.component.MessageComponent;
-import discord4j.core.object.entity.Member;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
-import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
-import reactor.core.publisher.Mono;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -58,7 +54,7 @@ public class FormButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
 
                 expired = true;
 
-                author.getAuthor().ifPresent(u -> StaticStore.removeHolder(u.getId().asString(), FormButtonHolder.this));
+                StaticStore.removeHolder(author.getAuthor().getId(), FormButtonHolder.this);
 
                 expire("");
             }
@@ -67,34 +63,28 @@ public class FormButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
 
     @Override
     public int handleEvent(ButtonInteractionEvent event) {
-        MessageChannel ch = embed.getChannel().block();
+        MessageChannel ch = embed.getChannel();
 
-        if(ch == null)
-            return RESULT_STILL;
-
-        if (!ch.getId().asString().equals(channelID)) {
+        if (!ch.getId().equals(channelID)) {
             return RESULT_STILL;
         }
 
-        if(event.getInteraction().getMember().isEmpty())
+        if(event.getInteraction().getMember() == null)
             return RESULT_STILL;
 
-        Member mem = event.getInteraction().getMember().get();
+        Member mem = event.getInteraction().getMember();
 
-        if(!mem.getId().asString().equals(memberID))
+        if(!mem.getId().equals(memberID))
             return RESULT_STILL;
 
-        if(event.getMessage().isEmpty())
-            return RESULT_STILL;
+        Message m = event.getMessage();
 
-        Message m = event.getMessage().get();
-
-        if(!m.getId().asString().equals(embed.getId().asString()))
+        if(!m.getId().equals(embed.getId()))
             return RESULT_STILL;
 
         int diff = 0;
 
-        switch (event.getCustomId()) {
+        switch (event.getComponentId()) {
             case "first":
                 diff = -2;
                 break;
@@ -122,7 +112,7 @@ public class FormButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
         Form newForm = f.unit.forms[f.fid + diff];
 
         try {
-            EntityHandler.showUnitEmb(newForm, ch, config, isFrame, talent, extra, lv, lang, false);
+            EntityHandler.performUnitEmb(newForm, ch, config, isFrame, talent, extra, lv, lang, false);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -131,8 +121,8 @@ public class FormButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
     }
 
     @Override
-    public Mono<?> getInteraction(ButtonInteractionEvent event) {
-        return event.deferEdit().then(event.getInteractionResponse().deleteInitialResponse());
+    public void performInteraction(ButtonInteractionEvent event) {
+        event.getMessage().delete().queue();
     }
 
     @Override
@@ -142,23 +132,13 @@ public class FormButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
 
     @Override
     public void expire(String id) {
-        Command.editMessage(embed, m -> {
-            ArrayList<Button> buttons = new ArrayList<>();
+        ArrayList<Button> buttons = new ArrayList<>();
 
-            for(LayoutComponent layoutComponent : embed.getComponents()) {
-                for(MessageComponent component : layoutComponent.getChildren()) {
-                    if(component instanceof Button) {
-                        if(((Button) component).getStyle() == Button.Style.SECONDARY) {
-                            buttons.add(((Button) component).disabled(true));
-                        } else {
-                            buttons.add((Button) component);
-                        }
-                    }
-                }
-            }
+        for(Button button : embed.getButtons()) {
+            buttons.add(button.asDisabled());
+        }
 
-            m.addComponent(ActionRow.of(buttons));
-        });
+        embed.editMessageComponents(ActionRow.of(buttons)).queue();
 
         expired = true;
     }

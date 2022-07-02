@@ -6,14 +6,6 @@ import common.util.lang.MultiLangCont;
 import common.util.stage.MapColc;
 import common.util.stage.Stage;
 import common.util.stage.StageMap;
-import discord4j.core.event.domain.interaction.InteractionCreateEvent;
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.discordjson.json.ApplicationCommandInteractionData;
-import discord4j.discordjson.json.ApplicationCommandInteractionOptionData;
-import discord4j.discordjson.json.InteractionData;
-import discord4j.discordjson.json.MemberData;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.TimedConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
@@ -25,9 +17,14 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.StageInfoButtonHolder;
 import mandarin.packpack.supporter.server.holder.StageInfoMessageHolder;
 import mandarin.packpack.supporter.server.holder.StageReactionSlashMessageHolder;
-import mandarin.packpack.supporter.server.slash.SlashBuilder;
 import mandarin.packpack.supporter.server.slash.SlashOption;
-import mandarin.packpack.supporter.server.slash.WebhookBuilder;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
+import net.dv8tion.jda.api.interactions.Interaction;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,29 +33,23 @@ public class StageInfo extends TimedConstraintCommand {
     private static final int PARAM_SECOND = 2;
     private static final int PARAM_EXTRA = 4;
 
-    public static WebhookBuilder getInteractionWebhook(InteractionCreateEvent event) {
-        InteractionData interaction = event.getInteraction().getData();
+    public static void performInteraction(GenericCommandInteractionEvent event) {
+        Interaction interaction = event.getInteraction();
 
-        if(interaction.data().isAbsent()) {
-            System.out.println("Data is absent in StageInfo!");
-            return null;
+        if(event.getOptions().isEmpty()) {
+            StaticStore.logger.uploadLog("E/StageInfo::performInteraction - Options are absent in StageInfo!");
+
+            return;
         }
 
-        ApplicationCommandInteractionData data = interaction.data().get();
-
-        if(data.options().isAbsent()) {
-            System.out.println("Options are absent in StageInfo!");
-            return null;
-        }
-
-        List<ApplicationCommandInteractionOptionData> options = data.options().get();
+        List<OptionMapping> options = event.getOptions();
 
         int lang = LangID.EN;
 
         IDHolder holder;
 
-        if(!interaction.guildId().isAbsent()) {
-            String gID = interaction.guildId().get();
+        if(interaction.getGuild() != null) {
+            String gID = interaction.getGuild().getId();
 
             if(gID.equals(StaticStore.BCU_KR_SERVER))
                 lang = LangID.KR;
@@ -66,23 +57,27 @@ public class StageInfo extends TimedConstraintCommand {
             holder = StaticStore.idHolder.get(gID);
 
             if(holder == null) {
-                return SlashBuilder.getWebhookRequest(w -> w.setContent("Bot couldn't get guild data"));
+                event.deferReply().setContent("Bot couldn't get guild data").queue();
+
+                return;
             }
         } else {
-            return SlashBuilder.getWebhookRequest(w -> w.setContent("Please use this command in any server where PackPack is in!"));
+            event.deferReply().setContent("Please use this command in any server where PackPack is in!").queue();
+
+            return;
         }
 
-        if(!interaction.member().isAbsent()) {
-            MemberData member = interaction.member().get();
+        if(interaction.getMember() != null) {
+            Member member = interaction.getMember();
 
-            if(StaticStore.config.containsKey(member.user().id().asString())) {
-                lang = StaticStore.config.get(member.user().id().asString()).lang;
+            if(StaticStore.config.containsKey(member.getId())) {
+                lang = StaticStore.config.get(member.getId()).lang;
 
                 if(lang == -1) {
-                    if(interaction.guildId().isAbsent()) {
+                    if(interaction.getGuild() == null) {
                         lang = LangID.EN;
                     } else {
-                        IDHolder idh = StaticStore.idHolder.get(interaction.guildId().get());
+                        IDHolder idh = StaticStore.idHolder.get(interaction.getGuild().getId());
 
                         if(idh == null) {
                             lang = LangID.EN;
@@ -112,30 +107,24 @@ public class StageInfo extends TimedConstraintCommand {
         boolean extra = SlashOption.getBooleanOption(options, "extra", false);
         int star = SlashOption.getIntOption(options, "level", 0);
 
-        final int finalLang = lang;
+        if(name[2].isBlank() || st == null) {
+            event.deferReply().setContent(LangID.getStringByID("formst_specific", lang)).queue();
+        } else {
+            try {
+                Message m = EntityHandler.performStageEmb(st, event, frame, extra, star, lang);
 
-        return SlashBuilder.getWebhookRequest(w -> {
-            if(name[2].isBlank() || st == null) {
-                w.setContent(LangID.getStringByID("formst_specific", finalLang));
-            } else {
-                try {
-                    EntityHandler.showStageEmb(st, w, frame, extra, star, finalLang);
+                if(m != null && interaction.getMember() != null) {
+                    Member member = interaction.getMember();
 
-                    w.addPostHandler((g, m) -> {
-                        if(!interaction.member().isAbsent()) {
-                            MemberData member = interaction.member().get();
-
-                            StaticStore.putHolder(
-                                    member.user().id().asString(),
-                                    new StageReactionSlashMessageHolder(g, st, m.id().asLong(), m.channelId().asLong(), member.user().id().asString(), holder, finalLang)
-                            );
-                        }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    StaticStore.putHolder(
+                            member.getId(),
+                            new StageReactionSlashMessageHolder(m, st, m.getId(), m.getChannel().getId(), member.getId(), holder, lang)
+                    );
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        });
+        }
     }
 
     private final ConfigHolder config;
@@ -147,7 +136,7 @@ public class StageInfo extends TimedConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
@@ -158,7 +147,7 @@ public class StageInfo extends TimedConstraintCommand {
         String[] names = generateStageNameSeries(getContent(event));
 
         if(list.length == 1 || allNull(names)) {
-            ch.createMessage(LangID.getStringByID("stinfo_noname", lang)).subscribe();
+            ch.sendMessage(LangID.getStringByID("stinfo_noname", lang)).queue();
         } else {
             ArrayList<Stage> stages = EntityFilter.findStageWithName(names, lang);
 
@@ -166,7 +155,7 @@ public class StageInfo extends TimedConstraintCommand {
                 stages = EntityFilter.findStageWithMapName(names[2]);
 
                 if(!stages.isEmpty()) {
-                    ch.createMessage(LangID.getStringByID("stinfo_smart", lang)).subscribe();
+                    ch.sendMessage(LangID.getStringByID("stinfo_smart", lang)).queue();
                 }
             }
 
@@ -182,14 +171,14 @@ public class StageInfo extends TimedConstraintCommand {
 
                 Message result = EntityHandler.showStageEmb(stages.get(0), ch, isFrame, isExtra, star, lang);
 
-                ArrayList<Stage> finalStages = stages;
+                Member m = getMember(event);
 
-                getMember(event).ifPresent(m -> {
+                if(m != null) {
                     Message author = getMessage(event);
 
                     if(author != null)
-                        StaticStore.putHolder(m.getId().asString(), new StageInfoButtonHolder(finalStages.get(0), author, result, ch.getId().asString(), m.getId().asString()));
-                });
+                        StaticStore.putHolder(m.getId(), new StageInfoButtonHolder(stages.get(0), author, result, ch.getId(), m.getId()));
+                }
             } else {
                 int param = checkParameters(getContent(event));
                 int star = getLevel(getContent((event)));
@@ -296,14 +285,14 @@ public class StageInfo extends TimedConstraintCommand {
                 Message res = getMessageWithNoPings(ch, sb.toString());
 
                 if(res != null) {
-                    ArrayList<Stage> finalStages1 = stages;
+                    Member member = getMember(event);
 
-                    getMember(event).ifPresent(member -> {
+                    if(member != null) {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(member.getId().asString(), new StageInfoMessageHolder(finalStages1, msg, res, ch.getId().asString(), star, isFrame, isExtra, lang));
-                    });
+                            StaticStore.putHolder(member.getId(), new StageInfoMessageHolder(stages, msg, res, ch.getId(), star, isFrame, isExtra, lang));
+                    }
                 }
             }
         }

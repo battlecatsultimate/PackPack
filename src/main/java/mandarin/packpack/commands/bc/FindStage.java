@@ -7,9 +7,6 @@ import common.util.stage.MapColc;
 import common.util.stage.Stage;
 import common.util.stage.StageMap;
 import common.util.unit.Enemy;
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.TimedConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
@@ -21,6 +18,10 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.StageEnemyMessageHolder;
 import mandarin.packpack.supporter.server.holder.StageInfoButtonHolder;
 import mandarin.packpack.supporter.server.holder.StageInfoMessageHolder;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.util.ArrayList;
 
@@ -37,7 +38,7 @@ public class FindStage extends TimedConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
@@ -46,7 +47,7 @@ public class FindStage extends TimedConstraintCommand {
         String enemyName = getEnemyName(getContent(event));
 
         if(enemyName.isBlank()) {
-            ch.createMessage(LangID.getStringByID("eimg_more", lang)).subscribe();
+            ch.sendMessage(LangID.getStringByID("eimg_more", lang)).queue();
             return;
         }
 
@@ -81,13 +82,15 @@ public class FindStage extends TimedConstraintCommand {
             } else if(stages.size() == 1) {
                 Message result = EntityHandler.showStageEmb(stages.get(0), ch, isFrame, isExtra, star, lang);
 
-                getMember(event).ifPresent(m -> {
+                Member m = getMember(event);
+
+                if(m != null) {
                     Message msg = getMessage(event);
 
                     if(msg != null) {
-                        StaticStore.putHolder(m.getId().asString(), new StageInfoButtonHolder(stages.get(0), msg, result, ch.getId().asString(), m.getId().asString()));
+                        StaticStore.putHolder(m.getId(), new StageInfoButtonHolder(stages.get(0), msg, result, ch.getId(), m.getId()));
                     }
-                });
+                }
             } else {
                 String eName = StaticStore.safeMultiLangGet(enemies.get(0), lang);
 
@@ -192,14 +195,16 @@ public class FindStage extends TimedConstraintCommand {
                 Message res = getMessageWithNoPings(ch, sb.toString());
 
                 if(res != null) {
-                    getMember(event).ifPresent(member -> {
+                    Member m = getMember(event);
+
+                    if(m != null) {
                         Message msg = getMessage(event);
 
                         if(msg != null) {
-                            StaticStore.putHolder(member.getId().asString(), new StageInfoMessageHolder(stages, msg, res, ch.getId().asString(), star, isFrame, isExtra, lang));
+                            StaticStore.putHolder(m.getId(), new StageInfoMessageHolder(stages, msg, res, ch.getId(), star, isFrame, isExtra, lang));
                         }
                         disableTimer();
-                    });
+                    }
                 }
             }
         } else {
@@ -242,12 +247,14 @@ public class FindStage extends TimedConstraintCommand {
             Message res = getMessageWithNoPings(ch, sb.toString());
 
             if(res != null) {
-                getMember(event).ifPresent(m -> {
+                Member m = getMember(event);
+
+                if(m != null) {
                     Message msg = getMessage(event);
 
                     if(msg != null)
-                        StaticStore.putHolder(m.getId().asString(), new StageEnemyMessageHolder(enemies, msg, res, ch.getId().asString(), isFrame, isExtra, star, lang));
-                });
+                        StaticStore.putHolder(m.getId(), new StageEnemyMessageHolder(enemies, msg, res, ch.getId(), isFrame, isExtra, star, lang));
+                }
             }
         }
     }

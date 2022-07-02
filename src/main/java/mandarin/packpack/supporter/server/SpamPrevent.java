@@ -2,15 +2,13 @@ package mandarin.packpack.supporter.server;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import discord4j.core.event.domain.interaction.DeferrableInteractionEvent;
-import discord4j.core.event.domain.interaction.InteractionCreateEvent;
-import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.discordjson.json.InteractionData;
-import discord4j.discordjson.json.MemberData;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.lang.LangID;
-import reactor.core.publisher.Mono;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
+import net.dv8tion.jda.api.interactions.Interaction;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -110,7 +108,8 @@ public class SpamPrevent {
 
                 }
 
-                ch.createMessage(LangID.getStringByID("command_prevent", lang).replace("_TTT_", beautifyMillis(lang)).replace("_UUU_", id)).subscribe();
+                ch.sendMessage(LangID.getStringByID("command_prevent", lang).replace("_TTT_", beautifyMillis(lang)).replace("_UUU_", id)).queue();
+
                 return true;
             }
         }
@@ -118,8 +117,8 @@ public class SpamPrevent {
         return false;
     }
 
-    public Mono<?> isPrevented(InteractionCreateEvent event) {
-        InteractionData interaction = event.getInteraction().getData();
+    public String isPrevented(GenericInteractionCreateEvent event) {
+        Interaction interaction = event.getInteraction();
 
         long current = System.currentTimeMillis();
 
@@ -129,7 +128,7 @@ public class SpamPrevent {
 
             return null;
         } else if(preventTime > 0)
-            return Mono.empty();
+            return "";
 
         if(current - lastTime > MINIMUM_INTERVAL) {
             lastTime = current;
@@ -147,33 +146,16 @@ public class SpamPrevent {
 
                 int lang = LangID.EN;
 
-                if(!interaction.guildId().isAbsent()) {
-                    String gID = interaction.guildId().get();
+                if(interaction.getMember() != null) {
+                    Member m = interaction.getMember();
 
-                    if(gID.equals(StaticStore.BCU_KR_SERVER))
-                        lang = LangID.KR;
-                }
-
-                if(!interaction.member().isAbsent()) {
-                    MemberData m = interaction.member().get();
-
-                    if(StaticStore.config.containsKey(m.user().id().asString())) {
-                        lang =  StaticStore.config.get(m.user().id().asString()).lang;
+                    if(StaticStore.config.containsKey(m.getUser().getId())) {
+                        lang =  StaticStore.config.get(m.getUser().getId()).lang;
                     }
 
-                    if(event instanceof DeferrableInteractionEvent) {
-                        DeferrableInteractionEvent dEvent = (DeferrableInteractionEvent) event;
-
-                        return dEvent.reply(LangID.getStringByID("command_prevent", lang).replace("_TTT_", beautifyMillis(lang)).replace("_UUU_", m.user().id().asString()));
-                    }
-                }
-
-                if(event instanceof DeferrableInteractionEvent) {
-                    DeferrableInteractionEvent dEvent = (DeferrableInteractionEvent) event;
-
-                    return dEvent.reply("You can't use command for "+beautifyMillis(lang));
+                    return LangID.getStringByID("command_prevent", lang).replace("_TTT_", beautifyMillis(lang)).replace("_UUU_", m.getUser().getId());
                 } else {
-                    return Mono.empty();
+                    return "";
                 }
             }
         }

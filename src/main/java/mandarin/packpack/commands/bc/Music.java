@@ -2,51 +2,52 @@ package mandarin.packpack.commands.bc;
 
 import common.pack.UserProfile;
 import common.util.Data;
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.discordjson.json.InteractionData;
-import discord4j.discordjson.json.MemberData;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.GlobalTimedConstraintCommand;
 import mandarin.packpack.supporter.Pauser;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import mandarin.packpack.supporter.server.slash.SlashBuilder;
-import mandarin.packpack.supporter.server.slash.WebhookBuilder;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
+import net.dv8tion.jda.api.interactions.Interaction;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 public class Music extends GlobalTimedConstraintCommand {
-    public static WebhookBuilder getInteractionWebhook(InteractionData interaction, common.util.stage.Music ms) throws Exception {
+    public static void performButton(ButtonInteractionEvent event, common.util.stage.Music ms) throws Exception {
+        Interaction interaction = event.getInteraction();
+
         int lang = LangID.EN;
 
-        if(!interaction.guildId().isAbsent()) {
-            String gID = interaction.guildId().get();
+        if(interaction.getGuild() != null) {
+            String gID = interaction.getGuild().getId();
 
             if(gID.equals(StaticStore.BCU_KR_SERVER))
                 lang = LangID.KR;
         }
 
-        if(!interaction.member().isAbsent()) {
-            MemberData m = interaction.member().get();
+        if(interaction.getMember() != null) {
+            Member m = interaction.getMember();
 
-            if(StaticStore.config.containsKey(m.user().id().asString())) {
-                lang =  StaticStore.config.get(m.user().id().asString()).lang;
+            if(StaticStore.config.containsKey(m.getId())) {
+                lang =  StaticStore.config.get(m.getId()).lang;
             }
         }
 
         if(ms != null && ms.id != null) {
             File file = new File("./temp/", Data.trio(ms.id.id) + ".ogg");
 
-            if (!file.exists()) {
-                boolean res = file.createNewFile();
+            if (!file.exists() && !file.createNewFile()) {
+                StaticStore.logger.uploadLog("Can't create file : " + file.getAbsolutePath());
 
-                if (!res) {
-                    System.out.println("Can't create file : " + file.getAbsolutePath());
-                    return null;
-                }
+                return;
             }
 
             FileOutputStream fos = new FileOutputStream(file);
@@ -62,17 +63,22 @@ public class Music extends GlobalTimedConstraintCommand {
             ins.close();
             fos.close();
 
-            FileInputStream fis = new FileInputStream(file);
+            event.deferReply()
+                    .allowedMentions(new ArrayList<>())
+                    .setContent(LangID.getStringByID("music_upload", lang).replace("_", Data.trio(ms.id.id)))
+                    .addFile(file, Data.trio(ms.id.id) + ".ogg")
+                    .queue(m -> {
+                        if(file.exists() && !file.delete()) {
+                            StaticStore.logger.uploadLog("Failed to delete file : "+file.getAbsolutePath());
+                        }
+                    }, e -> {
+                        StaticStore.logger.uploadErrorLog(e, "E/Music::performButton - Failed to upload music");
 
-            int finalLang = lang;
-
-            return SlashBuilder.getWebhookRequest(w -> {
-                w.setContent(LangID.getStringByID("music_upload", finalLang).replace("_", Data.trio(ms.id.id)));
-                w.addFile(Data.trio(ms.id.id) + ".ogg", fis, file);
-            });
+                        if(file.exists() && !file.delete()) {
+                            StaticStore.logger.uploadLog("Failed to delete file : "+file.getAbsolutePath());
+                        }
+                    });
         }
-
-        return null;
     }
 
     private static final String NOT_NUMBER = "notNumber";
@@ -93,7 +99,7 @@ public class Music extends GlobalTimedConstraintCommand {
     private final Pauser waiter = new Pauser();
 
     @Override
-    protected void setOptionalID(MessageEvent event) {
+    protected void setOptionalID(GenericMessageEvent event) {
         if(ms == null) {
             String[] command = getContent(event).split(" ");
 
@@ -128,17 +134,14 @@ public class Music extends GlobalTimedConstraintCommand {
     }
 
     @Override
-    protected void doThing(MessageEvent event) throws Exception {
+    protected void doThing(GenericMessageEvent event) throws Exception {
         if(ms != null && ms.id != null) {
             File file = new File("./temp/", Data.trio(ms.id.id)+".ogg");
 
-            if(!file.exists()) {
-                boolean res = file.createNewFile();
+            if(!file.exists() && !file.createNewFile()) {
+                StaticStore.logger.uploadLog("Can't create file : "+file.getAbsolutePath());
 
-                if(!res) {
-                    System.out.println("Can't create file : "+file.getAbsolutePath());
-                    return;
-                }
+                return;
             }
 
             FileOutputStream fos = new FileOutputStream(file);
@@ -157,28 +160,23 @@ public class Music extends GlobalTimedConstraintCommand {
             MessageChannel ch = getChannel(event);
 
             if(ch != null) {
-                FileInputStream fis = new FileInputStream(file);
+                ch.sendMessage(LangID.getStringByID("music_upload", lang).replace("_", optionalID))
+                        .addFile(file, optionalID+".ogg")
+                        .queue(m -> {
+                            waiter.resume();
 
-                createMessage(ch, msg -> {
-                    msg.content(LangID.getStringByID("music_upload", lang).replace("_", optionalID));
-                    msg.addFile(optionalID+".ogg", fis);
-                }, () -> {
-                    waiter.resume();
-
-                    try {
-                        if(file.exists()) {
-                            fis.close();
-
-                            boolean res = file.delete();
-
-                            if(!res) {
-                                System.out.println("Can't delete file : "+file.getAbsolutePath());
+                            if(file.exists() && !file.delete()) {
+                                StaticStore.logger.uploadLog("Can't delete file : "+file.getAbsolutePath());
                             }
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
+                        }, e -> {
+                            StaticStore.logger.uploadErrorLog(e, "E/Music - Failed to upload music");
+
+                            waiter.resume();
+
+                            if(file.exists() && !file.delete()) {
+                                StaticStore.logger.uploadLog("Can't delete file : "+file.getAbsolutePath());
+                            }
+                        });
 
                 waiter.pause(() -> onFail(event, DEFAULT_ERROR));
             }
@@ -190,13 +188,10 @@ public class Music extends GlobalTimedConstraintCommand {
 
             File file = new File("./temp/", Data.trio(id)+".ogg");
 
-            if(!file.exists()) {
-                boolean res = file.createNewFile();
+            if(!file.exists() && !file.createNewFile()) {
+                StaticStore.logger.uploadLog("Can't create file : "+file.getAbsolutePath());
 
-                if(!res) {
-                    System.out.println("Can't create file : "+file.getAbsolutePath());
-                    return;
-                }
+                return;
             }
 
             FileOutputStream fos = new FileOutputStream(file);
@@ -215,28 +210,23 @@ public class Music extends GlobalTimedConstraintCommand {
             MessageChannel ch = getChannel(event);
 
             if(ch != null) {
-                FileInputStream fis = new FileInputStream(file);
+                ch.sendMessage(LangID.getStringByID("music_upload", lang).replace("_", optionalID))
+                        .addFile(file, optionalID+".ogg")
+                        .queue(msg -> {
+                            waiter.resume();
 
-                createMessage(ch, msg -> {
-                    msg.content(LangID.getStringByID("music_upload", lang).replace("_", optionalID));
-                    msg.addFile(optionalID+".ogg", fis);
-                }, () -> {
-                    waiter.resume();
-
-                    try {
-                        if(file.exists()) {
-                            fis.close();
-
-                            boolean res = file.delete();
-
-                            if(!res) {
-                                System.out.println("Can't delete file : "+file.getAbsolutePath());
+                            if(file.exists() && !file.delete()) {
+                                StaticStore.logger.uploadLog("Can't delete file : "+file.getAbsolutePath());
                             }
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
+                        }, e -> {
+                            StaticStore.logger.uploadErrorLog(e, "E/Music - Failed to upload music");
+
+                            waiter.resume();
+
+                            if(file.exists() && !file.delete()) {
+                                StaticStore.logger.uploadLog("Can't delete file : "+file.getAbsolutePath());
+                            }
+                        });
 
                 waiter.pause(() -> onFail(event, DEFAULT_ERROR));
             }
@@ -244,19 +234,19 @@ public class Music extends GlobalTimedConstraintCommand {
     }
 
     @Override
-    protected void onAbort(MessageEvent event) {
+    protected void onAbort(GenericMessageEvent event) {
         MessageChannel ch = getChannel(event);
 
         if(ch != null) {
             switch (optionalID) {
                 case NOT_NUMBER:
-                    ch.createMessage(LangID.getStringByID("music_number", lang)).subscribe();
+                    ch.sendMessage(LangID.getStringByID("music_number", lang)).queue();
                     break;
                 case OUT_RANGE:
-                    ch.createMessage(LangID.getStringByID("music_outrange", lang).replace("_", String.valueOf(UserProfile.getBCData().musics.getList().size() - 1))).subscribe();
+                    ch.sendMessage(LangID.getStringByID("music_outrange", lang).replace("_", String.valueOf(UserProfile.getBCData().musics.getList().size() - 1))).queue();
                     break;
                 case ARGUMENT:
-                    ch.createMessage(LangID.getStringByID("music_argu", lang));
+                    ch.sendMessage(LangID.getStringByID("music_argu", lang)).queue();
                     break;
             }
         }

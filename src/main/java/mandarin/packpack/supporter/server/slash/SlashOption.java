@@ -1,35 +1,32 @@
 package mandarin.packpack.supporter.server.slash;
 
-import discord4j.core.object.command.ApplicationCommandOption;
-import discord4j.discordjson.json.ApplicationCommandInteractionOptionData;
-import discord4j.discordjson.json.ApplicationCommandOptionData;
-import discord4j.discordjson.json.ImmutableApplicationCommandRequest;
-import mandarin.packpack.supporter.StaticStore;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.requests.restaction.CommandCreateAction;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Locale;
 
 public class SlashOption {
     enum TYPE {
-        INT(ApplicationCommandOption.Type.INTEGER.getValue()),
-        BOOLEAN(ApplicationCommandOption.Type.BOOLEAN.getValue()),
-        STRING(ApplicationCommandOption.Type.STRING.getValue()),
-        ROLE(ApplicationCommandOption.Type.ROLE.getValue()),
-        CHANNEL(ApplicationCommandOption.Type.CHANNEL.getValue()),
-        SUB_COMMAND(ApplicationCommandOption.Type.SUB_COMMAND.getValue()),
-        GROUP(ApplicationCommandOption.Type.SUB_COMMAND_GROUP.getValue());
+        INT(OptionType.INTEGER),
+        BOOLEAN(OptionType.BOOLEAN),
+        STRING(OptionType.STRING),
+        ROLE(OptionType.ROLE),
+        CHANNEL(OptionType.CHANNEL),
+        SUB_COMMAND(OptionType.SUB_COMMAND),
+        GROUP(OptionType.SUB_COMMAND_GROUP);
 
-        int type;
+        OptionType type;
 
-        TYPE(int type) {
+        TYPE(OptionType type) {
             this.type = type;
         }
     }
 
-    public static ApplicationCommandInteractionOptionData getOption(List<ApplicationCommandInteractionOptionData> options, @NotNull String name) {
-        for(ApplicationCommandInteractionOptionData option : options) {
-            if(option.name().equals(name)) {
+    public static OptionMapping getOption(List<OptionMapping> options, @NotNull String name) {
+        for(OptionMapping option : options) {
+            if(option.getName().equals(name)) {
                 return option;
             }
         }
@@ -38,41 +35,39 @@ public class SlashOption {
     }
 
     @NotNull
-    public static String getStringOption(List<ApplicationCommandInteractionOptionData> options, String name, @NotNull String def) {
-        ApplicationCommandInteractionOptionData data = getOption(options, name);
+    public static String getStringOption(List<OptionMapping> options, String name, @NotNull String def) {
+        OptionMapping data = getOption(options, name);
 
         if(data == null)
             return def;
 
-        if(data.type() == TYPE.STRING.type && !data.value().isAbsent())
-            return data.value().get();
+        if(data.getType() == TYPE.STRING.type)
+            return data.getAsString();
 
         return def;
     }
 
-    public static boolean getBooleanOption(List<ApplicationCommandInteractionOptionData> options, String name, boolean def) {
-        ApplicationCommandInteractionOptionData data = getOption(options, name);
+    public static boolean getBooleanOption(List<OptionMapping> options, String name, boolean def) {
+        OptionMapping data = getOption(options, name);
 
         if(data == null)
             return def;
 
-        if(data.type() == TYPE.BOOLEAN.type && !data.value().isAbsent()) {
-            String value = data.value().get();
-
-            return value.toLowerCase(Locale.ENGLISH).equals("true");
+        if(data.getType() == TYPE.BOOLEAN.type) {
+            return data.getAsBoolean();
         }
 
         return def;
     }
 
-    public static int getIntOption(List<ApplicationCommandInteractionOptionData> options, String name, int def) {
-        ApplicationCommandInteractionOptionData data = getOption(options, name);
+    public static int getIntOption(List<OptionMapping> options, String name, int def) {
+        OptionMapping data = getOption(options, name);
 
         if(data == null)
             return def;
 
-        if(data.type() == TYPE.INT.type && !data.value().isAbsent())
-            return StaticStore.safeParseInt(data.value().get());
+        if(data.getType() == TYPE.INT.type)
+            return data.getAsInt();
 
         return def;
     }
@@ -92,13 +87,7 @@ public class SlashOption {
         this.type = type;
     }
 
-    public void apply(ImmutableApplicationCommandRequest.Builder builder) {
-        builder.addOption(ApplicationCommandOptionData.builder()
-                .name(name)
-                .description(description)
-                .type(type.type)
-                .required(required)
-                .build()
-        );
+    public CommandCreateAction apply(CommandCreateAction action) {
+        return action.addOption(type.type, name, description, required);
     }
 }

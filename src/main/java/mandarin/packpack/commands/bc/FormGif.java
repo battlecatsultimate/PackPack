@@ -2,62 +2,48 @@ package mandarin.packpack.commands.bc;
 
 import common.util.Data;
 import common.util.unit.Form;
-import discord4j.core.GatewayDiscordClient;
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.GlobalTimedConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
-import mandarin.packpack.supporter.server.holder.FormAnimMessageHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import mandarin.packpack.supporter.server.holder.FormAnimMessageHolder;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class FormGif extends GlobalTimedConstraintCommand {
     private final int PARAM_DEBUG = 2;
     private final int PARAM_RAW = 4;
     private final int PARAM_GIF = 8;
 
-    private final GatewayDiscordClient client;
-
-    public FormGif(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID, GatewayDiscordClient client) {
+    public FormGif(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID) {
         super(role, lang, id, mainID, TimeUnit.SECONDS.toMillis(30));
-
-        this.client = client;
     }
 
     @Override
-    protected void doThing(MessageEvent event) throws Exception {
+    protected void doThing(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
             return;
 
-        Guild g = getGuild(event).block();
+        Guild g = getGuild(event);
+        Member m = getMember(event);
 
-        if(g == null)
+        if(g == null || m == null)
             return;
 
-        AtomicReference<Boolean> isTrusted = new AtomicReference<>(false);
-
-        getMember(event).ifPresentOrElse(m -> {
-            if(StaticStore.contributors.contains(m.getId().asString())) {
-                isTrusted.set(true);
-            } else if(m.getId().asString().equals(StaticStore.MANDARIN_SMELL)) {
-                isTrusted.set(true);
-            } else {
-                isTrusted.set(false);
-            }
-        }, () -> isTrusted.set(false));
+        boolean isTrusted = StaticStore.contributors.contains(m.getId()) || m.getId().equals(StaticStore.MANDARIN_SMELL);
 
         String[] list = getContent(event).split(" ");
 
@@ -77,7 +63,7 @@ public class FormGif extends GlobalTimedConstraintCommand {
             String search = filterCommand(getContent(event));
 
             if(search.isBlank()) {
-                ch.createMessage(LangID.getStringByID("fimg_more", lang)).subscribe();
+                ch.sendMessage(LangID.getStringByID("fimg_more", lang)).queue();
                 disableTimer();
                 return;
             }
@@ -95,15 +81,15 @@ public class FormGif extends GlobalTimedConstraintCommand {
                 boolean gif = (param & PARAM_GIF) > 0;
                 int frame = getFrame(getContent(event));
 
-                if(raw && !isTrusted.get()) {
-                    ch.createMessage(LangID.getStringByID("gif_ignore", lang)).subscribe();
+                if(raw && !isTrusted) {
+                    ch.sendMessage(LangID.getStringByID("gif_ignore", lang)).queue();
                 }
 
                 Form f = forms.get(0);
 
-                boolean result = EntityHandler.generateFormAnim(f, ch, client, g.getPremiumTier().getValue(), mode, debug, frame, lang, raw && isTrusted.get(), gif);
+                boolean result = EntityHandler.generateFormAnim(f, ch, g.getBoostTier().getKey(), mode, debug, frame, lang, raw && isTrusted, gif);
 
-                if(raw && isTrusted.get()) {
+                if(raw && isTrusted) {
                     changeTime(TimeUnit.MINUTES.toMillis(1));
                 }
 
@@ -151,31 +137,29 @@ public class FormGif extends GlobalTimedConstraintCommand {
                 boolean raw = (param & PARAM_RAW) > 0;
                 boolean gif = (param &  PARAM_GIF) > 0;
 
-                if(raw && !isTrusted.get()) {
-                    ch.createMessage(LangID.getStringByID("gif_ignore", lang)).subscribe();
+                if(raw && !isTrusted) {
+                    ch.sendMessage(LangID.getStringByID("gif_ignore", lang)).queue();
                 }
 
                 Message res = getMessageWithNoPings(ch, sb.toString());
 
                 if(res != null) {
-                    getMember(event).ifPresent(member -> {
-                        Message msg = getMessage(event);
+                    Message msg = getMessage(event);
 
-                        if(msg != null)
-                            StaticStore.putHolder(member.getId().asString(), new FormAnimMessageHolder(forms, msg, res, client, ch.getId().asString(), mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isTrusted.get(), gif));
-                    });
+                    if(msg != null)
+                        StaticStore.putHolder(m.getId(), new FormAnimMessageHolder(forms, msg, res, ch.getId(), mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isTrusted, gif));
                 }
 
                 disableTimer();
             }
         } else {
-            ch.createMessage(LangID.getStringByID("fimg_more", lang)).subscribe();
+            ch.sendMessage(LangID.getStringByID("fimg_more", lang)).queue();
             disableTimer();
         }
     }
 
     @Override
-    protected void setOptionalID(MessageEvent event) {
+    protected void setOptionalID(GenericMessageEvent event) {
         optionalID = "";
     }
 

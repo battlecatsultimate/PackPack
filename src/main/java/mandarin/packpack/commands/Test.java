@@ -1,42 +1,23 @@
 package mandarin.packpack.commands;
 
-import common.util.Data;
-import discord4j.common.util.Snowflake;
-import discord4j.core.GatewayDiscordClient;
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.core.object.entity.channel.VoiceChannel;
-import mandarin.packpack.supporter.StaticStore;
-import mandarin.packpack.supporter.bc.cell.AbilityData;
-import mandarin.packpack.supporter.bc.cell.CellData;
-import mandarin.packpack.supporter.bc.cell.FlagCellData;
-import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import mandarin.packpack.supporter.server.holder.StatAnalyzerMessageHolder;
-import org.apache.commons.lang3.StringUtils;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class Test extends GlobalTimedConstraintCommand {
-    private final GatewayDiscordClient gate;
-
-    public Test(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID, GatewayDiscordClient gate) {
+    public Test(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID) {
         super(role, lang, id, mainID, TimeUnit.SECONDS.toMillis(1));
-
-        this.gate = gate;
     }
 
     @Override
-    protected void doThing(MessageEvent event) {
+    protected void doThing(GenericMessageEvent event) {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
@@ -44,35 +25,45 @@ public class Test extends GlobalTimedConstraintCommand {
 
         String[] contents = getContent(event).split(" ");
 
-        if(contents.length < 3)
-            createMessage(ch, m -> m.content("p!test -s/c/m [ID]"));
+        if(contents.length < 3) {
+            ch.sendMessage("p!test -s/c/m [ID]").queue();
+
+            return;
+        }
+
+        JDA gate = event.getJDA();
 
         switch (contents[1]) {
             case "-m":
-                gate.getUserById(Snowflake.of(contents[2])).subscribe(u -> createMessage(ch, m -> m.content("User Name : "+u.getUsername()+u.getDiscriminator())));
+                User u = gate.getUserById(contents[2]);
+
+                if(u != null) {
+                    ch.sendMessage("User Name : "+u.getName()+u.getDiscriminator()).queue();
+                }
                 break;
             case "-c":
-                gate.getChannelById(Snowflake.of(contents[2])).subscribe(c -> {
-                    createMessage(ch, m -> m.content("Channel type : "+c.getType()));
+                GuildChannel c = gate.getGuildChannelById(contents[2]);
 
-                    if(c instanceof VoiceChannel) {
-                        createMessage(ch, m -> m.content("Channel Name : "+((VoiceChannel) c).getName()));
-                        createMessage(ch, m -> m.content("Server name : "+((VoiceChannel) c).getGuild().block().getName()));
-                    } else if(c instanceof MessageChannel) {
-                        createMessage(ch, m -> m.content("Channel Name : "+c.getRestChannel().getData().block().name().get()));
-                        createMessage(ch, m -> m.content("Server name : "+(c.getRestChannel().getData().block().guildId().isAbsent() ? "None" : c.getRestChannel().getData().block().guildId().get())));
-                    }
-                });
+                if(c != null) {
+                    ch.sendMessage("Channel type : "+c.getType()).queue();
+                    ch.sendMessage("Channel Name : "+ c.getName()).queue();
+                    ch.sendMessage("Server name : "+ c.getGuild().getName()).queue();
+                }
 
                 break;
             case "-s":
-                gate.getGuildById(Snowflake.of(contents[2])).subscribe(g -> createMessage(ch, m -> m.content("Guild Name : "+g.getName())));
+                Guild g = gate.getGuildById(contents[2]);
 
+                if(g != null) {
+                    ch.sendMessage("Guild Name : "+g.getName()).queue();
+                }
+
+                break;
         }
     }
 
     @Override
-    protected void setOptionalID(MessageEvent event) {
+    protected void setOptionalID(GenericMessageEvent event) {
         optionalID = "";
     }
 

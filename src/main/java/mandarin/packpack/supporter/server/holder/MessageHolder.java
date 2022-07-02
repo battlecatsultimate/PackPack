@@ -1,21 +1,17 @@
 package mandarin.packpack.supporter.server.holder;
 
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.discordjson.possible.Possible;
-import discord4j.rest.util.AllowedMentions;
-import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import javax.annotation.Nullable;
-import java.util.Optional;
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
 
-public abstract class MessageHolder<T extends MessageEvent> implements Holder<T> {
+public abstract class MessageHolder<T extends GenericMessageEvent> implements Holder<T> {
     public static final int RESULT_FAIL = -1;
     public static final int RESULT_STILL = 0;
     public static final int RESULT_FINISH = 1;
@@ -43,17 +39,15 @@ public abstract class MessageHolder<T extends MessageEvent> implements Holder<T>
     }
 
     public void createMessageWithNoPings(MessageChannel ch, String content) {
-        Command.createMessage(ch, m -> {
-            m.content(content);
-            m.allowedMentions(AllowedMentions.builder().build());
-        });
+        ch.sendMessage(content)
+            .allowedMentions(new ArrayList<>())
+            .queue();
     }
 
     public Message getMessageWithNoPings(MessageChannel ch, String content) {
-        return Command.createMessage(ch, m -> {
-            m.content(content);
-            m.allowedMentions(AllowedMentions.builder().build());
-        });
+        return ch.sendMessage(content)
+                .allowedMentions(new ArrayList<>())
+                .complete();
     }
 
     public void registerAutoFinish(MessageHolder<?> messageHolder, Message msg, Message author, int lang, long millis) {
@@ -67,9 +61,8 @@ public abstract class MessageHolder<T extends MessageEvent> implements Holder<T>
 
                 expired = true;
 
-                author.getAuthor().ifPresent(au -> StaticStore.removeHolder(au.getId().asString(), messageHolder));
-
-                Command.editMessage(msg, m -> m.content(wrap(LangID.getStringByID("formst_expire", lang))));
+                StaticStore.removeHolder(author.getAuthor().getId(), messageHolder);
+                msg.editMessage(LangID.getStringByID("formst_expire", lang)).queue();
             }
         }, millis);
     }
@@ -85,9 +78,8 @@ public abstract class MessageHolder<T extends MessageEvent> implements Holder<T>
 
                 expired = true;
 
-                author.getAuthor().ifPresent(au -> StaticStore.removeHolder(au.getId().asString(), messageHolder));
-
-                Command.editMessage(msg, m -> m.content(wrap(LangID.getStringByID("formst_expire", lang))));
+                StaticStore.removeHolder(author.getAuthor().getId(), messageHolder);
+                msg.editMessage(LangID.getStringByID("formst_expire", lang)).queue();
 
                 if(run != null)
                     run.run();
@@ -106,9 +98,8 @@ public abstract class MessageHolder<T extends MessageEvent> implements Holder<T>
 
                 expired = true;
 
-                author.getAuthor().ifPresent(au -> StaticStore.removeHolder(au.getId().asString(), messageHolder));
-
-                Command.editMessage(msg, m -> m.content(wrap(LangID.getStringByID(langID, lang))));
+                StaticStore.removeHolder(author.getAuthor().getId(), messageHolder);
+                msg.editMessage(LangID.getStringByID(langID, lang)).queue();
             }
         }, millis);
     }
@@ -124,17 +115,12 @@ public abstract class MessageHolder<T extends MessageEvent> implements Holder<T>
 
                 expired = true;
 
-                author.getAuthor().ifPresent(au -> StaticStore.removeHolder(au.getId().asString(), messageHolder));
-
-                Command.editMessage(msg, m -> m.content(wrap(LangID.getStringByID(langID, lang))));
+                StaticStore.removeHolder(author.getAuthor().getId(), messageHolder);
+                msg.editMessage(LangID.getStringByID(langID, lang)).queue();
 
                 if(run != null)
                     run.run();
             }
         }, millis);
-    }
-
-    public Possible<Optional<String>> wrap(String content) {
-        return Possible.of(Optional.of(content));
     }
 }

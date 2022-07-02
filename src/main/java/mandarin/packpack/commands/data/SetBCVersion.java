@@ -1,11 +1,11 @@
 package mandarin.packpack.commands.data;
 
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class SetBCVersion extends ConstraintCommand {
     public SetBCVersion(ROLE role, int lang, IDHolder id) {
@@ -13,7 +13,7 @@ public class SetBCVersion extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
@@ -34,24 +34,28 @@ public class SetBCVersion extends ConstraintCommand {
                     "BCJP : " +
                     convertVersion(StaticStore.safeParseInt(StaticStore.getVersion(3)));
 
-            createMessage(ch, m -> m.content("Format : p!sbv [Locale] [Version]\n\n"+versions));
+            ch.sendMessage("Format : p!sbv [Locale] [Version]\n\n"+versions).queue();
+
             return;
         }
 
         if(!StaticStore.isNumeric(contents[1])) {
-            createMessage(ch, m -> m.content("Locale must be numeric! 0 : En | 2 : Tw | 3 : Kr | 4 : Jp"));
+            ch.sendMessage("Locale must be numeric! 0 : En | 2 : Tw | 3 : Kr | 4 : Jp").queue();
+
             return;
         }
 
         int loc = StaticStore.safeParseInt(contents[1]);
 
         if(loc < 0 || loc > 4) {
-            createMessage(ch, m -> m.content("Locale must be range in 0 ~ 4! 0 : En | 2 : Tw | 3 : Kr | 4 : Jp"));
+            ch.sendMessage("Locale must be range in 0 ~ 4! 0 : En | 2 : Tw | 3 : Kr | 4 : Jp").queue();
+
             return;
         }
 
         if(!StaticStore.isNumeric(contents[2])) {
-            createMessage(ch, m -> m.content("Version must be numeric! Example : 11.0.1 for 110001"));
+            ch.sendMessage("Version must be numeric! Example : 11.0.1 for 110001").queue();
+
             return;
         }
 
@@ -78,7 +82,7 @@ public class SetBCVersion extends ConstraintCommand {
                 StaticStore.japaneseVersion = "" + ver;
         }
 
-        createMessage(ch, m -> m.content("Set "+locale+" version to "+version+"!"));
+        ch.sendMessage("Set "+locale+" version to "+version+"!").queue();
     }
 
     private String convertVersion(int version) {

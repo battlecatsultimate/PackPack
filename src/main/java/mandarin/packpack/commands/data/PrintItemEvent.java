@@ -1,17 +1,17 @@
 package mandarin.packpack.commands.data;
 
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Member;
-import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.core.spec.MessageCreateFields;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
 
 public class PrintItemEvent extends ConstraintCommand {
     public PrintItemEvent(ROLE role, int lang, IDHolder id) {
@@ -19,7 +19,7 @@ public class PrintItemEvent extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
@@ -29,10 +29,10 @@ public class PrintItemEvent extends ConstraintCommand {
          int t = 0;
 
         if(now) {
-            Optional<Member> m = getMember(event);
+            Member m = getMember(event);
 
-            if(m.isPresent()) {
-                t = StaticStore.timeZones.getOrDefault(m.get().getId().asString(), 0);
+            if(m != null) {
+                t = StaticStore.timeZones.getOrDefault(m.getId(), 0);
 
                 String content;
 
@@ -41,14 +41,15 @@ public class PrintItemEvent extends ConstraintCommand {
                 else
                     content = "" + t;
 
-                createMessage(ch, me -> me.content(LangID.getStringByID("printevent_time", lang).replace("_", content)));
+                ch.sendMessage(LangID.getStringByID("printevent_time", lang).replace("_", content)).queue();
             }
         }
 
         String result = StaticStore.event.printItemEvent(getLocale(getContent(event)), lang, isFull(getContent(event)), isRaw(getContent(event)), now, t);
 
         if(result.isBlank()) {
-            createMessage(ch, m -> m.content(LangID.getStringByID("chevent_noup", lang)));
+            ch.sendMessage(LangID.getStringByID("chevent_noup", lang)).queue();
+
             return;
         }
 
@@ -73,36 +74,9 @@ public class PrintItemEvent extends ConstraintCommand {
 
             writer.close();
 
-            FileInputStream fis = new FileInputStream(res);
-
-            createMessage(ch, m -> {
-                m.content(LangID.getStringByID("printitem_toolong", lang));
-                m.addFile(MessageCreateFields.File.of("itemEvent.txt", fis));
-            }, (e) -> {
-                StaticStore.logger.uploadErrorLog(e, "Failed to perform PrintStageEvent while uploading sale event result");
-
-                try {
-                    fis.close();
-                } catch (IOException ex) {
-                    StaticStore.logger.uploadErrorLog(ex, "Failed to perform PrintStageEvent while uploading sale event result");
-                }
-
-                if(res.exists() && !res.delete()) {
-                    StaticStore.logger.uploadLog("Faield to delte file : "+res.getAbsolutePath());
-                }
-            }, () -> {
-                try {
-                    fis.close();
-                } catch (IOException e) {
-                    StaticStore.logger.uploadErrorLog(e, "Failed to perform PrintStageEvent while uploading sale event result");
-                }
-
-                if(res.exists() && !res.delete()) {
-                    StaticStore.logger.uploadLog("Faield to delte file : "+res.getAbsolutePath());
-                }
-            });
+            sendMessageWithFile(ch, LangID.getStringByID("printitem_toolong", lang), res, "itemEvent.txt");
         } else {
-            createMessage(ch, m -> m.content(result));
+            ch.sendMessage(result).queue();
         }
     }
 

@@ -4,21 +4,18 @@ import common.io.assets.UpdateCheck;
 import common.system.files.VFile;
 import common.util.Data;
 import common.util.anim.MaAnim;
-import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.entity.Attachment;
-import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
-import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.AnimMixer;
+import mandarin.packpack.supporter.bc.CustomMaskUnit;
+import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.bc.cell.AbilityData;
 import mandarin.packpack.supporter.bc.cell.CellData;
-import mandarin.packpack.supporter.bc.CustomMaskUnit;
-import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.cell.FlagCellData;
 import mandarin.packpack.supporter.lang.LangID;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -32,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 @SuppressWarnings("ForLoopReplaceableByForEach")
-public class StatAnalyzerMessageHolder extends MessageHolder<MessageCreateEvent> {
+public class StatAnalyzerMessageHolder extends MessageHolder<MessageReceivedEvent> {
     private enum FILE {
         STAT(-1),
         LEVEL(-1),
@@ -77,7 +74,7 @@ public class StatAnalyzerMessageHolder extends MessageHolder<MessageCreateEvent>
     private final List<AtomicReference<String>> icon = new ArrayList<>();
 
     public StatAnalyzerMessageHolder(Message msg, Message author, int uID, int len, boolean isSecond, List<CellData> cellData, List<AbilityData> procData, List<FlagCellData> abilityData, List<FlagCellData> traitData, String channelID, File container, int lv, String[] name, int lang) throws Exception {
-        super(MessageCreateEvent.class);
+        super(MessageReceivedEvent.class);
 
         this.cellData = cellData;
         this.abilityData = abilityData;
@@ -105,38 +102,38 @@ public class StatAnalyzerMessageHolder extends MessageHolder<MessageCreateEvent>
         AtomicReference<Long> now = new AtomicReference<>(System.currentTimeMillis());
 
         if(!author.getAttachments().isEmpty()) {
-            for(Attachment a : author.getAttachments()) {
-                if(a.getFilename().equals("unit"+ Data.trio(uID+1)+".csv") && !statDone) {
+            for(Message.Attachment a : author.getAttachments()) {
+                if(a.getFileName().equals("unit"+ Data.trio(uID+1)+".csv") && !statDone) {
                     downloadAndValidate("STAT (unit"+ Data.trio(uID+1)+".csv) : ", a, FILE.STAT, now);
-                } else if(a.getFilename().equals("unitlevel.csv") && !levelDone) {
+                } else if(a.getFileName().equals("unitlevel.csv") && !levelDone) {
                     downloadAndValidate("LEVEL (unitlevel.csv) : ", a, FILE.LEVEL, now);
-                } else if(a.getFilename().endsWith("02.maanim")) {
-                    int index = getIndexOfMaanim(a.getFilename());
+                } else if(a.getFileName().endsWith("02.maanim")) {
+                    int index = getIndexOfMaanim(a.getFileName());
 
                     if(index != -1) {
                         FILE.ANIM.setIndex(index);
 
-                        if(index == 0 && a.getFilename().equals(Data.trio(uID)+"_f02.maanim")) {
+                        if(index == 0 && a.getFileName().equals(Data.trio(uID)+"_f02.maanim")) {
                             downloadAndValidate(getMaanimTitle(index), a, FILE.ANIM, now);
-                        } else if(index == 1 && a.getFilename().equals(Data.trio(uID)+"_c02.maanim")) {
+                        } else if(index == 1 && a.getFileName().equals(Data.trio(uID)+"_c02.maanim")) {
                             downloadAndValidate(getMaanimTitle(index), a, FILE.ANIM, now);
-                        } else if(index == 2 && a.getFilename().equals(Data.trio(uID)+"_s02.maanim")) {
+                        } else if(index == 2 && a.getFileName().equals(Data.trio(uID)+"_s02.maanim")) {
                             downloadAndValidate(getMaanimTitle(index), a, FILE.ANIM, now);
                         }
                     }
-                } else if(a.getFilename().endsWith(".png") && getIndexOfIcon(a.getFilename()) != -1) {
-                    int index = getIndexOfIcon(a.getFilename());
+                } else if(a.getFileName().endsWith(".png") && getIndexOfIcon(a.getFileName()) != -1) {
+                    int index = getIndexOfIcon(a.getFileName());
 
                     FILE.ICON.setIndex(index);
 
-                    if(index == 0 && a.getFilename().equals("uni"+ Data.trio(uID)+"_f00.png")) {
+                    if(index == 0 && a.getFileName().equals("uni"+ Data.trio(uID)+"_f00.png")) {
                         downloadAndValidate(getIconTitle(index), a, FILE.ICON, now);
-                    } else if(index == 1 && a.getFilename().equals("uni"+ Data.trio(uID)+"_c00.png")) {
+                    } else if(index == 1 && a.getFileName().equals("uni"+ Data.trio(uID)+"_c00.png")) {
                         downloadAndValidate(getIconTitle(index), a, FILE.ICON, now);
-                    } else if(index == 2 && a.getFilename().equals("uni"+ Data.trio(uID)+"_s00.png")) {
+                    } else if(index == 2 && a.getFileName().equals("uni"+ Data.trio(uID)+"_s00.png")) {
                         downloadAndValidate(getIconTitle(index), a, FILE.ICON, now);
                     }
-                } else if(a.getFilename().equals("unitbuy.csv") && !buyDone) {
+                } else if(a.getFileName().equals("unitbuy.csv") && !buyDone) {
                     downloadAndValidate("BUY (unitbuy.csv) : ", a, FILE.BUY, now);
                 }
             }
@@ -144,19 +141,6 @@ public class StatAnalyzerMessageHolder extends MessageHolder<MessageCreateEvent>
 
         if(allDone()) {
             new Thread(() -> {
-                Guild g = msg.getGuild().block();
-
-                if(g == null) {
-                    new Timer().schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            StaticStore.deleteFile(container, true);
-                        }
-                    }, 1000);
-
-                    return;
-                }
-
                 try {
                     CustomMaskUnit[] units = new CustomMaskUnit[anim.size()];
 
@@ -263,7 +247,7 @@ public class StatAnalyzerMessageHolder extends MessageHolder<MessageCreateEvent>
 
                     statReader.close();
 
-                    EntityHandler.generateStatImage(msg.getChannel().block(), cellData, procData, abilityData, traitData, units, name, container, lv, !isSecond, uID, lang);
+                    EntityHandler.generateStatImage(msg.getChannel(), cellData, procData, abilityData, traitData, units, name, container, lv, !isSecond, uID, lang);
 
                     new Timer().schedule(new TimerTask() {
                         @Override
@@ -284,14 +268,14 @@ public class StatAnalyzerMessageHolder extends MessageHolder<MessageCreateEvent>
                 }
             }).start();
         } else {
-            author.getAuthor().ifPresent(u -> StaticStore.putHolder(u.getId().asString(), StatAnalyzerMessageHolder.this));
+            StaticStore.putHolder(author.getAuthor().getId(), StatAnalyzerMessageHolder.this);
 
             registerAutoFinish(this, msg, author, lang, "stat_expire", TimeUnit.MINUTES.toMillis(5));
         }
     }
 
     @Override
-    public int handleEvent(MessageCreateEvent event) {
+    public int handleEvent(MessageReceivedEvent event) {
         try {
             if(expired) {
                 StaticStore.logger.uploadLog("Expired Holder : "+this.getClass().getName());
@@ -300,14 +284,11 @@ public class StatAnalyzerMessageHolder extends MessageHolder<MessageCreateEvent>
 
             System.out.println("1");
 
-            MessageChannel ch = event.getMessage().getChannel().block();
-
-            if(ch == null)
-                return RESULT_STILL;
+            MessageChannel ch = event.getMessage().getChannel();
 
             System.out.println("2");
 
-            if(!ch.getId().asString().equals(channelID))
+            if(!ch.getId().equals(channelID))
                 return RESULT_STILL;
 
             System.out.println("3");
@@ -317,47 +298,34 @@ public class StatAnalyzerMessageHolder extends MessageHolder<MessageCreateEvent>
             Message m = event.getMessage();
 
             if(!m.getAttachments().isEmpty()) {
-                for(Attachment a : m.getAttachments()) {
-                    if(a.getFilename().equals("unit"+Data.trio(uID+1)+".csv") && !statDone) {
+                for(Message.Attachment a : m.getAttachments()) {
+                    if(a.getFileName().equals("unit"+Data.trio(uID+1)+".csv") && !statDone) {
                         downloadAndValidate("STAT (" + "unit" + Data.trio(uID+1) + ".csv" + ") : ", a, FILE.STAT, now);
-                    } else if(a.getFilename().equals("unitlevel.csv") && !levelDone) {
+                    } else if(a.getFileName().equals("unitlevel.csv") && !levelDone) {
                         downloadAndValidate("LEVEL (unitlevel.csv) : ", a, FILE.LEVEL, now);
-                    } else if(a.getFilename().endsWith("02.maanim")) {
-                        int index = getIndexOfMaanim(a.getFilename());
+                    } else if(a.getFileName().endsWith("02.maanim")) {
+                        int index = getIndexOfMaanim(a.getFileName());
 
                         if(index != -1) {
                             FILE.ANIM.setIndex(index);
 
                             downloadAndValidate(getMaanimTitle(index), a, FILE.ANIM, now);
                         }
-                    } else if(a.getFilename().endsWith(".png") && getIndexOfIcon(a.getFilename()) != -1) {
-                        int index = getIndexOfIcon(a.getFilename());
+                    } else if(a.getFileName().endsWith(".png") && getIndexOfIcon(a.getFileName()) != -1) {
+                        int index = getIndexOfIcon(a.getFileName());
 
                         FILE.ICON.setIndex(index);
 
                         downloadAndValidate(getIconTitle(index), a, FILE.ICON, now);
-                    } else if(a.getFilename().equals("unitbuy.csv") && !buyDone) {
+                    } else if(a.getFileName().equals("unitbuy.csv") && !buyDone) {
                         downloadAndValidate("BUY (unitbuy.csv) : ", a, FILE.BUY, now);
                     }
                 }
 
-                m.delete().subscribe();
+                m.delete().queue();
 
                 if(allDone()) {
                     new Thread(() -> {
-                        Guild g = msg.getGuild().block();
-
-                        if(g == null) {
-                            new Timer().schedule(new TimerTask() {
-                                @Override
-                                public void run() {
-                                    StaticStore.deleteFile(container, true);
-                                }
-                            }, 1000);
-
-                            return;
-                        }
-
                         try {
                             CustomMaskUnit[] units = new CustomMaskUnit[anim.size()];
 
@@ -464,7 +432,7 @@ public class StatAnalyzerMessageHolder extends MessageHolder<MessageCreateEvent>
 
                             statReader.close();
 
-                            EntityHandler.generateStatImage(msg.getChannel().block(), cellData, procData, abilityData, traitData, units, name, container, lv, !isSecond, uID, lang);
+                            EntityHandler.generateStatImage(msg.getChannel(), cellData, procData, abilityData, traitData, units, name, container, lv, !isSecond, uID, lang);
 
                             new Timer().schedule(new TimerTask() {
                                 @Override
@@ -486,8 +454,8 @@ public class StatAnalyzerMessageHolder extends MessageHolder<MessageCreateEvent>
                     }).start();
                 }
 
-            } else if(m.getContent().equals("c")) {
-                Command.editMessage(msg, me -> me.content(wrap(LangID.getStringByID("stat_cancel", lang))));
+            } else if(m.getContentRaw().equals("c")) {
+                msg.editMessage(LangID.getStringByID("stat_cancel", lang)).queue();
 
                 StaticStore.deleteFile(container, true);
 
@@ -514,7 +482,7 @@ public class StatAnalyzerMessageHolder extends MessageHolder<MessageCreateEvent>
 
         StaticStore.removeHolder(id, this);
 
-        Command.editMessage(msg, m -> m.content(wrap(LangID.getStringByID("formst_expire", lang))));
+        msg.editMessage(LangID.getStringByID("formst_expire", lang)).queue();
     }
 
     private boolean allDone() {
@@ -526,7 +494,7 @@ public class StatAnalyzerMessageHolder extends MessageHolder<MessageCreateEvent>
         return statDone && levelDone && buyDone;
     }
 
-    private void downloadAndValidate(String prefix, Attachment attachment, FILE type, AtomicReference<Long> now) throws Exception {
+    private void downloadAndValidate(String prefix, Message.Attachment attachment, FILE type, AtomicReference<Long> now) throws Exception {
         UpdateCheck.Downloader down = StaticStore.getDownloader(attachment, container);
 
         if(down != null) {
@@ -550,7 +518,7 @@ public class StatAnalyzerMessageHolder extends MessageHolder<MessageCreateEvent>
                 }
             });
 
-            File res = new File(container, attachment.getFilename());
+            File res = new File(container, attachment.getFileName());
 
             if(res.exists()) {
                 if(validFile(type, res)) {
@@ -739,6 +707,6 @@ public class StatAnalyzerMessageHolder extends MessageHolder<MessageCreateEvent>
                 content.append("\n");
         }
 
-        Command.editMessage(msg, m -> m.content(wrap(content.toString())));
+        msg.editMessage(content.toString()).queue();
     }
 }
