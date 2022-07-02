@@ -6,6 +6,7 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 
 import javax.annotation.Nullable;
@@ -83,14 +84,19 @@ public class ScamLinkHandler {
                 StaticStore.logger.uploadLog("Something impossible happened for ScamLinkHandler\nServer ID : "+server+"\nACTION : "+action+"\nMute role ID : null\nReport Channel : "+channel);
             } else {
                 List<Role> roleID = m.getRoles();
+                int pos = StaticStore.getHighestRolePosition(g.getSelfMember());
 
-                for(Role r : roleID) {
-                    g.removeRoleFromMember(UserSnowflake.fromId(m.getId()), r).queue();
+                if(g.getSelfMember().hasPermission(Permission.MANAGE_ROLES)) {
+                    for(Role r : roleID) {
+                        if(pos > r.getPosition()) {
+                            g.removeRoleFromMember(UserSnowflake.fromId(m.getId()), r).queue();
+                        }
+                    }
                 }
 
                 Role muteRole = g.getRoleById(mute);
 
-                if(muteRole != null) {
+                if(muteRole != null && g.getSelfMember().hasPermission(Permission.MANAGE_ROLES) && StaticStore.getHighestRolePosition(g.getSelfMember()) > muteRole.getPosition()) {
                     g.addRoleToMember(UserSnowflake.fromId(m.getId()), muteRole).queue();
                 }
 

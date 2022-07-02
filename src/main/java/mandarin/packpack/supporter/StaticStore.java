@@ -916,10 +916,6 @@ public class StaticStore {
         return holders.containsKey(id);
     }
 
-    public static Member getPackPack(Guild g) {
-        return g.getMemberById(PACKPACK);
-    }
-
     public static String extractFileName(String rawName) {
         String[] names = rawName.split("\\.");
 
@@ -976,6 +972,18 @@ public class StaticStore {
         }
 
         return null;
+    }
+
+    public static int getHighestRolePosition(Member m) {
+        List<Role> roles = m.getRoles();
+
+        int pos = -1;
+
+        for(Role r : roles) {
+            pos = Math.max(r.getPosition(), pos);
+        }
+
+        return pos;
     }
 
     private static int rgb(int r, int g, int b) {
