@@ -1,5 +1,5 @@
 # PackPack
-BCU pack finding discord bot
+Information providing bot for game called Battle Cats. Bot is run with BCU code, meaning that programming language used is Java, being run with Discord Java API [JDA](https://github.com/DV8FromTheWorld/JDA)
 
 When you run [PackBot](https://github.com/battlecatsultimate/PackPack/blob/main/src/main/java/mandarin/packpack/PackBot.java), you have to pass Discord Bot API Token, and Imgur API Access Token as argument
 
