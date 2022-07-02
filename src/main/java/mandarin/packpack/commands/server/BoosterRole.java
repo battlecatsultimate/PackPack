@@ -266,11 +266,9 @@ public class BoosterRole extends ConstraintCommand {
     }
 
     private int getPackPackPosition(Guild g) {
-        Member packpack = StaticStore.getPackPack(g);
-
         int role = 0;
 
-        List<Role> roles = packpack.getRoles();
+        List<Role> roles = g.getSelfMember().getRoles();
 
         for(Role r : roles) {
             int pos = r.getPosition();
