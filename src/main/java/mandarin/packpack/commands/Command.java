@@ -160,9 +160,7 @@ public abstract class Command {
     public void onCancel(GenericMessageEvent event) {}
 
     public MessageChannel getChannel(GenericMessageEvent event) {
-        Message msg = getMessage(event);
-
-        return msg == null ? null : msg.getChannel();
+        return event.getChannel();
     }
 
     public Message getMessage(GenericMessageEvent event) {
@@ -174,8 +172,19 @@ public abstract class Command {
             if(obj instanceof Message)
                 return (Message) obj;
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            StaticStore.logger.uploadErrorLog(e, "Failed to get Message from this class : "+event.getClass().getName());
-            e.printStackTrace();
+            try {
+                MessageChannel ch = event.getChannel();
+
+                Method m = event.getClass().getMethod("getMessageId");
+
+                Object obj = m.invoke(event);
+
+                if(obj instanceof String) {
+                    return ch.retrieveMessageById((String) obj).complete();
+                }
+            } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException invocationTargetException) {
+                StaticStore.logger.uploadErrorLog(e, "Failed to get Message from this class : "+event.getClass().getName());
+            }
         }
 
         return null;
@@ -196,8 +205,7 @@ public abstract class Command {
             if(obj instanceof Member)
                 return (Member) obj;
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            StaticStore.logger.uploadErrorLog(e, "Failed to get Message from this class : "+event.getClass().getName());
-            e.printStackTrace();
+            StaticStore.logger.uploadErrorLog(e, "Failed to get Member from this class : "+event.getClass().getName());
         }
 
         return null;
