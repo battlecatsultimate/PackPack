@@ -1,17 +1,12 @@
 package mandarin.packpack.supporter;
 
-import discord4j.common.util.Snowflake;
-import discord4j.core.GatewayDiscordClient;
-import discord4j.core.object.entity.channel.Channel;
-import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.rest.util.AllowedMentions;
-import mandarin.packpack.commands.Command;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.GuildMessageChannel;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class Logger {
@@ -23,20 +18,20 @@ public class Logger {
             "Bruh"
     };
 
-    private final GatewayDiscordClient client;
+    private final JDA client;
 
-    public Logger(GatewayDiscordClient client) {
+    public Logger(JDA client) {
         this.client = client;
     }
 
-    private MessageChannel getLoggingChannel() {
+    private GuildMessageChannel getLoggingChannel() {
         if(StaticStore.loggingChannel.isBlank())
             return null;
 
-        Channel ch = client.getChannelById(Snowflake.of(StaticStore.loggingChannel)).block();
+        GuildChannel ch = client.getGuildChannelById(StaticStore.loggingChannel);
 
-        if(ch instanceof MessageChannel)
-            return (MessageChannel) ch;
+        if(ch instanceof GuildMessageChannel)
+            return (GuildMessageChannel) ch;
         else
             return null;
     }
@@ -44,7 +39,7 @@ public class Logger {
     public void uploadErrorLog(Throwable e, String message, File... files) {
         e.printStackTrace();
 
-        MessageChannel ch = getLoggingChannel();
+        GuildMessageChannel ch = getLoggingChannel();
 
         if(ch == null)
             return;
@@ -63,7 +58,7 @@ public class Logger {
     public void uploadLog(String content) {
         System.out.println(content);
 
-        MessageChannel ch = getLoggingChannel();
+        GuildMessageChannel ch = getLoggingChannel();
 
         if(ch == null)
             return;
@@ -71,51 +66,26 @@ public class Logger {
         createMessageWithNoPings(ch, content);
     }
 
-    private void createMessageWithNoPings(MessageChannel ch, String content) {
-        Command.createMessage(ch, m -> {
-            m.content(content);
-            m.allowedMentions(AllowedMentions.builder().build());
-        });
+    private void createMessageWithNoPings(GuildMessageChannel ch, String content) {
+        ch.sendMessage(content)
+                .allowedMentions(new ArrayList<>())
+                .queue();
     }
 
-    private void createMessageWithNoPingsWithFile(MessageChannel ch, String content, File... files) {
-        ArrayList<FileInputStream> fis = new ArrayList<>();
-
+    private void createMessageWithNoPingsWithFile(GuildMessageChannel ch, String content, File... files) {
         for(File f : files) {
-            if(f.exists()) {
-                try {
-                    FileInputStream fi = new FileInputStream(f);
-                    fis.add(fi);
-                } catch (FileNotFoundException e) {
-                    uploadErrorLog(e, "Failed to open file input stream while uploading error log : "+f.getAbsolutePath());
-                    e.printStackTrace();
-                    return;
-                }
+            if(!f.exists()) {
+                throw new IllegalStateException("File doesn't exist : "+f.getAbsolutePath());
             }
         }
 
-        Command.createMessage(ch, m -> {
-            m.content(content);
-            m.allowedMentions(AllowedMentions.builder().build());
-            for(int i = 0; i < files.length; i++) {
-                m.addFile(files[i].getName(), fis.get(i));
-            }
-        }, (e) -> {
-            for(FileInputStream fi : fis) {
-                try {
-                    fi.close();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-            }
-        }, () -> {
-            for(FileInputStream fi : fis) {
-                try {
-                    fi.close();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-            }
-        });
+        MessageAction action = ch.sendMessage(content)
+                .allowedMentions(new ArrayList<>());
+
+        for(int i = 0; i < files.length; i++) {
+            action = action.addFile(files[i], files[i].getName());
+        }
+
+        action.queue();
     }
 }

@@ -1,26 +1,20 @@
 package mandarin.packpack.commands.server;
 
-import discord4j.common.util.Snowflake;
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.component.ActionComponent;
-import discord4j.core.object.component.ActionRow;
-import discord4j.core.object.component.Button;
-import discord4j.core.object.component.SelectMenu;
-import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.Channel;
-import discord4j.core.object.entity.channel.GuildChannel;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.ScamLinkSubscriptionHolder;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
+import net.dv8tion.jda.api.interactions.components.ActionComponent;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
+import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class SubscribeScamLinkDetector extends ConstraintCommand {
     public SubscribeScamLinkDetector(ROLE role, int lang, IDHolder id) {
@@ -28,67 +22,72 @@ public class SubscribeScamLinkDetector extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
             return;
 
-        Guild g = getGuild(event).block();
+        Guild g = getGuild(event);
 
         if(g == null) {
-            createMessage(ch, m -> m.content(LangID.getStringByID("subscam_noguild", lang)));
+            ch.sendMessage(LangID.getStringByID("subscam_noguild", lang)).queue();
+
             return;
         }
 
         String[] contents = getContent(event).split(" ");
 
         if(contents.length < 2) {
-            createMessage(ch, m -> m.content(LangID.getStringByID("subscam_noid", lang)));
+            ch.sendMessage(LangID.getStringByID("subscam_noid", lang)).queue();
+
             return;
         }
 
         String channel = parseChannel(contents[1]);
 
         if(!StaticStore.isNumeric(channel)) {
-            createMessage(ch, m -> m.content(LangID.getStringByID("subscam_invalidch", lang)));
+            ch.sendMessage(LangID.getStringByID("subscam_invalidch", lang)).queue();
+
             return;
         }
 
         if(!isValidChannel(g, channel)) {
-            createMessage(ch, m -> m.content(LangID.getStringByID("subscam_nosuch", lang)));
+            ch.sendMessage(LangID.getStringByID("subscam_nosuch", lang)).queue();
+
             return;
         }
 
         System.out.println(getMute(g, getContent(event)));
 
-        Message msg = createMessage(ch, m -> {
-            m.content(LangID.getStringByID("subscam_decide", lang));
+        List<SelectOption> options = new ArrayList<>();
 
-            List<SelectMenu.Option> options = new ArrayList<>();
+        options.add(SelectOption.of(LangID.getStringByID("mute", lang), "mute").withDefault(true));
+        options.add(SelectOption.of(LangID.getStringByID("kick", lang), "kick"));
+        options.add(SelectOption.of(LangID.getStringByID("ban", lang), "ban"));
 
-            options.add(SelectMenu.Option.ofDefault(LangID.getStringByID("mute", lang), "mute"));
-            options.add(SelectMenu.Option.of(LangID.getStringByID("kick", lang), "kick"));
-            options.add(SelectMenu.Option.of(LangID.getStringByID("ban", lang), "ban"));
+        List<SelectOption> notices = new ArrayList<>();
 
-            m.addComponent(ActionRow.of(SelectMenu.of("action", options)));
+        notices.add(SelectOption.of(LangID.getStringByID("noticex", lang), "noticeX").withDefault(true));
+        notices.add(SelectOption.of(LangID.getStringByID("noticeall", lang), "noticeAll"));
 
-            List<SelectMenu.Option> notices = new ArrayList<>();
+        List<ActionComponent> components = new ArrayList<>();
 
-            notices.add(SelectMenu.Option.ofDefault(LangID.getStringByID("noticex", lang), "noticeX"));
-            notices.add(SelectMenu.Option.of(LangID.getStringByID("noticeall", lang), "noticeAll"));
+        components.add(Button.success("confirm", LangID.getStringByID("button_confirm", lang)));
+        components.add(Button.danger("cancel", LangID.getStringByID("button_cancel", lang)));
 
-            m.addComponent(ActionRow.of(SelectMenu.of("notice", notices)));
+        Message msg = ch.sendMessage(LangID.getStringByID("subscam_decide", lang))
+                .setActionRows(
+                        ActionRow.of(SelectMenu.create("action").addOptions(options).build()),
+                        ActionRow.of(SelectMenu.create("notice").addOptions(notices).build()),
+                        ActionRow.of(components)
+                ).complete();
 
-            List<ActionComponent> components = new ArrayList<>();
+        Member m = getMember(event);
 
-            components.add(Button.success("confirm", LangID.getStringByID("button_confirm", lang)));
-            components.add(Button.danger("cancel", LangID.getStringByID("button_cancel", lang)));
-
-            m.addComponent(ActionRow.of(components));
-        });
-
-        getMember(event).ifPresent(m -> StaticStore.putHolder(m.getId().asString(), new ScamLinkSubscriptionHolder(msg, ch.getId().asString(), m.getId().asString(), lang, channel, getMute(g, getContent(event)))));
+        if(m != null) {
+            StaticStore.putHolder(m.getId(), new ScamLinkSubscriptionHolder(msg, ch.getId(), m.getId(), lang, channel, getMute(g, getContent(event))));
+        }
     }
 
     private String parseChannel(String content) {
@@ -100,18 +99,16 @@ public class SubscribeScamLinkDetector extends ConstraintCommand {
     }
 
     private boolean isValidChannel(Guild g, String id) {
-        AtomicReference<Boolean> valid = new AtomicReference<>(false);
+        List<GuildChannel> channels = g.getChannels();
 
-        g.getChannels().collectList().subscribe(l -> {
-            for(GuildChannel gc : l) {
-                if((gc.getType() == Channel.Type.GUILD_TEXT || gc.getType() == Channel.Type.GUILD_NEWS) && id.equals(gc.getId().asString())) {
-                    valid.set(true);
-                    return;
-                }
+        for(GuildChannel gc : channels) {
+            if((gc.getType() == ChannelType.TEXT || gc.getType() == ChannelType.NEWS) && id.equals(gc.getId())) {
+
+                return true;
             }
-        });
+        }
 
-        return valid.get();
+        return false;
     }
 
     private String getMute(Guild g, String content) {
@@ -127,10 +124,10 @@ public class SubscribeScamLinkDetector extends ConstraintCommand {
     }
 
     private boolean isValidID(Guild g, String id) {
-        Set<Snowflake> ids = g.getRoleIds();
+        List<Role> roles = g.getRoles();
 
-        for(Snowflake snow : ids) {
-            if(snow.asString().equals(id))
+        for(Role role : roles) {
+            if(role.getId().equals(id))
                 return true;
         }
 

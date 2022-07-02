@@ -1,24 +1,17 @@
 package mandarin.packpack.supporter.server;
 
 import com.google.gson.JsonObject;
-import discord4j.common.util.Snowflake;
-import discord4j.core.GatewayDiscordClient;
-import discord4j.core.object.Ban;
-import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.Member;
-import discord4j.core.object.entity.channel.GuildChannel;
-import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.core.spec.BanQuerySpec;
-import discord4j.core.spec.EmbedCreateSpec;
-import discord4j.core.spec.MessageCreateSpec;
-import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.*;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class ScamLinkHandler {
     public static boolean validScammingUser(String content) {
@@ -62,15 +55,27 @@ public class ScamLinkHandler {
         this.noticeAll = noticeAll;
     }
 
-    public void takeAction(GatewayDiscordClient gate, String link, Member m, Guild g) {
-        GuildChannel ch = g.getChannelById(Snowflake.of(channel)).block();
-        IDHolder holder = StaticStore.idHolder.get(g.getId().asString());
+    public void takeAction(String link, Member m, Guild g) {
+        GuildChannel ch = g.getGuildChannelById(channel);
+        IDHolder holder = StaticStore.idHolder.get(g.getId());
 
-        if(holder == null)
+        if(holder == null || ch == null)
             return;
 
+        JDA client = m.getJDA();
+
         if(!(ch instanceof MessageChannel)) {
-            g.getMemberById(Snowflake.of(author)).subscribe(me -> me.getPrivateChannel().subscribe(pch -> pch.createMessage(MessageCreateSpec.builder().content(LangID.getStringByID("scamhandle_nochannel", holder.serverLocale)).build())));
+            Member me = g.getMemberById(author);
+
+            if(me == null)
+                return;
+
+            User u = me.getUser();
+
+            u.openPrivateChannel()
+                    .flatMap(channel -> channel.sendMessage(LangID.getStringByID("scamhandle_nochannel", holder.serverLocale)))
+                    .queue();
+
             return;
         }
 
@@ -78,72 +83,78 @@ public class ScamLinkHandler {
             if(mute == null) {
                 StaticStore.logger.uploadLog("Something impossible happened for ScamLinkHandler\nServer ID : "+server+"\nACTION : "+action+"\nMute role ID : null\nReport Channel : "+channel);
             } else {
-                Set<Snowflake> roleID = m.getRoleIds();
+                List<Role> roleID = m.getRoles();
+                int pos = StaticStore.getHighestRolePosition(g.getSelfMember());
 
-                for(Snowflake id : roleID) {
-                    m.removeRole(id).subscribe();
+                if(g.getSelfMember().hasPermission(Permission.MANAGE_ROLES)) {
+                    for(Role r : roleID) {
+                        if(pos > r.getPosition()) {
+                            g.removeRoleFromMember(UserSnowflake.fromId(m.getId()), r).queue();
+                        }
+                    }
                 }
 
-                g.getRoleById(Snowflake.of(mute)).subscribe(r -> m.addRole(r.getId()).subscribe());
+                Role muteRole = g.getRoleById(mute);
 
-                EmbedCreateSpec spec = Command.createEmbed(e -> {
-                    e.title(LangID.getStringByID("scamhandle_title", holder.serverLocale));
-                    e.author(m.getDisplayName() +" ("+m.getId().asString()+")", null, m.getAvatarUrl());
-                    e.description(LangID.getStringByID("scamhandle_descmute", holder.serverLocale));
-                });
+                if(muteRole != null && g.getSelfMember().hasPermission(Permission.MANAGE_ROLES) && StaticStore.getHighestRolePosition(g.getSelfMember()) > muteRole.getPosition()) {
+                    g.addRoleToMember(UserSnowflake.fromId(m.getId()), muteRole).queue();
+                }
+
+                MessageEmbed embed = new EmbedBuilder()
+                        .setTitle(LangID.getStringByID("scamhandle_title", holder.serverLocale))
+                        .setAuthor(m.getEffectiveName() + " ("+m.getId()+")", null, m.getAvatarUrl())
+                        .setDescription(LangID.getStringByID("scamhandle_descmute", holder.serverLocale))
+                        .build();
 
                 try {
-                    Command.createMessage((MessageChannel) ch, msg -> msg.addEmbed(spec));
+                    ((MessageChannel) ch).sendMessageEmbeds(embed).queue();
                 } catch (Exception ignored) {}
             }
         } else if(action == ACTION.KICK) {
-            m.kick(LangID.getStringByID("scamhandle_kickreason", holder.serverLocale)).subscribe();
+            m.kick(LangID.getStringByID("scamhandle_kickreason", holder.serverLocale)).queue();
 
-            EmbedCreateSpec spec = Command.createEmbed(e -> {
-                e.title(LangID.getStringByID("scamhandle_title", holder.serverLocale));
-                e.author(m.getDisplayName() +" ("+m.getId().asString()+")", null, m.getAvatarUrl());
-                e.description(LangID.getStringByID("scamhandle_desckick", holder.serverLocale));
-            });
+            MessageEmbed embed = new EmbedBuilder()
+                    .setTitle(LangID.getStringByID("scamhandle_title", holder.serverLocale))
+                    .setAuthor(m.getEffectiveName() + " ("+m.getId()+")", null, m.getAvatarUrl())
+                    .setDescription(LangID.getStringByID("scamhandle_desckick", holder.serverLocale))
+                    .build();
 
             try {
-                Command.createMessage((MessageChannel) ch, msg -> msg.addEmbed(spec));
+                ((MessageChannel) ch).sendMessageEmbeds(embed).queue();
             } catch (Exception ignored) {}
         } else if(action == ACTION.BAN) {
-            m.ban(BanQuerySpec.builder().reason(LangID.getStringByID("scamhandle_banreason", holder.serverLocale)).build()).subscribe();
+            m.ban(0, LangID.getStringByID("scamhandle_banreason", holder.serverLocale)).queue();
 
-            EmbedCreateSpec spec = Command.createEmbed(e -> {
-                e.title(LangID.getStringByID("scamhandle_title", holder.serverLocale));
-                e.author(m.getDisplayName() +" ("+m.getId().asString()+")", null, m.getAvatarUrl());
-                e.description(LangID.getStringByID("scamhandle_descban", holder.serverLocale));
-            });
+            MessageEmbed embed = new EmbedBuilder()
+                    .setTitle(LangID.getStringByID("scamhandle_title", holder.serverLocale))
+                    .setAuthor(m.getEffectiveName() + " ("+m.getId()+")", null, m.getAvatarUrl())
+                    .setDescription(LangID.getStringByID("scamhandle_descban", holder.serverLocale))
+                    .build();
 
             try {
-                Command.createMessage((MessageChannel) ch, msg -> msg.addEmbed(spec));
+                ((MessageChannel) ch).sendMessageEmbeds(embed).queue();
             } catch (Exception ignored) {}
         }
 
-        m.getPrivateChannel().subscribe(pc -> pc.createMessage(MessageCreateSpec.builder().content(LangID.getStringByID("scamhandle_dm", holder.serverLocale).replace("_NNN_", g.getName()).replace("_III_", g.getId().asString())).build()).subscribe());
+        m.getUser().openPrivateChannel()
+                .flatMap(pc -> pc.sendMessage(LangID.getStringByID("scamhandle_dm", holder.serverLocale).replace("_NNN_", g.getName()).replace("_III_", g.getId())))
+                .queue();
 
         for(String guildID : StaticStore.idHolder.keySet()) {
-            if(g.getId().asString().equals(guildID))
+            if(g.getId().equals(guildID))
                 continue;
 
             try {
-                List<Ban> bans = g.getBans().collectList().block();
+                AtomicReference<Boolean> banned = new AtomicReference<>(false);
 
-                if(bans != null) {
-                    boolean banned = false;
-
-                    for(Ban ban : bans) {
-                        if(ban.getUser().getId().asString().equals(m.getId().asString())) {
-                            banned = true;
-                            break;
-                        }
+                g.retrieveBanList().forEach(b -> {
+                    if(b.getUser().getId().equals(m.getId())) {
+                        banned.set(true);
                     }
+                });
 
-                    if(banned)
-                        continue;
-                }
+                if(banned.get())
+                    return;
             } catch (Exception ignored) {}
 
             if(!StaticStore.scamLinkHandlers.servers.containsKey(guildID))
@@ -155,43 +166,50 @@ public class ScamLinkHandler {
             if(h == null || handler == null)
                 continue;
 
-            gate.getGuildById(Snowflake.of(guildID)).subscribe(gu -> {
-                if(handler.noticeAll) {
-                    gu.getMemberById(m.getId()).subscribe(me -> gu.getChannelById(Snowflake.of(handler.channel)).subscribe(cha -> {
-                        if(cha instanceof MessageChannel) {
-                            EmbedCreateSpec spec = Command.createEmbed(e -> {
-                                e.title(LangID.getStringByID("scamhandle_report", h.serverLocale));
-                                e.author(m.getDisplayName()+" ("+m.getId().asString()+")", null, m.getAvatarUrl());
-                                e.description(LangID.getStringByID("scamhandle_reportdesc", h.serverLocale).replace("_", link));
-                            });
+            Guild gu = client.getGuildById(guildID);
 
-                            Command.createMessage((MessageChannel) cha, msg -> msg.addEmbed(spec));
-                        }
-                    }, e -> {}), ex -> gu.getChannelById(Snowflake.of(handler.channel)).subscribe(cha -> {
-                        if(cha instanceof MessageChannel) {
-                            EmbedCreateSpec spec = Command.createEmbed(e -> {
-                                e.title(LangID.getStringByID("scamhandle_report", h.serverLocale));
-                                e.author(m.getDisplayName()+" ("+m.getId().asString()+")", null, m.getAvatarUrl());
-                                e.description(LangID.getStringByID("scamhandle_reportdescall", h.serverLocale).replace("_", link));
-                            });
+            if(gu == null)
+                continue;
 
-                            Command.createMessage((MessageChannel) cha, msg -> msg.addEmbed(spec));
-                        }
-                    }, e -> {}));
-                } else {
-                    gu.getMemberById(m.getId()).subscribe(me -> gu.getChannelById(Snowflake.of(handler.channel)).subscribe(cha -> {
-                        if(cha instanceof MessageChannel) {
-                            EmbedCreateSpec spec = Command.createEmbed(e -> {
-                                e.title(LangID.getStringByID("scamhandle_report", h.serverLocale));
-                                e.author(m.getDisplayName()+" ("+m.getId().asString()+")", null, m.getAvatarUrl());
-                                e.description(LangID.getStringByID("scamhandle_reportdesc", h.serverLocale).replace("_", link));
-                            });
+            Member me = gu.getMemberById(m.getId());
 
-                            Command.createMessage((MessageChannel) cha, msg -> msg.addEmbed(spec));
-                        }
-                    }, e -> {}), e -> {});
+            if(handler.noticeAll) {
+                GuildChannel cha = gu.getGuildChannelById(handler.channel);
+
+                if(cha instanceof MessageChannel) {
+                    MessageEmbed embed;
+
+                    if(me != null) {
+                        embed = new EmbedBuilder()
+                                .setTitle(LangID.getStringByID("scamhandle_report", h.serverLocale))
+                                .setAuthor(m.getEffectiveName() + " ("+m.getId()+")", null, m.getAvatarUrl())
+                                .setDescription(LangID.getStringByID("scamhandle_reportdesc", h.serverLocale).replace("_", link))
+                                .build();
+                    } else {
+                        embed = new EmbedBuilder()
+                                .setTitle(LangID.getStringByID("scamhandle_report", h.serverLocale))
+                                .setAuthor(m.getEffectiveName() + " ("+m.getId()+")", null, m.getAvatarUrl())
+                                .setDescription(LangID.getStringByID("scamhandle_reportdescall", h.serverLocale).replace("_", link))
+                                .build();
+                    }
+
+                    ((MessageChannel) cha).sendMessageEmbeds(embed).queue();
                 }
-            }, e -> {});
+            } else {
+                if(me != null) {
+                    GuildChannel cha = gu.getGuildChannelById(handler.channel);
+
+                    if(cha instanceof MessageChannel) {
+                        MessageEmbed embed = new EmbedBuilder()
+                                .setTitle(LangID.getStringByID("scamhandle_report", h.serverLocale))
+                                .setAuthor(m.getEffectiveName() + " ("+m.getId()+")", null, m.getAvatarUrl())
+                                .setDescription(LangID.getStringByID("scamhandle_reportdesc", h.serverLocale).replace("_", link))
+                                .build();
+
+                        ((MessageChannel) cha).sendMessageEmbeds(embed).queue();
+                    }
+                }
+            }
         }
     }
 

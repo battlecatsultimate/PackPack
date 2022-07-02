@@ -1,13 +1,13 @@
 package mandarin.packpack.commands.data;
 
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.event.EventFactor;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class Announcement extends ConstraintCommand {
     private static final int PARAM_EN = 2;
@@ -20,7 +20,7 @@ public class Announcement extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
@@ -70,11 +70,11 @@ public class Announcement extends ConstraintCommand {
 
         Message msg = getMessage(event);
 
-        String time = msg != null ? Long.toString(msg.getTimestamp().getEpochSecond()) : "0";
+        String time = msg != null ? Long.toString(msg.getTimeCreated().toEpochSecond()) : "0";
 
         String url = EventFactor.ANNOUNCEURL.replace("LL", loc).replace("VVVVVV", ver).replace("DDDDDDDDD", time);
 
-        ch.createMessage(LangID.getStringByID("announce_limit", lang)+"\n"+url).subscribe();
+        ch.sendMessage(LangID.getStringByID("announce_limit", lang)+"\n"+url).queue();
     }
 
     private int checkParameter(String message) {

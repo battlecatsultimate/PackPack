@@ -1,16 +1,12 @@
 package mandarin.packpack.supporter.server.holder;
 
-import discord4j.core.event.domain.interaction.InteractionCreateEvent;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.discordjson.possible.Possible;
-import discord4j.rest.util.AllowedMentions;
-import mandarin.packpack.commands.Command;
-import reactor.core.publisher.Mono;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 
-import java.util.Optional;
+import java.util.ArrayList;
 
-public abstract class InteractionHolder<T extends InteractionCreateEvent> implements Holder<T> {
+public abstract class InteractionHolder<T extends GenericInteractionCreateEvent> implements Holder<T> {
     public boolean expired = false;
 
     private final Class<?> cls;
@@ -24,7 +20,7 @@ public abstract class InteractionHolder<T extends InteractionCreateEvent> implem
     @Override
     public abstract int handleEvent(T event);
 
-    public abstract Mono<?> getInteraction(T event);
+    public abstract void performInteraction(T event);
 
     @Override
     public abstract void clean();
@@ -41,20 +37,14 @@ public abstract class InteractionHolder<T extends InteractionCreateEvent> implem
     }
 
     public void createMessageWithNoPings(MessageChannel ch, String content) {
-        Command.createMessage(ch, m -> {
-            m.content(content);
-            m.allowedMentions(AllowedMentions.builder().build());
-        });
+        ch.sendMessage(content)
+                .allowedMentions(new ArrayList<>())
+                .queue();
     }
 
     public Message getMessageWithNoPings(MessageChannel ch, String content) {
-        return Command.createMessage(ch, m -> {
-            m.content(content);
-            m.allowedMentions(AllowedMentions.builder().build());
-        });
-    }
-
-    public Possible<Optional<String>> wrap(String content) {
-        return Possible.of(Optional.of(content));
+        return ch.sendMessage(content)
+                .allowedMentions(new ArrayList<>())
+                .complete();
     }
 }

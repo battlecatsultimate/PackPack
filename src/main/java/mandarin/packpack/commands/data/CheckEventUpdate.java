@@ -1,44 +1,39 @@
 package mandarin.packpack.commands.data;
 
-import discord4j.core.GatewayDiscordClient;
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.PackBot;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.event.EventFactor;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class CheckEventUpdate extends ConstraintCommand {
-    private final GatewayDiscordClient gate;
-
-    public CheckEventUpdate(ROLE role, int lang, IDHolder id, GatewayDiscordClient gate) {
+    public CheckEventUpdate(ROLE role, int lang, IDHolder id) {
         super(role, lang, id);
-
-        this.gate = gate;
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
             return;
 
-        Message msg = createMessage(ch, m -> m.content(LangID.getStringByID("chevent_check", lang)));
+        Message msg = ch.sendMessage(LangID.getStringByID("chevent_check", lang)).complete();
 
         boolean[][] result = StaticStore.event.checkUpdates();
 
         String res = parseResult(result);
 
         if(res.isBlank()) {
-            editMessage(msg, m -> m.content(wrap(LangID.getStringByID("chevent_noup", lang))));
+            msg.editMessage(LangID.getStringByID("chevent_noup", lang)).queue();
         } else {
-            editMessage(msg, m -> m.content(wrap(LangID.getStringByID("chevent_done", lang) + "\n\n" + res)));
+            msg.editMessage(LangID.getStringByID("chevent_done", lang) + "\n\n" + res).queue();
 
-            PackBot.notifyEvent(gate, result);
+            PackBot.notifyEvent(event.getJDA(), result);
         }
     }
 

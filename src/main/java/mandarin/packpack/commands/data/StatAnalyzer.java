@@ -1,9 +1,6 @@
 package mandarin.packpack.commands.data;
 
 import common.util.Data;
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.cell.AbilityData;
@@ -12,6 +9,9 @@ import mandarin.packpack.supporter.bc.cell.FlagCellData;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.StatAnalyzerMessageHolder;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
@@ -30,7 +30,7 @@ public class StatAnalyzer extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         File temp = new File("./temp");
 
         if(!temp.exists() && !temp.mkdirs()) {
@@ -56,7 +56,8 @@ public class StatAnalyzer extends ConstraintCommand {
         int uid = getUID(command);
 
         if(uid == -1) {
-            createMessage(ch, m -> m.content(LangID.getStringByID("stat_uid", lang)));
+            ch.sendMessage(LangID.getStringByID("stat_uid", lang)).queue();
+
             return;
         }
 
@@ -74,7 +75,8 @@ public class StatAnalyzer extends ConstraintCommand {
         } else if(name.length != len) {
             int nLen = name.length;
 
-            createMessage(ch, m -> m.content(LangID.getStringByID("stat_name", lang).replace("_RRR_", len+"").replace("_PPP_", nLen+"")));
+            ch.sendMessage(LangID.getStringByID("stat_name", lang).replace("_RRR_", len+"").replace("_PPP_", nLen+"")).queue();
+
             return;
         }
 
@@ -109,9 +111,7 @@ public class StatAnalyzer extends ConstraintCommand {
         warnings = warnings.replaceAll("\n{3,}", "\n\n").strip();
 
         if(!warnings.isBlank()) {
-            String finalWarnings = warnings;
-
-            createMessage(ch, m -> m.content(finalWarnings));
+            ch.sendMessage(warnings).queue();
         }
 
         StringBuilder sb = new StringBuilder("STAT (unit")
@@ -144,12 +144,12 @@ public class StatAnalyzer extends ConstraintCommand {
         }
 
 
-        Message msg = createMessage(ch, m -> m.content(sb.toString()));
+        Message msg = ch.sendMessage(sb.toString()).complete();
 
         if(msg == null)
             return;
 
-        new StatAnalyzerMessageHolder(msg, author, uid, len, isSecond, cellData, procData, abilData, traitData, ch.getId().asString(), container, level, name, lang);
+        new StatAnalyzerMessageHolder(msg, author, uid, len, isSecond, cellData, procData, abilData, traitData, ch.getId(), container, level, name, lang);
     }
 
     private int getUID(String command) {

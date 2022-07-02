@@ -7,22 +7,21 @@ import common.util.stage.MapColc;
 import common.util.stage.Stage;
 import common.util.stage.StageMap;
 import common.util.unit.Enemy;
-import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.rest.util.AllowedMentions;
-import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class StageEnemyMessageHolder extends MessageHolder<MessageCreateEvent> {
+public class StageEnemyMessageHolder extends MessageHolder<MessageReceivedEvent> {
     private final ArrayList<Enemy> enemy;
     private final Message msg;
     private final String channelID;
@@ -37,7 +36,7 @@ public class StageEnemyMessageHolder extends MessageHolder<MessageCreateEvent> {
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
     public StageEnemyMessageHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, boolean isFrame, boolean isExtra, int star, int lang) {
-        super(MessageCreateEvent.class);
+        super(MessageReceivedEvent.class);
 
         this.enemy = enemy;
         this.msg = msg;
@@ -52,21 +51,18 @@ public class StageEnemyMessageHolder extends MessageHolder<MessageCreateEvent> {
     }
 
     @Override
-    public int handleEvent(MessageCreateEvent event) {
+    public int handleEvent(MessageReceivedEvent event) {
         if(expired) {
             System.out.println("Expired at StageEnemyHolder!!!");
             return RESULT_FAIL;
         }
 
-        MessageChannel ch = event.getMessage().getChannel().block();
+        MessageChannel ch = event.getMessage().getChannel();
 
-        if(ch == null)
+        if(!ch.getId().equals(channelID))
             return RESULT_STILL;
 
-        if(!ch.getId().asString().equals(channelID))
-            return RESULT_STILL;
-
-        String content = event.getMessage().getContent();
+        String content = event.getMessage().getContentRaw();
 
         if(content.equals("n")) {
             if(20 * (page + 1) >= enemy.size())
@@ -98,40 +94,40 @@ public class StageEnemyMessageHolder extends MessageHolder<MessageCreateEvent> {
                 ArrayList<Stage> stages = EntityFilter.findStageByEnemy(e);
 
                 if(stages.isEmpty()) {
-                    msg.delete().subscribe();
+                    msg.delete().queue();
 
                     expired = true;
 
                     cleaner.add(event.getMessage());
 
-                    ch.createMessage(LangID.getStringByID("fstage_nost", lang)).subscribe();
+                    ch.sendMessage(LangID.getStringByID("fstage_nost", lang)).queue();
 
                     return RESULT_FINISH;
                 } else if(stages.size() == 1) {
-                    msg.delete().subscribe();
+                    msg.delete().queue();
 
                     Message result = EntityHandler.showStageEmb(stages.get(0), ch, isFrame, isExtra, star, lang);
-                    Guild g = event.getGuild().block();
+                    Guild g = event.getGuild();
 
                     if(result != null) {
-                        event.getMember().ifPresent(m -> {
-                            if(StaticStore.timeLimit.containsKey(m.getId().asString())) {
-                                StaticStore.timeLimit.get(m.getId().asString()).put(StaticStore.COMMAND_FINDSTAGE_ID, System.currentTimeMillis());
+                        Member m = event.getMember();
+
+                        if(m != null) {
+                            if(StaticStore.timeLimit.containsKey(m.getId())) {
+                                StaticStore.timeLimit.get(m.getId()).put(StaticStore.COMMAND_FINDSTAGE_ID, System.currentTimeMillis());
                             } else {
                                 Map<String, Long> memberLimit = new HashMap<>();
 
                                 memberLimit.put(StaticStore.COMMAND_FINDSTAGE_ID, System.currentTimeMillis());
 
-                                StaticStore.timeLimit.put(m.getId().asString(), memberLimit);
+                                StaticStore.timeLimit.put(m.getId(), memberLimit);
                             }
 
-                            if(g != null && StaticStore.idHolder.containsKey(g.getId().asString())) {
-                                StaticStore.removeHolder(m.getId().asString(), StageEnemyMessageHolder.this);
-                                StaticStore.putHolder(m.getId().asString(), new StageInfoButtonHolder(stages.get(0), event.getMessage(), result, channelID, m.getId().asString()));
+                            if(StaticStore.idHolder.containsKey(g.getId())) {
+                                StaticStore.removeHolder(m.getId(), StageEnemyMessageHolder.this);
+                                StaticStore.putHolder(m.getId(), new StageInfoButtonHolder(stages.get(0), event.getMessage(), result, channelID, m.getId()));
                             }
-                        });
-
-
+                        }
                     }
 
                     expired = true;
@@ -242,21 +238,22 @@ public class StageEnemyMessageHolder extends MessageHolder<MessageCreateEvent> {
                     sb.append(LangID.getStringByID("formst_can", lang));
                     sb.append("```");
 
-                    Message res = Command.createMessage(ch, m -> {
-                        m.content(sb.toString());
-                        m.allowedMentions(AllowedMentions.builder().build());
-                    });
+                    Message res = ch.sendMessage(sb.toString())
+                            .allowedMentions(new ArrayList<>())
+                            .complete();
 
                     if(res != null) {
-                        event.getMember().ifPresent(m -> {
+                        Member m = event.getMember();
+
+                        if(m != null) {
                             Message msg = event.getMessage();
 
-                            StaticStore.removeHolder(m.getId().asString(), StageEnemyMessageHolder.this);
-                            StaticStore.putHolder(m.getId().asString(), new StageInfoMessageHolder(stages, msg, res, ch.getId().asString(), star, isFrame, isExtra, lang));
-                        });
+                            StaticStore.removeHolder(m.getId(), StageEnemyMessageHolder.this);
+                            StaticStore.putHolder(m.getId(), new StageInfoMessageHolder(stages, msg, res, ch.getId(), star, isFrame, isExtra, lang));
+                        }
                     }
 
-                    msg.delete().subscribe();
+                    msg.delete().queue();
 
                     expired = true;
 
@@ -270,10 +267,9 @@ public class StageEnemyMessageHolder extends MessageHolder<MessageCreateEvent> {
                 e.printStackTrace();
             }
         } else if(content.equals("c")) {
-            Command.editMessage(msg, m -> {
-                m.content(wrap(LangID.getStringByID("formst_cancel", lang)));
-                expired = true;
-            });
+            msg.editMessage(LangID.getStringByID("formst_cancel", lang)).queue();
+
+            expired = true;
 
             cleaner.add(event.getMessage());
 
@@ -305,7 +301,7 @@ public class StageEnemyMessageHolder extends MessageHolder<MessageCreateEvent> {
     public void clean() {
         for(Message m : cleaner) {
             if(m != null) {
-                m.delete().subscribe();
+                m.delete().queue();
             }
         }
 
@@ -321,54 +317,52 @@ public class StageEnemyMessageHolder extends MessageHolder<MessageCreateEvent> {
 
         StaticStore.removeHolder(id, this);
 
-        Command.editMessage(msg, m -> m.content(wrap(LangID.getStringByID("formst_expire", lang))));
+        msg.editMessage(LangID.getStringByID("formst_expire", lang)).queue();
     }
 
     private void showPage() {
-        Command.editMessage(msg, m -> {
-            String check;
+        String check;
 
-            if(enemy.size() <= 20)
-                check = "";
-            else if(page == 0)
-                check = LangID.getStringByID("formst_next", lang);
-            else if((page + 1) * 20 >= enemy.size())
-                check = LangID.getStringByID("formst_pre", lang);
-            else
-                check = LangID.getStringByID("formst_nexpre", lang);
+        if(enemy.size() <= 20)
+            check = "";
+        else if(page == 0)
+            check = LangID.getStringByID("formst_next", lang);
+        else if((page + 1) * 20 >= enemy.size())
+            check = LangID.getStringByID("formst_pre", lang);
+        else
+            check = LangID.getStringByID("formst_nexpre", lang);
 
-            StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
+        StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
 
-            int oldConfig = CommonStatic.getConfig().lang;
+        int oldConfig = CommonStatic.getConfig().lang;
+        CommonStatic.getConfig().lang = lang;
+
+        for(int i = 20 * page; i < 20 * (page +1); i++) {
+            if(i >= enemy.size())
+                break;
+
+            Enemy e = enemy.get(i);
+
+            String fname = Data.trio(e.id.id) + " - ";
+
             CommonStatic.getConfig().lang = lang;
 
-            for(int i = 20 * page; i < 20 * (page +1); i++) {
-                if(i >= enemy.size())
-                    break;
-
-                Enemy e = enemy.get(i);
-
-                String fname = Data.trio(e.id.id) + " - ";
-
-                CommonStatic.getConfig().lang = lang;
-
-                if(MultiLangCont.get(e) != null)
-                    fname += MultiLangCont.get(e);
-
-                CommonStatic.getConfig().lang = oldConfig;
-
-                sb.append(i+1).append(". ").append(fname).append("\n");
-            }
+            if(MultiLangCont.get(e) != null)
+                fname += MultiLangCont.get(e);
 
             CommonStatic.getConfig().lang = oldConfig;
 
-            if(enemy.size() > 20)
-                sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(enemy.size()/20 + 1)));
+            sb.append(i+1).append(". ").append(fname).append("\n");
+        }
 
-            sb.append(LangID.getStringByID("formst_can", lang));
-            sb.append("```");
+        CommonStatic.getConfig().lang = oldConfig;
 
-            m.content(wrap(sb.toString()));
-        });
+        if(enemy.size() > 20)
+            sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(enemy.size()/20 + 1)));
+
+        sb.append(LangID.getStringByID("formst_can", lang));
+        sb.append("```");
+
+        msg.editMessage(sb.toString()).queue();
     }
 }

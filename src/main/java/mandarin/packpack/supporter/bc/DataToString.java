@@ -12,13 +12,14 @@ import common.util.lang.MultiLangCont;
 import common.util.stage.*;
 import common.util.stage.info.DefStageInfo;
 import common.util.unit.*;
-import discord4j.rest.util.Color;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 
+import java.awt.*;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.*;
+import java.util.List;
 
 public class DataToString {
     private static final Map<Integer, String> talentText = new HashMap<>();
@@ -1606,10 +1607,10 @@ public class DataToString {
         }
     }
 
-    public static Color getDifficultyColor(int diff) {
+    public static int getDifficultyColor(int diff) {
         int[] rgb = HSVtoRGB((-220 * (diff - 1 - maxDifficulty) / 11.0) / 360.0);
 
-        return Color.of(rgb[0], rgb[1], rgb[2]);
+        return new Color(rgb[0], rgb[1], rgb[2]).getRGB();
     }
 
     private static int[] HSVtoRGB(double h) {

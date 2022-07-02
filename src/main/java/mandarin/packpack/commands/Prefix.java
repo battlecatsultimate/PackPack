@@ -1,11 +1,13 @@
 package mandarin.packpack.commands;
 
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.rest.util.AllowedMentions;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
+
+import java.util.ArrayList;
 
 public class Prefix extends ConstraintCommand {
     private static final int ERR_CANT_FIND_MEMBER = 0;
@@ -15,50 +17,51 @@ public class Prefix extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) {
+    public void doSomething(GenericMessageEvent event) {
         MessageChannel ch = getChannel(event);
 
         String[] list = getContent(event).split(" ");
 
         if(list.length == 2) {
             if(list[1] == null || list[1].isBlank()) {
-                ch.createMessage(LangID.getStringByID("prefix_space", lang));
+                ch.sendMessage(LangID.getStringByID("prefix_space", lang)).queue();
                 return;
             }
 
-            getMember(event).ifPresentOrElse(m -> {
-                StaticStore.prefix.put(m.getId().asString(), list[1]);
+            Member m = getMember(event);
+
+            if(m != null) {
+                StaticStore.prefix.put(m.getId(), list[1]);
 
                 String result = LangID.getStringByID("prefix_set", lang).replace("_", list[1]);
 
                 if(result.length() < 2000) {
-                    createMessage(ch, me -> {
-                        me.content(result);
-                        me.allowedMentions(AllowedMentions.builder().build());
-                    });
+                    ch.sendMessage(result)
+                            .allowedMentions(new ArrayList<>())
+                            .queue();
                 } else {
-                    ch.createMessage(LangID.getStringByID("prefix_setnone", lang)).subscribe();
+                    ch.sendMessage(LangID.getStringByID("prefix_setnone", lang)).queue();
                 }
-            }, () -> onFail(event, ERR_CANT_FIND_MEMBER));
+            }
         } else if(list.length == 1) {
-            ch.createMessage(LangID.getStringByID("prefix_argu", lang)).subscribe();
+            ch.sendMessage(LangID.getStringByID("prefix_argu", lang)).queue();
         } else {
-            ch.createMessage(LangID.getStringByID("prefix_tooarg", lang)).subscribe();
+            ch.sendMessage(LangID.getStringByID("prefix_tooarg", lang)).queue();
         }
     }
 
     @Override
-    public void onFail(MessageEvent event, int error) {
+    public void onFail(GenericMessageEvent event, int error) {
         StaticStore.executed--;
 
         MessageChannel ch = getChannel(event);
 
         switch (error) {
             case DEFAULT_ERROR:
-                ch.createMessage("`INTERNAL_ERROR`").subscribe();
+                ch.sendMessage("`INTERNAL_ERROR`").queue();
                 break;
             case ERR_CANT_FIND_MEMBER:
-                ch.createMessage("Couldn't get member info").subscribe();
+                ch.sendMessage("Couldn't get member info").queue();
                 break;
         }
     }

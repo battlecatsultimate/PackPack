@@ -1,10 +1,10 @@
 package mandarin.packpack.commands.bot;
 
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class SuggestBan extends ConstraintCommand {
 
@@ -13,7 +13,7 @@ public class SuggestBan extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
@@ -22,13 +22,13 @@ public class SuggestBan extends ConstraintCommand {
         String[] contents = getContent(event).split(" ");
 
         if(contents.length < 2) {
-            ch.createMessage("This command requires user ID!").subscribe();
+            ch.sendMessage("This command requires user ID!").queue();
         } else {
             String reason = getReason(getContent(event));
 
             StaticStore.suggestBanned.put(contents[1], reason.isBlank() ? "None" : reason);
 
-            ch.createMessage("Banned "+contents[1]).subscribe();
+            ch.sendMessage("Banned "+contents[1]).queue();
         }
     }
 

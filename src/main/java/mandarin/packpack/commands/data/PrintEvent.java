@@ -1,21 +1,19 @@
 package mandarin.packpack.commands.data;
 
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Member;
-import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.core.spec.MessageCreateFields;
-import discord4j.core.spec.MessageCreateSpec;
-import discord4j.rest.util.AllowedMentions;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.event.EventFactor;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class PrintEvent extends ConstraintCommand {
     public PrintEvent(ROLE role, int lang, IDHolder id) {
@@ -23,7 +21,7 @@ public class PrintEvent extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
@@ -39,7 +37,8 @@ public class PrintEvent extends ConstraintCommand {
         List<String> stage = StaticStore.event.printStageEvent(loc, l, full, raw, false, 0);
 
         if(gacha.isBlank() && item.isBlank() && stage.isEmpty()) {
-            createMessage(ch, m -> m.content(LangID.getStringByID("chevent_noup", lang)));
+            ch.sendMessage(LangID.getStringByID("chevent_noup", lang)).queue();
+
             return;
         }
 
@@ -57,7 +56,8 @@ public class PrintEvent extends ConstraintCommand {
 
                 if(!eventDone) {
                     eventDone = true;
-                    ch.createMessage(MessageCreateSpec.builder().content(LangID.getStringByID("event_loc"+loc, l)).build()).subscribe();
+
+                    ch.sendMessage(LangID.getStringByID("event_loc"+loc, l)).queue();
                 }
 
                 boolean goWithFile = false;
@@ -70,8 +70,6 @@ public class PrintEvent extends ConstraintCommand {
                 }
 
                 if(goWithFile) {
-                    MessageCreateSpec.Builder builder = MessageCreateSpec.builder();
-
                     StringBuilder total = new StringBuilder(LangID.getStringByID("event_stage", l).replace("**", "")).append("\n\n");
 
                     for(int k = 0; k < stage.size(); k++) {
@@ -101,38 +99,9 @@ public class PrintEvent extends ConstraintCommand {
 
                     writer.close();
 
-                    FileInputStream fis = new FileInputStream(res);
-
-                    builder.content((wasDone ? "** **\n" : "") + LangID.getStringByID("printstage_toolong", l))
-                            .addFile(MessageCreateFields.File.of("event.txt", fis));
-
-                    ch.createMessage(builder.build()).subscribe(null, (e) -> {
-                        StaticStore.logger.uploadErrorLog(e, "Failed to perform uploading stage event data");
-
-                        try {
-                            fis.close();
-                        } catch (IOException ex) {
-                            StaticStore.logger.uploadErrorLog(ex, "Failed close stream while uploading stage event data");
-                        }
-
-                        if(res.exists() && !res.delete()) {
-                            StaticStore.logger.uploadLog("Failed to delete file : "+res.getAbsolutePath());
-                        }
-                    }, () -> {
-                        try {
-                            fis.close();
-                        } catch (IOException e) {
-                            StaticStore.logger.uploadErrorLog(e, "Failed close stream while uploading stage event data");
-                        }
-
-                        if(res.exists() && !res.delete()) {
-                            StaticStore.logger.uploadLog("Failed to delete file : "+res.getAbsolutePath());
-                        }
-                    });
+                    sendMessageWithFile(ch, (wasDone ? "** **\n" : "") + LangID.getStringByID("printstage_toolong", l), res, "event.txt");
                 } else {
                     for(int k = 0; k < stage.size(); k++) {
-                        MessageCreateSpec.Builder builder = MessageCreateSpec.builder();
-
                         StringBuilder merge = new StringBuilder();
 
                         if(k == 0) {
@@ -163,10 +132,9 @@ public class PrintEvent extends ConstraintCommand {
                             k++;
                         }
 
-                        builder.content(merge.toString());
-                        builder.allowedMentions(AllowedMentions.builder().build());
-
-                        ch.createMessage(builder.build()).subscribe();
+                        ch.sendMessage(merge.toString())
+                                .allowedMentions(new ArrayList<>())
+                                .queue();
                     }
                 }
             } else {
@@ -187,12 +155,9 @@ public class PrintEvent extends ConstraintCommand {
 
                 if(!eventDone) {
                     eventDone = true;
-                    ch.createMessage(MessageCreateSpec.builder().content(LangID.getStringByID("event_loc"+loc, l)).build()).subscribe();
+
+                    ch.sendMessage(LangID.getStringByID("event_loc"+loc, l)).queue();
                 }
-
-                MessageCreateSpec.Builder builder = MessageCreateSpec.builder();
-
-                builder.allowedMentions(AllowedMentions.builder().build());
 
                 if(result.length() >= 1980) {
                     File temp = new File("./temp");
@@ -215,8 +180,6 @@ public class PrintEvent extends ConstraintCommand {
 
                     writer.close();
 
-                    FileInputStream fis = new FileInputStream(res);
-
                     String lID;
 
                     if(j == EventFactor.GATYA) {
@@ -225,42 +188,17 @@ public class PrintEvent extends ConstraintCommand {
                         lID = "printitem_toolong";
                     }
 
-                    builder.content((wasDone ? "** **\n" : "") + LangID.getStringByID(lID, l))
-                            .addFile(MessageCreateFields.File.of("event.txt", fis));
-
-                    ch.createMessage(builder.build()).subscribe(null, (e) -> {
-                        StaticStore.logger.uploadErrorLog(e, "Failed to perform uploading stage event data");
-
-                        try {
-                            fis.close();
-                        } catch (IOException ex) {
-                            StaticStore.logger.uploadErrorLog(ex, "Failed close stream while uploading stage event data");
-                        }
-
-                        if(res.exists() && !res.delete()) {
-                            StaticStore.logger.uploadLog("Failed to delete file : "+res.getAbsolutePath());
-                        }
-                    }, () -> {
-                        try {
-                            fis.close();
-                        } catch (IOException e) {
-                            StaticStore.logger.uploadErrorLog(e, "Failed close stream while uploading stage event data");
-                        }
-
-                        if(res.exists() && !res.delete()) {
-                            StaticStore.logger.uploadLog("Failed to delete file : "+res.getAbsolutePath());
-                        }
-                    });
+                    sendMessageWithFile(ch, (wasDone ? "** **\n" : "") + LangID.getStringByID(lID, l), res, "event.txt");
                 } else {
-                    builder.content((wasDone ? "** **\n" : "") + result);
-
-                    ch.createMessage(builder.build()).subscribe();
+                    ch.sendMessage((wasDone ? "** **\n" : "") + result)
+                            .allowedMentions(new ArrayList<>())
+                            .queue();
                 }
             }
         }
 
         if(done) {
-            ch.createMessage(MessageCreateSpec.builder().content(LangID.getStringByID("event_warning", holder.serverLocale)).build()).subscribe();
+            ch.sendMessage(LangID.getStringByID("event_warning", holder.serverLocale)).queue();
         }
     }
 

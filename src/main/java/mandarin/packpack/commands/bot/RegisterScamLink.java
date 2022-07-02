@@ -1,12 +1,12 @@
 package mandarin.packpack.commands.bot;
 
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class RegisterScamLink extends ConstraintCommand {
     public RegisterScamLink(ROLE role, int lang, IDHolder id) {
@@ -14,39 +14,43 @@ public class RegisterScamLink extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
-        Guild g = getGuild(event).block();
+        Guild g = getGuild(event);
 
         if(ch == null || g == null) {
             return;
         }
 
-        if(!StaticStore.scamLink.servers.contains(g.getId().asString())) {
-            createMessage(ch, m -> m.content(LangID.getStringByID("scamreg_noperm", lang)));
+        if(!StaticStore.scamLink.servers.contains(g.getId())) {
+            ch.sendMessage(LangID.getStringByID("scamreg_noperm", lang)).queue();
+
             return;
         }
 
         String[] contents = getContent(event).split(" ");
 
         if(contents.length < 2) {
-            createMessage(ch, m -> m.content(LangID.getStringByID("scamreg_nolink", lang)));
+            ch.sendMessage(LangID.getStringByID("scamreg_nolink", lang)).queue();
+
             return;
         }
 
         String link = contents[1].replaceAll("/$", "");
 
         if(!link.startsWith("http://") && !link.startsWith("https://")) {
-            createMessage(ch, m -> m.content(LangID.getStringByID("scamreg_invlink", lang)));
+            ch.sendMessage(LangID.getStringByID("scamreg_invlink", lang)).queue();
+
             return;
         }
 
         if(StaticStore.scamLink.links.contains(link)) {
-            createMessage(ch, m -> m.content(LangID.getStringByID("scamreg_already", lang)));
+            ch.sendMessage(LangID.getStringByID("scamreg_already", lang)).queue();
+
             return;
         }
 
         StaticStore.scamLink.links.add(link);
-        createMessage(ch, m -> m.content(LangID.getStringByID("scamreg_added", lang)));
+        ch.sendMessage(LangID.getStringByID("scamreg_added", lang)).queue();
     }
 }

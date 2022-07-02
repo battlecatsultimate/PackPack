@@ -5,9 +5,6 @@ import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Combo;
 import common.util.unit.Form;
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.TimedConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
@@ -15,9 +12,13 @@ import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.ComboFormMessageHolder;
 import mandarin.packpack.supporter.server.holder.ComboMessageHolder;
-import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
@@ -28,7 +29,7 @@ public class CatCombo extends TimedConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         String name = getUnitName(getContent(event));
@@ -82,13 +83,15 @@ public class CatCombo extends TimedConstraintCommand {
                 Message res = getMessageWithNoPings(ch, sb.toString());
 
                 if(res != null) {
-                    getMember(event).ifPresent(m -> {
+                    Member m = getMember(event);
+
+                    if(m != null) {
                         Message msg = getMessage(event);
 
                         if(msg != null) {
-                            StaticStore.putHolder(m.getId().asString(), new ComboMessageHolder(combos, msg, res, null, ch.getId().asString(), lang));
+                            StaticStore.putHolder(m.getId(), new ComboMessageHolder(combos, msg, res, null, ch.getId(), lang));
                         }
-                    });
+                    }
                 }
             }
         } else {
@@ -146,13 +149,15 @@ public class CatCombo extends TimedConstraintCommand {
                     Message res = getMessageWithNoPings(ch, sb.toString());
 
                     if(res != null) {
-                        getMember(event).ifPresent(m -> {
+                        Member m = getMember(event);
+
+                        if(m != null) {
                             Message msg = getMessage(event);
 
                             if(msg != null) {
-                                StaticStore.putHolder(m.getId().asString(), new ComboMessageHolder(combos, msg, res, null, ch.getId().asString(), lang));
+                                StaticStore.putHolder(m.getId(), new ComboMessageHolder(combos, msg, res, null, ch.getId(), lang));
                             }
-                        });
+                        }
                     }
                 }
             } else {
@@ -193,13 +198,15 @@ public class CatCombo extends TimedConstraintCommand {
                 Message res = getMessageWithNoPings(ch, sb.toString());
 
                 if(res != null) {
-                    getMember(event).ifPresent(m -> {
+                    Member m = getMember(event);
+
+                    if(m != null) {
                         Message msg = getMessage(event);
 
                         if(msg != null) {
-                            StaticStore.putHolder(m.getId().asString(), new ComboFormMessageHolder(forms, msg, res, ch.getId().asString(), lang, cName, name));
+                            StaticStore.putHolder(m.getId(), new ComboFormMessageHolder(forms, msg, res, ch.getId(), lang, cName, name));
                         }
-                    });
+                    }
                 }
             }
         }

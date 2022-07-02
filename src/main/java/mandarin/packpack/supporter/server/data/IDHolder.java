@@ -4,8 +4,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
-import discord4j.common.util.Snowflake;
 import mandarin.packpack.supporter.lang.LangID;
+import net.dv8tion.jda.api.entities.Role;
 
 import java.util.*;
 
@@ -117,12 +117,12 @@ public class IDHolder {
         return obj;
     }
 
-    public ArrayList<String> getAllAllowedChannels(Set<Snowflake> ids) {
+    public ArrayList<String> getAllAllowedChannels(List<Role> ids) {
         ArrayList<String> result = new ArrayList<>();
 
-        for(Snowflake id : ids) {
-            if(isSetAsRole(id.asString())) {
-                List<String> channels = channel.get(id.asString());
+        for(Role role : ids) {
+            if(isSetAsRole(role.getId())) {
+                List<String> channels = channel.get(role.getId());
 
                 if(channels == null)
                     return null;

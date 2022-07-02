@@ -9,9 +9,6 @@ import common.util.anim.AnimU;
 import common.util.anim.EAnimD;
 import common.util.pack.Background;
 import common.util.pack.bgeffect.BackgroundEffect;
-import discord4j.core.object.entity.Message;
-import discord4j.discordjson.possible.Possible;
-import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.awt.FG2D;
 import mandarin.packpack.supporter.bc.cell.AbilityCellDrawer;
@@ -19,6 +16,7 @@ import mandarin.packpack.supporter.bc.cell.CellDrawer;
 import mandarin.packpack.supporter.bc.cell.NormalCellDrawer;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.lzw.AnimatedGifEncoder;
+import net.dv8tion.jda.api.entities.Message;
 import org.apache.commons.lang3.SystemUtils;
 
 import javax.imageio.ImageIO;
@@ -32,7 +30,6 @@ import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class ImageDrawing {
@@ -292,7 +289,7 @@ public class ImageDrawing {
                         .replace("_VVV_", 0.0 + "")
                         .replace("_SSS_", "-");
 
-        Command.editMessage(msg, m -> m.content(wrap(cont)));
+        msg.editMessage(cont).queue();
 
         long start = System.currentTimeMillis();
         long current = System.currentTimeMillis();
@@ -300,22 +297,18 @@ public class ImageDrawing {
 
         for(int i = 0; i < bgAnimTime; i++) {
             if(System.currentTimeMillis() - current >= 1500) {
-                int finalI = i;
+                String prog = DataToString.df.format(i * 100.0 / bgAnimTime);
+                String eta = getETA(start, System.currentTimeMillis(), i, bgAnimTime);
+                String ind = ""+ i;
+                String content = LangID.getStringByID("bg_dimen", lang).replace("_WWW_", finalW+"").replace("_HHH_", bgAnimHeight+"") +"\n\n"+
+                        LangID.getStringByID("bg_prog", lang)
+                                .replace("_PPP_", " ".repeat(Math.max(0, 3 - ind.length()))+ind)
+                                .replace("_LLL_", bgAnimTime+"")
+                                .replace("_BBB_", getProgressBar(i, bgAnimTime))
+                                .replace("_VVV_", " ".repeat(Math.max(0, 6 - prog.length()))+prog)
+                                .replace("_SSS_", " ".repeat(Math.max(0, 6 - eta.length()))+eta);
 
-                Command.editMessage(msg, m -> {
-                    String prog = DataToString.df.format(finalI * 100.0 / bgAnimTime);
-                    String eta = getETA(start, System.currentTimeMillis(), finalI, bgAnimTime);
-                    String ind = ""+finalI;
-                    String content = LangID.getStringByID("bg_dimen", lang).replace("_WWW_", finalW+"").replace("_HHH_", bgAnimHeight+"") +"\n\n"+
-                            LangID.getStringByID("bg_prog", lang)
-                                    .replace("_PPP_", " ".repeat(Math.max(0, 3 - ind.length()))+ind)
-                                    .replace("_LLL_", bgAnimTime+"")
-                                    .replace("_BBB_", getProgressBar(finalI, bgAnimTime))
-                                    .replace("_VVV_", " ".repeat(Math.max(0, 6 - prog.length()))+prog)
-                                    .replace("_SSS_", " ".repeat(Math.max(0, 6 - eta.length()))+eta);
-
-                    m.content(wrap(content));
-                });
+                msg.editMessage(content).queue();
 
                 current = System.currentTimeMillis();
             }
@@ -386,18 +379,16 @@ public class ImageDrawing {
             eff.update(len, bgHeight, midH);
         }
 
-        Command.editMessage(msg, m -> {
-            String content = LangID.getStringByID("bg_dimen", lang).replace("_WWW_", finalW+"").replace("_HHH_", bgAnimHeight+"") +"\n\n"+
-                    LangID.getStringByID("bg_prog", lang)
-                            .replace("_PPP_", bgAnimTime + "")
-                            .replace("_LLL_", bgAnimTime + "")
-                            .replace("_BBB_", getProgressBar(bgAnimTime, bgAnimTime))
-                            .replace("_VVV_", "100.00")
-                            .replace("_SSS_", "     0") + "\n"+
-                    LangID.getStringByID("bg_upload", lang);
+        String content = LangID.getStringByID("bg_dimen", lang).replace("_WWW_", finalW+"").replace("_HHH_", bgAnimHeight+"") +"\n\n"+
+                LangID.getStringByID("bg_prog", lang)
+                        .replace("_PPP_", bgAnimTime + "")
+                        .replace("_LLL_", bgAnimTime + "")
+                        .replace("_BBB_", getProgressBar(bgAnimTime, bgAnimTime))
+                        .replace("_VVV_", "100.00")
+                        .replace("_SSS_", "     0") + "\n"+
+                LangID.getStringByID("bg_upload", lang);
 
-            m.content(wrap(content));
-        });
+        msg.editMessage(content).queue();
 
         ProcessBuilder builder = new ProcessBuilder(SystemUtils.IS_OS_WINDOWS ? "data/ffmpeg/bin/ffmpeg" : "ffmpeg", "-r", "30", "-f", "image2", "-s", w+"x"+h,
                 "-i", "temp/"+folderName+"/%04d.png", "-vcodec", "libx264", "-crf", "25", "-pix_fmt", "yuv420p", "-y", "temp/"+mp4.getName());
@@ -632,7 +623,7 @@ public class ImageDrawing {
                 .replace("_HHH_", rect.height+"").replace("_XXX_", rect.x+"")
                 .replace("_YYY_", rect.x+"");
 
-        Command.editMessage(msg, m -> m.content(wrap(cont)));
+        msg.editMessage(cont).queue();
 
         if(rect.width * rect.height > 1500 * 1500) {
             ratio = 1.0;
@@ -677,9 +668,7 @@ public class ImageDrawing {
                 .replace("_HHH_", rect.height+"").replace("_XXX_", rect.x+"")
                 .replace("_YYY_", rect.x+"")+"\n";
 
-        String finalFinCont = finCont;
-
-        Command.editMessage(msg, m -> m.content(wrap(finalFinCont)));
+        msg.editMessage(finCont).queue();
 
         P pos = new P(-rect.x, -rect.y);
 
@@ -688,26 +677,21 @@ public class ImageDrawing {
 
         for(int i = 0; i < frame; i++) {
             if(System.currentTimeMillis() - current >= 1500) {
-                int finalI = i;
-                int finalFrame = frame;
+                String content = finCont +"\n\n";
 
-                Command.editMessage(msg, m -> {
-                    String content = finalFinCont +"\n\n";
+                String prog = DataToString.df.format(i * 100.0 / frame);
+                String eta = getETA(start, System.currentTimeMillis(), i, frame);
+                String ind = ""+ i;
+                String len = frame +"";
 
-                    String prog = DataToString.df.format(finalI * 100.0 / finalFrame);
-                    String eta = getETA(start, System.currentTimeMillis(), finalI, finalFrame);
-                    String ind = ""+finalI;
-                    String len = finalFrame+"";
+                content += LangID.getStringByID("bg_prog", lang)
+                        .replace("_PPP_", " ".repeat(Math.max(0, len.length() - ind.length()))+ind)
+                        .replace("_LLL_", len)
+                        .replace("_BBB_", getProgressBar(i, frame))
+                        .replace("_VVV_", " ".repeat(Math.max(0, 6 - prog.length()))+prog)
+                        .replace("_SSS_", " ".repeat(Math.max(0, 6 - eta.length()))+eta);
 
-                    content += LangID.getStringByID("bg_prog", lang)
-                            .replace("_PPP_", " ".repeat(Math.max(0, len.length() - ind.length()))+ind)
-                            .replace("_LLL_", len)
-                            .replace("_BBB_", getProgressBar(finalI, finalFrame))
-                            .replace("_VVV_", " ".repeat(Math.max(0, 6 - prog.length()))+prog)
-                            .replace("_SSS_", " ".repeat(Math.max(0, 6 - eta.length()))+eta);
-
-                    m.content(wrap(content));
-                });
+                msg.editMessage(content).queue();
 
                 current = System.currentTimeMillis();
             }
@@ -761,12 +745,10 @@ public class ImageDrawing {
             ImageIO.write(image, "PNG", img);
         }
 
-        Command.editMessage(msg, m -> {
-            String content = finalFinCont + "\n\n" + LangID.getStringByID("gif_makepng", lang).replace("_", "100")
-                    +"\n\n"+ LangID.getStringByID("gif_converting", lang);
+        String content = finCont + "\n\n" + LangID.getStringByID("gif_makepng", lang).replace("_", "100")
+                +"\n\n"+ LangID.getStringByID("gif_converting", lang);
 
-            m.content(wrap(content));
-        });
+        msg.editMessage(content).queue();
 
         ProcessBuilder builder = new ProcessBuilder(SystemUtils.IS_OS_WINDOWS ? "data/ffmpeg/bin/ffmpeg" : "ffmpeg", "-r", "30", "-f", "image2", "-s", rect.width+"x"+rect.height,
                 "-i", "temp/"+folderName+"/%04d.png", "-vcodec", "libx264", "-crf", "25", "-pix_fmt", "yuv420p", "-y", "temp/"+gif.getName());
@@ -786,21 +768,17 @@ public class ImageDrawing {
 
         StaticStore.deleteFile(folder, true);
 
-        int finalFrame = frame;
+        content = finCont + "\n\n" +
+                LangID.getStringByID("gif_makepng", lang).replace("_", "100") + "\n\n" +
+                LangID.getStringByID("bg_prog", lang)
+                        .replace("_PPP_", frame + "")
+                        .replace("_LLL_", frame + "")
+                        .replace("_BBB_", getProgressBar(frame, frame))
+                        .replace("_VVV_", "100.00")
+                        .replace("_SSS_", "     0") + "\n" +
+                LangID.getStringByID("gif_uploadmp4", lang);
 
-        Command.editMessage(msg, m -> {
-            String content = finalFinCont + "\n\n" +
-                    LangID.getStringByID("gif_makepng", lang).replace("_", "100") + "\n\n" +
-                    LangID.getStringByID("bg_prog", lang)
-                            .replace("_PPP_", finalFrame + "")
-                            .replace("_LLL_", finalFrame + "")
-                            .replace("_BBB_", getProgressBar(finalFrame, finalFrame))
-                            .replace("_VVV_", "100.00")
-                            .replace("_SSS_", "     0") + "\n" +
-                    LangID.getStringByID("gif_uploadmp4", lang);
-
-            m.content(wrap(content));
-        });
+        msg.editMessage(content).queue();
 
         return gif;
     }
@@ -918,9 +896,7 @@ public class ImageDrawing {
                 .replace("_HHH_", (int) (ratio* rect.height)+"").replace("_XXX_", (int) (ratio * rect.x)+"")
                 .replace("_YYY_", (int) (ratio * rect.y)+"");
 
-        String finalCont = cont;
-
-        Command.editMessage(msg, m -> m.content(wrap(finalCont)));
+        msg.editMessage(cont).queue();
 
         rect.x = (int) (ratio * rect.x);
         rect.y = (int) (ratio * rect.y);
@@ -953,29 +929,21 @@ public class ImageDrawing {
 
         for(int i = 0; i < Math.min(frame, 300); i++) {
             if(System.currentTimeMillis() - current >= 1000) {
-                int finalI = i;
+                String content = cont +"\n\n";
 
-                String finalCont1 = cont;
+                String prog = DataToString.df.format(i * 100.0 / frame);
+                String eta = getETA(start, System.currentTimeMillis(), i, frame);
+                String ind = ""+ i;
+                String len = frame + "";
 
-                int finalFrame = frame;
+                content += LangID.getStringByID("bg_prog", lang)
+                        .replace("_PPP_", " ".repeat(Math.max(0, len.length() - ind.length()))+ind)
+                        .replace("_LLL_", len)
+                        .replace("_BBB_", getProgressBar(i, frame))
+                        .replace("_VVV_", " ".repeat(Math.max(0, 6 - prog.length()))+prog)
+                        .replace("_SSS_", " ".repeat(Math.max(0, 6 - eta.length()))+eta);
 
-                Command.editMessage(msg, m -> {
-                    String content = finalCont1 +"\n\n";
-
-                    String prog = DataToString.df.format(finalI * 100.0 / finalFrame);
-                    String eta = getETA(start, System.currentTimeMillis(), finalI, finalFrame);
-                    String ind = ""+finalI;
-                    String len = finalFrame + "";
-
-                    content += LangID.getStringByID("bg_prog", lang)
-                            .replace("_PPP_", " ".repeat(Math.max(0, len.length() - ind.length()))+ind)
-                            .replace("_LLL_", len)
-                            .replace("_BBB_", getProgressBar(finalI, finalFrame))
-                            .replace("_VVV_", " ".repeat(Math.max(0, 6 - prog.length()))+prog)
-                            .replace("_SSS_", " ".repeat(Math.max(0, 6 - eta.length()))+eta);
-
-                    m.content(wrap(content));
-                });
+                msg.editMessage(content).queue();
 
                 current = System.currentTimeMillis();
             }
@@ -1022,21 +990,16 @@ public class ImageDrawing {
 
         fos.close();
 
-        String finalCont2 = cont;
-        int finalFrame = frame;
+        String content = cont + "\n\n"+
+                LangID.getStringByID("bg_prog", lang)
+                        .replace("_PPP_", frame + "")
+                        .replace("_LLL_", frame + "")
+                        .replace("_BBB_", getProgressBar(frame, frame))
+                        .replace("_VVV_", "100.00")
+                        .replace("_SSS_", "     0") + "\n"+
+                LangID.getStringByID("gif_uploading", lang);
 
-        Command.editMessage(msg, m -> {
-            String content = finalCont2 + "\n\n"+
-                    LangID.getStringByID("bg_prog", lang)
-                            .replace("_PPP_", finalFrame + "")
-                            .replace("_LLL_", finalFrame + "")
-                            .replace("_BBB_", getProgressBar(finalFrame, finalFrame))
-                            .replace("_VVV_", "100.00")
-                            .replace("_SSS_", "     0") + "\n"+
-                    LangID.getStringByID("gif_uploading", lang);
-
-            m.content(wrap(content));
-        });
+        msg.editMessage(content).queue();
 
         return gif;
     }
@@ -1137,7 +1100,7 @@ public class ImageDrawing {
                 .replace("_HHH_", ""+rect.height).replace("_XXX_", rect.x+"")
                 .replace("_YYY_", ""+rect.y);
 
-        Command.editMessage(msg, m -> m.content(wrap(cont)));
+        msg.editMessage(cont).queue();
 
         if(rect.width * rect.height > 1500 * 1500) {
             ratio = 1.0;
@@ -1182,9 +1145,7 @@ public class ImageDrawing {
                 .replace("_HHH_", rect.height+"").replace("_XXX_", rect.x+"")
                 .replace("_YYY_", rect.x+"")+"\n";
 
-        String finalFinCont = finCont;
-
-        Command.editMessage(msg, m -> m.content(wrap(finalFinCont)));
+        msg.editMessage(finCont).queue();
 
         P pos = new P(-rect.x, -rect.y);
 
@@ -1253,25 +1214,20 @@ public class ImageDrawing {
                     while(stackFrame < 60) {
                         for(int j = 0; j < frame; j++) {
                             if(System.currentTimeMillis() - current >= 1500) {
-                                int finalProg = progress;
-                                int finalTotal = totalFrame;
+                                String content = finCont +"\n\n";
 
-                                Command.editMessage(msg, m -> {
-                                    String content = finalFinCont +"\n\n";
+                                String prog = DataToString.df.format(progress * 100.0 / totalFrame);
+                                String eta = getETA(start, System.currentTimeMillis(), progress, totalFrame);
 
-                                    String prog = DataToString.df.format(finalProg * 100.0 / finalTotal);
-                                    String eta = getETA(start, System.currentTimeMillis(), finalProg, finalTotal);
+                                content += LangID.getStringByID("gif_makepng", lang) +
+                                        LangID.getStringByID("bg_prog", lang)
+                                                .replace("_PPP_", progress + "")
+                                                .replace("_LLL_", totalFrame + "")
+                                                .replace("_BBB_", getProgressBar(progress, totalFrame))
+                                                .replace("_VVV_", " ".repeat(Math.max(0, 6 - prog.length())) + prog)
+                                                .replace("_SSS_", " ".repeat(Math.max(0, 6 - eta.length())) + eta);
 
-                                    content += LangID.getStringByID("gif_makepng", lang) +
-                                            LangID.getStringByID("bg_prog", lang)
-                                                    .replace("_PPP_", finalProg + "")
-                                                    .replace("_LLL_", finalTotal + "")
-                                                    .replace("_BBB_", getProgressBar(finalProg, finalTotal))
-                                                    .replace("_VVV_", " ".repeat(Math.max(0, 6 - prog.length())) + prog)
-                                                    .replace("_SSS_", " ".repeat(Math.max(0, 6 - eta.length())) + eta);
-
-                                    m.content(wrap(content));
-                                });
+                                msg.editMessage(content).queue();
 
                                 current = System.currentTimeMillis();
                             }
@@ -1312,25 +1268,20 @@ public class ImageDrawing {
                 } else {
                     for(int j = 0; j < frame - 1; j++) {
                         if(System.currentTimeMillis() - current >= 1500) {
-                            int finalProg = progress;
-                            int finalTotal = totalFrame;
+                            String content = finCont +"\n\n";
 
-                            Command.editMessage(msg, m -> {
-                                String content = finalFinCont +"\n\n";
+                            String prog = DataToString.df.format(progress * 100.0 / totalFrame);
+                            String eta = getETA(start, System.currentTimeMillis(), progress, totalFrame);
 
-                                String prog = DataToString.df.format(finalProg * 100.0 / finalTotal);
-                                String eta = getETA(start, System.currentTimeMillis(), finalProg, finalTotal);
+                            content += LangID.getStringByID("gif_makepng", lang) +
+                                    LangID.getStringByID("bg_prog", lang)
+                                            .replace("_PPP_", progress + "")
+                                            .replace("_LLL_", totalFrame + "")
+                                            .replace("_BBB_", getProgressBar(progress, totalFrame))
+                                            .replace("_VVV_", " ".repeat(Math.max(0, 6 - prog.length())) + prog)
+                                            .replace("_SSS_", " ".repeat(Math.max(0, 6 - eta.length())) + eta);
 
-                                content += LangID.getStringByID("gif_makepng", lang) +
-                                        LangID.getStringByID("bg_prog", lang)
-                                                .replace("_PPP_", finalProg + "")
-                                                .replace("_LLL_", finalTotal + "")
-                                                .replace("_BBB_", getProgressBar(finalProg, finalTotal))
-                                                .replace("_VVV_", " ".repeat(Math.max(0, 6 - prog.length())) + prog)
-                                                .replace("_SSS_", " ".repeat(Math.max(0, 6 - eta.length())) + eta);
-
-                                m.content(wrap(content));
-                            });
+                            msg.editMessage(content).queue();
 
                             current = System.currentTimeMillis();
                         }
@@ -1371,21 +1322,17 @@ public class ImageDrawing {
             }
         }
 
-        int finalTotalFrame = totalFrame;
+        String content = finCont + "\n\n" +
+                LangID.getStringByID("gif_makepng", lang) +
+                LangID.getStringByID("bg_prog", lang)
+                        .replace("_PPP_", totalFrame + "")
+                        .replace("_LLL_", totalFrame + "")
+                        .replace("_BBB_", getProgressBar(totalFrame, totalFrame))
+                        .replace("_VVV_", "100.00")
+                        .replace("_SSS_", "     0") + "\n" +
+                LangID.getStringByID("gif_converting", lang);
 
-        Command.editMessage(msg, m -> {
-            String content = finalFinCont + "\n\n" +
-                    LangID.getStringByID("gif_makepng", lang) +
-                    LangID.getStringByID("bg_prog", lang)
-                            .replace("_PPP_", finalTotalFrame + "")
-                            .replace("_LLL_", finalTotalFrame + "")
-                            .replace("_BBB_", getProgressBar(finalTotalFrame, finalTotalFrame))
-                            .replace("_VVV_", "100.00")
-                            .replace("_SSS_", "     0") + "\n" +
-                    LangID.getStringByID("gif_converting", lang);
-
-            m.content(wrap(content));
-        });
+        msg.editMessage(content).queue();
 
         ProcessBuilder builder = new ProcessBuilder(SystemUtils.IS_OS_WINDOWS ? "data/ffmpeg/bin/ffmpeg" : "ffmpeg", "-r", "30", "-f", "image2", "-s", rect.width+"x"+rect.height,
                 "-i", "temp/"+folderName+"/%04d.png", "-vcodec", "libx264", "-crf", "25", "-pix_fmt", "yuv420p", "-y", "temp/"+gif.getName());
@@ -1405,20 +1352,18 @@ public class ImageDrawing {
 
         StaticStore.deleteFile(folder, true);
 
-        Command.editMessage(msg, m -> {
-            String content = finalFinCont + "\n\n" +
-                    LangID.getStringByID("gif_makepng", lang) +
-                    LangID.getStringByID("bg_prog", lang)
-                            .replace("_PPP_", finalTotalFrame + "")
-                            .replace("_LLL_", finalTotalFrame + "")
-                            .replace("_BBB_", getProgressBar(finalTotalFrame, finalTotalFrame))
-                            .replace("_VVV_", "100.00")
-                            .replace("_SSS_", "     0") + "\n" +
-                    LangID.getStringByID("gif_converting", lang) + "\n\n" +
-                    LangID.getStringByID("gif_uploadmp4", lang);
+        content = finCont + "\n\n" +
+                LangID.getStringByID("gif_makepng", lang) +
+                LangID.getStringByID("bg_prog", lang)
+                        .replace("_PPP_", totalFrame + "")
+                        .replace("_LLL_", totalFrame + "")
+                        .replace("_BBB_", getProgressBar(totalFrame, totalFrame))
+                        .replace("_VVV_", "100.00")
+                        .replace("_SSS_", "     0") + "\n" +
+                LangID.getStringByID("gif_converting", lang) + "\n\n" +
+                LangID.getStringByID("gif_uploadmp4", lang);
 
-            m.content(wrap(content));
-        });
+        msg.editMessage(content).queue();
 
         return gif;
     }
@@ -1739,10 +1684,6 @@ public class ImageDrawing {
         double unit = (current - start) / 1000.0 / prog;
 
         return DataToString.df.format(unit * (time - prog));
-    }
-
-    private static Possible<Optional<String>> wrap(String content) {
-        return Possible.of(Optional.of(content));
     }
 
     private static int handleMixedBGEffect(int ind) {

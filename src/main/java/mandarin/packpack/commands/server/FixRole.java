@@ -1,18 +1,15 @@
 package mandarin.packpack.commands.server;
 
-import discord4j.common.util.Snowflake;
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.rest.util.AllowedMentions;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.ConfirmButtonHolder;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FixRole extends ConstraintCommand {
     public FixRole(ROLE role, int lang, IDHolder id) {
@@ -20,24 +17,25 @@ public class FixRole extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
             return;
 
-        Guild g = getGuild(event).block();
+        Guild g = getGuild(event);
 
         if(g == null)
             return;
 
-        if(!StaticStore.needFixing.contains(g.getId().asString())) {
+        if(!StaticStore.needFixing.contains(g.getId())) {
             createMessageWithNoPings(ch, LangID.getStringByID("fixrole_nofixing", lang).replace("_", StaticStore.MANDARIN_SMELL));
             return;
         }
 
         if(holder.MEMBER == null) {
-            createMessage(ch, m -> m.content(LangID.getStringByID("fixrole_nomem", lang)));
+            ch.sendMessage(LangID.getStringByID("fixrole_nomem", lang)).queue();
+
             return;
         }
 
@@ -46,7 +44,8 @@ public class FixRole extends ConstraintCommand {
         if(preID == null && holder.ID.containsKey("Pre Member")) {
             preID = holder.ID.get("Pre Member");
         } else if(preID == null && !holder.ID.containsKey("Pre Member")) {
-            createMessage(ch, m -> m.content(LangID.getStringByID("chbcu_pre", lang)));
+            ch.sendMessage(LangID.getStringByID("chbcu_pre", lang)).queue();
+
             return;
         }
 
@@ -56,41 +55,48 @@ public class FixRole extends ConstraintCommand {
         final String finalPre = preID;
         String ignore = getIgnore(getContent(event));
 
-        Message msg = createMessage(ch, m -> {
-            if(ignore == null) {
-                m.content(LangID.getStringByID("fixrole_confirm", lang).replace("_PPP_", finalPre).replace("_MMM_", holder.MEMBER));
-            } else {
-                m.content(LangID.getStringByID("fixrole_confirmig", lang).replace("_PPP_", finalPre).replace("_MMM_", holder.MEMBER).replace("_III_", ignore));
-            }
-            m.allowedMentions(AllowedMentions.builder().build());
-            registerConfirmButtons(m, lang);
-        });
+        String content;
+
+        if(ignore == null) {
+            content = LangID.getStringByID("fixrole_confirm", lang).replace("_PPP_", finalPre).replace("_MMM_", holder.MEMBER);
+        } else {
+            content = LangID.getStringByID("fixrole_confirmig", lang).replace("_PPP_", finalPre).replace("_MMM_", holder.MEMBER).replace("_III_", ignore);
+        }
+
+        Message msg = registerConfirmButtons(ch.sendMessage(content).allowedMentions(new ArrayList<>()), lang).complete();
 
         if(msg == null)
             return;
 
-        getMember(event).ifPresent(me -> StaticStore.putHolder(me.getId().asString(), new ConfirmButtonHolder(msg, getMessage(event), ch.getId().asString(), me.getId().asString(), () -> {
+        Member me = getMember(event);
 
-            AtomicLong fixed = new AtomicLong();
+        if(me != null) {
+            StaticStore.putHolder(me.getId(), new ConfirmButtonHolder(msg, getMessage(event), ch.getId(), me.getId(), () -> {
+                Role role = g.getRoleById(finalPre);
 
-            g.getMembers()
-                    .filter(m -> !m.isBot() && (ignore == null || !StaticStore.rolesToString(m.getRoleIds()).contains(ignore)))
-                    .toStream()
-                    .forEach(m -> {
-                        String roles = StaticStore.rolesToString(m.getRoleIds());
+                if(role == null)
+                    return;
 
-                        if(!roles.contains(finalPre) && !roles.contains(holder.MEMBER)) {
-                            m.addRole(Snowflake.of(finalPre)).subscribe();
-                            fixed.getAndIncrement();
-                        }
-                    });
+                long fixed = 0L;
 
-            if(fixed.get() == 0) {
-                createMessage(ch, m -> m.content(LangID.getStringByID("fixrole_noneed", lang)));
-            } else {
-                createMessage(ch, m -> m.content(LangID.getStringByID("fixrole_fixed", lang).replace("_", "" + fixed.get())));
-            }
-        }, lang)));
+                List<Member> members = g.getMembers();
+
+                for(Member m : members) {
+                    String roles = StaticStore.rolesToString(m.getRoles());
+
+                    if(!roles.contains(finalPre) && !roles.contains(holder.MEMBER)) {
+                        g.addRoleToMember(UserSnowflake.fromId(m.getId()), role).queue();
+                        fixed++;
+                    }
+                }
+
+                if(fixed == 0) {
+                    ch.sendMessage(LangID.getStringByID("fixrole_noneed", lang)).queue();
+                } else {
+                    ch.sendMessage(LangID.getStringByID("fixrole_fixed", lang).replace("_", "" + fixed)).queue();
+                }
+            }, lang));
+        }
     }
 
     private String getPreMemberID(String content) {

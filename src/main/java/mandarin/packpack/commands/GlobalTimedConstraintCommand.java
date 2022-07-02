@@ -1,26 +1,20 @@
 package mandarin.packpack.commands;
 
-import discord4j.common.util.Snowflake;
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.channel.GuildChannel;
-import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.core.spec.MessageCreateSpec;
-import discord4j.rest.util.Permission;
-import discord4j.rest.util.PermissionSet;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.SpamPrevent;
-import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.TimeBoolean;
+import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.GuildMessageChannel;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class GlobalTimedConstraintCommand extends Command {
     static String ABORT = "ABORT";
@@ -63,106 +57,78 @@ public abstract class GlobalTimedConstraintCommand extends Command {
     }
 
     @Override
-    public void execute(MessageEvent event) {
+    public void execute(GenericMessageEvent event) {
         prepareAborts();
 
         MessageChannel ch = getChannel(event);
-        Guild g = getGuild(event).block();
+        Guild g = getGuild(event);
 
         if(ch == null || g == null)
             return;
 
-        AtomicReference<Boolean> hasRole = new AtomicReference<>(false);
-        AtomicReference<Boolean> isMandarin = new AtomicReference<>(false);
-        AtomicReference<Boolean> isMod = new AtomicReference<>(false);
-        AtomicReference<Boolean> prevented = new AtomicReference<>(false);
+        Member m = getMember(event);
 
-        AtomicReference<Boolean> canGo = new AtomicReference<>(true);
+        if(m == null)
+            return;
 
-        getMember(event).ifPresentOrElse(m -> {
-            SpamPrevent spam;
+        SpamPrevent spam;
 
-            if(StaticStore.spamData.containsKey(m.getId().asString())) {
-                spam = StaticStore.spamData.get(m.getId().asString());
+        boolean hasRole;
+        boolean isMandarin = m.getId().equals(StaticStore.MANDARIN_SMELL);
 
-                prevented.set(spam.isPrevented(ch, lang, m.getId().asString()));
-            } else {
-                spam = new SpamPrevent();
+        String role = StaticStore.rolesToString(m.getRoles());
 
-                StaticStore.spamData.put(m.getId().asString(), spam);
-            }
+        if(StaticStore.spamData.containsKey(m.getId())) {
+            spam = StaticStore.spamData.get(m.getId());
 
-            if(prevented.get())
+            if(spam.isPrevented(ch, lang, m.getId()))
                 return;
+        } else {
+            spam = new SpamPrevent();
 
-            String role = StaticStore.rolesToString(m.getRoleIds());
-
-            if(constRole == null) {
-                hasRole.set(true);
-            } else if(constRole.equals("MANDARIN")) {
-                hasRole.set(m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
-            } else if(constRole.equals("CONTRIBUTOR")) {
-                hasRole.set(StaticStore.contributors.contains(m.getId().asString()));
-            } else {
-                hasRole.set(role.contains(constRole) || m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
-            }
-
-            if(!hasRole.get()) {
-                isMod.set((constRole != null && !constRole.equals("MANDARIN") && !constRole.equals("CONTRIBUTOR")) && holder.MOD != null && role.contains(holder.MOD));
-            }
-
-            isMandarin.set(m.getId().asString().equals(StaticStore.MANDARIN_SMELL));
-        }, () -> canGo.set(false));
-
-        if(prevented.get())
-            return;
-
-        if(!canGo.get())
-            return;
-
-        AtomicBoolean canTry = new AtomicBoolean(true);
-
-        if(ch instanceof GuildChannel) {
-            GuildChannel tc = ((GuildChannel) ch);
-
-            Optional<PermissionSet> op = tc.getEffectivePermissions(Snowflake.of(StaticStore.PACKPACK)).blockOptional();
-
-            op.ifPresent(permissions -> canTry.set(permissions.contains(Permission.SEND_MESSAGES)));
+            StaticStore.spamData.put(m.getId(), spam);
         }
 
-        if(!canTry.get()) {
-            getMember(event).ifPresent(m -> {
-                String serverName = g.getName();
-                String channelName;
+        if(constRole == null) {
+            hasRole = true;
+        } else if(constRole.equals("MANDARIN")) {
+            hasRole = m.getId().equals(StaticStore.MANDARIN_SMELL);
+        } else if(constRole.equals("CONTRIBUTOR")) {
+            hasRole = StaticStore.contributors.contains(m.getId());
+        } else {
+            boolean isMod = holder.MOD != null && role.contains(holder.MOD);
 
-                if(ch instanceof GuildChannel)
-                    channelName = ((GuildChannel) ch).getName();
-                else
-                    channelName = null;
+            hasRole = isMod || role.contains(constRole) || m.getId().equals(StaticStore.MANDARIN_SMELL);
+        }
 
-                String content;
+        boolean canTry = true;
 
-                if(channelName == null) {
-                    content = LangID.getStringByID("no_perm", lang).replace("_SSS_", serverName);
-                } else {
-                    content = LangID.getStringByID("no_permch", lang).replace("_SSS_", serverName).replace("_CCC_", channelName);
-                }
+        if(ch instanceof GuildMessageChannel) {
+            GuildMessageChannel tc = ((GuildMessageChannel) ch);
 
-                m.getPrivateChannel().subscribe(pc -> pc.createMessage(MessageCreateSpec.builder().content(content).build()).subscribe(null, e -> {}));
-            });
+            canTry = tc.canTalk();
+        }
+
+        if(!canTry) {
+            String serverName = g.getName();
+            String channelName = ch.getName();
+
+            String content = LangID.getStringByID("no_permch", lang).replace("_SSS_", serverName).replace("_CCC_", channelName);
+
+            m.getUser().openPrivateChannel().flatMap(pc -> pc.sendMessage(content)).queue();
 
             StaticStore.executed++;
 
             return;
         }
 
-        if(!hasRole.get() && !isMod.get()) {
+        if(!hasRole) {
             if(constRole.equals("MANDARIN")) {
-                ch.createMessage(LangID.getStringByID("const_man", lang)).subscribe();
+                ch.sendMessage(LangID.getStringByID("const_man", lang)).queue();
             } else if(constRole.equals("CONTRIBUTOR")) {
                 createMessageWithNoPings(ch, LangID.getStringByID("const_con", lang));
             } else {
-                ch.createMessage(LangID.getStringByID("const_role", lang).replace("_", StaticStore.roleNameFromID(g, constRole))).subscribe();
+                ch.sendMessage(LangID.getStringByID("const_role", lang).replace("_", StaticStore.roleNameFromID(g, constRole))).queue();
             }
         } else {
             setOptionalID(event);
@@ -172,10 +138,9 @@ public abstract class GlobalTimedConstraintCommand extends Command {
             try {
                 TimeBoolean bool = StaticStore.canDo.get(id);
 
-                if(!isMandarin.get() && !isMod.get() && bool != null && !bool.canDo && System.currentTimeMillis() - bool.time < bool.totalTime) {
-                    ch.createMessage(LangID.getStringByID("single_wait", lang).replace("_", DataToString.df.format((bool.totalTime - (System.currentTimeMillis() - StaticStore.canDo.get(id).time)) / 1000.0))).subscribe();
+                if(!isMandarin && bool != null && !bool.canDo && System.currentTimeMillis() - bool.time < bool.totalTime) {
+                    ch.sendMessage(LangID.getStringByID("single_wait", lang).replace("_", DataToString.df.format((bool.totalTime - (System.currentTimeMillis() - StaticStore.canDo.get(id).time)) / 1000.0))).queue();
                 } else {
-
                     if(!aborts.contains(optionalID)) {
                         pause.reset();
 
@@ -230,7 +195,7 @@ public abstract class GlobalTimedConstraintCommand extends Command {
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         doThing(event);
 
         pause.resume();
@@ -250,11 +215,11 @@ public abstract class GlobalTimedConstraintCommand extends Command {
         }
     }
 
-    protected abstract void doThing(MessageEvent event) throws Exception;
+    protected abstract void doThing(GenericMessageEvent event) throws Exception;
 
-    protected abstract void setOptionalID(MessageEvent event);
+    protected abstract void setOptionalID(GenericMessageEvent event);
 
     protected abstract void prepareAborts();
 
-    protected void onAbort(MessageEvent event) {}
+    protected void onAbort(GenericMessageEvent event) {}
 }

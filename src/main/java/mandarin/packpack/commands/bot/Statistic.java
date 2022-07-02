@@ -1,10 +1,10 @@
 package mandarin.packpack.commands.bot;
 
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class Statistic extends Command {
     public Statistic(int lang) {
@@ -12,7 +12,7 @@ public class Statistic extends Command {
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)

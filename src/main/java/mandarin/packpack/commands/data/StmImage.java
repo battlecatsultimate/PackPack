@@ -4,18 +4,18 @@ import common.system.fake.FakeImage;
 import common.system.fake.ImageBuilder;
 import common.system.files.FDFile;
 import common.util.anim.ImgCut;
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.FontStageImageGenerator;
 import mandarin.packpack.supporter.ImageGenerator;
 import mandarin.packpack.supporter.StageImageGenerator;
+import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.awt.*;
 import java.io.File;
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -31,7 +31,7 @@ public class StmImage extends ConstraintCommand {
     private int startIndex = 1;
 
     @Override
-    public void doSomething(MessageEvent event) {
+    public void doSomething(GenericMessageEvent event) {
         try {
             MessageChannel ch = getChannel(event);
 
@@ -56,7 +56,7 @@ public class StmImage extends ConstraintCommand {
                 String[] messages = getContent(event).split(" ", startIndex+1);
 
                 if(messages.length <= startIndex) {
-                    ch.createMessage(LangID.getStringByID("stimg_more", lang).replace("_", holder.serverPrefix)).subscribe();
+                    ch.sendMessage(LangID.getStringByID("stimg_more", lang).replace("_", holder.serverPrefix)).queue();
                     return;
                 }
 
@@ -93,7 +93,7 @@ public class StmImage extends ConstraintCommand {
 
                 handleLast(message, f, ch, generator);
             } else {
-                ch.createMessage(LangID.getStringByID("stmimg_argu", lang).replace("_", holder.serverPrefix)).subscribe();
+                ch.sendMessage(LangID.getStringByID("stmimg_argu", lang).replace("_", holder.serverPrefix)).queue();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -101,33 +101,26 @@ public class StmImage extends ConstraintCommand {
         }
     }
 
-    private void handleLast(String message, File f, MessageChannel ch, ImageGenerator generator) throws Exception {
+    private void handleLast(String message, File f, MessageChannel ch, ImageGenerator generator) {
         if(f != null) {
-            FileInputStream fis = new FileInputStream(f);
-
-            createMessage(ch, m -> {
-                m.addFile(f.getName(), fis);
-                m.content(LangID.getStringByID("stimg_result", lang));
-            }, () -> {
-                try {
-                    if (f.exists()) {
-                        fis.close();
-
-                        boolean res = f.delete();
-
-                        if (!res) {
-                            System.out.println("Can't delete file : " + f.getAbsolutePath());
+            ch.sendMessage(LangID.getStringByID("stimg_result", lang))
+                    .addFile(f, f.getName())
+                    .queue(m -> {
+                        if(f.exists() && !f.delete()) {
+                            StaticStore.logger.uploadLog("Can't delete file : "+f.getAbsolutePath());
                         }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
+                    }, e -> {
+                        StaticStore.logger.uploadErrorLog(e, "E/StmImage::handleLast - Failed to upload stage image");
+
+                        if(f.exists() && !f.delete()) {
+                            StaticStore.logger.uploadLog("Can't delete file : "+f.getAbsolutePath());
+                        }
+                    });
         } else {
             ArrayList<String> invalid = generator.getInvalids(message);
 
             if(invalid.isEmpty()) {
-                ch.createMessage(LangID.getStringByID("stimg_wrong", lang)).subscribe();
+                ch.sendMessage(LangID.getStringByID("stimg_wrong", lang)).queue();
             } else {
                 StringBuilder builder = new StringBuilder(LangID.getStringByID("stimg_letter", lang));
 
@@ -139,7 +132,7 @@ public class StmImage extends ConstraintCommand {
                     }
                 }
 
-                ch.createMessage(builder.toString()).subscribe();
+                ch.sendMessage(builder.toString()).queue();
             }
         }
     }

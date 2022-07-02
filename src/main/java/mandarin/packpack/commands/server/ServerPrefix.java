@@ -1,10 +1,10 @@
 package mandarin.packpack.commands.server;
 
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class ServerPrefix extends ConstraintCommand {
     public ServerPrefix(ROLE role, int lang, IDHolder holder) {
@@ -12,14 +12,14 @@ public class ServerPrefix extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) {
+    public void doSomething(GenericMessageEvent event) {
         MessageChannel ch = getChannel(event);
 
         String[] list = getContent(event).split(" ");
 
         if(list.length == 2) {
             if(list[1] == null || list[1].isBlank()) {
-                ch.createMessage(LangID.getStringByID("prefix_space", lang));
+                ch.sendMessage(LangID.getStringByID("prefix_space", lang)).queue();
                 return;
             }
 
@@ -27,9 +27,9 @@ public class ServerPrefix extends ConstraintCommand {
 
             createMessageWithNoPings(ch, LangID.getStringByID("serverpre_set", lang).replace("_", holder.serverPrefix));
         } else if(list.length == 1) {
-            ch.createMessage(LangID.getStringByID("prefix_argu", lang)).subscribe();
+            ch.sendMessage(LangID.getStringByID("prefix_argu", lang)).queue();
         } else {
-            ch.createMessage(LangID.getStringByID("prefix_tooag", lang)).subscribe();
+            ch.sendMessage(LangID.getStringByID("prefix_tooag", lang)).queue();
         }
     }
 }

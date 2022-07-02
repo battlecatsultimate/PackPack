@@ -4,22 +4,22 @@ import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Enemy;
-import discord4j.core.GatewayDiscordClient;
-import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
-import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.TimeBoolean;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-public class EnemyAnimMessageHolder extends MessageHolder<MessageCreateEvent> {
+public class EnemyAnimMessageHolder extends MessageHolder<MessageReceivedEvent> {
     private final ArrayList<Enemy> enemy;
     private final Message msg;
 
@@ -31,7 +31,6 @@ public class EnemyAnimMessageHolder extends MessageHolder<MessageCreateEvent> {
     private final boolean gif;
     private final boolean raw;
     private final boolean gifMode;
-    private final GatewayDiscordClient client;
 
     private final String channelID;
 
@@ -39,8 +38,8 @@ public class EnemyAnimMessageHolder extends MessageHolder<MessageCreateEvent> {
 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
-    public EnemyAnimMessageHolder(ArrayList<Enemy> enemy, Message author, Message msg, GatewayDiscordClient client, String channelID, int mode, int frame, boolean transparent, boolean debug, int lang, boolean isGif, boolean raw, boolean gifMode) {
-        super(MessageCreateEvent.class);
+    public EnemyAnimMessageHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, int mode, int frame, boolean transparent, boolean debug, int lang, boolean isGif, boolean raw, boolean gifMode) {
+        super(MessageReceivedEvent.class);
 
         this.enemy = enemy;
         this.msg = msg;
@@ -54,27 +53,23 @@ public class EnemyAnimMessageHolder extends MessageHolder<MessageCreateEvent> {
         this.gif = isGif;
         this.raw = raw;
         this.gifMode = gifMode;
-        this.client = client;
 
         registerAutoFinish(this, msg, author, lang, FIVE_MIN);
     }
 
     @Override
-    public int handleEvent(MessageCreateEvent event) {
+    public int handleEvent(MessageReceivedEvent event) {
         if(expired) {
             System.out.println("Expired!!");
             return RESULT_FAIL;
         }
 
-        MessageChannel ch = event.getMessage().getChannel().block();
+        MessageChannel ch = event.getMessage().getChannel();
 
-        if(ch == null)
+        if(!ch.getId().equals(channelID))
             return RESULT_STILL;
 
-        if(!ch.getId().asString().equals(channelID))
-            return RESULT_STILL;
-
-        String content = event.getMessage().getContent();
+        String content = event.getMessage().getContentRaw();
 
         if(content.equals("n")) {
             if(20 * (page + 1) >= enemy.size())
@@ -82,51 +77,7 @@ public class EnemyAnimMessageHolder extends MessageHolder<MessageCreateEvent> {
 
             page++;
 
-            Command.editMessage(msg, m -> {
-                String check;
-
-                if(enemy.size() <= 20)
-                    check = "";
-                else if(page == 0)
-                    check = LangID.getStringByID("formst_next", lang);
-                else if((page + 1) * 20 >= enemy.size())
-                    check = LangID.getStringByID("formst_pre", lang);
-                else
-                    check = LangID.getStringByID("formst_nexpre", lang);
-
-                StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
-
-                int oldConfig = CommonStatic.getConfig().lang;
-                CommonStatic.getConfig().lang = lang;
-
-                for(int i = 20 * page; i < 20 * (page +1); i++) {
-                    if(i >= enemy.size())
-                        break;
-
-                    Enemy e = enemy.get(i);
-
-                    String fname = Data.trio(e.id.id) + " - ";
-
-                    CommonStatic.getConfig().lang = lang;
-
-                    if(MultiLangCont.get(e) != null)
-                        fname += MultiLangCont.get(e);
-
-                    CommonStatic.getConfig().lang = oldConfig;
-
-                    sb.append(i+1).append(". ").append(fname).append("\n");
-                }
-
-                CommonStatic.getConfig().lang = oldConfig;
-
-                if(enemy.size() > 20)
-                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(enemy.size()/20 + 1)));
-
-                sb.append(LangID.getStringByID("formst_can", lang));
-                sb.append("```");
-
-                m.content(wrap(sb.toString()));
-            });
+            edit();
 
             cleaner.add(event.getMessage());
         } else if(content.equals("p")) {
@@ -135,51 +86,7 @@ public class EnemyAnimMessageHolder extends MessageHolder<MessageCreateEvent> {
 
             page--;
 
-            Command.editMessage(msg, m -> {
-                String check;
-
-                if(enemy.size() <= 20)
-                    check = "";
-                else if(page == 0)
-                    check = LangID.getStringByID("formst_next", lang);
-                else if((page + 1) * 20 >= enemy.size())
-                    check = LangID.getStringByID("formst_pre", lang);
-                else
-                    check = LangID.getStringByID("formst_nexpre", lang);
-
-                StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
-
-                int oldConfig = CommonStatic.getConfig().lang;
-                CommonStatic.getConfig().lang = lang;
-
-                for(int i = 20 * page; i < 20 * (page +1); i++) {
-                    if(i >= enemy.size())
-                        break;
-
-                    Enemy e = enemy.get(i);
-
-                    String fname = Data.trio(e.id.id) + " - ";
-
-                    CommonStatic.getConfig().lang = lang;
-
-                    if(MultiLangCont.get(e) != null)
-                        fname += MultiLangCont.get(e);
-
-                    CommonStatic.getConfig().lang = oldConfig;
-
-                    sb.append(i+1).append(". ").append(fname).append("\n");
-                }
-
-                CommonStatic.getConfig().lang = oldConfig;
-
-                if(enemy.size() > 20)
-                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(enemy.size()/20 + 1)));
-
-                sb.append(LangID.getStringByID("formst_can", lang));
-                sb.append("```");
-
-                m.content(wrap(sb.toString()));
-            });
+            edit();
 
             cleaner.add(event.getMessage());
         } else if(StaticStore.isNumeric(content)) {
@@ -196,13 +103,10 @@ public class EnemyAnimMessageHolder extends MessageHolder<MessageCreateEvent> {
 
                     if(timeBoolean == null || timeBoolean.canDo) {
                         new Thread(() -> {
-                            Guild g = event.getGuild().block();
-
-                            if(g == null)
-                                return;
+                            Guild g = event.getGuild();
 
                             try {
-                                boolean result = EntityHandler.generateEnemyAnim(e, ch, client, g.getPremiumTier().getValue(), mode, debug, frame, lang, raw, gifMode);
+                                boolean result = EntityHandler.generateEnemyAnim(e, ch, g.getBoostTier().getKey(), mode, debug, frame, lang, raw, gifMode);
 
                                 if(result) {
                                     long time = raw ? TimeUnit.MINUTES.toMillis(1) : TimeUnit.SECONDS.toMillis(30);
@@ -224,25 +128,27 @@ public class EnemyAnimMessageHolder extends MessageHolder<MessageCreateEvent> {
                             }
                         }).start();
                     } else {
-                        ch.createMessage(LangID.getStringByID("single_wait", lang).replace("_", DataToString.df.format((timeBoolean.totalTime - (System.currentTimeMillis() - StaticStore.canDo.get("gif").time)) / 1000.0))).subscribe();
+                        ch.sendMessage(LangID.getStringByID("single_wait", lang).replace("_", DataToString.df.format((timeBoolean.totalTime - (System.currentTimeMillis() - StaticStore.canDo.get("gif").time)) / 1000.0))).queue();
                     }
                 } else {
-                    event.getMember().ifPresent(m -> {
+                    Member m = event.getMember();
+
+                    if(m != null) {
                         try {
-                            if(StaticStore.timeLimit.containsKey(m.getId().asString()) && StaticStore.timeLimit.get(m.getId().asString()).containsKey(StaticStore.COMMAND_ENEMYIMAGE_ID)) {
-                                long time = StaticStore.timeLimit.get(m.getId().asString()).get(StaticStore.COMMAND_ENEMYIMAGE_ID);
+                            if(StaticStore.timeLimit.containsKey(m.getId()) && StaticStore.timeLimit.get(m.getId()).containsKey(StaticStore.COMMAND_ENEMYIMAGE_ID)) {
+                                long time = StaticStore.timeLimit.get(m.getId()).get(StaticStore.COMMAND_ENEMYIMAGE_ID);
 
                                 if(System.currentTimeMillis() - time > 10000) {
                                     EntityHandler.generateEnemyImage(e, ch, mode, frame, transparent, debug, lang);
 
-                                    StaticStore.timeLimit.get(m.getId().asString()).put(StaticStore.COMMAND_ENEMYIMAGE_ID, System.currentTimeMillis());
+                                    StaticStore.timeLimit.get(m.getId()).put(StaticStore.COMMAND_ENEMYIMAGE_ID, System.currentTimeMillis());
                                 } else {
-                                    ch.createMessage(LangID.getStringByID("command_timelimit", lang).replace("_", DataToString.df.format((System.currentTimeMillis() - time) / 1000.0))).subscribe();
+                                    ch.sendMessage(LangID.getStringByID("command_timelimit", lang).replace("_", DataToString.df.format((System.currentTimeMillis() - time) / 1000.0))).queue();
                                 }
-                            } else if(StaticStore.timeLimit.containsKey(m.getId().asString())) {
+                            } else if(StaticStore.timeLimit.containsKey(m.getId())) {
                                 EntityHandler.generateEnemyImage(e, ch, mode, frame, transparent, debug, lang);
 
-                                StaticStore.timeLimit.get(m.getId().asString()).put(StaticStore.COMMAND_ENEMYIMAGE_ID, System.currentTimeMillis());
+                                StaticStore.timeLimit.get(m.getId()).put(StaticStore.COMMAND_ENEMYIMAGE_ID, System.currentTimeMillis());
                             } else {
                                 EntityHandler.generateEnemyImage(e, ch, mode, frame, transparent, debug, lang);
 
@@ -250,18 +156,18 @@ public class EnemyAnimMessageHolder extends MessageHolder<MessageCreateEvent> {
 
                                 memberLimit.put(StaticStore.COMMAND_ENEMYIMAGE_ID, System.currentTimeMillis());
 
-                                StaticStore.timeLimit.put(m.getId().asString(), memberLimit);
+                                StaticStore.timeLimit.put(m.getId(), memberLimit);
                             }
                         } catch (Exception exception) {
                             exception.printStackTrace();
                         }
-                    });
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-            msg.delete().subscribe();
+            msg.delete().queue();
 
             expired = true;
 
@@ -269,10 +175,9 @@ public class EnemyAnimMessageHolder extends MessageHolder<MessageCreateEvent> {
 
             return RESULT_FINISH;
         } else if(content.equals("c")) {
-            Command.editMessage(msg, m -> {
-                m.content(wrap(LangID.getStringByID("formst_cancel", lang)));
-                expired = true;
-            });
+            msg.editMessage(LangID.getStringByID("formst_cancel", lang)).queue();
+
+            expired = true;
 
             cleaner.add(event.getMessage());
 
@@ -290,51 +195,7 @@ public class EnemyAnimMessageHolder extends MessageHolder<MessageCreateEvent> {
 
                     page = p;
 
-                    Command.editMessage(msg, m -> {
-                        String check;
-
-                        if(enemy.size() <= 20)
-                            check = "";
-                        else if(page == 0)
-                            check = LangID.getStringByID("formst_next", lang);
-                        else if((page + 1) * 20 >= enemy.size())
-                            check = LangID.getStringByID("formst_pre", lang);
-                        else
-                            check = LangID.getStringByID("formst_nexpre", lang);
-
-                        StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
-
-                        int oldConfig = CommonStatic.getConfig().lang;
-                        CommonStatic.getConfig().lang = lang;
-
-                        for(int i = 20 * page; i < 20 * (page +1); i++) {
-                            if(i >= enemy.size())
-                                break;
-
-                            Enemy e = enemy.get(i);
-
-                            String fname = Data.trio(e.id.id) + " - ";
-
-                            CommonStatic.getConfig().lang = lang;
-
-                            if(MultiLangCont.get(e) != null)
-                                fname += MultiLangCont.get(e);
-
-                            CommonStatic.getConfig().lang = oldConfig;
-
-                            sb.append(i+1).append(". ").append(fname).append("\n");
-                        }
-
-                        CommonStatic.getConfig().lang = oldConfig;
-
-                        if(enemy.size() > 20)
-                            sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(enemy.size()/20 + 1)));
-
-                        sb.append(LangID.getStringByID("formst_can", lang));
-                        sb.append("```");
-
-                        m.content(wrap(sb.toString()));
-                    });
+                    edit();
 
                     cleaner.add(event.getMessage());
                 }
@@ -348,7 +209,7 @@ public class EnemyAnimMessageHolder extends MessageHolder<MessageCreateEvent> {
     public void clean() {
         for(Message m : cleaner) {
             if(m != null)
-                m.delete().subscribe();
+                m.delete().queue();
         }
     }
 
@@ -361,6 +222,52 @@ public class EnemyAnimMessageHolder extends MessageHolder<MessageCreateEvent> {
 
         StaticStore.removeHolder(id, this);
 
-        Command.editMessage(msg, m -> m.content(wrap(LangID.getStringByID("formst_expire", lang))));
+        msg.editMessage(LangID.getStringByID("formst_expire", lang)).queue();
+    }
+
+    public void edit() {
+        String check;
+
+        if(enemy.size() <= 20)
+            check = "";
+        else if(page == 0)
+            check = LangID.getStringByID("formst_next", lang);
+        else if((page + 1) * 20 >= enemy.size())
+            check = LangID.getStringByID("formst_pre", lang);
+        else
+            check = LangID.getStringByID("formst_nexpre", lang);
+
+        StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
+
+        int oldConfig = CommonStatic.getConfig().lang;
+        CommonStatic.getConfig().lang = lang;
+
+        for(int i = 20 * page; i < 20 * (page +1); i++) {
+            if(i >= enemy.size())
+                break;
+
+            Enemy e = enemy.get(i);
+
+            String fname = Data.trio(e.id.id) + " - ";
+
+            CommonStatic.getConfig().lang = lang;
+
+            if(MultiLangCont.get(e) != null)
+                fname += MultiLangCont.get(e);
+
+            CommonStatic.getConfig().lang = oldConfig;
+
+            sb.append(i+1).append(". ").append(fname).append("\n");
+        }
+
+        CommonStatic.getConfig().lang = oldConfig;
+
+        if(enemy.size() > 20)
+            sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(enemy.size()/20 + 1)));
+
+        sb.append(LangID.getStringByID("formst_can", lang));
+        sb.append("```");
+
+        msg.editMessage(sb.toString()).queue();
     }
 }

@@ -1,12 +1,13 @@
 package mandarin.packpack.commands;
 
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class Locale extends ConstraintCommand {
 
@@ -15,7 +16,7 @@ public class Locale extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) {
+    public void doSomething(GenericMessageEvent event) {
         MessageChannel ch = getChannel(event);
 
         if(ch != null) {
@@ -28,17 +29,19 @@ public class Locale extends ConstraintCommand {
                     if(lan >= 0 && lan <= StaticStore.langIndex.length - 1) {
                         int loc = StaticStore.langIndex[lan];
 
-                        getMember(event).ifPresentOrElse(m -> {
+                        Member m = getMember(event);
+                        
+                        if(m != null) {
                             ConfigHolder holder;
 
-                            if(StaticStore.config.containsKey(m.getId().asString()))
-                                holder = StaticStore.config.get(m.getId().asString());
+                            if(StaticStore.config.containsKey(m.getId()))
+                                holder = StaticStore.config.get(m.getId());
                             else
                                 holder = new ConfigHolder();
 
                             holder.lang = loc;
 
-                            StaticStore.config.put(m.getId().asString(), holder);
+                            StaticStore.config.put(m.getId(), holder);
 
                             String locale;
 
@@ -69,40 +72,44 @@ public class Locale extends ConstraintCommand {
                                     break;
                             }
 
-                            ch.createMessage(LangID.getStringByID("locale_set", lan).replace("_", locale)).subscribe();
-                        }, () -> ch.createMessage("Can't find member!").subscribe());
+                            ch.sendMessage(LangID.getStringByID("locale_set", lan).replace("_", locale)).queue();
+                        } else {
+                            ch.sendMessage("Can't find member!").queue();
+                        }
                     } else if(lan == -1) {
-                        getMember(event).ifPresent(m -> {
-                            if(StaticStore.config.containsKey(m.getId().asString())) {
-                                ConfigHolder holder = StaticStore.config.get(m.getId().asString());
+                        Member m = getMember(event);
+                        
+                        if(m != null) {
+                            if(StaticStore.config.containsKey(m.getId())) {
+                                ConfigHolder holder = StaticStore.config.get(m.getId());
 
                                 holder.lang = -1;
 
-                                StaticStore.config.put(m.getId().asString(), holder);
+                                StaticStore.config.put(m.getId(), holder);
                             }
-                        });
+                        }
 
-                        Guild g = getGuild(event).block();
+                        Guild g = getGuild(event);
 
                         if(g != null) {
-                            IDHolder holder = StaticStore.idHolder.get(g.getId().asString());
+                            IDHolder holder = StaticStore.idHolder.get(g.getId());
 
                             if(holder != null) {
-                                ch.createMessage(LangID.getStringByID("locale_auto", holder.serverLocale)).subscribe();
+                                ch.sendMessage(LangID.getStringByID("locale_auto", holder.serverLocale)).queue();
                             } else {
-                                ch.createMessage(LangID.getStringByID("locale_auto", lang)).subscribe();
+                                ch.sendMessage(LangID.getStringByID("locale_auto", lang)).queue();
                             }
                         } else {
-                            ch.createMessage(LangID.getStringByID("locale_auto", lang)).subscribe();
+                            ch.sendMessage(LangID.getStringByID("locale_auto", lang)).queue();
                         }
                     } else {
-                        ch.createMessage(LangID.getStringByID("locale_incorrect", lan)).subscribe();
+                        ch.sendMessage(LangID.getStringByID("locale_incorrect", lan)).queue();
                     }
                 } else {
-                    ch.createMessage(LangID.getStringByID("locale_number", lang)).subscribe();
+                    ch.sendMessage(LangID.getStringByID("locale_number", lang)).queue();
                 }
             } else {
-                ch.createMessage(LangID.getStringByID("locale_argu", lang)).subscribe();
+                ch.sendMessage(LangID.getStringByID("locale_argu", lang)).queue();
             }
         }
     }

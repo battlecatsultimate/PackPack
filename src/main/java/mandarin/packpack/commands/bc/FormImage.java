@@ -5,21 +5,20 @@ import common.util.Data;
 import common.util.anim.EAnimD;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Form;
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.TimedConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.ImageDrawing;
 import mandarin.packpack.supporter.lang.LangID;
-import mandarin.packpack.supporter.server.holder.FormAnimMessageHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import mandarin.packpack.supporter.server.holder.FormAnimMessageHolder;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -32,7 +31,7 @@ public class FormImage extends TimedConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
@@ -55,7 +54,7 @@ public class FormImage extends TimedConstraintCommand {
             String search = filterCommand(getContent(event));
 
             if(search.isBlank()) {
-                ch.createMessage(LangID.getStringByID("fimg_more", lang)).subscribe();
+                ch.sendMessage(LangID.getStringByID("fimg_more", lang)).queue();
                 disableTimer();
                 return;
             }
@@ -82,41 +81,32 @@ public class FormImage extends TimedConstraintCommand {
                 forms.get(0).anim.unload();
 
                 if(img != null) {
-                    FileInputStream fis = new FileInputStream(img);
+                    int oldConfig = CommonStatic.getConfig().lang;
+                    CommonStatic.getConfig().lang = lang;
 
-                    int finalMode = mode;
+                    String fName = MultiLangCont.get(forms.get(0));
 
-                    createMessage(ch, m -> {
-                        int oldConfig = CommonStatic.getConfig().lang;
-                        CommonStatic.getConfig().lang = lang;
+                    CommonStatic.getConfig().lang = oldConfig;
 
-                        String fName = MultiLangCont.get(forms.get(0));
+                    if(fName == null || fName.isBlank())
+                        fName = forms.get(0).names.toString();
 
-                        CommonStatic.getConfig().lang = oldConfig;
+                    if(fName.isBlank())
+                        fName = LangID.getStringByID("data_unit", lang)+" "+ Data.trio(forms.get(0).uid.id)+" "+Data.trio(forms.get(0).fid);
 
-                        if(fName == null || fName.isBlank())
-                            fName = forms.get(0).names.toString();
+                    ch.sendMessage(LangID.getStringByID("fimg_result", lang).replace("_", fName).replace(":::", getModeName(mode, forms.get(0).anim.anims.length)).replace("=", String.valueOf(frame)))
+                            .addFile(img, "result.png")
+                            .queue(m -> {
+                                if(img.exists() && !img.delete()) {
+                                    StaticStore.logger.uploadLog("Can't delete file : " + img.getAbsolutePath());
+                                }
+                            }, e -> {
+                                StaticStore.logger.uploadErrorLog(e, "E/FormImage - Error happened while trying to upload form image");
 
-                        if(fName.isBlank())
-                            fName = LangID.getStringByID("data_unit", lang)+" "+ Data.trio(forms.get(0).uid.id)+" "+Data.trio(forms.get(0).fid);
-
-                        m.content(LangID.getStringByID("fimg_result", lang).replace("_", fName).replace(":::", getModeName(finalMode, forms.get(0).anim.anims.length)).replace("=", String.valueOf(frame)));
-                        m.addFile("result.png", fis);
-                    }, () -> {
-                        try {
-                            fis.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-                        if(img.exists()) {
-                            boolean res = img.delete();
-
-                            if(!res) {
-                                System.out.println("Can't delete file : "+img.getAbsolutePath());
-                            }
-                        }
-                    });
+                                if(img.exists() && !img.delete()) {
+                                    StaticStore.logger.uploadLog("Can't delete file : " + img.getAbsolutePath());
+                                }
+                            });
                 }
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", filterCommand(getContent(event))));
@@ -159,18 +149,20 @@ public class FormImage extends TimedConstraintCommand {
                 int frame = getFrame(getContent(event));
 
                 if(res != null) {
-                    getMember(event).ifPresent(member -> {
+                    Member member = getMember(event);
+
+                    if(member != null) {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(member.getId().asString(), new FormAnimMessageHolder(forms, msg, res, null, ch.getId().asString(), mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang, false, false, false));
-                    });
+                            StaticStore.putHolder(member.getId(), new FormAnimMessageHolder(forms, msg, res, ch.getId(), mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang, false, false, false));
+                    }
                 }
 
                 disableTimer();
             }
         } else {
-            ch.createMessage(LangID.getStringByID("fimg_more", lang)).subscribe();
+            ch.sendMessage(LangID.getStringByID("fimg_more", lang)).queue();
             disableTimer();
         }
     }

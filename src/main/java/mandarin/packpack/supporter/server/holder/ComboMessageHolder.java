@@ -4,21 +4,21 @@ import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Combo;
-import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
-import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public class ComboMessageHolder extends MessageHolder<MessageCreateEvent> {
+public class ComboMessageHolder extends MessageHolder<MessageReceivedEvent> {
     private final ArrayList<Combo> combo;
     private final Message msg;
     private final Message fMsg;
@@ -31,7 +31,7 @@ public class ComboMessageHolder extends MessageHolder<MessageCreateEvent> {
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
     public ComboMessageHolder(ArrayList<Combo> combo, Message author, Message msg, Message fMsg, String channelID, int lang) {
-        super(MessageCreateEvent.class);
+        super(MessageReceivedEvent.class);
 
         this.combo = combo;
         this.msg = msg;
@@ -42,26 +42,23 @@ public class ComboMessageHolder extends MessageHolder<MessageCreateEvent> {
 
         registerAutoFinish(this, msg, author, lang, TimeUnit.MINUTES.toMillis(5), () -> {
             if(fMsg != null)
-                fMsg.delete().subscribe();
+                fMsg.delete().queue();
         });
     }
 
     @Override
-    public int handleEvent(MessageCreateEvent event) {
+    public int handleEvent(MessageReceivedEvent event) {
         if(expired) {
             System.out.println("Expired!!");
             return RESULT_FAIL;
         }
 
-        MessageChannel ch = event.getMessage().getChannel().block();
+        MessageChannel ch = event.getMessage().getChannel();
 
-        if(ch == null)
+        if(!ch.getId().equals(channelID))
             return RESULT_STILL;
 
-        if(!ch.getId().asString().equals(channelID))
-            return RESULT_STILL;
-
-        String content = event.getMessage().getContent();
+        String content = event.getMessage().getContentRaw();
 
         if(content.equals("n")) {
             if(20 * (page + 1) >= combo.size())
@@ -69,47 +66,7 @@ public class ComboMessageHolder extends MessageHolder<MessageCreateEvent> {
 
             page++;
 
-            Command.editMessage(msg, m -> {
-                String check;
-
-                if(combo.size() <= 20)
-                    check = "";
-                else if(page == 0)
-                    check = LangID.getStringByID("formst_next", lang);
-                else if((page + 1) * 20 >= combo.size())
-                    check = LangID.getStringByID("formst_pre", lang);
-                else
-                    check = LangID.getStringByID("formst_nexpre", lang);
-
-                StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
-
-                for(int i = 20 * page; i < 20 * (page + 1) ; i++) {
-                    if(i >= combo.size())
-                        break;
-
-                    Combo c = combo.get(i);
-
-                    String comboName = Data.trio(Integer.parseInt(c.name)) + " ";
-
-                    int oldConfig = CommonStatic.getConfig().lang;
-                    CommonStatic.getConfig().lang = lang;
-
-                    if(MultiLangCont.getStatic().COMNAME.getCont(c) != null)
-                        comboName += MultiLangCont.getStatic().COMNAME.getCont(c) + " | " + DataToString.getComboType(c, lang);
-
-                    CommonStatic.getConfig().lang = oldConfig;
-
-                    sb.append(i+1).append(". ").append(comboName).append("\n");
-                }
-
-                if(combo.size() > 20)
-                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(combo.size()/20 + 1)));
-
-                sb.append(LangID.getStringByID("formst_can", lang));
-                sb.append("```");
-
-                m.content(wrap(sb.toString()));
-            });
+            edit();
 
             cleaner.add(event.getMessage());
         } else if(content.equals("p")) {
@@ -118,47 +75,7 @@ public class ComboMessageHolder extends MessageHolder<MessageCreateEvent> {
 
             page--;
 
-            Command.editMessage(msg, m -> {
-                String check;
-
-                if(combo.size() <= 20)
-                    check = "";
-                else if(page == 0)
-                    check = LangID.getStringByID("formst_next", lang);
-                else if((page + 1) * 20 >= combo.size())
-                    check = LangID.getStringByID("formst_pre", lang);
-                else
-                    check = LangID.getStringByID("formst_nexpre", lang);
-
-                StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
-
-                for(int i = 20 * page; i < 20 * (page + 1) ; i++) {
-                    if(i >= combo.size())
-                        break;
-
-                    Combo c = combo.get(i);
-
-                    String comboName = Data.trio(Integer.parseInt(c.name)) + " ";
-
-                    int oldConfig = CommonStatic.getConfig().lang;
-                    CommonStatic.getConfig().lang = lang;
-
-                    if(MultiLangCont.getStatic().COMNAME.getCont(c) != null)
-                        comboName += MultiLangCont.getStatic().COMNAME.getCont(c) + " | " + DataToString.getComboType(c, lang);
-
-                    CommonStatic.getConfig().lang = oldConfig;
-
-                    sb.append(i+1).append(". ").append(comboName).append("\n");
-                }
-
-                if(combo.size() > 20)
-                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(combo.size()/20 + 1)));
-
-                sb.append(LangID.getStringByID("formst_can", lang));
-                sb.append("```");
-
-                m.content(wrap(sb.toString()));
-            });
+            edit();
 
             cleaner.add(event.getMessage());
         } else if(StaticStore.isNumeric(content)) {
@@ -167,25 +84,27 @@ public class ComboMessageHolder extends MessageHolder<MessageCreateEvent> {
             if(id < 0 || id >= combo.size())
                 return RESULT_STILL;
 
-            msg.delete().subscribe();
+            msg.delete().queue();
 
             if(fMsg != null)
-                fMsg.delete().subscribe();
+                fMsg.delete().queue();
 
             try {
                 EntityHandler.showComboEmbed(ch, combo.get(id), lang);
 
-                event.getMember().ifPresent(m -> {
-                    if(StaticStore.timeLimit.containsKey(m.getId().asString())) {
-                        StaticStore.timeLimit.get(m.getId().asString()).put(StaticStore.COMMAND_COMBO_ID, System.currentTimeMillis());
+                Member m = event.getMember();
+
+                if(m != null) {
+                    if(StaticStore.timeLimit.containsKey(m.getId())) {
+                        StaticStore.timeLimit.get(m.getId()).put(StaticStore.COMMAND_COMBO_ID, System.currentTimeMillis());
                     } else {
                         Map<String, Long> memberLimit = new HashMap<>();
 
                         memberLimit.put(StaticStore.COMMAND_COMBO_ID, System.currentTimeMillis());
 
-                        StaticStore.timeLimit.put(m.getId().asString(), memberLimit);
+                        StaticStore.timeLimit.put(m.getId(), memberLimit);
                     }
-                });
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -197,12 +116,11 @@ public class ComboMessageHolder extends MessageHolder<MessageCreateEvent> {
             return RESULT_FINISH;
         } else if(content.equals("c")) {
             if(fMsg != null)
-                fMsg.delete().subscribe();
+                fMsg.delete().queue();
 
-            Command.editMessage(msg, m -> {
-                m.content(wrap(LangID.getStringByID("formst_cancel" ,lang)));
-                expired = true;
-            });
+            msg.editMessage(LangID.getStringByID("formst_cancel" ,lang)).queue();
+
+            expired = true;
 
             cleaner.add(event.getMessage());
 
@@ -220,47 +138,7 @@ public class ComboMessageHolder extends MessageHolder<MessageCreateEvent> {
 
                     page = p;
 
-                    Command.editMessage(msg, m -> {
-                        String check;
-
-                        if(combo.size() <= 20)
-                            check = "";
-                        else if(page == 0)
-                            check = LangID.getStringByID("formst_next", lang);
-                        else if((page + 1) * 20 >= combo.size())
-                            check = LangID.getStringByID("formst_pre", lang);
-                        else
-                            check = LangID.getStringByID("formst_nexpre", lang);
-
-                        StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
-
-                        for(int i = 20 * page; i < 20 * (page + 1) ; i++) {
-                            if(i >= combo.size())
-                                break;
-
-                            Combo c = combo.get(i);
-
-                            String comboName = Data.trio(Integer.parseInt(c.name)) + " ";
-
-                            int oldConfig = CommonStatic.getConfig().lang;
-                            CommonStatic.getConfig().lang = lang;
-
-                            if(MultiLangCont.getStatic().COMNAME.getCont(c) != null)
-                                comboName += MultiLangCont.getStatic().COMNAME.getCont(c) + " | " + DataToString.getComboType(c, lang);
-
-                            CommonStatic.getConfig().lang = oldConfig;
-
-                            sb.append(i+1).append(". ").append(comboName).append("\n");
-                        }
-
-                        if(combo.size() > 20)
-                            sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(combo.size()/20 + 1)));
-
-                        sb.append(LangID.getStringByID("formst_can", lang));
-                        sb.append("```");
-
-                        m.content(wrap(sb.toString()));
-                    });
+                    edit();
 
                     cleaner.add(event.getMessage());
                 }
@@ -274,7 +152,7 @@ public class ComboMessageHolder extends MessageHolder<MessageCreateEvent> {
     public void clean() {
         for(Message m : cleaner) {
             if(m != null)
-                m.delete().subscribe();
+                m.delete().queue();
         }
 
         cleaner.clear();
@@ -290,8 +168,50 @@ public class ComboMessageHolder extends MessageHolder<MessageCreateEvent> {
         StaticStore.removeHolder(id, this);
 
         if(fMsg != null)
-            fMsg.delete().subscribe();
+            fMsg.delete().queue();
 
-        Command.editMessage(msg, m -> m.content(wrap(LangID.getStringByID("formst_expire", lang))));
+        msg.editMessage(LangID.getStringByID("formst_expire", lang)).queue();
+    }
+
+    private void edit() {
+        String check;
+
+        if(combo.size() <= 20)
+            check = "";
+        else if(page == 0)
+            check = LangID.getStringByID("formst_next", lang);
+        else if((page + 1) * 20 >= combo.size())
+            check = LangID.getStringByID("formst_pre", lang);
+        else
+            check = LangID.getStringByID("formst_nexpre", lang);
+
+        StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
+
+        for(int i = 20 * page; i < 20 * (page + 1) ; i++) {
+            if(i >= combo.size())
+                break;
+
+            Combo c = combo.get(i);
+
+            String comboName = Data.trio(Integer.parseInt(c.name)) + " ";
+
+            int oldConfig = CommonStatic.getConfig().lang;
+            CommonStatic.getConfig().lang = lang;
+
+            if(MultiLangCont.getStatic().COMNAME.getCont(c) != null)
+                comboName += MultiLangCont.getStatic().COMNAME.getCont(c) + " | " + DataToString.getComboType(c, lang);
+
+            CommonStatic.getConfig().lang = oldConfig;
+
+            sb.append(i+1).append(". ").append(comboName).append("\n");
+        }
+
+        if(combo.size() > 20)
+            sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(combo.size()/20 + 1)));
+
+        sb.append(LangID.getStringByID("formst_can", lang));
+        sb.append("```");
+
+        msg.editMessage(sb.toString()).queue();
     }
 }

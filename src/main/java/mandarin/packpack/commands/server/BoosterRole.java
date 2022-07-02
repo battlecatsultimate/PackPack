@@ -1,22 +1,17 @@
 package mandarin.packpack.commands.server;
 
-import discord4j.common.util.Snowflake;
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.Member;
-import discord4j.core.object.entity.Role;
-import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.core.spec.RoleCreateSpec;
-import discord4j.rest.util.Color;
-import discord4j.rest.util.PermissionSet;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.BoosterData;
 import mandarin.packpack.supporter.server.data.BoosterHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import org.apache.commons.lang3.StringUtils;
 
+import java.awt.*;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -31,14 +26,14 @@ public class BoosterRole extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
-        Guild g = getGuild(event).block();
+        Guild g = getGuild(event);
 
         if(ch == null || g == null)
             return;
 
-        IDHolder holder = StaticStore.idHolder.get(g.getId().asString());
+        IDHolder holder = StaticStore.idHolder.get(g.getId());
 
         if(holder.BOOSTER == null) {
             createMessageWithNoPings(ch, LangID.getStringByID("boorole_norole", lang));
@@ -59,23 +54,24 @@ public class BoosterRole extends ConstraintCommand {
             return;
         }
 
-        Color c = getColor(getContent(event), ch);
+        int c = getColor(getContent(event), ch);
 
-        if(c == null) {
+        if(c == -1)
             return;
-        }
 
-        g.getMemberById(Snowflake.of(id)).subscribe(m -> {
-            if(!m.getRoleIds().contains(Snowflake.of(holder.BOOSTER))) {
+        Member m = g.getMemberById(id);
+
+        if(m != null) {
+            if(!StaticStore.rolesToString(m.getRoles()).contains(holder.BOOSTER)) {
                 createMessageWithNoPings(ch, LangID.getStringByID("boorole_noboost", lang).replace("_RRR_", holder.BOOSTER));
                 return;
             }
 
-            if(StaticStore.boosterData.containsKey(g.getId().asString())) {
-                BoosterHolder bHolder = StaticStore.boosterData.get(g.getId().asString());
+            if(StaticStore.boosterData.containsKey(g.getId())) {
+                BoosterHolder bHolder = StaticStore.boosterData.get(g.getId());
 
-                if(bHolder.serverBooster.containsKey(m.getId().asString())) {
-                    BoosterData data = bHolder.serverBooster.get(m.getId().asString());
+                if(bHolder.serverBooster.containsKey(m.getId())) {
+                    BoosterData data = bHolder.serverBooster.get(m.getId());
 
                     if(data.getRole() != null) {
                         createMessageWithNoPings(ch, LangID.getStringByID("boorole_already", lang));
@@ -84,66 +80,74 @@ public class BoosterRole extends ConstraintCommand {
                 }
             }
 
-            g.createRole(RoleCreateSpec.builder()
-                    .hoist(false)
-                    .color(c)
-                    .name(name)
-                    .mentionable(false)
-                    .permissions(PermissionSet.none())
-                    .build()
-            ).subscribe(r -> {
-                r.changePosition(getPackPackPosition(g)-1).subscribe(null, e -> createMessageWithNoPings(ch, LangID.getStringByID("boorole_failmove", lang)));
+            if (g.getSelfMember().hasPermission(Permission.MANAGE_ROLES)) {
+                g.createRole()
+                        .setHoisted(false)
+                        .setColor(c)
+                        .setName(name)
+                        .setMentionable(false)
+                        .setPermissions(Permission.EMPTY_PERMISSIONS)
+                        .queue(r -> {
+                            g.modifyRolePositions().selectPosition(r).moveTo(getPackPackPosition(g) - 1).queue(null, e -> {
+                                StaticStore.logger.uploadErrorLog(e, "E/BoosterRole - Failed to move role");
 
-                if(StaticStore.boosterData.containsKey(g.getId().asString())) {
-                    BoosterHolder bHolder = StaticStore.boosterData.get(g.getId().asString());
-
-                    if(bHolder.serverBooster.containsKey(m.getId().asString())) {
-                        BoosterData data = bHolder.serverBooster.get(m.getId().asString());
-
-                        int result = data.setRole(r.getId().asString());
-
-                        if(result == BoosterData.ERR_ALREADY_ROLE_SET) {
-                            createMessageWithNoPings(ch, LangID.getStringByID("boorole_already", lang));
-                        } else {
-                            m.addRole(r.getId()).subscribe(null, e -> {
-                                e.printStackTrace();
-
-                                createMessageWithNoPings(ch, "Something is wong...");
+                                ch.sendMessage(LangID.getStringByID("boorole_failmove", lang)).queue();
                             });
-                            createMessageWithNoPings(ch, LangID.getStringByID("boorole_success", lang).replace("_RRR_", r.getId().asString()).replace("_MMM_", m.getId().asString()));
-                        }
-                    } else {
-                        BoosterData data = new BoosterData(r.getId().asString(), BoosterData.INITIAL.ROLE);
 
-                        m.addRole(r.getId()).subscribe(null, e -> {
-                            e.printStackTrace();
+                            if(StaticStore.boosterData.containsKey(g.getId())) {
+                                BoosterHolder bHolder = StaticStore.boosterData.get(g.getId());
 
-                            createMessageWithNoPings(ch, "Something is wong...");
-                        });
+                                if(bHolder.serverBooster.containsKey(m.getId())) {
+                                    BoosterData data = bHolder.serverBooster.get(m.getId());
 
-                        bHolder.serverBooster.put(m.getId().asString(), data);
+                                    int result = data.setRole(r.getId());
 
-                        createMessageWithNoPings(ch, LangID.getStringByID("boorole_success", lang).replace("_RRR_", r.getId().asString()).replace("_MMM_", m.getId().asString()));
-                    }
-                } else {
-                    BoosterHolder bHolder = new BoosterHolder();
+                                    if(result == BoosterData.ERR_ALREADY_ROLE_SET) {
+                                        createMessageWithNoPings(ch, LangID.getStringByID("boorole_already", lang));
+                                    } else {
+                                        g.addRoleToMember(UserSnowflake.fromId(m.getId()), r).queue(null, e -> {
+                                            StaticStore.logger.uploadErrorLog(e, "E/BoosterRole - Error happened while trying to assign role to member");
 
-                    BoosterData data = new BoosterData(r.getId().asString(), BoosterData.INITIAL.ROLE);
+                                            createMessageWithNoPings(ch, "Error happened while trying to assign role to member...");
+                                        });
 
-                    m.addRole(r.getId()).subscribe();
+                                        createMessageWithNoPings(ch, LangID.getStringByID("boorole_success", lang).replace("_RRR_", r.getId()).replace("_MMM_", m.getId()));
+                                    }
+                                } else {
+                                    BoosterData data = new BoosterData(r.getId(), BoosterData.INITIAL.ROLE);
 
-                    bHolder.serverBooster.put(m.getId().asString(), data);
+                                    g.addRoleToMember(UserSnowflake.fromId(m.getId()), r).queue(null, e -> {
+                                        StaticStore.logger.uploadErrorLog(e, "E/BoosterRole - Error happened while trying to assign role to member");
 
-                    StaticStore.boosterData.put(g.getId().asString(), bHolder);
+                                        createMessageWithNoPings(ch, "Error happened while trying to assign role to member...");
+                                    });
 
-                    createMessageWithNoPings(ch, LangID.getStringByID("boorole_success", lang).replace("_RRR_", r.getId().asString()).replace("_MMM_", m.getId().asString()));
-                }
-            }, e -> {
-                e.printStackTrace();
+                                    bHolder.serverBooster.put(m.getId(), data);
 
+                                    createMessageWithNoPings(ch, LangID.getStringByID("boorole_success", lang).replace("_RRR_", r.getId()).replace("_MMM_", m.getId()));
+                                }
+                            } else {
+                                BoosterHolder bHolder = new BoosterHolder();
+
+                                BoosterData data = new BoosterData(r.getId(), BoosterData.INITIAL.ROLE);
+
+                                g.addRoleToMember(UserSnowflake.fromId(m.getId()), r).queue(null, e -> {
+                                    StaticStore.logger.uploadErrorLog(e, "E/BoosterRole - Error happened while trying to assign role to member");
+
+                                    createMessageWithNoPings(ch, "Error happened while trying to assign role to member...");
+                                });
+
+                                bHolder.serverBooster.put(m.getId(), data);
+
+                                StaticStore.boosterData.put(g.getId(), bHolder);
+
+                                createMessageWithNoPings(ch, LangID.getStringByID("boorole_success", lang).replace("_RRR_", r.getId()).replace("_MMM_", m.getId()));
+                            }
+                        }, e -> StaticStore.logger.uploadErrorLog(e, "E/BoosterRole - Error happened while trying to create role"));
+            } else {
                 createMessageWithNoPings(ch, LangID.getStringByID("boorole_invmem", lang));
-            });
-        });
+            }
+        }
 
 
     }
@@ -162,7 +166,7 @@ public class BoosterRole extends ConstraintCommand {
             return null;
     }
 
-    private Color getColor(String message, MessageChannel ch) {
+    private int getColor(String message, MessageChannel ch) {
         String[] content = message.split(" ");
 
         int[] rgb = null;
@@ -185,7 +189,8 @@ public class BoosterRole extends ConstraintCommand {
                     he = true;
                 } else {
                     createMessageWithNoPings(ch, LangID.getStringByID("boorole_invhex", lang).replace("_", h));
-                    return null;
+
+                    return -1;
                 }
             } else if(!re && (content[i].equals("-r") || content[i].equals("-red")) && i < content.length - 1 && StaticStore.isNumeric(content[i+1])) {
                 if(rgb == null)
@@ -213,18 +218,20 @@ public class BoosterRole extends ConstraintCommand {
 
         if(hex == null && rgb == null) {
             createMessageWithNoPings(ch, LangID.getStringByID("boorole_setcolor", lang));
-            return null;
+
+            return -1;
         }
 
         if(hex != null) {
-            return Color.of(Integer.parseInt(hex, 16));
+            return Integer.parseInt(hex, 16);
         }
 
         if(re && gr && bl) {
-            return Color.of(rgb[0], rgb[1], rgb[2]);
+            return new Color(rgb[0], rgb[1], rgb[2]).getRGB();
         } else {
             createMessageWithNoPings(ch, LangID.getStringByID("boorole_fullrgb", lang));
-            return null;
+
+            return -1;
         }
     }
 
@@ -259,23 +266,15 @@ public class BoosterRole extends ConstraintCommand {
     }
 
     private int getPackPackPosition(Guild g) {
-        Member packpack = StaticStore.getPackPack(g);
-
         int role = 0;
 
-        List<Role> roles = packpack.getRoles().collectList().block();
+        List<Role> roles = g.getSelfMember().getRoles();
 
-        if(roles != null) {
-            for(Role r : roles) {
-                Integer pos = r.getPosition().block();
+        for(Role r : roles) {
+            int pos = r.getPosition();
 
-                if(pos != null) {
-                    role = Math.max(role, pos);
-                }
-            }
+            role = Math.max(role, pos);
         }
-
-        System.out.println(role);
 
         return role;
     }

@@ -7,19 +7,14 @@ import common.util.stage.CastleImg;
 import common.util.stage.CastleList;
 import common.util.stage.Music;
 import common.util.stage.Stage;
-import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
-import discord4j.core.object.component.ActionRow;
-import discord4j.core.object.component.Button;
-import discord4j.core.object.component.LayoutComponent;
-import discord4j.core.object.component.MessageComponent;
-import discord4j.core.object.entity.Member;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
-import mandarin.packpack.commands.Command;
 import mandarin.packpack.commands.bc.Castle;
 import mandarin.packpack.supporter.StaticStore;
-import mandarin.packpack.supporter.server.slash.WebhookBuilder;
-import reactor.core.publisher.Mono;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -50,7 +45,7 @@ public class StageInfoButtonHolder extends InteractionHolder<ButtonInteractionEv
 
                 expired = true;
 
-                author.getAuthor().ifPresent(u -> StaticStore.removeHolder(u.getId().asString(), StageInfoButtonHolder.this));
+                StaticStore.removeHolder(author.getAuthor().getId(), StageInfoButtonHolder.this);
 
                 expire("");
             }
@@ -64,41 +59,35 @@ public class StageInfoButtonHolder extends InteractionHolder<ButtonInteractionEv
             return RESULT_FAIL;
         }
 
-        MessageChannel ch = embed.getChannel().block();
+        MessageChannel ch = embed.getChannel();
 
-        if(ch == null)
+        if(!ch.getId().equals(channelID))
             return RESULT_STILL;
 
-        if(!ch.getId().asString().equals(channelID))
+        if(event.getInteraction().getMember() == null)
             return RESULT_STILL;
 
-        if(event.getInteraction().getMember().isEmpty())
+        Member mem = event.getInteraction().getMember();
+
+        if(!mem.getId().equals(memberID))
             return RESULT_STILL;
 
-        Member mem = event.getInteraction().getMember().get();
+        Message m = event.getMessage();
 
-        if(!mem.getId().asString().equals(memberID))
-            return RESULT_STILL;
-
-        if(event.getMessage().isEmpty())
-            return RESULT_STILL;
-
-        Message m = event.getMessage().get();
-
-        if(!m.getId().asString().equals(embed.getId().asString()))
+        if(!m.getId().equals(embed.getId()))
             return RESULT_STILL;
 
         return RESULT_FINISH;
     }
 
     @Override
-    public Mono<?> getInteraction(ButtonInteractionEvent event) {
+    public void performInteraction(ButtonInteractionEvent event) {
         expire("");
 
-        switch (event.getCustomId()) {
+        switch (event.getComponentId()) {
             case "music":
                 if(st.mus0 == null)
-                    return Mono.empty();
+                    return;
 
                 Music ms = Identifier.get(st.mus0);
 
@@ -107,27 +96,14 @@ public class StageInfoButtonHolder extends InteractionHolder<ButtonInteractionEv
                 }
 
                 try {
-                    WebhookBuilder request = mandarin.packpack.commands.bc.Music.getInteractionWebhook(event.getInteraction().getData(), ms);
-
-                    if(request == null)
-                        return Mono.empty();
-
-                    return event.deferReply()
-                            .then(event.getInteractionResponse().createFollowupMessage(request.build()))
-                            .then(Mono.create(m -> request.finishJob(true)))
-                            .doOnError(e -> {
-                                e.printStackTrace();
-                                StaticStore.logger.uploadErrorLog(e, "E/StageInfoButtonHolder | Failed to perform interaction for music");
-                                request.finishJob(true);
-                            });
+                    mandarin.packpack.commands.bc.Music.performButton(event, ms);
                 } catch (Exception e) {
                     StaticStore.logger.uploadErrorLog(e, "E/StageInfoButtonHolder | Failed to prepare interaction data for music");
-                    e.printStackTrace();
                 }
                 break;
             case "music2":
                 if(st.mus1 == null)
-                    return Mono.empty();
+                    return;
 
                 ms = Identifier.get(st.mus1);
 
@@ -136,22 +112,9 @@ public class StageInfoButtonHolder extends InteractionHolder<ButtonInteractionEv
                 }
 
                 try {
-                    WebhookBuilder request = mandarin.packpack.commands.bc.Music.getInteractionWebhook(event.getInteraction().getData(), ms);
-
-                    if(request == null)
-                        return Mono.empty();
-
-                    return event.deferReply()
-                            .then(event.getInteractionResponse().createFollowupMessage(request.build()))
-                            .then(Mono.create(m -> request.finishJob(true)))
-                            .doOnError(e -> {
-                                e.printStackTrace();
-                                StaticStore.logger.uploadErrorLog(e, "E/StageInfoButtonHolder | Failed to perform interaction for music");
-                                request.finishJob(true);
-                            });
+                    mandarin.packpack.commands.bc.Music.performButton(event, ms);
                 } catch (Exception e) {
                     StaticStore.logger.uploadErrorLog(e, "E/StageInfoButtonHolder | Failed to prepare interaction data for music");
-                    e.printStackTrace();
                 }
                 break;
             case "bg":
@@ -161,22 +124,9 @@ public class StageInfoButtonHolder extends InteractionHolder<ButtonInteractionEv
                     bg = UserProfile.getBCData().bgs.get(0);
 
                 try {
-                    WebhookBuilder request = mandarin.packpack.commands.bc.Background.getInteractionWebhook(event.getInteraction().getData(), bg);
-
-                    if(request == null)
-                        return Mono.empty();
-
-                    return event.deferReply()
-                            .then(event.getInteractionResponse().createFollowupMessage(request.build()))
-                            .then(Mono.create(m -> request.finishJob(true)))
-                            .doOnError(e -> {
-                                e.printStackTrace();
-                                StaticStore.logger.uploadErrorLog(e, "E/StageInfoButtonHolder | Failed to perform interaction for bg");
-                                request.finishJob(true);
-                            });
+                    mandarin.packpack.commands.bc.Background.performButton(event, bg);
                 } catch (Exception e) {
                     StaticStore.logger.uploadErrorLog(e, "E/StageInfoButtonHolder | Failed to prepare interaction data for bg");
-                    e.printStackTrace();
                 }
                 break;
             case "castle":
@@ -189,27 +139,13 @@ public class StageInfoButtonHolder extends InteractionHolder<ButtonInteractionEv
                 }
 
                 try {
-                    WebhookBuilder request = Castle.getInteractionWebhook(event.getInteraction().getData(), cs);
-
-                    if(request == null)
-                        return Mono.empty();
-
-                    return event.deferReply()
-                            .then(event.getInteractionResponse().createFollowupMessage(request.build()))
-                            .then(Mono.create(m -> request.finishJob(true)))
-                            .doOnError(e -> {
-                                e.printStackTrace();
-                                StaticStore.logger.uploadErrorLog(e, "E/StageInfoButtonHolder | Failed to perform interaction for castle");
-                                request.finishJob(true);
-                            });
+                    Castle.performButton(event, cs);
                 } catch (Exception e) {
                     StaticStore.logger.uploadErrorLog(e, "E/StageInfoButtonHolder | Failed to prepare interaction data for castle");
                     e.printStackTrace();
                 }
                 break;
         }
-
-        return Mono.empty();
     }
 
     @Override
@@ -219,23 +155,13 @@ public class StageInfoButtonHolder extends InteractionHolder<ButtonInteractionEv
 
     @Override
     public void expire(String id) {
-        Command.editMessage(embed, m -> {
-            ArrayList<Button> buttons = new ArrayList<>();
+        ArrayList<Button> buttons = new ArrayList<>();
 
-            for(LayoutComponent layoutComponent : embed.getComponents()) {
-                for(MessageComponent component : layoutComponent.getChildren()) {
-                    if(component instanceof Button) {
-                        if(((Button) component).getStyle() == Button.Style.SECONDARY) {
-                            buttons.add(((Button) component).disabled(true));
-                        } else {
-                            buttons.add((Button) component);
-                        }
-                    }
-                }
-            }
+        for(Button b : embed.getButtons()) {
+            buttons.add(b.asDisabled());
+        }
 
-            m.addComponent(ActionRow.of(buttons));
-        });
+        embed.editMessageComponents(ActionRow.of(buttons)).queue();
 
         expired = true;
     }

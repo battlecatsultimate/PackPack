@@ -1,18 +1,17 @@
 package mandarin.packpack.commands.server;
 
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.channel.Channel;
-import discord4j.core.object.entity.channel.GuildChannel;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class ChannelPermission extends ConstraintCommand {
     private static final int PARAM_ADD = 2;
@@ -23,7 +22,7 @@ public class ChannelPermission extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
@@ -34,7 +33,7 @@ public class ChannelPermission extends ConstraintCommand {
         String[] msg = pureMessage.split(" ");
 
         if(msg.length == 1) {
-            Guild g = getGuild(event).block();
+            Guild g = getGuild(event);
 
             if(g == null)
                 return;
@@ -51,16 +50,16 @@ public class ChannelPermission extends ConstraintCommand {
             }
 
             if(result.length() < 2000) {
-                ch.createMessage(result.toString()).subscribe();
+                ch.sendMessage(result.toString()).queue();
             } else {
-                ch.createMessage(LangID.getStringByID("idset_toobig", lang)).subscribe();
+                ch.sendMessage(LangID.getStringByID("idset_toobig", lang)).queue();
             }
         } else {
             StringBuilder result = new StringBuilder(LangID.getStringByID("idset_result", lang));
 
             int param = checkParameter(pureMessage);
 
-            Guild g = getGuild(event).block();
+            Guild g = getGuild(event);
 
             if(g == null)
                 result.append(LangID.getStringByID("idset_noguild", lang));
@@ -225,24 +224,20 @@ public class ChannelPermission extends ConstraintCommand {
 
                 StaticStore.saveServerInfo();
 
-                ch.createMessage(result.toString()).subscribe();
+                ch.sendMessage(result.toString()).queue();
             }
         }
     }
 
     private boolean isValidChannel(Guild g, String id) {
-        AtomicReference<Boolean> valid = new AtomicReference<>(false);
+        List<GuildChannel> channels = g.getChannels();
 
-        g.getChannels().collectList().subscribe(l -> {
-            for(GuildChannel gc : l) {
-                if(gc.getType() == Channel.Type.GUILD_TEXT && id.equals(gc.getId().asString())) {
-                    valid.set(true);
-                    return;
-                }
-            }
-        });
+        for(GuildChannel gc : channels) {
+            if(gc.getType() == ChannelType.TEXT && id.equals(gc.getId()))
+                return true;
+        }
 
-        return valid.get();
+        return false;
     }
 
     private String printChannels(String id) {

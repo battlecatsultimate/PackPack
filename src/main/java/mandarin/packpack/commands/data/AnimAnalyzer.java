@@ -1,13 +1,13 @@
 package mandarin.packpack.commands.data;
 
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.AnimMessageHolder;
 import mandarin.packpack.supporter.server.holder.BCAnimMessageHolder;
-import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.io.File;
 import java.util.Locale;
@@ -24,7 +24,7 @@ public class AnimAnalyzer extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
@@ -62,10 +62,7 @@ public class AnimAnalyzer extends ConstraintCommand {
             }
         }
 
-        Message m = ch.createMessage(message.toString()).block();
-
-        if(m == null)
-            return;
+        Message m = ch.sendMessage(message.toString()).complete();
 
         File temp = new File("./temp");
 
@@ -93,9 +90,9 @@ public class AnimAnalyzer extends ConstraintCommand {
 
         if(msg != null)
             if(bc) {
-                new BCAnimMessageHolder(msg, m, lang, ch.getId().asString(), container, ch, zombie);
+                new BCAnimMessageHolder(msg, m, lang, ch.getId(), container, ch, zombie);
             } else {
-                new AnimMessageHolder(msg, m, lang, ch.getId().asString(), container, debug, ch, raw, transparent, anim);
+                new AnimMessageHolder(msg, m, lang, ch.getId(), container, debug, ch, raw, transparent, anim);
             }
     }
 

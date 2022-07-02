@@ -1,15 +1,13 @@
 package mandarin.packpack.commands.server;
 
-import discord4j.common.util.Snowflake;
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.BoosterData;
 import mandarin.packpack.supporter.server.data.BoosterHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class BoosterRoleRemove extends ConstraintCommand {
     public BoosterRoleRemove(ROLE role, int lang, IDHolder id) {
@@ -17,8 +15,8 @@ public class BoosterRoleRemove extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
-        Guild g = getGuild(event).block();
+    public void doSomething(GenericMessageEvent event) throws Exception {
+        Guild g = getGuild(event);
         MessageChannel ch = getChannel(event);
 
         if(ch == null || g == null)
@@ -31,33 +29,39 @@ public class BoosterRoleRemove extends ConstraintCommand {
             return;
         }
 
-        g.getMemberById(Snowflake.of(id)).subscribe(m -> {
-            if(StaticStore.boosterData.containsKey(g.getId().asString())) {
-                BoosterHolder holder = StaticStore.boosterData.get(g.getId().asString());
+        Member m = g.getMemberById(id);
 
-                if(holder.serverBooster.containsKey(m.getId().asString())) {
-                    BoosterData data = holder.serverBooster.get(m.getId().asString());
+        if(m != null) {
+            if(StaticStore.boosterData.containsKey(g.getId())) {
+                BoosterHolder holder = StaticStore.boosterData.get(g.getId());
+
+                if(holder.serverBooster.containsKey(m.getId())) {
+                    BoosterData data = holder.serverBooster.get(m.getId());
 
                     if(data.getRole() == null) {
                         createMessageWithNoPings(ch, LangID.getStringByID("boorolerem_norole", lang));
                     } else {
-                        String role = data.getRole();
+                        String r = data.getRole();
 
-                        boolean leave = leaveRole(getContent(event));
+                        Role role = g.getRoleById(r);
 
-                        if(leave) {
-                            m.removeRole(Snowflake.of(role)).subscribe();
-                        } else {
-                            g.getRoleById(Snowflake.of(role)).subscribe(r -> r.delete().subscribe());
+                        if(role != null) {
+                            boolean leave = leaveRole(getContent(event));
+
+                            if(leave) {
+                                g.removeRoleFromMember(UserSnowflake.fromId(m.getId()), role).queue();
+                            } else {
+                                role.delete().queue();
+                            }
+
+                            data.removeRole();
+
+                            if(data.getEmoji() == null) {
+                                holder.serverBooster.remove(m.getId());
+                            }
+
+                            createMessageWithNoPings(ch, LangID.getStringByID("boorolerem_success", lang).replace("_", m.getId()));
                         }
-
-                        data.removeRole();
-
-                        if(data.getEmoji() == null) {
-                            holder.serverBooster.remove(m.getId().asString());
-                        }
-
-                        createMessageWithNoPings(ch, LangID.getStringByID("boorolerem_success", lang).replace("_", m.getId().asString()));
                     }
                 } else {
                     createMessageWithNoPings(ch, LangID.getStringByID("boorolerem_norole", lang));
@@ -65,7 +69,7 @@ public class BoosterRoleRemove extends ConstraintCommand {
             } else {
                 createMessageWithNoPings(ch, LangID.getStringByID("boorolerem_nodata", lang));
             }
-        });
+        }
     }
 
     private boolean leaveRole(String message) {

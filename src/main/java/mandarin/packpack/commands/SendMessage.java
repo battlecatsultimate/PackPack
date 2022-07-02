@@ -1,51 +1,61 @@
 package mandarin.packpack.commands;
 
-import discord4j.common.util.Snowflake;
-import discord4j.core.GatewayDiscordClient;
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.GuildMessageChannel;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class SendMessage extends ConstraintCommand {
-    private final GatewayDiscordClient client;
-
-    public SendMessage(ROLE role, int lang, IDHolder id, GatewayDiscordClient client) {
+    public SendMessage(ROLE role, int lang, IDHolder id) {
         super(role, lang, id);
-
-        this.client = client;
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
             return;
 
+        JDA client = event.getJDA();
+
         String[] contents = getContent(event).split(" ", 4);
 
         if(contents.length != 4) {
-            createMessage(ch, m -> m.content("`p!sm [Guild ID] [Channel ID] [Contents]`"));
+            ch.sendMessage("`p!sm [Guild ID] [Channel ID] [Contents]`").queue();
             return;
         }
 
-        client.getGuildById(Snowflake.of(contents[1])).subscribe(g -> g.getChannelById(Snowflake.of(contents[2])).subscribe(c -> {
-            if(c instanceof MessageChannel) {
-                String co;
+        Guild g = client.getGuildById(contents[1]);
 
-                if(contents[3].startsWith("`"))
-                    co = contents[3].substring(1, contents[3].length() - 1).replace("\\e", "");
-                else
-                    co = contents[3].replace("\\e", "");
+        if(g != null) {
+            GuildChannel c = g.getGuildChannelById(contents[2]);
 
-                createMessage((MessageChannel) c, m -> m.content(co));
+            if(c != null) {
+                if(c instanceof GuildMessageChannel) {
+                    String co;
 
-                createMessage(ch, m -> m.content("Sent message : "+co));
+                    if(contents[3].startsWith("`"))
+                        co = contents[3].substring(1, contents[3].length() - 1).replace("\\e", "");
+                    else
+                        co = contents[3].replace("\\e", "");
 
-                System.out.println(co);
+                    ((GuildMessageChannel) c).sendMessage(co).queue();
+
+                    ch.sendMessage(co).queue();
+
+                    System.out.println(co);
+                } else {
+                    ch.sendMessage("Channel isn't message channel").queue();
+                }
             } else {
-                createMessage(ch, m -> m.content("Channel isn't message channel"));
+                ch.sendMessage("No such channel found").queue();
             }
-        }, e -> createMessage(ch, m -> m.content("No such channel found"))), e -> createMessage(ch, m -> m.content("No such guild found")));
+        } else {
+            ch.sendMessage("No such guild found").queue();
+        }
     }
 }

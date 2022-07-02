@@ -1,6 +1,6 @@
 package mandarin.packpack.supporter.server.holder;
 
-import discord4j.core.event.domain.Event;
+import net.dv8tion.jda.api.events.Event;
 
 import java.util.concurrent.TimeUnit;
 

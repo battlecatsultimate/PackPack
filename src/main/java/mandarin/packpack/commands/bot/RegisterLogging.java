@@ -1,10 +1,10 @@
 package mandarin.packpack.commands.bot;
 
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class RegisterLogging extends ConstraintCommand {
     public RegisterLogging(ROLE role, int lang, IDHolder id) {
@@ -12,13 +12,13 @@ public class RegisterLogging extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
+    public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
             return;
 
-        StaticStore.loggingChannel = ch.getId().asString();
+        StaticStore.loggingChannel = ch.getId();
 
         createMessageWithNoPings(ch, "Logging channel is registered [<#"+StaticStore.loggingChannel+">]");
     }

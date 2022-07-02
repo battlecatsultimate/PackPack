@@ -1,31 +1,24 @@
 package mandarin.packpack.supporter.server.holder;
 
-import discord4j.core.event.domain.interaction.ComponentInteractionEvent;
-import discord4j.core.event.domain.interaction.SelectMenuInteractionEvent;
-import discord4j.core.object.component.ActionRow;
-import discord4j.core.object.component.Button;
-import discord4j.core.object.component.SelectMenu;
-import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.Member;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.Role;
-import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.discordjson.json.AllowedMentionsData;
-import discord4j.discordjson.json.ComponentData;
-import discord4j.discordjson.json.WebhookMessageEditRequest;
-import discord4j.discordjson.possible.Possible;
-import discord4j.rest.util.AllowedMentions;
-import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import reactor.core.publisher.Mono;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
+import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
+import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
+import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
-public class SetupModButtonHolder extends InteractionHolder<ComponentInteractionEvent> {
+public class SetupModButtonHolder extends InteractionHolder<GenericComponentInteractionCreateEvent> {
     private final Message msg;
-    private final Message author;
     private final String channelID;
     private final String memberID;
     private final int lang;
@@ -35,10 +28,9 @@ public class SetupModButtonHolder extends InteractionHolder<ComponentInteraction
     private String roleID;
 
     public SetupModButtonHolder(Message msg, Message author, String channelID, String memberID, IDHolder holder, int lang) {
-        super(ComponentInteractionEvent.class);
+        super(GenericComponentInteractionCreateEvent.class);
 
         this.msg = msg;
-        this.author = author;
         this.channelID = channelID;
         this.memberID = memberID;
         this.lang = lang;
@@ -55,7 +47,7 @@ public class SetupModButtonHolder extends InteractionHolder<ComponentInteraction
 
                 expired = true;
 
-                author.getAuthor().ifPresent(u -> StaticStore.removeHolder(u.getId().asString(), SetupModButtonHolder.this));
+                StaticStore.removeHolder(author.getAuthor().getId(), SetupModButtonHolder.this);
 
                 expire("");
             }
@@ -63,109 +55,95 @@ public class SetupModButtonHolder extends InteractionHolder<ComponentInteraction
     }
 
     @Override
-    public int handleEvent(ComponentInteractionEvent event) {
-        MessageChannel ch = msg.getChannel().block();
+    public int handleEvent(GenericComponentInteractionCreateEvent event) {
+        MessageChannel ch = msg.getChannel();
 
-        if(ch == null)
-            return RESULT_STILL;
-
-        if(!ch.getId().asString().equals(channelID)) {
+        if(!ch.getId().equals(channelID)) {
             return RESULT_STILL;
         }
 
-        if(event.getInteraction().getMember().isEmpty())
+        if(event.getInteraction().getMember() == null)
             return RESULT_STILL;
 
-        Member m = event.getInteraction().getMember().get();
+        Member m = event.getInteraction().getMember();
 
-        if(!m.getId().asString().equals(memberID))
+        if(!m.getId().equals(memberID))
             return RESULT_STILL;
 
-        if(event.getMessage().isEmpty())
-            return RESULT_STILL;
+        Message me = event.getMessage();
 
-        Message me = event.getMessage().get();
-
-        if(!me.getId().asString().equals(msg.getId().asString()))
+        if(!me.getId().equals(msg.getId()))
             return RESULT_STILL;
 
         return RESULT_FINISH;
     }
 
     @Override
-    public Mono<?> getInteraction(ComponentInteractionEvent event) {
-        MessageChannel ch = msg.getChannel().block();
-        Guild g = msg.getGuild().block();
+    public void performInteraction(GenericComponentInteractionCreateEvent event) {
+        MessageChannel ch = msg.getChannel();
+        Guild g = msg.getGuild();
 
-        if(ch == null || g == null)
-            return Mono.empty();
-
-        switch (event.getCustomId()) {
+        switch (event.getComponentId()) {
             case "role":
                 SelectMenuInteractionEvent es = (SelectMenuInteractionEvent) event;
 
                 if(es.getValues().size() != 1)
-                    return Mono.empty();
+                    return;
 
                 roleID = es.getValues().get(0);
 
-                ((Button) msg.getComponents().get(1).getChildren().get(0)).disabled(false);
+                event.deferEdit()
+                        .setContent(LangID.getStringByID("setup_modsele", lang).replace("_RRR_", es.getValues().get(0)))
+                        .setActionRows(getComponents(g))
+                        .queue();
 
-                return event.deferEdit().then(event.getInteractionResponse().editInitialResponse(
-                        WebhookMessageEditRequest.builder()
-                                .content(wrap(LangID.getStringByID("setup_modsele", lang).replace("_RRR_", es.getValues().get(0))))
-                                .allowedMentions(Possible.of(Optional.of(AllowedMentionsData.builder().addAllRoles(new ArrayList<>()).build())))
-                                .components(getComponents(g))
-                                .build()
-                ));
+                break;
             case "confirm":
-                List<Role> roles = g.getRoles().collectList().block();
+                List<Role> roles = g.getRoles();
 
-                if(roles == null)
-                    return Mono.empty();
-
-                List<SelectMenu.Option> options = new ArrayList<>();
+                List<SelectOption> options = new ArrayList<>();
 
                 for(int i = 0; i < roles.size(); i++) {
-                    if(roles.get(i).isEveryone() || roles.get(i).isManaged())
+                    if(roles.get(i).isPublicRole() || roles.get(i).isManaged())
                         continue;
 
-                    options.add(SelectMenu.Option.of(roles.get(i).getName(), roles.get(i).getId().asString()).withDescription(roles.get(i).getId().asString()));
+                    if(options.size() == 25)
+                        break;
+
+                    options.add(SelectOption.of(roles.get(i).getName(), roles.get(i).getId()).withDescription(roles.get(i).getId()));
                 }
 
-                Message m = Command.createMessage(ch, b -> {
-                    b.messageReference(msg.getId());
-                    b.allowedMentions(AllowedMentions.builder().build());
-                    b.content(LangID.getStringByID("setup_mem", lang));
-
-                    b.addComponent(ActionRow.of(SelectMenu.of("role", options).withPlaceholder(LangID.getStringByID("setup_select", lang))));
-                    b.addComponent(ActionRow.of(Button.success("confirm", LangID.getStringByID("button_confirm", lang)).disabled(true), Button.danger("cancel", LangID.getStringByID("button_cancel", lang))));
-                    b.allowedMentions(AllowedMentions.builder().build());
-                });
+                Message m = ch.sendMessage(LangID.getStringByID("setup_mem", lang))
+                        .reference(msg)
+                        .allowedMentions(new ArrayList<>())
+                        .setActionRows(
+                                ActionRow.of(SelectMenu.create("role").addOptions(options).setPlaceholder(LangID.getStringByID("setup_select", lang)).build()),
+                                ActionRow.of(Button.success("confirm", LangID.getStringByID("button_confirm", lang)).asDisabled(), Button.danger("cancel", LangID.getStringByID("button_cancel", lang)))
+                        ).complete();
 
                 expired = true;
+
                 StaticStore.removeHolder(memberID, this);
+
                 StaticStore.putHolder(memberID, new SetupMemberButtonHolder(m, channelID, memberID, holder, roleID, lang));
 
-                return event.deferEdit().then(event.getInteractionResponse().editInitialResponse(
-                        WebhookMessageEditRequest.builder()
-                                .content(wrap(LangID.getStringByID("setup_modsele", lang).replace("_RRR_", roleID)))
-                                .components(new ArrayList<>())
-                                .build()
-                ));
+                event.deferEdit()
+                        .setContent(LangID.getStringByID("setup_modsele", lang).replace("_RRR_", roleID))
+                        .setActionRows()
+                        .queue();
+
+                break;
             case "cancel":
                 expired = true;
                 StaticStore.removeHolder(memberID, this);
 
-                return event.deferEdit().then(event.getInteractionResponse().editInitialResponse(
-                        WebhookMessageEditRequest.builder()
-                                .content(wrap(LangID.getStringByID("setup_cancel", lang)))
-                                .components(new ArrayList<>())
-                                .build()
-                ));
-        }
+                event.deferEdit()
+                        .setContent(LangID.getStringByID("setup_cancel", lang))
+                        .setActionRows()
+                        .queue();
 
-        return Mono.empty();
+                break;
+        }
     }
 
     @Override
@@ -177,35 +155,43 @@ public class SetupModButtonHolder extends InteractionHolder<ComponentInteraction
     public void expire(String id) {
         expired = true;
 
-        Command.editMessage(msg, m -> {
-            m.components(new ArrayList<>());
-            m.content(wrap(LangID.getStringByID("setup_expire", lang)));
-        });
+        msg.editMessage(LangID.getStringByID("setup_expire", lang))
+                .setActionRows()
+                .queue();
     }
 
-    private List<ComponentData> getComponents(Guild g) {
-        List<Role> roles = g.getRoles().collectList().block();
+    private List<ActionRow> getComponents(Guild g) {
+        List<Role> roles = g.getRoles();
 
-        if(roles == null)
-            return new ArrayList<>();
-
-        List<SelectMenu.Option> options = new ArrayList<>();
+        List<SelectOption> options = new ArrayList<>();
 
         for(int i = 0; i < roles.size(); i++) {
-            if(roles.get(i).isEveryone() || roles.get(i).isManaged())
+            if(roles.get(i).isPublicRole() || roles.get(i).isManaged())
                 continue;
 
-            if(roleID != null && roles.get(i).getId().asString().equals(roleID)) {
-                options.add(SelectMenu.Option.ofDefault(roles.get(i).getName(), roles.get(i).getId().asString()).withDescription(roles.get(i).getId().asString()));
+            if(options.size() == 25)
+                break;
+
+            if(roleID != null && roles.get(i).getId().equals(roleID)) {
+                options.add(SelectOption.of(roles.get(i).getName(), roles.get(i).getId()).withDescription(roles.get(i).getId()).withDefault(true));
             } else {
-                options.add(SelectMenu.Option.of(roles.get(i).getName(), roles.get(i).getId().asString()).withDescription(roles.get(i).getId().asString()));
+                options.add(SelectOption.of(roles.get(i).getName(), roles.get(i).getId()).withDescription(roles.get(i).getId()));
             }
         }
 
-        List<ComponentData> result = new ArrayList<>();
+        List<ActionRow> result = new ArrayList<>();
 
-        result.add(ActionRow.of(SelectMenu.of("role", options).withPlaceholder(LangID.getStringByID("setup_select", lang))).getData());
-        result.add(ActionRow.of(Button.success("confirm", LangID.getStringByID("button_confirm", lang)).disabled(roleID == null), Button.danger("cancel", LangID.getStringByID("button_cancel", lang))).getData());
+        result.add(ActionRow.of(SelectMenu.create("role").addOptions(options).setPlaceholder(LangID.getStringByID("setup_select", lang)).build()));
+
+        Button confirm;
+
+        if(roleID != null) {
+            confirm = Button.success("confirm", LangID.getStringByID("button_confirm", lang)).asEnabled();
+        } else {
+            confirm = Button.success("confirm", LangID.getStringByID("button_confirm", lang)).asDisabled();
+        }
+
+        result.add(ActionRow.of(confirm, Button.danger("cancel", LangID.getStringByID("button_cancel", lang))));
 
         return result;
     }

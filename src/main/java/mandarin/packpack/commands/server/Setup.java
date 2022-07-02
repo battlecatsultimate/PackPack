@@ -1,27 +1,22 @@
 package mandarin.packpack.commands.server;
 
-import discord4j.common.util.Snowflake;
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.component.ActionComponent;
-import discord4j.core.object.component.ActionRow;
-import discord4j.core.object.component.Button;
-import discord4j.core.object.component.SelectMenu;
-import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.Member;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.Role;
-import discord4j.core.object.entity.channel.MessageChannel;
-import discord4j.rest.util.AllowedMentions;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.ConfirmButtonHolder;
 import mandarin.packpack.supporter.server.holder.SetupModButtonHolder;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
+import net.dv8tion.jda.api.interactions.components.ActionComponent;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
+import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class Setup extends ConstraintCommand {
@@ -30,8 +25,8 @@ public class Setup extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(MessageEvent event) throws Exception {
-        Guild g = getGuild(event).block();
+    public void doSomething(GenericMessageEvent event) throws Exception {
+        Guild g = getGuild(event);
         MessageChannel ch = getChannel(event);
 
         if(g == null || ch == null) {
@@ -39,33 +34,25 @@ public class Setup extends ConstraintCommand {
         }
 
         if(alreadySet(g)) {
-            Message m = createMessage(ch, b -> {
-                b.content(LangID.getStringByID("setup_confirm", lang));
+            List<ActionComponent> components = new ArrayList<>();
 
-                List<ActionComponent> components = new ArrayList<>();
+            components.add(Button.success("confirm", LangID.getStringByID("button_confirm", lang)));
+            components.add(Button.danger("cancel", LangID.getStringByID("button_cancel", lang)));
 
-                components.add(Button.success("confirm", LangID.getStringByID("button_confirm", lang)));
-                components.add(Button.danger("cancel", LangID.getStringByID("button_cancel", lang)));
-
-                b.addComponent(ActionRow.of(components));
-            });
+            Message m = ch.sendMessage(LangID.getStringByID("setup_confirm", lang))
+                    .setActionRows(ActionRow.of(components))
+                    .complete();
 
             if(m == null)
                 return;
 
             Message author = getMessage(event);
+            Member member = getMember(event);
 
-            if(author == null)
+            if(author == null || member == null)
                 return;
 
-            Optional<Member> om = getMember(event);
-
-            if(om.isEmpty())
-                return;
-
-            Member member = om.get();
-
-            StaticStore.putHolder(member.getId().asString(), new ConfirmButtonHolder(m, author, ch.getId().asString(), member.getId().asString(), () -> initializeSetup(ch, g, author), lang));
+            StaticStore.putHolder(member.getId(), new ConfirmButtonHolder(m, author, ch.getId(), member.getId(), () -> initializeSetup(ch, g, author), lang));
         } else {
             Message author = getMessage(event);
 
@@ -77,47 +64,49 @@ public class Setup extends ConstraintCommand {
     }
 
     private void initializeSetup(MessageChannel ch, Guild g, Message author) {
-        Message m = createMessage(ch, b -> {
-            b.content(LangID.getStringByID("setup_mod", lang));
+        MessageAction action = ch.sendMessage(LangID.getStringByID("setup_mod", lang));
 
-            List<Role> roles = g.getRoles().collectList().block();
 
-            if(roles == null)
-                return;
+        List<Role> roles = g.getRoles();
 
-            List<SelectMenu.Option> options = new ArrayList<>();
+        List<SelectOption> options = new ArrayList<>();
 
-            for(int i = 0; i < roles.size(); i++) {
-                if(roles.get(i).isEveryone() || roles.get(i).isManaged())
-                    continue;
+        for(int i = 0; i < roles.size(); i++) {
+            if(roles.get(i).isPublicRole() || roles.get(i).isManaged())
+                continue;
 
-                options.add(SelectMenu.Option.of(roles.get(i).getName(), roles.get(i).getId().asString()).withDescription(roles.get(i).getId().asString()));
-            }
+            if(options.size() == 25)
+                break;
 
-            b.addComponent(ActionRow.of(SelectMenu.of("role", options).withPlaceholder(LangID.getStringByID("setup_select", lang))));
-            b.addComponent(ActionRow.of(Button.success("confirm", LangID.getStringByID("button_confirm", lang)).disabled(true), Button.danger("cancel", LangID.getStringByID("button_cancel", lang))));
-            b.allowedMentions(AllowedMentions.builder().build());
-        });
+            options.add(SelectOption.of(roles.get(i).getName(), roles.get(i).getId()).withDescription(roles.get(i).getId()));
+        }
+
+        action = action.setActionRows(
+                ActionRow.of(SelectMenu.create("role").addOptions(options).setPlaceholder(LangID.getStringByID("setup_select", lang)).build()),
+                ActionRow.of(Button.success("confirm", LangID.getStringByID("button_confirm", lang)).asDisabled(), Button.danger("cancel", LangID.getStringByID("button_cancel", lang)))
+        ).allowedMentions(new ArrayList<>());
+
+        Message m = action.complete();
 
         if(m == null)
             return;
 
-        author.getAuthor().ifPresent(u -> StaticStore.putHolder(u.getId().asString(), new SetupModButtonHolder(m, author, ch.getId().asString(), u.getId().asString(), holder, lang)));
+        StaticStore.putHolder(author.getAuthor().getId(), new SetupModButtonHolder(m, author, ch.getId(), author.getAuthor().getId(), holder, lang));
     }
 
     private boolean alreadySet(Guild g) {
         if(holder.MOD != null) {
-            Role r = g.getRoleById(Snowflake.of(holder.MOD)).block();
+            Role r = g.getRoleById(holder.MOD);
 
             if(r == null) {
-                StaticStore.logger.uploadLog("W/Setup | Role was null while trying to perform `alreadySet`");
+                StaticStore.logger.uploadLog("W/Setup::alreadySet | Role was null");
 
                 return false;
             }
 
             return !r.getName().equals("PackPackMod") || holder.MEMBER != null;
         } else {
-            StaticStore.logger.uploadLog("Invalid ID holder data found, moderator role ID was null\nServer ID : "+g.getId().asString()+" | "+g.getName()+"\n-----ID Holder-----\n\n"+holder);
+            StaticStore.logger.uploadLog("Invalid ID holder data found, moderator role ID was null\nServer ID : "+g.getId()+" | "+g.getName()+"\n-----ID Holder-----\n\n"+holder);
         }
 
         return false;

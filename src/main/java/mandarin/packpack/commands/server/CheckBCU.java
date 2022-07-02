@@ -1,14 +1,16 @@
 package mandarin.packpack.commands.server;
 
-import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.MessageChannel;
 import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.List;
 
 public class CheckBCU extends Command {
     private final IDHolder holder;
@@ -20,21 +22,19 @@ public class CheckBCU extends Command {
     }
 
     @Override
-    public void doSomething(MessageEvent event) {
+    public void doSomething(GenericMessageEvent event) {
         Message msg = getMessage(event);
 
         if(msg == null)
             return;
 
-        MessageChannel ch = msg.getChannel().block();
-
-        if(ch == null)
-            return;
+        MessageChannel ch = msg.getChannel();
 
         String preID = getPreMemberID(getContent(event));
 
         if(preID == null && !holder.ID.containsKey("Pre Member")) {
-            createMessage(ch, m -> m.content(LangID.getStringByID("chbcu_pre", lang)));
+            ch.sendMessage(LangID.getStringByID("chbcu_pre", lang)).queue();
+
             return;
         } else if(preID == null && holder.ID.containsKey("Pre Member")) {
             preID = holder.ID.get("Pre Member");
@@ -43,38 +43,43 @@ public class CheckBCU extends Command {
         final String finalPre = preID;
 
         if(StaticStore.checkingBCU) {
-            ch.createMessage(LangID.getStringByID("chbcu_perform", lang)).subscribe();
+            ch.sendMessage(LangID.getStringByID("chbcu_perform", lang)).queue();
         } else {
             StaticStore.checkingBCU = true;
 
-            AtomicReference<StringBuilder> both = new AtomicReference<>(new StringBuilder("BOTH : "));
-            AtomicReference<StringBuilder> none = new AtomicReference<>(new StringBuilder("NONE : "));
+            StringBuilder both = new StringBuilder("BOTH : ");
+            StringBuilder none = new StringBuilder("NONE : ");
 
-            getGuild(event)
-                    .subscribe(g -> g.getMembers()
-                        .filter(m -> !m.isBot() && (!holder.ID.containsKey("Muted") || !StaticStore.rolesToString(m.getRoleIds()).contains(holder.ID.get("Muted"))))
-                        .subscribe(m -> {
-                            boolean pre = false;
-                            boolean mem = false;
+            Guild g = getGuild(event);
 
-                            String role = StaticStore.rolesToString(m.getRoleIds());
+            if(g != null) {
+                List<Member> members = g.getMembers();
 
-                            if(role.contains(finalPre))
-                                pre = true;
+                for(int i = 0; i < members.size(); i++) {
+                    Member m = members.get(i);
 
-                            if(holder.MEMBER != null && role.contains(holder.MEMBER))
-                                mem = true;
+                    if(!m.getUser().isBot() && (!holder.ID.containsKey("Muted") || !StaticStore.rolesToString(m.getRoles()).contains(holder.ID.get("Muted")))) {
+                        boolean pre = false;
+                        boolean mem = false;
 
-                            if (!pre && !mem)
-                                none.get().append(m.getUsername()).append(", ");
+                        String role = StaticStore.rolesToString(m.getRoles());
 
-                            if (pre && mem)
-                                both.get().append(m.getUsername()).append(", ");
-                        }, e -> ch.createMessage(StaticStore.ERROR_MSG).subscribe(), pause::resume));
+                        if(role.contains(finalPre))
+                            pre = true;
 
-            pause.pause(() -> onFail(event, DEFAULT_ERROR));
+                        if(holder.MEMBER != null && role.contains(holder.MEMBER))
+                            mem = true;
 
-            ch.createMessage(both.get().substring(0, both.get().length()-2)+"\n"+none.get().substring(0, none.get().length()-2)).subscribe();
+                        if (!pre && !mem)
+                            none.append(m.getNickname()).append(", ");
+
+                        if (pre && mem)
+                            both.append(m.getNickname()).append(", ");
+                    }
+                }
+
+                ch.sendMessage(both.substring(0, both.length()-2)+"\n"+none.substring(0, none.length()-2)).queue();
+            }
 
             StaticStore.checkingBCU = false;
         }
