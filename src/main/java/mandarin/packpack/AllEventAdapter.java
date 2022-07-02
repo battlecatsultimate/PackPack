@@ -49,52 +49,52 @@ public class AllEventAdapter extends ListenerAdapter {
     public void onGuildLeave(@NotNull GuildLeaveEvent event) {
         super.onGuildLeave(event);
 
-        Guild g = event.getGuild();
+        try {
+            Guild g = event.getGuild();
 
-        StaticStore.logger.uploadLog("Left server : "+g.getName()+ " ("+g.getId()+")");
+            StaticStore.logger.uploadLog("Left server : "+g.getName()+ " ("+g.getId()+")");
 
-        StaticStore.idHolder.remove(g.getId());
+            StaticStore.idHolder.remove(g.getId());
 
-        StaticStore.saveServerInfo();
-    }
-
-    @Override
-    public void onGuildMemberJoin(@NotNull GuildMemberJoinEvent event) {
-        super.onGuildMemberJoin(event);
+            StaticStore.saveServerInfo();
+        } catch (Exception e) {
+            StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::onGuildLeave - Error happened");
+        }
     }
 
     @Override
     public void onGuildJoin(@NotNull GuildJoinEvent event) {
         super.onGuildJoin(event);
 
-        Guild g = event.getGuild();
+        try {
+            Guild g = event.getGuild();
 
-        IDHolder id = StaticStore.idHolder.get(g.getId());
+            IDHolder id = StaticStore.idHolder.get(g.getId());
 
-        AtomicReference<Boolean> warned = new AtomicReference<>(false);
+            AtomicReference<Boolean> warned = new AtomicReference<>(false);
 
-        if(id == null) {
-            final IDHolder idh = new IDHolder();
+            if(id == null) {
+                final IDHolder idh = new IDHolder();
 
-            handleInitialModRole(g, idh, warned);
+                handleInitialModRole(g, idh, warned);
 
-            StaticStore.idHolder.put(g.getId(), idh);
-        } else {
-            System.out.println("3");
-            String mod = id.MOD;
+                StaticStore.idHolder.put(g.getId(), idh);
+            } else {
+                String mod = id.MOD;
 
-            if (mod != null) {
-                List<Role> roles = g.getRoles();
+                if (mod != null) {
+                    List<Role> roles = g.getRoles();
 
-                for (Role r : roles) {
-                    if (r.getId().equals(mod))
-                        return;
+                    for (Role r : roles) {
+                        if (r.getId().equals(mod))
+                            return;
+                    }
                 }
+
+                handleInitialModRole(g, id, warned);
             }
-
-            System.out.println("4");
-
-            handleInitialModRole(g, id, warned);
+        } catch (Exception e) {
+            StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::onGuildJoin - Error happened");
         }
     }
 
@@ -102,77 +102,85 @@ public class AllEventAdapter extends ListenerAdapter {
     public void onRoleDelete(@NotNull RoleDeleteEvent event) {
         super.onRoleDelete(event);
 
-        Guild g = event.getGuild();
+        try {
+            Guild g = event.getGuild();
 
-        IDHolder holder = StaticStore.idHolder.get(g.getId());
+            IDHolder holder = StaticStore.idHolder.get(g.getId());
 
-        AtomicReference<Boolean> warned = new AtomicReference<>(false);
+            AtomicReference<Boolean> warned = new AtomicReference<>(false);
 
-        if(holder != null) {
-            String mod = holder.MOD;
+            if(holder != null) {
+                String mod = holder.MOD;
 
-            if(mod == null) {
-                reassignTempModRole(g, holder, warned);
-            } else {
-                if(event.getRole().getId().equals(mod)) {
-                    String modID = StaticStore.getRoleIDByName("PackPackMod", g);
+                if(mod == null) {
+                    reassignTempModRole(g, holder, warned);
+                } else {
+                    if(event.getRole().getId().equals(mod)) {
+                        String modID = StaticStore.getRoleIDByName("PackPackMod", g);
 
-                    if(modID == null) {
-                        reassignTempModRole(g, holder, warned);
-                    } else {
-                        holder.MOD = modID;
+                        if(modID == null) {
+                            reassignTempModRole(g, holder, warned);
+                        } else {
+                            holder.MOD = modID;
+                        }
                     }
                 }
-            }
-        } else {
-            final IDHolder idh = new IDHolder();
-
-            String modID = StaticStore.getRoleIDByName("PackPackMod", g);
-
-            if(modID == null) {
-                reassignTempModRole(g, idh, warned);
             } else {
-                idh.MOD = modID;
+                final IDHolder idh = new IDHolder();
+
+                String modID = StaticStore.getRoleIDByName("PackPackMod", g);
+
+                if(modID == null) {
+                    reassignTempModRole(g, idh, warned);
+                } else {
+                    idh.MOD = modID;
+                }
+
+                StaticStore.idHolder.put(g.getId(), idh);
             }
 
-            StaticStore.idHolder.put(g.getId(), idh);
+            StaticStore.saveServerInfo();
+        } catch (Exception e) {
+            StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::onRoleDelete - Error happened");
         }
-
-        StaticStore.saveServerInfo();
     }
 
     @Override
     public void onChannelDelete(@NotNull ChannelDeleteEvent event) {
         super.onChannelDelete(event);
 
-        Guild g = event.getGuild();
-        Channel ch = event.getChannel();
+        try {
+            Guild g = event.getGuild();
+            Channel ch = event.getChannel();
 
-        IDHolder idh = StaticStore.idHolder.get(g.getId());
+            IDHolder idh = StaticStore.idHolder.get(g.getId());
 
-        if(idh == null)
-            return;
+            if(idh == null)
+                return;
 
-        if(idh.ANNOUNCE != null && idh.ANNOUNCE.equals(ch.getId()))
-            idh.ANNOUNCE = null;
+            if(idh.ANNOUNCE != null && idh.ANNOUNCE.equals(ch.getId()))
+                idh.ANNOUNCE = null;
 
-        if(idh.GET_ACCESS != null && idh.GET_ACCESS.equals(ch.getId()))
-            idh.GET_ACCESS = null;
+            if(idh.GET_ACCESS != null && idh.GET_ACCESS.equals(ch.getId()))
+                idh.GET_ACCESS = null;
 
-        if(idh.event != null && idh.event.equals(ch.getId()))
-            idh.event = null;
+            if(idh.event != null && idh.event.equals(ch.getId()))
+                idh.event = null;
 
-        if(idh.logDM != null && idh.logDM.equals(ch.getId()))
-            idh.logDM = null;
+            if(idh.logDM != null && idh.logDM.equals(ch.getId()))
+                idh.logDM = null;
 
-        StaticStore.idHolder.put(g.getId(), idh);
+            StaticStore.idHolder.put(g.getId(), idh);
 
-        if(StaticStore.scamLinkHandlers.servers.containsKey(g.getId())) {
-            String channel = StaticStore.scamLinkHandlers.servers.get(g.getId()).channel;
+            if(StaticStore.scamLinkHandlers.servers.containsKey(g.getId())) {
+                String channel = StaticStore.scamLinkHandlers.servers.get(g.getId()).channel;
 
-            if(channel != null && channel.equals(ch.getId())) {
-                StaticStore.scamLinkHandlers.servers.remove(g.getId());
+                if(channel != null && channel.equals(ch.getId())) {
+                    StaticStore.scamLinkHandlers.servers.remove(g.getId());
+                }
             }
+        } catch (Exception e) {
+            StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::onChannelDelete - Error happened");
         }
     }
 
@@ -180,52 +188,56 @@ public class AllEventAdapter extends ListenerAdapter {
     public void onGuildMemberUpdate(@NotNull GuildMemberUpdateEvent event) {
         super.onGuildMemberUpdate(event);
 
-        Member m = event.getMember();
+        try {
+            Member m = event.getMember();
 
-        if(m.getUser().isBot())
-            return;
+            if(m.getUser().isBot())
+                return;
 
-        Guild g = event.getGuild();
+            Guild g = event.getGuild();
 
-        if(!StaticStore.idHolder.containsKey(g.getId()))
-            return;
+            if(!StaticStore.idHolder.containsKey(g.getId()))
+                return;
 
-        IDHolder holder = StaticStore.idHolder.get(g.getId());
+            IDHolder holder = StaticStore.idHolder.get(g.getId());
 
-        if(holder.BOOSTER == null)
-            return;
+            if(holder.BOOSTER == null)
+                return;
 
-        if(!StaticStore.boosterData.containsKey(g.getId()))
-            return;
+            if(!StaticStore.boosterData.containsKey(g.getId()))
+                return;
 
-        BoosterHolder booster = StaticStore.boosterData.get(g.getId());
+            BoosterHolder booster = StaticStore.boosterData.get(g.getId());
 
-        if(!booster.serverBooster.containsKey(m.getId()))
-            return;
+            if(!booster.serverBooster.containsKey(m.getId()))
+                return;
 
-        BoosterData data = booster.serverBooster.get(m.getId());
+            BoosterData data = booster.serverBooster.get(m.getId());
 
-        if(!StaticStore.rolesToString(m.getRoles()).contains(holder.BOOSTER)) {
-            String role = data.getRole();
-            String emoji = data.getEmoji();
+            if(!StaticStore.rolesToString(m.getRoles()).contains(holder.BOOSTER)) {
+                String role = data.getRole();
+                String emoji = data.getEmoji();
 
-            if(role != null) {
-                Role r = g.getRoleById(role);
+                if(role != null) {
+                    Role r = g.getRoleById(role);
 
-                if(r != null) {
-                    r.delete().queue();
+                    if(r != null) {
+                        r.delete().queue();
+                    }
                 }
-            }
 
-            if(emoji != null) {
-                Emote e = g.getEmoteById(emoji);
+                if(emoji != null) {
+                    Emote e = g.getEmoteById(emoji);
 
-                if(e != null) {
-                    e.delete().queue();
+                    if(e != null) {
+                        e.delete().queue();
+                    }
                 }
-            }
 
-            booster.serverBooster.remove(m.getId());
+                booster.serverBooster.remove(m.getId());
+            }
+        } catch (Exception e) {
+            StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::onGuildMemberUpdate - Error happened");
         }
     }
 
@@ -697,43 +709,47 @@ public class AllEventAdapter extends ListenerAdapter {
     public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
         super.onMessageReactionAdd(event);
 
-        Message msg = event.getChannel().retrieveMessageById(event.getMessageId()).complete();
+        try {
+            Message msg = event.getChannel().retrieveMessageById(event.getMessageId()).complete();
 
-        if(msg == null) {
-            StaticStore.logger.uploadLog("W/AllEventAdapter::onMessageReactionAdd - Message is null while trying to perform ReactionAddEvent");
+            if(msg == null) {
+                StaticStore.logger.uploadLog("W/AllEventAdapter::onMessageReactionAdd - Message is null while trying to perform ReactionAddEvent");
 
-            return;
-        }
-
-        Member m = event.getMember();
-
-        if(m == null) {
-            StaticStore.logger.uploadLog("W/AllEventAdapter::onMessageReactionAdd - Member is empty while trying to perform ReactionAddEvent");
-
-            return;
-        }
-
-        if(StaticStore.holderContainsKey(m.getId())) {
-            Holder<? extends Event> holder = StaticStore.getHolder(m.getId());
-
-            if(!(holder instanceof MessageHolder))
                 return;
+            }
 
-            MessageHolder<? extends GenericMessageEvent> messageHolder = (MessageHolder<? extends GenericMessageEvent>) holder;
+            Member m = event.getMember();
 
-            if(messageHolder.canCastTo(MessageReactionAddEvent.class)) {
-                MessageHolder<MessageReactionAddEvent> h = (MessageHolder<MessageReactionAddEvent>) messageHolder;
+            if(m == null) {
+                StaticStore.logger.uploadLog("W/AllEventAdapter::onMessageReactionAdd - Member is empty while trying to perform ReactionAddEvent");
 
-                int result = h.handleEvent(event);
+                return;
+            }
 
-                if(result == Holder.RESULT_FINISH) {
-                    h.clean();
-                    StaticStore.removeHolder(m.getId(), holder);
-                } else if(result == Holder.RESULT_FAIL) {
-                    StaticStore.logger.uploadLog("W/AllEventAdapter::onMessageReactionAdd - Expired process tried to be handled : "+m.getId()+" | "+h.getClass().getName());
-                    StaticStore.removeHolder(m.getId(), holder);
+            if(StaticStore.holderContainsKey(m.getId())) {
+                Holder<? extends Event> holder = StaticStore.getHolder(m.getId());
+
+                if(!(holder instanceof MessageHolder))
+                    return;
+
+                MessageHolder<? extends GenericMessageEvent> messageHolder = (MessageHolder<? extends GenericMessageEvent>) holder;
+
+                if(messageHolder.canCastTo(MessageReactionAddEvent.class)) {
+                    MessageHolder<MessageReactionAddEvent> h = (MessageHolder<MessageReactionAddEvent>) messageHolder;
+
+                    int result = h.handleEvent(event);
+
+                    if(result == Holder.RESULT_FINISH) {
+                        h.clean();
+                        StaticStore.removeHolder(m.getId(), holder);
+                    } else if(result == Holder.RESULT_FAIL) {
+                        StaticStore.logger.uploadLog("W/AllEventAdapter::onMessageReactionAdd - Expired process tried to be handled : "+m.getId()+" | "+h.getClass().getName());
+                        StaticStore.removeHolder(m.getId(), holder);
+                    }
                 }
             }
+        } catch (Exception e) {
+            StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::onMessageReactionAdd - Error happened");
         }
     }
 
@@ -741,80 +757,84 @@ public class AllEventAdapter extends ListenerAdapter {
     public void onGenericInteractionCreate(@NotNull GenericInteractionCreateEvent event) {
         super.onGenericInteractionCreate(event);
 
-        if(event instanceof GenericComponentInteractionCreateEvent) {
-            GenericComponentInteractionCreateEvent c = (GenericComponentInteractionCreateEvent) event;
+        try {
+            if(event instanceof GenericComponentInteractionCreateEvent) {
+                GenericComponentInteractionCreateEvent c = (GenericComponentInteractionCreateEvent) event;
 
-            if(c.getInteraction().getMember() == null)
-                return;
+                if(c.getInteraction().getMember() == null)
+                    return;
 
-            Member m = c.getInteraction().getMember();
+                Member m = c.getInteraction().getMember();
 
-            if(StaticStore.holderContainsKey(m.getId())) {
-                Holder<? extends Event> holder = StaticStore.getHolder(m.getId());
+                if(StaticStore.holderContainsKey(m.getId())) {
+                    Holder<? extends Event> holder = StaticStore.getHolder(m.getId());
 
-                if(!(holder instanceof InteractionHolder)) {
+                    if(!(holder instanceof InteractionHolder)) {
+                        return;
+                    }
+
+                    InteractionHolder<? extends GenericComponentInteractionCreateEvent> interactionHolder = (InteractionHolder<? extends GenericComponentInteractionCreateEvent>) holder;
+
+                    if(interactionHolder.canCastTo(ButtonInteractionEvent.class)) {
+                        InteractionHolder<ButtonInteractionEvent> h = (InteractionHolder<ButtonInteractionEvent>) interactionHolder;
+
+                        int result = h.handleEvent((ButtonInteractionEvent) event);
+
+                        if(result == Holder.RESULT_FINISH || result == Holder.RESULT_FAIL) {
+                            StaticStore.removeHolder(m.getId(), holder);
+                        }
+
+                        if(result == Holder.RESULT_FINISH)
+                            h.performInteraction((ButtonInteractionEvent) event);
+                    } else if(interactionHolder.canCastTo(GenericComponentInteractionCreateEvent.class)) {
+                        InteractionHolder<GenericComponentInteractionCreateEvent> h = (InteractionHolder<GenericComponentInteractionCreateEvent>) interactionHolder;
+
+                        int result = h.handleEvent((GenericComponentInteractionCreateEvent) event);
+
+                        if(result == Holder.RESULT_FINISH)
+                            h.performInteraction((GenericComponentInteractionCreateEvent) event);
+                    }
+                }
+            } else if(event instanceof GenericCommandInteractionEvent) {
+                GenericCommandInteractionEvent i = (GenericCommandInteractionEvent) event;
+
+                if(event.getInteraction().getMember() == null) {
                     return;
                 }
 
-                InteractionHolder<? extends GenericComponentInteractionCreateEvent> interactionHolder = (InteractionHolder<? extends GenericComponentInteractionCreateEvent>) holder;
+                SpamPrevent spam;
 
-                if(interactionHolder.canCastTo(ButtonInteractionEvent.class)) {
-                    InteractionHolder<ButtonInteractionEvent> h = (InteractionHolder<ButtonInteractionEvent>) interactionHolder;
+                Member m = event.getInteraction().getMember();
 
-                    int result = h.handleEvent((ButtonInteractionEvent) event);
+                if(StaticStore.spamData.containsKey(m.getId())) {
+                    spam = StaticStore.spamData.get(m.getId());
 
-                    if(result == Holder.RESULT_FINISH || result == Holder.RESULT_FAIL) {
-                        StaticStore.removeHolder(m.getId(), holder);
+                    String result = spam.isPrevented(event);
+
+                    if(result != null) {
+                        if (!result.isBlank()) {
+
+                            i.deferReply().setContent(result).queue();
+                        }
+
+                        return;
                     }
+                }
 
-                    if(result == Holder.RESULT_FINISH)
-                        h.performInteraction((ButtonInteractionEvent) event);
-                } else if(interactionHolder.canCastTo(GenericComponentInteractionCreateEvent.class)) {
-                    InteractionHolder<GenericComponentInteractionCreateEvent> h = (InteractionHolder<GenericComponentInteractionCreateEvent>) interactionHolder;
-
-                    int result = h.handleEvent((GenericComponentInteractionCreateEvent) event);
-
-                    if(result == Holder.RESULT_FINISH)
-                        h.performInteraction((GenericComponentInteractionCreateEvent) event);
+                switch (i.getName()) {
+                    case "fs":
+                        FormStat.performInteraction(i);
+                        break;
+                    case "es":
+                        EnemyStat.performInteraction(i);
+                        break;
+                    case "si":
+                        StageInfo.performInteraction(i);
+                        break;
                 }
             }
-        } else if(event instanceof GenericCommandInteractionEvent) {
-            GenericCommandInteractionEvent i = (GenericCommandInteractionEvent) event;
-
-            if(event.getInteraction().getMember() == null) {
-                return;
-            }
-
-            SpamPrevent spam;
-
-            Member m = event.getInteraction().getMember();
-
-            if(StaticStore.spamData.containsKey(m.getId())) {
-                spam = StaticStore.spamData.get(m.getId());
-
-                String result = spam.isPrevented(event);
-
-                if(result != null) {
-                    if (!result.isBlank()) {
-
-                        i.deferReply().setContent(result).queue();
-                    }
-
-                    return;
-                }
-            }
-
-            switch (i.getName()) {
-                case "fs":
-                    FormStat.performInteraction(i);
-                    break;
-                case "es":
-                    EnemyStat.performInteraction(i);
-                    break;
-                case "si":
-                    StageInfo.performInteraction(i);
-                    break;
-            }
+        } catch (Exception e) {
+            StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::onGenericInteractionCreate - Error happened");
         }
     }
 
