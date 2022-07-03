@@ -138,7 +138,7 @@ public class FormButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
             buttons.add(button.asDisabled());
         }
 
-        embed.editMessageComponents(ActionRow.of(buttons)).queue();
+        embed.editMessageComponents(ActionRow.of(buttons)).queue(null, e -> {});
 
         expired = true;
     }
