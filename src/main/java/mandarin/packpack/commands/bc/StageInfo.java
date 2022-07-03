@@ -114,7 +114,7 @@ public class StageInfo extends TimedConstraintCommand {
             try {
                 Message m = EntityHandler.performStageEmb(st, event, frame, extra, star, lang);
 
-                if(m != null && interaction.getMember() != null && m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION)) {
+                if(m != null && interaction.getMember() != null && m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI)) {
                     Member member = interaction.getMember();
 
                     StaticStore.putHolder(

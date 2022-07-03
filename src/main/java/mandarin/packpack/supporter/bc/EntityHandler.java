@@ -226,7 +226,7 @@ public class EntityHandler {
 
             Guild g = msg.getGuild();
 
-            if(g.getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION)) {
+            if(g.getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI)) {
                 if(canFirstForm(f)) {
                     Emote e = StaticStore.getEmoteWitNameAndID(hook.getJDA(), "FirstForm", StaticStore.TWOPREVIOUS, false);
 
@@ -1199,7 +1199,7 @@ public class EntityHandler {
         if(msg != null) {
             Guild g = msg.getGuild();
 
-            if(g.getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION)) {
+            if(g.getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI)) {
                 Emote e = StaticStore.getEmoteWitNameAndID(hook.getJDA(), "Castle", StaticStore.CASTLE, false);
 
                 if(e != null)
