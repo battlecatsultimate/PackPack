@@ -6,7 +6,9 @@ import net.dv8tion.jda.api.entities.GuildMessageChannel;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 
 public class Logger {
@@ -50,9 +52,47 @@ public class Logger {
 
         if(errMessage.length() >= 2000) {
             errMessage = errMessage.substring(0, 1993) + "...\n```";
-        }
 
-        createMessageWithNoPingsWithFile(ch, errMessage, files);
+            try {
+                File temp = new File("temp");
+
+                if(!temp.exists() && !temp.mkdirs()) {
+                    uploadLog("Failed to create folder : "+temp.getAbsolutePath());
+
+                    createMessageWithNoPingsWithFile(ch, errMessage, files);
+
+                    return;
+                }
+
+                File log = new File("temp", StaticStore.findFileName(temp, "log", ".txt"));
+
+                if(!log.exists() && !log.createNewFile()) {
+                    uploadLog("Failed to create file : "+log.getAbsolutePath());
+                }
+
+                BufferedWriter writer = new BufferedWriter(new FileWriter(log));
+
+                writer.write(ExceptionUtils.getStackTrace(e));
+
+                writer.close();
+
+                File[] fs = new File[1 + files.length];
+
+                for(int i = 0; i < fs.length; i++) {
+                    if(i == 0) {
+                        fs[i] = log;
+                    } else {
+                        fs[i] = files[i - 1];
+                    }
+                }
+
+                createMessageWithNoPingsWithFile(ch, errMessage, fs);
+            } catch (Exception err) {
+                createMessageWithNoPingsWithFile(ch, errMessage, files);
+            }
+        } else {
+            createMessageWithNoPingsWithFile(ch, errMessage, files);
+        }
     }
 
     public void uploadLog(String content) {
