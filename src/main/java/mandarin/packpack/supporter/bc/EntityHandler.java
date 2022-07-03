@@ -25,6 +25,7 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
@@ -223,35 +224,39 @@ public class EntityHandler {
         if(hook != null) {
             Message msg = hook.retrieveOriginal().complete();
 
-            if(canFirstForm(f)) {
-                Emote e = StaticStore.getEmoteWitNameAndID(hook.getJDA(), "FirstForm", StaticStore.TWOPREVIOUS, false);
+            Guild g = msg.getGuild();
 
-                if(e != null) {
-                    msg.addReaction(e).queue();
+            if(g.getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION)) {
+                if(canFirstForm(f)) {
+                    Emote e = StaticStore.getEmoteWitNameAndID(hook.getJDA(), "FirstForm", StaticStore.TWOPREVIOUS, false);
+
+                    if(e != null) {
+                        msg.addReaction(e).queue();
+                    }
                 }
-            }
 
-            if(canPreviousForm(f)) {
-                Emote e = StaticStore.getEmoteWitNameAndID(hook.getJDA(), "PreviousForm", StaticStore.PREVIOUS, false);
+                if(canPreviousForm(f)) {
+                    Emote e = StaticStore.getEmoteWitNameAndID(hook.getJDA(), "PreviousForm", StaticStore.PREVIOUS, false);
 
-                if(e != null) {
-                    msg.addReaction(e).queue();
+                    if(e != null) {
+                        msg.addReaction(e).queue();
+                    }
                 }
-            }
 
-            if(canNextForm(f)) {
-                Emote e = StaticStore.getEmoteWitNameAndID(hook.getJDA(), "NextForm", StaticStore.NEXT, false);
+                if(canNextForm(f)) {
+                    Emote e = StaticStore.getEmoteWitNameAndID(hook.getJDA(), "NextForm", StaticStore.NEXT, false);
 
-                if(e != null) {
-                    msg.addReaction(e).queue();
+                    if(e != null) {
+                        msg.addReaction(e).queue();
+                    }
                 }
-            }
 
-            if(canFinalForm(f)) {
-                Emote e = StaticStore.getEmoteWitNameAndID(hook.getJDA(), "FinalForm", StaticStore.TWONEXT, false);
+                if(canFinalForm(f)) {
+                    Emote e = StaticStore.getEmoteWitNameAndID(hook.getJDA(), "FinalForm", StaticStore.TWONEXT, false);
 
-                if(e != null) {
-                    msg.addReaction(e).queue();
+                    if(e != null) {
+                        msg.addReaction(e).queue();
+                    }
                 }
             }
 
@@ -269,7 +274,7 @@ public class EntityHandler {
         return null;
     }
 
-    public static Message performUnitEmb(Form f, MessageChannel ch, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, ArrayList<Integer> lv, int lang, boolean addEmoji) throws Exception {
+    public static Message showUnitEmb(Form f, MessageChannel ch, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, ArrayList<Integer> lv, int lang, boolean addEmoji) throws Exception {
         int level = lv.get(0);
         int levelp = 0;
 
@@ -1192,28 +1197,32 @@ public class EntityHandler {
         Message msg = hook.retrieveOriginal().complete();
 
         if(msg != null) {
-            Emote e = StaticStore.getEmoteWitNameAndID(hook.getJDA(), "Castle", StaticStore.CASTLE, false);
+            Guild g = msg.getGuild();
 
-            if(e != null)
-                msg.addReaction(e).queue();
-
-            e = StaticStore.getEmoteWitNameAndID(hook.getJDA(), "Background", StaticStore.BG, false);
-
-            if(e != null)
-                msg.addReaction(e).queue();
-
-            if(st.mus0 != null) {
-                e = StaticStore.getEmoteWitNameAndID(hook.getJDA(), "Music", StaticStore.MUSIC, false);
+            if(g.getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION)) {
+                Emote e = StaticStore.getEmoteWitNameAndID(hook.getJDA(), "Castle", StaticStore.CASTLE, false);
 
                 if(e != null)
                     msg.addReaction(e).queue();
-            }
 
-            if(hasTwoMusic(st)) {
-                e = StaticStore.getEmoteWitNameAndID(hook.getJDA(), "MusicBoss", StaticStore.MUSIC2, false);
+                e = StaticStore.getEmoteWitNameAndID(hook.getJDA(), "Background", StaticStore.BG, false);
 
                 if(e != null)
                     msg.addReaction(e).queue();
+
+                if(st.mus0 != null) {
+                    e = StaticStore.getEmoteWitNameAndID(hook.getJDA(), "Music", StaticStore.MUSIC, false);
+
+                    if(e != null)
+                        msg.addReaction(e).queue();
+                }
+
+                if(hasTwoMusic(st)) {
+                    e = StaticStore.getEmoteWitNameAndID(hook.getJDA(), "MusicBoss", StaticStore.MUSIC2, false);
+
+                    if(e != null)
+                        msg.addReaction(e).queue();
+                }
             }
         }
 

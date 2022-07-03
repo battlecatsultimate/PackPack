@@ -18,6 +18,7 @@ import mandarin.packpack.supporter.server.holder.StageInfoButtonHolder;
 import mandarin.packpack.supporter.server.holder.StageInfoMessageHolder;
 import mandarin.packpack.supporter.server.holder.StageReactionSlashMessageHolder;
 import mandarin.packpack.supporter.server.slash.SlashOption;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -113,7 +114,7 @@ public class StageInfo extends TimedConstraintCommand {
             try {
                 Message m = EntityHandler.performStageEmb(st, event, frame, extra, star, lang);
 
-                if(m != null && interaction.getMember() != null) {
+                if(m != null && interaction.getMember() != null && m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION)) {
                     Member member = interaction.getMember();
 
                     StaticStore.putHolder(

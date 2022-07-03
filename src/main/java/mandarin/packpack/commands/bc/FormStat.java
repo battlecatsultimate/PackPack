@@ -14,6 +14,7 @@ import mandarin.packpack.supporter.server.holder.FormButtonHolder;
 import mandarin.packpack.supporter.server.holder.FormReactionSlashMessageHolder;
 import mandarin.packpack.supporter.server.holder.FormStatMessageHolder;
 import mandarin.packpack.supporter.server.slash.SlashOption;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -92,7 +93,7 @@ public class FormStat extends ConstraintCommand {
 
             Message m = EntityHandler.performUnitEmb(f, event, config, frame, talent, extra, lvs, finalLang);
 
-            if(m != null && interaction.getMember() != null) {
+            if(m != null && interaction.getMember() != null && m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION)) {
                 StaticStore.putHolder(
                         interaction.getMember().getId(),
                         new FormReactionSlashMessageHolder(m, f, interaction.getMember().getId(), m.getChannel().getId(), m.getId(), config, frame && config.useFrame, talent, extra || config.extra, lvs, finalLang)
@@ -155,7 +156,7 @@ public class FormStat extends ConstraintCommand {
                 boolean talent = (param & PARAM_TALENT) > 0;
                 boolean extra = (param & PARAM_EXTRA) > 0 || config.extra;
 
-                Message result = EntityHandler.performUnitEmb(forms.get(0), ch, config, isFrame, talent, extra, lv, lang, true);
+                Message result = EntityHandler.showUnitEmb(forms.get(0), ch, config, isFrame, talent, extra, lv, lang, true);
 
                 if(result != null) {
                     Member m = getMember(event);
