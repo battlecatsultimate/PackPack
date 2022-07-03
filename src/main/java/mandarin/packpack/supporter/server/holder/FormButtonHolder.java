@@ -112,7 +112,7 @@ public class FormButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
         Form newForm = f.unit.forms[f.fid + diff];
 
         try {
-            EntityHandler.performUnitEmb(newForm, ch, config, isFrame, talent, extra, lv, lang, false);
+            EntityHandler.showUnitEmb(newForm, ch, config, isFrame, talent, extra, lv, lang, false);
         } catch (Exception e) {
             e.printStackTrace();
         }

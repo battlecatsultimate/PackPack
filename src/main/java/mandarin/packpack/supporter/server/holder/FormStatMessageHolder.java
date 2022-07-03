@@ -98,7 +98,7 @@ public class FormStatMessageHolder extends MessageHolder<MessageReceivedEvent> {
             }
 
             try {
-                Message result = EntityHandler.performUnitEmb(form.get(id), ch, config, isFrame, talent, extra, lv, lang, true);
+                Message result = EntityHandler.showUnitEmb(form.get(id), ch, config, isFrame, talent, extra, lv, lang, true);
 
                 if(result != null) {
                     Member m = event.getMember();
