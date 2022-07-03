@@ -4,6 +4,7 @@ import mandarin.packpack.supporter.Pauser;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.SpamPrevent;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
@@ -179,8 +180,12 @@ public abstract class Command {
 
                 Object obj = m.invoke(event);
 
-                if(obj instanceof String) {
-                    return ch.retrieveMessageById((String) obj).complete();
+                if(obj instanceof String && ch instanceof GuildChannel) {
+                    Guild g = ((GuildChannel) ch).getGuild();
+
+                    if (g.getSelfMember().hasPermission(Permission.MESSAGE_HISTORY)) {
+                        return ch.retrieveMessageById((String) obj).complete();
+                    }
                 }
             } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException invocationTargetException) {
                 StaticStore.logger.uploadErrorLog(e, "Failed to get Message from this class : "+event.getClass().getName());

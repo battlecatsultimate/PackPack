@@ -24,7 +24,6 @@ import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
-import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberUpdateEvent;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
@@ -710,14 +709,6 @@ public class AllEventAdapter extends ListenerAdapter {
         super.onMessageReactionAdd(event);
 
         try {
-            Message msg = event.getChannel().retrieveMessageById(event.getMessageId()).complete();
-
-            if(msg == null) {
-                StaticStore.logger.uploadLog("W/AllEventAdapter::onMessageReactionAdd - Message is null while trying to perform ReactionAddEvent");
-
-                return;
-            }
-
             Member m = event.getMember();
 
             if(m == null) {
