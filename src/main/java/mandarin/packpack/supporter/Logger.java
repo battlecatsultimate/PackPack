@@ -59,7 +59,7 @@ public class Logger {
                 if(!temp.exists() && !temp.mkdirs()) {
                     uploadLog("Failed to create folder : "+temp.getAbsolutePath());
 
-                    createMessageWithNoPingsWithFile(ch, errMessage, files);
+                    createMessageWithNoPingsWithFile(ch, errMessage, null, files);
 
                     return;
                 }
@@ -86,12 +86,16 @@ public class Logger {
                     }
                 }
 
-                createMessageWithNoPingsWithFile(ch, errMessage, fs);
+                createMessageWithNoPingsWithFile(ch, errMessage, () -> {
+                    if(log.exists() && !log.delete()) {
+                        uploadLog("Failed to delete file : "+log.getAbsolutePath());
+                    }
+                }, fs);
             } catch (Exception err) {
-                createMessageWithNoPingsWithFile(ch, errMessage, files);
+                createMessageWithNoPingsWithFile(ch, errMessage, null, files);
             }
         } else {
-            createMessageWithNoPingsWithFile(ch, errMessage, files);
+            createMessageWithNoPingsWithFile(ch, errMessage, null, files);
         }
     }
 
@@ -112,7 +116,7 @@ public class Logger {
                 .queue();
     }
 
-    private void createMessageWithNoPingsWithFile(GuildMessageChannel ch, String content, File... files) {
+    private void createMessageWithNoPingsWithFile(GuildMessageChannel ch, String content, Runnable run, File... files) {
         for(File f : files) {
             if(!f.exists()) {
                 throw new IllegalStateException("File doesn't exist : "+f.getAbsolutePath());
@@ -126,6 +130,12 @@ public class Logger {
             action = action.addFile(files[i], files[i].getName());
         }
 
-        action.queue();
+        action.queue(m -> {
+            if(run != null)
+                run.run();
+        }, e -> {
+            if(run != null)
+                run.run();
+        });
     }
 }
