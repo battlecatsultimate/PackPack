@@ -700,7 +700,7 @@ public class AllEventAdapter extends ListenerAdapter {
                     break;
                 case "downloadapk":
                 case "da":
-                    new DownloadApk(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+                    new DownloadApk(ConstraintCommand.ROLE.CONTRIBUTOR, lang, idh).execute(event);
                     break;
             }
         } catch (Exception e) {
