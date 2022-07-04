@@ -378,7 +378,7 @@ public class AllEventAdapter extends ListenerAdapter {
                     new ServerPrefix(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
                     break;
                 case "save":
-                    new Save(ConstraintCommand.ROLE.CONTRIBUTOR, lang, idh).execute(event);
+                    new Save(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
                     break;
                 case "stimg":
                 case "stimage":
@@ -457,7 +457,7 @@ public class AllEventAdapter extends ListenerAdapter {
                     break;
                 case "aa":
                 case "animanalyzer":
-                    new AnimAnalyzer(ConstraintCommand.ROLE.CONTRIBUTOR, lang, idh).execute(event);
+                    new AnimAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
                     break;
                 case "channelpermission":
                 case "channelperm":
@@ -494,7 +494,7 @@ public class AllEventAdapter extends ListenerAdapter {
                 case "serverjson":
                 case "json":
                 case "sj":
-                    new ServerJson(ConstraintCommand.ROLE.CONTRIBUTOR, lang, idh).execute(event);
+                    new ServerJson(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
                     break;
                 case "findstage":
                 case "findst":
@@ -611,7 +611,7 @@ public class AllEventAdapter extends ListenerAdapter {
                     break;
                 case "checkeventupdate":
                 case "ceu":
-                    new CheckEventUpdate(ConstraintCommand.ROLE.CONTRIBUTOR, lang, idh).execute(event);
+                    new CheckEventUpdate(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
                     break;
                 case "printstageevent":
                 case "pse":
@@ -627,7 +627,7 @@ public class AllEventAdapter extends ListenerAdapter {
                     break;
                 case "setbcversion":
                 case "sbv":
-                    new SetBCVersion(ConstraintCommand.ROLE.CONTRIBUTOR, lang, idh).execute(event);
+                    new SetBCVersion(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
                     break;
                 case "logout":
                     new LogOut(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
@@ -642,7 +642,7 @@ public class AllEventAdapter extends ListenerAdapter {
                     break;
                 case "statanalyzer":
                 case "sa":
-                    new StatAnalyzer(ConstraintCommand.ROLE.CONTRIBUTOR, lang, idh).execute(event);
+                    new StatAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
                     break;
                 case "addscamlinkhelpingserver":
                 case "aslhs":
@@ -700,7 +700,7 @@ public class AllEventAdapter extends ListenerAdapter {
                     break;
                 case "downloadapk":
                 case "da":
-                    new DownloadApk(ConstraintCommand.ROLE.CONTRIBUTOR, lang, idh).execute(event);
+                    new DownloadApk(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
                     break;
             }
         } catch (Exception e) {

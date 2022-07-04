@@ -42,8 +42,8 @@ public abstract class GlobalTimedConstraintCommand extends Command {
             case MANDARIN:
                 constRole = "MANDARIN";
                 break;
-            case CONTRIBUTOR:
-                constRole = "CONTRIBUTOR";
+            case TRUSTED:
+                constRole = "TRUSTED";
                 break;
             default:
                 throw new IllegalStateException("Invalid ROLE enum : "+role);
@@ -93,7 +93,7 @@ public abstract class GlobalTimedConstraintCommand extends Command {
             hasRole = true;
         } else if(constRole.equals("MANDARIN")) {
             hasRole = m.getId().equals(StaticStore.MANDARIN_SMELL);
-        } else if(constRole.equals("CONTRIBUTOR")) {
+        } else if(constRole.equals("TRUSTED")) {
             hasRole = StaticStore.contributors.contains(m.getId());
         } else {
             boolean isMod = holder.MOD != null && role.contains(holder.MOD);
@@ -125,7 +125,7 @@ public abstract class GlobalTimedConstraintCommand extends Command {
         if(!hasRole) {
             if(constRole.equals("MANDARIN")) {
                 ch.sendMessage(LangID.getStringByID("const_man", lang)).queue();
-            } else if(constRole.equals("CONTRIBUTOR")) {
+            } else if(constRole.equals("TRUSTED")) {
                 createMessageWithNoPings(ch, LangID.getStringByID("const_con", lang));
             } else {
                 ch.sendMessage(LangID.getStringByID("const_role", lang).replace("_", StaticStore.roleNameFromID(g, constRole))).queue();
