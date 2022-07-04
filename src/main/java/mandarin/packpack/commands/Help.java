@@ -306,6 +306,10 @@ public class Help extends Command {
             case "config":
                 ch.sendMessageEmbeds(addFields("config", false, false, true)).queue();
                 break;
+            case "downloadapk":
+            case "da":
+                ch.sendMessageEmbeds(addFields("downloadapk", true, true, false)).queue();
+                break;
             default:
                 createMessageWithNoPings(ch, LangID.getStringByID("help_nocomm", lang).replace("_", command));
         }
