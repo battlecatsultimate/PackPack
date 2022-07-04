@@ -282,16 +282,10 @@ public class StatAnalyzerMessageHolder extends MessageHolder<MessageReceivedEven
                 return RESULT_FAIL;
             }
 
-            System.out.println("1");
-
             MessageChannel ch = event.getMessage().getChannel();
-
-            System.out.println("2");
 
             if(!ch.getId().equals(channelID))
                 return RESULT_STILL;
-
-            System.out.println("3");
 
             AtomicReference<Long> now = new AtomicReference<>(System.currentTimeMillis());
 
