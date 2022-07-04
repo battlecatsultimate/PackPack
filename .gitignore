@@ -31,4 +31,7 @@ hs_err_pid*
 /temp/
 /out/
 /data/event/
+/data/bc/
 /data/privateKey.txt
+/googlePlay/
+/googlePlay/*

@@ -1,8 +1,12 @@
 package mandarin.packpack.commands.data;
 
+import common.system.files.VFile;
 import common.util.Data;
+import common.util.anim.MaAnim;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.bc.CustomMaskUnit;
+import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.bc.cell.AbilityData;
 import mandarin.packpack.supporter.bc.cell.CellData;
 import mandarin.packpack.supporter.bc.cell.FlagCellData;
@@ -14,7 +18,10 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,7 +30,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class StatAnalyzer extends ConstraintCommand {
-    private static final List<String> allParameters = List.of("-s", "-second", "-lv", "-uid", "-u", "-n", "-name", "-l", "-len", "-p", "-proc", "-a", "-ability", "-t", "-trait", "-c", "-cell");
+    private static final List<String> allParameters = List.of(
+            "-s", "-second", "-lv", "-uid", "-u", "-n", "-name", "-l", "-len", "-p", "-proc", "-a", "-ability", "-t", 
+            "-trait", "-c", "-cell", "-apk", "-en", "-jp", "-tw", "-kr", "-egg"
+    );
 
     public StatAnalyzer(ROLE role, int lang, IDHolder id) {
         super(role, lang, id);
@@ -64,6 +74,7 @@ public class StatAnalyzer extends ConstraintCommand {
         int level = getLevel(command);
         int len = getLen(command);
         boolean isSecond = isSecond(command);
+        boolean isApk = isApk(command);
         String[] name = getName(command);
 
         if(name == null) {
@@ -114,42 +125,112 @@ public class StatAnalyzer extends ConstraintCommand {
             ch.sendMessage(warnings).queue();
         }
 
-        StringBuilder sb = new StringBuilder("STAT (unit")
-                .append(Data.trio(uid+1))
-                .append(".csv) : -\nLEVEL (unitlevel.csv) : -\nBUY (unitbuy.csv) : -\n");
-
-        for(int i = 0; i < len; i++) {
-            sb.append("MAANIM ")
-                    .append(getUnitCode(i))
-                    .append(" ATK (")
-                    .append(Data.trio(uid))
-                    .append("_")
-                    .append(getUnitCode(i).toLowerCase(Locale.ENGLISH))
-                    .append("02.maanim) : -")
-                    .append("\n");
-        }
-
-        for(int i = 0; i < len; i++) {
-            sb.append("ICON ")
-                    .append(getUnitCode(i))
-                    .append(" (uni")
-                    .append(Data.trio(uid))
-                    .append("_")
-                    .append(getUnitCode(i).toLowerCase(Locale.ENGLISH))
-                    .append("00.png) : -");
-
-            if(i < len - 1) {
-                sb.append("\n");
+        if(isApk) {
+            String localeCode = getLocale(command);
+            
+            File workspace = new File("./data/bc/"+localeCode+"/workspace");
+            
+            if(!workspace.exists()) {
+                ch.sendMessage("Couldn't find workspace folder, try to call `p!da [Locale]` first").queue();
+                
+                return;
             }
+
+            if(!validateFile(workspace, uid, len)) {
+                ch.sendMessage("Couldn't find sufficient data for unit code : "+uid).queue();
+
+                return;
+            }
+
+            File dataLocal = new File(workspace, "DataLocal");
+            File imageDataLocal = new File(workspace, "ImageDataLocal");
+            File unitLocal = new File(workspace, "UnitLocal");
+
+            CustomMaskUnit[] data = new CustomMaskUnit[len];
+
+            String[] code = {"f", "c", "s"};
+
+            File statFile = new File(dataLocal, "unit"+Data.trio(uid+1)+".csv");
+            File levelFile = new File(dataLocal, "unitlevel.csv");
+            File buyFile = new File(dataLocal, "unitbuy.csv");
+
+            BufferedReader statReader = new BufferedReader(new FileReader(statFile, StandardCharsets.UTF_8));
+            BufferedReader levelReader = new BufferedReader(new FileReader(levelFile, StandardCharsets.UTF_8));
+            BufferedReader buyReader = new BufferedReader(new FileReader(buyFile, StandardCharsets.UTF_8));
+
+            int count = 0;
+
+            while(count < uid) {
+                levelReader.readLine();
+                buyReader.readLine();
+                count++;
+            }
+
+            String[] curve = levelReader.readLine().split(",");
+            String[] rare = buyReader.readLine().split(",");
+
+            levelReader.close();
+            buyReader.close();
+
+            System.gc();
+
+            for(int i = 0; i < data.length; i++) {
+                File maanim = new File(imageDataLocal, Data.trio(uid)+"_"+code[i]+"02.maanim");
+
+                VFile anim = VFile.getFile(maanim);
+
+                if(anim == null) {
+                    ch.sendMessage("Something went wrong while analyzing maanim data").queue();
+
+                    return;
+                }
+
+                MaAnim ma = MaAnim.newIns(anim.getData());
+
+                data[i] = new CustomMaskUnit(statReader.readLine().split(","), curve, ma, rare);
+            }
+
+            statReader.close();
+
+            EntityHandler.generateStatImage(ch, cellData, procData, abilData, traitData, data, name, unitLocal, level, !isSecond, uid, lang);
+
+        } else {
+            StringBuilder sb = new StringBuilder("STAT (unit")
+                    .append(Data.trio(uid+1))
+                    .append(".csv) : -\nLEVEL (unitlevel.csv) : -\nBUY (unitbuy.csv) : -\n");
+
+            for(int i = 0; i < len; i++) {
+                sb.append("MAANIM ")
+                        .append(getUnitCode(i))
+                        .append(" ATK (")
+                        .append(Data.trio(uid))
+                        .append("_")
+                        .append(getUnitCode(i).toLowerCase(Locale.ENGLISH))
+                        .append("02.maanim) : -")
+                        .append("\n");
+            }
+
+            for(int i = 0; i < len; i++) {
+                sb.append("ICON ")
+                        .append(getUnitCode(i))
+                        .append(" (uni")
+                        .append(Data.trio(uid))
+                        .append("_")
+                        .append(getUnitCode(i).toLowerCase(Locale.ENGLISH))
+                        .append("00.png) : -");
+
+                if(i < len - 1) {
+                    sb.append("\n");
+                }
+            }
+
+            Message msg = ch.sendMessage(sb.toString()).complete();
+
+            if(msg == null)
+                return;
+
+            new StatAnalyzerMessageHolder(msg, author, uid, len, isSecond, cellData, procData, abilData, traitData, ch.getId(), container, level, name, lang);
         }
-
-
-        Message msg = ch.sendMessage(sb.toString()).complete();
-
-        if(msg == null)
-            return;
-
-        new StatAnalyzerMessageHolder(msg, author, uid, len, isSecond, cellData, procData, abilData, traitData, ch.getId(), container, level, name, lang);
     }
 
     private int getUID(String command) {
@@ -757,5 +838,60 @@ public class StatAnalyzer extends ConstraintCommand {
         }
 
         return allParameters.contains(content);
+    }
+
+    private boolean isApk(String content) {
+        String[] contents = content.split(" ");
+
+        for(int i = 0; i < contents.length; i++) {
+            if(contents[i].equals("-apk"))
+                return true;
+        }
+
+        return false;
+    }
+    
+    private String getLocale(String content) {
+        if(content.contains("-en"))
+            return "en";
+        else if(content.contains("-tw"))
+            return "zh";
+        else if(content.contains("-kr"))
+            return "kr";
+        else
+            return "jp";
+    }
+
+    private boolean validateFile(File workspace, int uID, int len) {
+        File dataLocal = new File(workspace, "DataLocal");
+        File imageDataLocal = new File(workspace, "ImageDataLocal");
+        File unitLocal = new File(workspace, "UnitLocal");
+
+        if(!dataLocal.exists() || !imageDataLocal.exists() || !unitLocal.exists())
+            return false;
+
+        String[] codes = {"f", "c", "s"};
+
+        for(int i = 0; i < len; i++) {
+            File atkMaanim = new File(imageDataLocal, Data.trio(uID)+"_"+codes[i]+"02.maanim");
+            File icon = new File(unitLocal, "uni"+Data.trio(uID)+"_"+codes[i]+"00.png");
+
+            if(!atkMaanim.exists() || !icon.exists())
+                return false;
+        }
+
+        File stat = new File(dataLocal, "unit"+Data.trio((uID+1))+".csv");
+
+        if(!stat.exists())
+            return false;
+
+        File level = new File(dataLocal, "unitlevel.csv");
+
+        if(!level.exists())
+            return false;
+
+        File buy = new File(dataLocal, "unitbuy.csv");
+
+        return buy.exists();
     }
 }

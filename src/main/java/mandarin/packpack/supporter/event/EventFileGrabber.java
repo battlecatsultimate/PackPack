@@ -1,6 +1,7 @@
 package mandarin.packpack.supporter.event;
 
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.bc.TasteApk;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 
@@ -41,6 +42,13 @@ public class EventFileGrabber {
 
         id = reader.readLine();
         key = reader.readLine();
+        StaticStore.GOOGLE_EMAIL = reader.readLine();
+        StaticStore.GOOGLE_APP = reader.readLine();
+
+        for(int i = 0; i < 4; i++) {
+            TasteApk.VECTOR.add(reader.readLine());
+            TasteApk.KEY.add(reader.readLine());
+        }
 
         reader.close();
     }

@@ -1,15 +1,26 @@
 package mandarin.packpack.commands.data;
 
+import common.system.files.VFile;
+import common.util.anim.ImgCut;
+import common.util.anim.MaAnim;
+import common.util.anim.MaModel;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.bc.AnimMixer;
+import mandarin.packpack.supporter.bc.EntityHandler;
+import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.AnimMessageHolder;
 import mandarin.packpack.supporter.server.holder.BCAnimMessageHolder;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
+import javax.imageio.ImageIO;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class AnimAnalyzer extends ConstraintCommand {
@@ -18,6 +29,7 @@ public class AnimAnalyzer extends ConstraintCommand {
     private static final int PARAM_BC = 8;
     private static final int PARAM_ZOMBIE = 16;
     private static final int PARAM_TRANSPARENT = 32;
+    private static final int PARAM_USEAPK = 64;
 
     public AnimAnalyzer(ROLE role, int lang, IDHolder id) {
         super(role, lang, id);
@@ -26,10 +38,10 @@ public class AnimAnalyzer extends ConstraintCommand {
     @Override
     public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
+        Guild g = getGuild(event);
 
-        if(ch == null)
+        if(ch == null || g == null)
             return;
-
 
         int param = checkParam(getContent(event));
 
@@ -38,62 +50,143 @@ public class AnimAnalyzer extends ConstraintCommand {
         boolean bc = (PARAM_BC & param) > 0;
         boolean zombie = (PARAM_ZOMBIE & param) > 0;
         boolean transparent = (PARAM_TRANSPARENT & param) > 0;
+        boolean apk = (PARAM_USEAPK & param) > 0;
 
-        int anim = getAnimNumber(getContent(event));
+        if(apk) {
+            String animCode = getAnimCode(getContent(event));
 
-        if(bc)
-            anim = zombie ? 7 : 4;
+            if(animCode == null) {
+                ch.sendMessage("Please specify file code such as `000_f`, `001_m`, etc.").queue();
 
-        StringBuilder message = new StringBuilder("PNG : -\nIMGCUT : -\nMAMODEL : -\n");
-
-        if(bc) {
-            for(int i = 0; i < anim; i++) {
-                message.append(getMaanimTitle(i)).append("-");
-
-                if(i < anim - 1)
-                    message.append("\n");
+                return;
             }
+
+            String localeCode;
+
+            switch (getLocale(getContent(event))) {
+                case LangID.EN:
+                    localeCode = "en";
+                    break;
+                case LangID.ZH:
+                    localeCode = "zh";
+                    break;
+                case LangID.KR:
+                    localeCode = "kr";
+                    break;
+                default:
+                    localeCode = "jp";
+            }
+
+            File workspace = new File("./data/bc/"+localeCode+"/workspace");
+
+            if(!workspace.exists()) {
+                ch.sendMessage("Bot couldn't find analyzed apk file data for locale "+localeCode+". Please call `p!da [Locale]` first").queue();
+
+                return;
+            }
+
+            if(!validateFiles(animCode, workspace, zombie)) {
+                ch.sendMessage("Workspace folder contains no animation data with such code, try `p!da [Locale]`").queue();
+
+                return;
+            }
+
+            AnimMixer mixer = new AnimMixer(zombie ? 7 : 4);
+
+            VFile imgcut = VFile.getFile(new File(workspace, "ImageDataLocal/"+animCode+".imgcut"));
+
+            if(imgcut == null) {
+                ch.sendMessage("Couldn't find imgcut file").queue();
+
+                return;
+            }
+
+            mixer.imgCut = ImgCut.newIns(imgcut.getData());
+
+            VFile mamodel = VFile.getFile(new File(workspace, "ImageDataLocal/"+animCode+".mamodel"));
+
+            if(mamodel == null) {
+                ch.sendMessage("Couldn't find mamodel file").queue();
+
+                return;
+            }
+
+            mixer.model = MaModel.newIns(mamodel.getData());
+
+            List<File> maanims = gatherMaanims(new File(workspace, "ImageDataLocal"), animCode, zombie);
+
+            for(int i = 0; i < maanims.size(); i++) {
+                VFile maanim = VFile.getFile(maanims.get(i));
+
+                if(maanim == null) {
+                    ch.sendMessage("Couldn't find maanim file : "+maanims.get(i).getName()).queue();
+
+                    return;
+                }
+
+                mixer.anim[i] = MaAnim.newIns(maanim.getData());
+            }
+
+            mixer.png = ImageIO.read(new File(workspace, "NumberLocal/"+animCode+".png"));
+
+            EntityHandler.generateBCAnim(ch, g.getBoostTier().getKey(), mixer, lang);
         } else {
-            for(int i = 0; i < anim; i++) {
-                message.append("MAANIM ").append(i).append(" : -");
+            int anim = getAnimNumber(getContent(event));
 
-                if(i < anim - 1)
-                    message.append("\n");
-            }
-        }
+            if(bc)
+                anim = zombie ? 7 : 4;
 
-        Message m = ch.sendMessage(message.toString()).complete();
+            StringBuilder message = new StringBuilder("PNG : -\nIMGCUT : -\nMAMODEL : -\n");
 
-        File temp = new File("./temp");
-
-        if(!temp.exists()) {
-            boolean res = temp.mkdirs();
-
-            if(!res) {
-                System.out.println("Can't create folder : "+temp.getAbsolutePath());
-                return;
-            }
-        }
-
-        File container = new File("./temp", StaticStore.findFileName(temp, "anim", ""));
-
-        if(!container.exists()) {
-            boolean res = container.mkdirs();
-
-            if(!res) {
-                System.out.println("Can't create folder : "+temp.getAbsolutePath());
-                return;
-            }
-        }
-
-        Message msg = getMessage(event);
-
-        if(msg != null)
             if(bc) {
-                new BCAnimMessageHolder(msg, m, lang, ch.getId(), container, ch, zombie);
+                for(int i = 0; i < anim; i++) {
+                    message.append(getMaanimTitle(i)).append("-");
+
+                    if(i < anim - 1)
+                        message.append("\n");
+                }
             } else {
-                new AnimMessageHolder(msg, m, lang, ch.getId(), container, debug, ch, raw, transparent, anim);
+                for(int i = 0; i < anim; i++) {
+                    message.append("MAANIM ").append(i).append(" : -");
+
+                    if(i < anim - 1)
+                        message.append("\n");
+                }
             }
+
+            Message m = ch.sendMessage(message.toString()).complete();
+
+            File temp = new File("./temp");
+
+            if(!temp.exists()) {
+                boolean res = temp.mkdirs();
+
+                if(!res) {
+                    System.out.println("Can't create folder : "+temp.getAbsolutePath());
+                    return;
+                }
+            }
+
+            File container = new File("./temp", StaticStore.findFileName(temp, "anim", ""));
+
+            if(!container.exists()) {
+                boolean res = container.mkdirs();
+
+                if(!res) {
+                    System.out.println("Can't create folder : "+temp.getAbsolutePath());
+                    return;
+                }
+            }
+
+            Message msg = getMessage(event);
+
+            if(msg != null)
+                if(bc) {
+                    new BCAnimMessageHolder(msg, m, lang, ch.getId(), container, ch, zombie);
+                } else {
+                    new AnimMessageHolder(msg, m, lang, ch.getId(), container, debug, ch, raw, transparent, anim);
+                }
+        }
     }
 
     private int checkParam(String message) {
@@ -145,6 +238,14 @@ public class AnimAnalyzer extends ConstraintCommand {
                         } else {
                             break label;
                         }
+                        break;
+                    case "-apk":
+                    case "-a":
+                        if((result & PARAM_USEAPK) == 0) {
+                            result |= PARAM_USEAPK;
+                        } else {
+                            break label;
+                        }
                 }
             }
         }
@@ -183,5 +284,83 @@ public class AnimAnalyzer extends ConstraintCommand {
             default:
                 return "MAANIM "+index+" : ";
         }
+    }
+
+    private String getAnimCode(String content) {
+        String[] contents = content.split(" ");
+
+        if(contents.length < 2)
+            return null;
+
+        for(int i = 1; i < contents.length; i++) {
+            if(contents[i].startsWith("-"))
+                continue;
+
+            return contents[i];
+        }
+
+        return null;
+    }
+
+    private int getLocale(String content) {
+        if(content.contains("-tw"))
+            return LangID.ZH;
+        else if(content.contains("-en"))
+            return LangID.EN;
+        else if(content.contains("-kr"))
+            return LangID.KR;
+        else
+            return LangID.JP;
+    }
+
+    private boolean validateFiles(String code, File workspace, boolean zombie) {
+        File numberLocal = new File(workspace, "NumberLocal");
+        File imageDataLocal = new File(workspace, "ImageDataLocal");
+
+        if(!numberLocal.exists() || !imageDataLocal.exists()) {
+            return false;
+        }
+
+        File sprite = new File(numberLocal, code+".png");
+
+        if(!sprite.exists()) {
+            return false;
+        }
+
+        String[] maanims;
+
+        if(zombie) {
+            maanims = new String[] {"00", "01", "02", "03", "_zombie00", "_zombie01", "_zombie02"};
+        } else {
+            maanims = new String[] {"00", "01", "02", "03"};
+        }
+
+        for(int i = 0; i < maanims.length; i++) {
+            File f = new File(imageDataLocal, code+maanims[i]+".maanim");
+
+            if(!f.exists()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private List<File> gatherMaanims(File imageData, String code, boolean zombie) {
+        List<File> result = new ArrayList<>();
+
+        String[] maanims;
+
+        if(zombie) {
+            maanims = new String[] {"00", "01", "02", "03", "_zombie00", "_zombie01", "_zombie02"};
+        } else {
+            maanims = new String[] {"00", "01", "02", "03"};
+        }
+
+        for(int i = 0; i < maanims.length; i++) {
+            result.add(new File(imageData, code+maanims[i]+".maanim"));
+        }
+
+        return result;
     }
 }

@@ -698,6 +698,10 @@ public class AllEventAdapter extends ListenerAdapter {
                 case "ct":
                     new ClearTemp(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
                     break;
+                case "downloadapk":
+                case "da":
+                    new DownloadApk(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+                    break;
             }
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::onMessageReceived - Error happened while doing something");
