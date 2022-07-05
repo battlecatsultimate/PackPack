@@ -35,6 +35,7 @@ public class StageInfoMessageHolder extends SearchHolder {
         this.star = star;
         this.isFrame = isFrame;
         this.isExtra = isExtra;
+
         registerAutoFinish(this, msg, author, lang, FIVE_MIN);
     }
 

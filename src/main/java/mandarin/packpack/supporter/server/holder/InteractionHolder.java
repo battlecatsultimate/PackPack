@@ -67,7 +67,9 @@ public abstract class InteractionHolder<T extends GenericInteractionCreateEvent>
                 expired = true;
 
                 StaticStore.removeHolder(author.getAuthor().getId(), holder);
-                msg.editMessage(LangID.getStringByID("formst_expire", lang)).queue();
+                msg.editMessage(LangID.getStringByID("formst_expire", lang))
+                        .setActionRows()
+                        .queue();
             }
         }, millis);
     }
@@ -84,7 +86,9 @@ public abstract class InteractionHolder<T extends GenericInteractionCreateEvent>
                 expired = true;
 
                 StaticStore.removeHolder(author.getAuthor().getId(), holder);
-                msg.editMessage(LangID.getStringByID("formst_expire", lang)).queue();
+                msg.editMessage(LangID.getStringByID("formst_expire", lang))
+                        .setActionRows()
+                        .queue();
 
                 if(run != null)
                     run.run();
@@ -104,7 +108,9 @@ public abstract class InteractionHolder<T extends GenericInteractionCreateEvent>
                 expired = true;
 
                 StaticStore.removeHolder(author.getAuthor().getId(), holder);
-                msg.editMessage(LangID.getStringByID(langID, lang)).queue();
+                msg.editMessage(LangID.getStringByID(langID, lang))
+                        .setActionRows()
+                        .queue();
             }
         }, millis);
     }
@@ -121,7 +127,9 @@ public abstract class InteractionHolder<T extends GenericInteractionCreateEvent>
                 expired = true;
 
                 StaticStore.removeHolder(author.getAuthor().getId(), holder);
-                msg.editMessage(LangID.getStringByID(langID, lang)).queue();
+                msg.editMessage(LangID.getStringByID(langID, lang))
+                        .setActionRows()
+                        .queue();
 
                 if(run != null)
                     run.run();
