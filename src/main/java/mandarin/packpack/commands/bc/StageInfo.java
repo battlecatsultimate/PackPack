@@ -14,6 +14,7 @@ import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import mandarin.packpack.supporter.server.holder.SearchHolder;
 import mandarin.packpack.supporter.server.holder.StageInfoButtonHolder;
 import mandarin.packpack.supporter.server.holder.StageInfoMessageHolder;
 import mandarin.packpack.supporter.server.holder.StageReactionSlashMessageHolder;
@@ -175,7 +176,7 @@ public class StageInfo extends TimedConstraintCommand {
                     Message author = getMessage(event);
 
                     if(author != null)
-                        StaticStore.putHolder(m.getId(), new StageInfoButtonHolder(stages.get(0), author, result, ch.getId(), m.getId()));
+                        StaticStore.putHolder(m.getId(), new StageInfoButtonHolder(stages.get(0), author, result, ch.getId()));
                 }
             } else {
                 int param = checkParameters(getContent(event));
@@ -183,104 +184,22 @@ public class StageInfo extends TimedConstraintCommand {
                 boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
                 boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
 
-                CommonStatic.getConfig().lang = lang;
-
-                String check;
-
-                if(stages.size() <= 20)
-                    check = "";
-                else
-                    check = LangID.getStringByID("formst_next", lang);
-
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("stinfo_several", lang).replace("_", generateSearchName(names)))
                         .append("```md\n")
-                        .append(LangID.getStringByID("formst_pick", lang))
-                        .append(check);
+                        .append(LangID.getStringByID("formst_pick", lang));
 
-                for(int i = 0; i < 20; i++) {
-                    if(i >= stages.size())
-                        break;
+                List<String> data = accumulateData(stages, true);
 
-                    Stage st = stages.get(i);
-                    StageMap stm = st.getCont();
-                    MapColc mc = stm.getCont();
-
-                    String name;
-
-                    if(mc != null)
-                        name = mc.getSID()+"/";
-                    else
-                        name = "Unknown/";
-
-                    if(stm.id != null)
-                        name += Data.trio(stm.id.id)+"/";
-                    else
-                        name += "Unknown/";
-
-                    if(st.id != null)
-                        name += Data.trio(st.id.id)+" | ";
-                    else
-                        name += "Unknown | ";
-
-                    if(mc != null) {
-                        int oldConfig = CommonStatic.getConfig().lang;
-                        CommonStatic.getConfig().lang = lang;
-
-                        String mcn = MultiLangCont.get(mc);
-
-                        CommonStatic.getConfig().lang = oldConfig;
-
-                        if(mcn == null || mcn.isBlank())
-                            mcn = mc.getSID();
-
-                        name += mcn+" - ";
-                    } else {
-                        name += "Unknown - ";
-                    }
-
-                    int oldConfig = CommonStatic.getConfig().lang;
-                    CommonStatic.getConfig().lang = lang;
-
-                    String stmn = MultiLangCont.get(stm);
-
-                    CommonStatic.getConfig().lang = oldConfig;
-
-                    if(stm.id != null) {
-                        if(stmn == null || stmn.isBlank())
-                            stmn = Data.trio(stm.id.id);
-                    } else {
-                        if(stmn == null || stmn.isBlank())
-                            stmn = "Unknown";
-                    }
-
-                    name += stmn+" - ";
-
-                    CommonStatic.getConfig().lang = lang;
-
-                    String stn = MultiLangCont.get(st);
-
-                    CommonStatic.getConfig().lang = oldConfig;
-
-                    if(st.id != null) {
-                        if(stn == null || stn.isBlank())
-                            stn = Data.trio(st.id.id);
-                    } else {
-                        if(stn == null || stn.isBlank())
-                            stn = "Unknown";
-                    }
-
-                    name += stn;
-
-                    sb.append(i+1).append(". ").append(name).append("\n");
+                for(int i = 0; i < data.size(); i++) {
+                    sb.append(i+1).append(". ").append(data.get(i)).append("\n");
                 }
 
-                if(stages.size() > 20)
-                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(1)).replace("-", String.valueOf(stages.size()/20 + 1)));
+                if(stages.size() > SearchHolder.PAGE_CHUNK)
+                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(1)).replace("-", String.valueOf(stages.size()/SearchHolder.PAGE_CHUNK + 1))).append("\n");
 
-                sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
 
-                Message res = getMessageWithNoPings(ch, sb.toString());
+                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).allowedMentions(new ArrayList<>()), stages.size(), accumulateData(stages, false), lang).complete();
 
                 if(res != null) {
                     Member member = getMember(event);
@@ -502,5 +421,92 @@ public class StageInfo extends TimedConstraintCommand {
             result = result.substring(0, result.length() -2);
 
         return result;
+    }
+
+    private List<String> accumulateData(List<Stage> stages, boolean full) {
+        List<String> data = new ArrayList<>();
+
+        for(int i = 0; i < SearchHolder.PAGE_CHUNK; i++) {
+            if(i >= stages.size())
+                break;
+
+            Stage st = stages.get(i);
+            StageMap stm = st.getCont();
+            MapColc mc = stm.getCont();
+
+            String name;
+
+            if(full) {
+                if(mc != null)
+                    name = mc.getSID()+"/";
+                else
+                    name = "Unknown/";
+
+                if(stm.id != null)
+                    name += Data.trio(stm.id.id)+"/";
+                else
+                    name += "Unknown/";
+
+                if(st.id != null)
+                    name += Data.trio(st.id.id)+" | ";
+                else
+                    name += "Unknown | ";
+
+                if(mc != null) {
+                    int oldConfig = CommonStatic.getConfig().lang;
+                    CommonStatic.getConfig().lang = lang;
+
+                    String mcn = MultiLangCont.get(mc);
+
+                    CommonStatic.getConfig().lang = oldConfig;
+
+                    if(mcn == null || mcn.isBlank())
+                        mcn = mc.getSID();
+
+                    name += mcn+" - ";
+                } else {
+                    name += "Unknown - ";
+                }
+            } else {
+                name = "";
+            }
+
+            int oldConfig = CommonStatic.getConfig().lang;
+            CommonStatic.getConfig().lang = lang;
+
+            String stmn = MultiLangCont.get(stm);
+
+            CommonStatic.getConfig().lang = oldConfig;
+
+            if(stm.id != null) {
+                if(stmn == null || stmn.isBlank())
+                    stmn = Data.trio(stm.id.id);
+            } else {
+                if(stmn == null || stmn.isBlank())
+                    stmn = "Unknown";
+            }
+
+            name += stmn+" - ";
+
+            CommonStatic.getConfig().lang = lang;
+
+            String stn = MultiLangCont.get(st);
+
+            CommonStatic.getConfig().lang = oldConfig;
+
+            if(st.id != null) {
+                if(stn == null || stn.isBlank())
+                    stn = Data.trio(st.id.id);
+            } else {
+                if(stn == null || stn.isBlank())
+                    stn = "Unknown";
+            }
+
+            name += stn;
+
+            data.add(name);
+        }
+
+        return data;
     }
 }

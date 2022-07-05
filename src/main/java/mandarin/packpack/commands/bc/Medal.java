@@ -9,12 +9,14 @@ import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.MedalMessageHolder;
+import mandarin.packpack.supporter.server.holder.SearchHolder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Medal extends ConstraintCommand {
     public Medal(ROLE role, int lang, IDHolder id) {
@@ -42,36 +44,20 @@ public class Medal extends ConstraintCommand {
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", realContents[1]));
 
-                String check;
+                sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang));
 
-                if(id.size() <= 20)
-                    check = "";
-                else
-                    check = LangID.getStringByID("formst_next", lang);
+                List<String> data = accumulateData(id);
 
-                sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
-
-                for(int i = 0; i < 20; i++) {
-                    if(i >= id.size())
-                        break;
-
-                    int oldConfig = CommonStatic.getConfig().lang;
-                    CommonStatic.getConfig().lang = lang;
-
-                    String medalName = Data.trio(id.get(i)) + " " + StaticStore.MEDNAME.getCont(id.get(i));
-
-                    CommonStatic.getConfig().lang = oldConfig;
-
-                    sb.append(i+1).append(". ").append(medalName).append("\n");
+                for(int i = 0; i < data.size(); i++) {
+                    sb.append(i+1).append(". ").append(data.get(i)).append("\n");
                 }
 
-                if(id.size() > 20)
-                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", "1").replace("-", String.valueOf(id.size()/20 + 1)));
+                if(id.size() > SearchHolder.PAGE_CHUNK)
+                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", "1").replace("-", String.valueOf(id.size()/SearchHolder.PAGE_CHUNK + 1))).append("\n");
 
-                sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
 
-                Message res = getMessageWithNoPings(ch, sb.toString());
+                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).allowedMentions(new ArrayList<>()), id.size(), data, lang).complete();
 
                 if(res != null) {
                     Member m = getMember(event);
@@ -87,5 +73,25 @@ public class Medal extends ConstraintCommand {
         } else {
             ch.sendMessage(LangID.getStringByID("medal_more", lang)).queue();
         }
+    }
+
+    private List<String> accumulateData(List<Integer> id) {
+        List<String> data = new ArrayList<>();
+
+        for(int i = 0; i < SearchHolder.PAGE_CHUNK; i++) {
+            if(i >= id.size())
+                break;
+
+            int oldConfig = CommonStatic.getConfig().lang;
+            CommonStatic.getConfig().lang = lang;
+
+            String medalName = Data.trio(id.get(i)) + " " + StaticStore.MEDNAME.getCont(id.get(i));
+
+            CommonStatic.getConfig().lang = oldConfig;
+
+            data.add(medalName);
+        }
+
+        return data;
     }
 }

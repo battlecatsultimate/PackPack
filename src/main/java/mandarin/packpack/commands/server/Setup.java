@@ -52,7 +52,7 @@ public class Setup extends ConstraintCommand {
             if(author == null || member == null)
                 return;
 
-            StaticStore.putHolder(member.getId(), new ConfirmButtonHolder(m, author, ch.getId(), member.getId(), () -> initializeSetup(ch, g, author), lang));
+            StaticStore.putHolder(member.getId(), new ConfirmButtonHolder(m, author, ch.getId(), () -> initializeSetup(ch, g, author), lang));
         } else {
             Message author = getMessage(event);
 

@@ -10,6 +10,7 @@ import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.FormAnimMessageHolder;
+import mandarin.packpack.supporter.server.holder.SearchHolder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -18,6 +19,7 @@ import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -99,35 +101,17 @@ public class FormGif extends GlobalTimedConstraintCommand {
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", filterCommand(getContent(event))));
 
-                String check;
+                sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang));
 
-                if(forms.size() <= 20)
-                    check = "";
-                else
-                    check = LangID.getStringByID("formst_next", lang);
+                List<String> data = accumulateData(forms);
 
-                sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
-
-                for(int i = 0; i < 20; i++) {
-                    if(i >= forms.size())
-                        break;
-
-                    Form f = forms.get(i);
-
-                    String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
-
-                    String name = StaticStore.safeMultiLangGet(f, lang);
-
-                    if(name != null)
-                        fname += name;
-
-                    sb.append(i+1).append(". ").append(fname).append("\n");
+                for(int i = 0; i < data.size(); i++) {
+                    sb.append(i+1).append(". ").append(data.get(i)).append("\n");
                 }
 
-                if(forms.size() > 20)
-                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", "1").replace("-", String.valueOf(forms.size()/20 + 1)));
+                if(forms.size() > SearchHolder.PAGE_CHUNK)
+                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", "1").replace("-", String.valueOf(forms.size()/SearchHolder.PAGE_CHUNK + 1))).append("\n");
 
-                sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
 
                 int param = checkParameters(getContent(event));
@@ -141,7 +125,7 @@ public class FormGif extends GlobalTimedConstraintCommand {
                     ch.sendMessage(LangID.getStringByID("gif_ignore", lang)).queue();
                 }
 
-                Message res = getMessageWithNoPings(ch, sb.toString());
+                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).allowedMentions(new ArrayList<>()), forms.size(), data, lang).complete();
 
                 if(res != null) {
                     Message msg = getMessage(event);
@@ -347,5 +331,27 @@ public class FormGif extends GlobalTimedConstraintCommand {
         }
 
         return result.toString().trim();
+    }
+
+    private List<String> accumulateData(List<Form> forms) {
+        List<String> data = new ArrayList<>();
+
+        for(int i = 0; i < SearchHolder.PAGE_CHUNK; i++) {
+            if(i >= forms.size())
+                break;
+
+            Form f = forms.get(i);
+
+            String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
+
+            String name = StaticStore.safeMultiLangGet(f, lang);
+
+            if(name != null)
+                fname += name;
+
+            data.add(fname);
+        }
+
+        return data;
     }
 }

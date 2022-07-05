@@ -29,14 +29,14 @@ public class FormButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
     private final String memberID;
     private final ArrayList<Integer> lv;
 
-    public FormButtonHolder(Form f, Message author, Message msg, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, ArrayList<Integer> lv, int lang, String channelID, String memberID) {
+    public FormButtonHolder(Form f, Message author, Message msg, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, ArrayList<Integer> lv, int lang, String channelID) {
         super(ButtonInteractionEvent.class);
 
         this.embed = msg;
         this.config = config;
         this.lang = lang;
         this.channelID = channelID;
-        this.memberID = memberID;
+        this.memberID = author.getAuthor().getId();
         this.f = f;
 
         this.isFrame = isFrame;

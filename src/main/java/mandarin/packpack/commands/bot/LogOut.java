@@ -26,7 +26,7 @@ public class LogOut extends ConstraintCommand {
             Member m = getMember(event);
 
             if(m != null) {
-                StaticStore.putHolder(m.getId(), new ConfirmButtonHolder(msg, getMessage(event), ch.getId(), m.getId(), () -> {
+                StaticStore.putHolder(m.getId(), new ConfirmButtonHolder(msg, getMessage(event), ch.getId(), () -> {
                     ch.sendMessage("Good bye!").queue();
 
                     StaticStore.saver.cancel();

@@ -13,6 +13,7 @@ import mandarin.packpack.supporter.bc.ImageDrawing;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.EnemyAnimMessageHolder;
+import mandarin.packpack.supporter.server.holder.SearchHolder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -20,6 +21,7 @@ import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class EnemyImage extends TimedConstraintCommand {
@@ -105,47 +107,20 @@ public class EnemyImage extends TimedConstraintCommand {
 
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", filterCommand(getContent(event))));
 
-                String check;
+                sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang));
 
-                if(enemies.size() <= 20)
-                    check = "";
-                else
-                    check = LangID.getStringByID("formst_next", lang);
+                List<String> data = accumulateData(enemies);
 
-                sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
-
-                for(int i = 0; i < 20; i++) {
-                    if(i >= enemies.size())
-                        break;
-
-                    Enemy e = enemies.get(i);
-
-                    String fname;
-
-                    if(e.id != null) {
-                         fname = Data.trio(e.id.id)+" - ";
-                    } else {
-                        fname = e.toString();
-                    }
-
-                    int oldConfig = CommonStatic.getConfig().lang;
-                    CommonStatic.getConfig().lang = lang;
-
-                    if(MultiLangCont.get(e) != null)
-                        fname += MultiLangCont.get(e);
-
-                    CommonStatic.getConfig().lang = oldConfig;
-
-                    sb.append(i+1).append(". ").append(fname).append("\n");
+                for(int i = 0; i < data.size(); i++) {
+                    sb.append(i+1).append(". ").append(data.get(i)).append("\n");
                 }
 
-                if(enemies.size() > 20)
-                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", "1").replace("-", String.valueOf(enemies.size()/20 + 1)));
+                if(enemies.size() > SearchHolder.PAGE_CHUNK)
+                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", "1").replace("-", String.valueOf(enemies.size()/SearchHolder.PAGE_CHUNK + 1))).append("\n");
 
-                sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
 
-                Message res = getMessageWithNoPings(ch, sb.toString());
+                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).allowedMentions(new ArrayList<>()), enemies.size(), data, lang).complete();
 
                 int param = checkParameters(getContent(event));
                 int mode = getMode(getContent(event));
@@ -351,5 +326,33 @@ public class EnemyImage extends TimedConstraintCommand {
             default:
                 return LangID.getStringByID("fimg_walk", lang);
         }
+    }
+
+    private List<String> accumulateData(List<Enemy> enemies) {
+        List<String> data = new ArrayList<>();
+
+        for(int i = 0; i < SearchHolder.PAGE_CHUNK; i++) {
+            if(i >= enemies.size())
+                break;
+
+            Enemy e = enemies.get(i);
+
+            String ename;
+
+            if(e.id != null) {
+                ename = Data.trio(e.id.id)+" ";
+            } else {
+                ename = " ";
+            }
+
+            String name = StaticStore.safeMultiLangGet(e, lang);
+
+            if(name != null)
+                ename += name;
+
+            data.add(ename);
+        }
+
+        return data;
     }
 }

@@ -19,12 +19,12 @@ public class ConfirmButtonHolder extends InteractionHolder<ButtonInteractionEven
 
     private final Message msg;
 
-    public ConfirmButtonHolder(Message msg, Message author, String channelID, String memberID, Runnable action, int lang) {
+    public ConfirmButtonHolder(Message msg, Message author, String channelID, Runnable action, int lang) {
         super(ButtonInteractionEvent.class);
         this.action = action;
         this.lang = lang;
         this.channelID = channelID;
-        this.memberID = memberID;
+        this.memberID = author.getAuthor().getId();
 
         this.msg = msg;
 

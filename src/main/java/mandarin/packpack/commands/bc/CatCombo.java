@@ -15,12 +15,14 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.ComboFormMessageHolder;
 import mandarin.packpack.supporter.server.holder.ComboMessageHolder;
+import mandarin.packpack.supporter.server.holder.SearchHolder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class CatCombo extends TimedConstraintCommand {
@@ -46,41 +48,20 @@ public class CatCombo extends TimedConstraintCommand {
             } else {
                 disableTimer();
 
-                String check;
+                StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang));
 
-                if(combos.size() <= 20)
-                    check = "";
-                else
-                    check = LangID.getStringByID("formst_next", lang);
+                List<String> data = accumulateCombo(combos);
 
-                StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
-
-                for(int i = 0; i < 20 ; i++) {
-                    if(i >= combos.size())
-                        break;
-
-                    Combo c = combos.get(i);
-
-                    String comboName = Data.trio(Integer.parseInt(c.name)) + " ";
-
-                    int oldConfig = CommonStatic.getConfig().lang;
-                    CommonStatic.getConfig().lang = lang;
-
-                    if(MultiLangCont.getStatic().COMNAME.getCont(c) != null)
-                        comboName += MultiLangCont.getStatic().COMNAME.getCont(c) + " | " + DataToString.getComboType(c, lang);
-
-                    CommonStatic.getConfig().lang = oldConfig;
-
-                    sb.append(i+1).append(". ").append(comboName).append("\n");
+                for(int i = 0; i < data.size(); i++) {
+                    sb.append(i+1).append(". ").append(data.get(i)).append("\n");
                 }
 
-                if(combos.size() > 20)
-                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(1)).replace("-", String.valueOf(combos.size()/20 + 1)));
+                if(combos.size() > SearchHolder.PAGE_CHUNK)
+                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(1)).replace("-", String.valueOf(combos.size()/SearchHolder.PAGE_CHUNK + 1))).append("\n");
 
-                sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
 
-                Message res = getMessageWithNoPings(ch, sb.toString());
+                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).allowedMentions(new ArrayList<>()), combos.size(), data, lang).complete();
 
                 if(res != null) {
                     Member m = getMember(event);
@@ -112,41 +93,20 @@ public class CatCombo extends TimedConstraintCommand {
                 } else {
                     disableTimer();
 
-                    String check;
+                    StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang));
 
-                    if(combos.size() <= 20)
-                        check = "";
-                    else
-                        check = LangID.getStringByID("formst_next", lang);
+                    List<String> data = accumulateCombo(combos);
 
-                    StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
-
-                    for(int i = 0; i < 20 ; i++) {
-                        if(i >= combos.size())
-                            break;
-
-                        Combo c = combos.get(i);
-
-                        String comboName = Data.trio(Integer.parseInt(c.name)) + " ";
-
-                        int oldConfig = CommonStatic.getConfig().lang;
-                        CommonStatic.getConfig().lang = lang;
-
-                        if(MultiLangCont.getStatic().COMNAME.getCont(c) != null)
-                            comboName += MultiLangCont.getStatic().COMNAME.getCont(c) + " | " + DataToString.getComboType(c, lang);
-
-                        CommonStatic.getConfig().lang = oldConfig;
-
-                        sb.append(i+1).append(". ").append(comboName).append("\n");
+                    for(int i = 0; i < data.size(); i++) {
+                        sb.append(i+1).append(". ").append(data.get(i)).append("\n");
                     }
 
-                    if(combos.size() > 20)
-                        sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(1)).replace("-", String.valueOf(combos.size()/20 + 1)));
+                    if(combos.size() > SearchHolder.PAGE_CHUNK)
+                        sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(1)).replace("-", String.valueOf(combos.size()/SearchHolder.PAGE_CHUNK + 1))).append("\n");
 
-                    sb.append(LangID.getStringByID("formst_can", lang));
                     sb.append("```");
 
-                    Message res = getMessageWithNoPings(ch, sb.toString());
+                    Message res = registerSearchComponents(ch.sendMessage(sb.toString()).allowedMentions(new ArrayList<>()), combos.size(), data, lang).complete();
 
                     if(res != null) {
                         Member m = getMember(event);
@@ -161,41 +121,20 @@ public class CatCombo extends TimedConstraintCommand {
                     }
                 }
             } else {
-                String check;
+                StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang));
 
-                if(forms.size() <= 20)
-                    check = "";
-                else
-                    check = LangID.getStringByID("formst_next", lang);
+                List<String> data = accumulateUnit(forms);
 
-                StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
-
-                for(int i = 0; i < 20; i++) {
-                    if(i >= forms.size())
-                        break;
-
-                    Form f = forms.get(i);
-
-                    String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
-
-                    int oldConfig = CommonStatic.getConfig().lang;
-                    CommonStatic.getConfig().lang = lang;
-
-                    if(MultiLangCont.get(f) != null)
-                        fname += MultiLangCont.get(f);
-
-                    CommonStatic.getConfig().lang = oldConfig;
-
-                    sb.append(i+1).append(". ").append(fname).append("\n");
+                for(int i = 0; i < data.size(); i++) {
+                    sb.append(i+1).append(". ").append(data.get(i)).append("\n");
                 }
 
-                if(forms.size() > 20)
-                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(1)).replace("-", String.valueOf(forms.size()/20 + 1)));
+                if(forms.size() > SearchHolder.PAGE_CHUNK)
+                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(1)).replace("-", String.valueOf(forms.size()/SearchHolder.PAGE_CHUNK + 1))).append("\n");
 
-                sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
 
-                Message res = getMessageWithNoPings(ch, sb.toString());
+                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).allowedMentions(new ArrayList<>()), forms.size(), data, lang).complete();
 
                 if(res != null) {
                     Member m = getMember(event);
@@ -263,5 +202,54 @@ public class CatCombo extends TimedConstraintCommand {
         }
 
         return builder.toString();
+    }
+
+    private List<String> accumulateCombo(List<Combo> combos) {
+        List<String> data = new ArrayList<>();
+        for(int i = 0; i < SearchHolder.PAGE_CHUNK; i++) {
+            if(i >= combos.size())
+                break;
+
+            Combo c = combos.get(i);
+
+            String comboName = Data.trio(Integer.parseInt(c.name)) + " ";
+
+            int oldConfig = CommonStatic.getConfig().lang;
+            CommonStatic.getConfig().lang = lang;
+
+            if(MultiLangCont.getStatic().COMNAME.getCont(c) != null)
+                comboName += MultiLangCont.getStatic().COMNAME.getCont(c) + " | " + DataToString.getComboType(c, lang);
+
+            CommonStatic.getConfig().lang = oldConfig;
+
+            data.add(comboName);
+        }
+
+        return data;
+    }
+
+    private List<String> accumulateUnit(List<Form> forms) {
+        List<String> data = new ArrayList<>();
+
+        for(int i = 0; i < SearchHolder.PAGE_CHUNK; i++) {
+            if(i >= forms.size())
+                break;
+
+            Form f = forms.get(i);
+
+            String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
+
+            int oldConfig = CommonStatic.getConfig().lang;
+            CommonStatic.getConfig().lang = lang;
+
+            if(MultiLangCont.get(f) != null)
+                fname += MultiLangCont.get(f);
+
+            CommonStatic.getConfig().lang = oldConfig;
+
+            data.add(fname);
+        }
+
+        return data;
     }
 }

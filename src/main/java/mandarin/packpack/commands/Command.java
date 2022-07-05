@@ -1,14 +1,20 @@
 package mandarin.packpack.commands;
 
+import mandarin.packpack.supporter.EmoteStore;
 import mandarin.packpack.supporter.Pauser;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.SpamPrevent;
+import mandarin.packpack.supporter.server.holder.SearchHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
+import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 
 import java.io.File;
@@ -27,6 +33,41 @@ public abstract class Command {
         components.add(Button.danger("cancel", LangID.getStringByID("button_cancel", lang)));
 
         return m.setActionRow(components);
+    }
+
+    public static MessageAction registerSearchComponents(MessageAction m, int dataSize, List<String> data, int lang) {
+        int totPage = dataSize / SearchHolder.PAGE_CHUNK + 1;
+
+        List<ActionRow> rows = new ArrayList<>();
+
+        if(dataSize > SearchHolder.PAGE_CHUNK) {
+            List<Button> buttons = new ArrayList<>();
+
+            if(totPage > 10) {
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("search_prev10", lang), Emoji.fromEmote(EmoteStore.TWO_PREVIOUS)).asDisabled());
+            }
+
+            buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", LangID.getStringByID("search_prev", lang), Emoji.fromEmote(EmoteStore.PREVIOUS)).asDisabled());
+            buttons.add(Button.of(ButtonStyle.SECONDARY, "next", LangID.getStringByID("search_next", lang), Emoji.fromEmote(EmoteStore.NEXT)));
+
+            if(totPage > 10) {
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("search_next10", lang), Emoji.fromEmote(EmoteStore.TWO_NEXT)));
+            }
+
+            rows.add(ActionRow.of(buttons));
+        }
+
+        List<SelectOption> options = new ArrayList<>();
+
+        for(int i = 0; i < data.size(); i++) {
+            options.add(SelectOption.of(data.get(i), String.valueOf(i)));
+        }
+
+        rows.add(ActionRow.of(SelectMenu.create("data").addOptions(options).setPlaceholder(LangID.getStringByID("search_list", lang)).build()));
+
+        rows.add(ActionRow.of(Button.danger("cancel", LangID.getStringByID("button_cancel", lang))));
+
+        return m.setActionRows(rows);
     }
 
     public static void sendMessageWithFile(MessageChannel ch, String content, File f) {

@@ -27,13 +27,13 @@ public class StageInfoButtonHolder extends InteractionHolder<ButtonInteractionEv
     private final String memberID;
     private final Stage st;
 
-    public StageInfoButtonHolder(Stage st, Message author, Message msg, String channelID, String memberID) {
+    public StageInfoButtonHolder(Stage st, Message author, Message msg, String channelID) {
         super(ButtonInteractionEvent.class);
 
         this.st = st;
         embed = msg;
         this.channelID = channelID;
-        this.memberID = memberID;
+        this.memberID = author.getAuthor().getId();
 
         Timer autoFinish = new Timer();
 

@@ -56,8 +56,6 @@ public class PackBot {
 
         StaticStore.logger = new Logger(client);
 
-        EmoteStore.initialize(client);
-
         StaticStore.saver = new Timer();
         StaticStore.saver.schedule(new TimerTask() {
             @Override
@@ -159,6 +157,19 @@ public class PackBot {
         }, 0, TimeUnit.MINUTES.toMillis(1));
 
         SlashBuilder.build(client);
+
+        Timer timer = new Timer();
+
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                EmoteStore.initialize(client);
+
+                timer.cancel();
+            }
+        };
+
+        timer.schedule(task, 3000);
 
         List<Guild> l = client.getGuilds();
 

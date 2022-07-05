@@ -1,10 +1,17 @@
 package mandarin.packpack.supporter.server.holder;
 
+import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.lang.LangID;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
+import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public abstract class InteractionHolder<T extends GenericInteractionCreateEvent> implements Holder<T> {
     public boolean expired = false;
@@ -46,5 +53,87 @@ public abstract class InteractionHolder<T extends GenericInteractionCreateEvent>
         return ch.sendMessage(content)
                 .allowedMentions(new ArrayList<>())
                 .complete();
+    }
+
+    public void registerAutoFinish(Holder<?> holder, Message msg, Message author, int lang, long millis) {
+        Timer autoFinish = new Timer();
+
+        autoFinish.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if(expired)
+                    return;
+
+                expired = true;
+
+                StaticStore.removeHolder(author.getAuthor().getId(), holder);
+                msg.editMessage(LangID.getStringByID("formst_expire", lang)).queue();
+            }
+        }, millis);
+    }
+
+    public void registerAutoFinish(Holder<?> holder, Message msg, Message author, int lang, long millis, @Nullable Runnable run) {
+        Timer autoFinish = new Timer();
+
+        autoFinish.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if(expired)
+                    return;
+
+                expired = true;
+
+                StaticStore.removeHolder(author.getAuthor().getId(), holder);
+                msg.editMessage(LangID.getStringByID("formst_expire", lang)).queue();
+
+                if(run != null)
+                    run.run();
+            }
+        }, millis);
+    }
+
+    public void registerAutoFinish(Holder<?> holder, Message msg, Message author, int lang, String langID, long millis) {
+        Timer autoFinish = new Timer();
+
+        autoFinish.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if(expired)
+                    return;
+
+                expired = true;
+
+                StaticStore.removeHolder(author.getAuthor().getId(), holder);
+                msg.editMessage(LangID.getStringByID(langID, lang)).queue();
+            }
+        }, millis);
+    }
+
+    public void registerAutoFinish(Holder<?> holder, Message msg, Message author, int lang, String langID, long millis, @Nullable Runnable run) {
+        Timer autoFinish = new Timer();
+
+        autoFinish.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if(expired)
+                    return;
+
+                expired = true;
+
+                StaticStore.removeHolder(author.getAuthor().getId(), holder);
+                msg.editMessage(LangID.getStringByID(langID, lang)).queue();
+
+                if(run != null)
+                    run.run();
+            }
+        }, millis);
+    }
+
+    public int parseDataToInt(GenericComponentInteractionCreateEvent event) {
+        if(!(event instanceof SelectMenuInteractionEvent)) {
+            throw new IllegalStateException("Event type isn't SelectMenuInteractionEvent!");
+        }
+
+        return StaticStore.safeParseInt(((SelectMenuInteractionEvent) event).getValues().get(0));
     }
 }

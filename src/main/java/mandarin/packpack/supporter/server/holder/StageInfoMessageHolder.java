@@ -8,171 +8,41 @@ import common.util.stage.Stage;
 import common.util.stage.StageMap;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
-import mandarin.packpack.supporter.lang.LangID;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class StageInfoMessageHolder extends MessageHolder<MessageReceivedEvent> {
+public class StageInfoMessageHolder extends SearchHolder {
     private final ArrayList<Stage> stage;
-    private final Message msg;
-    private final String channelID;
-
-    private int page = 0;
+    private final Message author;
 
     private final boolean isFrame;
     private final boolean isExtra;
     private final int star;
-    private final int lang;
-
-    private final ArrayList<Message> cleaner = new ArrayList<>();
 
     public StageInfoMessageHolder(ArrayList<Stage> stage, Message author, Message msg, String channelID, int star, boolean isFrame, boolean isExtra, int lang) {
-        super(MessageReceivedEvent.class);
+        super(msg, channelID, author.getAuthor().getId(), lang);
 
         this.stage = stage;
-        this.msg = msg;
-        this.channelID = channelID;
+        this.author = author;
 
         this.star = star;
         this.isFrame = isFrame;
         this.isExtra = isExtra;
-        this.lang = lang;
-
         registerAutoFinish(this, msg, author, lang, FIVE_MIN);
     }
 
     @Override
-    public int handleEvent(MessageReceivedEvent event) {
-        if(expired) {
-            System.out.println("Expired!!");
-            return RESULT_FAIL;
-        }
+    public List<String> accumulateListData(boolean onText) {
+        List<String> data = new ArrayList<>();
 
-        MessageChannel ch = event.getMessage().getChannel();
-
-        if(!ch.getId().equals(channelID))
-            return RESULT_STILL;
-
-        String content = event.getMessage().getContentRaw();
-
-        if(content.equals("n")) {
-            if(20 * (page + 1) >= stage.size()) {
-                return RESULT_STILL;
-            }
-
-            page++;
-
-            showPage();
-
-            cleaner.add(event.getMessage());
-        } else if(content.equals("p")) {
-            if(page == 0)
-                return RESULT_STILL;
-
-            page--;
-
-            showPage();
-
-            cleaner.add(event.getMessage());
-        } else if(StaticStore.isNumeric(content)) {
-            int id = StaticStore.safeParseInt(content) - 1;
-
-            if(id < 0 || id >= stage.size())
-                return RESULT_STILL;
-
-            msg.delete().queue();
-
-            Member m = event.getMember();
-
-            if(m != null) {
-                String mid = m.getId();
-
-                if(StaticStore.timeLimit.containsKey(mid)) {
-                    StaticStore.timeLimit.get(mid).put(StaticStore.COMMAND_STAGEINFO_ID, System.currentTimeMillis());
-                } else {
-                    Map<String, Long> memberLimit = new HashMap<>();
-
-                    memberLimit.put(StaticStore.COMMAND_STAGEINFO_ID, System.currentTimeMillis());
-
-                    StaticStore.timeLimit.put(mid, memberLimit);
-                }
-            }
-
-            try {
-                Message msg = EntityHandler.showStageEmb(stage.get(id), ch, isFrame, isExtra, star, lang);
-
-                Guild g = event.getGuild();
-
-                if(msg != null && StaticStore.idHolder.containsKey(g.getId())) {
-                    if(m != null) {
-                        StaticStore.removeHolder(m.getId(), StageInfoMessageHolder.this);
-                        StaticStore.putHolder(m.getId(), new StageInfoButtonHolder(stage.get(id), event.getMessage(), msg, channelID, m.getId()));
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            expired = true;
-
-            cleaner.add(event.getMessage());
-
-            clean();
-
-            return RESULT_STILL;
-        } else if(content.equals("c")) {
-            msg.editMessage(LangID.getStringByID("formst_cancel", lang)).queue();
-
-            expired = true;
-
-            cleaner.add(event.getMessage());
-
-            return RESULT_FINISH;
-        } else if(content.startsWith("n ")) {
-            String[] contents = content.split(" ");
-
-            if(contents.length == 2) {
-                if(StaticStore.isNumeric(contents[1])) {
-                    int p = StaticStore.safeParseInt(contents[1]) -1;
-
-                    if(p < 0 || p * 20 >= stage.size()) {
-                        return RESULT_STILL;
-                    }
-
-                    page = p;
-
-                    showPage();
-
-                    cleaner.add(event.getMessage());
-                }
-            }
-        }
-
-        return RESULT_STILL;
-    }
-
-    private void showPage() {
-        String check;
-
-        if(stage.size() <= 20)
-            check = "";
-        else if(page == 0)
-            check = LangID.getStringByID("formst_next", lang);
-        else if((page + 1) * 20 >= stage.size())
-            check = LangID.getStringByID("formst_pre", lang);
-        else
-            check = LangID.getStringByID("formst_nexpre", lang);
-
-        StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
-
-        for(int i = 20 * page; i < 20 * (page + 1); i++) {
+        for(int i = PAGE_CHUNK * page; i < PAGE_CHUNK * (page + 1); i++) {
             if(i >= stage.size())
                 break;
 
@@ -180,37 +50,39 @@ public class StageInfoMessageHolder extends MessageHolder<MessageReceivedEvent> 
             StageMap stm = st.getCont();
             MapColc mc = stm.getCont();
 
-            String name;
+            String name = "";
 
-            if(mc != null)
-                name = mc.getSID()+"/";
-            else
-                name = "Unknown/";
+            if(onText) {
+                if(mc != null)
+                    name = mc.getSID()+"/";
+                else
+                    name = "Unknown/";
 
-            if(stm.id != null)
-                name += Data.trio(stm.id.id)+"/";
-            else
-                name += "Unknown/";
+                if(stm.id != null)
+                    name += Data.trio(stm.id.id)+"/";
+                else
+                    name += "Unknown/";
 
-            if(st.id != null)
-                name += Data.trio(st.id.id)+" | ";
-            else
-                name += "Unknown | ";
+                if(st.id != null)
+                    name += Data.trio(st.id.id)+" | ";
+                else
+                    name += "Unknown | ";
 
-            if(mc != null) {
-                int oldConfig = CommonStatic.getConfig().lang;
-                CommonStatic.getConfig().lang = lang;
+                if(mc != null) {
+                    int oldConfig = CommonStatic.getConfig().lang;
+                    CommonStatic.getConfig().lang = lang;
 
-                String mcn = MultiLangCont.get(mc);
+                    String mcn = MultiLangCont.get(mc);
 
-                CommonStatic.getConfig().lang = oldConfig;
+                    CommonStatic.getConfig().lang = oldConfig;
 
-                if(mcn == null || mcn.isBlank())
-                    mcn = mc.getSID();
+                    if(mcn == null || mcn.isBlank())
+                        mcn = mc.getSID();
 
-                name += mcn+" - ";
-            } else {
-                name += "Unknown - ";
+                    name += mcn+" - ";
+                } else {
+                    name += "Unknown - ";
+                }
             }
 
             int oldConfig = CommonStatic.getConfig().lang;
@@ -246,35 +118,49 @@ public class StageInfoMessageHolder extends MessageHolder<MessageReceivedEvent> 
 
             name += stn;
 
-            sb.append(i+1).append(". ").append(name).append("\n");
+            data.add(name);
         }
 
-        if(stage.size() > 20)
-            sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(stage.size()/20 + 1)));
-
-        sb.append(LangID.getStringByID("formst_can", lang));
-        sb.append("```");
-
-        msg.editMessage(sb.toString()).queue();
+        return data;
     }
 
     @Override
-    public void clean() {
-        for(Message m : cleaner) {
-            if(m != null)
-                m.delete().queue();
-        }
-    }
+    public void onSelected(GenericComponentInteractionCreateEvent event) {
+        MessageChannel ch = event.getChannel();
+        Guild g = event.getGuild();
 
-    @Override
-    public void expire(String id) {
-        if(expired)
+        if(g == null)
             return;
 
-        expired = true;
+        int id = parseDataToInt(event);
 
-        StaticStore.removeHolder(id, this);
+        msg.delete().queue();
 
-        msg.editMessage(LangID.getStringByID("formst_expire", lang)).queue();
+        String mid = author.getAuthor().getId();
+
+        if(StaticStore.timeLimit.containsKey(mid)) {
+            StaticStore.timeLimit.get(mid).put(StaticStore.COMMAND_STAGEINFO_ID, System.currentTimeMillis());
+        } else {
+            Map<String, Long> memberLimit = new HashMap<>();
+
+            memberLimit.put(StaticStore.COMMAND_STAGEINFO_ID, System.currentTimeMillis());
+
+            StaticStore.timeLimit.put(mid, memberLimit);
+        }
+
+        try {
+            Message msg = EntityHandler.showStageEmb(stage.get(id), ch, isFrame, isExtra, star, lang);
+
+            if(msg != null && StaticStore.idHolder.containsKey(g.getId())) {
+                StaticStore.putHolder(author.getAuthor().getId(), new StageInfoButtonHolder(stage.get(id), author, msg, channelID));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public int getDataSize() {
+        return stage.size();
     }
 }

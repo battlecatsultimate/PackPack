@@ -1,8 +1,6 @@
 package mandarin.packpack.commands.bc;
 
-import common.CommonStatic;
 import common.util.Data;
-import common.util.lang.MultiLangCont;
 import common.util.unit.Enemy;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
@@ -12,6 +10,7 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.EnemyStatMessageHolder;
+import mandarin.packpack.supporter.server.holder.SearchHolder;
 import mandarin.packpack.supporter.server.slash.SlashOption;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -117,41 +116,20 @@ public class EnemyStat extends ConstraintCommand {
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", filterCommand(getContent(event))));
 
-                String check;
+                sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang));
 
-                if(enemies.size() <= 20)
-                    check = "";
-                else
-                    check = LangID.getStringByID("formst_next", lang);
+                List<String> data = accumulateData(enemies);
 
-                sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
-
-                for(int i = 0; i < 20; i++) {
-                    if(i >= enemies.size())
-                        break;
-
-                    Enemy e = enemies.get(i);
-
-                    String ename = e.id == null ? "UNKNOWN " : Data.trio(e.id.id)+" ";
-
-                    int oldConfig = CommonStatic.getConfig().lang;
-                    CommonStatic.getConfig().lang = lang;
-
-                    if(MultiLangCont.get(e) != null)
-                        ename += MultiLangCont.get(e);
-
-                    CommonStatic.getConfig().lang = oldConfig;
-
-                    sb.append(i+1).append(". ").append(ename).append("\n");
+                for(int i = 0; i < data.size(); i++) {
+                    sb.append(i+1).append(". ").append(data.get(i)).append("\n");
                 }
 
-                if(enemies.size() > 20)
-                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", "1").replace("-", String.valueOf(enemies.size() / 20 + 1)));
+                if(enemies.size() > SearchHolder.PAGE_CHUNK)
+                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", "1").replace("-", String.valueOf(enemies.size()/SearchHolder.PAGE_CHUNK + 1))).append("\n");
 
-                sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
 
-                Message res = getMessageWithNoPings(ch, sb.toString());
+                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).allowedMentions(new ArrayList<>()), enemies.size(), data, lang).complete();
 
                 int[] magnification = handleMagnification(getContent(event));
 
@@ -358,5 +336,33 @@ public class EnemyStat extends ConstraintCommand {
         result = result.substring(0, result.length() - numberLetter);
 
         return result;
+    }
+
+    private List<String> accumulateData(List<Enemy> enemies) {
+        List<String> data = new ArrayList<>();
+
+        for(int i = 0; i < SearchHolder.PAGE_CHUNK; i++) {
+            if(i >= enemies.size())
+                break;
+
+            Enemy e = enemies.get(i);
+
+            String ename;
+
+            if(e.id != null) {
+                ename = Data.trio(e.id.id)+" ";
+            } else {
+                ename = " ";
+            }
+
+            String name = StaticStore.safeMultiLangGet(e, lang);
+
+            if(name != null)
+                ename += name;
+
+            data.add(ename);
+        }
+
+        return data;
     }
 }

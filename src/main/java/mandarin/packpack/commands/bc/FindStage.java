@@ -15,6 +15,7 @@ import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import mandarin.packpack.supporter.server.holder.SearchHolder;
 import mandarin.packpack.supporter.server.holder.StageEnemyMessageHolder;
 import mandarin.packpack.supporter.server.holder.StageInfoButtonHolder;
 import mandarin.packpack.supporter.server.holder.StageInfoMessageHolder;
@@ -24,6 +25,7 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class FindStage extends TimedConstraintCommand {
     private static final int PARAM_SECOND = 2;
@@ -88,7 +90,7 @@ public class FindStage extends TimedConstraintCommand {
                     Message msg = getMessage(event);
 
                     if(msg != null) {
-                        StaticStore.putHolder(m.getId(), new StageInfoButtonHolder(stages.get(0), msg, result, ch.getId(), m.getId()));
+                        StaticStore.putHolder(m.getId(), new StageInfoButtonHolder(stages.get(0), msg, result, ch.getId()));
                     }
                 }
             } else {
@@ -100,99 +102,20 @@ public class FindStage extends TimedConstraintCommand {
                 if(eName.isBlank())
                     eName = Data.trio(enemies.get(0).id.id);
 
-                String check;
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("fstage_several", lang).replace("_", eName)).append("```md\n");
+                
+                List<String> data = accumulateStage(stages, true);
 
-                if(stages.size() <= 20)
-                    check = "";
-                else
-                    check = LangID.getStringByID("formst_next", lang);
-
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("fstage_several", lang).replace("_", eName)).append("```md\n").append(check);
-
-                for(int i = 0; i < 20; i++) {
-                    if(i >= stages.size())
-                        break;
-
-                    Stage st = stages.get(i);
-                    StageMap stm = st.getCont();
-                    MapColc mc = stm.getCont();
-
-                    String name;
-
-                    if(mc != null)
-                        name = mc.getSID()+"/";
-                    else
-                        name = "Unknown/";
-
-                    if(stm.id != null)
-                        name += Data.trio(stm.id.id)+"/";
-                    else
-                        name += "Unknown/";
-
-                    if(st.id != null)
-                        name += Data.trio(st.id.id)+" | ";
-                    else
-                        name += "Unknown | ";
-
-                    if(mc != null) {
-                        int oldConfig = CommonStatic.getConfig().lang;
-                        CommonStatic.getConfig().lang = lang;
-
-                        String mcn = MultiLangCont.get(mc);
-
-                        CommonStatic.getConfig().lang = oldConfig;
-
-                        if(mcn == null || mcn.isBlank())
-                            mcn = mc.getSID();
-
-                        name += mcn+" - ";
-                    } else {
-                        name += "Unknown - ";
-                    }
-
-                    int oldConfig = CommonStatic.getConfig().lang;
-                    CommonStatic.getConfig().lang = lang;
-
-                    String stmn = MultiLangCont.get(stm);
-
-                    CommonStatic.getConfig().lang = oldConfig;
-
-                    if(stm.id != null) {
-                        if(stmn == null || stmn.isBlank())
-                            stmn = Data.trio(stm.id.id);
-                    } else {
-                        if(stmn == null || stmn.isBlank())
-                            stmn = "Unknown";
-                    }
-
-                    name += stmn+" - ";
-
-                    CommonStatic.getConfig().lang = lang;
-
-                    String stn = MultiLangCont.get(st);
-
-                    CommonStatic.getConfig().lang = oldConfig;
-
-                    if(st.id != null) {
-                        if(stn == null || stn.isBlank())
-                            stn = Data.trio(st.id.id);
-                    } else {
-                        if(stn == null || stn.isBlank())
-                            stn = "Unknown";
-                    }
-
-                    name += stn;
-
-                    sb.append(i+1).append(". ").append(name).append("\n");
+                for(int i = 0; i < data.size(); i++) {
+                    sb.append(i+1).append(". ").append(data.get(i)).append("\n");
                 }
 
-                if(stages.size() > 20)
-                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(1)).replace("-", String.valueOf(stages.size()/20 + 1)));
+                if(stages.size() > SearchHolder.PAGE_CHUNK)
+                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(1)).replace("-", String.valueOf(stages.size()/SearchHolder.PAGE_CHUNK + 1))).append("\n");
 
-                sb.append(LangID.getStringByID("formst_can", lang));
                 sb.append("```");
 
-                Message res = getMessageWithNoPings(ch, sb.toString());
+                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).allowedMentions(new ArrayList<>()), stages.size(), accumulateStage(stages, false), lang).complete();
 
                 if(res != null) {
                     Member m = getMember(event);
@@ -210,41 +133,20 @@ public class FindStage extends TimedConstraintCommand {
         } else {
             StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", enemyName));
 
-            String check;
+            sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang));
+            
+            List<String> data = accumulateEnemy(enemies);
 
-            if(enemies.size() <= 20)
-                check = "";
-            else
-                check = LangID.getStringByID("formst_next", lang);
-
-            sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang)).append(check);
-
-            for(int i = 0; i < 20; i++) {
-                if(i >= enemies.size())
-                    break;
-
-                Enemy e = enemies.get(i);
-
-                String ename = e.id == null ? "UNKNOWN " : Data.trio(e.id.id)+" ";
-
-                int oldConfig = CommonStatic.getConfig().lang;
-                CommonStatic.getConfig().lang = lang;
-
-                if(MultiLangCont.get(e) != null)
-                    ename += MultiLangCont.get(e);
-
-                CommonStatic.getConfig().lang = oldConfig;
-
-                sb.append(i+1).append(". ").append(ename).append("\n");
+            for(int i = 0; i < data.size(); i++) {
+                sb.append(i+1).append(". ").append(data.get(i)).append("\n");
             }
 
-            if(enemies.size() > 20)
-                sb.append(LangID.getStringByID("formst_page", lang).replace("_", "1").replace("-", String.valueOf(enemies.size() / 20 + 1)));
-
-            sb.append(LangID.getStringByID("formst_can", lang));
+            if(enemies.size() > SearchHolder.PAGE_CHUNK)
+                sb.append(LangID.getStringByID("formst_page", lang).replace("_", "1").replace("-", String.valueOf(enemies.size() / SearchHolder.PAGE_CHUNK + 1))).append("\n");
+            
             sb.append("```");
 
-            Message res = getMessageWithNoPings(ch, sb.toString());
+            Message res = registerSearchComponents(ch.sendMessage(sb.toString()).allowedMentions(new ArrayList<>()), enemies.size(), data, lang).complete();
 
             if(res != null) {
                 Member m = getMember(event);
@@ -337,5 +239,115 @@ public class FindStage extends TimedConstraintCommand {
         }
 
         return level;
+    }
+    
+    private List<String> accumulateEnemy(List<Enemy> enemies) {
+        List<String> data = new ArrayList<>();
+        
+        for(int i = 0; i < SearchHolder.PAGE_CHUNK; i++) {
+            if(i >= enemies.size())
+                break;
+
+            Enemy e = enemies.get(i);
+
+            String ename = e.id == null ? "UNKNOWN " : Data.trio(e.id.id)+" ";
+
+            int oldConfig = CommonStatic.getConfig().lang;
+            CommonStatic.getConfig().lang = lang;
+
+            if(MultiLangCont.get(e) != null)
+                ename += MultiLangCont.get(e);
+
+            CommonStatic.getConfig().lang = oldConfig;
+
+            data.add(ename);
+        }
+        
+        return data;
+    }
+    
+    private List<String> accumulateStage(List<Stage> stages, boolean full) {
+        List<String> data = new ArrayList<>();
+        
+        for(int i = 0; i < SearchHolder.PAGE_CHUNK; i++) {
+            if(i >= stages.size())
+                break;
+
+            Stage st = stages.get(i);
+            StageMap stm = st.getCont();
+            MapColc mc = stm.getCont();
+
+            String name = "";
+
+            if(full) {
+                if(mc != null)
+                    name = mc.getSID()+"/";
+                else
+                    name = "Unknown/";
+
+                if(stm.id != null)
+                    name += Data.trio(stm.id.id)+"/";
+                else
+                    name += "Unknown/";
+
+                if(st.id != null)
+                    name += Data.trio(st.id.id)+" | ";
+                else
+                    name += "Unknown | ";
+
+                if(mc != null) {
+                    int oldConfig = CommonStatic.getConfig().lang;
+                    CommonStatic.getConfig().lang = lang;
+
+                    String mcn = MultiLangCont.get(mc);
+
+                    CommonStatic.getConfig().lang = oldConfig;
+
+                    if(mcn == null || mcn.isBlank())
+                        mcn = mc.getSID();
+
+                    name += mcn+" - ";
+                } else {
+                    name += "Unknown - ";
+                }
+            }
+
+            int oldConfig = CommonStatic.getConfig().lang;
+            CommonStatic.getConfig().lang = lang;
+
+            String stmn = MultiLangCont.get(stm);
+
+            CommonStatic.getConfig().lang = oldConfig;
+
+            if(stm.id != null) {
+                if(stmn == null || stmn.isBlank())
+                    stmn = Data.trio(stm.id.id);
+            } else {
+                if(stmn == null || stmn.isBlank())
+                    stmn = "Unknown";
+            }
+
+            name += stmn+" - ";
+
+            CommonStatic.getConfig().lang = lang;
+
+            String stn = MultiLangCont.get(st);
+
+            CommonStatic.getConfig().lang = oldConfig;
+
+            if(st.id != null) {
+                if(stn == null || stn.isBlank())
+                    stn = Data.trio(st.id.id);
+            } else {
+                if(stn == null || stn.isBlank())
+                    stn = "Unknown";
+            }
+
+            name += stn;
+
+            data.add(name);
+        }
+        
+        return data;
     }
 }
