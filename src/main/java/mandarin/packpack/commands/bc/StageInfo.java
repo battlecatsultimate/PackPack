@@ -52,9 +52,6 @@ public class StageInfo extends TimedConstraintCommand {
         if(interaction.getGuild() != null) {
             String gID = interaction.getGuild().getId();
 
-            if(gID.equals(StaticStore.BCU_KR_SERVER))
-                lang = LangID.KR;
-
             holder = StaticStore.idHolder.get(gID);
 
             if(holder == null) {
