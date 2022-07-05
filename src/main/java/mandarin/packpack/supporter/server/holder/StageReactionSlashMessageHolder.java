@@ -11,10 +11,7 @@ import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.bc.Castle;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.MessageReaction;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 
 import java.util.ArrayList;
@@ -86,10 +83,16 @@ public class StageReactionSlashMessageHolder extends MessageHolder<MessageReacti
 
         MessageReaction.ReactionEmote e = event.getReactionEmote();
 
+        Emote emote = e.getEmote();
+        Guild g = emote.getGuild();
+
+        if(g == null || !g.getId().equals(StaticStore.PACKPACK_SERVER))
+            return RESULT_STILL;
+
         boolean emojiClicked = false;
 
-        switch (e.getId()) {
-            case StaticStore.CASTLE:
+        switch (e.getName()) {
+            case "Castle":
                 emojiClicked = true;
 
                 CastleImg cs = Identifier.get(st.castle);
@@ -103,7 +106,7 @@ public class StageReactionSlashMessageHolder extends MessageHolder<MessageReacti
                 new Castle(ConstraintCommand.ROLE.MEMBER, lang, holder, cs).execute(event);
 
                 break;
-            case StaticStore.BG:
+            case "Background":
                 emojiClicked = true;
 
                 Background bg = Identifier.get(st.bg);
@@ -115,7 +118,7 @@ public class StageReactionSlashMessageHolder extends MessageHolder<MessageReacti
                 new mandarin.packpack.commands.bc.Background(ConstraintCommand.ROLE.MEMBER, lang, holder, 10000, bg).execute(event);
 
                 break;
-            case StaticStore.MUSIC:
+            case "Music":
                 emojiClicked = true;
 
                 if(st.mus0 == null)
@@ -130,7 +133,7 @@ public class StageReactionSlashMessageHolder extends MessageHolder<MessageReacti
                 new mandarin.packpack.commands.bc.Music(ConstraintCommand.ROLE.MEMBER, lang, holder, "music_", ms).execute(event);
 
                 break;
-            case StaticStore.MUSIC2:
+            case "MusicBoss":
                 emojiClicked = true;
 
                 if(st.mus1 == null)

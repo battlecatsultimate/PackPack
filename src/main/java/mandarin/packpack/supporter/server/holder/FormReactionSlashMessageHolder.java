@@ -4,10 +4,7 @@ import common.util.unit.Form;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.MessageReaction;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 
 import java.util.ArrayList;
@@ -90,8 +87,14 @@ public class FormReactionSlashMessageHolder extends MessageHolder<MessageReactio
 
         MessageReaction.ReactionEmote emoji = event.getReactionEmote();
 
-        switch (emoji.getId()) {
-            case StaticStore.TWOPREVIOUS:
+        Emote emote = emoji.getEmote();
+        Guild g = emote.getGuild();
+
+        if(g == null || !g.getId().equals(StaticStore.PACKPACK_SERVER))
+            return RESULT_STILL;
+
+        switch (emoji.getName()) {
+            case "TwoPrevious":
                 emojiClicked = true;
 
                 if(f.fid - 2 < 0)
@@ -109,7 +112,7 @@ public class FormReactionSlashMessageHolder extends MessageHolder<MessageReactio
                 }
 
                 break;
-            case StaticStore.PREVIOUS:
+            case "Previous":
                 emojiClicked = true;
 
                 if(f.fid - 1 < 0)
@@ -127,7 +130,7 @@ public class FormReactionSlashMessageHolder extends MessageHolder<MessageReactio
                 }
 
                 break;
-            case StaticStore.NEXT:
+            case "Next":
                 emojiClicked = true;
 
                 if(f.unit == null)
@@ -145,7 +148,7 @@ public class FormReactionSlashMessageHolder extends MessageHolder<MessageReactio
                 }
 
                 break;
-            case StaticStore.TWONEXT:
+            case "TwoNext":
                 emojiClicked = true;
 
                 if(f.unit == null)

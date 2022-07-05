@@ -139,18 +139,6 @@ public class StaticStore {
         rgb(218,232,240)
     };
 
-    public static final String TWOPREVIOUS = "821449061332025404";
-    public static final String PREVIOUS = "821449028767187014";
-    public static final String NEXT = "821449099936923739";
-    public static final String TWONEXT = "821449111109894164";
-    public static final String UDP = "892124601478434817";
-    public final static String BG = "821436445242818610";
-    public final static String CASTLE = "821436460447039508";
-    public final static String MUSIC = "821436473525141588";
-    public final static String MUSIC2 = "821436484254564373";
-    public final static String CROWNON = "911286793293414491";
-    public final static String CROWNOFF = "911286831985885215";
-
     public final static String UNITARCHIVE = "964536593715200112";
     public final static String ENEMYARCHIVE = "964536611276738641";
     public final static String MISCARCHIVE = "964536641526067310";
@@ -162,7 +150,7 @@ public class StaticStore {
     public static final BigInteger min = new BigInteger(Integer.toString(Integer.MIN_VALUE));
 
     public static final String MANDARIN_SMELL = "460409259021172781";
-    public static final String PACKPACK = "779311078412255242";
+    public static final String PACKPACK_SERVER = "964054872649515048";
 
     public static String downPack = "./pack/download";
     public static String tempPack = "./pack/download";
@@ -170,9 +158,6 @@ public class StaticStore {
     public static final String ERROR_MSG = "`INTERNAL_ERROR`";
 
     public static Map<String, IDHolder> idHolder = new HashMap<>();
-
-    public static final String BCU_SERVER = "490262537527623692";
-    public static final String BCU_KR_SERVER = "679858366389944409";
 
     public static String loggingChannel = "";
 
@@ -271,23 +256,6 @@ public class StaticStore {
                 System.out.println("Warning! : Key "+key+" returns null!");
                 continue;
             }
-
-            JsonObject set = new JsonObject();
-
-            set.addProperty("key", key);
-            set.addProperty("val", value);
-
-            arr.add(set);
-        }
-
-        return arr;
-    }
-
-    public static JsonArray mapToJsonInt(Map<String, Integer> map) {
-        JsonArray arr = new JsonArray();
-
-        for(String key : map.keySet()) {
-            int value = map.get(key);
 
             JsonObject set = new JsonObject();
 
@@ -877,10 +845,6 @@ public class StaticStore {
         return new UpdateCheck.Downloader(target, temp, "", false, url);
     }
 
-    public static UpdateCheck.Downloader getDownloader(String url, File target, File temp) {
-        return new UpdateCheck.Downloader(target, temp, "", false, url);
-    }
-
     public static String getRoleIDByName(String name, Guild g) {
         AtomicReference<String> id = new AtomicReference<>(null);
 
@@ -974,6 +938,20 @@ public class StaticStore {
 
         for(Emote e : emotes) {
             if(e.getId().equals(id) && e.isAnimated() == animated)
+                return e;
+        }
+
+        return null;
+    }
+
+    public static Emote getEmoteWitNameAndID(JDA jda, String name, long id, boolean animated) {
+        List<Emote> emotes = jda.getEmotesByName(name, false);
+
+        if(emotes.isEmpty())
+            return null;
+
+        for(Emote e : emotes) {
+            if(e.getIdLong() == id && e.isAnimated() == animated)
                 return e;
         }
 

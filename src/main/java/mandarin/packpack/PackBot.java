@@ -1,10 +1,7 @@
 package mandarin.packpack;
 
 import common.CommonStatic;
-import mandarin.packpack.supporter.AssetDownloader;
-import mandarin.packpack.supporter.Logger;
-import mandarin.packpack.supporter.PackContext;
-import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.*;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.event.EventFactor;
 import mandarin.packpack.supporter.event.EventFileGrabber;
@@ -58,6 +55,8 @@ public class PackBot {
         JDA client = builder.build();
 
         StaticStore.logger = new Logger(client);
+
+        EmoteStore.initialize(client);
 
         StaticStore.saver = new Timer();
         StaticStore.saver.schedule(new TimerTask() {

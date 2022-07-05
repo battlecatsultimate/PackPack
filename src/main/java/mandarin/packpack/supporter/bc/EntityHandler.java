@@ -17,6 +17,7 @@ import common.util.stage.Stage;
 import common.util.stage.StageMap;
 import common.util.stage.info.DefStageInfo;
 import common.util.unit.*;
+import mandarin.packpack.supporter.EmoteStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.awt.FG2D;
 import mandarin.packpack.supporter.awt.FIBI;
@@ -227,35 +228,19 @@ public class EntityHandler {
 
             if(g.getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI)) {
                 if(canFirstForm(f)) {
-                    Emote e = StaticStore.getEmoteWitNameAndID(hook.getJDA(), "FirstForm", StaticStore.TWOPREVIOUS, false);
-
-                    if(e != null) {
-                        msg.addReaction(e).queue();
-                    }
+                    msg.addReaction(EmoteStore.TWO_PREVIOUS).queue();
                 }
 
                 if(canPreviousForm(f)) {
-                    Emote e = StaticStore.getEmoteWitNameAndID(hook.getJDA(), "PreviousForm", StaticStore.PREVIOUS, false);
-
-                    if(e != null) {
-                        msg.addReaction(e).queue();
-                    }
+                    msg.addReaction(EmoteStore.PREVIOUS).queue();
                 }
 
                 if(canNextForm(f)) {
-                    Emote e = StaticStore.getEmoteWitNameAndID(hook.getJDA(), "NextForm", StaticStore.NEXT, false);
-
-                    if(e != null) {
-                        msg.addReaction(e).queue();
-                    }
+                    msg.addReaction(EmoteStore.NEXT).queue();
                 }
 
                 if(canFinalForm(f)) {
-                    Emote e = StaticStore.getEmoteWitNameAndID(hook.getJDA(), "FinalForm", StaticStore.TWONEXT, false);
-
-                    if(e != null) {
-                        msg.addReaction(e).queue();
-                    }
+                    msg.addReaction(EmoteStore.TWO_NEXT).queue();
                 }
             }
 
@@ -441,24 +426,24 @@ public class EntityHandler {
 
         if(addEmoji) {
             if(canFirstForm(f)) {
-                components.add(Button.secondary("first", LangID.getStringByID("button_firf", lang)).withEmoji(Emoji.fromEmote("FirstForm", Long.parseLong(StaticStore.TWOPREVIOUS), false)));
+                components.add(Button.secondary("first", LangID.getStringByID("button_firf", lang)).withEmoji(Emoji.fromEmote(EmoteStore.TWO_PREVIOUS)));
             }
 
             if(canPreviousForm(f)) {
-                components.add(Button.secondary("pre", LangID.getStringByID("button_pref", lang)).withEmoji(Emoji.fromEmote("PreviousForm", Long.parseLong(StaticStore.PREVIOUS), false)));
+                components.add(Button.secondary("pre", LangID.getStringByID("button_pref", lang)).withEmoji(Emoji.fromEmote(EmoteStore.PREVIOUS)));
             }
 
             if(canNextForm(f)) {
-                components.add(Button.secondary("next", LangID.getStringByID("button_nexf", lang)).withEmoji(Emoji.fromEmote("NextForm", Long.parseLong(StaticStore.NEXT), false)));
+                components.add(Button.secondary("next", LangID.getStringByID("button_nexf", lang)).withEmoji(Emoji.fromEmote(EmoteStore.NEXT)));
             }
 
             if(canFinalForm(f)) {
-                components.add(Button.secondary("final", LangID.getStringByID("button_finf", lang)).withEmoji(Emoji.fromEmote("FinalForm", Long.parseLong(StaticStore.TWONEXT), false)));
+                components.add(Button.secondary("final", LangID.getStringByID("button_finf", lang)).withEmoji(Emoji.fromEmote(EmoteStore.TWO_NEXT)));
             }
         }
 
         if(f.unit.rarity == 4 || f.unit.rarity == 5) {
-            components.add(Button.link("https://thanksfeanor.pythonanywhere.com/UDP/"+Data.trio(f.unit.id.id), "UDP").withEmoji(Emoji.fromEmote("UDP", Long.parseLong(StaticStore.UDP), false)));
+            components.add(Button.link("https://thanksfeanor.pythonanywhere.com/UDP/"+Data.trio(f.unit.id.id), "UDP").withEmoji(Emoji.fromEmote(EmoteStore.UDP)));
         }
 
         if(!components.isEmpty()) {
@@ -1032,15 +1017,15 @@ public class EntityHandler {
 
         ArrayList<Button> buttons = new ArrayList<>();
 
-        buttons.add(Button.secondary("castle", LangID.getStringByID("button_castle", lang)).withEmoji(Emoji.fromEmote("Castle", Long.parseLong(StaticStore.CASTLE), false)));
-        buttons.add(Button.secondary("bg", LangID.getStringByID("button_bg", lang)).withEmoji(Emoji.fromEmote("Background", Long.parseLong(StaticStore.BG), false)));
+        buttons.add(Button.secondary("castle", LangID.getStringByID("button_castle", lang)).withEmoji(Emoji.fromEmote(EmoteStore.CASTLE)));
+        buttons.add(Button.secondary("bg", LangID.getStringByID("button_bg", lang)).withEmoji(Emoji.fromEmote(EmoteStore.BACKGROUND)));
 
         if(st.mus0 != null) {
-            buttons.add(Button.secondary("music", LangID.getStringByID("button_mus", lang)).withEmoji(Emoji.fromEmote("Music", Long.parseLong(StaticStore.MUSIC), false)));
+            buttons.add(Button.secondary("music", LangID.getStringByID("button_mus", lang)).withEmoji(Emoji.fromEmote(EmoteStore.MUSIC)));
         }
 
         if(hasTwoMusic(st)) {
-            buttons.add(Button.secondary("music2", LangID.getStringByID("button_mus2", lang)).withEmoji(Emoji.fromEmote("MusicBoss", Long.parseLong(StaticStore.MUSIC2), false)));
+            buttons.add(Button.secondary("music2", LangID.getStringByID("button_mus2", lang)).withEmoji(Emoji.fromEmote(EmoteStore.MUSIC_BOSS)));
         }
 
         action = action.setActionRows(ActionRow.of(buttons));
@@ -1232,28 +1217,15 @@ public class EntityHandler {
             Guild g = msg.getGuild();
 
             if(g.getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI)) {
-                Emote e = StaticStore.getEmoteWitNameAndID(hook.getJDA(), "Castle", StaticStore.CASTLE, false);
-
-                if(e != null)
-                    msg.addReaction(e).queue();
-
-                e = StaticStore.getEmoteWitNameAndID(hook.getJDA(), "Background", StaticStore.BG, false);
-
-                if(e != null)
-                    msg.addReaction(e).queue();
+                msg.addReaction(EmoteStore.CASTLE).queue();
+                msg.addReaction(EmoteStore.BACKGROUND).queue();
 
                 if(st.mus0 != null) {
-                    e = StaticStore.getEmoteWitNameAndID(hook.getJDA(), "Music", StaticStore.MUSIC, false);
-
-                    if(e != null)
-                        msg.addReaction(e).queue();
+                    msg.addReaction(EmoteStore.MUSIC).queue();
                 }
 
                 if(hasTwoMusic(st)) {
-                    e = StaticStore.getEmoteWitNameAndID(hook.getJDA(), "MusicBoss", StaticStore.MUSIC2, false);
-
-                    if(e != null)
-                        msg.addReaction(e).queue();
+                    msg.addReaction(EmoteStore.MUSIC_BOSS).queue();
                 }
             }
 
