@@ -79,7 +79,11 @@ public class PackContext implements Context {
     @Override
     public void noticeErr(Exception e, ErrType t, String str) {
         printErr(t, str);
-        StaticStore.logger.uploadErrorLog(e, t.name()+" - "+str);
+
+        if(StaticStore.logger != null) {
+            StaticStore.logger.uploadErrorLog(e, t.name()+" - "+str);
+        }
+
         e.printStackTrace(t == ErrType.INFO ? System.out : System.err);
     }
 
