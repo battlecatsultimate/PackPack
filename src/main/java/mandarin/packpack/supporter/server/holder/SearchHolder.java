@@ -70,7 +70,6 @@ public abstract class SearchHolder extends InteractionHolder<GenericComponentInt
         StaticStore.removeHolder(id, this);
 
         msg.editMessage(LangID.getStringByID("formst_expire", lang))
-                .setActionRows(getComponents())
                 .setActionRows()
                 .queue();
     }
