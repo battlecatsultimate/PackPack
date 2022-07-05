@@ -12,6 +12,7 @@ import common.util.lang.MultiLangCont;
 import common.util.stage.*;
 import common.util.stage.info.DefStageInfo;
 import common.util.unit.*;
+import mandarin.packpack.supporter.EmoteStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 
@@ -938,9 +939,9 @@ public class DataToString {
 
         for(int i = 0; i < stm.stars.length; i++) {
             if(i <= star) {
-                res.append("<:CrownOn:").append(StaticStore.CROWNON).append(">");
+                res.append(EmoteStore.CROWN_ON.getAsMention());
             } else {
-                res.append("<:CrwonOff:").append(StaticStore.CROWNOFF).append(">");
+                res.append(EmoteStore.CROWN_OFF.getAsMention());
             }
         }
 
@@ -1345,7 +1346,7 @@ public class DataToString {
                 builder.append(LangID.getStringByID("data_once", lang));
 
             if(i == 0 && info.drop[i][0] != 100 && info.rand != -4)
-                builder.append(" <:treasureRadar:810007545355173889>");
+                builder.append(EmoteStore.TREASURE_RADAR.getAsMention());
 
             builder.append("  |  ").append(info.drop[i][2]);
 
