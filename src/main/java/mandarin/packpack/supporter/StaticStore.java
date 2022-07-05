@@ -930,8 +930,14 @@ public class StaticStore {
         return DataToString.df.format(size)+unit[2];
     }
 
-    public static Emote getEmoteWitNameAndID(JDA jda, String name, long id, boolean animated) {
+    public static Emote getEmoteWitNameAndID(JDA jda, String name, long id, boolean animated, boolean force) {
         List<Emote> emotes = jda.getEmotesByName(name, false);
+
+        if (force) {
+            while(emotes.isEmpty()) {
+                emotes = jda.getEmotesByName(name, false);
+            }
+        }
 
         if(emotes.isEmpty())
             return null;

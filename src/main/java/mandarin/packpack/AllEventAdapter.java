@@ -5,6 +5,7 @@ import mandarin.packpack.commands.bc.*;
 import mandarin.packpack.commands.bot.*;
 import mandarin.packpack.commands.data.*;
 import mandarin.packpack.commands.server.*;
+import mandarin.packpack.supporter.EmoteStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.ScamLinkHandler;
@@ -16,11 +17,13 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.holder.InteractionHolder;
 import mandarin.packpack.supporter.server.holder.MessageHolder;
+import mandarin.packpack.supporter.server.slash.SlashBuilder;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
@@ -831,6 +834,80 @@ public class AllEventAdapter extends ListenerAdapter {
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::onGenericInteractionCreate - Error happened");
         }
+    }
+
+    @Override
+    public void onReady(@NotNull ReadyEvent event) {
+        super.onReady(event);
+
+        JDA client = event.getJDA();
+
+        EmoteStore.initialize(client);
+
+        SlashBuilder.build(client);
+
+        List<Guild> l = client.getGuilds();
+
+        for (Guild guild : l) {
+            if (guild != null) {
+                IDHolder id = StaticStore.idHolder.get(guild.getId());
+
+                AtomicReference<Boolean> warned = new AtomicReference<>(false);
+
+                if (id == null) {
+                    final IDHolder idh = new IDHolder();
+
+                    String modID = StaticStore.getRoleIDByName("PackPackMod", guild);
+
+                    if(modID == null) {
+                        reassignTempModRole(guild, idh, warned);
+                    } else {
+                        idh.MOD = modID;
+                    }
+
+                    StaticStore.idHolder.put(guild.getId(), idh);
+                } else {
+                    //Validate Role
+                    String mod = id.MOD;
+
+                    if(mod == null) {
+                        String modID = StaticStore.getRoleIDByName("PackPackMod", guild);
+
+                        if(modID == null) {
+                            reassignTempModRole(guild, id, warned);
+                        } else {
+                            id.MOD = modID;
+                        }
+                    } else {
+                        List<Role> roles = guild.getRoles();
+
+                        boolean found = false;
+
+                        for(Role r : roles) {
+                            if(r.getId().equals(mod)) {
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        if(found)
+                            continue;
+
+                        String modID = StaticStore.getRoleIDByName("PackPackMod", guild);
+
+                        if(modID == null) {
+                            reassignTempModRole(guild, id, warned);
+                        } else {
+                            id.MOD = modID;
+                        }
+                    }
+                }
+            }
+        }
+
+        StaticStore.saveServerInfo();
+
+        StaticStore.logger.uploadLog("Bot ready to be used!");
     }
 
     private static boolean isModerator(EnumSet<Permission> set) {
