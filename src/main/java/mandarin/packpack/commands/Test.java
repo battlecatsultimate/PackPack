@@ -1,6 +1,5 @@
 package mandarin.packpack.commands;
 
-import mandarin.packpack.commands.data.StageImage;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
