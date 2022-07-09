@@ -24,14 +24,10 @@ public class Test extends GlobalTimedConstraintCommand {
         if(ch == null)
             return;
 
-        for(int i = 0; i < 20; i++) {
-            new StageImage(ConstraintCommand.ROLE.MANDARIN, lang, holder).execute(event);
-        }
-
         String[] contents = getContent(event).split(" ");
 
         if(contents.length < 3) {
-            ch.sendMessage("p!test -s/c/m [ID]").queue();
+            ch.sendMessage("`p!test -s/c/m [ID]`").queue();
 
             return;
         }

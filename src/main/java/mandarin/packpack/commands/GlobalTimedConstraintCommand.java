@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -73,11 +74,6 @@ public abstract class GlobalTimedConstraintCommand extends Command {
 
         SpamPrevent spam;
 
-        boolean hasRole;
-        boolean isMandarin = m.getId().equals(StaticStore.MANDARIN_SMELL);
-
-        String role = StaticStore.rolesToString(m.getRoles());
-
         if(StaticStore.spamData.containsKey(m.getId())) {
             spam = StaticStore.spamData.get(m.getId());
 
@@ -88,6 +84,11 @@ public abstract class GlobalTimedConstraintCommand extends Command {
 
             StaticStore.spamData.put(m.getId(), spam);
         }
+
+        boolean hasRole;
+        boolean isMandarin = m.getId().equals(StaticStore.MANDARIN_SMELL);
+
+        String role = StaticStore.rolesToString(m.getRoles());
 
         if(constRole == null) {
             hasRole = true;
@@ -122,7 +123,7 @@ public abstract class GlobalTimedConstraintCommand extends Command {
             return;
         }
 
-        if(!hasRole) {
+        if(!hasRole && !isMandarin) {
             if(constRole.equals("MANDARIN")) {
                 ch.sendMessage(LangID.getStringByID("const_man", lang)).queue();
             } else if(constRole.equals("TRUSTED")) {
