@@ -12,6 +12,8 @@ import mandarin.packpack.commands.bc.Castle;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 
 import java.util.ArrayList;
@@ -81,12 +83,14 @@ public class StageReactionSlashMessageHolder extends MessageHolder<MessageReacti
         if(!mem.getId().equals(memberID))
             return RESULT_STILL;
 
-        MessageReaction.ReactionEmote e = event.getReactionEmote();
+        Emoji e = event.getEmoji();
 
-        Emote emote = e.getEmote();
-        Guild g = emote.getGuild();
+        if(!(e instanceof CustomEmoji))
+            return RESULT_STILL;
 
-        if(g == null || !g.getId().equals(StaticStore.PACKPACK_SERVER))
+        Guild g = event.getGuild();
+
+        if(!g.getId().equals(StaticStore.PACKPACK_SERVER))
             return RESULT_STILL;
 
         boolean emojiClicked = false;

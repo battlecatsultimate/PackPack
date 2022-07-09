@@ -6,10 +6,10 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.BoosterData;
 import mandarin.packpack.supporter.server.data.BoosterHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class BoosterEmojiRemove extends ConstraintCommand {
@@ -49,7 +49,7 @@ public class BoosterEmojiRemove extends ConstraintCommand {
                         boolean leave = leaveEmoji(getContent(event));
 
                         if(!leave) {
-                            Emote e = g.getEmoteById(emoji);
+                            RichCustomEmoji e = g.getEmojiById(emoji);
 
                             if(e != null)
                                 e.delete().queue();

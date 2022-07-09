@@ -1,7 +1,10 @@
 package mandarin.packpack;
 
 import common.CommonStatic;
-import mandarin.packpack.supporter.*;
+import mandarin.packpack.supporter.AssetDownloader;
+import mandarin.packpack.supporter.Logger;
+import mandarin.packpack.supporter.PackContext;
+import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.event.EventFactor;
 import mandarin.packpack.supporter.event.EventFileGrabber;
@@ -9,7 +12,6 @@ import mandarin.packpack.supporter.event.GachaSet;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import mandarin.packpack.supporter.server.slash.SlashBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.Permission;
@@ -47,7 +49,7 @@ public class PackBot {
 
         JDABuilder builder = JDABuilder.createDefault(TOKEN);
 
-        builder.setEnabledIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_EMOJIS, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.DIRECT_MESSAGES, GatewayIntent.DIRECT_MESSAGE_REACTIONS);
+        builder.setEnabledIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_EMOJIS_AND_STICKERS, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.DIRECT_MESSAGES, GatewayIntent.DIRECT_MESSAGE_REACTIONS);
         builder.disableCache(CacheFlag.VOICE_STATE);
         builder.setActivity(Activity.playing(develop ? dev : normal));
         builder.addEventListeners(new AllEventAdapter());

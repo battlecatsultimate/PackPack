@@ -1,5 +1,6 @@
 package mandarin.packpack.commands;
 
+import mandarin.packpack.commands.data.StageImage;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
@@ -22,6 +23,10 @@ public class Test extends GlobalTimedConstraintCommand {
 
         if(ch == null)
             return;
+
+        for(int i = 0; i < 20; i++) {
+            new StageImage(ConstraintCommand.ROLE.MANDARIN, lang, holder).execute(event);
+        }
 
         String[] contents = getContent(event).split(" ");
 

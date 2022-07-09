@@ -19,6 +19,7 @@ import mandarin.packpack.supporter.server.data.*;
 import mandarin.packpack.supporter.server.holder.Holder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.events.Event;
 
 import java.awt.*;
@@ -930,19 +931,19 @@ public class StaticStore {
         return DataToString.df.format(size)+unit[2];
     }
 
-    public static Emote getEmoteWitNameAndID(JDA jda, String name, long id, boolean animated, boolean force) {
-        List<Emote> emotes = jda.getEmotesByName(name, false);
+    public static RichCustomEmoji getEmoteWitNameAndID(JDA jda, String name, long id, boolean animated, boolean force) {
+        List<RichCustomEmoji> emotes = jda.getEmojisByName(name, false);
 
         if (force) {
             while(emotes.isEmpty()) {
-                emotes = jda.getEmotesByName(name, false);
+                emotes = jda.getEmojisByName(name, false);
             }
         }
 
         if(emotes.isEmpty())
             return null;
 
-        for(Emote e : emotes) {
+        for(RichCustomEmoji e : emotes) {
             if(e.getIdLong() == id && e.isAnimated() == animated)
                 return e;
         }

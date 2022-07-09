@@ -5,6 +5,8 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 
 import java.util.ArrayList;
@@ -83,14 +85,16 @@ public class FormReactionSlashMessageHolder extends MessageHolder<MessageReactio
         if(!mem.getId().equals(memberID))
             return RESULT_STILL;
 
+        Emoji emoji = event.getEmoji();
+
+        if(!(emoji instanceof CustomEmoji))
+            return RESULT_STILL;
+
         boolean emojiClicked = false;
 
-        MessageReaction.ReactionEmote emoji = event.getReactionEmote();
+        Guild g = event.getGuild();
 
-        Emote emote = emoji.getEmote();
-        Guild g = emote.getGuild();
-
-        if(g == null || !g.getId().equals(StaticStore.PACKPACK_SERVER))
+        if(!g.getId().equals(StaticStore.PACKPACK_SERVER))
             return RESULT_STILL;
 
         switch (emoji.getName()) {

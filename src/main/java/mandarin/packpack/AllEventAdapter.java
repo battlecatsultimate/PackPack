@@ -5,7 +5,7 @@ import mandarin.packpack.commands.bc.*;
 import mandarin.packpack.commands.bot.*;
 import mandarin.packpack.commands.data.*;
 import mandarin.packpack.commands.server.*;
-import mandarin.packpack.supporter.EmoteStore;
+import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.ScamLinkHandler;
@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
@@ -229,7 +230,7 @@ public class AllEventAdapter extends ListenerAdapter {
                 }
 
                 if(emoji != null) {
-                    Emote e = g.getEmoteById(emoji);
+                    RichCustomEmoji e = g.getEmojiById(emoji);
 
                     if(e != null) {
                         e.delete().queue();
@@ -842,7 +843,7 @@ public class AllEventAdapter extends ListenerAdapter {
 
         JDA client = event.getJDA();
 
-        EmoteStore.initialize(client);
+        EmojiStore.initialize(client);
 
         SlashBuilder.build(client);
 

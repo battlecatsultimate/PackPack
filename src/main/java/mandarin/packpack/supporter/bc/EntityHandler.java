@@ -17,7 +17,7 @@ import common.util.stage.Stage;
 import common.util.stage.StageMap;
 import common.util.stage.info.DefStageInfo;
 import common.util.unit.*;
-import mandarin.packpack.supporter.EmoteStore;
+import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.awt.FG2D;
 import mandarin.packpack.supporter.awt.FIBI;
@@ -28,6 +28,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
@@ -228,19 +229,19 @@ public class EntityHandler {
 
             if(g.getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI)) {
                 if(canFirstForm(f)) {
-                    msg.addReaction(EmoteStore.TWO_PREVIOUS).queue();
+                    msg.addReaction(EmojiStore.TWO_PREVIOUS).queue();
                 }
 
                 if(canPreviousForm(f)) {
-                    msg.addReaction(EmoteStore.PREVIOUS).queue();
+                    msg.addReaction(EmojiStore.PREVIOUS).queue();
                 }
 
                 if(canNextForm(f)) {
-                    msg.addReaction(EmoteStore.NEXT).queue();
+                    msg.addReaction(EmojiStore.NEXT).queue();
                 }
 
                 if(canFinalForm(f)) {
-                    msg.addReaction(EmoteStore.TWO_NEXT).queue();
+                    msg.addReaction(EmojiStore.TWO_NEXT).queue();
                 }
             }
 
@@ -426,24 +427,24 @@ public class EntityHandler {
 
         if(addEmoji) {
             if(canFirstForm(f)) {
-                components.add(Button.secondary("first", LangID.getStringByID("button_firf", lang)).withEmoji(Emoji.fromEmote(EmoteStore.TWO_PREVIOUS)));
+                components.add(Button.secondary("first", LangID.getStringByID("button_firf", lang)).withEmoji(Emoji.fromCustom(EmojiStore.TWO_PREVIOUS)));
             }
 
             if(canPreviousForm(f)) {
-                components.add(Button.secondary("pre", LangID.getStringByID("button_pref", lang)).withEmoji(Emoji.fromEmote(EmoteStore.PREVIOUS)));
+                components.add(Button.secondary("pre", LangID.getStringByID("button_pref", lang)).withEmoji(Emoji.fromCustom(EmojiStore.PREVIOUS)));
             }
 
             if(canNextForm(f)) {
-                components.add(Button.secondary("next", LangID.getStringByID("button_nexf", lang)).withEmoji(Emoji.fromEmote(EmoteStore.NEXT)));
+                components.add(Button.secondary("next", LangID.getStringByID("button_nexf", lang)).withEmoji(Emoji.fromCustom(EmojiStore.NEXT)));
             }
 
             if(canFinalForm(f)) {
-                components.add(Button.secondary("final", LangID.getStringByID("button_finf", lang)).withEmoji(Emoji.fromEmote(EmoteStore.TWO_NEXT)));
+                components.add(Button.secondary("final", LangID.getStringByID("button_finf", lang)).withEmoji(Emoji.fromCustom(EmojiStore.TWO_NEXT)));
             }
         }
 
         if(f.unit.rarity == 4 || f.unit.rarity == 5) {
-            components.add(Button.link("https://thanksfeanor.pythonanywhere.com/UDP/"+Data.trio(f.unit.id.id), "UDP").withEmoji(Emoji.fromEmote(EmoteStore.UDP)));
+            components.add(Button.link("https://thanksfeanor.pythonanywhere.com/UDP/"+Data.trio(f.unit.id.id), "UDP").withEmoji(Emoji.fromCustom(EmojiStore.UDP)));
         }
 
         if(!components.isEmpty()) {
@@ -1017,15 +1018,15 @@ public class EntityHandler {
 
         ArrayList<Button> buttons = new ArrayList<>();
 
-        buttons.add(Button.secondary("castle", LangID.getStringByID("button_castle", lang)).withEmoji(Emoji.fromEmote(EmoteStore.CASTLE)));
-        buttons.add(Button.secondary("bg", LangID.getStringByID("button_bg", lang)).withEmoji(Emoji.fromEmote(EmoteStore.BACKGROUND)));
+        buttons.add(Button.secondary("castle", LangID.getStringByID("button_castle", lang)).withEmoji(Emoji.fromCustom(EmojiStore.CASTLE)));
+        buttons.add(Button.secondary("bg", LangID.getStringByID("button_bg", lang)).withEmoji(Emoji.fromCustom(EmojiStore.BACKGROUND)));
 
         if(st.mus0 != null) {
-            buttons.add(Button.secondary("music", LangID.getStringByID("button_mus", lang)).withEmoji(Emoji.fromEmote(EmoteStore.MUSIC)));
+            buttons.add(Button.secondary("music", LangID.getStringByID("button_mus", lang)).withEmoji(Emoji.fromCustom(EmojiStore.MUSIC)));
         }
 
         if(hasTwoMusic(st)) {
-            buttons.add(Button.secondary("music2", LangID.getStringByID("button_mus2", lang)).withEmoji(Emoji.fromEmote(EmoteStore.MUSIC_BOSS)));
+            buttons.add(Button.secondary("music2", LangID.getStringByID("button_mus2", lang)).withEmoji(Emoji.fromCustom(EmojiStore.MUSIC_BOSS)));
         }
 
         action = action.setActionRows(ActionRow.of(buttons));
@@ -1217,15 +1218,15 @@ public class EntityHandler {
             Guild g = msg.getGuild();
 
             if(g.getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI)) {
-                msg.addReaction(EmoteStore.CASTLE).queue();
-                msg.addReaction(EmoteStore.BACKGROUND).queue();
+                msg.addReaction(EmojiStore.CASTLE).queue();
+                msg.addReaction(EmojiStore.BACKGROUND).queue();
 
                 if(st.mus0 != null) {
-                    msg.addReaction(EmoteStore.MUSIC).queue();
+                    msg.addReaction(EmojiStore.MUSIC).queue();
                 }
 
                 if(hasTwoMusic(st)) {
-                    msg.addReaction(EmoteStore.MUSIC_BOSS).queue();
+                    msg.addReaction(EmojiStore.MUSIC_BOSS).queue();
                 }
             }
 

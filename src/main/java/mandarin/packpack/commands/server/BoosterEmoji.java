@@ -151,7 +151,7 @@ public class BoosterEmoji extends ConstraintCommand {
 
                 boolean finalGif = gif;
 
-                g.createEmote(name, Icon.from(target)).queue(e -> {
+                g.createEmoji(name, Icon.from(target)).queue(e -> {
                     if(StaticStore.boosterData.containsKey(g.getId())) {
                         BoosterHolder bHolder = StaticStore.boosterData.get(g.getId());
 
