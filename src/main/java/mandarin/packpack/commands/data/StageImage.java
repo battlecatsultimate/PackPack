@@ -124,11 +124,15 @@ public class StageImage extends ConstraintCommand {
             ch.sendMessage(LangID.getStringByID("stimg_result", lang))
                     .addFile(f, f.getName())
                     .queue(m -> {
+                        System.out.println("deleted : "+f.getName());
+
                         if(f.exists() && !f.delete()) {
                             StaticStore.logger.uploadLog("Can't delete file : "+f.getAbsolutePath());
                         }
                     }, e -> {
                         StaticStore.logger.uploadErrorLog(e, "E/StageImage::handleLast - Error happened while trying to upload stage image");
+
+                        System.out.println("deleted : "+f.getName());
 
                         if(f.exists() && !f.delete()) {
                             StaticStore.logger.uploadLog("Can't delete file : "+f.getAbsolutePath());

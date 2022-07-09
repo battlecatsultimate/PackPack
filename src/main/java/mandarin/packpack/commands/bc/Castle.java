@@ -42,11 +42,9 @@ public class Castle extends ConstraintCommand {
             return;
         }
 
-        File img = new File(temp, StaticStore.findFileName(temp, "castle", ".png"));
+        File img = StaticStore.generateTempFile(temp, "castle", ".png", false);
 
-        if(!img.exists() && !img.createNewFile()) {
-            StaticStore.logger.uploadLog("Can't create new file : "+img.getAbsolutePath());
-
+        if(img == null) {
             return;
         }
 
@@ -160,16 +158,9 @@ public class Castle extends ConstraintCommand {
             }
         }
 
-        File img = new File(temp, StaticStore.findFileName(temp, "castle", ".png"));
+        File img = StaticStore.generateTempFile(temp, "castle", ".png", false);
 
-        if(!img.exists()) {
-            boolean res = img.createNewFile();
-
-            if(!res) {
-                System.out.println("Can't create new file : "+img.getAbsolutePath());
-                return;
-            }
-        } else {
+        if(img == null) {
             return;
         }
 

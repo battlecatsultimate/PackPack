@@ -86,10 +86,9 @@ public class PrintEvent extends ConstraintCommand {
                         return;
                     }
 
-                    File res = new File(temp, StaticStore.findFileName(temp, "event", ".txt"));
+                    File res = StaticStore.generateTempFile(temp, "event", ".txt", false);
 
-                    if(!res.exists() && !res.createNewFile()) {
-                        StaticStore.logger.uploadLog("Failed to create file : "+res.getAbsolutePath());
+                    if(res == null) {
                         return;
                     }
 
@@ -167,10 +166,9 @@ public class PrintEvent extends ConstraintCommand {
                         return;
                     }
 
-                    File res = new File(temp, StaticStore.findFileName(temp, "event", ".txt"));
+                    File res = StaticStore.generateTempFile(temp, "event", ".txt", false);
 
-                    if(!res.exists() && !res.createNewFile()) {
-                        StaticStore.logger.uploadLog("Failed to create file : "+res.getAbsolutePath());
+                    if(res == null) {
                         return;
                     }
 

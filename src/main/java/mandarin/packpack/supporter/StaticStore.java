@@ -74,8 +74,6 @@ public class StaticStore {
 
     public static final Map<Integer, String> announcements = new HashMap<>();
 
-    private static final Map<String, Holder<? extends Event>> holders = new HashMap<>();
-
     public static Map<String, String> suggestBanned = new HashMap<>();
 
     public static ArrayList<String> contributors = new ArrayList<>();
@@ -107,6 +105,9 @@ public class StaticStore {
     public static final Map<String, Map<String, Long>> timeLimit = new HashMap<>();
 
     public static Timer saver = null;
+
+    private static final Map<String, Holder<? extends Event>> holders = new HashMap<>();
+    private static final List<String> queuedFileNames = new ArrayList<>();
 
     public static final int[] langIndex = {
             LangID.EN,
@@ -731,7 +732,7 @@ public class StaticStore {
         }
     }
 
-    public static String findFileName(File folder, String name, String extension) {
+    public static synchronized File generateTempFile(File folder, String name, String extension, boolean isDirectory) {
         int n = 0;
 
         if(!extension.isBlank() && !extension.startsWith("."))
@@ -745,12 +746,36 @@ public class StaticStore {
             else
                 fileName = name+"_"+n+extension;
 
+            if(queuedFileNames.contains(fileName)) {
+                n++;
+                continue;
+            }
+
+            queuedFileNames.add(fileName);
+
             File test = new File(folder, fileName);
 
-            if(!test.exists())
-                return fileName;
-            else
+            if(!Files.exists(test.toPath())) {
+                try {
+                    if(isDirectory) {
+                        Files.createDirectory(test.toPath());
+                    } else {
+                        Files.createFile(test.toPath());
+                    }
+
+                    return test;
+                } catch (Exception e) {
+                    logger.uploadErrorLog(e, "Error happened while trying to create new temp file/folder : "+test.getAbsolutePath());
+
+                    return null;
+                } finally {
+                    queuedFileNames.remove(fileName);
+                }
+            } else {
+                queuedFileNames.remove(fileName);
+
                 n++;
+            }
         }
     }
 

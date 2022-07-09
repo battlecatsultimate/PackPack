@@ -108,10 +108,9 @@ public class AnalyzeServer extends ConstraintCommand {
             return;
         }
 
-        File analysis = new File(f, StaticStore.findFileName(f, "analysis", ""));
+        File analysis =StaticStore.generateTempFile(f, "analysis", "", true);
 
-        if(!analysis.mkdirs()) {
-            StaticStore.logger.uploadLog("Couldn't create folder : "+analysis.getAbsolutePath());
+        if(analysis == null) {
             return;
         }
 

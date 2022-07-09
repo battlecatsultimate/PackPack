@@ -142,11 +142,9 @@ public class DownloadApk extends ConstraintCommand {
             return null;
         }
 
-        File log = new File(temp, StaticStore.findFileName(temp, "result", ".txt"));
+        File log = StaticStore.generateTempFile(temp, "result", ".txt", false);
 
-        if(!log.exists() && !log.createNewFile()) {
-            StaticStore.logger.uploadLog("Failed to create file : "+log.getAbsolutePath());
-
+        if(log == null) {
             return null;
         }
 

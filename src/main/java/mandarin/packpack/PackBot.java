@@ -14,7 +14,6 @@ import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
@@ -27,7 +26,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Usage : java -jar JARNAME DISCORD_BOT_TOKEN IMGUR_API_ACCESS_TOKEN
@@ -264,10 +262,9 @@ public class PackBot {
                                             return;
                                         }
 
-                                        File res = new File(temp, StaticStore.findFileName(temp, "event", ".txt"));
+                                        File res = StaticStore.generateTempFile(temp, "event", ".txt", false);
 
-                                        if(!res.exists() && !res.createNewFile()) {
-                                            StaticStore.logger.uploadLog("Failed to create file : "+res.getAbsolutePath());
+                                        if(res == null) {
                                             return;
                                         }
 
@@ -357,10 +354,9 @@ public class PackBot {
                                             return;
                                         }
 
-                                        File res = new File(temp, StaticStore.findFileName(temp, "event", ".txt"));
+                                        File res = StaticStore.generateTempFile(temp, "event", ".txt", false);
 
-                                        if(!res.exists() && !res.createNewFile()) {
-                                            StaticStore.logger.uploadLog("Failed to create file : "+res.getAbsolutePath());
+                                        if(res == null) {
                                             return;
                                         }
 
@@ -461,26 +457,6 @@ public class PackBot {
                 return "item";
             default:
                 return "sale";
-        }
-    }
-
-    private static void reassignTempModRole(Guild g, IDHolder holder, AtomicReference<Boolean> warned) {
-        if (g.getSelfMember().hasPermission(Permission.MANAGE_ROLES)) {
-            g.createRole()
-                    .setName("PackPackMod")
-                    .queue(r -> holder.MOD = r.getId(), e -> StaticStore.logger.uploadErrorLog(e, "E/PackBot::reassignTempModRole - Error happened while trying to create role"));
-        } else {
-            if(!warned.get()) {
-                Member owner = g.retrieveOwner().complete();
-
-                if(owner != null) {
-                    owner.getUser().openPrivateChannel()
-                            .flatMap(pc -> pc.sendMessage(LangID.getStringByID("needroleperm", holder.serverLocale).replace("_", g.getName())))
-                            .queue();
-
-                    warned.set(true);
-                }
-            }
         }
     }
 }

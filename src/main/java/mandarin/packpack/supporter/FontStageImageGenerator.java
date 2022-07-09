@@ -110,22 +110,10 @@ public class FontStageImageGenerator implements ImageGenerator{
                 pad += generateLetterWidth(str, frc) + 4;
             }
 
-            File f = new File("./temp/", StaticStore.findFileName(new File("./temp/"), "Result", ".png"));
+            File f = StaticStore.generateTempFile(new File("./temp/"), "Result", ".png", false);
 
-            try {
-                if(!f.exists()) {
-                    boolean res = f.createNewFile();
-
-                    if(!res) {
-                        System.out.println("Can't create file : "+f.getAbsolutePath());
-                        return null;
-                    }
-                }
-            } catch (IOException e) {
-                StaticStore.logger.uploadErrorLog(e, "Failed to create file : "+f.getAbsolutePath());
-                e.printStackTrace();
+            if(f == null)
                 return null;
-            }
 
             try {
                 ImageIO.write(img, "PNG", f);
@@ -248,15 +236,10 @@ public class FontStageImageGenerator implements ImageGenerator{
 
             g.drawImage(FIBI.build(scaled), 128 - (scaled.getWidth() * ratio / 2), 32 - 55.0/2, scaled.getWidth() * ratio, scaled.getHeight());
 
-            File f = new File("./temp/", StaticStore.findFileName(new File("./temp/"), "Result", ".png"));
+            File f = StaticStore.generateTempFile(new File("./temp/"), "Result", ".png", false);
 
-            try {
-                Context.check(f);
-            } catch (IOException e) {
-                StaticStore.logger.uploadErrorLog(e, "Failed to check file : "+f.getAbsolutePath());
-                e.printStackTrace();
+            if(f == null)
                 return null;
-            }
 
             try {
                 ImageIO.write(real, "PNG", f);

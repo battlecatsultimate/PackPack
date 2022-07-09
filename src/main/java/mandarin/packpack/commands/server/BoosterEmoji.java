@@ -102,12 +102,14 @@ public class BoosterEmoji extends ConstraintCommand {
                             if(mes == null)
                                 return;
 
+                            File tempo = StaticStore.generateTempFile(temp, StaticStore.extractFileName(att.getFileName()), ".png.tmp", false);
+
+                            if(tempo == null)
+                                return;
+
                             String url = att.getUrl();
 
-                            String fileName = StaticStore.findFileName(temp, StaticStore.extractFileName(att.getFileName()), ".png");
-
-                            target = new File("./temp", fileName);
-                            File tempo = new File("./temp", fileName+".tmp");
+                            target = new File(temp, tempo.getName().replace(".tmp", ""));
 
                             UpdateCheck.Downloader down = new UpdateCheck.Downloader(target, tempo, "", false, url);
 

@@ -61,10 +61,9 @@ public class PrintGachaEvent extends ConstraintCommand {
                 return;
             }
 
-            File res = new File(temp, StaticStore.findFileName(temp, "gachaEvent", ".txt"));
+            File res = StaticStore.generateTempFile(temp, "gachaEvent", ".txt", false);
 
-            if(!res.exists() && !res.createNewFile()) {
-                StaticStore.logger.uploadLog("Failed to create file : "+res.getAbsolutePath());
+            if(res == null) {
                 return;
             }
 

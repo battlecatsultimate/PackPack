@@ -48,10 +48,9 @@ public class StatAnalyzer extends ConstraintCommand {
             return;
         }
 
-        File container = new File("./temp", StaticStore.findFileName(temp, "stat", ""));
+        File container = StaticStore.generateTempFile(temp, "stat", "", true);
 
-        if(!container.exists() && !container.mkdirs()) {
-            StaticStore.logger.uploadLog("Can't create folder : "+container.getAbsolutePath());
+        if(container == null) {
             return;
         }
 

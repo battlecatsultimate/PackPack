@@ -130,15 +130,10 @@ public class ImageDrawing {
             }
         }
 
-        File image = new File("./temp", StaticStore.findFileName(temp, "result", ".png"));
+        File image = StaticStore.generateTempFile(temp, "result", ".png", false);
 
-        if(!image.exists()) {
-            boolean res = image.createNewFile();
-
-            if(!res) {
-                System.out.println("Can't create new file : "+image.getAbsolutePath());
-                return null;
-            }
+        if(image == null) {
+            return null;
         }
 
         BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
@@ -234,19 +229,17 @@ public class ImageDrawing {
             return null;
         }
 
-        String folderName = StaticStore.findFileName(temp, "images", "");
+        File folder = StaticStore.generateTempFile(temp, "images", "", true);
 
-        File folder = new File("./temp", folderName);
-
-        if(!folder.exists() && !folder.mkdirs()) {
-            StaticStore.logger.uploadLog("Can't create folder : "+folder.getAbsolutePath());
+        if(folder == null) {
             return null;
         }
 
-        File mp4 = new File("./temp", StaticStore.findFileName(temp, "result", ".mp4"));
+        String folderName = folder.getName();
 
-        if(!mp4.exists() && !mp4.createNewFile()) {
-            StaticStore.logger.uploadLog("Can't create file : "+mp4.getAbsolutePath());
+        File mp4 = StaticStore.generateTempFile(temp, "result", ".mp4", false);
+
+        if(mp4 == null) {
             return null;
         }
 
@@ -499,15 +492,10 @@ public class ImageDrawing {
         }
 
         File temp = new File("./temp");
-        File file = new File("./temp", StaticStore.findFileName(temp, "result", ".png"));
+        File file = StaticStore.generateTempFile(temp, "result", ".png", false);
 
-        if(!file.exists()) {
-            boolean res = file.createNewFile();
-
-            if(!res) {
-                System.out.println("Can't create file : "+file.getAbsolutePath());
-                return null;
-            }
+        if(file == null) {
+            return null;
         }
 
         ImageIO.write(result, "PNG", file);
@@ -528,29 +516,18 @@ public class ImageDrawing {
             }
         }
 
-        String folderName = StaticStore.findFileName(temp, "images", "");
+        File folder = StaticStore.generateTempFile(temp, "images", "", true);
 
-        File folder = new File("./temp/"+folderName);
-
-        if(!folder.exists()) {
-            boolean res = folder.mkdirs();
-
-            if(!res) {
-                System.out.println("Can't create folder : "+folder.getAbsolutePath());
-
-                return null;
-            }
+        if(folder == null) {
+            return null;
         }
 
-        File gif = new File("./temp", StaticStore.findFileName(temp, "result", ".mp4"));
+        String folderName = folder.getName();
 
-        if(!gif.exists()) {
-            boolean res = gif.createNewFile();
+        File gif = StaticStore.generateTempFile(temp, "result", ".mp4", false);
 
-            if(!res) {
-                System.out.println("Can't create file : "+gif.getAbsolutePath());
-                return null;
-            }
+        if(gif == null) {
+            return null;
         }
 
         CommonStatic.getConfig().ref = false;
@@ -795,15 +772,10 @@ public class ImageDrawing {
             }
         }
 
-        File gif = new File("./temp", StaticStore.findFileName(temp, "result", ".gif"));
+        File gif = StaticStore.generateTempFile(temp, "result", ".gif", false);
 
-        if(!gif.exists()) {
-            boolean res = gif.createNewFile();
-
-            if(!res) {
-                System.out.println("Can't create file : "+gif.getAbsolutePath());
-                return null;
-            }
+        if(gif == null) {
+            return null;
         }
 
         CommonStatic.getConfig().ref = false;
@@ -1016,29 +988,18 @@ public class ImageDrawing {
             }
         }
 
-        String folderName = StaticStore.findFileName(temp, "images", "");
+        File folder = StaticStore.generateTempFile(temp, "images", "", true);
 
-        File folder = new File("./temp/"+folderName);
-
-        if(!folder.exists()) {
-            boolean res = folder.mkdirs();
-
-            if(!res) {
-                System.out.println("Can't create folder : "+folder.getAbsolutePath());
-
-                return null;
-            }
+        if(folder == null) {
+            return null;
         }
 
-        File gif = new File("./temp", StaticStore.findFileName(temp, "result", ".mp4"));
+        String folderName = folder.getName();
 
-        if(!gif.exists()) {
-            boolean res = gif.createNewFile();
+        File gif = StaticStore.generateTempFile(temp, "result", ".mp4", false);
 
-            if(!res) {
-                System.out.println("Can't create file : "+gif.getAbsolutePath());
-                return null;
-            }
+        if(gif == null) {
+            return null;
         }
 
         CommonStatic.getConfig().ref = false;
@@ -1531,11 +1492,9 @@ public class ImageDrawing {
         if(!f.exists() && !f.mkdirs())
             return null;
 
-        String fileName = StaticStore.findFileName(f, "result", ".png");
+        File image = StaticStore.generateTempFile(f, "result", ".png", false);
 
-        File image = new File(f.getAbsolutePath(), fileName);
-
-        if(!image.exists() && !image.createNewFile()) {
+        if(image == null) {
             return null;
         }
 

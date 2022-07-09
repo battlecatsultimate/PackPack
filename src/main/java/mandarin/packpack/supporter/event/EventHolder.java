@@ -955,13 +955,12 @@ public class EventHolder extends EventFactor {
                     if(oldMD5 == null || !oldMD5.equals(newMD5)) {
                         updates[i][j] = true;
 
-                        File temporary = new File("./temp", StaticStore.findFileName(temp, fi, ".tmp"));
-                        File target = new File("./temp", StaticStore.findFileName(temp, fi.split("\\.")[0], ".tsv"));
+                        File temporary = StaticStore.generateTempFile(temp, fi, ".tmp", false);
 
-                        if(!temporary.exists() && !temporary.createNewFile()) {
-                            StaticStore.logger.uploadLog("Failed to create file : "+temporary.getAbsolutePath());
+                        if(temporary == null)
                             continue;
-                        }
+
+                        File target = new File(temp, fi.split("\\.")[0] + ".tsv");
 
                         HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
                         connection.setRequestMethod("GET");
@@ -1013,8 +1012,12 @@ public class EventHolder extends EventFactor {
                 } else {
                     updates[i][j] = true;
 
-                    File temporary = new File("./temp", StaticStore.findFileName(temp, fi, ".tmp"));
-                    File target = new File("./temp", StaticStore.findFileName(temp, fi.split("\\.")[0], ".tsv"));
+                    File temporary = StaticStore.generateTempFile(temp, fi, ".tmp", false);
+
+                    if(temporary == null)
+                        continue;
+
+                    File target = new File(temp, fi.split("\\.")[0] + ".tsv");
 
                     if(!temporary.exists() && !temporary.createNewFile()) {
                         StaticStore.logger.uploadLog("Failed to create file : "+temporary.getAbsolutePath());

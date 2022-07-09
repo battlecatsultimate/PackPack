@@ -711,16 +711,10 @@ public class EntityHandler {
             }
         }
 
-        File img = new File("./temp/", StaticStore.findFileName(temp, "result", ".png"));
+        File img = StaticStore.generateTempFile(temp, "result", ".png", false);
 
-        if(!img.exists()) {
-            boolean res = img.createNewFile();
-
-            if(!res) {
-                System.out.println("Can't create file : "+img.getAbsolutePath());
-                return null;
-            }
-        }
+        if(img == null)
+            return null;
 
         Object image;
 
@@ -746,15 +740,10 @@ public class EntityHandler {
             }
         }
 
-        File img = new File("./temp/", StaticStore.findFileName(temp, "result", ".png"));
+        File img = StaticStore.generateTempFile(temp, "result", ".png", false);
 
-        if(!img.exists()) {
-            boolean res = img.createNewFile();
-
-            if(!res) {
-                System.out.println("Can't create file : "+img.getAbsolutePath());
-                return null;
-            }
+        if(img == null) {
+            return null;
         }
 
         Object image;
@@ -789,15 +778,10 @@ public class EntityHandler {
             }
         }
 
-        File img = new File("./temp", StaticStore.findFileName(tmp, "result", ".png"));
+        File img = StaticStore.generateTempFile(tmp, "result", ".png", false);
 
-        if(!img.exists()) {
-            boolean res = img.createNewFile();
-
-            if(!res) {
-                System.out.println("Can't create file : "+img.getAbsolutePath());
-                return null;
-            }
+        if(img == null) {
+            return null;
         }
 
         BufferedImage image = new BufferedImage(600, 150, BufferedImage.TYPE_INT_ARGB);
@@ -1261,15 +1245,10 @@ public class EntityHandler {
             }
         }
 
-        File img = new File("./temp/", StaticStore.findFileName(temp, "scheme", ".png"));
+        File img = StaticStore.generateTempFile(temp, "scheme", ".png", false);
 
-        if(!img.exists()) {
-            boolean res = img.createNewFile();
-
-            if(!res) {
-                System.out.println("Can't create file : "+img.getAbsolutePath());
-                return null;
-            }
+        if(img == null) {
+            return null;
         }
 
         Canvas cv = new Canvas();
@@ -2379,15 +2358,10 @@ public class EntityHandler {
             }
         }
 
-        File image = new File("./temp/", StaticStore.findFileName(temp, "result", ".png"));
+        File image = StaticStore.generateTempFile(temp, "result", ".png", false);
 
-        if(!image.exists()) {
-            boolean res = image.createNewFile();
-
-            if(!res) {
-                System.out.println("Can't create file : "+image.getAbsolutePath());
-                return;
-            }
+        if(image == null) {
+            return;
         }
 
         f.anim.load();
@@ -2479,15 +2453,10 @@ public class EntityHandler {
             }
         }
 
-        File image = new File("./temp/", StaticStore.findFileName(temp, "result", ".png"));
+        File image = StaticStore.generateTempFile(temp, "result", ".png", false);
 
-        if(!image.exists()) {
-            boolean res = image.createNewFile();
-
-            if(!res) {
-                System.out.println("Can't create file : "+image.getAbsolutePath());
-                return;
-            }
+        if(image == null) {
+            return;
         }
 
         e.anim.load();
@@ -2548,10 +2517,9 @@ public class EntityHandler {
             return;
         }
 
-        File image = new File("./temp", StaticStore.findFileName(temp, "result", ".png"));
+        File image = StaticStore.generateTempFile(temp, "result", ".png", false);
 
-        if(!image.exists() && !image.createNewFile()) {
-            StaticStore.logger.uploadLog("Can't create file : "+image.getAbsolutePath());
+        if(image == null) {
             return;
         }
 
@@ -2865,15 +2833,10 @@ public class EntityHandler {
             }
         }
 
-        File image = new File("./temp", StaticStore.findFileName(temp, "combo", ".png"));
+        File image = StaticStore.generateTempFile(temp, "combo", ".png", false);
 
-        if(!image.exists()) {
-            boolean res = image.createNewFile();
-
-            if(!res) {
-                System.out.println("Can't create new file : "+image.getAbsolutePath());
-                return null;
-            }
+        if(image == null) {
+            return null;
         }
 
         BufferedImage img = new BufferedImage(600, 95, BufferedImage.TYPE_INT_ARGB);

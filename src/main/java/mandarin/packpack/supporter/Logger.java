@@ -64,10 +64,10 @@ public class Logger {
                     return;
                 }
 
-                File log = new File("temp", StaticStore.findFileName(temp, "log", ".txt"));
+                File log = StaticStore.generateTempFile(temp, "log", ".txt", false);
 
-                if(!log.exists() && !log.createNewFile()) {
-                    uploadLog("Failed to create file : "+log.getAbsolutePath());
+                if(log == null) {
+                    return;
                 }
 
                 BufferedWriter writer = new BufferedWriter(new FileWriter(log));

@@ -308,21 +308,10 @@ public class StageImageGenerator implements  ImageGenerator {
                 index++;
             }
 
-            File f = new File("./temp/", StaticStore.findFileName(new File("./temp/"), "Result", ".png"));
+            File f = StaticStore.generateTempFile(new File("./temp/"), "Result", ".png", false);
 
-            if(!f.exists()) {
-                try {
-                    boolean res = f.createNewFile();
-
-                    if(!res) {
-                        System.out.println("Can't create file : "+f.getAbsolutePath());
-                        return null;
-                    }
-                } catch (IOException e) {
-                    StaticStore.logger.uploadErrorLog(e, "Failed to create file : "+f.getAbsolutePath());
-                    e.printStackTrace();
-                    return null;
-                }
+            if(f == null) {
+                return null;
             }
 
             try {
@@ -408,15 +397,10 @@ public class StageImageGenerator implements  ImageGenerator {
 
             g.drawImage(FIBI.build(scaled), 3, 10, scaled.getWidth() * ratio, scaled.getHeight());
 
-            File f = new File("./temp/", StaticStore.findFileName(new File("./temp/"), "Result", ".png"));
+            File f = StaticStore.generateTempFile(new File("./temp/"), "Result", ".png", false);
 
-            try {
-                Context.check(f);
-            } catch (IOException e) {
-                StaticStore.logger.uploadErrorLog(e, "Failed to check file : "+f.getAbsolutePath());
-                e.printStackTrace();
+            if(f == null)
                 return null;
-            }
 
             try {
                 ImageIO.write(real, "PNG", f);

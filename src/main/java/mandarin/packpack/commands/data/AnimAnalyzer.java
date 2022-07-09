@@ -167,15 +167,10 @@ public class AnimAnalyzer extends ConstraintCommand {
                 }
             }
 
-            File container = new File("./temp", StaticStore.findFileName(temp, "anim", ""));
+            File container = StaticStore.generateTempFile(temp, "anim", "", true);
 
-            if(!container.exists()) {
-                boolean res = container.mkdirs();
-
-                if(!res) {
-                    System.out.println("Can't create folder : "+temp.getAbsolutePath());
-                    return;
-                }
+            if(container == null) {
+                return;
             }
 
             Message msg = getMessage(event);
