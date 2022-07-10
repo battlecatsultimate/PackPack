@@ -316,7 +316,9 @@ public class AllEventAdapter extends ListenerAdapter {
 
             String acc = idh.GET_ACCESS;
 
-            if(!mandarin && !isMod && !canGo && (acc != null && mc.getId().equals(acc)))
+            canGo &= acc == null || !mc.getId().equals(acc);
+
+            if(!mandarin && !isMod && !canGo)
                 return;
 
             if(StaticStore.holderContainsKey(m.getId())) {
