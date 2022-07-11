@@ -72,6 +72,8 @@ public class AllEventAdapter extends ListenerAdapter {
         try {
             Guild g = event.getGuild();
 
+            StaticStore.logger.uploadLog("Joined server : "+g.getName()+" ("+g.getId()+")");
+
             IDHolder id = StaticStore.idHolder.get(g.getId());
 
             AtomicReference<Boolean> warned = new AtomicReference<>(false);
