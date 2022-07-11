@@ -10,7 +10,7 @@ public interface CellDrawer {
     int lineMargin = 16;
     int textMargin = 48;
 
-    void initialize(Font nameFont, Font contentFont, FontMetrics nfm, FontMetrics cfm);
+    void initialize(Font nameFont, Font contentFont, FontMetrics nfm, FontMetrics cfm, int targetWidth);
 
     void draw(FG2D g, int x, int y, int uw, int offset, int h, Font nameFont, Font contentFont);
 }

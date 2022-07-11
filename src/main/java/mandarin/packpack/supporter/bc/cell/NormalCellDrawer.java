@@ -41,7 +41,7 @@ public class NormalCellDrawer implements CellDrawer {
     }
 
     @Override
-    public void initialize(Font nameFont, Font contentFont, FontMetrics nfm, FontMetrics cfm) {
+    public void initialize(Font nameFont, Font contentFont, FontMetrics nfm, FontMetrics cfm, int targetWidth) {
         getWidth(nfm, cfm);
         getHeightAndOffset(nameFont, contentFont, nfm.getFontRenderContext(), cfm.getFontRenderContext());
     }

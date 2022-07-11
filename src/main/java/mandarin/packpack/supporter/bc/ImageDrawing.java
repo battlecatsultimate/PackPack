@@ -1329,7 +1329,7 @@ public class ImageDrawing {
         return gif;
     }
 
-    public static File drawStatImage(CustomMaskUnit[] units, List<List<CellDrawer>> cellGroup, int lv, String[] name, String type, File container, int uID) throws Exception {
+    public static File drawStatImage(CustomMaskUnit[] units, List<List<CellDrawer>> cellGroup, int lv, String[] name, String type, File container, int uID, int[] egg) throws Exception {
         Canvas cv = new Canvas();
 
         FontMetrics nfm = cv.getFontMetrics(nameFont);
@@ -1346,36 +1346,43 @@ public class ImageDrawing {
         for(int i = 0; i < cellGroup.size(); i++) {
             List<CellDrawer> group = cellGroup.get(i);
 
-            for(int j = 0; j < group.size(); j++) {
-                group.get(j).initialize(nameFont, contentFont, nfm, cfm);
+            for(int j = 0; j < group.size() - 1; j++) {
+                if(group.get(j) instanceof AbilityCellDrawer)
+                    continue;
+
+                group.get(j).initialize(nameFont, contentFont, nfm, cfm, 0);
 
                 if(group.get(i) instanceof NormalCellDrawer)
                     offset = Math.max(((NormalCellDrawer) group.get(i)).offset, offset);
-                else if(group.get(i) instanceof AbilityCellDrawer)
-                    offset = Math.max(((AbilityCellDrawer) group.get(i)).offset, offset);
 
-                if(j < group.size() - 1) {
-                    int tempH = ((NormalCellDrawer) group.get(j)).h;
-                    int tempUw = ((NormalCellDrawer) group.get(j)).uw;
+                int tempH = ((NormalCellDrawer) group.get(j)).h;
+                int tempUw = ((NormalCellDrawer) group.get(j)).uw;
 
-                    if(((NormalCellDrawer) group.get(j)).isSingleData()) {
-                        uh = Math.max(tempH, uh);
+                if(((NormalCellDrawer) group.get(j)).isSingleData()) {
+                    uh = Math.max(tempH, uh);
 
-                        if(tempUw > uw * 3 + CellDrawer.lineOffset * 4) {
-                            uw = (tempUw - CellDrawer.lineOffset * 4) / 3;
-                        }
-                    } else {
-                        uh = Math.max(tempH, uh);
-                        uw = Math.max(tempUw, uw);
+                    if(tempUw > uw * 3 + CellDrawer.lineOffset * 4) {
+                        uw = (tempUw - CellDrawer.lineOffset * 4) / 3;
                     }
                 } else {
-                    int tempH = ((AbilityCellDrawer) group.get(j)).h;
-                    int tempUw = ((AbilityCellDrawer) group.get(j)).w;
-
-                    ah = Math.max(tempH, ah);
-                    aw = Math.max(tempUw, aw);
+                    uh = Math.max(tempH, uh);
+                    uw = Math.max(tempUw, uw);
                 }
             }
+        }
+
+        for(int i = 0; i < cellGroup.size(); i++) {
+            List<CellDrawer> group = cellGroup.get(i);
+
+            group.get(group.size() - 1).initialize(nameFont, contentFont, nfm, cfm, (int) Math.round((uw * 3 + CellDrawer.lineOffset * 4) * 1.5));
+
+            offset = Math.max(((AbilityCellDrawer) group.get(group.size() - 1)).offset, offset);
+
+            int tempH = ((AbilityCellDrawer) group.get(group.size() - 1)).h;
+            int tempUw = ((AbilityCellDrawer) group.get(group.size() - 1)).w;
+
+            ah = Math.max(tempH, ah);
+            aw = Math.max(tempUw, aw);
         }
 
         if(aw > uw * 3 + CellDrawer.lineOffset * 4) {
@@ -1391,7 +1398,13 @@ public class ImageDrawing {
             FontMetrics sf = cv.getFontMetrics(typeFont);
             FontMetrics lf = cv.getFontMetrics(levelFont);
 
-            File icon = new File(container, "uni"+Data.trio(uID)+"_"+getUnitCode(i)+"00.png");
+            File icon;
+
+            if(egg != null && i < egg.length && egg[i] != -1) {
+                icon = new File(container, "uni"+Data.trio(egg[i])+"_m"+Data.duo(i)+".png");
+            } else {
+                icon = new File(container, "uni"+Data.trio(uID)+"_"+getUnitCode(i)+"00.png");
+            }
 
             BufferedImage title = getUnitTitleImage(icon, name[i], type, lv, bf, sf, lf);
 

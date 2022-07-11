@@ -11,6 +11,7 @@ import java.awt.geom.Rectangle2D;
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class AbilityCellDrawer implements CellDrawer {
     private static final int abilityMargin = 54;
+    private static final int lineSpace = 12;
 
     private final String name;
     private final String[] contents;
@@ -22,6 +23,8 @@ public class AbilityCellDrawer implements CellDrawer {
 
     public int xNameOffset = -1;
     public int yNameOffset = -1;
+
+    public int spaceDotMargin = 0;
 
     public final int[] xTextOffset;
     public final int[] yTextOffset;
@@ -35,14 +38,46 @@ public class AbilityCellDrawer implements CellDrawer {
     }
 
     @Override
-    public void initialize(Font nameFont, Font contentFont, FontMetrics nfm, FontMetrics cfm) {
-        getWidth(cfm);
+    public void initialize(Font nameFont, Font contentFont, FontMetrics nfm, FontMetrics cfm, int targetWidth) {
+        getWidth(cfm, targetWidth);
         getHeightAndOffset(nameFont, contentFont, nfm.getFontRenderContext(), cfm.getFontRenderContext());
     }
 
-    private void getWidth(FontMetrics contentFont) {
+    private void getWidth(FontMetrics contentFont, int targetWidth) {
         for(int i = 0; i < contents.length; i++) {
-            w = Math.max(w, contentFont.stringWidth(contents[i]));
+            String[] data = contents[i].split(" ");
+
+            int stackWidth = 0;
+
+            StringBuilder realContent = new StringBuilder();
+            boolean reachedBoundary = false;
+
+            for(int j = 0; j < data.length; j++) {
+                String realSegment = j < data.length - 1 ? data[j] + " " : data[j];
+
+                int sw = contentFont.stringWidth(realSegment);
+
+                if(stackWidth + sw > targetWidth) {
+                    if(spaceDotMargin == 0) {
+                        spaceDotMargin = contentFont.stringWidth(" · ");
+                    }
+
+                    stackWidth = contentFont.stringWidth( realSegment);
+
+                    realContent.append("\n").append(realSegment);
+
+                    reachedBoundary = true;
+                } else {
+                    stackWidth += sw;
+
+                    realContent.append(realSegment);
+                }
+            }
+
+            if(reachedBoundary)
+                contents[i] = realContent.toString();
+
+            w = Math.max(w, reachedBoundary ? targetWidth : contentFont.stringWidth(contents[i]));
         }
     }
 
@@ -58,18 +93,26 @@ public class AbilityCellDrawer implements CellDrawer {
         offset = rh;
 
         for(int i = 0; i < contents.length; i++) {
-            GlyphVector cgv = contentFont.createGlyphVector(cfrc, contents[i]);
+            String[] segment = contents[i].split("\n");
 
-            Rectangle2D cRect = cgv.getPixelBounds(null, 0, 0);
+            for(int j = 0; j < segment.length; j++) {
+                GlyphVector cgv = contentFont.createGlyphVector(cfrc, segment[j]);
 
-            yTextOffset[i] = (int) Math.round(cRect.getY());
-            xTextOffset[i] = (int) Math.round(cRect.getX());
+                Rectangle2D cRect = cgv.getPixelBounds(null, 0, 0);
 
-            uh = (int) Math.max(uh, cRect.getHeight());
+                if(j == 0) {
+                    yTextOffset[i] = (int) Math.round(cRect.getY());
+                    xTextOffset[i] = (int) Math.round(cRect.getX());
+                }
+
+                uh = (int) Math.max(uh, cRect.getHeight());
+            }
         }
 
         for(int i = 0; i < contents.length; i++) {
-            rh += uh;
+            String[] segment = contents[i].split("\n");
+
+            rh += uh * segment.length + lineSpace * (segment.length - 1);
 
             if(i < contents.length - 1)
                 rh += abilityMargin;
@@ -91,8 +134,22 @@ public class AbilityCellDrawer implements CellDrawer {
         g.setFont(contentFont);
 
         for(int i = 0; i < contents.length; i++) {
-            g.drawText(contents[i], x - xTextOffset[i], ry + offset - yTextOffset[i]);
-            ry += abilityMargin + uh;
+            String[] segment = contents[i].split("\n");
+
+            for(int j = 0; j < segment.length; j++) {
+                if(j == 0) {
+                    g.drawText(segment[j], x - xTextOffset[i], ry + offset - yTextOffset[i]);
+                } else {
+                    g.drawText(segment[j], x + spaceDotMargin - xTextOffset[i], ry + offset - yTextOffset[i]);
+                }
+
+                ry += uh;
+
+                if(j < segment.length - 1)
+                    ry += lineSpace;
+            }
+
+            ry += abilityMargin;
         }
     }
 }
