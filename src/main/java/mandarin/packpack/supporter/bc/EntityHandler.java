@@ -2631,7 +2631,7 @@ public class EntityHandler {
         });
     }
 
-    public static void generateStatImage(MessageChannel ch, List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilData, List<FlagCellData> traitData, CustomMaskUnit[] units, String[] name, File container, int lv, boolean isFrame, int uid, int lang) throws Exception {
+    public static void generateStatImage(MessageChannel ch, List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilData, List<FlagCellData> traitData, CustomMaskUnit[] units, String[] name, File container, int lv, boolean isFrame, int[] egg, int uid, int lang) throws Exception {
         List<List<CellDrawer>> cellGroup = new ArrayList<>();
 
         for(int i = 0; i < units.length; i++) {
@@ -2640,7 +2640,7 @@ public class EntityHandler {
 
         String type = getRarity(units[0].rarity, lang);
 
-        File result = ImageDrawing.drawStatImage(units, cellGroup, lv, name, type, container, uid);
+        File result = ImageDrawing.drawStatImage(units, cellGroup, lv, name, type, container, uid, egg);
 
         if(result == null) {
             ch.sendMessage(LangID.getStringByID("stat_fail", lang)).queue();
@@ -2670,19 +2670,19 @@ public class EntityHandler {
         lvs.add(lv);
 
         cells.add(new NormalCellDrawer(
-                new String[] {"HP", "Hitbacks", "Speed"},
+                new String[] {LangID.getStringByID("data_hp", lang), LangID.getStringByID("data_hb", lang), LangID.getStringByID("data_speed", lang)},
                 new String[] {DataToString.getHP(u, u.curve, false, lvs), DataToString.getHitback(u, false, lvs), DataToString.getSpeed(u, false , lvs)}
         ));
 
-        cells.add(new NormalCellDrawer(new String[] {"Attack"}, new String[] {DataToString.getAtk(u, u.curve, false, lvs)}));
+        cells.add(new NormalCellDrawer(new String[] {LangID.getStringByID("data_atk", lang)}, new String[] {DataToString.getAtk(u, u.curve, false, lvs)}));
 
         cells.add(new NormalCellDrawer(
-                new String[] {"DPS", "Attack Time", "Use Ability"},
+                new String[] {LangID.getStringByID("data_dps", lang), LangID.getStringByID("data_atktime", lang), LangID.getStringByID("data_abilt", lang)},
                 new String[] {DataToString.getDPS(u, u.curve, false, lvs), DataToString.getAtkTime(u, isFrame), DataToString.getAbilT(u, lang)}
         ));
 
         cells.add(new NormalCellDrawer(
-                new String[] {"Pre-Atk", "Post-Atk", "TBA"},
+                new String[] {LangID.getStringByID("data_preatk", lang), LangID.getStringByID("data_postatk", lang), LangID.getStringByID("data_tba", lang)},
                 new String[] {DataToString.getPre(u, isFrame), DataToString.getPost(u, isFrame), DataToString.getTBA(u, isFrame)}
         ));
 
@@ -2697,17 +2697,17 @@ public class EntityHandler {
         }
 
         cells.add(new NormalCellDrawer(
-                new String[] {"Trait"},
+                new String[] {LangID.getStringByID("data_trait", lang)},
                 new String[] {trait.toString()}
         ));
 
         cells.add(new NormalCellDrawer(
-                new String[] {"Attack Type", "Cost", "Range"},
+                new String[] {LangID.getStringByID("data_atktype", lang), LangID.getStringByID("data_cost", lang), LangID.getStringByID("data_range", lang)},
                 new String[] {DataToString.getSiMu(u, lang), DataToString.getCost(u, false, lvs), DataToString.getRange(u)}
         ));
 
         cells.add(new NormalCellDrawer(
-                new String[] {"Cooldown"},
+                new String[] {LangID.getStringByID("data_cooldown", lang)},
                 new String[] {DataToString.getCD(u, isFrame, false, lvs)}
         ));
 
@@ -2786,7 +2786,7 @@ public class EntityHandler {
         }
 
         if(abil.isEmpty()) {
-            cells.add(new NormalCellDrawer(new String[] {"Ability"}, new String[] {"None"}));
+            cells.add(new AbilityCellDrawer(LangID.getStringByID("data_ability", lang), new String[] {LangID.getStringByID("data_none", lang)}));
         } else {
             List<String> finalAbil = new ArrayList<>();
 
@@ -2794,7 +2794,7 @@ public class EntityHandler {
                 finalAbil.add(" · " + abil.get(i));
             }
 
-            cells.add(new AbilityCellDrawer("Ability", finalAbil.toArray(new String[0])));
+            cells.add(new AbilityCellDrawer(LangID.getStringByID("data_ability", lang), finalAbil.toArray(new String[0])));
         }
 
         return cells;
