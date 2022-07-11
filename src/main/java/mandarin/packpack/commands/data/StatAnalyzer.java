@@ -25,14 +25,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class StatAnalyzer extends ConstraintCommand {
     private static final List<String> allParameters = List.of(
             "-s", "-second", "-lv", "-uid", "-u", "-n", "-name", "-l", "-len", "-p", "-proc", "-a", "-ability", "-t", 
-            "-trait", "-c", "-cell", "-apk", "-en", "-jp", "-tw", "-kr", "-egg"
+            "-trait", "-c", "-cell", "-apk", "-en", "-jp", "-tw", "-kr"
     );
 
     public StatAnalyzer(ROLE role, int lang, IDHolder id) {
@@ -153,6 +152,8 @@ public class StatAnalyzer extends ConstraintCommand {
             File levelFile = new File(dataLocal, "unitlevel.csv");
             File buyFile = new File(dataLocal, "unitbuy.csv");
 
+            int[] egg = getEggData(buyFile, uid);
+
             BufferedReader statReader = new BufferedReader(new FileReader(statFile, StandardCharsets.UTF_8));
             BufferedReader levelReader = new BufferedReader(new FileReader(levelFile, StandardCharsets.UTF_8));
             BufferedReader buyReader = new BufferedReader(new FileReader(buyFile, StandardCharsets.UTF_8));
@@ -174,7 +175,13 @@ public class StatAnalyzer extends ConstraintCommand {
             System.gc();
 
             for(int i = 0; i < data.length; i++) {
-                File maanim = new File(imageDataLocal, Data.trio(uid)+"_"+code[i]+"02.maanim");
+                File maanim;
+
+                if(egg != null && i < egg.length && egg[i] != -1) {
+                    maanim = new File(imageDataLocal, Data.trio(egg[i])+"_m02.maanim");
+                } else {
+                    maanim = new File(imageDataLocal, Data.trio(uid)+"_"+code[i]+"02.maanim");
+                }
 
                 VFile anim = VFile.getFile(maanim);
 
@@ -191,34 +198,22 @@ public class StatAnalyzer extends ConstraintCommand {
 
             statReader.close();
 
-            EntityHandler.generateStatImage(ch, cellData, procData, abilData, traitData, data, name, unitLocal, level, !isSecond, uid, lang);
+            EntityHandler.generateStatImage(ch, cellData, procData, abilData, traitData, data, name, unitLocal, level, !isSecond, egg, uid, lang);
 
         } else {
-            StringBuilder sb = new StringBuilder("STAT (unit")
-                    .append(Data.trio(uid+1))
-                    .append(".csv) : -\nLEVEL (unitlevel.csv) : -\nBUY (unitbuy.csv) : -\n");
+            List<String> requiredFiles = new ArrayList<>();
 
-            for(int i = 0; i < len; i++) {
-                sb.append("MAANIM ")
-                        .append(getUnitCode(i))
-                        .append(" ATK (")
-                        .append(Data.trio(uid))
-                        .append("_")
-                        .append(getUnitCode(i).toLowerCase(Locale.ENGLISH))
-                        .append("02.maanim) : -")
-                        .append("\n");
-            }
+            requiredFiles.add("unit"+Data.trio(uid + 1)+".csv");
+            requiredFiles.add("unitlevel.csv");
+            requiredFiles.add("unitbuy.csv");
 
-            for(int i = 0; i < len; i++) {
-                sb.append("ICON ")
-                        .append(getUnitCode(i))
-                        .append(" (uni")
-                        .append(Data.trio(uid))
-                        .append("_")
-                        .append(getUnitCode(i).toLowerCase(Locale.ENGLISH))
-                        .append("00.png) : -");
+            StringBuilder sb = new StringBuilder("- Required File List -\n\n");
 
-                if(i < len - 1) {
+            for(int i = 0; i < requiredFiles.size(); i++) {
+                sb.append(requiredFiles.get(i))
+                        .append(" : Ready");
+
+                if(i < requiredFiles.size() - 1) {
                     sb.append("\n");
                 }
             }
@@ -228,7 +223,7 @@ public class StatAnalyzer extends ConstraintCommand {
             if(msg == null)
                 return;
 
-            new StatAnalyzerMessageHolder(msg, author, uid, len, isSecond, cellData, procData, abilData, traitData, ch.getId(), container, level, name, lang);
+            new StatAnalyzerMessageHolder(msg, author, uid, len, isSecond, cellData, procData, abilData, traitData, ch.getId(), container, level, name, lang, requiredFiles);
         }
     }
 
@@ -817,19 +812,6 @@ public class StatAnalyzer extends ConstraintCommand {
         return res.substring(0, Math.max(0, res.length() - 1));
     }
 
-    private static String getUnitCode(int ind) {
-        switch (ind) {
-            case 0:
-                return "F";
-            case 1:
-                return "C";
-            case 2:
-                return "S";
-            default:
-                return "" + ind;
-        }
-    }
-
     private boolean abortAppending(String content, String... exception) {
         for(int i = 0; i < exception.length; i++) {
             if(content.equals(exception[i]))
@@ -861,7 +843,7 @@ public class StatAnalyzer extends ConstraintCommand {
             return "jp";
     }
 
-    private boolean validateFile(File workspace, int uID, int len) {
+    private boolean validateFile(File workspace, int uID, int len) throws Exception {
         File dataLocal = new File(workspace, "DataLocal");
         File imageDataLocal = new File(workspace, "ImageDataLocal");
         File unitLocal = new File(workspace, "UnitLocal");
@@ -869,11 +851,25 @@ public class StatAnalyzer extends ConstraintCommand {
         if(!dataLocal.exists() || !imageDataLocal.exists() || !unitLocal.exists())
             return false;
 
+        File buy = new File(dataLocal, "unitbuy.csv");
+
+        if(!buy.exists())
+            return false;
+
         String[] codes = {"f", "c", "s"};
+        int[] egg = getEggData(new File(dataLocal, "unitbuy.csv"), uID);
 
         for(int i = 0; i < len; i++) {
-            File atkMaanim = new File(imageDataLocal, Data.trio(uID)+"_"+codes[i]+"02.maanim");
-            File icon = new File(unitLocal, "uni"+Data.trio(uID)+"_"+codes[i]+"00.png");
+            File atkMaanim;
+            File icon;
+
+            if(egg != null && i < egg.length && egg[i] != -1) {
+                atkMaanim = new File(imageDataLocal, Data.trio(egg[i])+"_m02.maanim");
+                icon = new File(unitLocal, "uni"+Data.trio(egg[i])+"_m"+Data.duo(i)+".png");
+            } else {
+                atkMaanim = new File(imageDataLocal, Data.trio(uID)+"_"+codes[i]+"02.maanim");
+                icon = new File(unitLocal, "uni"+Data.trio(uID)+"_"+codes[i]+"00.png");
+            }
 
             if(!atkMaanim.exists() || !icon.exists())
                 return false;
@@ -886,11 +882,36 @@ public class StatAnalyzer extends ConstraintCommand {
 
         File level = new File(dataLocal, "unitlevel.csv");
 
-        if(!level.exists())
-            return false;
+        return level.exists();
+    }
 
-        File buy = new File(dataLocal, "unitbuy.csv");
+    private int[] getEggData(File unitBuy, int uID) throws Exception {
+        if(!unitBuy.exists())
+            return null;
 
-        return buy.exists();
+        BufferedReader reader = new BufferedReader(new FileReader(unitBuy, StandardCharsets.UTF_8));
+
+        int count = 0;
+        String line;
+
+        while((line = reader.readLine()) != null) {
+            if(count == uID && !line.isBlank()) {
+                reader.close();
+
+                String[] data = line.split(",");
+
+                int firstEgg = StaticStore.safeParseInt(data[data.length - 2]);
+                int secondEgg = StaticStore.safeParseInt(data[data.length - 1]);
+
+                if(firstEgg != -1 || secondEgg != -1)
+                    return new int[] {firstEgg, secondEgg};
+
+                return null;
+            }
+
+            count++;
+        }
+
+        return null;
     }
 }
