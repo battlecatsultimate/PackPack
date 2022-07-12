@@ -1535,6 +1535,15 @@ public class ImageDrawing {
             rg.drawImage(trueFormImage, bx + bgMargin, bgMargin * 4 + titleH + imgH + statPanelMargin * 2 + fruitGap);
         }
 
+        BufferedImage scaledDown = new BufferedImage(result.getWidth() / 2, result.getHeight() / 2, BufferedImage.TYPE_INT_ARGB);
+
+        FG2D sdg = new FG2D(scaledDown.getGraphics());
+
+        sdg.setRenderingHint(3, 1);
+        sdg.enableAntialiasing();
+
+        sdg.drawImage(result, 0, 0, scaledDown.getWidth(), scaledDown.getHeight());
+
         File f = new File("./temp/");
 
         if(!f.exists() && !f.mkdirs())
@@ -1546,7 +1555,7 @@ public class ImageDrawing {
             return null;
         }
 
-        ImageIO.write(result, "PNG", image);
+        ImageIO.write(scaledDown, "PNG", image);
 
         return image;
     }
