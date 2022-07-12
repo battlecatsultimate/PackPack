@@ -710,6 +710,12 @@ public class AllEventAdapter extends ListenerAdapter {
                 case "da":
                     new DownloadApk(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
                     break;
+                case "trueformanalyzer":
+                case "tfanalyzer":
+                case "trueforma":
+                case "tfa":
+                    new TrueFormAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
+                    break;
             }
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::onMessageReceived - Error happened while doing something");

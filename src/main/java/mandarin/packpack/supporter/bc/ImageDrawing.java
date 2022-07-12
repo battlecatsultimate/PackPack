@@ -1340,7 +1340,7 @@ public class ImageDrawing {
         return gif;
     }
 
-    public static File drawStatImage(CustomMaskUnit[] units, List<List<CellDrawer>> cellGroup, int lv, String[] name, String type, File container, File itemContainer, int uID, int[] egg, int[][] trueForm) throws Exception {
+    public static File drawStatImage(CustomMaskUnit[] units, List<List<CellDrawer>> cellGroup, int lv, String[] name, String type, File container, File itemContainer, boolean trueFormMode, int uID, int[] egg, int[][] trueForm) throws Exception {
         Canvas cv = new Canvas();
 
         FontMetrics nfm = cv.getFontMetrics(nameFont);
@@ -1402,22 +1402,16 @@ public class ImageDrawing {
 
         List<BufferedImage[]> images = new ArrayList<>();
 
-        for(int i = 0; i < units.length; i++) {
+        if(trueFormMode) {
             BufferedImage[] imgs = new BufferedImage[2];
 
             FontMetrics bf = cv.getFontMetrics(titleFont);
             FontMetrics sf = cv.getFontMetrics(typeFont);
             FontMetrics lf = cv.getFontMetrics(levelFont);
 
-            File icon;
+            File icon = new File(container, "uni"+Data.trio(uID)+"_s00.png");
 
-            if(egg != null && i < egg.length && egg[i] != -1) {
-                icon = new File(container, "uni"+Data.trio(egg[i])+"_m"+Data.duo(i)+".png");
-            } else {
-                icon = new File(container, "uni"+Data.trio(uID)+"_"+getUnitCode(i)+"00.png");
-            }
-
-            BufferedImage title = getUnitTitleImage(icon, name[i], type, lv, bf, sf, lf);
+            BufferedImage title = getUnitTitleImage(icon, name[0], type, lv, bf, sf, lf);
 
             imgs[1] = title;
 
@@ -1425,6 +1419,32 @@ public class ImageDrawing {
 
             if(uw * 3 + CellDrawer.lineOffset * 4 + statPanelMargin * 2 < title.getWidth()) {
                 uw = (title.getWidth() - statPanelMargin * 2 - CellDrawer.lineOffset * 4) / 3;
+            }
+        } else {
+            for(int i = 0; i < units.length; i++) {
+                BufferedImage[] imgs = new BufferedImage[2];
+
+                FontMetrics bf = cv.getFontMetrics(titleFont);
+                FontMetrics sf = cv.getFontMetrics(typeFont);
+                FontMetrics lf = cv.getFontMetrics(levelFont);
+
+                File icon;
+
+                if(egg != null && i < egg.length && egg[i] != -1) {
+                    icon = new File(container, "uni"+Data.trio(egg[i])+"_m"+Data.duo(i)+".png");
+                } else {
+                    icon = new File(container, "uni"+Data.trio(uID)+"_"+getUnitCode(i)+"00.png");
+                }
+
+                BufferedImage title = getUnitTitleImage(icon, name[i], type, lv, bf, sf, lf);
+
+                imgs[1] = title;
+
+                images.add(imgs);
+
+                if(uw * 3 + CellDrawer.lineOffset * 4 + statPanelMargin * 2 < title.getWidth()) {
+                    uw = (title.getWidth() - statPanelMargin * 2 - CellDrawer.lineOffset * 4) / 3;
+                }
             }
         }
 
@@ -1491,7 +1511,7 @@ public class ImageDrawing {
         int finH = bgMargin * 5 + titleH + statPanelMargin * 2 + imgH;
         int fruitH = 0;
 
-        if(trueForm != null && units.length >= 3) {
+        if(trueForm != null && (trueFormMode || units.length >= 3)) {
             GlyphVector glyph = fruitFont.createGlyphVector(cv.getFontMetrics(fruitFont).getFontRenderContext(), "1234567890Mk");
 
             int textHeight = glyph.getPixelBounds(null, 0, 0).height;
@@ -1515,7 +1535,7 @@ public class ImageDrawing {
         for(int i = 0; i < units.length; i++) {
             rg.setColor(64, 68, 75);
 
-            if(units.length >= 3 && trueForm != null && i != 2) {
+            if(!trueFormMode && units.length >= 3 && trueForm != null && i != 2) {
                 rg.fillRoundRect(bx + bgMargin, bgMargin * 4 + titleH, imgW + statPanelMargin * 2, imgH + statPanelMargin * 2 + fruitH, cornerRadius, cornerRadius);
             } else {
                 rg.fillRoundRect(bx + bgMargin, bgMargin * 4 + titleH, imgW + statPanelMargin * 2, imgH + statPanelMargin * 2, cornerRadius, cornerRadius);
@@ -1527,7 +1547,7 @@ public class ImageDrawing {
             bx += finW;
         }
 
-        if(units.length >= 3 && trueForm != null) {
+        if((units.length >= 3 || trueFormMode) && trueForm != null) {
             BufferedImage trueFormImage = generateEvolveImage(itemContainer, trueForm, finW - bgMargin * 2, cfm);
 
             bx -= finW;

@@ -37,7 +37,7 @@ public class Help extends Command {
                     .addField(LangID.getStringByID("help_normal", lang), "```analyze, config, locale, optout, prefix, timezone```", false)
                     .addField(LangID.getStringByID("help_bc", lang), "```background, castle, catcombo, enemygif, enemyimage, enemysprite, enemystat, findstage, formgif, formimage, formsprite, formstat, medal, music, stageinfo```", false)
                     .addField(LangID.getStringByID("help_server", lang), "```bcustat, boosteremoji, boosteremojiremove, boosterrole, boosterroleremove, channelpermission, checkbcu, clearcache, fixrole, idset, memory, save, serverjson, serverpre, setup, subscribeevent, subscribescamlinkdetector, unsubscribescamlinkdetector, watchdm```", false)
-                    .addField(LangID.getStringByID("help_data", lang), "```animanalyzer, announcement, checkeventupdate, printevent, printgachaevent, printitemevent, printstageevent, stageimage, statanalyzer, stagemapimage```", false)
+                    .addField(LangID.getStringByID("help_data", lang), "```animanalyzer, announcement, checkeventupdate, printevent, printgachaevent, printitemevent, printstageevent, stageimage, statanalyzer, stagemapimage, trueformanalyzer```", false)
                     .addField(LangID.getStringByID("help_packpack", lang), "```alias, aliasadd, aliasremove, registerscamlink, statistic, suggest, unregisterscamlink```", false);
 
             ch.sendMessageEmbeds(builder.build()).queue();
@@ -309,6 +309,21 @@ public class Help extends Command {
             case "downloadapk":
             case "da":
                 ch.sendMessageEmbeds(addFields("downloadapk", true, true, false)).queue();
+                break;
+            case "trueformanalyzer":
+            case "tfanalyzer":
+            case "trueforma":
+            case "tfa":
+                ch.sendMessageEmbeds(addFields("trueformanalyzer", true, true, true)).queue();
+                ch.sendMessageEmbeds(new EmbedBuilder()
+                        .setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)])
+                        .setDescription(LangID.getStringByID("help_statanalyzer_adddesc", lang))
+                        .addField("-name", LangID.getStringByID("help_statanalyzer_name", lang), false)
+                        .addField("-trait", LangID.getStringByID("help_statanalyzer_trait", lang), false)
+                        .addField("-cell", LangID.getStringByID("help_statanalyzer_cell", lang), false)
+                        .addField("-abil", LangID.getStringByID("help_statanalyzer_abil", lang), false)
+                        .addField("-proc", LangID.getStringByID("help_statanalyzer_proc", lang), false)
+                        .build()).queue();
                 break;
             default:
                 createMessageWithNoPings(ch, LangID.getStringByID("help_nocomm", lang).replace("_", command));
