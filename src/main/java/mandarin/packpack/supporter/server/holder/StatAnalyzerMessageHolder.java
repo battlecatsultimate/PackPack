@@ -117,7 +117,7 @@ public class StatAnalyzerMessageHolder extends FileAnalyzerHolder {
 
         statReader.close();
 
-        EntityHandler.generateStatImage(msg.getChannel(), cellData, procData, abilityData, traitData, units, name, container, lv, !isSecond, egg, trueForm, uID, lang);
+        EntityHandler.generateStatImage(msg.getChannel(), cellData, procData, abilityData, traitData, units, name, container, container, lv, !isSecond, egg, trueForm, uID, lang);
     }
 
     @Override

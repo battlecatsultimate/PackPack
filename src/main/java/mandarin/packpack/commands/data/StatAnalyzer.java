@@ -143,6 +143,7 @@ public class StatAnalyzer extends ConstraintCommand {
             File dataLocal = new File(workspace, "DataLocal");
             File imageDataLocal = new File(workspace, "ImageDataLocal");
             File unitLocal = new File(workspace, "UnitLocal");
+            File imageLocal = new File(workspace, "ImageLocal");
 
             CustomMaskUnit[] data = new CustomMaskUnit[len];
 
@@ -199,7 +200,7 @@ public class StatAnalyzer extends ConstraintCommand {
 
             statReader.close();
 
-            EntityHandler.generateStatImage(ch, cellData, procData, abilData, traitData, data, name, unitLocal, level, !isSecond, egg, trueForm, uid, lang);
+            EntityHandler.generateStatImage(ch, cellData, procData, abilData, traitData, data, name, unitLocal, imageLocal, level, !isSecond, egg, trueForm, uid, lang);
 
         } else {
             List<String> requiredFiles = new ArrayList<>();

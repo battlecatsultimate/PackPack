@@ -1340,7 +1340,7 @@ public class ImageDrawing {
         return gif;
     }
 
-    public static File drawStatImage(CustomMaskUnit[] units, List<List<CellDrawer>> cellGroup, int lv, String[] name, String type, File container, int uID, int[] egg, int[][] trueForm) throws Exception {
+    public static File drawStatImage(CustomMaskUnit[] units, List<List<CellDrawer>> cellGroup, int lv, String[] name, String type, File container, File itemContainer, int uID, int[] egg, int[][] trueForm) throws Exception {
         Canvas cv = new Canvas();
 
         FontMetrics nfm = cv.getFontMetrics(nameFont);
@@ -1528,7 +1528,7 @@ public class ImageDrawing {
         }
 
         if(units.length >= 3 && trueForm != null) {
-            BufferedImage trueFormImage = generateEvolveImage(container, trueForm, finW - bgMargin * 2, cfm);
+            BufferedImage trueFormImage = generateEvolveImage(itemContainer, trueForm, finW - bgMargin * 2, cfm);
 
             bx -= finW;
 
