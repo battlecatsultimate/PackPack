@@ -212,10 +212,10 @@ public class StatAnalyzerMessageHolder extends FileAnalyzerHolder {
                     for(int i = 0; i < len; i++) {
                         //Unnecessary calculation is for organizing stuffs
 
-                        int id = StaticStore.safeParseInt(data[25 + 2 * i + 2]);
+                        int id = StaticStore.safeParseInt(data[25 + 2 * i + 1]);
 
-                        trueForm[i][0] = StaticStore.safeParseInt(data[25 + 2 * i + 1]);
-                        trueForm[i][1] = id;
+                        trueForm[i][0] = id;
+                        trueForm[i][1] = StaticStore.safeParseInt(data[25 + 2 * i + 2]);
 
                         if(id != -1) {
                             String catFruitName = "gatyaitemD_"+id+"_f.png";
