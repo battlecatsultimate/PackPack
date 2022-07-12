@@ -12,6 +12,7 @@ import java.awt.geom.Rectangle2D;
 public class AbilityCellDrawer implements CellDrawer {
     private static final int abilityMargin = 54;
     private static final int lineSpace = 12;
+    private static final int fixer = 15;
 
     private final String name;
     private final String[] contents;
@@ -118,7 +119,7 @@ public class AbilityCellDrawer implements CellDrawer {
                 rh += abilityMargin;
         }
 
-        h = rh;
+        h = rh + fixer;
     }
 
     @Override
