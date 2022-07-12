@@ -27,6 +27,7 @@ public class StatAnalyzerMessageHolder extends FileAnalyzerHolder {
     private final int len;
     private final boolean isSecond;
     private int[] egg = null;
+    private int[][] trueForm = null;
     private final int lv;
     private final String[] name;
 
@@ -116,7 +117,7 @@ public class StatAnalyzerMessageHolder extends FileAnalyzerHolder {
 
         statReader.close();
 
-        EntityHandler.generateStatImage(msg.getChannel(), cellData, procData, abilityData, traitData, units, name, container, lv, !isSecond, egg, uID, lang);
+        EntityHandler.generateStatImage(msg.getChannel(), cellData, procData, abilityData, traitData, units, name, container, lv, !isSecond, egg, trueForm, uID, lang);
     }
 
     @Override
@@ -199,6 +200,32 @@ public class StatAnalyzerMessageHolder extends FileAnalyzerHolder {
 
                     if(firstEgg != -1 || secondEgg != -1)
                         egg = new int[] {firstEgg, secondEgg};
+
+                    int len = 0;
+
+                    while(len != 6 && StaticStore.safeParseInt(data[25 + 1 + 2 * len + 1]) != 0) {
+                        len++;
+                    }
+
+                    trueForm = new int[len][2];
+
+                    for(int i = 0; i < len; i++) {
+                        //Unnecessary calculation is for organizing stuffs
+
+                        int id = StaticStore.safeParseInt(data[25 + 2 * i + 2]);
+
+                        trueForm[i][0] = StaticStore.safeParseInt(data[25 + 2 * i + 1]);
+                        trueForm[i][1] = id;
+
+                        if(id != -1) {
+                            String catFruitName = "gatyaitemD_"+id+"_f.png";
+                            VFile vf = VFile.get("./org/page/catfruit/"+catFruitName);
+
+                            if(vf == null) {
+                                registerMoreFile(catFruitName);
+                            }
+                        }
+                    }
 
                     return true;
                 }

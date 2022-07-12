@@ -153,6 +153,7 @@ public class StatAnalyzer extends ConstraintCommand {
             File buyFile = new File(dataLocal, "unitbuy.csv");
 
             int[] egg = getEggData(buyFile, uid);
+            int[][] trueForm = getTrueForm(buyFile, uid);
 
             BufferedReader statReader = new BufferedReader(new FileReader(statFile, StandardCharsets.UTF_8));
             BufferedReader levelReader = new BufferedReader(new FileReader(levelFile, StandardCharsets.UTF_8));
@@ -198,7 +199,7 @@ public class StatAnalyzer extends ConstraintCommand {
 
             statReader.close();
 
-            EntityHandler.generateStatImage(ch, cellData, procData, abilData, traitData, data, name, unitLocal, level, !isSecond, egg, uid, lang);
+            EntityHandler.generateStatImage(ch, cellData, procData, abilData, traitData, data, name, unitLocal, level, !isSecond, egg, trueForm, uid, lang);
 
         } else {
             List<String> requiredFiles = new ArrayList<>();
@@ -847,8 +848,9 @@ public class StatAnalyzer extends ConstraintCommand {
         File dataLocal = new File(workspace, "DataLocal");
         File imageDataLocal = new File(workspace, "ImageDataLocal");
         File unitLocal = new File(workspace, "UnitLocal");
+        File imageLocal = new File(workspace, "ImageLocal");
 
-        if(!dataLocal.exists() || !imageDataLocal.exists() || !unitLocal.exists())
+        if(!dataLocal.exists() || !imageDataLocal.exists() || !unitLocal.exists() || !imageLocal.exists())
             return false;
 
         File buy = new File(dataLocal, "unitbuy.csv");
@@ -858,6 +860,7 @@ public class StatAnalyzer extends ConstraintCommand {
 
         String[] codes = {"f", "c", "s"};
         int[] egg = getEggData(new File(dataLocal, "unitbuy.csv"), uID);
+        int[][] trueForm = getTrueForm(new File(dataLocal, "unitbuy.csv"), uID);
 
         for(int i = 0; i < len; i++) {
             File atkMaanim;
@@ -873,6 +876,23 @@ public class StatAnalyzer extends ConstraintCommand {
 
             if(!atkMaanim.exists() || !icon.exists())
                 return false;
+        }
+
+        if(trueForm != null) {
+            for(int i = 0; i < trueForm.length; i++) {
+                if(trueForm[i][0] == -1)
+                    continue;
+
+                File icon = new File(imageLocal, "gatyaitemD_"+trueForm[i][0]+"_f.png");
+
+                if(!icon.exists()) {
+                    VFile vf = VFile.get("./org/page/catfruit/gatyaitemD_"+trueForm[i][0]+"_f.png");
+
+                    if(vf == null) {
+                        return false;
+                    }
+                }
+            }
         }
 
         File stat = new File(dataLocal, "unit"+Data.trio((uID+1))+".csv");
@@ -905,6 +925,49 @@ public class StatAnalyzer extends ConstraintCommand {
 
                 if(firstEgg != -1 || secondEgg != -1)
                     return new int[] {firstEgg, secondEgg};
+
+                return null;
+            }
+
+            count++;
+        }
+
+        return null;
+    }
+
+    private int[][] getTrueForm(File unitBuy, int uID) throws Exception {
+        if(!unitBuy.exists())
+            return null;
+
+        BufferedReader reader = new BufferedReader(new FileReader(unitBuy, StandardCharsets.UTF_8));
+
+        int count = 0;
+        String line;
+
+        while((line = reader.readLine()) != null) {
+            if(count == uID && !line.isBlank()) {
+                reader.close();
+
+                String[] data = line.split(",");
+
+                if(StaticStore.safeParseInt(data[25]) != 0) {
+                    int len = 0;
+
+                    while(len != 6 && StaticStore.safeParseInt(data[25 + 2 * len + 2]) != 0) {
+                        len++;
+                    }
+
+                    int[][] trueForm = new int[len][2];
+
+                    for(int i = 0; i < len; i++) {
+                        //Unnecessary calculation is for organizing stuffs
+
+                        trueForm[i][0] = StaticStore.safeParseInt(data[25 + 2 * i + 1]);
+                        trueForm[i][1] = StaticStore.safeParseInt(data[25 + 2 * i + 2]);
+                    }
+
+                    return trueForm;
+                }
 
                 return null;
             }

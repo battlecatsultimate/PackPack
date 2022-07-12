@@ -4,6 +4,7 @@ import common.CommonStatic;
 import common.system.P;
 import common.system.fake.FakeGraphics;
 import common.system.fake.FakeImage;
+import common.system.files.VFile;
 import common.util.Data;
 import common.util.anim.AnimU;
 import common.util.anim.EAnimD;
@@ -11,6 +12,7 @@ import common.util.pack.Background;
 import common.util.pack.bgeffect.BackgroundEffect;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.awt.FG2D;
+import mandarin.packpack.supporter.awt.FIBI;
 import mandarin.packpack.supporter.bc.cell.AbilityCellDrawer;
 import mandarin.packpack.supporter.bc.cell.CellDrawer;
 import mandarin.packpack.supporter.bc.cell.NormalCellDrawer;
@@ -22,6 +24,7 @@ import org.apache.commons.lang3.SystemUtils;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.font.FontRenderContext;
+import java.awt.font.GlyphVector;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -93,6 +96,7 @@ public class ImageDrawing {
     private static Font nameFont;
     private static Font contentFont;
     private static Font levelFont;
+    private static Font fruitFont;
 
     private static final int statPanelMargin = 120;
     private static final int bgMargin = 80;
@@ -102,6 +106,12 @@ public class ImageDrawing {
     private static final int typeLeftRightMargin = 66;
     private static final int levelMargin = 36;
     private static final int cellMargin = 110;
+
+    private static final int fruitGap = 60;
+    private static final double fruitRatio = 0.125;
+    private static final double fruitTextGapRatio = 0.025;
+    private static final double fruitUpperGapRatio = 0.025;
+    private static final double fruitDownerGapRatio = 0.05;
 
     static {
         File regular = new File("./data/NotoRegular.otf");
@@ -113,6 +123,7 @@ public class ImageDrawing {
             nameFont = Font.createFont(Font.TRUETYPE_FONT, medium).deriveFont(63f);
             contentFont = Font.createFont(Font.TRUETYPE_FONT, regular).deriveFont(84f);
             levelFont = Font.createFont(Font.TRUETYPE_FONT, medium).deriveFont(96f);
+            fruitFont = Font.createFont(Font.TRUETYPE_FONT, medium).deriveFont(120f);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1329,7 +1340,7 @@ public class ImageDrawing {
         return gif;
     }
 
-    public static File drawStatImage(CustomMaskUnit[] units, List<List<CellDrawer>> cellGroup, int lv, String[] name, String type, File container, int uID, int[] egg) throws Exception {
+    public static File drawStatImage(CustomMaskUnit[] units, List<List<CellDrawer>> cellGroup, int lv, String[] name, String type, File container, int uID, int[] egg, int[][] trueForm) throws Exception {
         Canvas cv = new Canvas();
 
         FontMetrics nfm = cv.getFontMetrics(nameFont);
@@ -1478,6 +1489,17 @@ public class ImageDrawing {
 
         int finW = Math.max(titleW, imgW + statPanelMargin * 2) + bgMargin * 2;
         int finH = bgMargin * 5 + titleH + statPanelMargin * 2 + imgH;
+        int fruitH = 0;
+
+        if(trueForm != null && units.length >= 3) {
+            GlyphVector glyph = fruitFont.createGlyphVector(cv.getFontMetrics(fruitFont).getFontRenderContext(), "1234567890Mk");
+
+            int textHeight = glyph.getPixelBounds(null, 0, 0).height;
+
+            fruitH = (int) (textHeight + (finW - 2 * bgMargin) * (fruitRatio + fruitTextGapRatio + fruitUpperGapRatio + fruitDownerGapRatio) + fruitGap);
+
+            finH += fruitH;
+        }
 
         BufferedImage result = new BufferedImage(finW * units.length, finH, BufferedImage.TYPE_INT_ARGB);
         FG2D rg = new FG2D(result.getGraphics());
@@ -1492,12 +1514,25 @@ public class ImageDrawing {
 
         for(int i = 0; i < units.length; i++) {
             rg.setColor(64, 68, 75);
-            rg.fillRoundRect(bx + bgMargin, bgMargin * 4 + titleH, imgW + statPanelMargin * 2, imgH + statPanelMargin * 2, cornerRadius, cornerRadius);
+
+            if(units.length >= 3 && trueForm != null && i != 2) {
+                rg.fillRoundRect(bx + bgMargin, bgMargin * 4 + titleH, imgW + statPanelMargin * 2, imgH + statPanelMargin * 2 + fruitH, cornerRadius, cornerRadius);
+            } else {
+                rg.fillRoundRect(bx + bgMargin, bgMargin * 4 + titleH, imgW + statPanelMargin * 2, imgH + statPanelMargin * 2, cornerRadius, cornerRadius);
+            }
 
             rg.drawImage(images.get(i)[1], bx + bgMargin, bgMargin * 2);
             rg.drawImage(images.get(i)[0], bx + bgMargin + statPanelMargin, bgMargin * 4 + titleH + statPanelMargin);
 
             bx += finW;
+        }
+
+        if(units.length >= 3 && trueForm != null) {
+            BufferedImage trueFormImage = generateEvolveImage(container, trueForm, finW - bgMargin * 2, cfm);
+
+            bx -= finW;
+
+            rg.drawImage(trueFormImage, bx + bgMargin, bgMargin * 4 + titleH + imgH + statPanelMargin * 2 + fruitGap);
         }
 
         File f = new File("./temp/");
@@ -1573,6 +1608,79 @@ public class ImageDrawing {
         g.drawImage(ic, 0, 0, icw, h - lRect.getHeight() - levelMargin);
 
         return result;
+    }
+
+    private static BufferedImage generateEvolveImage(File container, int[][] data, int targetWidth, FontMetrics metrics) {
+        GlyphVector glyph = fruitFont.createGlyphVector(metrics.getFontRenderContext(), "1234567890Mk");
+
+        int textHeight = glyph.getPixelBounds(null, 0, 0).height;
+
+        double h = textHeight + targetWidth * (fruitRatio + fruitTextGapRatio + fruitUpperGapRatio + fruitDownerGapRatio);
+
+        BufferedImage img = new BufferedImage(targetWidth, (int) h, BufferedImage.TYPE_INT_ARGB);
+
+        FG2D g = new FG2D(img.getGraphics());
+
+        g.setRenderingHint(3, 1);
+        g.enableAntialiasing();
+
+        double panelPadding = targetWidth * (1.0 - fruitRatio * data.length) / (5.0 * data.length - 1);
+        double padding = panelPadding * 2;
+
+        double panelWidth = padding * 2 + fruitRatio * targetWidth;
+
+        g.setFont(fruitFont);
+
+        double x = 0;
+
+        for(int i = 0; i < data.length; i++) {
+            g.setColor(64, 68, 75, 255);
+
+            g.fillRoundRect((int) x, 0, (int) panelWidth, (int) h, cornerRadius, cornerRadius);
+
+            try {
+                BufferedImage icon = getFruitImage(container, data[i][0]);
+
+                FakeImage ic = FIBI.build(icon);
+
+                g.drawImage(ic, x + padding, targetWidth * fruitUpperGapRatio, targetWidth * fruitRatio, targetWidth * fruitRatio);
+            } catch (Exception e) {
+                StaticStore.logger.uploadErrorLog(e, "E/ImageDrawing::generateEvolveImage - Failed to generate fruit image : "+data[i][0]);
+            }
+
+            g.setColor(238, 238, 238, 255);
+
+            g.drawCenteredText(convertValue(data[i][1]), (int) (x + panelWidth / 2), (int) Math.round(targetWidth * (fruitUpperGapRatio + fruitRatio + fruitTextGapRatio) + textHeight / 2.0));
+
+            x += panelWidth + panelPadding;
+        }
+
+        return img;
+    }
+
+    private static BufferedImage getFruitImage(File container, int id) throws Exception {
+        if(id == -1) {
+            VFile vf = VFile.get("./org/page/catfruit/xp.png");
+
+            if(vf != null) {
+                return (BufferedImage) vf.getData().getImg().bimg();
+            }
+        } else {
+            String name = "gatyaitemD_"+id+"_f.png";
+            VFile vf = VFile.get("./org/page/catfruit/"+name);
+
+            if(vf == null) {
+                File icon = new File(container, name);
+
+                if(icon.exists()) {
+                    return ImageIO.read(icon);
+                }
+            } else {
+                return (BufferedImage) vf.getData().getImg().bimg();
+            }
+        }
+
+        return null;
     }
 
     public static AnimU.UType getAnimType(int mode, int max) {
@@ -1665,5 +1773,20 @@ public class ImageDrawing {
         }
 
         return -1;
+    }
+
+    private static String convertValue(int value) {
+        String[] prefix = { "", "k", "M" };
+
+        int i = 0;
+
+        while(true) {
+            if(i == 2 || value < 1000)
+                return value + prefix[i];
+            else {
+                value /= 1000;
+                i++;
+            }
+        }
     }
 }

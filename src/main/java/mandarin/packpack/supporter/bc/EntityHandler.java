@@ -2631,7 +2631,7 @@ public class EntityHandler {
         });
     }
 
-    public static void generateStatImage(MessageChannel ch, List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilData, List<FlagCellData> traitData, CustomMaskUnit[] units, String[] name, File container, int lv, boolean isFrame, int[] egg, int uid, int lang) throws Exception {
+    public static void generateStatImage(MessageChannel ch, List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilData, List<FlagCellData> traitData, CustomMaskUnit[] units, String[] name, File container, int lv, boolean isFrame, int[] egg, int[][] trueForm, int uid, int lang) throws Exception {
         List<List<CellDrawer>> cellGroup = new ArrayList<>();
 
         for(int i = 0; i < units.length; i++) {
@@ -2640,7 +2640,7 @@ public class EntityHandler {
 
         String type = getRarity(units[0].rarity, lang);
 
-        File result = ImageDrawing.drawStatImage(units, cellGroup, lv, name, type, container, uid, egg);
+        File result = ImageDrawing.drawStatImage(units, cellGroup, lv, name, type, container, uid, egg, trueForm);
 
         if(result == null) {
             ch.sendMessage(LangID.getStringByID("stat_fail", lang)).queue();
