@@ -13,8 +13,9 @@ public class GachaSection {
         STEP
     }
 
+    public GachaSchedule.TYPE gachaType;
     public int gachaID;
-    public int[] rarityChances = new int[5];
+    public double[] rarityChances = new double[5];
     public int[] rarityGuarantees = new int[5];
     public int addition;
     public int additionalMask;

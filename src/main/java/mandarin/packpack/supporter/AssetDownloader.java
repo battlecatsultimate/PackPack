@@ -409,20 +409,32 @@ public class AssetDownloader {
                                 if(str.length == 1)
                                     continue;
 
-                                int id = Integer.parseInt(str[0].trim());
-                                String name = str[1].trim();
+                                if(str[0].startsWith("E")) {
+                                    int id = Integer.parseInt(str[0].replace("E", "").trim());
+                                    String name = str[1].trim();
 
-                                if(StaticStore.isNumeric(name) && StaticStore.safeParseInt(name) < 0) {
-                                    name = StaticStore.GACHANAME.getCont(StaticStore.safeParseInt(name));
+                                    StaticStore.EXTRAGACHA.put(f, id, name);
+                                } else if(str[0].startsWith("N")) {
+                                    int id = Integer.parseInt(str[0].replace("N", "").trim());
+                                    String name = str[1].trim();
+
+                                    StaticStore.NORMALGACHA.put(f, id, name);
+                                } else if(StaticStore.isNumeric(str[0])) {
+                                    int id = Integer.parseInt(str[0].trim());
+                                    String name = str[1].trim();
+
+                                    if(StaticStore.isNumeric(name) && StaticStore.safeParseInt(name) < 0) {
+                                        name = StaticStore.GACHANAME.getCont(StaticStore.safeParseInt(name));
+                                    }
+
+                                    if(str.length == 3 && name != null) {
+                                        int[] units = CommonStatic.parseIntsN(str[2]);
+
+                                        EventFactor.newUnits.put(id, units);
+                                    }
+
+                                    StaticStore.GACHANAME.put(f, id, name);
                                 }
-
-                                if(str.length == 3 && name != null) {
-                                    int[] units = CommonStatic.parseIntsN(str[2]);
-
-                                    EventFactor.newUnits.put(id, units);
-                                }
-
-                                StaticStore.GACHANAME.put(f, id, name);
                             }
 
                             CommonStatic.getConfig().lang = oldConfig;

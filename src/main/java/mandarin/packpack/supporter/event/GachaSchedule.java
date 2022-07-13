@@ -17,6 +17,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class GachaSchedule extends EventFactor implements Schedule {
+    public enum TYPE {
+        NORMAL,
+        EXTRA,
+        RARE
+    }
+
     private static final Pattern p = Pattern.compile("<h2>.+</h2>");
 
     private final int locale;
@@ -98,7 +104,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
             for(int i = 0; i < categoryNum; i++) {
                 int gachaID = parse(data[index]);
 
-                if(gachaID == -1 || gachaID == 0 || (gachaID > 5 && gachaID < 100 && !date.dateEnd.equals(END))) {
+                if(gachaID == -1 || gachaID == 0) {
                     if(gachaType == 4) {
                         index += 17;
                     } else {
@@ -106,6 +112,17 @@ public class GachaSchedule extends EventFactor implements Schedule {
                     }
                 } else {
                     GachaSection section = new GachaSection();
+
+                    switch (gachaType) {
+                        case 4:
+                            section.gachaType = TYPE.EXTRA;
+                            break;
+                        case 0:
+                            section.gachaType = TYPE.NORMAL;
+                            break;
+                        default:
+                            section.gachaType = TYPE.RARE;
+                    }
 
                     section.gachaID = gachaID;
                     section.index = i;
@@ -152,6 +169,16 @@ public class GachaSchedule extends EventFactor implements Schedule {
                     for(int j = 0; j < 5; j++) {
                         section.rarityChances[j] = parse(data[index + 2 * j]);
                         section.rarityGuarantees[j] = parse(data[index + 1 + 2 * j]);
+                    }
+
+                    double chanceSum = 0;
+
+                    for(int j = 0; j < 5; j++) {
+                        chanceSum += section.rarityChances[j];
+                    }
+
+                    for(int j = 0; j < 5; j++) {
+                        section.rarityChances[j] = section.rarityChances[j] / chanceSum * 100.0;
                     }
 
                     index += 10;
@@ -230,7 +257,18 @@ public class GachaSchedule extends EventFactor implements Schedule {
             int oldConfig = CommonStatic.getConfig().lang;
             CommonStatic.getConfig().lang = lang;
 
-            String g = StaticStore.GACHANAME.getCont(section.gachaID);
+            String g;
+
+            switch (section.gachaType) {
+                case NORMAL:
+                    g = StaticStore.NORMALGACHA.getCont(section.gachaID);
+                    break;
+                case EXTRA:
+                    g = StaticStore.EXTRAGACHA.getCont(section.gachaID);
+                    break;
+                default:
+                    g = StaticStore.GACHANAME.getCont(section.gachaID);
+            }
 
             CommonStatic.getConfig().lang = oldConfig;
 
@@ -324,6 +362,11 @@ public class GachaSchedule extends EventFactor implements Schedule {
 
                     result.append(" }");
                 }
+            }
+
+            if(section.gachaType == TYPE.RARE && hasWeirdChance(section)) {
+                result.append(" ")
+                        .append(getWeirdChanceData(section, lang));
             }
 
             if(i < gacha.size() - 1) {
@@ -574,6 +617,9 @@ public class GachaSchedule extends EventFactor implements Schedule {
     }
 
     private boolean hasAdditionalData(GachaSection section) {
+        if(section.gachaType != TYPE.RARE)
+            return false;
+
         return (section.rarityGuarantees.length > 3 && section.rarityGuarantees[3] == 1) ||
                 (section.rarityGuarantees.length > 4 && section.rarityGuarantees[4] == 1) ||
                 !section.additional.isEmpty();
@@ -612,5 +658,40 @@ public class GachaSchedule extends EventFactor implements Schedule {
         }
 
         return true;
+    }
+
+    private boolean hasWeirdChance(GachaSection section) {
+        if(section.rarityChances.length <= 3)
+            return false;
+
+        //Platinum/Legendary Gacha
+        if(section.rarityChances[3] == 100 || section.rarityChances[3] == 95)
+            return false;
+
+        boolean weirdUR = section.rarityChances[3] != 5;
+
+        if(!weirdUR && section.rarityGuarantees.length > 4) {
+            return section.rarityChances[4] != 0 && section.rarityChances[4] != 0.3;
+        }
+
+        return weirdUR;
+    }
+
+    private String getWeirdChanceData(GachaSection section, int lang) {
+        String result = "<";
+
+        result += LangID.getStringByID("printgacha_chance", lang);
+
+        if(section.rarityChances[3] != 5) {
+            result += LangID.getStringByID("printgacha_uber", lang).replace("_", DataToString.df.format(section.rarityChances[3]));
+
+            if(section.rarityChances.length > 4 && section.rarityChances[4] != 0 && section.rarityChances[4] != 0.3)
+                result += " | ";
+        }
+
+        if(section.rarityChances.length > 4 && section.rarityChances[4] != 0 && section.rarityChances[4] != 0.3)
+            result += LangID.getStringByID("printgacha_lr", lang).replace("_", DataToString.df.format(section.rarityChances[4]));
+
+        return result + ">";
     }
 }
