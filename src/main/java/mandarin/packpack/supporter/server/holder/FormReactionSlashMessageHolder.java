@@ -4,6 +4,7 @@ import common.util.unit.Form;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -57,7 +58,9 @@ public class FormReactionSlashMessageHolder extends MessageHolder<MessageReactio
 
                 StaticStore.removeHolder(memberID, FormReactionSlashMessageHolder.this);
 
-                m.clearReactions().queue();
+                if(m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
+                    m.clearReactions().queue();
+                }
             }
         }, TimeUnit.MINUTES.toMillis(5));
     }
@@ -173,7 +176,9 @@ public class FormReactionSlashMessageHolder extends MessageHolder<MessageReactio
         }
 
         if(emojiClicked) {
-            m.clearReactions().queue();
+            if(m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
+                m.clearReactions().queue();
+            }
 
             expired = true;
         }
@@ -195,6 +200,8 @@ public class FormReactionSlashMessageHolder extends MessageHolder<MessageReactio
 
         StaticStore.removeHolder(id, this);
 
-        m.clearReactions().queue();
+        if(m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
+            m.clearReactions().queue();
+        }
     }
 }

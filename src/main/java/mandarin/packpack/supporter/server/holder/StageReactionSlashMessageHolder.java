@@ -11,6 +11,7 @@ import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.bc.Castle;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -55,7 +56,9 @@ public class StageReactionSlashMessageHolder extends MessageHolder<MessageReacti
 
                 StaticStore.removeHolder(memberID, StageReactionSlashMessageHolder.this);
 
-                m.clearReactions().queue();
+                if(m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
+                    m.clearReactions().queue();
+                }
             }
         }, TimeUnit.MINUTES.toMillis(5));
     }
@@ -155,7 +158,9 @@ public class StageReactionSlashMessageHolder extends MessageHolder<MessageReacti
         }
 
         if(emojiClicked) {
-            m.clearReactions().queue();
+            if(m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
+                m.clearReactions().queue();
+            }
 
             expired = true;
         }
@@ -177,6 +182,8 @@ public class StageReactionSlashMessageHolder extends MessageHolder<MessageReacti
 
         StaticStore.removeHolder(memberID, StageReactionSlashMessageHolder.this);
 
-        m.clearReactions().queue();
+        if(m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
+            m.clearReactions().queue();
+        }
     }
 }
