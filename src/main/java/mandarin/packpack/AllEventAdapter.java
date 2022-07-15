@@ -38,6 +38,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.role.RoleDeleteEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.internal.entities.GuildImpl;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -945,6 +946,22 @@ public class AllEventAdapter extends ListenerAdapter {
 
         if(modID == null) {
             if (g.getSelfMember().hasPermission(Permission.MANAGE_ROLES)) {
+                if(g.getRoles().size() == 250) {
+                    if(!warned.get()) {
+                        Member owner = g.retrieveOwner().complete();
+
+                        if(owner != null) {
+                            owner.getUser().openPrivateChannel()
+                                    .flatMap(pc -> pc.sendMessage(LangID.getStringByID("maxrole", id.serverLocale).replace("_", g.getName())))
+                                    .queue();
+
+                            warned.set(true);
+                        }
+                    }
+
+                    return;
+                }
+
                 g.createRole()
                         .setName("PackPackMod")
                         .queue(r -> {
@@ -1037,6 +1054,22 @@ public class AllEventAdapter extends ListenerAdapter {
 
     private static void reassignTempModRole(Guild g, IDHolder holder, AtomicReference<Boolean> warned) {
         if (g.getSelfMember().hasPermission(Permission.MANAGE_ROLES)) {
+            if(g.getRoles().size() == 250) {
+                if(!warned.get()) {
+                    Member owner = g.retrieveOwner().complete();
+
+                    if(owner != null) {
+                        owner.getUser().openPrivateChannel()
+                                .flatMap(pc -> pc.sendMessage(LangID.getStringByID("maxrole", holder.serverLocale).replace("_", g.getName())))
+                                .queue();
+
+                        warned.set(true);
+                    }
+                }
+
+                return;
+            }
+
             g.createRole()
                     .setName("PackPackMod")
                     .queue(r -> holder.MOD = r.getId(), e -> StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::reassignTempModRole - Error happened while trying to create role"));

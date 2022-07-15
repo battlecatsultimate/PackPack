@@ -33,6 +33,12 @@ public class BoosterRole extends ConstraintCommand {
         if(ch == null || g == null)
             return;
 
+        if(g.getRoles().size() == 250) {
+            ch.sendMessage(LangID.getStringByID("boorole_max", lang)).queue();
+
+            return;
+        }
+
         IDHolder holder = StaticStore.idHolder.get(g.getId());
 
         if(holder.BOOSTER == null) {
