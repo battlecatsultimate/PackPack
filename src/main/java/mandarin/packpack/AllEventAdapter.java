@@ -843,7 +843,15 @@ public class AllEventAdapter extends ListenerAdapter {
                 }
             }
         } catch (Exception e) {
-            StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::onGenericInteractionCreate - Error happened");
+            String message = "E/AllEventAdapter::onGenericInteractionCreate - Error happened";
+
+            Member m = event.getMember();
+
+            if(m != null && StaticStore.holderContainsKey(m.getId())) {
+                message += "\n\nTried to handle the holder : " + StaticStore.getHolder(m.getId()).getClass().getName();
+            }
+
+            StaticStore.logger.uploadErrorLog(e, message);
         }
     }
 
