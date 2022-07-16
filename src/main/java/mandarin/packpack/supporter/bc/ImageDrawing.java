@@ -106,12 +106,16 @@ public class ImageDrawing {
     private static final int typeLeftRightMargin = 66;
     private static final int levelMargin = 36;
     private static final int cellMargin = 110;
+    private static final int enemyIconStroke = 15;
+    private static final int enemyIconGap = 40;
 
     private static final int fruitGap = 60;
     private static final double fruitRatio = 0.125;
     private static final double fruitTextGapRatio = 0.025;
     private static final double fruitUpperGapRatio = 0.025;
     private static final double fruitDownerGapRatio = 0.05;
+    private static final double enemyIconRatio = 1.25; // w/h
+    private static final double enemyInnerIconRatio = 0.95;
 
     static {
         File regular = new File("./data/NotoRegular.otf");
@@ -1363,8 +1367,8 @@ public class ImageDrawing {
 
                 group.get(j).initialize(nameFont, contentFont, nfm, cfm, 0);
 
-                if(group.get(i) instanceof NormalCellDrawer)
-                    offset = Math.max(((NormalCellDrawer) group.get(i)).offset, offset);
+                if(group.get(j) instanceof NormalCellDrawer)
+                    offset = Math.max(((NormalCellDrawer) group.get(j)).offset, offset);
 
                 int tempH = ((NormalCellDrawer) group.get(j)).h;
                 int tempUw = ((NormalCellDrawer) group.get(j)).uw;
@@ -1580,6 +1584,160 @@ public class ImageDrawing {
         return image;
     }
 
+    public static File drawEnemyStatImage(List<CellDrawer> cellGroup, String mag, String name, File container, int eID) throws Exception {
+        Canvas cv = new Canvas();
+
+        FontMetrics nfm = cv.getFontMetrics(nameFont);
+        FontMetrics cfm = cv.getFontMetrics(contentFont);
+
+        int uh = 0;
+        int uw = 0;
+
+        int ah = 0;
+        int aw = 0;
+
+        int offset = 0;
+
+        for(int i = 0; i < cellGroup.size() - 1; i++) {
+            if(cellGroup.get(i) instanceof AbilityCellDrawer)
+                continue;
+
+            cellGroup.get(i).initialize(nameFont, contentFont, nfm, cfm, 0);
+
+            if(cellGroup.get(i) instanceof NormalCellDrawer)
+                offset = Math.max(((NormalCellDrawer) cellGroup.get(i)).offset, offset);
+
+            int tempH = ((NormalCellDrawer) cellGroup.get(i)).h;
+            int tempUw = ((NormalCellDrawer) cellGroup.get(i)).uw;
+
+            if(((NormalCellDrawer) cellGroup.get(i)).isSingleData()) {
+                uh = Math.max(tempH, uh);
+
+                if(tempUw > uw * 3 + CellDrawer.lineOffset * 4) {
+                    uw = (tempUw - CellDrawer.lineOffset * 4) / 3;
+                }
+            } else {
+                uh = Math.max(tempH, uh);
+                uw = Math.max(tempUw, uw);
+            }
+        }
+
+        cellGroup.get(cellGroup.size() - 1).initialize(nameFont, contentFont, nfm, cfm, (int) Math.round((uw * 3 + CellDrawer.lineOffset * 4) * 1.5));
+
+        offset = Math.max(((AbilityCellDrawer) cellGroup.get(cellGroup.size() - 1)).offset, offset);
+
+        int tempH = ((AbilityCellDrawer) cellGroup.get(cellGroup.size() - 1)).h;
+        int tempUw = ((AbilityCellDrawer) cellGroup.get(cellGroup.size() - 1)).w;
+
+        ah = Math.max(tempH, ah);
+        aw = Math.max(tempUw, aw);
+
+        if(aw > uw * 3 + CellDrawer.lineOffset * 4) {
+            uw = (aw - CellDrawer.lineOffset * 4) / 3;
+        }
+
+        BufferedImage[] imgs = new BufferedImage[2];
+
+        FontMetrics bf = cv.getFontMetrics(titleFont);
+        FontMetrics lf = cv.getFontMetrics(levelFont);
+
+        File icon = new File(container, "enemy_icon_"+Data.trio(eID)+".png");
+
+        BufferedImage title = getEnemyTitleImage(icon, name, mag, bf, lf);
+
+        imgs[1] = title;
+
+        if(uw * 3 + CellDrawer.lineOffset * 4 + statPanelMargin * 2 < title.getWidth()) {
+            uw = (title.getWidth() - statPanelMargin * 2 - CellDrawer.lineOffset * 4) / 3;
+        }
+
+        int h = 0;
+        int w = uw * 3 + CellDrawer.lineOffset * 4;
+
+        int th = 0;
+
+        for(int i = 0; i < cellGroup.size(); i++) {
+            if(i < cellGroup.size() - 1) {
+                th += uh;
+
+                th += cellMargin;
+            } else {
+                th += ah + cellMargin;
+            }
+        }
+
+        h = Math.max(th, h);
+
+        BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        FG2D g = new FG2D(img.getGraphics());
+
+        g.setRenderingHint(3, 1);
+        g.enableAntialiasing();
+
+        int x = 0;
+        int y = 0;
+
+        for(int i = 0; i < cellGroup.size(); i++) {
+            cellGroup.get(i).draw(g, x, y, uw, offset, uh, nameFont, contentFont);
+
+            y += uh + cellMargin;
+
+            if(i == cellGroup.size() - 2)
+                y += cellMargin;
+        }
+
+        imgs[0] = img;
+
+        int titleW = imgs[1].getWidth();
+        int imgW = imgs[0].getWidth();
+
+        int titleH = imgs[1].getHeight();
+        int imgH = imgs[0].getHeight();
+
+        int finW = Math.max(titleW, imgW + statPanelMargin * 2) + bgMargin * 2;
+        int finH = bgMargin * 5 + titleH + statPanelMargin * 2 + imgH;
+
+        BufferedImage result = new BufferedImage(finW, finH, BufferedImage.TYPE_INT_ARGB);
+        FG2D rg = new FG2D(result.getGraphics());
+
+        rg.setColor(50, 53, 59);
+        rg.fillRect(0, 0, finW, finH);
+
+        rg.setColor(24, 25, 28);
+        rg.fillRoundRect(0, -cornerRadius, finW, cornerRadius + bgMargin * 6 + titleH, cornerRadius, cornerRadius);
+
+        rg.setColor(64, 68, 75);
+
+        rg.fillRoundRect(bgMargin, bgMargin * 4 + titleH, imgW + statPanelMargin * 2, imgH + statPanelMargin * 2, cornerRadius, cornerRadius);
+
+        rg.drawImage(imgs[1], bgMargin, bgMargin * 2);
+        rg.drawImage(imgs[0], bgMargin + statPanelMargin, bgMargin * 4 + titleH + statPanelMargin);
+
+        BufferedImage scaledDown = new BufferedImage(result.getWidth() / 2, result.getHeight() / 2, BufferedImage.TYPE_INT_ARGB);
+
+        FG2D sdg = new FG2D(scaledDown.getGraphics());
+
+        sdg.setRenderingHint(3, 1);
+        sdg.enableAntialiasing();
+
+        sdg.drawImage(result, 0, 0, scaledDown.getWidth(), scaledDown.getHeight());
+
+        File f = new File("./temp/");
+
+        if(!f.exists() && !f.mkdirs())
+            return null;
+
+        File image = StaticStore.generateTempFile(f, "result", ".png", false);
+
+        if(image == null) {
+            return null;
+        }
+
+        ImageIO.write(scaledDown, "PNG", image);
+
+        return image;
+    }
+
     private static String getUnitCode(int ind) {
         switch (ind) {
             case 0:
@@ -1635,6 +1793,54 @@ public class ImageDrawing {
         g.drawText(type, (int) (icw + nameMargin + typeLeftRightMargin - tRect.getX()), (int) (nRect.getHeight() + nameMargin + typeUpDownMargin - tRect.getY()));
 
         g.drawImage(ic, 0, 0, icw, h - lRect.getHeight() - levelMargin);
+
+        return result;
+    }
+
+    private static BufferedImage getEnemyTitleImage(File icon, String name, String mag, FontMetrics bfm, FontMetrics lfm) throws Exception {
+        BufferedImage ic = ImageIO.read(icon);
+
+        FontRenderContext bfrc = bfm.getFontRenderContext();
+        FontRenderContext lfrc = lfm.getFontRenderContext();
+
+        Rectangle2D nRect = titleFont.createGlyphVector(bfrc, name).getPixelBounds(null, 0, 0);
+        Rectangle2D lRect = levelFont.createGlyphVector(lfrc, mag).getPixelBounds(null, 0, 0);
+
+        int h = (int) Math.round(nRect.getHeight() + nameMargin + lRect.getHeight() + enemyIconGap * 3);
+
+        int icw = (int) (h * enemyIconRatio);
+
+        int w = (int) (icw + nameMargin + Math.max(nRect.getWidth(), lRect.getWidth()));
+
+        BufferedImage result = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        FG2D g = new FG2D(result.getGraphics());
+
+        g.setRenderingHint(3, 1);
+        g.enableAntialiasing();
+
+        g.setColor(238, 238, 238, 255);
+        g.setFont(titleFont);
+
+        g.drawText(name, (int) (icw + nameMargin - nRect.getX()), (int) (enemyIconGap -nRect.getY()));
+
+        g.setFont(levelFont);
+
+        if(CommonStatic.parseIntN(mag) != 100) {
+            g.drawText(mag, (int) (icw + nameMargin - lRect.getX()), (int) (nRect.getHeight() + nameMargin + enemyIconGap - lRect.getY()));
+        }
+
+        g.setColor(54, 57, 63);
+
+        g.fillRoundRect(enemyIconStroke / 2, enemyIconStroke / 2, icw - enemyIconStroke, h - enemyIconStroke, cornerRadius, cornerRadius);
+
+        int size = (int) Math.min(h * enemyInnerIconRatio, h - enemyIconStroke * 2);
+
+        g.drawImage(ic, (icw - h + enemyIconStroke) / 2.0, enemyIconStroke / 2.0, size, size);
+
+        g.setColor(191, 191, 191);
+        g.setStroke(enemyIconStroke);
+
+        g.roundRect(enemyIconStroke / 2, enemyIconStroke / 2, icw - enemyIconStroke, h - enemyIconStroke, cornerRadius, cornerRadius);
 
         return result;
     }

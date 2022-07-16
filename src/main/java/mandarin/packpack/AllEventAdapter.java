@@ -38,7 +38,6 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.role.RoleDeleteEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.internal.entities.GuildImpl;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -716,6 +715,12 @@ public class AllEventAdapter extends ListenerAdapter {
                 case "trueforma":
                 case "tfa":
                     new TrueFormAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
+                    break;
+                case "enemystatanalyzer":
+                case "estatanalyzer":
+                case "enemysa":
+                case "esa":
+                    new EnemyStatAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
                     break;
             }
         } catch (Exception e) {

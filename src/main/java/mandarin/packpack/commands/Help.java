@@ -325,6 +325,21 @@ public class Help extends Command {
                         .addField("-proc", LangID.getStringByID("help_statanalyzer_proc", lang), false)
                         .build()).queue();
                 break;
+            case "enemystatanalyzer":
+            case "estatanalyzer":
+            case "enemysa":
+            case "esa":
+                ch.sendMessageEmbeds(addFields("enemystatanalyzer", true, true, true)).queue();
+                ch.sendMessageEmbeds(new EmbedBuilder()
+                        .setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)])
+                        .setDescription(LangID.getStringByID("help_statanalyzer_adddesc", lang))
+                        .addField("-name", LangID.getStringByID("help_statanalyzer_name", lang), false)
+                        .addField("-trait", LangID.getStringByID("help_statanalyzer_trait", lang), false)
+                        .addField("-cell", LangID.getStringByID("help_statanalyzer_cell", lang), false)
+                        .addField("-abil", LangID.getStringByID("help_statanalyzer_abil", lang), false)
+                        .addField("-proc", LangID.getStringByID("help_statanalyzer_proc", lang), false)
+                        .build()).queue();
+                break;
             default:
                 createMessageWithNoPings(ch, LangID.getStringByID("help_nocomm", lang).replace("_", command));
         }

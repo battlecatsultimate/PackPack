@@ -2659,7 +2659,30 @@ public class EntityHandler {
                         }
                     });
         }
+    }
 
+    public static void generateEnemyStatImage(MessageChannel ch, List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilData, List<FlagCellData> traitData, CustomMaskEnemy enemy, String name, File container, int m, boolean isFrame, int eid, int lang) throws Exception {
+        List<CellDrawer> cellGroup = getEnemyCell(data, procData, abilData, traitData, enemy, lang, m, isFrame);
+
+        File result = ImageDrawing.drawEnemyStatImage(cellGroup, LangID.getStringByID("stat_magnif", lang).replace("_", m+""), name, container, eid);
+
+        if(result == null) {
+            ch.sendMessage(LangID.getStringByID("stat_fail", lang)).queue();
+        } else {
+            ch.sendMessage(LangID.getStringByID("stat_success", lang))
+                    .addFile(result, "stat.png")
+                    .queue(msg -> {
+                        if(result.exists() && !result.delete()) {
+                            StaticStore.logger.uploadLog("Failed to delete file : "+result.getAbsolutePath());
+                        }
+                    }, e -> {
+                        StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateEnemyStatImage - Failed to create stat image");
+
+                        if(result.exists() && !result.delete()) {
+                            StaticStore.logger.uploadLog("Failed to delete file : "+result.getAbsolutePath());
+                        }
+                    });
+        }
     }
 
     private static List<CellDrawer> addCell(List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilData, List<FlagCellData> traitData, CustomMaskUnit u, int lang, int lv, boolean isFrame) {
@@ -2779,6 +2802,140 @@ public class EntityHandler {
 
         for(int i = 0; i < procData.size(); i++) {
             String p = procData.get(i).beautify(u.data, isFrame);
+
+            if(!p.isBlank()) {
+                abil.add(p);
+            }
+        }
+
+        if(abil.isEmpty()) {
+            cells.add(new AbilityCellDrawer(LangID.getStringByID("data_ability", lang), new String[] {LangID.getStringByID("data_none", lang)}));
+        } else {
+            List<String> finalAbil = new ArrayList<>();
+
+            for(int i = 0; i < abil.size(); i++) {
+                finalAbil.add(" · " + abil.get(i));
+            }
+
+            cells.add(new AbilityCellDrawer(LangID.getStringByID("data_ability", lang), finalAbil.toArray(new String[0])));
+        }
+
+        return cells;
+    }
+
+    private static List<CellDrawer> getEnemyCell(List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilData, List<FlagCellData> traitData, CustomMaskEnemy e, int lang, int m, boolean isFrame) {
+        List<CellDrawer> cells = new ArrayList<>();
+
+        cells.add(new NormalCellDrawer(
+                new String[] {LangID.getStringByID("data_hp", lang), LangID.getStringByID("data_hb", lang), LangID.getStringByID("data_speed", lang)},
+                new String[] {DataToString.getHP(e, m), DataToString.getHitback(e), DataToString.getSpeed(e)}
+        ));
+
+        cells.add(new NormalCellDrawer(new String[] {LangID.getStringByID("data_atk", lang)}, new String[] {DataToString.getAtk(e, m)}));
+
+        cells.add(new NormalCellDrawer(
+                new String[] {LangID.getStringByID("data_dps", lang), LangID.getStringByID("data_atktime", lang), LangID.getStringByID("data_abilt", lang)},
+                new String[] {DataToString.getDPS(e, m), DataToString.getAtkTime(e, isFrame), DataToString.getAbilT(e, lang)}
+        ));
+
+        cells.add(new NormalCellDrawer(
+                new String[] {LangID.getStringByID("data_preatk", lang), LangID.getStringByID("data_postatk", lang), LangID.getStringByID("data_tba", lang)},
+                new String[] {DataToString.getPre(e, isFrame), DataToString.getPost(e, isFrame), DataToString.getTBA(e, isFrame)}
+        ));
+
+        StringBuilder trait = new StringBuilder(DataToString.getTrait(e, lang));
+
+        for(int i = 0; i < traitData.size(); i++) {
+            String t = traitData.get(i).dataToString(e.data);
+
+            if(!t.isBlank()) {
+                trait.append(", ").append(t);
+            }
+        }
+
+        cells.add(new NormalCellDrawer(
+                new String[] {LangID.getStringByID("data_trait", lang)},
+                new String[] {trait.toString()}
+        ));
+
+        cells.add(new NormalCellDrawer(
+                new String[] {LangID.getStringByID("data_atktype", lang), LangID.getStringByID("data_drop", lang), LangID.getStringByID("data_range", lang)},
+                new String[] {DataToString.getSiMu(e, lang), DataToString.getDrop(e), DataToString.getRange(e)}
+        ));
+
+        cells.add(new NormalCellDrawer(
+                new String[] {LangID.getStringByID("data_barrier", lang)},
+                new String[] {DataToString.getBarrier(e, lang)}
+        ));
+
+        List<List<CellData>> cellGroup = new ArrayList<>();
+
+        for(int i = 0; i < data.size(); i++) {
+            CellData d = data.get(i);
+
+            List<CellData> group = new ArrayList<>();
+
+            if(d.oneLine) {
+                group.add(d);
+
+                cellGroup.add(group);
+            } else {
+                int j = i;
+
+                while(group.size() < 3 && !data.get(j).oneLine) {
+                    group.add(data.get(j));
+
+                    j++;
+
+                    if(j >= data.size()) {
+                        break;
+                    }
+                }
+
+                j--;
+
+                cellGroup.add(group);
+
+                if(j > i) {
+                    i = j;
+                }
+            }
+        }
+
+        for(int i = 0; i < cellGroup.size(); i++) {
+            List<CellData> group = cellGroup.get(i);
+
+            String[] names = new String[group.size()];
+            String[] contents = new String[group.size()];
+
+            for(int j = 0; j < group.size(); j++) {
+                names[j] = group.get(j).name;
+                String c = group.get(j).dataToString(e.data, isFrame);
+
+                if(c.isBlank()) {
+                    contents[j] = LangID.getStringByID("data_none", lang);
+                } else {
+                    contents[j] = c;
+                }
+            }
+
+            cells.add(new NormalCellDrawer(names, contents));
+        }
+
+        List<String> abil = Interpret.getAbi(e, lang);
+
+        for(int i = 0; i < abilData.size(); i++) {
+            String a = abilData.get(i).dataToString(e.data);
+
+            if(!a.isBlank()) {
+                abil.add(a);
+            }
+        }
+
+        abil.addAll(Interpret.getProc(e, !isFrame, lang, 1.0, 1.0));
+
+        for(int i = 0; i < procData.size(); i++) {
+            String p = procData.get(i).beautify(e.data, isFrame);
 
             if(!p.isBlank()) {
                 abil.add(p);
