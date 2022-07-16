@@ -438,6 +438,7 @@ public class AssetDownloader {
                             }
 
                             CommonStatic.getConfig().lang = oldConfig;
+                            break;
                         case "MissionName.txt":
                             for(String line : qs) {
                                 if(line == null)
