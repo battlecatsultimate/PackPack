@@ -12,6 +12,7 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.AnimMessageHolder;
 import mandarin.packpack.supporter.server.holder.BCAnimMessageHolder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -33,6 +34,11 @@ public class AnimAnalyzer extends ConstraintCommand {
 
     public AnimAnalyzer(ROLE role, int lang, IDHolder id) {
         super(role, lang, id);
+    }
+
+    @Override
+    public void prepare() throws Exception {
+        registerRequiredPermission(Permission.MESSAGE_ATTACH_FILES);
     }
 
     @Override

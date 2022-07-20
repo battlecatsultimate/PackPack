@@ -11,6 +11,7 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.EnemyAnimMessageHolder;
 import mandarin.packpack.supporter.server.holder.SearchHolder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -30,6 +31,11 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
 
     public EnemyGif(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID) {
         super(role, lang, id, mainID, TimeUnit.SECONDS.toMillis(30));
+    }
+
+    @Override
+    public void prepare() throws Exception {
+        registerRequiredPermission(Permission.MESSAGE_ATTACH_FILES);
     }
 
     @Override

@@ -8,6 +8,7 @@ import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
@@ -139,6 +140,11 @@ public class Castle extends ConstraintCommand {
     }
 
     private int startIndex = 1;
+
+    @Override
+    public void prepare() throws Exception {
+        registerRequiredPermission(Permission.MESSAGE_ATTACH_FILES);
+    }
 
     @Override
     public void doSomething(GenericMessageEvent event) throws Exception {

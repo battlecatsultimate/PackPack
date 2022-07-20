@@ -13,6 +13,7 @@ import mandarin.packpack.supporter.bc.cell.FlagCellData;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.StatAnalyzerMessageHolder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
@@ -36,6 +37,11 @@ public class StatAnalyzer extends ConstraintCommand {
 
     public StatAnalyzer(ROLE role, int lang, IDHolder id) {
         super(role, lang, id);
+    }
+
+    @Override
+    public void prepare() throws Exception {
+        registerRequiredPermission(Permission.MESSAGE_MANAGE, Permission.MESSAGE_ATTACH_FILES);
     }
 
     @Override

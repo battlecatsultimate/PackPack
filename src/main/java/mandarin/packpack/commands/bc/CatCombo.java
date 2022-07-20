@@ -16,6 +16,7 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.ComboFormMessageHolder;
 import mandarin.packpack.supporter.server.holder.ComboMessageHolder;
 import mandarin.packpack.supporter.server.holder.SearchHolder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -28,6 +29,11 @@ import java.util.concurrent.TimeUnit;
 public class CatCombo extends TimedConstraintCommand {
     public CatCombo(ConstraintCommand.ROLE role, int lang, IDHolder id) {
         super(role, lang, id, TimeUnit.SECONDS.toMillis(5), StaticStore.COMMAND_COMBO_ID);
+    }
+
+    @Override
+    public void prepare() throws Exception {
+        registerRequiredPermission(Permission.MESSAGE_MANAGE, Permission.MESSAGE_ATTACH_FILES);
     }
 
     @Override

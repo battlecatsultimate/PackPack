@@ -112,7 +112,7 @@ public class StageInfo extends TimedConstraintCommand {
             try {
                 Message m = EntityHandler.performStageEmb(st, event, frame, extra, star, lang);
 
-                if(m != null && interaction.getMember() != null && m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI)) {
+                if(m != null && interaction.getMember() != null && m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_MANAGE)) {
                     Member member = interaction.getMember();
 
                     StaticStore.putHolder(
@@ -132,6 +132,11 @@ public class StageInfo extends TimedConstraintCommand {
         super(role, lang, id, time, StaticStore.COMMAND_STAGEINFO_ID);
 
         this.config = config;
+    }
+
+    @Override
+    public void prepare() throws Exception {
+        registerRequiredPermission(Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_ATTACH_FILES);
     }
 
     @Override

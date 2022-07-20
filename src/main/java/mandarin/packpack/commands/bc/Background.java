@@ -9,6 +9,7 @@ import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.bc.ImageDrawing;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -66,6 +67,11 @@ public class Background extends TimedConstraintCommand {
         super(role, lang, id, time, StaticStore.COMMAND_BG_ID);
 
         this.bg = bg;
+    }
+
+    @Override
+    public void prepare() throws Exception {
+        registerRequiredPermission(Permission.MESSAGE_ATTACH_FILES);
     }
 
     @Override

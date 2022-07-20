@@ -12,6 +12,7 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.EnemyStatMessageHolder;
 import mandarin.packpack.supporter.server.holder.SearchHolder;
 import mandarin.packpack.supporter.server.slash.SlashOption;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -89,6 +90,11 @@ public class EnemyStat extends ConstraintCommand {
         super(role, lang, id);
 
         this.config = config;
+    }
+
+    @Override
+    public void prepare() throws Exception {
+        registerRequiredPermission(Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_ATTACH_FILES);
     }
 
     @Override

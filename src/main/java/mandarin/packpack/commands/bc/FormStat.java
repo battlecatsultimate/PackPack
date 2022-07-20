@@ -94,7 +94,7 @@ public class FormStat extends ConstraintCommand {
 
             Message m = EntityHandler.performUnitEmb(f, event, config, frame, talent, extra, lvs, finalLang);
 
-            if(m != null && interaction.getMember() != null && m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI)) {
+            if(m != null && interaction.getMember() != null && m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_MANAGE)) {
                 StaticStore.putHolder(
                         interaction.getMember().getId(),
                         new FormReactionSlashMessageHolder(m, f, interaction.getMember().getId(), m.getChannel().getId(), m.getId(), config, frame && config.useFrame, talent, extra || config.extra, lvs, finalLang)
@@ -128,6 +128,11 @@ public class FormStat extends ConstraintCommand {
         super(role, lang, holder);
 
         this.config = config;
+    }
+
+    @Override
+    public void prepare() throws Exception {
+        registerRequiredPermission(Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_ATTACH_FILES);
     }
 
     @Override

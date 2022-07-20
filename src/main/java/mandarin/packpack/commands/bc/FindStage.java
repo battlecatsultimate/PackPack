@@ -19,6 +19,7 @@ import mandarin.packpack.supporter.server.holder.SearchHolder;
 import mandarin.packpack.supporter.server.holder.StageEnemyMessageHolder;
 import mandarin.packpack.supporter.server.holder.StageInfoButtonHolder;
 import mandarin.packpack.supporter.server.holder.StageInfoMessageHolder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -37,6 +38,11 @@ public class FindStage extends TimedConstraintCommand {
         super(role, lang, id, time, StaticStore.COMMAND_FINDSTAGE_ID);
 
         this.config = config;
+    }
+
+    @Override
+    public void prepare() throws Exception {
+        registerRequiredPermission(Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_ATTACH_FILES);
     }
 
     @Override

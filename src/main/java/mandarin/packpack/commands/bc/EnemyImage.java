@@ -14,6 +14,7 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.EnemyAnimMessageHolder;
 import mandarin.packpack.supporter.server.holder.SearchHolder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -30,6 +31,11 @@ public class EnemyImage extends TimedConstraintCommand {
 
     public EnemyImage(ConstraintCommand.ROLE role, int lang, IDHolder id, long time) {
         super(role, lang, id, time, StaticStore.COMMAND_ENEMYIMAGE_ID);
+    }
+
+    @Override
+    public void prepare() throws Exception {
+        registerRequiredPermission(Permission.MESSAGE_ATTACH_FILES);
     }
 
     @Override

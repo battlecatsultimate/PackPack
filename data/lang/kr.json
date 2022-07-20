@@ -1058,5 +1058,12 @@
   "config_units" : "단위 : _",
   "config_apply" : "설정 변경이 적용되었습니다!",
   "config_cancel" : "설정 변경이 취소됐습니다",
-  "config_expire" : "설정 변경이 시간 초과로 취소됐습니다"
+  "config_expire" : "설정 변경이 시간 초과로 취소됐습니다",
+  "missing_permission" : "봇이 해당 명령어를 수행하기 위해 요구되는 권한이 없음을 감지했습니다\n서버 관리자에게 연락하거나 혹은 이미 관리 권한을 가지고 계신다면 아래의 권한을 봇에게 부여해 주세요\n\n----------\n\n_PPP_\n\n---------\n\n이 메세지는 다음의 서버에서 왔습니다 : **_SSS_**\n채널 : **_CCC_**",
+  "permission_file" : "파일 첨부",
+  "permission_managemsg" : "메세지 관리 (제거 등)",
+  "permission_addreact" : "이모지 추가",
+  "permission_addrole" : "역할 관리 (추가, 제거 등)",
+  "permission_addemoji" : "이모지 및 스티커 관리 (추가, 제거 등)",
+  "permission_externalemoji" : "외부 이모지 사용"
 }

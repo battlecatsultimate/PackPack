@@ -1053,5 +1053,12 @@
   "config_units" : "Unit : _",
   "config_apply" : "Config change applied!",
   "config_cancel" : "Config change canceled",
-  "config_expire" : "Config change canceled due to time out"
+  "config_expire" : "Config change canceled due to time out",
+  "permission_file" : "Attaching Files",
+  "missing_permission" : "Bot noticed that it lacks specific permissions which are required to perform this command\nPlease contact moderator to adjust permission, or if you are one of them, please add permissions below to bot\n\n----------\n\n_PPP_\n\n---------\n\nThis message is from server : **_SSS_**\nChannel : **_CCC_**",
+  "permission_managemsg" : "Managing Messages (Deletion, etc.)",
+  "permission_addreact" : "Adding Reactions",
+  "permission_addrole" : "Managing Roles (Adding, Deleting, etc.)",
+  "permission_addemoji" : "Managing Emojis and Stickers (Adding, Deleting, etc.)",
+  "permission_externalemoji" : "Using External Emojis"
 }

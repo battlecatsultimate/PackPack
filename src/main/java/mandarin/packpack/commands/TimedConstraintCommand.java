@@ -4,13 +4,12 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildMessageChannel;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public abstract class TimedConstraintCommand extends Command {
@@ -49,6 +48,14 @@ public abstract class TimedConstraintCommand extends Command {
 
     @Override
     public void execute(GenericMessageEvent event) {
+        try {
+            prepare();
+        } catch (Exception e) {
+            StaticStore.logger.uploadErrorLog(e, "E/TimedConstraintCommand::execute - Failed to prepare command : "+this.getClass().getName());
+
+            return;
+        }
+
         MessageChannel ch = getChannel(event);
         Guild g = getGuild(event);
 
@@ -89,23 +96,33 @@ public abstract class TimedConstraintCommand extends Command {
             hasRole = isMod || role.contains(constRole) || m.getId().equals(StaticStore.MANDARIN_SMELL);
         }
 
-        boolean canTry = true;
-
         if(ch instanceof GuildMessageChannel) {
             GuildMessageChannel tc = ((GuildMessageChannel) ch);
 
-            canTry = tc.canTalk();
-        }
+            if(!tc.canTalk()) {
+                String serverName = g.getName();
+                String channelName = ch.getName();
 
-        if(!canTry) {
-            String serverName = g.getName();
-            String channelName = ch.getName();
+                String content;
 
-            String content = LangID.getStringByID("no_permch", lang).replace("_SSS_", serverName).replace("_CCC_", channelName);
+                content = LangID.getStringByID("no_permch", lang).replace("_SSS_", serverName).replace("_CCC_", channelName);
 
-            m.getUser().openPrivateChannel().flatMap(pc -> pc.sendMessage(content)).queue();
+                m.getUser().openPrivateChannel()
+                        .flatMap(pc -> pc.sendMessage(content))
+                        .queue();
 
-            return;
+                return;
+            }
+
+            List<Permission> missingPermission = getMissingPermissions((GuildChannel) ch, g.getSelfMember());
+
+            if(!missingPermission.isEmpty()) {
+                m.getUser().openPrivateChannel()
+                        .flatMap(pc -> pc.sendMessage(LangID.getStringByID("missing_permission", lang).replace("_PPP_", parsePermissionAsList(missingPermission)).replace("_SSS_", g.getName()).replace("_CCC_", ch.getName())))
+                        .queue();
+
+                return;
+            }
         }
 
         if(!hasRole) {

@@ -18,10 +18,12 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -109,11 +111,21 @@ public abstract class Command {
     public Pauser pause = new Pauser();
     public final int lang;
 
+    protected final List<Permission> requiredPermission = new ArrayList<>();
+
     public Command(int lang) {
         this.lang = lang;
     }
 
     public void execute(GenericMessageEvent event) {
+        try {
+            prepare();
+        } catch (Exception e) {
+            StaticStore.logger.uploadErrorLog(e, "E/Command::execute - Failed to prepare command : "+this.getClass().getName());
+
+            return;
+        }
+
         MessageChannel ch = getChannel(event);
         Guild g = getGuild(event);
 
@@ -148,24 +160,34 @@ public abstract class Command {
         if(ch instanceof GuildMessageChannel) {
             GuildMessageChannel tc = ((GuildMessageChannel) ch);
 
-            canTry = tc.canTalk();
-        }
+            if(!tc.canTalk()) {
+                if(m != null) {
+                    String serverName = g.getName();
+                    String channelName = ch.getName();
 
-        if(!canTry) {
-            if(m != null) {
-                String serverName = g.getName();
-                String channelName = ch.getName();
+                    String content;
 
-                String content;
+                    content = LangID.getStringByID("no_permch", lang).replace("_SSS_", serverName).replace("_CCC_", channelName);
 
-                content = LangID.getStringByID("no_permch", lang).replace("_SSS_", serverName).replace("_CCC_", channelName);
+                    m.getUser().openPrivateChannel()
+                            .flatMap(pc -> pc.sendMessage(content))
+                            .queue();
+                }
 
-                m.getUser().openPrivateChannel()
-                        .flatMap(pc -> pc.sendMessage(content))
-                        .queue();
+                return;
             }
 
-            return;
+            List<Permission> missingPermission = getMissingPermissions((GuildChannel) ch, g.getSelfMember());
+
+            if(!missingPermission.isEmpty()) {
+                if(m != null) {
+                    m.getUser().openPrivateChannel()
+                            .flatMap(pc -> pc.sendMessage(LangID.getStringByID("missing_permission", lang).replace("_PPP_", parsePermissionAsList(missingPermission)).replace("_SSS_", g.getName()).replace("_CCC_", ch.getName())))
+                            .queue();
+                }
+
+                return;
+            }
         }
 
         try {
@@ -183,6 +205,10 @@ public abstract class Command {
             e.printStackTrace();
             onFail(event, DEFAULT_ERROR);
         }
+    }
+
+    public void prepare() throws Exception {
+
     }
 
     public abstract void doSomething(GenericMessageEvent event) throws Exception;
@@ -272,5 +298,66 @@ public abstract class Command {
         return ch.sendMessage(content)
                 .allowedMentions(new ArrayList<>())
                 .complete();
+    }
+
+    public void registerRequiredPermission(@Nonnull Permission... permissions) {
+        Collections.addAll(requiredPermission, permissions);
+    }
+
+    protected boolean hasProperPermission(GuildChannel ch, Member self) {
+        return self.hasPermission(ch, requiredPermission);
+    }
+
+    protected List<Permission> getMissingPermissions(GuildChannel ch, Member self) {
+        List<Permission> missing = new ArrayList<>();
+
+        for(int i = 0; i < requiredPermission.size(); i++) {
+            if(!self.hasPermission(ch, requiredPermission.get(i))) {
+                missing.add(requiredPermission.get(i));
+            }
+        }
+
+        return missing;
+    }
+
+    protected String parsePermissionAsList(List<Permission> missingPermissions) {
+        StringBuilder builder = new StringBuilder();
+
+        for(int i = 0; i < missingPermissions.size(); i++) {
+            Permission permission = missingPermissions.get(i);
+
+            String id;
+
+            switch (permission.getName()) {
+                case "Attach Files":
+                    id = "permission_file";
+                    break;
+                case "Manage Messages":
+                    id = "permission_managemsg";
+                    break;
+                case "Add Reactions":
+                    id = "permission_addreact";
+                    break;
+                case "Manage Roles":
+                    id = "permission_addrole";
+                    break;
+                case "Manage Emojis and Stickers":
+                    id = "permission_addemoji";
+                    break;
+                case "Use External Emojis":
+                    id = "permission_externalemoji";
+                    break;
+                default:
+                    id = permission.getName();
+            }
+
+            builder.append(LangID.getStringByID(id, lang));
+
+            if(i < missingPermissions.size() - 1) {
+                builder.append("\n");
+            }
+        }
+
+        return builder.toString();
     }
 }
