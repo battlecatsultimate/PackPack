@@ -6,10 +6,11 @@ version '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
-    implementation 'net.dv8tion:JDA:5.0.0-alpha.16'
+    implementation 'com.github.DV8FromTheWorld:JDA:efe995de2d'
     implementation 'com.google.code.gson:gson:2.8.8'
     implementation 'org.json:json:20210307'
     implementation 'org.jetbrains:annotations:22.0.0'
