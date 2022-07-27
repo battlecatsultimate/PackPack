@@ -722,6 +722,12 @@ public class AllEventAdapter extends ListenerAdapter {
                 case "esa":
                     new EnemyStatAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
                     break;
+                case "stagestatanalyzer":
+                case "sstatanalyzer":
+                case "stagesa":
+                case "ssa":
+                    new StageStatAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
+                    break;
             }
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::onMessageReceived - Error happened while doing something");

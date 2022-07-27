@@ -171,7 +171,7 @@ public class FG2D implements FakeGraphics {
 
 		Rectangle2D rect = fm.getStringBounds(text, g);
 
-		g.drawString(text, (int) (x - rect.getWidth() / 2), (int) (y + (rect.getHeight() - fm.getDescent()) / 2));
+		g.drawString(text, (int) (x - rect.getWidth() / 2 - rect.getX()), (int) (y - rect.getHeight() / 2 - rect.getY()));
 	}
 
 	public void drawVerticalCenteredText(String text, int x, int y) {

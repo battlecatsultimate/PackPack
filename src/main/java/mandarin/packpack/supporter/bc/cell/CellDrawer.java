@@ -9,6 +9,7 @@ public interface CellDrawer {
     float lineStroke = 6f;
     int lineMargin = 16;
     int textMargin = 48;
+    int iconMargin = 48;
 
     void initialize(Font nameFont, Font contentFont, FontMetrics nfm, FontMetrics cfm, int targetWidth);
 

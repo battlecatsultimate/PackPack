@@ -44,8 +44,8 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class EntityHandler {
@@ -2685,6 +2685,57 @@ public class EntityHandler {
         }
     }
 
+    public static void generateStageStatImage(MessageChannel ch, CustomStageMap map, int lv, boolean isFrame, int lang, String[] name, String code) throws Exception {
+        List<List<CellDrawer>> cellGroups = new ArrayList<>();
+
+        if(map.customIndex.isEmpty()) {
+            for(int i = 0; i < map.list.size(); i++) {
+                cellGroups.add(getStageCell(map, i, lang, lv, isFrame));
+            }
+        } else {
+            for(int i = 0; i < map.customIndex.size(); i++) {
+                cellGroups.add(getStageCell(map, map.customIndex.get(i), lang, lv, isFrame));
+            }
+        }
+
+        List<File> results = new ArrayList<>();
+
+        if(map.customIndex.isEmpty()) {
+            for(int i = 0; i < map.list.size(); i++) {
+                File result = ImageDrawing.drawStageStatImage(map, cellGroups.get(i), isFrame, lv, name[i], code + " - " + Data.trio(map.mapID % 1000) + " - " + Data.trio(i), i, lang);
+
+                if(result != null) {
+                    results.add(result);
+                }
+            }
+        } else {
+            for(int i = 0; i < map.customIndex.size(); i++) {
+                File result = ImageDrawing.drawStageStatImage(map, cellGroups.get(i), isFrame, lv, name[i], code + " - " + Data.trio(map.mapID % 1000) + " - " + Data.trio(map.customIndex.get(i)), map.customIndex.get(i), lang);
+
+                if(result != null) {
+                    results.add(result);
+                }
+            }
+        }
+
+        int i = 0;
+
+        while(i < results.size()) {
+            MessageAction action = ch.sendMessage("Analyzed stage image");
+
+            long fileSize = 0;
+
+            while (i < results.size() && fileSize + results.get(i).length() < 8 * 1024 * 1024) {
+                action = action.addFile(results.get(i));
+
+                fileSize += results.get(i).length();
+                i++;
+            }
+
+            action.queue();
+        }
+    }
+
     private static List<CellDrawer> addCell(List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilData, List<FlagCellData> traitData, CustomMaskUnit u, int lang, int lv, boolean isFrame) {
         List<CellDrawer> cells = new ArrayList<>();
 
@@ -2957,6 +3008,51 @@ public class EntityHandler {
         return cells;
     }
 
+    private static List<CellDrawer> getStageCell(CustomStageMap map, int index, int lang, int lv, boolean isFrame) {
+        List<CellDrawer> cells = new ArrayList<>();
+
+        Stage st = map.list.get(index);
+
+        cells.add(new NormalCellDrawer(
+                new String[] {LangID.getStringByID("data_energy", lang), LangID.getStringByID("data_base", lang), LangID.getStringByID("data_xp", lang), LangID.getStringByID("data_level", lang)},
+                new String[] {DataToString.getEnergy(st, lang), DataToString.getBaseHealth(st), DataToString.getXP(st), DataToString.getLevelMagnification(map)},
+                new BufferedImage[] {null, null, null, drawLevelImage(map.stars.length, lv)},
+                new boolean[] {false, false ,false, true}
+        ));
+
+        cells.add(new NormalCellDrawer(
+                new String[] {LangID.getStringByID("data_music", lang), DataToString.getMusicChange(st), LangID.getStringByID("data_bg", lang), LangID.getStringByID("data_castle", lang)},
+                new String[] {DataToString.getMusic(st, lang), DataToString.getMusic1(st, lang), DataToString.getBackground(st, lang), DataToString.getCastle(st, lang)}
+        ));
+
+        cells.add(new NormalCellDrawer(
+                new String[] {LangID.getStringByID("data_continuable", lang), LangID.getStringByID("data_maxenem", lang), LangID.getStringByID("data_minspawn", lang), LangID.getStringByID("data_length", lang)},
+                new String[] {DataToString.getContinuable(st, lang), DataToString.getMaxEnemy(st), DataToString.getMinSpawn(st, isFrame), DataToString.getLength(st)}
+        ));
+
+        List<String> limits = DataToString.getLimit(st.lim, map, lang);
+
+        if(limits.isEmpty())
+            limits.add(LangID.getStringByID("data_none", lang));
+
+        cells.add(new AbilityCellDrawer(
+                LangID.getStringByID("data_limit", lang),
+                limits.toArray(new String[0])
+        ));
+
+        List<String> misc = DataToString.getMiscellaneous(st, lang);
+
+        if(misc.isEmpty())
+            misc.add(LangID.getStringByID("data_none", lang));
+
+        cells.add(new AbilityCellDrawer(
+                LangID.getStringByID("data_misc", lang),
+                misc.toArray(new String[0])
+        ));
+
+        return cells;
+    }
+
     private static String getRarity(int type, int lang) {
         String rarity;
 
@@ -3204,5 +3300,34 @@ public class EntityHandler {
         }
 
         return result;
+    }
+
+    private static BufferedImage drawLevelImage(int max, int lv) {
+        try {
+            BufferedImage crownOn = ImageIO.read(new File("./data/bot/icons/crownOn.png"));
+            BufferedImage crownOff = ImageIO.read(new File("./data/bot/icons/crownOff.png"));
+
+            BufferedImage result = new BufferedImage(crownOn.getWidth() * max + 10 * (max - 1), crownOn.getHeight(), BufferedImage.TYPE_INT_ARGB);
+
+            FG2D g = new FG2D(result.getGraphics());
+
+            int x = 0;
+
+            for(int i = 0; i < max; i++) {
+                if(i > lv) {
+                    g.drawImage(crownOff, x, 0);
+                } else {
+                    g.drawImage(crownOn, x, 0);
+                }
+
+                x += crownOn.getWidth() + 10;
+            }
+
+            return result;
+        } catch (Exception e) {
+            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::drawLevelImage - Failed to generate level image");
+        }
+
+        return null;
     }
 }

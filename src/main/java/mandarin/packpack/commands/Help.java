@@ -340,6 +340,12 @@ public class Help extends Command {
                         .addField("-proc", LangID.getStringByID("help_statanalyzer_proc", lang), false)
                         .build()).queue();
                 break;
+            case "stagestatanalyzer":
+            case "sstatanalyzer":
+            case "stagesa":
+            case "ssa":
+                ch.sendMessageEmbeds(addFields("stagestatanalyzer", true, true, true)).queue();
+                break;
             default:
                 createMessageWithNoPings(ch, LangID.getStringByID("help_nocomm", lang).replace("_", command));
         }

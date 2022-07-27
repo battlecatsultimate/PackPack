@@ -1,6 +1,8 @@
 package mandarin.packpack.supporter.bc;
 
 import common.CommonStatic;
+import common.pack.Identifier;
+import common.pack.UserProfile;
 import common.system.P;
 import common.system.fake.FakeGraphics;
 import common.system.fake.FakeImage;
@@ -8,8 +10,14 @@ import common.system.files.VFile;
 import common.util.Data;
 import common.util.anim.AnimU;
 import common.util.anim.EAnimD;
+import common.util.lang.MultiLangCont;
 import common.util.pack.Background;
 import common.util.pack.bgeffect.BackgroundEffect;
+import common.util.stage.SCDef;
+import common.util.stage.Stage;
+import common.util.stage.info.DefStageInfo;
+import common.util.unit.AbEnemy;
+import common.util.unit.Enemy;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.awt.FG2D;
 import mandarin.packpack.supporter.awt.FIBI;
@@ -108,6 +116,14 @@ public class ImageDrawing {
     private static final int cellMargin = 110;
     private static final int enemyIconStroke = 15;
     private static final int enemyIconGap = 40;
+    private static final int innerTableCornerRadius = 75;
+    private static final int innerTableTextMargin = 100;
+    private static final int innerTableCellMargin = 200;
+    private static final int headerSeparatorHeight = 135;
+    private static final int rewardIconSize = 160;
+
+    private static final float headerStroke = 4f;
+    private static final float innerTableLineStroke = 3f;
 
     private static final int fruitGap = 60;
     private static final double fruitRatio = 0.125;
@@ -116,6 +132,22 @@ public class ImageDrawing {
     private static final double fruitDownerGapRatio = 0.05;
     private static final double enemyIconRatio = 1.25; // w/h
     private static final double enemyInnerIconRatio = 0.95;
+
+    private static final int CHANCE_WIDTH = 0;
+    private static final int REWARD_WIDTH = 1;
+    private static final int AMOUNT_WIDTH = 2;
+    private static final int TOTAL_WIDTH = 3;
+    private static final int TOTAL_HEIGHT = 4;
+
+    private static final int ENEMY = 0;
+    private static final int NUMBER = 1;
+    private static final int BASE = 2;
+    private static final int MAGNIFICATION = 3;
+    private static final int START = 4;
+    private static final int LAYER = 5;
+    private static final int BOSS = 6;
+    private static final int STAGE_WIDTH = 7;
+    private static final int STAGE_HEIGHT = 8;
 
     static {
         File regular = new File("./data/NotoRegular.otf");
@@ -1370,7 +1402,7 @@ public class ImageDrawing {
                 if(group.get(j) instanceof NormalCellDrawer)
                     offset = Math.max(((NormalCellDrawer) group.get(j)).offset, offset);
 
-                int tempH = ((NormalCellDrawer) group.get(j)).h;
+                int tempH = Math.max(((NormalCellDrawer) group.get(j)).h, ((NormalCellDrawer) group.get(j)).ih);
                 int tempUw = ((NormalCellDrawer) group.get(j)).uw;
 
                 if(((NormalCellDrawer) group.get(j)).isSingleData()) {
@@ -1607,7 +1639,7 @@ public class ImageDrawing {
             if(cellGroup.get(i) instanceof NormalCellDrawer)
                 offset = Math.max(((NormalCellDrawer) cellGroup.get(i)).offset, offset);
 
-            int tempH = ((NormalCellDrawer) cellGroup.get(i)).h;
+            int tempH = Math.max(((NormalCellDrawer) cellGroup.get(i)).h, ((NormalCellDrawer) cellGroup.get(i)).ih);
             int tempUw = ((NormalCellDrawer) cellGroup.get(i)).uw;
 
             if(((NormalCellDrawer) cellGroup.get(i)).isSingleData()) {
@@ -1654,19 +1686,15 @@ public class ImageDrawing {
         int h = 0;
         int w = uw * 3 + CellDrawer.lineOffset * 4;
 
-        int th = 0;
-
         for(int i = 0; i < cellGroup.size(); i++) {
             if(i < cellGroup.size() - 1) {
-                th += uh;
+                h += uh;
 
-                th += cellMargin;
+                h += cellMargin;
             } else {
-                th += ah + cellMargin;
+                h += ah + cellMargin;
             }
         }
-
-        h = Math.max(th, h);
 
         BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
         FG2D g = new FG2D(img.getGraphics());
@@ -1734,6 +1762,259 @@ public class ImageDrawing {
         }
 
         ImageIO.write(scaledDown, "PNG", image);
+
+        return image;
+    }
+
+    public static File drawStageStatImage(CustomStageMap map, List<CellDrawer> group, boolean isFrame, int lv, String name, String code, int index, int lang) throws Exception {
+        Stage st = map.list.get(index);
+
+        Canvas cv = new Canvas();
+
+        FontMetrics nfm = cv.getFontMetrics(nameFont);
+        FontMetrics cfm = cv.getFontMetrics(contentFont);
+        FontMetrics tfm = cv.getFontMetrics(titleFont);
+
+        int uh = 0;
+        int uw = 0;
+        int ch = 0;
+
+        int offset = 0;
+
+        for(int i = 0; i < group.size() - 2; i++) {
+            group.get(i).initialize(nameFont, contentFont, nfm, cfm, 0);
+
+            if(group.get(i) instanceof NormalCellDrawer)
+                offset = Math.max(((NormalCellDrawer) group.get(i)).offset, offset);
+
+            int tempH = Math.max(((NormalCellDrawer) group.get(i)).h, ((NormalCellDrawer) group.get(i)).ih);
+            int tempUw = ((NormalCellDrawer) group.get(i)).uw;
+
+            if(((NormalCellDrawer) group.get(i)).isSingleData()) {
+                uh = Math.max(tempH, uh);
+
+                if(tempUw > uw * 3 + CellDrawer.lineOffset * 4) {
+                    uw = (tempUw - CellDrawer.lineOffset * 4) / 3;
+                }
+            } else {
+                uh = Math.max(tempH, uh);
+                uw = Math.max(tempUw, uw);
+            }
+
+            ch = Math.max(((NormalCellDrawer) group.get(i)).ch, ch);
+        }
+
+        group.get(group.size() - 2).initialize(nameFont, contentFont, nfm, cfm, uw * 4 + CellDrawer.lineOffset * 6);
+
+        offset = Math.max(((AbilityCellDrawer) group.get(group.size() - 2)).offset, offset);
+
+        int ah = ((AbilityCellDrawer) group.get(group.size() - 2)).h;
+        int aw = ((AbilityCellDrawer) group.get(group.size() - 2)).w;
+
+        if(aw > uw * 4 + CellDrawer.lineOffset * 6) {
+            uw = (aw - CellDrawer.lineOffset * 6) / 4;
+        }
+
+        group.get(group.size() - 1).initialize(nameFont, contentFont, nfm, cfm, uw * 4 + CellDrawer.lineOffset * 6);
+
+        offset = Math.max(((AbilityCellDrawer) group.get(group.size() - 1)).offset, offset);
+
+        int mh = ((AbilityCellDrawer) group.get(group.size() - 1)).h;
+        int mw = ((AbilityCellDrawer) group.get(group.size() - 1)).w;
+
+        if(mw > uw * 4 + CellDrawer.lineOffset * 6) {
+            uw = (mw - CellDrawer.lineOffset * 6) / 4;
+        }
+
+        BufferedImage title = getStageTitleImage(name, code, tfm, cfm);
+
+        if(title.getWidth() > uw * 4 + CellDrawer.lineOffset * 6) {
+            uw = (title.getWidth() - CellDrawer.lineOffset * 6) / 4;
+        }
+
+        int[] stw = measureEnemySchemeWidth(st, map, cfm, isFrame, lv, lang);
+        int[] dw = measureDropTableWidth(st, map, cfm, lang, true);
+        int[] sw = measureDropTableWidth(st, map, cfm, lang, false);
+
+        if(dw != null && sw == null) {
+            sw = dw;
+        }
+
+        if(sw != null && dw == null) {
+            dw = sw;
+        }
+
+        int desiredStageGap = innerTableTextMargin;
+        int desiredRewardGap = innerTableTextMargin;
+        int desiredScoreGap = innerTableTextMargin;
+
+        if(dw != null) {
+            int tw = maxAmong(dw[TOTAL_WIDTH] * 2 + CellDrawer.lineOffset * 2, sw[TOTAL_WIDTH] * 2 + CellDrawer.lineOffset * 2, stw[STAGE_WIDTH]);
+
+            if(tw > uw * 4 + CellDrawer.lineOffset * 6) {
+                uw = (int) Math.round((tw - CellDrawer.lineOffset * 6) / 4.0);
+
+                if(tw > dw[TOTAL_WIDTH] * 2 + CellDrawer.lineOffset * 2) {
+                    desiredRewardGap = (int) Math.round((tw - 2 * (dw[CHANCE_WIDTH] + dw[REWARD_WIDTH] + dw[AMOUNT_WIDTH] + rewardIconSize + CellDrawer.lineOffset)) / 14.0);
+                }
+
+                if(tw > sw[TOTAL_WIDTH] * 2 + CellDrawer.lineOffset * 2) {
+                    desiredScoreGap = (int) Math.round((tw - 2 * (sw[CHANCE_WIDTH] + sw[REWARD_WIDTH] + sw[AMOUNT_WIDTH] + rewardIconSize + CellDrawer.lineOffset)) / 14.0);
+                }
+
+                if(tw > stw[STAGE_WIDTH] - statPanelMargin * 2) {
+                    int tempTotalWidth = tw + statPanelMargin * 2;
+
+                    for(int i = ENEMY; i <= BOSS; i++) {
+                        tempTotalWidth -= stw[i];
+                    }
+
+                    desiredStageGap = (int) Math.round((tempTotalWidth - rewardIconSize) / 15.0);
+                }
+            } else {
+                desiredRewardGap = (int) Math.round((uw * 2 + CellDrawer.lineOffset * 2 - dw[CHANCE_WIDTH] - dw[REWARD_WIDTH] - dw[AMOUNT_WIDTH] - rewardIconSize) / 7.0);
+                desiredScoreGap = (int) Math.round((uw * 2 + CellDrawer.lineOffset * 2 - sw[CHANCE_WIDTH] - sw[REWARD_WIDTH] - sw[AMOUNT_WIDTH] - rewardIconSize) / 7.0);
+
+                int tempTotalWidth = uw * 4 + CellDrawer.lineOffset * 6;
+
+                for(int i = ENEMY; i <= BOSS; i++) {
+                    tempTotalWidth -= stw[i];
+                }
+
+                desiredStageGap = (int) Math.round((tempTotalWidth - rewardIconSize) / 15.0);
+            }
+        } else {
+            if(stw[STAGE_WIDTH] > uw * 4 + CellDrawer.lineOffset * 6) {
+                uw = (int) Math.round((stw[TOTAL_WIDTH] - CellDrawer.lineOffset * 6) / 4.0);
+            } else {
+                int tempTotalWidth = uw * 4 + CellDrawer.lineOffset * 6;
+
+                for(int i = ENEMY; i <= BOSS; i++) {
+                    tempTotalWidth -= stw[i];
+                }
+
+                desiredStageGap = (int) Math.round((tempTotalWidth - rewardIconSize) / 15.0);
+            }
+        }
+
+        BufferedImage enemySchematic = drawEnemySchemeTable(st, map, stw, desiredStageGap, isFrame, lv, lang);
+
+        BufferedImage rewardTable = drawRewardTable(st, map, dw, desiredRewardGap, lang, true);
+        BufferedImage scoreTable = drawRewardTable(st, map, sw, desiredScoreGap, lang, false);
+
+        int w = uw * 4 + CellDrawer.lineOffset * 6;
+        int h = 0;
+
+        for(int i = 0; i < group.size(); i++) {
+            if(i < group.size() - 2) {
+                h += uh;
+                h += cellMargin;
+            } else if(i < group.size() - 1) {
+                h += ah + cellMargin * 2;
+            } else {
+                h += mh + cellMargin * 2;
+            }
+        }
+
+        BufferedImage infoPanel = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+
+        FG2D pg = new FG2D(infoPanel.getGraphics());
+
+        int x = 0;
+        int y = 0;
+
+        for(int i = 0; i < group.size(); i++) {
+            group.get(i).draw(pg, x, y, uw, offset, uh, nameFont, contentFont);
+
+            if(i < group.size() - 1)
+                y += uh + cellMargin;
+            else
+                y += ah + cellMargin;
+
+            if(i == group.size() - 3 || i == group.size() - 2)
+                y += cellMargin;
+        }
+
+        int finW = infoPanel.getWidth() + statPanelMargin * 2 + bgMargin * 2;
+        int finH = bgMargin * 6 + title.getHeight() + statPanelMargin * 2 + infoPanel.getHeight() + cellMargin * 2 + uh - CellDrawer.textMargin - ch;
+        int panelH = statPanelMargin * 2 + infoPanel.getHeight() + cellMargin * 2 + uh - CellDrawer.textMargin - ch;
+
+        if(rewardTable != null || scoreTable != null) {
+            int tableH = 0;
+
+            if(rewardTable != null)
+                tableH = Math.max(rewardTable.getHeight(), tableH);
+
+            if(scoreTable != null)
+                tableH = Math.max(scoreTable.getHeight(), tableH);
+
+            finH += tableH;
+            panelH += tableH;
+        } else {
+            finH += ch;
+            panelH += ch;
+        }
+
+        finH += enemySchematic.getHeight();
+
+        BufferedImage result = new BufferedImage(finW, finH, BufferedImage.TYPE_INT_ARGB);
+
+        FG2D g = new FG2D(result.getGraphics());
+
+        g.setColor(50, 53, 59);
+
+        g.fillRect(0, 0, finW, finH);
+
+        g.setColor(24, 25, 28);
+
+        g.fillRoundRect(0, -cornerRadius, finW, cornerRadius + bgMargin * 10 + title.getHeight(), cornerRadius, cornerRadius);
+
+        g.setColor(64, 68, 75);
+
+        g.fillRoundRect(bgMargin, bgMargin * 4 + title.getHeight(), infoPanel.getWidth() + statPanelMargin * 2, panelH, cornerRadius, cornerRadius);
+
+        g.drawImage(title, bgMargin, bgMargin * 2);
+        g.drawImage(infoPanel, bgMargin + statPanelMargin, bgMargin * 4 + title.getHeight() + statPanelMargin);
+
+        g.setColor(191, 191, 191);
+
+        g.setFont(nameFont);
+
+        g.drawText(LangID.getStringByID("data_rewarddrop", lang), bgMargin + statPanelMargin, bgMargin * 4 + title.getHeight() + statPanelMargin + infoPanel.getHeight() + cellMargin + offset / 2);
+        g.drawText(LangID.getStringByID("data_scoredrop", lang), bgMargin + statPanelMargin + uw * 2 + CellDrawer.lineOffset * 4, bgMargin * 4 + title.getHeight() + statPanelMargin + infoPanel.getHeight() + cellMargin + offset / 2);
+
+        if(rewardTable != null) {
+            g.drawImage(rewardTable, bgMargin + statPanelMargin, bgMargin * 4 + title.getHeight() + statPanelMargin + infoPanel.getHeight() + cellMargin * 2 + uh - ch - CellDrawer.textMargin);
+        } else {
+            g.setFont(contentFont);
+            g.setColor(239, 239, 239);
+
+            g.drawText(LangID.getStringByID("data_none", lang), bgMargin + statPanelMargin, bgMargin * 4 + title.getHeight() + statPanelMargin + infoPanel.getHeight() + cellMargin * 2 + uh - ch - CellDrawer.textMargin + offset / 2);
+        }
+
+        if(scoreTable != null) {
+            g.drawImage(scoreTable, bgMargin + statPanelMargin + uw * 2 + CellDrawer.lineOffset * 4, bgMargin * 4 + title.getHeight() + statPanelMargin + infoPanel.getHeight() + cellMargin * 2 + uh - ch - CellDrawer.textMargin);
+        } else {
+            g.setFont(contentFont);
+            g.setColor(239, 239, 239);
+
+            g.drawText(LangID.getStringByID("data_none", lang), bgMargin + statPanelMargin + uw * 2 + CellDrawer.lineOffset * 4, bgMargin * 4 + title.getHeight() + statPanelMargin + infoPanel.getHeight() + cellMargin * 2 + uh - ch - CellDrawer.textMargin + offset / 2);
+        }
+
+        g.drawImage(enemySchematic, bgMargin, bgMargin * 4 + title.getHeight() + panelH + bgMargin);
+
+        File f = new File("./temp/");
+
+        if(!f.exists() && !f.mkdirs())
+            return null;
+
+        File image = StaticStore.generateTempFile(f, "result", ".png", false);
+
+        if(image == null) {
+            return null;
+        }
+
+        ImageIO.write(result, "PNG", image);
 
         return image;
     }
@@ -1845,6 +2126,36 @@ public class ImageDrawing {
         return result;
     }
 
+    private static BufferedImage getStageTitleImage(String name, String code, FontMetrics bfm, FontMetrics lfm) {
+        FontRenderContext bfrc = bfm.getFontRenderContext();
+        FontRenderContext lfrc = lfm.getFontRenderContext();
+
+        Rectangle2D nRect = titleFont.createGlyphVector(bfrc, name).getPixelBounds(null, 0, 0);
+        Rectangle2D lRect = contentFont.createGlyphVector(lfrc, code).getPixelBounds(null, 0, 0);
+
+        int h = (int) Math.round(nRect.getHeight() + nameMargin + lRect.getHeight());
+
+        int w = (int) Math.max(nRect.getWidth(), lRect.getWidth()) + bgMargin;
+
+        BufferedImage result = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        FG2D g = new FG2D(result.getGraphics());
+
+        g.setRenderingHint(3, 1);
+        g.enableAntialiasing();
+
+        g.setColor(238, 238, 238, 255);
+        g.setFont(titleFont);
+
+        g.drawText(name, (int) (bgMargin - nRect.getX()), (int) -nRect.getY());
+
+        g.setColor(191, 191, 191);
+        g.setFont(contentFont);
+
+        g.drawText(code, (int) (bgMargin - nRect.getX()), (int) (nRect.getHeight() + nameMargin - lRect.getY()));
+
+        return result;
+    }
+
     private static BufferedImage generateEvolveImage(File container, int[][] data, int targetWidth, FontMetrics metrics) {
         GlyphVector glyph = fruitFont.createGlyphVector(metrics.getFontRenderContext(), "1234567890Mk");
 
@@ -1916,6 +2227,629 @@ public class ImageDrawing {
         }
 
         return null;
+    }
+
+    /**
+     *
+     * @param st Stage
+     * @param map Stage map
+     * @param cfm Fonrt metrics to measure text width/height
+     * @param lang Language value
+     * @return Returns { Width of Chance, Width of Item, Width of Amount, Total Width, Total Height }
+     */
+    private static int[] measureDropTableWidth(Stage st, CustomStageMap map, FontMetrics cfm, int lang, boolean reward) {
+        List<String[]> dropData;
+
+        if(reward) {
+            dropData = DataToString.getRewards(st, map, lang);
+        } else {
+            dropData = DataToString.getScoreDrops(st, map, lang);
+        }
+
+        if(dropData == null)
+            return null;
+
+        int[] result = new int[5];
+
+        String chance;
+
+        if(dropData.get(dropData.size() - 1).length == 1) {
+            dropData.remove(dropData.size() - 1);
+
+            chance = LangID.getStringByID("data_rewardno", lang);
+        } else {
+            chance = LangID.getStringByID("data_chance", lang);
+        }
+
+        int cw = cfm.stringWidth(chance);
+
+        int rw = cfm.stringWidth(LangID.getStringByID("data_reward", lang));
+
+        int aw = cfm.stringWidth(LangID.getStringByID("data_amount", lang));
+
+        for(int i = 0; i < dropData.size(); i++) {
+            String[] data = dropData.get(i);
+
+            if(data.length != 3)
+                continue;
+
+            cw = Math.max(cw, cfm.stringWidth(data[0]));
+            rw = Math.max(rw, cfm.stringWidth(data[1]));
+            aw = Math.max(aw, cfm.stringWidth(data[2]));
+        }
+
+        result[CHANCE_WIDTH] = cw;
+        result[REWARD_WIDTH] = rw;
+        result[AMOUNT_WIDTH] = aw;
+        result[TOTAL_WIDTH] = innerTableTextMargin * 2 + cw + innerTableTextMargin * 3 + rewardIconSize + rw + innerTableTextMargin * 2 + aw;
+        result[TOTAL_HEIGHT] = innerTableCellMargin * (dropData.size() + 1);
+
+        return result;
+    }
+
+    /**
+     *
+     * @param st Stage
+     * @param map Stage map
+     * @param cfm Fonrt metrics to measure text width/height
+     * @param lang Language value
+     * @return Returns { Width of Enemy, Width of Number, Width of Base, Width of Magnification, Width of Start, Width of Layer, Width of Boss, Total Width, Total Height }
+     */
+    private static int[] measureEnemySchemeWidth(Stage st, CustomStageMap map, FontMetrics cfm, boolean isFrame, int lv, int lang) {
+        int[] result = new int[9];
+
+        int ew = cfm.stringWidth(LangID.getStringByID("data_enemy", lang));
+        int nw = cfm.stringWidth(LangID.getStringByID("data_number", lang));
+        int bw = cfm.stringWidth(LangID.getStringByID("data_basehealth", lang));
+        int mw = cfm.stringWidth(LangID.getStringByID("data_manif", lang));
+        int sw = cfm.stringWidth(LangID.getStringByID("data_startres", lang));
+        int lw = cfm.stringWidth(LangID.getStringByID("data_layer", lang));
+        int bow = cfm.stringWidth(LangID.getStringByID("data_isboss", lang));
+
+        for(int i = st.data.datas.length - 1; i >= 0; i--) {
+            SCDef.Line line = st.data.datas[i];
+
+            Identifier<AbEnemy> id = line.enemy;
+
+            String enemyName = null;
+
+            if(id.id >= UserProfile.getBCData().enemies.size()) {
+                enemyName = map.enemyNames.get(id.id);
+            } else {
+                AbEnemy enemy = id.get();
+
+                if(enemy instanceof Enemy) {
+                    int oldConfig = CommonStatic.getConfig().lang;
+                    CommonStatic.getConfig().lang = lang;
+
+                    enemyName = MultiLangCont.get(enemy);
+
+                    CommonStatic.getConfig().lang = oldConfig;
+
+                    if(enemyName == null || enemyName.isBlank()) {
+                        enemyName = ((Enemy) enemy).names.toString();
+                    }
+
+                    if(enemyName.isBlank()) {
+                        enemyName = map.enemyNames.get(id.id);
+                    }
+                }
+            }
+
+            if(enemyName == null || enemyName.isBlank()) {
+                enemyName = LangID.getStringByID("data_enemy", lang)+" - "+Data.trio(id.id);
+            }
+
+            ew = Math.max(ew, cfm.stringWidth(enemyName));
+
+            String number;
+
+            if(line.number == 0)
+                number = LangID.getStringByID("data_infinite", lang);
+            else
+                number = String.valueOf(line.number);
+
+            nw = Math.max(nw, cfm.stringWidth(number));
+
+            String baseHP;
+
+            if(line.castle_0 == line.castle_1 || line.castle_1 == 0)
+                baseHP = line.castle_0+"%";
+            else {
+                int minHealth = Math.min(line.castle_0, line.castle_1);
+                int maxHealth = Math.max(line.castle_0, line.castle_1);
+
+                baseHP = minHealth + " ~ " + maxHealth + "%";
+            }
+
+            bw = Math.max(bw, cfm.stringWidth(baseHP));
+
+            mw = Math.max(mw, cfm.stringWidth(DataToString.getMagnification(new int[] {line.multiple, line.mult_atk}, lv)));
+
+            String start;
+
+            if(line.spawn_1 == 0)
+                if(isFrame)
+                    start = line.spawn_0+"f";
+                else
+                    start = DataToString.df.format(line.spawn_0/30.0)+"s";
+            else {
+                int minSpawn = Math.min(line.spawn_0, line.spawn_1);
+                int maxSpawn = Math.max(line.spawn_0, line.spawn_1);
+
+                if(isFrame)
+                    start = minSpawn+"f ~ "+maxSpawn+"f";
+                else
+                    start = DataToString.df.format(minSpawn/30.0)+"s ~ "+DataToString.df.format(maxSpawn/30.0)+"s";
+            }
+
+            String respawn;
+
+            if(line.respawn_0 == line.respawn_1)
+                if(isFrame)
+                    respawn = line.respawn_0+"f";
+                else
+                    respawn = DataToString.df.format(line.respawn_0/30.0)+"s";
+            else {
+                int minSpawn = Math.min(line.respawn_0, line.respawn_1);
+                int maxSpawn = Math.max(line.respawn_0, line.respawn_1);
+
+                if(isFrame)
+                    respawn = minSpawn+"f ~ "+maxSpawn+"f";
+                else
+                    respawn = DataToString.df.format(minSpawn/30.0)+"s ~ "+DataToString.df.format(maxSpawn/30.0)+"s";
+            }
+
+            String startResp = start+" ("+respawn+")";
+
+            sw = Math.max(sw, cfm.stringWidth(startResp));
+
+            String layer;
+
+            if(line.layer_0 != line.layer_1) {
+                int minLayer = Math.min(line.layer_0, line.layer_1);
+                int maxLayer = Math.max(line.layer_0, line.layer_1);
+
+                layer = minLayer + " ~ " + maxLayer;
+            } else {
+                layer = String.valueOf(line.layer_0);
+            }
+
+            lw = Math.max(lw, cfm.stringWidth(layer));
+
+            String boss;
+
+            if(line.boss == 0)
+                boss = "";
+            else
+                boss = LangID.getStringByID("data_boss", lang);
+
+            bow = Math.max(bow, cfm.stringWidth(boss));
+        }
+
+        result[ENEMY] = ew;
+        result[NUMBER] = nw;
+        result[BASE] = bw;
+        result[MAGNIFICATION] = mw;
+        result[START] = sw;
+        result[LAYER] = lw;
+        result[BOSS] = bow;
+        result[STAGE_WIDTH] =
+                innerTableTextMargin * 3 + rewardIconSize + ew +
+                        innerTableTextMargin * 2 + nw +
+                        innerTableTextMargin * 2 + bw +
+                        innerTableTextMargin * 2 + mw +
+                        innerTableTextMargin * 2 + sw +
+                        innerTableTextMargin * 2 + lw +
+                        innerTableTextMargin * 2 + bow;
+        result[STAGE_HEIGHT] = innerTableCellMargin * (st.data.datas.length + 1);
+
+        return result;
+    }
+
+    private static BufferedImage drawRewardTable(Stage st, CustomStageMap map, int[] dimension, int desiredGap, int lang, boolean reward) throws Exception {
+        List<String[]> data;
+
+        if(reward)
+            data = DataToString.getRewards(st, map, lang);
+        else
+            data = DataToString.getScoreDrops(st, map, lang);
+
+        if(data == null) {
+            return null;
+        } else {
+            int w = desiredGap * 7 + dimension[CHANCE_WIDTH] + dimension[REWARD_WIDTH] + dimension[AMOUNT_WIDTH] + rewardIconSize;
+
+            int h = dimension[TOTAL_HEIGHT];
+
+            BufferedImage result = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+
+            FG2D g = new FG2D(result.getGraphics());
+
+            g.setRenderingHint(3, 1);
+            g.enableAntialiasing();
+
+            g.setFont(contentFont);
+
+            g.setColor(51, 53, 60);
+
+            g.fillRoundRect(0, 0, w, h, innerTableCornerRadius, innerTableCornerRadius);
+
+            g.setColor(24, 25, 28);
+
+            g.fillRoundRect(0, 0, w,innerTableCellMargin + innerTableCornerRadius, innerTableCornerRadius, innerTableCornerRadius);
+
+            g.setColor(51, 53, 60);
+
+            g.fillRect(0, innerTableCellMargin, w, innerTableCornerRadius);
+
+            int x = 0;
+
+            for(int i = 0; i < 3; i++) {
+                double tx = desiredGap * 2 + dimension[i];
+
+                if(i == 1)
+                    tx += desiredGap + rewardIconSize;
+
+                tx /= 2.0;
+
+                switch (i) {
+                    case CHANCE_WIDTH:
+                        String chance;
+
+                        if(data.get(data.size() - 1).length == 1) {
+                            data.remove(data.size() - 1);
+
+                            chance = LangID.getStringByID("data_rewardno", lang);
+                        } else {
+                            chance = LangID.getStringByID("data_chance", lang);
+                        }
+
+                        g.setColor(191, 191, 191);
+
+                        g.drawCenteredText(chance, x + (int) tx, innerTableCellMargin / 2);
+
+                        g.setStroke(headerStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+                        int ly = (int) Math.round((innerTableCellMargin - headerSeparatorHeight) / 2.0);
+
+                        g.drawLine((int) (x + tx * 2.0), ly, (int) (x + tx * 2.0), innerTableCellMargin - ly);
+
+                        int y = innerTableCellMargin;
+
+                        for(int j = 0; j < data.size(); j++) {
+                            g.setColor(239, 239, 239);
+
+                            g.drawCenteredText(data.get(j)[i], x + (int) tx, y + innerTableCellMargin / 2);
+
+                            g.setColor(191, 191, 191, 64);
+
+                            g.drawLine((int) (x + tx * 2.0), y + ly, (int) (x + tx * 2.0), y + innerTableCellMargin - ly);
+
+                            y += innerTableCellMargin;
+                        }
+
+                        break;
+                    case REWARD_WIDTH:
+                        g.setColor(191, 191, 191);
+
+                        g.drawCenteredText(LangID.getStringByID("data_reward", lang), x + (int) tx, innerTableCellMargin / 2);
+
+                        g.setStroke(headerStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+                        ly = (int) Math.round((innerTableCellMargin - headerSeparatorHeight) / 2.0);
+
+                        g.drawLine((int) (x + tx * 2.0), ly, (int) (x + tx * 2.0), innerTableCellMargin - ly);
+
+                        y = innerTableCellMargin;
+
+                        int rx = (int) Math.round((tx * 2.0 - desiredGap - rewardIconSize) / 2.0);
+
+                        for(int j = 0; j < data.size(); j++) {
+                            g.setColor(239, 239, 239);
+
+                            g.drawCenteredText(data.get(j)[i], x + desiredGap + rewardIconSize + rx, y + innerTableCellMargin / 2);
+
+                            g.setColor(65, 69, 76);
+
+                            g.fillOval(x + desiredGap, y + (innerTableCellMargin - rewardIconSize) / 2, rewardIconSize, rewardIconSize);
+
+                            BufferedImage icon = getRewardImage(((DefStageInfo) st.info).drop[j][i], map);
+
+                            if(icon != null) {
+                                g.drawImage(icon, x + desiredGap, y + (innerTableCellMargin - rewardIconSize) / 2.0, rewardIconSize, rewardIconSize);
+                            }
+
+                            g.setColor(191, 191, 191, 64);
+
+                            g.drawLine((int) (x + tx * 2.0), y + ly, (int) (x + tx * 2.0), y + innerTableCellMargin - ly);
+
+                            y += innerTableCellMargin;
+                        }
+
+                        break;
+                    case AMOUNT_WIDTH:
+                        g.setColor(191, 191, 191);
+
+                        g.drawCenteredText(LangID.getStringByID("data_amount", lang), x + (int) tx, innerTableCellMargin / 2);
+
+                        g.setStroke(headerStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+                        y = innerTableCellMargin;
+
+                        for(int j = 0; j < data.size(); j++) {
+                            g.setColor(239, 239, 239);
+
+                            g.drawCenteredText(data.get(j)[i], x + (int) tx, y + innerTableCellMargin / 2);
+
+                            g.setColor(191, 191, 191, 64);
+
+                            y += innerTableCellMargin;
+                        }
+
+                        break;
+                }
+
+                x += (int) (tx * 2.0);
+            }
+
+            g.setColor(191, 191, 191, 64);
+
+            g.setStroke(innerTableLineStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+            int y = innerTableCellMargin * 2;
+
+            for(int i = 0; i < data.size() - 1; i++) {
+                g.drawLine(innerTableTextMargin, y, w - innerTableTextMargin, y);
+
+                y += innerTableCellMargin;
+            }
+
+            return result;
+        }
+    }
+
+    private static BufferedImage drawEnemySchemeTable(Stage st, CustomStageMap map, int[] dimension, int desiredGap, boolean isFrame, int lv, int lang) throws Exception {
+        int w = desiredGap * 15 + rewardIconSize;
+
+        for(int i = ENEMY; i <= BOSS; i++) {
+            w += dimension[i];
+        }
+
+        int h = innerTableCellMargin * (st.data.datas.length + 1);
+
+        BufferedImage result = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+
+        FG2D g = new FG2D(result.getGraphics());
+
+        g.setRenderingHint(3, 1);
+        g.enableAntialiasing();
+
+        g.setFont(contentFont);
+
+        g.setColor(65, 69, 76);
+
+        g.fillRoundRect(0, 0, w, h, cornerRadius, cornerRadius);
+
+        g.setColor(24, 25, 28);
+
+        g.fillRoundRect(0, 0, w, innerTableCellMargin * 2, cornerRadius, cornerRadius);
+
+        g.setColor(65, 69, 76);
+
+        g.fillRect(0, innerTableCellMargin, w, innerTableCellMargin);
+
+        String[] headerText = {
+                LangID.getStringByID("data_enemy", lang),
+                LangID.getStringByID("data_number", lang),
+                LangID.getStringByID("data_basehealth", lang),
+                LangID.getStringByID("data_manif", lang),
+                LangID.getStringByID("data_startres", lang),
+                LangID.getStringByID("data_layer", lang),
+                LangID.getStringByID("data_isboss", lang)
+        };
+
+        int x = 0;
+
+        g.setColor(191, 191, 191);
+
+        g.setStroke(headerStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+        for(int i = ENEMY; i <= BOSS; i++) {
+            double tx = desiredGap * 2 + dimension[i];
+
+            if(i == ENEMY)
+                tx += desiredGap + rewardIconSize;
+
+            tx /= 2.0;
+
+            int ly = (int) Math.round((innerTableCellMargin - headerSeparatorHeight) / 2.0);
+
+            g.drawCenteredText(headerText[i], (int) Math.round(x + tx), innerTableCellMargin / 2);
+
+            if(i < BOSS)
+                g.drawLine((int) (x + tx * 2.0), ly, (int) (x + tx * 2.0), innerTableCellMargin - ly);
+
+            x += (int) (tx * 2.0);
+        }
+
+        int y = innerTableCellMargin;
+
+        for(int i = st.data.datas.length - 1; i >= 0; i--) {
+            x = 0;
+
+            SCDef.Line line = st.data.datas[i];
+
+            for(int j = ENEMY; j <= BOSS; j++) {
+                double tx = desiredGap * 2 + dimension[j];
+
+                if(j == ENEMY)
+                    tx += desiredGap + rewardIconSize;
+
+                tx /= 2.0;
+
+                String content = "";
+
+                int rx = (int) Math.round((tx * 2.0 - desiredGap - rewardIconSize) / 2.0);
+                int ly = (int) Math.round((innerTableCellMargin - headerSeparatorHeight) / 2.0);
+
+                switch (j) {
+                    case ENEMY:
+                        Identifier<AbEnemy> id = line.enemy;
+
+                        content = null;
+
+                        if(id.id >= UserProfile.getBCData().enemies.size()) {
+                            content = map.enemyNames.get(id.id);
+                        } else {
+                            AbEnemy enemy = id.get();
+
+                            if(enemy instanceof Enemy) {
+                                int oldConfig = CommonStatic.getConfig().lang;
+                                CommonStatic.getConfig().lang = lang;
+
+                                content = MultiLangCont.get(enemy);
+
+                                CommonStatic.getConfig().lang = oldConfig;
+
+                                if(content == null || content.isBlank()) {
+                                    content = ((Enemy) enemy).names.toString();
+                                }
+
+                                if(content.isBlank()) {
+                                    content = map.enemyNames.get(id.id);
+                                }
+                            }
+                        }
+
+                        if(content == null || content.isBlank()) {
+                            content = LangID.getStringByID("data_enemy", lang)+" - "+Data.trio(id.id);
+                        }
+
+                        break;
+                    case NUMBER:
+                        if(line.number == 0)
+                            content = LangID.getStringByID("data_infinite", lang);
+                        else
+                            content = String.valueOf(line.number);
+
+                        break;
+                    case BASE:
+                        if(line.castle_0 == line.castle_1 || line.castle_1 == 0)
+                            content = line.castle_0+"%";
+                        else {
+                            int minHealth = Math.min(line.castle_0, line.castle_1);
+                            int maxHealth = Math.max(line.castle_0, line.castle_1);
+
+                            content = minHealth + " ~ " + maxHealth + "%";
+                        }
+
+                        break;
+                    case MAGNIFICATION:
+                        content = DataToString.getMagnification(new int[] {line.multiple, line.mult_atk}, map.stars[lv]);
+
+                        break;
+                    case START:
+                        String start;
+
+                        if(line.spawn_1 == 0)
+                            if(isFrame)
+                                start = line.spawn_0+"f";
+                            else
+                                start = DataToString.df.format(line.spawn_0/30.0)+"s";
+                        else {
+                            int minSpawn = Math.min(line.spawn_0, line.spawn_1);
+                            int maxSpawn = Math.max(line.spawn_0, line.spawn_1);
+
+                            if(isFrame)
+                                start = minSpawn+"f ~ "+maxSpawn+"f";
+                            else
+                                start = DataToString.df.format(minSpawn/30.0)+"s ~ "+DataToString.df.format(maxSpawn/30.0)+"s";
+                        }
+
+                        String respawn;
+
+                        if(line.respawn_0 == line.respawn_1)
+                            if(isFrame)
+                                respawn = line.respawn_0+"f";
+                            else
+                                respawn = DataToString.df.format(line.respawn_0/30.0)+"s";
+                        else {
+                            int minSpawn = Math.min(line.respawn_0, line.respawn_1);
+                            int maxSpawn = Math.max(line.respawn_0, line.respawn_1);
+
+                            if(isFrame)
+                                respawn = minSpawn+"f ~ "+maxSpawn+"f";
+                            else
+                                respawn = DataToString.df.format(minSpawn/30.0)+"s ~ "+DataToString.df.format(maxSpawn/30.0)+"s";
+                        }
+
+                        content = start+" ("+respawn+")";
+
+                        break;
+                    case LAYER:
+                        if(line.layer_0 != line.layer_1) {
+                            int minLayer = Math.min(line.layer_0, line.layer_1);
+                            int maxLayer = Math.max(line.layer_0, line.layer_1);
+
+                            content = minLayer + " ~ " + maxLayer;
+                        } else {
+                            content = String.valueOf(line.layer_0);
+                        }
+
+                        break;
+                    case BOSS:
+                        if(line.boss == 0)
+                            content = "";
+                        else
+                            content = LangID.getStringByID("data_boss", lang);
+
+                        break;
+                }
+
+                if(j == ENEMY) {
+                    g.setColor(51, 53, 60);
+
+                    g.fillOval(desiredGap, y + (innerTableCellMargin - rewardIconSize) / 2, rewardIconSize, rewardIconSize);
+
+                    BufferedImage icon = getEnemyIcon(line.enemy.id, map);
+
+                    if(icon != null) {
+                        g.drawImage(icon, desiredGap + 30, y + (innerTableCellMargin - rewardIconSize) / 2.0 + 30, 100, 100);
+                    }
+
+                    g.setColor(239, 239, 239);
+
+                    g.drawCenteredText(content, desiredGap + rewardIconSize + rx, y + innerTableCellMargin / 2);
+                } else {
+                    g.setColor(239, 239, 239);
+
+                    g.drawCenteredText(content, (int) (x + tx), y + innerTableCellMargin / 2);
+                }
+
+                g.setColor(191, 191, 191, 64);
+
+                if(j < BOSS) {
+                    g.drawLine((int) (x + tx * 2.0), y + ly, (int) (x + tx * 2.0), y + innerTableCellMargin - ly);
+                }
+
+                x += (int) (tx * 2.0);
+            }
+
+            y += innerTableCellMargin;
+        }
+
+        y = innerTableCellMargin * 2;
+
+        g.setStroke(innerTableLineStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+        for(int i = 0; i < st.data.datas.length - 1; i++) {
+            g.drawLine(innerTableTextMargin, y, w - innerTableTextMargin, y);
+
+            y += innerTableCellMargin;
+        }
+
+        return result;
     }
 
     public static AnimU.UType getAnimType(int mode, int max) {
@@ -2023,5 +2957,75 @@ public class ImageDrawing {
                 i++;
             }
         }
+    }
+
+    private static BufferedImage getRewardImage(int id, CustomStageMap map) throws Exception {
+        if(id < 1000) {
+            File icon = map.rewardIcons.get(id);
+
+            if(icon != null) {
+                return ImageIO.read(icon);
+            }
+
+            if(id >= 11 && id <= 13)
+                id += 9;
+
+            String name = "gatyaitemD_" + Data.duo(id) + "_f.png";
+
+            VFile vf = VFile.get("./org/page/items/"+name);
+
+            if(vf != null) {
+                return (BufferedImage) vf.getData().getImg().bimg();
+            }
+        } else if(id < 30000) {
+            File icon;
+
+            if(id < 10000)
+                icon = map.unitIcons.get(id);
+            else
+                icon = map.trueFormIcons.get(id);
+
+            if(icon != null) {
+                return ImageIO.read(icon);
+            }
+
+            String name = map.rewardToUnitIcon.get(id);
+
+            if(name != null) {
+                int uid = CommonStatic.parseIntN(name);
+
+                String path;
+
+                if(name.endsWith("_m.png")) {
+                    path = "./org/img/m/" + Data.trio(uid) + "/" + name;
+                } else {
+                    path = "./org/unit/" + Data.trio(uid) + "/" + name;
+                }
+
+                VFile vf = VFile.get(path);
+
+                if(vf != null) {
+                    return (BufferedImage) vf.getData().getImg().bimg();
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private static BufferedImage getEnemyIcon(int eid, CustomStageMap map) throws Exception {
+        File icon = map.enemyIcons.get(eid);
+
+        if(icon != null) {
+            return ImageIO.read(icon);
+        } else {
+            VFile vf = VFile.get("./org/enemy/" + Data.trio(eid) + "/enemy_icon_" + Data.trio(eid) + ".png");
+
+            if(vf != null) {
+                return (BufferedImage) vf.getData().getImg().bimg();
+            }
+        }
+
+        return null;
     }
 }
