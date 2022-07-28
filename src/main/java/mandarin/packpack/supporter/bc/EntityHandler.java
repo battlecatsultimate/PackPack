@@ -2720,6 +2720,8 @@ public class EntityHandler {
 
         int i = 0;
 
+        Queue<File> done = new ArrayDeque<>();
+
         while(i < results.size()) {
             MessageAction action = ch.sendMessage("Analyzed stage image");
 
@@ -2727,12 +2729,31 @@ public class EntityHandler {
 
             while (i < results.size() && fileSize + results.get(i).length() < 8 * 1024 * 1024) {
                 action = action.addFile(results.get(i));
+                done.add(results.get(i));
 
                 fileSize += results.get(i).length();
                 i++;
             }
 
-            action.queue();
+            action.queue(m -> {
+                while(done.size() > 0) {
+                    File target = done.poll();
+
+                    if(target != null && target.exists() && !target.delete()) {
+                        StaticStore.logger.uploadLog("W/EntityHandler::generateStageStatImage - Failed to delete file : " + target.getAbsolutePath());
+                    }
+                }
+            }, e -> {
+                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateStageStatImage - Error happened while trying to upload analyzed stage image");
+
+                while(done.size() > 0) {
+                    File target = done.poll();
+
+                    if(target != null && target.exists() && !target.delete()) {
+                        StaticStore.logger.uploadLog("W/EntityHandler::generateStageStatImage - Failed to delete file : " + target.getAbsolutePath());
+                    }
+                }
+            });
         }
     }
 
