@@ -48,12 +48,6 @@ public class StageStatAnalyzer extends ConstraintCommand {
             return;
         }
 
-        File container = StaticStore.generateTempFile(temp, "stat", "", true);
-
-        if(container == null) {
-            return;
-        }
-
         MessageChannel ch = getChannel(event);
         Message author = getMessage(event);
 
