@@ -2554,7 +2554,13 @@ public class ImageDrawing {
 
                             g.fillOval(x + desiredGap, y + (innerTableCellMargin - rewardIconSize) / 2, rewardIconSize, rewardIconSize);
 
-                            BufferedImage icon = getRewardImage(((DefStageInfo) st.info).drop[j][i], map);
+                            BufferedImage icon;
+
+                            if(reward) {
+                                icon = getRewardImage(((DefStageInfo) st.info).drop[j][i], map);
+                            } else {
+                                icon = getRewardImage(((DefStageInfo) st.info).time[j][i], map);
+                            }
 
                             if(icon != null) {
                                 g.drawImage(icon, x + desiredGap, y + (innerTableCellMargin - rewardIconSize) / 2.0, rewardIconSize, rewardIconSize);
