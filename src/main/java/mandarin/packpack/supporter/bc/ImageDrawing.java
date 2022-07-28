@@ -1884,10 +1884,10 @@ public class ImageDrawing {
                 desiredStageGap = (int) Math.round((tempTotalWidth - rewardIconSize) / 15.0);
             }
         } else {
-            if(stw[STAGE_WIDTH] > uw * 4 + CellDrawer.lineOffset * 6) {
-                uw = (int) Math.round((stw[TOTAL_WIDTH] - CellDrawer.lineOffset * 6) / 4.0);
+            if(stw[STAGE_WIDTH] > uw * 4 + CellDrawer.lineOffset * 6 + statPanelMargin * 2) {
+                uw = (int) Math.round((stw[STAGE_WIDTH] - CellDrawer.lineOffset * 6 - statPanelMargin * 2) / 4.0);
             } else {
-                int tempTotalWidth = uw * 4 + CellDrawer.lineOffset * 6;
+                int tempTotalWidth = uw * 4 + CellDrawer.lineOffset * 6 + statPanelMargin * 2;
 
                 for(int i = ENEMY; i <= BOSS; i++) {
                     tempTotalWidth -= stw[i];
