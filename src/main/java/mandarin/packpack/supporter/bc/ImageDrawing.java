@@ -2641,11 +2641,11 @@ public class ImageDrawing {
 
         g.setColor(24, 25, 28);
 
-        g.fillRoundRect(0, 0, w, innerTableCellMargin * 2, cornerRadius, cornerRadius);
+        g.fillRoundRect(0, 0, w, innerTableCellMargin + cornerRadius / 2, cornerRadius, cornerRadius);
 
         g.setColor(65, 69, 76);
 
-        g.fillRect(0, innerTableCellMargin, w, innerTableCellMargin);
+        g.fillRect(0, innerTableCellMargin, w, cornerRadius / 2);
 
         String[] headerText = {
                 LangID.getStringByID("data_enemy", lang),
