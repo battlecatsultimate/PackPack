@@ -36,7 +36,7 @@ public class StageStatAnalyzer extends ConstraintCommand {
 
     @Override
     public void prepare() throws Exception {
-        registerRequiredPermission(Permission.MESSAGE_MANAGE, Permission.MESSAGE_ATTACH_FILES);
+        registerRequiredPermission(Permission.MESSAGE_ATTACH_FILES);
     }
 
     @Override
