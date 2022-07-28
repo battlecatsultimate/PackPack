@@ -1804,7 +1804,7 @@ public class ImageDrawing {
             ch = Math.max(((NormalCellDrawer) group.get(i)).ch, ch);
         }
 
-        group.get(group.size() - 2).initialize(nameFont, contentFont, nfm, cfm, uw * 4 + CellDrawer.lineOffset * 6);
+        group.get(group.size() - 2).initialize(nameFont, contentFont, nfm, cfm, (int) ((uw * 4 + CellDrawer.lineOffset * 6) * 1.5));
 
         offset = Math.max(((AbilityCellDrawer) group.get(group.size() - 2)).offset, offset);
 
@@ -1815,7 +1815,7 @@ public class ImageDrawing {
             uw = (aw - CellDrawer.lineOffset * 6) / 4;
         }
 
-        group.get(group.size() - 1).initialize(nameFont, contentFont, nfm, cfm, uw * 4 + CellDrawer.lineOffset * 6);
+        group.get(group.size() - 1).initialize(nameFont, contentFont, nfm, cfm, (int) ((uw * 4 + CellDrawer.lineOffset * 6) * 1.5));
 
         offset = Math.max(((AbilityCellDrawer) group.get(group.size() - 1)).offset, offset);
 
