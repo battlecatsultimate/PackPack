@@ -2148,10 +2148,12 @@ public class ImageDrawing {
 
         g.drawText(name, (int) (bgMargin - nRect.getX()), (int) -nRect.getY());
 
-        g.setColor(191, 191, 191);
-        g.setFont(contentFont);
+        if(!code.equals(name)) {
+            g.setColor(191, 191, 191);
+            g.setFont(contentFont);
 
-        g.drawText(code, (int) (bgMargin - lRect.getX()), (int) (lRect.getHeight() + nameMargin - lRect.getY()));
+            g.drawText(code, (int) (bgMargin - lRect.getX()), (int) (lRect.getHeight() + nameMargin - lRect.getY()));
+        }
 
         return result;
     }
