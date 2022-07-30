@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import javax.security.auth.login.LoginException;
@@ -48,6 +49,7 @@ public class PackBot {
         JDABuilder builder = JDABuilder.createDefault(TOKEN);
 
         builder.setEnabledIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_EMOJIS_AND_STICKERS, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.DIRECT_MESSAGES, GatewayIntent.DIRECT_MESSAGE_REACTIONS, GatewayIntent.MESSAGE_CONTENT);
+        builder.setChunkingFilter(ChunkingFilter.ALL);
         builder.disableCache(CacheFlag.VOICE_STATE);
         builder.setActivity(Activity.playing(develop ? dev : normal));
         builder.addEventListeners(new AllEventAdapter());

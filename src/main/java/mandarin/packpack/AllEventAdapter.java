@@ -370,8 +370,9 @@ public class AllEventAdapter extends ListenerAdapter {
                 case "checkbcu":
                     new CheckBCU(lang, idh).execute(event);
                     break;
-                case "bcustat":
-                    new BCUStat(lang, idh).execute(event);
+                case "serverstat":
+                case "ss":
+                    new ServerStat(lang, idh).execute(event);
                     break;
                 case "analyze":
                     new Analyze(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);

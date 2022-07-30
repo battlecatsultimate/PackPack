@@ -13,11 +13,11 @@ import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import java.text.DecimalFormat;
 import java.util.List;
 
-public class BCUStat extends Command {
+public class ServerStat extends Command {
 
     private final IDHolder holder;
 
-    public BCUStat(int lang, IDHolder holder) {
+    public ServerStat(int lang, IDHolder holder) {
         super(lang);
 
         this.holder = holder;
@@ -41,7 +41,7 @@ public class BCUStat extends Command {
         Guild g = getGuild(event);
 
         if(g != null) {
-            List<Member> members = g.getMembers();
+            List<Member> members = g.loadMembers().get();
 
             long human = 0L;
 
