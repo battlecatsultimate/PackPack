@@ -145,9 +145,11 @@ public class ImageDrawing {
     private static final int MAGNIFICATION = 3;
     private static final int START = 4;
     private static final int LAYER = 5;
-    private static final int BOSS = 6;
-    private static final int STAGE_WIDTH = 7;
-    private static final int STAGE_HEIGHT = 8;
+    private static final int RESPECT = 6;
+    private static final int KILL = 7;
+    private static final int BOSS = 8;
+    private static final int STAGE_WIDTH = 9;
+    private static final int STAGE_HEIGHT = 10;
 
     static {
         File regular = new File("./data/NotoRegular.otf");
@@ -2298,7 +2300,7 @@ public class ImageDrawing {
      * @return Returns { Width of Enemy, Width of Number, Width of Base, Width of Magnification, Width of Start, Width of Layer, Width of Boss, Total Width, Total Height }
      */
     private static int[] measureEnemySchemeWidth(Stage st, CustomStageMap map, FontMetrics cfm, boolean isFrame, int lv, int lang) {
-        int[] result = new int[9];
+        int[] result = new int[11];
 
         int ew = cfm.stringWidth(LangID.getStringByID("data_enemy", lang));
         int nw = cfm.stringWidth(LangID.getStringByID("data_number", lang));
@@ -2306,6 +2308,8 @@ public class ImageDrawing {
         int mw = cfm.stringWidth(LangID.getStringByID("data_manif", lang));
         int sw = cfm.stringWidth(LangID.getStringByID("data_startres", lang));
         int lw = cfm.stringWidth(LangID.getStringByID("data_layer", lang));
+        int rw = cfm.stringWidth(LangID.getStringByID("data_respect", lang));
+        int kw = cfm.stringWidth(LangID.getStringByID("data_killcount", lang));
         int bow = cfm.stringWidth(LangID.getStringByID("data_isboss", lang));
 
         for(int i = st.data.datas.length - 1; i >= 0; i--) {
@@ -2372,17 +2376,17 @@ public class ImageDrawing {
 
             if(line.spawn_1 == 0)
                 if(isFrame)
-                    start = line.spawn_0+"f";
+                    start = Math.abs(line.spawn_0)+"f";
                 else
-                    start = DataToString.df.format(line.spawn_0/30.0)+"s";
+                    start = DataToString.df.format(Math.abs(line.spawn_0) / 30.0)+"s";
             else {
-                int minSpawn = Math.min(line.spawn_0, line.spawn_1);
-                int maxSpawn = Math.max(line.spawn_0, line.spawn_1);
+                int minSpawn = Math.abs(Math.min(line.spawn_0, line.spawn_1));
+                int maxSpawn = Math.abs(Math.max(line.spawn_0, line.spawn_1));
 
                 if(isFrame)
                     start = minSpawn+"f ~ "+maxSpawn+"f";
                 else
-                    start = DataToString.df.format(minSpawn/30.0)+"s ~ "+DataToString.df.format(maxSpawn/30.0)+"s";
+                    start = DataToString.df.format(minSpawn/30.0)+"s ~ " + DataToString.df.format(maxSpawn/30.0)+"s";
             }
 
             String respawn;
@@ -2419,12 +2423,20 @@ public class ImageDrawing {
 
             lw = Math.max(lw, cfm.stringWidth(layer));
 
+            String respect = (line.spawn_0 < 0 || line.spawn_1 < 0) ? LangID.getStringByID("data_true", lang) : "";
+
+            rw = Math.max(rw, cfm.stringWidth(respect));
+
+            kw = Math.max(kw, cfm.stringWidth(line.kill_count + ""));
+
             String boss;
 
             if(line.boss == 0)
                 boss = "";
-            else
+            else if(line.boss == 1)
                 boss = LangID.getStringByID("data_boss", lang);
+            else
+                boss = LangID.getStringByID("data_bossshake", lang);
 
             bow = Math.max(bow, cfm.stringWidth(boss));
         }
@@ -2435,6 +2447,8 @@ public class ImageDrawing {
         result[MAGNIFICATION] = mw;
         result[START] = sw;
         result[LAYER] = lw;
+        result[RESPECT] = rw;
+        result[KILL] = kw;
         result[BOSS] = bow;
         result[STAGE_WIDTH] =
                 innerTableTextMargin * 3 + rewardIconSize + ew +
@@ -2443,6 +2457,8 @@ public class ImageDrawing {
                         innerTableTextMargin * 2 + mw +
                         innerTableTextMargin * 2 + sw +
                         innerTableTextMargin * 2 + lw +
+                        innerTableTextMargin * 2 + rw +
+                        innerTableTextMargin * 2 + kw +
                         innerTableTextMargin * 2 + bow;
         result[STAGE_HEIGHT] = innerTableCellMargin * (st.data.datas.length + 1);
 
@@ -2654,6 +2670,8 @@ public class ImageDrawing {
                 LangID.getStringByID("data_manif", lang),
                 LangID.getStringByID("data_startres", lang),
                 LangID.getStringByID("data_layer", lang),
+                LangID.getStringByID("data_respect", lang),
+                LangID.getStringByID("data_killcount", lang),
                 LangID.getStringByID("data_isboss", lang)
         };
 
@@ -2762,12 +2780,12 @@ public class ImageDrawing {
 
                         if(line.spawn_1 == 0)
                             if(isFrame)
-                                start = line.spawn_0+"f";
+                                start = Math.abs(line.spawn_0)+"f";
                             else
-                                start = DataToString.df.format(line.spawn_0/30.0)+"s";
+                                start = DataToString.df.format(Math.abs(line.spawn_0) / 30.0)+"s";
                         else {
-                            int minSpawn = Math.min(line.spawn_0, line.spawn_1);
-                            int maxSpawn = Math.max(line.spawn_0, line.spawn_1);
+                            int minSpawn = Math.abs(Math.min(line.spawn_0, line.spawn_1));
+                            int maxSpawn = Math.abs(Math.max(line.spawn_0, line.spawn_1));
 
                             if(isFrame)
                                 start = minSpawn+"f ~ "+maxSpawn+"f";
@@ -2804,6 +2822,14 @@ public class ImageDrawing {
                         } else {
                             content = String.valueOf(line.layer_0);
                         }
+
+                        break;
+                    case RESPECT:
+                        content = (line.spawn_0 < 0 || line.spawn_1 < 0) ? LangID.getStringByID("data_true", lang) : "";
+
+                        break;
+                    case KILL:
+                        content = line.kill_count + "";
 
                         break;
                     case BOSS:

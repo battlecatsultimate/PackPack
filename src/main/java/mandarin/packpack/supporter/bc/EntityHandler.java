@@ -1263,6 +1263,8 @@ public class EntityHandler {
         ArrayList<String> baseHealth = new ArrayList<>();
         ArrayList<String> startRespawn = new ArrayList<>();
         ArrayList<String> layers = new ArrayList<>();
+        ArrayList<String> respects = new ArrayList<>();
+        ArrayList<String> killCounts = new ArrayList<>();
 
         for(int i = st.data.datas.length - 1; i >= 0; i--) {
             SCDef.Line line = st.data.datas[i];
@@ -1315,8 +1317,10 @@ public class EntityHandler {
 
             if(line.boss == 0)
                 boss = "";
-            else
+            else if(line.boss == 1)
                 boss = LangID.getStringByID("data_boss", lang);
+            else
+                boss = LangID.getStringByID("data_bossshake", lang);
 
             isBoss.add(boss);
 
@@ -1324,12 +1328,12 @@ public class EntityHandler {
 
             if(line.spawn_1 == 0)
                 if(isFrame)
-                    start = line.spawn_0+"f";
+                    start = Math.abs(line.spawn_0)+"f";
                 else
-                    start = df.format(line.spawn_0/30.0)+"s";
+                    start = df.format(Math.abs(line.spawn_0) / 30.0)+"s";
             else {
-                int minSpawn = Math.min(line.spawn_0, line.spawn_1);
-                int maxSpawn = Math.max(line.spawn_0, line.spawn_1);
+                int minSpawn = Math.abs(Math.min(line.spawn_0, line.spawn_1));
+                int maxSpawn = Math.abs(Math.max(line.spawn_0, line.spawn_1));
 
                 if(isFrame)
                     start = minSpawn+"f ~ "+maxSpawn+"f";
@@ -1383,6 +1387,12 @@ public class EntityHandler {
             }
 
             layers.add(layer);
+
+            String respect = (line.spawn_0 < 0 || line.spawn_1 < 0) ? LangID.getStringByID("data_true", lang) : "";
+
+            respects.add(respect);
+
+            killCounts.add(line.kill_count + "");
         }
 
         double eMax = fm.stringWidth(LangID.getStringByID("data_enemy", lang));
@@ -1392,6 +1402,8 @@ public class EntityHandler {
         double bMax = fm.stringWidth(LangID.getStringByID("data_basehealth", lang));
         double sMax = fm.stringWidth(LangID.getStringByID("data_startres", lang));
         double lMax = fm.stringWidth(LangID.getStringByID("data_layer", lang));
+        double rMax = fm.stringWidth(LangID.getStringByID("data_respect", lang));
+        double kMax = fm.stringWidth(LangID.getStringByID("data_killcount", lang));
 
         for(int i = 0; i < enemies.size(); i++) {
             eMax = Math.max(eMax, fm.stringWidth(enemies.get(i)));
@@ -1407,6 +1419,10 @@ public class EntityHandler {
             sMax = Math.max(sMax, fm.stringWidth(startRespawn.get(i)));
 
             lMax = Math.max(lMax, fm.stringWidth(layers.get(i)));
+
+            rMax = Math.max(rMax, fm.stringWidth(respects.get(i)));
+
+            kMax = Math.max(kMax, fm.stringWidth(killCounts.get(i)));
         }
 
         int xGap = 16;
@@ -1419,10 +1435,12 @@ public class EntityHandler {
         bMax += xGap;
         sMax += xGap;
         lMax += xGap;
+        rMax += xGap;
+        kMax += xGap;
 
         int ySeg = Math.max(fm.getHeight() + yGap, 32 + yGap);
 
-        int w = (int) (eMax + nMax + mMax + iMax + bMax + sMax + lMax);
+        int w = (int) (eMax + nMax + mMax + iMax + bMax + sMax + lMax + rMax + kMax);
         int h = ySeg * (enemies.size() + 1);
 
         BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
@@ -1474,6 +1492,14 @@ public class EntityHandler {
 
         g.drawLine(x, 0, x, h);
 
+        x += (int) rMax;
+
+        g.drawLine(x, 0, x, h);
+
+        x += (int) kMax;
+
+        g.drawLine(x, 0, x, h);
+
         x += (int) iMax;
 
         g.drawLine(x, 0, x, h);
@@ -1504,7 +1530,15 @@ public class EntityHandler {
 
         g.drawCenteredText(LangID.getStringByID("data_layer", lang), initX, ySeg / 2);
 
-        initX += (int) (lMax / 2 + iMax / 2);
+        initX += (int) (lMax / 2 + rMax / 2);
+
+        g.drawCenteredText(LangID.getStringByID("data_respect", lang), initX, ySeg / 2);
+
+        initX += (int) (rMax / 2 + kMax / 2);
+
+        g.drawCenteredText(LangID.getStringByID("data_killcount", lang), initX, ySeg / 2);
+
+        initX += (int) (kMax / 2 + iMax / 2);
 
         g.drawCenteredText(LangID.getStringByID("data_isboss", lang), initX, ySeg / 2);
 
@@ -1556,6 +1590,14 @@ public class EntityHandler {
             g.drawVerticalCenteredText(layers.get(i), px, py);
 
             px += (int) lMax;
+
+            g.drawVerticalCenteredText(respects.get(i), px, py);
+
+            px += (int) rMax;
+
+            g.drawVerticalCenteredText(killCounts.get(i), px, py);
+
+            px += (int) kMax;
 
             g.drawVerticalCenteredText(isBoss.get(i), px, py);
         }

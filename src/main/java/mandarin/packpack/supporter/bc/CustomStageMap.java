@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-@SuppressWarnings("deprecation")
 public class CustomStageMap extends StageMap {
     public final int mapID;
 
@@ -168,8 +167,19 @@ public class CustomStageMap extends StageMap {
 
                 if(lineRaw.length > 11 && StaticStore.isNumeric(lineRaw[11])) {
                     lineData[SCDef.M1] = StaticStore.safeParseInt(lineRaw[11]);
+
+                    if(lineData[SCDef.M1] == 0)
+                        lineData[SCDef.M1] = lineData[SCDef.M];
                 } else {
                     lineData[SCDef.M1] = lineData[SCDef.M];
+                }
+
+                if(lineRaw.length > 12 && StaticStore.isNumeric(lineRaw[12]) && StaticStore.safeParseInt(lineRaw[12]) == 1) {
+                    lineData[SCDef.S0] *= -1;
+                }
+
+                if(lineRaw.length > 13 && StaticStore.isNumeric(lineRaw[13])) {
+                    lineData[SCDef.KC] = StaticStore.safeParseInt(lineRaw[13]);
                 }
 
                 if(lineData[0] == isBase)
