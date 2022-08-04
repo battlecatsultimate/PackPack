@@ -782,6 +782,8 @@ public class StaticStore {
     }
 
     public static boolean isNumeric(String name) {
+        name = name.trim();
+
         boolean decimalStart = false;
         boolean eNotationStart = false;
         boolean numberContained = false;
@@ -804,7 +806,7 @@ public class StaticStore {
 
     public static int safeParseInt(String value) {
         if(isNumeric(value)) {
-            BigInteger big = new BigDecimal(value).toBigInteger();
+            BigInteger big = new BigDecimal(value.trim()).toBigInteger();
 
             if(big.compareTo(max) > 0) {
                 return Integer.MAX_VALUE;
