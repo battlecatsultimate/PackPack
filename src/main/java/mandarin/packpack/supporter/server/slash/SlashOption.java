@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.slash;
 
+import mandarin.packpack.supporter.StaticStore;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.requests.restaction.CommandCreateAction;
@@ -67,7 +68,7 @@ public class SlashOption {
             return def;
 
         if(data.getType() == TYPE.INT.type)
-            return data.getAsInt();
+            return StaticStore.safeParseInt(data.getAsString());
 
         return def;
     }

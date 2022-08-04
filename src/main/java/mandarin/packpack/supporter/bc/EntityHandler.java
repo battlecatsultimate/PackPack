@@ -224,10 +224,11 @@ public class EntityHandler {
 
         if(hook != null) {
             Message msg = hook.retrieveOriginal().complete();
+            MessageChannel ch = msg.getChannel();
 
             Guild g = msg.getGuild();
 
-            if(g.getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_MANAGE)) {
+            if(ch instanceof GuildChannel && g.getSelfMember().hasPermission((GuildChannel) ch, Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_MANAGE)) {
                 if(canFirstForm(f)) {
                     msg.addReaction(EmojiStore.TWO_PREVIOUS).queue();
                 }
@@ -1200,8 +1201,9 @@ public class EntityHandler {
 
         if(msg != null) {
             Guild g = msg.getGuild();
+            MessageChannel ch = msg.getChannel();
 
-            if(g.getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_MANAGE)) {
+            if(ch instanceof GuildChannel && g.getSelfMember().hasPermission((GuildChannel) ch, Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_MANAGE)) {
                 msg.addReaction(EmojiStore.CASTLE).queue();
                 msg.addReaction(EmojiStore.BACKGROUND).queue();
 
