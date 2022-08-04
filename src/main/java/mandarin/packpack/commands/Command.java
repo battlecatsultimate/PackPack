@@ -347,6 +347,9 @@ public abstract class Command {
                 case "Use External Emojis":
                     id = "permission_externalemoji";
                     break;
+                case "Embed Links":
+                    id = "permission_embed";
+                    break;
                 default:
                     id = permission.getName();
             }

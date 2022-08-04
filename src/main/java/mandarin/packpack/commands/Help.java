@@ -4,6 +4,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
@@ -15,6 +16,11 @@ public class Help extends Command {
         super(lang);
 
         this.holder = holder;
+    }
+
+    @Override
+    public void prepare() throws Exception {
+        registerRequiredPermission(Permission.MESSAGE_EMBED_LINKS);
     }
 
     @Override

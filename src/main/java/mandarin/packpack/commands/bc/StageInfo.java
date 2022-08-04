@@ -136,7 +136,7 @@ public class StageInfo extends TimedConstraintCommand {
 
     @Override
     public void prepare() throws Exception {
-        registerRequiredPermission(Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_ATTACH_FILES);
+        registerRequiredPermission(Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_ATTACH_FILES, Permission.MESSAGE_EMBED_LINKS);
     }
 
     @Override

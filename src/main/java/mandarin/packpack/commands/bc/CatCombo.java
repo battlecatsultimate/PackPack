@@ -33,7 +33,7 @@ public class CatCombo extends TimedConstraintCommand {
 
     @Override
     public void prepare() throws Exception {
-        registerRequiredPermission(Permission.MESSAGE_MANAGE, Permission.MESSAGE_ATTACH_FILES);
+        registerRequiredPermission(Permission.MESSAGE_MANAGE, Permission.MESSAGE_ATTACH_FILES, Permission.MESSAGE_EMBED_LINKS);
     }
 
     @Override
