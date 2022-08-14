@@ -121,6 +121,7 @@ public class FormStat extends ConstraintCommand {
     private static final int PARAM_TALENT = 2;
     private static final int PARAM_SECOND = 4;
     private static final int PARAM_EXTRA = 8;
+    private static final int PARAM_COMPACT = 16;
 
     private final ConfigHolder config;
 
@@ -161,8 +162,9 @@ public class FormStat extends ConstraintCommand {
                 boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
                 boolean talent = (param & PARAM_TALENT) > 0;
                 boolean extra = (param & PARAM_EXTRA) > 0 || config.extra;
+                boolean compact = (param & PARAM_COMPACT) > 0 || config.compact;
 
-                Message result = EntityHandler.showUnitEmb(forms.get(0), ch, config, isFrame, talent, extra, lv, lang, true);
+                Message result = EntityHandler.showUnitEmb(forms.get(0), ch, config, isFrame, talent, extra, lv, lang, true, compact);
 
                 if(result != null) {
                     Member m = getMember(event);
@@ -171,7 +173,7 @@ public class FormStat extends ConstraintCommand {
                         Message author = getMessage(event);
 
                         if(author != null) {
-                            StaticStore.putHolder(m.getId(), new FormButtonHolder(forms.get(0), author, result, config, isFrame, talent, extra, lv, lang, ch.getId()));
+                            StaticStore.putHolder(m.getId(), new FormButtonHolder(forms.get(0), author, result, config, isFrame, talent, extra, compact, lv, lang, ch.getId()));
                         }
                     }
                 }
@@ -244,6 +246,13 @@ public class FormStat extends ConstraintCommand {
                         } else
                             break label;
                         break;
+                    case "-c":
+                    case "-compact":
+                        if ((result & PARAM_COMPACT) == 0) {
+                            result |= PARAM_COMPACT;
+                        } else
+                            break label;
+                        break;
                 }
             }
         }
@@ -258,6 +267,7 @@ public class FormStat extends ConstraintCommand {
         boolean isLevel = false;
         boolean isTalent = false;
         boolean isExtra = false;
+        boolean isCompact = false;
 
         StringBuilder command = new StringBuilder();
 
@@ -302,6 +312,15 @@ public class FormStat extends ConstraintCommand {
 
                         isLevel = true;
                     } else {
+                        command.append(content[i]);
+                        written = true;
+                    }
+                    break;
+                case "-c":
+                case "-compact":
+                    if(!isCompact)
+                        isCompact = true;
+                    else {
                         command.append(content[i]);
                         written = true;
                     }

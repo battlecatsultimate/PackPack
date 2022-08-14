@@ -83,6 +83,7 @@ public class EnemyStat extends ConstraintCommand {
 
     private static final int PARAM_SECOND = 2;
     private static final int PARAM_EXTRA = 4;
+    private static final int PARAM_COMPACT = 8;
 
     private final ConfigHolder config;
 
@@ -115,8 +116,9 @@ public class EnemyStat extends ConstraintCommand {
 
                 boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
                 boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
+                boolean isCompact = (param & PARAM_COMPACT) > 0 || config.compact;
 
-                EntityHandler.showEnemyEmb(enemies.get(0), ch, isFrame, isExtra, magnification, lang);
+                EntityHandler.showEnemyEmb(enemies.get(0), ch, isFrame, isExtra, isCompact, magnification, lang);
             } else if(enemies.size() == 0) {
                 createMessageWithNoPings(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(getContent(event))));
             } else {
@@ -143,6 +145,7 @@ public class EnemyStat extends ConstraintCommand {
 
                 boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
                 boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
+                boolean isCompact = (param & PARAM_COMPACT) > 0 || config.compact;
 
                 if(res != null) {
                     Member member = getMember(event);
@@ -151,7 +154,7 @@ public class EnemyStat extends ConstraintCommand {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(member.getId(), new EnemyStatMessageHolder(enemies, msg, res, ch.getId(), magnification, isFrame, isExtra, lang));
+                            StaticStore.putHolder(member.getId(), new EnemyStatMessageHolder(enemies, msg, res, ch.getId(), magnification, isFrame, isExtra, isCompact, lang));
                     }
                 }
             }
@@ -164,6 +167,7 @@ public class EnemyStat extends ConstraintCommand {
         boolean isSec = false;
         boolean isExtra = false;
         boolean isLevel = false;
+        boolean isCompact = false;
 
         StringBuilder command = new StringBuilder();
 
@@ -203,6 +207,15 @@ public class EnemyStat extends ConstraintCommand {
                         written = true;
                     }
                     break;
+                case "-c":
+                case "-compact":
+                    if(!isCompact)
+                        isCompact = true;
+                    else {
+                        command.append(content[i]);
+                        written = true;
+                    }
+                    break;
                 default:
                     command.append(content[i]);
                     written = true;
@@ -227,18 +240,31 @@ public class EnemyStat extends ConstraintCommand {
         if(msg.length >= 2) {
             String[] pureMessage = message.split(" ", 2)[1].split(" ");
 
+            label:
             for(String str : pureMessage) {
-                if(str.startsWith("-s")) {
-                    if((result & PARAM_SECOND) == 0) {
-                        result |= PARAM_SECOND;
-                    } else
+                switch (str) {
+                    case "-s":
+                        if ((result & PARAM_SECOND) == 0) {
+                            result |= PARAM_SECOND;
+                        } else
+                            break label;
                         break;
-                } else if(str.startsWith("-e") || str.startsWith("-extra")) {
-                    if((result & PARAM_EXTRA) == 0) {
-                        result |= PARAM_EXTRA;
-                    } else {
+                    case "-e":
+                    case "-extra":
+                        if ((result & PARAM_EXTRA) == 0) {
+                            result |= PARAM_EXTRA;
+                        } else {
+                            break label;
+                        }
                         break;
-                    }
+                    case "-c":
+                    case "-compact":
+                        if ((result & PARAM_COMPACT) == 0) {
+                            result |= PARAM_COMPACT;
+                        } else {
+                            break label;
+                        }
+                        break;
                 }
             }
         }

@@ -17,9 +17,10 @@ public class EnemyStatMessageHolder extends SearchHolder {
 
     private final boolean isFrame;
     private final boolean isExtra;
+    private final boolean isCompact;
     private final int[] magnification;
 
-    public EnemyStatMessageHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, int[] magnification, boolean isFrame, boolean isExtra, int lang) {
+    public EnemyStatMessageHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, int[] magnification, boolean isFrame, boolean isExtra, boolean isCompact, int lang) {
         super(msg, channelID, author.getAuthor().getId(), lang);
 
         this.enemy = enemy;
@@ -27,6 +28,7 @@ public class EnemyStatMessageHolder extends SearchHolder {
         this.magnification = magnification;
         this.isFrame = isFrame;
         this.isExtra = isExtra;
+        this.isCompact = isCompact;
 
         registerAutoFinish(this, msg, author, lang, FIVE_MIN);
     }
@@ -66,7 +68,7 @@ public class EnemyStatMessageHolder extends SearchHolder {
         msg.delete().queue();
 
         try {
-            EntityHandler.showEnemyEmb(enemy.get(id), ch, isFrame, isExtra, magnification, lang);
+            EntityHandler.showEnemyEmb(enemy.get(id), ch, isFrame, isExtra, isCompact, magnification, lang);
         } catch (Exception e) {
             e.printStackTrace();
         }

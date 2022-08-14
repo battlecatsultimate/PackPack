@@ -34,6 +34,7 @@ import java.util.List;
 public class StageInfo extends TimedConstraintCommand {
     private static final int PARAM_SECOND = 2;
     private static final int PARAM_EXTRA = 4;
+    private static final int PARAM_COMPACT = 8;
 
     public static void performInteraction(GenericCommandInteractionEvent event) {
         Interaction interaction = event.getInteraction();
@@ -170,10 +171,11 @@ public class StageInfo extends TimedConstraintCommand {
                 int star = getLevel(getContent((event)));
                 boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
                 boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
+                boolean isCompact = (param & PARAM_COMPACT) > 0 || config.compact;
 
                 CommonStatic.getConfig().lang = lang;
 
-                Message result = EntityHandler.showStageEmb(stages.get(0), ch, isFrame, isExtra, star, lang);
+                Message result = EntityHandler.showStageEmb(stages.get(0), ch, isFrame, isExtra, isCompact, star, lang);
 
                 Member m = getMember(event);
 
@@ -188,6 +190,7 @@ public class StageInfo extends TimedConstraintCommand {
                 int star = getLevel(getContent((event)));
                 boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
                 boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
+                boolean isCompact = (param & PARAM_COMPACT) > 0 || config.compact;
 
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("stinfo_several", lang).replace("_", generateSearchName(names)))
                         .append("```md\n")
@@ -213,7 +216,7 @@ public class StageInfo extends TimedConstraintCommand {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(member.getId(), new StageInfoMessageHolder(stages, msg, res, ch.getId(), star, isFrame, isExtra, lang));
+                            StaticStore.putHolder(member.getId(), new StageInfoMessageHolder(stages, msg, res, ch.getId(), star, isFrame, isExtra, isCompact, lang));
                     }
                 }
             }
@@ -241,6 +244,11 @@ public class StageInfo extends TimedConstraintCommand {
                 } else if(str.equals("-e") || str.equals("-extra")) {
                     if((result & PARAM_EXTRA) == 0) {
                         result |= PARAM_EXTRA;
+                    } else
+                        break;
+                } else if(str.equals("-c") || str.equals("-compact")) {
+                    if((result & PARAM_COMPACT) == 0) {
+                        result |= PARAM_COMPACT;
                     } else
                         break;
                 }
@@ -374,6 +382,7 @@ public class StageInfo extends TimedConstraintCommand {
     private String getStageName(String[] contents) {
         boolean isSecond = false;
         boolean isExtra = false;
+        boolean isCompact = false;
 
         StringBuilder st = new StringBuilder();
 
@@ -389,6 +398,12 @@ public class StageInfo extends TimedConstraintCommand {
             } else if(contents[i].equals("-e") || contents[i].equals("-extra")) {
                 if(!isExtra) {
                     isExtra = true;
+                } else {
+                    st.append(contents[i]).append(" ");
+                }
+            } else if(contents[i].equals("-c") || contents[i].equals("-compact")) {
+                if(!isCompact) {
+                    isCompact = true;
                 } else {
                     st.append(contents[i]).append(" ");
                 }

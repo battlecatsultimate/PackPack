@@ -24,9 +24,10 @@ public class StageInfoMessageHolder extends SearchHolder {
 
     private final boolean isFrame;
     private final boolean isExtra;
+    private final boolean isCompact;
     private final int star;
 
-    public StageInfoMessageHolder(ArrayList<Stage> stage, Message author, Message msg, String channelID, int star, boolean isFrame, boolean isExtra, int lang) {
+    public StageInfoMessageHolder(ArrayList<Stage> stage, Message author, Message msg, String channelID, int star, boolean isFrame, boolean isExtra, boolean isCompact, int lang) {
         super(msg, channelID, author.getAuthor().getId(), lang);
 
         this.stage = stage;
@@ -35,6 +36,7 @@ public class StageInfoMessageHolder extends SearchHolder {
         this.star = star;
         this.isFrame = isFrame;
         this.isExtra = isExtra;
+        this.isCompact = isCompact;
 
         registerAutoFinish(this, msg, author, lang, FIVE_MIN);
     }
@@ -150,7 +152,7 @@ public class StageInfoMessageHolder extends SearchHolder {
         }
 
         try {
-            Message msg = EntityHandler.showStageEmb(stage.get(id), ch, isFrame, isExtra, star, lang);
+            Message msg = EntityHandler.showStageEmb(stage.get(id), ch, isFrame, isExtra, isCompact, star, lang);
 
             if(msg != null && StaticStore.idHolder.containsKey(g.getId())) {
                 StaticStore.putHolder(author.getAuthor().getId(), new StageInfoButtonHolder(stage.get(id), author, msg, channelID));

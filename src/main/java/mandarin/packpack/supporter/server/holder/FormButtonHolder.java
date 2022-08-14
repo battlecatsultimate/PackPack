@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -25,11 +26,12 @@ public class FormButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
     private final boolean isFrame;
     private final boolean talent;
     private final boolean extra;
+    private final boolean compact;
     private final String channelID;
     private final String memberID;
     private final ArrayList<Integer> lv;
 
-    public FormButtonHolder(Form f, Message author, Message msg, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, ArrayList<Integer> lv, int lang, String channelID) {
+    public FormButtonHolder(Form f, Message author, Message msg, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, boolean compact, ArrayList<Integer> lv, int lang, String channelID) {
         super(ButtonInteractionEvent.class);
 
         this.embed = msg;
@@ -42,6 +44,7 @@ public class FormButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
         this.isFrame = isFrame;
         this.talent = talent;
         this.extra = extra;
+        this.compact = compact;
         this.lv = lv;
 
         Timer autoFinsh = new Timer();
@@ -112,7 +115,7 @@ public class FormButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
         Form newForm = f.unit.forms[f.fid + diff];
 
         try {
-            EntityHandler.showUnitEmb(newForm, ch, config, isFrame, talent, extra, lv, lang, false);
+            EntityHandler.showUnitEmb(newForm, ch, config, isFrame, talent, extra, lv, lang, false, compact);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -135,10 +138,18 @@ public class FormButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
         ArrayList<Button> buttons = new ArrayList<>();
 
         for(Button button : embed.getButtons()) {
-            buttons.add(button.asDisabled());
+            if(button.getStyle().getKey() == ButtonStyle.LINK.getKey()) {
+                buttons.add(button);
+            } else if(!compact) {
+                buttons.add(button.asDisabled());
+            }
         }
 
-        embed.editMessageComponents(ActionRow.of(buttons)).queue(null, e -> {});
+        if(buttons.isEmpty()) {
+            embed.editMessageComponents().queue(null, e -> {});
+        } else {
+            embed.editMessageComponents(ActionRow.of(buttons)).queue(null, e -> {});
+        }
 
         expired = true;
     }

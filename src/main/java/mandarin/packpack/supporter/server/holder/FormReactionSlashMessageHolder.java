@@ -113,7 +113,7 @@ public class FormReactionSlashMessageHolder extends MessageHolder<MessageReactio
                 Form newForm = f.unit.forms[f.fid - 2];
 
                 try {
-                    EntityHandler.showUnitEmb(newForm, ch, config, isFrame, talent, extra, lv, lang, false);
+                    EntityHandler.showUnitEmb(newForm, ch, config, isFrame, talent, extra, lv, lang, false, false);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -131,7 +131,7 @@ public class FormReactionSlashMessageHolder extends MessageHolder<MessageReactio
                 newForm = f.unit.forms[f.fid - 1];
 
                 try {
-                    EntityHandler.showUnitEmb(newForm, ch, config, isFrame, talent, extra, lv, lang, false);
+                    EntityHandler.showUnitEmb(newForm, ch, config, isFrame, talent, extra, lv, lang, false, false);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -149,7 +149,7 @@ public class FormReactionSlashMessageHolder extends MessageHolder<MessageReactio
                 newForm = f.unit.forms[f.fid + 1];
 
                 try {
-                    EntityHandler.showUnitEmb(newForm, ch, config, isFrame, talent, extra, lv, lang, false);
+                    EntityHandler.showUnitEmb(newForm, ch, config, isFrame, talent, extra, lv, lang, false, false);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -167,7 +167,7 @@ public class FormReactionSlashMessageHolder extends MessageHolder<MessageReactio
                 newForm = f.unit.forms[f.fid + 2];
 
                 try {
-                    EntityHandler.showUnitEmb(newForm, ch, config, isFrame, talent, extra, lv, lang, false);
+                    EntityHandler.showUnitEmb(newForm, ch, config, isFrame, talent, extra, lv, lang, false, false);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

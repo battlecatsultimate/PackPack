@@ -23,6 +23,7 @@ public class FormStatMessageHolder extends SearchHolder {
     private final boolean talent;
     private final boolean isFrame;
     private final boolean extra;
+    private final boolean compact;
     private final ArrayList<Integer> lv;
 
     public FormStatMessageHolder(ArrayList<Form> form, Message author, ConfigHolder config, Message msg, String channelID, int param, ArrayList<Integer> lv, int lang) {
@@ -35,6 +36,7 @@ public class FormStatMessageHolder extends SearchHolder {
         this.talent = (param & 2) > 0;
         this.isFrame = (param & 4) == 0 && config.useFrame;
         this.extra = (param & 8) > 0 || config.extra;
+        this.compact = (param & 16) > 0 || config.compact;
         this.lv = lv;
 
         registerAutoFinish(this, msg, author, lang, FIVE_MIN);
@@ -84,7 +86,7 @@ public class FormStatMessageHolder extends SearchHolder {
         }
 
         try {
-            Message result = EntityHandler.showUnitEmb(form.get(id), ch, config, isFrame, talent, extra, lv, lang, true);
+            Message result = EntityHandler.showUnitEmb(form.get(id), ch, config, isFrame, talent, extra, lv, lang, true, compact);
 
             if(result != null) {
                 Member m = event.getMember();
@@ -92,7 +94,7 @@ public class FormStatMessageHolder extends SearchHolder {
                 if(m != null) {
                     StaticStore.removeHolder(m.getId(), FormStatMessageHolder.this);
 
-                    StaticStore.putHolder(m.getId(), new FormButtonHolder(form.get(id), author, result, config, isFrame, talent, extra, lv, lang, channelID));
+                    StaticStore.putHolder(m.getId(), new FormButtonHolder(form.get(id), author, result, config, isFrame, talent, extra, compact, lv, lang, channelID));
                 }
             }
         } catch (Exception e) {

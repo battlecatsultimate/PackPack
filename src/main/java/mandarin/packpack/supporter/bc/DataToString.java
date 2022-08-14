@@ -1041,7 +1041,7 @@ public class DataToString {
         if(st.mus0 == null || st.mus0.id == -1) {
             return LangID.getStringByID("data_none", lang);
         } else {
-            return getPackName(st.getCont().getCont().getSID(), lang)+" - "+Data.trio(st.mus0.id);
+            return Data.trio(st.mus0.id);
         }
     }
 
@@ -1053,7 +1053,7 @@ public class DataToString {
         if(st.mus1 == null || st.mus1.id == -1) {
             return LangID.getStringByID("data_none", lang);
         } else {
-            return getPackName(st.getCont().getCont().getSID(), lang)+" - "+Data.trio(st.mus1.id);
+            return Data.trio(st.mus1.id);
         }
     }
 
@@ -1061,7 +1061,7 @@ public class DataToString {
         if(st.bg == null || st.bg.id == -1) {
             return LangID.getStringByID("data_none", lang);
         } else {
-            return getPackName(st.bg.pack, lang)+" - "+Data.trio(st.bg.id);
+            return Data.trio(st.bg.id);
         }
     }
 
@@ -1069,7 +1069,7 @@ public class DataToString {
         if(st.castle == null || st.castle.id == -1) {
             return LangID.getStringByID("data_none", lang);
         } else {
-            return getPackName(st.castle.pack, lang)+" - "+Data.trio(st.castle.id);
+            return Data.trio(st.castle.id);
         }
     }
 
@@ -1953,5 +1953,219 @@ public class DataToString {
         }
 
         return sb.toString();
+    }
+
+    public static String getCompactTitle(Form f, int lang) {
+        if(f == null)
+            return "";
+
+        int oldConfig = CommonStatic.getConfig().lang;
+        CommonStatic.getConfig().lang = lang;
+
+        String name = MultiLangCont.get(f);
+
+        CommonStatic.getConfig().lang = oldConfig;
+
+        if(name == null || name.isBlank())
+            name = f.names.toString();
+
+        if(name.isBlank())
+            name = getID(f.uid.id, f.fid);
+        else
+            name += " [" + getID(f.uid.id, f.fid) + "]";
+
+        String rarity;
+
+        if(f.unit.rarity == 0)
+            rarity = LangID.getStringByID("data_basic", lang);
+        else if(f.unit.rarity == 1)
+            rarity = LangID.getStringByID("data_ex", lang);
+        else if(f.unit.rarity == 2)
+            rarity = LangID.getStringByID("data_rare", lang);
+        else if(f.unit.rarity == 3)
+            rarity = LangID.getStringByID("data_sr", lang);
+        else if(f.unit.rarity == 4)
+            rarity = LangID.getStringByID("data_ur", lang);
+        else if(f.unit.rarity == 5)
+            rarity = LangID.getStringByID("data_lr", lang);
+        else
+            rarity = "Unknown";
+
+        if(name.isBlank()) {
+            return rarity;
+        } else {
+            return rarity + " - " + name;
+        }
+    }
+
+    public static String getHealthHitback(MaskUnit f, UnitLevel lv, boolean talent, ArrayList<Integer> lvs) {
+        return getHP(f, lv, talent, lvs) + " - " + getHitback(f, talent, lvs);
+    }
+
+    public static String getHealthHitback(MaskEnemy e, int m) {
+        return getHP(e, m) + " - " + getHitback(e);
+    }
+
+    public static String getCompactAtk(MaskUnit f, boolean talent, UnitLevel lv, ArrayList<Integer> lvs) {
+        if(f == null)
+            return "";
+
+        MaskUnit du;
+
+        if(f.getPCoin() != null && talent)
+            du = f.getPCoin().improve(lvs);
+        else
+            du = f;
+
+        if(du.rawAtkData().length > 1)
+            return getTotalAtk(lv, du, talent, lvs) + " " + getCompactAtks(du, talent, lv, lvs) + " [" + getDPS(f, lv, talent, lvs) + "]";
+        else
+            return getTotalAtk(lv, du, talent, lvs) + " [" + getDPS(f, lv, talent, lvs) + "]";
+    }
+
+    public static String getCompactAtk(MaskEnemy e, int m) {
+        if(e == null)
+            return "";
+
+        if(e.rawAtkData().length > 1)
+            return getTotalAtk(e, m) + " " + getCompactAtks(e, m) + " [" + getDPS(e, m) + "]";
+        else
+            return getTotalAtk(e, m) + " [" + getDPS(e, m) + "]";
+    }
+
+    private static String getCompactAtks(MaskUnit du, boolean talent, UnitLevel lv, ArrayList<Integer> lvs) {
+        if(du == null)
+            return "";
+
+        int[][] raw = du.rawAtkData();
+
+        Treasure t = BasisSet.current().t();
+
+        ArrayList<Integer> damage = new ArrayList<>();
+
+        for(int[] atk : raw) {
+            int result;
+
+            if(du.getPCoin() != null && talent) {
+                result = (int) ((int) (Math.round(atk[0] * lv.getMult(lvs.get(0))) * t.getAtkMulti()) * du.getPCoin().getAtkMultiplication(lvs));
+            } else {
+                result = (int) (Math.round(atk[0] * lv.getMult(lvs.get(0))) * t.getAtkMulti());
+            }
+
+            damage.add(result);
+        }
+
+        StringBuilder result = new StringBuilder("(");
+
+        for(int i = 0; i < damage.size(); i++) {
+            if(raw[i][2] == 1) {
+                result.append("**__")
+                        .append(damage.get(i))
+                        .append("__**");
+            } else {
+                result.append(damage.get(i));
+            }
+
+            if(i < damage.size() -1)
+                result.append(", ");
+            else
+                result.append(")");
+        }
+
+        return result.toString();
+    }
+
+    private static String getCompactAtks(MaskEnemy e, int magnification) {
+        if(e == null)
+            return "";
+
+        int[][] atks = e.rawAtkData();
+
+        ArrayList<Integer> damage = new ArrayList<>();
+
+        for(int[] atk : atks) {
+            damage.add((int) (atk[0] * e.multi(BasisSet.current()) * magnification / 100.0));
+        }
+
+        StringBuilder result = new StringBuilder("(");
+
+        for(int i = 0; i < damage.size(); i++) {
+            if(atks[i][2] == 1) {
+                result.append("**__")
+                        .append(damage.get(i))
+                        .append("__**");
+            } else {
+                result.append(damage.get(i));
+            }
+
+            if(i < damage.size() -1)
+                result.append(", ");
+            else
+                result.append(")");
+        }
+
+        return result.toString();
+    }
+
+    public static String getCompactAtkTimings(MaskUnit f, boolean isFrame) {
+        return getAtkTime(f, isFrame) + " : " + getPre(f, isFrame) + " -> " + getPost(f, isFrame) + " -> " + getTBA(f, isFrame);
+    }
+
+    public static String getCompactAtkTimings(MaskEnemy e, boolean isFrame) {
+        return getAtkTime(e, isFrame) + " : " + getPre(e, isFrame) + " -> " + getPost(e, isFrame) + " -> " + getTBA(e, isFrame);
+    }
+
+    public static String getCostCooldownSpeed(MaskUnit f, boolean talent, boolean isFrame, ArrayList<Integer> lvs) {
+        return getCost(f, talent, lvs) + " - " + getCD(f, isFrame, talent, lvs) + " - " + getSpeed(f, talent, lvs);
+    }
+
+    public static String getDropBarrierSpeed(MaskEnemy e, int lang) {
+        return getDrop(e) + " - " + getBarrier(e, lang) + " - " + getSpeed(e);
+    }
+
+    public static String getCompactTitle(Enemy e, int lang) {
+        if(e == null)
+            return "";
+
+        int oldConfig = CommonStatic.getConfig().lang;
+        CommonStatic.getConfig().lang = lang;
+
+        String name = MultiLangCont.get(e);
+
+        CommonStatic.getConfig().lang = oldConfig;
+
+        if(name == null || name.isBlank()) {
+            name = e.names.toString();
+        }
+
+        if(name.isBlank()) {
+            name = getID(e.id.id);
+        } else {
+            name += " [" + getID(e.id.id) + "]";
+        }
+
+        return name;
+    }
+
+    public static String getIdDifficultyLevel(Stage st, int star, int lang) {
+        return getStageCode(st) +" - " + getDifficulty(st, lang) + " - " + getStar(st, star);
+    }
+
+    public static String getEnergyBaseXP(Stage st, int lang) {
+        return getEnergy(st, lang) + " - " + getBaseHealth(st) + " - " + getXP(st);
+    }
+
+    public static String getEnemyContinuableLength(Stage st, int lang) {
+        return getMaxEnemy(st) + " - " + getContinuable(st, lang) + " - " + getLength(st);
+    }
+
+    public static String getMusciBackgroundCastle(Stage st, int lang) {
+        String result = getMusic(st, lang);
+
+        if(st.mus1 != null && (st.mus0 == null || st.mus0.id != st.mus1.id)) {
+            result += "->" + getMusic1(st, lang);
+        }
+
+        return result + " - " + getBackground(st, lang) + " - " + getCastle(st, lang);
     }
 }

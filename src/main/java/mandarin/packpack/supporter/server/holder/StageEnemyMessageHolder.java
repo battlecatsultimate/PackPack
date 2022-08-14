@@ -28,9 +28,10 @@ public class StageEnemyMessageHolder extends SearchHolder {
 
     private final boolean isFrame;
     private final boolean isExtra;
+    private final boolean isCompact;
     private final int star;
 
-    public StageEnemyMessageHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, boolean isFrame, boolean isExtra, int star, int lang) {
+    public StageEnemyMessageHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, boolean isFrame, boolean isExtra, boolean isCompact, int star, int lang) {
         super(msg, channelID, author.getAuthor().getId(), lang);
 
         this.enemy = enemy;
@@ -38,6 +39,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
 
         this.isFrame = isFrame;
         this.isExtra = isExtra;
+        this.isCompact = isCompact;
         this.star = star;
 
         registerAutoFinish(this, msg, author, lang, FIVE_MIN);
@@ -92,7 +94,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
             } else if(stages.size() == 1) {
                 msg.delete().queue();
 
-                Message result = EntityHandler.showStageEmb(stages.get(0), ch, isFrame, isExtra, star, lang);
+                Message result = EntityHandler.showStageEmb(stages.get(0), ch, isFrame, isExtra, isCompact, star, lang);
 
                 if(result != null) {
                     if(StaticStore.timeLimit.containsKey(author.getAuthor().getId())) {
@@ -136,7 +138,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
                 Message res = Command.registerSearchComponents(ch.sendMessage(sb.toString()).allowedMentions(new ArrayList<>()), stages.size(), accumulateStage(stages, false), lang).complete();
 
                 if(res != null) {
-                    StaticStore.putHolder(author.getAuthor().getId(), new StageInfoMessageHolder(stages, author, res, ch.getId(), star, isFrame, isExtra, lang));
+                    StaticStore.putHolder(author.getAuthor().getId(), new StageInfoMessageHolder(stages, author, res, ch.getId(), star, isFrame, isExtra, isCompact, lang));
                 }
 
                 msg.delete().queue();
