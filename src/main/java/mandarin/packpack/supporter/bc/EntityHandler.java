@@ -1302,6 +1302,23 @@ public class EntityHandler {
         Canvas cv = new Canvas();
         FontMetrics fm = cv.getFontMetrics(font);
 
+        boolean needBoss = false;
+        boolean needRespect = false;
+        boolean needCount = false;
+
+        for(int i = st.data.datas.length - 1; i >= 0; i--) {
+            SCDef.Line line = st.data.datas[i];
+
+            if(!needBoss && line.boss != 0)
+                needBoss = true;
+
+            if(!needRespect && (line.spawn_0 < 0 || line.spawn_1 < 0))
+                needRespect = true;
+
+            if(!needCount && line.kill_count != 0)
+                needCount = true;
+        }
+
         ArrayList<String> enemies = new ArrayList<>();
         ArrayList<String> numbers = new ArrayList<>();
         ArrayList<String> magnifs = new ArrayList<>();
@@ -1358,17 +1375,6 @@ public class EntityHandler {
             String magnif = DataToString.getMagnification(new int[] {line.multiple, line.mult_atk}, star);
 
             magnifs.add(magnif);
-
-            String boss;
-
-            if(line.boss == 0)
-                boss = "";
-            else if(line.boss == 1)
-                boss = LangID.getStringByID("data_boss", lang);
-            else
-                boss = LangID.getStringByID("data_bossshake", lang);
-
-            isBoss.add(boss);
 
             String start;
 
@@ -1434,11 +1440,28 @@ public class EntityHandler {
 
             layers.add(layer);
 
-            String respect = (line.spawn_0 < 0 || line.spawn_1 < 0) ? LangID.getStringByID("data_true", lang) : "";
+            if(needBoss) {
+                String boss;
 
-            respects.add(respect);
+                if(line.boss == 0)
+                    boss = "";
+                else if(line.boss == 1)
+                    boss = LangID.getStringByID("data_boss", lang);
+                else
+                    boss = LangID.getStringByID("data_bossshake", lang);
 
-            killCounts.add(line.kill_count + "");
+                isBoss.add(boss);
+            }
+
+            if(needRespect) {
+                String respect = (line.spawn_0 < 0 || line.spawn_1 < 0) ? LangID.getStringByID("data_true", lang) : "";
+
+                respects.add(respect);
+            }
+
+            if(needCount) {
+                killCounts.add(line.kill_count + "");
+            }
         }
 
         double eMax = fm.stringWidth(LangID.getStringByID("data_enemy", lang));
@@ -1458,17 +1481,20 @@ public class EntityHandler {
 
             mMax = Math.max(mMax, fm.stringWidth(magnifs.get(i)));
 
-            iMax = Math.max(iMax, fm.stringWidth(isBoss.get(i)));
-
             bMax = Math.max(bMax, fm.stringWidth(baseHealth.get(i)));
 
             sMax = Math.max(sMax, fm.stringWidth(startRespawn.get(i)));
 
             lMax = Math.max(lMax, fm.stringWidth(layers.get(i)));
 
-            rMax = Math.max(rMax, fm.stringWidth(respects.get(i)));
+            if(needBoss)
+                iMax = Math.max(iMax, fm.stringWidth(isBoss.get(i)));
 
-            kMax = Math.max(kMax, fm.stringWidth(killCounts.get(i)));
+            if(needRespect)
+                rMax = Math.max(rMax, fm.stringWidth(respects.get(i)));
+
+            if(needCount)
+                kMax = Math.max(kMax, fm.stringWidth(killCounts.get(i)));
         }
 
         int xGap = 16;
@@ -1477,16 +1503,26 @@ public class EntityHandler {
         eMax += xGap + 93;
         nMax += xGap;
         mMax += xGap;
-        iMax += xGap;
         bMax += xGap;
         sMax += xGap;
         lMax += xGap;
         rMax += xGap;
         kMax += xGap;
+        iMax += xGap;
 
         int ySeg = Math.max(fm.getHeight() + yGap, 32 + yGap);
 
-        int w = (int) (eMax + nMax + mMax + iMax + bMax + sMax + lMax + rMax + kMax);
+        int w = (int) (eMax + nMax + mMax + bMax + sMax + lMax);
+
+        if(needBoss)
+            w += iMax;
+
+        if(needRespect)
+            w += rMax;
+
+        if(needCount)
+            w += kMax;
+
         int h = ySeg * (enemies.size() + 1);
 
         BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
@@ -1538,17 +1574,23 @@ public class EntityHandler {
 
         g.drawLine(x, 0, x, h);
 
-        x += (int) rMax;
+        if(needRespect) {
+            x += (int) rMax;
 
-        g.drawLine(x, 0, x, h);
+            g.drawLine(x, 0, x, h);
+        }
 
-        x += (int) kMax;
+        if(needCount) {
+            x += (int) kMax;
 
-        g.drawLine(x, 0, x, h);
+            g.drawLine(x, 0, x, h);
+        }
 
-        x += (int) iMax;
+        if(needBoss) {
+            x += (int) iMax;
 
-        g.drawLine(x, 0, x, h);
+            g.drawLine(x, 0, x, h);
+        }
 
         g.setColor(238, 238, 238, 255);
 
@@ -1576,17 +1618,29 @@ public class EntityHandler {
 
         g.drawCenteredText(LangID.getStringByID("data_layer", lang), initX, ySeg / 2);
 
-        initX += (int) (lMax / 2 + rMax / 2);
+        initX += (int) (lMax / 2);
 
-        g.drawCenteredText(LangID.getStringByID("data_respect", lang), initX, ySeg / 2);
+        if(needRespect) {
+            initX += (int) (rMax / 2);
 
-        initX += (int) (rMax / 2 + kMax / 2);
+            g.drawCenteredText(LangID.getStringByID("data_respect", lang), initX, ySeg / 2);
 
-        g.drawCenteredText(LangID.getStringByID("data_killcount", lang), initX, ySeg / 2);
+            initX += (int) (rMax / 2);
+        }
 
-        initX += (int) (kMax / 2 + iMax / 2);
+        if(needCount) {
+            initX += (int) (kMax / 2);
 
-        g.drawCenteredText(LangID.getStringByID("data_isboss", lang), initX, ySeg / 2);
+            g.drawCenteredText(LangID.getStringByID("data_killcount", lang), initX, ySeg / 2);
+
+            initX += (int) (kMax / 2);
+        }
+
+        if(needBoss) {
+            initX += (int) (iMax / 2);
+
+            g.drawCenteredText(LangID.getStringByID("data_isboss", lang), initX, ySeg / 2);
+        }
 
         for(int i = 0; i < enemies.size(); i++) {
             AbEnemy e = st.data.datas[st.data.datas.length - 1 - i].enemy.get();
@@ -1637,15 +1691,21 @@ public class EntityHandler {
 
             px += (int) lMax;
 
-            g.drawVerticalCenteredText(respects.get(i), px, py);
+            if(needRespect) {
+                g.drawVerticalCenteredText(respects.get(i), px, py);
 
-            px += (int) rMax;
+                px += (int) rMax;
+            }
 
-            g.drawVerticalCenteredText(killCounts.get(i), px, py);
+            if(needCount) {
+                g.drawVerticalCenteredText(killCounts.get(i), px, py);
 
-            px += (int) kMax;
+                px += (int) kMax;
+            }
 
-            g.drawVerticalCenteredText(isBoss.get(i), px, py);
+            if(needBoss) {
+                g.drawVerticalCenteredText(isBoss.get(i), px, py);
+            }
         }
 
         ImageIO.write(image, "PNG", img);
