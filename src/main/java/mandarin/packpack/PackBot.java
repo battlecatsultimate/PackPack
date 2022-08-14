@@ -37,8 +37,8 @@ public class PackBot {
     public static boolean eventInit = false;
     public static boolean develop = false;
 
-    public static final String normal = "p!help, but under Construction!";
-    public static final String dev = "p!help, being developed, bot may not response";
+    public static final String normal = "p!help for command info!";
+    public static final String dev = "p!help, being developed, bot may not respond";
 
     public static void main(String[] args) throws LoginException {
         initialize(args);
