@@ -227,10 +227,12 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
                 case 0:
                     List<SelectOption> languages = new ArrayList<>();
 
-                    if(config.lang == -1)
-                        languages.add(SelectOption.of(LangID.getStringByID("config_auto", lang), "-1").withDefault(true));
-                    else
-                        languages.add(SelectOption.of(LangID.getStringByID("config_auto", lang), "-1"));
+                    if(!forServer) {
+                        if(config.lang == -1)
+                            languages.add(SelectOption.of(LangID.getStringByID("config_auto", lang), "-1").withDefault(true));
+                        else
+                            languages.add(SelectOption.of(LangID.getStringByID("config_auto", lang), "-1"));
+                    }
 
                     for(int j = 0; j < StaticStore.langIndex.length; j++) {
                         String l = LangID.getStringByID("lang_"+StaticStore.langCode[j], lang);

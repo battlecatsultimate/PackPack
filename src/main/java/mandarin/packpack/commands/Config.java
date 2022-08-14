@@ -113,10 +113,12 @@ public class Config extends ConstraintCommand {
 
         List<SelectOption> languages = new ArrayList<>();
 
-        if(config.lang == -1)
-            languages.add(SelectOption.of(LangID.getStringByID("config_auto", lang), "-1").withDefault(true));
-        else
-            languages.add(SelectOption.of(LangID.getStringByID("config_auto", lang), "-1"));
+        if(!forServer) {
+            if(config.lang == -1)
+                languages.add(SelectOption.of(LangID.getStringByID("config_auto", lang), "-1").withDefault(true));
+            else
+                languages.add(SelectOption.of(LangID.getStringByID("config_auto", lang), "-1"));
+        }
 
         for(int i = 0; i < StaticStore.langIndex.length; i++) {
             String l = LangID.getStringByID("lang_"+StaticStore.langCode[i], config.lang);
