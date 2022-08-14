@@ -803,7 +803,7 @@ public class AllEventAdapter extends ListenerAdapter {
 
                     InteractionHolder<? extends GenericComponentInteractionCreateEvent> interactionHolder = (InteractionHolder<? extends GenericComponentInteractionCreateEvent>) holder;
 
-                    if(interactionHolder.canCastTo(ButtonInteractionEvent.class)) {
+                    if(event instanceof ButtonInteractionEvent && interactionHolder.canCastTo(ButtonInteractionEvent.class)) {
                         InteractionHolder<ButtonInteractionEvent> h = (InteractionHolder<ButtonInteractionEvent>) interactionHolder;
 
                         int result = h.handleEvent((ButtonInteractionEvent) event);
