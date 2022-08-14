@@ -17,10 +17,6 @@ public class IDHolder {
             id.serverPrefix = id.setOr(obj.get("server").getAsString());
         }
 
-        if(obj.has("locale")) {
-            id.serverLocale = obj.get("locale").getAsInt();
-        }
-
         if (obj.has("publish")) {
             id.publish = obj.get("publish").getAsBoolean();
         }
@@ -65,11 +61,18 @@ public class IDHolder {
             id.eventLocale = id.jsonObjectToListInteger(obj.getAsJsonArray("eventLocale"));
         }
 
+        if(obj.has("config")) {
+            id.config = ConfigHolder.parseJson(obj.getAsJsonObject("config"));
+        }
+
+        if(obj.has("locale")) {
+            id.config.lang = obj.get("locale").getAsInt();
+        }
+
         return id;
     }
 
     public String serverPrefix = "p!";
-    public int serverLocale = LangID.EN;
     public boolean publish = false;
     public String logDM = null;
     public String event = null;
@@ -85,23 +88,25 @@ public class IDHolder {
     public Map<String, List<String>> channel = new TreeMap<>();
     public List<Integer> eventLocale = new ArrayList<>();
     public boolean eventRaw = false;
+    public ConfigHolder config = new ConfigHolder();
 
     public IDHolder(String m, String me, String bo, String acc) {
         this.MOD = m;
         this.MEMBER = me;
         this.GET_ACCESS = acc;
         this.BOOSTER = bo;
+
+        config.lang = LangID.EN;
     }
 
     public IDHolder() {
-
+        config.lang = LangID.EN;
     }
 
     public JsonObject jsonfy() {
         JsonObject obj = new JsonObject();
 
         obj.addProperty("server", getOrNull(serverPrefix));
-        obj.addProperty("locale", serverLocale);
         obj.addProperty("publish", publish);
         obj.addProperty("mod", getOrNull(MOD));
         obj.addProperty("mem", getOrNull(MEMBER));
@@ -113,6 +118,7 @@ public class IDHolder {
         obj.addProperty("logDM", getOrNull(logDM));
         obj.addProperty("event", getOrNull(event));
         obj.add("eventLocale", listIntegerToJsonObject(eventLocale));
+        obj.add("config", config.jsonfy());
 
         return obj;
     }
@@ -321,7 +327,6 @@ public class IDHolder {
     public String toString() {
         return "IDHolder{" +
                 "serverPrefix='" + serverPrefix + '\'' +
-                ", serverLocale=" + serverLocale +
                 ", publish=" + publish +
                 ", MOD='" + MOD + '\'' +
                 ", MEMBER='" + MEMBER + '\'' +

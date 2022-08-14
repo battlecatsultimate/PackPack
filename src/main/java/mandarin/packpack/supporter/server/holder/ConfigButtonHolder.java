@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder;
 
+import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
@@ -7,6 +8,7 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
@@ -28,8 +30,11 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
 
     private final String channelID;
     private final String memberID;
+    private final boolean forServer;
 
-    public ConfigButtonHolder(Message msg, Message author, ConfigHolder config, IDHolder holder, String channelID, String memberID) {
+    private int page = 0;
+
+    public ConfigButtonHolder(Message msg, Message author, ConfigHolder config, IDHolder holder, String channelID, String memberID, boolean forServer) {
         super(GenericComponentInteractionCreateEvent.class);
 
         this.msg = msg;
@@ -39,6 +44,7 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
 
         this.channelID = channelID;
         this.memberID = memberID;
+        this.forServer = forServer;
 
         Timer autoFinsh = new Timer();
 
@@ -128,6 +134,29 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
                 performResult(event);
 
                 break;
+            case "compact":
+                es = (SelectMenuInteractionEvent) event;
+
+                if(es.getValues().size() != 1)
+                    return;
+
+                config.compact = es.getValues().get(0).equals("true");
+
+                performResult(event);
+
+                break;
+            case "next":
+                page++;
+
+                performResult(event);
+
+                break;
+            case "prev":
+                page--;
+
+                performResult(event);
+
+                break;
             case "confirm":
                 expired = true;
                 StaticStore.removeHolder(memberID, this);
@@ -137,7 +166,7 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
                 int lang = config.lang;
 
                 if(lang == -1)
-                    lang = holder.serverLocale;
+                    lang = holder.config.lang;
 
                 event.deferEdit()
                         .setContent(LangID.getStringByID("config_apply", lang))
@@ -149,7 +178,11 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
                 expired = true;
                 StaticStore.removeHolder(memberID, this);
 
-                StaticStore.config.put(memberID, backup);
+                if(forServer) {
+                    holder.config = backup;
+                } else {
+                    StaticStore.config.put(memberID, backup);
+                }
 
                 event.deferEdit()
                         .setContent(LangID.getStringByID("config_cancel", backup.lang))
@@ -185,64 +218,102 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
         int lang = config.lang;
 
         if(lang == -1)
-            lang = holder.serverLocale;
+            lang = holder.config.lang;
 
         List<ActionRow> m = new ArrayList<>();
 
-        List<SelectOption> languages = new ArrayList<>();
+        for(int i = page * 3; i < (page + 1) * 3; i++) {
+            switch (i) {
+                case 0:
+                    List<SelectOption> languages = new ArrayList<>();
 
-        if(config.lang == -1)
-            languages.add(SelectOption.of(LangID.getStringByID("config_auto", lang), "-1").withDefault(true));
-        else
-            languages.add(SelectOption.of(LangID.getStringByID("config_auto", lang), "-1"));
+                    if(config.lang == -1)
+                        languages.add(SelectOption.of(LangID.getStringByID("config_auto", lang), "-1").withDefault(true));
+                    else
+                        languages.add(SelectOption.of(LangID.getStringByID("config_auto", lang), "-1"));
 
-        for(int i = 0; i < StaticStore.langIndex.length; i++) {
-            String l = LangID.getStringByID("lang_"+StaticStore.langCode[i], lang);
+                    for(int j = 0; j < StaticStore.langIndex.length; j++) {
+                        String l = LangID.getStringByID("lang_"+StaticStore.langCode[j], lang);
 
-            if(config.lang == StaticStore.langIndex[i]) {
-                languages.add(SelectOption.of(LangID.getStringByID("config_locale", lang).replace("_", l), ""+StaticStore.langIndex[i]).withDefault(true));
-            } else {
-                languages.add(SelectOption.of(LangID.getStringByID("config_locale", lang).replace("_", l), ""+StaticStore.langIndex[i]));
+                        if(config.lang == StaticStore.langIndex[j]) {
+                            languages.add(SelectOption.of(LangID.getStringByID("config_locale", lang).replace("_", l), ""+StaticStore.langIndex[j]).withDefault(true));
+                        } else {
+                            languages.add(SelectOption.of(LangID.getStringByID("config_locale", lang).replace("_", l), ""+StaticStore.langIndex[j]));
+                        }
+                    }
+
+                    m.add(ActionRow.of(SelectMenu.create("language").addOptions(languages).build()));
+
+                    break;
+                case 1:
+                    List<SelectOption> levels = new ArrayList<>();
+
+                    for(int j = 0; j <= 50; j += 5) {
+                        if(config.defLevel == j) {
+                            levels.add(SelectOption.of(LangID.getStringByID("config_default", lang).replace("_", j == 0 ? "1" : ""+j), j == 0 ? "1" : ""+j).withDefault(true));
+                        } else {
+                            levels.add(SelectOption.of(LangID.getStringByID("config_default", lang).replace("_", j == 0 ? "1" : ""+j), j == 0 ? "1" : ""+j));
+                        }
+                    }
+
+                    m.add(ActionRow.of(SelectMenu.create("defLevels").addOptions(levels).build()));
+
+                    break;
+                case 2:
+                    List<SelectOption> extras = new ArrayList<>();
+
+                    if(config.extra) {
+                        extras.add(SelectOption.of(LangID.getStringByID("config_extra", lang).replace("_", LangID.getStringByID("data_true", lang)), "true").withDefault(true));
+                        extras.add(SelectOption.of(LangID.getStringByID("config_extra", lang).replace("_", LangID.getStringByID("data_false", lang)), "false"));
+                    } else {
+                        extras.add(SelectOption.of(LangID.getStringByID("config_extra", lang).replace("_", LangID.getStringByID("data_true", lang)), "true"));
+                        extras.add(SelectOption.of(LangID.getStringByID("config_extra", lang).replace("_", LangID.getStringByID("data_false", lang)), "false").withDefault(true));
+                    }
+
+                    m.add(ActionRow.of(SelectMenu.create("extra").addOptions(extras).build()));
+
+                    break;
+                case 3:
+                    List<SelectOption> units = new ArrayList<>();
+
+                    if(config.useFrame) {
+                        units.add(SelectOption.of(LangID.getStringByID("config_units", lang).replace("_", LangID.getStringByID("config_frame", lang)), "frame").withDefault(true));
+                        units.add(SelectOption.of(LangID.getStringByID("config_units", lang).replace("_", LangID.getStringByID("config_second", lang)), "second"));
+                    } else {
+                        units.add(SelectOption.of(LangID.getStringByID("config_units", lang).replace("_", LangID.getStringByID("config_frame", lang)), "frame"));
+                        units.add(SelectOption.of(LangID.getStringByID("config_units", lang).replace("_", LangID.getStringByID("config_second", lang)), "second").withDefault(true));
+                    }
+
+                    m.add(ActionRow.of(SelectMenu.create("unit").addOptions(units).build()));
+
+                    break;
+                case 4:
+                    List<SelectOption> compacts = new ArrayList<>();
+
+                    if(config.compact) {
+                        compacts.add(SelectOption.of(LangID.getStringByID("config_compact", lang).replace("_", LangID.getStringByID("data_true", lang)), "true").withDefault(true));
+                        compacts.add(SelectOption.of(LangID.getStringByID("config_compact", lang).replace("_", LangID.getStringByID("data_false", lang)), "false"));
+                    } else {
+                        compacts.add(SelectOption.of(LangID.getStringByID("config_compact", lang).replace("_", LangID.getStringByID("data_true", lang)), "true"));
+                        compacts.add(SelectOption.of(LangID.getStringByID("config_compact", lang).replace("_", LangID.getStringByID("data_false", lang)), "false").withDefault(true));
+                    }
+
+                    m.add(ActionRow.of(SelectMenu.create("compact").addOptions(compacts).build()));
+                    break;
             }
         }
 
-        m.add(ActionRow.of(SelectMenu.create("language").addOptions(languages).build()));
+        List<ActionComponent> pages = new ArrayList<>();
 
-        List<SelectOption> levels = new ArrayList<>();
-
-        for(int i = 0; i <= 50; i += 5) {
-            if(config.defLevel == i) {
-                levels.add(SelectOption.of(LangID.getStringByID("config_default", lang).replace("_", i == 0 ? "1" : ""+i), i == 0 ? "1" : ""+i).withDefault(true));
-            } else {
-                levels.add(SelectOption.of(LangID.getStringByID("config_default", lang).replace("_", i == 0 ? "1" : ""+i), i == 0 ? "1" : ""+i));
-            }
-        }
-
-        m.add(ActionRow.of(SelectMenu.create("defLevels").addOptions(levels).build()));
-
-        List<SelectOption> extras = new ArrayList<>();
-
-        if(config.extra) {
-            extras.add(SelectOption.of(LangID.getStringByID("config_extra", lang).replace("_", LangID.getStringByID("data_true", lang)), "true").withDefault(true));
-            extras.add(SelectOption.of(LangID.getStringByID("config_extra", lang).replace("_", LangID.getStringByID("data_false", lang)), "false"));
+        if(page == 0) {
+            pages.add(Button.secondary("prev", LangID.getStringByID("search_prev", lang)).withEmoji(Emoji.fromCustom(EmojiStore.PREVIOUS)).asDisabled());
+            pages.add(Button.secondary("next", LangID.getStringByID("search_next", lang)).withEmoji(Emoji.fromCustom(EmojiStore.NEXT)));
         } else {
-            extras.add(SelectOption.of(LangID.getStringByID("config_extra", lang).replace("_", LangID.getStringByID("data_true", lang)), "true"));
-            extras.add(SelectOption.of(LangID.getStringByID("config_extra", lang).replace("_", LangID.getStringByID("data_false", lang)), "false").withDefault(true));
+            pages.add(Button.secondary("prev", LangID.getStringByID("search_prev", lang)).withEmoji(Emoji.fromCustom(EmojiStore.PREVIOUS)));
+            pages.add(Button.secondary("next", LangID.getStringByID("search_next", lang)).withEmoji(Emoji.fromCustom(EmojiStore.NEXT)).asDisabled());
         }
 
-        m.add(ActionRow.of(SelectMenu.create("extra").addOptions(extras).build()));
-
-        List<SelectOption> units = new ArrayList<>();
-
-        if(config.useFrame) {
-            units.add(SelectOption.of(LangID.getStringByID("config_units", lang).replace("_", LangID.getStringByID("config_frame", lang)), "frame").withDefault(true));
-            units.add(SelectOption.of(LangID.getStringByID("config_units", lang).replace("_", LangID.getStringByID("config_second", lang)), "second"));
-        } else {
-            units.add(SelectOption.of(LangID.getStringByID("config_units", lang).replace("_", LangID.getStringByID("config_frame", lang)), "frame"));
-            units.add(SelectOption.of(LangID.getStringByID("config_units", lang).replace("_", LangID.getStringByID("config_second", lang)), "second").withDefault(true));
-        }
-
-        m.add(ActionRow.of(SelectMenu.create("unit").addOptions(units).build()));
+        m.add(ActionRow.of(pages));
 
         List<ActionComponent> components = new ArrayList<>();
 
@@ -258,7 +329,7 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
         int lang = config.lang;
 
         if(lang == -1)
-            lang = holder.serverLocale;
+            lang = holder.config.lang;
 
         String locale;
 
@@ -310,12 +381,25 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
         else
             unit = LangID.getStringByID("config_second", lang);
 
+        String compact;
+        String comp;
+
+        if(config.compact) {
+            compact = LangID.getStringByID("data_true", lang);
+            comp = LangID.getStringByID("config_comtrue", lang);
+        } else {
+            compact = LangID.getStringByID("data_false", lang);
+            comp = LangID.getStringByID("config_comfalse", lang);
+        }
+
         return "**" + LangID.getStringByID("config_locale", lang).replace("_", locale) + "**\n\n" +
-                "**" + LangID.getStringByID("config_default", lang).replace("_", ""+config.defLevel) + "**\n" +
-                LangID.getStringByID("config_deflvdesc", lang).replace("_", ""+config.defLevel) + "\n\n" +
+                "**" + LangID.getStringByID("config_default", lang).replace("_", ""+ config.defLevel) + "**\n" +
+                LangID.getStringByID("config_deflvdesc", lang).replace("_", config.defLevel+"") + "\n\n" +
                 "**" + LangID.getStringByID("config_extra", lang).replace("_", bool) + "**\n" +
                 ex + "\n\n" +
                 "**" + LangID.getStringByID("config_unit", lang).replace("_", unit) + "**\n" +
-                LangID.getStringByID("config_unitdesc", lang);
+                LangID.getStringByID("config_unitdesc", lang) + "\n\n" +
+                "**" + LangID.getStringByID("config_compact", lang).replace("_", compact) + "**\n" +
+                comp;
     }
 }

@@ -82,7 +82,7 @@ public class StageInfo extends TimedConstraintCommand {
                         if(idh == null) {
                             lang = LangID.EN;
                         } else {
-                            lang = idh.serverLocale;
+                            lang = idh.config.lang;
                         }
                     }
                 }
@@ -132,7 +132,10 @@ public class StageInfo extends TimedConstraintCommand {
     public StageInfo(ConstraintCommand.ROLE role, int lang, IDHolder id, ConfigHolder config, long time) {
         super(role, lang, id, time, StaticStore.COMMAND_STAGEINFO_ID);
 
-        this.config = config;
+        if(config == null)
+            this.config = id.config;
+        else
+            this.config = config;
     }
 
     @Override

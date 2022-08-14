@@ -73,7 +73,7 @@ public class ScamLinkHandler {
             User u = me.getUser();
 
             u.openPrivateChannel()
-                    .flatMap(channel -> channel.sendMessage(LangID.getStringByID("scamhandle_nochannel", holder.serverLocale)))
+                    .flatMap(channel -> channel.sendMessage(LangID.getStringByID("scamhandle_nochannel", holder.config.lang)))
                     .queue();
 
             return;
@@ -101,9 +101,9 @@ public class ScamLinkHandler {
                 }
 
                 MessageEmbed embed = new EmbedBuilder()
-                        .setTitle(LangID.getStringByID("scamhandle_title", holder.serverLocale))
+                        .setTitle(LangID.getStringByID("scamhandle_title", holder.config.lang))
                         .setAuthor(m.getEffectiveName() + " ("+m.getId()+")", null, m.getAvatarUrl())
-                        .setDescription(LangID.getStringByID("scamhandle_descmute", holder.serverLocale))
+                        .setDescription(LangID.getStringByID("scamhandle_descmute", holder.config.lang))
                         .build();
 
                 try {
@@ -111,24 +111,24 @@ public class ScamLinkHandler {
                 } catch (Exception ignored) {}
             }
         } else if(action == ACTION.KICK) {
-            m.kick(LangID.getStringByID("scamhandle_kickreason", holder.serverLocale)).queue();
+            m.kick(LangID.getStringByID("scamhandle_kickreason", holder.config.lang)).queue();
 
             MessageEmbed embed = new EmbedBuilder()
-                    .setTitle(LangID.getStringByID("scamhandle_title", holder.serverLocale))
+                    .setTitle(LangID.getStringByID("scamhandle_title", holder.config.lang))
                     .setAuthor(m.getEffectiveName() + " ("+m.getId()+")", null, m.getAvatarUrl())
-                    .setDescription(LangID.getStringByID("scamhandle_desckick", holder.serverLocale))
+                    .setDescription(LangID.getStringByID("scamhandle_desckick", holder.config.lang))
                     .build();
 
             try {
                 ((MessageChannel) ch).sendMessageEmbeds(embed).queue();
             } catch (Exception ignored) {}
         } else if(action == ACTION.BAN) {
-            m.ban(0, LangID.getStringByID("scamhandle_banreason", holder.serverLocale)).queue();
+            m.ban(0, LangID.getStringByID("scamhandle_banreason", holder.config.lang)).queue();
 
             MessageEmbed embed = new EmbedBuilder()
-                    .setTitle(LangID.getStringByID("scamhandle_title", holder.serverLocale))
+                    .setTitle(LangID.getStringByID("scamhandle_title", holder.config.lang))
                     .setAuthor(m.getEffectiveName() + " ("+m.getId()+")", null, m.getAvatarUrl())
-                    .setDescription(LangID.getStringByID("scamhandle_descban", holder.serverLocale))
+                    .setDescription(LangID.getStringByID("scamhandle_descban", holder.config.lang))
                     .build();
 
             try {
@@ -137,7 +137,7 @@ public class ScamLinkHandler {
         }
 
         m.getUser().openPrivateChannel()
-                .flatMap(pc -> pc.sendMessage(LangID.getStringByID("scamhandle_dm", holder.serverLocale).replace("_NNN_", g.getName()).replace("_III_", g.getId())))
+                .flatMap(pc -> pc.sendMessage(LangID.getStringByID("scamhandle_dm", holder.config.lang).replace("_NNN_", g.getName()).replace("_III_", g.getId())))
                 .queue();
 
         for(String guildID : StaticStore.idHolder.keySet()) {
@@ -181,15 +181,15 @@ public class ScamLinkHandler {
 
                     if(me != null) {
                         embed = new EmbedBuilder()
-                                .setTitle(LangID.getStringByID("scamhandle_report", h.serverLocale))
+                                .setTitle(LangID.getStringByID("scamhandle_report", h.config.lang))
                                 .setAuthor(m.getEffectiveName() + " ("+m.getId()+")", null, m.getAvatarUrl())
-                                .setDescription(LangID.getStringByID("scamhandle_reportdesc", h.serverLocale).replace("_", link))
+                                .setDescription(LangID.getStringByID("scamhandle_reportdesc", h.config.lang).replace("_", link))
                                 .build();
                     } else {
                         embed = new EmbedBuilder()
-                                .setTitle(LangID.getStringByID("scamhandle_report", h.serverLocale))
+                                .setTitle(LangID.getStringByID("scamhandle_report", h.config.lang))
                                 .setAuthor(m.getEffectiveName() + " ("+m.getId()+")", null, m.getAvatarUrl())
-                                .setDescription(LangID.getStringByID("scamhandle_reportdescall", h.serverLocale).replace("_", link))
+                                .setDescription(LangID.getStringByID("scamhandle_reportdescall", h.config.lang).replace("_", link))
                                 .build();
                     }
 
@@ -201,9 +201,9 @@ public class ScamLinkHandler {
 
                     if(cha instanceof MessageChannel) {
                         MessageEmbed embed = new EmbedBuilder()
-                                .setTitle(LangID.getStringByID("scamhandle_report", h.serverLocale))
+                                .setTitle(LangID.getStringByID("scamhandle_report", h.config.lang))
                                 .setAuthor(m.getEffectiveName() + " ("+m.getId()+")", null, m.getAvatarUrl())
-                                .setDescription(LangID.getStringByID("scamhandle_reportdesc", h.serverLocale).replace("_", link))
+                                .setDescription(LangID.getStringByID("scamhandle_reportdesc", h.config.lang).replace("_", link))
                                 .build();
 
                         ((MessageChannel) cha).sendMessageEmbeds(embed).queue();

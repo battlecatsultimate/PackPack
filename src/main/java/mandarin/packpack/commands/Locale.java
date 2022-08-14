@@ -37,7 +37,7 @@ public class Locale extends ConstraintCommand {
                             if(StaticStore.config.containsKey(m.getId()))
                                 holder = StaticStore.config.get(m.getId());
                             else
-                                holder = new ConfigHolder();
+                                holder = this.holder.config;
 
                             holder.lang = loc;
 
@@ -95,7 +95,7 @@ public class Locale extends ConstraintCommand {
                             IDHolder holder = StaticStore.idHolder.get(g.getId());
 
                             if(holder != null) {
-                                ch.sendMessage(LangID.getStringByID("locale_auto", holder.serverLocale)).queue();
+                                ch.sendMessage(LangID.getStringByID("locale_auto", holder.config.lang)).queue();
                             } else {
                                 ch.sendMessage(LangID.getStringByID("locale_auto", lang)).queue();
                             }

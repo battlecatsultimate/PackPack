@@ -48,7 +48,7 @@ public class Publish extends ConstraintCommand {
             if(c instanceof NewsChannel) {
                 String content = null;
 
-                int[] pref = CommonStatic.Lang.pref[holder.serverLocale];
+                int[] pref = CommonStatic.Lang.pref[holder.config.lang];
 
                 for(int p : pref) {
                     if(StaticStore.announcements.containsKey(p)) {
@@ -69,7 +69,7 @@ public class Publish extends ConstraintCommand {
             } else if(c instanceof GuildMessageChannel) {
                 String content = null;
 
-                int[] pref = CommonStatic.Lang.pref[holder.serverLocale];
+                int[] pref = CommonStatic.Lang.pref[holder.config.lang];
 
                 for(int p : pref) {
                     if(StaticStore.announcements.containsKey(p)) {

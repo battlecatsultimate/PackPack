@@ -34,7 +34,7 @@ public class PrintEvent extends ConstraintCommand {
             return;
 
         int loc = getLocale(getContent(event));
-        int l = followServerLocale(getContent(event)) ? holder.serverLocale : lang;
+        int l = followServerLocale(getContent(event)) ? holder.config.lang : lang;
         boolean full = isFull(getContent(event));
         boolean raw = isRaw(getContent(event));
 
@@ -202,7 +202,7 @@ public class PrintEvent extends ConstraintCommand {
         }
 
         if(done) {
-            ch.sendMessage(LangID.getStringByID("event_warning", holder.serverLocale)).queue();
+            ch.sendMessage(LangID.getStringByID("event_warning", holder.config.lang)).queue();
         }
     }
 

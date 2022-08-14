@@ -353,18 +353,18 @@ public class AllEventAdapter extends ListenerAdapter {
             if(msg.getContentRaw().startsWith(StaticStore.serverPrefix))
                 prefix = StaticStore.serverPrefix;
 
-            int lang = idh.serverLocale;
+            int lang = idh.config.lang;
             ConfigHolder c;
 
             if(StaticStore.config.containsKey(m.getId())) {
                 lang = StaticStore.config.get(m.getId()).lang;
                 c = StaticStore.config.get(m.getId());
             } else {
-                c = new ConfigHolder();
+                c = null;
             }
 
             if(lang == -1)
-                lang = idh.serverLocale;
+                lang = idh.config.lang;
 
             switch (StaticStore.getCommand(msg.getContentRaw(), prefix)) {
                 case "checkbcu":
@@ -689,7 +689,7 @@ public class AllEventAdapter extends ListenerAdapter {
                     new OptOut(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
                     break;
                 case "config":
-                    new Config(ConstraintCommand.ROLE.MEMBER, lang, idh, c).execute(event);
+                    new Config(ConstraintCommand.ROLE.MEMBER, lang, idh, c, false).execute(event);
                     break;
                 case "removecache":
                 case "rc":
@@ -728,6 +728,12 @@ public class AllEventAdapter extends ListenerAdapter {
                 case "stagesa":
                 case "ssa":
                     new StageStatAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
+                    break;
+                case "serverconfig":
+                case "sconfig":
+                case "serverc":
+                case "sc":
+                    new Config(ConstraintCommand.ROLE.MOD, lang, idh, idh.config, true).execute(event);
                     break;
             }
         } catch (Exception e) {
@@ -964,7 +970,7 @@ public class AllEventAdapter extends ListenerAdapter {
 
                         if(owner != null) {
                             owner.getUser().openPrivateChannel()
-                                    .flatMap(pc -> pc.sendMessage(LangID.getStringByID("maxrole", id.serverLocale).replace("_", g.getName())))
+                                    .flatMap(pc -> pc.sendMessage(LangID.getStringByID("maxrole", id.config.lang).replace("_", g.getName())))
                                     .queue();
 
                             warned.set(true);
@@ -998,12 +1004,12 @@ public class AllEventAdapter extends ListenerAdapter {
                                                 String message;
 
                                                 if(roleName != null) {
-                                                    message = LangID.getStringByID("first_joinmod", id.serverLocale)
+                                                    message = LangID.getStringByID("first_joinmod", id.config.lang)
                                                             .replace("_III_", roleID)
                                                             .replace("_MMM_", roleName)
                                                             .replace("_SSS_", g.getName());
                                                 } else {
-                                                    message = LangID.getStringByID("first_join", id.serverLocale)
+                                                    message = LangID.getStringByID("first_join", id.config.lang)
                                                             .replace("_SSS_", g.getName());
                                                 }
 
@@ -1018,7 +1024,7 @@ public class AllEventAdapter extends ListenerAdapter {
 
                     if(owner != null) {
                         owner.getUser().openPrivateChannel()
-                                .flatMap(pc -> pc.sendMessage(LangID.getStringByID("needroleperm", id.serverLocale).replace("_", g.getName())))
+                                .flatMap(pc -> pc.sendMessage(LangID.getStringByID("needroleperm", id.config.lang).replace("_", g.getName())))
                                 .queue();
                     }
 
@@ -1049,12 +1055,12 @@ public class AllEventAdapter extends ListenerAdapter {
                             String message;
 
                             if(roleName != null) {
-                                message = LangID.getStringByID("first_joinmod", id.serverLocale)
+                                message = LangID.getStringByID("first_joinmod", id.config.lang)
                                         .replace("_III_", roleID)
                                         .replace("_MMM_", roleName)
                                         .replace("_SSS_", g.getName());
                             } else {
-                                message = LangID.getStringByID("first_join", id.serverLocale)
+                                message = LangID.getStringByID("first_join", id.config.lang)
                                         .replace("_SSS_", g.getName());
                             }
 
@@ -1072,7 +1078,7 @@ public class AllEventAdapter extends ListenerAdapter {
 
                     if(owner != null) {
                         owner.getUser().openPrivateChannel()
-                                .flatMap(pc -> pc.sendMessage(LangID.getStringByID("maxrole", holder.serverLocale).replace("_", g.getName())))
+                                .flatMap(pc -> pc.sendMessage(LangID.getStringByID("maxrole", holder.config.lang).replace("_", g.getName())))
                                 .queue();
 
                         warned.set(true);
@@ -1091,7 +1097,7 @@ public class AllEventAdapter extends ListenerAdapter {
 
                 if(owner != null) {
                     owner.getUser().openPrivateChannel()
-                            .flatMap(pc -> pc.sendMessage(LangID.getStringByID("needroleperm", holder.serverLocale).replace("_", g.getName())))
+                            .flatMap(pc -> pc.sendMessage(LangID.getStringByID("needroleperm", holder.config.lang).replace("_", g.getName())))
                             .queue();
 
                     warned.set(true);
@@ -1124,9 +1130,9 @@ public class AllEventAdapter extends ListenerAdapter {
                         EmbedBuilder builder = new EmbedBuilder();
 
                         builder.setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)])
-                                .setDescription(LangID.getStringByID("watdm_suslink", holder.serverLocale))
+                                .setDescription(LangID.getStringByID("watdm_suslink", holder.config.lang))
                                 .setAuthor(m.getEffectiveName()+" ("+m.getId()+")", null, m.getAvatarUrl())
-                                .addField(LangID.getStringByID("watdm_content", holder.serverLocale), content, true);
+                                .addField(LangID.getStringByID("watdm_content", holder.config.lang), content, true);
 
                         if(ch instanceof GuildMessageChannel) {
                             ((GuildMessageChannel) ch).sendMessageEmbeds(builder.build()).queue();

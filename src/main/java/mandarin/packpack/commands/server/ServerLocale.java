@@ -26,7 +26,7 @@ public class ServerLocale extends ConstraintCommand {
                     if(lan >= 0 && lan <= StaticStore.langIndex.length - 1) {
                         int loc = StaticStore.langIndex[lan];
 
-                        holder.serverLocale = loc;
+                        holder.config.lang = loc;
 
                         String locale;
 

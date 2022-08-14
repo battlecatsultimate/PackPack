@@ -53,7 +53,7 @@ public class FormStat extends ConstraintCommand {
                         if(idh == null) {
                             lang = LangID.EN;
                         } else {
-                            lang = idh.serverLocale;
+                            lang = idh.config.lang;
                         }
                     }
                 }
@@ -128,7 +128,10 @@ public class FormStat extends ConstraintCommand {
     public FormStat(ROLE role, int lang, IDHolder holder, ConfigHolder config) {
         super(role, lang, holder);
 
-        this.config = config;
+        if(config == null)
+            this.config = holder.config;
+        else
+            this.config = config;
     }
 
     @Override

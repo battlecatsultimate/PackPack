@@ -47,7 +47,7 @@ public class EnemyStat extends ConstraintCommand {
                         if(idh == null) {
                             lang = LangID.EN;
                         } else {
-                            lang = idh.serverLocale;
+                            lang = idh.config.lang;
                         }
                     }
                 }
@@ -90,7 +90,10 @@ public class EnemyStat extends ConstraintCommand {
     public EnemyStat(ROLE role, int lang, IDHolder id, ConfigHolder config) {
         super(role, lang, id);
 
-        this.config = config;
+        if(config == null)
+            this.config = id.config;
+        else
+            this.config = config;
     }
 
     @Override

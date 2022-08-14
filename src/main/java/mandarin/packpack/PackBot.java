@@ -222,7 +222,7 @@ public class PackBot {
 
                             if(ch instanceof GuildMessageChannel) {
                                 if(j == EventFactor.SALE) {
-                                    ArrayList<String> result = StaticStore.event.printStageEvent(i, holder.serverLocale, false, holder.eventRaw, false, 0);
+                                    ArrayList<String> result = StaticStore.event.printStageEvent(i, holder.config.lang, false, holder.eventRaw, false, 0);
 
                                     if(result.isEmpty())
                                         continue;
@@ -233,7 +233,7 @@ public class PackBot {
 
                                     if(!eventDone) {
                                         eventDone = true;
-                                        ((MessageChannel) ch).sendMessage((wasDone ? "** **\n" : "") + LangID.getStringByID("event_loc"+i, holder.serverLocale)).queue();
+                                        ((MessageChannel) ch).sendMessage((wasDone ? "** **\n" : "") + LangID.getStringByID("event_loc"+i, holder.config.lang)).queue();
                                     }
 
                                     boolean goWithFile = false;
@@ -246,7 +246,7 @@ public class PackBot {
                                     }
 
                                     if(goWithFile) {
-                                        StringBuilder total = new StringBuilder(LangID.getStringByID("event_stage", holder.serverLocale).replace("**", "")).append("\n\n");
+                                        StringBuilder total = new StringBuilder(LangID.getStringByID("event_stage", holder.config.lang).replace("**", "")).append("\n\n");
 
                                         for(int k = 0; k < result.size(); k++) {
                                             total.append(result.get(k).replace("```scss\n", "").replace("```", ""));
@@ -274,7 +274,7 @@ public class PackBot {
 
                                         writer.close();
 
-                                        ((GuildMessageChannel) ch).sendMessage((wasDone ? "** **\n" : "") + LangID.getStringByID("printstage_toolong", holder.serverLocale))
+                                        ((GuildMessageChannel) ch).sendMessage((wasDone ? "** **\n" : "") + LangID.getStringByID("printstage_toolong", holder.config.lang))
                                                 .addFile(res, "event.txt")
                                                 .queue(m -> {
                                                     if(res.exists() && !res.delete()) {
@@ -296,7 +296,7 @@ public class PackBot {
                                                     merge.append("** **\n");
                                                 }
 
-                                                merge.append(LangID.getStringByID("event_stage", holder.serverLocale)).append("\n\n");
+                                                merge.append(LangID.getStringByID("event_stage", holder.config.lang)).append("\n\n");
                                             } else {
                                                 merge.append("** **\n");
                                             }
@@ -328,9 +328,9 @@ public class PackBot {
                                     String result;
 
                                     if(j == EventFactor.GATYA)
-                                        result = StaticStore.event.printGachaEvent(i, holder.serverLocale, false, holder.eventRaw, false, 0);
+                                        result = StaticStore.event.printGachaEvent(i, holder.config.lang, false, holder.eventRaw, false, 0);
                                     else
-                                        result = StaticStore.event.printItemEvent(i, holder.serverLocale, false, holder.eventRaw, false, 0);
+                                        result = StaticStore.event.printItemEvent(i, holder.config.lang, false, holder.eventRaw, false, 0);
 
                                     if(result.isBlank()) {
                                         continue;
@@ -343,7 +343,7 @@ public class PackBot {
                                     if(!eventDone) {
                                         eventDone = true;
 
-                                        ((MessageChannel) ch).sendMessage((wasDone ? "** **\n" : "") + LangID.getStringByID("event_loc"+i, holder.serverLocale)).queue();
+                                        ((MessageChannel) ch).sendMessage((wasDone ? "** **\n" : "") + LangID.getStringByID("event_loc"+i, holder.config.lang)).queue();
                                     }
 
                                     if(result.length() >= 1980) {
@@ -374,7 +374,7 @@ public class PackBot {
                                             lID = "printitem_toolong";
                                         }
 
-                                        ((GuildMessageChannel) ch).sendMessage((wasDone ? "** **\n" : "") + LangID.getStringByID(lID, holder.serverLocale))
+                                        ((GuildMessageChannel) ch).sendMessage((wasDone ? "** **\n" : "") + LangID.getStringByID(lID, holder.config.lang))
                                                 .allowedMentions(new ArrayList<>())
                                                 .addFile(res, "event.txt")
                                                 .queue(m -> {
@@ -406,7 +406,7 @@ public class PackBot {
                 GuildChannel ch = client.getGuildChannelById(holder.event);
 
                 if(ch instanceof GuildMessageChannel) {
-                    ((GuildMessageChannel) ch).sendMessage(LangID.getStringByID("event_warning", holder.serverLocale)).queue();
+                    ((GuildMessageChannel) ch).sendMessage(LangID.getStringByID("event_warning", holder.config.lang)).queue();
                 }
             }
         }

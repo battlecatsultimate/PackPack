@@ -70,7 +70,7 @@ public class PrintStageEvent extends ConstraintCommand {
         }
 
         if(goWithFile) {
-            StringBuilder total = new StringBuilder(LangID.getStringByID("event_stage", holder.serverLocale).replace("**", "")).append("\n");
+            StringBuilder total = new StringBuilder(LangID.getStringByID("event_stage", holder.config.lang).replace("**", "")).append("\n");
 
             for(int k = 0; k < result.size(); k++) {
                 total.append(result.get(k).replace("```scss\n", "").replace("```", ""));
@@ -98,13 +98,13 @@ public class PrintStageEvent extends ConstraintCommand {
 
             writer.close();
 
-            sendMessageWithFile(ch, LangID.getStringByID("printstage_toolong", holder.serverLocale), res, "stageAndEvent.txt");
+            sendMessageWithFile(ch, LangID.getStringByID("printstage_toolong", holder.config.lang), res, "stageAndEvent.txt");
         } else {
             for(int k = 0; k < result.size(); k++) {
                 StringBuilder merge = new StringBuilder();
 
                 if(k == 0) {
-                    merge.append(LangID.getStringByID("event_stage", holder.serverLocale)).append("\n\n");
+                    merge.append(LangID.getStringByID("event_stage", holder.config.lang)).append("\n\n");
                 } else {
                     merge.append("** **\n");
                 }

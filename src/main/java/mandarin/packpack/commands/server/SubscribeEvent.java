@@ -123,7 +123,7 @@ public class SubscribeEvent extends ConstraintCommand {
     }
 
     private int filterLocale() {
-        switch (holder.serverLocale) {
+        switch (holder.config.lang) {
             case LangID.ZH:
                 return LangID.ZH;
             case LangID.KR:
