@@ -2,7 +2,6 @@ package mandarin.packpack.supporter.server.data;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import common.CommonStatic;
 import common.io.json.JsonDecoder;
 import common.io.json.JsonEncoder;
 import common.pack.Identifier;
@@ -30,14 +29,8 @@ public class AliasHolder {
     public enum MODE {
         ADD,
         REMOVE,
-        RESET,
         GET
     }
-
-    public static final int SUCCESS = 0;
-    public static final int ERR_NO_SUCH_ALIAS = -1;
-    public static final int ERR_ALIAS_EXISTS = -2;
-    public static final int ERR_WRONG_DATA = -3;
 
     public static final MultiLangCont<Form, ArrayList<String>> FALIAS = new MultiLangCont<>();
     public static final MultiLangCont<Enemy, ArrayList<String>> EALIAS = new MultiLangCont<>();
@@ -269,204 +262,6 @@ public class AliasHolder {
         }
 
         return aliases;
-    }
-
-    public static void resetAlias(TYPE type, int lang, Object data) {
-        switch (type) {
-            case FORM:
-                if(!(data instanceof Form)) {
-                    return;
-                }
-
-                FALIAS.put(getLangCode(lang), (Form) data, null);
-
-                break;
-            case ENEMY:
-                if(!(data instanceof Enemy)) {
-                    return;
-                }
-
-                EALIAS.put(getLangCode(lang), (Enemy) data, null);
-
-                break;
-            case STAGE:
-                if(!(data instanceof Stage)) {
-                    return;
-                }
-
-                SALIAS.put(getLangCode(lang), (Stage) data, null);
-
-                break;
-        }
-    }
-
-    public static int putAlias(TYPE type, int lang, Object data, String alias) {
-        ArrayList<String> aliases;
-
-        int oldConfig = CommonStatic.getConfig().lang;
-        CommonStatic.getConfig().lang = lang;
-
-        switch (type) {
-            case FORM:
-                if(!(data instanceof Form)) {
-                    return ERR_WRONG_DATA;
-                }
-
-                aliases = FALIAS.getCont((Form) data);
-                break;
-            case ENEMY:
-                if(!(data instanceof Enemy)) {
-                    return ERR_WRONG_DATA;
-                }
-
-                aliases = EALIAS.getCont((Enemy) data);
-                break;
-            case STAGE:
-                if(!(data instanceof Stage)) {
-                    return ERR_WRONG_DATA;
-                }
-
-                aliases = SALIAS.getCont((Stage) data);
-                break;
-            default:
-                return ERR_WRONG_DATA;
-        }
-
-        CommonStatic.getConfig().lang = oldConfig;
-
-        if(aliases == null)
-            aliases = new ArrayList<>();
-
-        if(aliases.contains(alias))
-            return ERR_ALIAS_EXISTS;
-
-        aliases.add(alias);
-
-        switch (type) {
-            case FORM:
-                FALIAS.put(getLangCode(lang), (Form) data, aliases);
-                break;
-            case ENEMY:
-                EALIAS.put(getLangCode(lang), (Enemy) data, aliases);
-                break;
-            case STAGE:
-                SALIAS.put(getLangCode(lang), (Stage) data, aliases);
-                break;
-        }
-
-        return SUCCESS;
-    }
-
-    public static int removeAlias(TYPE type, int lang, Object data, String alias) {
-        ArrayList<String> aliases;
-
-        int oldConfig = CommonStatic.getConfig().lang;
-        CommonStatic.getConfig().lang = lang;
-
-        switch (type) {
-            case FORM:
-                if(!(data instanceof Form)) {
-                    return ERR_WRONG_DATA;
-                }
-
-                aliases = FALIAS.getCont((Form) data);
-                break;
-            case ENEMY:
-                if(!(data instanceof Enemy)) {
-                    return ERR_WRONG_DATA;
-                }
-
-                aliases = EALIAS.getCont((Enemy) data);
-                break;
-            case STAGE:
-                if(!(data instanceof Stage)) {
-                    return ERR_WRONG_DATA;
-                }
-
-                aliases = SALIAS.getCont((Stage) data);
-                break;
-            default:
-                return ERR_WRONG_DATA;
-        }
-
-        CommonStatic.getConfig().lang = oldConfig;
-
-        if(aliases == null || !aliases.contains(alias))
-            return ERR_NO_SUCH_ALIAS;
-
-        aliases.remove(alias);
-
-        switch (type) {
-            case FORM:
-                FALIAS.put(getLangCode(lang), (Form) data, aliases);
-                break;
-            case ENEMY:
-                EALIAS.put(getLangCode(lang), (Enemy) data, aliases);
-                break;
-            case STAGE:
-                SALIAS.put(getLangCode(lang), (Stage) data, aliases);
-                break;
-        }
-
-        return SUCCESS;
-    }
-
-    public static int replaceAlias(TYPE type, int lang, Object data, String alias, String replace) {
-        ArrayList<String> aliases;
-
-        int oldConfig = CommonStatic.getConfig().lang;
-        CommonStatic.getConfig().lang = lang;
-
-        switch (type) {
-            case FORM:
-                if(!(data instanceof Form)) {
-                    return ERR_WRONG_DATA;
-                }
-
-                aliases = FALIAS.getCont((Form) data);
-                break;
-            case ENEMY:
-                if(!(data instanceof Enemy)) {
-                    return ERR_WRONG_DATA;
-                }
-
-                aliases = EALIAS.getCont((Enemy) data);
-                break;
-            case STAGE:
-                if(!(data instanceof Stage)) {
-                    return ERR_WRONG_DATA;
-                }
-
-                aliases = SALIAS.getCont((Stage) data);
-                break;
-            default:
-                return ERR_WRONG_DATA;
-        }
-
-        CommonStatic.getConfig().lang = oldConfig;
-
-        if(aliases == null || !aliases.contains(alias))
-            return ERR_NO_SUCH_ALIAS;
-
-        if(aliases.contains(replace))
-            return ERR_ALIAS_EXISTS;
-
-        aliases.remove(alias);
-        aliases.add(replace);
-
-        switch (type) {
-            case FORM:
-                FALIAS.put(getLangCode(lang), (Form) data, aliases);
-                break;
-            case ENEMY:
-                EALIAS.put(getLangCode(lang), (Enemy) data, aliases);
-                break;
-            case STAGE:
-                SALIAS.put(getLangCode(lang), (Stage) data, aliases);
-                break;
-        }
-
-        return SUCCESS;
     }
 
     public static String getLangCode(int lang) {

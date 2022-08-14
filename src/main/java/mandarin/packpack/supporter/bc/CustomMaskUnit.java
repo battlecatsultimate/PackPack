@@ -1,6 +1,5 @@
 package mandarin.packpack.supporter.bc;
 
-import common.CommonStatic;
 import common.battle.data.DataUnit;
 import common.util.anim.MaAnim;
 import common.util.unit.UnitLevel;

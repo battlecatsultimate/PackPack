@@ -60,6 +60,8 @@ public class EnemyStatAnalyzerHolder extends FileAnalyzerHolder {
         if(anim == null) {
             msg.getChannel().sendMessage("Something went wrong while analyzing maanim data").queue();
 
+            statReader.close();
+
             return;
         }
 
@@ -92,6 +94,8 @@ public class EnemyStatAnalyzerHolder extends FileAnalyzerHolder {
                     count++;
                 }
             }
+
+            reader.close();
         }
 
         return false;

@@ -157,6 +157,8 @@ public class EnemyStatAnalyzer extends ConstraintCommand {
             if(anim == null) {
                 ch.sendMessage("Something went wrong while analyzing maanim data").queue();
 
+                statReader.close();
+
                 return;
             }
 

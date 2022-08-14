@@ -1,11 +1,8 @@
 import common.CommonStatic;
 import common.pack.UserProfile;
-import common.system.VImg;
 import common.system.fake.ImageBuilder;
 import common.util.Data;
 import common.util.unit.Enemy;
-import common.util.unit.Form;
-import common.util.unit.Unit;
 import mandarin.packpack.supporter.AssetDownloader;
 import mandarin.packpack.supporter.PackContext;
 import mandarin.packpack.supporter.StaticStore;
@@ -25,8 +22,8 @@ public class ImageExtracter {
 
         File f = new File("./extract");
 
-        if(!f.exists())
-            f.mkdirs();
+        if(!f.exists() && !f.mkdirs())
+            return;
 
         for(Enemy e : UserProfile.getBCData().enemies.getList()) {
             System.out.println(e.id.id);
@@ -35,8 +32,8 @@ public class ImageExtracter {
 
             File g = new File(f.getAbsolutePath()+"/"+ Data.trio(e.id.id)+".png");
 
-            if(!g.exists())
-                g.createNewFile();
+            if(!g.exists() && !g.createNewFile())
+                return;
 
             ImageIO.write((BufferedImage) e.anim.getEdi().getImg().bimg(), "PNG", g);
         }

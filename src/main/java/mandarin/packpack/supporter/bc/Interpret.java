@@ -208,23 +208,6 @@ public class Interpret extends Data {
             return false;
     }
 
-    private boolean isResist(int i, MaskAtk atk) {
-        switch (i) {
-            case P_IMUWEAK:
-                return atk.getProc().IMUWEAK.mult != 100;
-            case P_IMUSTOP:
-                return atk.getProc().IMUSTOP.mult != 100;
-            case P_IMUSLOW:
-                return atk.getProc().IMUSLOW.mult != 100;
-            case P_IMUWARP:
-                return atk.getProc().IMUWARP.mult != 100;
-            case P_IMUCURSE:
-                return atk.getProc().IMUCURSE.mult != 100;
-            default:
-                return false;
-        }
-    }
-
     private static boolean isEnglish(int lang) {
         return lang != LangID.KR && lang != LangID.JP && lang != LangID.ZH;
     }

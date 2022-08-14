@@ -235,6 +235,9 @@ public class TasteApk {
                 if(!f.exists() && !f.createNewFile()) {
                     StaticStore.logger.uploadLog("Failed to create file : "+f.getAbsolutePath());
 
+                    reader.close();
+                    packAccess.close();
+
                     return false;
                 }
 

@@ -196,6 +196,8 @@ public class StatAnalyzer extends ConstraintCommand {
                 if(anim == null) {
                     ch.sendMessage("Something went wrong while analyzing maanim data").queue();
 
+                    statReader.close();
+
                     return;
                 }
 
@@ -939,6 +941,8 @@ public class StatAnalyzer extends ConstraintCommand {
             count++;
         }
 
+        reader.close();
+
         return null;
     }
 
@@ -981,6 +985,8 @@ public class StatAnalyzer extends ConstraintCommand {
 
             count++;
         }
+
+        reader.close();
 
         return null;
     }

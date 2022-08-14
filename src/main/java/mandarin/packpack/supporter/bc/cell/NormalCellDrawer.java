@@ -1,7 +1,6 @@
 package mandarin.packpack.supporter.bc.cell;
 
 import mandarin.packpack.supporter.awt.FG2D;
-import mandarin.packpack.supporter.bc.cell.CellDrawer;
 
 import javax.annotation.Nonnull;
 import java.awt.*;

@@ -181,6 +181,8 @@ public class TrueFormAnalyzer extends ConstraintCommand {
             if(anim == null) {
                 ch.sendMessage("Something went wrong while analyzing maanim data").queue();
 
+                statReader.close();
+
                 return;
             }
 
@@ -916,6 +918,8 @@ public class TrueFormAnalyzer extends ConstraintCommand {
 
             count++;
         }
+
+        reader.close();
 
         return null;
     }

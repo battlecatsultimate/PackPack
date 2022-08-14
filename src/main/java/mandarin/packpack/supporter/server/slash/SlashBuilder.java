@@ -10,7 +10,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class SlashBuilder {
     private static final ArrayList<CommandCreateAction> requests = new ArrayList<>();

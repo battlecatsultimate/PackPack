@@ -1,7 +1,5 @@
 package mandarin.packpack.supporter.event;
 
-import java.util.Calendar;
-
 public class EventDateSet {
     public final EventDate dateStart, dateEnd;
     public final EventTimeSection section;

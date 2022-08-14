@@ -302,9 +302,14 @@ public class StageStatAnalyzer extends ConstraintCommand {
         while((line = reader.readLine()) != null) {
             if(!line.isBlank())
                 len++;
-            else
+            else {
+                reader.close();
+
                 return len;
+            }
         }
+
+        reader.close();
 
         return len;
     }
@@ -380,8 +385,11 @@ public class StageStatAnalyzer extends ConstraintCommand {
                     if(!enemyIcon.exists()) {
                         VFile vf = VFile.get("./org/enemy/"+Data.trio(enemyData[0] - 2)+"/enemy_icon_"+Data.trio(enemyData[0] - 2)+".png");
 
-                        if(vf == null)
+                        if(vf == null) {
+                            stageReader.close();
+
                             return false;
+                        }
                     }
                 }
             }
@@ -507,8 +515,11 @@ public class StageStatAnalyzer extends ConstraintCommand {
 
                     File unitBuy = new File(dataLocal, "unitbuy.csv");
 
-                    if(!unitBuy.exists())
+                    if(!unitBuy.exists()) {
+                        dropReader.close();
+
                         return false;
+                    }
 
                     if(dropData[2] >= UserProfile.getBCData().units.size()) {
                         int egg = getEggValue(dropData[2], unitBuy);
@@ -518,8 +529,11 @@ public class StageStatAnalyzer extends ConstraintCommand {
                         File icon = new File(imageLocal, iconName);
                         File name = new File(resLocal, "Unit_Explanation"+dropData[2]+"_"+loc+".csv");
 
-                        if(!icon.exists() || !name.exists())
+                        if(!icon.exists() || !name.exists()) {
+                            dropReader.close();
+
                             return false;
+                        }
                     }
                 }
             }
@@ -556,8 +570,11 @@ public class StageStatAnalyzer extends ConstraintCommand {
                     File icon = new File(imageLocal, iconName);
                     File name = new File(resLocal, "Unit_Explanation"+Data.trio(count)+"_"+loc+".csv");
 
-                    if(!icon.exists() || !name.exists())
+                    if(!icon.exists() || !name.exists()) {
+                        buyReader.close();
+
                         return false;
+                    }
                 }
 
                 count++;

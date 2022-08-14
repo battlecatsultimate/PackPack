@@ -6,8 +6,6 @@ import common.system.fake.FakeTransform;
 
 import java.awt.*;
 import java.awt.RenderingHints.Key;
-import java.awt.font.FontRenderContext;
-import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;

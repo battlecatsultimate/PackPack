@@ -23,6 +23,8 @@ public class AnimMixer implements Source.AnimLoader {
         int pngHeader = fis.read();
 
         if(pngHeader != 137) {
+            fis.close();
+
             return false;
         }
 
@@ -45,8 +47,11 @@ public class AnimMixer implements Source.AnimLoader {
 
         String line = reader.readLine();
 
-        if(line == null)
+        if(line == null) {
+            reader.close();
+
             return false;
+        }
 
         line = line.trim();
 
@@ -104,8 +109,11 @@ public class AnimMixer implements Source.AnimLoader {
 
         String line = reader.readLine();
 
-        if(line == null)
+        if(line == null) {
+            reader.close();
+
             return false;
+        }
 
         line = line.trim();
 
@@ -122,8 +130,11 @@ public class AnimMixer implements Source.AnimLoader {
 
         String line = reader.readLine();
 
-        if(line == null)
+        if(line == null) {
+            reader.close();
+
             return false;
+        }
 
         line = line.trim();
 

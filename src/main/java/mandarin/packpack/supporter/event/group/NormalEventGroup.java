@@ -2,7 +2,6 @@ package mandarin.packpack.supporter.event.group;
 
 import common.util.stage.StageMap;
 import mandarin.packpack.supporter.StaticStore;
-import mandarin.packpack.supporter.event.EventDateSet;
 import mandarin.packpack.supporter.event.Schedule;
 import mandarin.packpack.supporter.event.StageSchedule;
 
