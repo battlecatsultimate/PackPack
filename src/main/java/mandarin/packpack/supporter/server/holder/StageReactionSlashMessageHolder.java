@@ -182,7 +182,9 @@ public class StageReactionSlashMessageHolder extends MessageHolder<MessageReacti
 
         StaticStore.removeHolder(memberID, StageReactionSlashMessageHolder.this);
 
-        if(m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
+        GuildChannel gc = m.getGuildChannel();
+
+        if(m.getGuild().getSelfMember().hasPermission(gc, Permission.MESSAGE_MANAGE)) {
             m.clearReactions().queue();
         }
     }
