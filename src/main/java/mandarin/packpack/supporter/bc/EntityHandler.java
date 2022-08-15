@@ -942,7 +942,7 @@ public class EntityHandler {
         spec.setTitle(name);
 
         if(isCompact) {
-            spec.addField(LangID.getStringByID("data_iddile", lang), DataToString.getIdDifficultyLevel(st, star, lang), false);
+            spec.addField(LangID.getStringByID("data_iddile", lang), DataToString.getIdDifficultyLevel(st, sta, lang), false);
 
             String secondField = DataToString.getEnergyBaseXP(st, lang);
 
