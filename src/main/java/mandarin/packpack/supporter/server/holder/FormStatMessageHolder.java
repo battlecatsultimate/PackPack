@@ -76,15 +76,6 @@ public class FormStatMessageHolder extends SearchHolder {
 
         msg.delete().queue();
 
-        if(lv.get(0) > form.get(id).unit.max + form.get(id).unit.maxp)
-            lv.set(0, form.get(id).unit.max + form.get(id).unit.maxp);
-        else if(lv.get(0) <= 0) {
-            if(form.get(id).unit.rarity == 0)
-                lv.set(0, 110);
-            else
-                lv.set(0, 30);
-        }
-
         try {
             Message result = EntityHandler.showUnitEmb(form.get(id), ch, config, isFrame, talent, extra, lv, lang, true, compact);
 

@@ -157,11 +157,6 @@ public class FormStat extends ConstraintCommand {
 
                 ArrayList<Integer> lv = handleLevel(getContent(event));
 
-                if(lv.get(0) == -1) {
-                    if(forms.get(0).unit.rarity != 0)
-                        lv.set(0, config.defLevel);
-                }
-
                 boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
                 boolean talent = (param & PARAM_TALENT) > 0;
                 boolean extra = (param & PARAM_EXTRA) > 0 || config.extra;
