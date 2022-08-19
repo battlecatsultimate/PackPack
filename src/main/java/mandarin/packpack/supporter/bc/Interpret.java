@@ -8,7 +8,9 @@ import common.util.Data;
 import common.util.lang.Formatter;
 import common.util.lang.ProcLang;
 import common.util.unit.Trait;
+import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.lang.LangID;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,12 +37,14 @@ public class Interpret extends Data {
             "CRITI", "IMUSEAL", "IMUPOI", "IMUSUMMON", "IMUMOVING", "IMUARMOR", "IMUSPEED"
     };
 
-    public static final int[] P_INDEX = {P_WEAK, P_STOP, P_SLOW, P_KB, P_WARP, P_CURSE, P_IMUATK,
-            P_STRONG, P_LETHAL, P_ATKBASE, P_CRIT, P_BREAK, P_SHIELDBREAK, P_SATK, P_BOUNTY, P_MINIWAVE, P_WAVE, P_VOLC, P_BSTHUNT, P_IMUWEAK,
-            P_IMUSTOP, P_IMUSLOW, P_IMUKB, P_IMUWAVE, P_IMUVOLC, P_IMUWARP, P_IMUCURSE, P_IMUPOIATK,
-            P_POIATK, P_DEMONSHIELD, P_DEATHSURGE, P_BURROW, P_REVIVE, P_SNIPER, P_SEAL, P_TIME, P_SUMMON, P_MOVEWAVE, P_THEME,
-            P_POISON, P_BOSS, P_ARMOR, P_COUNTER, P_DMGCUT, P_DMGCUT, P_SPEED, P_CRITI, P_IMUSEAL, P_IMUPOI, P_IMUSUMMON, P_IMUMOVING,
-            P_IMUARMOR, P_IMUSPEED};
+    public static final int[] P_INDEX = {
+            P_WEAK, P_STOP, P_SLOW, P_KB, P_WARP, P_CURSE, P_IMUATK, P_STRONG, P_LETHAL, P_ATKBASE, P_CRIT, P_BREAK,
+            P_SHIELDBREAK, P_SATK, P_BOUNTY, P_MINIWAVE, P_WAVE, P_VOLC, P_BSTHUNT, P_IMUWEAK, P_IMUSTOP, P_IMUSLOW,
+            P_IMUKB, P_IMUWAVE, P_IMUVOLC, P_IMUWARP, P_IMUCURSE, P_IMUPOIATK, P_POIATK, P_DEMONSHIELD, P_DEATHSURGE,
+            P_BURROW, P_REVIVE, P_SNIPER, P_SEAL, P_TIME, P_SUMMON, P_MOVEWAVE, P_THEME, P_POISON, P_BOSS, P_ARMOR,
+            P_COUNTER, P_DMGCUT, P_DMGCUT, P_SPEED, P_CRITI, P_IMUSEAL, P_IMUPOI, P_IMUSUMMON, P_IMUMOVING, P_IMUARMOR,
+            P_IMUSPEED
+    };
 
     public static String getTrait(List<Trait> traits, int star, int lang) {
         StringBuilder res = new StringBuilder();
@@ -91,7 +95,7 @@ public class Interpret extends Data {
 
         for(int i = 0; i < ABIS.length; i++) {
             if(((mu.getAbi() >> i) & 1) > 0) {
-                String ab = LangID.getStringByID(ABIS[i], lang);
+                String ab = getAbilityEmoji(ABIS[i]) + LangID.getStringByID(ABIS[i], lang);
 
                 if(ab.startsWith("Imu."))
                     ab = ab.replace("Imu.", "Immune to");
@@ -144,7 +148,9 @@ public class Interpret extends Data {
 
                 CommonStatic.getConfig().lang = oldConfig;
 
-                String ans = Formatter.format(f, getProcObject(i, mr), c);
+                Object proc = getProcObject(i, mr);
+
+                String ans = getProcEmoji(PROCIND[i], proc) + Formatter.format(f, proc, c);
 
                 if(!l.contains(ans)) {
                     if(id.contains(i)) {
@@ -173,7 +179,9 @@ public class Interpret extends Data {
 
                     CommonStatic.getConfig().lang = oldConfig;
 
-                    String ans = Formatter.format(f, getProcObject(i, ma), c);
+                    Object proc = getProcObject(i, ma);
+
+                    String ans = getProcEmoji(PROCIND[i], proc) + Formatter.format(f, proc, c);
 
                     if(!l.contains(ans)) {
                         if(id.contains(i)) {
@@ -229,6 +237,30 @@ public class Interpret extends Data {
                 return "rd";
             default:
                 return "th";
+        }
+    }
+
+    private static String getProcEmoji(String code, Object proc) {
+        if(proc instanceof Proc.IMU && ((Proc.IMU) proc).mult < 100) {
+            code = code.replace("IMU", "RES");
+        }
+
+        RichCustomEmoji emoji = EmojiStore.ABILITY.get(code);
+
+        if(emoji != null) {
+            return emoji.getAsMention() + " ";
+        } else {
+            return "";
+        }
+    }
+
+    private static String getAbilityEmoji(String code) {
+        RichCustomEmoji emoji = EmojiStore.ABILITY.get(code);
+
+        if(emoji != null) {
+            return emoji.getAsMention() + " ";
+        } else {
+            return "";
         }
     }
 }

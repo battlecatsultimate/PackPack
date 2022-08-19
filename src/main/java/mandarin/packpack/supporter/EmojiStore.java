@@ -3,6 +3,13 @@ package mandarin.packpack.supporter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+
 public class EmojiStore {
     public static void initialize(JDA jda) {
         TWO_PREVIOUS = StaticStore.getEmoteWitNameAndID(jda, "TwoPrevious", 993716493458083900L, false, true);
@@ -17,6 +24,29 @@ public class EmojiStore {
         CROWN_ON = StaticStore.getEmoteWitNameAndID(jda, "CrownOn", 993716790813261884L, false, true);
         TREASURE_RADAR = StaticStore.getEmoteWitNameAndID(jda, "TreasureRadar", 993716433387261992L, false, true);
         UDP = StaticStore.getEmoteWitNameAndID(jda, "UDP", 993716659904847912L, false, true);
+
+        File iconData = new File("./data/abilityIcons.txt");
+
+        if(iconData.exists()) {
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader(iconData, StandardCharsets.UTF_8));
+
+                String line;
+
+                while((line = reader.readLine()) != null) {
+                    if(line.isBlank())
+                        break;
+
+                    String[] data = line.split("\t");
+
+                    putAbility(jda, data[0], data[1], Long.parseLong(data[2]));
+                }
+
+                reader.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public static RichCustomEmoji TWO_PREVIOUS;
@@ -31,4 +61,18 @@ public class EmojiStore {
     public static RichCustomEmoji CROWN_ON;
     public static RichCustomEmoji TREASURE_RADAR;
     public static RichCustomEmoji UDP;
+
+    public static Map<String, RichCustomEmoji> ABILITY = new HashMap<>();
+
+    private static void putAbility(JDA jda, String key, String name, long id) {
+        RichCustomEmoji emoji = StaticStore.getEmoteWitNameAndID(jda, name, id, false, true);
+
+        if(emoji == null) {
+            System.out.println("W/EmojiStore::putAbility - Couldn't get Emoji : " + name + " (" + id + ")");
+
+            return;
+        }
+
+        ABILITY.put(key, emoji);
+    }
 }
