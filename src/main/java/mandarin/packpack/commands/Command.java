@@ -39,7 +39,10 @@ public abstract class Command {
     }
 
     public static MessageAction registerSearchComponents(MessageAction m, int dataSize, List<String> data, int lang) {
-        int totPage = dataSize / SearchHolder.PAGE_CHUNK + 1;
+        int totPage = dataSize / SearchHolder.PAGE_CHUNK;
+
+        if(dataSize % SearchHolder.PAGE_CHUNK != 0)
+            totPage++;
 
         List<ActionRow> rows = new ArrayList<>();
 

@@ -10,6 +10,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.AliasHolder;
 import mandarin.packpack.supporter.server.holder.MessageHolder;
+import mandarin.packpack.supporter.server.holder.SearchHolder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -334,8 +335,14 @@ public class AliasStageMessageHolder extends MessageHolder<MessageReceivedEvent>
             sb.append(i+1).append(". ").append(name).append("\n");
         }
 
-        if(stage.size() > 20)
-            sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(stage.size()/20 + 1)));
+        if(stage.size() > SearchHolder.PAGE_CHUNK) {
+            int totalPage = stage.size() / SearchHolder.PAGE_CHUNK;
+
+            if(stage.size() % SearchHolder.PAGE_CHUNK != 0)
+                totalPage++;
+
+            sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(totalPage)));
+        }
 
         sb.append(LangID.getStringByID("formst_can", lang));
         sb.append("```");

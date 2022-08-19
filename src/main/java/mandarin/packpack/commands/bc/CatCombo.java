@@ -62,8 +62,14 @@ public class CatCombo extends TimedConstraintCommand {
                     sb.append(i+1).append(". ").append(data.get(i)).append("\n");
                 }
 
-                if(combos.size() > SearchHolder.PAGE_CHUNK)
-                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(1)).replace("-", String.valueOf(combos.size()/SearchHolder.PAGE_CHUNK + 1))).append("\n");
+                if(combos.size() > SearchHolder.PAGE_CHUNK) {
+                    int totalPage = combos.size() / SearchHolder.PAGE_CHUNK;
+
+                    if(combos.size() % SearchHolder.PAGE_CHUNK != 0)
+                        totalPage++;
+
+                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(1)).replace("-", String.valueOf(totalPage))).append("\n");
+                }
 
                 sb.append("```");
 
@@ -107,8 +113,14 @@ public class CatCombo extends TimedConstraintCommand {
                         sb.append(i+1).append(". ").append(data.get(i)).append("\n");
                     }
 
-                    if(combos.size() > SearchHolder.PAGE_CHUNK)
-                        sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(1)).replace("-", String.valueOf(combos.size()/SearchHolder.PAGE_CHUNK + 1))).append("\n");
+                    if(combos.size() > SearchHolder.PAGE_CHUNK) {
+                        int totalPage = combos.size() / SearchHolder.PAGE_CHUNK;
+
+                        if(combos.size() % SearchHolder.PAGE_CHUNK != 0)
+                            totalPage++;
+
+                        sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(1)).replace("-", String.valueOf(totalPage))).append("\n");
+                    }
 
                     sb.append("```");
 
@@ -135,8 +147,14 @@ public class CatCombo extends TimedConstraintCommand {
                     sb.append(i+1).append(". ").append(data.get(i)).append("\n");
                 }
 
-                if(forms.size() > SearchHolder.PAGE_CHUNK)
-                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(1)).replace("-", String.valueOf(forms.size()/SearchHolder.PAGE_CHUNK + 1))).append("\n");
+                if(forms.size() > SearchHolder.PAGE_CHUNK) {
+                    int totalPage = forms.size() / SearchHolder.PAGE_CHUNK;
+
+                    if(forms.size() % SearchHolder.PAGE_CHUNK != 0)
+                        totalPage++;
+
+                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(1)).replace("-", String.valueOf(totalPage))).append("\n");
+                }
 
                 sb.append("```");
 

@@ -13,6 +13,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.AliasHolder;
+import mandarin.packpack.supporter.server.holder.SearchHolder;
 import mandarin.packpack.supporter.server.holder.alias.AliasEnemyMessageHolder;
 import mandarin.packpack.supporter.server.holder.alias.AliasFormMessageHolder;
 import mandarin.packpack.supporter.server.holder.alias.AliasStageMessageHolder;
@@ -116,8 +117,14 @@ public class AliasAdd extends Command {
                         sb.append(i+1).append(". ").append(fname).append("\n");
                     }
 
-                    if(forms.size() > 20)
-                        sb.append(LangID.getStringByID("formst_page", lang).replace("_", "1").replace("-", String.valueOf(forms.size()/20 + 1)));
+                    if(forms.size() > SearchHolder.PAGE_CHUNK) {
+                        int totalPage = forms.size() / SearchHolder.PAGE_CHUNK;
+
+                        if(forms.size() % SearchHolder.PAGE_CHUNK != 0)
+                            totalPage++;
+
+                        sb.append(LangID.getStringByID("formst_page", lang).replace("_", "1").replace("-", String.valueOf(totalPage)));
+                    }
 
                     sb.append(LangID.getStringByID("formst_can", lang));
                     sb.append("```");
@@ -206,8 +213,14 @@ public class AliasAdd extends Command {
                         sb.append(i+1).append(". ").append(ename).append("\n");
                     }
 
-                    if(enemies.size() > 20)
-                        sb.append(LangID.getStringByID("formst_page", lang).replace("_", "1").replace("-", String.valueOf(enemies.size() / 20 + 1)));
+                    if(enemies.size() > SearchHolder.PAGE_CHUNK) {
+                        int totalPage = enemies.size() / SearchHolder.PAGE_CHUNK;
+
+                        if(enemies.size() % SearchHolder.PAGE_CHUNK != 0)
+                            totalPage++;
+
+                        sb.append(LangID.getStringByID("formst_page", lang).replace("_", "1").replace("-", String.valueOf(totalPage)));
+                    }
 
                     sb.append(LangID.getStringByID("formst_can", lang));
                     sb.append("```");
@@ -360,8 +373,14 @@ public class AliasAdd extends Command {
                         sb.append(i+1).append(". ").append(stageName).append("\n");
                     }
 
-                    if(stages.size() > 20)
-                        sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(1)).replace("-", String.valueOf(stages.size()/20 + 1)));
+                    if(stages.size() > SearchHolder.PAGE_CHUNK) {
+                        int totalPage = stages.size() / SearchHolder.PAGE_CHUNK;
+
+                        if(stages.size() % SearchHolder.PAGE_CHUNK != 0)
+                            totalPage++;
+
+                        sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(1)).replace("-", String.valueOf(totalPage)));
+                    }
 
                     sb.append(LangID.getStringByID("formst_can", lang));
                     sb.append("```");

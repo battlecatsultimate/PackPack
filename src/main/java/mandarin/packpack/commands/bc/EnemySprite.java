@@ -71,8 +71,14 @@ public class EnemySprite extends TimedConstraintCommand {
                     sb.append(i+1).append(". ").append(data.get(i)).append("\n");
                 }
 
-                if(enemies.size() > SearchHolder.PAGE_CHUNK)
-                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", "1").replace("-", String.valueOf(enemies.size()/SearchHolder.PAGE_CHUNK + 1))).append("\n");
+                if(enemies.size() > SearchHolder.PAGE_CHUNK) {
+                    int totalPage = enemies.size() / SearchHolder.PAGE_CHUNK;
+
+                    if(enemies.size() % SearchHolder.PAGE_CHUNK != 0)
+                        totalPage++;
+
+                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", "1").replace("-", String.valueOf(totalPage))).append("\n");
+                }
 
                 sb.append("```");
 

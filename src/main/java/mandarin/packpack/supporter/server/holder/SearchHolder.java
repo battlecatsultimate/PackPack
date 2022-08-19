@@ -131,7 +131,10 @@ public abstract class SearchHolder extends InteractionHolder<GenericComponentInt
     public abstract int getDataSize();
 
     private List<ActionRow> getComponents() {
-        int totalPage = getDataSize() / PAGE_CHUNK + 1;
+        int totalPage = getDataSize() / PAGE_CHUNK;
+
+        if(getDataSize() % PAGE_CHUNK != 0)
+            totalPage++;
 
         List<ActionRow> rows = new ArrayList<>();
 
@@ -152,14 +155,14 @@ public abstract class SearchHolder extends InteractionHolder<GenericComponentInt
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", LangID.getStringByID("search_prev", lang), Emoji.fromCustom(EmojiStore.PREVIOUS)));
             }
 
-            if(page + 1 > getDataSize() / PAGE_CHUNK) {
+            if(page + 1 >= totalPage) {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "next", LangID.getStringByID("search_next", lang), Emoji.fromCustom(EmojiStore.NEXT)).asDisabled());
             } else {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "next", LangID.getStringByID("search_next", lang), Emoji.fromCustom(EmojiStore.NEXT)));
             }
 
             if(totalPage > 10) {
-                if(page + 10 > getDataSize() / PAGE_CHUNK) {
+                if(page + 10 >= totalPage) {
                     buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("search_next10", lang), Emoji.fromCustom(EmojiStore.TWO_NEXT)).asDisabled());
                 } else {
                     buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("search_next10", lang), Emoji.fromCustom(EmojiStore.TWO_NEXT)));
@@ -197,8 +200,14 @@ public abstract class SearchHolder extends InteractionHolder<GenericComponentInt
                     .append("\n");
         }
 
-        if(getDataSize() > PAGE_CHUNK)
-            sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page + 1)).replace("-", String.valueOf(getDataSize() / PAGE_CHUNK + 1))).append("\n");
+        if(getDataSize() > PAGE_CHUNK) {
+            int totalPage = getDataSize() / PAGE_CHUNK;
+
+            if(getDataSize() % PAGE_CHUNK != 0)
+                totalPage++;
+
+            sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page + 1)).replace("-", String.valueOf(totalPage))).append("\n");
+        }
 
         sb.append("```");
 

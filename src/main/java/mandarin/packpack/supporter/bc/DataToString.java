@@ -1454,7 +1454,7 @@ public class DataToString {
             if(i == 0 && (info.rand == 1 || (info.drop[i][1] >= 1000 && info.drop[i][1] < 30000)))
                 builder.append(LangID.getStringByID("data_once", lang));
 
-            if(i == 0 && info.drop[i][0] != 100 && info.rand != -4)
+            if(i == 0 && info.drop[i][0] != 100 && info.rand != -4 && !chances.isEmpty())
                 builder.append(EmojiStore.TREASURE_RADAR.getAsMention());
 
             builder.append("  |  ").append(info.drop[i][2]);
