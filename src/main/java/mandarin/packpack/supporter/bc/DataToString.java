@@ -2115,7 +2115,7 @@ public class DataToString {
         return getAtkTime(e, isFrame) + " : " + getPre(e, isFrame) + " -> " + getPost(e, isFrame) + " -> " + getTBA(e, isFrame);
     }
 
-    public static String getCostCooldownSpeed(MaskUnit f, boolean talent, boolean isFrame, ArrayList<Integer> lvs) {
+    public static String getCostCooldownSpeed(MaskUnit f, boolean isFrame, boolean talent, ArrayList<Integer> lvs) {
         return getCost(f, talent, lvs) + " - " + getCD(f, isFrame, talent, lvs) + " - " + getSpeed(f, talent, lvs);
     }
 

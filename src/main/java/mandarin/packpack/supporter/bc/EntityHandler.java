@@ -354,7 +354,7 @@ public class EntityHandler {
 
             spec.addField(LangID.getStringByID("data_level", lang), l, false);
             spec.addField(LangID.getStringByID("data_hpkb", lang), DataToString.getHealthHitback(f.du, f.unit.lv, talent, t), false);
-            spec.addField(LangID.getStringByID("data_cocosp", lang), DataToString.getCostCooldownSpeed(f.du,isFrame, talent, t), true);
+            spec.addField(LangID.getStringByID("data_cocosp", lang), DataToString.getCostCooldownSpeed(f.du, isFrame, talent, t), true);
             spec.addField(LangID.getStringByID("data_range", lang), DataToString.getRange(f.du), true);
             spec.addField(LangID.getStringByID("data_times", lang), DataToString.getCompactAtkTimings(f.du, isFrame), false);
             spec.addField(LangID.getStringByID("data_atkdps", lang).replace("_TTT_", DataToString.getSiMu(f.du, lang)), DataToString.getCompactAtk(f.du, talent, f.unit.lv, t), false);
