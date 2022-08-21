@@ -943,6 +943,20 @@ public class AllEventAdapter extends ListenerAdapter {
             }
         }
 
+        List<String> unreachableGuilds = new ArrayList<>();
+
+        for(String key : StaticStore.idHolder.keySet()) {
+            Guild g = client.getGuildById(key);
+
+            if(g == null) {
+                unreachableGuilds.add(key);
+            }
+        }
+
+        for(String key : unreachableGuilds) {
+            StaticStore.idHolder.remove(key);
+        }
+
         StaticStore.saveServerInfo();
 
         StaticStore.logger.uploadLog("Bot ready to be used!");
