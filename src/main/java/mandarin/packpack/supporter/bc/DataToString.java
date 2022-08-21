@@ -1432,6 +1432,10 @@ public class DataToString {
             if(!chances.isEmpty() && i < chances.size() && Double.parseDouble(chances.get(i)) == 0.0)
                 continue;
 
+            if(s.getCont() != null && s.getCont().getCont() != null && s.getCont().getCont().getSID().equals("000003") && info.drop[i][1] == 1119) {
+                return null;
+            }
+
             String chance;
 
             if(chances.isEmpty())
