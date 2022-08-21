@@ -1372,7 +1372,15 @@ public class EntityHandler {
 
             numbers.add(number);
 
-            String magnif = DataToString.getMagnification(new int[] {line.multiple, line.mult_atk}, star);
+            int[] magnification;
+
+            if(st.getCont() != null && st.getCont().getCont() != null && st.getCont().getCont().getSID().equals("000003") && st.getCont().id.id == 9) {
+                magnification = new int[] {100, 100};
+            } else {
+                magnification = new int[] {line.multiple, line.mult_atk};
+            }
+
+            String magnif = DataToString.getMagnification(magnification, star);
 
             magnifs.add(magnif);
 
