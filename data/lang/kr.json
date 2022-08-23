@@ -191,6 +191,7 @@
   "data_starred" : "별달린",
   "data_energy" : "에너지",
   "data_base" : "성 체력",
+  "data_basedealt" : "데미지 총량",
   "data_xp" : "XP",
   "data_diff" : "난이도",
   "data_continuable" : "컨티뉴",

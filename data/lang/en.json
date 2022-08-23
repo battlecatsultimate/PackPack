@@ -179,6 +179,7 @@
   "data_starred" : "Starred",
   "data_energy" : "Energy",
   "data_base" : "Base Health",
+  "data_basedealt" : "Total Damage",
   "data_xp" : "XP",
   "data_diff" : "Difficulty",
   "data_continuable" : "Continuable",

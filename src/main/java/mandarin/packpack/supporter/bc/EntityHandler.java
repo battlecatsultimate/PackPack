@@ -1424,13 +1424,17 @@ public class EntityHandler {
 
             String baseHP;
 
-            if(line.castle_0 == line.castle_1 || line.castle_1 == 0)
-                baseHP = line.castle_0+"%";
-            else {
-                int minHealth = Math.min(line.castle_0, line.castle_1);
-                int maxHealth = Math.max(line.castle_0, line.castle_1);
+            if(st.trail) {
+                baseHP = line.castle_0 + "";
+            } else {
+                if(line.castle_0 == line.castle_1 || line.castle_1 == 0)
+                    baseHP = line.castle_0+"%";
+                else {
+                    int minHealth = Math.min(line.castle_0, line.castle_1);
+                    int maxHealth = Math.max(line.castle_0, line.castle_1);
 
-                baseHP = minHealth + " ~ " + maxHealth + "%";
+                    baseHP = minHealth + " ~ " + maxHealth + "%";
+                }
             }
 
             baseHealth.add(baseHP);
@@ -1476,7 +1480,7 @@ public class EntityHandler {
         double nMax = fm.stringWidth(LangID.getStringByID("data_number", lang));
         double mMax = fm.stringWidth(LangID.getStringByID("data_magnif", lang));
         double iMax = fm.stringWidth(LangID.getStringByID("data_isboss", lang));
-        double bMax = fm.stringWidth(LangID.getStringByID("data_basehealth", lang));
+        double bMax = fm.stringWidth(LangID.getStringByID(st.trail ? "data_basedealt" : "data_basehealth", lang));
         double sMax = fm.stringWidth(LangID.getStringByID("data_startres", lang));
         double lMax = fm.stringWidth(LangID.getStringByID("data_layer", lang));
         double rMax = fm.stringWidth(LangID.getStringByID("data_respect", lang));
@@ -1612,7 +1616,7 @@ public class EntityHandler {
 
         initX += (int) (nMax / 2 + bMax / 2);
 
-        g.drawCenteredText(LangID.getStringByID("data_basehealth", lang), initX, ySeg / 2);
+        g.drawCenteredText(LangID.getStringByID(st.trail ? "data_basedealt" : "data_basehealth", lang), initX, ySeg / 2);
 
         initX += (int) (bMax / 2 + mMax / 2);
 

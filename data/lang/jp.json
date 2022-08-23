@@ -178,6 +178,7 @@
   "data_starred" : "スター",
   "data_energy" : "統率力",
   "data_base" : "城体力",
+  "data_basedealt" : "Total Damage",
   "data_xp" : "XP",
   "data_diff" : "難易度",
   "data_continuable" : "コンティニュー可",
