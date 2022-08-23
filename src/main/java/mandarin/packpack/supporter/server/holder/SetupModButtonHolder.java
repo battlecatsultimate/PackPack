@@ -26,12 +26,12 @@ public class SetupModButtonHolder extends InteractionHolder<GenericComponentInte
 
     private String roleID;
 
-    public SetupModButtonHolder(Message msg, Message author, String channelID, String memberID, IDHolder holder, int lang) {
-        super(GenericComponentInteractionCreateEvent.class);
+    public SetupModButtonHolder(Message msg, Message author, String channelID, IDHolder holder, int lang) {
+        super(GenericComponentInteractionCreateEvent.class, author);
 
         this.msg = msg;
         this.channelID = channelID;
-        this.memberID = memberID;
+        this.memberID = author.getAuthor().getId();
         this.lang = lang;
 
         this.holder = holder;
@@ -124,7 +124,7 @@ public class SetupModButtonHolder extends InteractionHolder<GenericComponentInte
 
                 StaticStore.removeHolder(memberID, this);
 
-                StaticStore.putHolder(memberID, new SetupMemberButtonHolder(m, channelID, memberID, holder, roleID, lang));
+                StaticStore.putHolder(memberID, new SetupMemberButtonHolder(m, getAuthorMessage(), memberID, holder, roleID, lang));
 
                 event.deferEdit()
                         .setContent(LangID.getStringByID("setup_modsele", lang).replace("_RRR_", roleID))

@@ -91,7 +91,7 @@ public class Setup extends ConstraintCommand {
         if(m == null)
             return;
 
-        StaticStore.putHolder(author.getAuthor().getId(), new SetupModButtonHolder(m, author, ch.getId(), author.getAuthor().getId(), holder, lang));
+        StaticStore.putHolder(author.getAuthor().getId(), new SetupModButtonHolder(m, author, ch.getId(), holder, lang));
     }
 
     private boolean alreadySet(Guild g) {

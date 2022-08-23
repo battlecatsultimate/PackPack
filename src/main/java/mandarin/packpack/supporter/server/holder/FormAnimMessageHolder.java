@@ -30,7 +30,7 @@ public class FormAnimMessageHolder extends SearchHolder {
     private final boolean gifMode;
 
     public FormAnimMessageHolder(ArrayList<Form> form, Message author, Message msg, String channelID, int mode, int frame, boolean transparent, boolean debug, int lang, boolean isGif, boolean raw, boolean gifMode) {
-        super(msg, channelID, author.getAuthor().getId(), lang);
+        super(msg, author, channelID, lang);
 
         this.form = form;
 

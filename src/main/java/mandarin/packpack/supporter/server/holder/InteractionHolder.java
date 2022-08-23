@@ -17,9 +17,11 @@ public abstract class InteractionHolder<T extends GenericInteractionCreateEvent>
     public boolean expired = false;
 
     private final Class<?> cls;
+    private final Message author;
 
-    public InteractionHolder(Class<?> cls) {
+    public InteractionHolder(Class<?> cls, Message author) {
         this.cls = cls;
+        this.author = author;
     }
 
     public final long time = System.currentTimeMillis();
@@ -34,6 +36,11 @@ public abstract class InteractionHolder<T extends GenericInteractionCreateEvent>
 
     @Override
     public abstract void expire(String id);
+
+    @Override
+    public Message getAuthorMessage() {
+        return author;
+    }
 
     public boolean equals(InteractionHolder<T> that) {
         return this.time == that.time;

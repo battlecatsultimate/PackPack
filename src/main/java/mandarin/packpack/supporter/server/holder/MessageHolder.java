@@ -19,9 +19,11 @@ public abstract class MessageHolder<T extends GenericMessageEvent> implements Ho
     public boolean expired = false;
 
     private final Class<?> cls;
+    public final Message author;
 
-    public MessageHolder(Class<?> cls) {
+    public MessageHolder(Class<?> cls, Message author) {
         this.cls = cls;
+        this.author = author;
     }
 
     public final long time = System.currentTimeMillis();
@@ -29,6 +31,11 @@ public abstract class MessageHolder<T extends GenericMessageEvent> implements Ho
     public abstract int handleEvent(T event);
     public abstract void clean();
     public abstract void expire(String id);
+
+    @Override
+    public Message getAuthorMessage() {
+        return author;
+    }
 
     public boolean equals(MessageHolder<T> that) {
         return this.time == that.time;

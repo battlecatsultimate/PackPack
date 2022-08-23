@@ -30,7 +30,7 @@ public class EnemyAnimMessageHolder extends SearchHolder {
     private final boolean gifMode;
 
     public EnemyAnimMessageHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, int mode, int frame, boolean transparent, boolean debug, int lang, boolean isGif, boolean raw, boolean gifMode) {
-        super(msg, channelID, author.getAuthor().getId(), lang);
+        super(msg, author, channelID, lang);
 
         this.enemy = enemy;
 

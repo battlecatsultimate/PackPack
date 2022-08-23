@@ -26,12 +26,12 @@ public abstract class SearchHolder extends InteractionHolder<GenericComponentInt
 
     protected int page = 0;
 
-    public SearchHolder(@Nonnull Message msg, @Nonnull String channelID, @Nonnull String memberID, int lang) {
-        super(GenericComponentInteractionCreateEvent.class);
+    public SearchHolder(@Nonnull Message msg, @Nonnull Message author, @Nonnull String channelID, int lang) {
+        super(GenericComponentInteractionCreateEvent.class, author);
 
         this.msg = msg;
         this.channelID = channelID;
-        this.memberID = memberID;
+        this.memberID = author.getAuthor().getId();
         this.lang = lang;
     }
 

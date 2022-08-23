@@ -30,12 +30,12 @@ public class ScamLinkSubscriptionHolder extends InteractionHolder<GenericCompone
     private ScamLinkHandler.ACTION action = ScamLinkHandler.ACTION.MUTE;
     private boolean noticeAll = false;
 
-    public ScamLinkSubscriptionHolder(Message msg, String channelID, String memberID, int lang, String targetChannel, String mute) {
-        super(GenericComponentInteractionCreateEvent.class);
+    public ScamLinkSubscriptionHolder(Message msg, Message author, String channelID, int lang, String targetChannel, String mute) {
+        super(GenericComponentInteractionCreateEvent.class, author);
 
         this.msg = msg;
         this.channelID = channelID;
-        this.memberID = memberID;
+        this.memberID = author.getAuthor().getId();
         this.lang = lang;
 
         this.targetChannel = targetChannel;

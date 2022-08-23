@@ -25,12 +25,12 @@ public class SetupMemberButtonHolder extends InteractionHolder<GenericComponentI
 
     private String roleID;
 
-    public SetupMemberButtonHolder(Message msg, String channelID, String memberID, IDHolder holder, String modID, int lang) {
-        super(GenericComponentInteractionCreateEvent.class);
+    public SetupMemberButtonHolder(Message msg, Message author, String channelID, IDHolder holder, String modID, int lang) {
+        super(GenericComponentInteractionCreateEvent.class, author);
 
         this.msg = msg;
         this.channelID = channelID;
-        this.memberID = memberID;
+        this.memberID = author.getAuthor().getId();
 
         this.holder = holder;
         this.modID = modID;

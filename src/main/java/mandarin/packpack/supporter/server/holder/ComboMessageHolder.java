@@ -23,7 +23,7 @@ public class ComboMessageHolder extends SearchHolder {
     private final Message fMsg;
 
     public ComboMessageHolder(ArrayList<Combo> combo, Message author, Message msg, Message fMsg, String channelID, int lang) {
-        super(msg, channelID, author.getAuthor().getId(), lang);
+        super(msg, author, channelID, lang);
 
         this.combo = combo;
         this.fMsg = fMsg;

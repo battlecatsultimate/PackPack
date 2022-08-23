@@ -15,7 +15,7 @@ public class MedalMessageHolder extends SearchHolder {
     private final ArrayList<Integer> id;
     
     public MedalMessageHolder(ArrayList<Integer> id, Message author, Message msg, int lang, String channelID) {
-        super(msg, channelID, author.getAuthor().getId(), lang);
+        super(msg, author, channelID, lang);
 
         this.id = id;
 

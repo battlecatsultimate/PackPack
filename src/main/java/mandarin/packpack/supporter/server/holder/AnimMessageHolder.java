@@ -44,7 +44,7 @@ public class AnimMessageHolder extends MessageHolder<MessageReceivedEvent> {
     private final ArrayList<AtomicReference<String>> maanim = new ArrayList<>();
 
     public AnimMessageHolder(Message msg, Message target, int lang, String channelID, File container, boolean debug, MessageChannel ch, boolean raw, boolean transparent, int len) throws Exception {
-        super(MessageReceivedEvent.class);
+        super(MessageReceivedEvent.class, msg);
 
         this.msg = target;
         this.lang = lang;

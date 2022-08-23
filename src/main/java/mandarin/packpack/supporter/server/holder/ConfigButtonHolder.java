@@ -35,7 +35,7 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
     private int page = 0;
 
     public ConfigButtonHolder(Message msg, Message author, ConfigHolder config, IDHolder holder, String channelID, String memberID, boolean forServer) {
-        super(GenericComponentInteractionCreateEvent.class);
+        super(GenericComponentInteractionCreateEvent.class, author);
 
         this.msg = msg;
         this.config = config;

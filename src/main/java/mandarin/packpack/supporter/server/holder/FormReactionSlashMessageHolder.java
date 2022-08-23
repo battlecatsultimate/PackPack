@@ -30,7 +30,7 @@ public class FormReactionSlashMessageHolder extends MessageHolder<MessageReactio
     private final ArrayList<Integer> lv;
 
     public FormReactionSlashMessageHolder(Message m, Form f, String memberID, String channelID, String embID, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, ArrayList<Integer> lv, int lang) {
-        super(MessageReactionAddEvent.class);
+        super(MessageReactionAddEvent.class, null);
 
         this.f = f;
         this.memberID = memberID;

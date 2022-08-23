@@ -18,7 +18,7 @@ public class FormSpriteMessageHolder extends SearchHolder {
     private final int mode;
 
     public FormSpriteMessageHolder(ArrayList<Form> form, Message author, Message msg, String channelID, int mode, int lang) {
-        super(msg, channelID, author.getAuthor().getId(), lang);
+        super(msg, author, channelID, lang);
 
         this.form = form;
         this.mode = mode;

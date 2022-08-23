@@ -28,7 +28,7 @@ public class StageInfoMessageHolder extends SearchHolder {
     private final int star;
 
     public StageInfoMessageHolder(ArrayList<Stage> stage, Message author, Message msg, String channelID, int star, boolean isFrame, boolean isExtra, boolean isCompact, int lang) {
-        super(msg, channelID, author.getAuthor().getId(), lang);
+        super(msg, author, channelID, lang);
 
         this.stage = stage;
         this.author = author;

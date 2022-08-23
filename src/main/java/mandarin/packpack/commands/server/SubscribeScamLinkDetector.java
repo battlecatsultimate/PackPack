@@ -86,7 +86,7 @@ public class SubscribeScamLinkDetector extends ConstraintCommand {
         Member m = getMember(event);
 
         if(m != null) {
-            StaticStore.putHolder(m.getId(), new ScamLinkSubscriptionHolder(msg, ch.getId(), m.getId(), lang, channel, getMute(g, getContent(event))));
+            StaticStore.putHolder(m.getId(), new ScamLinkSubscriptionHolder(msg, getMessage(event), ch.getId(), lang, channel, getMute(g, getContent(event))));
         }
     }
 

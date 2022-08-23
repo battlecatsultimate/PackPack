@@ -33,7 +33,7 @@ public class StageReactionSlashMessageHolder extends MessageHolder<MessageReacti
     private final Message m;
 
     public StageReactionSlashMessageHolder(Message m, Stage st, String embedID, String channelID, String memberID, IDHolder holder, int lang) {
-        super(MessageReactionAddEvent.class);
+        super(MessageReactionAddEvent.class, null);
 
         this.embedID = embedID;
         this.holder = holder;

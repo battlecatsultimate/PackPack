@@ -32,7 +32,7 @@ public class FormButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
     private final ArrayList<Integer> lv;
 
     public FormButtonHolder(Form f, Message author, Message msg, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, boolean compact, ArrayList<Integer> lv, int lang, String channelID) {
-        super(ButtonInteractionEvent.class);
+        super(ButtonInteractionEvent.class, author);
 
         this.embed = msg;
         this.config = config;

@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder;
 
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.Event;
 
 import java.util.concurrent.TimeUnit;
@@ -14,4 +15,5 @@ public interface Holder<T extends Event> {
     int handleEvent(T event);
     void clean();
     void expire(String id);
+    Message getAuthorMessage();
 }

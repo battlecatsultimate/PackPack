@@ -27,7 +27,7 @@ public abstract class FileAnalyzerHolder extends MessageHolder<MessageReceivedEv
     private final List<Integer> fileDownloaded = new ArrayList<>();
 
     public FileAnalyzerHolder(Message msg, Message author, String channelID, File container, List<String> requiredFiles, int lang) {
-        super(MessageReceivedEvent.class);
+        super(MessageReceivedEvent.class, author);
 
         this.msg = msg;
         this.channelID = channelID;

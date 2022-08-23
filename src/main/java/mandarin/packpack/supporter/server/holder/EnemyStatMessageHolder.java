@@ -21,7 +21,7 @@ public class EnemyStatMessageHolder extends SearchHolder {
     private final int[] magnification;
 
     public EnemyStatMessageHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, int[] magnification, boolean isFrame, boolean isExtra, boolean isCompact, int lang) {
-        super(msg, channelID, author.getAuthor().getId(), lang);
+        super(msg, author, channelID, lang);
 
         this.enemy = enemy;
 

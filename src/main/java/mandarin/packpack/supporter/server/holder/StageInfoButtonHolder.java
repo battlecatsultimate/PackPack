@@ -28,7 +28,7 @@ public class StageInfoButtonHolder extends InteractionHolder<ButtonInteractionEv
     private final Stage st;
 
     public StageInfoButtonHolder(Stage st, Message author, Message msg, String channelID) {
-        super(ButtonInteractionEvent.class);
+        super(ButtonInteractionEvent.class, author);
 
         this.st = st;
         embed = msg;

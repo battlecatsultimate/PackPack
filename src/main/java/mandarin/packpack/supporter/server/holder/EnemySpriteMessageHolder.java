@@ -18,7 +18,7 @@ public class EnemySpriteMessageHolder extends SearchHolder {
     private final int mode;
 
     public EnemySpriteMessageHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, int mode, int lang) {
-        super(msg, channelID, author.getAuthor().getId(), lang);
+        super(msg, author, channelID, lang);
 
         this.enemy = enemy;
         this.mode = mode;

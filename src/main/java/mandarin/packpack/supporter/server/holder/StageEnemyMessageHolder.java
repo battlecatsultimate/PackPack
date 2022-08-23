@@ -32,7 +32,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
     private final int star;
 
     public StageEnemyMessageHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, boolean isFrame, boolean isExtra, boolean isCompact, int star, int lang) {
-        super(msg, channelID, author.getAuthor().getId(), lang);
+        super(msg, author, channelID, lang);
 
         this.enemy = enemy;
         this.author = author;

@@ -737,7 +737,9 @@ public class AllEventAdapter extends ListenerAdapter {
                     break;
             }
         } catch (Exception e) {
-            StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::onMessageReceived - Error happened while doing something");
+            Message msg = event.getMessage();
+
+            StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::onMessageReceived - Error happened while doing something\n\nCommand : "+msg.getContentRaw());
         }
     }
 
@@ -868,6 +870,11 @@ public class AllEventAdapter extends ListenerAdapter {
 
             if(m != null && StaticStore.holderContainsKey(m.getId())) {
                 message += "\n\nTried to handle the holder : " + StaticStore.getHolder(m.getId()).getClass().getName();
+
+                Message author = StaticStore.getHolder(m.getId()).getAuthorMessage();
+
+                if(author != null)
+                    message += "\n\nCommand : " + author.getContentRaw();
             }
 
             StaticStore.logger.uploadErrorLog(e, message);

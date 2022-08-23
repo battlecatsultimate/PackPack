@@ -7,7 +7,6 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 
-import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -20,7 +19,7 @@ public class ConfirmButtonHolder extends InteractionHolder<ButtonInteractionEven
     private final Message msg;
 
     public ConfirmButtonHolder(Message msg, Message author, String channelID, Runnable action, int lang) {
-        super(ButtonInteractionEvent.class);
+        super(ButtonInteractionEvent.class, author);
         this.action = action;
         this.lang = lang;
         this.channelID = channelID;

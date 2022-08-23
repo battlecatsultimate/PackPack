@@ -29,7 +29,7 @@ public class ComboFormMessageHolder extends SearchHolder {
     private final String fName;
 
     public ComboFormMessageHolder(ArrayList<Form> form, Message author, Message msg, String channelID, int lang, String cName, String fName) {
-        super(msg, channelID, author.getAuthor().getId(), lang);
+        super(msg, author, channelID, lang);
 
         this.form = form;
 

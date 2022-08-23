@@ -27,7 +27,7 @@ public class FormStatMessageHolder extends SearchHolder {
     private final ArrayList<Integer> lv;
 
     public FormStatMessageHolder(ArrayList<Form> form, Message author, ConfigHolder config, Message msg, String channelID, int param, ArrayList<Integer> lv, int lang) {
-        super(msg, channelID, author.getAuthor().getId(), lang);
+        super(msg, author, channelID, lang);
 
         this.form = form;
         this.config = config;

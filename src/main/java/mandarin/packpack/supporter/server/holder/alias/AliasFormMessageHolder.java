@@ -34,7 +34,7 @@ public class AliasFormMessageHolder extends MessageHolder<MessageReceivedEvent> 
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
     public AliasFormMessageHolder(ArrayList<Form> form, Message author, Message msg, String channelID, AliasHolder.MODE mode, int lang, @Nullable String aliasName) {
-        super(MessageReceivedEvent.class);
+        super(MessageReceivedEvent.class, author);
 
         this.form = form;
         this.msg = msg;
