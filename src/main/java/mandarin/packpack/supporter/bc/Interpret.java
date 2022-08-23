@@ -243,6 +243,10 @@ public class Interpret extends Data {
     private static String getProcEmoji(String code, Object proc) {
         if(proc instanceof Proc.IMU && ((Proc.IMU) proc).mult < 100) {
             code = code.replace("IMU", "RES");
+        } else if(proc instanceof Proc.IMUAD && ((Proc.IMUAD) proc).mult < 100) {
+            code = code.replace("IMU", "RES");
+        } else if(proc instanceof Proc.WAVEI && ((Proc.WAVEI) proc).mult < 100) {
+            code = code.replace("IMU", "RES");
         }
 
         RichCustomEmoji emoji = EmojiStore.ABILITY.get(code);
