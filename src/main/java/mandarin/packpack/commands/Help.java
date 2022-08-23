@@ -42,7 +42,7 @@ public class Help extends Command {
                     .setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)])
                     .addField(LangID.getStringByID("help_normal", lang), "```analyze, config, locale, optout, prefix, timezone```", false)
                     .addField(LangID.getStringByID("help_bc", lang), "```background, castle, catcombo, enemygif, enemyimage, enemysprite, enemystat, findstage, formgif, formimage, formsprite, formstat, medal, music, stageinfo```", false)
-                    .addField(LangID.getStringByID("help_server", lang), "```bcustat, boosteremoji, boosteremojiremove, boosterrole, boosterroleremove, channelpermission, checkbcu, clearcache, fixrole, idset, memory, save, serverconfig, serverjson, serverpre, setup, subscribeevent, subscribescamlinkdetector, unsubscribescamlinkdetector, watchdm```", false)
+                    .addField(LangID.getStringByID("help_server", lang), "```boosteremoji, boosteremojiremove, boosterrole, boosterroleremove, channelpermission, checkbcu, clearcache, fixrole, idset, memory, save, serverconfig, serverjson, serverpre, serverstat, setup, subscribeevent, subscribescamlinkdetector, unsubscribescamlinkdetector, watchdm```", false)
                     .addField(LangID.getStringByID("help_data", lang), "```animanalyzer, announcement, checkeventupdate, printevent, printgachaevent, printitemevent, printstageevent, stageimage, stagestatanalyzer, statanalyzer, stagemapimage, trueformanalyzer```", false)
                     .addField(LangID.getStringByID("help_packpack", lang), "```alias, aliasadd, aliasremove, registerscamlink, statistic, suggest, unregisterscamlink```", false);
 
@@ -55,7 +55,8 @@ public class Help extends Command {
             case "checkbcu":
                 ch.sendMessageEmbeds(addFields("checkbcu", true, false, false)).queue();
                 break;
-            case "bcustat":
+            case "serverstat":
+            case "ss":
                 ch.sendMessageEmbeds(addFields( "bcustat", false, false, false)).queue();
                 break;
             case "analyze":
