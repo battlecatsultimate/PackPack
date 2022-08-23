@@ -56,21 +56,6 @@ public class StageInfoMessageHolder extends SearchHolder {
             String name = "";
 
             if(onText) {
-                if(mc != null)
-                    name = mc.getSID()+"/";
-                else
-                    name = "Unknown/";
-
-                if(stm.id != null)
-                    name += Data.trio(stm.id.id)+"/";
-                else
-                    name += "Unknown/";
-
-                if(st.id != null)
-                    name += Data.trio(st.id.id)+" | ";
-                else
-                    name += "Unknown | ";
-
                 if(mc != null) {
                     int oldConfig = CommonStatic.getConfig().lang;
                     CommonStatic.getConfig().lang = lang;

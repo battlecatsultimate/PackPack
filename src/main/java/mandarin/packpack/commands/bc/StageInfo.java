@@ -463,24 +463,9 @@ public class StageInfo extends TimedConstraintCommand {
             StageMap stm = st.getCont();
             MapColc mc = stm.getCont();
 
-            String name;
+            String name = "";
 
             if(full) {
-                if(mc != null)
-                    name = mc.getSID()+"/";
-                else
-                    name = "Unknown/";
-
-                if(stm.id != null)
-                    name += Data.trio(stm.id.id)+"/";
-                else
-                    name += "Unknown/";
-
-                if(st.id != null)
-                    name += Data.trio(st.id.id)+" | ";
-                else
-                    name += "Unknown | ";
-
                 if(mc != null) {
                     int oldConfig = CommonStatic.getConfig().lang;
                     CommonStatic.getConfig().lang = lang;
