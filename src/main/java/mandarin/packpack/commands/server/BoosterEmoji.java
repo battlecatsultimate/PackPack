@@ -96,7 +96,7 @@ public class BoosterEmoji extends ConstraintCommand {
                             return;
                         } else {
                             Message mes = ch.sendMessage(LangID.getStringByID("booemo_down", lang))
-                                    .allowedMentions(new ArrayList<>())
+                                    .setAllowedMentions(new ArrayList<>())
                                     .complete();
 
                             if(mes == null)

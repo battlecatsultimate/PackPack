@@ -60,7 +60,7 @@ public class Publish extends ConstraintCommand {
                 if(content != null && ((NewsChannel) c).canTalk()) {
                     Message m = ((NewsChannel) c)
                             .sendMessage(content)
-                            .allowedMentions(new ArrayList<>())
+                            .setAllowedMentions(new ArrayList<>())
                             .complete();
 
                     if(m != null && holder.publish)
@@ -81,7 +81,7 @@ public class Publish extends ConstraintCommand {
                 if(content != null) {
                     if(((GuildMessageChannel) c).canTalk()) {
                         ((GuildMessageChannel) c).sendMessage(content)
-                                .allowedMentions(new ArrayList<>())
+                                .setAllowedMentions(new ArrayList<>())
                                 .queue();
                     }
                 }

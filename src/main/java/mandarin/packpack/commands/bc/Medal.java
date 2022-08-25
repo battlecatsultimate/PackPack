@@ -69,7 +69,7 @@ public class Medal extends ConstraintCommand {
 
                 sb.append("```");
 
-                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).allowedMentions(new ArrayList<>()), id.size(), data, lang).complete();
+                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), id.size(), data, lang).complete();
 
                 if(res != null) {
                     Member m = getMember(event);

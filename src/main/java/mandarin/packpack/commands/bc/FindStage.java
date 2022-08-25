@@ -132,7 +132,7 @@ public class FindStage extends TimedConstraintCommand {
 
                 sb.append("```");
 
-                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).allowedMentions(new ArrayList<>()), stages.size(), accumulateStage(stages, false), lang).complete();
+                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), stages.size(), accumulateStage(stages, false), lang).complete();
 
                 if(res != null) {
                     Member m = getMember(event);
@@ -169,7 +169,7 @@ public class FindStage extends TimedConstraintCommand {
             
             sb.append("```");
 
-            Message res = registerSearchComponents(ch.sendMessage(sb.toString()).allowedMentions(new ArrayList<>()), enemies.size(), data, lang).complete();
+            Message res = registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), enemies.size(), data, lang).complete();
 
             if(res != null) {
                 Member m = getMember(event);

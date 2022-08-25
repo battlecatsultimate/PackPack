@@ -65,7 +65,7 @@ public class CommandUnban extends ConstraintCommand {
 
             registerConfirmButtons(
                     ch.sendMessage(LangID.getStringByID("comunban_confirm", lang).replace("_", m.getId()))
-                            .allowedMentions(new ArrayList<>())
+                            .setAllowedMentions(new ArrayList<>())
                     , lang
             ).queue(msg -> StaticStore.putHolder(me.getId(), new ConfirmButtonHolder(msg, getMessage(event), ch.getId(), () -> {
                 holder.banned.remove(m.getId());

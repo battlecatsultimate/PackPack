@@ -37,7 +37,7 @@ public class Prefix extends ConstraintCommand {
 
                 if(result.length() < 2000) {
                     ch.sendMessage(result)
-                            .allowedMentions(new ArrayList<>())
+                            .setAllowedMentions(new ArrayList<>())
                             .queue();
                 } else {
                     ch.sendMessage(LangID.getStringByID("prefix_setnone", lang)).queue();

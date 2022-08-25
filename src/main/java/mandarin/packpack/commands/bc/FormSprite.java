@@ -88,7 +88,7 @@ public class FormSprite extends TimedConstraintCommand {
 
                 int mode = getModeFromParam(param);
 
-                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).allowedMentions(new ArrayList<>()), forms.size(), data, lang).complete();
+                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), forms.size(), data, lang).complete();
 
                 if(res != null) {
                     Member m = getMember(event);

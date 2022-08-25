@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.interactions.Interaction;
+import net.dv8tion.jda.api.utils.FileUpload;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -40,9 +41,9 @@ public class Background extends TimedConstraintCommand {
 
         if(img != null) {
             event.deferReply()
-                    .allowedMentions(new ArrayList<>())
+                    .setAllowedMentions(new ArrayList<>())
                     .setContent(LangID.getStringByID("bg_result", lang).replace("_", Data.trio(bg.id.id)).replace("WWW", 960+"").replace("HHH", 520+""))
-                    .addFile(img, "bg.png")
+                    .addFiles(FileUpload.fromData(img, "bg.png"))
                     .queue(m -> {
                         if(img.exists() && !img.delete()) {
                             StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
@@ -87,7 +88,7 @@ public class Background extends TimedConstraintCommand {
 
             if(img != null) {
                 ch.sendMessage(LangID.getStringByID("bg_result", lang).replace("_", Data.trio(bg.id.id)).replace("WWW", 960+"").replace("HHH", 520+""))
-                        .addFile(img, "bg.png")
+                        .addFiles(FileUpload.fromData(img, "bg.png"))
                         .queue(m -> {
                             if(img.exists() && !img.delete()) {
                                 StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
@@ -157,7 +158,7 @@ public class Background extends TimedConstraintCommand {
 
                     if(img != null) {
                         ch.sendMessage(LangID.getStringByID("bg_result", lang).replace("_", Data.trio(bg.id.id)).replace("WWW", w +"").replace("HHH", h+""))
-                                .addFile(img, "bg.png")
+                                .addFiles(FileUpload.fromData(img, "bg.png"))
                                 .queue(message -> {
                                     if(img.exists() && !img.delete()) {
                                         StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());

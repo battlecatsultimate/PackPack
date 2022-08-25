@@ -52,13 +52,13 @@ public abstract class InteractionHolder<T extends GenericInteractionCreateEvent>
 
     public void createMessageWithNoPings(MessageChannel ch, String content) {
         ch.sendMessage(content)
-                .allowedMentions(new ArrayList<>())
+                .setAllowedMentions(new ArrayList<>())
                 .queue();
     }
 
     public Message getMessageWithNoPings(MessageChannel ch, String content) {
         return ch.sendMessage(content)
-                .allowedMentions(new ArrayList<>())
+                .setAllowedMentions(new ArrayList<>())
                 .complete();
     }
 
@@ -75,7 +75,7 @@ public abstract class InteractionHolder<T extends GenericInteractionCreateEvent>
 
                 StaticStore.removeHolder(author.getAuthor().getId(), holder);
                 msg.editMessage(LangID.getStringByID("formst_expire", lang))
-                        .setActionRows()
+                        .setComponents()
                         .queue();
             }
         }, millis);
@@ -94,7 +94,7 @@ public abstract class InteractionHolder<T extends GenericInteractionCreateEvent>
 
                 StaticStore.removeHolder(author.getAuthor().getId(), holder);
                 msg.editMessage(LangID.getStringByID("formst_expire", lang))
-                        .setActionRows()
+                        .setComponents()
                         .queue();
 
                 if(run != null)
@@ -116,7 +116,7 @@ public abstract class InteractionHolder<T extends GenericInteractionCreateEvent>
 
                 StaticStore.removeHolder(author.getAuthor().getId(), holder);
                 msg.editMessage(LangID.getStringByID(langID, lang))
-                        .setActionRows()
+                        .setComponents()
                         .queue();
             }
         }, millis);
@@ -135,7 +135,7 @@ public abstract class InteractionHolder<T extends GenericInteractionCreateEvent>
 
                 StaticStore.removeHolder(author.getAuthor().getId(), holder);
                 msg.editMessage(LangID.getStringByID(langID, lang))
-                        .setActionRows()
+                        .setComponents()
                         .queue();
 
                 if(run != null)

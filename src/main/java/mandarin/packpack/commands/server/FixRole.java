@@ -63,7 +63,7 @@ public class FixRole extends ConstraintCommand {
             content = LangID.getStringByID("fixrole_confirmig", lang).replace("_PPP_", finalPre).replace("_MMM_", holder.MEMBER).replace("_III_", ignore);
         }
 
-        Message msg = registerConfirmButtons(ch.sendMessage(content).allowedMentions(new ArrayList<>()), lang).complete();
+        Message msg = registerConfirmButtons(ch.sendMessage(content).setAllowedMentions(new ArrayList<>()), lang).complete();
 
         if(msg == null)
             return;

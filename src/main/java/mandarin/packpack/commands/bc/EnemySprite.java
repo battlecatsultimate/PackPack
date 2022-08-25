@@ -86,7 +86,7 @@ public class EnemySprite extends TimedConstraintCommand {
 
                 int mode = getModeFromParam(param);
 
-                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).allowedMentions(new ArrayList<>()), enemies.size(), data, lang).complete();
+                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), enemies.size(), data, lang).complete();
 
                 if(res != null) {
                     Member m = getMember(event);

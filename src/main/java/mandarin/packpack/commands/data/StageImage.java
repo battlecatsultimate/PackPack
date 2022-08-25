@@ -14,6 +14,7 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
+import net.dv8tion.jda.api.utils.FileUpload;
 
 import java.awt.*;
 import java.io.File;
@@ -128,7 +129,7 @@ public class StageImage extends ConstraintCommand {
     private void handleLast(String message, MessageChannel ch, ImageGenerator generator) {
         if(f != null) {
             ch.sendMessage(LangID.getStringByID("stimg_result", lang))
-                    .addFile(f, f.getName())
+                    .addFiles(FileUpload.fromData(f, f.getName()))
                     .queue(m -> {
                         if(f.exists() && !f.delete()) {
                             StaticStore.logger.uploadLog("Can't delete file : "+f.getAbsolutePath());

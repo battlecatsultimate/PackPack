@@ -93,7 +93,7 @@ public class SetupModButtonHolder extends InteractionHolder<GenericComponentInte
 
                 event.deferEdit()
                         .setContent(LangID.getStringByID("setup_modsele", lang).replace("_RRR_", es.getValues().get(0)))
-                        .setActionRows(getComponents(g))
+                        .setComponents(getComponents(g))
                         .queue();
 
                 break;
@@ -113,9 +113,9 @@ public class SetupModButtonHolder extends InteractionHolder<GenericComponentInte
                 }
 
                 Message m = ch.sendMessage(LangID.getStringByID("setup_mem", lang))
-                        .reference(msg)
-                        .allowedMentions(new ArrayList<>())
-                        .setActionRows(
+                        .setMessageReference(msg)
+                        .setAllowedMentions(new ArrayList<>())
+                        .setComponents(
                                 ActionRow.of(SelectMenu.create("role").addOptions(options).setPlaceholder(LangID.getStringByID("setup_select", lang)).build()),
                                 ActionRow.of(Button.success("confirm", LangID.getStringByID("button_confirm", lang)).asDisabled(), Button.danger("cancel", LangID.getStringByID("button_cancel", lang)))
                         ).complete();
@@ -128,7 +128,7 @@ public class SetupModButtonHolder extends InteractionHolder<GenericComponentInte
 
                 event.deferEdit()
                         .setContent(LangID.getStringByID("setup_modsele", lang).replace("_RRR_", roleID))
-                        .setActionRows()
+                        .setComponents()
                         .queue();
 
                 break;
@@ -138,7 +138,7 @@ public class SetupModButtonHolder extends InteractionHolder<GenericComponentInte
 
                 event.deferEdit()
                         .setContent(LangID.getStringByID("setup_cancel", lang))
-                        .setActionRows()
+                        .setComponents()
                         .queue();
 
                 break;
@@ -155,7 +155,7 @@ public class SetupModButtonHolder extends InteractionHolder<GenericComponentInte
         expired = true;
 
         msg.editMessage(LangID.getStringByID("setup_expire", lang))
-                .setActionRows()
+                .setComponents()
                 .queue();
     }
 

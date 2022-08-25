@@ -77,7 +77,7 @@ public class SubscribeScamLinkDetector extends ConstraintCommand {
         components.add(Button.danger("cancel", LangID.getStringByID("button_cancel", lang)));
 
         Message msg = ch.sendMessage(LangID.getStringByID("subscam_decide", lang))
-                .setActionRows(
+                .setComponents(
                         ActionRow.of(SelectMenu.create("action").addOptions(options).build()),
                         ActionRow.of(SelectMenu.create("notice").addOptions(notices).build()),
                         ActionRow.of(components)

@@ -47,13 +47,13 @@ public abstract class MessageHolder<T extends GenericMessageEvent> implements Ho
 
     public void createMessageWithNoPings(MessageChannel ch, String content) {
         ch.sendMessage(content)
-            .allowedMentions(new ArrayList<>())
+            .setAllowedMentions(new ArrayList<>())
             .queue();
     }
 
     public Message getMessageWithNoPings(MessageChannel ch, String content) {
         return ch.sendMessage(content)
-                .allowedMentions(new ArrayList<>())
+                .setAllowedMentions(new ArrayList<>())
                 .complete();
     }
 

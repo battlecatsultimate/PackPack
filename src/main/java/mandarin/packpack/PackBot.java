@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import javax.security.auth.login.LoginException;
@@ -275,7 +276,7 @@ public class PackBot {
                                         writer.close();
 
                                         ((GuildMessageChannel) ch).sendMessage((wasDone ? "** **\n" : "") + LangID.getStringByID("printstage_toolong", holder.config.lang))
-                                                .addFile(res, "event.txt")
+                                                .addFiles(FileUpload.fromData(res, "event.txt"))
                                                 .queue(m -> {
                                                     if(res.exists() && !res.delete()) {
                                                         StaticStore.logger.uploadLog("Failed to delete file : "+res.getAbsolutePath());
@@ -320,7 +321,7 @@ public class PackBot {
                                             }
 
                                             ((GuildMessageChannel) ch).sendMessage(merge.toString())
-                                                    .allowedMentions(new ArrayList<>())
+                                                    .setAllowedMentions(new ArrayList<>())
                                                     .queue();
                                         }
                                     }
@@ -375,8 +376,8 @@ public class PackBot {
                                         }
 
                                         ((GuildMessageChannel) ch).sendMessage((wasDone ? "** **\n" : "") + LangID.getStringByID(lID, holder.config.lang))
-                                                .allowedMentions(new ArrayList<>())
-                                                .addFile(res, "event.txt")
+                                                .setAllowedMentions(new ArrayList<>())
+                                                .addFiles(FileUpload.fromData(res, "event.txt"))
                                                 .queue(m -> {
                                                     if(res.exists() && !res.delete()) {
                                                         StaticStore.logger.uploadLog("Failed to delete file : "+res.getAbsolutePath());

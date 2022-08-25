@@ -71,7 +71,7 @@ public class EnemyStat extends ConstraintCommand {
         final int finalLang = lang;
 
         if(e == null) {
-            interaction.deferReply().allowedMentions(new ArrayList<>()).setContent(LangID.getStringByID("formst_specific", finalLang)).queue();
+            interaction.deferReply().setAllowedMentions(new ArrayList<>()).setContent(LangID.getStringByID("formst_specific", finalLang)).queue();
         } else {
             try {
                 EntityHandler.performEnemyEmb(e, interaction, frame, extra, magnification, finalLang);
@@ -146,7 +146,7 @@ public class EnemyStat extends ConstraintCommand {
 
                 sb.append("```");
 
-                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).allowedMentions(new ArrayList<>()), enemies.size(), data, lang).complete();
+                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), enemies.size(), data, lang).complete();
 
                 int[] magnification = handleMagnification(getContent(event));
 

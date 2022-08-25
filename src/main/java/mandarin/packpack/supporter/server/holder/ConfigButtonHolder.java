@@ -170,7 +170,7 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
 
                 event.deferEdit()
                         .setContent(LangID.getStringByID("config_apply", lang))
-                        .setActionRows()
+                        .setComponents()
                         .queue();
 
                 break;
@@ -186,7 +186,7 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
 
                 event.deferEdit()
                         .setContent(LangID.getStringByID("config_cancel", backup.lang))
-                        .setActionRows()
+                        .setComponents()
                         .queue();
 
                 break;
@@ -203,14 +203,14 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
         expired = true;
 
         msg.editMessage(LangID.getStringByID("config_expire", config.lang))
-                .setActionRows()
+                .setComponents()
                 .queue();
     }
 
     private void performResult(GenericComponentInteractionCreateEvent event) {
         event.deferEdit()
                 .setContent(parseMessage())
-                .setActionRows(parseComponents())
+                .setComponents(parseComponents())
                 .queue();
     }
 

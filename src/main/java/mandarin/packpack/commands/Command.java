@@ -16,7 +16,8 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
+import net.dv8tion.jda.api.utils.FileUpload;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -29,7 +30,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @SuppressWarnings("unused")
 public abstract class Command {
-    public static MessageAction registerConfirmButtons(MessageAction m, int lang) {
+    public static MessageCreateAction registerConfirmButtons(MessageCreateAction m, int lang) {
         List<ActionComponent> components = new ArrayList<>();
 
         components.add(Button.success("confirm", LangID.getStringByID("button_confirm", lang)));
@@ -38,7 +39,7 @@ public abstract class Command {
         return m.setActionRow(components);
     }
 
-    public static MessageAction registerSearchComponents(MessageAction m, int dataSize, List<String> data, int lang) {
+    public static MessageCreateAction registerSearchComponents(MessageCreateAction m, int dataSize, List<String> data, int lang) {
         int totPage = dataSize / SearchHolder.PAGE_CHUNK;
 
         if(dataSize % SearchHolder.PAGE_CHUNK != 0)
@@ -73,13 +74,13 @@ public abstract class Command {
 
         rows.add(ActionRow.of(Button.danger("cancel", LangID.getStringByID("button_cancel", lang))));
 
-        return m.setActionRows(rows);
+        return m.setComponents(rows);
     }
 
     public static void sendMessageWithFile(MessageChannel ch, String content, File f) {
         ch.sendMessage(content)
-                .addFile(f)
-                .allowedMentions(new ArrayList<>())
+                .addFiles(FileUpload.fromData(f))
+                .setAllowedMentions(new ArrayList<>())
                 .queue(m -> {
                     if(f.exists() && !f.delete()) {
                         StaticStore.logger.uploadLog("Failed to delete file : "+f.getAbsolutePath());
@@ -95,8 +96,8 @@ public abstract class Command {
 
     public static void sendMessageWithFile(MessageChannel ch, String content, File f, String fileName) {
         ch.sendMessage(content)
-                .addFile(f, fileName)
-                .allowedMentions(new ArrayList<>())
+                .addFiles(FileUpload.fromData(f, fileName))
+                .setAllowedMentions(new ArrayList<>())
                 .queue(m -> {
                     if(f.exists() && !f.delete()) {
                         StaticStore.logger.uploadLog("Failed to delete file : "+f.getAbsolutePath());
@@ -291,13 +292,13 @@ public abstract class Command {
 
     public void createMessageWithNoPings(MessageChannel ch, String content) {
         ch.sendMessage(content)
-                .allowedMentions(new ArrayList<>())
+                .setAllowedMentions(new ArrayList<>())
                 .queue();
     }
 
     public Message getMessageWithNoPings(MessageChannel ch, String content) {
         return ch.sendMessage(content)
-                .allowedMentions(new ArrayList<>())
+                .setAllowedMentions(new ArrayList<>())
                 .complete();
     }
 

@@ -128,7 +128,7 @@ public class PrintStageEvent extends ConstraintCommand {
                 }
 
                 ch.sendMessage(merge.toString())
-                        .allowedMentions(new ArrayList<>())
+                        .setAllowedMentions(new ArrayList<>())
                         .queue();
             }
         }

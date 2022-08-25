@@ -34,8 +34,9 @@ import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
+import net.dv8tion.jda.api.utils.FileUpload;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -216,9 +217,10 @@ public class EntityHandler {
         action = action.addEmbeds(spec.build());
 
         if(img != null)
-            action = action.addFile(img, "icon.png");
+            action = action.addFiles(FileUpload.fromData(img, "icon.png"));
+
         if(cf != null)
-            action = action.addFile(cf, "cf.png");
+            action = action.addFiles(FileUpload.fromData(cf, "cf.png"));
 
         InteractionHook hook = action.complete();
 
@@ -429,13 +431,13 @@ public class EntityHandler {
         if(talentExists(t))
             spec.setFooter(DataToString.getTalent(f.du, t, lang));
 
-        MessageAction action = ch.sendMessageEmbeds(spec.build());
+        MessageCreateAction action = ch.sendMessageEmbeds(spec.build());
 
         if(img != null)
-            action = action.addFile(img, "icon.png");
+            action = action.addFiles(FileUpload.fromData(img, "icon.png"));
 
         if(cf != null)
-            action = action.addFile(cf, "cf.png");
+            action = action.addFiles(FileUpload.fromData(cf, "cf.png"));
 
         ArrayList<ActionComponent> components = new ArrayList<>();
 
@@ -462,7 +464,7 @@ public class EntityHandler {
         }
 
         if(!components.isEmpty()) {
-            action = action.setActionRows(ActionRow.of(components));
+            action = action.setComponents(ActionRow.of(components));
         }
 
         Message msg = action.complete();
@@ -610,10 +612,10 @@ public class EntityHandler {
 
         spec.setFooter(LangID.getStringByID("enemyst_source", lang));
 
-        MessageAction action = ch.sendMessageEmbeds(spec.build());
+        MessageCreateAction action = ch.sendMessageEmbeds(spec.build());
 
         if(img != null)
-            action = action.addFile(img, "icon.png");
+            action = action.addFiles(FileUpload.fromData(img, "icon.png"));
 
         action.queue(msg -> {
             if(img != null && img.exists() && !img.delete()) {
@@ -710,7 +712,7 @@ public class EntityHandler {
         ReplyCallbackAction action = event.deferReply().addEmbeds(spec.build());
 
         if(img != null)
-            action = action.addFile(img, "icon.png");
+            action = action.addFiles(FileUpload.fromData(img, "icon.png"));
 
         action.queue(h -> {
             if(img != null && img.exists() && !img.delete()) {
@@ -1042,10 +1044,10 @@ public class EntityHandler {
             spec.setImage("attachment://scheme.png");
         }
 
-        MessageAction action = ch.sendMessageEmbeds(spec.build());
+        MessageCreateAction action = ch.sendMessageEmbeds(spec.build());
 
         if(img != null)
-            action = action.addFile(img, "scheme.png");
+            action = action.addFiles(FileUpload.fromData(img, "scheme.png"));
 
         ArrayList<Button> buttons = new ArrayList<>();
 
@@ -1060,7 +1062,7 @@ public class EntityHandler {
             buttons.add(Button.secondary("music2", LangID.getStringByID("button_mus2", lang)).withEmoji(Emoji.fromCustom(EmojiStore.MUSIC_BOSS)));
         }
 
-        action = action.setActionRows(ActionRow.of(buttons));
+        action = action.setComponents(ActionRow.of(buttons));
 
         Message msg = action.complete();
 
@@ -1239,7 +1241,7 @@ public class EntityHandler {
         ReplyCallbackAction action = event.deferReply().addEmbeds(spec.build());
 
         if(img != null)
-            action = action.addFile(img, "scheme.png");
+            action = action.addFiles(FileUpload.fromData(img, "scheme.png"));
 
         InteractionHook hook = action.complete();
 
@@ -1754,7 +1756,7 @@ public class EntityHandler {
                 fName = LangID.getStringByID("data_unit", lang)+" "+ Data.trio(f.uid.id)+" "+Data.trio(f.fid);
 
             ch.sendMessage(LangID.getStringByID("fimg_result", lang).replace("_", fName).replace(":::", getModeName(mode, f.anim.anims.length, lang)).replace("=", String.valueOf(frame)))
-                    .addFile(img, "result.png")
+                    .addFiles(FileUpload.fromData(img, "result.png"))
                     .queue(m -> {
                         if(img.exists() && !img.delete()) {
                             StaticStore.logger.uploadLog("W/EntityHandlerFormImage | Can't delete file : "+img.getAbsolutePath());
@@ -1798,7 +1800,7 @@ public class EntityHandler {
                 eName = LangID.getStringByID("data_enemy", lang)+" "+ Data.trio(en.id.id);
 
             ch.sendMessage(LangID.getStringByID("fimg_result", lang).replace("_", eName).replace(":::", getModeName(mode, en.anim.anims.length, lang)).replace("=", String.valueOf(frame)))
-                    .addFile(img, "result.png")
+                    .addFiles(FileUpload.fromData(img, "result.png"))
                     .queue(m -> {
                         if(img.exists() && !img.delete()) {
                             StaticStore.logger.uploadLog("W/EntityHandlerFormImage | Can't delete file : "+img.getAbsolutePath());
@@ -1971,7 +1973,7 @@ public class EntityHandler {
 
             if(debug || limit > 0) {
                 ch.sendMessage(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)))
-                        .addFile(img, raw ? "result.mp4" : "result.gif")
+                        .addFiles(FileUpload.fromData(img, raw ? "result.mp4" : "result.gif"))
                         .queue(m -> {
                             if(img.exists() && !img.delete()) {
                                 StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
@@ -1990,7 +1992,7 @@ public class EntityHandler {
                     String siz = getFileSize(img);
 
                     ((GuildMessageChannel) chan).sendMessage(generateID(f, fMode))
-                            .addFile(img, raw ? "result.mp4" : "result.gif")
+                            .addFiles(FileUpload.fromData(img, raw ? "result.mp4" : "result.gif"))
                             .queue(m -> {
                                 if(img.exists() && !img.delete()) {
                                     StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
@@ -2155,7 +2157,7 @@ public class EntityHandler {
 
             if(debug || limit > 0) {
                 ch.sendMessage(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)))
-                        .addFile(img, raw ? "result.mp4" : "result.gif")
+                        .addFiles(FileUpload.fromData(img, raw ? "result.mp4" : "result.gif"))
                         .queue(m -> {
                             if(img.exists() && !img.delete()) {
                                 StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
@@ -2174,7 +2176,7 @@ public class EntityHandler {
                     String siz = getFileSize(img);
 
                     ((GuildMessageChannel) chan).sendMessage(generateID(en, fMode))
-                            .addFile(img, raw ? "result.mp4" : "result.gif")
+                            .addFiles(FileUpload.fromData(img, raw ? "result.mp4" : "result.gif"))
                             .queue(m -> {
                                 if(img.exists() && !img.delete()) {
                                     StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
@@ -2296,7 +2298,7 @@ public class EntityHandler {
             }
         } else if(img.length() < (long) getBoosterFileLimit(booster) * 1024 * 1024) {
             ch.sendMessage(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)))
-                    .addFile(img, raw ? "result.mp4" : "result.gif")
+                    .addFiles(FileUpload.fromData(img, raw ? "result.mp4" : "result.gif"))
                     .queue(message -> {
                         if(img.exists() && !img.delete()) {
                             StaticStore.logger.uploadLog("W/EntityHandlerAnim | Can't delete file : "+img.getAbsolutePath());
@@ -2389,7 +2391,7 @@ public class EntityHandler {
             }
         } else if(img.length() < (long) getBoosterFileLimit(booster) * 1024 * 1024) {
             ch.sendMessage(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)))
-                    .addFile(img, "result.mp4")
+                    .addFiles(FileUpload.fromData(img, "result.mp4"))
                     .queue(message -> {
                         if(img.exists() && !img.delete()) {
                             StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
@@ -2431,7 +2433,7 @@ public class EntityHandler {
                 String siz = getFileSize(result);
 
                 ((MessageChannel) chan).sendMessage("BG - "+Data.trio(bg.id.id))
-                        .addFile(result, "result.mp4")
+                        .addFiles(FileUpload.fromData(result, "result.mp4"))
                         .queue(m -> {
                             if(result.exists() && !result.delete()) {
                                 StaticStore.logger.uploadLog("W/EntityHandlerBGAnim | Can't delete file : "+result.getAbsolutePath());
@@ -2582,7 +2584,7 @@ public class EntityHandler {
         }
 
         ch.sendMessage(LangID.getStringByID("fsp_result", lang).replace("_", fName).replace("===", getIconName(mode, lang)))
-                .addFile(image, "result.png")
+                .addFiles(FileUpload.fromData(image, "result.png"))
                 .queue(m -> {
                     if(image.exists() && !image.delete()) {
                         StaticStore.logger.uploadLog("W/EntityHandlerFormSprite | Can't delete file : "+image.getAbsolutePath());
@@ -2655,7 +2657,7 @@ public class EntityHandler {
         }
 
         ch.sendMessage(LangID.getStringByID("fsp_result", lang).replace("_", fName).replace("===", getIconName(mode, lang)))
-                .addFile(image, "result.png")
+                .addFiles(FileUpload.fromData(image, "result.png"))
                 .queue(m -> {
                     if(image.exists() && !image.delete()) {
                         StaticStore.logger.uploadLog("W/EntityHandlerEnemySprite | Can't delete file : "+image.getAbsolutePath());
@@ -2726,7 +2728,7 @@ public class EntityHandler {
             e.setImage("attachment://medal.png");
 
             ch.sendMessageEmbeds(e.build())
-                    .addFile(image, "medal.png")
+                    .addFiles(FileUpload.fromData(image, "medal.png"))
                     .queue(m -> {
                         if(image.exists() && !image.delete()) {
                             StaticStore.logger.uploadLog("W/EntityHandlerMedal | Can't delete file : "+image.getAbsolutePath());
@@ -2775,10 +2777,10 @@ public class EntityHandler {
             e.setImage("attachment://combo.png");
         }
 
-        MessageAction action = ch.sendMessageEmbeds(e.build());
+        MessageCreateAction action = ch.sendMessageEmbeds(e.build());
 
         if(icon != null)
-            action = action.addFile(icon, "combo.png");
+            action = action.addFiles(FileUpload.fromData(icon, "combo.png"));
 
         action.queue(m -> {
             if(icon != null && icon.exists() && !icon.delete()) {
@@ -2808,7 +2810,7 @@ public class EntityHandler {
             ch.sendMessage(LangID.getStringByID("stat_fail", lang)).queue();
         } else {
             ch.sendMessage(LangID.getStringByID("stat_success", lang))
-                    .addFile(result, "stat.png")
+                    .addFiles(FileUpload.fromData(result, "stat.png"))
                     .queue(m -> {
                         if(result.exists() && !result.delete()) {
                             StaticStore.logger.uploadLog("Failed to delete file : "+result.getAbsolutePath());
@@ -2832,7 +2834,7 @@ public class EntityHandler {
             ch.sendMessage(LangID.getStringByID("stat_fail", lang)).queue();
         } else {
             ch.sendMessage(LangID.getStringByID("stat_success", lang))
-                    .addFile(result, "stat.png")
+                    .addFiles(FileUpload.fromData(result, "stat.png"))
                     .queue(msg -> {
                         if(result.exists() && !result.delete()) {
                             StaticStore.logger.uploadLog("Failed to delete file : "+result.getAbsolutePath());
@@ -2885,12 +2887,12 @@ public class EntityHandler {
         Queue<File> done = new ArrayDeque<>();
 
         while(i < results.size()) {
-            MessageAction action = ch.sendMessage("Analyzed stage image");
+            MessageCreateAction action = ch.sendMessage("Analyzed stage image");
 
             long fileSize = 0;
 
             while (i < results.size() && fileSize + results.get(i).length() < 8 * 1024 * 1024) {
-                action = action.addFile(results.get(i));
+                action = action.addFiles(FileUpload.fromData(results.get(i)));
                 done.add(results.get(i));
 
                 fileSize += results.get(i).length();

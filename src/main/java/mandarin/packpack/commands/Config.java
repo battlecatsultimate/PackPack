@@ -161,7 +161,7 @@ public class Config extends ConstraintCommand {
         pages.add(Button.secondary("next", LangID.getStringByID("search_next", lang)).withEmoji(Emoji.fromCustom(EmojiStore.NEXT)));
 
         Message msg = ch.sendMessage(builder)
-                .setActionRows(
+                .setComponents(
                         ActionRow.of(SelectMenu.create("language").addOptions(languages).build()),
                         ActionRow.of(SelectMenu.create("defLevels").addOptions(levels).build()),
                         ActionRow.of(SelectMenu.create("extra").addOptions(extras).build()),

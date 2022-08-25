@@ -92,7 +92,7 @@ public class ScamLinkSubscriptionHolder extends InteractionHolder<GenericCompone
                 
                 event.deferEdit()
                         .setContent(parseMessage())
-                        .setActionRows(getComponents())
+                        .setComponents(getComponents())
                         .queue();
 
                 break;
@@ -106,7 +106,7 @@ public class ScamLinkSubscriptionHolder extends InteractionHolder<GenericCompone
 
                 event.deferEdit()
                         .setContent(parseMessage())
-                        .setActionRows(getComponents())
+                        .setComponents(getComponents())
                         .queue();
 
                 break;
@@ -120,18 +120,18 @@ public class ScamLinkSubscriptionHolder extends InteractionHolder<GenericCompone
                     StaticStore.scamLinkHandlers.servers.put(g.getId(), handler);
 
                     ch.sendMessage(LangID.getStringByID("subscam_done", lang).replace("_", targetChannel))
-                            .reference(msg)
-                            .allowedMentions(new ArrayList<>())
+                            .setMessageReference(msg)
+                            .setAllowedMentions(new ArrayList<>())
                             .queue();
 
                     event.deferEdit()
                             .setContent(parseMessage())
-                            .setActionRows()
+                            .setComponents()
                             .queue();
                 } else {
                     event.deferEdit()
                             .setContent(LangID.getStringByID("subscam_nomute", lang))
-                            .setActionRows()
+                            .setComponents()
                             .queue();
                 }
 
@@ -142,7 +142,7 @@ public class ScamLinkSubscriptionHolder extends InteractionHolder<GenericCompone
 
                 event.deferEdit()
                         .setContent(LangID.getStringByID("subscam_cancel", lang))
-                        .setActionRows()
+                        .setComponents()
                         .queue();
 
                 break;
@@ -158,7 +158,7 @@ public class ScamLinkSubscriptionHolder extends InteractionHolder<GenericCompone
     public void expire(String id) {
         expired = true;
 
-        msg.editMessage(LangID.getStringByID("subscam_expire", lang)).allowedMentions(new ArrayList<>()).queue();
+        msg.editMessage(LangID.getStringByID("subscam_expire", lang)).setAllowedMentions(new ArrayList<>()).queue();
     }
 
     private String parseMessage() {

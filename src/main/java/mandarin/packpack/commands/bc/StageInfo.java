@@ -216,7 +216,7 @@ public class StageInfo extends TimedConstraintCommand {
 
                 sb.append("```");
 
-                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).allowedMentions(new ArrayList<>()), stages.size(), accumulateData(stages, false), lang).complete();
+                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), stages.size(), accumulateData(stages, false), lang).complete();
 
                 if(res != null) {
                     Member member = getMember(event);

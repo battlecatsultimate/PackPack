@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +40,7 @@ public class Setup extends ConstraintCommand {
             components.add(Button.danger("cancel", LangID.getStringByID("button_cancel", lang)));
 
             Message m = ch.sendMessage(LangID.getStringByID("setup_confirm", lang))
-                    .setActionRows(ActionRow.of(components))
+                    .setComponents(ActionRow.of(components))
                     .complete();
 
             if(m == null)
@@ -64,7 +64,7 @@ public class Setup extends ConstraintCommand {
     }
 
     private void initializeSetup(MessageChannel ch, Guild g, Message author) {
-        MessageAction action = ch.sendMessage(LangID.getStringByID("setup_mod", lang));
+        MessageCreateAction action = ch.sendMessage(LangID.getStringByID("setup_mod", lang));
 
 
         List<Role> roles = g.getRoles();
@@ -81,10 +81,10 @@ public class Setup extends ConstraintCommand {
             options.add(SelectOption.of(roles.get(i).getName(), roles.get(i).getId()).withDescription(roles.get(i).getId()));
         }
 
-        action = action.setActionRows(
+        action = action.setComponents(
                 ActionRow.of(SelectMenu.create("role").addOptions(options).setPlaceholder(LangID.getStringByID("setup_select", lang)).build()),
                 ActionRow.of(Button.success("confirm", LangID.getStringByID("button_confirm", lang)).asDisabled(), Button.danger("cancel", LangID.getStringByID("button_cancel", lang)))
-        ).allowedMentions(new ArrayList<>());
+        ).setAllowedMentions(new ArrayList<>());
 
         Message m = action.complete();
 

@@ -73,7 +73,7 @@ public class CatCombo extends TimedConstraintCommand {
 
                 sb.append("```");
 
-                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).allowedMentions(new ArrayList<>()), combos.size(), data, lang).complete();
+                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), combos.size(), data, lang).complete();
 
                 if(res != null) {
                     Member m = getMember(event);
@@ -124,7 +124,7 @@ public class CatCombo extends TimedConstraintCommand {
 
                     sb.append("```");
 
-                    Message res = registerSearchComponents(ch.sendMessage(sb.toString()).allowedMentions(new ArrayList<>()), combos.size(), data, lang).complete();
+                    Message res = registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), combos.size(), data, lang).complete();
 
                     if(res != null) {
                         Member m = getMember(event);
@@ -158,7 +158,7 @@ public class CatCombo extends TimedConstraintCommand {
 
                 sb.append("```");
 
-                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).allowedMentions(new ArrayList<>()), forms.size(), data, lang).complete();
+                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), forms.size(), data, lang).complete();
 
                 if(res != null) {
                     Member m = getMember(event);

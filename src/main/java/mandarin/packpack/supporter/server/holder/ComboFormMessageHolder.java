@@ -122,7 +122,7 @@ public class ComboFormMessageHolder extends SearchHolder {
 
                 sb.append("```");
 
-                Message res = Command.registerSearchComponents(ch.sendMessage(sb.toString()).allowedMentions(new ArrayList<>()), combos.size(), data, lang).complete();
+                Message res = Command.registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), combos.size(), data, lang).complete();
                 String formName = StaticStore.safeMultiLangGet(form.get(id), lang);
 
                 if(formName == null || formName.isBlank())
@@ -131,7 +131,7 @@ public class ComboFormMessageHolder extends SearchHolder {
                 if(formName.isBlank())
                     formName = Data.trio(form.get(id).unit.id.id) +" - " + Data.trio(form.get(id).fid);
 
-                msg.editMessage(LangID.getStringByID("combo_selected", lang).replace("_", formName)).setActionRows().queue();
+                msg.editMessage(LangID.getStringByID("combo_selected", lang).replace("_", formName)).setComponents().queue();
 
                 if(res != null) {
                     Member m = event.getMember();

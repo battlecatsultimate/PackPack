@@ -74,7 +74,7 @@ public class FormStat extends ConstraintCommand {
 
         if(f == null) {
             event.deferReply()
-                    .allowedMentions(new ArrayList<>())
+                    .setAllowedMentions(new ArrayList<>())
                     .setContent(LangID.getStringByID("formst_specific", finalLang))
                     .queue();
 
@@ -199,7 +199,7 @@ public class FormStat extends ConstraintCommand {
 
                 sb.append("```");
 
-                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).allowedMentions(new ArrayList<>()), forms.size(), data, lang).complete();
+                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), forms.size(), data, lang).complete();
 
                 int param = checkParameters(getContent(event));
 

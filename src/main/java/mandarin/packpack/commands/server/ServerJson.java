@@ -6,6 +6,7 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
+import net.dv8tion.jda.api.utils.FileUpload;
 
 import java.io.File;
 
@@ -30,7 +31,7 @@ public class ServerJson extends ConstraintCommand {
 
             if(msg != null) {
                 msg.getAuthor().openPrivateChannel()
-                        .flatMap(pc -> pc.sendMessage("Sent serverinfo.json via DM").addFile(f, "serverinfo.json"))
+                        .flatMap(pc -> pc.sendMessage("Sent serverinfo.json via DM").addFiles(FileUpload.fromData(f, "serverinfo.json")))
                         .queue();
             }
         }

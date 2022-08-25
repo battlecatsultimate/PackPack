@@ -137,7 +137,7 @@ public class FormGif extends GlobalTimedConstraintCommand {
                     ch.sendMessage(LangID.getStringByID("gif_ignore", lang)).queue();
                 }
 
-                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).allowedMentions(new ArrayList<>()), forms.size(), data, lang).complete();
+                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), forms.size(), data, lang).complete();
 
                 if(res != null) {
                     Message msg = getMessage(event);

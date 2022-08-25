@@ -77,7 +77,7 @@ public class SetupMemberButtonHolder extends InteractionHolder<GenericComponentI
 
                 event.deferEdit()
                         .setContent(LangID.getStringByID("setup_memsele", lang).replace("_RRR_", es.getValues().get(0)))
-                        .setActionRows(getComponents(g))
+                        .setComponents(getComponents(g))
                         .queue();
 
                 break;
@@ -91,13 +91,13 @@ public class SetupMemberButtonHolder extends InteractionHolder<GenericComponentI
                 StaticStore.idHolder.put(g.getId(), holder);
 
                 ch.sendMessage(LangID.getStringByID("setup_done", lang).replace("_MOD_", modID).replace("_MEM_", roleID))
-                        .reference(msg)
-                        .allowedMentions(new ArrayList<>())
+                        .setMessageReference(msg)
+                        .setAllowedMentions(new ArrayList<>())
                         .queue();
 
                 event.deferEdit()
                         .setContent(LangID.getStringByID("setup_memsele", lang).replace("_RRR_", roleID))
-                        .setActionRows()
+                        .setComponents()
                         .queue();
 
                 break;
@@ -107,7 +107,7 @@ public class SetupMemberButtonHolder extends InteractionHolder<GenericComponentI
 
                 event.deferEdit()
                         .setContent(LangID.getStringByID("setup_cancel", lang))
-                        .setActionRows()
+                        .setComponents()
                         .queue();
 
                 break;
@@ -124,7 +124,7 @@ public class SetupMemberButtonHolder extends InteractionHolder<GenericComponentI
         expired = true;
 
         msg.editMessage(LangID.getStringByID("setup_expire", lang))
-                .setActionRows()
+                .setComponents()
                 .queue();
     }
 

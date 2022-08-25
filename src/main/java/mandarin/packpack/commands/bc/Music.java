@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.interactions.Interaction;
+import net.dv8tion.jda.api.utils.FileUpload;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -58,9 +59,9 @@ public class Music extends GlobalTimedConstraintCommand {
             fos.close();
 
             event.deferReply()
-                    .allowedMentions(new ArrayList<>())
+                    .setAllowedMentions(new ArrayList<>())
                     .setContent(LangID.getStringByID("music_upload", lang).replace("_", Data.trio(ms.id.id)))
-                    .addFile(file, Data.trio(ms.id.id) + ".ogg")
+                    .addFiles(FileUpload.fromData(file, Data.trio(ms.id.id) + ".ogg"))
                     .queue(m -> {
                         if(file.exists() && !file.delete()) {
                             StaticStore.logger.uploadLog("Failed to delete file : "+file.getAbsolutePath());
@@ -160,7 +161,7 @@ public class Music extends GlobalTimedConstraintCommand {
 
             if(ch != null) {
                 ch.sendMessage(LangID.getStringByID("music_upload", lang).replace("_", optionalID))
-                        .addFile(file, optionalID+".ogg")
+                        .addFiles(FileUpload.fromData(file, optionalID+".ogg"))
                         .queue(m -> {
                             waiter.resume();
 
@@ -210,7 +211,7 @@ public class Music extends GlobalTimedConstraintCommand {
 
             if(ch != null) {
                 ch.sendMessage(LangID.getStringByID("music_upload", lang).replace("_", optionalID))
-                        .addFile(file, optionalID+".ogg")
+                        .addFiles(FileUpload.fromData(file, optionalID+".ogg"))
                         .queue(msg -> {
                             waiter.resume();
 

@@ -138,7 +138,7 @@ public class PrintEvent extends ConstraintCommand {
                         }
 
                         ch.sendMessage(merge.toString())
-                                .allowedMentions(new ArrayList<>())
+                                .setAllowedMentions(new ArrayList<>())
                                 .queue();
                     }
                 }
@@ -195,7 +195,7 @@ public class PrintEvent extends ConstraintCommand {
                     sendMessageWithFile(ch, (wasDone ? "** **\n" : "") + LangID.getStringByID(lID, l), res, "event.txt");
                 } else {
                     ch.sendMessage((wasDone ? "** **\n" : "") + result)
-                            .allowedMentions(new ArrayList<>())
+                            .setAllowedMentions(new ArrayList<>())
                             .queue();
                 }
             }

@@ -141,7 +141,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
 
                 sb.append("```");
 
-                Message res = Command.registerSearchComponents(ch.sendMessage(sb.toString()).allowedMentions(new ArrayList<>()), stages.size(), accumulateStage(stages, false), lang).complete();
+                Message res = Command.registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), stages.size(), accumulateStage(stages, false), lang).complete();
 
                 if(res != null) {
                     StaticStore.putHolder(author.getAuthor().getId(), new StageInfoMessageHolder(stages, author, res, ch.getId(), star, isFrame, isExtra, isCompact, lang));

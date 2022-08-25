@@ -71,7 +71,7 @@ public abstract class SearchHolder extends InteractionHolder<GenericComponentInt
         StaticStore.removeHolder(id, this);
 
         msg.editMessage(LangID.getStringByID("formst_expire", lang))
-                .setActionRows()
+                .setComponents()
                 .queue();
     }
 
@@ -108,7 +108,7 @@ public abstract class SearchHolder extends InteractionHolder<GenericComponentInt
                 StaticStore.removeHolder(event.getUser().getId(), this);
 
                 event.deferEdit()
-                        .setActionRows()
+                        .setComponents()
                         .complete();
 
                 msg.editMessage(LangID.getStringByID("formst_cancel", lang)).complete();
@@ -217,7 +217,7 @@ public abstract class SearchHolder extends InteractionHolder<GenericComponentInt
     private void apply(GenericComponentInteractionCreateEvent event) {
         event.deferEdit()
                 .setContent(getPage())
-                .setActionRows(getComponents())
+                .setComponents(getComponents())
                 .complete();
     }
 }

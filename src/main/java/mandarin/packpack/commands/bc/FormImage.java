@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
+import net.dv8tion.jda.api.utils.FileUpload;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -103,7 +104,7 @@ public class FormImage extends TimedConstraintCommand {
                         fName = LangID.getStringByID("data_unit", lang)+" "+ Data.trio(forms.get(0).uid.id)+" "+Data.trio(forms.get(0).fid);
 
                     ch.sendMessage(LangID.getStringByID("fimg_result", lang).replace("_", fName).replace(":::", getModeName(mode, forms.get(0).anim.anims.length)).replace("=", String.valueOf(frame)))
-                            .addFile(img, "result.png")
+                            .addFiles(FileUpload.fromData(img, "result.png"))
                             .queue(m -> {
                                 if(img.exists() && !img.delete()) {
                                     StaticStore.logger.uploadLog("Can't delete file : " + img.getAbsolutePath());
@@ -138,7 +139,7 @@ public class FormImage extends TimedConstraintCommand {
 
                 sb.append("```");
 
-                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).allowedMentions(new ArrayList<>()), forms.size(), data, lang).complete();
+                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), forms.size(), data, lang).complete();
 
                 int param = checkParameters(getContent(event));
                 int mode = getMode(getContent(event));
