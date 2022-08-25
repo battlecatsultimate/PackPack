@@ -80,7 +80,7 @@ public class ConfirmButtonHolder extends InteractionHolder<ButtonInteractionEven
                 action.run();
 
                 break;
-            case "cnacle":
+            case "cancel":
                 event.getMessage().delete().queue();
         }
     }
