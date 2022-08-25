@@ -142,12 +142,12 @@ public abstract class ConstraintCommand extends Command {
                     try {
                         doSomething(event);
                     } catch (Exception e) {
-                        StaticStore.logger.uploadErrorLog(e, "Failed to perform command");
+                        StaticStore.logger.uploadErrorLog(e, "Failed to perform command\n\nCommand : " + getContent(event));
                         onFail(event, DEFAULT_ERROR);
                     }
                 }).start();
             } catch (Exception e) {
-                StaticStore.logger.uploadErrorLog(e, "Failed to perform command");
+                StaticStore.logger.uploadErrorLog(e, "Failed to perform command\n\nCommand : " + getContent(event));
                 onFail(event, DEFAULT_ERROR);
             }
 

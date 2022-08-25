@@ -151,13 +151,13 @@ public abstract class TimedConstraintCommand extends Command {
                             }
                         }
                     } catch (Exception e) {
-                        StaticStore.logger.uploadErrorLog(e, "Failed to perform timed constraint command : "+this.getClass());
+                        StaticStore.logger.uploadErrorLog(e, "Failed to perform timed constraint command : "+this.getClass()+"\n\nCommand : "+getContent(event));
                         e.printStackTrace();
                         onFail(event, DEFAULT_ERROR);
                     }
                 }).start();
             } catch (Exception e) {
-                StaticStore.logger.uploadErrorLog(e, "Failed to perform timed constraint command : "+this.getClass());
+                StaticStore.logger.uploadErrorLog(e, "Failed to perform timed constraint command : "+this.getClass()+"\n\nCommand : "+getContent(event));
                 e.printStackTrace();
                 onFail(event, DEFAULT_ERROR);
             }
@@ -165,7 +165,7 @@ public abstract class TimedConstraintCommand extends Command {
             try {
                 onSuccess(event);
             } catch (Exception e) {
-                StaticStore.logger.uploadErrorLog(e, "Failed to perform timed constraint command on success : "+this.getClass());
+                StaticStore.logger.uploadErrorLog(e, "Failed to perform timed constraint command : "+this.getClass()+"\n\nCommand : "+getContent(event));
                 e.printStackTrace();
             }
         }

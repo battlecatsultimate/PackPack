@@ -198,14 +198,12 @@ public abstract class Command {
                 try {
                     doSomething(event);
                 } catch (Exception e) {
-                    StaticStore.logger.uploadErrorLog(e, "Failed to perform command");
-                    e.printStackTrace();
+                    StaticStore.logger.uploadErrorLog(e, "Failed to perform command\n\nCommand : " + getContent(event));
                     onFail(event, DEFAULT_ERROR);
                 }
             }).start();
         } catch (Exception e) {
-            StaticStore.logger.uploadErrorLog(e, "Failed to perform command");
-            e.printStackTrace();
+            StaticStore.logger.uploadErrorLog(e, "Failed to perform command\n\nCommand : " + getContent(event));
             onFail(event, DEFAULT_ERROR);
         }
     }
