@@ -69,6 +69,10 @@ public class IDHolder {
             id.config.lang = obj.get("locale").getAsInt();
         }
 
+        if(obj.has("banned")) {
+            id.banned = id.jsonObjectToListString(obj.getAsJsonArray("banned"));
+        }
+
         return id;
     }
 
@@ -89,6 +93,7 @@ public class IDHolder {
     public List<Integer> eventLocale = new ArrayList<>();
     public boolean eventRaw = false;
     public ConfigHolder config = new ConfigHolder();
+    public List<String> banned = new ArrayList<>();
 
     public IDHolder(String m, String me, String bo, String acc) {
         this.MOD = m;
@@ -119,6 +124,7 @@ public class IDHolder {
         obj.addProperty("event", getOrNull(event));
         obj.add("eventLocale", listIntegerToJsonObject(eventLocale));
         obj.add("config", config.jsonfy());
+        obj.add("banned", listStringToJsonObject(banned));
 
         return obj;
     }

@@ -323,6 +323,9 @@ public class AllEventAdapter extends ListenerAdapter {
             if(!mandarin && !isMod && !canGo)
                 return;
 
+            if(!mandarin && idh.banned.contains(m.getId()))
+                return;
+
             if(StaticStore.holderContainsKey(m.getId())) {
                 Holder<? extends Event> holder = StaticStore.getHolder(m.getId());
 
@@ -734,6 +737,14 @@ public class AllEventAdapter extends ListenerAdapter {
                 case "serverc":
                 case "sc":
                     new Config(ConstraintCommand.ROLE.MOD, lang, idh, idh.config, true).execute(event);
+                    break;
+                case "commandban":
+                case "cb":
+                    new CommandBan(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+                    break;
+                case "commandunban":
+                case "cub":
+                    new CommandUnban(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
                     break;
             }
         } catch (Exception e) {

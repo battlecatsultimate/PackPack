@@ -752,6 +752,10 @@
   "help_serverconfig_use" : "`p!serverconfig`",
   "help_serverconfig_desc" : "Adjust config of server, so bot can apply preferences automatically. **Only moderators can use this command.** `serverc`, `sconfig`, `sc` are also valid command",
   "help_serverconfig_tip" : "When you call this command, bot will show 5 things which can be adjusted : Language, Default level, Extra information, Unit, Compact embed\n\n**Language** - language is that you can make bot show text with difference supporting language\n\n**Default level** - You can make bot apply specific level automatically without calling `-lv` argument\n\n**Extra information** - You can make bot always show extra information (catfruit evolve data for unit, ex stage data for stage, etc.) without calling `-e` argument\n\n**Unit** - You can make bot always use frame/second unit for time-related data automatically without calling `-s` argument\n\n**Compact embed** - In mobile discord, there's problem that bot floods the chat when showing stat embed. This config merges multiple fields into one field, compressing embed messages without calling `-c` argument",
+  "help_commandban_use" : "`p!commandban [User ID]`",
+  "help_commandban_desc" : "Make the bot ignore specified user's command calls to prevent abusing it. **Only moderators can use this command.** `cb` is also valid command",
+  "help_commandunban_use" : "`p!commandunban [User ID]`",
+  "help_commandunban_desc" : "Allow user who banned from using this bot to use commands back. **Only moderators can use this command.** `cub` is also valid command",
   "prefix_space" : "Prefixはスペースにはできません!",
   "prefix_set" : "Prefixは _ にセットされました!",
   "prefix_setnone" : "あなたのPrefixはアップデートされました!",
@@ -1093,5 +1097,16 @@
   "permission_addreact" : "Adding Reactions",
   "permission_addrole" : "Managing Roles (Adding, Deleting, etc.)",
   "permission_addemoji" : "Managing Emojis and Stickers (Adding, Deleting, etc.)",
-  "permission_externalemoji" : "Using External Emojis"
+  "permission_externalemoji" : "Using External Emojis",
+  "comban_noid" : "You have to decide which member to ban from using this bot!",
+  "comban_nonumber" : "You have to provide either mention or ID of user",
+  "comban_nomember" : "Bot couldn't find such user in this server",
+  "comban_already" : "This user is already banned from using bot in this server",
+  "comban_confirm" : "Are you sure that you want to ban this user <@_> from using PackPack? Once you ban this user, they won't be able to use any commands of PackPack",
+  "comban_success" : "Successfully banned user <@_>",
+  "comban_fail" : "Failed to get member data...",
+  "comban_noself" : "You can't ban yourself!",
+  "comunban_notban" : "This user isn't banned from using this bot",
+  "comunban_confirm" : "Are you sure that you want to unban this user <@_> from using PackPack? This means user will be able to use commands of PackPack back",
+  "comunban_success" : "Successfully unbanned user <@_>"
 }
