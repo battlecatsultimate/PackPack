@@ -26,6 +26,7 @@ public class EmojiStore {
         CROWN_ON = StaticStore.getEmoteWitNameAndID(jda, "CrownOn", 993716790813261884L, false, true);
         TREASURE_RADAR = StaticStore.getEmoteWitNameAndID(jda, "TreasureRadar", 993716433387261992L, false, true);
         UDP = StaticStore.getEmoteWitNameAndID(jda, "UDP", 993716659904847912L, false, true);
+        NP = StaticStore.getEmoteWitNameAndID(jda, "NP", 1013168214143946823L, false, true);
 
         File iconData = new File("./data/abilityIcons.txt");
 
@@ -78,6 +79,7 @@ public class EmojiStore {
     public static RichCustomEmoji CROWN_ON;
     public static RichCustomEmoji TREASURE_RADAR;
     public static RichCustomEmoji UDP;
+    public static RichCustomEmoji NP;
 
     public static Map<String, RichCustomEmoji> ABILITY = new HashMap<>();
     public static MultiLangCont<String, RichCustomEmoji> TRAIT = new MultiLangCont<>();

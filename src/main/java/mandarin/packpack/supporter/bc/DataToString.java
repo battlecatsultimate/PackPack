@@ -9,13 +9,16 @@ import common.pack.PackData;
 import common.pack.UserProfile;
 import common.system.files.VFile;
 import common.util.Data;
+import common.util.lang.Formatter;
 import common.util.lang.MultiLangCont;
+import common.util.lang.ProcLang;
 import common.util.stage.*;
 import common.util.stage.info.DefStageInfo;
 import common.util.unit.*;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 
 import java.awt.*;
 import java.text.DecimalFormat;
@@ -23,13 +26,13 @@ import java.text.NumberFormat;
 import java.util.*;
 import java.util.List;
 
-public class DataToString {
+public class DataToString extends Data {
     private static final Map<Integer, String> talentText = new HashMap<>();
     private static final Map<Integer, String> talentIcon = new HashMap<>();
     public static final DecimalFormat df;
     private static final List<String> mapIds = Arrays.asList("000000", "000001", "000002", "000003", "000004", "000006", "000007", "000011", "000012", "000013", "000014", "000024", "000025", "000027", "000031");
     private static final String[] mapCodes = {"N", "S", "C", "CH", "E", "T", "V", "R", "M", "A", "B", "RA", "H", "CA", "Q"};
-    private static final Map<Integer, int[]> pCoinLevels = new HashMap<>();
+    private static final Map<Integer, int[]> talentLevel = new HashMap<>();
     private static final int maxDifficulty = 11;
 
     static {
@@ -122,7 +125,7 @@ public class DataToString {
 
                 System.arraycopy(values, 1, costs, 0, values.length - 1);
 
-                pCoinLevels.put(id, costs);
+                talentLevel.put(id, costs);
             }
         }
     }
@@ -2177,5 +2180,277 @@ public class DataToString {
         }
 
         return result + " - " + getBackground(st, lang) + " - " + getCastle(st, lang);
+    }
+
+    public static String getTalentTitle(MaskUnit du, int index, int lang) {
+        if(du == null || du.getPCoin() == null)
+            return "";
+
+        int[] data = du.getPCoin().info.get(index);
+
+        String name;
+
+        if(talentText.containsKey(data[0])) {
+            name = LangID.getStringByID(talentText.get(data[0]), lang);
+        } else {
+            name = "???";
+        }
+
+        if(data[1] >= 2) {
+            name += " [1 ~ " + data[1] + "]";
+        }
+
+        if(talentIcon.containsKey(data[0])) {
+            String code = talentIcon.get(data[0]);
+
+            RichCustomEmoji emoji;
+
+            if(code.startsWith("T_")) {
+                int oldConfig = CommonStatic.getConfig().lang;
+                CommonStatic.getConfig().lang = lang;
+
+                emoji = EmojiStore.TRAIT.getCont(code);
+
+                CommonStatic.getConfig().lang = oldConfig;
+            } else {
+                emoji = EmojiStore.ABILITY.get(code);
+            }
+
+            if(emoji != null) {
+                name = emoji.getAsMention() + " " + name;
+            }
+        }
+
+        if(du.getPCoin().trait.size() == 1 && index == 0) {
+            String code = Interpret.TRAITICON[du.getPCoin().trait.get(0).id.id];
+
+            int oldConfig = CommonStatic.getConfig().lang;
+            CommonStatic.getConfig().lang = lang;
+
+            RichCustomEmoji emoji = EmojiStore.TRAIT.getCont(code);
+
+            CommonStatic.getConfig().lang = oldConfig;
+
+            if(emoji != null)
+                return emoji.getAsMention() + name;
+            else
+                return name;
+        } else {
+            return name;
+        }
+    }
+
+    public static String getTalentExplanation(MaskUnit du, MaskUnit improved, int index, boolean isFrame, int lang) {
+        if(du == null || du.getPCoin() == null)
+            return "";
+
+        int[] data = du.getPCoin().info.get(index);
+
+        String talentName;
+
+        if(talentText.containsKey(data[0])) {
+            talentName = LangID.getStringByID(talentText.get(data[0]), lang);
+        } else {
+            talentName = "???";
+        }
+
+        int[] type = PC_CORRES[data[0]];
+
+        String desc = "";
+
+        if(du.getPCoin().trait.size() == 1 && index == 0) {
+            desc += LangID.getStringByID("talentinfo_together", lang).replace("_", LangID.getStringByID(Interpret.TRAIT[du.getPCoin().trait.get(0).id.id], lang));
+        }
+
+        switch (type[0]) {
+            case PC_P:
+                if (data[1] >= 1) {
+                    Proc.ProcItem p = du.getProc().getArr(type[1]);
+
+                    if (!p.exists()) {
+                        Formatter.Context c = new Formatter.Context(true, !isFrame, new double[]{0, 0});
+
+                        int oldConfig = CommonStatic.getConfig().lang;
+                        CommonStatic.getConfig().lang = lang;
+
+                        String f = ProcLang.get().get(type[1]).format;
+
+                        CommonStatic.getConfig().lang = oldConfig;
+
+                        desc += Formatter.format(f, improved.getProc().getArr(type[1]), c) + "\n\n";
+                    }
+
+                    int changedIndex = findDifferentTalentIndex(data);
+
+                    if (changedIndex == -1) {
+                        StaticStore.logger.uploadLog("W/DataToString::getTalentExplanation - Failed to find different value set in talent : " + data[0]);
+
+                        return "";
+                    }
+
+                    int min = data[2 + changedIndex * 2];
+                    int max = data[3 + changedIndex * 2];
+
+                    String fieldName = p.getFieldName(changedIndex);
+                    String descID;
+
+                    switch (fieldName) {
+                        case "prob":
+                            descID = "talentinfo_chance";
+
+                            break;
+                        case "time":
+                            descID = "talentinfo_duration";
+
+                            break;
+                        case "mult":
+                            descID = "talentinfo_multiplier";
+
+                            break;
+                        default:
+                            throw new IllegalStateException("Unknown proc field name : " + fieldName);
+                    }
+
+                    if (fieldName.equals("time")) {
+                        if (isFrame) {
+                            desc += LangID.getStringByID(descID, lang).replace("_mmm_", min + "f").replace("_MMM_", max + "f") + "\n\n";
+                        } else {
+                            desc += LangID.getStringByID(descID, lang).replace("_mmm_", df.format(min / 30.0) + "s").replace("_MMM_", df.format(max / 30.0) + "s") + "\n\n";
+                        }
+                    } else {
+                        if (fieldName.equals("mult") && type[1] == P_WEAK) {
+                            min = 100 - min;
+                            max = 100 - max;
+                        }
+
+                        desc += LangID.getStringByID(descID, lang).replace("_mmm_", min + "").replace("_MMM_", max + "") + "\n\n";
+                    }
+                }
+
+                return desc + fillUpNpCost(data, lang, desc.isBlank());
+            case PC_IMU:
+            case PC_AB:
+                return desc + fillUpNpCost(data, lang, desc.isBlank());
+            case PC_BASE:
+                int changedIndex = findDifferentTalentIndex(data);
+
+                if(changedIndex == -1) {
+                    StaticStore.logger.uploadLog("W/DataToString::getTalentExplanation - Failed to find different value set in talent : " + data[0]);
+
+                    return "";
+                }
+
+                int min = data[2 + changedIndex * 2];
+                int max = data[3 + changedIndex * 2];
+
+                if(type[1] == PC2_COST) {
+                    min = (int) (min * 1.5);
+                    max = (int) (max * 1.5);
+                }
+
+                String key;
+
+                switch (type[1]) {
+                    case PC2_HP:
+                        key = "talentinfo_health";
+
+                        break;
+                    case PC2_ATK:
+                        key = "talentinfo_attack";
+
+                        break;
+                    case PC2_SPEED:
+                        key = "talentinfo_speed";
+
+                        break;
+                    case PC2_COST:
+                        key = "talentinfo_cost";
+
+                        break;
+                    case PC2_CD:
+                        key = "talentinfo_cooldown";
+
+                        break;
+                    case PC2_HB:
+                        key = "talentinfo_kb";
+
+                        break;
+                    default:
+                        throw new IllegalStateException("Invalid P_BASE ID : " + type[1]);
+                }
+
+                return desc + LangID.getStringByID(key, lang)
+                        .replace("_mmm_", min + "")
+                        .replace("_MMM_", max + "") +
+                        fillUpNpCost(data, lang, true);
+            case PC_TRAIT:
+                return desc + LangID.getStringByID("talentinfo_trait", lang).replace("_", talentName) + fillUpNpCost(data, lang, true);
+            default:
+                throw new IllegalStateException("E/DataToString::getTalentExplanation - Somehow reached point where bot couldn't get description of talent " + data[0] + " | Type : " + type[0]);
+        }
+    }
+
+    private static int findDifferentTalentIndex(int[] data) {
+        for(int i = 0; i < 4; i++) {
+            if(data[2 + 2 * i] != data[3 + 2 * i]) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    private static String fillUpNpCost(int[] data, int lang, boolean space) {
+        if(talentLevel.containsKey(data[11])) {
+            if(data[1] < 2) {
+                return (space ? "\n** **\n" : "") + LangID.getStringByID("talentinfo_npsingle", lang).replace("_", talentLevel.get(data[11])[0] + "");
+            } else {
+                int[] costs = talentLevel.get(data[11]);
+
+                StringBuilder cost = new StringBuilder("[");
+                int totalCost = 0;
+
+                for(int i = 0; i < data[1]; i++) {
+                    if(i < costs.length) {
+                        cost.append(costs[i]);
+                        totalCost += costs[i];
+
+                        if(i < data[1] - 1 && i < costs.length - 1)
+                            cost.append(", ");
+                        else
+                            cost.append("]");
+                    }
+                }
+
+                return (space ? "\n** **\n" : "") + LangID.getStringByID("talentinfo_np", lang).replace("_CCC_", cost.toString()).replace("_TTT_", totalCost + "");
+            }
+        } else {
+            StaticStore.logger.uploadLog("W/DataToString::fillUpNpCost - Unknown talent cost group ID : " + data[11]);
+
+            return "";
+        }
+    }
+
+    public static String accumulateNpCost(PCoin talent, int lang) {
+        int cost = 0;
+
+        for(int i = 0; i < talent.info.size(); i++) {
+            int[] data = talent.info.get(i);
+
+            if(talentLevel.containsKey(data[11])) {
+                int[] costCurve = talentLevel.get(data[11]);
+
+                if(data[1] <= 1) {
+                    cost += costCurve[0];
+                } else {
+                    for(int j = 0; j < data[1]; j++) {
+                        if(j < costCurve.length)
+                            cost += costCurve[j];
+                    }
+                }
+            }
+        }
+
+        return LangID.getStringByID("talentinfo_total", lang).replace("_", cost + "");
     }
 }

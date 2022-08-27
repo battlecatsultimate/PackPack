@@ -6,38 +6,25 @@ import common.util.lang.MultiLangCont;
 import common.util.unit.Form;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
-import mandarin.packpack.supporter.server.data.ConfigHolder;
-import net.dv8tion.jda.api.entities.Member;
+import mandarin.packpack.supporter.lang.LangID;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FormStatMessageHolder extends SearchHolder {
-    private final ArrayList<Form> form;
-    private final ConfigHolder config;
+public class TalentMessageHolder extends SearchHolder {
+    private final List<Form> form;
 
-    private final boolean talent;
     private final boolean isFrame;
-    private final boolean extra;
-    private final boolean compact;
-    private final ArrayList<Integer> lv;
 
-    public FormStatMessageHolder(ArrayList<Form> form, Message author, ConfigHolder config, Message msg, String channelID, int param, ArrayList<Integer> lv, int lang) {
+    public TalentMessageHolder(@NotNull Message msg, @NotNull Message author, @NotNull String channelID, List<Form> form, boolean isFrame, int lang) {
         super(msg, author, channelID, lang);
 
         this.form = form;
-        this.config = config;
-
-        this.talent = (param & 2) > 0;
-        this.isFrame = (param & 4) == 0 && config.useFrame;
-        this.extra = (param & 8) > 0 || config.extra;
-        this.compact = (param & 16) > 0 || config.compact;
-        this.lv = lv;
-
-        registerAutoFinish(this, msg, author, lang, FIVE_MIN);
+        this.isFrame = isFrame;
     }
 
     @Override
@@ -75,19 +62,25 @@ public class FormStatMessageHolder extends SearchHolder {
         msg.delete().queue();
 
         try {
-            Message result = EntityHandler.showUnitEmb(form.get(id), ch, config, isFrame, talent, extra, lv, lang, true, compact);
+            Form f = form.get(id);
 
-            if(result != null) {
-                Member m = event.getMember();
+            if(f.unit.forms.length < 3) {
+                createMessageWithNoPings(ch, LangID.getStringByID("talentinfo_notf", lang));
 
-                if(m != null) {
-                    StaticStore.removeHolder(m.getId(), FormStatMessageHolder.this);
-
-                    StaticStore.putHolder(m.getId(), new FormButtonHolder(form.get(id), getAuthorMessage(), result, config, isFrame, talent, extra, compact, lv, lang, channelID));
-                }
+                return;
             }
+
+            Form trueForm = f.unit.forms[2];
+
+            if(trueForm.du == null || trueForm.du.getPCoin() == null) {
+                createMessageWithNoPings(ch, LangID.getStringByID("talentinfo_notal", lang));
+
+                return;
+            }
+
+            EntityHandler.showTalentEmbed(ch, trueForm, isFrame, lang);
         } catch (Exception e) {
-            StaticStore.logger.uploadErrorLog(e, "E/FormStatMessageHolder::onSelected - Failed to perform showing unit embed");
+            StaticStore.logger.uploadErrorLog(e, "E/TalentMessageHolder::onSelected - Failed to perform showing talent embed");
         }
     }
 

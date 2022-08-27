@@ -3,6 +3,7 @@ package mandarin.packpack.supporter.bc;
 import com.google.gson.JsonObject;
 import common.CommonStatic;
 import common.battle.data.MaskUnit;
+import common.battle.data.PCoin;
 import common.pack.PackData;
 import common.system.fake.FakeImage;
 import common.system.files.VFile;
@@ -457,6 +458,10 @@ public class EntityHandler {
             if(canFinalForm(f)) {
                 components.add(Button.secondary("final", LangID.getStringByID("button_finf", lang)).withEmoji(Emoji.fromCustom(EmojiStore.TWO_NEXT)));
             }
+
+            if(f.du.getPCoin() != null) {
+                components.add(Button.secondary("talent", LangID.getStringByID("button_talent", lang)).withEmoji(Emoji.fromCustom(EmojiStore.NP)));
+            }
         }
 
         if(f.unit.rarity == 4 || f.unit.rarity == 5) {
@@ -491,6 +496,62 @@ public class EntityHandler {
         f.anim.unload();
 
         return msg;
+    }
+
+    public static void showTalentEmbed(MessageChannel ch, Form unit, boolean isFrame, int lang) throws Exception {
+        if(unit.du == null || unit.du.getPCoin() == null)
+            throw new IllegalStateException("E/EntityHandler::showTalentEmbed - Unit which has no talent has been passed");
+
+        ArrayList<Integer> levels = new ArrayList<>();
+
+        for(int i = 0; i < unit.du.getPCoin().max.size(); i++) {
+            levels.add(1);
+        }
+
+        MaskUnit improved = unit.du.getPCoin().improve(levels);
+
+        EmbedBuilder spec = new EmbedBuilder();
+
+        PCoin talent = unit.du.getPCoin();
+
+        File img = generateIcon(unit);
+
+        int oldConfig = CommonStatic.getConfig().lang;
+        CommonStatic.getConfig().lang = lang;
+
+        String unitName = MultiLangCont.get(unit);
+
+        CommonStatic.getConfig().lang = oldConfig;
+
+        if(unitName == null)
+            unitName = Data.trio(unit.unit.id.id);
+
+        spec.setTitle(LangID.getStringByID("talentinfo_title", lang).replace("_", unitName));
+
+        for(int i = 0; i < talent.info.size(); i++) {
+            String title = DataToString.getTalentTitle(unit.du, i, lang);
+            String desc = DataToString.getTalentExplanation(unit.du, improved, i, isFrame, lang);
+
+            if(title.isBlank() || desc.isBlank())
+                continue;
+
+            spec.addField(title, desc, false);
+        }
+
+        spec.setColor(StaticStore.rainbow[2]);
+
+        if(img != null)
+            spec.setThumbnail("attachment://icon.png");
+
+        spec.setFooter(DataToString.accumulateNpCost(unit.du.getPCoin(), lang));
+
+        MessageCreateAction action = ch.sendMessageEmbeds(spec.build())
+                .setAllowedMentions(new ArrayList<>());
+
+        if(img != null)
+            action = action.addFiles(FileUpload.fromData(img, "icon.png"));
+
+        action.queue();
     }
 
     private static ArrayList<Integer> handleTalent(ArrayList<Integer> lv, ArrayList<Integer> t) {
@@ -3476,8 +3537,6 @@ public class EntityHandler {
             if(i < immunes.size() - 1)
                 sb.append(LangID.getStringByID("data_comma", lang));
         }
-
-
 
         switch (lang) {
             case LangID.KR:

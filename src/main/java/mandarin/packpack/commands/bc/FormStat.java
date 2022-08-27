@@ -151,8 +151,6 @@ public class FormStat extends ConstraintCommand {
             ArrayList<Form> forms = EntityFilter.findUnitWithName(filterCommand(getContent(event)), lang);
 
             if (forms.size() == 1) {
-                CommonStatic.getConfig().lang = lang;
-
                 int param = checkParameters(getContent(event));
 
                 ArrayList<Integer> lv = handleLevel(getContent(event));

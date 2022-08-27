@@ -758,6 +758,10 @@ public class AllEventAdapter extends ListenerAdapter {
                 case "achp":
                     new AllowChannelPermission(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
                     break;
+                case "talentinfo":
+                case "ti":
+                    new TalentInfo(ConstraintCommand.ROLE.MEMBER, lang, idh, c).execute(event);
+                    break;
             }
         } catch (Exception e) {
             Message msg = event.getMessage();
