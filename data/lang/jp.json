@@ -131,6 +131,7 @@
   "data_add4" : " (被ダメx0.2/ 与ダメx5)",
   "data_add5" : " (被ダメx1/6~x1/7)",
   "data_add6" : " (与ダメx5~x6)",
+  "data_add7" : " (被ダメx0.7/ 与ダメx1.6)",
   "data_weaken" : "攻撃力ダウン",
   "data_freeze" : "動きを止める",
   "data_slow" : "動きを遅くする",

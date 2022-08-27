@@ -131,6 +131,7 @@
   "data_add4" : " (Receives damage 0.2x / Deals damage 5x)",
   "data_add5" : " (Receives damage 1/6~1/7x)",
   "data_add6" : " (Deals damage 5~6x)",
+  "data_add7" : " (Receives damage 0.7x / Deals damage 1.6x)",
   "data_weaken" : "Weaken",
   "data_freeze" : "Freeze",
   "data_slow" : "Slow",

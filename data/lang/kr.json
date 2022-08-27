@@ -145,6 +145,7 @@
   "data_add4" : " (피격 시 x0.2 / 공격 시 x5)",
   "data_add5" : " (피격 시 x1/6~x1/7)",
   "data_add6" : " (공격 시 x5~x6)",
+  "data_add7" : " (피격 시 0.7x / 공격 시 1.6x)",
   "data_weaken" : "약하게한다",
   "data_freeze" : "멈춘다",
   "data_slow" : "느리게 한다",
