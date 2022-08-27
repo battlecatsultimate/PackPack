@@ -1894,7 +1894,7 @@ public class DataToString {
         }
 
         for(int i = 0; i < result.size(); i++) {
-            result.set(i, " - " + result.get(i));
+            result.set(i, result.get(i));
         }
 
         return result;

@@ -3227,6 +3227,10 @@ public class EntityHandler {
 
         List<String> misc = DataToString.getMiscellaneous(st, lang);
 
+        for(int i = 0; i < misc.size(); i++) {
+            misc.set(i, " - " + misc.get(i));
+        }
+
         if(misc.isEmpty())
             misc.add(LangID.getStringByID("data_none", lang));
 
