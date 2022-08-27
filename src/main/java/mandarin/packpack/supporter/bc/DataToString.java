@@ -25,6 +25,7 @@ import java.util.List;
 
 public class DataToString {
     private static final Map<Integer, String> talentText = new HashMap<>();
+    private static final Map<Integer, String> talentIcon = new HashMap<>();
     public static final DecimalFormat df;
     private static final List<String> mapIds = Arrays.asList("000000", "000001", "000002", "000003", "000004", "000006", "000007", "000011", "000012", "000013", "000014", "000024", "000025", "000027", "000031");
     private static final String[] mapCodes = {"N", "S", "C", "CH", "E", "T", "V", "R", "M", "A", "B", "RA", "H", "CA", "Q"};
@@ -38,67 +39,67 @@ public class DataToString {
     }
 
     public static void initialize() {
-        talentText.put(0, "??");
-        talentText.put(1, "data_weaken");
-        talentText.put(2, "data_freeze");
-        talentText.put(3, "data_slow");
-        talentText.put(4, "data_attackon");
-        talentText.put(5, "data_strong");
-        talentText.put(6, "data_resistant");
-        talentText.put(7, "data_massive");
-        talentText.put(8, "data_knockback");
-        talentText.put(9, "data_warp");
-        talentText.put(10, "data_strength");
-        talentText.put(11, "data_survive");
-        talentText.put(12, "data_basedest");
-        talentText.put(13, "data_critical");
-        talentText.put(14, "data_zombiekill");
-        talentText.put(15, "data_barrierbreak");
-        talentText.put(16, "data_extramon");
-        talentText.put(17, "data_wave");
-        talentText.put(18, "data_resweak");
-        talentText.put(19, "data_resfreeze");
-        talentText.put(20, "data_resslow");
-        talentText.put(21, "data_reskb");
-        talentText.put(22, "data_reswave");
-        talentText.put(23, "data_waveshie");
-        talentText.put(24, "data_reswarp");
-        talentText.put(25, "data_cost");
-        talentText.put(26, "data_cooldown");
-        talentText.put(27, "data_speed");
-        talentText.put(28, "??");
-        talentText.put(29, "data_imucurse");
-        talentText.put(30, "data_rescurse");
-        talentText.put(31, "data_atk");
-        talentText.put(32, "data_hp");
-        talentText.put(33, "data_red");
-        talentText.put(34, "data_float");
-        talentText.put(35, "data_black");
-        talentText.put(36, "data_metal");
-        talentText.put(37, "data_angel");
-        talentText.put(38, "data_alien");
-        talentText.put(39, "data_zombie");
-        talentText.put(40, "data_relic");
-        talentText.put(41, "data_white");
-        talentText.put(42, "??");
-        talentText.put(43, "??");
-        talentText.put(44, "data_imuweak");
-        talentText.put(45, "data_imufreeze");
-        talentText.put(46, "data_imuslow");
-        talentText.put(47, "data_imukb");
-        talentText.put(48, "data_imuwave");
-        talentText.put(49, "data_imuwarp");
-        talentText.put(50, "data_savage");
-        talentText.put(51, "data_invinci");
-        talentText.put(52, "data_respoison");
-        talentText.put(53, "data_imupoison");
-        talentText.put(54, "data_ressurge");
-        talentText.put(55, "data_imusurge");
-        talentText.put(56, "data_surge");
-        talentText.put(57, "data_demon");
-        talentText.put(58, "data_shieldbreak");
-        talentText.put(59, "data_corpsekiller");
-        talentText.put(60, "data_curse");
+        addTalentData(0, "??", "");
+        addTalentData(1, "data_weaken", "WEAK");
+        addTalentData(2, "data_freeze", "STOP");
+        addTalentData(3, "data_slow", "SLOW");
+        addTalentData(4, "data_attackon", "data_attackon");
+        addTalentData(5, "data_strong", "data_strong");
+        addTalentData(6, "data_resistant", "data_resistant");
+        addTalentData(7, "data_massive", "data_massive");
+        addTalentData(8, "data_knockback", "KB");
+        addTalentData(9, "data_warp", "WARP");
+        addTalentData(10, "data_strength", "STRONG");
+        addTalentData(11, "data_survive", "LETHAL");
+        addTalentData(12, "data_basedest", "data_basedest");
+        addTalentData(13, "data_critical", "CRIT");
+        addTalentData(14, "data_zombiekill", "data_zombiekill");
+        addTalentData(15, "data_barrierbreak", "BREAK");
+        addTalentData(16, "data_extramon", "BOUNTY");
+        addTalentData(17, "data_wave", "WAVE");
+        addTalentData(18, "data_resweak", "RESWEAK");
+        addTalentData(19, "data_resfreeze", "RESSTOP");
+        addTalentData(20, "data_resslow", "RESSLOW");
+        addTalentData(21, "data_reskb", "RESKB");
+        addTalentData(22, "data_reswave", "RESWAVE");
+        addTalentData(23, "data_waveshie", "data_waveshie");
+        addTalentData(24, "data_reswarp", "RESWARP");
+        addTalentData(25, "data_cost", "COSTDEC");
+        addTalentData(26, "data_cooldown", "CDDEC");
+        addTalentData(27, "data_speed", "SPEEDUP");
+        addTalentData(28, "??", "");
+        addTalentData(29, "data_imucurse", "IMUCURSE");
+        addTalentData(30, "data_rescurse", "RESCURSE");
+        addTalentData(31, "data_atk", "ATKUP");
+        addTalentData(32, "data_hp", "HPUP");
+        addTalentData(33, "data_red", "T_RED");
+        addTalentData(34, "data_float", "T_FLOAT");
+        addTalentData(35, "data_black", "T_BLACK");
+        addTalentData(36, "data_metal", "T_METAL");
+        addTalentData(37, "data_angel", "T_ANGEL");
+        addTalentData(38, "data_alien", "T_ALIEN");
+        addTalentData(39, "data_zombie", "T_ZOMBIE");
+        addTalentData(40, "data_relic", "T_RELIC");
+        addTalentData(41, "data_white", "T_WHITE");
+        addTalentData(42, "??", "");
+        addTalentData(43, "??", "");
+        addTalentData(44, "data_imuweak", "IMUWEAK");
+        addTalentData(45, "data_imufreeze", "IMUSTOP");
+        addTalentData(46, "data_imuslow", "IMUSLOW");
+        addTalentData(47, "data_imukb", "IMUKB");
+        addTalentData(48, "data_imuwave", "IMUWAVE");
+        addTalentData(49, "data_imuwarp", "IMUWARP");
+        addTalentData(50, "data_savage", "SATK");
+        addTalentData(51, "data_invinci", "IMUATK");
+        addTalentData(52, "data_respoison", "RESPOIATK");
+        addTalentData(53, "data_imupoison", "IMUPOIATK");
+        addTalentData(54, "data_ressurge", "RESVOLC");
+        addTalentData(55, "data_imusurge", "IMUVOLC");
+        addTalentData(56, "data_surge", "VOLC");
+        addTalentData(57, "data_demon", "T_AKU");
+        addTalentData(58, "data_shieldbreak", "SHIELDBREAK");
+        addTalentData(59, "data_corpsekiller", "data_corpsekiller");
+        addTalentData(60, "data_curse", "CURSE");
 
         VFile pCoinLevel = VFile.get("./org/data/SkillLevel.csv");
 
@@ -124,6 +125,11 @@ public class DataToString {
                 pCoinLevels.put(id, costs);
             }
         }
+    }
+
+    private static void addTalentData(int id, String name, String icon) {
+        talentText.put(id, name);
+        talentIcon.put(id, icon);
     }
 
     public static String getTitle(Form f, int lang) {

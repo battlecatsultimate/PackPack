@@ -22,6 +22,11 @@ public class Interpret extends Data {
             "data_demon", "data_relic", "data_white", "data_eva", "data_witch", "data_baron", "data_beast", "data_baset"
     };
 
+    public static final String[] TRAITICON = {
+            "T_RED", "T_FLOAT", "T_BLACK", "T_METAL", "T_ANGEL", "T_ALIEN", "T_ZOMBIE", "T_AKU", "T_RELIC", "T_WHITE",
+            "EVA", "WITCH", "COLOSSUS", "BEHEMOTH", "BASE"
+    };
+
     public static final String[] ABIS = {
             "data_strong", "data_resistant", "data_massive", "data_attackon", "data_abimetal", "data_waveshie",
             "data_imusnipe", "data_imustoptt", "data_ghost", "data_zombiekill", "data_witchkill", "data_suicide",
@@ -53,6 +58,8 @@ public class Interpret extends Data {
             Trait trait = traits.get(i);
 
             if(trait.id.pack.equals(Identifier.DEF)) {
+                res.append(getTraitEmoji(TRAITICON[trait.id.id], lang));
+
                 if(trait.id.id == 6 && star == 1) {
                     res.append(LangID.getStringByID(TRAIT[trait.id.id], lang))
                             .append(" (")
@@ -268,6 +275,29 @@ public class Interpret extends Data {
             return emoji.getAsMention() + " ";
         } else {
             return "";
+        }
+    }
+
+    private static String getTraitEmoji(String code, int lang) {
+        if(code.startsWith("T_")) {
+            int oldConfig = CommonStatic.getConfig().lang;
+            CommonStatic.getConfig().lang = lang;
+
+            RichCustomEmoji emoji = EmojiStore.TRAIT.getCont(code);
+
+            CommonStatic.getConfig().lang = oldConfig;
+
+            if(emoji == null)
+                return "";
+            else
+                return emoji.getAsMention() + " ";
+        } else {
+            RichCustomEmoji emoji = EmojiStore.ABILITY.get(code);
+
+            if(emoji == null)
+                return "";
+            else
+                return emoji.getAsMention() + " ";
         }
     }
 }

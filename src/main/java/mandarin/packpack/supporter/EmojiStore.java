@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter;
 
+import common.util.lang.MultiLangCont;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 
@@ -8,6 +9,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class EmojiStore {
@@ -39,7 +41,22 @@ public class EmojiStore {
 
                     String[] data = line.split("\t");
 
-                    putAbility(jda, data[0], data[1], Long.parseLong(data[2]));
+                    if(data.length <= 3) {
+                        putAbility(jda, data[0], data[1], Long.parseLong(data[2]));
+                    } else {
+                        if(data[0].startsWith("T_")) {
+                            for(int i = 2; i < data.length; i++) {
+                                String[] localeID = data[i].split("\\|");
+
+                                if(localeID.length != 2)
+                                    continue;
+
+                                localeID[0] = localeID[0].toLowerCase(Locale.ENGLISH);
+
+                                putTrait(jda, data[0], data[1], localeID[0], Long.parseLong(localeID[1]));
+                            }
+                        }
+                    }
                 }
 
                 reader.close();
@@ -63,6 +80,7 @@ public class EmojiStore {
     public static RichCustomEmoji UDP;
 
     public static Map<String, RichCustomEmoji> ABILITY = new HashMap<>();
+    public static MultiLangCont<String, RichCustomEmoji> TRAIT = new MultiLangCont<>();
 
     private static void putAbility(JDA jda, String key, String name, long id) {
         RichCustomEmoji emoji = StaticStore.getEmoteWitNameAndID(jda, name, id, false, true);
@@ -74,5 +92,19 @@ public class EmojiStore {
         }
 
         ABILITY.put(key, emoji);
+    }
+
+    private static void putTrait(JDA jda, String key, String name, String loc, long id) {
+        String locale = name.replace("LOC", loc.toUpperCase(Locale.ENGLISH));
+
+        RichCustomEmoji emoji = StaticStore.getEmoteWitNameAndID(jda, locale, id, false, true);
+
+        if(emoji == null) {
+            System.out.println("W/EmojiStore::putAbility - Couldn't get Emoji : " + locale + " (" + id + ")");
+
+            return;
+        }
+
+        TRAIT.put(loc.equals("tw") ? "zh" : loc, key, emoji);
     }
 }
