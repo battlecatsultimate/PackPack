@@ -459,7 +459,7 @@ public class EntityHandler {
                 components.add(Button.secondary("final", LangID.getStringByID("button_finf", lang)).withEmoji(Emoji.fromCustom(EmojiStore.TWO_NEXT)));
             }
 
-            if(f.du.getPCoin() != null) {
+            if(talent && f.du.getPCoin() != null) {
                 components.add(Button.secondary("talent", LangID.getStringByID("button_talent", lang)).withEmoji(Emoji.fromCustom(EmojiStore.NP)));
             }
         }
