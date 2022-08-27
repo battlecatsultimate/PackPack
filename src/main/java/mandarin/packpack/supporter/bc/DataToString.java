@@ -2282,14 +2282,19 @@ public class DataToString extends Data {
 
                     int changedIndex = findDifferentTalentIndex(data);
 
+                    int min = data[2 + changedIndex * 2];
+                    int max = data[3 + changedIndex * 2];
+
+                    if(p.exists()) {
+                        min += p.get(changedIndex);
+                        max += p.get(changedIndex);
+                    }
+
                     if (changedIndex == -1) {
                         StaticStore.logger.uploadLog("W/DataToString::getTalentExplanation - Failed to find different value set in talent : " + data[0]);
 
                         return "";
                     }
-
-                    int min = data[2 + changedIndex * 2];
-                    int max = data[3 + changedIndex * 2];
 
                     String fieldName = p.getFieldName(changedIndex);
                     String descID;
