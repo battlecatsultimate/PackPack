@@ -756,6 +756,16 @@
   "help_commandban_desc" : "특정된 유저가 이 봇의 명령어들을 사용하지 못하도록 금지시킵니다. **서버 관리자들만 사용가능한 명령어입니다.** `cb` 또한 유효한 명령어 입니다",
   "help_commandunban_use" : "`p!commandunban [유저 ID]`",
   "help_commandunban_desc" : "이 봇의 명령어 사용이 금지된 유저가 다시 명령어들을 사용할 수 있도록 허용합니다. **서버 관리자들만 사용가능한 명령어입니다.** `cub` 또한 유효한 명령어 입니다",
+  "help_ignorechannelpermission_use" : "`p!ignorechannelpermission [유저 ID] [권한 그룹]`",
+  "help_ignorechannelpermission_desc" : "유저들이 특정한 역할 소유로 인해 더 많은 채널에서 명령어를 사용할 수 있는 권한을 남용하는 것을 막기 위해, 봇이 이 유저에게 할당된 특정된 채널 권한 그룹을 무시하도록 만듭니다. **서버 관리자들만 사용가능한 명령어입니다.** `ichannelpermission`, `ignorechp`, `ichp` 또한 유효한 명령어 입니다",
+  "help_ignorechannelpermission_argu" : "`-me` 또는 `-member` : 할당된 Member 역할의 채널 권한 그룹을 무시합니다\n`-c` 또는 `-custom` : 할당된 커스텀 역할의 채널 권한 그룹을 무시합니다. 커스텀 역할을 \"로 묶어서 이름을 제공해줘야 합니다",
+  "help_ignorechannelpermission_exam" : "`p!ichp @USER -me -c \"테스트 역할\"",
+  "help_ignorechannelpermission_tip" : "채널 권한 시스템은 유저가 만족되는 역할을 갖고 있을 때, 특정한 채널들에서만 명령어를 사용할 수 있도록 만들어주는 시스템입니다. 이 명령어는 봇이 유저가 갖고 있는 특정한 역할과 연결된 채널 권한 그룹을 무시하도록 만드는 명령어 입니다",
+  "help_allowchannelpermission_use" : "`p!allowchannelpermission [유저 ID] [권한 그룹]`",
+  "help_allowchannelpermission_desc" : "봇이 이 유저에게 할당된 특정된 채널 권한 그룹을 다시 고려하도록 만듭니다. **서버 관리자들만 사용가능한 명령어입니다.** `achannelpermission`, `allowchp`, `achp` 또한 유효한 명령어 입니다",
+  "help_allowchannelpermission_argu" : "`-me` 또는 `-member` : 할당된 Member 역할의 채널 권한 그룹을 다시 고려합니다\n`-c` 또는 `-custom` : 할당된 커스텀 역할의 채널 권한 그룹을 다시 고려합니다. 커스텀 역할을 \"로 묶어서 이름을 제공해줘야 합니다",
+  "help_allowchannelpermission_exam" : "`p!ichp @USER -me -c \"Test Role\"",
+  "help_allowchannelpermission_tip" : "채널 권한 시스템은 유저가 만족되는 역할을 갖고 있을 때, 특정한 채널들에서만 명령어를 사용할 수 있도록 만들어주는 시스템입니다. 이 명령어는 봇이 유저가 갖고 있는 특정한 역할과 연결된 채널 권한 그룹을 다시 고려하도록 만드는 명령어 입니다",
   "prefix_space" : "접두사는 여백으로 설정될 수 없습니다!",
   "prefix_set" : "접두사가 _ 로 설정되었습니다!",
   "prefix_setnone" : "접두사가 설정되었습니다!",
@@ -1114,5 +1124,10 @@
   "comban_noself" : "자신 스스로를 밴하실 수 없습니다!",
   "comunban_notban" : "이 유저는 봇 명령어 사용이 금지되어있지 않습니다",
   "comunban_confirm" : "정말로 <@_> 유저가 봇을 다시 사용할 수 있도록 밴을 해제하시겠습니까?",
-  "comunban_success" : "성공적으로 <@_> 유저의 밴을 해제했습니다"
+  "comunban_success" : "성공적으로 <@_> 유저의 밴을 해제했습니다",
+  "ignorechp_nomem" : "이 서버에는 아직 할당된 맴버 역할이 없습니다",
+  "ignorechp_mem" : "Member가 명령어를 사용할 수 있는 채널들을 무시합니다",
+  "ignorechp_cus" : "\"_\" 커스텀 역할이 사용할 수 있는 채널들을 무시합니다",
+  "allowchp_mem" : "Member가 명령어를 사용할 수 있는 채널들을 다시 허용합니다",
+  "allowchp_cus" : "\"_\" 커스텀 역할이 사용할 수 있는 채널들을 다시 허용합니다"
 }

@@ -308,7 +308,7 @@ public class AllEventAdapter extends ListenerAdapter {
                 isMod = StaticStore.rolesToString(m.getRoles()).contains(idh.MOD);
             }
 
-            ArrayList<String> channels = idh.getAllAllowedChannels(m.getRoles());
+            ArrayList<String> channels = idh.getAllAllowedChannels(m);
 
             if(channels == null)
                 canGo = true;
@@ -745,6 +745,18 @@ public class AllEventAdapter extends ListenerAdapter {
                 case "commandunban":
                 case "cub":
                     new CommandUnban(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+                    break;
+                case "ignorechannelpermission":
+                case "ichannelpermission":
+                case "ignorechp":
+                case "ichp":
+                    new IgnoreChannelPermission(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+                    break;
+                case "allowchannelpermission":
+                case "achannelpermission":
+                case "allowchp":
+                case "achp":
+                    new AllowChannelPermission(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
                     break;
             }
         } catch (Exception e) {

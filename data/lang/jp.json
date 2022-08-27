@@ -756,6 +756,16 @@
   "help_commandban_desc" : "Make the bot ignore specified user's command calls to prevent abusing it. **Only moderators can use this command.** `cb` is also valid command",
   "help_commandunban_use" : "`p!commandunban [User ID]`",
   "help_commandunban_desc" : "Allow user who banned from using this bot to use commands back. **Only moderators can use this command.** `cub` is also valid command",
+  "help_ignorechannelpermission_use" : "`p!ignorechannelpermission [User ID] [Permission Set]`",
+  "help_ignorechannelpermission_desc" : "Make bot ignore specific channel permission set for this user to prevent abusing privileges to use commands in wider channels. **Only moderators can use this command.** `ichannelpermission`, `ignorechp`, `ichp` are also valid commands",
+  "help_ignorechannelpermission_argu" : "`-me` or `-member` : Ignore channel permission set of assigned Member role\n`-c` or `-custom` : Ignore channel permission set of assigned custom role. Must come with custom role name, wrapped with \"",
+  "help_ignorechannelpermission_exam" : "`p!ichp @USER -me -c \"Test Role\"",
+  "help_ignorechannelpermission_tip" : "Channel permission system is that moderators can make users able to use commands only in specific channel when having satisfying role. You can make bot ignore assigned channel permission set despite user having connected role with",
+  "help_allowchannelpermission_use" : "`p!allowchannelpermission [User ID] [Permission Set]`",
+  "help_allowchannelpermission_desc" : "Make bot consider specific channel permission set for this user back. **Only moderators can use this command.** `achannelpermission`, `allowchp`, `achp` are also valid commands",
+  "help_allowchannelpermission_argu" : "`-me` or `-member` : Allow channel permission set of assigned Member role\n`-c` or `-custom` : Allow channel permission set of assigned custom role. Must come with custom role name, wrapped with \"",
+  "help_allowchannelpermission_exam" : "`p!ichp @USER -me -c \"Test Role\"",
+  "help_allowchannelpermission_tip" : "Channel permission system is that moderators can make users able to use commands only in specific channel when having satisfying role. You can make bot consider assigned channel permission set back for this user",
   "prefix_space" : "Prefixはスペースにはできません!",
   "prefix_set" : "Prefixは _ にセットされました!",
   "prefix_setnone" : "あなたのPrefixはアップデートされました!",
@@ -1108,5 +1118,10 @@
   "comban_noself" : "You can't ban yourself!",
   "comunban_notban" : "This user isn't banned from using this bot",
   "comunban_confirm" : "Are you sure that you want to unban this user <@_> from using PackPack? This means user will be able to use commands of PackPack back",
-  "comunban_success" : "Successfully unbanned user <@_>"
+  "comunban_success" : "Successfully unbanned user <@_>",
+  "ignorechp_nomem" : "This server doesn't have assigned member role yet",
+  "ignorechp_mem" : "Channel where Member can use commands will be ignored for this user",
+  "ignorechp_cus" : "Channel where \"_\" can use commands will be ignored for this user",
+  "allowchp_mem" : "Channel where Member can use commands will be allowed back for this user",
+  "allowchp_cus" : "Channel where \"_\" can use commands will be allowed back for this user"
 }

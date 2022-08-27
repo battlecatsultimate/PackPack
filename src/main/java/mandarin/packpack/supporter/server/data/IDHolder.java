@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import mandarin.packpack.supporter.lang.LangID;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 
 import java.util.*;
@@ -73,6 +74,10 @@ public class IDHolder {
             id.banned = id.jsonObjectToListString(obj.getAsJsonArray("banned"));
         }
 
+        if(obj.has("channelException")) {
+            id.channelException = id.toMap(obj.getAsJsonObject("channelException"));
+        }
+
         return id;
     }
 
@@ -94,6 +99,7 @@ public class IDHolder {
     public boolean eventRaw = false;
     public ConfigHolder config = new ConfigHolder();
     public List<String> banned = new ArrayList<>();
+    public Map<String, List<String>> channelException = new HashMap<>();
 
     public IDHolder(String m, String me, String bo, String acc) {
         this.MOD = m;
@@ -118,22 +124,26 @@ public class IDHolder {
         obj.addProperty("acc", getOrNull(GET_ACCESS));
         obj.addProperty("ann", getOrNull(ANNOUNCE));
         obj.addProperty("bo", getOrNull(BOOSTER));
-        obj.add("channel", jsonfyMap());
+        obj.add("channel", jsonfyMap(channel));
         obj.add("id", jsonfyIDs());
         obj.addProperty("logDM", getOrNull(logDM));
         obj.addProperty("event", getOrNull(event));
         obj.add("eventLocale", listIntegerToJsonObject(eventLocale));
         obj.add("config", config.jsonfy());
         obj.add("banned", listStringToJsonObject(banned));
+        obj.add("channelException", jsonfyMap(channelException));
 
         return obj;
     }
 
-    public ArrayList<String> getAllAllowedChannels(List<Role> ids) {
+    public ArrayList<String> getAllAllowedChannels(Member member) {
+        List<Role> ids = member.getRoles();
+        List<String> exceptions = channelException.get(member.getId());
+
         ArrayList<String> result = new ArrayList<>();
 
         for(Role role : ids) {
-            if(isSetAsRole(role.getId())) {
+            if(isSetAsRole(role.getId()) && (exceptions == null || !exceptions.contains(role.getId()))) {
                 List<String> channels = channel.get(role.getId());
 
                 if(channels == null)
@@ -231,15 +241,15 @@ public class IDHolder {
         return null;
     }
 
-    private JsonObject jsonfyMap() {
+    private JsonObject jsonfyMap(Map<String, List<String>> map) {
         JsonObject obj = new JsonObject();
 
-        Set<String> keys = channel.keySet();
+        Set<String> keys = map.keySet();
 
         int i = 0;
 
         for(String key : keys) {
-            List<String> arr = channel.get(key);
+            List<String> arr = map.get(key);
 
             if(arr == null)
                 continue;
