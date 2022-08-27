@@ -85,39 +85,50 @@ public class FormButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
         if(!m.getId().equals(embed.getId()))
             return RESULT_STILL;
 
-        int diff = 0;
+        if(event.getComponentId().equals("talent")) {
+            if(f.du.getPCoin() == null)
+                return RESULT_STILL;
 
-        switch (event.getComponentId()) {
-            case "first":
-                diff = -2;
-                break;
-            case "pre":
-                diff = -1;
-                break;
-            case "next":
-                diff = 1;
-                break;
-            case "final":
-                diff = 2;
-                break;
-        }
+            try {
+                EntityHandler.showTalentEmbed(ch, f, isFrame, lang);
+            } catch (Exception e) {
+                StaticStore.logger.uploadErrorLog(e, "E/FormButtonHolder::handleEvent - Failed to show talent embed on button click");
+            }
+        } else {
+            int diff = 0;
 
-        if(diff == 0) {
-            return RESULT_STILL;
-        }
+            switch (event.getComponentId()) {
+                case "first":
+                    diff = -2;
+                    break;
+                case "pre":
+                    diff = -1;
+                    break;
+                case "next":
+                    diff = 1;
+                    break;
+                case "final":
+                    diff = 2;
+                    break;
+            }
 
-        if(f.fid + diff < 0)
-            return RESULT_STILL;
+            if(diff == 0) {
+                return RESULT_STILL;
+            }
 
-        if(f.unit == null)
-            return RESULT_STILL;
+            if(f.fid + diff < 0)
+                return RESULT_STILL;
 
-        Form newForm = f.unit.forms[f.fid + diff];
+            if(f.unit == null)
+                return RESULT_STILL;
 
-        try {
-            EntityHandler.showUnitEmb(newForm, ch, config, isFrame, talent, extra, lv, lang, false, compact);
-        } catch (Exception e) {
-            e.printStackTrace();
+            Form newForm = f.unit.forms[f.fid + diff];
+
+            try {
+                EntityHandler.showUnitEmb(newForm, ch, config, isFrame, talent, extra, lv, lang, false, compact);
+            } catch (Exception e) {
+                StaticStore.logger.uploadErrorLog(e, "E/FormButtonHolder::handleEvent - Failed to show unit embed on button click");
+            }
         }
 
         return RESULT_FINISH;
