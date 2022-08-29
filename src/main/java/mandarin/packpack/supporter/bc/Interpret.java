@@ -97,12 +97,12 @@ public class Interpret extends Data {
         }
     }
 
-    public static ArrayList<String> getAbi(MaskEntity mu, int lang) {
+    public static ArrayList<String> getAbi(MaskEntity mu, boolean icon, int lang) {
         ArrayList<String> l = new ArrayList<>();
 
         for(int i = 0; i < ABIS.length; i++) {
             if(((mu.getAbi() >> i) & 1) > 0) {
-                String ab = getAbilityEmoji(ABIS[i]) + LangID.getStringByID(ABIS[i], lang);
+                String ab = (icon ? getAbilityEmoji(ABIS[i]) : "") + LangID.getStringByID(ABIS[i], lang);
 
                 if(ab.startsWith("Imu."))
                     ab = ab.replace("Imu.", "Immune to");
@@ -142,7 +142,7 @@ public class Interpret extends Data {
         return l;
     }
 
-    public static ArrayList<String> getProc(MaskEntity du, boolean useSecond, int lang, double multi, double amulti) {
+    public static ArrayList<String> getProc(MaskEntity du, boolean useSecond, boolean icon, int lang, double multi, double amulti) {
         ArrayList<String> l = new ArrayList<>();
         ArrayList<Integer> id = new ArrayList<>();
 
@@ -160,7 +160,7 @@ public class Interpret extends Data {
 
                 Object proc = getProcObject(i, mr);
 
-                String ans = getProcEmoji(PROCIND[i], proc) + Formatter.format(f, proc, c);
+                String ans = (icon ? getProcEmoji(PROCIND[i], proc) : "") + Formatter.format(f, proc, c);
 
                 if(!l.contains(ans)) {
                     if(id.contains(i)) {
@@ -191,7 +191,7 @@ public class Interpret extends Data {
 
                     Object proc = getProcObject(i, ma);
 
-                    String ans = getProcEmoji(PROCIND[i], proc) + Formatter.format(f, proc, c);
+                    String ans = (icon ? getProcEmoji(PROCIND[i], proc) : "") + Formatter.format(f, proc, c);
 
                     if(!l.contains(ans)) {
                         if(id.contains(i)) {

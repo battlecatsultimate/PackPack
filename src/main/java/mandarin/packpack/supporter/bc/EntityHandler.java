@@ -177,24 +177,37 @@ public class EntityHandler {
         else
             du = f.du;
 
-        List<String> abis = Interpret.getAbi(du, lang);
-        abis.addAll(Interpret.getProc(du, !isFrame, lang, 1.0, 1.0));
-
-        abis = mergeImmune(abis, lang);
+        List<String> abis = Interpret.getAbi(du, true, lang);
+        abis.addAll(Interpret.getProc(du, !isFrame, true, lang, 1.0, 1.0));
 
         StringBuilder sb = new StringBuilder();
 
         for(int i = 0; i < abis.size(); i++) {
             if(i == abis.size() - 1)
-                sb.append(abis.get(i));
+                sb.append("⦁ ").append(abis.get(i));
             else
-                sb.append(abis.get(i)).append("\n");
+                sb.append("⦁ ").append(abis.get(i)).append("\n");
         }
 
         String res = sb.toString();
 
         if(res.isBlank())
             res = LangID.getStringByID("data_none", lang);
+        else if(res.length() > 1024) {
+            abis = Interpret.getAbi(du, false, lang);
+            abis.addAll(Interpret.getProc(du, !isFrame, false, lang, 1.0, 1.0));
+
+            sb = new StringBuilder();
+
+            for(int i = 0; i < abis.size(); i++) {
+                if(i == abis.size() - 1)
+                    sb.append("⦁ ").append(abis.get(i));
+                else
+                    sb.append("⦁ ").append(abis.get(i)).append("\n");
+            }
+
+            res = sb.toString();
+        }
 
         spec.addField(LangID.getStringByID("data_ability", lang), res, false);
 
@@ -394,10 +407,8 @@ public class EntityHandler {
         else
             du = f.du;
 
-        List<String> abis = Interpret.getAbi(du, lang);
-        abis.addAll(Interpret.getProc(du, !isFrame, lang, 1.0, 1.0));
-
-        abis = mergeImmune(abis, lang);
+        List<String> abis = Interpret.getAbi(du, true, lang);
+        abis.addAll(Interpret.getProc(du, !isFrame, true, lang, 1.0, 1.0));
 
         StringBuilder sb = new StringBuilder();
 
@@ -412,6 +423,21 @@ public class EntityHandler {
 
         if(res.isBlank())
             res = LangID.getStringByID("data_none", lang);
+        else if(res.length() > 1024) {
+            abis = Interpret.getAbi(du, false, lang);
+            abis.addAll(Interpret.getProc(du, !isFrame, false, lang, 1.0, 1.0));
+
+            sb = new StringBuilder();
+
+            for(int i = 0; i < abis.size(); i++) {
+                if(i == abis.size() - 1)
+                    sb.append("⦁ ").append(abis.get(i));
+                else
+                    sb.append("⦁ ").append(abis.get(i)).append("\n");
+            }
+
+            res = sb.toString();
+        }
 
         spec.addField(LangID.getStringByID("data_ability", lang), res, false);
 
@@ -642,24 +668,37 @@ public class EntityHandler {
             spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(e.de, lang), true);
         }
 
-        List<String> abis = Interpret.getAbi(e.de, lang);
-        abis.addAll(Interpret.getProc(e.de, !isFrame, lang, mag[0] / 100.0, mag[1] / 100.0));
-
-        abis = mergeImmune(abis, lang);
+        List<String> abis = Interpret.getAbi(e.de, true, lang);
+        abis.addAll(Interpret.getProc(e.de, !isFrame, true, lang, mag[0] / 100.0, mag[1] / 100.0));
 
         StringBuilder sb = new StringBuilder();
 
         for(int i = 0; i < abis.size(); i++) {
             if(i == abis.size() - 1)
-                sb.append("⦁ ").append(abis.get(i));
+                sb.append(abis.get(i));
             else
-                sb.append("⦁ ").append(abis.get(i)).append("\n");
+                sb.append(abis.get(i)).append("\n");
         }
 
         String res = sb.toString();
 
         if(res.isBlank())
             res = LangID.getStringByID("data_none", lang);
+        else if(res.length() > 1024) {
+            abis = Interpret.getAbi(e.de, false, lang);
+            abis.addAll(Interpret.getProc(e.de, !isFrame, false, lang, mag[0] / 100.0, mag[1] / 100.0));
+
+            sb = new StringBuilder();
+
+            for(int i = 0; i < abis.size(); i++) {
+                if(i == abis.size() - 1)
+                    sb.append(abis.get(i));
+                else
+                    sb.append(abis.get(i)).append("\n");
+            }
+
+            res = sb.toString();
+        }
 
         spec.addField(LangID.getStringByID("data_ability", lang), res, false);
 
@@ -739,10 +778,8 @@ public class EntityHandler {
         spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(e.de, mag[1]), true);
         spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(e.de, lang), true);
 
-        List<String> abis = Interpret.getAbi(e.de, lang);
-        abis.addAll(Interpret.getProc(e.de, !isFrame, lang, mag[0] / 100.0, mag[1] / 100.0));
-
-        abis = mergeImmune(abis, lang);
+        List<String> abis = Interpret.getAbi(e.de, true, lang);
+        abis.addAll(Interpret.getProc(e.de, !isFrame, true, lang, mag[0] / 100.0, mag[1] / 100.0));
 
         StringBuilder sb = new StringBuilder();
 
@@ -757,6 +794,21 @@ public class EntityHandler {
 
         if(res.isBlank())
             res = LangID.getStringByID("data_none", lang);
+        else if(res.length() > 1024) {
+            abis = Interpret.getAbi(e.de, false, lang);
+            abis.addAll(Interpret.getProc(e.de, !isFrame, false, lang, mag[0] / 100.0, mag[1] / 100.0));
+
+            sb = new StringBuilder();
+
+            for(int i = 0; i < abis.size(); i++) {
+                if(i == abis.size() - 1)
+                    sb.append(abis.get(i));
+                else
+                    sb.append(abis.get(i)).append("\n");
+            }
+
+            res = sb.toString();
+        }
 
         spec.addField(LangID.getStringByID("data_ability", lang), res, false);
 
@@ -3085,7 +3137,7 @@ public class EntityHandler {
             cells.add(new NormalCellDrawer(names, contents));
         }
 
-        List<String> abil = Interpret.getAbi(u, lang);
+        List<String> abil = Interpret.getAbi(u, false, lang);
 
         for(int i = 0; i < abilData.size(); i++) {
             String a = abilData.get(i).dataToString(u.data);
@@ -3095,7 +3147,7 @@ public class EntityHandler {
             }
         }
 
-        abil.addAll(Interpret.getProc(u, !isFrame, lang, 1.0, 1.0));
+        abil.addAll(Interpret.getProc(u, !isFrame, false, lang, 1.0, 1.0));
 
         for(int i = 0; i < procData.size(); i++) {
             String p = procData.get(i).beautify(u.data, isFrame);
@@ -3219,7 +3271,7 @@ public class EntityHandler {
             cells.add(new NormalCellDrawer(names, contents));
         }
 
-        List<String> abil = Interpret.getAbi(e, lang);
+        List<String> abil = Interpret.getAbi(e, false, lang);
 
         for(int i = 0; i < abilData.size(); i++) {
             String a = abilData.get(i).dataToString(e.data);
@@ -3229,7 +3281,7 @@ public class EntityHandler {
             }
         }
 
-        abil.addAll(Interpret.getProc(e, !isFrame, lang, 1.0, 1.0));
+        abil.addAll(Interpret.getProc(e, !isFrame, false, lang, 1.0, 1.0));
 
         for(int i = 0; i < procData.size(); i++) {
             String p = procData.get(i).beautify(e.data, isFrame);
@@ -3499,55 +3551,6 @@ public class EntityHandler {
             default:
                 return 8;
         }
-    }
-
-    private static List<String> mergeImmune(List<String> abilities, int lang) {
-        List<String> result = new ArrayList<>();
-        List<String> immunes = new ArrayList<>();
-
-        for(int i = 0; i < abilities.size(); i++) {
-            switch (lang) {
-                case LangID.KR:
-                case LangID.JP:
-                    if(abilities.get(i).endsWith(LangID.getStringByID("data_immune", lang))) {
-                        immunes.add(abilities.get(i));
-                    } else {
-                        result.add(abilities.get(i));
-                    }
-                    break;
-                default:
-                    if(abilities.get(i).startsWith(LangID.getStringByID("data_immune", lang))) {
-                        immunes.add(abilities.get(i));
-                    } else {
-                        result.add(abilities.get(i));
-                    }
-            }
-        }
-
-        if(immunes.isEmpty())
-            return result;
-
-        StringBuilder sb = new StringBuilder();
-
-        for(int i = 0; i < immunes.size(); i++) {
-            String segment = immunes.get(i).replace(LangID.getStringByID("data_immune", lang), "");
-
-            sb.append(segment);
-
-            if(i < immunes.size() - 1)
-                sb.append(LangID.getStringByID("data_comma", lang));
-        }
-
-        switch (lang) {
-            case LangID.KR:
-            case LangID.JP:
-                result.add(sb + LangID.getStringByID("data_immune", lang));
-                break;
-            default:
-                result.add(LangID.getStringByID("data_immune", lang) + sb);
-        }
-
-        return result;
     }
 
     private static BufferedImage drawLevelImage(int max, int lv) {
