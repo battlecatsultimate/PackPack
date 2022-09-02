@@ -641,8 +641,6 @@ public class StageStatAnalyzer extends ConstraintCommand {
 
         String[] contents = content.replaceAll("[ ]+,[ ]+|,[ ]+|[ ]+,", ",").replaceAll("[ ]+-[ ]+|-[ ]+|[ ]+-", "-").split(" ");
 
-        System.out.println(Arrays.toString(contents));
-
         for(int i = 0; i < contents.length; i++) {
             if((contents[i].endsWith("-r") || contents[i].endsWith("-range")) && i < contents.length - 1) {
                 String range = contents[i + 1];
