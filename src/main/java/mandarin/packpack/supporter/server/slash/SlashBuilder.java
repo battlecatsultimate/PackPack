@@ -129,6 +129,8 @@ public class SlashBuilder {
             }
         }
 
+        action = action.setGuildOnly(true);
+
         requests.add(action);
     }
 
