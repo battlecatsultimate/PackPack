@@ -21,13 +21,14 @@ import java.io.File;
 import java.io.FileReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
 public class StageStatAnalyzer extends ConstraintCommand {
     private static final List<String> allParameters = List.of(
             "-s", "-second", "-c", "-code", "-m", "-mid", "-s", "-l", "-len", "-n", "-name", "-lv",
-            "-en", "-jp", "-tw", "-kr"
+            "-en", "-jp", "-tw", "-kr", "-r", "-range"
     );
 
     public StageStatAnalyzer(ROLE role, int lang, IDHolder id) {
@@ -121,9 +122,17 @@ public class StageStatAnalyzer extends ConstraintCommand {
         File characterGroup = new File(dataLocal, "Charagroup.csv");
 
         int len = getStageLength(mapData);
-        List<Integer> indexes = new ArrayList<>();
+        List<Integer> indexes = getStageRange(getContent(event));
 
-        if(code.equals("CA") || code.equals("RA")) {
+        for(int i = 0; i < indexes.size(); i++) {
+            if(indexes.get(i) >= len) {
+                createMessageWithNoPings(ch, LangID.getStringByID("stanalyzer_range", lang));
+
+                return;
+            }
+        }
+
+        if(indexes.isEmpty() && (code.equals("CA") || code.equals("RA"))) {
             int index = 1;
 
             while(index < len) {
@@ -151,10 +160,10 @@ public class StageStatAnalyzer extends ConstraintCommand {
                     name[i] = code + " - " + Data.trio(mid % 1000) + " - " + Data.trio(i);
                 }
             }
-        } else if(name.length != len) {
+        } else if(name.length != (indexes.isEmpty() ? len : indexes.size())) {
             int nLen = name.length;
 
-            ch.sendMessage(LangID.getStringByID("stat_name", lang).replace("_RRR_", len+"").replace("_PPP_", nLen+"")).queue();
+            ch.sendMessage(LangID.getStringByID("stat_name", lang).replace("_RRR_", (indexes.isEmpty() ? len : indexes.size())+"").replace("_PPP_", nLen+"")).queue();
 
             return;
         }
@@ -625,5 +634,44 @@ public class StageStatAnalyzer extends ConstraintCommand {
         }
 
         return -1;
+    }
+
+    private List<Integer> getStageRange(String content) {
+        List<Integer> result = new ArrayList<>();
+
+        String[] contents = content.replaceAll("[ ]+,[ ]+|,[ ]+|[ ]+,", ",").replaceAll("[ ]+-[ ]+|-[ ]+|[ ]+-", "-").split(" ");
+
+        System.out.println(Arrays.toString(contents));
+
+        for(int i = 0; i < contents.length; i++) {
+            if((contents[i].endsWith("-r") || contents[i].endsWith("-range")) && i < contents.length - 1) {
+                String range = contents[i + 1];
+
+                String[] segments = range.split(",");
+
+                for(int j = 0; j < segments.length; j++) {
+                    if(StaticStore.isNumeric(segments[j])) {
+                        int n = StaticStore.safeParseInt(segments[j]);
+
+                        if(!result.contains(n))
+                            result.add(n);
+                    } else {
+                        String[] trial = segments[j].split("-");
+
+                        if(trial.length == 2 && StaticStore.isNumeric(trial[0]) && StaticStore.isNumeric(trial[1])) {
+                            int t0 = StaticStore.safeParseInt(trial[0]);
+                            int t1 = StaticStore.safeParseInt(trial[1]);
+
+                            for(int k = Math.min(t0, t1); k <= Math.max(t0, t1); k++) {
+                                if(!result.contains(k))
+                                    result.add(k);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return result;
     }
 }
