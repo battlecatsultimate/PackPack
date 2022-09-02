@@ -165,7 +165,7 @@ public class EntityHandler {
         spec.addField(LangID.getStringByID("data_dps", lang), DataToString.getDPS(f.du, f.unit.lv, talent, t), true);
         spec.addField(LangID.getStringByID("data_abilt", lang), DataToString.getAbilT(f.du, lang), true);
         spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(f.du, f.unit.lv, talent, t), true);
-        spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(f.du, talent, t, lang), true);
+        spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(f.du, talent, t, true, lang), true);
 
         MaskUnit du;
 
@@ -395,7 +395,7 @@ public class EntityHandler {
             spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(f.du, f.unit.lv, talent, t), true);
         }
 
-        spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(f.du, talent, t, lang), true);
+        spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(f.du, talent, t, true, lang), true);
 
         MaskUnit du;
 
@@ -645,7 +645,7 @@ public class EntityHandler {
             spec.addField(LangID.getStringByID("data_range", lang), DataToString.getRange(e.de), true);
             spec.addField(LangID.getStringByID("data_times", lang), DataToString.getCompactAtkTimings(e.de, isFrame), false);
             spec.addField(LangID.getStringByID("data_atkdps", lang).replace("_TTT_", DataToString.getSiMu(e.de, lang)), DataToString.getCompactAtk(e.de, mag[1]), false);
-            spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(e.de, lang), false);
+            spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(e.de, true, lang), false);
         } else {
             spec.setTitle(DataToString.getTitle(e, lang));
 
@@ -665,7 +665,7 @@ public class EntityHandler {
             spec.addField(LangID.getStringByID("data_dps", lang), DataToString.getDPS(e.de, mag[1]), true);
             spec.addField(LangID.getStringByID("data_abilt", lang), DataToString.getAbilT(e.de, lang), true);
             spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(e.de, mag[1]), true);
-            spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(e.de, lang), true);
+            spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(e.de, true, lang), true);
         }
 
         List<String> abis = Interpret.getAbi(e.de, true, lang);
@@ -776,7 +776,7 @@ public class EntityHandler {
         spec.addField(LangID.getStringByID("data_dps", lang), DataToString.getDPS(e.de, mag[1]), true);
         spec.addField(LangID.getStringByID("data_abilt", lang), DataToString.getAbilT(e.de, lang), true);
         spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(e.de, mag[1]), true);
-        spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(e.de, lang), true);
+        spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(e.de, true, lang), true);
 
         List<String> abis = Interpret.getAbi(e.de, true, lang);
         abis.addAll(Interpret.getProc(e.de, !isFrame, true, lang, mag[0] / 100.0, mag[1] / 100.0));
@@ -3058,7 +3058,7 @@ public class EntityHandler {
                 new String[] {DataToString.getPre(u, isFrame), DataToString.getPost(u, isFrame), DataToString.getTBA(u, isFrame)}
         ));
 
-        StringBuilder trait = new StringBuilder(DataToString.getTrait(u, false, lvs, lang));
+        StringBuilder trait = new StringBuilder(DataToString.getTrait(u, false, lvs, false, lang));
 
         for(int i = 0; i < traitData.size(); i++) {
             String t = traitData.get(i).dataToString(u.data);
@@ -3192,7 +3192,7 @@ public class EntityHandler {
                 new String[] {DataToString.getPre(e, isFrame), DataToString.getPost(e, isFrame), DataToString.getTBA(e, isFrame)}
         ));
 
-        StringBuilder trait = new StringBuilder(DataToString.getTrait(e, lang));
+        StringBuilder trait = new StringBuilder(DataToString.getTrait(e, false, lang));
 
         for(int i = 0; i < traitData.size(); i++) {
             String t = traitData.get(i).dataToString(e.data);

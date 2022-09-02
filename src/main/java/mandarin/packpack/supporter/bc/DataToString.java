@@ -747,7 +747,7 @@ public class DataToString extends Data {
         return "" + (int) (e.multi(BasisSet.current()) * e.getHp() * magnification / 100.0);
     }
 
-    public static String getTrait(MaskUnit f, boolean talent, ArrayList<Integer> lvs, int lang) {
+    public static String getTrait(MaskUnit f, boolean talent, ArrayList<Integer> lvs, boolean icon, int lang) {
         if(f == null)
             return "";
 
@@ -772,7 +772,7 @@ public class DataToString extends Data {
         }
         allTrait.append(LangID.getStringByID("data_white", lang)).append(", ").append(allColor);
 
-        String trait = Interpret.getTrait(du.getTraits(), 0, lang);
+        String trait = Interpret.getTrait(du.getTraits(), 0, icon, lang);
 
         if(trait.isBlank())
             trait = LangID.getStringByID("data_none", lang);
@@ -789,7 +789,7 @@ public class DataToString extends Data {
         return trait;
     }
 
-    public static String getTrait(MaskEnemy e, int lang) {
+    public static String getTrait(MaskEnemy e, boolean icon, int lang) {
         if(e == null)
             return "";
 
@@ -804,7 +804,7 @@ public class DataToString extends Data {
         }
         allTrait.append(LangID.getStringByID("data_white", lang)).append(", ").append(allColor);
 
-        String trait = Interpret.getTrait(e.getTraits(), e.getStar(), lang);
+        String trait = Interpret.getTrait(e.getTraits(), e.getStar(), icon, lang);
 
         if(trait.isBlank())
             trait = LangID.getStringByID("data_none", lang);
@@ -878,7 +878,7 @@ public class DataToString extends Data {
         if(f.getPCoin().trait.size() != 0) {
             sb.append("[");
 
-            String trait = Interpret.getTrait(f.getPCoin().trait, 0, lang);
+            String trait = Interpret.getTrait(f.getPCoin().trait, 0, false, lang);
 
             if(trait.endsWith(", "))
                 trait = trait.substring(0, trait.length() - 2);

@@ -51,14 +51,16 @@ public class Interpret extends Data {
             P_IMUSPEED
     };
 
-    public static String getTrait(List<Trait> traits, int star, int lang) {
+    public static String getTrait(List<Trait> traits, int star, boolean icon, int lang) {
         StringBuilder res = new StringBuilder();
 
         for(int i = 0; i < traits.size(); i++) {
             Trait trait = traits.get(i);
 
             if(trait.id.pack.equals(Identifier.DEF)) {
-                res.append(getTraitEmoji(TRAITICON[trait.id.id], lang));
+                if(icon) {
+                    res.append(getTraitEmoji(TRAITICON[trait.id.id], lang));
+                }
 
                 if(trait.id.id == 6 && star == 1) {
                     res.append(LangID.getStringByID(TRAIT[trait.id.id], lang))
