@@ -1161,7 +1161,6 @@
   "talentinfo_total" : "_ NP needed for full talents",
   "soul_argu" : "This command needs one more data! : [Soul ID]",
   "soul_range" : "Invalid ID range, ID must be number between 0 ~ _",
-  "soul_number" : "You have to pass numeric ID only!",
   "soul_nosoul" : "Bot couldn't get data of this soul...",
   "soulimg_result" : "Uploaded Soul _ | Frame : -",
   "soulimg_fail" : "Failed to generate soul image",

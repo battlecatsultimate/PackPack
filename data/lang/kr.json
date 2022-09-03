@@ -1165,7 +1165,6 @@
   "talentinfo_total" : "풀 본능을 위해 _ NP 필요",
   "soul_argu" : "이 명령어는 1개의 데이터를 더 요구합니다! : [영혼 ID]",
   "soul_range" : "유효하지 않은 ID 범위입니다. ID는 0 ~ _ 사이의 숫자여야만 합니다",
-  "soul_number" : "숫자 ID 만을 제공해줘야 합니다!",
   "soul_nosoul" : "봇이 이 영혼의 데이터를 불러오지 못했습니다...",
   "soulimg_result" : "영혼 _ 업로드 성공 | Frame : -",
   "soulimg_fail" : "영혼 이미지 생성 실패",

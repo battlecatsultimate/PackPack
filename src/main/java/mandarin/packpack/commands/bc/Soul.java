@@ -19,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 
 public class Soul extends GlobalTimedConstraintCommand {
     private static final String NO_ID = "NO_ID";
-    private static final String NOT_NUMBER = "NOT_NUMBER";
     private static final String INVALID_RANGE = "INVALID_RANGE";
 
     private final int PARAM_DEBUG = 2;
@@ -44,9 +43,7 @@ public class Soul extends GlobalTimedConstraintCommand {
         if(ch == null || m == null || g == null)
             return;
 
-        String[] contents = getContent(event).split(" ");
-
-        int id = StaticStore.safeParseInt(contents[1]);
+        int id = findSoulID(getContent(event));
 
         common.util.pack.Soul s = UserProfile.getBCData().souls.get(id);
 
@@ -81,15 +78,11 @@ public class Soul extends GlobalTimedConstraintCommand {
 
     @Override
     protected void setOptionalID(GenericMessageEvent event) {
-        String[] contents = getContent(event).split(" ");
+        int id = findSoulID(getContent(event));
 
-        if(contents.length < 2) {
+        if(id == -1) {
             optionalID = NO_ID;
-        } else if(!StaticStore.isNumeric(contents[1])) {
-            optionalID = NOT_NUMBER;
         } else {
-            int id = StaticStore.safeParseInt(contents[1]);
-
             int max = UserProfile.getBCData().souls.size();
 
             if(id >= max) {
@@ -101,7 +94,6 @@ public class Soul extends GlobalTimedConstraintCommand {
     @Override
     protected void prepareAborts() {
         aborts.add(NO_ID);
-        aborts.add(NOT_NUMBER);
         aborts.add(INVALID_RANGE);
     }
 
@@ -115,10 +107,6 @@ public class Soul extends GlobalTimedConstraintCommand {
         switch (optionalID) {
             case NO_ID:
                 createMessageWithNoPings(ch, LangID.getStringByID("soul_argu", lang));
-
-                return;
-            case NOT_NUMBER:
-                createMessageWithNoPings(ch, LangID.getStringByID("soul_number", lang));
 
                 return;
             case INVALID_RANGE:
@@ -187,6 +175,23 @@ public class Soul extends GlobalTimedConstraintCommand {
                     return StaticStore.safeParseInt(msg[i+1]);
                 }
             }
+        }
+
+        return -1;
+    }
+
+    private int findSoulID(String content) {
+        String[] contents = content.split(" ");
+
+        boolean frame = false;
+
+        for(int i = 0; i < contents.length; i++) {
+            if((contents[i].equals("-f") || contents[i].equals("-fr")) && i < contents.length - 1 && StaticStore.isNumeric(contents[i + 1]) && !frame) {
+                frame = true;
+
+                i++;
+            } else if(StaticStore.isNumeric(contents[i]))
+                return StaticStore.safeParseInt(contents[i]);
         }
 
         return -1;
