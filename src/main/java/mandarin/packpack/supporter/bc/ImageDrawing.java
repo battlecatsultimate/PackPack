@@ -6,6 +6,7 @@ import common.pack.UserProfile;
 import common.system.P;
 import common.system.fake.FakeGraphics;
 import common.system.fake.FakeImage;
+import common.system.fake.FakeTransform;
 import common.system.files.VFile;
 import common.util.Data;
 import common.util.anim.AnimU;
@@ -519,7 +520,11 @@ public class ImageDrawing {
             rg.fillRect(0, 0, rect.width, rect.height);
         }
 
+        FakeTransform t = rg.getTransform();
+
         anim.draw(rg, new P(-rect.x, -rect.y), siz);
+
+        rg.setTransform(t);
 
         rg.setStroke(1.5f);
 
