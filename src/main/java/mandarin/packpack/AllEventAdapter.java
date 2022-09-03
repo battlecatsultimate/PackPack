@@ -762,6 +762,22 @@ public class AllEventAdapter extends ListenerAdapter {
                 case "ti":
                     new TalentInfo(ConstraintCommand.ROLE.MEMBER, lang, idh, c).execute(event);
                     break;
+                case "soul":
+                case "sl":
+                    new Soul(ConstraintCommand.ROLE.MEMBER, lang, idh, "gif").execute(event);
+                    break;
+                case "soulimage":
+                case "soulimg":
+                case "simage":
+                case "simg":
+                    new SoulImage(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
+                    break;
+                case "soulsprite":
+                case "ssprite":
+                case "soulsp":
+                case "ssp":
+                    new SoulSprite(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
+                    break;
             }
         } catch (Exception e) {
             Message msg = event.getMessage();

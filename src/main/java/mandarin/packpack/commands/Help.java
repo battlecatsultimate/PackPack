@@ -41,7 +41,7 @@ public class Help extends Command {
                     .setDescription(LangID.getStringByID("help_explain", lang))
                     .setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)])
                     .addField(LangID.getStringByID("help_normal", lang), "```analyze, config, locale, optout, prefix, timezone```", false)
-                    .addField(LangID.getStringByID("help_bc", lang), "```background, castle, catcombo, enemygif, enemyimage, enemysprite, enemystat, findstage, formgif, formimage, formsprite, formstat, medal, music, stageinfo, talentinfo```", false)
+                    .addField(LangID.getStringByID("help_bc", lang), "```background, castle, catcombo, enemygif, enemyimage, enemysprite, enemystat, findstage, formgif, formimage, formsprite, formstat, medal, music, soul, soulimage, soulsprite, stageinfo, talentinfo```", false)
                     .addField(LangID.getStringByID("help_server", lang), "```boosteremoji, boosteremojiremove, boosterrole, boosterroleremove, channelpermission, checkbcu, clearcache, commandban, commandunban fixrole, idset, memory, save, serverconfig, serverjson, serverpre, serverstat, setup, subscribeevent, subscribescamlinkdetector, unsubscribescamlinkdetector, watchdm```", false)
                     .addField(LangID.getStringByID("help_data", lang), "```animanalyzer, announcement, checkeventupdate, printevent, printgachaevent, printitemevent, printstageevent, stageimage, stagestatanalyzer, statanalyzer, stagemapimage, trueformanalyzer```", false)
                     .addField(LangID.getStringByID("help_packpack", lang), "```alias, aliasadd, aliasremove, registerscamlink, statistic, suggest, unregisterscamlink```", false);
@@ -370,6 +370,22 @@ public class Help extends Command {
             case "talentinfo":
             case "ti":
                 ch.sendMessageEmbeds(addFields("talentinfo", true, false, false)).queue();
+                break;
+            case "soul":
+            case "sl":
+                ch.sendMessageEmbeds(addFields("soul", true, true, false)).queue();
+                break;
+            case "soulimage":
+            case "soulimg":
+            case "simage":
+            case "simg":
+                ch.sendMessageEmbeds(addFields("soulimage", true, true, false)).queue();
+                break;
+            case "soulsprite":
+            case "ssprite":
+            case "soulsp":
+            case "ssp":
+                ch.sendMessageEmbeds(addFields("soulsprite", false, false, false)).queue();
                 break;
             default:
                 createMessageWithNoPings(ch, LangID.getStringByID("help_nocomm", lang).replace("_", command));
