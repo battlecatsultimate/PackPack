@@ -174,7 +174,7 @@ public class StageInfo extends TimedConstraintCommand {
                 int star = getLevel(getContent((event)));
                 boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
                 boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
-                boolean isCompact = (param & PARAM_COMPACT) > 0 || config.compact;
+                boolean isCompact = (param & PARAM_COMPACT) > 0 || (holder.forceCompact ? holder.config.compact : config.compact);
 
                 CommonStatic.getConfig().lang = lang;
 
@@ -193,7 +193,7 @@ public class StageInfo extends TimedConstraintCommand {
                 int star = getLevel(getContent((event)));
                 boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
                 boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
-                boolean isCompact = (param & PARAM_COMPACT) > 0 || config.compact;
+                boolean isCompact = (param & PARAM_COMPACT) > 0 || (holder.forceCompact ? holder.config.compact : config.compact);
 
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("stinfo_several", lang).replace("_", generateSearchName(names)))
                         .append("```md\n")

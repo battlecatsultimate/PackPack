@@ -7,6 +7,7 @@ import common.util.unit.Form;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
+import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -25,7 +26,7 @@ public class FormStatMessageHolder extends SearchHolder {
     private final boolean compact;
     private final ArrayList<Integer> lv;
 
-    public FormStatMessageHolder(ArrayList<Form> form, Message author, ConfigHolder config, Message msg, String channelID, int param, ArrayList<Integer> lv, int lang) {
+    public FormStatMessageHolder(ArrayList<Form> form, Message author, ConfigHolder config, IDHolder holder, Message msg, String channelID, int param, ArrayList<Integer> lv, int lang) {
         super(msg, author, channelID, lang);
 
         this.form = form;
@@ -34,7 +35,7 @@ public class FormStatMessageHolder extends SearchHolder {
         this.talent = (param & 2) > 0;
         this.isFrame = (param & 4) == 0 && config.useFrame;
         this.extra = (param & 8) > 0 || config.extra;
-        this.compact = (param & 16) > 0 || config.compact;
+        this.compact = (param & 16) > 0 || (holder.forceCompact ? holder.config.compact : config.compact);
         this.lv = lv;
 
         registerAutoFinish(this, msg, author, lang, FIVE_MIN);

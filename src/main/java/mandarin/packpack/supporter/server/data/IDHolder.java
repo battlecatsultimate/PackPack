@@ -78,6 +78,10 @@ public class IDHolder {
             id.channelException = id.toMap(obj.getAsJsonObject("channelException"));
         }
 
+        if(obj.has("forceCompact")) {
+            id.forceCompact = obj.get("forceCompact").getAsBoolean();
+        }
+
         return id;
     }
 
@@ -96,7 +100,7 @@ public class IDHolder {
     public Map<String, String> ID = new TreeMap<>();
     public Map<String, List<String>> channel = new TreeMap<>();
     public List<Integer> eventLocale = new ArrayList<>();
-    public boolean eventRaw = false;
+    public boolean eventRaw = false, forceCompact = false;
     public ConfigHolder config = new ConfigHolder();
     public List<String> banned = new ArrayList<>();
     public Map<String, List<String>> channelException = new HashMap<>();
@@ -132,6 +136,7 @@ public class IDHolder {
         obj.add("config", config.jsonfy());
         obj.add("banned", listStringToJsonObject(banned));
         obj.add("channelException", jsonfyMap(channelException));
+        obj.addProperty("forceCompact", forceCompact);
 
         return obj;
     }

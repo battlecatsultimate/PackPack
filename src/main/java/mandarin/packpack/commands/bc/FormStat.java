@@ -158,7 +158,7 @@ public class FormStat extends ConstraintCommand {
                 boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
                 boolean talent = (param & PARAM_TALENT) > 0;
                 boolean extra = (param & PARAM_EXTRA) > 0 || config.extra;
-                boolean compact = (param & PARAM_COMPACT) > 0 || config.compact;
+                boolean compact = (param & PARAM_COMPACT) > 0 || (holder.forceCompact ? holder.config.compact : config.compact);
 
                 Message result = EntityHandler.showUnitEmb(forms.get(0), ch, config, isFrame, talent, extra, lv, lang, true, compact);
 
@@ -210,7 +210,7 @@ public class FormStat extends ConstraintCommand {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(m.getId(), new FormStatMessageHolder(forms, msg, config, res, ch.getId(), param, lv, lang));
+                            StaticStore.putHolder(m.getId(), new FormStatMessageHolder(forms, msg, config, holder, res, ch.getId(), param, lv, lang));
                     }
                 }
 

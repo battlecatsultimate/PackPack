@@ -145,6 +145,20 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
                 performResult(event);
 
                 break;
+            case "force":
+                es = (SelectMenuInteractionEvent) event;
+
+                if(!forServer) {
+                    StaticStore.logger.uploadLog("W/ConfigButtonHolder::performInteraction - Force compact mode is visible for personal config");
+
+                    return;
+                }
+
+                holder.forceCompact = es.getValues().get(0).equals("true");
+
+                performResult(event);
+
+                break;
             case "next":
                 page++;
 
@@ -301,6 +315,23 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
                     }
 
                     m.add(ActionRow.of(SelectMenu.create("compact").addOptions(compacts).build()));
+
+                    break;
+                case 5:
+                    if(forServer) {
+                        List<SelectOption> forces = new ArrayList<>();
+
+                        if(holder.forceCompact) {
+                            forces.add(SelectOption.of(LangID.getStringByID("config_force", lang).replace("_", LangID.getStringByID("data_true", lang)), "true").withDefault(true));
+                            forces.add(SelectOption.of(LangID.getStringByID("config_force", lang).replace("_", LangID.getStringByID("data_false", lang)), "false"));
+                        } else {
+                            forces.add(SelectOption.of(LangID.getStringByID("config_force", lang).replace("_", LangID.getStringByID("data_true", lang)), "true"));
+                            forces.add(SelectOption.of(LangID.getStringByID("config_force", lang).replace("_", LangID.getStringByID("data_false", lang)), "false").withDefault(true));
+                        }
+
+                        m.add(ActionRow.of(SelectMenu.create("force").addOptions(forces).build()));
+                    }
+
                     break;
             }
         }
@@ -394,7 +425,7 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
             comp = LangID.getStringByID("config_comfalse", lang);
         }
 
-        return "**" + LangID.getStringByID("config_locale", lang).replace("_", locale) + "**\n\n" +
+        String message = "**" + LangID.getStringByID("config_locale", lang).replace("_", locale) + "**\n\n" +
                 "**" + LangID.getStringByID("config_default", lang).replace("_", ""+ config.defLevel) + "**\n" +
                 LangID.getStringByID("config_deflvdesc", lang).replace("_", config.defLevel+"") + "\n\n" +
                 "**" + LangID.getStringByID("config_extra", lang).replace("_", bool) + "**\n" +
@@ -403,5 +434,16 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
                 LangID.getStringByID("config_unitdesc", lang) + "\n\n" +
                 "**" + LangID.getStringByID("config_compact", lang).replace("_", compact) + "**\n" +
                 comp;
+
+        if(forServer) {
+            String force = LangID.getStringByID(holder.forceCompact ? "data_true" : "data_false", lang);
+            String forc = LangID.getStringByID(holder.forceCompact ? "config_fortrue" : "config_forfalse", lang);
+
+            message += "\n\n" +
+                    "**" + LangID.getStringByID("config_force", lang).replace("_", force) + "**\n" +
+                    forc;
+        }
+
+        return message;
     }
 }

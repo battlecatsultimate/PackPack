@@ -68,7 +68,7 @@ public class FindStage extends TimedConstraintCommand {
 
         boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
         boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
-        boolean isCompact = (param & PARAM_COMPACT) > 0 || config.compact;
+        boolean isCompact = (param & PARAM_COMPACT) > 0 || (holder.forceCompact ? holder.config.compact : config.compact);
 
         ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(enemyName, lang);
 

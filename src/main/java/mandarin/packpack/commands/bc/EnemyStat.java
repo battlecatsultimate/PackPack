@@ -119,7 +119,7 @@ public class EnemyStat extends ConstraintCommand {
 
                 boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
                 boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
-                boolean isCompact = (param & PARAM_COMPACT) > 0 || config.compact;
+                boolean isCompact = (param & PARAM_COMPACT) > 0 || (holder.forceCompact ? holder.config.compact : config.compact);
 
                 EntityHandler.showEnemyEmb(enemies.get(0), ch, isFrame, isExtra, isCompact, magnification, lang);
             } else if(enemies.size() == 0) {
@@ -154,7 +154,7 @@ public class EnemyStat extends ConstraintCommand {
 
                 boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
                 boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
-                boolean isCompact = (param & PARAM_COMPACT) > 0 || config.compact;
+                boolean isCompact = (param & PARAM_COMPACT) > 0 || (holder.forceCompact ? holder.config.compact : config.compact);
 
                 if(res != null) {
                     Member member = getMember(event);
