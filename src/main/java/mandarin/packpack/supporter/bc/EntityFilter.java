@@ -62,8 +62,18 @@ public class EntityFilter {
 
                         for(String a : alias) {
                             if(a.toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
+                                if(a.toLowerCase(Locale.ENGLISH).equals(name.toLowerCase(Locale.ENGLISH))) {
+                                    res.clear();
+
+                                    res.add(f);
+
+                                    return res;
+                                }
+
                                 added = true;
+
                                 res.add(f);
+
                                 break;
                             }
                         }
@@ -283,8 +293,18 @@ public class EntityFilter {
 
                     for(String a : alias) {
                         if(a.toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
+                            if(a.toLowerCase(Locale.ENGLISH).equals(name.toLowerCase(Locale.ENGLISH))) {
+                                res.clear();
+
+                                res.add(e);
+
+                                return res;
+                            }
+
                             added = true;
+
                             res.add(e);
+
                             break;
                         }
                     }
@@ -813,8 +833,18 @@ public class EntityFilter {
 
                                             for(String a : alias) {
                                                 if(a.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
+                                                    if(a.toLowerCase(Locale.ENGLISH).equals(names[2].toLowerCase(Locale.ENGLISH))) {
+                                                        stResult.clear();
+
+                                                        stResult.add(st);
+
+                                                        return stResult;
+                                                    }
+
                                                     added = true;
+
                                                     s2 = true;
+
                                                     break;
                                                 }
                                             }
