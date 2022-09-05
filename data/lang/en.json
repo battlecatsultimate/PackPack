@@ -1141,7 +1141,7 @@
   "config_apply" : "Config change applied!",
   "config_cancel" : "Config change canceled",
   "config_expire" : "Config change canceled due to time out",
-  "config_force" : "Force users to use compact mode : _",
+  "config_force" : "Force users to follow server's compact mode : _",
   "config_fortrue" : "Normally, personal config overrides server's default config. However, since server may be using compact mode due to bot flooding the chat, moderators can force users to use compact mode specially\n\nUsers will have to follow server's default from now on for compact mode",
   "config_forfalse" : "Normally, personal config overrides server's default config. However, since server may be using compact mode due to bot flooding the chat, moderators can force users to use compact mode specially\n\nBot will use user's personal preference regardless of server's config",
   "stanalyzer_sid" : "Please specify ID of the map you want to analyze",
