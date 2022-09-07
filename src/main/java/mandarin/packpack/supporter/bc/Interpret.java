@@ -2,7 +2,9 @@ package mandarin.packpack.supporter.bc;
 
 import common.CommonStatic;
 import common.battle.data.MaskAtk;
+import common.battle.data.MaskEnemy;
 import common.battle.data.MaskEntity;
+import common.battle.data.MaskUnit;
 import common.pack.Identifier;
 import common.util.Data;
 import common.util.lang.Formatter;
@@ -149,7 +151,7 @@ public class Interpret extends Data {
         ArrayList<Integer> id = new ArrayList<>();
 
         MaskAtk mr = du.getRepAtk();
-        Formatter.Context c = new Formatter.Context(true, useSecond, new double[] { multi, amulti });
+        Formatter.Context c = new Formatter.Context(du instanceof MaskEnemy, useSecond, new double[] { multi, amulti });
 
         for(int i = 0; i < PROCIND.length; i++) {
             if(isValidProc(i, mr)) {

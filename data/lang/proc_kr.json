@@ -79,7 +79,7 @@
         "abbr_name": "파동",
         "full_name": "파동",
         "tooltip": "타겟 앞에 파동을 생성하여 멀리있는 타겟까지 공격할 수 있습니다",
-        "format": "(prob)% 확률로 레벨 (lv) 파동",
+        "format": "(prob)% 확률로 레벨 (lv) (_left)범위 (_waveRange(lv))(_right) 파동",
         "class": {
             "prob": {
                 "name": "확률",
@@ -1169,7 +1169,7 @@
         "abbr_name": "성 파괴가 특기",
         "full_name": "성 파괴가 특기",
         "tooltip": "적 성에게 추가 혹은 감소된 데미지를 가하도록 하는 능력입니다",
-        "format": "성 파괴[(mult>0){가 특기}(mult<0){에 약함}] (_left)적 성에게 (_abs(mult))% 만큼 [(mult>0){추가}(mult<0){감소된}] 데미지(_right)",
+        "format": "성 파괴[(mult>0){가 특기}(mult<0){에 약함}] [(mult==300){(_left)타겟 성에 데미지 x4(_right)}(mult!=300){(_left)적 성에게 (_abs(mult))% 만큼 [(mult>0){추가}(mult<0){감소된}] 데미지(_right)}]",
         "class": {
             "mult": {
                 "name": "퍼센트",

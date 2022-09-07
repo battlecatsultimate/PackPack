@@ -79,7 +79,7 @@
         "abbr_name": "wave",
         "full_name": "Wave",
         "tooltip": null,
-        "format": "(prob)% chance to create a Lv.(lv) wave attack",
+        "format": "(prob)% chance to create a Lv.(lv) (_left)(_waveRange(lv)) Range(_right) wave attack",
         "class": {
             "prob": {
                 "name": "chance",
@@ -1203,7 +1203,7 @@
         "abbr_name": "Vs. Base",
         "full_name": "Base Destroyer",
         "tooltip": null,
-        "format": "[(mult>0){Base Destroyer}(mult<0){Bad at castle destruction}] (_left)Deals (_abs(mult))% [(mult>0){more}(mult<0){less}] damage to the Enemy Base(_right)",
+        "format": "[(mult>0){Base Destroyer}(mult<0){Bad at castle destruction}] [(mult==300){(_left)Deals 4x damage to target base(_right)}(mult!=300){(_left)Deals (_abs(mult))% [(mult>0){more}(mult<0){less}] damage to the Enemy Base(_right)}]",
         "class": {
             "mult": {
                 "name": "percent",
