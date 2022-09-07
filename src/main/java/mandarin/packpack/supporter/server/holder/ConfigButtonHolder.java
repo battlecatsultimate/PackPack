@@ -175,8 +175,6 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
                 expired = true;
                 StaticStore.removeHolder(memberID, this);
 
-                StaticStore.config.put(memberID, config);
-
                 int lang = config.lang;
 
                 if(lang == -1)
