@@ -35,6 +35,7 @@ public class PackBot {
     public static int save = 0;
     public static int event = 0;
     public static int pfp = 0;
+    public static int udp = 0;
     public static boolean eventInit = false;
     public static boolean develop = false;
 
@@ -72,6 +73,20 @@ public class PackBot {
                     save = 1;
                 } else {
                     save++;
+                }
+
+                if(udp % 30 == 0) {
+                    System.out.println("Fetch UDP");
+
+                    try {
+                        StaticStore.fetchUDPData();
+                    } catch (Exception e) {
+                        StaticStore.logger.uploadErrorLog(e, "E/PackBot::main - Failed to fetch UDP data");
+                    }
+
+                    udp = 1;
+                } else {
+                    udp++;
                 }
 
                 if(pfp % 60 == 0) {
@@ -190,6 +205,12 @@ public class PackBot {
 
             if(!StaticStore.contributors.contains(StaticStore.MANDARIN_SMELL)) {
                 StaticStore.contributors.add(StaticStore.MANDARIN_SMELL);
+            }
+
+            try {
+                StaticStore.fetchUDPData();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
             StaticStore.initialized = true;

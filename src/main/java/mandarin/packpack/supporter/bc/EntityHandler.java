@@ -492,7 +492,7 @@ public class EntityHandler {
             }
         }
 
-        if(f.unit.rarity == 4 || f.unit.rarity == 5) {
+        if(StaticStore.availableUDP.contains(f.unit.id.id)) {
             components.add(Button.link("https://thanksfeanor.pythonanywhere.com/UDP/"+Data.trio(f.unit.id.id), "UDP").withEmoji(Emoji.fromCustom(EmojiStore.UDP)));
         }
 

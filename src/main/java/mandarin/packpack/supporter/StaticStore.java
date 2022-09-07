@@ -8,6 +8,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import common.CommonStatic;
+import common.io.WebFileIO;
 import common.io.assets.UpdateCheck;
 import common.util.lang.MultiLangCont;
 import mandarin.packpack.supporter.bc.DataToString;
@@ -156,6 +157,8 @@ public class StaticStore {
     public static final String MANDARIN_SMELL = "460409259021172781";
     public static final String PACKPACK_SERVER = "964054872649515048";
 
+    public static final String UDP_LINK = "https://api.github.com/repos/ThanksFeanor/UDP-Data/contents";
+
     public static String downPack = "./pack/download";
     public static String tempPack = "./pack/download";
 
@@ -164,6 +167,8 @@ public class StaticStore {
     public static Map<String, IDHolder> idHolder = new HashMap<>();
 
     public static String loggingChannel = "";
+
+    public static final List<Integer> availableUDP = new ArrayList<>();
 
     public static String rolesToString(List<Role> roles) {
         StringBuilder builder = new StringBuilder();
@@ -990,6 +995,35 @@ public class StaticStore {
         }
 
         return pos;
+    }
+
+    public static void fetchUDPData() throws Exception {
+        JsonElement data = WebFileIO.directRead(UDP_LINK);
+
+        if(!(data instanceof JsonArray))
+            return;
+
+        availableUDP.clear();
+
+        JsonArray arr = (JsonArray) data;
+
+        for(int i = 0; i < arr.size(); i++) {
+            JsonObject obj = arr.get(i).getAsJsonObject();
+
+            if(obj.has("name")) {
+                String name = obj.get("name").getAsString();
+
+                if(name.startsWith("UDPData_") && name.endsWith(".txt")) {
+                    String idName = name.replace("UDPData_", "").replace(".txt", "");
+
+                    if(isNumeric(idName)) {
+                        availableUDP.add(safeParseInt(idName));
+                    }
+                }
+            }
+        }
+
+        System.out.println("Successfully fetched UDP data");
     }
 
     private static int rgb(int r, int g, int b) {
