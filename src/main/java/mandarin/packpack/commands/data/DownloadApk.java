@@ -31,18 +31,31 @@ public class DownloadApk extends ConstraintCommand {
         if(ch == null)
             return;
 
+        if(StaticStore.apkDownloading) {
+            ch.sendMessage("APK is downloading, wait for process to be done").queue();
+
+            return;
+        }
+
+        StaticStore.apkDownloading = true;
+
         File googlePlay = new File("./googlePlay");
 
         if(!googlePlay.exists() || googlePlay.isFile()) {
             ch.sendMessage("Failed to find apk downloader scripts. Download process aborted").queue();
+
+            StaticStore.apkDownloading = false;
 
             return;
         }
 
         Message m = getMessage(event);
 
-        if(m == null)
+        if(m == null) {
+            StaticStore.apkDownloading = false;
+
             return;
+        }
 
         int loc = getLocale(m.getContentRaw());
 
@@ -93,6 +106,8 @@ public class DownloadApk extends ConstraintCommand {
         if(!apk.exists()) {
             ch.sendMessage("It seems that apk downloading was unsuccessful, analyzing process aborted").queue();
 
+            StaticStore.apkDownloading = false;
+
             return;
         }
 
@@ -100,6 +115,8 @@ public class DownloadApk extends ConstraintCommand {
 
         if(!TasteApk.isValidApk(apk)) {
             ch.sendMessage("Bot caught invalid format in apk file, check raw file manually, aborted").queue();
+
+            StaticStore.apkDownloading = false;
 
             return;
         }
@@ -126,6 +143,8 @@ public class DownloadApk extends ConstraintCommand {
             else
                 ch.sendMessage(content).queue();
         }
+
+        StaticStore.apkDownloading = false;
     }
 
     private int getLocale(String content) {
@@ -161,5 +180,12 @@ public class DownloadApk extends ConstraintCommand {
         writer.close();
 
         return log;
+    }
+
+    @Override
+    public void onFail(GenericMessageEvent event, int error) {
+        super.onFail(event, error);
+
+        StaticStore.apkDownloading = false;
     }
 }
