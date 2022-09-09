@@ -53,49 +53,47 @@ public class Logger {
 
         if(errMessage.length() >= 2000) {
             errMessage = errMessage.substring(0, 1993) + "...\n```";
+        }
 
-            try {
-                File temp = new File("temp");
+        try {
+            File temp = new File("temp");
 
-                if(!temp.exists() && !temp.mkdirs()) {
-                    uploadLog("Failed to create folder : "+temp.getAbsolutePath());
+            if(!temp.exists() && !temp.mkdirs()) {
+                uploadLog("Failed to create folder : "+temp.getAbsolutePath());
 
-                    createMessageWithNoPingsWithFile(ch, errMessage, null, files);
-
-                    return;
-                }
-
-                File log = StaticStore.generateTempFile(temp, "log", ".txt", false);
-
-                if(log == null) {
-                    return;
-                }
-
-                BufferedWriter writer = new BufferedWriter(new FileWriter(log));
-
-                writer.write(ExceptionUtils.getStackTrace(e));
-
-                writer.close();
-
-                File[] fs = new File[1 + files.length];
-
-                for(int i = 0; i < fs.length; i++) {
-                    if(i == 0) {
-                        fs[i] = log;
-                    } else {
-                        fs[i] = files[i - 1];
-                    }
-                }
-
-                createMessageWithNoPingsWithFile(ch, errMessage, () -> {
-                    if(log.exists() && !log.delete()) {
-                        uploadLog("Failed to delete file : "+log.getAbsolutePath());
-                    }
-                }, fs);
-            } catch (Exception err) {
                 createMessageWithNoPingsWithFile(ch, errMessage, null, files);
+
+                return;
             }
-        } else {
+
+            File log = StaticStore.generateTempFile(temp, "log", ".txt", false);
+
+            if(log == null) {
+                return;
+            }
+
+            BufferedWriter writer = new BufferedWriter(new FileWriter(log));
+
+            writer.write(ExceptionUtils.getStackTrace(e));
+
+            writer.close();
+
+            File[] fs = new File[1 + files.length];
+
+            for(int i = 0; i < fs.length; i++) {
+                if(i == 0) {
+                    fs[i] = log;
+                } else {
+                    fs[i] = files[i - 1];
+                }
+            }
+
+            createMessageWithNoPingsWithFile(ch, errMessage, () -> {
+                if(log.exists() && !log.delete()) {
+                    uploadLog("Failed to delete file : "+log.getAbsolutePath());
+                }
+            }, fs);
+        } catch (Exception err) {
             createMessageWithNoPingsWithFile(ch, errMessage, null, files);
         }
     }
