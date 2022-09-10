@@ -1205,9 +1205,16 @@
   "hi_3" : "Nice to meet you!",
   "hi_4" : ">:(",
   "hi_5" : "I hope you have a great day",
-  "hi_6_0" : ":envelope: You are invited to join Null cult! :envelope:\n\nWill you accept invitation???",
-  "hi_6_0_0" : "Welcome! You are now member of Null cult!",
-  "hi_6_0_1" : "How shameful! You will regret it!",
-  "hi_6_0_2" : "This isn't something that takes long time to think...! It will be beneficial to you",
-  "hi_6_1" : "Well, hello there, fellow cultist!"
+  "hi_6" : "Hi! It's good to see you!",
+  "hi_7" : "I... Hurr... huh? huy??",
+  "hi_8" : "`INTERNAL_ERROR`",
+  "hi_8_0" : "Ha! It was fake, hello!",
+  "hi_9" : "Oh boy, cool user said hi to me",
+  "hi_10" : "Thanks for saying hi to me!",
+  "hi_11" : "Bonjour!",
+  "hi_12_0" : ":envelope: You are invited to join Null cult! :envelope:\n\nWill you accept invitation???",
+  "hi_12_0_0" : "Welcome! You are now member of Null cult!",
+  "hi_12_0_1" : "How shameful! You will regret it!",
+  "hi_12_0_2" : "This isn't something that takes long time to think...! It will be beneficial to you",
+  "hi_12_1" : "Well, hello there, fellow cultist!"
 }

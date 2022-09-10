@@ -43,7 +43,7 @@ public class SayHi extends Command {
                 StaticStore.putHolder(m.getId(), new CultButtonHolder(getMessage(event), msg, ch.getId(), m.getId(), lang));
             }
         } else {
-            int index = StaticStore.random.nextInt(6);
+            int index = StaticStore.random.nextInt(12);
 
             switch (index) {
                 case 0:
@@ -75,6 +75,24 @@ public class SayHi extends Command {
                                 message.editMessage(
                                         LangID.getStringByID("hi_2", lang) + "\n\n" +
                                         LangID.getStringByID("hi_2_" + luck, lang)
+                                ).queue();
+                            }
+                        }, 5000);
+                    }
+
+                    break;
+                case 8:
+                    Message ms = getMessageWithNoPings(ch, LangID.getStringByID("hi_" + index, lang));
+
+                    if(ms != null) {
+                        Timer changer = new Timer();
+
+                        changer.schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                ms.editMessage(
+                                        LangID.getStringByID("hi_8", lang) + "\n\n" +
+                                                LangID.getStringByID("hi_8_0", lang)
                                 ).queue();
                             }
                         }, 5000);
