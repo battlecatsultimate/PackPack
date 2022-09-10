@@ -778,6 +778,10 @@ public class AllEventAdapter extends ListenerAdapter {
                 case "ssp":
                     new SoulSprite(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
                     break;
+                case "sayhi":
+                case "hi":
+                    new SayHi(lang).execute(event);
+                    break;
             }
         } catch (Exception e) {
             Message msg = event.getMessage();

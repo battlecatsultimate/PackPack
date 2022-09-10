@@ -170,6 +170,8 @@ public class StaticStore {
 
     public static final List<Integer> availableUDP = new ArrayList<>();
 
+    public static List<String> cultist = new ArrayList<>();
+
     public static String rolesToString(List<Role> roles) {
         StringBuilder builder = new StringBuilder();
 
@@ -317,7 +319,7 @@ public class StaticStore {
         return arr;
     }
 
-    public static JsonArray listToJsonString(ArrayList<String> list) {
+    public static JsonArray listToJsonString(List<String> list) {
         JsonArray arr = new JsonArray();
 
         for(String str : list) {
@@ -523,6 +525,7 @@ public class StaticStore {
         obj.add("scamLink", scamLink.jsonfy());
         obj.add("scamLinkHandlers", scamLinkHandlers.jsonfy());
         obj.add("optoutMembers", listToJsonString(optoutMembers));
+        obj.add("cultist", listToJsonString(cultist));
 
         try {
             File folder = new File("./data/");
@@ -689,6 +692,10 @@ public class StaticStore {
 
             if(obj.has("optoutMembers")) {
                 optoutMembers = jsonToListString(obj.getAsJsonArray("optoutMembers"));
+            }
+
+            if(obj.has("cultist")) {
+                cultist = jsonToListString(obj.getAsJsonArray("cultist"));
             }
         }
     }
