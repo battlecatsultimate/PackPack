@@ -137,7 +137,7 @@ public class ComboFormMessageHolder extends SearchHolder {
                     Member m = event.getMember();
 
                     if(m != null) {
-                        StaticStore.putHolder(m.getId(), new ComboMessageHolder(combos, event.getMessage(), res, msg, ch.getId(), lang));
+                        StaticStore.putHolder(m.getId(), new ComboMessageHolder(combos, getAuthorMessage(), res, msg, ch.getId(), lang));
                     }
                 }
             }
