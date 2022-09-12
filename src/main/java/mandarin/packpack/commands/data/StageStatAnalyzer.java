@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -639,7 +638,7 @@ public class StageStatAnalyzer extends ConstraintCommand {
     private List<Integer> getStageRange(String content) {
         List<Integer> result = new ArrayList<>();
 
-        String[] contents = content.replaceAll("[ ]+,[ ]+|,[ ]+|[ ]+,", ",").replaceAll("[ ]+-[ ]+|-[ ]+|[ ]+-", "-").split(" ");
+        String[] contents = content.replaceAll("(?<=\\d)( +)?,( +)?(?=\\d)", ",").replaceAll("(?<=\\d)( +)?-( +)?(?=\\d)", "-").split(" ");
 
         for(int i = 0; i < contents.length; i++) {
             if((contents[i].endsWith("-r") || contents[i].endsWith("-range")) && i < contents.length - 1) {
