@@ -4,6 +4,7 @@ import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Form;
+import mandarin.packpack.commands.bc.FormGif;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityHandler;
@@ -83,6 +84,14 @@ public class FormAnimMessageHolder extends SearchHolder {
 
         try {
             Form f = form.get(id);
+
+            if(FormGif.forbidden.contains(f.unit.id.id)) {
+                msg.delete().queue();
+
+                ch.sendMessage(LangID.getStringByID("gif_dummy", lang)).queue();
+
+                return;
+            }
 
             if(gif) {
                 TimeBoolean timeBoolean = StaticStore.canDo.get("gif");

@@ -877,6 +877,7 @@
   "gif_uploading" : "Uploading gif...",
   "gif_uploadmp4" : "Uploading mp4...",
   "gif_ignore" : "Ignoring -raw param because user isn't dev",
+  "gif_dummy" : "Currently, this data is dummy, so generating gif is blocked for this",
   "idset_argu" : "This command requires one more argument set : `Usage : p!idset [ROLE] [ID]",
   "idset_result" : "-----------RESULT----------\n\n",
   "idset_noguild" : "Couldn't get guild info",

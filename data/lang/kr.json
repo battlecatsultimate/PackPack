@@ -865,6 +865,7 @@
   "gif_uploading" : "GIF 업로드 중...",
   "gif_uploadmp4" : "MP4 업로드 중...",
   "gif_ignore" : "유저가 개발자가 아니므로 -raw 인자를 무시합니다",
+  "gif_dummy" : "현재, 이 데이터는 더미로 존재합니다. 따라서 gif 생성을 취소합니다",
   "idset_argu" : "해당 명령어는 하나 이상의 정보 묶음을 요구합니다 : `용도 : p!idset [역할] [ID]",
   "idset_result" : "-----------결과----------\n\n",
   "idset_noguild" : "길드 정보 불러오지 못했음",

@@ -866,6 +866,7 @@
   "gif_uploading" : "gifをアップロードしています...",
   "gif_uploadmp4" : "mp4をアップロードしています...",
   "gif_ignore" : "ユーザーが開発者ではないため、-raw を無視します",
+  "gif_dummy" : "Currently, this data is dummy, so generating gif is blocked for this",
   "idset_argu" : "このコマンドにはもう一つ引数が必要です。 : `使い方 : p!idset [ロール] [ID]",
   "idset_result" : "-----------結果----------\n\n",
   "idset_noguild" : "ギルドの情報を取得できませんでした。",

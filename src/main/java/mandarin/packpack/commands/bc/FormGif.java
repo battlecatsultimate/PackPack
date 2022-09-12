@@ -20,14 +20,26 @@ import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class FormGif extends GlobalTimedConstraintCommand {
-    private final int PARAM_DEBUG = 2;
-    private final int PARAM_RAW = 4;
-    private final int PARAM_GIF = 8;
+    private static final int PARAM_DEBUG = 2;
+    private static final int PARAM_RAW = 4;
+    private static final int PARAM_GIF = 8;
+
+    public static List<Integer> forbidden = new ArrayList<>();
+
+    static {
+        int[] data = {
+                677, 678, 679
+        };
+
+        for(int d : data)
+            forbidden.add(d);
+    }
 
     public FormGif(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID) {
         super(role, lang, id, mainID, TimeUnit.SECONDS.toMillis(30));
@@ -89,11 +101,17 @@ public class FormGif extends GlobalTimedConstraintCommand {
                 boolean gif = (param & PARAM_GIF) > 0;
                 int frame = getFrame(getContent(event));
 
+                Form f = forms.get(0);
+
+                if(forbidden.contains(f.unit.id.id)) {
+                    ch.sendMessage(LangID.getStringByID("gif_dummy", lang)).queue();
+
+                    return;
+                }
+
                 if(raw && !isTrusted) {
                     ch.sendMessage(LangID.getStringByID("gif_ignore", lang)).queue();
                 }
-
-                Form f = forms.get(0);
 
                 boolean result = EntityHandler.generateFormAnim(f, ch, g.getBoostTier().getKey(), mode, debug, frame, lang, raw && isTrusted, gif);
 

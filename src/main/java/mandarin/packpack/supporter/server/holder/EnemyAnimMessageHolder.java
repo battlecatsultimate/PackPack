@@ -4,6 +4,7 @@ import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Enemy;
+import mandarin.packpack.commands.bc.EnemyGif;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityHandler;
@@ -83,6 +84,14 @@ public class EnemyAnimMessageHolder extends SearchHolder {
 
         try {
             Enemy e = enemy.get(id);
+
+            if(EnemyGif.forbidden.contains(e.id.id)) {
+                ch.sendMessage(LangID.getStringByID("gif_dummy", lang)).queue();
+
+                msg.delete().queue();
+
+                return;
+            }
 
             if (gif) {
                 TimeBoolean timeBoolean = StaticStore.canDo.get("gif");

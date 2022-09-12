@@ -25,9 +25,20 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class EnemyGif extends GlobalTimedConstraintCommand {
-    private final int PARAM_DEBUG = 2;
-    private final int PARAM_RAW = 4;
-    private final int PARAM_GIF = 8;
+    private static final int PARAM_DEBUG = 2;
+    private static final int PARAM_RAW = 4;
+    private static final int PARAM_GIF = 8;
+
+    public static final List<Integer> forbidden = new ArrayList<>();
+
+    static {
+        int[] data = {
+                616, 617, 618, 619, 620, 621
+        };
+
+        for(int d : data)
+            forbidden.add(d);
+    }
 
     public EnemyGif(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID) {
         super(role, lang, id, mainID, TimeUnit.SECONDS.toMillis(30));
@@ -88,11 +99,17 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
                 boolean gif = (param & PARAM_GIF) > 0;
                 int frame = getFrame(getContent(event));
 
+                Enemy en = enemies.get(0);
+
+                if(forbidden.contains(en.id.id)) {
+                    ch.sendMessage(LangID.getStringByID("gif_dummy", lang)).queue();
+
+                    return;
+                }
+
                 if(raw && !isTrusted) {
                     ch.sendMessage(LangID.getStringByID("gif_ignore", lang)).queue();
                 }
-
-                Enemy en = enemies.get(0);
 
                 boolean result = EntityHandler.generateEnemyAnim(en, ch, g.getBoostTier().getKey(), mode, debug, frame, lang, raw && isTrusted, gif);
 
