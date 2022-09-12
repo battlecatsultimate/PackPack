@@ -2160,7 +2160,7 @@ public class ImageDrawing {
             g.setColor(191, 191, 191);
             g.setFont(contentFont);
 
-            g.drawText(code, (int) (bgMargin - lRect.getX()), (int) (lRect.getHeight() + nameMargin - lRect.getY()));
+            g.drawText(code, (int) (bgMargin - lRect.getX()), (int) (nRect.getHeight() + nameMargin - lRect.getY()));
         }
 
         return result;
