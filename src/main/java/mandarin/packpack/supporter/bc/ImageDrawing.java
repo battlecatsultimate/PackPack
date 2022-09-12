@@ -2975,8 +2975,8 @@ public class ImageDrawing {
     }
 
     private static int handleMixedBGEffect(int ind) {
-        for(int i = 0; i < BackgroundEffect.jsonList.length; i++) {
-            if(BackgroundEffect.jsonList[i] == -ind)
+        for(int i = 0; i < BackgroundEffect.jsonList.size(); i++) {
+            if(BackgroundEffect.jsonList.get(i) == -ind)
                 return 10 + i;
         }
 
