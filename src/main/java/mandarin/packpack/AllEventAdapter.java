@@ -782,6 +782,11 @@ public class AllEventAdapter extends ListenerAdapter {
                 case "hi":
                     new SayHi(lang).execute(event);
                     break;
+                case "calculator":
+                case "calc":
+                case "c":
+                    new Calculator(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
+                    break;
             }
         } catch (Exception e) {
             Message msg = event.getMessage();
