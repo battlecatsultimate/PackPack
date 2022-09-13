@@ -782,7 +782,7 @@
   "help_soulsprite_use" : "`p!soulsprite [Soul ID]`",
   "help_soulsprite_desc" : "Upload sprite of soul with specified ID. `soulsp`, `ssprite`, `ssp` are also valid command",
   "help_calculator_use" : "`p!calculator [Equation]`",
-  "help_calculator_desc" : "Calculate the equation that is provided. `calc`, `c` are also valid command. It supports functions blow\n\n`Basic calculations`\nsin/cos/tan`\n`csc/sec/cot`\n`arcsin/arccos/arctan`\n`ln/log/logN`\n`sqrt/sqrtN`",
+  "help_calculator_desc" : "Calculate the equation that is provided. `calc`, `c` are also valid command. It supports functions blow\n\n`Basic calculations`\n`sin/cos/tan`\n`csc/sec/cot`\n`arcsin/arccos/arctan`\n`ln/log/logN`\n`sqrt/sqrtN`",
   "help_calculator_exam" : "`p!c ln(e) + sin(pi/2) * cos(pi/4) * sqrt(2) - log5(25) + cos(arcsin(1) * 2) + sqrt3(8)`",
   "help_calculator_tip" : "`logN` means log whose base is `N`, so if you want to perform log with base of 2, then you have to call something like `log2(4)`\n\nSame for `sqrtN`, it's `sqrt`, but base is `N`, which is identical to `V^(1/N)` = `sqrtN(V)`. So if you want to perform `8^(1/3)`, then you have to call `sqrt3(8)`\n\nWhen you write number and parenthesis, you really don't need to put `*` manually. For example, `2(2+5)` will give you `14` automatically",
   "prefix_space" : "Prefixはスペースにはできません!",
