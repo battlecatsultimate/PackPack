@@ -185,6 +185,10 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
                         .setComponents()
                         .queue();
 
+                if(!forServer && !StaticStore.config.containsKey(memberID)) {
+                    StaticStore.config.put(memberID, config);
+                }
+
                 break;
             case "cancel":
                 expired = true;
