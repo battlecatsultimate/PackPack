@@ -274,7 +274,7 @@ public class StageInfo extends TimedConstraintCommand {
             String[] contents = command.split(" ");
 
             for(int i = 0; i < contents.length; i++) {
-                if(contents[i].equals("-lv") && i < contents.length - 1 && StaticStore.isNumeric(contents[i+1])) {
+                if((contents[i].equals("-lv") || contents[i].equals("-lvl")) && i < contents.length - 1 && StaticStore.isNumeric(contents[i+1])) {
                     level = StaticStore.safeParseInt(contents[i+1]);
                     break;
                 }
@@ -352,7 +352,7 @@ public class StageInfo extends TimedConstraintCommand {
         for(int i = start+1; i < contents.length; i++) {
             if(contents[i].equals("-stm") && !stmDone)
                 break;
-            else if(contents[i].equals("-lv") && i < contents.length - 1 && StaticStore.isNumeric(contents[i+1]))
+            else if((contents[i].equals("-lv") || contents[i].equals("-lvl")) && i < contents.length - 1 && StaticStore.isNumeric(contents[i+1]))
                 i++;
             else
                 mc.append(contents[i]).append(" ");
@@ -374,7 +374,7 @@ public class StageInfo extends TimedConstraintCommand {
         for (int i = start + 1; i < contents.length; i++) {
             if (contents[i].equals("-mc") && !mcDone)
                 break;
-            else if(contents[i].equals("-lv") && i < contents.length - 1 && StaticStore.isNumeric(contents[i+1]))
+            else if((contents[i].equals("-lv") || contents[i].equals("-lvl")) && i < contents.length - 1 && StaticStore.isNumeric(contents[i+1]))
                 i++;
             else
                 stm.append(contents[i]).append(" ");
@@ -416,7 +416,7 @@ public class StageInfo extends TimedConstraintCommand {
                 } else {
                     st.append(contents[i]).append(" ");
                 }
-            } else if(contents[i].equals("-lv") && i < contents.length - 1 && StaticStore.isNumeric(contents[i+1])) {
+            } else if((contents[i].equals("-lvl") || contents[i].equals("-lv")) && i < contents.length - 1 && StaticStore.isNumeric(contents[i+1])) {
                 i++;
             } else {
                 st.append(contents[i]).append(" ");

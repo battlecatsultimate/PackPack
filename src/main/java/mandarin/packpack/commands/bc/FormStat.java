@@ -1,6 +1,5 @@
 package mandarin.packpack.commands.bc;
 
-import common.CommonStatic;
 import common.util.Data;
 import common.util.unit.Form;
 import mandarin.packpack.commands.ConstraintCommand;
@@ -303,6 +302,7 @@ public class FormStat extends ConstraintCommand {
                     }
                     break;
                 case "-lv":
+                case "-lvl":
                     if(!isLevel && i < content.length - 1) {
                         String text = getLevelText(content, i + 1);
 
@@ -349,7 +349,7 @@ public class FormStat extends ConstraintCommand {
             String[] content = msg.split(" ");
 
             for(int i = 0; i < content.length; i++) {
-                if(content[i].equals("-lv") && i != content.length -1) {
+                if((content[i].equals("-lv") || content[i].equals("-lvl")) && i != content.length -1) {
                     String[] trial = getLevelText(content, i+1).replace(" ", "").split(",");
 
                     int length = 0;
