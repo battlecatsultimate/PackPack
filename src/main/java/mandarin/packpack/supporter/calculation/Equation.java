@@ -11,7 +11,13 @@ public class Equation {
     public static List<String> error = new ArrayList<>();
     public static DecimalFormat df = new DecimalFormat("#.######");
 
-    public static double calculate(String equation) {
+    public static double calculate(String equation, String parent) {
+        if(equation.equals(parent)) {
+            error.add("data_notnum | " + equation);
+
+            return 0;
+        }
+
         List<Element> elements = parse(equation);
 
         if(elements.isEmpty())
@@ -176,7 +182,7 @@ public class Equation {
                     }
 
                     if(prefix != null) {
-                        double inner = calculate(builder.toString());
+                        double inner = calculate(builder.toString(), equation);
 
                         if(StaticStore.isNumeric(prefix)) {
                             elements.add(new Number(StaticStore.safeParseInt(prefix) * inner));
@@ -319,7 +325,7 @@ public class Equation {
                                         } else {
                                             int originalLength = error.size();
 
-                                            double value = calculate(base);
+                                            double value = calculate(base, prefix + "(" + builder + ")");
 
                                             if(originalLength != error.size()) {
                                                 error.add("calc_unknownfunc | " + prefix + "(" + builder + ")");
@@ -359,7 +365,7 @@ public class Equation {
                                         } else {
                                             int originalLength = error.size();
 
-                                            double value = calculate(base);
+                                            double value = calculate(base, prefix + "(" + builder + ")");
 
                                             if(originalLength != error.size()) {
                                                 error.add("calc_unknownfunc | " + prefix + "(" + builder + ")");
@@ -386,7 +392,7 @@ public class Equation {
                                     } else {
                                         int len = error.size();
 
-                                        check = calculate(prefix);
+                                        check = calculate(prefix, prefix + "(" + builder + ")");
 
                                         if(len != error.size()) {
                                             error.add("calc_unknownfunc | " + prefix + "(" + builder + ")");
@@ -403,13 +409,14 @@ public class Equation {
                     }
 
                     break;
-                case '*':
                 case '+':
                 case '-':
-                case '/':
-                case '^':
+                case '*':
                 case '×':
+                case 'x':
+                case '/':
                 case '÷':
+                case '^':
                     if((builder.length() == 0 && i != 0 && equation.charAt(i - 1) != ')') || i == equation.length() - 1) {
                         error.add("calc_alone");
 
@@ -441,7 +448,7 @@ public class Equation {
                                 default:
                                     int len = error.size();
 
-                                    double check = calculate(prefix);
+                                    double check = calculate(prefix, equation);
 
                                     if(len != error.size()) {
                                         error.add("calc_notnum | " + prefix);
@@ -461,6 +468,7 @@ public class Equation {
                     switch (equation.charAt(i)) {
                         case '*':
                         case '×':
+                        case 'x':
                             operator = Operator.TYPE.MULTIPLICATION;
 
                             break;
@@ -508,7 +516,7 @@ public class Equation {
                     default:
                         int len = error.size();
 
-                        double check = calculate(prefix);
+                        double check = calculate(prefix, equation);
 
                         if(len != error.size()) {
                             error.add("calc_notnum | " + prefix);

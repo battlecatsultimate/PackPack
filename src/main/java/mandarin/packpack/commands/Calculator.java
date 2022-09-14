@@ -27,7 +27,7 @@ public class Calculator extends ConstraintCommand {
             return;
         }
 
-        double result = Equation.calculate(equation[1].replace(" ", ""));
+        double result = Equation.calculate(equation[1].replace(" ", ""), null);
 
         if(Equation.error.isEmpty()) {
             createMessageWithNoPings(ch, LangID.getStringByID("calc_result", lang).replace("_", Equation.df.format(result)));
