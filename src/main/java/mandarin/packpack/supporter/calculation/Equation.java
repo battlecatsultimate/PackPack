@@ -6,10 +6,13 @@ import mandarin.packpack.supporter.lang.LangID;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class Equation {
     public static List<String> error = new ArrayList<>();
     public static DecimalFormat df = new DecimalFormat("#.######");
+
+    private static final String[] suffix = { "k", "m", "b", "t" };
 
     public static double calculate(String equation, String parent) {
         if(equation.equals(parent)) {
@@ -270,6 +273,7 @@ public class Equation {
                                     break;
                                 case "sqrt":
                                 case "root":
+                                case "sqrt2":
                                     if(inner < 0) {
                                         error.add("calc_sqrt | " + prefix + "(" + builder + ")");
 
@@ -285,7 +289,7 @@ public class Equation {
                                     break;
                                 case "arcsin":
                                 case "asin":
-                                    if(inner < -Math.PI / 2 || inner > Math.PI / 2) {
+                                    if(inner < -1 || inner > 1) {
                                         error.add("calc_arcsin | " + prefix + "(" + builder + ")");
 
                                         return new ArrayList<>();
@@ -296,7 +300,7 @@ public class Equation {
                                     break;
                                 case "arccos":
                                 case "acos":
-                                    if(inner < 0 || inner > Math.PI) {
+                                    if(inner < -1 || inner > 1) {
                                         error.add("calc_arccos | " + prefix + "(" + builder + ")");
 
                                         return new ArrayList<>();
@@ -307,13 +311,38 @@ public class Equation {
                                     break;
                                 case "arctan":
                                 case "atan":
-                                    if (inner <= -Math.PI / 2 || inner >= Math.PI / 2) {
-                                        error.add("calc_arctan | " + prefix + "(" + builder + ")");
+                                    elements.add(new Number(Math.atan(inner)));
+
+                                    break;
+                                case "arccsc":
+                                case "acsc":
+                                    if(-1 < inner && inner < 1) {
+                                        error.add("calc_arccsc | " + prefix + "(" + builder + ")");
 
                                         return new ArrayList<>();
                                     }
 
-                                    elements.add(new Number(Math.atan(inner)));
+                                    elements.add(new Number(Math.asin(1.0 / inner)));
+
+                                    break;
+                                case "arcsec":
+                                case "asec":
+                                    if(-1 < inner && inner < 1) {
+                                        error.add("calc_arcsec | " + prefix + "(" + builder + ")");
+
+                                        return new ArrayList<>();
+                                    }
+
+                                    elements.add(new Number(Math.acos(1.0 / inner)));
+
+                                    break;
+                                case "arccot":
+                                case "acot":
+                                    if (inner == 0) {
+                                        elements.add(new Number(Math.PI / 2));
+                                    } else {
+                                        elements.add(new Number(Math.atan(1.0 / inner)));
+                                    }
 
                                     break;
                                 default:
@@ -453,16 +482,22 @@ public class Equation {
 
                                     break;
                                 default:
-                                    int len = error.size();
+                                    double suffixCheck = checkSuffix(prefix);
 
-                                    double check = calculate(prefix, equation);
+                                    if(Double.isNaN(suffixCheck)) {
+                                        int len = error.size();
 
-                                    if(len != error.size()) {
-                                        error.add("calc_notnum | " + prefix);
+                                        double check = calculate(prefix, equation);
 
-                                        return new ArrayList<>();
+                                        if(len != error.size()) {
+                                            error.add("calc_notnum | " + prefix);
+
+                                            return new ArrayList<>();
+                                        } else {
+                                            elements.add(new Number(check));
+                                        }
                                     } else {
-                                        elements.add(new Number(check));
+                                        elements.add(new Number(suffixCheck));
                                     }
                             }
                         }
@@ -521,16 +556,22 @@ public class Equation {
 
                         break;
                     default:
-                        int len = error.size();
+                        double suffixCheck = checkSuffix(prefix);
 
-                        double check = calculate(prefix, equation);
+                        if(Double.isNaN(suffixCheck)) {
+                            int len = error.size();
 
-                        if(len != error.size()) {
-                            error.add("calc_notnum | " + prefix);
+                            double check = calculate(prefix, equation);
 
-                            return new ArrayList<>();
+                            if(len != error.size()) {
+                                error.add("calc_notnum | " + prefix);
+
+                                return new ArrayList<>();
+                            } else {
+                                elements.add(new Number(check));
+                            }
                         } else {
-                            elements.add(new Number(check));
+                            elements.add(new Number(suffixCheck));
                         }
                 }
             }
@@ -550,5 +591,25 @@ public class Equation {
         }
 
         return open != 0;
+    }
+
+    private static double checkSuffix(String value) {
+        for(int i = 0; i < suffix.length; i++) {
+            if(value.toLowerCase(Locale.ENGLISH).endsWith(suffix[i])) {
+                String prefix = value.toLowerCase(Locale.ENGLISH).replaceAll(suffix[i] +"$", "");
+
+                if(StaticStore.isNumeric(prefix)) {
+                    return Double.parseDouble(prefix) * Math.pow(10, (i + 1) * 3);
+                } else if(prefix.equals("pi")) {
+                    return Math.PI * Math.pow(10, (i + 1) * 3);
+                } else if(prefix.equals("e")) {
+                    return Math.E * Math.pow(10, (i + 1) * 3);
+                } else {
+                    return Double.NaN;
+                }
+            }
+        }
+
+        return Double.NaN;
     }
 }
