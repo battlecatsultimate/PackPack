@@ -3,7 +3,7 @@ package mandarin.packpack.commands;
 import mandarin.packpack.supporter.calculation.Equation;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class Calculator extends ConstraintCommand {

@@ -8,6 +8,7 @@ import mandarin.packpack.supporter.server.data.BoosterHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import org.apache.commons.lang3.StringUtils;
 

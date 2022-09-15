@@ -8,9 +8,12 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class ScamLinkHandler {
@@ -111,7 +114,9 @@ public class ScamLinkHandler {
                 } catch (Exception ignored) {}
             }
         } else if(action == ACTION.KICK) {
-            m.kick(LangID.getStringByID("scamhandle_kickreason", holder.config.lang)).queue();
+            m.kick()
+                    .reason(LangID.getStringByID("scamhandle_kickreason", holder.config.lang))
+                    .queue();
 
             MessageEmbed embed = new EmbedBuilder()
                     .setTitle(LangID.getStringByID("scamhandle_title", holder.config.lang))
@@ -123,7 +128,9 @@ public class ScamLinkHandler {
                 ((MessageChannel) ch).sendMessageEmbeds(embed).queue();
             } catch (Exception ignored) {}
         } else if(action == ACTION.BAN) {
-            m.ban(0, LangID.getStringByID("scamhandle_banreason", holder.config.lang)).queue();
+            m.ban(0, TimeUnit.HOURS)
+                    .reason(LangID.getStringByID("scamhandle_kickreason", holder.config.lang))
+                    .queue();
 
             MessageEmbed embed = new EmbedBuilder()
                     .setTitle(LangID.getStringByID("scamhandle_title", holder.config.lang))

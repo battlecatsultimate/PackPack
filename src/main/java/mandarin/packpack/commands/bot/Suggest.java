@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
@@ -71,7 +71,7 @@ public class Suggest extends TimedConstraintCommand {
                 }
 
                 builder.addField("Member ID", m.getId(), true);
-                builder.addField("Member Name", m.getNickname(), true);
+                builder.addField("Member Name", m.getUser().getName(), true);
                 builder.setAuthor(title, null, m.getAvatarUrl());
 
                 builder.addField("Channel ID" , ch.getId(), false);

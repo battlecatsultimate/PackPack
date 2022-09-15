@@ -1,7 +1,7 @@
 package mandarin.packpack.supporter.bc;
 
 import mandarin.packpack.supporter.StaticStore;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
