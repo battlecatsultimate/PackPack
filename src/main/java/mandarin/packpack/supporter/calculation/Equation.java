@@ -13,7 +13,7 @@ public class Equation {
 
     public static double calculate(String equation, String parent) {
         if(equation.equals(parent)) {
-            error.add("data_notnum | " + equation);
+            error.add("calc_notnum | " + equation);
 
             return 0;
         }
@@ -535,10 +535,10 @@ public class Equation {
     private static boolean openedBracket(String raw) {
         int open = 0;
 
-        for(int i = 0; i < raw.length(); i++) {
-            if(raw.charAt(i) == '(')
+        for (int i = 0; i < raw.length(); i++) {
+            if (raw.charAt(i) == '(')
                 open++;
-            else if(raw.charAt(i) == ')')
+            else if (raw.charAt(i) == ')')
                 open--;
         }
 
