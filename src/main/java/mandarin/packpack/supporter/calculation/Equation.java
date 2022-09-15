@@ -114,8 +114,15 @@ public class Equation {
     public static String getErrorMessage(int lang) {
         StringBuilder builder = new StringBuilder();
 
-        for(int i = 0; i < error.size(); i++) {
-            String[] data = error.get(i).split(" \\| ");
+        List<String> realError = new ArrayList<>();
+
+        for(String e : error) {
+            if(!realError.contains(e))
+                realError.add(e);
+        }
+
+        for(int i = 0; i < realError.size(); i++) {
+            String[] data = realError.get(i).split(" \\| ");
 
             if(data.length == 1) {
                 builder.append(LangID.getStringByID(data[0], lang));
@@ -123,7 +130,7 @@ public class Equation {
                 builder.append(LangID.getStringByID(data[0], lang).replace("_", data[1]));
             }
 
-            if(i < error.size() - 1) {
+            if(i < realError.size() - 1) {
                 builder.append("\n\n");
             }
         }
