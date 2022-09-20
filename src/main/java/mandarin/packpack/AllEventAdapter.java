@@ -567,6 +567,7 @@ public class AllEventAdapter extends ListenerAdapter {
                     new News(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
                     break;
                 case "publish":
+                case "pub":
                     new Publish(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
                     break;
                 case "boosterrole":
@@ -791,6 +792,13 @@ public class AllEventAdapter extends ListenerAdapter {
                 case "calc":
                 case "c":
                     new Calculator(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
+                    break;
+                case "assetbrowser":
+                case "abroswer":
+                case "assetb":
+                case "ab":
+                    new AssetBrowser(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
+
                     break;
             }
         } catch (Exception e) {

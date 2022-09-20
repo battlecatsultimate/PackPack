@@ -96,23 +96,11 @@ public abstract class SearchHolder extends InteractionHolder<GenericComponentInt
 
                 break;
             case "data":
-                expired = true;
-
-                StaticStore.removeHolder(event.getUser().getId(), this);
-
-                onSelected(event);
+                finish(event);
 
                 return;
             case "cancel":
-                expired = true;
-
-                StaticStore.removeHolder(event.getUser().getId(), this);
-
-                event.deferEdit()
-                        .setComponents()
-                        .complete();
-
-                msg.editMessage(LangID.getStringByID("formst_cancel", lang)).complete();
+                cancel(event);
 
                 return;
         }
@@ -130,6 +118,53 @@ public abstract class SearchHolder extends InteractionHolder<GenericComponentInt
     public abstract void onSelected(GenericComponentInteractionCreateEvent event);
 
     public abstract int getDataSize();
+
+    public void finish(GenericComponentInteractionCreateEvent event) {
+        expired = true;
+
+        StaticStore.removeHolder(event.getUser().getId(), this);
+
+        onSelected(event);
+    }
+
+    public void cancel(GenericComponentInteractionCreateEvent event) {
+        expired = true;
+
+        StaticStore.removeHolder(event.getUser().getId(), this);
+
+        event.deferEdit()
+                .setComponents()
+                .complete();
+
+        msg.editMessage(LangID.getStringByID("formst_cancel", lang)).complete();
+    }
+
+    protected String getPage() {
+        StringBuilder sb = new StringBuilder("```md\n")
+                .append(LangID.getStringByID("formst_pick", lang));
+
+        List<String> data = accumulateListData(true);
+
+        for(int i = 0; i < data.size(); i++) {
+            sb.append(i + PAGE_CHUNK * page + 1)
+                    .append(". ")
+                    .append(data.get(i))
+                    .append("\n");
+        }
+
+        if(getDataSize() > PAGE_CHUNK) {
+            int totalPage = getDataSize() / PAGE_CHUNK;
+
+            if(getDataSize() % PAGE_CHUNK != 0)
+                totalPage++;
+
+            sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page + 1)).replace("-", String.valueOf(totalPage))).append("\n");
+        }
+
+        sb.append("```");
+
+        return sb.toString();
+    }
 
     private List<ActionRow> getComponents() {
         int totalPage = getDataSize() / PAGE_CHUNK;
@@ -178,7 +213,19 @@ public abstract class SearchHolder extends InteractionHolder<GenericComponentInt
         List<String> data = accumulateListData(false);
 
         for(int i = 0; i < data.size(); i++) {
-            options.add(SelectOption.of(data.get(i), String.valueOf(page * PAGE_CHUNK + i)));
+            String element = data.get(i);
+
+            String[] elements = element.split("\\\\\\\\");
+
+            if(elements.length == 2) {
+                if(elements[0].matches("<:[^\\s]+?:\\d+>")) {
+                    options.add(SelectOption.of(elements[1], String.valueOf(page * PAGE_CHUNK + i)).withEmoji(Emoji.fromFormatted(elements[0])));
+                } else {
+                    options.add(SelectOption.of(element, String.valueOf(page * PAGE_CHUNK + i)));
+                }
+            } else {
+                options.add(SelectOption.of(element, String.valueOf(page * PAGE_CHUNK + i)));
+            }
         }
 
         rows.add(ActionRow.of(SelectMenu.create("data").addOptions(options).setPlaceholder(LangID.getStringByID("search_list", lang)).build()));
@@ -188,34 +235,7 @@ public abstract class SearchHolder extends InteractionHolder<GenericComponentInt
         return rows;
     }
 
-    private String getPage() {
-        StringBuilder sb = new StringBuilder("```md\n")
-                .append(LangID.getStringByID("formst_pick", lang));
-
-        List<String> data = accumulateListData(true);
-
-        for(int i = 0; i < data.size(); i++) {
-            sb.append(i + PAGE_CHUNK * page + 1)
-                    .append(". ")
-                    .append(data.get(i))
-                    .append("\n");
-        }
-
-        if(getDataSize() > PAGE_CHUNK) {
-            int totalPage = getDataSize() / PAGE_CHUNK;
-
-            if(getDataSize() % PAGE_CHUNK != 0)
-                totalPage++;
-
-            sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page + 1)).replace("-", String.valueOf(totalPage))).append("\n");
-        }
-
-        sb.append("```");
-
-        return sb.toString();
-    }
-
-    private void apply(GenericComponentInteractionCreateEvent event) {
+    protected void apply(GenericComponentInteractionCreateEvent event) {
         event.deferEdit()
                 .setContent(getPage())
                 .setComponents(getComponents())

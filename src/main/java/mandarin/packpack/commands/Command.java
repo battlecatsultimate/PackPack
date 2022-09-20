@@ -70,7 +70,19 @@ public abstract class Command {
         List<SelectOption> options = new ArrayList<>();
 
         for(int i = 0; i < data.size(); i++) {
-            options.add(SelectOption.of(data.get(i), String.valueOf(i)));
+            String element = data.get(i);
+
+            String[] elements = element.split("\\\\\\\\");
+
+            if(elements.length == 2) {
+                if(elements[0].matches("<:[^\\s]+?:\\d+>")) {
+                    options.add(SelectOption.of(elements[1], String.valueOf(i)).withEmoji(Emoji.fromFormatted(elements[0])));
+                } else {
+                    options.add(SelectOption.of(element, String.valueOf(i)));
+                }
+            } else {
+                options.add(SelectOption.of(element, String.valueOf(i)));
+            }
         }
 
         rows.add(ActionRow.of(SelectMenu.create("data").addOptions(options).setPlaceholder(LangID.getStringByID("search_list", lang)).build()));

@@ -27,6 +27,17 @@ public class EmojiStore {
         TREASURE_RADAR = StaticStore.getEmoteWitNameAndID(jda, "TreasureRadar", 993716433387261992L, false, true);
         UDP = StaticStore.getEmoteWitNameAndID(jda, "UDP", 993716659904847912L, false, true);
         NP = StaticStore.getEmoteWitNameAndID(jda, "NP", 1013168214143946823L, false, true);
+        FILE = StaticStore.getEmoteWitNameAndID(jda, "File", 1021728205540954142L, false, true);
+        FOLDER = StaticStore.getEmoteWitNameAndID(jda, "Folder", 1021730210741227581L, false, true);
+        FOLDERUP = StaticStore.getEmoteWitNameAndID(jda, "FolderUp", 1021728258292731914L, false, true);
+        PNG = StaticStore.getEmoteWitNameAndID(jda, "PNG", 1021728433870487572L, false, true);
+        CSV = StaticStore.getEmoteWitNameAndID(jda, "CSV", 1021728377360633866L, false, true);
+        TSV = StaticStore.getEmoteWitNameAndID(jda, "TSV", 1021728409262493706L, false, true);
+        JSON = StaticStore.getEmoteWitNameAndID(jda, "JSON", 1021728486483836938L, false, true);
+        INI = StaticStore.getEmoteWitNameAndID(jda, "INI", 1021728519195205663L, false, true);
+        IMGCUT = StaticStore.getEmoteWitNameAndID(jda, "Imgcut", 1021728290895056936L, false, true);
+        MAMODEL = StaticStore.getEmoteWitNameAndID(jda, "Mamodel", 1021728318510342184L, false, true);
+        MAANIM = StaticStore.getEmoteWitNameAndID(jda, "Maanim", 1021728344632467517L, false, true);
 
         File iconData = new File("./data/abilityIcons.txt");
 
@@ -80,6 +91,17 @@ public class EmojiStore {
     public static RichCustomEmoji TREASURE_RADAR;
     public static RichCustomEmoji UDP;
     public static RichCustomEmoji NP;
+    public static RichCustomEmoji FILE;
+    public static RichCustomEmoji FOLDER;
+    public static RichCustomEmoji FOLDERUP;
+    public static RichCustomEmoji PNG;
+    public static RichCustomEmoji CSV;
+    public static RichCustomEmoji TSV;
+    public static RichCustomEmoji JSON;
+    public static RichCustomEmoji INI;
+    public static RichCustomEmoji IMGCUT;
+    public static RichCustomEmoji MAMODEL;
+    public static RichCustomEmoji MAANIM;
 
     public static Map<String, RichCustomEmoji> ABILITY = new HashMap<>();
     public static MultiLangCont<String, RichCustomEmoji> TRAIT = new MultiLangCont<>();

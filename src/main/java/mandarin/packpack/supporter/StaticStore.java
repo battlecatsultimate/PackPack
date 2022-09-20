@@ -51,7 +51,6 @@ public class StaticStore {
     public static String GOOGLE_APP;
 
     public static boolean apkDownloading = false;
-    public static boolean animApk = false;
 
     public static final String COMMAND_BG_ID = "bg";
     public static final String COMMAND_COMBO_ID = "combo";
