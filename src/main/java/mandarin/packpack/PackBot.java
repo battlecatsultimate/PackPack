@@ -97,9 +97,6 @@ public class PackBot {
                         String fileName;
 
                         switch (c.get(Calendar.MONTH) + 1) {
-                            case 12:
-                                fileName = "BotDec.png";
-                                break;
                             case 1:
                                 fileName = "BotJan.png";
                                 break;
@@ -111,6 +108,15 @@ public class PackBot {
                                 break;
                             case 4:
                                 fileName = "BotApr.png";
+                                break;
+                            case 10:
+                                fileName = "BotOct.png";
+                                break;
+                            case 11:
+                                fileName = "BotNov.png";
+                                break;
+                            case 12:
+                                fileName = "BotDec.png";
                                 break;
                             default:
                                 fileName = "Bot.png";
