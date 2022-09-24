@@ -1353,7 +1353,7 @@ public class EntityFilter {
         }
     }
 
-    public static ArrayList<Stage> findStageByEnemy(Enemy e) {
+    public static ArrayList<Stage> findStage(List<Enemy> enemies, int music, int background, int castle, boolean hasBoss, boolean orOperator) {
         ArrayList<Stage> result = new ArrayList<>();
 
         for(MapColc mc : MapColc.values()) {
@@ -1368,12 +1368,24 @@ public class EntityFilter {
                     if(st == null)
                         continue;
 
-                    for(SCDef.Line line : st.data.datas) {
-                        if(line.enemy.equals(e.id)) {
-                            result.add(st);
-                            break;
-                        }
+                    if(music != -1) {
+                        boolean mus = st.mus0 != null && st.mus0.id == music;
+
+                        if(!mus && st.mus1 != null && st.mus1.id == music)
+                            mus = true;
+
+                        if(!mus)
+                            continue;
                     }
+
+                    if(background != -1 && (st.bg == null || st.bg.id != background))
+                        continue;
+
+                    if(castle != -1 && (st.castle == null || st.castle.id != castle))
+                        continue;
+
+                    if(enemies.isEmpty() || containsEnemies(st.data.datas, enemies, hasBoss, orOperator))
+                        result.add(st);
                 }
             }
         }
@@ -1918,5 +1930,40 @@ public class EntityFilter {
         }
 
         return distances;
+    }
+
+    private static boolean containsEnemies(SCDef.Line[] lines, List<Enemy> enemies, boolean hasBoss, boolean or) {
+        boolean b = !hasBoss;
+
+        if(!b) {
+            for(SCDef.Line l : lines) {
+                if(l.boss != 0) {
+                    b = true;
+                    break;
+                }
+            }
+        }
+
+        boolean c = false;
+
+        for(Enemy e : enemies) {
+            boolean contain = false;
+
+            for(SCDef.Line l : lines) {
+                if(l.enemy != null && l.enemy.equals(e.id)) {
+                    contain = true;
+                    break;
+                }
+            }
+
+            if(!or && !contain)
+                return false;
+            else if(or && contain) {
+                c = true;
+                break;
+            }
+        }
+
+        return b && (!or || c);
     }
 }

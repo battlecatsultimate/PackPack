@@ -9,6 +9,7 @@ import common.util.stage.StageMap;
 import common.util.unit.Enemy;
 import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
@@ -23,24 +24,42 @@ import java.util.List;
 import java.util.Map;
 
 public class StageEnemyMessageHolder extends SearchHolder {
-    private final ArrayList<Enemy> enemy;
-    private final Message author;
+    private final List<List<Enemy>> enemySequences;
+    private final List<Enemy> filterEnemy;
+    private final StringBuilder enemyList;
+
+    private List<Enemy> enemy;
 
     private final boolean isFrame;
     private final boolean isExtra;
     private final boolean isCompact;
-    private final int star;
+    private final boolean orOperate;
+    private final boolean hasBoss;
 
-    public StageEnemyMessageHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, boolean isFrame, boolean isExtra, boolean isCompact, int star, int lang) {
+    private final int star;
+    private final int background;
+    private final int castle;
+    private final int music;
+
+    public StageEnemyMessageHolder(List<List<Enemy>> enemySequences, List<Enemy> filterEnemy, StringBuilder enemyList, Message author, Message msg, String channelID, boolean isFrame, boolean isExtra, boolean isCompact, boolean orOperate, boolean hasBoss, int star, int background, int castle, int music, int lang) {
         super(msg, author, channelID, lang);
 
-        this.enemy = enemy;
-        this.author = author;
+        this.enemySequences = enemySequences;
+        this.filterEnemy = filterEnemy;
+        this.enemyList = enemyList;
 
         this.isFrame = isFrame;
         this.isExtra = isExtra;
         this.isCompact = isCompact;
+        this.orOperate = orOperate;
+        this.hasBoss = hasBoss;
+
         this.star = star;
+        this.background = background;
+        this.castle = castle;
+        this.music = music;
+
+        enemy = enemySequences.remove(0);
 
         registerAutoFinish(this, msg, author, lang, FIVE_MIN);
     }
@@ -76,16 +95,13 @@ public class StageEnemyMessageHolder extends SearchHolder {
     public void onSelected(GenericComponentInteractionCreateEvent event) {
         MessageChannel ch = event.getChannel();
         Guild g = event.getGuild();
+        Message author = getAuthorMessage();
 
-        if(g == null)
+        if(g == null || author == null)
             return;
 
-        int id = parseDataToInt(event);
-
         try {
-            Enemy e = enemy.get(id);
-
-            ArrayList<Stage> stages = EntityFilter.findStageByEnemy(e);
+            ArrayList<Stage> stages = EntityFilter.findStage(filterEnemy, music, background, castle, hasBoss, orOperate);
 
             if(stages.isEmpty()) {
                 msg.delete().queue();
@@ -112,17 +128,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
                     }
                 }
             } else {
-                String eName = StaticStore.safeMultiLangGet(e, lang);
-
-                if(eName == null || eName.isBlank())
-                    eName = e.names.toString();
-
-                if(eName.isBlank())
-                    eName = Data.trio(e.id.id);
-
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("fstage_several", lang).replace("_", eName))
-                        .append("```md\n").
-                        append(LangID.getStringByID("formst_pick", lang));
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("fstage_several", lang)).append("```md\n");
 
                 List<String> data = accumulateStage(stages, true);
 
@@ -152,6 +158,61 @@ public class StageEnemyMessageHolder extends SearchHolder {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void finish(GenericComponentInteractionCreateEvent event) {
+        int id = parseDataToInt(event);
+
+        Enemy e = enemy.get(id);
+
+        filterEnemy.add(e);
+
+        String n = StaticStore.safeMultiLangGet(e, lang);
+
+        if(n == null || n.isBlank())
+            n = Data.trio(e.id.id);
+
+        enemyList.append(n).append(", ");
+
+        if(enemySequences.isEmpty()) {
+            super.finish(event);
+        } else {
+            enemy = enemySequences.remove(0);
+            page = 0;
+
+            apply(event);
+        }
+    }
+
+    @Override
+    protected String getPage() {
+        StringBuilder sb = new StringBuilder();
+
+        if(enemyList.length() != 0) {
+            sb.append(LangID.getStringByID("fstage_selected", lang).replace("_", enemyList.toString().replaceAll(", $", "")));
+        }
+
+        sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang));
+
+        List<String> data = accumulateListData(false);
+
+        for(int i = 0; i < data.size(); i++) {
+            sb.append(page * PAGE_CHUNK + i + 1).append(". ").append(data.get(i)).append("\n");
+        }
+
+        if(enemy.size() > SearchHolder.PAGE_CHUNK) {
+            int totalPage = enemy.size() / SearchHolder.PAGE_CHUNK;
+
+            if(enemy.size() % SearchHolder.PAGE_CHUNK != 0)
+                totalPage++;
+
+            sb.append(LangID.getStringByID("formst_page", lang).replace("_", (page + 1) + "").replace("-", String.valueOf(totalPage))).append("\n");
+        }
+
+        sb.append("```");
+
+        return sb.toString();
     }
 
     @Override

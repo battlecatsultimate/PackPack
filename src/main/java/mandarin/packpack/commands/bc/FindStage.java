@@ -1,8 +1,10 @@
 package mandarin.packpack.commands.bc;
 
 import common.CommonStatic;
+import common.pack.UserProfile;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
+import common.util.stage.CastleList;
 import common.util.stage.MapColc;
 import common.util.stage.Stage;
 import common.util.stage.StageMap;
@@ -32,6 +34,9 @@ public class FindStage extends TimedConstraintCommand {
     private static final int PARAM_SECOND = 2;
     private static final int PARAM_EXTRA = 4;
     private static final int PARAM_COMPACT = 8;
+    private static final int PARAM_OR = 16;
+    private static final int PARAM_AND = 32;
+    private static final int PARAM_BOSS = 64;
 
     private final ConfigHolder config;
 
@@ -58,38 +63,94 @@ public class FindStage extends TimedConstraintCommand {
 
         String enemyName = getEnemyName(getContent(event));
 
-        if(enemyName.isBlank()) {
-            ch.sendMessage(LangID.getStringByID("eimg_more", lang)).queue();
-            return;
-        }
-
         int param = checkParameters(getContent(event));
         int star = getLevel(getContent(event));
+        int music = getMusic(getContent(event));
+        int castle = getCastle(getContent(event));
+        int background = getBackground(getContent(event));
 
         boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
         boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
         boolean isCompact = (param & PARAM_COMPACT) > 0 || (holder.forceCompact ? holder.config.compact : config.compact);
+        boolean orOperate = (param & PARAM_OR) > 0 && (param & PARAM_AND) == 0;
+        boolean hasBoss = (param & PARAM_BOSS) > 0;
 
-        ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(enemyName, lang);
+        if(enemyName.isBlank() && music < 0 && castle < 0 && background < 0 && !hasBoss) {
+            ch.sendMessage(LangID.getStringByID("fstage_noparam", lang)).queue();
 
-        if (enemies.isEmpty()) {
-            createMessageWithNoPings(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", enemyName));
+            return;
+        }
+
+        if(background >= 0 && UserProfile.getBCData().bgs.get(background) == null) {
+            ch.sendMessage(LangID.getStringByID("fstage_bg", lang)).queue();
+
+            return;
+        }
+
+        if(music >= 0 && UserProfile.getBCData().musics.get(music) == null) {
+            ch.sendMessage(LangID.getStringByID("fstage_music", lang)).queue();
+
+            return;
+        }
+
+        ArrayList<CastleList> castleLists = new ArrayList<>(CastleList.defset());
+
+        if(castle >= 0 && castle >= castleLists.get(0).size()) {
+            ch.sendMessage(LangID.getStringByID("fstage_castle", lang)).queue();
+
+            return;
+        }
+
+        List<List<Enemy>> enemySequences = new ArrayList<>();
+        List<Enemy> filterEnemy = new ArrayList<>();
+        StringBuilder enemyList = new StringBuilder();
+
+        String[] names = enemyName.split("/");
+
+        if(names.length > 5) {
+            ch.sendMessage(LangID.getStringByID("fstage_toomany", lang)).queue();
             disableTimer();
-        } else if(enemies.size() == 1) {
-            ArrayList<Stage> stages = EntityFilter.findStageByEnemy(enemies.get(0));
+
+            return;
+        }
+
+        if(!enemyName.isBlank()) {
+            for(int i = 0; i < names.length; i++) {
+                if(names[i].trim().isBlank()) {
+                    createMessageWithNoPings(ch, LangID.getStringByID("fstage_noname", lang));
+                    disableTimer();
+
+                    return;
+                }
+
+                ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(names[i].trim(), lang);
+
+                if(enemies.isEmpty()) {
+                    createMessageWithNoPings(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", names[i].trim()));
+                    disableTimer();
+
+                    return;
+                } else if(enemies.size() == 1) {
+                    filterEnemy.add(enemies.get(0));
+
+                    String n = StaticStore.safeMultiLangGet(enemies.get(0), lang);
+
+                    if(n == null || n.isBlank()) {
+                        n = Data.trio(enemies.get(0).id.id);
+                    }
+
+                    enemyList.append(n).append(", ");
+                } else {
+                    enemySequences.add(enemies);
+                }
+            }
+        }
+
+        if(enemySequences.isEmpty()) {
+            ArrayList<Stage> stages = EntityFilter.findStage(filterEnemy, music, background, castle, hasBoss, orOperate);
 
             if(stages.isEmpty()) {
-                String eName = StaticStore.safeMultiLangGet(enemies.get(0), lang);
-
-                if(eName == null || eName.isBlank()) {
-                    eName = enemies.get(0).names.toString();
-                }
-
-                if(eName.isBlank()) {
-                    eName = Data.trio(enemies.get(0).id.id);
-                }
-
-                createMessageWithNoPings(ch, LangID.getStringByID("fstage_nost", lang).replace("_", eName));
+                createMessageWithNoPings(ch, LangID.getStringByID("fstage_nost", lang));
 
                 disableTimer();
             } else if(stages.size() == 1) {
@@ -105,16 +166,8 @@ public class FindStage extends TimedConstraintCommand {
                     }
                 }
             } else {
-                String eName = StaticStore.safeMultiLangGet(enemies.get(0), lang);
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("fstage_several", lang)).append("```md\n");
 
-                if(eName == null || eName.isBlank())
-                    eName = enemies.get(0).names.toString();
-
-                if(eName.isBlank())
-                    eName = Data.trio(enemies.get(0).id.id);
-
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("fstage_several", lang).replace("_", eName)).append("```md\n");
-                
                 List<String> data = accumulateStage(stages, true);
 
                 for(int i = 0; i < data.size(); i++) {
@@ -148,10 +201,16 @@ public class FindStage extends TimedConstraintCommand {
                 }
             }
         } else {
-            StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", enemyName));
+            StringBuilder sb = new StringBuilder();
+
+            if(enemyList.length() != 0) {
+                sb.append(LangID.getStringByID("fstage_selected", lang).replace("_", enemyList.toString().replaceAll(", $", "")));
+            }
 
             sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang));
-            
+
+            List<Enemy> enemies = enemySequences.get(0);
+
             List<String> data = accumulateEnemy(enemies);
 
             for(int i = 0; i < data.size(); i++) {
@@ -166,7 +225,7 @@ public class FindStage extends TimedConstraintCommand {
 
                 sb.append(LangID.getStringByID("formst_page", lang).replace("_", "1").replace("-", String.valueOf(totalPage))).append("\n");
             }
-            
+
             sb.append("```");
 
             Message res = registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), enemies.size(), data, lang).complete();
@@ -178,7 +237,7 @@ public class FindStage extends TimedConstraintCommand {
                     Message msg = getMessage(event);
 
                     if(msg != null)
-                        StaticStore.putHolder(m.getId(), new StageEnemyMessageHolder(enemies, msg, res, ch.getId(), isFrame, isExtra, isCompact, star, lang));
+                        StaticStore.putHolder(m.getId(), new StageEnemyMessageHolder(enemySequences, filterEnemy, enemyList, msg, res, ch.getId(), isFrame, isExtra, isCompact, orOperate, hasBoss, star, background, castle, music, lang));
                 }
             }
         }
@@ -194,6 +253,12 @@ public class FindStage extends TimedConstraintCommand {
 
         boolean second = false;
         boolean level = false;
+        boolean background = false;
+        boolean or = false;
+        boolean and = false;
+        boolean castle = false;
+        boolean music = false;
+        boolean boss = false;
 
         for(int i = 1; i < contents.length; i++) {
             if(contents[i].equals("-lv") && !level) {
@@ -207,8 +272,23 @@ public class FindStage extends TimedConstraintCommand {
                         result.append(" ");
                     }
                 }
-            } else if(contents[i].equals("-s") && !second) {
+            } else if(!second && contents[i].equals("-s")) {
                 second = true;
+            } else if(!background && (contents[i].equals("-bg") || contents[i].equals("-background")) && i < contents.length - 1 && StaticStore.isNumeric(contents[i + 1])) {
+                background = true;
+                i++;
+            } else if(!and && (contents[i].equals("-a") || contents[i].equals("-and"))) {
+                and = true;
+            } else if(!or && (contents[i].equals("-o") || contents[i].equals("-or"))) {
+                or = true;
+            } else if(!castle && (contents[i].equals("-cs") || contents[i].equals("-castle")) && i < contents.length - 1 && StaticStore.isNumeric(contents[i + 1])) {
+                castle = true;
+                i++;
+            } else if(!music && (contents[i].equals("-ms") || contents[i].equals("-music")) && i < contents.length - 1 && StaticStore.isNumeric(contents[i + 1])) {
+                music = true;
+                i++;
+            } else if(!boss && (contents[i].equals("-b") || contents[i].equals("-boss"))) {
+                boss = true;
             } else {
                 result.append(contents[i]);
 
@@ -252,6 +332,28 @@ public class FindStage extends TimedConstraintCommand {
                         } else
                             break label;
                         break;
+                    case "-o":
+                    case "-or":
+                        if ((result & PARAM_OR) == 0) {
+                            result |= PARAM_OR;
+                        } else
+                            break label;
+                        break;
+                    case "-a":
+                    case "-and":
+                        if ((result & PARAM_AND) == 0) {
+                            result |= PARAM_AND;
+                        } else
+                            break label;
+                        break;
+                    case "-b":
+                    case "-boss":
+                        if ((result & PARAM_BOSS) == 0) {
+                            result |= PARAM_BOSS;
+                        } else {
+                            break label;
+                        }
+                        break;
                 }
             }
         }
@@ -274,6 +376,57 @@ public class FindStage extends TimedConstraintCommand {
         }
 
         return level;
+    }
+
+    private int getBackground(String command) {
+        int bg = -1;
+
+        if (command.contains("-bg") || command.contains("-background")) {
+            String[] contents = command.split(" ");
+
+            for(int i = 0; i < contents.length; i++) {
+                if((contents[i].equals("-bg") || contents[i].equals("-background")) && i < contents.length - 1 && StaticStore.isNumeric(contents[i + 1])) {
+                    bg = StaticStore.safeParseInt(contents[i + 1]);
+                    break;
+                }
+            }
+        }
+
+        return bg;
+    }
+
+    private int getCastle(String command) {
+        int castle = -1;
+
+        if (command.contains("-cs")) {
+            String[] contents = command.split(" ");
+
+            for(int i = 0; i < contents.length; i++) {
+                if((contents[i].equals("-cs") || contents[i].equals("-castle")) && i < contents.length - 1 && StaticStore.isNumeric(contents[i + 1])) {
+                    castle = StaticStore.safeParseInt(contents[i + 1]);
+                    break;
+                }
+            }
+        }
+
+        return castle;
+    }
+
+    private int getMusic(String command) {
+        int music = -1;
+
+        if (command.contains("-ms")) {
+            String[] contents = command.split(" ");
+
+            for(int i = 0; i < contents.length; i++) {
+                if((contents[i].equals("-ms") || contents[i].equals("-music")) && i < contents.length - 1 && StaticStore.isNumeric(contents[i + 1])) {
+                    music = StaticStore.safeParseInt(contents[i + 1]);
+                    break;
+                }
+            }
+        }
+
+        return music;
     }
     
     private List<String> accumulateEnemy(List<Enemy> enemies) {

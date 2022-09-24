@@ -188,7 +188,7 @@ public class Help extends Command {
             case "findst":
             case "fstage":
             case "fst":
-                ch.sendMessageEmbeds(addFields( "findstage", true, true, false)).queue();
+                ch.sendMessageEmbeds(addFields( "findstage", true, true, true)).queue();
                 break;
             case "suggest":
                 ch.sendMessageEmbeds(addFields( "suggest", true, true, true)).queue();
