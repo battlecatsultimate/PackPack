@@ -109,6 +109,12 @@ public class PackBot {
                             case 4:
                                 fileName = "BotApr.png";
                                 break;
+                            case 6:
+                                fileName = "BotJun.png";
+                                break;
+                            case 7:
+                                fileName = "BotJul.png";
+                                break;
                             case 10:
                                 fileName = "BotOct.png";
                                 break;
