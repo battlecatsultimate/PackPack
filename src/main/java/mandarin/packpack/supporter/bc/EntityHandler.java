@@ -1002,6 +1002,18 @@ public class EntityHandler {
             stmMagnification = stm.stars[sta];
         }
 
+        if(stm != null) {
+            MapColc mc = stm.getCont();
+
+            if(mc != null && mc.getSID().equals("000003") && stm.id.id == 9) {
+                if(st.id.id == 49) {
+                    sta = 1;
+                } else if(st.id.id == 50) {
+                    sta = 2;
+                }
+            }
+        }
+
         File img = generateScheme(st, isFrame, lang, stmMagnification);
 
         EmbedBuilder spec = new EmbedBuilder();
