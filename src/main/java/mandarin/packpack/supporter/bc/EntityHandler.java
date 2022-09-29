@@ -988,7 +988,7 @@ public class EntityHandler {
         return img;
     }
 
-    public static Message showStageEmb(Stage st, MessageChannel ch, boolean isFrame, boolean isExtra, boolean isCompact, int star, int lang) throws Exception {
+    public static Message showStageEmb(Stage st, MessageChannel ch, boolean isFrame, boolean isExtra, boolean isCompact, int level, int lang) throws Exception {
         StageMap stm = st.getCont();
 
         int sta;
@@ -998,7 +998,7 @@ public class EntityHandler {
             sta = 0;
             stmMagnification = 100;
         } else {
-            sta = Math.min(Math.max(star-1, 0), st.getCont().stars.length-1);
+            sta = Math.min(Math.max(level-1, 0), st.getCont().stars.length-1);
             stmMagnification = stm.stars[sta];
         }
 
@@ -1214,7 +1214,7 @@ public class EntityHandler {
         return msg;
     }
 
-    public static Message performStageEmb(Stage st, GenericCommandInteractionEvent event, boolean isFrame, boolean isExtra, int star, int lang) throws Exception {
+    public static Message performStageEmb(Stage st, GenericCommandInteractionEvent event, boolean isFrame, boolean isExtra, int level, int lang) throws Exception {
         StageMap stm = st.getCont();
 
         int sta;
@@ -1224,7 +1224,7 @@ public class EntityHandler {
             sta = 0;
             stmMagnification = 100;
         } else {
-            sta = Math.min(Math.max(star-1, 0), st.getCont().stars.length-1);
+            sta = Math.min(Math.max(level-1, 0), st.getCont().stars.length-1);
             stmMagnification = stm.stars[sta];
         }
 
