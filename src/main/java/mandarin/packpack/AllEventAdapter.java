@@ -798,7 +798,10 @@ public class AllEventAdapter extends ListenerAdapter {
                 case "assetb":
                 case "ab":
                     new AssetBrowser(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
-
+                    break;
+                case "garbagecollect":
+                case "gc":
+                    new GarbageCollect(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
                     break;
             }
         } catch (Exception e) {
