@@ -166,7 +166,7 @@ public abstract class SearchHolder extends InteractionHolder<GenericComponentInt
         return sb.toString();
     }
 
-    private List<ActionRow> getComponents() {
+    public List<ActionRow> getComponents() {
         int totalPage = getDataSize() / PAGE_CHUNK;
 
         if(getDataSize() % PAGE_CHUNK != 0)

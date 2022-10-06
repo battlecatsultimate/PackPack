@@ -24,6 +24,18 @@ import java.util.List;
 import java.util.Locale;
 
 public class EntityFilter {
+    private static  final int[] storyChapterMonthly = {
+            3, 4, 5, 6, 7, 8, 9
+    };
+
+    private static final int[] cycloneMonthly = {
+            14, 15, 16, 39, 43, 66, 96, 122, 157
+    };
+
+    private static final int[] cycloneCatamin = {
+            18, 19, 20, 21, 22, 23, 35, 36, 49
+    };
+
     public static ArrayList<Form> findUnitWithName(String name, int lang) {
         ArrayList<Form> res = new ArrayList<>();
 
@@ -1353,7 +1365,7 @@ public class EntityFilter {
         }
     }
 
-    public static ArrayList<Stage> findStage(List<Enemy> enemies, int music, int background, int castle, boolean hasBoss, boolean orOperator) {
+    public static ArrayList<Stage> findStage(List<Enemy> enemies, int music, int background, int castle, boolean hasBoss, boolean orOperator, boolean monthly) {
         ArrayList<Stage> result = new ArrayList<>();
 
         for(MapColc mc : MapColc.values()) {
@@ -1363,6 +1375,10 @@ public class EntityFilter {
             for(StageMap stm : mc.maps.getList()) {
                 if(stm == null)
                     continue;
+
+                if (monthly && !isMonthly(mc, stm)) {
+                    continue;
+                }
 
                 for(Stage st : stm.list.getList()) {
                     if(st == null)
@@ -1965,5 +1981,42 @@ public class EntityFilter {
         }
 
         return b && (!or || c);
+    }
+
+    private static boolean isMonthly(MapColc mc, StageMap map) {
+        switch (mc.getSID()) {
+            case "000003": {
+                int id = map.id.id;
+
+                for (int i = 0; i < storyChapterMonthly.length; i++) {
+                    if (id == storyChapterMonthly[i])
+                        return true;
+                }
+                
+                break;
+            }
+            case "000001": {
+                int id = map.id.id;
+
+                for (int i = 0; i < cycloneMonthly.length; i++) {
+                    if (id == cycloneMonthly[i])
+                        return true;
+                }
+
+                break;
+            }
+            case "000014": {
+                int id = map.id.id;
+
+                for (int i = 0; i < cycloneCatamin.length; i++) {
+                    if (id == cycloneCatamin[i])
+                        return true;
+                }
+
+                break;
+            }
+        }
+
+        return mc.getSID().equals("000000");
     }
 }

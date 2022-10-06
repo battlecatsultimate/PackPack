@@ -11,32 +11,51 @@ import common.util.stage.StageMap;
 import common.util.unit.Enemy;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.TimedConstraintCommand;
+import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import mandarin.packpack.supporter.server.holder.SearchHolder;
-import mandarin.packpack.supporter.server.holder.StageEnemyMessageHolder;
-import mandarin.packpack.supporter.server.holder.StageInfoButtonHolder;
-import mandarin.packpack.supporter.server.holder.StageInfoMessageHolder;
+import mandarin.packpack.supporter.server.holder.*;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
+import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class FindStage extends TimedConstraintCommand {
+    public enum MONTHLY {
+        ALL,
+        EOC,
+        ITF1,
+        ITF2,
+        ITF3,
+        COTC1,
+        COTC2,
+        COTC3,
+        SOL,
+        CYCLONE
+    }
+
     private static final int PARAM_SECOND = 2;
     private static final int PARAM_EXTRA = 4;
     private static final int PARAM_COMPACT = 8;
     private static final int PARAM_OR = 16;
     private static final int PARAM_AND = 32;
     private static final int PARAM_BOSS = 64;
+    private static final int PARAM_MONTHLY = 128;
 
     private final ConfigHolder config;
 
@@ -74,6 +93,7 @@ public class FindStage extends TimedConstraintCommand {
         boolean isCompact = (param & PARAM_COMPACT) > 0 || (holder.forceCompact ? holder.config.compact : config.compact);
         boolean orOperate = (param & PARAM_OR) > 0 && (param & PARAM_AND) == 0;
         boolean hasBoss = (param & PARAM_BOSS) > 0;
+        boolean monthly = (param & PARAM_MONTHLY) > 0;
 
         if(enemyName.isBlank() && music < 0 && castle < 0 && background < 0 && !hasBoss) {
             ch.sendMessage(LangID.getStringByID("fstage_noparam", lang)).queue();
@@ -147,7 +167,7 @@ public class FindStage extends TimedConstraintCommand {
         }
 
         if(enemySequences.isEmpty()) {
-            ArrayList<Stage> stages = EntityFilter.findStage(filterEnemy, music, background, castle, hasBoss, orOperate);
+            ArrayList<Stage> stages = EntityFilter.findStage(filterEnemy, music, background, castle, hasBoss, orOperate, monthly);
 
             if(stages.isEmpty()) {
                 createMessageWithNoPings(ch, LangID.getStringByID("fstage_nost", lang));
@@ -185,7 +205,7 @@ public class FindStage extends TimedConstraintCommand {
 
                 sb.append("```");
 
-                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), stages.size(), accumulateStage(stages, false), lang).complete();
+                Message res = createMonthlyMessage(ch, sb.toString(), accumulateStage(stages, false), stages, stages.size(), monthly);
 
                 if(res != null) {
                     Member m = getMember(event);
@@ -194,7 +214,7 @@ public class FindStage extends TimedConstraintCommand {
                         Message msg = getMessage(event);
 
                         if(msg != null) {
-                            StaticStore.putHolder(m.getId(), new StageInfoMessageHolder(stages, msg, res, ch.getId(), star, isFrame, isExtra, isCompact, lang));
+                            StaticStore.putHolder(m.getId(), new FindStageMessageHolder(stages, monthly ? accumulateCategory(stages) : null, getMessage(event), res, ch.getId(), star, isFrame, isExtra, isCompact, lang));
                         }
                         disableTimer();
                     }
@@ -237,7 +257,7 @@ public class FindStage extends TimedConstraintCommand {
                     Message msg = getMessage(event);
 
                     if(msg != null)
-                        StaticStore.putHolder(m.getId(), new StageEnemyMessageHolder(enemySequences, filterEnemy, enemyList, msg, res, ch.getId(), isFrame, isExtra, isCompact, orOperate, hasBoss, star, background, castle, music, lang));
+                        StaticStore.putHolder(m.getId(), new StageEnemyMessageHolder(enemySequences, filterEnemy, enemyList, msg, res, ch.getId(), isFrame, isExtra, isCompact, orOperate, hasBoss, monthly, star, background, castle, music, lang));
                 }
             }
         }
@@ -259,6 +279,7 @@ public class FindStage extends TimedConstraintCommand {
         boolean castle = false;
         boolean music = false;
         boolean boss = false;
+        boolean monthly = false;
 
         for(int i = 1; i < contents.length; i++) {
             if(contents[i].equals("-lv") && !level) {
@@ -289,6 +310,8 @@ public class FindStage extends TimedConstraintCommand {
                 i++;
             } else if(!boss && (contents[i].equals("-b") || contents[i].equals("-boss"))) {
                 boss = true;
+            } else if(!monthly && (contents[i].equals("-m") || contents[i].equals("-monthly"))) {
+                monthly = true;
             } else {
                 result.append(contents[i]);
 
@@ -350,6 +373,14 @@ public class FindStage extends TimedConstraintCommand {
                     case "-boss":
                         if ((result & PARAM_BOSS) == 0) {
                             result |= PARAM_BOSS;
+                        } else {
+                            break label;
+                        }
+                        break;
+                    case "-m":
+                    case "-monthly":
+                        if ((result & PARAM_MONTHLY) == 0) {
+                            result |= PARAM_MONTHLY;
                         } else {
                             break label;
                         }
@@ -454,35 +485,20 @@ public class FindStage extends TimedConstraintCommand {
         return data;
     }
     
-    private List<String> accumulateStage(List<Stage> stages, boolean full) {
+    private List<String> accumulateStage(List<Stage> stage, boolean onText) {
         List<String> data = new ArrayList<>();
-        
+
         for(int i = 0; i < SearchHolder.PAGE_CHUNK; i++) {
-            if(i >= stages.size())
+            if(i >= stage.size())
                 break;
 
-            Stage st = stages.get(i);
+            Stage st = stage.get(i);
             StageMap stm = st.getCont();
             MapColc mc = stm.getCont();
 
             String name = "";
 
-            if(full) {
-                if(mc != null)
-                    name = mc.getSID()+"/";
-                else
-                    name = "Unknown/";
-
-                if(stm.id != null)
-                    name += Data.trio(stm.id.id)+"/";
-                else
-                    name += "Unknown/";
-
-                if(st.id != null)
-                    name += Data.trio(st.id.id)+" | ";
-                else
-                    name += "Unknown | ";
-
+            if(onText) {
                 if(mc != null) {
                     int oldConfig = CommonStatic.getConfig().lang;
                     CommonStatic.getConfig().lang = lang;
@@ -535,7 +551,132 @@ public class FindStage extends TimedConstraintCommand {
 
             data.add(name);
         }
-        
+
         return data;
+    }
+
+    private Message createMonthlyMessage(MessageChannel ch, String content, List<String> data, List<Stage> stages, int size, boolean monthly) {
+        int totPage = size / SearchHolder.PAGE_CHUNK;
+
+        if(size % SearchHolder.PAGE_CHUNK != 0)
+            totPage++;
+
+        List<ActionRow> rows = new ArrayList<>();
+
+        if(size > SearchHolder.PAGE_CHUNK) {
+            List<Button> buttons = new ArrayList<>();
+
+            if(totPage > 10) {
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("search_prev10", lang), Emoji.fromCustom(EmojiStore.TWO_PREVIOUS)).asDisabled());
+            }
+
+            buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", LangID.getStringByID("search_prev", lang), Emoji.fromCustom(EmojiStore.PREVIOUS)).asDisabled());
+            buttons.add(Button.of(ButtonStyle.SECONDARY, "next", LangID.getStringByID("search_next", lang), Emoji.fromCustom(EmojiStore.NEXT)));
+
+            if(totPage > 10) {
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("search_next10", lang), Emoji.fromCustom(EmojiStore.TWO_NEXT)));
+            }
+
+            rows.add(ActionRow.of(buttons));
+        }
+
+        List<SelectOption> options = new ArrayList<>();
+
+        for(int i = 0; i < data.size(); i++) {
+            String element = data.get(i);
+
+            String[] elements = element.split("\\\\\\\\");
+
+            if(elements.length == 2) {
+                if(elements[0].matches("<:[^\\s]+?:\\d+>")) {
+                    options.add(SelectOption.of(elements[1], String.valueOf(i)).withEmoji(Emoji.fromFormatted(elements[0])));
+                } else {
+                    options.add(SelectOption.of(element, String.valueOf(i)));
+                }
+            } else {
+                options.add(SelectOption.of(element, String.valueOf(i)));
+            }
+        }
+
+        rows.add(ActionRow.of(SelectMenu.create("data").addOptions(options).setPlaceholder(LangID.getStringByID("search_list", lang)).build()));
+
+        if(monthly) {
+            List<SelectOption> categories = new ArrayList<>();
+
+            List<MONTHLY> category = accumulateCategory(stages);
+
+            categories.add(SelectOption.of(LangID.getStringByID("data_all", lang), "all"));
+
+            for(int i = 0; i < category.size(); i++) {
+                String name = category.get(i).name().toLowerCase(Locale.ENGLISH);
+
+                categories.add(SelectOption.of(LangID.getStringByID("data_" + name, lang), name));
+            }
+
+            rows.add(ActionRow.of(SelectMenu.create("category").addOptions(categories).setPlaceholder(LangID.getStringByID("fstage_category", lang)).build()));
+        }
+
+        rows.add(ActionRow.of(Button.danger("cancel", LangID.getStringByID("button_cancel", lang))));
+
+        return ch.sendMessage(content).setAllowedMentions(new ArrayList<>()).setComponents(rows).complete();
+    }
+
+    private List<MONTHLY> accumulateCategory(List<Stage> stages) {
+        List<MONTHLY> category = new ArrayList<>();
+
+        for(int i = 0; i < stages.size(); i++) {
+            StageMap map = stages.get(i).getCont();
+
+            if(map == null || map.id == null)
+                continue;
+
+            MapColc mc = map.getCont();
+
+            if(mc == null)
+                continue;
+
+            switch (mc.getSID()) {
+                case "000003":
+                    switch (map.id.id) {
+                        case 3:
+                            addIfNone(category, MONTHLY.ITF1);
+                            break;
+                        case 4:
+                            addIfNone(category, MONTHLY.ITF2);
+                            break;
+                        case 5:
+                            addIfNone(category, MONTHLY.ITF3);
+                            break;
+                        case 6:
+                            addIfNone(category, MONTHLY.COTC1);
+                            break;
+                        case 7:
+                            addIfNone(category, MONTHLY.COTC2);
+                            break;
+                        case 8:
+                            addIfNone(category, MONTHLY.COTC3);
+                            break;
+                        case 9:
+                            addIfNone(category, MONTHLY.EOC);
+                            break;
+                    }
+
+                    break;
+                case "000001":
+                    addIfNone(category, MONTHLY.CYCLONE);
+                    break;
+                case "000000":
+                    addIfNone(category, MONTHLY.SOL);
+                    break;
+            }
+        }
+
+        return category;
+    }
+
+    private <T> void addIfNone(List<T> data, T element) {
+        if(!data.contains(element)) {
+            data.add(element);
+        }
     }
 }
