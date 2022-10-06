@@ -280,6 +280,8 @@ public class FindStage extends TimedConstraintCommand {
         boolean music = false;
         boolean boss = false;
         boolean monthly = false;
+        boolean extra = false;
+        boolean compact = false;
 
         for(int i = 1; i < contents.length; i++) {
             if(contents[i].equals("-lv") && !level) {
@@ -312,6 +314,10 @@ public class FindStage extends TimedConstraintCommand {
                 boss = true;
             } else if(!monthly && (contents[i].equals("-m") || contents[i].equals("-monthly"))) {
                 monthly = true;
+            } else if (!extra && (contents[i].equals("-e") || contents[i].equals("-extra"))) {
+                extra = true;
+            } else if (!compact && (contents[i].equals("-c") || contents[i].equals("-compact"))) {
+                compact = true;
             } else {
                 result.append(contents[i]);
 

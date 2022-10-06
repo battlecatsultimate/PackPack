@@ -1992,7 +1992,7 @@ public class EntityFilter {
                     if (id == storyChapterMonthly[i])
                         return true;
                 }
-                
+
                 break;
             }
             case "000001": {
