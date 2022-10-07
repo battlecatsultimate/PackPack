@@ -694,7 +694,7 @@
   "help_setup_desc" : "Setup PackPack, so users in this server can use commands properly. **This affects permission of commands for users, so only moderator of this server can use this command**",
   "help_setup_tip" : "Most of PackPack commands require specific role to be used, so moderators need to give permission to specific role for using these commands. PackPack adds role called `PackPackMod` if there isn't any specified moderator role or member role set. Moderator can add this role and call this command to themselves to firstly initialize role data to restrict uses of commands for users",
   "help_fixrole_use" : "`p!fixrole`",
-  "help_fixrole_desc" : "If this server is registered as server where requires role data maintenance, **moderators** can fix incorrect user role data for PackPack. `fr` is also valid command",
+  "help_fixrole_desc" : "If this server is registered as server where requires role data maintenance, **moderators** can fix incorrect user role data for PackPack. `fir` is also valid command",
   "help_fixrole_argu" : "`-p` or `-pre` : Manually decide role which will be added\n`-i` or `-ignore` : Decide role which will trigger ignoring. If this role is specified, even though user has none of two roles, bot will ignore them",
   "help_fixrole_exam" : "`p!fr -p 12345`\n`p!fr -p 12345 -i 67890`",
   "help_fixrole_tip" : "Let's say users in server must have one of member or pre-member role. There must not be users who have none of these roles. But sometimes, since usually these role system is managed by other bots, some users may have none of these roles due to inactivity of bot, etc. In that case, moderators can call this command to make such users have correct role data. Moderators must provide role ID. If server isn't registered as server where requires role data maintenance, moderators can't use this command. Ask creator of bot to register this server by using `p!suggest` command or manually contacting",
@@ -809,6 +809,10 @@
   "help_calculator_tip" : "`logN` means log whose base is `N`, so if you want to perform log with base of 2, then you have to call something like `log2(4)`\n\nSame for `sqrtN`, it's `sqrt`, but base is `N`, which is identical to `V^(1/N)` = `sqrtN(V)`. So if you want to perform `8^(1/3)`, then you have to call `sqrt3(8)`\n\nWhen you write number and parenthesis, you really don't need to put `*` manually. For example, `2(2+5)` will give you `14` automatically",
   "help_assetbrowser_use" : "`p!aasetbrowser`",
   "help_assetbrowser_desc" : "Bring asset browser, and upload picked file data. **This can be used by only trusted users because it gives raw files of BC.** `abrowser`, `assetb`, `ab` are also valid command",
+  "help_findreward_use" : "`p!findreward [Reward Name]`",
+  "help_findreward_desc" : "Try to search stage with specified reward name, and upload info of it if exists. `freward`, `findr`, `fr` are also valid command",
+  "help_findreward_argu" : "`-ch` or `-chance` : Filter reward whose chance is higher or same than specified value. Unit is percentage, and this will exclude score rewards automatically\n`-a` or `-amount` : Find reward whose amount is higher or same than specified value\n`-e` or `-extra` : Show extra information such as description\n`-c` or `-compact` : Compress multiple fields into one field so that mobile users can see stat without flooding the chat",
+  "help_findreward_exam" : "`p!fr green b. stone -ch 30`\n`p!fr xp -a 1000000`",
   "prefix_space" : "Prefix can't be white spaces!",
   "prefix_set" : "Prefix is set as _!",
   "prefix_setnone" : "Your prefix has been updated!",
@@ -1265,5 +1269,12 @@
   "asset_no" : "Bot couldn't bring asset data...",
   "asset_goup" : "Go to parent folder",
   "asset_current" : "Current path : `_`",
-  "asset_file" : "Successfully uploaded file : _"
+  "asset_file" : "Successfully uploaded file : _",
+  "freward_noname" : "You have to provide reward name!",
+  "freward_norew" : "Searching with _, but no such reward found!",
+  "freward_nosta" : "Searching with _, but no such stage with this reward found!",
+  "freward_severalst" : "Searching with _, and several stages found...",
+  "freward_chance" : "Chance must be higher than 0, and smaller or same than 100!",
+  "freward_amount" : "Amount of reward must be higher than 0!",
+  "freward_several" : "Searching with _, and several rewards found...\n\n"
 }

@@ -61,6 +61,7 @@ public class StaticStore {
     public static final String COMMAND_FORMSPRITE_ID = "fsprite";
     public static final String COMMAND_STAGEINFO_ID = "stageinfo";
     public static final String COMMAND_SUGGEST_ID = "suggest";
+    public static final String COMMAND_FINDREWARD_ID = "freward";
 
     public static String englishVersion = "110000";
     public static String taiwaneseVersion = "110000";
@@ -103,6 +104,7 @@ public class StaticStore {
     public static final MultiLangCont<Integer, String> MISSIONNAME = new MultiLangCont<>();
     public static int medalNumber = 0;
     public static JsonElement medalData;
+    public static List<Integer> existingRewards = new ArrayList<>();
 
     public static final Map<String, Map<String, Long>> timeLimit = new HashMap<>();
 

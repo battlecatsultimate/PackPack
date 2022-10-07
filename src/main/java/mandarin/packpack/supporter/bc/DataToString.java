@@ -1614,6 +1614,79 @@ public class DataToString extends Data {
         return res;
     }
 
+    public static ArrayList<Double> getDropChances(Stage s) {
+        ArrayList<Double> res = new ArrayList<>();
+
+        if(!(s.info instanceof DefStageInfo))
+            return null;
+
+        DefStageInfo info = (DefStageInfo) s.info;
+
+        int[][] data = info.drop;
+
+        int sum = 0;
+
+        for(int[] d : data) {
+            sum += d[0];
+        }
+
+        if(sum == 0)
+            return null;
+
+        if(sum == 1000) {
+            for(int[] d : data) {
+                res.add(d[0]/10.0);
+            }
+        } else if((sum == data.length && sum != 1) || info.rand == -3) {
+            return res;
+        } else if(sum == 100) {
+            for(int[] d : data) {
+                res.add((double) d[0]);
+            }
+        } else if(sum > 100 && (info.rand == 0 || info.rand == 1)) {
+            double rest = 100.0;
+
+            if(data[0][0] == 100) {
+                res.add(100.0);
+
+                for(int i = 1; i < data.length; i++) {
+                    double filter = rest * data[i][0] / 100.0;
+
+                    rest -= filter;
+
+                    res.add(filter);
+                }
+            } else {
+                for(int[] d : data) {
+                    double filter = rest * d[0] / 100.0;
+
+                    rest -= filter;
+
+                    res.add(filter);
+                }
+            }
+        } else if(info.rand == -4) {
+            int total = 0;
+
+            for(int[] d : data) {
+                total += d[0];
+            }
+
+            if(total == 0)
+                return null;
+
+            for(int[] d : data) {
+                res.add(d[0] * 100.0 / total);
+            }
+        } else {
+            for(int[] d : data) {
+                res.add((double) d[0]);
+            }
+        }
+
+        return res;
+    }
+
     public static String getScoreDrops(Stage st, int lang) {
         if(st == null || !(st.info instanceof DefStageInfo) || ((DefStageInfo) st.info).time == null || ((DefStageInfo) st.info).time.length == 0)
             return null;

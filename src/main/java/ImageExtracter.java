@@ -3,7 +3,7 @@ import common.pack.UserProfile;
 import common.system.fake.ImageBuilder;
 import common.util.Data;
 import common.util.unit.Enemy;
-import mandarin.packpack.supporter.AssetDownloader;
+import mandarin.packpack.supporter.Initializer;
 import mandarin.packpack.supporter.PackContext;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.awt.FIBI;
@@ -47,7 +47,7 @@ public class ImageExtracter {
             ImageBuilder.builder = FIBI.builder;
             StaticStore.readServerInfo();
 
-            AssetDownloader.checkAssetDownload();
+            Initializer.checkAssetDownload();
 
             StaticStore.postReadServerInfo();
 

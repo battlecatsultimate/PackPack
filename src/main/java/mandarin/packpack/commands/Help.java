@@ -245,7 +245,7 @@ public class Help extends Command {
                 ch.sendMessageEmbeds(addFields("setup", false, false, true)).queue();
                 break;
             case "fixrole":
-            case "fr":
+            case "fir":
                 ch.sendMessageEmbeds(addFields("fixrole", true, true, true)).queue();
                 break;
             case "watchdm":
@@ -391,6 +391,12 @@ public class Help extends Command {
             case "calc":
             case "c":
                 ch.sendMessageEmbeds(addFields("calculator", false, true, true)).queue();
+                break;
+            case "findreward":
+            case "freward":
+            case "findr":
+            case "fr":
+                ch.sendMessageEmbeds(addFields("findreward", true, true, false)).queue();
                 break;
             default:
                 createMessageWithNoPings(ch, LangID.getStringByID("help_nocomm", lang).replace("_", command));

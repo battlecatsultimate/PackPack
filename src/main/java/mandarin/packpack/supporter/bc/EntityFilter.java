@@ -8,6 +8,7 @@ import common.util.stage.MapColc;
 import common.util.stage.SCDef;
 import common.util.stage.Stage;
 import common.util.stage.StageMap;
+import common.util.stage.info.DefStageInfo;
 import common.util.unit.Combo;
 import common.util.unit.Enemy;
 import common.util.unit.Form;
@@ -18,10 +19,7 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.AliasHolder;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 public class EntityFilter {
     private static  final int[] storyChapterMonthly = {
@@ -1567,6 +1565,187 @@ public class EntityFilter {
         }
 
         result.sort(Comparator.comparingInt(c -> c.id.id));
+
+        return result;
+    }
+
+    public static List<Integer> findRewardByName(String name, int lang) {
+        List<Integer> result = new ArrayList<>();
+
+        for(int i = 0; i < StaticStore.existingRewards.size(); i++) {
+            for(int j = 0; j < StaticStore.langIndex.length; j++) {
+                int oldConfig = CommonStatic.getConfig().lang;
+                CommonStatic.getConfig().lang = StaticStore.langIndex[j];
+
+                String rewardName = MultiLangCont.getStatic().RWNAME.getCont(StaticStore.existingRewards.get(i));
+
+                CommonStatic.getConfig().lang = oldConfig;
+
+                if(rewardName == null || rewardName.isBlank()) {
+                    rewardName = Data.trio(StaticStore.existingRewards.get(i));
+                } else {
+                    rewardName = Data.trio(StaticStore.existingRewards.get(i)) + " " + rewardName;
+                }
+
+                if(rewardName.toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
+                    result.add(StaticStore.existingRewards.get(i));
+
+                    break;
+                }
+            }
+        }
+
+        if(result.isEmpty()) {
+            ArrayList<Integer> similar = new ArrayList<>();
+            ArrayList<Integer> similarity = new ArrayList<>();
+
+            int sMin = 10;
+
+            name = name.toLowerCase(Locale.ENGLISH);
+
+            if(lang == LangID.KR)
+                name = KoreanSeparater.separate(name);
+
+            for(int i = 0; i < StaticStore.existingRewards.size(); i++) {
+                int oldConfig = CommonStatic.getConfig().lang;
+                CommonStatic.getConfig().lang = lang;
+
+                String rewardName = MultiLangCont.getStatic().RWNAME.getCont(StaticStore.existingRewards.get(i));
+
+                if(rewardName == null || rewardName.isBlank())
+                    continue;
+
+                CommonStatic.getConfig().lang = oldConfig;
+
+                rewardName = rewardName.toLowerCase(Locale.ENGLISH);
+
+                if(lang == LangID.KR)
+                    rewardName = KoreanSeparater.separate(rewardName);
+
+                int wordNumber = StringUtils.countMatches(name, ' ') + 1;
+
+                String[] words;
+
+                if(wordNumber != 1) {
+                    words = getWords(rewardName.split(" "), wordNumber);
+                } else {
+                    words = rewardName.split(" ");
+                }
+
+                for(String word : words) {
+                    int s = damerauLevenshteinDistance(word, name);
+
+                    if(s <= 5) {
+                        similar.add(StaticStore.existingRewards.get(i));
+                        similarity.add(s);
+
+                        sMin = Math.min(sMin, s);
+
+                        break;
+                    }
+                }
+
+                sMin = Math.min(sMin, damerauLevenshteinDistance(rewardName, name));
+            }
+
+            if(similar.isEmpty())
+                return similar;
+
+            ArrayList<Integer> finalResult = new ArrayList<>();
+
+            for(int i = 0; i < similar.size(); i++) {
+                if (sMin == similarity.get(i)) {
+                    finalResult.add(similar.get(i));
+                }
+            }
+
+            return finalResult;
+        } else {
+            return result;
+        }
+    }
+
+    public static List<Stage> findStageByReward(int reward, double chance, int amount) {
+        List<Stage> result = new ArrayList<>();
+
+        System.out.println(chance);
+
+        for(MapColc mc : MapColc.values()) {
+            if(mc == null)
+                continue;
+
+            for(StageMap map : mc.maps) {
+                if(map == null)
+                    continue;
+
+                for(Stage st : map.list) {
+                    if(st == null || !(st.info instanceof DefStageInfo) || (((DefStageInfo) st.info).drop == null && ((DefStageInfo) st.info).time == null))
+                        continue;
+
+                    if(chance == -1) {
+                        boolean added = false;
+
+                        if(((DefStageInfo) st.info).drop != null) {
+                            for(int[] data : ((DefStageInfo) st.info).drop) {
+                                if(data[1] == reward && (amount == -1 || data[2] >= amount)) {
+                                    added = true;
+
+                                    result.add(st);
+
+                                    break;
+                                }
+                            }
+                        }
+
+                        if(added)
+                            continue;
+
+                        if(((DefStageInfo) st.info).time != null) {
+                            for(int[] data : ((DefStageInfo) st.info).time) {
+                                if(data[1] == reward && (amount == -1 || data[2] >= amount)) {
+                                    result.add(st);
+
+                                    break;
+                                }
+                            }
+                        }
+                    } else {
+                        if(((DefStageInfo) st.info).drop == null)
+                            continue;
+
+                        List<Double> chances = DataToString.getDropChances(st);
+
+                        if(chances == null) {
+                            continue;
+                        }
+
+                        if(chances.isEmpty()) {
+                            double ch = 100.0 / ((DefStageInfo) st.info).drop.length;
+
+                            for(int i = 0; i < ((DefStageInfo) st.info).drop.length; i++) {
+                                int[] data = ((DefStageInfo) st.info).drop[i];
+
+                                if(data[1] == reward && ch >= chance && (amount == -1 || data[2] >= amount)) {
+                                    result.add(st);
+
+                                    break;
+                                }
+                            }
+                        } else {
+                            for(int i = 0; i < ((DefStageInfo) st.info).drop.length; i++) {
+                                int[] data = ((DefStageInfo) st.info).drop[i];
+
+                                if(data[1] == reward && chances.get(i) >= chance && (amount == -1 || data[2] >= amount)) {
+                                    result.add(st);
+
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         return result;
     }

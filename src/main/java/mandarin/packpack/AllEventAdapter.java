@@ -612,7 +612,7 @@ public class AllEventAdapter extends ListenerAdapter {
                     new Setup(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
                     break;
                 case "fixrole":
-                case "fr":
+                case "fir":
                     new FixRole(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
                     break;
                 case "registerfixing":
@@ -802,6 +802,12 @@ public class AllEventAdapter extends ListenerAdapter {
                 case "garbagecollect":
                 case "gc":
                     new GarbageCollect(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+                    break;
+                case "findreward":
+                case "freward":
+                case "findr":
+                case "fr":
+                    new FindReward(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000, c).execute(event);
                     break;
             }
         } catch (Exception e) {

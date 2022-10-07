@@ -1,7 +1,7 @@
 package mandarin.packpack;
 
 import common.CommonStatic;
-import mandarin.packpack.supporter.AssetDownloader;
+import mandarin.packpack.supporter.Initializer;
 import mandarin.packpack.supporter.Logger;
 import mandarin.packpack.supporter.PackContext;
 import mandarin.packpack.supporter.StaticStore;
@@ -201,7 +201,7 @@ public class PackBot {
 
             LangID.initialize();
 
-            AssetDownloader.checkAssetDownload();
+            Initializer.checkAssetDownload();
 
             StaticStore.postReadServerInfo();
 
