@@ -140,7 +140,7 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
         if(file.getData() == null)
             throw new IllegalStateException("E/AssetBrowserHolder::onSelected - Folder passed through the filter");
 
-        File temp = new File("./tmep");
+        File temp = new File("./temp");
 
         if(!temp.exists() && !temp.mkdirs()) {
             StaticStore.logger.uploadLog("W/AssetBrowserHolder::onSelected - Failed to create folder : " + temp.getAbsolutePath());
