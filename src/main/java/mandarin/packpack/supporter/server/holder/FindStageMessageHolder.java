@@ -29,7 +29,6 @@ public class FindStageMessageHolder extends SearchHolder {
     private final List<Stage> stage;
     private final List<Stage> actualStage = new ArrayList<>();
     private final List<FindStage.MONTHLY> monthly;
-    private final Message author;
 
     private final boolean isFrame;
     private final boolean isExtra;
@@ -43,7 +42,6 @@ public class FindStageMessageHolder extends SearchHolder {
 
         this.stage = stage;
         this.monthly = monthly;
-        this.author = author;
 
         this.star = star;
         this.isFrame = isFrame;
@@ -138,7 +136,7 @@ public class FindStageMessageHolder extends SearchHolder {
 
         msg.delete().queue();
 
-        String mid = author.getAuthor().getId();
+        String mid = getAuthorMessage().getId();
 
         if(StaticStore.timeLimit.containsKey(mid)) {
             StaticStore.timeLimit.get(mid).put(StaticStore.COMMAND_STAGEINFO_ID, System.currentTimeMillis());
@@ -154,7 +152,7 @@ public class FindStageMessageHolder extends SearchHolder {
             Message msg = EntityHandler.showStageEmb(actualStage.get(id), ch, isFrame, isExtra, isCompact, star, lang);
 
             if(msg != null && StaticStore.idHolder.containsKey(g.getId())) {
-                StaticStore.putHolder(author.getAuthor().getId(), new StageInfoButtonHolder(actualStage.get(id), author, msg, channelID));
+                StaticStore.putHolder(getAuthorMessage().getId(), new StageInfoButtonHolder(actualStage.get(id), getAuthorMessage(), msg, channelID));
             }
         } catch (Exception e) {
             e.printStackTrace();
