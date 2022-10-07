@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Queue;
 
 @SuppressWarnings("ForLoopReplaceableByForEach")
-public class AssetDownloader {
+public class Initializer {
     private static final String[] folder = {"bot/", "jp/", "kr/", "zh/", "fr/", "it/", "es/", "de/"};
     private static final int[] loc = {0, 3, 2, 1, 6, 9, 8, 5};
     private static final String[] file = {"EnemyName.txt", "StageName.txt", "UnitName.txt", "UnitExplanation.txt", "EnemyExplanation.txt", "CatFruitExplanation.txt", "RewardName.txt", "ComboName.txt", "MedalName.txt", "MedalExplanation.txt", "GachaName.txt", "MissionName.txt"};
@@ -527,6 +527,39 @@ public class AssetDownloader {
                 }
             }
         }
+
+        for(MapColc mc : MapColc.values()) {
+            if(mc == null)
+                continue;
+
+            for(StageMap map : mc.maps) {
+                if(map == null)
+                    continue;
+
+                for(Stage st : map.list) {
+                    if(st == null || !(st.info instanceof DefStageInfo))
+                        continue;
+
+                    if(((DefStageInfo) st.info).drop != null) {
+                        for(int[] data : ((DefStageInfo) st.info).drop) {
+                            if(!StaticStore.existingRewards.contains(data[1])) {
+                                StaticStore.existingRewards.add(data[1]);
+                            }
+                        }
+                    }
+
+                    if(((DefStageInfo) st.info).time != null) {
+                        for(int[] data : ((DefStageInfo) st.info).time) {
+                            if(!StaticStore.existingRewards.contains(data[1])) {
+                                StaticStore.existingRewards.add(data[1]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        StaticStore.existingRewards.sort(Integer::compareTo);
     }
 
     private static Combo findComboWithID(int id) {
