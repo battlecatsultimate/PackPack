@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 public class StageInfoMessageHolder extends SearchHolder {
-    private final ArrayList<Stage> stage;
+    private final List<Stage> stage;
     private final Message author;
 
     private final boolean isFrame;
@@ -27,7 +27,7 @@ public class StageInfoMessageHolder extends SearchHolder {
     private final boolean isCompact;
     private final int star;
 
-    public StageInfoMessageHolder(ArrayList<Stage> stage, Message author, Message msg, String channelID, int star, boolean isFrame, boolean isExtra, boolean isCompact, int lang) {
+    public StageInfoMessageHolder(List<Stage> stage, Message author, Message msg, String channelID, int star, boolean isFrame, boolean isExtra, boolean isCompact, int lang) {
         super(msg, author, channelID, lang);
 
         this.stage = stage;
