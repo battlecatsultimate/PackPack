@@ -266,11 +266,13 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
 
     @Override
     public int compare(VFile o1, VFile o2) {
-        if(o1.getData() == null && o2.getData() == null) {
+        if(o1.getData() != null && o2.getData() != null) {
             return o1.getName().compareTo(o2.getName());
         } else if(o1.getData() == null)
             return -1;
-        else
+        else if(o2.getData() == null)
             return 1;
+        else
+            return 0;
     }
 }
