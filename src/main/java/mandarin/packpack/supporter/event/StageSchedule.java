@@ -462,7 +462,7 @@ public class StageSchedule extends EventFactor implements Schedule {
                     } else if(id >= 18000 && id < 18100) {
                         int year = id - 18000 + 7;
 
-                        result.append(LangID.getStringByID("sale_18xxx", lang).replace("_", year + getNumberExtension(year, lang)));
+                        result.append(LangID.getStringByID("sale_18xxx", lang).replace("_", ("" + year).repeat(3)));
                     } else {
                         String langID = "sale_"+id;
 
