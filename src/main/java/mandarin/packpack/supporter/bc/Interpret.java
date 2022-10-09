@@ -64,7 +64,7 @@ public class Interpret extends Data {
                     res.append(getTraitEmoji(TRAITICON[trait.id.id], lang));
                 }
 
-                if(trait.id.id == 6 && star == 1) {
+                if(trait.id.id == 5 && star == 1) {
                     res.append(LangID.getStringByID(TRAIT[trait.id.id], lang))
                             .append(" (")
                             .append(LangID.getStringByID("data_starred", lang))
