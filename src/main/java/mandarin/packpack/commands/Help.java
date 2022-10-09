@@ -43,7 +43,7 @@ public class Help extends Command {
                     .addField(LangID.getStringByID("help_normal", lang), "```analyze, calculator, config, locale, optout, prefix, timezone```", false)
                     .addField(LangID.getStringByID("help_bc", lang), "```background, castle, catcombo, enemygif, enemyimage, enemysprite, enemystat, findreward, findstage, formgif, formimage, formsprite, formstat, medal, music, soul, soulimage, soulsprite, stageinfo, talentinfo```", false)
                     .addField(LangID.getStringByID("help_server", lang), "```boosteremoji, boosteremojiremove, boosterrole, boosterroleremove, channelpermission, checkbcu, clearcache, commandban, commandunban, fixrole, idset, memory, save, serverconfig, serverjson, serverpre, serverstat, setup, subscribeevent, subscribescamlinkdetector, unsubscribescamlinkdetector, watchdm```", false)
-                    .addField(LangID.getStringByID("help_data", lang), "```animanalyzer, announcement, checkeventupdate, printevent, printgachaevent, printitemevent, printstageevent, stageimage, stagestatanalyzer, statanalyzer, stagemapimage, trueformanalyzer```", false)
+                    .addField(LangID.getStringByID("help_data", lang), "```animanalyzer, announcement, checkeventupdate, downloadapk, enemystatanalyzer, eventdataarchive, printevent, printgachaevent, printitemevent, printstageevent, stageimage, stagestatanalyzer, statanalyzer, stagemapimage, trueformanalyzer```", false)
                     .addField(LangID.getStringByID("help_packpack", lang), "```alias, aliasadd, aliasremove, registerscamlink, statistic, suggest, unregisterscamlink```", false);
 
             ch.sendMessageEmbeds(builder.build()).queue();
@@ -397,6 +397,12 @@ public class Help extends Command {
             case "findr":
             case "fr":
                 ch.sendMessageEmbeds(addFields("findreward", true, true, false)).queue();
+                break;
+            case "eventdataarchive":
+            case "eventddataa":
+            case "earchive":
+            case "eda":
+                ch.sendMessageEmbeds(addFields("eventdataarchive", true, true, false)).queue();
                 break;
             default:
                 createMessageWithNoPings(ch, LangID.getStringByID("help_nocomm", lang).replace("_", command));
