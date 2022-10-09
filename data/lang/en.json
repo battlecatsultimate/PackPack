@@ -822,6 +822,10 @@
   "help_findreward_desc" : "Try to search stage with specified reward name, and upload info of it if exists. `freward`, `findr`, `fr` are also valid command",
   "help_findreward_argu" : "`-ch` or `-chance` : Filter reward whose chance is higher or same than specified value. Unit is percentage, and this will exclude score rewards automatically\n`-a` or `-amount` : Find reward whose amount is higher or same than specified value\n`-e` or `-extra` : Show extra information such as description\n`-c` or `-compact` : Compress multiple fields into one field so that mobile users can see stat without flooding the chat",
   "help_findreward_exam" : "`p!fr green b. stone -ch 30`\n`p!fr xp -a 1000000`",
+  "help_eventdataarchive_use" : "`p!eventdataarchive <Locale> <File>`",
+  "help_eventdataarchive_desc" : "Bring archived event data on specific locale and file type, and upload file of it. `eventdataa`, `earchive`, `eda` are also valid command",
+  "help_eventdataarchive_argu" : "`-en/jp/tw/kr` : Decide locale of BC\n`-g` or `-gatya` or `-gacha` : Find gacha event data archive\n`-i` or `-item` : Find item event data archive\n`-s` or `-sale` : Find sale event data archive",
+  "help_eventdataarchive_exam" : "`p!eda -en -i`\n`p!eda -jp -s`",
   "prefix_space" : "Prefix can't be white spaces!",
   "prefix_set" : "Prefix is set as _!",
   "prefix_setnone" : "Your prefix has been updated!",
@@ -1285,5 +1289,9 @@
   "freward_severalst" : "Searching with _, and several stages found...",
   "freward_chance" : "Chance must be higher than 0, and smaller or same than 100!",
   "freward_amount" : "Amount of reward must be higher than 0!",
-  "freward_several" : "Searching with _, and several rewards found...\n\n"
+  "freward_several" : "Searching with _, and several rewards found...\n\n",
+  "eventarc_noarchive" : "Currently there's no archived event data for _!",
+  "eventarc_fail" : "Failed to bring archived event data for _...",
+  "eventarc_bring" : "Bringing event data archive : _LLL_ - _FFF_\n\n",
+  "eventarc_success" : "Successfully uploaded data"
 }

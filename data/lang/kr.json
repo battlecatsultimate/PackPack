@@ -811,6 +811,10 @@
   "help_findreward_desc" : "제공된 보상 이름으로 스테이지를 찾고, 존재하면 그 정보를 표시합니다. `freward`, `findr`, `fr` 또한 유효한 명령어 입니다",
   "help_findreward_argu" : "`-ch` 또는 `-chance` : 확률이 제공된 값 이상인 보상을 찾습니다. 퍼센트가 단위이며, 스코어 보상은 자동으로 제외됩니다\n`-a` 또는 `-amount` : 제공된 값 이상의 양을 가진 보상을 찾습니다\n`-e` 또는 `-extra` : 적의 설명 등 추가적인 정보를 표시합니다\n`-c` 또는 `-compact` : 여러 스탯 정보를 하나로 뭉쳐 모바일 유저들이 불편함 없이 볼 수 있도록 임베드를 압축시킵니다",
   "help_findreward_exam" : "`p!fr green b. stone -ch 30`\n`p!fr xp -a 1000000`",
+  "help_eventdataarchive_use" : "`p!eventdataarchive <언어> <파일>`",
+  "help_eventdataarchive_desc" : "제공된 언어버전, 파일 타입으로 이벤트 데이터 아카이브를 불러오고, 파일을 업로드합니다. `eventdataa`, `earchive`, `eda` 또한 유효한 명령어 입니다",
+  "help_eventdataarchive_argu" : "`-en/jp/tw/kr` : 냥코 언어버전을 정합니다\n`-g` 또는 `-gatya` 또는 `-gacha` : 가챠 이벤트 데이터 아카이브를 불러옵니다\n`-i` 또는 `-item` : 아이템 이벤트 데이터 아카이브를 불러옵니다\n`-s` 또는 `-sale` : 세일 이벤트 데이터 아카이브를 불러옵니다",
+  "help_eventdataarchive_exam" : "`p!eda -en -i`\n`p!eda -jp -s`",
   "prefix_space" : "접두사는 여백으로 설정될 수 없습니다!",
   "prefix_set" : "접두사가 _ 로 설정되었습니다!",
   "prefix_setnone" : "접두사가 설정되었습니다!",
@@ -1263,5 +1267,9 @@
   "freward_severalst" : "_ 보상 이름으로 검색한 결과, 여러 종류의 스테이지가 존재합니다...\n\n",
   "freward_chance" : "확률은 0보다 크고, 100 이하여야 합니다!",
   "freward_amount" : "보상의 양은 0보다 커야 합니다!",
-  "freward_several" : "_ 보상 이름으로 검색한 결과, 여러 종류의 결과가 존재합니다...\n\n"
+  "freward_several" : "_ 보상 이름으로 검색한 결과, 여러 종류의 결과가 존재합니다...\n\n",
+  "eventarc_noarchive" : "현재 _ 버전을 위한 이벤트 데이터 아카이브가 존재하지 않습니다!",
+  "eventarc_fail" : "_ 버전을 위한 이벤트 데이터 아카이브를 불러오는 데에 실패했습니다...",
+  "eventarc_bring" : "이벤트 데이터 아카이브를 불러왔습니다 : _LLL_ - _FFF_\n\n",
+  "eventarc_success" : "성공적으로 데이터를 업로드했습니다"
 }

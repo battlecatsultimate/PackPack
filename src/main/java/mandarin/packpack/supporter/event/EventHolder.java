@@ -10,6 +10,7 @@ import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.MessageDigest;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class EventHolder extends EventFactor {
@@ -34,7 +35,7 @@ public class EventHolder extends EventFactor {
 
         boolean needToAnalyze = false;
 
-        if(!file.exists()) {
+        if(!file.exists() || init) {
             needToAnalyze = true;
         } else {
             String newMd5 = StaticStore.fileToMD5(f);
@@ -173,7 +174,7 @@ public class EventHolder extends EventFactor {
 
         boolean needToAnalyze = false;
 
-        if(!file.exists()) {
+        if(!file.exists() || init) {
             needToAnalyze = true;
         } else {
             String newMd5 = StaticStore.fileToMD5(f);
@@ -253,7 +254,7 @@ public class EventHolder extends EventFactor {
 
         boolean needToAnalyze = false;
 
-        if(!file.exists()) {
+        if(!file.exists() || init) {
             needToAnalyze = true;
         } else {
             String newMd5 = StaticStore.fileToMD5(f);
@@ -955,6 +956,8 @@ public class EventHolder extends EventFactor {
                     if(oldMD5 == null || !oldMD5.equals(newMD5)) {
                         updates[i][j] = true;
 
+                        archive(f, i, j);
+
                         File temporary = StaticStore.generateTempFile(temp, fi, ".tmp", false);
 
                         if(temporary == null)
@@ -1070,6 +1073,8 @@ public class EventHolder extends EventFactor {
                             }
                             break;
                     }
+
+                    archive(f, i, j);
                 }
             }
         }
@@ -1129,6 +1134,119 @@ public class EventHolder extends EventFactor {
             return "GMT+"+time;
         } else {
             return "GMT"+time;
+        }
+    }
+
+    private void archive(File old, int lang, int file) throws Exception {
+        File archive = new File("./data/event/" + getLocaleName(lang) + "/archive/" + getFileName(file));
+
+        if(!archive.exists() && !archive.mkdirs()) {
+            StaticStore.logger.uploadLog("W/EventHolder::archive - Failed to create folder : " + archive.getAbsolutePath());
+
+            return;
+        }
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH;mm;ss");
+
+        String current = sdf.format(Calendar.getInstance().getTime());
+
+        File[] files = archive.listFiles();
+
+        if(files != null) {
+            File latest = null;
+            long timeStamp = 0L;
+
+            for(int i = 0; i < files.length; i++) {
+                if(timeStamp < files[i].lastModified()) {
+                    timeStamp = files[i].lastModified();
+                    latest = files[i];
+                }
+            }
+
+            if(latest != null) {
+                String[] data = latest.getName().replace(".txt", "").split(" ~ ");
+
+                String oldTime;
+
+                if(data.length == 2)
+                    oldTime = data[1];
+                else
+                    oldTime = data[0];
+
+                File newFile = new File(archive, oldTime + " ~ " + current + ".txt");
+
+                if(!newFile.exists() && !newFile.createNewFile()) {
+                    StaticStore.logger.uploadLog("W/EventHolder::archive - Failed to create file : " + newFile.getAbsolutePath());
+
+                    return;
+                }
+
+                FileInputStream fis = new FileInputStream(old);
+                FileOutputStream fos = new FileOutputStream(newFile);
+
+                byte[] buffer = new byte[65536];
+                int len;
+
+                while((len = fis.read(buffer)) != -1) {
+                    fos.write(buffer, 0, len);
+                }
+
+                fis.close();
+                fos.close();
+            } else {
+                File newFile = new File(archive, current + ".txt");
+
+                if(!newFile.exists() && !newFile.createNewFile()) {
+                    StaticStore.logger.uploadLog("W/EventHolder::archive - Failed to create file : " + newFile.getAbsolutePath());
+
+                    return;
+                }
+
+                FileInputStream fis = new FileInputStream(old);
+                FileOutputStream fos = new FileOutputStream(newFile);
+
+                byte[] buffer = new byte[65536];
+                int len;
+
+                while((len = fis.read(buffer)) != -1) {
+                    fos.write(buffer, 0, len);
+                }
+
+                fis.close();
+                fos.close();
+            }
+        } else {
+            File newFile = new File(archive, current + ".txt");
+
+            if(!newFile.exists() && !newFile.createNewFile()) {
+                StaticStore.logger.uploadLog("W/EventHolder::archive - Failed to create file : " + newFile.getAbsolutePath());
+
+                return;
+            }
+
+            FileInputStream fis = new FileInputStream(old);
+            FileOutputStream fos = new FileOutputStream(newFile);
+
+            byte[] buffer = new byte[65536];
+            int len;
+
+            while((len = fis.read(buffer)) != -1) {
+                fos.write(buffer, 0, len);
+            }
+
+            fis.close();
+            fos.close();
+        }
+    }
+
+    private String getFileName(int j) {
+        switch (j) {
+            case 0:
+                return "gatya";
+            case 1:
+                return "item";
+            default:
+                return "sale";
         }
     }
 }

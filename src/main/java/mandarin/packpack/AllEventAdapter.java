@@ -809,6 +809,12 @@ public class AllEventAdapter extends ListenerAdapter {
                 case "fr":
                     new FindReward(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000, c).execute(event);
                     break;
+                case "eventdataarchive":
+                case "eventddataa":
+                case "earchive":
+                case "eda":
+                    new EventDataArchive(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
+                    break;
             }
         } catch (Exception e) {
             Message msg = event.getMessage();
