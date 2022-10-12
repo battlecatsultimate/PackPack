@@ -35,6 +35,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
@@ -415,6 +416,10 @@ public class EntityHandler {
         List<String> abis = Interpret.getAbi(du, true, lang);
         abis.addAll(Interpret.getProc(du, !isFrame, true, lang, 1.0, 1.0));
 
+        if(compact) {
+            abis = mergeImmune(abis, lang);
+        }
+
         StringBuilder sb = new StringBuilder();
 
         for(int i = 0; i < abis.size(); i++) {
@@ -431,6 +436,10 @@ public class EntityHandler {
         else if(res.length() > 1024) {
             abis = Interpret.getAbi(du, false, lang);
             abis.addAll(Interpret.getProc(du, !isFrame, false, lang, 1.0, 1.0));
+
+            if(compact) {
+                abis = mergeImmune(abis, lang);
+            }
 
             sb = new StringBuilder();
 
@@ -676,6 +685,10 @@ public class EntityHandler {
         List<String> abis = Interpret.getAbi(e.de, true, lang);
         abis.addAll(Interpret.getProc(e.de, !isFrame, true, lang, mag[0] / 100.0, mag[1] / 100.0));
 
+        if(compact) {
+            abis = mergeImmune(abis, lang);
+        }
+
         StringBuilder sb = new StringBuilder();
 
         for(int i = 0; i < abis.size(); i++) {
@@ -692,6 +705,10 @@ public class EntityHandler {
         else if(res.length() > 1024) {
             abis = Interpret.getAbi(e.de, false, lang);
             abis.addAll(Interpret.getProc(e.de, !isFrame, false, lang, mag[0] / 100.0, mag[1] / 100.0));
+
+            if(compact) {
+                abis = mergeImmune(abis, lang);
+            }
 
             sb = new StringBuilder();
 
@@ -3784,6 +3801,66 @@ public class EntityHandler {
             default:
                 return 8;
         }
+    }
+
+    private static List<String> mergeImmune(List<String> abilities, int lang) {
+        List<String> result = new ArrayList<>();
+        List<String> immunes = new ArrayList<>();
+
+        for(int i = 0; i < abilities.size(); i++) {
+            String actualName = abilities.get(i).replaceAll("<:.+:\\d+> ", "");
+
+            System.out.println(actualName);
+
+            switch (lang) {
+                case LangID.KR:
+                case LangID.JP:
+                    if(actualName.endsWith(LangID.getStringByID("data_immune", lang))) {
+                        immunes.add(actualName);
+                    } else {
+                        result.add(abilities.get(i));
+                    }
+                    break;
+                case LangID.EN:
+                    if(actualName.startsWith(LangID.getStringByID("data_immune", lang))) {
+                        immunes.add(actualName);
+                    } else {
+                        result.add(abilities.get(i));
+                    }
+                    break;
+                default:
+                    return abilities;
+            }
+        }
+
+        if(immunes.isEmpty())
+            return result;
+
+        StringBuilder sb = new StringBuilder();
+
+        for(int i = 0; i < immunes.size(); i++) {
+            String segment = immunes.get(i).replace(LangID.getStringByID("data_immune", lang), "");
+
+            sb.append(segment);
+
+            if(i < immunes.size() - 1)
+                sb.append(LangID.getStringByID("data_comma", lang));
+        }
+
+        RichCustomEmoji emoji = EmojiStore.ABILITY.get("IMMUNITY");
+
+        String e = emoji == null ? "" : emoji.getAsMention() + " ";
+
+        switch (lang) {
+            case LangID.KR:
+            case LangID.JP:
+                result.add(e + sb + LangID.getStringByID("data_immune", lang));
+                break;
+            default:
+                result.add(e + LangID.getStringByID("data_immune", lang) + sb);
+        }
+
+        return result;
     }
 
     private static BufferedImage drawLevelImage(int max, int lv) {
