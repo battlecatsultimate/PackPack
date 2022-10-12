@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
+@SuppressWarnings({"MismatchedReadAndWriteOfArray", "RedundantOperationOnEmptyContainer"})
 public class EnemyGif extends GlobalTimedConstraintCommand {
     private static final int PARAM_DEBUG = 2;
     private static final int PARAM_RAW = 4;
@@ -33,7 +34,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
 
     static {
         int[] data = {
-                616, 617, 618, 619, 620, 621
+
         };
 
         for(int d : data)
