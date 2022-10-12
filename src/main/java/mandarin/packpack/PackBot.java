@@ -39,7 +39,6 @@ public class PackBot {
     public static int event = 0;
     public static int pfp = 0;
     public static int udp = 0;
-    public static boolean eventInit = false;
     public static boolean develop = false;
 
     public static final String normal = "p!help for command info!";
@@ -166,10 +165,7 @@ public class PackBot {
                         if(doNotify) {
                             StaticStore.saveServerInfo();
 
-                            if(!eventInit)
-                                eventInit = true;
-                            else
-                                notifyEvent(client, result);
+                            notifyEvent(client, result);
                         }
                     } catch (Exception e) {
                         StaticStore.logger.uploadErrorLog(e, "Error happened while trying to check event data");
