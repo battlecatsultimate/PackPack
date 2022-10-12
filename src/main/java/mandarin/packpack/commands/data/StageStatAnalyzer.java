@@ -461,11 +461,11 @@ public class StageStatAnalyzer extends ConstraintCommand {
                     int reward = lineData[6 + j * 3 + 1];
 
                     if(MultiLangCont.getStatic().RWNAME.getCont(reward) == null) {
-                        if(reward < 1000)
+                        if(reward < 1000 && newRewards.contains(reward))
                             newRewards.add(reward);
-                        else if(reward < 10000)
+                        else if(reward < 10000 && !newUnits.contains(reward))
                             newUnits.add(reward);
-                        else if(reward < 30000)
+                        else if(reward < 30000 && newTrueForms.contains(reward))
                             newTrueForms.add(reward);
                     }
                 }
@@ -473,11 +473,11 @@ public class StageStatAnalyzer extends ConstraintCommand {
                 int reward = lineData[6];
 
                 if(MultiLangCont.getStatic().RWNAME.getCont(reward) == null) {
-                    if(reward < 1000)
+                    if(reward < 1000 && newRewards.contains(reward))
                         newRewards.add(reward);
-                    else if(reward < 10000)
+                    else if(reward < 10000 && !newUnits.contains(reward))
                         newUnits.add(reward);
-                    else if(reward < 30000)
+                    else if(reward < 30000 && newTrueForms.contains(reward))
                         newTrueForms.add(reward);
                 }
             }
@@ -519,7 +519,7 @@ public class StageStatAnalyzer extends ConstraintCommand {
                     continue;
 
                 if(newUnits.contains(dropData[0])) {
-                    newUnits.remove(dropData[0]);
+                    newUnits.remove(Integer.valueOf(dropData[0]));
 
                     File unitBuy = new File(dataLocal, "unitbuy.csv");
 
@@ -535,7 +535,7 @@ public class StageStatAnalyzer extends ConstraintCommand {
                         String iconName = "gatyachara_" + Data.trio(egg != -1 ? egg : dropData[2]) + "_" + (egg != -1 ? "m" : "f") + ".png";
 
                         File icon = new File(imageLocal, iconName);
-                        File name = new File(resLocal, "Unit_Explanation"+dropData[2]+"_"+loc+".csv");
+                        File name = new File(resLocal, "Unit_Explanation"+(dropData[2]+ 1)+"_"+loc+".csv");
 
                         if(!icon.exists() || !name.exists()) {
                             dropReader.close();
@@ -569,7 +569,7 @@ public class StageStatAnalyzer extends ConstraintCommand {
                 int reward = StaticStore.safeParseInt(data[23]);
 
                 if(newTrueForms.contains(reward)) {
-                    newTrueForms.remove(reward);
+                    newTrueForms.remove(Integer.valueOf(reward));
 
                     int egg = getEggValue(count, unitBuy);
 

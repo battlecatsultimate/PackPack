@@ -526,7 +526,7 @@ public class CustomStageMap extends StageMap {
                         break;
 
                     for(File f : files) {
-                        if(f.getName().startsWith("Unit_Explanation" + unit)) {
+                        if(f.getName().startsWith("Unit_Explanation" + (unit + 1))) {
                             String name = getUnitName(f, 0);
 
                             if(name != null) {
@@ -544,11 +544,11 @@ public class CustomStageMap extends StageMap {
 
                     int egg = getEggValue(unit, unitBuy);
 
-                    String fileName = "gatyachara_" + Data.trio(egg == -1 ? id : egg) + "_" + (egg == -1 ? "f" : "m") + ".png";
+                    String fileName = "gatyachara_" + Data.trio(egg == -1 ? unit : egg) + "_" + (egg == -1 ? "f" : "m") + ".png";
 
                     for(File f : files) {
                         if(f.getName().equals(fileName)) {
-                            unitIcons.put(CommonStatic.parseIntN(f.getName()), f);
+                            unitIcons.put(id, f);
 
                             break;
                         }
