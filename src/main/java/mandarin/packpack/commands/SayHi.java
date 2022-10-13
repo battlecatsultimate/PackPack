@@ -31,9 +31,9 @@ public class SayHi extends Command {
 
         if(chance <= 0.01) {
             if (StaticStore.cultist.contains(m.getId())) {
-                createMessageWithNoPings(ch, LangID.getStringByID("hi_6_1", lang));
+                createMessageWithNoPings(ch, LangID.getStringByID("hi_sp_1", lang));
             } else {
-                Message msg = ch.sendMessage(LangID.getStringByID("hi_6_0", lang))
+                Message msg = ch.sendMessage(LangID.getStringByID("hi_sp_0", lang))
                         .setAllowedMentions(new ArrayList<>())
                         .setActionRow(
                                 Button.of(ButtonStyle.SUCCESS, "yes", LangID.getStringByID("button_yes", lang)),
@@ -42,8 +42,10 @@ public class SayHi extends Command {
 
                 StaticStore.putHolder(m.getId(), new CultButtonHolder(getMessage(event), msg, ch.getId(), m.getId(), lang));
             }
+        } else if(chance <= 0.05) {
+            createMessageWithNoPings(ch, LangID.getStringByID("hi_d", lang));
         } else {
-            int index = StaticStore.random.nextInt(12);
+            int index = StaticStore.random.nextInt(13);
 
             switch (index) {
                 case 0:
@@ -74,7 +76,7 @@ public class SayHi extends Command {
 
                                 message.editMessage(
                                         LangID.getStringByID("hi_2", lang) + "\n\n" +
-                                        LangID.getStringByID("hi_2_" + luck, lang)
+                                                LangID.getStringByID("hi_2_" + luck, lang)
                                 ).queue();
                             }
                         }, 5000);

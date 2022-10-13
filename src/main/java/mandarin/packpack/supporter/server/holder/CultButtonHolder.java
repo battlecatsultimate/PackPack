@@ -36,7 +36,7 @@ public class CultButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
 
                 expired = true;
 
-                msg.editMessage(LangID.getStringByID("hi_6_0_2", lang))
+                msg.editMessage(LangID.getStringByID("hi_sp_0_2", lang))
                         .setComponents()
                         .queue();
 
@@ -75,13 +75,13 @@ public class CultButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
             case "yes":
                 StaticStore.cultist.add(memberID);
 
-                msg.editMessage(LangID.getStringByID("hi_6_0_0", lang))
+                msg.editMessage(LangID.getStringByID("hi_sp_0_0", lang))
                         .setComponents()
                         .queue();
 
                 break;
             case "no":
-                msg.editMessage(LangID.getStringByID("hi_6_0_1", lang))
+                msg.editMessage(LangID.getStringByID("hi_sp_0_1", lang))
                         .setComponents()
                         .queue();
         }
@@ -96,7 +96,7 @@ public class CultButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
     public void expire(String id) {
         expired = true;
 
-        msg.editMessage(LangID.getStringByID("hi_6_0_2", lang))
+        msg.editMessage(LangID.getStringByID("hi_sp_0_2", lang))
                 .setComponents()
                 .queue();
     }
