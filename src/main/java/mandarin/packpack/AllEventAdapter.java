@@ -355,13 +355,14 @@ public class AllEventAdapter extends ListenerAdapter {
 
             String prefix = StaticStore.getPrefix(m.getId());
 
-            if(msg.getContentRaw().startsWith(idh.serverPrefix))
+            if(msg.getContentRaw().toLowerCase(java.util.Locale.ENGLISH).startsWith(idh.serverPrefix))
                 prefix = idh.serverPrefix;
 
-            if(msg.getContentRaw().startsWith(StaticStore.serverPrefix))
-                prefix = StaticStore.serverPrefix;
+            if(msg.getContentRaw().toLowerCase(java.util.Locale.ENGLISH).startsWith(StaticStore.globalPrefix))
+                prefix = StaticStore.globalPrefix;
 
             int lang = idh.config.lang;
+
             ConfigHolder c;
 
             if(StaticStore.config.containsKey(m.getId())) {

@@ -45,7 +45,7 @@ public class StaticStore {
 
     public static long executed = 0;
 
-    public static String serverPrefix = "p!";
+    public static String globalPrefix = "p!";
 
     public static String GOOGLE_EMAIL;
     public static String GOOGLE_APP;
@@ -221,7 +221,7 @@ public class StaticStore {
     public static String getPrefix(String id) {
         String pre = prefix.get(id);
 
-        return Objects.requireNonNullElse(pre, serverPrefix);
+        return Objects.requireNonNullElse(pre, globalPrefix);
     }
 
     public static String getCommand(String message, String prefix) {
@@ -502,7 +502,7 @@ public class StaticStore {
         JsonObject obj = new JsonObject();
 
         obj.addProperty("rating", ratingChannel);
-        obj.addProperty("serverpre", serverPrefix);
+        obj.addProperty("serverpre", globalPrefix);
         obj.addProperty("executed", executed);
         obj.addProperty("englishVersion", englishVersion);
         obj.addProperty("taiwaneseVersion", taiwaneseVersion);
@@ -586,7 +586,7 @@ public class StaticStore {
             }
 
             if (obj.has("serverpre")) {
-                serverPrefix = obj.get("serverpre").getAsString();
+                globalPrefix = obj.get("serverpre").getAsString();
             }
 
             if(obj.has("executed")) {
