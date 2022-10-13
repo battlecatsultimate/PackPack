@@ -38,7 +38,7 @@ public class ChannelPermission extends ConstraintCommand {
             if(g == null)
                 return;
 
-            StringBuilder result = new StringBuilder("Member : " + printChannels(holder.MEMBER) + "\n");
+            StringBuilder result = new StringBuilder("Member : " + printChannels(holder.MEMBER == null ? "Member" : holder.MEMBER) + "\n");
 
             for(String name : holder.ID.keySet()) {
                 String id = holder.ID.get(name);
@@ -75,52 +75,52 @@ public class ChannelPermission extends ConstraintCommand {
                             if(!mem && i < msg.length - 1) {
                                 String id = msg[i+1];
 
-                                if(holder.MEMBER != null) {
-                                    ArrayList<String> channels = getChannelList(g, id, (param & PARAM_ADD) > 0);
+                                ArrayList<String> channels = getChannelList(g, id, (param & PARAM_ADD) > 0);
 
-                                    if(channels == null) {
-                                        holder.channel.put(holder.MEMBER, null);
-                                    } else if(channels.isEmpty() && id.contains("all")) {
-                                        holder.channel.put(holder.MEMBER, channels);
-                                    } else {
-                                        List<String> oldChannels = holder.channel.get(holder.MEMBER);
+                                String memberID = holder.MEMBER;
 
-                                        if(oldChannels == null && (param & PARAM_ADD) > 0) {
-                                            holder.channel.put(holder.MEMBER, channels);
-                                        } else if(oldChannels != null) {
-                                            if((param & PARAM_ADD) > 0) {
-                                                oldChannels.addAll(channels);
-                                            } else {
-                                                oldChannels.removeAll(channels);
-                                            }
+                                if(memberID == null)
+                                    memberID = "Member";
 
-                                            holder.channel.put(holder.MEMBER, oldChannels);
-                                        }
-                                    }
-
-                                    String allNone;
-
-                                    if(channels == null)
-                                        allNone = LangID.getStringByID("channelpermission_all", lang);
-                                    else if(channels.isEmpty() && id.contains("all")) {
-                                        allNone = LangID.getStringByID("channelpermission_all", lang);
-                                    } else {
-                                        allNone = printChannels(channels);
-                                    }
-
-                                    result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-
-                                    if((param & PARAM_ADD) > 0) {
-                                        result.append(LangID.getStringByID("channelpermission_added", lang).replace("_", "Member").replace("=", allNone).replace("::", printChannels(holder.MEMBER)));
-                                    } else {
-                                        result.append(LangID.getStringByID("channelpermission_removed", lang).replace("_", "Member").replace("=", allNone).replace("::", printChannels(holder.MEMBER)));
-                                    }
-
-                                    result.append("\n");
+                                if(channels == null) {
+                                    holder.channel.put(memberID, null);
+                                } else if(channels.isEmpty() && id.contains("all")) {
+                                    holder.channel.put(memberID, channels);
                                 } else {
-                                    result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                    result.append(LangID.getStringByID("channelpermission_noid", lang).replace("_", "Member")).append("\n");
+                                    List<String> oldChannels = holder.channel.get(memberID);
+
+                                    if(oldChannels == null && (param & PARAM_ADD) > 0) {
+                                        holder.channel.put(memberID, channels);
+                                    } else if(oldChannels != null) {
+                                        if((param & PARAM_ADD) > 0) {
+                                            oldChannels.addAll(channels);
+                                        } else {
+                                            oldChannels.removeAll(channels);
+                                        }
+
+                                        holder.channel.put(memberID, oldChannels);
+                                    }
                                 }
+
+                                String allNone;
+
+                                if(channels == null)
+                                    allNone = LangID.getStringByID("channelpermission_all", lang);
+                                else if(channels.isEmpty() && id.contains("all")) {
+                                    allNone = LangID.getStringByID("channelpermission_all", lang);
+                                } else {
+                                    allNone = printChannels(channels);
+                                }
+
+                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
+
+                                if((param & PARAM_ADD) > 0) {
+                                    result.append(LangID.getStringByID("channelpermission_added", lang).replace("_", "Member").replace("=", allNone).replace("::", printChannels(memberID)));
+                                } else {
+                                    result.append(LangID.getStringByID("channelpermission_removed", lang).replace("_", "Member").replace("=", allNone).replace("::", printChannels(memberID)));
+                                }
+
+                                result.append("\n");
 
                                 mem = true;
 
@@ -205,7 +205,7 @@ public class ChannelPermission extends ConstraintCommand {
                                 if((param & PARAM_ADD) > 0) {
                                     result.append(LangID.getStringByID("channelpermission_added", lang).replace("=", allNone).replace("::", printChannels(chID)).replace("_", limitName(name)));
                                 } else {
-                                    result.append(LangID.getStringByID("channelpermission_removed", lang).replace("=", allNone).replace("::", printChannels(holder.MEMBER)).replace("_", limitName(name)));
+                                    result.append(LangID.getStringByID("channelpermission_removed", lang).replace("=", allNone).replace("::", printChannels(chID)).replace("_", limitName(name)));
                                 }
 
                                 result.append("\n");

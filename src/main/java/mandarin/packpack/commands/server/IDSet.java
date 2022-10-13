@@ -44,7 +44,7 @@ public class IDSet extends ConstraintCommand {
 
         if(msg.length == 1) {
             StringBuilder res = new StringBuilder("Moderator : " + getRoleIDWithName(holder.MOD) + "\n" +
-                    "Member : " + (holder.MEMBER == null ? "None" : getRoleIDWithName(holder.MEMBER)) + "\n" +
+                    "Member : " + (holder.MEMBER == null ? "Everyone" : getRoleIDWithName(holder.MEMBER)) + "\n" +
                     "Booster User : " + (holder.BOOSTER == null ? "None" : getRoleIDWithName(holder.BOOSTER)) + "\n" +
                     "Get-Access : " + (holder.GET_ACCESS == null ? "None" : getChannelIDWithName(holder.GET_ACCESS, g)) + "\n" +
                     "Announcement : " + (holder.ANNOUNCE == null ? "None" : getChannelIDWithName(holder.ANNOUNCE, g)) + "\n" +
@@ -121,9 +121,12 @@ public class IDSet extends ConstraintCommand {
 
                                 String oldID = holder.MEMBER;
 
+                                if(oldID == null)
+                                    oldID = "Member";
+
                                 holder.MEMBER = id;
 
-                                if(oldID != null && holder.channel.containsKey(oldID)) {
+                                if(holder.channel.containsKey(oldID)) {
                                     List<String> arr = holder.channel.get(oldID);
 
                                     holder.channel.put(id, arr);
@@ -135,12 +138,14 @@ public class IDSet extends ConstraintCommand {
 
                                 mem = true;
                             } else if(id.toLowerCase(Locale.ENGLISH).equals("none")) {
-                                holder.channel.remove(holder.MEMBER);
+                                List<String> oldChannels = holder.channel.remove(holder.MEMBER);
+
+                                holder.channel.put("Member", oldChannels);
 
                                 holder.MEMBER = null;
 
                                 result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                result.append(LangID.getStringByID("idset_idchange", lang).replace("_", "Member").replace("=", LangID.getStringByID("idset_none", lang))).append("\n");
+                                result.append(LangID.getStringByID("idset_idchange", lang).replace("_", "Member").replace("=", LangID.getStringByID("idset_everyone", lang))).append("\n");
 
                                 mem = true;
                             } else if(StaticStore.isNumeric(id)) {

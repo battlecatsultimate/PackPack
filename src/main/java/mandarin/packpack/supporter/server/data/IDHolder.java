@@ -147,6 +147,15 @@ public class IDHolder {
 
         ArrayList<String> result = new ArrayList<>();
 
+        if(MEMBER == null) {
+            List<String> channels = channel.get("Member");
+
+            if(channels == null)
+                return null;
+
+            result.addAll(channels);
+        }
+
         for(Role role : ids) {
             if(isSetAsRole(role.getId()) && (exceptions == null || !exceptions.contains(role.getId()))) {
                 List<String> channels = channel.get(role.getId());
