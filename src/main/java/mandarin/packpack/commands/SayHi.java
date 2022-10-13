@@ -44,6 +44,8 @@ public class SayHi extends Command {
             }
         } else if(chance <= 0.05) {
             createMessageWithNoPings(ch, LangID.getStringByID("hi_d", lang));
+        } else if(StaticStore.cultist.contains(m.getId()) && chance <= 0.1) {
+            createMessageWithNoPings(ch, LangID.getStringByID("hi_sp_1", lang));
         } else {
             int index = StaticStore.random.nextInt(13);
 

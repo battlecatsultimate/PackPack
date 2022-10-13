@@ -79,11 +79,19 @@ public class CultButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
                         .setComponents()
                         .queue();
 
+                expired = true;
+
+                StaticStore.removeHolder(memberID, this);
+
                 break;
             case "no":
                 msg.editMessage(LangID.getStringByID("hi_sp_0_1", lang))
                         .setComponents()
                         .queue();
+
+                expired = true;
+
+                StaticStore.removeHolder(memberID, this);
         }
     }
 
