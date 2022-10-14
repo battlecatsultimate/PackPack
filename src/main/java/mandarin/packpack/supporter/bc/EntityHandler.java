@@ -3833,8 +3833,8 @@ public class EntityHandler {
             }
         }
 
-        if(immunes.isEmpty())
-            return result;
+        if(immunes.size() < 2)
+            return abilities;
 
         StringBuilder sb = new StringBuilder();
 
