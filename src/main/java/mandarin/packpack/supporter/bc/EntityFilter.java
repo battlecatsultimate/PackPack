@@ -47,8 +47,12 @@ public class EntityFilter {
                     +u.id.id+"-"+f.fid+" "+Data.trio(u.id.id)+"-"+f.fid+" ");
                     fname.append(Data.trio(u.id.id)).append(Data.trio(f.fid)).append(" ");
 
+                    String formName = null;
+
                     if(MultiLangCont.get(f) != null) {
                         fname.append(StaticStore.safeMultiLangGet(f, StaticStore.langIndex[i]));
+
+                        formName = StaticStore.safeMultiLangGet(f, StaticStore.langIndex[i]);
                     }
 
                     if(!f.names.toString().isBlank()) {
@@ -56,6 +60,11 @@ public class EntityFilter {
                     }
 
                     if(fname.toString().toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
+                        res.add(f);
+                        break;
+                    }
+
+                    if(formName != null && formName.replaceAll("-", " ").toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
                         res.add(f);
                         break;
                     }
@@ -282,11 +291,20 @@ public class EntityFilter {
                 StringBuilder ename = new StringBuilder(Data.trio(e.id.id))
                         .append(" ").append(duo(i)).append(" ");
 
+                String enemyName = null;
+
                 if(MultiLangCont.get(e) != null) {
                     ename.append(StaticStore.safeMultiLangGet(e, StaticStore.langIndex[i]));
+
+                    enemyName = StaticStore.safeMultiLangGet(e, StaticStore.langIndex[i]);
                 }
 
                 if(ename.toString().toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
+                    res.add(e);
+                    break;
+                }
+
+                if(enemyName != null && enemyName.replaceAll("-", " ").toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
                     res.add(e);
                     break;
                 }
@@ -644,7 +662,7 @@ public class EntityFilter {
                             if(d != -1)
                                 disMin = Math.min(d, disMin);
 
-                        if(disMin <= 3) {
+                        if(disMin <= 5) {
                             int i = 0;
 
                             for(StageMap stm : mc.maps.getList()) {
