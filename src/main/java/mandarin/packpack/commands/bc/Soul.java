@@ -1,6 +1,7 @@
 package mandarin.packpack.commands.bc;
 
 import common.pack.UserProfile;
+import common.util.Data;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.GlobalTimedConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
@@ -66,6 +67,10 @@ public class Soul extends GlobalTimedConstraintCommand {
         }
 
         boolean result = EntityHandler.generateSoulAnim(s, ch, g.getBoostTier().getKey(), debug, frame, lang, raw && isTrusted, gif);
+
+        if(raw && isTrusted && result) {
+            StaticStore.logger.uploadLog("Generated mp4 by user " + m.getEffectiveName() + " for soul ID " + Data.trio(s.getID().id));
+        }
 
         if(raw && isTrusted) {
             changeTime(TimeUnit.MINUTES.toMillis(1));

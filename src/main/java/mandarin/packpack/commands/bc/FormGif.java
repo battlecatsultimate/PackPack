@@ -115,6 +115,10 @@ public class FormGif extends GlobalTimedConstraintCommand {
 
                 boolean result = EntityHandler.generateFormAnim(f, ch, g.getBoostTier().getKey(), mode, debug, frame, lang, raw && isTrusted, gif);
 
+                if(raw && isTrusted && result) {
+                    StaticStore.logger.uploadLog("Generated mp4 by user " + m.getEffectiveName() + " for unit ID " + Data.trio(f.unit.id.id) + " with mode of " + mode);
+                }
+
                 if(raw && isTrusted) {
                     changeTime(TimeUnit.MINUTES.toMillis(1));
                 }

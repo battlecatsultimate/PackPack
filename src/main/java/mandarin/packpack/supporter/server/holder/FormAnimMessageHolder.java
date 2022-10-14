@@ -101,6 +101,12 @@ public class FormAnimMessageHolder extends SearchHolder {
                         try {
                             boolean result = EntityHandler.generateFormAnim(f, ch, g.getBoostTier().getKey(), mode, debug, frame, lang, raw, gifMode);
 
+                            Member m = event.getMember();
+
+                            if(raw && result) {
+                                StaticStore.logger.uploadLog("Generated mp4 by user " + (m == null ? "Unknown" : m.getEffectiveName()) + " for unit ID " + Data.trio(f.unit.id.id) + " with mode of " + mode);
+                            }
+
                             if(result) {
                                 long time = raw ? TimeUnit.MINUTES.toMillis(1) : TimeUnit.SECONDS.toMillis(30);
 

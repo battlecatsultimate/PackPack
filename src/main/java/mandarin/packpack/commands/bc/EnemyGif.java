@@ -114,6 +114,10 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
 
                 boolean result = EntityHandler.generateEnemyAnim(en, ch, g.getBoostTier().getKey(), mode, debug, frame, lang, raw && isTrusted, gif);
 
+                if(raw && isTrusted && result) {
+                    StaticStore.logger.uploadLog("Generated mp4 by user " + m.getEffectiveName() + " for enemy ID " + Data.trio(en.id.id) + " with mode of " + mode);
+                }
+
                 if(raw && isTrusted) {
                     changeTime(TimeUnit.MINUTES.toMillis(1));
                 }
