@@ -1240,6 +1240,7 @@
   "calc_eq" : "You need to provide equation!",
   "calc_fail" : "Failed to perform calculation due to unknown problem",
   "calc_opened" : "Brackets aren't fully closed",
+  "cal_division0" : "Value was divided by zero",
   "calc_tan" : "_ : Target value turns out to be multiple of π/2",
   "calc_csc" : "_ : Target value turns out to be multiple of π",
   "calc_sec" : "_ : Target value turns out to be multiple of π/2",
