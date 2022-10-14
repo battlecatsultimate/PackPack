@@ -1668,8 +1668,6 @@ public class EntityFilter {
     public static List<Stage> findStageByReward(int reward, double chance, int amount) {
         List<Stage> result = new ArrayList<>();
 
-        System.out.println(chance);
-
         for(MapColc mc : MapColc.values()) {
             if(mc == null)
                 continue;

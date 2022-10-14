@@ -3810,8 +3810,6 @@ public class EntityHandler {
         for(int i = 0; i < abilities.size(); i++) {
             String actualName = abilities.get(i).replaceAll("<:.+:\\d+> ", "");
 
-            System.out.println(actualName);
-
             switch (lang) {
                 case LangID.KR:
                 case LangID.JP:
