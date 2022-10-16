@@ -866,6 +866,8 @@ public class StaticStore {
     }
 
     public static String safeMultiLangGet(Object any, int lang) {
+        lang = Math.max(0, lang);
+
         int oldConfig = CommonStatic.getConfig().lang;
         CommonStatic.getConfig().lang = lang;
 
