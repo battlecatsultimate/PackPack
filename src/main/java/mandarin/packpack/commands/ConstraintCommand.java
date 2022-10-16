@@ -145,12 +145,22 @@ public abstract class ConstraintCommand extends Command {
                     try {
                         doSomething(event);
                     } catch (Exception e) {
-                        StaticStore.logger.uploadErrorLog(e, "Failed to perform command\n\nCommand : " + getContent(event));
+                        String data = "Command : " + getContent(event) + "\n\n" +
+                                "Guild : " + g.getName() + " (" + g.getId() + ")\n\n" +
+                                "Member  : " + m.getEffectiveName() + " (" + m.getId() + ")\n\n" +
+                                "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+
+                        StaticStore.logger.uploadErrorLog(e, "Failed to perform constraint command : "+this.getClass()+"\n\n" + data);
                         onFail(event, DEFAULT_ERROR);
                     }
                 }).start();
             } catch (Exception e) {
-                StaticStore.logger.uploadErrorLog(e, "Failed to perform command\n\nCommand : " + getContent(event));
+                String data = "Command : " + getContent(event) + "\n\n" +
+                        "Guild : " + g.getName() + " (" + g.getId() + ")\n\n" +
+                        "Member  : " + m.getEffectiveName() + " (" + m.getId() + ")\n\n" +
+                        "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+
+                StaticStore.logger.uploadErrorLog(e, "Failed to perform constraint command : "+this.getClass()+"\n\n" + data);
                 onFail(event, DEFAULT_ERROR);
             }
 

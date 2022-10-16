@@ -154,13 +154,23 @@ public abstract class TimedConstraintCommand extends Command {
                             }
                         }
                     } catch (Exception e) {
-                        StaticStore.logger.uploadErrorLog(e, "Failed to perform timed constraint command : "+this.getClass()+"\n\nCommand : "+getContent(event));
+                        String data = "Command : " + getContent(event) + "\n\n" +
+                                "Guild : " + g.getName() + " (" + g.getId() + ")\n\n" +
+                                "Member  : " + m.getEffectiveName() + " (" + m.getId() + ")\n\n" +
+                                "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+
+                        StaticStore.logger.uploadErrorLog(e, "Failed to perform timed constraint command : "+this.getClass()+"\n\n" + data);
                         e.printStackTrace();
                         onFail(event, DEFAULT_ERROR);
                     }
                 }).start();
             } catch (Exception e) {
-                StaticStore.logger.uploadErrorLog(e, "Failed to perform timed constraint command : "+this.getClass()+"\n\nCommand : "+getContent(event));
+                String data = "Command : " + getContent(event) + "\n\n" +
+                        "Guild : " + g.getName() + " (" + g.getId() + ")\n\n" +
+                        "Member  : " + m.getEffectiveName() + " (" + m.getId() + ")\n\n" +
+                        "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+
+                StaticStore.logger.uploadErrorLog(e, "Failed to perform timed constraint command : "+this.getClass()+"\n\n" + data);
                 e.printStackTrace();
                 onFail(event, DEFAULT_ERROR);
             }
@@ -168,7 +178,12 @@ public abstract class TimedConstraintCommand extends Command {
             try {
                 onSuccess(event);
             } catch (Exception e) {
-                StaticStore.logger.uploadErrorLog(e, "Failed to perform timed constraint command : "+this.getClass()+"\n\nCommand : "+getContent(event));
+                String data = "Command : " + getContent(event) + "\n\n" +
+                        "Guild : " + g.getName() + " (" + g.getId() + ")\n\n" +
+                        "Member  : " + m.getEffectiveName() + " (" + m.getId() + ")\n\n" +
+                        "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+
+                StaticStore.logger.uploadErrorLog(e, "Failed to perform timed constraint command : "+this.getClass()+"\n\n" + data);
                 e.printStackTrace();
             }
         }

@@ -186,8 +186,12 @@ public abstract class GlobalTimedConstraintCommand extends Command {
                                     StaticStore.canDo.put(id, new TimeBoolean(true));
                                 }
                             } catch (Exception e) {
-                                e.printStackTrace();
-                                StaticStore.logger.uploadErrorLog(e, "Failed to perform command : "+this.getClass()+"\n\nCommand : "+getContent(event));
+                                String data = "Command : " + getContent(event) + "\n\n" +
+                                        "Guild : " + g.getName() + " (" + g.getId() + ")\n\n" +
+                                        "Member  : " + m.getEffectiveName() + " (" + m.getId() + ")\n\n" +
+                                        "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+
+                                StaticStore.logger.uploadErrorLog(e, "Failed to perform global timed constraint command : "+this.getClass()+"\n\n" + data);
                                 onFail(event, DEFAULT_ERROR);
                                 StaticStore.canDo.put(id, new TimeBoolean(true));
                             }
@@ -197,7 +201,12 @@ public abstract class GlobalTimedConstraintCommand extends Command {
                     }
                 }
             } catch (Exception e) {
-                StaticStore.logger.uploadErrorLog(e, "Failed to perform command : "+this.getClass()+"\n\nCommand : "+getContent(event));
+                String data = "Command : " + getContent(event) + "\n\n" +
+                        "Guild : " + g.getName() + " (" + g.getId() + ")\n\n" +
+                        "Member  : " + m.getEffectiveName() + " (" + m.getId() + ")\n\n" +
+                        "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+
+                StaticStore.logger.uploadErrorLog(e, "Failed to perform global timed constraint command : "+this.getClass()+"\n\n" + data);
                 e.printStackTrace();
                 StaticStore.canDo.put(id, new TimeBoolean(true));
                 onFail(event, DEFAULT_ERROR);
@@ -206,7 +215,12 @@ public abstract class GlobalTimedConstraintCommand extends Command {
             try {
                 onSuccess(event);
             } catch (Exception e) {
-                StaticStore.logger.uploadErrorLog(e, "Failed to perform command : "+this.getClass()+"\n\nCommand : "+getContent(event));
+                String data = "Command : " + getContent(event) + "\n\n" +
+                        "Guild : " + g.getName() + " (" + g.getId() + ")\n\n" +
+                        "Member  : " + m.getEffectiveName() + " (" + m.getId() + ")\n\n" +
+                        "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+
+                StaticStore.logger.uploadErrorLog(e, "Failed to perform global timed constraint command : "+this.getClass()+"\n\n" + data);
                 e.printStackTrace();
             }
         }

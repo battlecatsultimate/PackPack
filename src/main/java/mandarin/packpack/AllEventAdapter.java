@@ -819,8 +819,20 @@ public class AllEventAdapter extends ListenerAdapter {
             }
         } catch (Exception e) {
             Message msg = event.getMessage();
+            Guild g = event.getGuild();
+            Member m = event.getMember();
+            MessageChannel ch = event.getChannel();
 
-            StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::onMessageReceived - Error happened while doing something\n\nCommand : "+msg.getContentRaw());
+            String data = "Command : " + msg.getContentRaw() + "\n\n" +
+                    "Guild : " + g.getName() + " (" + g.getId() + ")";
+
+            if(m != null) {
+                data += "\n\nMember  : " + m.getEffectiveName() + " (" + m.getId() + ")";
+            }
+
+            data += "\n\nChannel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+
+            StaticStore.logger.uploadErrorLog(e, "Failed to perform timed constraint command : "+this.getClass()+"\n\n" + data);
         }
     }
 
@@ -954,8 +966,16 @@ public class AllEventAdapter extends ListenerAdapter {
 
                 Message author = StaticStore.getHolder(m.getId()).getAuthorMessage();
 
-                if(author != null)
-                    message += "\n\nCommand : " + author.getContentRaw();
+                if(author != null) {
+                    Guild g = author.getGuild();
+                    MessageChannel ch = author.getChannel();
+
+                    message += "\n\nCommand : " + author.getContentRaw() + "\n\n" +
+                            "Guild : " + g.getName() + " (" + g.getId() + ")\n\n" +
+                            "Member  : " + m.getEffectiveName() + " (" + m.getId() + ")\n\n" +
+                            "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+
+                }
             }
 
             StaticStore.logger.uploadErrorLog(e, message);

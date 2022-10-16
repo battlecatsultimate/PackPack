@@ -155,18 +155,19 @@ public abstract class Command {
 
         Member m = getMember(event);
 
-        if(m != null) {
-            SpamPrevent spam;
+        if(m == null)
+            return;
 
-            if(StaticStore.spamData.containsKey(m.getId())) {
-                spam = StaticStore.spamData.get(m.getId());
+        SpamPrevent spam;
 
-                prevented.set(spam.isPrevented(ch, lang, m.getId()));
-            } else {
-                spam = new SpamPrevent();
+        if(StaticStore.spamData.containsKey(m.getId())) {
+            spam = StaticStore.spamData.get(m.getId());
 
-                StaticStore.spamData.put(m.getId(), spam);
-            }
+            prevented.set(spam.isPrevented(ch, lang, m.getId()));
+        } else {
+            spam = new SpamPrevent();
+
+            StaticStore.spamData.put(m.getId(), spam);
         }
 
         if (prevented.get())
@@ -180,18 +181,16 @@ public abstract class Command {
             GuildMessageChannel tc = ((GuildMessageChannel) ch);
 
             if(!tc.canTalk()) {
-                if(m != null) {
-                    String serverName = g.getName();
-                    String channelName = ch.getName();
+                String serverName = g.getName();
+                String channelName = ch.getName();
 
-                    String content;
+                String content;
 
-                    content = LangID.getStringByID("no_permch", lang).replace("_SSS_", serverName).replace("_CCC_", channelName);
+                content = LangID.getStringByID("no_permch", lang).replace("_SSS_", serverName).replace("_CCC_", channelName);
 
-                    m.getUser().openPrivateChannel()
-                            .flatMap(pc -> pc.sendMessage(content))
-                            .queue();
-                }
+                m.getUser().openPrivateChannel()
+                        .flatMap(pc -> pc.sendMessage(content))
+                        .queue();
 
                 return;
             }
@@ -199,11 +198,9 @@ public abstract class Command {
             List<Permission> missingPermission = getMissingPermissions((GuildChannel) ch, g.getSelfMember());
 
             if(!missingPermission.isEmpty()) {
-                if(m != null) {
-                    m.getUser().openPrivateChannel()
-                            .flatMap(pc -> pc.sendMessage(LangID.getStringByID("missing_permission", lang).replace("_PPP_", parsePermissionAsList(missingPermission)).replace("_SSS_", g.getName()).replace("_CCC_", ch.getName())))
-                            .queue();
-                }
+                m.getUser().openPrivateChannel()
+                        .flatMap(pc -> pc.sendMessage(LangID.getStringByID("missing_permission", lang).replace("_PPP_", parsePermissionAsList(missingPermission)).replace("_SSS_", g.getName()).replace("_CCC_", ch.getName())))
+                        .queue();
 
                 return;
             }
@@ -214,12 +211,22 @@ public abstract class Command {
                 try {
                     doSomething(event);
                 } catch (Exception e) {
-                    StaticStore.logger.uploadErrorLog(e, "Failed to perform command\n\nCommand : " + getContent(event));
+                    String data = "Command : " + getContent(event) + "\n\n" +
+                            "Guild : " + g.getName() + " (" + g.getId() + ")\n\n" +
+                            "Member  : " + m.getEffectiveName() + " (" + m.getId() + ")\n\n" +
+                            "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+
+                    StaticStore.logger.uploadErrorLog(e, "Failed to perform command : "+this.getClass()+"\n\n" + data);
                     onFail(event, DEFAULT_ERROR);
                 }
             }).start();
         } catch (Exception e) {
-            StaticStore.logger.uploadErrorLog(e, "Failed to perform command\n\nCommand : " + getContent(event));
+            String data = "Command : " + getContent(event) + "\n\n" +
+                    "Guild : " + g.getName() + " (" + g.getId() + ")\n\n" +
+                    "Member  : " + m.getEffectiveName() + " (" + m.getId() + ")\n\n" +
+                    "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+
+            StaticStore.logger.uploadErrorLog(e, "Failed to perform command : "+this.getClass()+"\n\n" + data);
             onFail(event, DEFAULT_ERROR);
         }
     }
