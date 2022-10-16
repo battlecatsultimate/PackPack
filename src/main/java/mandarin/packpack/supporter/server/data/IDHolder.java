@@ -82,6 +82,9 @@ public class IDHolder {
             id.forceCompact = obj.get("forceCompact").getAsBoolean();
         }
 
+        if(id.config.lang < 0)
+            id.config.lang = 0;
+
         return id;
     }
 

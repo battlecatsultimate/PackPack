@@ -5,7 +5,6 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.util.concurrent.TimeUnit;
@@ -35,11 +34,11 @@ public class Test extends GlobalTimedConstraintCommand {
 
         switch (contents[1]) {
             case "-m":
-                User u = gate.getUserById(contents[2]);
-
-                if(u != null) {
-                    ch.sendMessage("User Name : "+u.getName()+u.getDiscriminator()).queue();
-                }
+                gate.retrieveUserById(contents[2]).queue(u -> {
+                    if(u != null) {
+                        ch.sendMessage("User Name : "+u.getName()+u.getDiscriminator()).queue();
+                    }
+                });
                 break;
             case "-c":
                 GuildChannel c = gate.getGuildChannelById(contents[2]);
