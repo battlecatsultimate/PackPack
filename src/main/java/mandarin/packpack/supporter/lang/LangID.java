@@ -14,6 +14,7 @@ public class LangID {
     public static final int IT = 9;
     public static final int ES = 8;
     public static final int DE = 5;
+    public static final int TH = 10;
 
     public static JsonObject EN_OBJ;
     public static JsonObject JP_OBJ;

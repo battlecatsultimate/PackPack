@@ -67,8 +67,11 @@ public class Locale extends ConstraintCommand {
                                 case LangID.ES:
                                     locale = LangID.getStringByID("lang_es", loc);
                                     break;
-                                default:
+                                case LangID.DE:
                                     locale = LangID.getStringByID("lang_de", loc);
+                                    break;
+                                default:
+                                    locale = LangID.getStringByID("lang_th", loc);
                                     break;
                             }
 

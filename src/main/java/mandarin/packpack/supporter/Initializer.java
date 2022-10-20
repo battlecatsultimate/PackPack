@@ -28,8 +28,8 @@ import java.util.Queue;
 
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class Initializer {
-    private static final String[] folder = {"bot/", "jp/", "kr/", "zh/", "fr/", "it/", "es/", "de/"};
-    private static final int[] loc = {0, 3, 2, 1, 6, 9, 8, 5};
+    private static final String[] folder = {"bot/", "jp/", "kr/", "zh/", "fr/", "it/", "es/", "de/", "th/"};
+    private static final int[] loc = {0, 3, 2, 1, 6, 9, 8, 5, 10};
     private static final String[] file = {"EnemyName.txt", "StageName.txt", "UnitName.txt", "UnitExplanation.txt", "EnemyExplanation.txt", "CatFruitExplanation.txt", "RewardName.txt", "ComboName.txt", "MedalName.txt", "MedalExplanation.txt", "GachaName.txt", "MissionName.txt"};
 
     public static void checkAssetDownload() {

@@ -67,6 +67,9 @@ public class Config extends ConstraintCommand {
             case LangID.DE:
                 locale = LangID.getStringByID("lang_de", lang);
                 break;
+            case LangID.TH:
+                locale = LangID.getStringByID("lang_th", lang);
+                break;
             default:
                 locale = LangID.getStringByID("config_auto", lang);
                 break;
