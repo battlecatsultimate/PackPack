@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 
 import java.util.ArrayList;
@@ -165,9 +165,9 @@ public class Config extends ConstraintCommand {
 
         Message msg = ch.sendMessage(builder)
                 .setComponents(
-                        ActionRow.of(SelectMenu.create("language").addOptions(languages).build()),
-                        ActionRow.of(SelectMenu.create("defLevels").addOptions(levels).build()),
-                        ActionRow.of(SelectMenu.create("extra").addOptions(extras).build()),
+                        ActionRow.of(StringSelectMenu.create("language").addOptions(languages).build()),
+                        ActionRow.of(StringSelectMenu.create("defLevels").addOptions(levels).build()),
+                        ActionRow.of(StringSelectMenu.create("extra").addOptions(extras).build()),
                         ActionRow.of(pages),
                         ActionRow.of(components)
                 ).complete();

@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 
 import java.util.ArrayList;
@@ -81,8 +81,8 @@ public class SubscribeScamLinkDetector extends ConstraintCommand {
 
         Message msg = ch.sendMessage(LangID.getStringByID("subscam_decide", lang))
                 .setComponents(
-                        ActionRow.of(SelectMenu.create("action").addOptions(options).build()),
-                        ActionRow.of(SelectMenu.create("notice").addOptions(notices).build()),
+                        ActionRow.of(StringSelectMenu.create("action").addOptions(options).build()),
+                        ActionRow.of(StringSelectMenu.create("notice").addOptions(notices).build()),
                         ActionRow.of(components)
                 ).complete();
 

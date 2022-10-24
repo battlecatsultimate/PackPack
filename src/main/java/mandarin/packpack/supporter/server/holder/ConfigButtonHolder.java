@@ -10,12 +10,12 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,7 +91,7 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
     public void performInteraction(GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
             case "language":
-                SelectMenuInteractionEvent es = (SelectMenuInteractionEvent) event;
+                StringSelectInteractionEvent es = (StringSelectInteractionEvent) event;
 
                 if(es.getValues().size() != 1)
                     return;
@@ -102,7 +102,7 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
 
                 break;
             case "defLevels":
-                es = (SelectMenuInteractionEvent) event;
+                es = (StringSelectInteractionEvent) event;
 
                 if(es.getValues().size() != 1)
                     return;
@@ -113,7 +113,7 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
 
                 break;
             case "extra":
-                es = (SelectMenuInteractionEvent) event;
+                es = (StringSelectInteractionEvent) event;
 
                 if(es.getValues().size() != 1)
                     return;
@@ -124,7 +124,7 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
 
                 break;
             case "unit":
-                es = (SelectMenuInteractionEvent) event;
+                es = (StringSelectInteractionEvent) event;
 
                 if(es.getValues().size() != 1)
                     return;
@@ -135,7 +135,7 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
 
                 break;
             case "compact":
-                es = (SelectMenuInteractionEvent) event;
+                es = (StringSelectInteractionEvent) event;
 
                 if(es.getValues().size() != 1)
                     return;
@@ -146,7 +146,7 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
 
                 break;
             case "force":
-                es = (SelectMenuInteractionEvent) event;
+                es = (StringSelectInteractionEvent) event;
 
                 if(!forServer) {
                     StaticStore.logger.uploadLog("W/ConfigButtonHolder::performInteraction - Force compact mode is visible for personal config");
@@ -260,7 +260,7 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
                         }
                     }
 
-                    m.add(ActionRow.of(SelectMenu.create("language").addOptions(languages).build()));
+                    m.add(ActionRow.of(StringSelectMenu.create("language").addOptions(languages).build()));
 
                     break;
                 case 1:
@@ -274,7 +274,7 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
                         }
                     }
 
-                    m.add(ActionRow.of(SelectMenu.create("defLevels").addOptions(levels).build()));
+                    m.add(ActionRow.of(StringSelectMenu.create("defLevels").addOptions(levels).build()));
 
                     break;
                 case 2:
@@ -288,7 +288,7 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
                         extras.add(SelectOption.of(LangID.getStringByID("config_extra", lang).replace("_", LangID.getStringByID("data_false", lang)), "false").withDefault(true));
                     }
 
-                    m.add(ActionRow.of(SelectMenu.create("extra").addOptions(extras).build()));
+                    m.add(ActionRow.of(StringSelectMenu.create("extra").addOptions(extras).build()));
 
                     break;
                 case 3:
@@ -302,7 +302,7 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
                         units.add(SelectOption.of(LangID.getStringByID("config_units", lang).replace("_", LangID.getStringByID("config_second", lang)), "second").withDefault(true));
                     }
 
-                    m.add(ActionRow.of(SelectMenu.create("unit").addOptions(units).build()));
+                    m.add(ActionRow.of(StringSelectMenu.create("unit").addOptions(units).build()));
 
                     break;
                 case 4:
@@ -316,7 +316,7 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
                         compacts.add(SelectOption.of(LangID.getStringByID("config_compact", lang).replace("_", LangID.getStringByID("data_false", lang)), "false").withDefault(true));
                     }
 
-                    m.add(ActionRow.of(SelectMenu.create("compact").addOptions(compacts).build()));
+                    m.add(ActionRow.of(StringSelectMenu.create("compact").addOptions(compacts).build()));
 
                     break;
                 case 5:
@@ -331,7 +331,7 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
                             forces.add(SelectOption.of(LangID.getStringByID("config_force", lang).replace("_", LangID.getStringByID("data_false", lang)), "false").withDefault(true));
                         }
 
-                        m.add(ActionRow.of(SelectMenu.create("force").addOptions(forces).build()));
+                        m.add(ActionRow.of(StringSelectMenu.create("force").addOptions(forces).build()));
                     }
 
                     break;

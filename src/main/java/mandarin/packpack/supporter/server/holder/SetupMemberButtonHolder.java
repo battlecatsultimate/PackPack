@@ -6,10 +6,10 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 
 import java.util.ArrayList;
@@ -69,7 +69,7 @@ public class SetupMemberButtonHolder extends InteractionHolder<GenericComponentI
 
         switch (event.getComponentId()) {
             case "role":
-                SelectMenuInteractionEvent es = (SelectMenuInteractionEvent) event;
+                StringSelectInteractionEvent es = (StringSelectInteractionEvent) event;
 
                 if(es.getValues().size() != 1)
                     return;
@@ -150,7 +150,7 @@ public class SetupMemberButtonHolder extends InteractionHolder<GenericComponentI
 
         List<ActionRow> result = new ArrayList<>();
 
-        result.add(ActionRow.of(SelectMenu.create("role").addOptions(options).setPlaceholder(LangID.getStringByID("setup_select", lang)).build()));
+        result.add(ActionRow.of(StringSelectMenu.create("role").addOptions(options).setPlaceholder(LangID.getStringByID("setup_select", lang)).build()));
 
         Button confirm;
 

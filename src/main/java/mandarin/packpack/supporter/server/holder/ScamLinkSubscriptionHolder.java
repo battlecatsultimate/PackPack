@@ -8,11 +8,11 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 
 import java.util.ArrayList;
@@ -73,7 +73,7 @@ public class ScamLinkSubscriptionHolder extends InteractionHolder<GenericCompone
 
         switch (event.getComponentId()) {
             case "action":
-                SelectMenuInteractionEvent es = (SelectMenuInteractionEvent) event;
+                StringSelectInteractionEvent es = (StringSelectInteractionEvent) event;
 
                 if(es.getValues().size() != 1)
                     return;
@@ -97,7 +97,7 @@ public class ScamLinkSubscriptionHolder extends InteractionHolder<GenericCompone
 
                 break;
             case "notice":
-                es = (SelectMenuInteractionEvent) event;
+                es = (StringSelectInteractionEvent) event;
 
                 if(es.getValues().size() != 1)
                     return;
@@ -207,7 +207,7 @@ public class ScamLinkSubscriptionHolder extends InteractionHolder<GenericCompone
             options.add(SelectOption.of(LangID.getStringByID("ban", lang), "ban"));
         }
 
-        m.add(ActionRow.of(SelectMenu.create("action").addOptions(options).build()));
+        m.add(ActionRow.of(StringSelectMenu.create("action").addOptions(options).build()));
 
         List<SelectOption> notices = new ArrayList<>();
 
@@ -219,7 +219,7 @@ public class ScamLinkSubscriptionHolder extends InteractionHolder<GenericCompone
             notices.add(SelectOption.of(LangID.getStringByID("noticex", lang), "noticeX"));
         }
 
-        m.add(ActionRow.of(SelectMenu.create("notice").addOptions(notices).build()));
+        m.add(ActionRow.of(StringSelectMenu.create("notice").addOptions(notices).build()));
 
         List<ActionComponent> components = new ArrayList<>();
 

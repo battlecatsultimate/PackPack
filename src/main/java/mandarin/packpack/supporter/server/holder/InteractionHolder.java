@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -145,10 +145,10 @@ public abstract class InteractionHolder<T extends GenericInteractionCreateEvent>
     }
 
     public int parseDataToInt(GenericComponentInteractionCreateEvent event) {
-        if(!(event instanceof SelectMenuInteractionEvent)) {
-            throw new IllegalStateException("Event type isn't SelectMenuInteractionEvent!");
+        if(!(event instanceof StringSelectInteractionEvent)) {
+            throw new IllegalStateException("Event type isn't StringSelectInteractionEvent!");
         }
 
-        return StaticStore.safeParseInt(((SelectMenuInteractionEvent) event).getValues().get(0));
+        return StaticStore.safeParseInt(((StringSelectInteractionEvent) event).getValues().get(0));
     }
 }

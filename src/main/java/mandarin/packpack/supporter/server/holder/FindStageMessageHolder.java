@@ -16,11 +16,11 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 
 import java.util.*;
@@ -167,7 +167,7 @@ public class FindStageMessageHolder extends SearchHolder {
     @Override
     public void performInteraction(GenericComponentInteractionCreateEvent event) {
         if(event.getComponentId().equals("category")) {
-            String name = ((SelectMenuInteractionEvent) event).getValues().get(0);
+            String name = ((StringSelectInteractionEvent) event).getValues().get(0);
 
             selected = FindStage.MONTHLY.valueOf(name.toUpperCase(Locale.ENGLISH));
 
@@ -312,7 +312,7 @@ public class FindStageMessageHolder extends SearchHolder {
             }
         }
 
-        rows.add(ActionRow.of(SelectMenu.create("data").addOptions(options).setPlaceholder(LangID.getStringByID("search_list", lang)).build()));
+        rows.add(ActionRow.of(StringSelectMenu.create("data").addOptions(options).setPlaceholder(LangID.getStringByID("search_list", lang)).build()));
 
         if(monthly != null) {
             List<SelectOption> categories = new ArrayList<>();
@@ -329,7 +329,7 @@ public class FindStageMessageHolder extends SearchHolder {
                 }
             }
 
-            rows.add(ActionRow.of(SelectMenu.create("category").addOptions(categories).setPlaceholder(LangID.getStringByID("fstage_category", lang)).build()));
+            rows.add(ActionRow.of(StringSelectMenu.create("category").addOptions(categories).setPlaceholder(LangID.getStringByID("fstage_category", lang)).build()));
         }
 
         rows.add(ActionRow.of(Button.danger("cancel", LangID.getStringByID("button_cancel", lang))));
