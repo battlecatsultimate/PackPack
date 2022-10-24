@@ -106,16 +106,32 @@ public class EnemyStat extends ConstraintCommand {
         MessageChannel ch = getChannel(event);
 
         String[] list = getContent(event).split(" ", 2);
+        String[] segments = getContent(event).split(" ");
 
-        if(list.length == 1 || filterCommand(getContent(event)).isBlank()) {
+        StringBuilder removeMistake = new StringBuilder();
+
+        for(int i = 0; i < segments.length; i++) {
+            if(segments[i].matches("-m(\\d+(,|%,|%$)?)+")) {
+                removeMistake.append("-m ").append(segments[i].replace("-m", ""));
+            } else {
+                removeMistake.append(segments[i]);
+            }
+
+            if(i < segments.length - 1)
+                removeMistake.append(" ");
+        }
+
+        String command = removeMistake.toString();
+
+        if(list.length == 1 || filterCommand(command).isBlank()) {
             ch.sendMessage(LangID.getStringByID("formst_noname", lang)).queue();
         } else {
-            ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(filterCommand(getContent(event)), lang);
+            ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(filterCommand(command), lang);
 
             if(enemies.size() == 1) {
-                int param = checkParameters(getContent(event));
+                int param = checkParameters(command);
 
-                int[] magnification = handleMagnification(getContent(event));
+                int[] magnification = handleMagnification(command);
 
                 boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
                 boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
@@ -123,9 +139,9 @@ public class EnemyStat extends ConstraintCommand {
 
                 EntityHandler.showEnemyEmb(enemies.get(0), ch, isFrame, isExtra, isCompact, magnification, lang);
             } else if(enemies.size() == 0) {
-                createMessageWithNoPings(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(getContent(event))));
+                createMessageWithNoPings(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(command)));
             } else {
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", filterCommand(getContent(event))));
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", filterCommand(command)));
 
                 sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang));
 
@@ -148,9 +164,9 @@ public class EnemyStat extends ConstraintCommand {
 
                 Message res = registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), enemies.size(), data, lang).complete();
 
-                int[] magnification = handleMagnification(getContent(event));
+                int[] magnification = handleMagnification(command);
 
-                int param = checkParameters(getContent(event));
+                int param = checkParameters(command);
 
                 boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
                 boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
@@ -292,7 +308,7 @@ public class EnemyStat extends ConstraintCommand {
                     int length = 0;
 
                     for (String s : trial) {
-                        if (StaticStore.isNumeric(s))
+                        if (StaticStore.isNumeric(s.replace("%", "")))
                             length++;
                         else
                             break;
@@ -304,10 +320,10 @@ public class EnemyStat extends ConstraintCommand {
                         int[] lv = new int[length];
 
                         for (int j = 0; j < length; j++) {
-                            if(trial[j].isBlank() && StaticStore.isNumeric(trial[j])) {
+                            if(trial[j].isBlank() || !StaticStore.isNumeric(trial[j].replace("%", ""))) {
                                 lv[j] = 100;
                             } else {
-                                lv[j] = StaticStore.safeParseInt(trial[j]);
+                                lv[j] = StaticStore.safeParseInt(trial[j].replace("%", ""));
                             }
                         }
 
@@ -336,6 +352,8 @@ public class EnemyStat extends ConstraintCommand {
 
         boolean commaStart = false;
         boolean beforeSpace = false;
+        boolean percentage = false;
+        boolean numberStart = false;
         int numberLetter = 0;
         int commaAdd = 0;
 
@@ -343,6 +361,7 @@ public class EnemyStat extends ConstraintCommand {
             if(sb.charAt(i) == ',') {
                 if(!commaStart && commaAdd <= 1) {
                     commaStart = true;
+                    numberStart = false;
                     commaAdd++;
                     fin.append(sb.charAt(i));
                     numberLetter++;
@@ -353,9 +372,20 @@ public class EnemyStat extends ConstraintCommand {
                 beforeSpace = true;
                 numberLetter = 0;
                 fin.append(sb.charAt(i));
+            } else if(sb.charAt(i) == '%') {
+                if(!percentage && numberStart) {
+                    percentage = true;
+                    numberStart = false;
+                    fin.append(sb.charAt(i));
+                    numberLetter++;
+                } else {
+                    break;
+                }
             } else {
                 if(Character.isDigit(sb.charAt(i))) {
+                    numberStart = true;
                     commaStart = false;
+                    percentage = false;
                     fin.append(sb.charAt(i));
                     numberLetter++;
                 } else if(beforeSpace) {
