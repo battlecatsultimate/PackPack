@@ -143,16 +143,34 @@ public class FormStat extends ConstraintCommand {
         MessageChannel ch = getChannel(event);
 
         String[] list = getContent(event).split(" ",2);
+        String[] segments = getContent(event).split(" ");
 
-        if(list.length == 1 || filterCommand(getContent(event)).isBlank()) {
+        StringBuilder removeMistake = new StringBuilder();
+
+        for(int i = 0; i < segments.length; i++) {
+            if(segments[i].matches("-lv(l)?\\d+(,)?")) {
+                removeMistake.append("-lv ").append(segments[i].replace("-lvl", "").replace("-lv", ""));
+            } else {
+                removeMistake.append(segments[i]);
+            }
+
+            if(i < segments.length - 1)
+                removeMistake.append(" ");
+        }
+
+        String command = removeMistake.toString();
+
+        System.out.println(command);
+
+        if(list.length == 1 || filterCommand(command).isBlank()) {
             ch.sendMessage(LangID.getStringByID("formst_noname", lang)).queue();
         } else {
-            ArrayList<Form> forms = EntityFilter.findUnitWithName(filterCommand(getContent(event)), lang);
+            ArrayList<Form> forms = EntityFilter.findUnitWithName(filterCommand(command), lang);
 
             if (forms.size() == 1) {
-                int param = checkParameters(getContent(event));
+                int param = checkParameters(command);
 
-                ArrayList<Integer> lv = handleLevel(getContent(event));
+                ArrayList<Integer> lv = handleLevel(command);
 
                 boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
                 boolean talent = (param & PARAM_TALENT) > 0;
@@ -173,9 +191,9 @@ public class FormStat extends ConstraintCommand {
                     }
                 }
             } else if (forms.isEmpty()) {
-                createMessageWithNoPings(ch, LangID.getStringByID("formst_nounit", lang).replace("_", filterCommand(getContent(event))));
+                createMessageWithNoPings(ch, LangID.getStringByID("formst_nounit", lang).replace("_", filterCommand(command)));
             } else {
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", filterCommand(getContent(event))));
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", filterCommand(command)));
 
                 sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang));
 
@@ -198,9 +216,9 @@ public class FormStat extends ConstraintCommand {
 
                 Message res = registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), forms.size(), data, lang).complete();
 
-                int param = checkParameters(getContent(event));
+                int param = checkParameters(command);
 
-                ArrayList<Integer> lv = handleLevel(getContent(event));
+                ArrayList<Integer> lv = handleLevel(command);
 
                 if(res != null) {
                     Member m = getMember(event);
