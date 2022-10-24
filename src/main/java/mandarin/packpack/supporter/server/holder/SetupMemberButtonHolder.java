@@ -5,12 +5,11 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
-import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
+import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,17 +68,28 @@ public class SetupMemberButtonHolder extends InteractionHolder<GenericComponentI
 
         switch (event.getComponentId()) {
             case "role":
-                StringSelectInteractionEvent es = (StringSelectInteractionEvent) event;
+                EntitySelectInteractionEvent es = (EntitySelectInteractionEvent) event;
 
                 if(es.getValues().size() != 1)
                     return;
 
-                roleID = es.getValues().get(0);
+                roleID = es.getValues().get(0).getId();
 
-                event.deferEdit()
-                        .setContent(LangID.getStringByID("setup_memsele", lang).replace("_RRR_", es.getValues().get(0)))
-                        .setComponents(getComponents(g))
-                        .queue();
+                if(roleID.equals(modID)) {
+                    roleID = null;
+
+                    event.deferEdit()
+                            .setContent(LangID.getStringByID("setup_already", lang).replace("_RRR_", es.getValues().get(0).getId()))
+                            .setComponents(getComponents(false))
+                            .setAllowedMentions(new ArrayList<>())
+                            .queue();
+                } else {
+                    event.deferEdit()
+                            .setContent(LangID.getStringByID("setup_memsele", lang).replace("_RRR_", es.getValues().get(0).getId()))
+                            .setComponents(getComponents(true))
+                            .setAllowedMentions(new ArrayList<>())
+                            .queue();
+                }
 
                 break;
             case "confirm":
@@ -129,28 +139,14 @@ public class SetupMemberButtonHolder extends InteractionHolder<GenericComponentI
                 .queue();
     }
 
-    private List<ActionRow> getComponents(Guild g) {
-        List<Role> roles = g.getRoles();
-
-        List<SelectOption> options = new ArrayList<>();
-
-        for(int i = 0; i < roles.size(); i++) {
-            if(roles.get(i).isPublicRole() || roles.get(i).isManaged())
-                continue;
-
-            if(options.size() == 25)
-                break;
-
-            if(roleID != null && roles.get(i).getId().equals(roleID)) {
-                options.add(SelectOption.of(roles.get(i).getName(), roles.get(i).getId()).withDescription(roles.get(i).getId()).withDefault(true));
-            } else {
-                options.add(SelectOption.of(roles.get(i).getName(), roles.get(i).getId()).withDescription(roles.get(i).getId()));
-            }
-        }
-
+    private List<ActionRow> getComponents(boolean done) {
         List<ActionRow> result = new ArrayList<>();
 
-        result.add(ActionRow.of(StringSelectMenu.create("role").addOptions(options).setPlaceholder(LangID.getStringByID("setup_select", lang)).build()));
+        if(done) {
+            result.add(ActionRow.of(EntitySelectMenu.create("role", EntitySelectMenu.SelectTarget.ROLE).setRequiredRange(1, 1).build()));
+        } else {
+            result.add(ActionRow.of(EntitySelectMenu.create("role", EntitySelectMenu.SelectTarget.ROLE).setPlaceholder(LangID.getStringByID("setup_select", lang)).setRequiredRange(1, 1).build()));
+        }
 
         Button confirm;
 

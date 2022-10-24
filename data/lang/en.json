@@ -1050,6 +1050,7 @@
   "setup_modsele" : "Moderator role is selected as <@&_RRR_>",
   "setup_mem" : "Select member role",
   "setup_memsele" : "Member role is selected as <@&_RRR_>",
+  "setup_already" : "This role <@&_RRR_> is already decided to be set as moderator role! Please select other role",
   "setup_done" : "Done!\n\nUsers who have <@&_MOD_> will be able to use moderator-only commands\nUsers who have <@&_MEM_> will be able to use member-only commands.\n\nYou can use `p!channelpermission` to make users able to use commands only in specific channels, call `p!help chp` for detailed info about it",
   "fixrole_confirm" : "If user doesn't have neither of <@&_PPP_> nor <@&_MMM_>, bot will add <@&_PPP_> to this user. This cannot be undone, are you sure that you want to run this command?",
   "fixrole_confirmig" : "If user doesn't have neither of <@&_PPP_> nor <@&_MMM_>, bot will add <@&_PPP_> to this user. However, even though this user have none of these two roles, if user has <@&_III_>, bot won't add role. This cannot be undone, are you sure that you want to run this command?",

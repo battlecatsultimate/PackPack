@@ -1029,6 +1029,7 @@
   "setup_modsele" : "管理者のロールは<@&_RRR_>が選択されました！",
   "setup_mem" : "メンバーのロールを選択してください。",
   "setup_memsele" : "メンバーのロールは<@&_RRR_>が選択されました！",
+  "setup_already" : "This role <@&_RRR_> is already decided to be set as moderator role! Please select other role",
   "setup_done" : "完了!\n\n<@&_MOD_>のロールを持っている人は管理者専用のコマンドを使うことができます。\n<@&_MEM_>のロールを持っている人はPackPackの基本的なコマンドを使うことができます。\n\n`p!channelpermission`コマンドで一部のチャンネルだけでコマンドを使用するように設定することもできます。`p!help chp`コマンドで詳細を確認してください。",
   "fixrole_confirm" : "If user doesn't have neither of <@&_PPP_> nor <@&_MMM_>, bot will add <@&_PPP_> to this user. This cannot be undone, are you sure?",
   "fixrole_confirmig" : "If user doesn't have neither of <@&_PPP_> nor <@&_MMM_>, bot will add <@&_PPP_> to this user. However, even though this user have none of these two roles, if user has <@&_III_>, bot won't add role. This cannot be undone, are you sure that you want to run this command?",

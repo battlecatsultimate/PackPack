@@ -12,8 +12,7 @@ import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
+import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 
 import java.util.ArrayList;
@@ -53,37 +52,22 @@ public class Setup extends ConstraintCommand {
             if(author == null || member == null)
                 return;
 
-            StaticStore.putHolder(member.getId(), new ConfirmButtonHolder(m, author, ch.getId(), () -> initializeSetup(ch, g, author), lang));
+            StaticStore.putHolder(member.getId(), new ConfirmButtonHolder(m, author, ch.getId(), () -> initializeSetup(ch, author), lang));
         } else {
             Message author = getMessage(event);
 
             if(author == null)
                 return;
 
-            initializeSetup(ch, g, author);
+            initializeSetup(ch, author);
         }
     }
 
-    private void initializeSetup(MessageChannel ch, Guild g, Message author) {
+    private void initializeSetup(MessageChannel ch, Message author) {
         MessageCreateAction action = ch.sendMessage(LangID.getStringByID("setup_mod", lang));
 
-
-        List<Role> roles = g.getRoles();
-
-        List<SelectOption> options = new ArrayList<>();
-
-        for(int i = 0; i < roles.size(); i++) {
-            if(roles.get(i).isPublicRole() || roles.get(i).isManaged())
-                continue;
-
-            if(options.size() == 25)
-                break;
-
-            options.add(SelectOption.of(roles.get(i).getName(), roles.get(i).getId()).withDescription(roles.get(i).getId()));
-        }
-
         action = action.setComponents(
-                ActionRow.of(StringSelectMenu.create("role").addOptions(options).setPlaceholder(LangID.getStringByID("setup_select", lang)).build()),
+                ActionRow.of(EntitySelectMenu.create("role", EntitySelectMenu.SelectTarget.ROLE).setPlaceholder(LangID.getStringByID("setup_select", lang)).setRequiredRange(1, 1).build()),
                 ActionRow.of(Button.success("confirm", LangID.getStringByID("button_confirm", lang)).asDisabled(), Button.danger("cancel", LangID.getStringByID("button_cancel", lang)))
         ).setAllowedMentions(new ArrayList<>());
 
