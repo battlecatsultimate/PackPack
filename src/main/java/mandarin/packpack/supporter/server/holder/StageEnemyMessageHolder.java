@@ -155,7 +155,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
                 Message res = createMonthlyMessage(ch, sb.toString(), accumulateStage(stages, false), stages, stages.size(), monthly);
 
                 if(res != null) {
-                    StaticStore.putHolder(author.getAuthor().getId(), new FindStageMessageHolder(stages, accumulateCategory(stages), getAuthorMessage(), res, ch.getId(), star, isFrame, isExtra, isCompact, lang));
+                    StaticStore.putHolder(author.getAuthor().getId(), new FindStageMessageHolder(stages, monthly ? accumulateCategory(stages) : null, getAuthorMessage(), res, ch.getId(), star, isFrame, isExtra, isCompact, lang));
                 }
 
                 msg.delete().queue();
