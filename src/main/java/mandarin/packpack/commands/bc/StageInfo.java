@@ -156,6 +156,8 @@ public class StageInfo extends TimedConstraintCommand {
 
         if(list.length == 1 || allNull(names)) {
             ch.sendMessage(LangID.getStringByID("stinfo_noname", lang)).queue();
+
+            disableTimer();
         } else {
             ArrayList<Stage> stages = EntityFilter.findStageWithName(names, lang);
 
@@ -169,6 +171,8 @@ public class StageInfo extends TimedConstraintCommand {
 
             if(stages.isEmpty()) {
                 createMessageWithNoPings(ch, LangID.getStringByID("stinfo_nores", lang).replace("_", generateSearchName(names)));
+
+                disableTimer();
             } else if(stages.size() == 1) {
                 int param = checkParameters(getContent(event));
                 int star = getLevel(getContent((event)));
@@ -228,6 +232,8 @@ public class StageInfo extends TimedConstraintCommand {
                             StaticStore.putHolder(member.getId(), new StageInfoMessageHolder(stages, msg, res, ch.getId(), star, isFrame, isExtra, isCompact, lang));
                     }
                 }
+
+                disableTimer();
             }
         }
     }
