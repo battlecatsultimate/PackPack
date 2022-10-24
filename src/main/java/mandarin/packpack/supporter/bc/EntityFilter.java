@@ -849,6 +849,13 @@ public class EntityFilter {
                                             break;
                                         }
 
+                                        stName = stName.replace("-", " ");
+
+                                        if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
+                                            s2 = true;
+                                            break;
+                                        }
+
                                         int oldConfig = CommonStatic.getConfig().lang;
                                         CommonStatic.getConfig().lang = StaticStore.langIndex[i];
 
@@ -971,6 +978,13 @@ public class EntityFilter {
 
                                                 if(stName == null || stName.isBlank())
                                                     continue;
+
+                                                if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
+                                                    s2 = true;
+                                                    break;
+                                                }
+
+                                                stName = stName.replace("-", " ");
 
                                                 if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
                                                     s2 = true;
@@ -1126,6 +1140,13 @@ public class EntityFilter {
                                                     s2 = true;
                                                     break;
                                                 }
+
+                                                stName = stName.replace("-", " ");
+
+                                                if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
+                                                    s2 = true;
+                                                    break;
+                                                }
                                             }
 
                                             String[] ids = {
@@ -1217,6 +1238,13 @@ public class EntityFilter {
 
                                                         if(stName == null || stName.isBlank())
                                                             continue;
+
+                                                        if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
+                                                            s2 = true;
+                                                            break;
+                                                        }
+
+                                                        stName = stName.replace("-", " ");
 
                                                         if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
                                                             s2 = true;
@@ -1851,6 +1879,11 @@ public class EntityFilter {
                 String name = StaticStore.safeMultiLangGet(t, StaticStore.langIndex[i]);
 
                 if(name != null && !name.isBlank()) {
+                    if(name.toLowerCase(Locale.ENGLISH).contains(keyword))
+                        return true;
+
+                    name = name.replace("-", " ");
+
                     if(name.toLowerCase(Locale.ENGLISH).contains(keyword))
                         return true;
 
