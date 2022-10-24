@@ -148,7 +148,7 @@ public class FormStat extends ConstraintCommand {
         StringBuilder removeMistake = new StringBuilder();
 
         for(int i = 0; i < segments.length; i++) {
-            if(segments[i].matches("-lv(l)?\\d+(,)?")) {
+            if(segments[i].matches("-lv(l)?(\\d+(,)?)+")) {
                 removeMistake.append("-lv ").append(segments[i].replace("-lvl", "").replace("-lv", ""));
             } else {
                 removeMistake.append(segments[i]);
@@ -159,8 +159,6 @@ public class FormStat extends ConstraintCommand {
         }
 
         String command = removeMistake.toString();
-
-        System.out.println(command);
 
         if(list.length == 1 || filterCommand(command).isBlank()) {
             ch.sendMessage(LangID.getStringByID("formst_noname", lang)).queue();
