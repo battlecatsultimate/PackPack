@@ -24,7 +24,7 @@ public class Prefix extends ConstraintCommand {
 
         if(list.length == 2) {
             if(list[1] == null || list[1].isBlank()) {
-                ch.sendMessage(LangID.getStringByID("prefix_space", lang)).queue();
+                ch.sendMessage(LangID.getStringByID("prefix_space", lang)).setMessageReference(getMessage(event)).mentionRepliedUser(false).queue();
                 return;
             }
 
@@ -38,15 +38,17 @@ public class Prefix extends ConstraintCommand {
                 if(result.length() < 2000) {
                     ch.sendMessage(result)
                             .setAllowedMentions(new ArrayList<>())
+                            .setMessageReference(getMessage(event))
+                            .mentionRepliedUser(false)
                             .queue();
                 } else {
-                    ch.sendMessage(LangID.getStringByID("prefix_setnone", lang)).queue();
+                    ch.sendMessage(LangID.getStringByID("prefix_setnone", lang)).setMessageReference(getMessage(event)).mentionRepliedUser(false).queue();
                 }
             }
         } else if(list.length == 1) {
-            ch.sendMessage(LangID.getStringByID("prefix_argu", lang)).queue();
+            ch.sendMessage(LangID.getStringByID("prefix_argu", lang)).setMessageReference(getMessage(event)).mentionRepliedUser(false).queue();
         } else {
-            ch.sendMessage(LangID.getStringByID("prefix_tooarg", lang)).queue();
+            ch.sendMessage(LangID.getStringByID("prefix_tooarg", lang)).setMessageReference(getMessage(event)).mentionRepliedUser(false).queue();
         }
     }
 

@@ -75,9 +75,9 @@ public class Locale extends ConstraintCommand {
                                     break;
                             }
 
-                            ch.sendMessage(LangID.getStringByID("locale_set", lan).replace("_", locale)).queue();
+                            ch.sendMessage(LangID.getStringByID("locale_set", lan).replace("_", locale)).setMessageReference(getMessage(event)).mentionRepliedUser(false).queue();
                         } else {
-                            ch.sendMessage("Can't find member!").queue();
+                            ch.sendMessage("Can't find member!").setMessageReference(getMessage(event)).mentionRepliedUser(false).queue();
                         }
                     } else if(lan == -1) {
                         Member m = getMember(event);
@@ -98,21 +98,21 @@ public class Locale extends ConstraintCommand {
                             IDHolder holder = StaticStore.idHolder.get(g.getId());
 
                             if(holder != null) {
-                                ch.sendMessage(LangID.getStringByID("locale_auto", holder.config.lang)).queue();
+                                ch.sendMessage(LangID.getStringByID("locale_auto", holder.config.lang)).setMessageReference(getMessage(event)).mentionRepliedUser(false).queue();
                             } else {
-                                ch.sendMessage(LangID.getStringByID("locale_auto", lang)).queue();
+                                ch.sendMessage(LangID.getStringByID("locale_auto", lang)).setMessageReference(getMessage(event)).mentionRepliedUser(false).queue();
                             }
                         } else {
-                            ch.sendMessage(LangID.getStringByID("locale_auto", lang)).queue();
+                            ch.sendMessage(LangID.getStringByID("locale_auto", lang)).setMessageReference(getMessage(event)).mentionRepliedUser(false).queue();
                         }
                     } else {
-                        ch.sendMessage(LangID.getStringByID("locale_incorrect", lan)).queue();
+                        ch.sendMessage(LangID.getStringByID("locale_incorrect", lan)).setMessageReference(getMessage(event)).mentionRepliedUser(false).queue();
                     }
                 } else {
-                    ch.sendMessage(LangID.getStringByID("locale_number", lang)).queue();
+                    ch.sendMessage(LangID.getStringByID("locale_number", lang)).setMessageReference(getMessage(event)).mentionRepliedUser(false).queue();
                 }
             } else {
-                ch.sendMessage(LangID.getStringByID("locale_argu", lang)).queue();
+                ch.sendMessage(LangID.getStringByID("locale_argu", lang)).setMessageReference(getMessage(event)).mentionRepliedUser(false).queue();
             }
         }
     }

@@ -155,7 +155,7 @@ public class StageInfo extends TimedConstraintCommand {
         String[] names = generateStageNameSeries(getContent(event));
 
         if(list.length == 1 || allNull(names)) {
-            ch.sendMessage(LangID.getStringByID("stinfo_noname", lang)).queue();
+            ch.sendMessage(LangID.getStringByID("stinfo_noname", lang)).setMessageReference(getMessage(event)).mentionRepliedUser(false).queue();
 
             disableTimer();
         } else {
@@ -170,7 +170,7 @@ public class StageInfo extends TimedConstraintCommand {
             }
 
             if(stages.isEmpty()) {
-                createMessageWithNoPings(ch, LangID.getStringByID("stinfo_nores", lang).replace("_", generateSearchName(names)));
+                createMessageWithNoPings(ch, LangID.getStringByID("stinfo_nores", lang).replace("_", generateSearchName(names)), getMessage(event));
 
                 disableTimer();
             } else if(stages.size() == 1) {

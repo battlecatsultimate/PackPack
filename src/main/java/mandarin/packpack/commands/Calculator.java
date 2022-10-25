@@ -30,9 +30,9 @@ public class Calculator extends ConstraintCommand {
         double result = Equation.calculate(equation[1].replace(" ", ""), null);
 
         if(Equation.error.isEmpty()) {
-            createMessageWithNoPings(ch, LangID.getStringByID("calc_result", lang).replace("_", Equation.df.format(result)));
+            createMessageWithNoPings(ch, LangID.getStringByID("calc_result", lang).replace("_", Equation.df.format(result)), getMessage(event));
         } else {
-            createMessageWithNoPings(ch, Equation.getErrorMessage(lang));
+            createMessageWithNoPings(ch, Equation.getErrorMessage(lang), getMessage(event));
         }
     }
 }

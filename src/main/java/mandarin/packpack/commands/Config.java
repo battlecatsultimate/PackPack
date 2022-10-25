@@ -170,7 +170,10 @@ public class Config extends ConstraintCommand {
                         ActionRow.of(StringSelectMenu.create("extra").addOptions(extras).build()),
                         ActionRow.of(pages),
                         ActionRow.of(components)
-                ).complete();
+                )
+                .setMessageReference(getMessage(event))
+                .mentionRepliedUser(false)
+                .complete();
 
         Member m = getMember(event);
 

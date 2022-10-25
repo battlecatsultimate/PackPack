@@ -334,6 +334,14 @@ public abstract class Command {
                 .complete();
     }
 
+    public Message getMessageWithNoPings(MessageChannel ch, String content, Message reference) {
+        return ch.sendMessage(content)
+                .setAllowedMentions(new ArrayList<>())
+                .setMessageReference(reference)
+                .mentionRepliedUser(false)
+                .complete();
+    }
+
     public void registerRequiredPermission(@Nonnull Permission... permissions) {
         Collections.addAll(requiredPermission, permissions);
     }

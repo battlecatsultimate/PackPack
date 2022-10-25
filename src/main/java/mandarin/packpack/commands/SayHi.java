@@ -31,9 +31,11 @@ public class SayHi extends Command {
 
         if(chance <= 0.01) {
             if (StaticStore.cultist.contains(m.getId())) {
-                createMessageWithNoPings(ch, LangID.getStringByID("hi_sp_1", lang));
+                createMessageWithNoPings(ch, LangID.getStringByID("hi_sp_1", lang), getMessage(event));
             } else {
                 Message msg = ch.sendMessage(LangID.getStringByID("hi_sp_0", lang))
+                        .setMessageReference(getMessage(event))
+                        .mentionRepliedUser(false)
                         .setAllowedMentions(new ArrayList<>())
                         .setActionRow(
                                 Button.of(ButtonStyle.SUCCESS, "yes", LangID.getStringByID("button_yes", lang)),
@@ -43,15 +45,15 @@ public class SayHi extends Command {
                 StaticStore.putHolder(m.getId(), new CultButtonHolder(getMessage(event), msg, ch.getId(), m.getId(), lang));
             }
         } else if(chance <= 0.05) {
-            createMessageWithNoPings(ch, LangID.getStringByID("hi_d", lang));
+            createMessageWithNoPings(ch, LangID.getStringByID("hi_d", lang), getMessage(event));
         } else if(StaticStore.cultist.contains(m.getId()) && chance <= 0.1) {
-            createMessageWithNoPings(ch, LangID.getStringByID("hi_sp_1", lang));
+            createMessageWithNoPings(ch, LangID.getStringByID("hi_sp_1", lang), getMessage(event));
         } else {
             int index = StaticStore.random.nextInt(13);
 
             switch (index) {
                 case 0:
-                    Message msg = getMessageWithNoPings(ch, LangID.getStringByID("hi_" + index, lang));
+                    Message msg = getMessageWithNoPings(ch, LangID.getStringByID("hi_" + index, lang), getMessage(event));
 
                     if(msg != null) {
                         Timer changer = new Timer();
@@ -59,14 +61,14 @@ public class SayHi extends Command {
                         changer.schedule(new TimerTask() {
                             @Override
                             public void run() {
-                                msg.editMessage(LangID.getStringByID("hi_0_0", lang)).queue();
+                                msg.editMessage(LangID.getStringByID("hi_0_0", lang)).mentionRepliedUser(false).queue();
                             }
                         }, 5000);
                     }
 
                     break;
                 case 2:
-                    Message message = getMessageWithNoPings(ch, LangID.getStringByID("hi_" + index, lang));
+                    Message message = getMessageWithNoPings(ch, LangID.getStringByID("hi_" + index, lang), getMessage(event));
 
                     if(message != null) {
                         Timer changer = new Timer();
@@ -79,14 +81,14 @@ public class SayHi extends Command {
                                 message.editMessage(
                                         LangID.getStringByID("hi_2", lang) + "\n\n" +
                                                 LangID.getStringByID("hi_2_" + luck, lang)
-                                ).queue();
+                                ).mentionRepliedUser(false).queue();
                             }
                         }, 5000);
                     }
 
                     break;
                 case 8:
-                    Message ms = getMessageWithNoPings(ch, LangID.getStringByID("hi_" + index, lang));
+                    Message ms = getMessageWithNoPings(ch, LangID.getStringByID("hi_" + index, lang), getMessage(event));
 
                     if(ms != null) {
                         Timer changer = new Timer();
@@ -97,14 +99,14 @@ public class SayHi extends Command {
                                 ms.editMessage(
                                         LangID.getStringByID("hi_8", lang) + "\n\n" +
                                                 LangID.getStringByID("hi_8_0", lang)
-                                ).queue();
+                                ).mentionRepliedUser(false).queue();
                             }
                         }, 5000);
                     }
 
                     break;
                 default:
-                    createMessageWithNoPings(ch, LangID.getStringByID("hi_" + index, lang));
+                    createMessageWithNoPings(ch, LangID.getStringByID("hi_" + index, lang), getMessage(event));
             }
         }
     }

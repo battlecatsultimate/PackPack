@@ -227,6 +227,8 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
         event.deferEdit()
                 .setContent(parseMessage())
                 .setComponents(parseComponents())
+                .mentionRepliedUser(false)
+                .setAllowedMentions(new ArrayList<>())
                 .queue();
     }
 

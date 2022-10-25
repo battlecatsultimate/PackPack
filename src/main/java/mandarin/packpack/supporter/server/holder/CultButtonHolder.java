@@ -38,6 +38,7 @@ public class CultButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
 
                 msg.editMessage(LangID.getStringByID("hi_sp_0_2", lang))
                         .setComponents()
+                        .mentionRepliedUser(false)
                         .queue();
 
                 StaticStore.removeHolder(memberID, CultButtonHolder.this);
@@ -77,6 +78,7 @@ public class CultButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
 
                 msg.editMessage(LangID.getStringByID("hi_sp_0_0", lang))
                         .setComponents()
+                        .mentionRepliedUser(false)
                         .queue();
 
                 expired = true;
@@ -87,6 +89,7 @@ public class CultButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
             case "no":
                 msg.editMessage(LangID.getStringByID("hi_sp_0_1", lang))
                         .setComponents()
+                        .mentionRepliedUser(false)
                         .queue();
 
                 expired = true;
@@ -106,6 +109,7 @@ public class CultButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
 
         msg.editMessage(LangID.getStringByID("hi_sp_0_2", lang))
                 .setComponents()
+                .mentionRepliedUser(false)
                 .queue();
     }
 }
