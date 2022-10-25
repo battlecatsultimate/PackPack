@@ -6,6 +6,7 @@ import mandarin.packpack.commands.bot.*;
 import mandarin.packpack.commands.data.*;
 import mandarin.packpack.commands.server.*;
 import mandarin.packpack.supporter.EmojiStore;
+import mandarin.packpack.supporter.KoreanSeparater;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.ScamLinkHandler;
@@ -32,6 +33,7 @@ import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberUpdateEvent;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
@@ -252,6 +254,30 @@ public class AllEventAdapter extends ListenerAdapter {
     }
 
     @Override
+    public void onGuildMemberJoin(@NotNull GuildMemberJoinEvent event) {
+        super.onGuildMemberJoin(event);
+
+        Guild g = event.getGuild();
+
+        if(g.getId().equals(StaticStore.BCU_SERVER)) {
+            Member m = event.getMember();
+
+            String memberName = m.getNickname();
+            String userName = m.getUser().getName();
+
+            boolean recommend = memberName != null && KoreanSeparater.containKorean(memberName);
+
+            if(KoreanSeparater.containKorean(userName)) {
+                recommend = true;
+            }
+
+            if(recommend) {
+                m.getUser().openPrivateChannel().queue(ch -> ch.sendMessage(LangID.getStringByID("korean_recommend", 0)).queue(), e -> {});
+            }
+        }
+    }
+
+    @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
         try {
             super.onMessageReceived(event);
@@ -260,6 +286,12 @@ public class AllEventAdapter extends ListenerAdapter {
             Message msg = event.getMessage();
 
             if(mc instanceof PrivateChannel) {
+                SelfUser self = event.getJDA().getSelfUser();
+
+                if(event.getAuthor().getId().equals(self.getId())) {
+                    return;
+                }
+
                 String content = msg.getContentRaw();
 
                 if(content.contains("http")) {
@@ -818,13 +850,17 @@ public class AllEventAdapter extends ListenerAdapter {
                     break;
             }
         } catch (Exception e) {
-            Message msg = event.getMessage();
-            Guild g = event.getGuild();
-            Member m = event.getMember();
             MessageChannel ch = event.getChannel();
+            Message msg = event.getMessage();
+            Member m = event.getMember();
 
-            String data = "Command : " + msg.getContentRaw() + "\n\n" +
-                    "Guild : " + g.getName() + " (" + g.getId() + ")";
+            String data = "Command : " + msg.getContentRaw();
+
+            if(ch instanceof GuildMessageChannel) {
+                Guild g = event.getGuild();
+
+                data += "\n\n" + "Guild : " + g.getName() + " (" + g.getId() + ")";
+            }
 
             if(m != null) {
                 data += "\n\nMember  : " + m.getEffectiveName() + " (" + m.getId() + ")";
@@ -832,7 +868,7 @@ public class AllEventAdapter extends ListenerAdapter {
 
             data += "\n\nChannel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
 
-            StaticStore.logger.uploadErrorLog(e, "Failed to perform timed constraint command : "+this.getClass()+"\n\n" + data);
+            StaticStore.logger.uploadErrorLog(e, "Failed to perform command : "+this.getClass()+"\n\n" + data);
         }
     }
 
@@ -1245,7 +1281,7 @@ public class AllEventAdapter extends ListenerAdapter {
                     return;
                 }
 
-                if(StaticStore.isNumeric(holder.logDM)) {
+                if(holder.logDM != null && StaticStore.isNumeric(holder.logDM)) {
                     GuildChannel ch = g.getGuildChannelById(holder.logDM);
 
                     if(ch != null) {

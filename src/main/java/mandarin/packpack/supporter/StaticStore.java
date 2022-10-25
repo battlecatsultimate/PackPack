@@ -160,6 +160,8 @@ public class StaticStore {
     public static final String MANDARIN_SMELL = "460409259021172781";
     public static final String PACKPACK_SERVER = "964054872649515048";
 
+    public static final String BCU_SERVER = "490262537527623692";
+
     public static final String UDP_LINK = "https://api.github.com/repos/ThanksFeanor/UDP-Data/contents";
 
     public static String downPack = "./pack/download";

@@ -31,6 +31,18 @@ public class KoreanSeparater {
         return result.toString();
     }
 
+    public static boolean containKorean(String src) {
+        for(int i = 0; i < src.length(); i++) {
+            char ch = src.charAt(i);
+
+            if(isKorean(ch)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private static boolean isKorean(char ch) {
         return ch >= BEGIN && ch <= END;
     }
