@@ -61,7 +61,7 @@ public class EnemySpriteMessageHolder extends SearchHolder {
         try {
             Enemy e = enemy.get(id);
 
-            EntityHandler.getEnemySprite(e, ch, mode, lang);
+            EntityHandler.getEnemySprite(e, ch, getAuthorMessage(), mode, lang);
         } catch (Exception e) {
             e.printStackTrace();
         }

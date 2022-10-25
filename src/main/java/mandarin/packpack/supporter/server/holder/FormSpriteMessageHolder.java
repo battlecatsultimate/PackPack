@@ -61,7 +61,7 @@ public class FormSpriteMessageHolder extends SearchHolder {
         try {
             Form f = form.get(id);
 
-            EntityHandler.getFormSprite(f, ch, mode, lang);
+            EntityHandler.getFormSprite(f, ch, getAuthorMessage(), mode, lang);
         } catch (Exception e) {
             e.printStackTrace();
         }

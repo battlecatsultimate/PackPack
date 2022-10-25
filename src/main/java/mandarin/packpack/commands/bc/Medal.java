@@ -46,7 +46,7 @@ public class Medal extends ConstraintCommand {
             if(id.isEmpty()) {
                 createMessageWithNoPings(ch, LangID.getStringByID("medal_nomed", lang).replace("_", realContents[1]));
             } else if(id.size() == 1) {
-                EntityHandler.showMedalEmbed(id.get(0), ch, lang);
+                EntityHandler.showMedalEmbed(id.get(0), ch, getMessage(event), lang);
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", realContents[1]));
 
@@ -69,7 +69,7 @@ public class Medal extends ConstraintCommand {
 
                 sb.append("```");
 
-                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), id.size(), data, lang).complete();
+                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).mentionRepliedUser(false).setMessageReference(getMessage(event)).setAllowedMentions(new ArrayList<>()), id.size(), data, lang).complete();
 
                 if(res != null) {
                     Member m = getMember(event);

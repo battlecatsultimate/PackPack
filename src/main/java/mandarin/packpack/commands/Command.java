@@ -92,9 +92,11 @@ public abstract class Command {
         return m.setComponents(rows);
     }
 
-    public static void sendMessageWithFile(MessageChannel ch, String content, File f) {
+    public static void sendMessageWithFile(MessageChannel ch, String content, File f, Message reference) {
         ch.sendMessage(content)
                 .addFiles(FileUpload.fromData(f))
+                .setMessageReference(reference)
+                .mentionRepliedUser(false)
                 .setAllowedMentions(new ArrayList<>())
                 .queue(m -> {
                     if(f.exists() && !f.delete()) {
@@ -314,6 +316,14 @@ public abstract class Command {
 
     public void createMessageWithNoPings(MessageChannel ch, String content) {
         ch.sendMessage(content)
+                .setAllowedMentions(new ArrayList<>())
+                .queue();
+    }
+
+    public void createMessageWithNoPings(MessageChannel ch, String content, Message reference) {
+        ch.sendMessage(content)
+                .setMessageReference(reference)
+                .mentionRepliedUser(false)
                 .setAllowedMentions(new ArrayList<>())
                 .queue();
     }

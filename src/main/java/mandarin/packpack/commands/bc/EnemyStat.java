@@ -124,7 +124,7 @@ public class EnemyStat extends ConstraintCommand {
         String command = removeMistake.toString();
 
         if(list.length == 1 || filterCommand(command).isBlank()) {
-            ch.sendMessage(LangID.getStringByID("formst_noname", lang)).queue();
+            createMessageWithNoPings(ch, LangID.getStringByID("formst_noname", lang), getMessage(event));
         } else {
             ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(filterCommand(command), lang);
 
@@ -137,9 +137,9 @@ public class EnemyStat extends ConstraintCommand {
                 boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
                 boolean isCompact = (param & PARAM_COMPACT) > 0 || (holder.forceCompact ? holder.config.compact : config.compact);
 
-                EntityHandler.showEnemyEmb(enemies.get(0), ch, isFrame, isExtra, isCompact, magnification, lang);
+                EntityHandler.showEnemyEmb(enemies.get(0), ch, getMessage(event), isFrame, isExtra, isCompact, magnification, lang);
             } else if(enemies.size() == 0) {
-                createMessageWithNoPings(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(command)));
+                createMessageWithNoPings(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(command)), getMessage(event));
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", filterCommand(command)));
 
@@ -162,7 +162,7 @@ public class EnemyStat extends ConstraintCommand {
 
                 sb.append("```");
 
-                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), enemies.size(), data, lang).complete();
+                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).mentionRepliedUser(false).setMessageReference(getMessage(event)).setAllowedMentions(new ArrayList<>()), enemies.size(), data, lang).complete();
 
                 int[] magnification = handleMagnification(command);
 

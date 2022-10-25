@@ -72,6 +72,8 @@ public abstract class SearchHolder extends InteractionHolder<GenericComponentInt
         StaticStore.removeHolder(id, this);
 
         msg.editMessage(LangID.getStringByID("formst_expire", lang))
+                .setAllowedMentions(new ArrayList<>())
+                .mentionRepliedUser(false)
                 .setComponents()
                 .queue();
     }
@@ -133,10 +135,11 @@ public abstract class SearchHolder extends InteractionHolder<GenericComponentInt
         StaticStore.removeHolder(event.getUser().getId(), this);
 
         event.deferEdit()
+                .setContent(LangID.getStringByID("formst_cancel", lang))
                 .setComponents()
+                .setAllowedMentions(new ArrayList<>())
+                .mentionRepliedUser(false)
                 .complete();
-
-        msg.editMessage(LangID.getStringByID("formst_cancel", lang)).complete();
     }
 
     protected String getPage() {
@@ -239,6 +242,8 @@ public abstract class SearchHolder extends InteractionHolder<GenericComponentInt
         event.deferEdit()
                 .setContent(getPage())
                 .setComponents(getComponents())
+                .mentionRepliedUser(false)
+                .setAllowedMentions(new ArrayList<>())
                 .complete();
     }
 }

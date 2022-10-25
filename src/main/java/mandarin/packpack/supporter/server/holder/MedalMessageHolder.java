@@ -52,7 +52,7 @@ public class MedalMessageHolder extends SearchHolder {
         msg.delete().queue();
 
         try {
-            EntityHandler.showMedalEmbed(id.get(i), ch, lang);
+            EntityHandler.showMedalEmbed(id.get(i), ch, getAuthorMessage(), lang);
         } catch (Exception e) {
             e.printStackTrace();
         }

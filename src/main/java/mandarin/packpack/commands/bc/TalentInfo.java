@@ -46,7 +46,7 @@ public class TalentInfo extends ConstraintCommand {
         String[] list = getContent(event).split(" ",2);
 
         if(list.length == 1 || filterCommand(getContent(event)).isBlank()) {
-            ch.sendMessage(LangID.getStringByID("formst_noname", lang)).queue();
+            createMessageWithNoPings(ch, LangID.getStringByID("formst_noname", lang), getMessage(event));
         } else {
             ArrayList<Form> forms = EntityFilter.findUnitWithName(filterCommand(getContent(event)), lang);
 
@@ -64,14 +64,14 @@ public class TalentInfo extends ConstraintCommand {
                 Form trueForm = f.unit.forms[2];
 
                 if(trueForm.du == null || trueForm.du.getPCoin() == null) {
-                    createMessageWithNoPings(ch, LangID.getStringByID("talentinfo_notal", lang));
+                    createMessageWithNoPings(ch, LangID.getStringByID("talentinfo_notal", lang), getMessage(event));
 
                     return;
                 }
 
-                EntityHandler.showTalentEmbed(ch, trueForm, isFrame, lang);
+                EntityHandler.showTalentEmbed(ch, getMessage(event), trueForm, isFrame, lang);
             } else if (forms.isEmpty()) {
-                createMessageWithNoPings(ch, LangID.getStringByID("formst_nounit", lang).replace("_", filterCommand(getContent(event))));
+                createMessageWithNoPings(ch, LangID.getStringByID("formst_nounit", lang).replace("_", filterCommand(getContent(event))), getMessage(event));
             } else {
                 boolean isFrame = isFrame(getContent(event)) && config.useFrame;
 
@@ -96,7 +96,7 @@ public class TalentInfo extends ConstraintCommand {
 
                 sb.append("```");
 
-                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), forms.size(), data, lang).complete();
+                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).mentionRepliedUser(false).setMessageReference(getMessage(event)).mentionRepliedUser(false).setAllowedMentions(new ArrayList<>()), forms.size(), data, lang).complete();
 
                 if(res != null) {
                     Member m = getMember(event);

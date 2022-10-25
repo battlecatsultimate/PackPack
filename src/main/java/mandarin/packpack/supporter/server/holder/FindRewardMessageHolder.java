@@ -95,7 +95,7 @@ public class FindRewardMessageHolder extends SearchHolder {
             if(stages.isEmpty()) {
                 ch.sendMessage(LangID.getStringByID("freward_nosta", lang).replace("_", keyword)).queue();
             } else if(stages.size() == 1) {
-                Message result = EntityHandler.showStageEmb(stages.get(0), ch, isFrame, isExtra, isCompact, 0, lang);
+                Message result = EntityHandler.showStageEmb(stages.get(0), ch, getAuthorMessage(), isFrame, isExtra, isCompact, 0, lang);
 
                 if(result != null) {
                     if(StaticStore.timeLimit.containsKey(author.getAuthor().getId())) {

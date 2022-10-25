@@ -76,7 +76,7 @@ public class FormStatMessageHolder extends SearchHolder {
         msg.delete().queue();
 
         try {
-            Message result = EntityHandler.showUnitEmb(form.get(id), ch, config, isFrame, talent, extra, lv, lang, true, compact);
+            Message result = EntityHandler.showUnitEmb(form.get(id), ch, getAuthorMessage(), config, isFrame, talent, extra, lv, lang, true, compact);
 
             if(result != null) {
                 Member m = event.getMember();

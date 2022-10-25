@@ -98,7 +98,7 @@ public class ComboFormMessageHolder extends SearchHolder {
                 msg.delete().queue();
 
                 try {
-                    EntityHandler.showComboEmbed(ch, combos.get(0), lang);
+                    EntityHandler.showComboEmbed(ch, getAuthorMessage(), combos.get(0), lang);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

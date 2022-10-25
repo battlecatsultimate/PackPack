@@ -62,14 +62,16 @@ public class EnemyImage extends TimedConstraintCommand {
             String search = filterCommand(getContent(event));
 
             if(search.isBlank()) {
-                ch.sendMessage(LangID.getStringByID("eimg_more", lang)).queue();
+                createMessageWithNoPings(ch, LangID.getStringByID("eimg_more", lang), getMessage(event));
+
                 return;
             }
 
             ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(search, lang);
 
             if(enemies.isEmpty()) {
-                createMessageWithNoPings(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(getContent(event))));
+                createMessageWithNoPings(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(getContent(event))), getMessage(event));
+
                 disableTimer();
             } else if(enemies.size() == 1) {
                 int param = checkParameters(getContent(event));
@@ -105,7 +107,8 @@ public class EnemyImage extends TimedConstraintCommand {
                     sendMessageWithFile(
                             ch,
                             LangID.getStringByID("eimg_result", lang).replace("_", fName).replace(":::", getModeName(mode, enemies.get(0).anim.anims.length)).replace("=", String.valueOf(frame)),
-                            img
+                            img,
+                            getMessage(event)
                     );
                 }
             } else {

@@ -62,19 +62,19 @@ public class FindReward extends TimedConstraintCommand {
         int amount = getAmount(getContent(event));
 
         if(rewardName.isBlank()) {
-            createMessageWithNoPings(ch, LangID.getStringByID("freward_noname", lang));
+            createMessageWithNoPings(ch, LangID.getStringByID("freward_noname", lang), getMessage(event));
 
             return;
         }
 
         if(chance != -1 && (chance <= 0 || chance > 100)) {
-            createMessageWithNoPings(ch, LangID.getStringByID("freward_chance", lang));
+            createMessageWithNoPings(ch, LangID.getStringByID("freward_chance", lang), getMessage(event));
 
             return;
         }
 
         if(amount != -1 && amount <= 0) {
-            createMessageWithNoPings(ch, LangID.getStringByID("freward_amount", lang));
+            createMessageWithNoPings(ch, LangID.getStringByID("freward_amount", lang), getMessage(event));
 
             return;
         }
@@ -82,18 +82,18 @@ public class FindReward extends TimedConstraintCommand {
         List<Integer> rewards = EntityFilter.findRewardByName(rewardName, lang);
 
         if(rewards.isEmpty()) {
-            createMessageWithNoPings(ch, LangID.getStringByID("freward_norew", lang).replace("_", rewardName));
+            createMessageWithNoPings(ch, LangID.getStringByID("freward_norew", lang).replace("_", rewardName), getMessage(event));
 
             disableTimer();
         } else if(rewards.size() == 1) {
             List<Stage> stages = EntityFilter.findStageByReward(rewards.get(0), chance, amount);
 
             if(stages.isEmpty()) {
-                createMessageWithNoPings(ch, LangID.getStringByID("freward_nosta", lang).replace("_", rewardName));
+                createMessageWithNoPings(ch, LangID.getStringByID("freward_nosta", lang).replace("_", rewardName), getMessage(event));
 
                 disableTimer();
             } else if(stages.size() == 1) {
-                Message result = EntityHandler.showStageEmb(stages.get(0), ch, holder.config.useFrame, isExtra, isCompact, 0, lang);
+                Message result = EntityHandler.showStageEmb(stages.get(0), ch, getMessage(event), holder.config.useFrame, isExtra, isCompact, 0, lang);
 
                 Member m = getMember(event);
 
@@ -126,7 +126,7 @@ public class FindReward extends TimedConstraintCommand {
 
                 sb.append("```");
 
-                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), stages.size(), accumulateStage(stages, false), lang).complete();
+                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).mentionRepliedUser(false).setMessageReference(getMessage(event)).setAllowedMentions(new ArrayList<>()), stages.size(), accumulateStage(stages, false), lang).complete();
 
                 if(res != null) {
                     Member member = getMember(event);

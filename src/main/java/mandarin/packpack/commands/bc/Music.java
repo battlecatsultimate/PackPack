@@ -161,6 +161,8 @@ public class Music extends GlobalTimedConstraintCommand {
 
             if(ch != null) {
                 ch.sendMessage(LangID.getStringByID("music_upload", lang).replace("_", optionalID))
+                        .setMessageReference(getMessage(event))
+                        .setAllowedMentions(new ArrayList<>())
                         .addFiles(FileUpload.fromData(file, optionalID+".ogg"))
                         .queue(m -> {
                             waiter.resume();
@@ -211,6 +213,8 @@ public class Music extends GlobalTimedConstraintCommand {
 
             if(ch != null) {
                 ch.sendMessage(LangID.getStringByID("music_upload", lang).replace("_", optionalID))
+                        .setMessageReference(getMessage(event))
+                        .setAllowedMentions(new ArrayList<>())
                         .addFiles(FileUpload.fromData(file, optionalID+".ogg"))
                         .queue(msg -> {
                             waiter.resume();

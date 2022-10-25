@@ -182,7 +182,7 @@ public class StageInfo extends TimedConstraintCommand {
 
                 CommonStatic.getConfig().lang = lang;
 
-                Message result = EntityHandler.showStageEmb(stages.get(0), ch, isFrame, isExtra, isCompact, star, lang);
+                Message result = EntityHandler.showStageEmb(stages.get(0), ch, getMessage(event), isFrame, isExtra, isCompact, star, lang);
 
                 Member m = getMember(event);
 
@@ -220,7 +220,7 @@ public class StageInfo extends TimedConstraintCommand {
 
                 sb.append("```");
 
-                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), stages.size(), accumulateData(stages, false), lang).complete();
+                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).mentionRepliedUser(false).setMessageReference(getMessage(event)).setAllowedMentions(new ArrayList<>()), stages.size(), accumulateData(stages, false), lang).complete();
 
                 if(res != null) {
                     Member member = getMember(event);

@@ -220,6 +220,8 @@ public class Castle extends ConstraintCommand {
 
             ch.sendMessage(LangID.getStringByID("castle_result", lang).replace("_CCC_", castleCode).replace("_III_", Data.trio(finalId)).replace("_BBB_", cs.boss_spawn+""))
                     .addFiles(FileUpload.fromData(img, "result.png"))
+                    .setMessageReference(getMessage(event))
+                    .setAllowedMentions(new ArrayList<>())
                     .queue(m -> {
                         if(img.exists() && !img.delete()) {
                             StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
@@ -240,7 +242,8 @@ public class Castle extends ConstraintCommand {
                 String[] messages = getContent(event).split(" ", startIndex+1);
 
                 if(messages.length <= startIndex) {
-                    ch.sendMessage(LangID.getStringByID("castle_more", lang).replace("_", holder.serverPrefix)).queue();
+                    createMessageWithNoPings(ch, LangID.getStringByID("castle_more", lang).replace("_", holder.serverPrefix), getMessage(event));
+
                     return;
                 }
 
@@ -251,7 +254,7 @@ public class Castle extends ConstraintCommand {
                 if(StaticStore.isNumeric(msg)) {
                     id = StaticStore.safeParseInt(msg);
                 } else {
-                    ch.sendMessage(LangID.getStringByID("castle_number", lang)).queue();
+                    createMessageWithNoPings(ch, LangID.getStringByID("castle_number", lang), getMessage(event));
 
                     return;
                 }
@@ -312,6 +315,8 @@ public class Castle extends ConstraintCommand {
 
                 ch.sendMessage(LangID.getStringByID("castle_result", lang).replace("_CCC_", castleCode).replace("_III_", Data.trio(id)).replace("_BBB_", image.boss_spawn+""))
                         .addFiles(FileUpload.fromData(img, "result.png"))
+                        .setMessageReference(getMessage(event))
+                        .setAllowedMentions(new ArrayList<>())
                         .queue(m -> {
                             if(img.exists() && !img.delete()) {
                                 StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
@@ -324,7 +329,7 @@ public class Castle extends ConstraintCommand {
                             }
                         });
             } else {
-                ch.sendMessage(LangID.getStringByID("castle_argu", lang).replace("_", holder.serverPrefix)).queue();
+                createMessageWithNoPings(ch, LangID.getStringByID("castle_argu", lang).replace("_", holder.serverPrefix), getMessage(event));
             }
         }
     }

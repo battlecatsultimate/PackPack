@@ -96,19 +96,19 @@ public class FindStage extends TimedConstraintCommand {
         boolean monthly = (param & PARAM_MONTHLY) > 0;
 
         if(enemyName.isBlank() && music < 0 && castle < 0 && background < 0 && !hasBoss) {
-            ch.sendMessage(LangID.getStringByID("fstage_noparam", lang)).queue();
+            createMessageWithNoPings(ch, LangID.getStringByID("fstage_noparam", lang), getMessage(event));
 
             return;
         }
 
         if(background >= 0 && UserProfile.getBCData().bgs.get(background) == null) {
-            ch.sendMessage(LangID.getStringByID("fstage_bg", lang)).queue();
+            createMessageWithNoPings(ch, LangID.getStringByID("fstage_bg", lang), getMessage(event));
 
             return;
         }
 
         if(music >= 0 && UserProfile.getBCData().musics.get(music) == null) {
-            ch.sendMessage(LangID.getStringByID("fstage_music", lang)).queue();
+            createMessageWithNoPings(ch, LangID.getStringByID("fstage_music", lang), getMessage(event));
 
             return;
         }
@@ -116,7 +116,7 @@ public class FindStage extends TimedConstraintCommand {
         ArrayList<CastleList> castleLists = new ArrayList<>(CastleList.defset());
 
         if(castle >= 0 && castle >= castleLists.get(0).size()) {
-            ch.sendMessage(LangID.getStringByID("fstage_castle", lang)).queue();
+            createMessageWithNoPings(ch, LangID.getStringByID("fstage_castle", lang), getMessage(event));
 
             return;
         }
@@ -128,7 +128,7 @@ public class FindStage extends TimedConstraintCommand {
         String[] names = enemyName.split("/");
 
         if(names.length > 5) {
-            ch.sendMessage(LangID.getStringByID("fstage_toomany", lang)).queue();
+            createMessageWithNoPings(ch, LangID.getStringByID("fstage_toomany", lang), getMessage(event));
             disableTimer();
 
             return;
@@ -137,7 +137,7 @@ public class FindStage extends TimedConstraintCommand {
         if(!enemyName.isBlank()) {
             for(int i = 0; i < names.length; i++) {
                 if(names[i].trim().isBlank()) {
-                    createMessageWithNoPings(ch, LangID.getStringByID("fstage_noname", lang));
+                    createMessageWithNoPings(ch, LangID.getStringByID("fstage_noname", lang), getMessage(event));
                     disableTimer();
 
                     return;
@@ -146,7 +146,7 @@ public class FindStage extends TimedConstraintCommand {
                 ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(names[i].trim(), lang);
 
                 if(enemies.isEmpty()) {
-                    createMessageWithNoPings(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", names[i].trim()));
+                    createMessageWithNoPings(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", names[i].trim()), getMessage(event));
                     disableTimer();
 
                     return;
@@ -170,11 +170,11 @@ public class FindStage extends TimedConstraintCommand {
             ArrayList<Stage> stages = EntityFilter.findStage(filterEnemy, music, background, castle, hasBoss, orOperate, monthly);
 
             if(stages.isEmpty()) {
-                createMessageWithNoPings(ch, LangID.getStringByID("fstage_nost", lang));
+                createMessageWithNoPings(ch, LangID.getStringByID("fstage_nost", lang), getMessage(event));
 
                 disableTimer();
             } else if(stages.size() == 1) {
-                Message result = EntityHandler.showStageEmb(stages.get(0), ch, isFrame, isExtra, isCompact, star, lang);
+                Message result = EntityHandler.showStageEmb(stages.get(0), ch, getMessage(event), isFrame, isExtra, isCompact, star, lang);
 
                 Member m = getMember(event);
 
@@ -205,7 +205,7 @@ public class FindStage extends TimedConstraintCommand {
 
                 sb.append("```");
 
-                Message res = createMonthlyMessage(ch, sb.toString(), accumulateStage(stages, false), stages, stages.size(), monthly);
+                Message res = createMonthlyMessage(ch, getMessage(event), sb.toString(), accumulateStage(stages, false), stages, stages.size(), monthly);
 
                 if(res != null) {
                     Member m = getMember(event);
@@ -561,7 +561,7 @@ public class FindStage extends TimedConstraintCommand {
         return data;
     }
 
-    private Message createMonthlyMessage(MessageChannel ch, String content, List<String> data, List<Stage> stages, int size, boolean monthly) {
+    private Message createMonthlyMessage(MessageChannel ch, Message reference, String content, List<String> data, List<Stage> stages, int size, boolean monthly) {
         int totPage = size / SearchHolder.PAGE_CHUNK;
 
         if(size % SearchHolder.PAGE_CHUNK != 0)
@@ -624,7 +624,7 @@ public class FindStage extends TimedConstraintCommand {
 
         rows.add(ActionRow.of(Button.danger("cancel", LangID.getStringByID("button_cancel", lang))));
 
-        return ch.sendMessage(content).setAllowedMentions(new ArrayList<>()).setComponents(rows).complete();
+        return ch.sendMessage(content).mentionRepliedUser(false).setMessageReference(reference).setAllowedMentions(new ArrayList<>()).setComponents(rows).complete();
     }
 
     private List<MONTHLY> accumulateCategory(List<Stage> stages) {

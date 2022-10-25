@@ -63,7 +63,7 @@ public class FormImage extends TimedConstraintCommand {
             String search = filterCommand(getContent(event));
 
             if(search.isBlank()) {
-                ch.sendMessage(LangID.getStringByID("fimg_more", lang)).queue();
+                createMessageWithNoPings(ch, LangID.getStringByID("fimg_more", lang), getMessage(event));
                 disableTimer();
                 return;
             }
@@ -71,7 +71,7 @@ public class FormImage extends TimedConstraintCommand {
             ArrayList<Form> forms = EntityFilter.findUnitWithName(search, lang);
 
             if(forms.isEmpty()) {
-                createMessageWithNoPings(ch, LangID.getStringByID("formst_nounit", lang).replace("_", filterCommand(getContent(event))));
+                createMessageWithNoPings(ch, LangID.getStringByID("formst_nounit", lang).replace("_", filterCommand(getContent(event))), getMessage(event));
                 disableTimer();
             } else if(forms.size() == 1) {
                 int param = checkParameters(getContent(event));
@@ -105,6 +105,8 @@ public class FormImage extends TimedConstraintCommand {
 
                     ch.sendMessage(LangID.getStringByID("fimg_result", lang).replace("_", fName).replace(":::", getModeName(mode, forms.get(0).anim.anims.length)).replace("=", String.valueOf(frame)))
                             .addFiles(FileUpload.fromData(img, "result.png"))
+                            .setMessageReference(getMessage(event))
+                            .setAllowedMentions(new ArrayList<>())
                             .queue(m -> {
                                 if(img.exists() && !img.delete()) {
                                     StaticStore.logger.uploadLog("Can't delete file : " + img.getAbsolutePath());
@@ -139,7 +141,7 @@ public class FormImage extends TimedConstraintCommand {
 
                 sb.append("```");
 
-                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), forms.size(), data, lang).complete();
+                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).mentionRepliedUser(false).setMessageReference(getMessage(event)).setAllowedMentions(new ArrayList<>()), forms.size(), data, lang).complete();
 
                 int param = checkParameters(getContent(event));
                 int mode = getMode(getContent(event));

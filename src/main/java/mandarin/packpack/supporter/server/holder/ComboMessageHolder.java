@@ -72,7 +72,7 @@ public class ComboMessageHolder extends SearchHolder {
             fMsg.delete().queue();
 
         try {
-            EntityHandler.showComboEmbed(ch, combo.get(id), lang);
+            EntityHandler.showComboEmbed(ch, getAuthorMessage(), combo.get(id), lang);
 
             Member m = event.getMember();
 

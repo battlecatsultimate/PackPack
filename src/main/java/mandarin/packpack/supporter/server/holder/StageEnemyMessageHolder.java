@@ -115,7 +115,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
             } else if(stages.size() == 1) {
                 msg.delete().queue();
 
-                Message result = EntityHandler.showStageEmb(stages.get(0), ch, isFrame, isExtra, isCompact, star, lang);
+                Message result = EntityHandler.showStageEmb(stages.get(0), ch, getAuthorMessage(), isFrame, isExtra, isCompact, star, lang);
 
                 if(result != null) {
                     if(StaticStore.timeLimit.containsKey(author.getAuthor().getId())) {

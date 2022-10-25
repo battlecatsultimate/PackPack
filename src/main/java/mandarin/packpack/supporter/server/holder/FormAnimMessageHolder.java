@@ -99,7 +99,7 @@ public class FormAnimMessageHolder extends SearchHolder {
                 if(timeBoolean == null || StaticStore.canDo.get("gif").canDo) {
                     new Thread(() -> {
                         try {
-                            boolean result = EntityHandler.generateFormAnim(f, ch, g.getBoostTier().getKey(), mode, debug, frame, lang, raw, gifMode);
+                            boolean result = EntityHandler.generateFormAnim(f, ch, getAuthorMessage(), g.getBoostTier().getKey(), mode, debug, frame, lang, raw, gifMode);
 
                             Member m = event.getMember();
 
@@ -138,18 +138,18 @@ public class FormAnimMessageHolder extends SearchHolder {
                             long time = StaticStore.timeLimit.get(m.getId()).get(StaticStore.COMMAND_FORMIMAGE_ID);
 
                             if(System.currentTimeMillis() - time > 10000) {
-                                EntityHandler.generateFormImage(f, ch, mode, frame, transparent, debug, lang);
+                                EntityHandler.generateFormImage(f, ch, getAuthorMessage(), mode, frame, transparent, debug, lang);
 
                                 StaticStore.timeLimit.get(m.getId()).put(StaticStore.COMMAND_FORMIMAGE_ID, System.currentTimeMillis());
                             } else {
                                 ch.sendMessage(LangID.getStringByID("command_timelimit", lang).replace("_", DataToString.df.format((System.currentTimeMillis() - time) / 1000.0))).queue();
                             }
                         } else if(StaticStore.timeLimit.containsKey(m.getId())) {
-                            EntityHandler.generateFormImage(f, ch, mode, frame, transparent, debug, lang);
+                            EntityHandler.generateFormImage(f, ch, getAuthorMessage(), mode, frame, transparent, debug, lang);
 
                             StaticStore.timeLimit.get(m.getId()).put(StaticStore.COMMAND_FORMIMAGE_ID, System.currentTimeMillis());
                         } else {
-                            EntityHandler.generateFormImage(f, ch, mode, frame, transparent, debug, lang);
+                            EntityHandler.generateFormImage(f, ch, getAuthorMessage(), mode, frame, transparent, debug, lang);
 
                             Map<String, Long> memberLimit = new HashMap<>();
 

@@ -100,7 +100,7 @@ public class EnemyAnimMessageHolder extends SearchHolder {
                     new Thread(() -> {
 
                         try {
-                            boolean result = EntityHandler.generateEnemyAnim(e, ch, g.getBoostTier().getKey(), mode, debug, frame, lang, raw, gifMode);
+                            boolean result = EntityHandler.generateEnemyAnim(e, ch, getAuthorMessage(), g.getBoostTier().getKey(), mode, debug, frame, lang, raw, gifMode);
 
                             Member m = event.getMember();
 
@@ -139,18 +139,18 @@ public class EnemyAnimMessageHolder extends SearchHolder {
                             long time = StaticStore.timeLimit.get(m.getId()).get(StaticStore.COMMAND_ENEMYIMAGE_ID);
 
                             if (System.currentTimeMillis() - time > 10000) {
-                                EntityHandler.generateEnemyImage(e, ch, mode, frame, transparent, debug, lang);
+                                EntityHandler.generateEnemyImage(e, ch, getAuthorMessage(), mode, frame, transparent, debug, lang);
 
                                 StaticStore.timeLimit.get(m.getId()).put(StaticStore.COMMAND_ENEMYIMAGE_ID, System.currentTimeMillis());
                             } else {
                                 ch.sendMessage(LangID.getStringByID("command_timelimit", lang).replace("_", DataToString.df.format((System.currentTimeMillis() - time) / 1000.0))).queue();
                             }
                         } else if (StaticStore.timeLimit.containsKey(m.getId())) {
-                            EntityHandler.generateEnemyImage(e, ch, mode, frame, transparent, debug, lang);
+                            EntityHandler.generateEnemyImage(e, ch, getAuthorMessage(), mode, frame, transparent, debug, lang);
 
                             StaticStore.timeLimit.get(m.getId()).put(StaticStore.COMMAND_ENEMYIMAGE_ID, System.currentTimeMillis());
                         } else {
-                            EntityHandler.generateEnemyImage(e, ch, mode, frame, transparent, debug, lang);
+                            EntityHandler.generateEnemyImage(e, ch, getAuthorMessage(), mode, frame, transparent, debug, lang);
 
                             Map<String, Long> memberLimit = new HashMap<>();
 

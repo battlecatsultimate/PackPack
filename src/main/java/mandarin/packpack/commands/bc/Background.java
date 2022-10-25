@@ -89,6 +89,8 @@ public class Background extends TimedConstraintCommand {
             if(img != null) {
                 ch.sendMessage(LangID.getStringByID("bg_result", lang).replace("_", Data.trio(bg.id.id)).replace("WWW", 960+"").replace("HHH", 520+""))
                         .addFiles(FileUpload.fromData(img, "bg.png"))
+                        .setMessageReference(getMessage(event))
+                        .setAllowedMentions(new ArrayList<>())
                         .queue(m -> {
                             if(img.exists() && !img.delete()) {
                                 StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
@@ -105,12 +107,13 @@ public class Background extends TimedConstraintCommand {
             String[] msg = getContent(event).split(" ");
 
             if(msg.length == 1) {
-                ch.sendMessage(LangID.getStringByID("bg_more", lang)).queue();
+                createMessageWithNoPings(ch, LangID.getStringByID("bg_more", lang), getMessage(event));
             } else {
                 int id = getID(getContent(event));
 
                 if(id == -1) {
-                    ch.sendMessage(LangID.getStringByID("bg_more", lang)).queue();
+                    createMessageWithNoPings(ch, LangID.getStringByID("bg_more", lang), getMessage(event));
+
                     return;
                 }
 
@@ -119,7 +122,7 @@ public class Background extends TimedConstraintCommand {
                 if(bg == null) {
                     int[] size = getBGSize();
 
-                    ch.sendMessage(LangID.getStringByID("bg_invalid", lang).replace("_", size[0]+"").replace("-", size[1] + "")).queue();
+                    createMessageWithNoPings(ch, LangID.getStringByID("bg_invalid", lang).replace("_", size[0]+"").replace("-", size[1] + ""), getMessage(event));
                     return;
                 }
 
@@ -137,13 +140,13 @@ public class Background extends TimedConstraintCommand {
                 String cache = StaticStore.imgur.get("BG - "+Data.trio(bg.id.id), false, true);
 
                 if(anim && bg.effect != -1 && cache == null && isTrusted) {
-                    if(!EntityHandler.generateBGAnim(ch, bg, lang)) {
+                    if(!EntityHandler.generateBGAnim(ch, getMessage(event), bg, lang)) {
                         StaticStore.logger.uploadLog("W/Background | Failed to generate bg effect animation");
                     }
                 } else {
                     if(anim && bg.effect != -1) {
                         if(cache != null) {
-                            ch.sendMessage(LangID.getStringByID("gif_cache", lang).replace("_", cache)).queue();
+                            createMessageWithNoPings(ch, LangID.getStringByID("gif_cache", lang).replace("_", cache), getMessage(event));
 
                             return;
                         } else {
@@ -159,6 +162,8 @@ public class Background extends TimedConstraintCommand {
                     if(img != null) {
                         ch.sendMessage(LangID.getStringByID("bg_result", lang).replace("_", Data.trio(bg.id.id)).replace("WWW", w +"").replace("HHH", h+""))
                                 .addFiles(FileUpload.fromData(img, "bg.png"))
+                                .setMessageReference(getMessage(event))
+                                .setAllowedMentions(new ArrayList<>())
                                 .queue(message -> {
                                     if(img.exists() && !img.delete()) {
                                         StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());

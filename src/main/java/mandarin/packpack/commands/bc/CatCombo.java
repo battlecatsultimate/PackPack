@@ -48,9 +48,9 @@ public class CatCombo extends TimedConstraintCommand {
 
             if(combos.isEmpty()) {
                 disableTimer();
-                createMessageWithNoPings(ch, LangID.getStringByID("combo_noname", lang).replace("_", getSearchKeywords(name, cName, lang)));
+                createMessageWithNoPings(ch, LangID.getStringByID("combo_noname", lang).replace("_", getSearchKeywords(name, cName, lang)), getMessage(event));
             } else if(combos.size() == 1) {
-                EntityHandler.showComboEmbed(ch, combos.get(0), lang);
+                EntityHandler.showComboEmbed(ch, getMessage(event), combos.get(0), lang);
             } else {
                 disableTimer();
 
@@ -73,7 +73,7 @@ public class CatCombo extends TimedConstraintCommand {
 
                 sb.append("```");
 
-                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), combos.size(), data, lang).complete();
+                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).mentionRepliedUser(false).setMessageReference(getMessage(event)).setAllowedMentions(new ArrayList<>()), combos.size(), data, lang).complete();
 
                 if(res != null) {
                     Member m = getMember(event);
@@ -92,16 +92,16 @@ public class CatCombo extends TimedConstraintCommand {
 
             if(forms.isEmpty()) {
                 disableTimer();
-                createMessageWithNoPings(ch, LangID.getStringByID("combo_noname", lang).replace("_", getSearchKeywords(name, cName, lang)));
+                createMessageWithNoPings(ch, LangID.getStringByID("combo_noname", lang).replace("_", getSearchKeywords(name, cName, lang)), getMessage(event));
             } else if(forms.size() == 1) {
                 ArrayList<Combo> combos = EntityFilter.filterComboWithUnit(forms.get(0), cName);
 
                 if(combos.isEmpty()) {
                     disableTimer();
 
-                    createMessageWithNoPings(ch, LangID.getStringByID("combo_noname", lang).replace("_", getSearchKeywords(name, cName, lang)));
+                    createMessageWithNoPings(ch, LangID.getStringByID("combo_noname", lang).replace("_", getSearchKeywords(name, cName, lang)), getMessage(event));
                 } else if(combos.size() == 1) {
-                    EntityHandler.showComboEmbed(ch, combos.get(0), lang);
+                    EntityHandler.showComboEmbed(ch, getMessage(event), combos.get(0), lang);
                 } else {
                     disableTimer();
 
@@ -124,7 +124,7 @@ public class CatCombo extends TimedConstraintCommand {
 
                     sb.append("```");
 
-                    Message res = registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), combos.size(), data, lang).complete();
+                    Message res = registerSearchComponents(ch.sendMessage(sb.toString()).mentionRepliedUser(false).setMessageReference(getMessage(event)).setAllowedMentions(new ArrayList<>()), combos.size(), data, lang).complete();
 
                     if(res != null) {
                         Member m = getMember(event);
@@ -158,7 +158,7 @@ public class CatCombo extends TimedConstraintCommand {
 
                 sb.append("```");
 
-                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), forms.size(), data, lang).complete();
+                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).mentionRepliedUser(false).setMessageReference(getMessage(event)).setAllowedMentions(new ArrayList<>()), forms.size(), data, lang).complete();
 
                 if(res != null) {
                     Member m = getMember(event);

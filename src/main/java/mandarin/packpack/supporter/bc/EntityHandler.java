@@ -293,7 +293,7 @@ public class EntityHandler {
         return null;
     }
 
-    public static Message showUnitEmb(Form f, MessageChannel ch, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, ArrayList<Integer> lv, int lang, boolean addEmoji, boolean compact) throws Exception {
+    public static Message showUnitEmb(Form f, MessageChannel ch, Message reference, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, ArrayList<Integer> lv, int lang, boolean addEmoji, boolean compact) throws Exception {
         int level = lv.get(0);
         int levelp = 0;
 
@@ -472,7 +472,7 @@ public class EntityHandler {
         if(talentExists(t))
             spec.setFooter(DataToString.getTalent(f.du, t, lang));
 
-        MessageCreateAction action = ch.sendMessageEmbeds(spec.build());
+        MessageCreateAction action = ch.sendMessageEmbeds(spec.build()).setMessageReference(reference).mentionRepliedUser(false);
 
         if(img != null)
             action = action.addFiles(FileUpload.fromData(img, "icon.png"));
@@ -538,7 +538,7 @@ public class EntityHandler {
         return msg;
     }
 
-    public static void showTalentEmbed(MessageChannel ch, Form unit, boolean isFrame, int lang) throws Exception {
+    public static void showTalentEmbed(MessageChannel ch, Message reference, Form unit, boolean isFrame, int lang) throws Exception {
         if(unit.du == null || unit.du.getPCoin() == null)
             throw new IllegalStateException("E/EntityHandler::showTalentEmbed - Unit which has no talent has been passed");
 
@@ -586,7 +586,9 @@ public class EntityHandler {
         spec.setFooter(DataToString.accumulateNpCost(unit.du.getPCoin(), lang));
 
         MessageCreateAction action = ch.sendMessageEmbeds(spec.build())
-                .setAllowedMentions(new ArrayList<>());
+                .setAllowedMentions(new ArrayList<>())
+                .setMessageReference(reference)
+                .mentionRepliedUser(false);
 
         if(img != null)
             action = action.addFiles(FileUpload.fromData(img, "icon.png"));
@@ -622,7 +624,7 @@ public class EntityHandler {
         return !empty;
     }
 
-    public static void showEnemyEmb(Enemy e, MessageChannel ch, boolean isFrame, boolean extra, boolean compact, int[] magnification, int lang) throws Exception {
+    public static void showEnemyEmb(Enemy e, MessageChannel ch, Message reference, boolean isFrame, boolean extra, boolean compact, int[] magnification, int lang) throws Exception {
         File img = generateIcon(e);
 
         EmbedBuilder spec = new EmbedBuilder();
@@ -734,7 +736,7 @@ public class EntityHandler {
 
         spec.setFooter(LangID.getStringByID("enemyst_source", lang));
 
-        MessageCreateAction action = ch.sendMessageEmbeds(spec.build());
+        MessageCreateAction action = ch.sendMessageEmbeds(spec.build()).setMessageReference(reference).mentionRepliedUser(false);
 
         if(img != null)
             action = action.addFiles(FileUpload.fromData(img, "icon.png"));
@@ -1005,7 +1007,7 @@ public class EntityHandler {
         return img;
     }
 
-    public static Message showStageEmb(Stage st, MessageChannel ch, boolean isFrame, boolean isExtra, boolean isCompact, int level, int lang) throws Exception {
+    public static Message showStageEmb(Stage st, MessageChannel ch, Message reference, boolean isFrame, boolean isExtra, boolean isCompact, int level, int lang) throws Exception {
         StageMap stm = st.getCont();
 
         int sta;
@@ -1191,7 +1193,7 @@ public class EntityHandler {
             spec.setImage("attachment://scheme.png");
         }
 
-        MessageCreateAction action = ch.sendMessageEmbeds(spec.build());
+        MessageCreateAction action = ch.sendMessageEmbeds(spec.build()).setMessageReference(reference).mentionRepliedUser(false);
 
         if(img != null)
             action = action.addFiles(FileUpload.fromData(img, "scheme.png"));
@@ -1874,7 +1876,7 @@ public class EntityHandler {
         return img;
     }
 
-    public static void generateFormImage(Form f, MessageChannel ch, int mode, int frame, boolean transparent, boolean debug, int lang) throws Exception {
+    public static void generateFormImage(Form f, MessageChannel ch, Message reference, int mode, int frame, boolean transparent, boolean debug, int lang) throws Exception {
         f.anim.load();
 
         if(mode >= f.anim.anims.length)
@@ -1904,6 +1906,8 @@ public class EntityHandler {
 
             ch.sendMessage(LangID.getStringByID("fimg_result", lang).replace("_", fName).replace(":::", getModeName(mode, f.anim.anims.length, lang)).replace("=", String.valueOf(frame)))
                     .addFiles(FileUpload.fromData(img, "result.png"))
+                    .setMessageReference(reference)
+                    .mentionRepliedUser(false)
                     .queue(m -> {
                         if(img.exists() && !img.delete()) {
                             StaticStore.logger.uploadLog("W/EntityHandlerFormImage | Can't delete file : "+img.getAbsolutePath());
@@ -1918,7 +1922,7 @@ public class EntityHandler {
         }
     }
 
-    public static void generateEnemyImage(Enemy en, MessageChannel ch, int mode, int frame, boolean transparent, boolean debug, int lang) throws Exception {
+    public static void generateEnemyImage(Enemy en, MessageChannel ch, Message reference, int mode, int frame, boolean transparent, boolean debug, int lang) throws Exception {
         en.anim.load();
 
         if(mode >= en.anim.anims.length)
@@ -1948,6 +1952,8 @@ public class EntityHandler {
 
             ch.sendMessage(LangID.getStringByID("fimg_result", lang).replace("_", eName).replace(":::", getModeName(mode, en.anim.anims.length, lang)).replace("=", String.valueOf(frame)))
                     .addFiles(FileUpload.fromData(img, "result.png"))
+                    .setMessageReference(reference)
+                    .mentionRepliedUser(false)
                     .queue(m -> {
                         if(img.exists() && !img.delete()) {
                             StaticStore.logger.uploadLog("W/EntityHandlerFormImage | Can't delete file : "+img.getAbsolutePath());
@@ -1984,7 +1990,7 @@ public class EntityHandler {
         }
     }
 
-    public static boolean generateFormAnim(Form f, MessageChannel ch, int booster, int mode, boolean debug, int limit, int lang, boolean raw, boolean gif) throws Exception {
+    public static boolean generateFormAnim(Form f, MessageChannel ch, Message reference, int booster, int mode, boolean debug, int limit, int lang, boolean raw, boolean gif) throws Exception {
         if(f.unit == null || f.unit.id == null)
             return false;
         else if(!debug && limit <= 0) {
@@ -1993,7 +1999,7 @@ public class EntityHandler {
             String link = StaticStore.imgur.get(id, gif, raw);
 
             if(link != null) {
-                ch.sendMessage(LangID.getStringByID("gif_cache", lang).replace("_", link)).queue();
+                ch.sendMessage(LangID.getStringByID("gif_cache", lang).replace("_", link)).setMessageReference(reference).mentionRepliedUser(false).queue();
                 return false;
             }
         }
@@ -2053,7 +2059,7 @@ public class EntityHandler {
 
             return false;
         } else if(img.length() >= max && img.length() < (raw ? 200 * 1024 * 1024 : 10 * 1024 * 1024)) {
-            Message m = ch.sendMessage(LangID.getStringByID("gif_filesize", lang)).complete();
+            Message m = ch.sendMessage(LangID.getStringByID("gif_filesize", lang)).setMessageReference(reference).mentionRepliedUser(false).complete();
 
             if(m == null) {
                 ch.sendMessage(LangID.getStringByID("gif_failcommand", lang)).queue(message -> {
@@ -2121,6 +2127,8 @@ public class EntityHandler {
             if(debug || limit > 0) {
                 ch.sendMessage(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)))
                         .addFiles(FileUpload.fromData(img, raw ? "result.mp4" : "result.gif"))
+                        .setMessageReference(reference)
+                        .mentionRepliedUser(false)
                         .queue(m -> {
                             if(img.exists() && !img.delete()) {
                                 StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
@@ -2140,6 +2148,8 @@ public class EntityHandler {
 
                     ((GuildMessageChannel) chan).sendMessage(generateID(f, fMode))
                             .addFiles(FileUpload.fromData(img, raw ? "result.mp4" : "result.gif"))
+                            .setMessageReference(reference)
+                            .mentionRepliedUser(false)
                             .queue(m -> {
                                 if(img.exists() && !img.delete()) {
                                     StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
@@ -2171,7 +2181,7 @@ public class EntityHandler {
         return true;
     }
 
-    public static boolean generateEnemyAnim(Enemy en, MessageChannel ch, int booster, int mode, boolean debug, int limit, int lang, boolean raw, boolean gif) throws Exception {
+    public static boolean generateEnemyAnim(Enemy en, MessageChannel ch, Message reference, int booster, int mode, boolean debug, int limit, int lang, boolean raw, boolean gif) throws Exception {
         if(en.id == null)
             return false;
         else if(!debug && limit <= 0) {
@@ -2180,7 +2190,7 @@ public class EntityHandler {
             String link = StaticStore.imgur.get(id, gif, raw);
 
             if(link != null) {
-                ch.sendMessage(LangID.getStringByID("gif_cache", lang).replace("_", link)).queue();
+                ch.sendMessage(LangID.getStringByID("gif_cache", lang).replace("_", link)).setMessageReference(reference).mentionRepliedUser(false).queue();
                 return false;
             }
         }
@@ -2233,11 +2243,11 @@ public class EntityHandler {
         String time = DataToString.df.format((end - start)/1000.0);
 
         if(img == null) {
-            ch.sendMessage(LangID.getStringByID("gif_faile", lang)).queue();
+            ch.sendMessage(LangID.getStringByID("gif_faile", lang)).setMessageReference(reference).mentionRepliedUser(false).queue();
 
             return false;
         } else if(img.length() >= max && img.length() < (raw ? 200 * 1024 * 1024 : 8 * 1024 * 1024)) {
-            Message m = ch.sendMessage(LangID.getStringByID("gif_filesize", lang)).complete();
+            Message m = ch.sendMessage(LangID.getStringByID("gif_filesize", lang)).setMessageReference(reference).mentionRepliedUser(false).complete();
 
             if(m == null) {
                 ch.sendMessage(LangID.getStringByID("gif_failcommand", lang)).queue(message -> {
@@ -2303,6 +2313,8 @@ public class EntityHandler {
 
             if(debug || limit > 0) {
                 ch.sendMessage(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)))
+                        .setMessageReference(reference)
+                        .mentionRepliedUser(false)
                         .addFiles(FileUpload.fromData(img, raw ? "result.mp4" : "result.gif"))
                         .queue(m -> {
                             if(img.exists() && !img.delete()) {
@@ -2323,6 +2335,8 @@ public class EntityHandler {
 
                     ((GuildMessageChannel) chan).sendMessage(generateID(en, fMode))
                             .addFiles(FileUpload.fromData(img, raw ? "result.mp4" : "result.gif"))
+                            .setMessageReference(reference)
+                            .mentionRepliedUser(false)
                             .queue(m -> {
                                 if(img.exists() && !img.delete()) {
                                     StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
@@ -2554,7 +2568,7 @@ public class EntityHandler {
         return true;
     }
 
-    public static boolean generateBGAnim(MessageChannel ch, Background bg, int lang) throws Exception {
+    public static boolean generateBGAnim(MessageChannel ch, Message reference, Background bg, int lang) throws Exception {
         Message message = ch.sendMessage(LangID.getStringByID("bg_prepare", lang)).complete();
 
         if(message == null)
@@ -2569,9 +2583,9 @@ public class EntityHandler {
         long end = System.currentTimeMillis();
 
         if(result == null) {
-            ch.sendMessage(LangID.getStringByID("bg_fail", lang)).queue();
+            ch.sendMessage(LangID.getStringByID("bg_fail", lang)).setMessageReference(reference).mentionRepliedUser(false).queue();
         } else if(result.length() >= 8 * 1024 * 1024) {
-            ch.sendMessage(LangID.getStringByID("bg_toobig", lang).replace("_SSS_", getFileSize(result))).queue();
+            ch.sendMessage(LangID.getStringByID("bg_toobig", lang).replace("_SSS_", getFileSize(result))).setMessageReference(reference).mentionRepliedUser(false).queue();
         } else {
             GuildChannel chan = client.getGuildChannelById(StaticStore.MISCARCHIVE);
 
@@ -2580,6 +2594,8 @@ public class EntityHandler {
 
                 ((MessageChannel) chan).sendMessage("BG - "+Data.trio(bg.id.id))
                         .addFiles(FileUpload.fromData(result, "result.mp4"))
+                        .setMessageReference(reference)
+                        .mentionRepliedUser(false)
                         .queue(m -> {
                             if(result.exists() && !result.delete()) {
                                 StaticStore.logger.uploadLog("W/EntityHandlerBGAnim | Can't delete file : "+result.getAbsolutePath());
@@ -2607,7 +2623,7 @@ public class EntityHandler {
         return true;
     }
 
-    public static boolean generateSoulAnim(Soul s, MessageChannel ch, int booster, boolean debug, int limit, int lang, boolean raw, boolean gif) throws Exception {
+    public static boolean generateSoulAnim(Soul s, MessageChannel ch, Message reference, int booster, boolean debug, int limit, int lang, boolean raw, boolean gif) throws Exception {
         if(s.getID() == null)
             return false;
         else if(!debug && limit <= 0) {
@@ -2671,7 +2687,7 @@ public class EntityHandler {
 
             return false;
         } else if(img.length() >= max && img.length() < (raw ? 200 * 1024 * 1024 : 8 * 1024 * 1024)) {
-            Message m = ch.sendMessage(LangID.getStringByID("gif_filesize", lang)).complete();
+            Message m = ch.sendMessage(LangID.getStringByID("gif_filesize", lang)).setMessageReference(reference).mentionRepliedUser(false).complete();
 
             if(m == null) {
                 ch.sendMessage(LangID.getStringByID("gif_failcommand", lang)).queue(message -> {
@@ -2736,6 +2752,8 @@ public class EntityHandler {
             if(debug || limit > 0) {
                 ch.sendMessage(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)))
                         .addFiles(FileUpload.fromData(img, raw ? "result.mp4" : "result.gif"))
+                        .setMessageReference(reference)
+                        .mentionRepliedUser(false)
                         .queue(m -> {
                             if(img.exists() && !img.delete()) {
                                 StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
@@ -2755,6 +2773,8 @@ public class EntityHandler {
 
                     ((GuildMessageChannel) chan).sendMessage("SOUL - " + Data.trio(s.getID().id))
                             .addFiles(FileUpload.fromData(img, raw ? "result.mp4" : "result.gif"))
+                            .setMessageReference(reference)
+                            .mentionRepliedUser(false)
                             .queue(m -> {
                                 if(img.exists() && !img.delete()) {
                                     StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
@@ -2827,7 +2847,7 @@ public class EntityHandler {
         }
     }
 
-    public static void getFormSprite(Form f, MessageChannel ch, int mode, int lang) throws Exception {
+    public static void getFormSprite(Form f, MessageChannel ch, Message reference, int mode, int lang) throws Exception {
         if(f.unit == null || f.unit.id == null) {
             ch.sendMessage(LangID.getStringByID("fsp_cantunit", lang)).queue();
             return;
@@ -2891,7 +2911,7 @@ public class EntityHandler {
         }
 
         if(img == null) {
-            ch.sendMessage(LangID.getStringByID("fsp_nodata", lang).replace("_", getIconName(mode, lang))).queue();
+            ch.sendMessage(LangID.getStringByID("fsp_nodata", lang).replace("_", getIconName(mode, lang))).setMessageReference(reference).mentionRepliedUser(false).queue();
             return;
         }
 
@@ -2907,6 +2927,8 @@ public class EntityHandler {
 
         ch.sendMessage(LangID.getStringByID("fsp_result", lang).replace("_", fName).replace("===", getIconName(mode, lang)))
                 .addFiles(FileUpload.fromData(image, "result.png"))
+                .setMessageReference(reference)
+                .mentionRepliedUser(false)
                 .queue(m -> {
                     if(image.exists() && !image.delete()) {
                         StaticStore.logger.uploadLog("W/EntityHandlerFormSprite | Can't delete file : "+image.getAbsolutePath());
@@ -2922,9 +2944,9 @@ public class EntityHandler {
         f.anim.unload();
     }
 
-    public static void getEnemySprite(Enemy e, MessageChannel ch, int mode, int lang) throws Exception {
+    public static void getEnemySprite(Enemy e, MessageChannel ch, Message reference, int mode, int lang) throws Exception {
         if(e.id == null) {
-            ch.sendMessage(LangID.getStringByID("esp_cantunit", lang)).queue();
+            ch.sendMessage(LangID.getStringByID("esp_cantunit", lang)).setMessageReference(reference).mentionRepliedUser(false).queue();
             return;
         }
 
@@ -2964,7 +2986,7 @@ public class EntityHandler {
         }
 
         if(img == null) {
-            ch.sendMessage(LangID.getStringByID("fsp_nodata", lang).replace("_", getIconName(mode, lang))).queue();
+            ch.sendMessage(LangID.getStringByID("fsp_nodata", lang).replace("_", getIconName(mode, lang))).setMessageReference(reference).mentionRepliedUser(false).queue();
             return;
         }
 
@@ -2980,6 +3002,8 @@ public class EntityHandler {
 
         ch.sendMessage(LangID.getStringByID("fsp_result", lang).replace("_", fName).replace("===", getIconName(mode, lang)))
                 .addFiles(FileUpload.fromData(image, "result.png"))
+                .setMessageReference(reference)
+                .mentionRepliedUser(false)
                 .queue(m -> {
                     if(image.exists() && !image.delete()) {
                         StaticStore.logger.uploadLog("W/EntityHandlerEnemySprite | Can't delete file : "+image.getAbsolutePath());
@@ -2995,7 +3019,7 @@ public class EntityHandler {
         e.anim.unload();
     }
 
-    public static void getSoulSprite(Soul s, MessageChannel ch, int lang) throws Exception {
+    public static void getSoulSprite(Soul s, MessageChannel ch, Message reference, int lang) throws Exception {
         if(s.getID() == null) {
             ch.sendMessage(LangID.getStringByID("soul_nosoul", lang)).queue();
 
@@ -3020,7 +3044,7 @@ public class EntityHandler {
         FakeImage img = s.getNum();
 
         if(img == null) {
-            ch.sendMessage(LangID.getStringByID("soul_nosoul", lang)).queue();
+            ch.sendMessage(LangID.getStringByID("soul_nosoul", lang)).setMessageReference(reference).mentionRepliedUser(false).queue();
 
             return;
         }
@@ -3032,11 +3056,12 @@ public class EntityHandler {
         Command.sendMessageWithFile(
                 ch,
                 LangID.getStringByID("soulspr_success", lang).replace("_", Data.trio(s.getID().id)),
-                image
+                image,
+                reference
         );
     }
 
-    public static void showMedalEmbed(int id, MessageChannel ch, int lang) throws  Exception {
+    public static void showMedalEmbed(int id, MessageChannel ch, Message reference, int lang) throws  Exception {
         File temp = new File("./temp");
 
         if(!temp.exists() && !temp.mkdirs()) {
@@ -3063,7 +3088,7 @@ public class EntityHandler {
         VFile vf = VFile.get(medalName);
 
         if(vf == null)
-            ch.sendMessage(LangID.getStringByID("medal_nopng", lang)).queue();
+            ch.sendMessage(LangID.getStringByID("medal_nopng", lang)).setMessageReference(reference).mentionRepliedUser(false).queue();
         else {
             BufferedImage img = (BufferedImage) vf.getData().getImg().bimg();
 
@@ -3092,6 +3117,8 @@ public class EntityHandler {
 
             ch.sendMessageEmbeds(e.build())
                     .addFiles(FileUpload.fromData(image, "medal.png"))
+                    .setMessageReference(reference)
+                    .mentionRepliedUser(false)
                     .queue(m -> {
                         if(image.exists() && !image.delete()) {
                             StaticStore.logger.uploadLog("W/EntityHandlerMedal | Can't delete file : "+image.getAbsolutePath());
@@ -3106,7 +3133,7 @@ public class EntityHandler {
         }
     }
 
-    public static void showComboEmbed(MessageChannel ch, Combo c, int lang) throws Exception {
+    public static void showComboEmbed(MessageChannel ch, Message reference, Combo c, int lang) throws Exception {
         File icon = generateComboImage(c);
 
         EmbedBuilder e = new EmbedBuilder();
@@ -3140,7 +3167,7 @@ public class EntityHandler {
             e.setImage("attachment://combo.png");
         }
 
-        MessageCreateAction action = ch.sendMessageEmbeds(e.build());
+        MessageCreateAction action = ch.sendMessageEmbeds(e.build()).setMessageReference(reference).mentionRepliedUser(false);
 
         if(icon != null)
             action = action.addFiles(FileUpload.fromData(icon, "combo.png"));

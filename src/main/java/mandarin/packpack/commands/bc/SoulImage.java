@@ -40,7 +40,7 @@ public class SoulImage extends TimedConstraintCommand {
         int id = findSoulID(getContent(event));
 
         if(id == -1) {
-            createMessageWithNoPings(ch, LangID.getStringByID("soul_argu", lang));
+            createMessageWithNoPings(ch, LangID.getStringByID("soul_argu", lang), getMessage(event));
 
             return;
         }
@@ -48,7 +48,7 @@ public class SoulImage extends TimedConstraintCommand {
         int soulLen = UserProfile.getBCData().souls.size();
 
         if(id >= soulLen) {
-            createMessageWithNoPings(ch, LangID.getStringByID("soul_range", lang).replace("_", (soulLen - 1) + ""));
+            createMessageWithNoPings(ch, LangID.getStringByID("soul_range", lang).replace("_", (soulLen - 1) + ""), getMessage(event));
 
             disableTimer();
 
@@ -90,7 +90,8 @@ public class SoulImage extends TimedConstraintCommand {
             sendMessageWithFile(
                     ch,
                     LangID.getStringByID("soulimg_result", lang).replace("_", Data.trio(s.getID().id)).replace("-", frame + ""),
-                    img
+                    img,
+                    getMessage(event)
             );
         } else {
             createMessageWithNoPings(ch, LangID.getStringByID("soulimg_fail", lang));

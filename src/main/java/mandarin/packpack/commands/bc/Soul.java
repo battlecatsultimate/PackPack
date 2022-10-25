@@ -49,7 +49,7 @@ public class Soul extends GlobalTimedConstraintCommand {
         common.util.pack.Soul s = UserProfile.getBCData().souls.get(id);
 
         if(s == null) {
-            createMessageWithNoPings(ch, LangID.getStringByID("soul_nosoul", lang));
+            createMessageWithNoPings(ch, LangID.getStringByID("soul_nosoul", lang), getMessage(event));
 
             return;
         }
@@ -66,7 +66,7 @@ public class Soul extends GlobalTimedConstraintCommand {
             ch.sendMessage(LangID.getStringByID("gif_ignore", lang)).queue();
         }
 
-        boolean result = EntityHandler.generateSoulAnim(s, ch, g.getBoostTier().getKey(), debug, frame, lang, raw && isTrusted, gif);
+        boolean result = EntityHandler.generateSoulAnim(s, ch, getMessage(event), g.getBoostTier().getKey(), debug, frame, lang, raw && isTrusted, gif);
 
         if(raw && isTrusted && result) {
             StaticStore.logger.uploadLog("Generated mp4 by user " + m.getEffectiveName() + " for soul ID " + Data.trio(s.getID().id));
@@ -111,13 +111,13 @@ public class Soul extends GlobalTimedConstraintCommand {
 
         switch (optionalID) {
             case NO_ID:
-                createMessageWithNoPings(ch, LangID.getStringByID("soul_argu", lang));
+                createMessageWithNoPings(ch, LangID.getStringByID("soul_argu", lang), getMessage(event));
 
                 return;
             case INVALID_RANGE:
                 int soulLen = UserProfile.getBCData().souls.size() - 1;
 
-                createMessageWithNoPings(ch, LangID.getStringByID("soul_range", lang).replace("_", soulLen + ""));
+                createMessageWithNoPings(ch, LangID.getStringByID("soul_range", lang).replace("_", soulLen + ""), getMessage(event));
         }
     }
 

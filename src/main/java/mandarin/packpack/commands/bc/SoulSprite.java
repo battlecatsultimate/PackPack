@@ -32,7 +32,7 @@ public class SoulSprite extends TimedConstraintCommand {
         int id = findSoulID(getContent(event));
 
         if(id == -1) {
-            createMessageWithNoPings(ch, LangID.getStringByID("soul_argu", lang));
+            createMessageWithNoPings(ch, LangID.getStringByID("soul_argu", lang), getMessage(event));
 
             disableTimer();
         }
@@ -40,7 +40,7 @@ public class SoulSprite extends TimedConstraintCommand {
         int soulLen = UserProfile.getBCData().souls.size();
 
         if(id >= soulLen) {
-            createMessageWithNoPings(ch, LangID.getStringByID("soul_range", lang).replace("_", (soulLen - 1) + ""));
+            createMessageWithNoPings(ch, LangID.getStringByID("soul_range", lang).replace("_", (soulLen - 1) + ""), getMessage(event));
 
             disableTimer();
 
@@ -57,7 +57,7 @@ public class SoulSprite extends TimedConstraintCommand {
             return;
         }
 
-        EntityHandler.getSoulSprite(s, ch, lang);
+        EntityHandler.getSoulSprite(s, ch, getMessage(event), lang);
     }
 
     private int findSoulID(String content) {

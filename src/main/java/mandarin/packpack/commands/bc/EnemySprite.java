@@ -42,24 +42,26 @@ public class EnemySprite extends TimedConstraintCommand {
         String[] contents = getContent(event).split(" ");
 
         if(contents.length == 1) {
-            ch.sendMessage(LangID.getStringByID("eimg_more", lang)).queue();
+            createMessageWithNoPings(ch, LangID.getStringByID("eimg_more", lang), getMessage(event));
         } else {
             String search = filterCommand(getContent(event));
 
             if(search.isBlank()) {
-                ch.sendMessage(LangID.getStringByID("eimg_more", lang)).queue();
+                createMessageWithNoPings(ch, LangID.getStringByID("eimg_more", lang), getMessage(event));
+
                 return;
             }
 
             ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(search, lang);
 
             if(enemies.isEmpty()) {
-                createMessageWithNoPings(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(getContent(event))));
+                createMessageWithNoPings(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(getContent(event))), getMessage(event));
+
                 disableTimer();
             } else if(enemies.size() == 1) {
                 int param = checkParameter(getContent(event));
 
-                EntityHandler.getEnemySprite(enemies.get(0), ch, getModeFromParam(param), lang);
+                EntityHandler.getEnemySprite(enemies.get(0), ch, getMessage(event), getModeFromParam(param), lang);
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", filterCommand(getContent(event))));
 
@@ -86,7 +88,7 @@ public class EnemySprite extends TimedConstraintCommand {
 
                 int mode = getModeFromParam(param);
 
-                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), enemies.size(), data, lang).complete();
+                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).mentionRepliedUser(false).setMessageReference(getMessage(event)).setAllowedMentions(new ArrayList<>()), enemies.size(), data, lang).complete();
 
                 if(res != null) {
                     Member m = getMember(event);

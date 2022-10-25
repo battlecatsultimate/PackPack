@@ -82,15 +82,18 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
             String search = filterCommand(getContent(event));
 
             if(search.isBlank()) {
-                ch.sendMessage(LangID.getStringByID("eimg_more", lang)).queue();
+                createMessageWithNoPings(ch, LangID.getStringByID("eimg_more", lang), getMessage(event));
+
                 disableTimer();
+
                 return;
             }
 
             ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(search, lang);
 
             if(enemies.isEmpty()) {
-                createMessageWithNoPings(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(getContent(event))));
+                createMessageWithNoPings(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(getContent(event))), getMessage(event));
+
                 disableTimer();
             } else if(enemies.size() == 1) {
                 int param = checkParameters(getContent(event));
@@ -112,7 +115,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
                     ch.sendMessage(LangID.getStringByID("gif_ignore", lang)).queue();
                 }
 
-                boolean result = EntityHandler.generateEnemyAnim(en, ch, g.getBoostTier().getKey(), mode, debug, frame, lang, raw && isTrusted, gif);
+                boolean result = EntityHandler.generateEnemyAnim(en, ch, getMessage(event), g.getBoostTier().getKey(), mode, debug, frame, lang, raw && isTrusted, gif);
 
                 if(raw && isTrusted && result) {
                     StaticStore.logger.uploadLog("Generated mp4 by user " + m.getEffectiveName() + " for enemy ID " + Data.trio(en.id.id) + " with mode of " + mode);
@@ -147,7 +150,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
 
                 sb.append("```");
 
-                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), enemies.size(), data, lang).complete();
+                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).mentionRepliedUser(false).setMessageReference(getMessage(event)).setAllowedMentions(new ArrayList<>()), enemies.size(), data, lang).complete();
 
                 int param = checkParameters(getContent(event));
                 int mode = getMode(getContent(event));

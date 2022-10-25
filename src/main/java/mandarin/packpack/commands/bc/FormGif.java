@@ -83,7 +83,7 @@ public class FormGif extends GlobalTimedConstraintCommand {
             String search = filterCommand(getContent(event));
 
             if(search.isBlank()) {
-                ch.sendMessage(LangID.getStringByID("fimg_more", lang)).queue();
+                createMessageWithNoPings(ch, LangID.getStringByID("fimg_more", lang), getMessage(event));
                 disableTimer();
                 return;
             }
@@ -91,7 +91,7 @@ public class FormGif extends GlobalTimedConstraintCommand {
             ArrayList<Form> forms = EntityFilter.findUnitWithName(search, lang);
 
             if(forms.isEmpty()) {
-                createMessageWithNoPings(ch, LangID.getStringByID("formst_nounit", lang).replace("_", filterCommand(getContent(event))));
+                createMessageWithNoPings(ch, LangID.getStringByID("formst_nounit", lang).replace("_", filterCommand(getContent(event))), getMessage(event));
                 disableTimer();
             } else if(forms.size() == 1) {
                 int param = checkParameters(getContent(event));
@@ -104,7 +104,7 @@ public class FormGif extends GlobalTimedConstraintCommand {
                 Form f = forms.get(0);
 
                 if(forbidden.contains(f.unit.id.id)) {
-                    ch.sendMessage(LangID.getStringByID("gif_dummy", lang)).queue();
+                    createMessageWithNoPings(ch, LangID.getStringByID("gif_dummy", lang), getMessage(event));
 
                     return;
                 }
@@ -113,7 +113,7 @@ public class FormGif extends GlobalTimedConstraintCommand {
                     ch.sendMessage(LangID.getStringByID("gif_ignore", lang)).queue();
                 }
 
-                boolean result = EntityHandler.generateFormAnim(f, ch, g.getBoostTier().getKey(), mode, debug, frame, lang, raw && isTrusted, gif);
+                boolean result = EntityHandler.generateFormAnim(f, ch, getMessage(event), g.getBoostTier().getKey(), mode, debug, frame, lang, raw && isTrusted, gif);
 
                 if(raw && isTrusted && result) {
                     StaticStore.logger.uploadLog("Generated mp4 by user " + m.getEffectiveName() + " for unit ID " + Data.trio(f.unit.id.id) + " with mode of " + mode);
@@ -159,7 +159,7 @@ public class FormGif extends GlobalTimedConstraintCommand {
                     ch.sendMessage(LangID.getStringByID("gif_ignore", lang)).queue();
                 }
 
-                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), forms.size(), data, lang).complete();
+                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).mentionRepliedUser(false).setMessageReference(getMessage(event)).setAllowedMentions(new ArrayList<>()), forms.size(), data, lang).complete();
 
                 if(res != null) {
                     Message msg = getMessage(event);

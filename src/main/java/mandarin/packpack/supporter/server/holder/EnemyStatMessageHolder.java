@@ -68,7 +68,7 @@ public class EnemyStatMessageHolder extends SearchHolder {
         msg.delete().queue();
 
         try {
-            EntityHandler.showEnemyEmb(enemy.get(id), ch, isFrame, isExtra, isCompact, magnification, lang);
+            EntityHandler.showEnemyEmb(enemy.get(id), ch, getAuthorMessage(), isFrame, isExtra, isCompact, magnification, lang);
         } catch (Exception e) {
             e.printStackTrace();
         }
