@@ -106,6 +106,7 @@ public class FormImage extends TimedConstraintCommand {
                     ch.sendMessage(LangID.getStringByID("fimg_result", lang).replace("_", fName).replace(":::", getModeName(mode, forms.get(0).anim.anims.length)).replace("=", String.valueOf(frame)))
                             .addFiles(FileUpload.fromData(img, "result.png"))
                             .setMessageReference(getMessage(event))
+                            .mentionRepliedUser(false)
                             .setAllowedMentions(new ArrayList<>())
                             .queue(m -> {
                                 if(img.exists() && !img.delete()) {
