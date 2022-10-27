@@ -2148,8 +2148,6 @@ public class EntityHandler {
 
                     ((GuildMessageChannel) chan).sendMessage(generateID(f, fMode))
                             .addFiles(FileUpload.fromData(img, raw ? "result.mp4" : "result.gif"))
-                            .setMessageReference(reference)
-                            .mentionRepliedUser(false)
                             .queue(m -> {
                                 if(img.exists() && !img.delete()) {
                                     StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
@@ -2159,7 +2157,10 @@ public class EntityHandler {
                                     Message.Attachment at = m.getAttachments().get(i);
 
                                     if(at.getFileName().startsWith("result.")) {
-                                        ch.sendMessage(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", siz)+"\n\n"+at.getUrl()).queue();
+                                        ch.sendMessage(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", siz)+"\n\n"+at.getUrl())
+                                                .setMessageReference(reference)
+                                                .mentionRepliedUser(false)
+                                                .queue();
                                         break;
                                     }
                                 }
@@ -2335,8 +2336,6 @@ public class EntityHandler {
 
                     ((GuildMessageChannel) chan).sendMessage(generateID(en, fMode))
                             .addFiles(FileUpload.fromData(img, raw ? "result.mp4" : "result.gif"))
-                            .setMessageReference(reference)
-                            .mentionRepliedUser(false)
                             .queue(m -> {
                                 if(img.exists() && !img.delete()) {
                                     StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
@@ -2346,7 +2345,10 @@ public class EntityHandler {
                                     Message.Attachment at = m.getAttachments().get(i);
 
                                     if(at.getFileName().startsWith("result.")) {
-                                        ch.sendMessage(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", siz)+"\n\n"+at.getUrl()).queue();
+                                        ch.sendMessage(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", siz)+"\n\n"+at.getUrl())
+                                                .setMessageReference(reference)
+                                                .mentionRepliedUser(false)
+                                                .queue();
                                     }
                                 }
 
@@ -2594,8 +2596,6 @@ public class EntityHandler {
 
                 ((MessageChannel) chan).sendMessage("BG - "+Data.trio(bg.id.id))
                         .addFiles(FileUpload.fromData(result, "result.mp4"))
-                        .setMessageReference(reference)
-                        .mentionRepliedUser(false)
                         .queue(m -> {
                             if(result.exists() && !result.delete()) {
                                 StaticStore.logger.uploadLog("W/EntityHandlerBGAnim | Can't delete file : "+result.getAbsolutePath());
@@ -2605,7 +2605,10 @@ public class EntityHandler {
                                 Message.Attachment at = m.getAttachments().get(i);
 
                                 if(at.getFileName().startsWith("result.")) {
-                                    ch.sendMessage(LangID.getStringByID("bg_animres", lang).replace("_SSS_", siz).replace("_TTT_", DataToString.df.format((end - start) / 1000.0))+"\n\n"+at.getUrl()).queue();
+                                    ch.sendMessage(LangID.getStringByID("bg_animres", lang).replace("_SSS_", siz).replace("_TTT_", DataToString.df.format((end - start) / 1000.0))+"\n\n"+at.getUrl())
+                                            .setMessageReference(reference)
+                                            .mentionRepliedUser(false)
+                                            .queue();
 
                                     StaticStore.imgur.put("BG - "+Data.trio(bg.id.id), at.getUrl(), true);
                                 }
@@ -2773,8 +2776,6 @@ public class EntityHandler {
 
                     ((GuildMessageChannel) chan).sendMessage("SOUL - " + Data.trio(s.getID().id))
                             .addFiles(FileUpload.fromData(img, raw ? "result.mp4" : "result.gif"))
-                            .setMessageReference(reference)
-                            .mentionRepliedUser(false)
                             .queue(m -> {
                                 if(img.exists() && !img.delete()) {
                                     StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
@@ -2784,7 +2785,10 @@ public class EntityHandler {
                                     Message.Attachment at = m.getAttachments().get(i);
 
                                     if(at.getFileName().startsWith("result.")) {
-                                        ch.sendMessage(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", siz)+"\n\n"+at.getUrl()).queue();
+                                        ch.sendMessage(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", siz)+"\n\n"+at.getUrl())
+                                                .setMessageReference(reference)
+                                                .mentionRepliedUser(false)
+                                                .queue();
 
                                         StaticStore.imgur.put("SOUL - " + Data.trio(s.getID().id), at.getUrl(), raw);
                                     }
