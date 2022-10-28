@@ -109,6 +109,17 @@ public class Logger {
         createMessageWithNoPings(ch, content);
     }
 
+    public void uploadLogWithPing(String content) {
+        System.out.println(content);
+
+        GuildMessageChannel ch = getLoggingChannel();
+
+        if(ch == null)
+            return;
+
+        ch.sendMessage(content).queue();
+    }
+
     private void createMessageWithNoPings(GuildMessageChannel ch, String content) {
         ch.sendMessage(content)
                 .setAllowedMentions(new ArrayList<>())

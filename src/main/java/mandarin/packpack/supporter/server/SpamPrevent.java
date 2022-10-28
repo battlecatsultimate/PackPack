@@ -108,6 +108,8 @@ public class SpamPrevent {
 
                 }
 
+                StaticStore.logger.uploadLog("Spammer found : " + id);
+
                 ch.sendMessage(LangID.getStringByID("command_prevent", lang).replace("_TTT_", beautifyMillis(lang)).replace("_UUU_", id)).queue();
 
                 return true;
