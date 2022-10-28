@@ -12,6 +12,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.utils.FileUpload;
@@ -63,7 +64,11 @@ public class StageImage extends ConstraintCommand {
                 String[] messages = getContent(event).split(" ", startIndex+1);
 
                 if(messages.length <= startIndex) {
-                    ch.sendMessage(LangID.getStringByID("stimg_more", lang).replace("_", holder.serverPrefix)).queue();
+                    ch.sendMessage(LangID.getStringByID("stimg_more", lang).replace("_", holder.serverPrefix))
+                            .setMessageReference(getMessage(event))
+                            .mentionRepliedUser(false)
+                            .queue();
+
                     return;
                 }
 
@@ -87,9 +92,12 @@ public class StageImage extends ConstraintCommand {
                     f = generator.generateImage(message, true);
                 }
 
-                handleLast(message, ch, generator);
+                handleLast(message, ch, getMessage(event), generator);
             } else {
-                ch.sendMessage(LangID.getStringByID("stimg_argu", lang).replace("_", holder.serverPrefix)).queue();
+                ch.sendMessage(LangID.getStringByID("stimg_argu", lang).replace("_", holder.serverPrefix))
+                        .setMessageReference(getMessage(event))
+                        .mentionRepliedUser(false)
+                        .queue();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -126,9 +134,11 @@ public class StageImage extends ConstraintCommand {
         return result;
     }
 
-    private void handleLast(String message, MessageChannel ch, ImageGenerator generator) {
+    private void handleLast(String message, MessageChannel ch, Message reference, ImageGenerator generator) {
         if(f != null) {
             ch.sendMessage(LangID.getStringByID("stimg_result", lang))
+                    .setMessageReference(reference)
+                    .mentionRepliedUser(false)
                     .addFiles(FileUpload.fromData(f, f.getName()))
                     .queue(m -> {
                         if(f.exists() && !f.delete()) {
@@ -145,7 +155,10 @@ public class StageImage extends ConstraintCommand {
             ArrayList<String> invalid = generator.getInvalids(message);
 
             if(invalid.isEmpty()) {
-                ch.sendMessage(LangID.getStringByID("stimg_wrong", lang)).queue();
+                ch.sendMessage(LangID.getStringByID("stimg_wrong", lang))
+                        .setMessageReference(reference)
+                        .mentionRepliedUser(false)
+                        .queue();
             } else {
                 StringBuilder builder = new StringBuilder(LangID.getStringByID("stimg_letter", lang));
 
@@ -157,7 +170,10 @@ public class StageImage extends ConstraintCommand {
                     }
                 }
 
-                ch.sendMessage(builder.toString()).queue();
+                ch.sendMessage(builder.toString())
+                        .setMessageReference(reference)
+                        .mentionRepliedUser(false)
+                        .queue();
             }
         }
     }
