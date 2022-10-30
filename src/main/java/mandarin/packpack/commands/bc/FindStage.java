@@ -9,6 +9,7 @@ import common.util.stage.MapColc;
 import common.util.stage.Stage;
 import common.util.stage.StageMap;
 import common.util.unit.Enemy;
+import mandarin.packpack.commands.Command;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.TimedConstraintCommand;
 import mandarin.packpack.supporter.EmojiStore;
@@ -96,19 +97,19 @@ public class FindStage extends TimedConstraintCommand {
         boolean monthly = (param & PARAM_MONTHLY) > 0;
 
         if(enemyName.isBlank() && music < 0 && castle < 0 && background < 0 && !hasBoss) {
-            createMessageWithNoPings(ch, LangID.getStringByID("fstage_noparam", lang), getMessage(event));
+            replyToMessageSafely(ch, LangID.getStringByID("fstage_noparam", lang), getMessage(event), a -> a);
 
             return;
         }
 
         if(background >= 0 && UserProfile.getBCData().bgs.get(background) == null) {
-            createMessageWithNoPings(ch, LangID.getStringByID("fstage_bg", lang), getMessage(event));
+            replyToMessageSafely(ch, LangID.getStringByID("fstage_bg", lang), getMessage(event), a -> a);
 
             return;
         }
 
         if(music >= 0 && UserProfile.getBCData().musics.get(music) == null) {
-            createMessageWithNoPings(ch, LangID.getStringByID("fstage_music", lang), getMessage(event));
+            replyToMessageSafely(ch, LangID.getStringByID("fstage_music", lang), getMessage(event), a -> a);
 
             return;
         }
@@ -116,7 +117,7 @@ public class FindStage extends TimedConstraintCommand {
         ArrayList<CastleList> castleLists = new ArrayList<>(CastleList.defset());
 
         if(castle >= 0 && castle >= castleLists.get(0).size()) {
-            createMessageWithNoPings(ch, LangID.getStringByID("fstage_castle", lang), getMessage(event));
+            replyToMessageSafely(ch, LangID.getStringByID("fstage_castle", lang), getMessage(event), a -> a);
 
             return;
         }
@@ -128,7 +129,7 @@ public class FindStage extends TimedConstraintCommand {
         String[] names = enemyName.split("/");
 
         if(names.length > 5) {
-            createMessageWithNoPings(ch, LangID.getStringByID("fstage_toomany", lang), getMessage(event));
+            replyToMessageSafely(ch, LangID.getStringByID("fstage_toomany", lang), getMessage(event), a -> a);
             disableTimer();
 
             return;
@@ -137,7 +138,7 @@ public class FindStage extends TimedConstraintCommand {
         if(!enemyName.isBlank()) {
             for(int i = 0; i < names.length; i++) {
                 if(names[i].trim().isBlank()) {
-                    createMessageWithNoPings(ch, LangID.getStringByID("fstage_noname", lang), getMessage(event));
+                    replyToMessageSafely(ch, LangID.getStringByID("fstage_noname", lang), getMessage(event), a -> a);
                     disableTimer();
 
                     return;
@@ -146,7 +147,7 @@ public class FindStage extends TimedConstraintCommand {
                 ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(names[i].trim(), lang);
 
                 if(enemies.isEmpty()) {
-                    createMessageWithNoPings(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", names[i].trim()), getMessage(event));
+                    replyToMessageSafely(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", names[i].trim()), getMessage(event), a -> a);
                     disableTimer();
 
                     return;
@@ -170,7 +171,7 @@ public class FindStage extends TimedConstraintCommand {
             ArrayList<Stage> stages = EntityFilter.findStage(filterEnemy, music, background, castle, hasBoss, orOperate, monthly);
 
             if(stages.isEmpty()) {
-                createMessageWithNoPings(ch, LangID.getStringByID("fstage_nost", lang), getMessage(event));
+                replyToMessageSafely(ch, LangID.getStringByID("fstage_nost", lang), getMessage(event), a -> a);
 
                 disableTimer();
             } else if(stages.size() == 1) {
@@ -624,7 +625,7 @@ public class FindStage extends TimedConstraintCommand {
 
         rows.add(ActionRow.of(Button.danger("cancel", LangID.getStringByID("button_cancel", lang))));
 
-        return ch.sendMessage(content).mentionRepliedUser(false).setMessageReference(reference).setAllowedMentions(new ArrayList<>()).setComponents(rows).complete();
+        return getRepliedMessageSafely(ch, content, reference, a -> a.setComponents(rows));
     }
 
     private List<MONTHLY> accumulateCategory(List<Stage> stages) {

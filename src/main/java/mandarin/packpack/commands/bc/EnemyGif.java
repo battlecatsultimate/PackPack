@@ -82,7 +82,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
             String search = filterCommand(getContent(event));
 
             if(search.isBlank()) {
-                createMessageWithNoPings(ch, LangID.getStringByID("eimg_more", lang), getMessage(event));
+                replyToMessageSafely(ch, LangID.getStringByID("eimg_more", lang), getMessage(event), a -> a);
 
                 disableTimer();
 
@@ -92,7 +92,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
             ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(search, lang);
 
             if(enemies.isEmpty()) {
-                createMessageWithNoPings(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(getContent(event))), getMessage(event));
+                replyToMessageSafely(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(getContent(event))), getMessage(event), a -> a);
 
                 disableTimer();
             } else if(enemies.size() == 1) {
@@ -150,7 +150,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
 
                 sb.append("```");
 
-                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).mentionRepliedUser(false).setMessageReference(getMessage(event)).setAllowedMentions(new ArrayList<>()), enemies.size(), data, lang).complete();
+                Message res = getRepliedMessageSafely(ch, sb.toString(), getMessage(event), a -> registerSearchComponents(a, enemies.size(), data, lang));
 
                 int param = checkParameters(getContent(event));
                 int mode = getMode(getContent(event));

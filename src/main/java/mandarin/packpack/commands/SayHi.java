@@ -10,7 +10,6 @@ import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 
-import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -31,29 +30,25 @@ public class SayHi extends Command {
 
         if(chance <= 0.01) {
             if (StaticStore.cultist.contains(m.getId())) {
-                createMessageWithNoPings(ch, LangID.getStringByID("hi_sp_1", lang), getMessage(event));
+                replyToMessageSafely(ch, LangID.getStringByID("hi_sp_1", lang), getMessage(event), a -> a);
             } else {
-                Message msg = ch.sendMessage(LangID.getStringByID("hi_sp_0", lang))
-                        .setMessageReference(getMessage(event))
-                        .mentionRepliedUser(false)
-                        .setAllowedMentions(new ArrayList<>())
-                        .setActionRow(
-                                Button.of(ButtonStyle.SUCCESS, "yes", LangID.getStringByID("button_yes", lang)),
-                                Button.of(ButtonStyle.DANGER, "no", LangID.getStringByID("button_no", lang))
-                        ).complete();
+                Message msg = getRepliedMessageSafely(ch, LangID.getStringByID("hi_sp_0", lang), getMessage(event), a -> a.setActionRow(
+                        Button.of(ButtonStyle.SUCCESS, "yes", LangID.getStringByID("button_yes", lang)),
+                        Button.of(ButtonStyle.DANGER, "no", LangID.getStringByID("button_no", lang))
+                ));
 
                 StaticStore.putHolder(m.getId(), new CultButtonHolder(getMessage(event), msg, ch.getId(), m.getId(), lang));
             }
         } else if(chance <= 0.05) {
-            createMessageWithNoPings(ch, LangID.getStringByID("hi_d", lang), getMessage(event));
+            replyToMessageSafely(ch, LangID.getStringByID("hi_d", lang), getMessage(event), a -> a);
         } else if(StaticStore.cultist.contains(m.getId()) && chance <= 0.1) {
-            createMessageWithNoPings(ch, LangID.getStringByID("hi_sp_1", lang), getMessage(event));
+            replyToMessageSafely(ch, LangID.getStringByID("hi_sp_1", lang), getMessage(event), a -> a);
         } else {
             int index = StaticStore.random.nextInt(13);
 
             switch (index) {
                 case 0:
-                    Message msg = getMessageWithNoPings(ch, LangID.getStringByID("hi_" + index, lang), getMessage(event));
+                    Message msg = getRepliedMessageSafely(ch, LangID.getStringByID("hi_" + index, lang), getMessage(event), a -> a);
 
                     if(msg != null) {
                         Timer changer = new Timer();
@@ -68,7 +63,7 @@ public class SayHi extends Command {
 
                     break;
                 case 2:
-                    Message message = getMessageWithNoPings(ch, LangID.getStringByID("hi_" + index, lang), getMessage(event));
+                    Message message = getRepliedMessageSafely(ch, LangID.getStringByID("hi_" + index, lang), getMessage(event), a -> a);
 
                     if(message != null) {
                         Timer changer = new Timer();
@@ -88,7 +83,7 @@ public class SayHi extends Command {
 
                     break;
                 case 8:
-                    Message ms = getMessageWithNoPings(ch, LangID.getStringByID("hi_" + index, lang), getMessage(event));
+                    Message ms = getRepliedMessageSafely(ch, LangID.getStringByID("hi_" + index, lang), getMessage(event), a -> a);
 
                     if(ms != null) {
                         Timer changer = new Timer();
@@ -106,7 +101,7 @@ public class SayHi extends Command {
 
                     break;
                 default:
-                    createMessageWithNoPings(ch, LangID.getStringByID("hi_" + index, lang), getMessage(event));
+                    replyToMessageSafely(ch, LangID.getStringByID("hi_" + index, lang), getMessage(event), a -> a);
             }
         }
     }

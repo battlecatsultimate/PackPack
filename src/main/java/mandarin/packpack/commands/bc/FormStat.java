@@ -161,7 +161,7 @@ public class FormStat extends ConstraintCommand {
         String command = removeMistake.toString();
 
         if(list.length == 1 || filterCommand(command).isBlank()) {
-            ch.sendMessage(LangID.getStringByID("formst_noname", lang)).mentionRepliedUser(false).setMessageReference(getMessage(event)).setAllowedMentions(new ArrayList<>()).queue();
+            replyToMessageSafely(ch, LangID.getStringByID("formst_noname", lang), getMessage(event), a -> a);
         } else {
             ArrayList<Form> forms = EntityFilter.findUnitWithName(filterCommand(command), lang);
 
@@ -189,7 +189,7 @@ public class FormStat extends ConstraintCommand {
                     }
                 }
             } else if (forms.isEmpty()) {
-                createMessageWithNoPings(ch, LangID.getStringByID("formst_nounit", lang).replace("_", filterCommand(command)), getMessage(event));
+                replyToMessageSafely(ch, LangID.getStringByID("formst_nounit", lang).replace("_", filterCommand(command)), getMessage(event), a -> a);
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", filterCommand(command)));
 
@@ -212,7 +212,7 @@ public class FormStat extends ConstraintCommand {
 
                 sb.append("```");
 
-                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).mentionRepliedUser(false).setMessageReference(getMessage(event)).setAllowedMentions(new ArrayList<>()), forms.size(), data, lang).complete();
+                Message res = getRepliedMessageSafely(ch, sb.toString(), getMessage(event), a -> registerSearchComponents(a, forms.size(), data, lang));
 
                 int param = checkParameters(command);
 

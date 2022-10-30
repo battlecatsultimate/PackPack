@@ -163,17 +163,13 @@ public class Config extends ConstraintCommand {
         pages.add(Button.secondary("prev", LangID.getStringByID("search_prev", lang)).withEmoji(Emoji.fromCustom(EmojiStore.PREVIOUS)).asDisabled());
         pages.add(Button.secondary("next", LangID.getStringByID("search_next", lang)).withEmoji(Emoji.fromCustom(EmojiStore.NEXT)));
 
-        Message msg = ch.sendMessage(builder)
-                .setComponents(
-                        ActionRow.of(StringSelectMenu.create("language").addOptions(languages).build()),
-                        ActionRow.of(StringSelectMenu.create("defLevels").addOptions(levels).build()),
-                        ActionRow.of(StringSelectMenu.create("extra").addOptions(extras).build()),
-                        ActionRow.of(pages),
-                        ActionRow.of(components)
-                )
-                .setMessageReference(getMessage(event))
-                .mentionRepliedUser(false)
-                .complete();
+        Message msg = getRepliedMessageSafely(ch, builder, getMessage(event), a -> a.setComponents(
+                ActionRow.of(StringSelectMenu.create("language").addOptions(languages).build()),
+                ActionRow.of(StringSelectMenu.create("defLevels").addOptions(levels).build()),
+                ActionRow.of(StringSelectMenu.create("extra").addOptions(extras).build()),
+                ActionRow.of(pages),
+                ActionRow.of(components)
+        ));
 
         Member m = getMember(event);
 

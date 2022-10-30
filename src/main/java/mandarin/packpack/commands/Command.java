@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 @SuppressWarnings("unused")
 public abstract class Command {
@@ -92,23 +93,94 @@ public abstract class Command {
         return m.setComponents(rows);
     }
 
-    public static void sendMessageWithFile(MessageChannel ch, String content, File f, Message reference) {
-        ch.sendMessage(content)
-                .addFiles(FileUpload.fromData(f))
-                .setMessageReference(reference)
-                .mentionRepliedUser(false)
-                .setAllowedMentions(new ArrayList<>())
-                .queue(m -> {
-                    if(f.exists() && !f.delete()) {
-                        StaticStore.logger.uploadLog("Failed to delete file : "+f.getAbsolutePath());
-                    }
-                }, e -> {
-                    StaticStore.logger.uploadErrorLog(e, "E/Command::sendMessageWithFile - Failed to upload message with file");
+    public static void replyToMessageSafely(MessageChannel ch, String content, Message reference, Function<MessageCreateAction, MessageCreateAction> function) {
+        MessageCreateAction action = ch.sendMessage(content)
+                .setAllowedMentions(new ArrayList<>());
 
-                    if(f.exists() && !f.delete()) {
-                        StaticStore.logger.uploadLog("Failed to delete file : "+f.getAbsolutePath());
-                    }
-                });
+        action = function.apply(action);
+
+        if(ch instanceof GuildMessageChannel) {
+            Guild g = ((GuildMessageChannel) ch).getGuild();
+
+            if(g.getSelfMember().hasPermission((GuildChannel) ch, Permission.MESSAGE_HISTORY)) {
+                action.setMessageReference(reference).mentionRepliedUser(false).queue();
+            } else {
+                action.queue();
+            }
+        } else {
+            action.queue();
+        }
+    }
+
+    public static Message getRepliedMessageSafely(MessageChannel ch, String content, Message reference, Function<MessageCreateAction, MessageCreateAction> function) {
+        MessageCreateAction action = ch.sendMessage(content)
+                .setAllowedMentions(new ArrayList<>());
+
+        action = function.apply(action);
+
+        if(ch instanceof GuildMessageChannel) {
+            Guild g = ((GuildMessageChannel) ch).getGuild();
+
+            if(g.getSelfMember().hasPermission((GuildChannel) ch, Permission.MESSAGE_HISTORY)) {
+                return action.setMessageReference(reference).mentionRepliedUser(false).complete();
+            } else {
+                return action.complete();
+            }
+        } else {
+            return action.complete();
+        }
+    }
+
+    public static void sendMessageWithFile(MessageChannel ch, String content, File f, Message reference) {
+        MessageCreateAction action = ch.sendMessage(content)
+                .addFiles(FileUpload.fromData(f))
+                .setAllowedMentions(new ArrayList<>());
+
+        if(ch instanceof GuildMessageChannel) {
+            Guild g = ((GuildMessageChannel) ch).getGuild();
+
+            if(g.getSelfMember().hasPermission((GuildChannel) ch, Permission.MESSAGE_HISTORY)) {
+                action = action.setMessageReference(reference).mentionRepliedUser(false);
+            }
+        }
+
+        action.queue(m -> {
+            if(f.exists() && !f.delete()) {
+                StaticStore.logger.uploadLog("Failed to delete file : "+f.getAbsolutePath());
+            }
+        }, e -> {
+            StaticStore.logger.uploadErrorLog(e, "E/Command::sendMessageWithFile - Failed to upload message with file");
+
+            if(f.exists() && !f.delete()) {
+                StaticStore.logger.uploadLog("Failed to delete file : "+f.getAbsolutePath());
+            }
+        });
+    }
+
+    public static void sendMessageWithFile(MessageChannel ch, String content, File f, String name, Message reference) {
+        MessageCreateAction action = ch.sendMessage(content)
+                .addFiles(FileUpload.fromData(f, name))
+                .setAllowedMentions(new ArrayList<>());
+
+        if(ch instanceof GuildMessageChannel) {
+            Guild g = ((GuildMessageChannel) ch).getGuild();
+
+            if(g.getSelfMember().hasPermission((GuildChannel) ch, Permission.MESSAGE_HISTORY)) {
+                action = action.setMessageReference(reference).mentionRepliedUser(false);
+            }
+        }
+
+        action.queue(m -> {
+            if(f.exists() && !f.delete()) {
+                StaticStore.logger.uploadLog("Failed to delete file : "+f.getAbsolutePath());
+            }
+        }, e -> {
+            StaticStore.logger.uploadErrorLog(e, "E/Command::sendMessageWithFile - Failed to upload message with file");
+
+            if(f.exists() && !f.delete()) {
+                StaticStore.logger.uploadLog("Failed to delete file : "+f.getAbsolutePath());
+            }
+        });
     }
 
     public static void sendMessageWithFile(MessageChannel ch, String content, File f, String fileName) {
@@ -126,6 +198,33 @@ public abstract class Command {
                         StaticStore.logger.uploadLog("Failed to delete file : "+f.getAbsolutePath());
                     }
                 });
+    }
+
+    public static void sendMessageWithFile(MessageChannel ch, String content, MessageEmbed embed, File f, String name, Message reference) {
+        MessageCreateAction action = ch.sendMessage(content)
+                .setEmbeds(embed)
+                .addFiles(FileUpload.fromData(f, name))
+                .setAllowedMentions(new ArrayList<>());
+
+        if(ch instanceof GuildMessageChannel) {
+            Guild g = ((GuildMessageChannel) ch).getGuild();
+
+            if(g.getSelfMember().hasPermission((GuildChannel) ch, Permission.MESSAGE_HISTORY)) {
+                action = action.setMessageReference(reference).mentionRepliedUser(false);
+            }
+        }
+
+        action.queue(m -> {
+            if(f.exists() && !f.delete()) {
+                StaticStore.logger.uploadLog("Failed to delete file : "+f.getAbsolutePath());
+            }
+        }, e -> {
+            StaticStore.logger.uploadErrorLog(e, "E/Command::sendMessageWithFile - Failed to upload message with file");
+
+            if(f.exists() && !f.delete()) {
+                StaticStore.logger.uploadLog("Failed to delete file : "+f.getAbsolutePath());
+            }
+        });
     }
 
     public final int DEFAULT_ERROR = -1;
@@ -320,25 +419,9 @@ public abstract class Command {
                 .queue();
     }
 
-    public void createMessageWithNoPings(MessageChannel ch, String content, Message reference) {
-        ch.sendMessage(content)
-                .setMessageReference(reference)
-                .mentionRepliedUser(false)
-                .setAllowedMentions(new ArrayList<>())
-                .queue();
-    }
-
     public Message getMessageWithNoPings(MessageChannel ch, String content) {
         return ch.sendMessage(content)
                 .setAllowedMentions(new ArrayList<>())
-                .complete();
-    }
-
-    public Message getMessageWithNoPings(MessageChannel ch, String content, Message reference) {
-        return ch.sendMessage(content)
-                .setAllowedMentions(new ArrayList<>())
-                .setMessageReference(reference)
-                .mentionRepliedUser(false)
                 .complete();
     }
 

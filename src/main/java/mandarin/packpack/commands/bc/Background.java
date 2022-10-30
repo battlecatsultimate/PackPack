@@ -87,32 +87,18 @@ public class Background extends TimedConstraintCommand {
             File img = ImageDrawing.drawBGImage(bg, 960, 520, false);
 
             if(img != null) {
-                ch.sendMessage(LangID.getStringByID("bg_result", lang).replace("_", Data.trio(bg.id.id)).replace("WWW", 960+"").replace("HHH", 520+""))
-                        .addFiles(FileUpload.fromData(img, "bg.png"))
-                        .setMessageReference(getMessage(event))
-                        .setAllowedMentions(new ArrayList<>())
-                        .queue(m -> {
-                            if(img.exists() && !img.delete()) {
-                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                            }
-                        }, e -> {
-                            StaticStore.logger.uploadErrorLog(e, "E/Background - Failed to upload bg image");
-
-                            if(img.exists() && !img.delete()) {
-                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                            }
-                        });
+                sendMessageWithFile(ch, LangID.getStringByID("bg_result", lang).replace("_", Data.trio(bg.id.id)).replace("WWW", 960+"").replace("HHH", 520+""), img, "bg.png", getMessage(event));
             }
         } else {
             String[] msg = getContent(event).split(" ");
 
             if(msg.length == 1) {
-                createMessageWithNoPings(ch, LangID.getStringByID("bg_more", lang), getMessage(event));
+                replyToMessageSafely(ch, LangID.getStringByID("bg_more", lang), getMessage(event), a -> a);
             } else {
                 int id = getID(getContent(event));
 
                 if(id == -1) {
-                    createMessageWithNoPings(ch, LangID.getStringByID("bg_more", lang), getMessage(event));
+                    replyToMessageSafely(ch, LangID.getStringByID("bg_more", lang), getMessage(event), a -> a);
 
                     return;
                 }
@@ -122,7 +108,7 @@ public class Background extends TimedConstraintCommand {
                 if(bg == null) {
                     int[] size = getBGSize();
 
-                    createMessageWithNoPings(ch, LangID.getStringByID("bg_invalid", lang).replace("_", size[0]+"").replace("-", size[1] + ""), getMessage(event));
+                    replyToMessageSafely(ch, LangID.getStringByID("bg_invalid", lang).replace("_", size[0]+"").replace("-", size[1] + ""), getMessage(event), a -> a);
                     return;
                 }
 
@@ -146,7 +132,7 @@ public class Background extends TimedConstraintCommand {
                 } else {
                     if(anim && bg.effect != -1) {
                         if(cache != null) {
-                            createMessageWithNoPings(ch, LangID.getStringByID("gif_cache", lang).replace("_", cache), getMessage(event));
+                            replyToMessageSafely(ch, LangID.getStringByID("gif_cache", lang).replace("_", cache), getMessage(event), a -> a);
 
                             return;
                         } else {
@@ -160,21 +146,7 @@ public class Background extends TimedConstraintCommand {
                     File img = ImageDrawing.drawBGImage(bg, w, h, eff);
 
                     if(img != null) {
-                        ch.sendMessage(LangID.getStringByID("bg_result", lang).replace("_", Data.trio(bg.id.id)).replace("WWW", w +"").replace("HHH", h+""))
-                                .addFiles(FileUpload.fromData(img, "bg.png"))
-                                .setMessageReference(getMessage(event))
-                                .setAllowedMentions(new ArrayList<>())
-                                .queue(message -> {
-                                    if(img.exists() && !img.delete()) {
-                                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                    }
-                                }, e -> {
-                                    StaticStore.logger.uploadErrorLog(e, "E/Background - Failed to upload bg image");
-
-                                    if(img.exists() && !img.delete()) {
-                                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                    }
-                                });
+                        sendMessageWithFile(ch, LangID.getStringByID("bg_result", lang).replace("_", Data.trio(bg.id.id)).replace("WWW", w +"").replace("HHH", h+""), img, "bg.png", getMessage(event));
                     }
                 }
             }

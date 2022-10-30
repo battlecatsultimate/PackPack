@@ -44,19 +44,19 @@ public class FormSprite extends TimedConstraintCommand {
         String[] contents = getContent(event).split(" ");
 
         if(contents.length == 1) {
-            createMessageWithNoPings(ch, LangID.getStringByID("fimg_more", lang), getMessage(event));
+            replyToMessageSafely(ch, LangID.getStringByID("fimg_more", lang), getMessage(event), a -> a);
         } else {
             String search = filterCommand(getContent(event));
 
             if(search.isBlank()) {
-                createMessageWithNoPings(ch, LangID.getStringByID("fimg_more", lang), getMessage(event));
+                replyToMessageSafely(ch, LangID.getStringByID("fimg_more", lang), getMessage(event), a -> a);
                 return;
             }
 
             ArrayList<Form> forms = EntityFilter.findUnitWithName(search, lang);
 
             if(forms.isEmpty()) {
-                createMessageWithNoPings(ch, LangID.getStringByID("formst_nounit", lang).replace("_", filterCommand(getContent(event))), getMessage(event));
+                replyToMessageSafely(ch, LangID.getStringByID("formst_nounit", lang).replace("_", filterCommand(getContent(event))), getMessage(event), a -> a);
                 disableTimer();
             } else if(forms.size() == 1) {
                 int param = checkParameter(getContent(event));
@@ -88,7 +88,7 @@ public class FormSprite extends TimedConstraintCommand {
 
                 int mode = getModeFromParam(param);
 
-                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).mentionRepliedUser(false).setMessageReference(getMessage(event)).setAllowedMentions(new ArrayList<>()), forms.size(), data, lang).complete();
+                Message res = getRepliedMessageSafely(ch, sb.toString(), getMessage(event), a -> registerSearchComponents(a, forms.size(), data, lang));
 
                 if(res != null) {
                     Member m = getMember(event);

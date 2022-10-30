@@ -64,10 +64,7 @@ public class StmImage extends ConstraintCommand {
                 String[] messages = getContent(event).split(" ", startIndex+1);
 
                 if(messages.length <= startIndex) {
-                    ch.sendMessage(LangID.getStringByID("stimg_more", lang).replace("_", holder.serverPrefix))
-                            .setMessageReference(getMessage(event))
-                            .mentionRepliedUser(false)
-                            .queue();
+                    replyToMessageSafely(ch, LangID.getStringByID("stimg_more", lang).replace("_", holder.serverPrefix), getMessage(event), a -> a);
 
                     return;
                 }
@@ -105,10 +102,7 @@ public class StmImage extends ConstraintCommand {
 
                 handleLast(message, f, ch, getMessage(event), generator);
             } else {
-                ch.sendMessage(LangID.getStringByID("stmimg_argu", lang).replace("_", holder.serverPrefix))
-                        .setMessageReference(getMessage(event))
-                        .mentionRepliedUser(false)
-                        .queue();
+                replyToMessageSafely(ch, LangID.getStringByID("stmimg_argu", lang).replace("_", holder.serverPrefix), getMessage(event), a -> a);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -118,29 +112,12 @@ public class StmImage extends ConstraintCommand {
 
     private void handleLast(String message, File f, MessageChannel ch, Message reference, ImageGenerator generator) {
         if(f != null) {
-            ch.sendMessage(LangID.getStringByID("stimg_result", lang))
-                    .addFiles(FileUpload.fromData(f, f.getName()))
-                    .setMessageReference(reference)
-                    .mentionRepliedUser(false)
-                    .queue(m -> {
-                        if(f.exists() && !f.delete()) {
-                            StaticStore.logger.uploadLog("Can't delete file : "+f.getAbsolutePath());
-                        }
-                    }, e -> {
-                        StaticStore.logger.uploadErrorLog(e, "E/StmImage::handleLast - Failed to upload stage image");
-
-                        if(f.exists() && !f.delete()) {
-                            StaticStore.logger.uploadLog("Can't delete file : "+f.getAbsolutePath());
-                        }
-                    });
+            sendMessageWithFile(ch, LangID.getStringByID("stimg_result", lang), f, f.getName(), reference);
         } else {
             ArrayList<String> invalid = generator.getInvalids(message);
 
             if(invalid.isEmpty()) {
-                ch.sendMessage(LangID.getStringByID("stimg_wrong", lang))
-                        .setMessageReference(reference)
-                        .mentionRepliedUser(false)
-                        .queue();
+                replyToMessageSafely(ch, LangID.getStringByID("stimg_wrong", lang), reference, a -> a);
             } else {
                 StringBuilder builder = new StringBuilder(LangID.getStringByID("stimg_letter", lang));
 
@@ -152,10 +129,7 @@ public class StmImage extends ConstraintCommand {
                     }
                 }
 
-                ch.sendMessage(builder.toString())
-                        .setMessageReference(reference)
-                        .mentionRepliedUser(false)
-                        .queue();
+                replyToMessageSafely(ch, builder.toString(), reference, a -> a);
             }
         }
     }

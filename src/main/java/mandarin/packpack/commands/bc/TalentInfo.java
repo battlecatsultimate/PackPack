@@ -1,6 +1,5 @@
 package mandarin.packpack.commands.bc;
 
-import common.CommonStatic;
 import common.util.Data;
 import common.util.unit.Form;
 import mandarin.packpack.commands.ConstraintCommand;
@@ -46,7 +45,7 @@ public class TalentInfo extends ConstraintCommand {
         String[] list = getContent(event).split(" ",2);
 
         if(list.length == 1 || filterCommand(getContent(event)).isBlank()) {
-            createMessageWithNoPings(ch, LangID.getStringByID("formst_noname", lang), getMessage(event));
+            replyToMessageSafely(ch, LangID.getStringByID("formst_noname", lang), getMessage(event), a -> a);
         } else {
             ArrayList<Form> forms = EntityFilter.findUnitWithName(filterCommand(getContent(event)), lang);
 
@@ -64,14 +63,14 @@ public class TalentInfo extends ConstraintCommand {
                 Form trueForm = f.unit.forms[2];
 
                 if(trueForm.du == null || trueForm.du.getPCoin() == null) {
-                    createMessageWithNoPings(ch, LangID.getStringByID("talentinfo_notal", lang), getMessage(event));
+                    replyToMessageSafely(ch, LangID.getStringByID("talentinfo_notal", lang), getMessage(event), a -> a);
 
                     return;
                 }
 
                 EntityHandler.showTalentEmbed(ch, getMessage(event), trueForm, isFrame, lang);
             } else if (forms.isEmpty()) {
-                createMessageWithNoPings(ch, LangID.getStringByID("formst_nounit", lang).replace("_", filterCommand(getContent(event))), getMessage(event));
+                replyToMessageSafely(ch, LangID.getStringByID("formst_nounit", lang).replace("_", filterCommand(getContent(event))), getMessage(event), a -> a);
             } else {
                 boolean isFrame = isFrame(getContent(event)) && config.useFrame;
 
@@ -96,7 +95,7 @@ public class TalentInfo extends ConstraintCommand {
 
                 sb.append("```");
 
-                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).mentionRepliedUser(false).setMessageReference(getMessage(event)).mentionRepliedUser(false).setAllowedMentions(new ArrayList<>()), forms.size(), data, lang).complete();
+                Message res = getRepliedMessageSafely(ch, sb.toString(), getMessage(event), a -> registerSearchComponents(a, forms.size(), data, lang));
 
                 if(res != null) {
                     Member m = getMember(event);

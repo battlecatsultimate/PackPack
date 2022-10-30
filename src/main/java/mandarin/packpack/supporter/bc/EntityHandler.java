@@ -472,47 +472,49 @@ public class EntityHandler {
         if(talentExists(t))
             spec.setFooter(DataToString.getTalent(f.du, t, lang));
 
-        MessageCreateAction action = ch.sendMessageEmbeds(spec.build()).setMessageReference(reference).mentionRepliedUser(false);
+        Message msg = Command.getRepliedMessageSafely(ch, "", reference, a -> {
+            MessageCreateAction action = a.setEmbeds(spec.build());
 
-        if(img != null)
-            action = action.addFiles(FileUpload.fromData(img, "icon.png"));
+            if(img != null)
+                action = action.addFiles(FileUpload.fromData(img, "icon.png"));
 
-        if(cf != null)
-            action = action.addFiles(FileUpload.fromData(cf, "cf.png"));
+            if(cf != null)
+                action = action.addFiles(FileUpload.fromData(cf, "cf.png"));
 
-        ArrayList<ActionComponent> components = new ArrayList<>();
+            ArrayList<ActionComponent> components = new ArrayList<>();
 
-        if(addEmoji) {
-            if(canFirstForm(f)) {
-                components.add(Button.secondary("first", LangID.getStringByID("button_firf", lang)).withEmoji(Emoji.fromCustom(EmojiStore.TWO_PREVIOUS)));
+            if(addEmoji) {
+                if(canFirstForm(f)) {
+                    components.add(Button.secondary("first", LangID.getStringByID("button_firf", lang)).withEmoji(Emoji.fromCustom(EmojiStore.TWO_PREVIOUS)));
+                }
+
+                if(canPreviousForm(f)) {
+                    components.add(Button.secondary("pre", LangID.getStringByID("button_pref", lang)).withEmoji(Emoji.fromCustom(EmojiStore.PREVIOUS)));
+                }
+
+                if(canNextForm(f)) {
+                    components.add(Button.secondary("next", LangID.getStringByID("button_nexf", lang)).withEmoji(Emoji.fromCustom(EmojiStore.NEXT)));
+                }
+
+                if(canFinalForm(f)) {
+                    components.add(Button.secondary("final", LangID.getStringByID("button_finf", lang)).withEmoji(Emoji.fromCustom(EmojiStore.TWO_NEXT)));
+                }
+
+                if(talent && f.du.getPCoin() != null) {
+                    components.add(Button.secondary("talent", LangID.getStringByID("button_talent", lang)).withEmoji(Emoji.fromCustom(EmojiStore.NP)));
+                }
             }
 
-            if(canPreviousForm(f)) {
-                components.add(Button.secondary("pre", LangID.getStringByID("button_pref", lang)).withEmoji(Emoji.fromCustom(EmojiStore.PREVIOUS)));
+            if(StaticStore.availableUDP.contains(f.unit.id.id)) {
+                components.add(Button.link("https://thanksfeanor.pythonanywhere.com/UDP/"+Data.trio(f.unit.id.id), "UDP").withEmoji(Emoji.fromCustom(EmojiStore.UDP)));
             }
 
-            if(canNextForm(f)) {
-                components.add(Button.secondary("next", LangID.getStringByID("button_nexf", lang)).withEmoji(Emoji.fromCustom(EmojiStore.NEXT)));
+            if(!components.isEmpty()) {
+                action = action.setComponents(ActionRow.of(components));
             }
 
-            if(canFinalForm(f)) {
-                components.add(Button.secondary("final", LangID.getStringByID("button_finf", lang)).withEmoji(Emoji.fromCustom(EmojiStore.TWO_NEXT)));
-            }
-
-            if(talent && f.du.getPCoin() != null) {
-                components.add(Button.secondary("talent", LangID.getStringByID("button_talent", lang)).withEmoji(Emoji.fromCustom(EmojiStore.NP)));
-            }
-        }
-
-        if(StaticStore.availableUDP.contains(f.unit.id.id)) {
-            components.add(Button.link("https://thanksfeanor.pythonanywhere.com/UDP/"+Data.trio(f.unit.id.id), "UDP").withEmoji(Emoji.fromCustom(EmojiStore.UDP)));
-        }
-
-        if(!components.isEmpty()) {
-            action = action.setComponents(ActionRow.of(components));
-        }
-
-        Message msg = action.complete();
+            return action;
+        });
 
         Timer timer = new Timer();
 
@@ -585,15 +587,14 @@ public class EntityHandler {
 
         spec.setFooter(DataToString.accumulateNpCost(unit.du.getPCoin(), lang));
 
-        MessageCreateAction action = ch.sendMessageEmbeds(spec.build())
-                .setAllowedMentions(new ArrayList<>())
-                .setMessageReference(reference)
-                .mentionRepliedUser(false);
+        Command.replyToMessageSafely(ch, "", reference, a -> {
+            MessageCreateAction action = a.setEmbeds(spec.build());
 
-        if(img != null)
-            action = action.addFiles(FileUpload.fromData(img, "icon.png"));
+            if(img != null)
+                action = action.addFiles(FileUpload.fromData(img, "icon.png"));
 
-        action.queue();
+            return action;
+        });
     }
 
     private static ArrayList<Integer> handleTalent(ArrayList<Integer> lv, ArrayList<Integer> t) {
@@ -736,22 +737,8 @@ public class EntityHandler {
 
         spec.setFooter(LangID.getStringByID("enemyst_source", lang));
 
-        MessageCreateAction action = ch.sendMessageEmbeds(spec.build()).setMessageReference(reference).mentionRepliedUser(false);
-
         if(img != null)
-            action = action.addFiles(FileUpload.fromData(img, "icon.png"));
-
-        action.queue(msg -> {
-            if(img != null && img.exists() && !img.delete()) {
-                StaticStore.logger.uploadLog("W/EntityHandlerEnemyEmb | Can't delete file : "+img.getAbsolutePath());
-            }
-        }, err -> {
-            StaticStore.logger.uploadErrorLog(err, "E/EntityHandler::showEnemyEmb - Error happend while trying to dispaly enemy embed");
-
-            if(img != null && img.exists() && !img.delete()) {
-                StaticStore.logger.uploadLog("W/EntityHandlerEnemyEmb | Can't delete file : "+img.getAbsolutePath());
-            }
-        });
+            Command.sendMessageWithFile(ch, "", spec.build(), img, "icon.png", reference);
 
         e.anim.unload();
     }
@@ -1193,27 +1180,29 @@ public class EntityHandler {
             spec.setImage("attachment://scheme.png");
         }
 
-        MessageCreateAction action = ch.sendMessageEmbeds(spec.build()).setMessageReference(reference).mentionRepliedUser(false);
+        Message msg = Command.getRepliedMessageSafely(ch, "", reference, a -> {
+            MessageCreateAction action = a.setEmbeds(spec.build());
 
-        if(img != null)
-            action = action.addFiles(FileUpload.fromData(img, "scheme.png"));
+            if(img != null)
+                action = action.addFiles(FileUpload.fromData(img, "scheme.png"));
 
-        ArrayList<Button> buttons = new ArrayList<>();
+            ArrayList<Button> buttons = new ArrayList<>();
 
-        buttons.add(Button.secondary("castle", LangID.getStringByID("button_castle", lang)).withEmoji(Emoji.fromCustom(EmojiStore.CASTLE)));
-        buttons.add(Button.secondary("bg", LangID.getStringByID("button_bg", lang)).withEmoji(Emoji.fromCustom(EmojiStore.BACKGROUND)));
+            buttons.add(Button.secondary("castle", LangID.getStringByID("button_castle", lang)).withEmoji(Emoji.fromCustom(EmojiStore.CASTLE)));
+            buttons.add(Button.secondary("bg", LangID.getStringByID("button_bg", lang)).withEmoji(Emoji.fromCustom(EmojiStore.BACKGROUND)));
 
-        if(st.mus0 != null) {
-            buttons.add(Button.secondary("music", LangID.getStringByID("button_mus", lang)).withEmoji(Emoji.fromCustom(EmojiStore.MUSIC)));
-        }
+            if(st.mus0 != null) {
+                buttons.add(Button.secondary("music", LangID.getStringByID("button_mus", lang)).withEmoji(Emoji.fromCustom(EmojiStore.MUSIC)));
+            }
 
-        if(hasTwoMusic(st)) {
-            buttons.add(Button.secondary("music2", LangID.getStringByID("button_mus2", lang)).withEmoji(Emoji.fromCustom(EmojiStore.MUSIC_BOSS)));
-        }
+            if(hasTwoMusic(st)) {
+                buttons.add(Button.secondary("music2", LangID.getStringByID("button_mus2", lang)).withEmoji(Emoji.fromCustom(EmojiStore.MUSIC_BOSS)));
+            }
 
-        action = action.setComponents(ActionRow.of(buttons));
+            action = action.setComponents(ActionRow.of(buttons));
 
-        Message msg = action.complete();
+            return action;
+        });
 
         Timer timer = new Timer();
 
@@ -1904,21 +1893,7 @@ public class EntityHandler {
             if(fName.isBlank())
                 fName = LangID.getStringByID("data_unit", lang)+" "+ Data.trio(f.uid.id)+" "+Data.trio(f.fid);
 
-            ch.sendMessage(LangID.getStringByID("fimg_result", lang).replace("_", fName).replace(":::", getModeName(mode, f.anim.anims.length, lang)).replace("=", String.valueOf(frame)))
-                    .addFiles(FileUpload.fromData(img, "result.png"))
-                    .setMessageReference(reference)
-                    .mentionRepliedUser(false)
-                    .queue(m -> {
-                        if(img.exists() && !img.delete()) {
-                            StaticStore.logger.uploadLog("W/EntityHandlerFormImage | Can't delete file : "+img.getAbsolutePath());
-                        }
-                    }, e -> {
-                        StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormImage - Error happened while trying to show form image");
-
-                        if(img.exists() && !img.delete()) {
-                            StaticStore.logger.uploadLog("W/EntityHandlerFormImage | Can't delete file : "+img.getAbsolutePath());
-                        }
-                    });
+            Command.sendMessageWithFile(ch, LangID.getStringByID("fimg_result", lang).replace("_", fName).replace(":::", getModeName(mode, f.anim.anims.length, lang)).replace("=", String.valueOf(frame)), img, "result.png", reference);
         }
     }
 
@@ -1950,21 +1925,7 @@ public class EntityHandler {
             if(eName.isBlank())
                 eName = LangID.getStringByID("data_enemy", lang)+" "+ Data.trio(en.id.id);
 
-            ch.sendMessage(LangID.getStringByID("fimg_result", lang).replace("_", eName).replace(":::", getModeName(mode, en.anim.anims.length, lang)).replace("=", String.valueOf(frame)))
-                    .addFiles(FileUpload.fromData(img, "result.png"))
-                    .setMessageReference(reference)
-                    .mentionRepliedUser(false)
-                    .queue(m -> {
-                        if(img.exists() && !img.delete()) {
-                            StaticStore.logger.uploadLog("W/EntityHandlerFormImage | Can't delete file : "+img.getAbsolutePath());
-                        }
-                    }, e -> {
-                        StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormImage - Error happened while trying to show form image");
-
-                        if(img.exists() && !img.delete()) {
-                            StaticStore.logger.uploadLog("W/EntityHandlerFormImage | Can't delete file : "+img.getAbsolutePath());
-                        }
-                    });
+            Command.sendMessageWithFile(ch, LangID.getStringByID("fimg_result", lang).replace("_", eName).replace(":::", getModeName(mode, en.anim.anims.length, lang)).replace("=", String.valueOf(frame)), img, "result.png", reference);
         }
     }
 
@@ -1999,7 +1960,7 @@ public class EntityHandler {
             String link = StaticStore.imgur.get(id, gif, raw);
 
             if(link != null) {
-                ch.sendMessage(LangID.getStringByID("gif_cache", lang).replace("_", link)).setMessageReference(reference).mentionRepliedUser(false).queue();
+                Command.replyToMessageSafely(ch, LangID.getStringByID("gif_cache", lang).replace("_", link), reference, a -> a);
                 return false;
             }
         }
@@ -2059,7 +2020,7 @@ public class EntityHandler {
 
             return false;
         } else if(img.length() >= max && img.length() < (raw ? 200 * 1024 * 1024 : 10 * 1024 * 1024)) {
-            Message m = ch.sendMessage(LangID.getStringByID("gif_filesize", lang)).setMessageReference(reference).mentionRepliedUser(false).complete();
+            Message m = Command.getRepliedMessageSafely(ch, LangID.getStringByID("gif_filesize", lang), reference, a -> a);
 
             if(m == null) {
                 ch.sendMessage(LangID.getStringByID("gif_failcommand", lang)).queue(message -> {
@@ -2125,21 +2086,7 @@ public class EntityHandler {
             final int fMode = mode;
 
             if(debug || limit > 0) {
-                ch.sendMessage(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)))
-                        .addFiles(FileUpload.fromData(img, raw ? "result.mp4" : "result.gif"))
-                        .setMessageReference(reference)
-                        .mentionRepliedUser(false)
-                        .queue(m -> {
-                            if(img.exists() && !img.delete()) {
-                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                            }
-                        }, e -> {
-                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
-
-                            if(img.exists() && !img.delete()) {
-                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                            }
-                        });
+                Command.sendMessageWithFile(ch, LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)), img, raw ? "result.mp4" : "result.gif", reference);
             } else {
                 GuildChannel chan = client.getGuildChannelById(StaticStore.UNITARCHIVE);
 
@@ -2157,10 +2104,7 @@ public class EntityHandler {
                                     Message.Attachment at = m.getAttachments().get(i);
 
                                     if(at.getFileName().startsWith("result.")) {
-                                        ch.sendMessage(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", siz)+"\n\n"+at.getUrl())
-                                                .setMessageReference(reference)
-                                                .mentionRepliedUser(false)
-                                                .queue();
+                                        Command.replyToMessageSafely(ch, LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", siz)+"\n\n"+at.getUrl(), reference, a -> a);
                                         break;
                                     }
                                 }
@@ -2191,7 +2135,7 @@ public class EntityHandler {
             String link = StaticStore.imgur.get(id, gif, raw);
 
             if(link != null) {
-                ch.sendMessage(LangID.getStringByID("gif_cache", lang).replace("_", link)).setMessageReference(reference).mentionRepliedUser(false).queue();
+                Command.replyToMessageSafely(ch, LangID.getStringByID("gif_cache", lang).replace("_", link), reference, a -> a);
                 return false;
             }
         }
@@ -2244,11 +2188,11 @@ public class EntityHandler {
         String time = DataToString.df.format((end - start)/1000.0);
 
         if(img == null) {
-            ch.sendMessage(LangID.getStringByID("gif_faile", lang)).setMessageReference(reference).mentionRepliedUser(false).queue();
+            Command.replyToMessageSafely(ch, LangID.getStringByID("gif_faile", lang), reference, a -> a);
 
             return false;
         } else if(img.length() >= max && img.length() < (raw ? 200 * 1024 * 1024 : 8 * 1024 * 1024)) {
-            Message m = ch.sendMessage(LangID.getStringByID("gif_filesize", lang)).setMessageReference(reference).mentionRepliedUser(false).complete();
+            Message m = Command.getRepliedMessageSafely(ch, LangID.getStringByID("gif_filesize", lang), reference, a -> a);
 
             if(m == null) {
                 ch.sendMessage(LangID.getStringByID("gif_failcommand", lang)).queue(message -> {
@@ -2313,21 +2257,7 @@ public class EntityHandler {
             final int fMode = mode;
 
             if(debug || limit > 0) {
-                ch.sendMessage(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)))
-                        .setMessageReference(reference)
-                        .mentionRepliedUser(false)
-                        .addFiles(FileUpload.fromData(img, raw ? "result.mp4" : "result.gif"))
-                        .queue(m -> {
-                            if(img.exists() && !img.delete()) {
-                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                            }
-                        }, e -> {
-                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateEnemyAnim - Failed to display enemy anim");
-
-                            if(img.exists() && !img.delete()) {
-                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                            }
-                        });
+                Command.sendMessageWithFile(ch, LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)), img, raw ? "result.mp4" : "result.gif", reference);
             } else {
                 GuildChannel chan = client.getGuildChannelById(StaticStore.ENEMYARCHIVE);
 
@@ -2345,10 +2275,7 @@ public class EntityHandler {
                                     Message.Attachment at = m.getAttachments().get(i);
 
                                     if(at.getFileName().startsWith("result.")) {
-                                        ch.sendMessage(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", siz)+"\n\n"+at.getUrl())
-                                                .setMessageReference(reference)
-                                                .mentionRepliedUser(false)
-                                                .queue();
+                                        Command.replyToMessageSafely(ch, LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", siz)+"\n\n"+at.getUrl(), reference, a -> a);
                                     }
                                 }
 
@@ -2585,9 +2512,9 @@ public class EntityHandler {
         long end = System.currentTimeMillis();
 
         if(result == null) {
-            ch.sendMessage(LangID.getStringByID("bg_fail", lang)).setMessageReference(reference).mentionRepliedUser(false).queue();
+            Command.replyToMessageSafely(ch, LangID.getStringByID("bg_fail", lang), reference, a -> a);
         } else if(result.length() >= 8 * 1024 * 1024) {
-            ch.sendMessage(LangID.getStringByID("bg_toobig", lang).replace("_SSS_", getFileSize(result))).setMessageReference(reference).mentionRepliedUser(false).queue();
+            Command.replyToMessageSafely(ch, LangID.getStringByID("bg_toobig", lang).replace("_SSS_", getFileSize(result)), reference, a -> a);
         } else {
             GuildChannel chan = client.getGuildChannelById(StaticStore.MISCARCHIVE);
 
@@ -2605,10 +2532,7 @@ public class EntityHandler {
                                 Message.Attachment at = m.getAttachments().get(i);
 
                                 if(at.getFileName().startsWith("result.")) {
-                                    ch.sendMessage(LangID.getStringByID("bg_animres", lang).replace("_SSS_", siz).replace("_TTT_", DataToString.df.format((end - start) / 1000.0))+"\n\n"+at.getUrl())
-                                            .setMessageReference(reference)
-                                            .mentionRepliedUser(false)
-                                            .queue();
+                                    Command.replyToMessageSafely(ch, LangID.getStringByID("bg_animres", lang).replace("_SSS_", siz).replace("_TTT_", DataToString.df.format((end - start) / 1000.0))+"\n\n"+at.getUrl(), reference, a -> a);
 
                                     StaticStore.imgur.put("BG - "+Data.trio(bg.id.id), at.getUrl(), true);
                                 }
@@ -2690,7 +2614,7 @@ public class EntityHandler {
 
             return false;
         } else if(img.length() >= max && img.length() < (raw ? 200 * 1024 * 1024 : 8 * 1024 * 1024)) {
-            Message m = ch.sendMessage(LangID.getStringByID("gif_filesize", lang)).setMessageReference(reference).mentionRepliedUser(false).complete();
+            Message m = Command.getRepliedMessageSafely(ch, LangID.getStringByID("gif_filesize", lang), reference, a -> a);
 
             if(m == null) {
                 ch.sendMessage(LangID.getStringByID("gif_failcommand", lang)).queue(message -> {
@@ -2753,21 +2677,7 @@ public class EntityHandler {
             return true;
         } else if(img.length() < max) {
             if(debug || limit > 0) {
-                ch.sendMessage(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)))
-                        .addFiles(FileUpload.fromData(img, raw ? "result.mp4" : "result.gif"))
-                        .setMessageReference(reference)
-                        .mentionRepliedUser(false)
-                        .queue(m -> {
-                            if(img.exists() && !img.delete()) {
-                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                            }
-                        }, e -> {
-                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateEnemyAnim - Failed to display enemy anim");
-
-                            if(img.exists() && !img.delete()) {
-                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                            }
-                        });
+                Command.sendMessageWithFile(ch, LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)), img, raw ? "result.mp4" : "result.gif", reference);
             } else {
                 GuildChannel chan = client.getGuildChannelById(StaticStore.MISCARCHIVE);
 
@@ -2785,10 +2695,7 @@ public class EntityHandler {
                                     Message.Attachment at = m.getAttachments().get(i);
 
                                     if(at.getFileName().startsWith("result.")) {
-                                        ch.sendMessage(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", siz)+"\n\n"+at.getUrl())
-                                                .setMessageReference(reference)
-                                                .mentionRepliedUser(false)
-                                                .queue();
+                                        Command.replyToMessageSafely(ch, LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", siz)+"\n\n"+at.getUrl(), reference, a -> a);
 
                                         StaticStore.imgur.put("SOUL - " + Data.trio(s.getID().id), at.getUrl(), raw);
                                     }
@@ -2915,7 +2822,7 @@ public class EntityHandler {
         }
 
         if(img == null) {
-            ch.sendMessage(LangID.getStringByID("fsp_nodata", lang).replace("_", getIconName(mode, lang))).setMessageReference(reference).mentionRepliedUser(false).queue();
+            Command.replyToMessageSafely(ch, LangID.getStringByID("fsp_nodata", lang).replace("_", getIconName(mode, lang)), reference, a -> a);
             return;
         }
 
@@ -2929,28 +2836,14 @@ public class EntityHandler {
             fName = Data.trio(f.unit.id.id)+"-"+Data.trio(f.fid);
         }
 
-        ch.sendMessage(LangID.getStringByID("fsp_result", lang).replace("_", fName).replace("===", getIconName(mode, lang)))
-                .addFiles(FileUpload.fromData(image, "result.png"))
-                .setMessageReference(reference)
-                .mentionRepliedUser(false)
-                .queue(m -> {
-                    if(image.exists() && !image.delete()) {
-                        StaticStore.logger.uploadLog("W/EntityHandlerFormSprite | Can't delete file : "+image.getAbsolutePath());
-                    }
-                }, e -> {
-                    StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::getFromSprite - Error happened while trying to display form sprite");
-
-                    if(image.exists() && !image.delete()) {
-                        StaticStore.logger.uploadLog("W/EntityHandlerFormSprite | Can't delete file : "+image.getAbsolutePath());
-                    }
-                });
+        Command.sendMessageWithFile(ch, LangID.getStringByID("fsp_result", lang).replace("_", fName).replace("===", getIconName(mode, lang)), image, "result.png", reference);
 
         f.anim.unload();
     }
 
     public static void getEnemySprite(Enemy e, MessageChannel ch, Message reference, int mode, int lang) throws Exception {
         if(e.id == null) {
-            ch.sendMessage(LangID.getStringByID("esp_cantunit", lang)).setMessageReference(reference).mentionRepliedUser(false).queue();
+            Command.replyToMessageSafely(ch, LangID.getStringByID("esp_cantunit", lang), reference, a -> a);
             return;
         }
 
@@ -2990,7 +2883,7 @@ public class EntityHandler {
         }
 
         if(img == null) {
-            ch.sendMessage(LangID.getStringByID("fsp_nodata", lang).replace("_", getIconName(mode, lang))).setMessageReference(reference).mentionRepliedUser(false).queue();
+            Command.replyToMessageSafely(ch, LangID.getStringByID("fsp_nodata", lang).replace("_", getIconName(mode, lang)), reference, a -> a);
             return;
         }
 
@@ -3004,21 +2897,7 @@ public class EntityHandler {
             fName = Data.trio(e.id.id);
         }
 
-        ch.sendMessage(LangID.getStringByID("fsp_result", lang).replace("_", fName).replace("===", getIconName(mode, lang)))
-                .addFiles(FileUpload.fromData(image, "result.png"))
-                .setMessageReference(reference)
-                .mentionRepliedUser(false)
-                .queue(m -> {
-                    if(image.exists() && !image.delete()) {
-                        StaticStore.logger.uploadLog("W/EntityHandlerEnemySprite | Can't delete file : "+image.getAbsolutePath());
-                    }
-                }, err -> {
-                    StaticStore.logger.uploadErrorLog(err, "E/EntityHandler::getEnemySprite - Error happened while trying to upload enemy sprite");
-
-                    if(image.exists() && !image.delete()) {
-                        StaticStore.logger.uploadLog("W/EntityHandlerEnemySprite | Can't delete file : "+image.getAbsolutePath());
-                    }
-                });
+        Command.sendMessageWithFile(ch, LangID.getStringByID("fsp_result", lang).replace("_", fName).replace("===", getIconName(mode, lang)), image, "result.png", reference);
 
         e.anim.unload();
     }
@@ -3048,7 +2927,7 @@ public class EntityHandler {
         FakeImage img = s.getNum();
 
         if(img == null) {
-            ch.sendMessage(LangID.getStringByID("soul_nosoul", lang)).setMessageReference(reference).mentionRepliedUser(false).queue();
+            Command.replyToMessageSafely(ch, LangID.getStringByID("soul_nosoul", lang), reference, a -> a);
 
             return;
         }
@@ -3092,7 +2971,7 @@ public class EntityHandler {
         VFile vf = VFile.get(medalName);
 
         if(vf == null)
-            ch.sendMessage(LangID.getStringByID("medal_nopng", lang)).setMessageReference(reference).mentionRepliedUser(false).queue();
+            Command.replyToMessageSafely(ch, LangID.getStringByID("medal_nopng", lang), reference, a -> a);
         else {
             BufferedImage img = (BufferedImage) vf.getData().getImg().bimg();
 
@@ -3119,21 +2998,7 @@ public class EntityHandler {
             e.addField(name, desc, false);
             e.setImage("attachment://medal.png");
 
-            ch.sendMessageEmbeds(e.build())
-                    .addFiles(FileUpload.fromData(image, "medal.png"))
-                    .setMessageReference(reference)
-                    .mentionRepliedUser(false)
-                    .queue(m -> {
-                        if(image.exists() && !image.delete()) {
-                            StaticStore.logger.uploadLog("W/EntityHandlerMedal | Can't delete file : "+image.getAbsolutePath());
-                        }
-                    }, err -> {
-                        StaticStore.logger.uploadErrorLog(err, "E/EntityHandler::showMedalEmbed - Error happened while trying to show medal embed");
-
-                        if(image.exists() && !image.delete()) {
-                            StaticStore.logger.uploadLog("W/EntityHandlerMedal | Can't delete file : "+image.getAbsolutePath());
-                        }
-                    });
+            Command.sendMessageWithFile(ch, "", e.build(), image, "medal.png", reference);
         }
     }
 
@@ -3171,22 +3036,8 @@ public class EntityHandler {
             e.setImage("attachment://combo.png");
         }
 
-        MessageCreateAction action = ch.sendMessageEmbeds(e.build()).setMessageReference(reference).mentionRepliedUser(false);
-
         if(icon != null)
-            action = action.addFiles(FileUpload.fromData(icon, "combo.png"));
-
-        action.queue(m -> {
-            if(icon != null && icon.exists() && !icon.delete()) {
-                StaticStore.logger.uploadLog("W/EntityHandlerCombo | Can't delete file : "+icon.getAbsolutePath());
-            }
-        }, err -> {
-            StaticStore.logger.uploadErrorLog(err, "E/EntityHandler::showComboEmbed - Error happened while trying to show combo embed");
-
-            if(icon != null && icon.exists() && !icon.delete()) {
-                StaticStore.logger.uploadLog("W/EntityHandlerCombo | Can't delete file : "+icon.getAbsolutePath());
-            }
-        });
+            Command.sendMessageWithFile(ch, "", e.build(), icon, "combo.png", reference);
     }
 
     public static void generateStatImage(MessageChannel ch, List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilData, List<FlagCellData> traitData, CustomMaskUnit[] units, String[] name, File container, File itemContainer, int lv, boolean isFrame, int[] egg, int[][] trueForm, boolean trueFormMode, int uid, int lang) throws Exception {

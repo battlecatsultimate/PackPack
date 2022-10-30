@@ -19,7 +19,6 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
-import net.dv8tion.jda.api.utils.FileUpload;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -63,7 +62,7 @@ public class FormImage extends TimedConstraintCommand {
             String search = filterCommand(getContent(event));
 
             if(search.isBlank()) {
-                createMessageWithNoPings(ch, LangID.getStringByID("fimg_more", lang), getMessage(event));
+                replyToMessageSafely(ch, LangID.getStringByID("fimg_more", lang), getMessage(event), a -> a);
                 disableTimer();
                 return;
             }
@@ -71,7 +70,7 @@ public class FormImage extends TimedConstraintCommand {
             ArrayList<Form> forms = EntityFilter.findUnitWithName(search, lang);
 
             if(forms.isEmpty()) {
-                createMessageWithNoPings(ch, LangID.getStringByID("formst_nounit", lang).replace("_", filterCommand(getContent(event))), getMessage(event));
+                replyToMessageSafely(ch, LangID.getStringByID("formst_nounit", lang).replace("_", filterCommand(getContent(event))), getMessage(event), a -> a);
                 disableTimer();
             } else if(forms.size() == 1) {
                 int param = checkParameters(getContent(event));
@@ -103,22 +102,7 @@ public class FormImage extends TimedConstraintCommand {
                     if(fName.isBlank())
                         fName = LangID.getStringByID("data_unit", lang)+" "+ Data.trio(forms.get(0).uid.id)+" "+Data.trio(forms.get(0).fid);
 
-                    ch.sendMessage(LangID.getStringByID("fimg_result", lang).replace("_", fName).replace(":::", getModeName(mode, forms.get(0).anim.anims.length)).replace("=", String.valueOf(frame)))
-                            .addFiles(FileUpload.fromData(img, "result.png"))
-                            .setMessageReference(getMessage(event))
-                            .mentionRepliedUser(false)
-                            .setAllowedMentions(new ArrayList<>())
-                            .queue(m -> {
-                                if(img.exists() && !img.delete()) {
-                                    StaticStore.logger.uploadLog("Can't delete file : " + img.getAbsolutePath());
-                                }
-                            }, e -> {
-                                StaticStore.logger.uploadErrorLog(e, "E/FormImage - Error happened while trying to upload form image");
-
-                                if(img.exists() && !img.delete()) {
-                                    StaticStore.logger.uploadLog("Can't delete file : " + img.getAbsolutePath());
-                                }
-                            });
+                    sendMessageWithFile(ch, LangID.getStringByID("fimg_result", lang).replace("_", fName).replace(":::", getModeName(mode, forms.get(0).anim.anims.length)).replace("=", String.valueOf(frame)), img, "result.png", getMessage(event));
                 }
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", filterCommand(getContent(event))));
@@ -142,7 +126,7 @@ public class FormImage extends TimedConstraintCommand {
 
                 sb.append("```");
 
-                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).mentionRepliedUser(false).setMessageReference(getMessage(event)).setAllowedMentions(new ArrayList<>()), forms.size(), data, lang).complete();
+                Message res = getRepliedMessageSafely(ch, sb.toString(), getMessage(event), a -> registerSearchComponents(a, forms.size(), data, lang));
 
                 int param = checkParameters(getContent(event));
                 int mode = getMode(getContent(event));

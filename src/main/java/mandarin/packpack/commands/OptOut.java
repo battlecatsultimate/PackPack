@@ -26,7 +26,7 @@ public class OptOut extends ConstraintCommand {
         if(me != null) {
             String id = me.getId();
 
-            Message m = registerConfirmButtons(ch.sendMessage(LangID.getStringByID("optout_warn", lang)), lang).setMessageReference(getMessage(event)).mentionRepliedUser(false).complete();
+            Message m = getRepliedMessageSafely(ch, LangID.getStringByID("optout_warn", lang), getMessage(event), a -> registerConfirmButtons(a, lang));
 
             StaticStore.putHolder(id, new ConfirmButtonHolder(m, getMessage(event), ch.getId(), () -> {
                 StaticStore.optoutMembers.add(id);
@@ -35,10 +35,10 @@ public class OptOut extends ConstraintCommand {
                 StaticStore.prefix.remove(id);
                 StaticStore.timeZones.remove(id);
 
-                ch.sendMessage(LangID.getStringByID("optout_success", lang)).setMessageReference(getMessage(event)).mentionRepliedUser(false).queue();
+                replyToMessageSafely(ch, LangID.getStringByID("optout_success", lang), getMessage(event), a -> a);
             }, lang));
         } else {
-            ch.sendMessage(LangID.getStringByID("optout_nomem", lang)).setMessageReference(getMessage(event)).mentionRepliedUser(false).queue();
+            replyToMessageSafely(ch, LangID.getStringByID("optout_nomem", lang), getMessage(event), a -> a);
         }
     }
 }

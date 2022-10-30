@@ -124,7 +124,7 @@ public class EnemyStat extends ConstraintCommand {
         String command = removeMistake.toString();
 
         if(list.length == 1 || filterCommand(command).isBlank()) {
-            createMessageWithNoPings(ch, LangID.getStringByID("formst_noname", lang), getMessage(event));
+            replyToMessageSafely(ch, LangID.getStringByID("formst_noname", lang), getMessage(event), a -> a);
         } else {
             ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(filterCommand(command), lang);
 
@@ -139,7 +139,7 @@ public class EnemyStat extends ConstraintCommand {
 
                 EntityHandler.showEnemyEmb(enemies.get(0), ch, getMessage(event), isFrame, isExtra, isCompact, magnification, lang);
             } else if(enemies.size() == 0) {
-                createMessageWithNoPings(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(command)), getMessage(event));
+                replyToMessageSafely(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(command)), getMessage(event), a -> a);
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", filterCommand(command)));
 
@@ -162,7 +162,7 @@ public class EnemyStat extends ConstraintCommand {
 
                 sb.append("```");
 
-                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).mentionRepliedUser(false).setMessageReference(getMessage(event)).setAllowedMentions(new ArrayList<>()), enemies.size(), data, lang).complete();
+                Message res = getRepliedMessageSafely(ch, sb.toString(), getMessage(event), a -> registerSearchComponents(a, enemies.size(), data, lang));
 
                 int[] magnification = handleMagnification(command);
 

@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder;
 
+import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.ScamLinkHandler;
@@ -119,10 +120,7 @@ public class ScamLinkSubscriptionHolder extends InteractionHolder<GenericCompone
 
                     StaticStore.scamLinkHandlers.servers.put(g.getId(), handler);
 
-                    ch.sendMessage(LangID.getStringByID("subscam_done", lang).replace("_", targetChannel))
-                            .setMessageReference(msg)
-                            .setAllowedMentions(new ArrayList<>())
-                            .queue();
+                    Command.replyToMessageSafely(ch, LangID.getStringByID("subscam_done", lang).replace("_", targetChannel), msg, a -> a);
 
                     event.deferEdit()
                             .setContent(parseMessage())

@@ -155,7 +155,7 @@ public class StageInfo extends TimedConstraintCommand {
         String[] names = generateStageNameSeries(getContent(event));
 
         if(list.length == 1 || allNull(names)) {
-            ch.sendMessage(LangID.getStringByID("stinfo_noname", lang)).setMessageReference(getMessage(event)).mentionRepliedUser(false).queue();
+            replyToMessageSafely(ch, LangID.getStringByID("stinfo_noname", lang), getMessage(event), a -> a);
 
             disableTimer();
         } else {
@@ -170,7 +170,7 @@ public class StageInfo extends TimedConstraintCommand {
             }
 
             if(stages.isEmpty()) {
-                createMessageWithNoPings(ch, LangID.getStringByID("stinfo_nores", lang).replace("_", generateSearchName(names)), getMessage(event));
+                replyToMessageSafely(ch, LangID.getStringByID("stinfo_nores", lang).replace("_", generateSearchName(names)), getMessage(event), a -> a);
 
                 disableTimer();
             } else if(stages.size() == 1) {
@@ -220,7 +220,9 @@ public class StageInfo extends TimedConstraintCommand {
 
                 sb.append("```");
 
-                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).mentionRepliedUser(false).setMessageReference(getMessage(event)).setAllowedMentions(new ArrayList<>()), stages.size(), accumulateData(stages, false), lang).complete();
+                ArrayList<Stage> finalStages = stages;
+
+                Message res = getRepliedMessageSafely(ch, sb.toString(), getMessage(event), a -> registerSearchComponents(a, finalStages.size(), accumulateData(finalStages, false), lang));
 
                 if(res != null) {
                     Member member = getMember(event);

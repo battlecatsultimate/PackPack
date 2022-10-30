@@ -4,7 +4,6 @@ import common.pack.UserProfile;
 import common.util.Data;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.GlobalTimedConstraintCommand;
-import mandarin.packpack.supporter.Pauser;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
@@ -96,8 +95,6 @@ public class Music extends GlobalTimedConstraintCommand {
         registerRequiredPermission(Permission.MESSAGE_ATTACH_FILES);
     }
 
-    private final Pauser waiter = new Pauser();
-
     @Override
     protected void setOptionalID(GenericMessageEvent event) {
         if(ms == null) {
@@ -160,27 +157,7 @@ public class Music extends GlobalTimedConstraintCommand {
             MessageChannel ch = getChannel(event);
 
             if(ch != null) {
-                ch.sendMessage(LangID.getStringByID("music_upload", lang).replace("_", optionalID))
-                        .setMessageReference(getMessage(event))
-                        .setAllowedMentions(new ArrayList<>())
-                        .addFiles(FileUpload.fromData(file, optionalID+".ogg"))
-                        .queue(m -> {
-                            waiter.resume();
-
-                            if(file.exists() && !file.delete()) {
-                                StaticStore.logger.uploadLog("Can't delete file : "+file.getAbsolutePath());
-                            }
-                        }, e -> {
-                            StaticStore.logger.uploadErrorLog(e, "E/Music - Failed to upload music");
-
-                            waiter.resume();
-
-                            if(file.exists() && !file.delete()) {
-                                StaticStore.logger.uploadLog("Can't delete file : "+file.getAbsolutePath());
-                            }
-                        });
-
-                waiter.pause(() -> onFail(event, DEFAULT_ERROR));
+                sendMessageWithFile(ch, LangID.getStringByID("music_upload", lang).replace("_", optionalID), file, optionalID + ".ogg", getMessage(event));
             }
 
         } else if(ms == null) {
@@ -212,27 +189,7 @@ public class Music extends GlobalTimedConstraintCommand {
             MessageChannel ch = getChannel(event);
 
             if(ch != null) {
-                ch.sendMessage(LangID.getStringByID("music_upload", lang).replace("_", optionalID))
-                        .setMessageReference(getMessage(event))
-                        .setAllowedMentions(new ArrayList<>())
-                        .addFiles(FileUpload.fromData(file, optionalID+".ogg"))
-                        .queue(msg -> {
-                            waiter.resume();
-
-                            if(file.exists() && !file.delete()) {
-                                StaticStore.logger.uploadLog("Can't delete file : "+file.getAbsolutePath());
-                            }
-                        }, e -> {
-                            StaticStore.logger.uploadErrorLog(e, "E/Music - Failed to upload music");
-
-                            waiter.resume();
-
-                            if(file.exists() && !file.delete()) {
-                                StaticStore.logger.uploadLog("Can't delete file : "+file.getAbsolutePath());
-                            }
-                        });
-
-                waiter.pause(() -> onFail(event, DEFAULT_ERROR));
+                sendMessageWithFile(ch, LangID.getStringByID("music_upload", lang).replace("_", optionalID), file, optionalID + ".ogg", getMessage(event));
             }
         }
     }

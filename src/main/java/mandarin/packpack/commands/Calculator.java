@@ -22,7 +22,7 @@ public class Calculator extends ConstraintCommand {
         String[] equation = getContent(event).split(" ", 2);
 
         if(equation.length < 2) {
-            createMessageWithNoPings(ch, LangID.getStringByID("calc_eq", lang));
+            replyToMessageSafely(ch, LangID.getStringByID("calc_eq", lang), getMessage(event), a -> a);
 
             return;
         }
@@ -30,9 +30,9 @@ public class Calculator extends ConstraintCommand {
         double result = Equation.calculate(equation[1].replace(" ", ""), null);
 
         if(Equation.error.isEmpty()) {
-            createMessageWithNoPings(ch, LangID.getStringByID("calc_result", lang).replace("_", Equation.df.format(result)), getMessage(event));
+            replyToMessageSafely(ch, LangID.getStringByID("calc_result", lang).replace("_", Equation.df.format(result)), getMessage(event), a -> a);
         } else {
-            createMessageWithNoPings(ch, Equation.getErrorMessage(lang), getMessage(event));
+            replyToMessageSafely(ch, Equation.getErrorMessage(lang), getMessage(event), a -> a);
         }
     }
 }

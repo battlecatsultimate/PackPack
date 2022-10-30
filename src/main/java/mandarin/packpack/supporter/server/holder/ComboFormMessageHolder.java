@@ -131,7 +131,7 @@ public class ComboFormMessageHolder extends SearchHolder {
                 if(formName.isBlank())
                     formName = Data.trio(form.get(id).unit.id.id) +" - " + Data.trio(form.get(id).fid);
 
-                msg.editMessage(LangID.getStringByID("combo_selected", lang).replace("_", formName)).setComponents().queue();
+                msg.editMessage(LangID.getStringByID("combo_selected", lang).replace("_", formName)).mentionRepliedUser(false).setComponents().queue();
 
                 if(res != null) {
                     Member m = event.getMember();

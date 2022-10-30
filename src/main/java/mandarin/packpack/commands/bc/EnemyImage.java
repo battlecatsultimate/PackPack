@@ -62,7 +62,7 @@ public class EnemyImage extends TimedConstraintCommand {
             String search = filterCommand(getContent(event));
 
             if(search.isBlank()) {
-                createMessageWithNoPings(ch, LangID.getStringByID("eimg_more", lang), getMessage(event));
+                replyToMessageSafely(ch, LangID.getStringByID("eimg_more", lang), getMessage(event), a -> a);
 
                 return;
             }
@@ -70,7 +70,7 @@ public class EnemyImage extends TimedConstraintCommand {
             ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(search, lang);
 
             if(enemies.isEmpty()) {
-                createMessageWithNoPings(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(getContent(event))), getMessage(event));
+                replyToMessageSafely(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(getContent(event))), getMessage(event), a -> a);
 
                 disableTimer();
             } else if(enemies.size() == 1) {

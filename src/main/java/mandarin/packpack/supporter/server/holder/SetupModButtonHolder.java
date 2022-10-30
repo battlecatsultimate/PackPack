@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder;
 
+import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
@@ -98,13 +99,10 @@ public class SetupModButtonHolder extends InteractionHolder<GenericComponentInte
 
                 break;
             case "confirm":
-                Message m = ch.sendMessage(LangID.getStringByID("setup_mem", lang))
-                        .setMessageReference(msg)
-                        .setAllowedMentions(new ArrayList<>())
-                        .setComponents(
+                Message m = Command.getRepliedMessageSafely(ch, LangID.getStringByID("setup_mem", lang), msg, a -> a.setComponents(
                                 ActionRow.of(EntitySelectMenu.create("role", EntitySelectMenu.SelectTarget.ROLE).setPlaceholder(LangID.getStringByID("setup_select", lang)).setRequiredRange(1, 1).build()),
                                 ActionRow.of(Button.success("confirm", LangID.getStringByID("button_confirm", lang)).asDisabled(), Button.danger("cancel", LangID.getStringByID("button_cancel", lang)))
-                        ).complete();
+                        ));
 
                 expired = true;
 

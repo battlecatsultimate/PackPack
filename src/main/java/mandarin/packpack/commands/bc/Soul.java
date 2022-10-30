@@ -49,7 +49,7 @@ public class Soul extends GlobalTimedConstraintCommand {
         common.util.pack.Soul s = UserProfile.getBCData().souls.get(id);
 
         if(s == null) {
-            createMessageWithNoPings(ch, LangID.getStringByID("soul_nosoul", lang), getMessage(event));
+            replyToMessageSafely(ch, LangID.getStringByID("soul_nosoul", lang), getMessage(event), a -> a);
 
             return;
         }
@@ -111,13 +111,13 @@ public class Soul extends GlobalTimedConstraintCommand {
 
         switch (optionalID) {
             case NO_ID:
-                createMessageWithNoPings(ch, LangID.getStringByID("soul_argu", lang), getMessage(event));
+                replyToMessageSafely(ch, LangID.getStringByID("soul_argu", lang), getMessage(event), a -> a);
 
                 return;
             case INVALID_RANGE:
                 int soulLen = UserProfile.getBCData().souls.size() - 1;
 
-                createMessageWithNoPings(ch, LangID.getStringByID("soul_range", lang).replace("_", soulLen + ""), getMessage(event));
+                replyToMessageSafely(ch, LangID.getStringByID("soul_range", lang).replace("_", soulLen + ""), getMessage(event), a -> a);
         }
     }
 

@@ -42,12 +42,12 @@ public class EnemySprite extends TimedConstraintCommand {
         String[] contents = getContent(event).split(" ");
 
         if(contents.length == 1) {
-            createMessageWithNoPings(ch, LangID.getStringByID("eimg_more", lang), getMessage(event));
+            replyToMessageSafely(ch, LangID.getStringByID("eimg_more", lang), getMessage(event), a -> a);
         } else {
             String search = filterCommand(getContent(event));
 
             if(search.isBlank()) {
-                createMessageWithNoPings(ch, LangID.getStringByID("eimg_more", lang), getMessage(event));
+                replyToMessageSafely(ch, LangID.getStringByID("eimg_more", lang), getMessage(event), a -> a);
 
                 return;
             }
@@ -55,7 +55,7 @@ public class EnemySprite extends TimedConstraintCommand {
             ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(search, lang);
 
             if(enemies.isEmpty()) {
-                createMessageWithNoPings(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(getContent(event))), getMessage(event));
+                replyToMessageSafely(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(getContent(event))), getMessage(event), a -> a);
 
                 disableTimer();
             } else if(enemies.size() == 1) {
@@ -88,7 +88,7 @@ public class EnemySprite extends TimedConstraintCommand {
 
                 int mode = getModeFromParam(param);
 
-                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).mentionRepliedUser(false).setMessageReference(getMessage(event)).setAllowedMentions(new ArrayList<>()), enemies.size(), data, lang).complete();
+                Message res = getRepliedMessageSafely(ch, sb.toString(), getMessage(event), a -> registerSearchComponents(a, enemies.size(), data, lang));
 
                 if(res != null) {
                     Member m = getMember(event);

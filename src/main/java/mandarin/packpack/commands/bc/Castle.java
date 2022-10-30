@@ -218,21 +218,7 @@ public class Castle extends ConstraintCommand {
             else
                 castleCode = "SC";
 
-            ch.sendMessage(LangID.getStringByID("castle_result", lang).replace("_CCC_", castleCode).replace("_III_", Data.trio(finalId)).replace("_BBB_", cs.boss_spawn+""))
-                    .addFiles(FileUpload.fromData(img, "result.png"))
-                    .setMessageReference(getMessage(event))
-                    .setAllowedMentions(new ArrayList<>())
-                    .queue(m -> {
-                        if(img.exists() && !img.delete()) {
-                            StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                        }
-                    }, e -> {
-                        StaticStore.logger.uploadErrorLog(e, "E/Castle - Failed to upload castle image");
-
-                        if(img.exists() && !img.delete()) {
-                            StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                        }
-                    });
+            sendMessageWithFile(ch, LangID.getStringByID("castle_result", lang).replace("_CCC_", castleCode).replace("_III_", Data.trio(finalId)).replace("_BBB_", cs.boss_spawn+""), img, "result.png", getMessage(event));
         } else {
             String[] list = getContent(event).split(" ");
 
@@ -242,7 +228,7 @@ public class Castle extends ConstraintCommand {
                 String[] messages = getContent(event).split(" ", startIndex+1);
 
                 if(messages.length <= startIndex) {
-                    createMessageWithNoPings(ch, LangID.getStringByID("castle_more", lang).replace("_", holder.serverPrefix), getMessage(event));
+                    replyToMessageSafely(ch, LangID.getStringByID("castle_more", lang).replace("_", holder.serverPrefix), getMessage(event), a -> a);
 
                     return;
                 }
@@ -254,7 +240,7 @@ public class Castle extends ConstraintCommand {
                 if(StaticStore.isNumeric(msg)) {
                     id = StaticStore.safeParseInt(msg);
                 } else {
-                    createMessageWithNoPings(ch, LangID.getStringByID("castle_number", lang), getMessage(event));
+                    replyToMessageSafely(ch, LangID.getStringByID("castle_number", lang), getMessage(event), a -> a);
 
                     return;
                 }
@@ -313,23 +299,9 @@ public class Castle extends ConstraintCommand {
                 else
                     castleCode = "SC";
 
-                ch.sendMessage(LangID.getStringByID("castle_result", lang).replace("_CCC_", castleCode).replace("_III_", Data.trio(id)).replace("_BBB_", image.boss_spawn+""))
-                        .addFiles(FileUpload.fromData(img, "result.png"))
-                        .setMessageReference(getMessage(event))
-                        .setAllowedMentions(new ArrayList<>())
-                        .queue(m -> {
-                            if(img.exists() && !img.delete()) {
-                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                            }
-                        }, e -> {
-                            StaticStore.logger.uploadErrorLog(e, "E/Castle - Failed to upload castle image");
-
-                            if(img.exists() && !img.delete()) {
-                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                            }
-                        });
+                sendMessageWithFile(ch, LangID.getStringByID("castle_result", lang).replace("_CCC_", castleCode).replace("_III_", Data.trio(id)).replace("_BBB_", image.boss_spawn+""), img, "result.png", getMessage(event));
             } else {
-                createMessageWithNoPings(ch, LangID.getStringByID("castle_argu", lang).replace("_", holder.serverPrefix), getMessage(event));
+                replyToMessageSafely(ch, LangID.getStringByID("castle_argu", lang).replace("_", holder.serverPrefix), getMessage(event), a -> a);
             }
         }
     }

@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder;
 
+import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
@@ -101,10 +102,7 @@ public class SetupMemberButtonHolder extends InteractionHolder<GenericComponentI
 
                 StaticStore.idHolder.put(g.getId(), holder);
 
-                ch.sendMessage(LangID.getStringByID("setup_done", lang).replace("_MOD_", modID).replace("_MEM_", roleID))
-                        .setMessageReference(msg)
-                        .setAllowedMentions(new ArrayList<>())
-                        .queue();
+                Command.replyToMessageSafely(ch, LangID.getStringByID("setup_done", lang).replace("_MOD_", modID).replace("_MEM_", roleID), msg, a -> a);
 
                 event.deferEdit()
                         .setContent(LangID.getStringByID("setup_memsele", lang).replace("_RRR_", roleID))

@@ -7,8 +7,6 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
-import java.util.ArrayList;
-
 public class Prefix extends ConstraintCommand {
     private static final int ERR_CANT_FIND_MEMBER = 0;
 
@@ -24,7 +22,8 @@ public class Prefix extends ConstraintCommand {
 
         if(list.length == 2) {
             if(list[1] == null || list[1].isBlank()) {
-                ch.sendMessage(LangID.getStringByID("prefix_space", lang)).setMessageReference(getMessage(event)).mentionRepliedUser(false).queue();
+                replyToMessageSafely(ch, LangID.getStringByID("prefix_space", lang), getMessage(event), a -> a);
+
                 return;
             }
 
@@ -36,19 +35,15 @@ public class Prefix extends ConstraintCommand {
                 String result = LangID.getStringByID("prefix_set", lang).replace("_", list[1]);
 
                 if(result.length() < 2000) {
-                    ch.sendMessage(result)
-                            .setAllowedMentions(new ArrayList<>())
-                            .setMessageReference(getMessage(event))
-                            .mentionRepliedUser(false)
-                            .queue();
+                    replyToMessageSafely(ch, result, getMessage(event), a -> a);
                 } else {
-                    ch.sendMessage(LangID.getStringByID("prefix_setnone", lang)).setMessageReference(getMessage(event)).mentionRepliedUser(false).queue();
+                    replyToMessageSafely(ch, LangID.getStringByID("prefix_setnone", lang), getMessage(event), a -> a);
                 }
             }
         } else if(list.length == 1) {
-            ch.sendMessage(LangID.getStringByID("prefix_argu", lang)).setMessageReference(getMessage(event)).mentionRepliedUser(false).queue();
+            replyToMessageSafely(ch, LangID.getStringByID("prefix_tooarg", lang), getMessage(event), a -> a);
         } else {
-            ch.sendMessage(LangID.getStringByID("prefix_tooarg", lang)).setMessageReference(getMessage(event)).mentionRepliedUser(false).queue();
+            replyToMessageSafely(ch, LangID.getStringByID("prefix_tooarg", lang), getMessage(event), a -> a);
         }
     }
 
