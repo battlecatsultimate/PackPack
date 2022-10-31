@@ -1725,7 +1725,12 @@ public class DataToString extends Data {
         for(int i = 0; i < info.time.length; i++) {
             String[] drop = new String[3];
 
+            int oldConfig = CommonStatic.getConfig().lang;
+            CommonStatic.getConfig().lang = lang;
+
             String reward = MultiLangCont.getStatic().RWNAME.getCont(data[i][1]);
+
+            CommonStatic.getConfig().lang = oldConfig;
 
             if(reward == null || reward.isBlank())
                 reward = map.rewardNames.get(data[i][1]);
