@@ -248,7 +248,7 @@ public class StageStatAnalyzer extends ConstraintCommand {
             }
         }
 
-        return 30;
+        return 0;
     }
 
     private boolean isSecond(String command) {
