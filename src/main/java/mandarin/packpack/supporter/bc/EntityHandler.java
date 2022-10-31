@@ -843,7 +843,7 @@ public class EntityHandler {
                 StaticStore.logger.uploadLog("Failed to remove file : "+img.getAbsolutePath());
             }
         }, err -> {
-            StaticStore.logger.uploadErrorLog(err, "E/EntityHandler::performEnemyEmb - Erro happened while trying to dispaly enemy embed");
+            StaticStore.logger.uploadErrorLog(err, "E/EntityHandler::performEnemyEmb - Error happened while trying to dispaly enemy embed");
 
             if(img != null && img.exists() && !img.delete()) {
                 StaticStore.logger.uploadLog("Failed to remove file : "+img.getAbsolutePath());
