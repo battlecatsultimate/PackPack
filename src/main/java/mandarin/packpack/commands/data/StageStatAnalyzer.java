@@ -131,7 +131,7 @@ public class StageStatAnalyzer extends ConstraintCommand {
             }
         }
 
-        if(indexes.isEmpty() && (code.equals("CA") || code.equals("RA"))) {
+        if(indexes.isEmpty() && (code.equals("CA") || code.equals("RA") || code.equals("A"))) {
             int index = 1;
 
             while(index < len) {
