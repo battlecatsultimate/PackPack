@@ -488,6 +488,7 @@
   "item_968" : "Panda Cat Stamp",
   "item_969" : "Merc Storia Collab Stamp",
   "item_970" : "World Trigger Collab Stamp",
+  "item_971" : "10th Anniversary Stamp",
   "command_timelimit" : " _ 秒後にコマンドを実行できます!",
   "command_prevent" : "<@_UUU_> あなたがコマンドをスパムしたので _TTT_ の間コマンドを実行できません。 何回もスパムを続けるとBANされる可能性があります!",
   "const_man" : "このコマンドはMandarinSmellにしか実行できません！",
