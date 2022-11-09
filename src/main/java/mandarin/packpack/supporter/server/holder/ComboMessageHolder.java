@@ -7,6 +7,7 @@ import common.util.unit.Combo;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityHandler;
+import mandarin.packpack.supporter.lang.LangID;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -50,7 +51,7 @@ public class ComboMessageHolder extends SearchHolder {
             CommonStatic.getConfig().lang = lang;
 
             if(MultiLangCont.getStatic().COMNAME.getCont(c) != null)
-                comboName += MultiLangCont.getStatic().COMNAME.getCont(c) + " | " + DataToString.getComboType(c, lang);
+                comboName += MultiLangCont.getStatic().COMNAME.getCont(c) + " | " + DataToString.getComboType(c, lang) + " " + String.format(LangID.getStringByID("combo_slot", lang), c.forms.length);
 
             CommonStatic.getConfig().lang = oldConfig;
 

@@ -969,6 +969,7 @@
   "announce_limit" : "This link has 5 minutes limit, call this command again if 5 minutes already have passed : ",
   "combo_noname" : "Searching with [_], but no such combo found!",
   "combo_selected" : "```\nUnit selected as _\n```",
+  "combo_slot" : "[%d Slot(s)]",
   "fstage_category" : "Select category to filter monthly missions",
   "fstage_noparam" : "You didn't provide anything to filter with!",
   "fstage_selected" : "```\nSelected _\n```\n",

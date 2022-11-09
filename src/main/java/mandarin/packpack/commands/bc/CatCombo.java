@@ -242,7 +242,7 @@ public class CatCombo extends TimedConstraintCommand {
             CommonStatic.getConfig().lang = lang;
 
             if(MultiLangCont.getStatic().COMNAME.getCont(c) != null)
-                comboName += MultiLangCont.getStatic().COMNAME.getCont(c) + " | " + DataToString.getComboType(c, lang);
+                comboName += MultiLangCont.getStatic().COMNAME.getCont(c) + " | " + DataToString.getComboType(c, lang) + " " + String.format(LangID.getStringByID("combo_slot", lang), c.forms.length);
 
             CommonStatic.getConfig().lang = oldConfig;
 
