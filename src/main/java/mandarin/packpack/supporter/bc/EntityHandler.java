@@ -3109,22 +3109,40 @@ public class EntityHandler {
 
         List<File> results = new ArrayList<>();
 
+        long start = System.currentTimeMillis();
+
         if(map.customIndex.isEmpty()) {
+            Message msg = Command.getRepliedMessageSafely(ch, String.format(LangID.getStringByID("stanalyzer_analyze", lang), 0, map.list.size()), null, a -> a);
+
             for(int i = 0; i < map.list.size(); i++) {
                 File result = ImageDrawing.drawStageStatImage(map, cellGroups.get(i), isFrame, lv, name[i], code + " - " + Data.trio(map.mapID % 1000) + " - " + Data.trio(i), i, lang);
 
                 if(result != null) {
                     results.add(result);
                 }
+
+                if(System.currentTimeMillis() - start > 1000) {
+                    msg.editMessage(String.format(LangID.getStringByID("stanalyzer_analyze", lang), i + 1, map.list.size())).queue();
+                }
             }
+
+            msg.editMessage(String.format(LangID.getStringByID("stanalyzer_analyze", lang), map.list.size(), map.list.size())).queue();
         } else {
+            Message msg = Command.getRepliedMessageSafely(ch, String.format(LangID.getStringByID("stanalyzer_analyze", lang), 0, map.customIndex.size()), null, a -> a);
+
             for(int i = 0; i < map.customIndex.size(); i++) {
                 File result = ImageDrawing.drawStageStatImage(map, cellGroups.get(i), isFrame, lv, name[i], code + " - " + Data.trio(map.mapID % 1000) + " - " + Data.trio(map.customIndex.get(i)), map.customIndex.get(i), lang);
 
                 if(result != null) {
                     results.add(result);
                 }
+
+                if(System.currentTimeMillis() - start > 1000) {
+                    msg.editMessage(String.format(LangID.getStringByID("stanalyzer_analyze", lang), i + 1, map.customIndex.size())).queue();
+                }
             }
+
+            msg.editMessage(String.format(LangID.getStringByID("stanalyzer_analyze", lang), map.customIndex.size(), map.customIndex.size())).queue();
         }
 
         int i = 0;

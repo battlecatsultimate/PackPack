@@ -1198,6 +1198,7 @@
   "stanalyzer_sid" : "Please specify ID of the map you want to analyze",
   "stanalyzer_code": "Please specify code of the map you want to analyzer (ex : S, RA, NA, etc.)",
   "stanalyzer_range" : "The range you gave exceeds total number of stage in this map",
+  "stanalyzer_analyze" : "Analyzing stage... : %d / %d",
   "missing_permission" : "Bot noticed that it lacks specific permissions which are required to perform this command\nPlease contact moderator to adjust permission, or if you are one of them, please add permissions below to bot\n\n----------\n\n_PPP_\n\n---------\n\nThis message is from server : **_SSS_**\nChannel : **_CCC_**",
   "permission_file" : "Attaching Files",
   "permission_managemsg" : "Managing Messages (Deletion, etc.)",

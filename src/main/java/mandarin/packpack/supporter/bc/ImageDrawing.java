@@ -1790,6 +1790,7 @@ public class ImageDrawing {
 
     public static File drawStageStatImage(CustomStageMap map, List<CellDrawer> group, boolean isFrame, int lv, String name, String code, int index, int lang) throws Exception {
         Stage st = map.list.get(index);
+        boolean isRanking = code.replaceAll(" - \\d+ - \\d+", "").equals("R") || code.replaceAll(" - \\d+ - \\d+", "").equals("T");
 
         Canvas cv = new Canvas();
 
@@ -1854,7 +1855,7 @@ public class ImageDrawing {
             uw = (title.getWidth() - CellDrawer.lineOffset * 6) / 4;
         }
 
-        int[] stw = measureEnemySchemeWidth(st, map, cfm, isFrame, lv, lang);
+        int[] stw = measureEnemySchemeWidth(st, map, cfm, isRanking, isFrame, lv, lang);
         int[] dw = measureDropTableWidth(st, map, cfm, lang, true);
         int[] sw = measureDropTableWidth(st, map, cfm, lang, false);
 
@@ -1871,7 +1872,7 @@ public class ImageDrawing {
         int desiredScoreGap = innerTableTextMargin;
 
         if(dw != null) {
-            int tw = maxAmong(dw[TOTAL_WIDTH] * 2 + CellDrawer.lineOffset * 2, sw[TOTAL_WIDTH] * 2 + CellDrawer.lineOffset * 2, stw[STAGE_WIDTH]);
+            int tw = maxAmong(dw[TOTAL_WIDTH] * 2 + CellDrawer.lineOffset * 2, sw[TOTAL_WIDTH] * 2 + CellDrawer.lineOffset * 2, stw[STAGE_WIDTH] - statPanelMargin * 2);
 
             if(tw > uw * 4 + CellDrawer.lineOffset * 6) {
                 uw = (int) Math.round((tw - CellDrawer.lineOffset * 6) / 4.0);
@@ -1891,7 +1892,7 @@ public class ImageDrawing {
                         tempTotalWidth -= stw[i];
                     }
 
-                    desiredStageGap = (int) Math.round((tempTotalWidth - rewardIconSize) / 15.0);
+                    desiredStageGap = (int) Math.round((tempTotalWidth - rewardIconSize) / 19.0);
                 }
             } else {
                 desiredRewardGap = (int) Math.round((uw * 2 + CellDrawer.lineOffset * 2 - dw[CHANCE_WIDTH] - dw[REWARD_WIDTH] - dw[AMOUNT_WIDTH] - rewardIconSize) / 7.0);
@@ -1903,7 +1904,7 @@ public class ImageDrawing {
                     tempTotalWidth -= stw[i];
                 }
 
-                desiredStageGap = (int) Math.round((tempTotalWidth - rewardIconSize) / 15.0);
+                desiredStageGap = (int) Math.round((tempTotalWidth - rewardIconSize) / 19.0);
             }
         } else {
             if(stw[STAGE_WIDTH] > uw * 4 + CellDrawer.lineOffset * 6 + statPanelMargin * 2) {
@@ -1915,11 +1916,11 @@ public class ImageDrawing {
                     tempTotalWidth -= stw[i];
                 }
 
-                desiredStageGap = (int) Math.round((tempTotalWidth - rewardIconSize) / 15.0);
+                desiredStageGap = (int) Math.round((tempTotalWidth - rewardIconSize) / 19.0);
             }
         }
 
-        BufferedImage enemySchematic = drawEnemySchemeTable(st, map, stw, desiredStageGap, isFrame, lv, lang);
+        BufferedImage enemySchematic = drawEnemySchemeTable(st, map, stw, desiredStageGap, isRanking, isFrame, lv, lang);
 
         BufferedImage rewardTable = drawRewardTable(st, map, dw, desiredRewardGap, lang, true);
         BufferedImage scoreTable = drawRewardTable(st, map, sw, desiredScoreGap, lang, false);
@@ -2319,12 +2320,12 @@ public class ImageDrawing {
      * @param lang Language value
      * @return Returns { Width of Enemy, Width of Number, Width of Base, Width of Magnification, Width of Start, Width of Layer, Width of Boss, Total Width, Total Height }
      */
-    private static int[] measureEnemySchemeWidth(Stage st, CustomStageMap map, FontMetrics cfm, boolean isFrame, int lv, int lang) {
+    private static int[] measureEnemySchemeWidth(Stage st, CustomStageMap map, FontMetrics cfm, boolean isRanking, boolean isFrame, int lv, int lang) {
         int[] result = new int[11];
 
         int ew = cfm.stringWidth(LangID.getStringByID("data_enemy", lang));
         int nw = cfm.stringWidth(LangID.getStringByID("data_number", lang));
-        int bw = cfm.stringWidth(LangID.getStringByID("data_basehealth", lang));
+        int bw = cfm.stringWidth(LangID.getStringByID(isRanking ? "data_basedealt" : "data_basehealth", lang));
         int mw = cfm.stringWidth(LangID.getStringByID("data_manif", lang));
         int sw = cfm.stringWidth(LangID.getStringByID("data_startres", lang));
         int lw = cfm.stringWidth(LangID.getStringByID("data_layer", lang));
@@ -2378,14 +2379,15 @@ public class ImageDrawing {
             nw = Math.max(nw, cfm.stringWidth(number));
 
             String baseHP;
+            String suffix = isRanking ? "" : "%";
 
             if(line.castle_0 == line.castle_1 || line.castle_1 == 0)
-                baseHP = line.castle_0+"%";
+                baseHP = line.castle_0 + suffix;
             else {
                 int minHealth = Math.min(line.castle_0, line.castle_1);
                 int maxHealth = Math.max(line.castle_0, line.castle_1);
 
-                baseHP = minHealth + " ~ " + maxHealth + "%";
+                baseHP = minHealth + " ~ " + maxHealth + suffix;
             }
 
             bw = Math.max(bw, cfm.stringWidth(baseHP));
@@ -2653,8 +2655,8 @@ public class ImageDrawing {
         }
     }
 
-    private static BufferedImage drawEnemySchemeTable(Stage st, CustomStageMap map, int[] dimension, int desiredGap, boolean isFrame, int lv, int lang) throws Exception {
-        int w = desiredGap * 15 + rewardIconSize;
+    private static BufferedImage drawEnemySchemeTable(Stage st, CustomStageMap map, int[] dimension, int desiredGap, boolean isRanking, boolean isFrame, int lv, int lang) throws Exception {
+        int w = desiredGap * 19 + rewardIconSize;
 
         for(int i = ENEMY; i <= BOSS; i++) {
             w += dimension[i];
@@ -2686,7 +2688,7 @@ public class ImageDrawing {
         String[] headerText = {
                 LangID.getStringByID("data_enemy", lang),
                 LangID.getStringByID("data_number", lang),
-                LangID.getStringByID("data_basehealth", lang),
+                LangID.getStringByID(isRanking ? "data_basedealt" : "data_basehealth", lang),
                 LangID.getStringByID("data_manif", lang),
                 LangID.getStringByID("data_startres", lang),
                 LangID.getStringByID("data_layer", lang),
@@ -2781,13 +2783,15 @@ public class ImageDrawing {
 
                         break;
                     case BASE:
+                        String suffix = isRanking ? "" : "%";
+
                         if(line.castle_0 == line.castle_1 || line.castle_1 == 0)
-                            content = line.castle_0+"%";
+                            content = line.castle_0 + suffix;
                         else {
                             int minHealth = Math.min(line.castle_0, line.castle_1);
                             int maxHealth = Math.max(line.castle_0, line.castle_1);
 
-                            content = minHealth + " ~ " + maxHealth + "%";
+                            content = minHealth + " ~ " + maxHealth + suffix;
                         }
 
                         break;

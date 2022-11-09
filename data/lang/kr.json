@@ -1175,6 +1175,7 @@
   "stanalyzer_sid" : "분석할 맵의 ID를 제공해 주세요",
   "stanalyzer_code": "분석할 맵의 코드를 제공해 주세요 (예시 : S, RA, NA, 등)",
   "stanalyzer_range" : "제공된 범위 값들 중 하나가 이 맵이 갖고 있는 총 스테이지 개수보다 큰 값을 가지고 있습니다",
+  "stanalyzer_analyze" : "스테이지 분석중... : %d / %d",
   "missing_permission" : "봇이 해당 명령어를 수행하기 위해 요구되는 권한이 없음을 감지했습니다\n서버 관리자에게 연락하거나 혹은 이미 관리 권한을 가지고 계신다면 아래의 권한을 봇에게 부여해 주세요\n\n----------\n\n_PPP_\n\n---------\n\n이 메세지는 다음의 서버에서 왔습니다 : **_SSS_**\n채널 : **_CCC_**",
   "permission_file" : "파일 첨부",
   "permission_managemsg" : "메세지 관리 (제거 등)",

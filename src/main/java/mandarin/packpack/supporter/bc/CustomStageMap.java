@@ -44,30 +44,36 @@ public class CustomStageMap extends StageMap {
     public CustomStageMap(String[] option, VFile data, VFile stageOption, VFile characterGroup, VFile[] stages, int mapID) {
         this.mapID = mapID;
 
-        int len = StaticStore.safeParseInt(option[1]);
+        if(option.length != 0) {
+            int len = StaticStore.safeParseInt(option[1]);
 
-        stars = new int[len];
+            stars = new int[len];
 
-        for(int i = 0; i < len; i++) {
-            stars[i] = StaticStore.safeParseInt(option[2 + i]);
-        }
+            for(int i = 0; i < len; i++) {
+                stars[i] = StaticStore.safeParseInt(option[2 + i]);
+            }
 
-        starMask = StaticStore.safeParseInt(option[12]);
+            starMask = StaticStore.safeParseInt(option[12]);
 
-        info = new StageMapInfo(this);
+            info = new StageMapInfo(this);
 
-        if(!option[7].equals("0")) {
-            info.resetMode = StaticStore.safeParseInt(option[7]);
-        }
+            if(!option[7].equals("0")) {
+                info.resetMode = StaticStore.safeParseInt(option[7]);
+            }
 
-        if(!option[8].equals("0")) {
-            info.clearLimit = StaticStore.safeParseInt(option[8]);
-        }
+            if(!option[8].equals("0")) {
+                info.clearLimit = StaticStore.safeParseInt(option[8]);
+            }
 
-        info.hiddenUponClear = !option[13].equals("0");
+            info.hiddenUponClear = !option[13].equals("0");
 
-        if(!option[10].equals("0")) {
-            info.waitTime = StaticStore.safeParseInt(option[10]);
+            if(!option[10].equals("0")) {
+                info.waitTime = StaticStore.safeParseInt(option[10]);
+            }
+        } else {
+            stars = new int[] { 100 };
+
+            info = new StageMapInfo(this);
         }
 
         Queue<String> dataLines = data.getData().readLine();
