@@ -519,10 +519,16 @@ public class ImageDrawing {
         }
 
         if(rect.width == 0)
-            rect.width = 1;
+            rect.width = 2;
 
         if(rect.height == 0)
-            rect.height = 1;
+            rect.height = 2;
+
+        if(rect.width % 2 == 1)
+            rect.width++;
+
+        if(rect.height % 2 == 1)
+            rect.height++;
 
         BufferedImage result = new BufferedImage(rect.width, rect.height, BufferedImage.TYPE_INT_ARGB);
         FG2D rg = new FG2D(result.getGraphics());

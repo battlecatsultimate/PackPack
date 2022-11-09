@@ -5,6 +5,7 @@ import common.system.fake.FakeImage;
 import common.system.fake.FakeTransform;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lzw.AnimatedGifEncoder;
+import org.apache.commons.lang3.SystemUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -13,8 +14,10 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStreamReader;
 
 import static java.awt.AlphaComposite.SRC_OVER;
 
@@ -328,37 +331,35 @@ public class FG2D implements FakeGraphics {
 		if(progress == null)
 			return;
 
-		AnimatedGifEncoder encoder = new AnimatedGifEncoder();
-
-		encoder.setSize(original.getWidth(), original.getHeight());
-		encoder.setFrameRate(10f);
-		encoder.setRepeat(1);
-
-		File result = StaticStore.generateTempFile(progress, "progression", ".gif", false);
+		File result = StaticStore.generateTempFile(progress, "progression", ".mp4", false);
 
 		if(result == null || !result.exists())
 			return;
 
-		FileOutputStream fos = new FileOutputStream(result);
+		int w = original.getWidth();
+		int h = original.getHeight();
 
-		encoder.start(fos);
+		if(w % 2 == 1)
+			w--;
 
-		int i = 0;
+		if(h % 2 == 1)
+			h--;
 
-		while(true) {
-			File image = new File(progress, "p" + (i == 0 ? "" : "_" + i) + ".png");
+		ProcessBuilder builder = new ProcessBuilder(SystemUtils.IS_OS_WINDOWS ? "data/ffmpeg/bin/ffmpeg" : "ffmpeg", "-r", "10", "-f", "image2", "-s", w+"x"+h,
+				"-i", "temp/"+progress.getName()+"/p_%d.png", "-vcodec", "libx264", "-crf", "25", "-pix_fmt", "yuv420p", "-y", "temp/"+progress.getName()+"/"+result.getName());
 
-			if(!image.exists())
-				break;
+		builder.redirectErrorStream(true);
 
-			BufferedImage img = ImageIO.read(image);
+		Process pro = builder.start();
 
-			encoder.addFrame(img);
+		BufferedReader reader = new BufferedReader(new InputStreamReader(pro.getInputStream()));
 
-			i++;
+		String line;
+
+		while((line = reader.readLine()) != null) {
+			System.out.println(line);
 		}
 
-		encoder.finish();
-		fos.close();
+		pro.waitFor();
 	}
 }
