@@ -1849,10 +1849,17 @@ public class ImageDrawing {
             uw = (mw - CellDrawer.lineOffset * 6) / 4;
         }
 
-        BufferedImage title = getStageTitleImage(name, code, tfm, cfm);
+        FontRenderContext bfrc = tfm.getFontRenderContext();
+        FontRenderContext lfrc = cfm.getFontRenderContext();
 
-        if(title.getWidth() > uw * 4 + CellDrawer.lineOffset * 6) {
-            uw = (title.getWidth() - CellDrawer.lineOffset * 6) / 4;
+        Rectangle2D nRect = titleFont.createGlyphVector(bfrc, name).getPixelBounds(null, 0, 0);
+        Rectangle2D lRect = contentFont.createGlyphVector(lfrc, code).getPixelBounds(null, 0, 0);
+
+        int titleHeight = (int) Math.round(nRect.getHeight() + nameMargin + lRect.getHeight());
+        int titleWidth = (int) Math.max(nRect.getWidth(), lRect.getWidth()) + bgMargin;
+
+        if(titleWidth > uw * 4 + CellDrawer.lineOffset * 6) {
+            uw = (titleWidth - CellDrawer.lineOffset * 6) / 4;
         }
 
         int[] stw = measureEnemySchemeWidth(st, map, cfm, isRanking, isFrame, lv, lang);
@@ -1920,56 +1927,42 @@ public class ImageDrawing {
             }
         }
 
-        BufferedImage enemySchematic = drawEnemySchemeTable(st, map, stw, desiredStageGap, isRanking, isFrame, lv, lang);
+        int schemeHeight = innerTableCellMargin * (st.data.datas.length + 1);
 
-        BufferedImage rewardTable = drawRewardTable(st, map, dw, desiredRewardGap, lang, true);
-        BufferedImage scoreTable = drawRewardTable(st, map, sw, desiredScoreGap, lang, false);
-
-        int w = uw * 4 + CellDrawer.lineOffset * 6;
-        int h = 0;
+        int infoWidth = uw * 4 + CellDrawer.lineOffset * 6;
+        int infoHeight = 0;
 
         for(int i = 0; i < group.size(); i++) {
             if(i < group.size() - 2) {
-                h += uh;
-                h += cellMargin;
+                infoHeight += uh;
+                infoHeight += cellMargin;
             } else if(i < group.size() - 1) {
-                h += ah + cellMargin * 2;
+                infoHeight += ah + cellMargin * 2;
             } else {
-                h += mh + cellMargin * 2;
+                infoHeight += mh + cellMargin * 2;
             }
         }
 
-        BufferedImage infoPanel = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        int finW = infoWidth + statPanelMargin * 2 + bgMargin * 2;
+        int finH = bgMargin * 6 + titleHeight + statPanelMargin * 2 + infoHeight + cellMargin * 2 + uh - CellDrawer.textMargin - ch;
+        int panelH = statPanelMargin * 2 + infoHeight + cellMargin * 2 + uh - CellDrawer.textMargin - ch;
 
-        FG2D pg = new FG2D(infoPanel.getGraphics());
+        List<String[]> rewardData = DataToString.getRewards(st, map, lang);
+        List<String[]> scoreData = DataToString.getScoreDrops(st, map, lang);
 
-        int x = 0;
-        int y = 0;
-
-        for(int i = 0; i < group.size(); i++) {
-            group.get(i).draw(pg, x, y, uw, offset, uh, nameFont, contentFont);
-
-            if(i < group.size() - 1)
-                y += uh + cellMargin;
-            else
-                y += ah + cellMargin;
-
-            if(i == group.size() - 3 || i == group.size() - 2)
-                y += cellMargin;
-        }
-
-        int finW = infoPanel.getWidth() + statPanelMargin * 2 + bgMargin * 2;
-        int finH = bgMargin * 6 + title.getHeight() + statPanelMargin * 2 + infoPanel.getHeight() + cellMargin * 2 + uh - CellDrawer.textMargin - ch;
-        int panelH = statPanelMargin * 2 + infoPanel.getHeight() + cellMargin * 2 + uh - CellDrawer.textMargin - ch;
-
-        if(rewardTable != null || scoreTable != null) {
+        if(rewardData != null || scoreData != null) {
             int tableH = 0;
 
-            if(rewardTable != null)
-                tableH = Math.max(rewardTable.getHeight(), tableH);
+            if(rewardData != null) {
+                assert dw != null;
 
-            if(scoreTable != null)
-                tableH = Math.max(scoreTable.getHeight(), tableH);
+                tableH = Math.max(dw[TOTAL_HEIGHT], tableH);
+            }
+
+            if(scoreData != null) {
+                assert sw != null;
+                tableH = Math.max(sw[TOTAL_HEIGHT], tableH);
+            }
 
             finH += tableH;
             panelH += tableH;
@@ -1978,7 +1971,7 @@ public class ImageDrawing {
             panelH += ch;
         }
 
-        finH += enemySchematic.getHeight();
+        finH += schemeHeight;
 
         BufferedImage result = new BufferedImage(finW, finH, BufferedImage.TYPE_INT_ARGB);
 
@@ -1990,41 +1983,57 @@ public class ImageDrawing {
 
         g.setColor(24, 25, 28);
 
-        g.fillRoundRect(0, -cornerRadius, finW, cornerRadius + bgMargin * 10 + title.getHeight(), cornerRadius, cornerRadius);
+        g.fillRoundRect(0, -cornerRadius, finW, cornerRadius + bgMargin * 10 + titleHeight, cornerRadius, cornerRadius);
 
         g.setColor(64, 68, 75);
 
-        g.fillRoundRect(bgMargin, bgMargin * 4 + title.getHeight(), infoPanel.getWidth() + statPanelMargin * 2, panelH, cornerRadius, cornerRadius);
+        g.fillRoundRect(bgMargin, bgMargin * 4 + titleHeight, infoWidth + statPanelMargin * 2, panelH, cornerRadius, cornerRadius);
 
-        g.drawImage(title, bgMargin, bgMargin * 2);
-        g.drawImage(infoPanel, bgMargin + statPanelMargin, bgMargin * 4 + title.getHeight() + statPanelMargin);
+        drawStageTitleImage(g, name, code, tfm, cfm);
+
+        int x = bgMargin + statPanelMargin;
+        int y = bgMargin * 4 + titleHeight + statPanelMargin;
+
+        for(int i = 0; i < group.size(); i++) {
+            group.get(i).draw(g, x, y, uw, offset, uh, nameFont, contentFont);
+
+            if(i < group.size() - 1)
+                y += uh + cellMargin;
+            else
+                y += ah + cellMargin;
+
+            if(i == group.size() - 3 || i == group.size() - 2)
+                y += cellMargin;
+        }
 
         g.setColor(191, 191, 191);
 
         g.setFont(nameFont);
 
-        g.drawText(LangID.getStringByID("data_rewarddrop", lang), bgMargin + statPanelMargin, bgMargin * 4 + title.getHeight() + statPanelMargin + infoPanel.getHeight() + cellMargin + offset / 2);
-        g.drawText(LangID.getStringByID("data_scoredrop", lang), bgMargin + statPanelMargin + uw * 2 + CellDrawer.lineOffset * 4, bgMargin * 4 + title.getHeight() + statPanelMargin + infoPanel.getHeight() + cellMargin + offset / 2);
+        g.drawText(LangID.getStringByID("data_rewarddrop", lang), bgMargin + statPanelMargin, bgMargin * 4 + titleHeight + statPanelMargin + infoHeight + cellMargin + offset / 2);
+        g.drawText(LangID.getStringByID("data_scoredrop", lang), bgMargin + statPanelMargin + uw * 2 + CellDrawer.lineOffset * 4, bgMargin * 4 + titleHeight + statPanelMargin + infoHeight + cellMargin + offset / 2);
 
-        if(rewardTable != null) {
-            g.drawImage(rewardTable, bgMargin + statPanelMargin, bgMargin * 4 + title.getHeight() + statPanelMargin + infoPanel.getHeight() + cellMargin * 2 + uh - ch - CellDrawer.textMargin);
+        int stack = bgMargin * 4 + titleHeight + statPanelMargin + infoHeight + cellMargin * 2 + uh - ch - CellDrawer.textMargin;
+
+        if(rewardData != null) {
+            drawRewardTable(g, bgMargin + statPanelMargin, stack, st, map, dw, desiredRewardGap, lang, true);
         } else {
             g.setFont(contentFont);
             g.setColor(239, 239, 239);
 
-            g.drawText(LangID.getStringByID("data_none", lang), bgMargin + statPanelMargin, bgMargin * 4 + title.getHeight() + statPanelMargin + infoPanel.getHeight() + cellMargin * 2 + uh - ch - CellDrawer.textMargin + offset / 2);
+            g.drawText(LangID.getStringByID("data_none", lang), bgMargin + statPanelMargin, stack + offset / 2);
         }
 
-        if(scoreTable != null) {
-            g.drawImage(scoreTable, bgMargin + statPanelMargin + uw * 2 + CellDrawer.lineOffset * 4, bgMargin * 4 + title.getHeight() + statPanelMargin + infoPanel.getHeight() + cellMargin * 2 + uh - ch - CellDrawer.textMargin);
+        if(scoreData != null) {
+            drawRewardTable(g, bgMargin + statPanelMargin + uw * 2 + CellDrawer.lineOffset * 4, stack, st, map, dw, desiredScoreGap, lang, false);
         } else {
             g.setFont(contentFont);
             g.setColor(239, 239, 239);
 
-            g.drawText(LangID.getStringByID("data_none", lang), bgMargin + statPanelMargin + uw * 2 + CellDrawer.lineOffset * 4, bgMargin * 4 + title.getHeight() + statPanelMargin + infoPanel.getHeight() + cellMargin * 2 + uh - ch - CellDrawer.textMargin + offset / 2);
+            g.drawText(LangID.getStringByID("data_none", lang), bgMargin + statPanelMargin + uw * 2 + CellDrawer.lineOffset * 4, stack + offset / 2);
         }
 
-        g.drawImage(enemySchematic, bgMargin, bgMargin * 4 + title.getHeight() + panelH + bgMargin);
+        drawEnemySchemeTable(g, bgMargin * 4 + titleHeight  + panelH + bgMargin, st, map, stw, desiredStageGap, isRanking, isFrame, lv, lang);
 
         File f = new File("./temp/");
 
@@ -2149,19 +2158,12 @@ public class ImageDrawing {
         return result;
     }
 
-    private static BufferedImage getStageTitleImage(String name, String code, FontMetrics bfm, FontMetrics lfm) {
+    private static void drawStageTitleImage(FG2D g, String name, String code, FontMetrics bfm, FontMetrics lfm) {
         FontRenderContext bfrc = bfm.getFontRenderContext();
         FontRenderContext lfrc = lfm.getFontRenderContext();
 
         Rectangle2D nRect = titleFont.createGlyphVector(bfrc, name).getPixelBounds(null, 0, 0);
         Rectangle2D lRect = contentFont.createGlyphVector(lfrc, code).getPixelBounds(null, 0, 0);
-
-        int h = (int) Math.round(nRect.getHeight() + nameMargin + lRect.getHeight());
-
-        int w = (int) Math.max(nRect.getWidth(), lRect.getWidth()) + bgMargin;
-
-        BufferedImage result = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-        FG2D g = new FG2D(result.getGraphics());
 
         g.setRenderingHint(3, 1);
         g.enableAntialiasing();
@@ -2169,16 +2171,14 @@ public class ImageDrawing {
         g.setColor(238, 238, 238, 255);
         g.setFont(titleFont);
 
-        g.drawText(name, (int) (bgMargin - nRect.getX()), (int) -nRect.getY());
+        g.drawText(name, (int) (bgMargin + bgMargin - nRect.getX()), (int) (bgMargin * 2 - nRect.getY()));
 
         if(!code.equals(name)) {
             g.setColor(191, 191, 191);
             g.setFont(contentFont);
 
-            g.drawText(code, (int) (bgMargin - lRect.getX()), (int) (nRect.getHeight() + nameMargin - lRect.getY()));
+            g.drawText(code, (int) (bgMargin + bgMargin - lRect.getX()), (int) (bgMargin * 2 + nRect.getHeight() + nameMargin - lRect.getY()));
         }
-
-        return result;
     }
 
     private static BufferedImage generateEvolveImage(File container, int[][] data, int targetWidth, FontMetrics metrics) {
@@ -2487,7 +2487,7 @@ public class ImageDrawing {
         return result;
     }
 
-    private static BufferedImage drawRewardTable(Stage st, CustomStageMap map, int[] dimension, int desiredGap, int lang, boolean reward) throws Exception {
+    private static void drawRewardTable(FG2D g, int x, int y, Stage st, CustomStageMap map, int[] dimension, int desiredGap, int lang, boolean reward) throws Exception {
         List<String[]> data;
 
         if(reward)
@@ -2495,16 +2495,9 @@ public class ImageDrawing {
         else
             data = DataToString.getScoreDrops(st, map, lang);
 
-        if(data == null) {
-            return null;
-        } else {
+        if(data != null) {
             int w = desiredGap * 7 + dimension[CHANCE_WIDTH] + dimension[REWARD_WIDTH] + dimension[AMOUNT_WIDTH] + rewardIconSize;
-
             int h = dimension[TOTAL_HEIGHT];
-
-            BufferedImage result = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-
-            FG2D g = new FG2D(result.getGraphics());
 
             g.setRenderingHint(3, 1);
             g.enableAntialiasing();
@@ -2513,17 +2506,17 @@ public class ImageDrawing {
 
             g.setColor(51, 53, 60);
 
-            g.fillRoundRect(0, 0, w, h, innerTableCornerRadius, innerTableCornerRadius);
+            g.fillRoundRect(x, y, w, h, innerTableCornerRadius, innerTableCornerRadius);
 
             g.setColor(24, 25, 28);
 
-            g.fillRoundRect(0, 0, w,innerTableCellMargin + innerTableCornerRadius, innerTableCornerRadius, innerTableCornerRadius);
+            g.fillRoundRect(x, y, w,innerTableCellMargin + innerTableCornerRadius, innerTableCornerRadius, innerTableCornerRadius);
 
             g.setColor(51, 53, 60);
 
-            g.fillRect(0, innerTableCellMargin, w, innerTableCornerRadius);
+            g.fillRect(x, y + innerTableCellMargin, w, innerTableCornerRadius);
 
-            int x = 0;
+            int x1 = x;
 
             for(int i = 0; i < 3; i++) {
                 double tx = desiredGap * 2 + dimension[i];
@@ -2547,52 +2540,52 @@ public class ImageDrawing {
 
                         g.setColor(191, 191, 191);
 
-                        g.drawCenteredText(chance, x + (int) tx, innerTableCellMargin / 2);
+                        g.drawCenteredText(chance, x1 + (int) tx, y + innerTableCellMargin / 2);
 
                         g.setStroke(headerStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
                         int ly = (int) Math.round((innerTableCellMargin - headerSeparatorHeight) / 2.0);
 
-                        g.drawLine((int) (x + tx * 2.0), ly, (int) (x + tx * 2.0), innerTableCellMargin - ly);
+                        g.drawLine((int) (x1 + tx * 2.0), y + ly, (int) (x1 + tx * 2.0), y + innerTableCellMargin - ly);
 
-                        int y = innerTableCellMargin;
+                        int y1 = y + innerTableCellMargin;
 
                         for(int j = 0; j < data.size(); j++) {
                             g.setColor(239, 239, 239);
 
-                            g.drawCenteredText(data.get(j)[i], x + (int) tx, y + innerTableCellMargin / 2);
+                            g.drawCenteredText(data.get(j)[i], x1 + (int) tx, y1 + innerTableCellMargin / 2);
 
                             g.setColor(191, 191, 191, 64);
 
-                            g.drawLine((int) (x + tx * 2.0), y + ly, (int) (x + tx * 2.0), y + innerTableCellMargin - ly);
+                            g.drawLine((int) (x1 + tx * 2.0), y + ly, (int) (x1 + tx * 2.0), y + innerTableCellMargin - ly);
 
-                            y += innerTableCellMargin;
+                            y1 += innerTableCellMargin;
                         }
 
                         break;
                     case REWARD_WIDTH:
                         g.setColor(191, 191, 191);
 
-                        g.drawCenteredText(LangID.getStringByID("data_reward", lang), x + (int) tx, innerTableCellMargin / 2);
+                        g.drawCenteredText(LangID.getStringByID("data_reward", lang), x1 + (int) tx, y + innerTableCellMargin / 2);
 
                         g.setStroke(headerStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
                         ly = (int) Math.round((innerTableCellMargin - headerSeparatorHeight) / 2.0);
 
-                        g.drawLine((int) (x + tx * 2.0), ly, (int) (x + tx * 2.0), innerTableCellMargin - ly);
+                        g.drawLine((int) (x1 + tx * 2.0), y + ly, (int) (x1 + tx * 2.0), y + innerTableCellMargin - ly);
 
-                        y = innerTableCellMargin;
+                        y1 = y + innerTableCellMargin;
 
                         int rx = (int) Math.round((tx * 2.0 - desiredGap - rewardIconSize) / 2.0);
 
                         for(int j = 0; j < data.size(); j++) {
                             g.setColor(239, 239, 239);
 
-                            g.drawCenteredText(data.get(j)[i], x + desiredGap + rewardIconSize + rx, y + innerTableCellMargin / 2);
+                            g.drawCenteredText(data.get(j)[i], x1 + desiredGap + rewardIconSize + rx, y1 + innerTableCellMargin / 2);
 
                             g.setColor(65, 69, 76);
 
-                            g.fillOval(x + desiredGap, y + (innerTableCellMargin - rewardIconSize) / 2, rewardIconSize, rewardIconSize);
+                            g.fillOval(x1 + desiredGap, y1 + (innerTableCellMargin - rewardIconSize) / 2, rewardIconSize, rewardIconSize);
 
                             BufferedImage icon;
 
@@ -2603,59 +2596,57 @@ public class ImageDrawing {
                             }
 
                             if(icon != null) {
-                                g.drawImage(icon, x + desiredGap, y + (innerTableCellMargin - rewardIconSize) / 2.0, rewardIconSize, rewardIconSize);
+                                g.drawImage(icon, x1 + desiredGap, y1 + (innerTableCellMargin - rewardIconSize) / 2.0, rewardIconSize, rewardIconSize);
                             }
 
                             g.setColor(191, 191, 191, 64);
 
-                            g.drawLine((int) (x + tx * 2.0), y + ly, (int) (x + tx * 2.0), y + innerTableCellMargin - ly);
+                            g.drawLine((int) (x1 + tx * 2.0), y1 + ly, (int) (x1 + tx * 2.0), y1 + innerTableCellMargin - ly);
 
-                            y += innerTableCellMargin;
+                            y1 += innerTableCellMargin;
                         }
 
                         break;
                     case AMOUNT_WIDTH:
                         g.setColor(191, 191, 191);
 
-                        g.drawCenteredText(LangID.getStringByID("data_amount", lang), x + (int) tx, innerTableCellMargin / 2);
+                        g.drawCenteredText(LangID.getStringByID("data_amount", lang), x1 + (int) tx, y + innerTableCellMargin / 2);
 
                         g.setStroke(headerStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
-                        y = innerTableCellMargin;
+                        y1 = y + innerTableCellMargin;
 
                         for(int j = 0; j < data.size(); j++) {
                             g.setColor(239, 239, 239);
 
-                            g.drawCenteredText(data.get(j)[i], x + (int) tx, y + innerTableCellMargin / 2);
+                            g.drawCenteredText(data.get(j)[i], x1 + (int) tx, y1 + innerTableCellMargin / 2);
 
                             g.setColor(191, 191, 191, 64);
 
-                            y += innerTableCellMargin;
+                            y1 += innerTableCellMargin;
                         }
 
                         break;
                 }
 
-                x += (int) (tx * 2.0);
+                x1 += (int) (tx * 2.0);
             }
 
             g.setColor(191, 191, 191, 64);
 
             g.setStroke(innerTableLineStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
-            int y = innerTableCellMargin * 2;
+            int y1 = y + innerTableCellMargin * 2;
 
             for(int i = 0; i < data.size() - 1; i++) {
-                g.drawLine(innerTableTextMargin, y, w - innerTableTextMargin, y);
+                g.drawLine(x + innerTableTextMargin, y1, w - innerTableTextMargin, y1);
 
-                y += innerTableCellMargin;
+                y1 += innerTableCellMargin;
             }
-
-            return result;
         }
     }
 
-    private static BufferedImage drawEnemySchemeTable(Stage st, CustomStageMap map, int[] dimension, int desiredGap, boolean isRanking, boolean isFrame, int lv, int lang) throws Exception {
+    private static void drawEnemySchemeTable(FG2D g, int y, Stage st, CustomStageMap map, int[] dimension, int desiredGap, boolean isRanking, boolean isFrame, int lv, int lang) throws Exception {
         int w = desiredGap * 19 + rewardIconSize;
 
         for(int i = ENEMY; i <= BOSS; i++) {
@@ -2664,10 +2655,6 @@ public class ImageDrawing {
 
         int h = innerTableCellMargin * (st.data.datas.length + 1);
 
-        BufferedImage result = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-
-        FG2D g = new FG2D(result.getGraphics());
-
         g.setRenderingHint(3, 1);
         g.enableAntialiasing();
 
@@ -2675,15 +2662,15 @@ public class ImageDrawing {
 
         g.setColor(65, 69, 76);
 
-        g.fillRoundRect(0, 0, w, h, cornerRadius, cornerRadius);
+        g.fillRoundRect(bgMargin, y, w, h, cornerRadius, cornerRadius);
 
         g.setColor(24, 25, 28);
 
-        g.fillRoundRect(0, 0, w, innerTableCellMargin + cornerRadius / 2, cornerRadius, cornerRadius);
+        g.fillRoundRect(bgMargin, y, w, innerTableCellMargin + cornerRadius / 2, cornerRadius, cornerRadius);
 
         g.setColor(65, 69, 76);
 
-        g.fillRect(0, innerTableCellMargin, w, cornerRadius / 2);
+        g.fillRect(bgMargin, y + innerTableCellMargin, w, cornerRadius / 2);
 
         String[] headerText = {
                 LangID.getStringByID("data_enemy", lang),
@@ -2697,7 +2684,7 @@ public class ImageDrawing {
                 LangID.getStringByID("data_isboss", lang)
         };
 
-        int x = 0;
+        int x1 = bgMargin;
 
         g.setColor(191, 191, 191);
 
@@ -2713,18 +2700,18 @@ public class ImageDrawing {
 
             int ly = (int) Math.round((innerTableCellMargin - headerSeparatorHeight) / 2.0);
 
-            g.drawCenteredText(headerText[i], (int) Math.round(x + tx), innerTableCellMargin / 2);
+            g.drawCenteredText(headerText[i], (int) Math.round(x1 + tx),  y + innerTableCellMargin / 2);
 
             if(i < BOSS)
-                g.drawLine((int) (x + tx * 2.0), ly, (int) (x + tx * 2.0), innerTableCellMargin - ly);
+                g.drawLine((int) (x1 + tx * 2.0),  y + ly, (int) (x1 + tx * 2.0),  y + innerTableCellMargin - ly);
 
-            x += (int) (tx * 2.0);
+            x1 += (int) (tx * 2.0);
         }
 
-        int y = innerTableCellMargin;
+        int y1 = y + innerTableCellMargin;
 
         for(int i = st.data.datas.length - 1; i >= 0; i--) {
-            x = 0;
+            x1 = bgMargin;
 
             SCDef.Line line = st.data.datas[i];
 
@@ -2868,46 +2855,44 @@ public class ImageDrawing {
                 if(j == ENEMY) {
                     g.setColor(51, 53, 60);
 
-                    g.fillOval(desiredGap, y + (innerTableCellMargin - rewardIconSize) / 2, rewardIconSize, rewardIconSize);
+                    g.fillOval(bgMargin + desiredGap, y1 + (innerTableCellMargin - rewardIconSize) / 2, rewardIconSize, rewardIconSize);
 
                     BufferedImage icon = getEnemyIcon(line.enemy.id, map);
 
                     if(icon != null) {
-                        g.drawImage(icon, desiredGap + 30, y + (innerTableCellMargin - rewardIconSize) / 2.0 + 30, 100, 100);
+                        g.drawImage(icon, bgMargin + desiredGap + 30, y1 + (innerTableCellMargin - rewardIconSize) / 2.0 + 30, 100, 100);
                     }
 
                     g.setColor(239, 239, 239);
 
-                    g.drawCenteredText(content, desiredGap + rewardIconSize + rx, y + innerTableCellMargin / 2);
+                    g.drawCenteredText(content, bgMargin + desiredGap + rewardIconSize + rx, y1 + innerTableCellMargin / 2);
                 } else {
                     g.setColor(239, 239, 239);
 
-                    g.drawCenteredText(content, (int) (x + tx), y + innerTableCellMargin / 2);
+                    g.drawCenteredText(content, (int) (x1 + tx), y1 + innerTableCellMargin / 2);
                 }
 
                 g.setColor(191, 191, 191, 64);
 
                 if(j < BOSS) {
-                    g.drawLine((int) (x + tx * 2.0), y + ly, (int) (x + tx * 2.0), y + innerTableCellMargin - ly);
+                    g.drawLine((int) (x1 + tx * 2.0), y1 + ly, (int) (x1 + tx * 2.0), y1 + innerTableCellMargin - ly);
                 }
 
-                x += (int) (tx * 2.0);
+                x1 += (int) (tx * 2.0);
             }
 
-            y += innerTableCellMargin;
+            y1 += innerTableCellMargin;
         }
 
-        y = innerTableCellMargin * 2;
+        y1 = y + innerTableCellMargin * 2;
 
         g.setStroke(innerTableLineStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
         for(int i = 0; i < st.data.datas.length - 1; i++) {
-            g.drawLine(innerTableTextMargin, y, w - innerTableTextMargin, y);
+            g.drawLine(bgMargin + innerTableTextMargin, y1, w - innerTableTextMargin, y1);
 
-            y += innerTableCellMargin;
+            y1 += innerTableCellMargin;
         }
-
-        return result;
     }
 
     public static AnimU.UType getAnimType(int mode, int max) {
