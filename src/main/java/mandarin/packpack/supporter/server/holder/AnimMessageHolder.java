@@ -514,7 +514,9 @@ public class AnimMessageHolder extends MessageHolder<MessageReceivedEvent> {
 
         StaticStore.removeHolder(id, this);
 
-        msg.editMessage(LangID.getStringByID("formst_expire", lang)).queue();
+        msg.editMessage(LangID.getStringByID("formst_expire", lang))
+                .mentionRepliedUser(false)
+                .queue();
     }
 
     private void edit() {

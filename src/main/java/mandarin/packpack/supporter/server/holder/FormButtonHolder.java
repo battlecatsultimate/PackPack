@@ -157,9 +157,9 @@ public class FormButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
         }
 
         if(buttons.isEmpty()) {
-            embed.editMessageComponents().queue(null, e -> {});
+            embed.editMessageComponents().mentionRepliedUser(false).queue(null, e -> {});
         } else {
-            embed.editMessageComponents(ActionRow.of(buttons)).queue(null, e -> {});
+            embed.editMessageComponents(ActionRow.of(buttons)).mentionRepliedUser(false).queue(null, e -> {});
         }
 
         expired = true;

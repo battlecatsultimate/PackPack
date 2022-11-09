@@ -96,6 +96,7 @@ public class ConfirmButtonHolder extends InteractionHolder<ButtonInteractionEven
 
         msg.editMessage(LangID.getStringByID("confirm_expired", lang))
                 .setComponents()
+                .mentionRepliedUser(false)
                 .queue();
     }
 }

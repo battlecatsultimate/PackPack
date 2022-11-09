@@ -220,6 +220,7 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
 
         msg.editMessage(LangID.getStringByID("config_expire", config.lang))
                 .setComponents()
+                .mentionRepliedUser(false)
                 .queue();
     }
 

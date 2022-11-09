@@ -140,6 +140,7 @@ public class SetupModButtonHolder extends InteractionHolder<GenericComponentInte
 
         msg.editMessage(LangID.getStringByID("setup_expire", lang))
                 .setComponents()
+                .mentionRepliedUser(false)
                 .queue();
     }
 

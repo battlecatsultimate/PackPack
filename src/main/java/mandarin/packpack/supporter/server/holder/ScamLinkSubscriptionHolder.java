@@ -156,7 +156,7 @@ public class ScamLinkSubscriptionHolder extends InteractionHolder<GenericCompone
     public void expire(String id) {
         expired = true;
 
-        msg.editMessage(LangID.getStringByID("subscam_expire", lang)).setAllowedMentions(new ArrayList<>()).queue();
+        msg.editMessage(LangID.getStringByID("subscam_expire", lang)).setAllowedMentions(new ArrayList<>()).mentionRepliedUser(false).queue();
     }
 
     private String parseMessage() {

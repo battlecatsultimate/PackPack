@@ -134,6 +134,7 @@ public class SetupMemberButtonHolder extends InteractionHolder<GenericComponentI
 
         msg.editMessage(LangID.getStringByID("setup_expire", lang))
                 .setComponents()
+                .mentionRepliedUser(false)
                 .queue();
     }
 

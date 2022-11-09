@@ -90,7 +90,9 @@ public abstract class FileAnalyzerHolder extends MessageHolder<MessageReceivedEv
 
         StaticStore.removeHolder(id, this);
 
-        msg.editMessage(LangID.getStringByID("formst_expire", lang)).queue();
+        msg.editMessage(LangID.getStringByID("formst_expire", lang))
+                .mentionRepliedUser(false)
+                .queue();
     }
 
     public boolean hasValidFileFormat(File result) throws Exception {

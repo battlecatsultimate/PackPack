@@ -161,7 +161,9 @@ public class StageInfoButtonHolder extends InteractionHolder<ButtonInteractionEv
             buttons.add(b.asDisabled());
         }
 
-        embed.editMessageComponents(ActionRow.of(buttons)).queue();
+        embed.editMessageComponents(ActionRow.of(buttons))
+                .mentionRepliedUser(false)
+                .queue();
 
         expired = true;
     }
