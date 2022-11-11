@@ -236,15 +236,23 @@ public class CatCombo extends TimedConstraintCommand {
 
             Combo c = combos.get(i);
 
-            String comboName = Data.trio(Integer.parseInt(c.name)) + " ";
+            String comboName = Data.trio(Integer.parseInt(c.name));
 
             int oldConfig = CommonStatic.getConfig().lang;
             CommonStatic.getConfig().lang = lang;
 
             if(MultiLangCont.getStatic().COMNAME.getCont(c) != null)
-                comboName += MultiLangCont.getStatic().COMNAME.getCont(c) + " | " + DataToString.getComboType(c, lang) + " " + String.format(LangID.getStringByID("combo_slot", lang), c.forms.length);
+                comboName += " " + MultiLangCont.getStatic().COMNAME.getCont(c);
 
             CommonStatic.getConfig().lang = oldConfig;
+
+            comboName += " | " + DataToString.getComboType(c, lang) + " ";
+
+            if(c.forms.length == 1) {
+                comboName += LangID.getStringByID("combo_slot", lang);
+            } else {
+                comboName += String.format(LangID.getStringByID("combo_slots", lang), c.forms.length);
+            }
 
             data.add(comboName);
         }
