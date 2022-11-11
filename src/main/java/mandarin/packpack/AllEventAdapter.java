@@ -79,7 +79,7 @@ public class AllEventAdapter extends ListenerAdapter {
         try {
             Guild g = event.getGuild();
 
-            StaticStore.logger.uploadLog("Joined server : "+g.getName()+" ("+g.getId()+")");
+            StaticStore.logger.uploadLog("Joined server : "+g.getName()+" ("+g.getId()+")"+"\nSize : "+g.getMemberCount());
 
             IDHolder id = StaticStore.idHolder.get(g.getId());
 
@@ -681,6 +681,7 @@ public class AllEventAdapter extends ListenerAdapter {
                     new SetBCVersion(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
                     break;
                 case "logout":
+                case "lo":
                     new LogOut(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
                     break;
                 case "printitemevent":
