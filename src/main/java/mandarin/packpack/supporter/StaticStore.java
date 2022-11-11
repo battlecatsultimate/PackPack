@@ -879,6 +879,10 @@ public class StaticStore {
 
         CommonStatic.getConfig().lang = oldConfig;
 
+        if(res != null && lang != LangID.JP) {
+            res = res.replaceAll("[’|‘]" , "'");
+        }
+
         return res;
     }
 
