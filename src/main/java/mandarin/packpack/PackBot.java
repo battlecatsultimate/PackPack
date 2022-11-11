@@ -14,20 +14,18 @@ import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.requests.GatewayIntent;
-import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import javax.security.auth.login.LoginException;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -255,7 +253,7 @@ public class PackBot {
 
                             if(ch instanceof GuildMessageChannel) {
                                 if(j == EventFactor.SALE) {
-                                    ArrayList<String> result = StaticStore.event.printStageEvent(i, holder.config.lang, false, holder.eventRaw, false, 0);
+                                    Map<EventFactor.SCHEDULE, List<String>> result = StaticStore.event.printStageEvent(i, holder.config.lang, false, holder.eventRaw, false, 0);
 
                                     if(result.isEmpty())
                                         continue;
@@ -266,108 +264,103 @@ public class PackBot {
 
                                     if(!eventDone) {
                                         eventDone = true;
+
                                         ((MessageChannel) ch).sendMessage((wasDone ? "** **\n" : "") + LangID.getStringByID("event_loc"+i, holder.config.lang)).queue();
                                     }
 
-                                    boolean goWithFile = false;
+                                    boolean started = false;
 
-                                    for(int k = 0; k < result.size(); k++) {
-                                        if(result.get(k).length() >= 1950) {
-                                            goWithFile = true;
-                                            break;
-                                        }
-                                    }
+                                    for(EventFactor.SCHEDULE type : result.keySet()) {
+                                        List<String> data = result.get(type);
 
-                                    if(goWithFile) {
-                                        StringBuilder total = new StringBuilder(LangID.getStringByID("event_stage", holder.config.lang).replace("**", "")).append("\n\n");
+                                        if(data == null || data.isEmpty())
+                                            continue;
 
-                                        for(int k = 0; k < result.size(); k++) {
-                                            total.append(result.get(k).replace("```scss\n", "").replace("```", ""));
+                                        boolean initial = false;
 
-                                            if(k < result.size() - 1)
-                                                total.append("\n");
-                                        }
+                                        while(!data.isEmpty()) {
+                                            StringBuilder builder = new StringBuilder();
 
-                                        File temp = new File("./temp");
+                                            if(!started) {
+                                                started = true;
 
-                                        if(!temp.exists() && !temp.mkdirs()) {
-                                            StaticStore.logger.uploadLog("Failed to create folder : "+temp.getAbsolutePath());
-                                            return;
-                                        }
-
-                                        File res = StaticStore.generateTempFile(temp, "event", ".txt", false);
-
-                                        if(res == null) {
-                                            return;
-                                        }
-
-                                        BufferedWriter writer = new BufferedWriter(new FileWriter(res, StandardCharsets.UTF_8));
-
-                                        writer.write(total.toString());
-
-                                        writer.close();
-
-                                        ((GuildMessageChannel) ch).sendMessage((wasDone ? "** **\n" : "") + LangID.getStringByID("printstage_toolong", holder.config.lang))
-                                                .addFiles(FileUpload.fromData(res, "event.txt"))
-                                                .queue(m -> {
-                                                    if(res.exists() && !res.delete()) {
-                                                        StaticStore.logger.uploadLog("Failed to delete file : "+res.getAbsolutePath());
-                                                    }
-                                                }, e -> {
-                                                    StaticStore.logger.uploadErrorLog(e, "E/PackBot::notifyEvent - Failed to perform uploading stage event data");
-
-                                                    if(res.exists() && !res.delete()) {
-                                                        StaticStore.logger.uploadLog("Failed to delete file : "+res.getAbsolutePath());
-                                                    }
-                                                });
-                                    } else {
-                                        for(int k = 0; k < result.size(); k++) {
-                                            StringBuilder merge = new StringBuilder();
-
-                                            if(k == 0) {
                                                 if(wasDone) {
-                                                    merge.append("** **\n");
+                                                    builder.append("** **\n");
                                                 }
 
-                                                merge.append(LangID.getStringByID("event_stage", holder.config.lang)).append("\n\n");
+                                                builder.append(LangID.getStringByID("event_stage", holder.config.lang)).append("\n\n");
+                                            }
+
+                                            if(!initial) {
+                                                initial = true;
+
+                                                builder.append(builder.length() == 0 ? "** **\n" : "");
+
+                                                switch (type) {
+                                                    case DAILY:
+                                                        builder.append(LangID.getStringByID("printstage_daily", holder.config.lang)).append("\n\n```scss\n");
+
+                                                        break;
+                                                    case WEEKLY:
+                                                        builder.append(LangID.getStringByID("printstage_weekly", holder.config.lang)).append("\n\n```scss\n");
+
+                                                        break;
+                                                    case MONTHLY:
+                                                        builder.append(LangID.getStringByID("printstage_monthly", holder.config.lang)).append("\n\n```scss\n");
+
+                                                        break;
+                                                    case YEARLY:
+                                                        builder.append(LangID.getStringByID("printstage_yearly", holder.config.lang)).append("\n\n```scss\n");
+
+                                                        break;
+                                                    case MISSION:
+                                                        builder.append(LangID.getStringByID("event_mission", holder.config.lang)).append("\n\n```scss\n");
+
+                                                        break;
+                                                    default:
+                                                        builder.append("```scss\n");
+                                                }
                                             } else {
-                                                merge.append("** **\n");
+                                                builder.append("```scss\n");
                                             }
 
-                                            while(merge.length() < 2000) {
-                                                if(k >= result.size())
-                                                    break;
+                                            while(builder.length() < 1980 && !data.isEmpty()) {
+                                                String line = data.get(0);
 
-                                                if(result.get(k).length() + merge.length() >= 2000) {
-                                                    k--;
-                                                    break;
+                                                if(line.length() > 1950) {
+                                                    data.remove(0);
+
+                                                    continue;
                                                 }
 
-                                                merge.append(result.get(k));
+                                                if(builder.length() + line.length() > 1980)
+                                                    break;
 
-                                                if(k < result.size() - 1) {
-                                                    merge.append("\n");
-                                                }
+                                                builder.append(line).append("\n");
 
-                                                k++;
+                                                if(type == EventFactor.SCHEDULE.MISSION)
+                                                    builder.append("\n");
+
+                                                data.remove(0);
                                             }
 
-                                            ((GuildMessageChannel) ch).sendMessage(merge.toString())
+                                            builder.append("```");
+
+                                            ((GuildMessageChannel) ch).sendMessage(builder.toString())
                                                     .setAllowedMentions(new ArrayList<>())
                                                     .queue();
                                         }
                                     }
                                 } else {
-                                    String result;
+                                    List<String> result;
 
                                     if(j == EventFactor.GATYA)
                                         result = StaticStore.event.printGachaEvent(i, holder.config.lang, false, holder.eventRaw, false, 0);
                                     else
                                         result = StaticStore.event.printItemEvent(i, holder.config.lang, false, holder.eventRaw, false, 0);
 
-                                    if(result.isBlank()) {
+                                    if(result.isEmpty())
                                         continue;
-                                    }
 
                                     boolean wasDone = done;
 
@@ -379,50 +372,81 @@ public class PackBot {
                                         ((MessageChannel) ch).sendMessage((wasDone ? "** **\n" : "") + LangID.getStringByID("event_loc"+i, holder.config.lang)).queue();
                                     }
 
-                                    if(result.length() >= 1980) {
-                                        File temp = new File("./temp");
+                                    boolean started = false;
 
-                                        if(!temp.exists() && !temp.mkdirs()) {
-                                            StaticStore.logger.uploadLog("Failed to create folder : "+temp.getAbsolutePath());
-                                            return;
+                                    while(!result.isEmpty()) {
+                                        StringBuilder builder = new StringBuilder();
+
+                                        if(!started) {
+                                            started = true;
+
+                                            if(wasDone) {
+                                                builder.append("** **\n");
+                                            }
+
+                                            if(j == EventFactor.GATYA) {
+                                                builder.append(LangID.getStringByID("event_gacha", holder.config.lang)).append("\n\n");
+                                            } else {
+                                                builder.append(LangID.getStringByID("event_item", holder.config.lang)).append("\n\n");
+                                            }
                                         }
 
-                                        File res = StaticStore.generateTempFile(temp, "event", ".txt", false);
+                                        builder.append("```scss\n");
 
-                                        if(res == null) {
-                                            return;
+                                        while(builder.length() < (j == EventFactor.GATYA ? 1800 : 1950) && !result.isEmpty()) {
+                                            String line = result.get(0);
+
+                                            if(line.length() > 1950) {
+                                                result.remove(0);
+
+                                                continue;
+                                            }
+
+                                            if(builder.length() + line.length() > (j == EventFactor.GATYA ? 1800 : 1950))
+                                                break;
+
+                                            builder.append(line).append("\n");
+
+                                            result.remove(0);
                                         }
 
-                                        BufferedWriter writer = new BufferedWriter(new FileWriter(res, StandardCharsets.UTF_8));
-
-                                        writer.write(result);
-
-                                        writer.close();
-
-                                        String lID;
-
-                                        if(j == EventFactor.GATYA) {
-                                            lID = "printgacha_toolong";
+                                        if(result.isEmpty() && j == EventFactor.GATYA) {
+                                            builder.append("\n")
+                                                    .append(LangID.getStringByID("printgacha_g", holder.config.lang))
+                                                    .append(" : ")
+                                                    .append(LangID.getStringByID("printgacha_gua", holder.config.lang))
+                                                    .append(" | ")
+                                                    .append(LangID.getStringByID("printgacha_s", holder.config.lang))
+                                                    .append(" : ")
+                                                    .append(LangID.getStringByID("printgacha_step", holder.config.lang))
+                                                    .append(" | ")
+                                                    .append(LangID.getStringByID("printgacha_l", holder.config.lang))
+                                                    .append(" : ")
+                                                    .append(LangID.getStringByID("printgacha_lucky", holder.config.lang))
+                                                    .append(" | ")
+                                                    .append(LangID.getStringByID("printgacha_p", holder.config.lang))
+                                                    .append(" : ")
+                                                    .append(LangID.getStringByID("printgacha_plat", holder.config.lang))
+                                                    .append(" | ")
+                                                    .append(LangID.getStringByID("printgacha_n", holder.config.lang))
+                                                    .append(" : ")
+                                                    .append(LangID.getStringByID("printgacha_neneko", holder.config.lang))
+                                                    .append(" | ")
+                                                    .append(LangID.getStringByID("printgacha_gr", holder.config.lang))
+                                                    .append(" : ")
+                                                    .append(LangID.getStringByID("printgacha_gran", holder.config.lang))
+                                                    .append(" | ")
+                                                    .append(LangID.getStringByID("printgacha_r", holder.config.lang))
+                                                    .append(" : ")
+                                                    .append(LangID.getStringByID("printgacha_rein", holder.config.lang))
+                                                    .append("\n```");
                                         } else {
-                                            lID = "printitem_toolong";
+                                            builder.append("```");
                                         }
 
-                                        ((GuildMessageChannel) ch).sendMessage((wasDone ? "** **\n" : "") + LangID.getStringByID(lID, holder.config.lang))
+                                        ((GuildMessageChannel) ch).sendMessage(builder.toString())
                                                 .setAllowedMentions(new ArrayList<>())
-                                                .addFiles(FileUpload.fromData(res, "event.txt"))
-                                                .queue(m -> {
-                                                    if(res.exists() && !res.delete()) {
-                                                        StaticStore.logger.uploadLog("Failed to delete file : "+res.getAbsolutePath());
-                                                    }
-                                                }, e -> {
-                                                    StaticStore.logger.uploadErrorLog(e, "E/PackBot::notifyEvent - Failed to perform uploading stage event data");
-
-                                                    if(res.exists() && !res.delete()) {
-                                                        StaticStore.logger.uploadLog("Failed to delete file : "+res.getAbsolutePath());
-                                                    }
-                                                });
-                                    } else {
-                                        ((MessageChannel) ch).sendMessage((wasDone ? "** **\n" : "") + result).queue();
+                                                .queue();
                                     }
                                 }
                             }

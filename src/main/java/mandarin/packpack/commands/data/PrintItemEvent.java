@@ -9,10 +9,8 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PrintItemEvent extends ConstraintCommand {
     public PrintItemEvent(ROLE role, int lang, IDHolder id) {
@@ -51,37 +49,59 @@ public class PrintItemEvent extends ConstraintCommand {
             }
         }
 
-        String result = StaticStore.event.printItemEvent(getLocale(getContent(event)), lang, isFull(getContent(event)), isRaw(getContent(event)), now, t);
+        boolean full = isFull(getContent(event));
 
-        if(result.isBlank()) {
+        Member m = getMember(event);
+
+        if(m == null || !StaticStore.contributors.contains(m.getId())) {
+            full = false;
+
+            createMessageWithNoPings(ch, LangID.getStringByID("event_ignorefull", lang));
+        }
+
+        List<String> result = StaticStore.event.printItemEvent(getLocale(getContent(event)), lang, full, isRaw(getContent(event)), now, t);
+
+        if(result.isEmpty()) {
             ch.sendMessage(LangID.getStringByID("chevent_noup", lang)).queue();
 
             return;
         }
 
-        if(result.length() >= 2000) {
-            File temp = new File("./temp");
+        boolean started = false;
 
-            if(!temp.exists() && !temp.mkdirs()) {
-                StaticStore.logger.uploadLog("Failed to create folder : "+temp.getAbsolutePath());
-                return;
+        while(!result.isEmpty()) {
+            StringBuilder builder = new StringBuilder();
+
+            if(!started) {
+                started = true;
+
+                builder.append(LangID.getStringByID("event_item", lang)).append("\n\n");
             }
 
-            File res = StaticStore.generateTempFile(temp, "itemEvent", ".txt", false);
+            builder.append("```scss\n");
 
-            if(res == null) {
-                return;
+            while(builder.length() < 1950 && !result.isEmpty()) {
+                String line = result.get(0);
+
+                if(line.length() > 1950) {
+                    result.remove(0);
+
+                    continue;
+                }
+
+                if(builder.length() + line.length() > 1950)
+                    break;
+
+                builder.append(line).append("\n");
+
+                result.remove(0);
             }
 
-            BufferedWriter writer = new BufferedWriter(new FileWriter(res, StandardCharsets.UTF_8));
+            builder.append("```");
 
-            writer.write(result);
-
-            writer.close();
-
-            sendMessageWithFile(ch, LangID.getStringByID("printitem_toolong", lang), res, "itemEvent.txt");
-        } else {
-            ch.sendMessage(result).queue();
+            ch.sendMessage(builder.toString())
+                    .setAllowedMentions(new ArrayList<>())
+                    .queue();
         }
     }
 

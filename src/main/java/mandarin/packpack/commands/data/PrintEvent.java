@@ -6,15 +6,13 @@ import mandarin.packpack.supporter.event.EventFactor;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class PrintEvent extends ConstraintCommand {
     public PrintEvent(ROLE role, int lang, IDHolder id) {
@@ -38,11 +36,19 @@ public class PrintEvent extends ConstraintCommand {
         boolean full = isFull(getContent(event));
         boolean raw = isRaw(getContent(event));
 
-        String gacha = StaticStore.event.printGachaEvent(loc, l , full, raw, false, 0);
-        String item = StaticStore.event.printItemEvent(loc, l, full, raw, false, 0);
-        List<String> stage = StaticStore.event.printStageEvent(loc, l, full, raw, false, 0);
+        Member m = getMember(event);
 
-        if(gacha.isBlank() && item.isBlank() && stage.isEmpty()) {
+        if(m == null || !StaticStore.contributors.contains(m.getId())) {
+            full = false;
+
+            createMessageWithNoPings(ch, LangID.getStringByID("event_ignorefull", lang));
+        }
+
+        List<String> gacha = StaticStore.event.printGachaEvent(loc, l , full, raw, false, 0);
+        List<String> item = StaticStore.event.printItemEvent(loc, l, full, raw, false, 0);
+        Map<EventFactor.SCHEDULE, List<String>> stage = StaticStore.event.printStageEvent(loc, l, false, holder.eventRaw, false, 0);
+
+        if(gacha.isEmpty() && item.isEmpty() && stage.isEmpty()) {
             ch.sendMessage(LangID.getStringByID("chevent_noup", lang)).queue();
 
             return;
@@ -62,97 +68,102 @@ public class PrintEvent extends ConstraintCommand {
 
                 if(!eventDone) {
                     eventDone = true;
-
                     ch.sendMessage(LangID.getStringByID("event_loc"+loc, l)).queue();
                 }
 
-                boolean goWithFile = false;
+                boolean started = false;
 
-                for(int k = 0; k < stage.size(); k++) {
-                    if(stage.get(k).length() >= 1950) {
-                        goWithFile = true;
-                        break;
-                    }
-                }
+                for(EventFactor.SCHEDULE type : stage.keySet()) {
+                    List<String> data = stage.get(type);
 
-                if(goWithFile) {
-                    StringBuilder total = new StringBuilder(LangID.getStringByID("event_stage", l).replace("**", "")).append("\n\n");
+                    if(data == null || data.isEmpty())
+                        continue;
 
-                    for(int k = 0; k < stage.size(); k++) {
-                        total.append(stage.get(k).replace("```scss\n", "").replace("```", ""));
+                    boolean initial = false;
 
-                        if(k < stage.size() - 1)
-                            total.append("\n");
-                    }
+                    while(!data.isEmpty()) {
+                        StringBuilder builder = new StringBuilder();
 
-                    File temp = new File("./temp");
+                        if(!started) {
+                            started = true;
 
-                    if(!temp.exists() && !temp.mkdirs()) {
-                        StaticStore.logger.uploadLog("Failed to create folder : "+temp.getAbsolutePath());
-                        return;
-                    }
-
-                    File res = StaticStore.generateTempFile(temp, "event", ".txt", false);
-
-                    if(res == null) {
-                        return;
-                    }
-
-                    BufferedWriter writer = new BufferedWriter(new FileWriter(res, StandardCharsets.UTF_8));
-
-                    writer.write(total.toString());
-
-                    writer.close();
-
-                    sendMessageWithFile(ch, (wasDone ? "** **\n" : "") + LangID.getStringByID("printstage_toolong", l), res, "event.txt");
-                } else {
-                    for(int k = 0; k < stage.size(); k++) {
-                        StringBuilder merge = new StringBuilder();
-
-                        if(k == 0) {
                             if(wasDone) {
-                                merge.append("** **\n");
+                                builder.append("** **\n");
                             }
 
-                            merge.append(LangID.getStringByID("event_stage", l)).append("\n\n");
+                            builder.append(LangID.getStringByID("event_stage", l)).append("\n\n");
+                        }
+
+                        if(!initial) {
+                            initial = true;
+
+                            builder.append(builder.length() == 0 ? "** **\n" : "");
+
+                            switch (type) {
+                                case DAILY:
+                                    builder.append(LangID.getStringByID("printstage_daily", l)).append("\n\n```scss\n");
+
+                                    break;
+                                case WEEKLY:
+                                    builder.append(LangID.getStringByID("printstage_weekly", l)).append("\n\n```scss\n");
+
+                                    break;
+                                case MONTHLY:
+                                    builder.append(LangID.getStringByID("printstage_monthly", l)).append("\n\n```scss\n");
+
+                                    break;
+                                case YEARLY:
+                                    builder.append(LangID.getStringByID("printstage_yearly", l)).append("\n\n```scss\n");
+
+                                    break;
+                                case MISSION:
+                                    builder.append(LangID.getStringByID("event_mission", l)).append("\n\n```scss\n");
+
+                                    break;
+                                default:
+                                    builder.append("```scss\n");
+                            }
                         } else {
-                            merge.append("** **\n");
+                            builder.append("```scss\n");
                         }
 
-                        while(merge.length() < 2000) {
-                            if(k >= stage.size())
-                                break;
+                        while(builder.length() < 1950 && !data.isEmpty()) {
+                            String line = data.get(0);
 
-                            if(stage.get(k).length() + merge.length() >= 2000) {
-                                k--;
-                                break;
+                            if(line.length() > 1950) {
+                                data.remove(0);
+
+                                continue;
                             }
 
-                            merge.append(stage.get(k));
+                            if(builder.length() + line.length() > 1950)
+                                break;
 
-                            if(k < stage.size() - 1) {
-                                merge.append("\n");
-                            }
+                            builder.append(line).append("\n");
 
-                            k++;
+                            if (type == EventFactor.SCHEDULE.MISSION)
+                                builder.append("\n");
+
+                            data.remove(0);
                         }
 
-                        ch.sendMessage(merge.toString())
+                        builder.append("```");
+
+                        ch.sendMessage(builder.toString())
                                 .setAllowedMentions(new ArrayList<>())
                                 .queue();
                     }
                 }
             } else {
-                String result;
+                List<String> result;
 
                 if(j == EventFactor.GATYA)
                     result = gacha;
                 else
                     result = item;
 
-                if(result.isBlank()) {
+                if(result.isEmpty())
                     continue;
-                }
 
                 boolean wasDone = done;
 
@@ -164,46 +175,86 @@ public class PrintEvent extends ConstraintCommand {
                     ch.sendMessage(LangID.getStringByID("event_loc"+loc, l)).queue();
                 }
 
-                if(result.length() >= 1980) {
-                    File temp = new File("./temp");
+                boolean started = false;
 
-                    if(!temp.exists() && !temp.mkdirs()) {
-                        StaticStore.logger.uploadLog("Failed to create folder : "+temp.getAbsolutePath());
-                        return;
+                while(!result.isEmpty()) {
+                    StringBuilder builder = new StringBuilder();
+
+                    if(!started) {
+                        started = true;
+
+                        if(wasDone) {
+                            builder.append("** **\n");
+                        }
+
+                        if(j == EventFactor.GATYA) {
+                            builder.append(LangID.getStringByID("event_gacha", l)).append("\n\n");
+                        } else {
+                            builder.append(LangID.getStringByID("event_item", l)).append("\n\n");
+                        }
                     }
 
-                    File res = StaticStore.generateTempFile(temp, "event", ".txt", false);
+                    builder.append("```scss\n");
 
-                    if(res == null) {
-                        return;
+                    while(builder.length() < (j == EventFactor.GATYA ? 1800 : 1950) && !result.isEmpty()) {
+                        String line = result.get(0);
+
+                        if(line.length() > 1950) {
+                            result.remove(0);
+
+                            continue;
+                        }
+
+                        if(builder.length() + line.length() > (j == EventFactor.GATYA ? 1800 : 1950))
+                            break;
+
+                        builder.append(line).append("\n");
+
+                        result.remove(0);
                     }
 
-                    BufferedWriter writer = new BufferedWriter(new FileWriter(res, StandardCharsets.UTF_8));
-
-                    writer.write(result);
-
-                    writer.close();
-
-                    String lID;
-
-                    if(j == EventFactor.GATYA) {
-                        lID = "printgacha_toolong";
+                    if(result.isEmpty() && j == EventFactor.GATYA) {
+                        builder.append("\n")
+                                .append(LangID.getStringByID("printgacha_g", l))
+                                .append(" : ")
+                                .append(LangID.getStringByID("printgacha_gua", l))
+                                .append(" | ")
+                                .append(LangID.getStringByID("printgacha_s", l))
+                                .append(" : ")
+                                .append(LangID.getStringByID("printgacha_step", l))
+                                .append(" | ")
+                                .append(LangID.getStringByID("printgacha_l", l))
+                                .append(" : ")
+                                .append(LangID.getStringByID("printgacha_lucky", l))
+                                .append(" | ")
+                                .append(LangID.getStringByID("printgacha_p", l))
+                                .append(" : ")
+                                .append(LangID.getStringByID("printgacha_plat", l))
+                                .append(" | ")
+                                .append(LangID.getStringByID("printgacha_n", l))
+                                .append(" : ")
+                                .append(LangID.getStringByID("printgacha_neneko", l))
+                                .append(" | ")
+                                .append(LangID.getStringByID("printgacha_gr", l))
+                                .append(" : ")
+                                .append(LangID.getStringByID("printgacha_gran", l))
+                                .append(" | ")
+                                .append(LangID.getStringByID("printgacha_r", l))
+                                .append(" : ")
+                                .append(LangID.getStringByID("printgacha_rein", l))
+                                .append("\n```");
                     } else {
-                        lID = "printitem_toolong";
+                        builder.append("```");
                     }
 
-                    sendMessageWithFile(ch, (wasDone ? "** **\n" : "") + LangID.getStringByID(lID, l), res, "event.txt");
-                } else {
-                    ch.sendMessage((wasDone ? "** **\n" : "") + result)
+                    ch.sendMessage(builder.toString())
                             .setAllowedMentions(new ArrayList<>())
                             .queue();
                 }
             }
         }
 
-        if(done) {
-            ch.sendMessage(LangID.getStringByID("event_warning", holder.config.lang)).queue();
-        }
+        ch.sendMessage(LangID.getStringByID("event_warning", l)).queue();
     }
 
     private boolean followServerLocale(String content) {

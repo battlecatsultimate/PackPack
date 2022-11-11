@@ -17,6 +17,15 @@ import mandarin.packpack.supporter.lang.LangID;
 import java.util.*;
 
 public class EventFactor {
+    public enum SCHEDULE {
+        NORMAL,
+        DAILY,
+        WEEKLY,
+        MONTHLY,
+        YEARLY,
+        MISSION
+    }
+
     static {
         Calendar c = Calendar.getInstance();
 

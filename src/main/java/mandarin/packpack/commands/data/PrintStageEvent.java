@@ -2,6 +2,7 @@ package mandarin.packpack.commands.data;
 
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.event.EventFactor;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.Permission;
@@ -9,11 +10,9 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class PrintStageEvent extends ConstraintCommand {
     public PrintStageEvent(ROLE role, int lang, IDHolder id) {
@@ -52,82 +51,99 @@ public class PrintStageEvent extends ConstraintCommand {
             }
         }
 
-        ArrayList<String> result = StaticStore.event.printStageEvent(getLocale(getContent(event)), lang, isFull(getContent(event)), isRaw(getContent(event)), now, t);
+        boolean full = isFull(getContent(event));
 
-        if(result.isEmpty()) {
+        Member m = getMember(event);
+
+        if(m == null || !StaticStore.contributors.contains(m.getId())) {
+            full = false;
+
+            createMessageWithNoPings(ch, LangID.getStringByID("event_ignorefull", lang));
+        }
+
+        Map<EventFactor.SCHEDULE, List<String>> stage = StaticStore.event.printStageEvent(getLocale(getContent(event)), lang, full, isRaw(getContent(event)), now, t);
+
+        if(stage.isEmpty()) {
             ch.sendMessage(LangID.getStringByID("chevent_noup", lang)).queue();
 
             return;
         }
 
-        boolean goWithFile = false;
+        boolean started = false;
 
-        for(int k = 0; k < result.size(); k++) {
-            if(result.get(k).length() >= 1950) {
-                goWithFile = true;
-                break;
-            }
-        }
+        for(EventFactor.SCHEDULE type : stage.keySet()) {
+            List<String> data = stage.get(type);
 
-        if(goWithFile) {
-            StringBuilder total = new StringBuilder(LangID.getStringByID("event_stage", holder.config.lang).replace("**", "")).append("\n");
+            if(data == null || data.isEmpty())
+                continue;
 
-            for(int k = 0; k < result.size(); k++) {
-                total.append(result.get(k).replace("```scss\n", "").replace("```", ""));
+            boolean initial = false;
 
-                if(k < result.size() - 1)
-                    total.append("\n");
-            }
+            while(!data.isEmpty()) {
+                StringBuilder builder = new StringBuilder();
 
-            File temp = new File("./temp");
+                if(!started) {
+                    started = true;
 
-            if(!temp.exists() && !temp.mkdirs()) {
-                StaticStore.logger.uploadLog("Failed to create folder : "+temp.getAbsolutePath());
-                return;
-            }
+                    builder.append(LangID.getStringByID("event_stage", lang)).append("\n\n");
+                }
 
-            File res = StaticStore.generateTempFile(temp, "event", ".txt", false);
+                if(!initial) {
+                    initial = true;
 
-            if(res == null) {
-                return;
-            }
+                    builder.append(builder.length() == 0 ? "** **\n" : "");
 
-            BufferedWriter writer = new BufferedWriter(new FileWriter(res, StandardCharsets.UTF_8));
+                    switch (type) {
+                        case DAILY:
+                            builder.append(LangID.getStringByID("printstage_daily", lang)).append("\n\n```scss\n");
 
-            writer.write(total.toString());
+                            break;
+                        case WEEKLY:
+                            builder.append(LangID.getStringByID("printstage_weekly", lang)).append("\n\n```scss\n");
 
-            writer.close();
+                            break;
+                        case MONTHLY:
+                            builder.append(LangID.getStringByID("printstage_monthly", lang)).append("\n\n```scss\n");
 
-            sendMessageWithFile(ch, LangID.getStringByID("printstage_toolong", holder.config.lang), res, "stageAndEvent.txt");
-        } else {
-            for(int k = 0; k < result.size(); k++) {
-                StringBuilder merge = new StringBuilder();
+                            break;
+                        case YEARLY:
+                            builder.append(LangID.getStringByID("printstage_yearly", lang)).append("\n\n```scss\n");
 
-                if(k == 0) {
-                    merge.append(LangID.getStringByID("event_stage", holder.config.lang)).append("\n\n");
+                            break;
+                        case MISSION:
+                            builder.append(LangID.getStringByID("event_mission", lang)).append("\n\n```scss\n");
+
+                            break;
+                        default:
+                            builder.append("```scss\n");
+                    }
                 } else {
-                    merge.append("** **\n");
+                    builder.append("```scss\n");
                 }
 
-                while(merge.length() < 2000) {
-                    if(k >= result.size())
-                        break;
+                while(builder.length() < 1950 && !data.isEmpty()) {
+                    String line = data.get(0);
 
-                    if(result.get(k).length() + merge.length() >= 2000) {
-                        k--;
-                        break;
+                    if(line.length() > 1950) {
+                        data.remove(0);
+
+                        continue;
                     }
 
-                    merge.append(result.get(k));
+                    if(builder.length() + line.length() > 1950)
+                        break;
 
-                    if(k < result.size() - 1) {
-                        merge.append("\n");
-                    }
+                    builder.append(line).append("\n");
 
-                    k++;
+                    if(type == EventFactor.SCHEDULE.MISSION)
+                        builder.append("\n");
+
+                    data.remove(0);
                 }
 
-                ch.sendMessage(merge.toString())
+                builder.append("```");
+
+                ch.sendMessage(builder.toString())
                         .setAllowedMentions(new ArrayList<>())
                         .queue();
             }

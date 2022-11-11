@@ -326,8 +326,8 @@ public class EventHolder extends EventFactor {
         this.items.put(locale, i);
     }
 
-    public ArrayList<String> printStageEvent(int locale, int lang, boolean full, boolean raw, boolean now, int time) {
-        ArrayList<String> result = new ArrayList<>();
+    public Map<SCHEDULE, List<String>> printStageEvent(int locale, int lang, boolean full, boolean raw, boolean now, int time) {
+        Map<SCHEDULE, List<String>> result = new LinkedHashMap<>();
 
         List<StageSchedule> fullStages = this.stages.get(locale);
 
@@ -337,7 +337,7 @@ public class EventHolder extends EventFactor {
             stages = new ArrayList<>(fullStages);
         } else {
             if(!stageCache.containsKey(locale)) {
-                stages = fullStages;
+                stages = new ArrayList<>(fullStages);
             } else {
                 List<Integer> cache = stageCache.get(locale);
 
@@ -349,10 +349,10 @@ public class EventHolder extends EventFactor {
             }
         }
 
-        if(stages != null && now)
+        if(now)
             filterScheduleByTimeZone(stages, time);
 
-        if(stages == null || stages.isEmpty())
+        if(stages.isEmpty())
             return result;
 
         stages.removeIf(schedule -> schedule.unknownStages.isEmpty() && schedule.stages.isEmpty());
@@ -458,89 +458,33 @@ public class EventHolder extends EventFactor {
         }
 
         if(!normals.isEmpty()) {
-            StringBuilder data = new StringBuilder();
-
-            data.append("```scss\n");
-
-            for (String normal : normals) {
-                data.append(normal)
-                        .append("\n");
-            }
-
-            data.append("```");
-
-            result.add(data.toString());
+            result.put(SCHEDULE.NORMAL, normals);
         }
 
         if(!dailys.isEmpty()) {
-            StringBuilder data = new StringBuilder(LangID.getStringByID("printstage_daily", lang)).append("\n\n```scss\n");
-
-            for (String day : dailys) {
-                data.append(day)
-                        .append("\n");
-            }
-
-            data.append("```");
-
-            result.add(data.toString());
+            result.put(SCHEDULE.DAILY, dailys);
         }
 
         if(!weeklys.isEmpty()) {
-            StringBuilder data = new StringBuilder(LangID.getStringByID("printstage_weekly", lang)).append("\n\n```scss\n");
-
-            for (String week : weeklys) {
-                data.append(week)
-                        .append("\n");
-            }
-
-            data.append("```");
-
-            result.add(data.toString());
+            result.put(SCHEDULE.WEEKLY, weeklys);
         }
 
         if(!monthlys.isEmpty()) {
-            StringBuilder data = new StringBuilder(LangID.getStringByID("printstage_monthly", lang)).append("\n\n```scss\n");
-
-            for (String month : monthlys) {
-                data.append(month)
-                        .append("\n");
-            }
-
-            data.append("```");
-
-            result.add(data.toString());
+            result.put(SCHEDULE.MONTHLY, monthlys);
         }
 
         if(!yearlys.isEmpty()) {
-            StringBuilder data = new StringBuilder(LangID.getStringByID("printstage_yearly", lang)).append("\n\n```scss\n");
-
-            for (String year : yearlys) {
-                data.append(year)
-                        .append("\n");
-            }
-
-            data.append("```");
-
-            result.add(data.toString());
+            result.put(SCHEDULE.YEARLY, yearlys);
         }
 
         if(!missions.isEmpty()) {
-            StringBuilder data = new StringBuilder(LangID.getStringByID("event_mission", lang)).append("\n\n```scss\n");
-
-            for (String mission : missions) {
-                data.append(mission)
-                        .append("\n\n");
-            }
-
-            data.append("```");
-
-            result.add(data.toString());
+            result.put(SCHEDULE.MISSION, missions);
         }
 
         return result;
     }
 
-    public String printGachaEvent(int locale, int lang, boolean full, boolean raw, boolean now, int time) {
+    public List<String> printGachaEvent(int locale, int lang, boolean full, boolean raw, boolean now, int time) {
         List<GachaSchedule> fullGachas = this.gachas.get(locale);
 
         List<GachaSchedule> gachas;
@@ -566,8 +510,6 @@ public class EventHolder extends EventFactor {
 
         gachas.removeIf(g -> g.gacha.isEmpty());
 
-        StringBuilder data = new StringBuilder(LangID.getStringByID("event_gacha", lang)).append("\n\n");
-
         ArrayList<String> normals = new ArrayList<>();
 
         for(int i = 0; i < gachas.size(); i++) {
@@ -582,52 +524,13 @@ public class EventHolder extends EventFactor {
             normals.sort(new DateComparator(lang));
 
         if(normals.isEmpty()) {
-           return "";
+           return new ArrayList<>();
         }
 
-        data.append("```scss\n");
-
-        for(int i = 0; i < normals.size(); i++) {
-            data.append(normals.get(i)).append("\n");
-        }
-
-        data.append("\n");
-
-        data.append(LangID.getStringByID("printgacha_g", lang))
-                .append(" : ")
-                .append(LangID.getStringByID("printgacha_gua", lang))
-                .append(" | ")
-                .append(LangID.getStringByID("printgacha_s", lang))
-                .append(" : ")
-                .append(LangID.getStringByID("printgacha_step", lang))
-                .append(" | ")
-                .append(LangID.getStringByID("printgacha_l", lang))
-                .append(" : ")
-                .append(LangID.getStringByID("printgacha_lucky", lang))
-                .append(" | ")
-                .append(LangID.getStringByID("printgacha_p", lang))
-                .append(" : ")
-                .append(LangID.getStringByID("printgacha_plat", lang))
-                .append(" | ")
-                .append(LangID.getStringByID("printgacha_n", lang))
-                .append(" : ")
-                .append(LangID.getStringByID("printgacha_neneko", lang))
-                .append(" | ")
-                .append(LangID.getStringByID("printgacha_gr", lang))
-                .append(" : ")
-                .append(LangID.getStringByID("printgacha_gran", lang))
-                .append(" | ")
-                .append(LangID.getStringByID("printgacha_r", lang))
-                .append(" : ")
-                .append(LangID.getStringByID("printgacha_rein", lang))
-                .append("\n");
-
-        data.append("```");
-
-        return data.toString();
+        return normals;
     }
 
-    public String printItemEvent(int locale, int lang, boolean full, boolean raw, boolean now, int time) {
+    public List<String> printItemEvent(int locale, int lang, boolean full, boolean raw, boolean now, int time) {
         List<ItemSchedule> fullItems = this.items.get(locale);
 
         List<ItemSchedule> items;
@@ -667,7 +570,7 @@ public class EventHolder extends EventFactor {
             normals.sort(new DateComparator(lang));
 
         if(normals.isEmpty()) {
-            return "";
+            return new ArrayList<>();
         }
 
         data.append("```scss\n");
@@ -678,7 +581,7 @@ public class EventHolder extends EventFactor {
 
         data.append("```");
 
-        return data.toString();
+        return normals;
     }
 
     private ArrayList<String> getOnlyNewLine(File src, File newSrc, int loc) throws Exception {

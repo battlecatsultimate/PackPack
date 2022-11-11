@@ -9,10 +9,8 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PrintGachaEvent extends ConstraintCommand {
     public PrintGachaEvent(ROLE role, int lang, IDHolder id) {
@@ -51,37 +49,91 @@ public class PrintGachaEvent extends ConstraintCommand {
             }
         }
 
-        String result = StaticStore.event.printGachaEvent(getLocale(getContent(event)), lang, isFull(getContent(event)), isRaw(getContent(event)), now, t);
+        boolean full = isFull(getContent(event));
 
-        if(result.isBlank()) {
+        Member m = getMember(event);
+
+        if(m == null || !StaticStore.contributors.contains(m.getId())) {
+            full = false;
+
+            createMessageWithNoPings(ch, LangID.getStringByID("event_ignorefull", lang));
+        }
+
+        List<String> result = StaticStore.event.printGachaEvent(getLocale(getContent(event)), lang, full, isRaw(getContent(event)), now, t);
+
+        if(result.isEmpty()) {
             ch.sendMessage(LangID.getStringByID("chevent_noup", lang)).queue();
 
             return;
         }
 
-        if(result.length() >= 2000) {
-            File temp = new File("./temp");
+        boolean started = false;
 
-            if(!temp.exists() && !temp.mkdirs()) {
-                StaticStore.logger.uploadLog("Failed to create folder : "+temp.getAbsolutePath());
-                return;
+        while(!result.isEmpty()) {
+            StringBuilder builder = new StringBuilder();
+
+            if(!started) {
+                started = true;
+
+                builder.append(LangID.getStringByID("event_gacha", lang)).append("\n\n");
             }
 
-            File res = StaticStore.generateTempFile(temp, "gachaEvent", ".txt", false);
+            builder.append("```scss\n");
 
-            if(res == null) {
-                return;
+            while(builder.length() < 1800 && !result.isEmpty()) {
+                String line = result.get(0);
+
+                if(line.length() > 1950) {
+                    result.remove(0);
+
+                    continue;
+                }
+
+                if(builder.length() + line.length() > 1800)
+                    break;
+
+                builder.append(line).append("\n");
+
+                result.remove(0);
             }
 
-            BufferedWriter writer = new BufferedWriter(new FileWriter(res, StandardCharsets.UTF_8));
+            if(result.isEmpty()) {
+                builder.append("\n")
+                        .append(LangID.getStringByID("printgacha_g", lang))
+                        .append(" : ")
+                        .append(LangID.getStringByID("printgacha_gua", lang))
+                        .append(" | ")
+                        .append(LangID.getStringByID("printgacha_s", lang))
+                        .append(" : ")
+                        .append(LangID.getStringByID("printgacha_step", lang))
+                        .append(" | ")
+                        .append(LangID.getStringByID("printgacha_l", lang))
+                        .append(" : ")
+                        .append(LangID.getStringByID("printgacha_lucky", lang))
+                        .append(" | ")
+                        .append(LangID.getStringByID("printgacha_p", lang))
+                        .append(" : ")
+                        .append(LangID.getStringByID("printgacha_plat", lang))
+                        .append(" | ")
+                        .append(LangID.getStringByID("printgacha_n", lang))
+                        .append(" : ")
+                        .append(LangID.getStringByID("printgacha_neneko", lang))
+                        .append(" | ")
+                        .append(LangID.getStringByID("printgacha_gr", lang))
+                        .append(" : ")
+                        .append(LangID.getStringByID("printgacha_gran", lang))
+                        .append(" | ")
+                        .append(LangID.getStringByID("printgacha_r", lang))
+                        .append(" : ")
+                        .append(LangID.getStringByID("printgacha_rein", lang))
+                        .append("\n```");
+            } else {
+                builder.append("```");
+            }
 
-            writer.write(result);
-
-            writer.close();
-
-            sendMessageWithFile(ch, LangID.getStringByID("printgacha_toolong", lang), res, "gachaEvent.txt");
-        } else {
-            ch.sendMessage(result).queue();
+            ch.sendMessage(builder.toString())
+                    .setAllowedMentions(new ArrayList<>())
+                    .queue();
         }
     }
 

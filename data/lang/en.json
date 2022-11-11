@@ -322,6 +322,7 @@
   "event_warning" : "** **\n:warning: This is done by computer anyway, there can be incorrect information or missing data. It will be quite accurate, but still don't trust it too much",
   "event_even" : "Every Even Day",
   "event_odd" : "Every Odd Day",
+  "event_ignorefull" : "`-f` argument is ignored because user isn't trusted",
   "group_0" : "Cyclone Festival",
   "group_1" : "Builders Festival",
   "group_2" : "XP Festival",

@@ -1054,6 +1054,7 @@
   "subevent_zh" : "BCTW",
   "subevent_kr" : "BCKR",
   "subevent_jp" : "BCJP",
+  "event_ignorefull" : "`-f` argument is ignored because user isn't trusted",
   "printstage_toolong" : "Uploading raw file because stage/event data was too long",
   "printstage_daily" : "New Daily Schedule Found",
   "printstage_weekly" : "New Weekly Schedule Found",

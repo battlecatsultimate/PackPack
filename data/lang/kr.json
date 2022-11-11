@@ -1058,6 +1058,7 @@
   "subevent_zh" : "대만판",
   "subevent_kr" : "한국판",
   "subevent_jp" : "일본판",
+  "event_ignorefull" : "유저가 기여자가 아니기 때문에 `-f` 인자는 무시됩니다",
   "printstage_toolong" : "스테이지/이벤트 데이터 메세지 길이가 너무 길어 파일로 업로드합니다",
   "printstage_daily" : "새로운 일간 스케줄이 발견되었습니다",
   "printstage_weekly" : "새로운 주간 스케줄이 발견되었습니다",
