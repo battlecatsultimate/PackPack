@@ -539,7 +539,7 @@ public class EntityFilter {
                         boolean s0 = mcName.toLowerCase(Locale.ENGLISH).contains(names[0].toLowerCase(Locale.ENGLISH));
 
                         if(!s0) {
-                            mcName = mcName.replace("-", "");
+                            mcName = mcName.replace("-", " ");
 
                             if(mcName.toLowerCase(Locale.ENGLISH).contains(names[0].toLowerCase(Locale.ENGLISH))) {
                                 s0 = true;
@@ -633,7 +633,7 @@ public class EntityFilter {
                                 break;
                             }
 
-                            mcName = mcName.replace("-", "");
+                            mcName = mcName.replace("-", " ");
 
                             if(mcName.toLowerCase(Locale.ENGLISH).contains(names[0].toLowerCase(Locale.ENGLISH))) {
                                 s0 = true;
@@ -665,7 +665,7 @@ public class EntityFilter {
                                     break;
                                 }
 
-                                stmName = stmName.replace("-", "");
+                                stmName = stmName.replace("-", " ");
 
                                 if(stmName.toLowerCase(Locale.ENGLISH).contains(names[1].toLowerCase(Locale.ENGLISH))) {
                                     s1 = true;
@@ -731,7 +731,7 @@ public class EntityFilter {
                                             break;
                                         }
 
-                                        stmName = stmName.replace("-", "");
+                                        stmName = stmName.replace("-", " ");
 
                                         if(stmName.toLowerCase(Locale.ENGLISH).contains(names[1].toLowerCase(Locale.ENGLISH))) {
                                             s1 = true;
@@ -829,7 +829,7 @@ public class EntityFilter {
                                 break;
                             }
 
-                            mcName = mcName.replace("-", "");
+                            mcName = mcName.replace("-", " ");
 
                             if(mcName.toLowerCase(Locale.ENGLISH).contains(names[0].toLowerCase(Locale.ENGLISH))) {
                                 s0 = true;
@@ -862,7 +862,7 @@ public class EntityFilter {
                                         break;
                                     }
 
-                                    stmName = stmName.replace("-", "");
+                                    stmName = stmName.replace("-", " ");
 
                                     if(stmName.toLowerCase(Locale.ENGLISH).contains(names[1].toLowerCase(Locale.ENGLISH))) {
                                         s1 = true;
@@ -1161,7 +1161,7 @@ public class EntityFilter {
                                                 break;
                                             }
 
-                                            stmName = stmName.replace("-", "");
+                                            stmName = stmName.replace("-", " ");
 
                                             if(stmName.toLowerCase(Locale.ENGLISH).contains(names[1].toLowerCase(Locale.ENGLISH))) {
                                                 s1 = true;
