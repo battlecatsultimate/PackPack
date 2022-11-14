@@ -251,7 +251,7 @@ public class PackBot {
                         try {
                             GuildChannel ch = client.getGuildChannelById(holder.event);
 
-                            if(ch instanceof GuildMessageChannel) {
+                            if(ch instanceof GuildMessageChannel && ((GuildMessageChannel) ch).canTalk()) {
                                 if(j == EventFactor.SALE) {
                                     Map<EventFactor.SCHEDULE, List<String>> result = StaticStore.event.printStageEvent(i, holder.config.lang, false, holder.eventRaw, false, 0);
 
