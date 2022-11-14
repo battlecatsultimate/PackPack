@@ -577,10 +577,10 @@ public class DataToString extends Data {
 
         int[][] atks = e.rawAtkData();
 
-        int result = 0;
+        long result = 0;
 
         for(int[] atk : atks) {
-            result += (int) (atk[0] * e.multi(BasisSet.current()) * magnification / 100.0);
+            result += (long) (atk[0] * e.multi(BasisSet.current()) * magnification / 100.0);
         }
 
         return String.valueOf(result);
@@ -626,10 +626,10 @@ public class DataToString extends Data {
 
         int[][] atks = e.rawAtkData();
 
-        ArrayList<Integer> damages = new ArrayList<>();
+        ArrayList<Long> damages = new ArrayList<>();
 
         for(int[] atk : atks) {
-            damages.add((int) (atk[0] * e.multi(BasisSet.current()) * magnification / 100.0));
+            damages.add((long) (atk[0] * e.multi(BasisSet.current()) * magnification / 100.0));
         }
 
         StringBuilder sb = new StringBuilder("(");
@@ -744,7 +744,7 @@ public class DataToString extends Data {
         if( e == null)
             return "";
 
-        return "" + (int) (e.multi(BasisSet.current()) * e.getHp() * magnification / 100.0);
+        return "" + (long) (e.multi(BasisSet.current()) * e.getHp() * magnification / 100.0);
     }
 
     public static String getTrait(MaskUnit f, boolean talent, ArrayList<Integer> lvs, boolean icon, int lang) {
