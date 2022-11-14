@@ -27,12 +27,12 @@ public class Calculator extends ConstraintCommand {
             return;
         }
 
-        double result = Equation.calculate(equation[1].replace(" ", ""), null);
+        double result = Equation.calculate(equation[1].replace(" ", ""), null, lang);
 
         if(Equation.error.isEmpty()) {
             replyToMessageSafely(ch, LangID.getStringByID("calc_result", lang).replace("_", Equation.df.format(result)), getMessage(event), a -> a);
         } else {
-            replyToMessageSafely(ch, Equation.getErrorMessage(lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, Equation.getErrorMessage(), getMessage(event), a -> a);
         }
     }
 }

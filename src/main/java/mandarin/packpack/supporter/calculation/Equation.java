@@ -5,6 +5,7 @@ import mandarin.packpack.supporter.lang.LangID;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -14,14 +15,14 @@ public class Equation {
 
     private static final String[] suffix = { "k", "m", "b", "t" };
 
-    public static double calculate(String equation, String parent) {
+    public static double calculate(String equation, String parent, int lang) {
         if(equation.equals(parent)) {
-            error.add("calc_notnum | " + equation);
+            error.add(String.format(LangID.getStringByID("calc_notnum", lang), equation));
 
             return 0;
         }
 
-        List<Element> elements = parse(equation);
+        List<Element> elements = parse(equation, lang);
 
         if(elements.isEmpty())
             return 0;
@@ -106,7 +107,7 @@ public class Equation {
         if(elements.size() != 1 || !(elements.get(0) instanceof Number)) {
             StaticStore.logger.uploadLog("W/Equation::calculate - Invalid equation format : " + equation + "\n\nData : " + elements);
 
-            error.add("calc_fail");
+            error.add(LangID.getStringByID("calc_fail", lang));
 
             return 0;
         } else {
@@ -114,7 +115,7 @@ public class Equation {
         }
     }
 
-    public static String getErrorMessage(int lang) {
+    public static String getErrorMessage() {
         StringBuilder builder = new StringBuilder();
 
         List<String> realError = new ArrayList<>();
@@ -125,13 +126,7 @@ public class Equation {
         }
 
         for(int i = 0; i < realError.size(); i++) {
-            String[] data = realError.get(i).split(" \\| ");
-
-            if(data.length == 1) {
-                builder.append(LangID.getStringByID(data[0], lang));
-            } else {
-                builder.append(LangID.getStringByID(data[0], lang).replace("_", data[1]));
-            }
+            builder.append(realError.get(i));
 
             if(i < realError.size() - 1) {
                 builder.append("\n\n");
@@ -143,14 +138,14 @@ public class Equation {
         return builder.toString();
     }
 
-    private static List<Element> parse(String equation) {
+    private static List<Element> parse(String equation, int lang) {
         if(openedBracket(equation)) {
-            error.add("calc_opened");
+            error.add(LangID.getStringByID("calc_opened", lang));
 
             return new ArrayList<>();
         }
 
-        equation = equation.replaceAll("[\\[|{]", "(").replaceAll("[]|}]", ")").replaceAll("\\)\\(", ")*(");
+        equation = equation.replaceAll("[\\[|{]", "(").replaceAll("[]|}]", ")").replaceAll("\\)\\(", ")*(").toLowerCase(Locale.ENGLISH);
 
         List<Element> elements = new ArrayList<>();
 
@@ -192,260 +187,309 @@ public class Equation {
                     }
 
                     if(prefix != null) {
-                        double inner = calculate(builder.toString(), equation);
+                        switch (prefix) {
+                            case "npr":
+                            case "ncr":
+                                List<String> data = filterData(builder.toString(), ',');
 
-                        if(StaticStore.isNumeric(prefix)) {
-                            elements.add(new Number(StaticStore.safeParseInt(prefix) * inner));
-                        } else {
-                            switch (prefix) {
-                                case "sin":
-                                    elements.add(new Number(Math.sin(inner)));
+                                if(data.size() != 2) {
+                                    error.add(String.format(LangID.getStringByID("calc_npcrparam", lang), 2, data.size(), data));
 
-                                    break;
-                                case "cos":
-                                    elements.add(new Number(Math.cos(inner)));
+                                    return new ArrayList<>();
+                                }
 
-                                    break;
-                                case "tan":
-                                    if(inner % (Math.PI / 2) == 0) {
-                                        error.add("calc_tan | tan(" + builder + ")");
+                                for(int j = 0; j < data.size(); j++) {
+                                    int originalLength = error.size();
+
+                                    double valD = calculate(data.get(j), null, lang);
+
+                                    if(originalLength != error.size()) {
+                                        error.add(String.format(LangID.getStringByID("calc_npcrnum", lang), prefix + "(" + data.get(0) + ", " + data.get(1) + ")", data.get(j)));
+
+                                        return new ArrayList<>();
+                                    } else if(valD % 1 != 0) {
+                                        error.add(String.format(LangID.getStringByID("calc_npcrnoint", lang),  prefix + "(" + data.get(0) + ", " + data.get(1) + ")", data.get(j)));
+
+                                        return new ArrayList<>();
+                                    } else if(valD < 0) {
+                                        error.add(String.format(LangID.getStringByID("calc_npcrnoint", lang),  prefix + "(" + data.get(0) + ", " + data.get(1) + ")", data.get(j)));
 
                                         return new ArrayList<>();
                                     }
+                                }
 
-                                    elements.add(new Number(Math.tan(inner)));
+                                long n = (long) calculate(data.get(0), null, lang);
+                                long r = (long) calculate(data.get(1), null, lang);
 
-                                    break;
-                                case "csc":
-                                    double check = Math.sin(inner);
+                                if(n < r) {
+                                    error.add(String.format(LangID.getStringByID("calc_npcrsize", lang), prefix + "(" + data.get(0) + ", " + data.get(1)+ ")", data.get(0), data.get(1)));
+                                }
 
-                                    if(check == 0) {
-                                        error.add("calc_csc | csc(" + builder + ")");
+                                if (prefix.equals("npr")) {
+                                    elements.add(new Number(nPr(n, r)));
+                                } else {
+                                    elements.add(new Number(nCr(n, r)));
+                                }
 
-                                        return new ArrayList<>();
-                                    }
+                                break;
+                            default:
+                                double inner = calculate(builder.toString(), equation, lang);
 
-                                    elements.add(new Number(1.0 / check));
+                                if(StaticStore.isNumeric(prefix)) {
+                                    elements.add(new Number(Double.parseDouble(prefix) * inner));
+                                } else {
+                                    switch (prefix) {
+                                        case "sin":
+                                            elements.add(new Number(Math.sin(inner)));
 
-                                    break;
-                                case "sec":
-                                    check = Math.cos(inner);
+                                            break;
+                                        case "cos":
+                                            elements.add(new Number(Math.cos(inner)));
 
-                                    if(check == 0) {
-                                        error.add("calc_sec | sec(" + builder + ")");
-
-                                        return new ArrayList<>();
-                                    }
-
-                                    elements.add(new Number(1.0 / check));
-
-                                    break;
-                                case "cot":
-                                    if(inner % Math.PI == 0) {
-                                        error.add("calc_cot | cot(" + builder + ")");
-                                    } else if(inner % (Math.PI / 2) == 0) {
-                                        elements.add(new Number(0));
-                                    } else {
-                                        elements.add(new Number(1.0 / Math.tan(inner)));
-                                    }
-
-                                    break;
-                                case "ln":
-                                case "loge":
-                                    if(inner <= 0) {
-                                        error.add("calc_ln | " + prefix + "(" + builder + ")");
-
-                                        return new ArrayList<>();
-                                    }
-
-                                    elements.add(new Number(Math.log(inner)));
-
-                                    break;
-                                case "log":
-                                    if(inner <= 0) {
-                                        error.add("calc_ln | log(" + builder + ")");
-
-                                        return new ArrayList<>();
-                                    }
-
-                                    elements.add(new Number(Math.log10(inner)));
-
-                                    break;
-                                case "sqrt":
-                                case "root":
-                                case "sqrt2":
-                                    if(inner < 0) {
-                                        error.add("calc_sqrt | " + prefix + "(" + builder + ")");
-
-                                        return new ArrayList<>();
-                                    }
-
-                                    elements.add(new Number(Math.sqrt(inner)));
-
-                                    break;
-                                case "exp":
-                                    elements.add(new Number(Math.pow(Math.E, inner)));
-
-                                    break;
-                                case "arcsin":
-                                case "asin":
-                                    if(inner < -1 || inner > 1) {
-                                        error.add("calc_arcsin | " + prefix + "(" + builder + ")");
-
-                                        return new ArrayList<>();
-                                    }
-
-                                    elements.add(new Number(Math.asin(inner)));
-
-                                    break;
-                                case "arccos":
-                                case "acos":
-                                    if(inner < -1 || inner > 1) {
-                                        error.add("calc_arccos | " + prefix + "(" + builder + ")");
-
-                                        return new ArrayList<>();
-                                    }
-
-                                    elements.add(new Number(Math.acos(inner)));
-
-                                    break;
-                                case "arctan":
-                                case "atan":
-                                    elements.add(new Number(Math.atan(inner)));
-
-                                    break;
-                                case "arccsc":
-                                case "acsc":
-                                    if(-1 < inner && inner < 1) {
-                                        error.add("calc_arccsc | " + prefix + "(" + builder + ")");
-
-                                        return new ArrayList<>();
-                                    }
-
-                                    elements.add(new Number(Math.asin(1.0 / inner)));
-
-                                    break;
-                                case "arcsec":
-                                case "asec":
-                                    if(-1 < inner && inner < 1) {
-                                        error.add("calc_arcsec | " + prefix + "(" + builder + ")");
-
-                                        return new ArrayList<>();
-                                    }
-
-                                    elements.add(new Number(Math.acos(1.0 / inner)));
-
-                                    break;
-                                case "arccot":
-                                case "acot":
-                                    if (inner == 0) {
-                                        elements.add(new Number(Math.PI / 2));
-                                    } else {
-                                        elements.add(new Number(Math.atan(1.0 / inner)));
-                                    }
-
-                                    break;
-                                default:
-                                    if(prefix.startsWith("log")) {
-                                        String base = prefix.replaceAll("^log", "");
-
-                                        if(StaticStore.isNumeric(base)) {
-                                            double value = Double.parseDouble(base);
-
-                                            if(value <= 0) {
-                                                error.add("calc_logbase | " + prefix + "(" + builder + ")");
+                                            break;
+                                        case "tan":
+                                            if(inner % (Math.PI / 2) == 0) {
+                                                error.add(String.format(LangID.getStringByID("calc_tan", lang), "tan(" + builder + ")"));
 
                                                 return new ArrayList<>();
                                             }
 
+                                            elements.add(new Number(Math.tan(inner)));
+
+                                            break;
+                                        case "csc":
+                                            double check = Math.sin(inner);
+
+                                            if(check == 0) {
+                                                error.add(String.format(LangID.getStringByID("calc_csc", lang), "csc(" + builder + ")"));
+
+                                                return new ArrayList<>();
+                                            }
+
+                                            elements.add(new Number(1.0 / check));
+
+                                            break;
+                                        case "sec":
+                                            check = Math.cos(inner);
+
+                                            if(check == 0) {
+                                                error.add(String.format(LangID.getStringByID("calc_sec", lang), "sec(" + builder + ")"));
+
+                                                return new ArrayList<>();
+                                            }
+
+                                            elements.add(new Number(1.0 / check));
+
+                                            break;
+                                        case "cot":
+                                            if(inner % Math.PI == 0) {
+                                                error.add(String.format(LangID.getStringByID("calc_cot", lang), "cot(" + builder + ")"));
+
+                                                return new ArrayList<>();
+                                            } else if(inner % (Math.PI / 2) == 0) {
+                                                elements.add(new Number(0));
+                                            } else {
+                                                elements.add(new Number(1.0 / Math.tan(inner)));
+                                            }
+
+                                            break;
+                                        case "ln":
+                                        case "loge":
                                             if(inner <= 0) {
-                                                error.add("calc_ln | " + prefix + "(" + builder + ")");
+                                                error.add(String.format(LangID.getStringByID("calc_ln", lang), prefix + "(" + builder + ")"));
 
                                                 return new ArrayList<>();
                                             }
 
-                                            elements.add(new Number(Math.log(inner) / Math.log(Double.parseDouble(base))));
-                                        } else {
-                                            int originalLength = error.size();
+                                            elements.add(new Number(Math.log(inner)));
 
-                                            double value = calculate(base, prefix + "(" + builder + ")");
-
-                                            if(originalLength != error.size()) {
-                                                error.add("calc_unknownfunc | " + prefix + "(" + builder + ")");
+                                            break;
+                                        case "log":
+                                            if(inner <= 0) {
+                                                error.add(String.format(LangID.getStringByID("calc_ln", lang), "log(" + builder + ")"));
 
                                                 return new ArrayList<>();
+                                            }
+
+                                            elements.add(new Number(Math.log10(inner)));
+
+                                            break;
+                                        case "sqrt":
+                                        case "root":
+                                        case "sqrt2":
+                                            if(inner < 0) {
+                                                error.add(String.format(LangID.getStringByID("calc_sqrt", lang), prefix + "(" + builder + ")"));
+
+                                                return new ArrayList<>();
+                                            }
+
+                                            elements.add(new Number(Math.sqrt(inner)));
+
+                                            break;
+                                        case "exp":
+                                            elements.add(new Number(Math.pow(Math.E, inner)));
+
+                                            break;
+                                        case "arcsin":
+                                        case "asin":
+                                            if(inner < -1 || inner > 1) {
+                                                error.add(String.format(LangID.getStringByID("calc_arcsin", lang), prefix + "(" + builder + ")"));
+
+                                                return new ArrayList<>();
+                                            }
+
+                                            elements.add(new Number(Math.asin(inner)));
+
+                                            break;
+                                        case "arccos":
+                                        case "acos":
+                                            if(inner < -1 || inner > 1) {
+                                                error.add(String.format(LangID.getStringByID("calc_arccos", lang), prefix + "(" + builder + ")"));
+
+                                                return new ArrayList<>();
+                                            }
+
+                                            elements.add(new Number(Math.acos(inner)));
+
+                                            break;
+                                        case "arctan":
+                                        case "atan":
+                                            elements.add(new Number(Math.atan(inner)));
+
+                                            break;
+                                        case "arccsc":
+                                        case "acsc":
+                                            if(-1 < inner && inner < 1) {
+                                                error.add(String.format(LangID.getStringByID("calc_arccsc", lang), prefix + "(" + builder + ")"));
+
+                                                return new ArrayList<>();
+                                            }
+
+                                            elements.add(new Number(Math.asin(1.0 / inner)));
+
+                                            break;
+                                        case "arcsec":
+                                        case "asec":
+                                            if(-1 < inner && inner < 1) {
+                                                error.add(String.format(LangID.getStringByID("calc_arcsec", lang), prefix + "(" + builder + ")"));
+
+                                                return new ArrayList<>();
+                                            }
+
+                                            elements.add(new Number(Math.acos(1.0 / inner)));
+
+                                            break;
+                                        case "arccot":
+                                        case "acot":
+                                            if (inner == 0) {
+                                                elements.add(new Number(Math.PI / 2));
                                             } else {
-                                                if(value <= 0) {
-                                                    error.add("calc_logbase | " + prefix + "(" + builder + ")");
+                                                elements.add(new Number(Math.atan(1.0 / inner)));
+                                            }
 
-                                                    return new ArrayList<>();
+                                            break;
+                                        default:
+                                            if(prefix.startsWith("log")) {
+                                                String base = prefix.replaceAll("^log", "");
+
+                                                if(StaticStore.isNumeric(base)) {
+                                                    double value = Double.parseDouble(base);
+
+                                                    if(value <= 0) {
+                                                        error.add(String.format(LangID.getStringByID("calc_logbase", lang), prefix + "(" + builder + ")"));
+
+                                                        return new ArrayList<>();
+                                                    }
+
+                                                    if(inner <= 0) {
+                                                        error.add(String.format(LangID.getStringByID("calc_ln", lang), prefix + "(" + builder + ")"));
+
+                                                        return new ArrayList<>();
+                                                    }
+
+                                                    elements.add(new Number(Math.log(inner) / Math.log(Double.parseDouble(base))));
+                                                } else {
+                                                    int originalLength = error.size();
+
+                                                    double value = calculate(base, prefix + "(" + builder + ")", lang);
+
+                                                    if(originalLength != error.size()) {
+                                                        error.add(String.format(LangID.getStringByID("calc_unknownfunc", lang), prefix + "(" + builder + ")"));
+
+                                                        return new ArrayList<>();
+                                                    } else {
+                                                        if(value <= 0) {
+                                                            error.add(String.format(LangID.getStringByID("calc_logbase", lang), prefix + "(" + builder + ")"));
+
+                                                            return new ArrayList<>();
+                                                        }
+
+                                                        elements.add(new Number(Math.log(inner) / Math.log(value)));
+                                                    }
                                                 }
+                                            } else if(prefix.startsWith("sqrt")) {
+                                                String base = prefix.replaceAll("^sqrt", "");
 
-                                                elements.add(new Number(Math.log(inner) / Math.log(value)));
-                                            }
-                                        }
-                                    } else if(prefix.startsWith("sqrt")) {
-                                        String base = prefix.replaceAll("^sqrt", "");
+                                                if(StaticStore.isNumeric(base)) {
+                                                    double value = Double.parseDouble(base);
 
-                                        if(StaticStore.isNumeric(base)) {
-                                            double value = Double.parseDouble(base);
+                                                    if(value % 2 == 0 && inner < 0) {
+                                                        error.add(String.format(LangID.getStringByID("calc_sqrtbase", lang), prefix + "(" + builder + ")"));
 
-                                            if(value % 2 == 0) {
-                                                error.add("calc_sqrtbase | " + prefix + "(" + builder + ")");
+                                                        return new ArrayList<>();
+                                                    }
 
-                                                return new ArrayList<>();
-                                            }
+                                                    check = Math.pow(inner, 1.0 / value);
 
-                                            check = Math.pow(inner, 1.0 / value);
+                                                    if(Double.isNaN(check)) {
+                                                        error.add(String.format(LangID.getStringByID("calc_sqrtbase", lang), prefix + "(" + builder + ")"));
 
-                                            if(Double.isNaN(check)) {
-                                                error.add("calc_sqrtbase | " + prefix + "(" + builder + ")");
+                                                        return new ArrayList<>();
+                                                    }
 
-                                                return new ArrayList<>();
-                                            }
+                                                    elements.add(new Number(check));
+                                                } else {
+                                                    int originalLength = error.size();
 
-                                            elements.add(new Number(check));
-                                        } else {
-                                            int originalLength = error.size();
+                                                    double value = calculate(base, prefix + "(" + builder + ")", lang);
 
-                                            double value = calculate(base, prefix + "(" + builder + ")");
+                                                    if(originalLength != error.size()) {
+                                                        error.add(String.format(LangID.getStringByID("calc_unknownfunc", lang), prefix + "(" + builder + ")"));
 
-                                            if(originalLength != error.size()) {
-                                                error.add("calc_unknownfunc | " + prefix + "(" + builder + ")");
+                                                        return new ArrayList<>();
+                                                    } else {
+                                                        if(value % 2 == 0 && inner < 0) {
+                                                            error.add(String.format(LangID.getStringByID("calc_sqrtbase", lang), prefix + "(" + builder + ")"));
 
-                                                return new ArrayList<>();
+                                                            return new ArrayList<>();
+                                                        }
+
+                                                        check = Math.pow(inner, 1.0 / value);
+
+                                                        if(Double.isNaN(check)) {
+                                                            error.add(String.format(LangID.getStringByID("calc_sqrtbase", lang), prefix + "(" + builder + ")"));
+
+                                                            return new ArrayList<>();
+                                                        }
+
+                                                        elements.add(new Number(check));
+                                                    }
+                                                }
                                             } else {
-                                                if(value % 2 == 0) {
-                                                    error.add("calc_sqrtbase | " + prefix + "(" + builder + ")");
+                                                int len = error.size();
+
+                                                check = calculate(prefix, prefix + "(" + builder + ")", lang);
+
+                                                if(len != error.size()) {
+                                                    error.add(String.format(LangID.getStringByID("calc_unknownfunc", lang), prefix + "(" + builder + ")"));
 
                                                     return new ArrayList<>();
                                                 }
 
-                                                check = Math.pow(inner, 1.0 / value);
-
-                                                if(Double.isNaN(check)) {
-                                                    error.add("calc_sqrtbase | " + prefix + "(" + builder + ")");
-
-                                                    return new ArrayList<>();
-                                                }
-
-                                                elements.add(new Number(check));
+                                                elements.add(new Number(check * inner));
                                             }
-                                        }
-                                    } else {
-                                        int len = error.size();
-
-                                        check = calculate(prefix, prefix + "(" + builder + ")");
-
-                                        if(len != error.size()) {
-                                            error.add("calc_unknownfunc | " + prefix + "(" + builder + ")");
-
-                                            return new ArrayList<>();
-                                        }
-
-                                        elements.add(new Number(check * inner));
                                     }
-                            }
+                                }
                         }
 
                         builder.setLength(0);
@@ -461,7 +505,7 @@ public class Equation {
                 case '÷':
                 case '^':
                     if((builder.length() == 0 && i != 0 && equation.charAt(i - 1) != ')') || i == equation.length() - 1) {
-                        error.add("calc_alone");
+                        error.add(LangID.getStringByID("calc_alone", lang));
 
                         return new ArrayList<>();
                     }
@@ -489,22 +533,96 @@ public class Equation {
 
                                     break;
                                 default:
-                                    double suffixCheck = checkSuffix(prefix);
+                                    if(prefix.endsWith("!")) {
+                                        String filtered = prefix.replaceAll("!$", "");
 
-                                    if(Double.isNaN(suffixCheck)) {
-                                        int len = error.size();
+                                        int originalSize = error.size();
 
-                                        double check = calculate(prefix, equation);
+                                        double valD = calculate(filtered, null, lang);
 
-                                        if(len != error.size()) {
-                                            error.add("calc_notnum | " + prefix);
+                                        if(originalSize != error.size()) {
+                                            error.add(String.format(LangID.getStringByID("calc_notnum", lang), prefix));
 
                                             return new ArrayList<>();
                                         } else {
-                                            elements.add(new Number(check));
+                                            if(valD % 1 != 0) {
+                                                error.add(String.format(LangID.getStringByID("calc_factnum", lang), prefix));
+
+                                                return new ArrayList<>();
+                                            } else if(valD < 0) {
+                                                error.add(String.format(LangID.getStringByID("calc_factrange", lang), prefix));
+
+                                                return new ArrayList<>();
+                                            } else {
+                                                elements.add(new Number(factorial((long) valD)));
+                                            }
+                                        }
+                                    } else if(prefix.matches("\\d+p\\d+") || prefix.matches("\\d+c\\d+")) {
+                                        String[] data;
+
+                                        if(prefix.matches("\\d+p\\d+")) {
+                                            data = builder.toString().split("p");
+                                        } else {
+                                            data = builder.toString().split("c");
+                                        }
+
+                                        if(data.length != 2) {
+                                            error.add(String.format(LangID.getStringByID("calc_npcrparam", lang), 2, data.length, Arrays.toString(data)));
+
+                                            return new ArrayList<>();
+                                        }
+
+                                        for(int j = 0; j < data.length; j++) {
+                                            if(StaticStore.isNumeric(data[j])) {
+                                                long valL = Long.parseLong(data[j]);
+                                                double valD = Double.parseDouble(data[j]);
+
+                                                if(valL != valD) {
+                                                    error.add(String.format(LangID.getStringByID("calc_npcrnoint", lang),  prefix, data[j]));
+
+                                                    return new ArrayList<>();
+                                                } else if(valL < 0) {
+                                                    error.add(String.format(LangID.getStringByID("calc_npcrrange", lang), prefix, data[j]));
+
+                                                    return new ArrayList<>();
+                                                }
+                                            } else {
+                                                error.add(String.format(LangID.getStringByID("calc_npcrnum", lang), prefix, data[j]));
+
+                                                return new ArrayList<>();
+                                            }
+                                        }
+
+                                        long n = Long.parseLong(data[0]);
+                                        long r = Long.parseLong(data[1]);
+
+                                        if(n < r) {
+                                            error.add(String.format(LangID.getStringByID("calc_npcrsize", lang), prefix, data[0], data[1]));
+                                        }
+
+                                        if (prefix.matches("\\d+p\\d+")) {
+                                            elements.add(new Number(nPr(n, r)));
+                                        } else {
+                                            elements.add(new Number(nCr(n, r)));
                                         }
                                     } else {
-                                        elements.add(new Number(suffixCheck));
+                                        double suffixCheck = checkSuffix(prefix);
+
+                                        if(Double.isNaN(suffixCheck)) {
+                                            int len = error.size();
+
+                                            double check = calculate(prefix, equation, lang);
+
+                                            if(len != error.size()) {
+                                                error.add(String.format(LangID.getStringByID("calc_notnum", lang), prefix));
+
+                                                return new ArrayList<>();
+                                            } else {
+                                                elements.add(new Number(check));
+                                            }
+                                        } else {
+                                            elements.add(new Number(suffixCheck));
+                                        }
                                     }
                             }
                         }
@@ -563,22 +681,96 @@ public class Equation {
 
                         break;
                     default:
-                        double suffixCheck = checkSuffix(prefix);
+                        if(prefix.endsWith("!")) {
+                            String filtered = prefix.replaceAll("!$", "");
 
-                        if(Double.isNaN(suffixCheck)) {
-                            int len = error.size();
+                            int originalSize = error.size();
 
-                            double check = calculate(prefix, equation);
+                            double valD = calculate(filtered, null, lang);
 
-                            if(len != error.size()) {
-                                error.add("calc_notnum | " + prefix);
+                            if(originalSize != error.size()) {
+                                error.add(String.format(LangID.getStringByID("calc_notnum", lang), prefix));
 
                                 return new ArrayList<>();
                             } else {
-                                elements.add(new Number(check));
+                                if(valD % 1 != 0) {
+                                    error.add(String.format(LangID.getStringByID("calc_factnum", lang), prefix));
+
+                                    return new ArrayList<>();
+                                } else if(valD < 0) {
+                                    error.add(String.format(LangID.getStringByID("calc_factrange", lang), prefix));
+
+                                    return new ArrayList<>();
+                                } else {
+                                    elements.add(new Number(factorial((long) valD)));
+                                }
+                            }
+                        } else if(prefix.matches("\\d+p\\d+") || prefix.matches("\\d+c\\d+")) {
+                            String[] data;
+
+                            if(prefix.matches("\\d+p\\d+")) {
+                                data = builder.toString().split("p");
+                            } else {
+                                data = builder.toString().split("c");
+                            }
+
+                            if(data.length != 2) {
+                                error.add(String.format(LangID.getStringByID("calc_npcrparam", lang), 2, data.length, Arrays.toString(data)));
+
+                                return new ArrayList<>();
+                            }
+
+                            for(int j = 0; j < data.length; j++) {
+                                if(StaticStore.isNumeric(data[j])) {
+                                    long valL = Long.parseLong(data[j]);
+                                    double valD = Double.parseDouble(data[j]);
+
+                                    if(valL != valD) {
+                                        error.add(String.format(LangID.getStringByID("calc_npcrnoint", lang),  prefix, data[j]));
+
+                                        return new ArrayList<>();
+                                    } else if(valL < 0) {
+                                        error.add(String.format(LangID.getStringByID("calc_npcrrange", lang), prefix, data[j]));
+
+                                        return new ArrayList<>();
+                                    }
+                                } else {
+                                    error.add(String.format(LangID.getStringByID("calc_npcrnum", lang), prefix, data[j]));
+
+                                    return new ArrayList<>();
+                                }
+                            }
+
+                            long n = Long.parseLong(data[0]);
+                            long r = Long.parseLong(data[1]);
+
+                            if(n < r) {
+                                error.add(String.format(LangID.getStringByID("calc_npcrsize", lang), prefix + "(" + data[0] + ", " + data[1] + ")", data[0], data[1]));
+                            }
+
+                            if (prefix.matches("\\d+p\\d+")) {
+                                elements.add(new Number(nPr(n, r)));
+                            } else {
+                                elements.add(new Number(nCr(n, r)));
                             }
                         } else {
-                            elements.add(new Number(suffixCheck));
+                            double suffixCheck = checkSuffix(prefix);
+
+                            if(Double.isNaN(suffixCheck)) {
+                                int len = error.size();
+
+                                double check = calculate(prefix, equation, lang);
+
+                                if(len != error.size()) {
+                                    error.add(String.format(LangID.getStringByID("calc_notnum", lang), prefix));
+
+                                    return new ArrayList<>();
+                                } else {
+                                    elements.add(new Number(check));
+                                }
+                            } else {
+                                elements.add(new Number(suffixCheck));
+                            }
                         }
                 }
             }
@@ -600,6 +792,44 @@ public class Equation {
         return open != 0;
     }
 
+    private static List<String> filterData(String raw, char separator) {
+        List<String> result = new ArrayList<>();
+
+        StringBuilder builder = new StringBuilder();
+
+        int depth = 0;
+
+        for(int i = 0; i < raw.length(); i++) {
+            char letter = raw.charAt(i);
+
+            if(letter == '(') {
+                depth++;
+            } else if(letter == ')') {
+                if(depth == 0)
+                    return new ArrayList<>();
+                else
+                    depth--;
+            }
+
+            if(letter == separator) {
+                if(depth == 0) {
+                    result.add(builder.toString());
+
+                    builder.setLength(0);
+                } else {
+                    builder.append(letter);
+                }
+            } else {
+                builder.append(letter);
+            }
+        }
+
+        if(builder.length() != 0)
+            result.add(builder.toString());
+
+        return result;
+    }
+
     private static double checkSuffix(String value) {
         for(int i = 0; i < suffix.length; i++) {
             if(value.toLowerCase(Locale.ENGLISH).endsWith(suffix[i])) {
@@ -618,5 +848,26 @@ public class Equation {
         }
 
         return Double.NaN;
+    }
+
+    private static double nPr(long n, long r) {
+        return factorial(n) * 1.0 / factorial(n - r);
+    }
+
+    private static double nCr(long n, long r) {
+        return factorial(n) * 1.0 / (factorial(r) * factorial(n - r));
+    }
+
+    private static long factorial(long n) {
+        if(n <= 0)
+            return 1;
+
+        long f = 1;
+
+        for(long i = 2; i <= n; i++) {
+            f *= i;
+        }
+
+        return f;
     }
 }
