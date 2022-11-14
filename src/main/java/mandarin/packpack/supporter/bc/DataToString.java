@@ -1771,7 +1771,38 @@ public class DataToString extends Data {
             desc = desc.replace("-", df.format(factor / 30.0));
         }
 
-        return desc;
+        StringBuilder builder = new StringBuilder("[");
+
+        int lastIndex = 0;
+
+        for(int i = 0; i < c.forms.length; i++) {
+            if(c.forms[i] != null) {
+                lastIndex = i;
+            }
+        }
+
+        for(int i = 0; i < c.forms.length; i++) {
+            if(c.forms[i] == null && i < lastIndex) {
+                builder.append(LangID.getStringByID("data_none", lang)).append(", ");
+            } else {
+                String name = StaticStore.safeMultiLangGet(c.forms[i], lang);
+
+                if(name == null || name.isBlank())
+                    name = c.forms[i].names.toString();
+
+                if(name.isBlank())
+                    name = Data.trio(c.forms[i].unit.id.id) + " - " + Data.trio(c.forms[i].fid);
+
+                builder.append(name);
+
+                if(i < lastIndex)
+                    builder.append(", ");
+            }
+        }
+
+        builder.append("]");
+
+        return desc + "\n\n" + builder;
     }
 
     public static String getComboType(Combo c, int lang) {
