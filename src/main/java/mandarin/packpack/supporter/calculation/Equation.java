@@ -357,6 +357,13 @@ public class Equation {
 
                                                 return new ArrayList<>();
                                             }
+
+                                            if(inner <= 0) {
+                                                error.add("calc_ln | " + prefix + "(" + builder + ")");
+
+                                                return new ArrayList<>();
+                                            }
+
                                             elements.add(new Number(Math.log(inner) / Math.log(Double.parseDouble(base))));
                                         } else {
                                             int originalLength = error.size();
