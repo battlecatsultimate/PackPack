@@ -30,7 +30,7 @@ public class Calculator extends ConstraintCommand {
         double result = Equation.calculate(equation[1].replace(" ", ""), null, lang);
 
         if(Equation.error.isEmpty()) {
-            replyToMessageSafely(ch, LangID.getStringByID("calc_result", lang).replace("_", Equation.df.format(result)), getMessage(event), a -> a);
+            replyToMessageSafely(ch, String.format(LangID.getStringByID("calc_result", lang), Equation.df.format(result)), getMessage(event), a -> a);
         } else {
             replyToMessageSafely(ch, Equation.getErrorMessage(), getMessage(event), a -> a);
         }
