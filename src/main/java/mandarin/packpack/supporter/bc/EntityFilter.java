@@ -36,12 +36,16 @@ public class EntityFilter {
 
     public static ArrayList<Form> findUnitWithName(String name, int lang) {
         ArrayList<Form> res = new ArrayList<>();
+        ArrayList<Form> clear = new ArrayList<>();
 
         for(Unit u : UserProfile.getBCData().units.getList()) {
             if(u == null)
                 continue;
 
             for(Form f : u.forms) {
+                boolean added = false;
+                boolean cleared = false;
+
                 for(int i = 0; i < StaticStore.langIndex.length; i++) {
                     StringBuilder fname = new StringBuilder(Data.trio(u.id.id)+"-"+Data.trio(f.fid)+" "+Data.trio(u.id.id)+" - "+Data.trio(f.fid) + " "
                     +u.id.id+"-"+f.fid+" "+Data.trio(u.id.id)+"-"+f.fid+" ");
@@ -60,13 +64,11 @@ public class EntityFilter {
                     }
 
                     if(fname.toString().toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
-                        res.add(f);
-                        break;
+                        added = true;
                     }
 
                     if(formName != null && formName.replaceAll("-", " ").toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
-                        res.add(f);
-                        break;
+                        added = true;
                     }
 
                     int oldConfig = CommonStatic.getConfig().lang;
@@ -77,21 +79,16 @@ public class EntityFilter {
                     CommonStatic.getConfig().lang = oldConfig;
 
                     if(alias != null && !alias.isEmpty()) {
-                        boolean added = false;
-
                         for(String a : alias) {
                             if(a.toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
                                 if(a.toLowerCase(Locale.ENGLISH).equals(name.toLowerCase(Locale.ENGLISH))) {
-                                    res.clear();
+                                    cleared = true;
+                                    added = true;
 
-                                    res.add(f);
-
-                                    return res;
+                                    break;
                                 }
 
                                 added = true;
-
-                                res.add(f);
 
                                 break;
                             }
@@ -101,7 +98,19 @@ public class EntityFilter {
                             break;
                     }
                 }
+
+                if(added) {
+                    res.add(f);
+                }
+
+                if(cleared) {
+                    clear.add(f);
+                }
             }
+        }
+
+        if(!clear.isEmpty()) {
+            return clear;
         }
 
         if(res.isEmpty()) {
@@ -282,10 +291,14 @@ public class EntityFilter {
 
     public static ArrayList<Enemy> findEnemyWithName(String name, int lang) {
         ArrayList<Enemy> res = new ArrayList<>();
+        ArrayList<Enemy> clear = new ArrayList<>();
 
         for(Enemy e : UserProfile.getBCData().enemies.getList()) {
             if(e == null)
                 continue;
+
+            boolean added = false;
+            boolean cleared = false;
 
             for(int i = 0; i < StaticStore.langIndex.length; i++) {
                 StringBuilder ename = new StringBuilder(Data.trio(e.id.id))
@@ -300,13 +313,11 @@ public class EntityFilter {
                 }
 
                 if(ename.toString().toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
-                    res.add(e);
-                    break;
+                    added = true;
                 }
 
                 if(enemyName != null && enemyName.replaceAll("-", " ").toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
-                    res.add(e);
-                    break;
+                    added = true;
                 }
 
                 int oldConfig = CommonStatic.getConfig().lang;
@@ -317,21 +328,16 @@ public class EntityFilter {
                 CommonStatic.getConfig().lang = oldConfig;
 
                 if(alias != null && !alias.isEmpty()) {
-                    boolean added = false;
-
                     for(String a : alias) {
                         if(a.toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
                             if(a.toLowerCase(Locale.ENGLISH).equals(name.toLowerCase(Locale.ENGLISH))) {
-                                res.clear();
+                                added = true;
+                                cleared = true;
 
-                                res.add(e);
-
-                                return res;
+                                break;
                             }
 
                             added = true;
-
-                            res.add(e);
 
                             break;
                         }
@@ -341,7 +347,18 @@ public class EntityFilter {
                         break;
                 }
             }
+
+            if(added) {
+                res.add(e);
+            }
+
+            if(cleared) {
+                clear.add(e);
+            }
         }
+
+        if(!clear.isEmpty())
+            return clear;
 
         if(res.isEmpty()) {
             ArrayList<Enemy> similar = new ArrayList<>();
@@ -520,10 +537,9 @@ public class EntityFilter {
 
     public static ArrayList<Stage> findStageWithName(String[] names, int lang) {
         ArrayList<Stage> result = new ArrayList<>();
+        ArrayList<Stage> clear = new ArrayList<>();
 
         if(searchMapColc(names) && names[0] != null && !names[0].isBlank()) {
-            ArrayList<Stage> mcResult = new ArrayList<>();
-
             //Search normally
             for(MapColc mc : MapColc.values()) {
                 if(mc == null)
@@ -555,7 +571,7 @@ public class EntityFilter {
                                     if(st == null)
                                         continue;
 
-                                    mcResult.add(st);
+                                    result.add(st);
                                 }
                             }
 
@@ -566,7 +582,7 @@ public class EntityFilter {
             }
 
             //Start autocorrect mode if no map colc found
-            if(mcResult.isEmpty()) {
+            if(result.isEmpty()) {
                 ArrayList<Integer> distances = getDistances(MapColc.values(), names[0], lang, MapColc.class);
 
                 int disMin = Integer.MAX_VALUE;
@@ -583,21 +599,15 @@ public class EntityFilter {
                     for(MapColc mc : MapColc.values()) {
                         if(distances.get(i) == disMin) {
                             for(StageMap stm : mc.maps.getList()) {
-                                mcResult.addAll(stm.list.getList());
+                                result.addAll(stm.list.getList());
                             }
                         }
 
                         i++;
                     }
-
-                    result.addAll(mcResult);
                 }
-            } else {
-                result.addAll(mcResult);
             }
         } else if(searchStageMap(names) && names[1] != null && !names[1].isBlank()) {
-            ArrayList<Stage> stmResult = new ArrayList<>();
-
             boolean mcContain;
 
             if(names[0] != null && !names[0].isBlank())
@@ -674,7 +684,7 @@ public class EntityFilter {
                             }
 
                             if(s1) {
-                                stmResult.addAll(stm.list.getList());
+                                result.addAll(stm.list.getList());
                             }
                         }
                     } else {
@@ -691,7 +701,7 @@ public class EntityFilter {
 
                             for(StageMap stm : mc.maps.getList()) {
                                 if(stmDistances.get(i) == disMin) {
-                                    stmResult.addAll(stm.list.getList());
+                                    result.addAll(stm.list.getList());
                                 }
 
                                 i++;
@@ -740,7 +750,7 @@ public class EntityFilter {
                                     }
 
                                     if(s1) {
-                                        stmResult.addAll(stm.list.getList());
+                                        result.addAll(stm.list.getList());
                                     }
                                 }
                             } else {
@@ -757,7 +767,7 @@ public class EntityFilter {
 
                                     for(StageMap stm : mc.maps.getList()) {
                                         if(stmDistances.get(j) == stmMin) {
-                                            stmResult.addAll(stm.list.getList());
+                                            result.addAll(stm.list.getList());
                                         }
 
                                         j++;
@@ -768,13 +778,7 @@ public class EntityFilter {
                     }
                 }
             }
-
-            if(!stmResult.isEmpty()) {
-                result.addAll(stmResult);
-            }
         } else if(names[2] != null && !names[2].isBlank()) {
-            ArrayList<Stage> stResult = new ArrayList<>();
-
             boolean mcContain;
 
             if(names[0] != null && !names[0].isBlank()) {
@@ -882,23 +886,21 @@ public class EntityFilter {
                                         continue;
 
                                     boolean s2 = false;
+                                    boolean cleared = false;
 
                                     for(int i = 0; i < StaticStore.langIndex.length; i++) {
                                         String stName = StaticStore.safeMultiLangGet(st, StaticStore.langIndex[i]);
 
-                                        if(stName == null || stName.isBlank())
-                                            continue;
+                                        if(stName != null && !stName.isBlank()) {
+                                            if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
+                                                s2 = true;
+                                            }
 
-                                        if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
-                                            s2 = true;
-                                            break;
-                                        }
+                                            stName = stName.replace("-", " ");
 
-                                        stName = stName.replace("-", " ");
-
-                                        if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
-                                            s2 = true;
-                                            break;
+                                            if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
+                                                s2 = true;
+                                            }
                                         }
 
                                         int oldConfig = CommonStatic.getConfig().lang;
@@ -909,19 +911,11 @@ public class EntityFilter {
                                         CommonStatic.getConfig().lang = oldConfig;
 
                                         if(alias != null && !alias.isEmpty()) {
-                                            boolean added = false;
-
                                             for(String a : alias) {
                                                 if(a.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
                                                     if(a.toLowerCase(Locale.ENGLISH).equals(names[2].toLowerCase(Locale.ENGLISH))) {
-                                                        stResult.clear();
-
-                                                        stResult.add(st);
-
-                                                        return stResult;
+                                                        cleared = true;
                                                     }
-
-                                                    added = true;
 
                                                     s2 = true;
 
@@ -929,7 +923,7 @@ public class EntityFilter {
                                                 }
                                             }
 
-                                            if(added)
+                                            if(s2)
                                                 break;
                                         }
                                     }
@@ -951,7 +945,11 @@ public class EntityFilter {
                                     }
 
                                     if(s2 || s3) {
-                                        stResult.add(st);
+                                        result.add(st);
+                                    }
+
+                                    if(cleared) {
+                                        clear.add(st);
                                     }
                                 }
                             } else {
@@ -968,7 +966,7 @@ public class EntityFilter {
 
                                     for(Stage st : stm.list.getList()) {
                                         if(stDistances.get(stInd) == stMin) {
-                                            stResult.add(st);
+                                            result.add(st);
                                         }
 
                                         stInd++;
@@ -992,7 +990,7 @@ public class EntityFilter {
                                         }
 
                                         if(s3)
-                                            stResult.add(st);
+                                            result.add(st);
                                     }
                                 }
                             }
@@ -1017,23 +1015,21 @@ public class EntityFilter {
                                                 continue;
 
                                             boolean s2 = false;
+                                            boolean cleared = false;
 
                                             for(int i = 0; i < StaticStore.langIndex.length; i++) {
                                                 String stName = StaticStore.safeMultiLangGet(st, StaticStore.langIndex[i]);
 
-                                                if(stName == null || stName.isBlank())
-                                                    continue;
+                                                if(stName != null && !stName.isBlank()) {
+                                                    if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
+                                                        s2 = true;
+                                                    }
 
-                                                if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
-                                                    s2 = true;
-                                                    break;
-                                                }
+                                                    stName = stName.replace("-", " ");
 
-                                                stName = stName.replace("-", " ");
-
-                                                if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
-                                                    s2 = true;
-                                                    break;
+                                                    if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
+                                                        s2 = true;
+                                                    }
                                                 }
 
                                                 int oldConfig = CommonStatic.getConfig().lang;
@@ -1044,17 +1040,19 @@ public class EntityFilter {
                                                 CommonStatic.getConfig().lang = oldConfig;
 
                                                 if(alias != null && !alias.isEmpty()) {
-                                                    boolean added = false;
-
                                                     for(String a : alias) {
                                                         if(a.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
-                                                            added = true;
+                                                            if(a.toLowerCase(Locale.ENGLISH).equals(names[2].toLowerCase(Locale.ENGLISH))) {
+                                                                cleared = true;
+                                                            }
+
                                                             s2 = true;
+
                                                             break;
                                                         }
                                                     }
 
-                                                    if(added)
+                                                    if(s2)
                                                         break;
                                                 }
                                             }
@@ -1076,7 +1074,11 @@ public class EntityFilter {
                                             }
 
                                             if(s2 || s3) {
-                                                stResult.add(st);
+                                                result.add(st);
+                                            }
+
+                                            if(cleared) {
+                                                clear.add(st);
                                             }
                                         }
                                     } else {
@@ -1093,7 +1095,7 @@ public class EntityFilter {
 
                                             for(Stage st : stm.list.getList()) {
                                                 if(stDistances.get(stInd) == stMin) {
-                                                    stResult.add(st);
+                                                    result.add(st);
                                                 }
 
                                                 stInd++;
@@ -1117,7 +1119,7 @@ public class EntityFilter {
                                                 }
 
                                                 if(s3)
-                                                    stResult.add(st);
+                                                    result.add(st);
                                             }
                                         }
                                     }
@@ -1181,23 +1183,45 @@ public class EntityFilter {
                                                 continue;
 
                                             boolean s2 = false;
+                                            boolean cleared = false;
 
                                             for(int i = 0; i < StaticStore.langIndex.length; i++) {
                                                 String stName = StaticStore.safeMultiLangGet(st, StaticStore.langIndex[i]);
 
-                                                if(stName == null || stName.isBlank())
-                                                    continue;
+                                                if(stName != null && !stName.isBlank()) {
+                                                    if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
+                                                        s2 = true;
+                                                    }
 
-                                                if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
-                                                    s2 = true;
-                                                    break;
+                                                    stName = stName.replace("-", " ");
+
+                                                    if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
+                                                        s2 = true;
+                                                    }
                                                 }
 
-                                                stName = stName.replace("-", " ");
+                                                int oldConfig = CommonStatic.getConfig().lang;
+                                                CommonStatic.getConfig().lang = StaticStore.langIndex[i];
 
-                                                if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
-                                                    s2 = true;
-                                                    break;
+                                                ArrayList<String> alias = AliasHolder.SALIAS.getCont(st);
+
+                                                CommonStatic.getConfig().lang = oldConfig;
+
+                                                if(alias != null && !alias.isEmpty()) {
+                                                    for(String a : alias) {
+                                                        if(a.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
+                                                            if(a.toLowerCase(Locale.ENGLISH).equals(names[2].toLowerCase(Locale.ENGLISH))) {
+                                                                cleared = true;
+                                                            }
+
+                                                            s2 = true;
+
+                                                            break;
+                                                        }
+                                                    }
+
+                                                    if(s2)
+                                                        break;
                                                 }
                                             }
 
@@ -1218,7 +1242,11 @@ public class EntityFilter {
                                             }
 
                                             if(s2 || s3) {
-                                                stResult.add(st);
+                                                result.add(st);
+                                            }
+
+                                            if(cleared) {
+                                                clear.add(st);
                                             }
                                         }
                                     } else {
@@ -1235,7 +1263,7 @@ public class EntityFilter {
 
                                             for(Stage st : stm.list.getList()) {
                                                 if(stDistances.get(stInd) == stMin) {
-                                                    stResult.add(st);
+                                                    result.add(st);
                                                 }
 
                                                 stInd++;
@@ -1259,7 +1287,7 @@ public class EntityFilter {
                                                 }
 
                                                 if(s3)
-                                                    stResult.add(st);
+                                                    result.add(st);
                                             }
                                         }
                                     }
@@ -1284,23 +1312,45 @@ public class EntityFilter {
                                                         continue;
 
                                                     boolean s2 = false;
+                                                    boolean cleared = false;
 
                                                     for(int i = 0; i < StaticStore.langIndex.length; i++) {
                                                         String stName = StaticStore.safeMultiLangGet(st, StaticStore.langIndex[i]);
 
-                                                        if(stName == null || stName.isBlank())
-                                                            continue;
+                                                        if(stName != null && !stName.isBlank()) {
+                                                            if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
+                                                                s2 = true;
+                                                            }
 
-                                                        if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
-                                                            s2 = true;
-                                                            break;
+                                                            stName = stName.replace("-", " ");
+
+                                                            if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
+                                                                s2 = true;
+                                                            }
                                                         }
 
-                                                        stName = stName.replace("-", " ");
+                                                        int oldConfig = CommonStatic.getConfig().lang;
+                                                        CommonStatic.getConfig().lang = StaticStore.langIndex[i];
 
-                                                        if(stName.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
-                                                            s2 = true;
-                                                            break;
+                                                        ArrayList<String> alias = AliasHolder.SALIAS.getCont(st);
+
+                                                        CommonStatic.getConfig().lang = oldConfig;
+
+                                                        if(alias != null && !alias.isEmpty()) {
+                                                            for(String a : alias) {
+                                                                if(a.toLowerCase(Locale.ENGLISH).contains(names[2].toLowerCase(Locale.ENGLISH))) {
+                                                                    if(a.toLowerCase(Locale.ENGLISH).equals(names[2].toLowerCase(Locale.ENGLISH))) {
+                                                                        cleared = true;
+                                                                    }
+
+                                                                    s2 = true;
+
+                                                                    break;
+                                                                }
+                                                            }
+
+                                                            if(s2)
+                                                                break;
                                                         }
                                                     }
 
@@ -1321,7 +1371,11 @@ public class EntityFilter {
                                                     }
 
                                                     if(s2 || s3) {
-                                                        stResult.add(st);
+                                                        result.add(st);
+                                                    }
+
+                                                    if(cleared) {
+                                                        clear.add(st);
                                                     }
                                                 }
                                             } else {
@@ -1338,7 +1392,7 @@ public class EntityFilter {
 
                                                     for(Stage st : stm.list.getList()) {
                                                         if(stDistances.get(stInd) == stMin) {
-                                                            stResult.add(st);
+                                                            result.add(st);
                                                         }
                                                         stInd++;
                                                     }
@@ -1361,7 +1415,7 @@ public class EntityFilter {
                                                         }
 
                                                         if(s3)
-                                                            stResult.add(st);
+                                                            result.add(st);
                                                     }
                                                 }
                                             }
@@ -1377,12 +1431,13 @@ public class EntityFilter {
                     }
                 }
             }
-
-            if(!stResult.isEmpty())
-                result.addAll(stResult);
         }
 
-        return result;
+        if(!clear.isEmpty()) {
+            return clear;
+        } else {
+            return result;
+        }
     }
 
     public static ArrayList<Stage> findStageWithMapName(String name) {
