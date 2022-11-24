@@ -145,7 +145,7 @@ public class Equation {
             return new ArrayList<>();
         }
 
-        equation = equation.replaceAll("[\\[|{]", "(").replaceAll("[]|}]", ")").replaceAll("\\)\\(", ")*(").toLowerCase(Locale.ENGLISH);
+        equation = equation.replaceAll("[\\[{]", "(").replaceAll("[]}]", ")").replaceAll("\\)\\(", ")*(").toLowerCase(Locale.ENGLISH);
 
         List<Element> elements = new ArrayList<>();
 
@@ -153,6 +153,80 @@ public class Equation {
 
         for(int i = 0; i < equation.length(); i++) {
             switch (equation.charAt(i)) {
+                case '|':
+                    String pre;
+
+                    if(builder.length() != 0) {
+                        pre = builder.toString();
+
+                        builder.setLength(0);
+                    } else {
+                        pre = null;
+                    }
+
+                    i++;
+
+                    int start = i;
+
+                    int max = 1;
+                    int level = 1;
+                    int last = i;
+
+                    while(true) {
+                        if(i >= equation.length()) {
+                            i = last;
+
+                            break;
+                        }
+
+                        if(endOfAbs(equation, i)) {
+                            level--;
+
+                            if(level < max) {
+                                last = i;
+                            }
+
+                            max = Math.min(max, level);
+                        } else if(equation.charAt(i) == '|') {
+                            level++;
+                        }
+
+                        i++;
+                    }
+
+                    if(start == last) {
+                        elements.add(new Number(0));
+                    } else {
+                        builder.append(equation, start, last);
+
+                        int size = error.size();
+
+                        double test = calculate(builder.toString(), equation, lang);
+
+                        if(size != error.size()) {
+                            error.add(String.format(LangID.getStringByID("calc_absfail", lang), builder));
+
+                            return new ArrayList<>();
+                        }
+
+                        if(pre != null) {
+                            double preTest = calculate(builder.toString(), equation, lang);
+
+                            if(size != error.size()) {
+                                error.add(String.format(LangID.getStringByID("calc_abspre", lang), pre + "|" + builder + "|"));
+
+                                return new ArrayList<>();
+                            }
+
+                            elements.add(new Number(preTest * Math.abs(test)));
+                        } else {
+                            elements.add(new Number(Math.abs(test)));
+                        }
+                    }
+
+                    builder.setLength(0);
+
+                    break;
                 case '(':
                     String prefix;
 
@@ -388,6 +462,27 @@ public class Equation {
                                             }
 
                                             break;
+                                        case "abs":
+                                            elements.add(new Number(Math.abs(inner)));
+
+                                            break;
+                                        case "sign":
+                                        case "sgn":
+                                            elements.add(new Number(Math.signum(inner)));
+
+                                            break;
+                                        case "floor":
+                                            elements.add(new Number(Math.floor(inner)));
+
+                                            break;
+                                        case "ceil":
+                                            elements.add(new Number(Math.ceil(inner)));
+
+                                            break;
+                                        case "round":
+                                            elements.add(new Number(Math.round(inner)));
+
+                                            break;
                                         default:
                                             if(prefix.startsWith("log")) {
                                                 String base = prefix.replaceAll("^log", "");
@@ -504,7 +599,7 @@ public class Equation {
                 case '/':
                 case '÷':
                 case '^':
-                    if((builder.length() == 0 && i != 0 && equation.charAt(i - 1) != ')') || i == equation.length() - 1) {
+                    if((builder.length() == 0 && i != 0 && equation.charAt(i - 1) != ')' && equation.charAt(i - 1) != '|') || i == equation.length() - 1) {
                         error.add(LangID.getStringByID("calc_alone", lang));
 
                         return new ArrayList<>();
@@ -781,15 +876,18 @@ public class Equation {
 
     private static boolean openedBracket(String raw) {
         int open = 0;
+        int count = 0;
 
         for (int i = 0; i < raw.length(); i++) {
             if (raw.charAt(i) == '(')
                 open++;
             else if (raw.charAt(i) == ')')
                 open--;
+            else if (raw.charAt(i) == '|')
+                count++;
         }
 
-        return open != 0;
+        return open != 0 || count % 2 == 1;
     }
 
     private static List<String> filterData(String raw, char separator) {
@@ -869,5 +967,27 @@ public class Equation {
         }
 
         return f;
+    }
+
+    private static boolean endOfAbs(String equation, int index) {
+        char c = equation.charAt(index);
+
+        if(c == '|') {
+            if(index - 1 < 0) {
+                return false;
+            }
+
+            char before = equation.charAt(index - 1);
+
+            if(Character.isDigit(before) || before == ')' || before == '|') {
+                return true;
+            }
+
+            String previous = equation.substring(0, index);
+
+            return previous.matches("(.+)?(pi|[^a-z]?e)$");
+        } else {
+            return false;
+        }
     }
 }

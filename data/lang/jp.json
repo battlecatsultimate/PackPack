@@ -1272,6 +1272,8 @@
   "calc_npcrsize" : "N must be bigger or same than R : %s -> N = %s, R = %s",
   "calc_factnum" : "Number must be integer in factorial (No gamma function support) : %s",
   "calc_factrange" : "Number in factorial must be higher or same than 0 (No gamma function support) : %s",
+  "calc_absfail" : "Failed to calculate equation in abs : %s",
+  "calc_abspre" : "Failed to calculate previous equation provided before abs : %s",
   "asset_no" : "Bot couldn't bring asset data...",
   "asset_goup" : "Go to parent folder",
   "asset_current" : "Current path : `_`",
