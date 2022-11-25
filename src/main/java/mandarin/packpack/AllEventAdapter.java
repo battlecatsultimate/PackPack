@@ -573,11 +573,11 @@ public class AllEventAdapter extends ListenerAdapter {
                     break;
                 case "aliasadd":
                 case "ala":
-                    new AliasAdd(lang).execute(event);
+                    new AliasAdd(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
                     break;
                 case "aliasremove":
                 case "alr":
-                    new AliasRemove(lang).execute(event);
+                    new AliasRemove(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
                     break;
                 case "contributoradd":
                 case "coa":

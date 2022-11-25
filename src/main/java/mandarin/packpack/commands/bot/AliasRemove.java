@@ -9,10 +9,12 @@ import common.util.stage.StageMap;
 import common.util.unit.Enemy;
 import common.util.unit.Form;
 import mandarin.packpack.commands.Command;
+import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.AliasHolder;
+import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.alias.AliasEnemyMessageHolder;
 import mandarin.packpack.supporter.server.holder.alias.AliasFormMessageHolder;
 import mandarin.packpack.supporter.server.holder.alias.AliasStageMessageHolder;
@@ -23,10 +25,10 @@ import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.util.ArrayList;
 
-public class AliasRemove extends Command {
+public class AliasRemove extends ConstraintCommand {
 
-    public AliasRemove(int lang) {
-        super(lang);
+    public AliasRemove(ROLE role, int lang, IDHolder id) {
+        super(role, lang, id);
     }
 
     @Override
