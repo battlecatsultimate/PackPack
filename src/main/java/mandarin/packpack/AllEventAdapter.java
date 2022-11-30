@@ -444,6 +444,10 @@ public class AllEventAdapter extends ListenerAdapter {
                     break;
                 case "formstat":
                 case "fs":
+                case "catstat":
+                case "cs":
+                case "unitstat":
+                case "us":
                     new FormStat(ConstraintCommand.ROLE.MEMBER, lang, idh, c).execute(event);
                     break;
                 case "locale":
@@ -459,7 +463,7 @@ public class AllEventAdapter extends ListenerAdapter {
                     new EnemyStat(ConstraintCommand.ROLE.MEMBER, lang, idh, c).execute(event);
                     break;
                 case "castle":
-                case "cs":
+                case "cas":
                     new Castle(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
                     break;
                 case "stageinfo":
