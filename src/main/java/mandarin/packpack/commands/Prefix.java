@@ -32,7 +32,7 @@ public class Prefix extends ConstraintCommand {
             if(m != null) {
                 StaticStore.prefix.put(m.getId(), list[1]);
 
-                String result = LangID.getStringByID("prefix_set", lang).replace("_", list[1]);
+                String result = String.format(LangID.getStringByID("prefix_set", lang), list[1]);
 
                 if(result.length() < 2000) {
                     replyToMessageSafely(ch, result, getMessage(event), a -> a);

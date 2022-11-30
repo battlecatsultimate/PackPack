@@ -834,7 +834,7 @@
   "help_eventdataarchive_argu" : "`-en/jp/tw/kr` : Decide locale of BC\n`-g` or `-gatya` or `-gacha` : Find gacha event data archive\n`-i` or `-item` : Find item event data archive\n`-s` or `-sale` : Find sale event data archive",
   "help_eventdataarchive_exam" : "`p!eda -en -i`\n`p!eda -jp -s`",
   "prefix_space" : "Prefix can't be white spaces!",
-  "prefix_set" : "Prefix is set as _!",
+  "prefix_set" : "Prefix setting compelete! Your personal prefix is now : %s",
   "prefix_setnone" : "Your prefix has been updated!",
   "prefix_argu" : "This command requires one more argument : [Prefix]",
   "prefix_tooarg" : "Too many arguments! This command needs only one argument : [Prefix]",

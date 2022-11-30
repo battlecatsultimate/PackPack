@@ -821,7 +821,7 @@
   "help_eventdataarchive_argu" : "`-en/jp/tw/kr` : 냥코 언어버전을 정합니다\n`-g` 또는 `-gatya` 또는 `-gacha` : 가챠 이벤트 데이터 아카이브를 불러옵니다\n`-i` 또는 `-item` : 아이템 이벤트 데이터 아카이브를 불러옵니다\n`-s` 또는 `-sale` : 세일 이벤트 데이터 아카이브를 불러옵니다",
   "help_eventdataarchive_exam" : "`p!eda -en -i`\n`p!eda -jp -s`",
   "prefix_space" : "접두사는 여백으로 설정될 수 없습니다!",
-  "prefix_set" : "접두사가 _ 로 설정되었습니다!",
+  "prefix_set" : "접두사가 %s 로 설정되었습니다!",
   "prefix_setnone" : "접두사가 설정되었습니다!",
   "prefix_argu" : "해당 명령어는 하나의 정보를 더 요구합니다 : [접두사]",
   "prefix_tooarg" : "정보가 너무 많습니다! 해당 명령어는 하나의 정보만 요구합니다 : [접두사]",
