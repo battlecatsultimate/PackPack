@@ -201,7 +201,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
     public String beautify(int lang) {
         StringBuilder result = new StringBuilder();
 
-        result.append("[");
+        result.append("\u001B[0;31m[");
 
         if(date.dateStart.year != currentYear) {
             result.append(date.dateStart.year)
@@ -275,12 +275,12 @@ public class GachaSchedule extends EventFactor implements Schedule {
             if(g == null)
                 g = tryGetGachaName(section.gachaID, lang);
 
-            result.append(g);
+            result.append("\u001B[1;38m").append(g);
 
             if(newUnits.containsKey(section.gachaID)) {
                 int[] units = newUnits.get(section.gachaID);
 
-                result.append(" (+");
+                result.append("\u001B[0;32m (+");
 
                 for(int j = 0; j < units.length; j++) {
                     Unit u = UserProfile.getBCData().units.get(units[j]);
@@ -305,7 +305,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
             }
 
             if(hasAdditionalData(section)) {
-                result.append(" [");
+                result.append("\u001B[0;36m [");
 
                 if(section.rarityGuarantees.length > 3 && section.rarityGuarantees[3] == 1) {
                     result.append(LangID.getStringByID("printgacha_g", lang));
@@ -328,7 +328,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
                 GachaSet set = GachaSet.gachaSet.get(section.gachaID);
 
                 if(!set.buffUnits.isEmpty()) {
-                    result.append(" { ");
+                    result.append("\u001B[0;33m { ");
 
                     List<Integer> params = new ArrayList<>(set.buffUnits.keySet());
 
@@ -375,10 +375,10 @@ public class GachaSchedule extends EventFactor implements Schedule {
         }
 
         if(getVersionNumber(minVersion) > StaticStore.safeParseInt(StaticStore.getVersion(locale))) {
-            result.append(" <").append(LangID.getStringByID("event_newver", lang).replace("_", beautifyVersion(minVersion))).append(">");
+            result.append("\u001B[0;35m <").append(LangID.getStringByID("event_newver", lang).replace("_", beautifyVersion(minVersion))).append(">");
         }
 
-        return preventDotDecimal(result.toString().replace("1s", "1\u200Bs").replace("'", "’").replace(":", "："));
+        return result.toString();
     }
 
     @Override
@@ -678,7 +678,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
     }
 
     private String getWeirdChanceData(GachaSection section, int lang) {
-        String result = "<";
+        String result = "\u001B[0;0m<";
 
         result += LangID.getStringByID("printgacha_chance", lang);
 

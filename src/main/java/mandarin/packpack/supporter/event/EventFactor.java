@@ -415,7 +415,7 @@ public class EventFactor {
 
         StringBuilder b = new StringBuilder();
 
-        String[] contents = result.trim().split("\\.");
+        String[] contents = result.split("\\.");
 
         for(int i = 0; i < contents.length; i++) {
             if(i == 0) {

@@ -96,7 +96,7 @@ public class ItemSchedule extends EventFactor implements Schedule {
     public String beautify(int lang) {
         StringBuilder result = new StringBuilder();
 
-        result.append("[");
+        result.append("\u001B[0;31m[");
 
         if(date.dateStart.year != currentYear) {
             result.append(date.dateStart.year)
@@ -143,21 +143,21 @@ public class ItemSchedule extends EventFactor implements Schedule {
 
         result.append("] ");
 
-        result.append(beautifyItem(lang, itemID, itemAmount));
+        result.append("\u001B[1;38m").append(beautifyItem(lang, itemID, itemAmount));
 
         if(1000 <= categoryID && categoryID < 5000 && everyday) {
-            result.append(" [").append(LangID.getStringByID("printitem_daily", lang)).append("]");
+            result.append("\u001B[1;34m [").append(LangID.getStringByID("printitem_daily", lang)).append("]");
         }
 
         if(!title.isBlank() && !title.startsWith("←全画面")) {
-            result.append(" {").append(title).append("}");
+            result.append("\u001B[0;33m {").append(title).append("}");
         }
 
         if(getVersionNumber(minVersion) > StaticStore.safeParseInt(StaticStore.getVersion(locale))) {
-            result.append(" <").append(LangID.getStringByID("event_newver", lang).replace("_", beautifyVersion(minVersion))).append(">");
+            result.append("\u001B[0;35m <").append(LangID.getStringByID("event_newver", lang).replace("_", beautifyVersion(minVersion))).append(">");
         }
 
-        return preventDotDecimal(result.toString().replace("1s", "1\u200Bs").replace("'", "’").replace(":", "："));
+        return result.toString();
     }
 
     @Override

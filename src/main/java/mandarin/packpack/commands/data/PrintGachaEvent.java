@@ -78,7 +78,7 @@ public class PrintGachaEvent extends ConstraintCommand {
                 builder.append(LangID.getStringByID("event_gacha", lang)).append("\n\n");
             }
 
-            builder.append("```scss\n");
+            builder.append("```ansi\n");
 
             while(builder.length() < 1800 && !result.isEmpty()) {
                 String line = result.get(0);

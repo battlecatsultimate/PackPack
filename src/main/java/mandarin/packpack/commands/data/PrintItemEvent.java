@@ -78,7 +78,7 @@ public class PrintItemEvent extends ConstraintCommand {
                 builder.append(LangID.getStringByID("event_item", lang)).append("\n\n");
             }
 
-            builder.append("```scss\n");
+            builder.append("```ansi\n");
 
             while(builder.length() < 1950 && !result.isEmpty()) {
                 String line = result.get(0);

@@ -791,7 +791,7 @@ public class EventHolder extends EventFactor {
     }
 
     private String manualSchedulePrint(EventDate dateStart, EventDate dateEnd, String scheduleName, int lang) {
-        StringBuilder result = new StringBuilder("[");
+        StringBuilder result = new StringBuilder("\u001B[0;31m[");
 
         if(dateStart.year != dateEnd.year || dateStart.year != currentYear) {
             result.append(dateStart.year)
@@ -822,7 +822,7 @@ public class EventHolder extends EventFactor {
                     .append("] ");
         }
 
-        result.append(scheduleName);
+        result.append("\u001B[1;38m").append(scheduleName);
 
         return result.toString();
     }

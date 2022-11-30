@@ -101,30 +101,30 @@ public class PrintEvent extends ConstraintCommand {
 
                             switch (type) {
                                 case DAILY:
-                                    builder.append(LangID.getStringByID("printstage_daily", l)).append("\n\n```scss\n");
+                                    builder.append(LangID.getStringByID("printstage_daily", l)).append("\n\n```ansi\n");
 
                                     break;
                                 case WEEKLY:
-                                    builder.append(LangID.getStringByID("printstage_weekly", l)).append("\n\n```scss\n");
+                                    builder.append(LangID.getStringByID("printstage_weekly", l)).append("\n\n```ansi\n");
 
                                     break;
                                 case MONTHLY:
-                                    builder.append(LangID.getStringByID("printstage_monthly", l)).append("\n\n```scss\n");
+                                    builder.append(LangID.getStringByID("printstage_monthly", l)).append("\n\n```ansi\n");
 
                                     break;
                                 case YEARLY:
-                                    builder.append(LangID.getStringByID("printstage_yearly", l)).append("\n\n```scss\n");
+                                    builder.append(LangID.getStringByID("printstage_yearly", l)).append("\n\n```ansi\n");
 
                                     break;
                                 case MISSION:
-                                    builder.append(LangID.getStringByID("event_mission", l)).append("\n\n```scss\n");
+                                    builder.append(LangID.getStringByID("event_mission", l)).append("\n\n```ansi\n");
 
                                     break;
                                 default:
-                                    builder.append("```scss\n");
+                                    builder.append("```ansi\n");
                             }
                         } else {
-                            builder.append("```scss\n");
+                            builder.append("```ansi\n");
                         }
 
                         while(builder.length() < 1950 && !data.isEmpty()) {
@@ -194,7 +194,7 @@ public class PrintEvent extends ConstraintCommand {
                         }
                     }
 
-                    builder.append("```scss\n");
+                    builder.append("```ansi\n");
 
                     while(builder.length() < (j == EventFactor.GATYA ? 1800 : 1950) && !result.isEmpty()) {
                         String line = result.get(0);

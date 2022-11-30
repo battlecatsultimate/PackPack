@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 
 import javax.security.auth.login.LoginException;
 import java.io.File;
@@ -298,30 +299,30 @@ public class PackBot {
 
                                                 switch (type) {
                                                     case DAILY:
-                                                        builder.append(LangID.getStringByID("printstage_daily", holder.config.lang)).append("\n\n```scss\n");
+                                                        builder.append(LangID.getStringByID("printstage_daily", holder.config.lang)).append("\n\n```ansi\n");
 
                                                         break;
                                                     case WEEKLY:
-                                                        builder.append(LangID.getStringByID("printstage_weekly", holder.config.lang)).append("\n\n```scss\n");
+                                                        builder.append(LangID.getStringByID("printstage_weekly", holder.config.lang)).append("\n\n```ansi\n");
 
                                                         break;
                                                     case MONTHLY:
-                                                        builder.append(LangID.getStringByID("printstage_monthly", holder.config.lang)).append("\n\n```scss\n");
+                                                        builder.append(LangID.getStringByID("printstage_monthly", holder.config.lang)).append("\n\n```ansi\n");
 
                                                         break;
                                                     case YEARLY:
-                                                        builder.append(LangID.getStringByID("printstage_yearly", holder.config.lang)).append("\n\n```scss\n");
+                                                        builder.append(LangID.getStringByID("printstage_yearly", holder.config.lang)).append("\n\n```ansi\n");
 
                                                         break;
                                                     case MISSION:
-                                                        builder.append(LangID.getStringByID("event_mission", holder.config.lang)).append("\n\n```scss\n");
+                                                        builder.append(LangID.getStringByID("event_mission", holder.config.lang)).append("\n\n```ansi\n");
 
                                                         break;
                                                     default:
-                                                        builder.append("```scss\n");
+                                                        builder.append("```ansi\n");
                                                 }
                                             } else {
-                                                builder.append("```scss\n");
+                                                builder.append("```ansi\n");
                                             }
 
                                             while(builder.length() < 1980 && !data.isEmpty()) {
@@ -391,7 +392,7 @@ public class PackBot {
                                             }
                                         }
 
-                                        builder.append("```scss\n");
+                                        builder.append("```ansi\n");
 
                                         while(builder.length() < (j == EventFactor.GATYA ? 1800 : 1950) && !result.isEmpty()) {
                                             String line = result.get(0);

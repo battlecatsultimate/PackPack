@@ -1069,7 +1069,7 @@
   "printstage_true" : "Unit _ True Form",
   "printstage_unlock" : "Unlock true form unit _",
   "printgacha_toolong" : "Uploading raw file because gacha dat was too long",
-  "printgacha_g" : "G",
+  "printgacha_g" : "\u001B[4m\u001B[1;36mG\u001B[0;36m",
   "printgacha_lg" : "LG",
   "printgacha_gr" : "GR",
   "printgacha_p" : "P",

@@ -95,30 +95,30 @@ public class PrintStageEvent extends ConstraintCommand {
 
                     switch (type) {
                         case DAILY:
-                            builder.append(LangID.getStringByID("printstage_daily", lang)).append("\n\n```scss\n");
+                            builder.append(LangID.getStringByID("printstage_daily", lang)).append("\n\n```ansi\n");
 
                             break;
                         case WEEKLY:
-                            builder.append(LangID.getStringByID("printstage_weekly", lang)).append("\n\n```scss\n");
+                            builder.append(LangID.getStringByID("printstage_weekly", lang)).append("\n\n```ansi\n");
 
                             break;
                         case MONTHLY:
-                            builder.append(LangID.getStringByID("printstage_monthly", lang)).append("\n\n```scss\n");
+                            builder.append(LangID.getStringByID("printstage_monthly", lang)).append("\n\n```ansi\n");
 
                             break;
                         case YEARLY:
-                            builder.append(LangID.getStringByID("printstage_yearly", lang)).append("\n\n```scss\n");
+                            builder.append(LangID.getStringByID("printstage_yearly", lang)).append("\n\n```ansi\n");
 
                             break;
                         case MISSION:
-                            builder.append(LangID.getStringByID("event_mission", lang)).append("\n\n```scss\n");
+                            builder.append(LangID.getStringByID("event_mission", lang)).append("\n\n```ansi\n");
 
                             break;
                         default:
-                            builder.append("```scss\n");
+                            builder.append("```ansi\n");
                     }
                 } else {
-                    builder.append("```scss\n");
+                    builder.append("```ansi\n");
                 }
 
                 while(builder.length() < 1950 && !data.isEmpty()) {
