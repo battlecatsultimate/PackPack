@@ -478,6 +478,14 @@ public class AllEventAdapter extends ListenerAdapter {
                 case "formimg":
                 case "fimage":
                 case "fimg":
+                case "catimage":
+                case "catimg":
+                case "cimage":
+                case "cimg":
+                case "unitimage":
+                case "unitimg":
+                case "uimage":
+                case "uimg":
                     new FormImage(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
                     break;
                 case "enemyimage":
@@ -496,6 +504,12 @@ public class AllEventAdapter extends ListenerAdapter {
                 case "formgif":
                 case "fgif":
                 case "fg":
+                case "catgif":
+                case "cgif":
+                case "cg":
+                case "unitgif":
+                case "ugif":
+                case "ug":
                     new FormGif(ConstraintCommand.ROLE.MEMBER, lang, idh, "gif").execute(event);
                     break;
                 case "enemygif":
@@ -524,6 +538,14 @@ public class AllEventAdapter extends ListenerAdapter {
                 case "fsprite":
                 case "formsp":
                 case "fsp":
+                case "catsprite":
+                case "csprite":
+                case "catsp":
+                case "csp":
+                case "unitsprite":
+                case "usprite":
+                case "unitsp":
+                case "usp":
                     new FormSprite(ConstraintCommand.ROLE.MEMBER, lang, idh, TimeUnit.SECONDS.toMillis(10)).execute(event);
                     break;
                 case "enemysprite":
