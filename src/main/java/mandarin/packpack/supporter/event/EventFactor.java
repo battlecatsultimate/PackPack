@@ -409,34 +409,6 @@ public class EventFactor {
         return v;
     }
 
-    public static String preventDotDecimal(String result) {
-        if(result.isBlank())
-            return "";
-
-        StringBuilder b = new StringBuilder();
-
-        String[] contents = result.split("\\.");
-
-        for(int i = 0; i < contents.length; i++) {
-            if(i == 0) {
-                b.append(contents[i]);
-            } else {
-                if(contents[i].isBlank()) {
-                    b.append(contents[i]);
-                } else if(Character.isDigit(contents[i].charAt(0))) {
-                    b.append("\u200B").append(contents[i]);
-                } else {
-                    b.append(contents[i]);
-                }
-            }
-
-            if(i < contents.length - 1)
-                b.append(".");
-        }
-
-        return b.toString();
-    }
-
     public static String beautifyItem(int lang, int itemID, int itemAmount) {
         if (itemID >= 11000 && itemID < 12000) {
             MapColc mc = MapColc.get(Data.hex(11));
