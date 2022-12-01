@@ -26,14 +26,16 @@ public class StageInfoButtonHolder extends InteractionHolder<ButtonInteractionEv
     private final String channelID;
     private final String memberID;
     private final Stage st;
+    private final boolean compact;
 
-    public StageInfoButtonHolder(Stage st, Message author, Message msg, String channelID) {
+    public StageInfoButtonHolder(Stage st, Message author, Message msg, String channelID, boolean compact) {
         super(ButtonInteractionEvent.class, author);
 
         this.st = st;
         embed = msg;
         this.channelID = channelID;
         this.memberID = author.getAuthor().getId();
+        this.compact = compact;
 
         Timer autoFinish = new Timer();
 
@@ -155,15 +157,21 @@ public class StageInfoButtonHolder extends InteractionHolder<ButtonInteractionEv
 
     @Override
     public void expire(String id) {
-        ArrayList<Button> buttons = new ArrayList<>();
+        if(compact) {
+            embed.editMessageComponents()
+                    .mentionRepliedUser(false)
+                    .queue();
+        } else {
+            ArrayList<Button> buttons = new ArrayList<>();
 
-        for(Button b : embed.getButtons()) {
-            buttons.add(b.asDisabled());
+            for(Button b : embed.getButtons()) {
+                buttons.add(b.asDisabled());
+            }
+
+            embed.editMessageComponents(ActionRow.of(buttons))
+                    .mentionRepliedUser(false)
+                    .queue();
         }
-
-        embed.editMessageComponents(ActionRow.of(buttons))
-                .mentionRepliedUser(false)
-                .queue();
 
         expired = true;
     }

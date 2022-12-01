@@ -129,7 +129,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
                     }
 
                     if(StaticStore.idHolder.containsKey(g.getId())) {
-                        StaticStore.putHolder(author.getAuthor().getId(), new StageInfoButtonHolder(stages.get(0), author, result, channelID));
+                        StaticStore.putHolder(author.getAuthor().getId(), new StageInfoButtonHolder(stages.get(0), author, result, channelID, isCompact));
                     }
                 }
             } else {

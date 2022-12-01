@@ -101,7 +101,7 @@ public class FindReward extends TimedConstraintCommand {
                     Message msg = getMessage(event);
 
                     if(msg != null) {
-                        StaticStore.putHolder(m.getId(), new StageInfoButtonHolder(stages.get(0), msg, result, ch.getId()));
+                        StaticStore.putHolder(m.getId(), new StageInfoButtonHolder(stages.get(0), msg, result, ch.getId(), isCompact));
                     }
                 }
             } else {

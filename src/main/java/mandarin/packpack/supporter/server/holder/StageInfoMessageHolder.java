@@ -140,7 +140,7 @@ public class StageInfoMessageHolder extends SearchHolder {
             Message msg = EntityHandler.showStageEmb(stage.get(id), ch, getAuthorMessage(), isFrame, isExtra, isCompact, star, lang);
 
             if(msg != null && StaticStore.idHolder.containsKey(g.getId())) {
-                StaticStore.putHolder(author.getAuthor().getId(), new StageInfoButtonHolder(stage.get(id), author, msg, channelID));
+                StaticStore.putHolder(author.getAuthor().getId(), new StageInfoButtonHolder(stage.get(id), author, msg, channelID, isCompact));
             }
         } catch (Exception e) {
             e.printStackTrace();

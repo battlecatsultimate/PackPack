@@ -190,7 +190,7 @@ public class StageInfo extends TimedConstraintCommand {
                     Message author = getMessage(event);
 
                     if(author != null)
-                        StaticStore.putHolder(m.getId(), new StageInfoButtonHolder(stages.get(0), author, result, ch.getId()));
+                        StaticStore.putHolder(m.getId(), new StageInfoButtonHolder(stages.get(0), author, result, ch.getId(), isCompact));
                 }
             } else {
                 int param = checkParameters(getContent(event));
