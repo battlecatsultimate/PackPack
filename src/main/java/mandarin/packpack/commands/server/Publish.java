@@ -69,6 +69,10 @@ public class Publish extends ConstraintCommand {
 
                     if(m != null && holder.publish)
                         m.crosspost().queue();
+
+                    if(!holder.announceMessage.isBlank()) {
+                        ((NewsChannel) c).sendMessage(holder.announceMessage).queue();
+                    }
                 }
             } else if(c instanceof GuildMessageChannel) {
                 String content = null;
@@ -87,6 +91,10 @@ public class Publish extends ConstraintCommand {
                         ((GuildMessageChannel) c).sendMessage(content)
                                 .setAllowedMentions(new ArrayList<>())
                                 .queue();
+                    }
+
+                    if(!holder.announceMessage.isBlank()) {
+                        ((GuildMessageChannel) c).sendMessage(holder.announceMessage).queue();
                     }
                 }
             }

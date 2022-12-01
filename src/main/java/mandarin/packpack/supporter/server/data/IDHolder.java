@@ -82,6 +82,10 @@ public class IDHolder {
             id.forceCompact = obj.get("forceCompact").getAsBoolean();
         }
 
+        if(obj.has("announceMessage")) {
+            id.announceMessage = obj.get("announceMessage").getAsString();
+        }
+
         if(id.config.lang < 0)
             id.config.lang = 0;
 
@@ -107,6 +111,8 @@ public class IDHolder {
     public ConfigHolder config = new ConfigHolder();
     public List<String> banned = new ArrayList<>();
     public Map<String, List<String>> channelException = new HashMap<>();
+
+    public String announceMessage = "";
 
     public IDHolder(String m, String me, String bo, String acc) {
         this.MOD = m;
@@ -140,6 +146,7 @@ public class IDHolder {
         obj.add("banned", listStringToJsonObject(banned));
         obj.add("channelException", jsonfyMap(channelException));
         obj.addProperty("forceCompact", forceCompact);
+        obj.addProperty("announceMessage", announceMessage);
 
         return obj;
     }

@@ -405,6 +405,10 @@ public class Help extends Command {
             case "eda":
                 replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("eventdataarchive", true, true, false)));
                 break;
+            case "announcemessage":
+            case "am":
+                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("announcemessage", false, false, true)));
+                break;
             default:
                 replyToMessageSafely(ch, LangID.getStringByID("help_nocomm", lang).replace("_", command), reference, a -> a);
         }
