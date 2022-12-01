@@ -171,7 +171,7 @@ public class FormStat extends ConstraintCommand {
                 ArrayList<Integer> lv = handleLevel(command);
 
                 boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
-                boolean talent = (param & PARAM_TALENT) > 0;
+                boolean talent = (param & PARAM_TALENT) > 0 || lv.size() > 1;
                 boolean extra = (param & PARAM_EXTRA) > 0 || config.extra;
                 boolean compact = (param & PARAM_COMPACT) > 0 || (holder.forceCompact ? holder.config.compact : config.compact);
 
