@@ -1078,7 +1078,7 @@
   "printstage_true" : "유닛 _ 3단 진화",
   "printstage_unlock" : "3단 진화 유닛 _ 해금",
   "printgacha_toolong" : "가챠 데이터 메세지 길이가 너무 길어 파일로 업로드합니다",
-  "printgacha_g" : "\u001B[4m\u001B[1;36확\u001B[0;36m",
+  "printgacha_g" : "\u001B[4m\u001B[1;36m확\u001B[0;36m",
   "printgacha_lg" : "레확",
   "printgacha_gr" : "그",
   "printgacha_p" : "플",
