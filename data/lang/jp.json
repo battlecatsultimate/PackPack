@@ -70,6 +70,8 @@
   "data_score" : "スコア (スコア | 報酬 | 数)",
   "data_rewarddrop" : "Reward Drops",
   "data_scoredrop" : "Score Drops",
+  "data_material" : "Material Drops (Material : Chance)",
+  "data_maxmat" : "Number of materials that can be dropped : %d as max",
   "data_chance" : "確率",
   "data_reward" : "報酬",
   "data_amount" : "数",

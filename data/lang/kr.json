@@ -70,6 +70,8 @@
   "data_score" : "스코어 정보 (점수 | 보상 | 양)",
   "data_rewarddrop" : "보상 드록 정보",
   "data_scoredrop" : "스코어 드롭 정보",
+  "data_material" : "성 재료 드롭 (재료 : 확률)",
+  "data_maxmat" : "드롭될 수 있는 재료 개수 : 최대 %d개",
   "data_chance" : "확률",
   "data_reward" : "보상",
   "data_amount" : "양",

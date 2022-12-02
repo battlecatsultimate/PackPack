@@ -1158,6 +1158,12 @@ public class EntityHandler {
             }
 
             spec.addField(LangID.getStringByID("data_exstage", lang), DataToString.getEXStage(st, lang), false);
+
+            String materials = DataToString.getMaterialDrop(st, sta, lang);
+
+            if(materials != null) {
+                spec.addField(LangID.getStringByID("data_material", lang), materials, false);
+            }
         }
 
         String drops = DataToString.getRewards(st, lang);

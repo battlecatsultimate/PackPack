@@ -34,6 +34,7 @@ public class DataToString extends Data {
     private static final String[] mapCodes = {"N", "S", "C", "CH", "E", "T", "V", "R", "M", "NA", "B", "A", "H", "CA", "Q", "L"};
     private static final Map<Integer, int[]> talentLevel = new HashMap<>();
     private static final int maxDifficulty = 11;
+    private static final int[] materialDrops = {85, 86, 87, 88, 89, 90, 91, 140};
 
     static {
         NumberFormat nf = NumberFormat.getInstance(Locale.US);
@@ -2040,7 +2041,7 @@ public class DataToString extends Data {
 
     public static String getEXStage(Stage st, int lang) {
         if(!(st.info instanceof DefStageInfo) || (!((DefStageInfo) st.info).exConnection && ((DefStageInfo) st.info).exStages == null)) {
-            return LangID.getStringByID("data_none", lang);
+            return null;
         }
 
         DefStageInfo info = (DefStageInfo) st.info;
@@ -2051,7 +2052,7 @@ public class DataToString extends Data {
             StageMap sm = MapColc.DefMapColc.getMap(4000 + info.exMapID);
 
             if(sm == null)
-                return LangID.getStringByID("data_none", lang);
+                return null;
 
             int n = info.exStageIDMax - info.exStageIDMin + 1;
 
@@ -2289,6 +2290,51 @@ public class DataToString extends Data {
         }
 
         return result + " - " + getBackground(st, lang) + " - " + getCastle(st, lang);
+    }
+
+    public static String getMaterialDrop(Stage st, int star, int lang) {
+        if(!(st.info instanceof DefStageInfo) || ((DefStageInfo) st.info).maxMaterial == -1 || st.getCont() == null)
+            return null;
+
+        StageMap map = st.getCont();
+
+        if(map.info == null)
+            return null;
+
+        if(star >= map.info.multiplier.length)
+            return null;
+
+        StringBuilder result = new StringBuilder();
+
+        int max = (int) Math.round(map.info.multiplier[star] * ((DefStageInfo) st.info).maxMaterial);
+
+        int oldConfig = CommonStatic.getConfig().lang;
+
+        for(int i = 1; i < map.info.materialDrop.length; i++) {
+            if(map.info.materialDrop[i] <= 0)
+                continue;
+
+            CommonStatic.getConfig().lang = lang;
+
+            String name = MultiLangCont.getStatic().RWNAME.getCont(materialDrops[i - 1]);
+
+            CommonStatic.getConfig().lang = oldConfig;
+
+            if(name == null || name.isBlank()) {
+                name = "" + materialDrops[i - 1];
+            }
+
+            result.append(name)
+                    .append(" : ")
+                    .append(map.info.materialDrop[i])
+                    .append("%")
+                    .append("\n");
+        }
+
+        result.append("\n")
+                .append(String.format(LangID.getStringByID("data_maxmat", lang), max));
+
+        return result.toString();
     }
 
     public static String getTalentTitle(MaskUnit du, int index, int lang) {
