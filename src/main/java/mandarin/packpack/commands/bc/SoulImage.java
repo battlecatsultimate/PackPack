@@ -2,6 +2,7 @@ package mandarin.packpack.commands.bc;
 
 import common.pack.UserProfile;
 import common.util.Data;
+import common.util.anim.AnimU;
 import common.util.anim.EAnimD;
 import common.util.pack.Soul;
 import mandarin.packpack.commands.ConstraintCommand;
@@ -78,13 +79,13 @@ public class SoulImage extends TimedConstraintCommand {
         int param = checkParameters(getContent(event));
         int frame = getFrame(getContent(event));
 
-        s.load();
+        s.anim.load();
 
-        EAnimD<?> anim = s.getEAnim(Soul.SoulType.DEF);
+        EAnimD<?> anim = s.anim.getEAnim(AnimU.UType.SOUL);
 
         File img = ImageDrawing.drawAnimImage(anim, frame, 1.0, (param & PARAM_TRANSPARENT) > 0, (param & PARAM_DEBUG) > 0);
 
-        s.unload();
+        s.anim.unload();
 
         if(img != null) {
             sendMessageWithFile(

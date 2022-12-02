@@ -2570,9 +2570,9 @@ public class EntityHandler {
 
         JDA client = ch.getJDA();
 
-        s.load();
+        s.anim.load();
 
-        EAnimD<?> anim = s.getEAnim(Soul.SoulType.DEF);
+        EAnimD<?> anim = s.anim.getEAnim(AnimU.UType.SOUL);
 
         if(limit > 0)  {
             ch.sendMessage(LangID.getStringByID("gif_lengthlim", lang).replace("_", anim.len()+"").replace("-", limit+"")).queue();
@@ -2606,7 +2606,7 @@ public class EntityHandler {
             img = ImageDrawing.drawAnimGif(anim, msg, 1.0, debug, false, limit, lang);
         }
 
-        s.unload();
+        s.anim.unload();
 
         long end = System.currentTimeMillis();
 
@@ -2925,9 +2925,9 @@ public class EntityHandler {
         if(image == null)
             return;
 
-        s.load();
+        s.anim.load();
 
-        FakeImage img = s.getNum();
+        FakeImage img = s.anim.getNum();
 
         if(img == null) {
             Command.replyToMessageSafely(ch, LangID.getStringByID("soul_nosoul", lang), reference, a -> a);
@@ -2945,6 +2945,8 @@ public class EntityHandler {
                 image,
                 reference
         );
+
+        s.anim.unload();
     }
 
     public static void showMedalEmbed(int id, MessageChannel ch, Message reference, int lang) throws  Exception {
