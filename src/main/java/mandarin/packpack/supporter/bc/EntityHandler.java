@@ -604,7 +604,10 @@ public class EntityHandler {
 
         for(int i = 0; i < t.size(); i++) {
             if(i >= lv.size())
-                res.set(i, 0);
+                if(lv.size() == 1)
+                    res.set(i, t.get(i));
+                else
+                    res.set(i, 0);
             else
                 res.set(i, Math.min(t.get(i), lv.get(i)));
 
