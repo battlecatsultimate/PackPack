@@ -1125,20 +1125,18 @@ public class EntityHandler {
 
         ArrayList<String> limit = DataToString.getLimit(st.getLim(sta), lang);
 
-        StringBuilder sb = new StringBuilder();
+        if(!limit.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
 
-        if(limit.isEmpty()) {
-            sb.append(LangID.getStringByID("data_none", lang));
-        } else {
             for(int i = 0; i < limit.size(); i ++) {
                 sb.append(limit.get(i));
 
                 if(i < limit.size()-1)
                     sb.append("\n");
             }
-        }
 
-        spec.addField(LangID.getStringByID("data_limit", lang), sb.toString(), false);
+            spec.addField(LangID.getStringByID("data_limit", lang), sb.toString(), false);
+        }
 
         if(isExtra) {
             List<String> misc = DataToString.getMiscellaneous(st, lang);
@@ -1157,7 +1155,11 @@ public class EntityHandler {
                 spec.addField(LangID.getStringByID("data_misc", lang), sbuilder.toString(), false);
             }
 
-            spec.addField(LangID.getStringByID("data_exstage", lang), DataToString.getEXStage(st, lang), false);
+            String exData = DataToString.getEXStage(st, lang);
+
+            if(exData != null) {
+                spec.addField(LangID.getStringByID("data_exstage", lang), exData, false);
+            }
 
             String materials = DataToString.getMaterialDrop(st, sta, lang);
 
@@ -1327,20 +1329,18 @@ public class EntityHandler {
 
         ArrayList<String> limit = DataToString.getLimit(st.getLim(sta), lang);
 
-        StringBuilder sb = new StringBuilder();
+        if(!limit.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
 
-        if(limit.isEmpty()) {
-            sb.append(LangID.getStringByID("data_none", lang));
-        } else {
             for(int i = 0; i < limit.size(); i ++) {
                 sb.append(limit.get(i));
 
                 if(i < limit.size()-1)
                     sb.append("\n");
             }
-        }
 
-        spec.addField(LangID.getStringByID("data_limit", lang), sb.toString(), false);
+            spec.addField(LangID.getStringByID("data_limit", lang), sb.toString(), false);
+        }
 
         if(isExtra) {
             List<String> misc = DataToString.getMiscellaneous(st, lang);
@@ -1359,7 +1359,11 @@ public class EntityHandler {
                 spec.addField(LangID.getStringByID("data_misc", lang), sbuilder.toString(), false);
             }
 
-            spec.addField(LangID.getStringByID("data_exstage", lang), DataToString.getEXStage(st, lang), false);
+            String exData = DataToString.getEXStage(st, lang);
+
+            if(exData != null) {
+                spec.addField(LangID.getStringByID("data_exstage", lang), exData, false);
+            }
         }
 
         String drops = DataToString.getRewards(st, lang);
