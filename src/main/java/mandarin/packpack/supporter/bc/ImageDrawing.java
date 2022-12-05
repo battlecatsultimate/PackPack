@@ -87,6 +87,9 @@ public class ImageDrawing {
             3900, //182
             4400, //183
             4400, //184
+            6000, //191
+            4000, //192
+            6200, //193
             3900, //1000
             4600, //1002
             4900, //1003
@@ -112,7 +115,9 @@ public class ImageDrawing {
             4600, //1023
             5400, //1024
             4400, //1025
-            3600 //1026
+            3600, //1026
+            4900, //1027
+            3600 //1029
     };
 
     private static Font titleFont;
@@ -258,6 +263,8 @@ public class ImageDrawing {
             } else {
                 effect = CommonStatic.getBCAssets().bgEffects.get(bg.effect);
             }
+
+            System.out.println(bg.effect);
 
             int len = (int) ((w / ratio - 400) / CommonStatic.BattleConst.ratio);
             int bgHeight = (int) (h / ratio);
