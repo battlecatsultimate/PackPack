@@ -85,7 +85,7 @@ public class StageStatAnalyzer extends ConstraintCommand {
         }
 
         if(!validateFile(workspace, code, mid, localeCode)) {
-            ch.sendMessage("Couldn't find sufficient data for unit code : "+code+ " - "+mid).queue();
+            ch.sendMessage("Couldn't find sufficient data for stage code : "+code+ " - "+mid).queue();
 
             return;
         }
