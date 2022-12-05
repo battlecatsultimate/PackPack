@@ -446,11 +446,11 @@ public class StageStatAnalyzer extends ConstraintCommand {
                     int reward = lineData[16 + j * 3 + 1];
 
                     if(MultiLangCont.getStatic().RWNAME.getCont(reward) == null) {
-                        if(reward < 1000)
+                        if(reward < 1000 && !newRewards.contains(reward))
                             newRewards.add(reward);
-                        else if(reward < 10000)
+                        else if(reward < 10000 && reward >= 1000 && !newUnits.contains(reward))
                             newUnits.add(reward);
-                        else if(reward < 30000)
+                        else if(reward < 30000 && reward >= 10000 && !newTrueForms.contains(reward))
                             newTrueForms.add(reward);
                     }
                 }
@@ -461,11 +461,11 @@ public class StageStatAnalyzer extends ConstraintCommand {
                     int reward = lineData[6 + j * 3 + 1];
 
                     if(MultiLangCont.getStatic().RWNAME.getCont(reward) == null) {
-                        if(reward < 1000 && newRewards.contains(reward))
+                        if(reward < 1000 && !newRewards.contains(reward))
                             newRewards.add(reward);
-                        else if(reward < 10000 && !newUnits.contains(reward))
+                        else if(reward < 10000 && reward >= 1000 && !newUnits.contains(reward))
                             newUnits.add(reward);
-                        else if(reward < 30000 && newTrueForms.contains(reward))
+                        else if(reward < 30000 && reward >= 10000 && !newTrueForms.contains(reward))
                             newTrueForms.add(reward);
                     }
                 }
@@ -473,11 +473,11 @@ public class StageStatAnalyzer extends ConstraintCommand {
                 int reward = lineData[6];
 
                 if(MultiLangCont.getStatic().RWNAME.getCont(reward) == null) {
-                    if(reward < 1000 && newRewards.contains(reward))
+                    if(reward < 1000 && !newRewards.contains(reward))
                         newRewards.add(reward);
-                    else if(reward < 10000 && !newUnits.contains(reward))
+                    else if(reward < 10000 && reward >= 1000 && !newUnits.contains(reward))
                         newUnits.add(reward);
-                    else if(reward < 30000 && newTrueForms.contains(reward))
+                    else if(reward < 30000 && reward >= 10000 && !newTrueForms.contains(reward))
                         newTrueForms.add(reward);
                 }
             }
