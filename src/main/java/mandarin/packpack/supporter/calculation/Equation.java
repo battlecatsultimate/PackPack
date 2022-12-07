@@ -40,7 +40,7 @@ public class Equation {
                     continue;
                 }
 
-                filtered.add(new Number(((Operator) e).calculate((Number) filtered.get(filtered.size() - 1), (Number) elements.get(i + 1))));
+                filtered.add(new Number(((Operator) e).calculate((Number) filtered.get(filtered.size() - 1), (Number) elements.get(i + 1), lang)));
                 filtered.remove(filtered.size() - 2);
 
                 i++;
@@ -65,7 +65,7 @@ public class Equation {
                     continue;
                 }
 
-                filtered.add(new Number(((Operator) e).calculate((Number) filtered.get(filtered.size() - 1), (Number) elements.get(i + 1))));
+                filtered.add(new Number(((Operator) e).calculate((Number) filtered.get(filtered.size() - 1), (Number) elements.get(i + 1), lang)));
                 filtered.remove(filtered.size() - 2);
 
                 i++;
@@ -90,7 +90,7 @@ public class Equation {
                     continue;
                 }
 
-                filtered.add(new Number(((Operator) e).calculate((Number) filtered.get(filtered.size() - 1), (Number) elements.get(i + 1))));
+                filtered.add(new Number(((Operator) e).calculate((Number) filtered.get(filtered.size() - 1), (Number) elements.get(i + 1), lang)));
                 filtered.remove(filtered.size() - 2);
 
                 i++;

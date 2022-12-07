@@ -1,5 +1,7 @@
 package mandarin.packpack.supporter.calculation;
 
+import mandarin.packpack.supporter.lang.LangID;
+
 public class Operator extends Element {
     public enum TYPE {
         ADDITION,
@@ -17,7 +19,7 @@ public class Operator extends Element {
         this.type = type;
     }
 
-    public double calculate(Number n0, Number n1) {
+    public double calculate(Number n0, Number n1, int lang) {
         switch (type) {
             case ADDITION:
                 return n0.value + n1.value;
@@ -27,7 +29,7 @@ public class Operator extends Element {
                 return n0.value * n1.value;
             case DIVISION:
                 if(n1.value == 0) {
-                    Equation.error.add("calc_division0");
+                    Equation.error.add(LangID.getStringByID("calc_division0", lang));
 
                     return 0;
                 }
