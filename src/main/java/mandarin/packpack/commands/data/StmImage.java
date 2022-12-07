@@ -15,6 +15,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.utils.FileUpload;
 
 import java.awt.*;
@@ -106,7 +107,11 @@ public class StmImage extends ConstraintCommand {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            onFail(event, DEFAULT_ERROR);
+            if(e instanceof ErrorResponseException) {
+                onFail(event, SERVER_ERROR);
+            } else {
+                onFail(event, DEFAULT_ERROR);
+            }
         }
     }
 

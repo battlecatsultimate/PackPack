@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
@@ -228,6 +229,7 @@ public abstract class Command {
     }
 
     public final int DEFAULT_ERROR = -1;
+    public final int SERVER_ERROR = -2;
     public Pauser pause = new Pauser();
     public final int lang;
 
@@ -318,7 +320,12 @@ public abstract class Command {
                             "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
 
                     StaticStore.logger.uploadErrorLog(e, "Failed to perform command : "+this.getClass()+"\n\n" + data);
-                    onFail(event, DEFAULT_ERROR);
+
+                    if(e instanceof ErrorResponseException) {
+                        onFail(event, SERVER_ERROR);
+                    } else {
+                        onFail(event, DEFAULT_ERROR);
+                    }
                 }
             }).start();
         } catch (Exception e) {
@@ -328,7 +335,12 @@ public abstract class Command {
                     "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
 
             StaticStore.logger.uploadErrorLog(e, "Failed to perform command : "+this.getClass()+"\n\n" + data);
-            onFail(event, DEFAULT_ERROR);
+
+            if(e instanceof ErrorResponseException) {
+                onFail(event, SERVER_ERROR);
+            } else {
+                onFail(event, DEFAULT_ERROR);
+            }
         }
     }
 
@@ -346,7 +358,11 @@ public abstract class Command {
         if(ch == null)
             return;
 
-        ch.sendMessage(StaticStore.ERROR_MSG).queue();
+        if(error == DEFAULT_ERROR) {
+            ch.sendMessage(StaticStore.ERROR_MSG).queue();
+        } else if(error == SERVER_ERROR) {
+            ch.sendMessage(LangID.getStringByID("error_api", lang)).queue();
+        }
     }
 
     public void onSuccess(GenericMessageEvent event) {}
