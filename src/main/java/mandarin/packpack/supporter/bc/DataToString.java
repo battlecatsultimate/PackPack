@@ -2414,7 +2414,7 @@ public class DataToString extends Data {
         String desc = "";
 
         if(du.getPCoin().trait.size() == 1 && index == 0) {
-            desc += LangID.getStringByID("talentinfo_together", lang).replace("_", LangID.getStringByID(Interpret.TRAIT[du.getPCoin().trait.get(0).id.id], lang));
+            desc += LangID.getStringByID("talentinfo_together", lang).replace("_", LangID.getStringByID(Interpret.TRAIT[du.getPCoin().trait.get(0).id.id], lang)) + "\n\n";
         }
 
         switch (type[0]) {
