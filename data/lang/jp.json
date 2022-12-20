@@ -413,6 +413,7 @@
   "item_301" : "Single Gacha Half Discount",
   "item_302" : "10+1 Gacha Half Discount",
   "item_303" : "Large Pop Up",
+  "item_421" : "Legendary Pass",
   "item_800" : "応援セール！お得ネコカンパック",
   "item_801" : "限定セール！ネコカンパック",
   "item_802" : "レアチケットセール",
@@ -828,6 +829,10 @@
   "help_announcemessage_use" : "`p!announcemessage [Content]`",
   "help_announcemessage_desc" : "Assign the message that will be sent together whenever bot sends announcement (Moderator needs to subscribe to announcement feature via `p!idset` command). **Only Moderators can use this command**. `am` is also valid command",
   "help_announcemessage_tip" : "**__Keep in mind that this message may ping role or everyone depending on contents of it, be aware of it__**. This command can be used whenever you want to make bot send additional message with announcement together. As said above, if moderators assign announcement channel via `p!idset`, bot will upload announcements there (if possible) whenever developer publishes them. Sometimes moderator may want users to get notified by announcements, or other purpose. In that case, you can assign message that bot will send along with announcements. Be aware that it will always send same assigned message for each announcement\n\nJust call `p!am` if you want to remove assigned message",
+  "help_talentanalyzer_use" : "`p!talentanalyzer -u [Unit ID]`",
+  "help_talentanalyzer_desc" : "Analyze talent data of specified unit from apk file, and upload image of analysis. **Only Trusted users can use this command.** `tala`, `ta` are also valid command",
+  "help_talentanalyzer_argu" : "`-u` or `-uid` : Decide ID of unit\n`-s` or `-second` : Use second unit\n`-n` or `-name` : Decide custom name of this unit\n`-en/tw/kr/jp` : Decide BC version which you will use",
+  "help_talentanalyzer_exam" : "`p!ta -u 534`\n`p!ta -u 417 -n Subterra Sentinels`",
   "prefix_space" : "Prefixはスペースにはできません!",
   "prefix_set" : "Prefixは %s にセットされました!",
   "prefix_setnone" : "あなたのPrefixはアップデートされました!",
@@ -1294,5 +1299,12 @@
   "announce_content" : "Please specify the message that you want to make bot send message whenever it sends announcement",
   "announce_toolong" : "Message must contain less than 2000 letters!",
   "announce_success" : "Successfully assigned message. From now on, whenever bot sends announcement, it will sends content below together : \n\n%s",
-  "announce_removed" : "Successfully removed assigned message, now bot will send only announcements without any additional messages"
+  "announce_removed" : "Successfully removed assigned message, now bot will send only announcements without any additional messages",
+  "talanalyzer_uid" : "Please specify unit ID!",
+  "talanalyzer_dummy" : "Talent %d",
+  "talanalyzer_title" : "Talent of %s",
+  "talanalyzer_singlenp" : "NP Cost: %dNP",
+  "talanalyzer_npcost" : "NP Cost => Total Cost",
+  "talanalyzer_fail" : "Failed to generate talent image...",
+  "talanalyzer_success" : "Successfully analyzed talent data"
 }

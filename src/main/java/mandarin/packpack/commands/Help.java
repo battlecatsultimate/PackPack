@@ -409,6 +409,11 @@ public class Help extends Command {
             case "am":
                 replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("announcemessage", false, false, true)));
                 break;
+            case "talentanalyzer":
+            case "tala":
+            case "ta":
+                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("talentanalyzer", true, true, false)));
+                break;
             default:
                 replyToMessageSafely(ch, LangID.getStringByID("help_nocomm", lang).replace("_", command), reference, a -> a);
         }

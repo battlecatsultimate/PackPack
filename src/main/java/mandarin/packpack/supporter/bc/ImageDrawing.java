@@ -142,6 +142,8 @@ public class ImageDrawing {
     private static final int innerTableCellMargin = 200;
     private static final int headerSeparatorHeight = 135;
     private static final int rewardIconSize = 160;
+    private static final int lineSpace = 12;
+    private static final int typeCornerRadius = 36;
 
     private static final float headerStroke = 4f;
     private static final float innerTableLineStroke = 3f;
@@ -153,6 +155,14 @@ public class ImageDrawing {
     private static final double fruitDownerGapRatio = 0.05;
     private static final double enemyIconRatio = 1.25; // w/h
     private static final double enemyInnerIconRatio = 0.95;
+
+    private static final int talentIconGap = 60;
+    private static final int talentNameGap = 80;
+    private static final int talentCostTableGap = 48;
+    private static final int talentCostGap = 120;
+    private static final int talentTableGap = 40;
+    private static final int talentGap = 120;
+    private static final int totalCostGap = 120;
 
     private static final int CHANCE_WIDTH = 0;
     private static final int REWARD_WIDTH = 1;
@@ -1601,7 +1611,7 @@ public class ImageDrawing {
         rg.fillRect(0, 0, finW * units.length, finH);
 
         rg.setColor(24, 25, 28);
-        rg.fillRoundRect(0, -cornerRadius, finW * units.length, cornerRadius + bgMargin * 6 + titleH, cornerRadius, cornerRadius);
+        rg.fillRoundRect(0, -cornerRadius, finW * units.length, cornerRadius + bgMargin * 8 + titleH, cornerRadius, cornerRadius);
 
         for(int i = 0; i < units.length; i++) {
             rg.setColor(64, 68, 75);
@@ -1767,7 +1777,7 @@ public class ImageDrawing {
         rg.fillRect(0, 0, finW, finH);
 
         rg.setColor(24, 25, 28);
-        rg.fillRoundRect(0, -cornerRadius, finW, cornerRadius + bgMargin * 6 + titleH, cornerRadius, cornerRadius);
+        rg.fillRoundRect(0, -cornerRadius, finW, cornerRadius + bgMargin * 8 + titleH, cornerRadius, cornerRadius);
 
         rg.setColor(64, 68, 75);
 
@@ -1996,7 +2006,7 @@ public class ImageDrawing {
 
         g.setColor(24, 25, 28);
 
-        g.fillRoundRect(0, -cornerRadius, finW, cornerRadius + bgMargin * 10 + titleHeight, cornerRadius, cornerRadius);
+        g.fillRoundRect(0, -cornerRadius, finW, cornerRadius + bgMargin * 8 + titleHeight, cornerRadius, cornerRadius);
 
         g.setColor(64, 68, 75);
 
@@ -2064,6 +2074,303 @@ public class ImageDrawing {
         return image;
     }
 
+    public static File drawTalentImage(String name, String type, CustomTalent talent, int lang) throws Exception {
+        File temp = new File("./temp");
+
+        if(!temp.exists() && !temp.mkdirs()) {
+            return null;
+        }
+
+        File image = StaticStore.generateTempFile(temp, "talent", ".png", false);
+
+        if(image == null || !image.exists())
+            return null;
+
+        Canvas cv = new Canvas();
+
+        FontMetrics nfm = cv.getFontMetrics(nameFont);
+        FontMetrics tyfm = cv.getFontMetrics(typeFont);
+        FontMetrics cfm = cv.getFontMetrics(contentFont);
+        FontMetrics tfm = cv.getFontMetrics(titleFont);
+        FontMetrics lvm = cv.getFontMetrics(levelFont);
+
+        Rectangle2D nameRect = titleFont.createGlyphVector(tfm.getFontRenderContext(), name).getPixelBounds(null, 0, 0);
+        Rectangle2D typeRect = typeFont.createGlyphVector(tyfm.getFontRenderContext(), type).getPixelBounds(null, 0, 0);
+
+        int titleHeight = (int) Math.round(nameRect.getHeight() + nameMargin + typeRect.getHeight() + typeUpDownMargin * 2);
+
+        int icw = (int) Math.round(titleHeight * 1.0 / talent.icon.getHeight() * talent.icon.getWidth());
+
+        int titleWidth = icw + nameMargin + (int) Math.round(Math.max(nameRect.getWidth(), typeRect.getWidth() + typeLeftRightMargin * 2));
+
+        int maxDescLineHeight = 0;
+        int maxDescLineWidth = 0;
+
+        int maxTitleHeight = 0;
+        int maxTitleWidth = 0;
+
+        int maxCostWidth = 0;
+
+        int totalCost = 0;
+
+        for(int i = 0; i < talent.talents.size(); i++) {
+            TalentData data = talent.talents.get(i);
+
+            for(int j = 0; j < data.cost.size(); j++) {
+                totalCost += data.cost.get(j);
+            }
+
+            Rectangle2D titleRect = levelFont.createGlyphVector(lvm.getFontRenderContext(), data.title).getPixelBounds(null, 0, 0);
+
+            maxTitleHeight = (int) Math.round(Math.max(maxTitleHeight, titleRect.getHeight()));
+            maxTitleWidth = (int) Math.round(Math.max(maxTitleWidth, titleRect.getWidth()));
+
+            for(int j = 0; j < data.description.length; j++) {
+                Rectangle2D descRect = nameFont.createGlyphVector(nfm.getFontRenderContext(), data.description[j]).getPixelBounds(null, 0, 0);
+
+                maxDescLineHeight = (int) Math.round(Math.max(maxDescLineHeight, descRect.getHeight()));
+                maxDescLineWidth = (int) Math.round(Math.max(maxDescLineWidth, descRect.getWidth()));
+            }
+
+            if(data.cost.size() == 1) {
+                String cost = String.format(LangID.getStringByID("talanalyzer_singlenp", lang), data.cost.get(0));
+
+                Rectangle2D costRect = contentFont.createGlyphVector(cfm.getFontRenderContext(), cost).getPixelBounds(null, 0, 0);
+
+                maxCostWidth = (int) Math.round(Math.max(maxCostWidth, costRect.getWidth()));
+            } else {
+                String costTitle = LangID.getStringByID("talanalyzer_npcost", lang);
+                StringBuilder cost = new StringBuilder("[");
+                int costSummary = 0;
+
+                for(int j = 0; j < data.cost.size(); j++) {
+                    costSummary += data.cost.get(j);
+
+                    cost.append(data.cost.get(j));
+
+                    if(j < data.cost.size() - 1)
+                        cost.append(", ");
+                }
+
+                cost.append("] => ").append(costSummary);
+
+                Rectangle2D costTitleRect = contentFont.createGlyphVector(cfm.getFontRenderContext(), costTitle).getPixelBounds(null, 0, 0);
+                Rectangle2D costRect = nameFont.createGlyphVector(nfm.getFontRenderContext(), cost.toString()).getPixelBounds(null, 0, 0);
+
+                maxCostWidth = (int) Math.round(Math.max(maxCostWidth, Math.max(costTitleRect.getWidth(), talentCostTableGap * 2 + costRect.getWidth())));
+            }
+        }
+
+        int talentIconDimension = (int) Math.round(maxTitleHeight * 1.5);
+
+        String totalCostText = LangID.getStringByID("talentinfo_total", lang).replace("_", "" + totalCost);
+        Rectangle2D totalRect = nameFont.createGlyphVector(nfm.getFontRenderContext(), totalCostText).getPixelBounds(null, 0, 0);
+
+        int totalCostWidth = (int) Math.round(totalRect.getWidth());
+        int totalCostHeight = (int) Math.round(totalRect.getHeight());
+
+        int panelWidth = statPanelMargin * 2 + Math.round(Math.max(maxCostWidth, Math.max(maxDescLineWidth, talentIconDimension * 2 + talentNameGap + maxTitleWidth)));
+        int panelHeight = statPanelMargin * 2;
+
+        for(int i = 0; i < talent.talents.size(); i++) {
+            TalentData data = talent.talents.get(i);
+
+            panelHeight += talentIconDimension;
+
+            if(data.hasDescription()) {
+                panelHeight += talentIconGap;
+
+                for(int j = 0; j < data.description.length; j++) {
+                    panelHeight += maxDescLineHeight;
+
+                    if(j < data.description.length - 1) {
+                        panelHeight += lineSpace;
+                    }
+                }
+            }
+
+            panelHeight += talentCostGap;
+
+            if(data.cost.size() == 1) {
+                String cost = String.format(LangID.getStringByID("talanalyzer_singlenp", lang), data.cost.get(0));
+
+                Rectangle2D costRect = contentFont.createGlyphVector(cfm.getFontRenderContext(), cost).getPixelBounds(null, 0, 0);
+
+                panelHeight += Math.round(costRect.getHeight());
+            } else {
+                String costTitle = LangID.getStringByID("talanalyzer_npcost", lang);
+                StringBuilder cost = new StringBuilder("[");
+                int costSummary = 0;
+
+                for(int j = 0; j < data.cost.size(); j++) {
+                    costSummary += data.cost.get(j);
+
+                    cost.append(data.cost.get(j));
+
+                    if(j < data.cost.size() - 1)
+                        cost.append(", ");
+                }
+
+                cost.append("] => ").append(costSummary);
+
+                Rectangle2D costTitleRect = contentFont.createGlyphVector(cfm.getFontRenderContext(), costTitle).getPixelBounds(null, 0, 0);
+                Rectangle2D costRect = nameFont.createGlyphVector(nfm.getFontRenderContext(), cost.toString()).getPixelBounds(null, 0, 0);
+
+                panelHeight += Math.round(costTitleRect.getHeight()) + talentTableGap + talentCostTableGap * 2 + costRect.getHeight();
+            }
+
+            if(i < talent.talents.size() - 1)
+                panelHeight += talentGap;
+        }
+
+        panelWidth = Math.max(totalCostWidth, Math.max(panelWidth, titleWidth + statPanelMargin));
+
+        int totalHeight = bgMargin * 2 + titleHeight + bgMargin * 2 + panelHeight + bgMargin + Math.max(totalCostGap, totalCostHeight);
+        int totalWidth = bgMargin * 2 + panelWidth;
+
+        BufferedImage result = new BufferedImage(totalWidth, totalHeight, BufferedImage.TYPE_INT_ARGB);
+        FG2D g = new FG2D(result.getGraphics());
+
+        g.setRenderingHint(3, 1);
+        g.enableAntialiasing();
+
+        g.setColor(51, 53, 60, 255);
+        g.fillRect( 0, 0, totalWidth, totalHeight);
+
+        g.setColor(24, 25, 28, 255);
+        g.fillRoundRect(0, -cornerRadius / 2, totalWidth, cornerRadius + bgMargin * 8 + titleHeight, cornerRadius, cornerRadius);
+
+        g.setColor(64, 68, 75, 255);
+        g.fillRoundRect(bgMargin, bgMargin * 4 + titleHeight, panelWidth, panelHeight, cornerRadius, cornerRadius);
+
+        g.drawImage(talent.icon, bgMargin, bgMargin * 2, icw, titleHeight);
+
+        g.setFont(titleFont);
+        g.setColor(238, 238, 238, 255);
+        g.drawText(name, (int) Math.round(bgMargin + icw + nameMargin - nameRect.getX()), (int) Math.round(bgMargin * 2 - nameRect.getY()));
+
+        g.setColor(88, 101, 242, 255);
+        g.fillRoundRect(bgMargin + icw + nameMargin, (int) Math.round(bgMargin * 2 + nameRect.getHeight() + nameMargin), (int) Math.round(typeLeftRightMargin * 2 + typeRect.getWidth()), (int) Math.round(typeUpDownMargin * 2 + typeRect.getHeight()), typeCornerRadius, typeCornerRadius);
+
+        g.setFont(typeFont);
+        g.setColor(238, 238, 238, 255);
+        g.drawText(type, (int) Math.round(bgMargin + icw + nameMargin + typeLeftRightMargin - typeRect.getX()), (int) Math.round(bgMargin * 2 + nameRect.getHeight() + nameMargin + typeUpDownMargin - typeRect.getY()));
+
+        int x = bgMargin + statPanelMargin;
+        int y = bgMargin * 2 + titleHeight + bgMargin * 2 + statPanelMargin;
+
+        for(int i = 0; i < talent.talents.size(); i++) {
+            TalentData data = talent.talents.get(i);
+
+            int talentTitleOffset = talentIconDimension + talentNameGap;
+
+            if(i == 0 && talent.traitIcon != null) {
+                g.drawImage(talent.traitIcon, x, y, talentIconDimension, talentIconDimension);
+                g.drawImage(data.icon, x + talentIconDimension + lineSpace, y, talentIconDimension, talentIconDimension);
+
+                talentTitleOffset += talentIconDimension + lineSpace;
+            } else {
+                g.drawImage(data.icon, x, y, talentIconDimension, talentIconDimension);
+            }
+
+            g.setFont(levelFont);
+            g.setColor(238, 238, 238, 255);
+
+            Rectangle2D talentNameRect = levelFont.createGlyphVector(lvm.getFontRenderContext(), data.title).getPixelBounds(null, 0, 0);
+
+            g.drawText(data.title, (int) Math.round(x + talentTitleOffset - talentNameRect.getX()), (int) Math.round(y + (talentIconDimension - talentNameRect.getHeight()) / 2.0 - talentNameRect.getY()));
+
+            y += talentIconDimension;
+
+            if(data.hasDescription()) {
+                y += talentIconGap;
+
+                g.setFont(nameFont);
+                g.setColor(191, 191, 191, 255);
+
+                for(int j = 0; j < data.description.length; j++) {
+                    if(!data.description[j].isBlank()) {
+                        Rectangle2D descRect = nameFont.createGlyphVector(nfm.getFontRenderContext(), data.description[j]).getPixelBounds(null, 0, 0);
+
+                        g.drawText(data.description[j], (int) Math.round(x - descRect.getX()), (int) Math.round(y - descRect.getY()));
+                    }
+
+                    y += maxDescLineHeight;
+
+                    if(j < data.description.length - 1)
+                        y += lineSpace;
+                }
+            }
+
+            y += talentCostGap;
+
+            if(data.cost.size() == 1) {
+                String cost = String.format(LangID.getStringByID("talanalyzer_singlenp", lang), data.cost.get(0));
+
+                g.setFont(contentFont);
+                g.setColor(238, 238, 238, 255);
+
+                Rectangle2D costRect = contentFont.createGlyphVector(cfm.getFontRenderContext(), cost).getPixelBounds(null, 0, 0);
+
+                g.drawText(cost, (int) Math.round(x - costRect.getX()), (int) Math.round(y - costRect.getY()));
+
+                y += Math.round(costRect.getHeight());
+            } else {
+                String costTitle = LangID.getStringByID("talanalyzer_npcost", lang);
+                StringBuilder cost = new StringBuilder("[");
+                int costSummary = 0;
+
+                for(int j = 0; j < data.cost.size(); j++) {
+                    costSummary += data.cost.get(j);
+
+                    cost.append(data.cost.get(j));
+
+                    if(j < data.cost.size() - 1)
+                        cost.append(", ");
+                }
+
+                cost.append("] => ").append(costSummary);
+
+                Rectangle2D costTitleRect = contentFont.createGlyphVector(cfm.getFontRenderContext(), costTitle).getPixelBounds(null, 0, 0);
+                Rectangle2D costRect = nameFont.createGlyphVector(nfm.getFontRenderContext(), cost.toString()).getPixelBounds(null, 0, 0);
+
+                g.setFont(contentFont);
+                g.setColor(238, 238, 238, 255);
+                g.drawText(costTitle, (int) Math.round(x - costTitleRect.getX()), (int) Math.round(y - costTitleRect.getY()));
+
+                y += Math.round(talentTableGap + costTitleRect.getHeight());
+
+                g.setColor(51, 54, 60);
+                g.fillRoundRect(x, y, (int) Math.round(talentCostTableGap * 2 + costRect.getWidth()), (int) Math.round(talentCostTableGap * 2 + costRect.getHeight()), innerTableCornerRadius, innerTableCornerRadius);
+
+                g.setFont(nameFont);
+                g.setColor(238, 238, 238, 255);
+
+                g.drawText(cost.toString(), (int) Math.round(x + talentCostTableGap - costRect.getX()), (int) Math.round(y + talentCostTableGap - costRect.getY()));
+
+                y += Math.round(talentCostTableGap * 2 + costRect.getHeight());
+            }
+
+            if(i < talent.talents.size() - 1) {
+                y += talentGap / 2.0;
+
+                g.setColor(191, 191, 191, 255);
+                g.setStroke(CellDrawer.lineStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+                g.drawLine(x, y, x + panelWidth - statPanelMargin * 2, y);
+
+                y += talentGap / 2.0;
+            }
+        }
+
+        g.setFont(nameFont);
+        g.setColor(191, 191, 191, 255);
+        g.drawText(totalCostText, (int) Math.round(totalWidth - bgMargin - totalCostWidth - totalRect.getX()), (int) Math.round(totalHeight - bgMargin - totalCostHeight - totalRect.getY()));
+
+        ImageIO.write(result, "PNG", image);
+
+        return image;
+    }
+
     private static String getUnitCode(int ind) {
         switch (ind) {
             case 0:
@@ -2111,7 +2418,7 @@ public class ImageDrawing {
 
         g.setColor(88, 101, 242, 255);
 
-        g.fillRoundRect(icw + nameMargin, (int) (nRect.getHeight() + nameMargin), (int) (typeLeftRightMargin * 2 + tRect.getWidth()), (int) (typeUpDownMargin * 2 + tRect.getHeight()), 36, 36);
+        g.fillRoundRect(icw + nameMargin, (int) (nRect.getHeight() + nameMargin), (int) (typeLeftRightMargin * 2 + tRect.getWidth()), (int) (typeUpDownMargin * 2 + tRect.getHeight()), typeCornerRadius, typeCornerRadius);
 
         g.setColor(238, 238, 238, 255);
         g.setFont(typeFont);
@@ -2129,7 +2436,7 @@ public class ImageDrawing {
         FontRenderContext bfrc = bfm.getFontRenderContext();
         FontRenderContext lfrc = lfm.getFontRenderContext();
 
-        Rectangle2D nRect = titleFont.createGlyphVector(bfrc, name).getPixelBounds(null, 0, 0);
+        Rectangle2D nRect = nameFont.createGlyphVector(bfrc, name).getPixelBounds(null, 0, 0);
         Rectangle2D lRect = levelFont.createGlyphVector(lfrc, mag).getPixelBounds(null, 0, 0);
 
         int h = (int) Math.round(nRect.getHeight() + nameMargin + lRect.getHeight() + enemyIconGap * 3);

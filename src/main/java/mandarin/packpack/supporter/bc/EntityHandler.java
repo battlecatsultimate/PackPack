@@ -3062,7 +3062,7 @@ public class EntityHandler {
             cellGroup.add(addCell(data, procData, abilData, traitData, units[i], lang, lv, isFrame));
         }
 
-        String type = getRarity(units[0].rarity, lang);
+        String type = DataToString.getRarity(units[0].rarity, lang);
 
         File result = ImageDrawing.drawStatImage(units, cellGroup, lv, name, type, container, itemContainer, trueFormMode, uid, egg, trueForm);
 
@@ -3518,27 +3518,6 @@ public class EntityHandler {
         ));
 
         return cells;
-    }
-
-    private static String getRarity(int type, int lang) {
-        String rarity;
-
-        if(type == 0)
-            rarity = LangID.getStringByID("data_basic", lang);
-        else if(type == 1)
-            rarity = LangID.getStringByID("data_ex", lang);
-        else if(type == 2)
-            rarity = LangID.getStringByID("data_rare", lang);
-        else if(type == 3)
-            rarity = LangID.getStringByID("data_sr", lang);
-        else if(type == 4)
-            rarity = LangID.getStringByID("data_ur", lang);
-        else if(type == 5)
-            rarity = LangID.getStringByID("data_lr", lang);
-        else
-            rarity = "Unknown";
-
-        return rarity;
     }
 
     private static File generateComboImage(Combo c) throws Exception {
