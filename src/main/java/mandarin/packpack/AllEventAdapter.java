@@ -879,6 +879,11 @@ public class AllEventAdapter extends ListenerAdapter {
                 case "am":
                     new AnnounceMessage(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
                     break;
+                case "talanetanalyzer":
+                case "tala":
+                case "ta":
+                    new TalentAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
+                    break;
             }
         } catch (Exception e) {
             MessageChannel ch = event.getChannel();

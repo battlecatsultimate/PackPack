@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 
 import java.util.List;
 
@@ -151,7 +152,12 @@ public abstract class ConstraintCommand extends Command {
                                 "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
 
                         StaticStore.logger.uploadErrorLog(e, "Failed to perform constraint command : "+this.getClass()+"\n\n" + data);
-                        onFail(event, DEFAULT_ERROR);
+
+                        if(e instanceof ErrorResponseException) {
+                            onFail(event, SERVER_ERROR);
+                        } else {
+                            onFail(event, DEFAULT_ERROR);
+                        }
                     }
                 }).start();
             } catch (Exception e) {
@@ -161,7 +167,12 @@ public abstract class ConstraintCommand extends Command {
                         "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
 
                 StaticStore.logger.uploadErrorLog(e, "Failed to perform constraint command : "+this.getClass()+"\n\n" + data);
-                onFail(event, DEFAULT_ERROR);
+
+                if(e instanceof ErrorResponseException) {
+                    onFail(event, SERVER_ERROR);
+                } else {
+                    onFail(event, DEFAULT_ERROR);
+                }
             }
 
             try {

@@ -55,6 +55,7 @@ public class Prefix extends ConstraintCommand {
 
         switch (error) {
             case DEFAULT_ERROR:
+            case SERVER_ERROR:
                 ch.sendMessage("`INTERNAL_ERROR`").queue();
                 break;
             case ERR_CANT_FIND_MEMBER:

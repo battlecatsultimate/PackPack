@@ -7,8 +7,11 @@ import common.battle.data.*;
 import common.pack.Identifier;
 import common.pack.PackData;
 import common.pack.UserProfile;
+import common.system.VImg;
+import common.system.fake.FakeImage;
 import common.system.files.VFile;
 import common.util.Data;
+import common.util.anim.ImgCut;
 import common.util.lang.Formatter;
 import common.util.lang.MultiLangCont;
 import common.util.lang.ProcLang;
@@ -27,12 +30,15 @@ import java.util.*;
 import java.util.List;
 
 public class DataToString extends Data {
+    public static final DecimalFormat df;
+    public static final Map<Integer, int[]> talentLevel = new HashMap<>();
+    public static FakeImage[] img015 = null;
+    public static final Map<Integer, Integer> resistantIcon = new HashMap<>();
+
     private static final Map<Integer, String> talentText = new HashMap<>();
     private static final Map<Integer, String> talentIcon = new HashMap<>();
-    public static final DecimalFormat df;
     private static final List<String> mapIds = Arrays.asList("000000", "000001", "000002", "000003", "000004", "000006", "000007", "000011", "000012", "000013", "000014", "000024", "000025", "000027", "000031", "000033", "000034");
     private static final String[] mapCodes = {"N", "S", "C", "CH", "E", "T", "V", "R", "M", "NA", "B", "A", "H", "CA", "Q", "L", "ND"};
-    private static final Map<Integer, int[]> talentLevel = new HashMap<>();
     private static final int maxDifficulty = 11;
     private static final int[] materialDrops = {85, 86, 87, 88, 89, 90, 91, 140};
 
@@ -129,6 +135,21 @@ public class DataToString extends Data {
                 talentLevel.put(id, costs);
             }
         }
+
+        ImgCut ic015 = ImgCut.newIns("./org/page/img015.imgcut");
+        VImg img015r = new VImg("./org/page/img015.png");
+
+        img015 = ic015.cut(img015r.getImg());
+
+        resistantIcon.put(P_IMUWEAK, 43);
+        resistantIcon.put(P_IMUSTOP, 45);
+        resistantIcon.put(P_IMUSLOW, 47);
+        resistantIcon.put(P_IMUKB, 49);
+        resistantIcon.put(P_IMUWAVE, 51);
+        resistantIcon.put(P_IMUWARP, 53);
+        resistantIcon.put(P_IMUCURSE, 109);
+        resistantIcon.put(P_IMUPOIATK, 235);
+        resistantIcon.put(P_IMUVOLC, 241);
     }
 
     private static void addTalentData(int id, String name, String icon) {
@@ -192,6 +213,27 @@ public class DataToString extends Data {
 
             return res;
         }
+    }
+
+    public static String getRarity(int type, int lang) {
+        String rarity;
+
+        if(type == 0)
+            rarity = LangID.getStringByID("data_basic", lang);
+        else if(type == 1)
+            rarity = LangID.getStringByID("data_ex", lang);
+        else if(type == 2)
+            rarity = LangID.getStringByID("data_rare", lang);
+        else if(type == 3)
+            rarity = LangID.getStringByID("data_sr", lang);
+        else if(type == 4)
+            rarity = LangID.getStringByID("data_ur", lang);
+        else if(type == 5)
+            rarity = LangID.getStringByID("data_lr", lang);
+        else
+            rarity = "Unknown";
+
+        return rarity;
     }
 
     public static String getAtkTime(MaskUnit f, boolean isFrame) {
@@ -2395,6 +2437,28 @@ public class DataToString extends Data {
         }
     }
 
+    public static String getTalentTitle(String[] data, int index, int lang) {
+        if(!StaticStore.isNumeric(data[2 + index * 13]) || !StaticStore.isNumeric(data[2 + index * 13 + 1]))
+            return "";
+
+        int maxLevel = StaticStore.safeParseInt(data[2 + index * 13 + 1]);
+        int abilityID = StaticStore.safeParseInt(data[2 + index * 13]);
+
+        String name;
+
+        if(talentText.containsKey(abilityID)) {
+            name = LangID.getStringByID(talentText.get(abilityID), lang);
+        } else {
+            name = "???";
+        }
+
+        if(maxLevel >= 2) {
+            name += " [1 ~ " + data[2 + index * 13 + 1] + "]";
+        }
+
+        return name;
+    }
+
     public static String getTalentExplanation(MaskUnit du, MaskUnit improved, int index, boolean isFrame, int lang) {
         if(du == null || du.getPCoin() == null)
             return "";
@@ -2414,7 +2478,7 @@ public class DataToString extends Data {
         String desc = "";
 
         if(du.getPCoin().trait.size() == 1 && index == 0) {
-            desc += LangID.getStringByID("talentinfo_together", lang).replace("_", LangID.getStringByID(Interpret.TRAIT[du.getPCoin().trait.get(0).id.id], lang));
+            desc += LangID.getStringByID("talentinfo_together", lang).replace("_", LangID.getStringByID(Interpret.TRAIT[du.getPCoin().trait.get(0).id.id], lang)) + "\n\n";
         }
 
         switch (type[0]) {
@@ -2550,6 +2614,165 @@ public class DataToString extends Data {
         }
     }
 
+    public static String getTalentExplanation(String[] data, MaskUnit du, int index, boolean isFrame, int lang) {
+        String talentName;
+
+        int abilityID = StaticStore.safeParseInt(data[2 + index * 13]);
+        int maxLevel = StaticStore.safeParseInt(data[2 + index * 13 + 1]);
+        int traitID = StaticStore.safeParseInt(data[1]);
+
+        List<Trait> traits = Trait.convertType(traitID);
+
+        if(talentText.containsKey(abilityID)) {
+            talentName = LangID.getStringByID(talentText.get(abilityID), lang);
+        } else {
+            talentName = "???";
+        }
+
+        int[] type = PC_CORRES[abilityID];
+
+        String desc = "";
+
+        if(traits.size() == 1 && index == 0) {
+            desc += LangID.getStringByID("talentinfo_together", lang).replace("_", LangID.getStringByID(Interpret.TRAIT[traits.get(0).id.id], lang)) + "\n\n";
+        }
+
+        switch (type[0]) {
+            case PC_P:
+                if (maxLevel >= 1) {
+                    Proc.ProcItem p = du.getProc().getArr(type[1]).clone();
+
+                    if (!p.exists()) {
+                        Formatter.Context c = new Formatter.Context(true, !isFrame, new double[]{0, 0});
+
+                        int oldConfig = CommonStatic.getConfig().lang;
+                        CommonStatic.getConfig().lang = lang;
+
+                        String f = ProcLang.get().get(type[1]).format;
+
+                        CommonStatic.getConfig().lang = oldConfig;
+
+                        desc += Formatter.format(f, improveManually(p.clone(), data, index, type[1]), c) + "\n\n";
+                    }
+
+                    int changedIndex = findDifferentTalentIndex(data, index);
+
+                    int min = StaticStore.safeParseInt(data[2 + index * 13 + 2 * (changedIndex + 1)]);
+                    int max = StaticStore.safeParseInt(data[2 + index * 13 + 1 + 2 * (changedIndex + 1)]);
+
+                    if(p.exists()) {
+                        min += p.get(changedIndex);
+                        max += p.get(changedIndex);
+                    }
+
+                    if (changedIndex == -1) {
+                        StaticStore.logger.uploadLog("W/DataToString::getTalentExplanation - Failed to find different value set in talent : " + abilityID);
+
+                        return "";
+                    }
+
+                    String fieldName = p.getFieldName(changedIndex);
+                    String descID;
+
+                    switch (fieldName) {
+                        case "prob":
+                            descID = "talentinfo_chance";
+
+                            break;
+                        case "time":
+                            descID = "talentinfo_duration";
+
+                            break;
+                        case "mult":
+                            descID = "talentinfo_multiplier";
+
+                            break;
+                        default:
+                            throw new IllegalStateException("Unknown proc field name : " + fieldName);
+                    }
+
+                    if (fieldName.equals("time")) {
+                        if (isFrame) {
+                            desc += LangID.getStringByID(descID, lang).replace("_mmm_", min + "f").replace("_MMM_", max + "f") + "\n\n";
+                        } else {
+                            desc += LangID.getStringByID(descID, lang).replace("_mmm_", df.format(min / 30.0) + "s").replace("_MMM_", df.format(max / 30.0) + "s") + "\n\n";
+                        }
+                    } else {
+                        if (fieldName.equals("mult") && type[1] == P_WEAK) {
+                            min = 100 - min;
+                            max = 100 - max;
+                        }
+
+                        desc += LangID.getStringByID(descID, lang).replace("_mmm_", min + "").replace("_MMM_", max + "") + "\n\n";
+                    }
+
+                    if(p instanceof Proc.IMU && ((Proc.IMU) p).mult == 100) {
+                        desc += "<IMU>";
+                    }
+                }
+
+                return desc;
+            case PC_IMU:
+            case PC_AB:
+                return desc;
+            case PC_BASE:
+                int changedIndex = findDifferentTalentIndex(data, index);
+
+                if(changedIndex == -1) {
+                    StaticStore.logger.uploadLog("W/DataToString::getTalentExplanation - Failed to find different value set in talent : " + abilityID);
+
+                    return "";
+                }
+
+                int min = StaticStore.safeParseInt(data[2 + index * 13 + 2 * (changedIndex + 1)]);
+                int max = StaticStore.safeParseInt(data[2 + index * 13 + 1 + 2 * (changedIndex + 1)]);
+
+                if(type[1] == PC2_COST) {
+                    min = (int) (min * 1.5);
+                    max = (int) (max * 1.5);
+                }
+
+                String key;
+
+                switch (type[1]) {
+                    case PC2_HP:
+                        key = "talentinfo_health";
+
+                        break;
+                    case PC2_ATK:
+                        key = "talentinfo_attack";
+
+                        break;
+                    case PC2_SPEED:
+                        key = "talentinfo_speed";
+
+                        break;
+                    case PC2_COST:
+                        key = "talentinfo_cost";
+
+                        break;
+                    case PC2_CD:
+                        key = "talentinfo_cooldown";
+
+                        break;
+                    case PC2_HB:
+                        key = "talentinfo_kb";
+
+                        break;
+                    default:
+                        throw new IllegalStateException("Invalid P_BASE ID : " + type[1]);
+                }
+
+                return desc + LangID.getStringByID(key, lang)
+                        .replace("_mmm_", min + "")
+                        .replace("_MMM_", max + "");
+            case PC_TRAIT:
+                return desc + LangID.getStringByID("talentinfo_trait", lang).replace("_", talentName);
+            default:
+                throw new IllegalStateException("E/DataToString::getTalentExplanation - Somehow reached point where bot couldn't get description of talent " + abilityID + " | Type : " + type[0]);
+        }
+    }
+
     private static int findDifferentTalentIndex(int[] data) {
         for(int i = 0; i < 4; i++) {
             if(data[2 + 2 * i] != data[3 + 2 * i]) {
@@ -2558,6 +2781,50 @@ public class DataToString extends Data {
         }
 
         return -1;
+    }
+
+    private static int findDifferentTalentIndex(String[] data, int index) {
+        for(int i = 0; i < 4; i++) {
+            if(!StaticStore.isNumeric(data[2 + index * 13 + 2 * (i + 1)]) || !StaticStore.isNumeric(data[2 + index * 13 + 1 + 2 * (i + 1)]))
+                continue;
+
+            if(StaticStore.safeParseInt(data[2 + index * 13 + 2 * (i + 1)]) != StaticStore.safeParseInt(data[2 + index * 13 + 1 + 2 * (i + 1)])) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    @SuppressWarnings("deprecation")
+    private static Proc.ProcItem improveManually(Proc.ProcItem item, String[] data, int index, int type) {
+        int[] modification = new int[4];
+
+        for(int i = 0; i < 4; i++) {
+            modification[i] = StaticStore.safeParseInt(data[2 + 13 * index + 2 * (i + 1)]);
+        }
+
+        if(type == P_VOLC) {
+            item.set(0, modification[0]);
+            item.set(1, modification[2] / 4);
+            item.set(2, (modification[2] + modification[3]) / 4);
+            item.set(3, modification[1] * 20);
+        } else {
+            for(int i = 0; i < 4; i++)
+                if(modification[i] > 0)
+                    item.set(i, item.get(i) + modification[i]);
+        }
+
+        if(type == P_STRONG && modification[0] != 0)
+            item.set(0, 100 - item.get(0));
+        else if(type == P_WEAK)
+            item.set(2, 100 - item.get(2));
+        else if(type == P_BOUNTY)
+            item.set(0, 100);
+        else if(type == P_ATKBASE)
+            item.set(0, 300);
+
+        return item;
     }
 
     private static String fillUpNpCost(int[] data, int lang, boolean space) {
