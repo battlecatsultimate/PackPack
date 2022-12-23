@@ -41,7 +41,13 @@ public class DateComparator implements Comparator<String> {
     }
 
     private int[] extractDate(String value) {
-        value = value.replace("[","");
+        String[] pre = value.split("m\\[", 2);
+
+        if(pre.length != 2) {
+            throw new IllegalStateException("Content has invalid format : "+value);
+        }
+
+        value = pre[1];
 
         String[] contents = value.split(" ~ ", 2);
 
