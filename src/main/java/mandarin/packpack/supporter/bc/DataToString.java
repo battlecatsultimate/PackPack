@@ -1792,9 +1792,9 @@ public class DataToString extends Data {
     }
 
     public static String getComboDescription(Combo c, int lang) {
-        int factor = getComboFactor(c);
+        int factor = getComboFactor(c.type, c.lv);
 
-        String desc = LangID.getStringByID("data_"+getComboKeyword(c)+"combodesc", lang).replace("_", String.valueOf(factor));
+        String desc = LangID.getStringByID("data_"+getComboKeyword(c.type)+"combodesc", lang).replace("_", String.valueOf(factor));
 
         if(c.type == 14) {
             desc = desc.replace("ttt", df.format(0.5 * (100 - factor) / 100.0))
@@ -1848,12 +1848,42 @@ public class DataToString extends Data {
         return desc + "\n\n" + builder;
     }
 
-    public static String getComboType(Combo c, int lang) {
-        return LangID.getStringByID("data_"+getComboKeyword(c)+"combo", lang) + " [" + getComboLevel(c, lang)+"]";
+    public static String getComboDescription(int type, int lv, int lang) {
+        int factor = getComboFactor(type, lv);
+
+        String desc = LangID.getStringByID("data_"+getComboKeyword(type)+"combodesc", lang).replace("_", String.valueOf(factor));
+
+        if(type == 14) {
+            desc = desc.replace("ttt", df.format(0.5 * (100 - factor) / 100.0))
+                    .replace("TTT", df.format(0.4 * (100 - factor) / 100.0))
+                    .replace("ggg", df.format(1.5 * (100 + factor) / 100.0))
+                    .replace("GGG", df.format(1.8 * (100 + factor) / 100.0));
+        } else if(type == 15) {
+            desc = desc.replace("ggg", df.format(3.0 * (100 + factor) / 100.0))
+                    .replace("GGG", df.format(4.0 * (100 + factor) / 100.0));
+        } else if(type == 16) {
+            desc = desc.replace("ttt", df.format(0.25 * (100 - factor) / 100.0))
+                    .replace("TTT", df.format(0.2 * (100 - factor) / 100.0));
+        } else if(type == 22 || type == 23) {
+            desc = desc.replace("ttt", df.format(0.2 / ((100 + factor) / 100.0)))
+                    .replace("ggg", df.format(5 * (100 + factor) / 100.0));
+        } else if(type == 7 || type == 11) {
+            desc = desc.replace("-", df.format(factor / 30.0));
+        }
+
+        return desc;
     }
 
-    private static String getComboLevel(Combo c, int lang) {
-        switch (c.lv) {
+    public static String getComboType(Combo c, int lang) {
+        return LangID.getStringByID("data_"+getComboKeyword(c.type)+"combo", lang) + " [" + getComboLevel(c.lv, lang)+"]";
+    }
+
+    public static String getComboType(int type, int lang) {
+        return LangID.getStringByID("data_"+getComboKeyword(type)+"combo", lang);
+    }
+
+    public static String getComboLevel(int lv, int lang) {
+        switch (lv) {
             case 0:
                 return LangID.getStringByID("data_combosm", lang);
             case 1:
@@ -1863,15 +1893,15 @@ public class DataToString extends Data {
             case 3:
                 return LangID.getStringByID("data_comboxl", lang);
             default:
-                return "Lv. "+c.lv;
+                return "Lv. "+lv;
         }
     }
 
-    private static int getComboFactor(Combo c) {
-        switch (c.type) {
+    private static int getComboFactor(int type, int lv) {
+        switch (type) {
             case 0:
             case 2:
-                return 10 + c.lv * 5;
+                return 10 + lv * 5;
             case 1:
             case 20:
             case 19:
@@ -1883,40 +1913,40 @@ public class DataToString extends Data {
             case 13:
             case 12:
             case 9:
-                return 10 + 10 * c.lv;
+                return 10 + 10 * lv;
             case 3:
-                return 20 + 20 * c.lv;
+                return 20 + 20 * lv;
             case 4:
-                return 2 + c.lv;
+                return 2 + lv;
             case 5:
-                if (c.lv == 0) {
+                if (lv == 0) {
                     return 300;
-                } else if (c.lv == 1) {
+                } else if (lv == 1) {
                     return 500;
                 } else {
                     return 1000;
                 }
             case 6:
             case 10:
-                return 20 + 30 * c.lv;
+                return 20 + 30 * lv;
             case 7:
-                return 150 + 150 * c.lv;
+                return 150 + 150 * lv;
             case 11:
-                return 26 + 26 * c.lv;
+                return 26 + 26 * lv;
             case 21:
-                return 20 + 10 * c.lv;
+                return 20 + 10 * lv;
             case 22:
             case 23:
-                return 100 + 100 * c.lv;
+                return 100 + 100 * lv;
             case 24:
-                return 1 + c.lv;
+                return 1 + lv;
             default:
                 return 0;
         }
     }
 
-    private static String getComboKeyword(Combo c) {
-        switch (c.type) {
+    private static String getComboKeyword(int type) {
+        switch (type) {
             case 0:
                 return "atk";
             case 1:
@@ -1966,7 +1996,7 @@ public class DataToString extends Data {
             case 13:
                 return "study";
             default:
-                throw new IllegalStateException("Invalid Combo Type : "+c.type);
+                throw new IllegalStateException("Invalid Combo Type : "+type);
         }
     }
 

@@ -848,6 +848,10 @@
   "help_talentanalyzer_desc" : "Analyze talent data of specified unit from apk file, and upload image of analysis. **Only Trusted users can use this command.** `tala`, `ta` are also valid command",
   "help_talentanalyzer_argu" : "`-u` or `-uid` : Decide ID of unit\n`-s` or `-second` : Use second unit\n`-n` or `-name` : Decide custom name of this unit\n`-en/tw/kr/jp` : Decide BC version which you will use",
   "help_talentanalyzer_exam" : "`p!ta -u 534`\n`p!ta -u 417 -n Subterra Sentinels`",
+  "help_comboanalyzer_use" : "`p!comboanalyzer <-c [Combo ID]>`",
+  "help_comboanalyzer_desc" : "Find new cat combo data, or specified one, anlyze them, and upload images of analyzed result. **Only Trusted users can use this command.** `catcomboanalyzer`, `cca`, `ca` are also valid command",
+  "help_comboanalyzer_argu" : "`-c` or `-cid` : Decide ID of combo\n`-en/tw/kr/jp` : Decide BC version which you will use",
+  "help_comboanalyzer_tip" : "You can make bot analyze new cat combo only, or analyze specific combo by passing its ID. You can't decide name for this, but bot will automatically grab combo name from files",
   "prefix_space" : "Prefix can't be white spaces!",
   "prefix_set" : "Prefix setting compelete! Your personal prefix is now : %s",
   "prefix_setnone" : "Your prefix has been updated!",
@@ -1342,5 +1346,7 @@
   "talanalyzer_singlenp" : "NP Cost: %dNP",
   "talanalyzer_npcost" : "NP Cost => Total Cost",
   "talanalyzer_fail" : "Failed to generate talent image...",
-  "talanalyzer_success" : "Successfully analyzed talent data"
+  "talanalyzer_success" : "Successfully analyzed talent data",
+  "comanalyzer_nosuch" : "Failed to generate combo image, or bot couldn't find such combo ID from data",
+  "comanalyzer_notfound" : "Failed to generate combo image, or bot couldn't find new combo form data"
 }

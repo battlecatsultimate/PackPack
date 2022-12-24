@@ -164,6 +164,18 @@ public class ImageDrawing {
     private static final int talentGap = 120;
     private static final int totalCostGap = 120;
 
+    private static final int comboTitleGap = 60;
+    private static final int comboTypeGap = 80;
+    private static final int comboTypeInnerGap = 15;
+    private static final int comboTypeRadius = 30;
+    private static final double comboIconScaleFactor = 2.5;
+    private static final int comboIconTableRadius = 75;
+    private static final int comboIconGap = 60;
+    private static final int comboIconLeftRightGap = 80;
+    private static final int comboIconUpDownGap = 60;
+    private static final int comboIconNameGap = 80;
+    private static final int comboContentGap = 120;
+
     private static final int CHANCE_WIDTH = 0;
     private static final int REWARD_WIDTH = 1;
     private static final int AMOUNT_WIDTH = 2;
@@ -2365,6 +2377,119 @@ public class ImageDrawing {
         g.setFont(nameFont);
         g.setColor(191, 191, 191, 255);
         g.drawText(totalCostText, (int) Math.round(totalWidth - bgMargin - totalCostWidth - totalRect.getX()), (int) Math.round(totalHeight - bgMargin - totalCostHeight - totalRect.getY()));
+
+        ImageIO.write(result, "PNG", image);
+
+        return image;
+    }
+
+    public static File drawComboImage(File folder, CustomCombo combo) throws Exception {
+        File image = StaticStore.generateTempFile(folder, "combo", ".png", false);
+
+        if(image == null || !image.exists())
+            return null;
+
+        Canvas cv = new Canvas();
+
+        FontMetrics tfm = cv.getFontMetrics(titleFont);
+        FontMetrics tyfm = cv.getFontMetrics(typeFont);
+        FontMetrics nfm = cv.getFontMetrics(nameFont);
+        FontMetrics cfm = cv.getFontMetrics(contentFont);
+
+        Rectangle2D titleRect = titleFont.createGlyphVector(tfm.getFontRenderContext(), combo.title).getPixelBounds(null, 0, 0);
+        Rectangle2D typeRect = typeFont.createGlyphVector(tyfm.getFontRenderContext(), combo.type).getPixelBounds(null, 0, 0);
+        Rectangle2D levelRect = typeFont.createGlyphVector(tyfm.getFontRenderContext(), combo.level).getPixelBounds(null, 0, 0);
+
+        int levelBoxDimension = (int) Math.round(Math.max(levelRect.getWidth(), levelRect.getHeight()) + comboTypeInnerGap * 2);
+
+        int typeBoxHeight = (int) Math.round(Math.max(typeRect.getHeight(), levelBoxDimension));
+        int typeBoxWidth = (int) Math.round(typeRect.getWidth() + comboTypeGap + levelBoxDimension);
+
+        int titleHeight = (int) Math.round(titleRect.getHeight() + comboTitleGap + typeBoxHeight);
+        int titleWidth = (int) Math.round(Math.max(titleRect.getWidth(), typeBoxWidth));
+
+        int maxIconTableWidth = (int) Math.round(comboIconLeftRightGap * 2 + combo.icons.get(0).getWidth() * comboIconScaleFactor);
+        int maxUnitNameHeight = 0;
+
+        for(int i = 0; i < combo.icons.size(); i++) {
+            Rectangle2D unitNameRect = nameFont.createGlyphVector(nfm.getFontRenderContext(), combo.names.get(i)).getPixelBounds(null, 0, 0);
+
+            maxUnitNameHeight = (int) Math.round(Math.max(maxUnitNameHeight, unitNameRect.getHeight()));
+            maxIconTableWidth = (int) Math.round(Math.max(maxIconTableWidth, comboIconLeftRightGap * 2 + unitNameRect.getWidth()));
+        }
+
+        int maxIconTableHeight = (int) Math.round(comboIconUpDownGap * 2 + combo.icons.get(0).getHeight() * comboIconScaleFactor + comboIconNameGap + maxUnitNameHeight);
+
+        Rectangle2D descRect = contentFont.createGlyphVector(cfm.getFontRenderContext(), combo.description).getPixelBounds(null, 0, 0);
+
+        maxIconTableWidth = (int) Math.round(Math.max(maxIconTableWidth, (descRect.getWidth() - comboIconGap * (combo.icons.size() - 1)) / (1.0 * combo.icons.size())));
+
+        int panelHeight = (int) Math.round(statPanelMargin * 2 + maxIconTableHeight + comboContentGap + descRect.getHeight());
+        int panelWidth = (int) Math.round(statPanelMargin * 2 + Math.max(maxIconTableWidth * combo.icons.size() + comboIconGap * (combo.icons.size() - 1), descRect.getWidth()));
+
+        if(titleWidth > panelWidth) {
+            panelWidth = titleWidth + bgMargin * 2 + statPanelMargin;
+
+            maxIconTableWidth = (int) Math.round((panelWidth - statPanelMargin * 2 - comboIconGap * (combo.icons.size() - 1)) / (1.0 * combo.icons.size()));
+        }
+
+        int totalHeight = bgMargin * 5 + titleHeight + panelHeight;
+        int totalWidth = Math.max(bgMargin * 4 + titleWidth, bgMargin * 2 + panelWidth);
+
+        BufferedImage result = new BufferedImage(totalWidth, totalHeight, BufferedImage.TYPE_INT_ARGB);
+
+        FG2D g = new FG2D(result.getGraphics());
+
+        g.setRenderingHint(3, 1);
+        g.enableAntialiasing();
+
+        g.setColor(51, 53, 60, 255);
+        g.fillRect( 0, 0, totalWidth, totalHeight);
+
+        g.setColor(24, 25, 28, 255);
+        g.fillRoundRect(0, -cornerRadius / 2, totalWidth, cornerRadius + bgMargin * 8 + titleHeight, cornerRadius, cornerRadius);
+
+        g.setColor(64, 68, 75, 255);
+        g.fillRoundRect(bgMargin, bgMargin * 4 + titleHeight, panelWidth, panelHeight, cornerRadius, cornerRadius);
+
+        g.setFont(titleFont);
+        g.setColor(238, 238, 238, 255);
+        g.drawText(combo.title, (int) Math.round(bgMargin * 2 - titleRect.getX()), (int) Math.round(bgMargin * 2 - titleRect.getY()));
+
+        g.setFont(typeFont);
+        g.drawText(combo.type, (int) Math.round(bgMargin * 2 - typeRect.getX()), (int) Math.round(bgMargin * 2 + titleRect.getHeight() + comboTitleGap + (Math.max(typeRect.getHeight(), levelBoxDimension) - typeRect.getHeight()) / 2.0 - typeRect.getY()));
+
+        g.setColor(88, 101, 242, 255);
+        g.fillRoundRect((int) Math.round(bgMargin * 2 + typeRect.getWidth() + comboTypeGap), (int) Math.round(bgMargin * 2 + titleRect.getHeight() + comboTitleGap + (Math.max(typeRect.getHeight(), levelBoxDimension) - levelBoxDimension) / 2.0), levelBoxDimension, levelBoxDimension, comboTypeRadius, comboTypeRadius);
+
+        g.setColor(238, 238, 238, 255);
+        g.drawText(combo.level, (int) Math.round(bgMargin * 2 + typeRect.getWidth() + comboTypeGap + comboTypeRadius / 2.0 - levelRect.getX()), (int) Math.round(bgMargin * 2 + titleRect.getHeight() + comboTitleGap + (Math.max(typeRect.getHeight(), levelBoxDimension) - levelRect.getHeight()) / 2.0 - levelRect.getY()));
+
+        int x = bgMargin + statPanelMargin;
+        int y = bgMargin * 4 + titleHeight + statPanelMargin;
+
+        g.setFont(nameFont);
+
+        for(int i = 0; i < combo.icons.size(); i++) {
+            Rectangle2D unitNameRect = nameFont.createGlyphVector(nfm.getFontRenderContext(), combo.names.get(i)).getPixelBounds(null, 0, 0);
+
+            g.setColor(51, 53, 60, 255);
+            g.fillRoundRect(x, y, maxIconTableWidth, maxIconTableHeight, comboIconTableRadius, comboIconTableRadius);
+
+            g.drawImage(combo.icons.get(i), Math.round(x + (maxIconTableWidth - combo.icons.get(i).getWidth() * comboIconScaleFactor) / 2.0), y + comboIconUpDownGap, (int) Math.round(combo.icons.get(i).getWidth() * comboIconScaleFactor), (int) Math.round(combo.icons.get(i).getHeight() * comboIconScaleFactor));
+
+            g.setColor(191, 191, 191, 255);
+            g.drawText(combo.names.get(i), (int) Math.round(x + (maxIconTableWidth - unitNameRect.getWidth()) / 2.0 - unitNameRect.getX()), (int) Math.round(y + comboIconUpDownGap + combo.icons.get(i).getHeight() * comboIconScaleFactor + comboIconNameGap - unitNameRect.getY()));
+
+            x += maxIconTableWidth + comboIconGap;
+        }
+
+        x = bgMargin + statPanelMargin;
+        y += maxIconTableHeight + comboContentGap;
+
+        g.setFont(contentFont);
+        g.setColor(238, 238, 238, 255);
+        g.drawText(combo.description, (int) Math.round(x - descRect.getX()), (int) Math.round(y - descRect.getY()));
 
         ImageIO.write(result, "PNG", image);
 

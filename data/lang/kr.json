@@ -835,6 +835,10 @@
   "help_talentanalyzer_desc" : "apk 파일로부터 제공된 유닛의 본능 데이터를 분석하고 결과를 이미지로 업로드 합니다. **기여자들만 사용 가능한 명령어 입니다.** `tala`, `ta` 또한 유효한 명령어 입니다",
   "help_talentanalyzer_argu" : "`-u` 또는 `-uid` : 분석할 유닛의 ID를 정합니다\n`-s` 또는 `-second` : 초 단위를 사용합니다\n`-n` 또는 `-name` : 유닛의 이름을 정합니다\n`-en/tw/kr/jp` : 사용할 냥코 언어 버전을 정합니다",
   "help_talentanalyzer_exam" : "`p!ta -u 534`\n`p!ta -u 417 -n 초지하전대 그란돈`",
+  "help_comboanalyzer_use" : "`p!comboanalyzer <-c [냥콤보 ID]>`",
+  "help_comboanalyzer_desc" : "제공된 혹은 새로운 냥콤보를 찾아서 분석하고, 분석된 결과들을 이미지로 업로드 합니다. **기여자들만 사용 가능한 명령어 입니다.** `catcomboanalyzer`, `cca`, `ca` 또한 유효한 명령어 입니다",
+  "help_comboanalyzer_argu" : "`-c` 또는 `-cid` : 냥콤보의 ID를 정합니다\n`-en/tw/kr/jp` : 사용할 냥코 언어 버전을 정합니다",
+  "help_comboanalyzer_tip" : "유저들은 봇이 새로 발견된 냥콤보만 분석하게 하거나, 냥콤보 ID를 제공하여 그 특정된 냥콤보만 분석하도록 만들 수 있습니다. 냥콤보 이름은 마음대로 정할 수는 없지만, 봇이 파일들 사이에서 냥콤보 이름을 자동으로 구합니다",
   "prefix_space" : "접두사는 여백으로 설정될 수 없습니다!",
   "prefix_set" : "접두사가 %s 로 설정되었습니다!",
   "prefix_setnone" : "접두사가 설정되었습니다!",
@@ -1319,5 +1323,7 @@
   "talanalyzer_singlenp" : "NP 코스트: %dNP",
   "talanalyzer_npcost" : "NP 코스트 => 총 코스트",
   "talanalyzer_fail" : "본능 이미지 생성 실패...",
-  "talanalyzer_success" : "성공적으로 본능 데이터를 분석했습니다"
+  "talanalyzer_success" : "성공적으로 본능 데이터를 분석했습니다",
+  "comanalyzer_nosuch" : "냥콤보 이미지 생성에 실패했거나, 해당 냥콤보 ID를 갖고 있는 데이터를 발견하지 못했습니다",
+  "comanalyzer_notfound" : "냥콤보 이미지 생성에 실패했거나, 새로운 냥톰보 데이터를 봇이 찾지 못했습니다"
 }

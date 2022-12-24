@@ -884,6 +884,12 @@ public class AllEventAdapter extends ListenerAdapter {
                 case "ta":
                     new TalentAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
                     break;
+                case "catcomboanalyzer":
+                case "comboanalyzer":
+                case "cca":
+                case "ca":
+                    new ComboAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
+                    break;
             }
         } catch (Exception e) {
             MessageChannel ch = event.getChannel();
