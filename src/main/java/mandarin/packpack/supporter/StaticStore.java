@@ -70,6 +70,7 @@ public class StaticStore {
 
     public static Map<String, String> prefix = new HashMap<>();
     public static Map<String, String> langs = new HashMap<>();
+    public static Map<String, String> musics = new HashMap<>();
     public static Map<String, Integer> timeZones = new HashMap<>();
     public static Map<String, ConfigHolder> config = new HashMap<>();
 
@@ -514,6 +515,7 @@ public class StaticStore {
         obj.addProperty("japaneseVersion", japaneseVersion);
         obj.add("prefix", mapToJsonString(prefix));
         obj.add("lang", mapToJsonString(langs));
+        obj.add("music", mapToJsonString(musics));
         obj.add("config", mapToJsonConfigHolder(config));
         obj.add("imgur", imgur.getData());
         obj.add("idholder", mapToJsonIDHolder(idHolder));
@@ -603,6 +605,10 @@ public class StaticStore {
 
             if(obj.has("lang")) {
                 langs = jsonToMapString(obj.get("lang").getAsJsonArray());
+            }
+
+            if(obj.has("music")) {
+                musics = jsonToMapString(obj.get("music").getAsJsonArray());
             }
 
             if(obj.has("config")) {

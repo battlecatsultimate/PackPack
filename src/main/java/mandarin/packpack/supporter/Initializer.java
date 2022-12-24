@@ -54,8 +54,12 @@ public class Initializer {
                 }
             }
 
+            for(String id : StaticStore.musics.keySet()) {
+                CommonStatic.getConfig().localMusicMap.put(StaticStore.safeParseInt(id), StaticStore.musics.get(id));
+            }
+
             asset = UpdateCheck.checkAsset(json, "android", "bot");
-            music = UpdateCheck.checkMusic(json.music);
+            music = UpdateCheck.checkMusic(json.music).get();
             lang = UpdateCheck.checkLang(langFile.toArray(new String[0])).get();
 
             if(!asset.isEmpty()) {
@@ -84,6 +88,8 @@ public class Initializer {
             for(UpdateCheck.Downloader d : music) {
                 System.out.println("Downloading Music : "+d.target.getName());
                 d.run((v) -> {});
+
+                StaticStore.musics.put(d.target.getName().replace(".ogg", ""), CommonStatic.getConfig().localMusicMap.get(StaticStore.safeParseInt(d.target.getName().replace(".ogg", ""))));
             }
 
             if(!lang.isEmpty()) {
