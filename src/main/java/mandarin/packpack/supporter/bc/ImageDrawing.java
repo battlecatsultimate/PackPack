@@ -164,8 +164,8 @@ public class ImageDrawing {
     private static final int talentGap = 120;
     private static final int totalCostGap = 120;
 
-    private static final int comboTitleGap = 60;
-    private static final int comboTypeGap = 80;
+    private static final int comboTitleGap = 90;
+    private static final int comboTypeGap = 40;
     private static final int comboTypeInnerGap = 15;
     private static final int comboTypeRadius = 30;
     private static final double comboIconScaleFactor = 2.5;
@@ -2463,7 +2463,7 @@ public class ImageDrawing {
         g.fillRoundRect((int) Math.round(bgMargin * 2 + typeRect.getWidth() + comboTypeGap), (int) Math.round(bgMargin * 2 + titleRect.getHeight() + comboTitleGap + (Math.max(typeRect.getHeight(), levelBoxDimension) - levelBoxDimension) / 2.0), levelBoxDimension, levelBoxDimension, comboTypeRadius, comboTypeRadius);
 
         g.setColor(238, 238, 238, 255);
-        g.drawText(combo.level, (int) Math.round(bgMargin * 2 + typeRect.getWidth() + comboTypeGap + comboTypeRadius / 2.0 - levelRect.getX()), (int) Math.round(bgMargin * 2 + titleRect.getHeight() + comboTitleGap + (Math.max(typeRect.getHeight(), levelBoxDimension) - levelRect.getHeight()) / 2.0 - levelRect.getY()));
+        g.drawText(combo.level, (int) Math.round(bgMargin * 2 + typeRect.getWidth() + comboTypeGap + (Math.max(typeRect.getHeight(), levelBoxDimension) - levelRect.getWidth()) / 2.0 - levelRect.getX()), (int) Math.round(bgMargin * 2 + titleRect.getHeight() + comboTitleGap + (Math.max(typeRect.getHeight(), levelBoxDimension) - levelRect.getHeight()) / 2.0 - levelRect.getY()));
 
         int x = bgMargin + statPanelMargin;
         int y = bgMargin * 4 + titleHeight + statPanelMargin;
