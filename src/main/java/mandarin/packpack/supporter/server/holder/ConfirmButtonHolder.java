@@ -4,6 +4,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 
@@ -52,12 +53,9 @@ public class ConfirmButtonHolder extends InteractionHolder<ButtonInteractionEven
             return RESULT_STILL;
         }
 
-        if(event.getInteraction().getMember() == null)
-            return RESULT_STILL;
+        User u = event.getUser();
 
-        Member m = event.getInteraction().getMember();
-
-        if(!m.getId().equals(memberID))
+        if(!u.getId().equals(memberID))
             return RESULT_STILL;
 
         Message me = event.getMessage();

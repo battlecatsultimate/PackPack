@@ -11,8 +11,9 @@ import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.TimeBoolean;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 
@@ -75,10 +76,6 @@ public class FormAnimMessageHolder extends SearchHolder {
     @Override
     public void onSelected(GenericComponentInteractionCreateEvent event) {
         MessageChannel ch = event.getChannel();
-        Guild g = event.getGuild();
-
-        if(g == null)
-            return;
 
         int id = parseDataToInt(event);
 
@@ -99,12 +96,20 @@ public class FormAnimMessageHolder extends SearchHolder {
                 if(timeBoolean == null || StaticStore.canDo.get("gif").canDo) {
                     new Thread(() -> {
                         try {
-                            boolean result = EntityHandler.generateFormAnim(f, ch, getAuthorMessage(), g.getBoostTier().getKey(), mode, debug, frame, lang, raw, gifMode);
+                            Guild g;
 
-                            Member m = event.getMember();
+                            if(ch instanceof GuildChannel) {
+                                g = event.getGuild();
+                            } else {
+                                g = null;
+                            }
+
+                            boolean result = EntityHandler.generateFormAnim(f, ch, getAuthorMessage(), g == null ? 0 : g.getBoostTier().getKey(), mode, debug, frame, lang, raw, gifMode);
+
+                            User u = event.getUser();
 
                             if(raw && result) {
-                                StaticStore.logger.uploadLog("Generated mp4 by user " + (m == null ? "Unknown" : m.getEffectiveName()) + " for unit ID " + Data.trio(f.unit.id.id) + " with mode of " + mode);
+                                StaticStore.logger.uploadLog("Generated mp4 by user " + u.getName() + " for unit ID " + Data.trio(f.unit.id.id) + " with mode of " + mode);
                             }
 
                             if(result) {
@@ -130,36 +135,34 @@ public class FormAnimMessageHolder extends SearchHolder {
                     ch.sendMessage(LangID.getStringByID("single_wait", lang).replace("_", DataToString.df.format((timeBoolean.totalTime - (System.currentTimeMillis() - StaticStore.canDo.get("gif").time)) / 1000.0))).queue();
                 }
             } else {
-                Member m = event.getMember();
+                User u = event.getUser();
 
-                if(m != null) {
-                    try {
-                        if(StaticStore.timeLimit.containsKey(m.getId()) && StaticStore.timeLimit.get(m.getId()).containsKey(StaticStore.COMMAND_FORMIMAGE_ID)) {
-                            long time = StaticStore.timeLimit.get(m.getId()).get(StaticStore.COMMAND_FORMIMAGE_ID);
+                try {
+                    if(StaticStore.timeLimit.containsKey(u.getId()) && StaticStore.timeLimit.get(u.getId()).containsKey(StaticStore.COMMAND_FORMIMAGE_ID)) {
+                        long time = StaticStore.timeLimit.get(u.getId()).get(StaticStore.COMMAND_FORMIMAGE_ID);
 
-                            if(System.currentTimeMillis() - time > 10000) {
-                                EntityHandler.generateFormImage(f, ch, getAuthorMessage(), mode, frame, transparent, debug, lang);
-
-                                StaticStore.timeLimit.get(m.getId()).put(StaticStore.COMMAND_FORMIMAGE_ID, System.currentTimeMillis());
-                            } else {
-                                ch.sendMessage(LangID.getStringByID("command_timelimit", lang).replace("_", DataToString.df.format((System.currentTimeMillis() - time) / 1000.0))).queue();
-                            }
-                        } else if(StaticStore.timeLimit.containsKey(m.getId())) {
+                        if(System.currentTimeMillis() - time > 10000) {
                             EntityHandler.generateFormImage(f, ch, getAuthorMessage(), mode, frame, transparent, debug, lang);
 
-                            StaticStore.timeLimit.get(m.getId()).put(StaticStore.COMMAND_FORMIMAGE_ID, System.currentTimeMillis());
+                            StaticStore.timeLimit.get(u.getId()).put(StaticStore.COMMAND_FORMIMAGE_ID, System.currentTimeMillis());
                         } else {
-                            EntityHandler.generateFormImage(f, ch, getAuthorMessage(), mode, frame, transparent, debug, lang);
-
-                            Map<String, Long> memberLimit = new HashMap<>();
-
-                            memberLimit.put(StaticStore.COMMAND_FORMIMAGE_ID, System.currentTimeMillis());
-
-                            StaticStore.timeLimit.put(m.getId(), memberLimit);
+                            ch.sendMessage(LangID.getStringByID("command_timelimit", lang).replace("_", DataToString.df.format((System.currentTimeMillis() - time) / 1000.0))).queue();
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    } else if(StaticStore.timeLimit.containsKey(u.getId())) {
+                        EntityHandler.generateFormImage(f, ch, getAuthorMessage(), mode, frame, transparent, debug, lang);
+
+                        StaticStore.timeLimit.get(u.getId()).put(StaticStore.COMMAND_FORMIMAGE_ID, System.currentTimeMillis());
+                    } else {
+                        EntityHandler.generateFormImage(f, ch, getAuthorMessage(), mode, frame, transparent, debug, lang);
+
+                        Map<String, Long> memberLimit = new HashMap<>();
+
+                        memberLimit.put(StaticStore.COMMAND_FORMIMAGE_ID, System.currentTimeMillis());
+
+                        StaticStore.timeLimit.put(u.getId(), memberLimit);
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         } catch (Exception e) {

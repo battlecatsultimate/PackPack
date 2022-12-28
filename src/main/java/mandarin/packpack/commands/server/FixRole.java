@@ -14,11 +14,14 @@ import java.util.List;
 
 public class FixRole extends ConstraintCommand {
     public FixRole(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, true);
     }
 
     @Override
     public void doSomething(GenericMessageEvent event) throws Exception {
+        if(holder == null)
+            return;
+
         MessageChannel ch = getChannel(event);
 
         if(ch == null)

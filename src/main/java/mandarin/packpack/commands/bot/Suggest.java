@@ -8,14 +8,13 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class Suggest extends TimedConstraintCommand {
     public Suggest(ConstraintCommand.ROLE role, int lang, IDHolder id, long time) {
-        super(role, lang, id, time, StaticStore.COMMAND_SUGGEST_ID);
+        super(role, lang, id, time, StaticStore.COMMAND_SUGGEST_ID, true);
     }
 
     @Override
@@ -27,13 +26,13 @@ public class Suggest extends TimedConstraintCommand {
 
         JDA client = event.getJDA();
 
-        Member m = getMember(event);
+        User u = getUser(event);
 
-        if(m == null)
+        if(u == null)
             return;
 
-        if(StaticStore.suggestBanned.containsKey(m.getId())) {
-            ch.sendMessage(LangID.getStringByID("suggest_banned", lang).replace("_RRR_", StaticStore.suggestBanned.get(m.getId()))).queue();
+        if(StaticStore.suggestBanned.containsKey(u.getId())) {
+            ch.sendMessage(LangID.getStringByID("suggest_banned", lang).replace("_RRR_", StaticStore.suggestBanned.get(u.getId()))).queue();
 
             disableTimer();
 
@@ -70,9 +69,9 @@ public class Suggest extends TimedConstraintCommand {
                     }
                 }
 
-                builder.addField("Member ID", m.getId(), true);
-                builder.addField("Member Name", m.getUser().getName(), true);
-                builder.setAuthor(title, null, m.getAvatarUrl());
+                builder.addField("Member ID", u.getId(), true);
+                builder.addField("Member Name", u.getName(), true);
+                builder.setAuthor(title, null, u.getAvatarUrl());
 
                 builder.addField("Channel ID" , ch.getId(), false);
 

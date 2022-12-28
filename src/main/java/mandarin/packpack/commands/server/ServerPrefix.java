@@ -8,11 +8,14 @@ import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class ServerPrefix extends ConstraintCommand {
     public ServerPrefix(ROLE role, int lang, IDHolder holder) {
-        super(role, lang, holder);
+        super(role, lang, holder, true);
     }
 
     @Override
     public void doSomething(GenericMessageEvent event) {
+        if(holder == null)
+            return;
+
         MessageChannel ch = getChannel(event);
 
         String[] list = getContent(event).split(" ");

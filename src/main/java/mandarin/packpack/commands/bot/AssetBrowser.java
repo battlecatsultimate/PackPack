@@ -11,6 +11,7 @@ import mandarin.packpack.supporter.server.holder.SearchHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
@@ -21,7 +22,7 @@ import java.util.List;
 
 public class AssetBrowser extends ConstraintCommand {
     public AssetBrowser(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, false);
     }
 
     @Override
@@ -68,10 +69,10 @@ public class AssetBrowser extends ConstraintCommand {
 
         Message res = registerSearchComponents(ch.sendMessage(builder.toString()).setAllowedMentions(new ArrayList<>()), data.size(), accumulateData(vf, true), lang).complete();
 
-        Member m = getMember(event);
+        User u = getUser(event);
 
-        if(m != null) {
-            StaticStore.putHolder(m.getId(), new AssetBrowserHolder(res, getMessage(event), ch.getId(), vf, lang));
+        if(u != null) {
+            StaticStore.putHolder(u.getId(), new AssetBrowserHolder(res, getMessage(event), ch.getId(), vf, lang));
         }
     }
 

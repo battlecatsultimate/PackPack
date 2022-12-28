@@ -8,11 +8,14 @@ import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class AnnounceMessage extends ConstraintCommand {
     public AnnounceMessage(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, true);
     }
 
     @Override
     public void doSomething(GenericMessageEvent event) throws Exception {
+        if(holder == null)
+            return;
+
         MessageChannel ch = getChannel(event);
 
         if(ch == null)

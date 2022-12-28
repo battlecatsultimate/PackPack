@@ -9,6 +9,7 @@ import mandarin.packpack.supporter.server.holder.SearchHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
@@ -17,7 +18,7 @@ import java.util.*;
 
 public class EventDataArchive extends ConstraintCommand {
     public EventDataArchive(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, false);
     }
 
     @Override
@@ -102,13 +103,13 @@ public class EventDataArchive extends ConstraintCommand {
         Message res = registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), files.size(), data, lang).complete();
 
         if(res != null) {
-            Member m = getMember(event);
+            User u = getUser(event);
 
-            if(m != null) {
+            if(u != null) {
                 Message msg = getMessage(event);
 
                 if(msg != null) {
-                    StaticStore.putHolder(m.getId(), new EventDataArchiveHolder(res, msg, ch.getId(), files, fileName, lang));
+                    StaticStore.putHolder(u.getId(), new EventDataArchiveHolder(res, msg, ch.getId(), files, fileName, lang));
                 }
             }
         }

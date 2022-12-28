@@ -4,6 +4,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
@@ -11,7 +12,7 @@ public class Prefix extends ConstraintCommand {
     private static final int ERR_CANT_FIND_MEMBER = 0;
 
     public Prefix(ROLE role, int lang, IDHolder holder) {
-        super(role, lang, holder);
+        super(role, lang, holder, false);
     }
 
     @Override
@@ -27,10 +28,10 @@ public class Prefix extends ConstraintCommand {
                 return;
             }
 
-            Member m = getMember(event);
+            User u = getUser(event);
 
-            if(m != null) {
-                StaticStore.prefix.put(m.getId(), list[1]);
+            if(u != null) {
+                StaticStore.prefix.put(u.getId(), list[1]);
 
                 String result = String.format(LangID.getStringByID("prefix_set", lang), list[1]);
 

@@ -9,7 +9,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
@@ -28,12 +28,10 @@ public class Castle extends ConstraintCommand {
 
         int lang = LangID.EN;
 
-        if(interaction.getMember() != null) {
-            Member m = interaction.getMember();
+        User u = interaction.getUser();
 
-            if(StaticStore.config.containsKey(m.getId())) {
-                lang =  StaticStore.config.get(m.getId()).lang;
-            }
+        if(StaticStore.config.containsKey(u.getId())) {
+            lang =  StaticStore.config.get(u.getId()).lang;
         }
 
         File temp = new File("./temp");
@@ -131,11 +129,11 @@ public class Castle extends ConstraintCommand {
     private CastleImg cs;
 
     public Castle(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, false);
     }
 
     public Castle(ROLE role, int lang, IDHolder id, CastleImg cs) {
-        super(role, lang, id);
+        super(role, lang, id, false);
 
         this.cs = cs;
     }
@@ -228,7 +226,7 @@ public class Castle extends ConstraintCommand {
                 String[] messages = getContent(event).split(" ", startIndex+1);
 
                 if(messages.length <= startIndex) {
-                    replyToMessageSafely(ch, LangID.getStringByID("castle_more", lang).replace("_", holder.serverPrefix), getMessage(event), a -> a);
+                    replyToMessageSafely(ch, LangID.getStringByID("castle_more", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.serverPrefix), getMessage(event), a -> a);
 
                     return;
                 }
@@ -301,7 +299,7 @@ public class Castle extends ConstraintCommand {
 
                 sendMessageWithFile(ch, LangID.getStringByID("castle_result", lang).replace("_CCC_", castleCode).replace("_III_", Data.trio(id)).replace("_BBB_", image.boss_spawn+""), img, "result.png", getMessage(event));
             } else {
-                replyToMessageSafely(ch, LangID.getStringByID("castle_argu", lang).replace("_", holder.serverPrefix), getMessage(event), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("castle_argu", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.serverPrefix), getMessage(event), a -> a);
             }
         }
     }

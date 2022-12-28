@@ -9,7 +9,6 @@ import common.util.stage.MapColc;
 import common.util.stage.Stage;
 import common.util.stage.StageMap;
 import common.util.unit.Enemy;
-import mandarin.packpack.commands.Command;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.TimedConstraintCommand;
 import mandarin.packpack.supporter.EmojiStore;
@@ -19,18 +18,21 @@ import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import mandarin.packpack.supporter.server.holder.*;
+import mandarin.packpack.supporter.server.holder.FindStageMessageHolder;
+import mandarin.packpack.supporter.server.holder.SearchHolder;
+import mandarin.packpack.supporter.server.holder.StageEnemyMessageHolder;
+import mandarin.packpack.supporter.server.holder.StageInfoButtonHolder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,10 +63,10 @@ public class FindStage extends TimedConstraintCommand {
     private final ConfigHolder config;
 
     public FindStage(ConstraintCommand.ROLE role, int lang, IDHolder id, ConfigHolder config, long time) {
-        super(role, lang, id, time, StaticStore.COMMAND_FINDSTAGE_ID);
+        super(role, lang, id, time, StaticStore.COMMAND_FINDSTAGE_ID, false);
 
         if(config == null)
-            this.config = id.config;
+            this.config = id == null ? StaticStore.defaultConfig : id.config;
         else
             this.config = config;
     }
@@ -91,7 +93,7 @@ public class FindStage extends TimedConstraintCommand {
 
         boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
         boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
-        boolean isCompact = (param & PARAM_COMPACT) > 0 || (holder.forceCompact ? holder.config.compact : config.compact);
+        boolean isCompact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
         boolean orOperate = (param & PARAM_OR) > 0 && (param & PARAM_AND) == 0;
         boolean hasBoss = (param & PARAM_BOSS) > 0;
         boolean monthly = (param & PARAM_MONTHLY) > 0;
@@ -177,13 +179,13 @@ public class FindStage extends TimedConstraintCommand {
             } else if(stages.size() == 1) {
                 Message result = EntityHandler.showStageEmb(stages.get(0), ch, getMessage(event), isFrame, isExtra, isCompact, star, lang);
 
-                Member m = getMember(event);
+                User u = getUser(event);
 
-                if(m != null) {
+                if(u != null) {
                     Message msg = getMessage(event);
 
                     if(msg != null) {
-                        StaticStore.putHolder(m.getId(), new StageInfoButtonHolder(stages.get(0), msg, result, ch.getId(), isCompact));
+                        StaticStore.putHolder(u.getId(), new StageInfoButtonHolder(stages.get(0), msg, result, ch.getId(), isCompact));
                     }
                 }
             } else {
@@ -209,13 +211,13 @@ public class FindStage extends TimedConstraintCommand {
                 Message res = createMonthlyMessage(ch, getMessage(event), sb.toString(), accumulateStage(stages, false), stages, stages.size(), monthly);
 
                 if(res != null) {
-                    Member m = getMember(event);
+                    User u = getUser(event);
 
-                    if(m != null) {
+                    if(u != null) {
                         Message msg = getMessage(event);
 
                         if(msg != null) {
-                            StaticStore.putHolder(m.getId(), new FindStageMessageHolder(stages, monthly ? accumulateCategory(stages) : null, getMessage(event), res, ch.getId(), star, isFrame, isExtra, isCompact, lang));
+                            StaticStore.putHolder(u.getId(), new FindStageMessageHolder(stages, monthly ? accumulateCategory(stages) : null, getMessage(event), res, ch.getId(), star, isFrame, isExtra, isCompact, lang));
                         }
                         disableTimer();
                     }
@@ -252,13 +254,13 @@ public class FindStage extends TimedConstraintCommand {
             Message res = registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), enemies.size(), data, lang).complete();
 
             if(res != null) {
-                Member m = getMember(event);
+                User u = getUser(event);
 
-                if(m != null) {
+                if(u != null) {
                     Message msg = getMessage(event);
 
                     if(msg != null)
-                        StaticStore.putHolder(m.getId(), new StageEnemyMessageHolder(enemySequences, filterEnemy, enemyList, msg, res, ch.getId(), isFrame, isExtra, isCompact, orOperate, hasBoss, monthly, star, background, castle, music, lang));
+                        StaticStore.putHolder(u.getId(), new StageEnemyMessageHolder(enemySequences, filterEnemy, enemyList, msg, res, ch.getId(), isFrame, isExtra, isCompact, orOperate, hasBoss, monthly, star, background, castle, music, lang));
                 }
             }
         }

@@ -14,7 +14,7 @@ public class Help extends Command {
     private final IDHolder holder;
 
     public Help(int lang, IDHolder holder) {
-        super(lang);
+        super(lang, false);
 
         this.holder = holder;
     }

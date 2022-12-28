@@ -11,8 +11,8 @@ import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 
@@ -81,18 +81,16 @@ public class ComboFormMessageHolder extends SearchHolder {
 
                 createMessageWithNoPings(ch, LangID.getStringByID("combo_noname", lang).replace("_", getSearchKeywords(fName, cName, lang)));
             } else if(combos.size() == 1) {
-                Member m = event.getMember();
+                User u = event.getUser();
 
-                if(m != null) {
-                    if(StaticStore.timeLimit.containsKey(m.getId())) {
-                        StaticStore.timeLimit.get(m.getId()).put(StaticStore.COMMAND_COMBO_ID, System.currentTimeMillis());
-                    } else {
-                        Map<String, Long> memberLimit = new HashMap<>();
+                if(StaticStore.timeLimit.containsKey(u.getId())) {
+                    StaticStore.timeLimit.get(u.getId()).put(StaticStore.COMMAND_COMBO_ID, System.currentTimeMillis());
+                } else {
+                    Map<String, Long> memberLimit = new HashMap<>();
 
-                        memberLimit.put(StaticStore.COMMAND_COMBO_ID, System.currentTimeMillis());
+                    memberLimit.put(StaticStore.COMMAND_COMBO_ID, System.currentTimeMillis());
 
-                        StaticStore.timeLimit.put(m.getId(), memberLimit);
-                    }
+                    StaticStore.timeLimit.put(u.getId(), memberLimit);
                 }
 
                 msg.delete().queue();
@@ -134,11 +132,9 @@ public class ComboFormMessageHolder extends SearchHolder {
                 msg.editMessage(LangID.getStringByID("combo_selected", lang).replace("_", formName)).mentionRepliedUser(false).setComponents().queue();
 
                 if(res != null) {
-                    Member m = event.getMember();
+                    User u = event.getUser();
 
-                    if(m != null) {
-                        StaticStore.putHolder(m.getId(), new ComboMessageHolder(combos, getAuthorMessage(), res, msg, ch.getId(), lang));
-                    }
+                    StaticStore.putHolder(u.getId(), new ComboMessageHolder(combos, getAuthorMessage(), res, msg, ch.getId(), lang));
                 }
             }
         } catch (Exception e) {

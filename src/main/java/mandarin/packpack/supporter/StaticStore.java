@@ -68,6 +68,8 @@ public class StaticStore {
     public static String koreanVersion = "110000";
     public static String japaneseVersion = "110000";
 
+    public static final ConfigHolder defaultConfig = new ConfigHolder();
+
     public static Map<String, String> prefix = new HashMap<>();
     public static Map<String, String> langs = new HashMap<>();
     public static Map<String, String> musics = new HashMap<>();
@@ -159,7 +161,6 @@ public class StaticStore {
     public static final BigInteger min = new BigInteger(Integer.toString(Integer.MIN_VALUE));
 
     public static final String MANDARIN_SMELL = "460409259021172781";
-    public static final String PACKPACK_SERVER = "964054872649515048";
 
     public static final String BCU_SERVER = "490262537527623692";
 

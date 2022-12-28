@@ -4,14 +4,14 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.ConfirmButtonHolder;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class OptOut extends ConstraintCommand {
     public OptOut(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, false);
     }
 
     @Override
@@ -21,10 +21,10 @@ public class OptOut extends ConstraintCommand {
         if(ch == null)
             return;
 
-        Member me = getMember(event);
+        User u = getUser(event);
 
-        if(me != null) {
-            String id = me.getId();
+        if(u != null) {
+            String id = u.getId();
 
             Message m = getRepliedMessageSafely(ch, LangID.getStringByID("optout_warn", lang), getMessage(event), a -> registerConfirmButtons(a, lang));
 

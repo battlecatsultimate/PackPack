@@ -18,7 +18,7 @@ public class ServerStat extends Command {
     private final IDHolder holder;
 
     public ServerStat(int lang, IDHolder holder) {
-        super(lang);
+        super(lang, true);
 
         this.holder = holder;
     }

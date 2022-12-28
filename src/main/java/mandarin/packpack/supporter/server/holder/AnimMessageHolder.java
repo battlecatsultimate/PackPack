@@ -12,6 +12,7 @@ import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
@@ -243,11 +244,17 @@ public class AnimMessageHolder extends MessageHolder<MessageReceivedEvent> {
 
         if(pngDone && cutDone && modelDone && animAllDone()) {
             new Thread(() -> {
-                Guild g = msg.getGuild();
+                Guild g;
+
+                if(ch instanceof GuildChannel) {
+                    g = msg.getGuild();
+                } else {
+                    g = null;
+                }
 
                 try {
                     for(int i = 0; i < mixer.anim.length; i++) {
-                        EntityHandler.generateAnim(ch, mixer, g.getBoostTier().getKey(), lang, debug, -1, raw, transparent, i);
+                        EntityHandler.generateAnim(ch, mixer, g == null ? 0 : g.getBoostTier().getKey(), lang, debug, -1, raw, transparent, i);
                     }
 
                     new Timer().schedule(new TimerTask() {
@@ -466,11 +473,17 @@ public class AnimMessageHolder extends MessageHolder<MessageReceivedEvent> {
 
                 if(pngDone && cutDone && modelDone && animAllDone()) {
                     new Thread(() -> {
-                        Guild g = event.getGuild();
+                        Guild g;
+
+                        if(ch instanceof GuildChannel) {
+                            g = event.getGuild();
+                        } else {
+                            g = null;
+                        }
 
                         try {
                             for(int i = 0; i < maanim.size(); i++) {
-                                EntityHandler.generateAnim(ch, mixer, g.getBoostTier().getKey(), lang, debug, -1, raw, transparent, i);
+                                EntityHandler.generateAnim(ch, mixer, g == null ? 0 : g.getBoostTier().getKey(), lang, debug, -1, raw, transparent, i);
                             }
 
                             new Timer().schedule(new TimerTask() {

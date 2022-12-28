@@ -15,6 +15,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
@@ -42,7 +43,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
     }
 
     public EnemyGif(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID) {
-        super(role, lang, id, mainID, TimeUnit.SECONDS.toMillis(30));
+        super(role, lang, id, mainID, TimeUnit.SECONDS.toMillis(30), false);
     }
 
     @Override
@@ -58,12 +59,12 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
             return;
 
         Guild g = getGuild(event);
-        Member m = getMember(event);
+        User u = getUser(event);
 
-        if(g == null || m == null)
+        if(u == null)
             return;
 
-        boolean isTrusted = StaticStore.contributors.contains(m.getId()) || m.getId().equals(StaticStore.MANDARIN_SMELL);
+        boolean isTrusted = StaticStore.contributors.contains(u.getId()) || u.getId().equals(StaticStore.MANDARIN_SMELL);
 
         String[] list = getContent(event).split(" ");
 
@@ -115,10 +116,10 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
                     ch.sendMessage(LangID.getStringByID("gif_ignore", lang)).queue();
                 }
 
-                boolean result = EntityHandler.generateEnemyAnim(en, ch, getMessage(event), g.getBoostTier().getKey(), mode, debug, frame, lang, raw && isTrusted, gif);
+                boolean result = EntityHandler.generateEnemyAnim(en, ch, getMessage(event), g == null ? 0 : g.getBoostTier().getKey(), mode, debug, frame, lang, raw && isTrusted, gif);
 
                 if(raw && isTrusted && result) {
-                    StaticStore.logger.uploadLog("Generated mp4 by user " + m.getEffectiveName() + " for enemy ID " + Data.trio(en.id.id) + " with mode of " + mode);
+                    StaticStore.logger.uploadLog("Generated mp4 by user " + u.getName() + " for enemy ID " + Data.trio(en.id.id) + " with mode of " + mode);
                 }
 
                 if(raw && isTrusted) {
@@ -164,7 +165,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
                 }
 
                 if(res != null) {
-                    StaticStore.putHolder(m.getId(), new EnemyAnimMessageHolder(enemies, getMessage(event), res, ch.getId(), mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isTrusted, gif));
+                    StaticStore.putHolder(u.getId(), new EnemyAnimMessageHolder(enemies, getMessage(event), res, ch.getId(), mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isTrusted, gif));
                 }
 
                 disableTimer();

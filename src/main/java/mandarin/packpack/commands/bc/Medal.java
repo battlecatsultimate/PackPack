@@ -11,8 +11,8 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.MedalMessageHolder;
 import mandarin.packpack.supporter.server.holder.SearchHolder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
@@ -21,7 +21,7 @@ import java.util.List;
 
 public class Medal extends ConstraintCommand {
     public Medal(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, false);
     }
 
     @Override
@@ -72,13 +72,13 @@ public class Medal extends ConstraintCommand {
                 Message res = getRepliedMessageSafely(ch, sb.toString(), getMessage(event), a -> registerSearchComponents(a, id.size(), data, lang));
 
                 if(res != null) {
-                    Member m = getMember(event);
+                    User u = getUser(event);
 
-                    if(m != null) {
+                    if(u != null) {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(m.getId(), new MedalMessageHolder(id, msg, res, lang, ch.getId()));
+                            StaticStore.putHolder(u.getId(), new MedalMessageHolder(id, msg, res, lang, ch.getId()));
                     }
                 }
             }

@@ -21,7 +21,7 @@ import java.util.List;
 
 public class SubscribeScamLinkDetector extends ConstraintCommand {
     public SubscribeScamLinkDetector(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, true);
     }
 
     @Override

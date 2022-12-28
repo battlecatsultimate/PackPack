@@ -59,6 +59,9 @@ public class ScamLinkHandler {
     }
 
     public void takeAction(String link, Member m, Guild g) {
+        if(m == null)
+            return;
+
         GuildChannel ch = g.getGuildChannelById(channel);
         IDHolder holder = StaticStore.idHolder.get(g.getId());
 

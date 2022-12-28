@@ -7,6 +7,7 @@ import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
@@ -71,13 +72,20 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
             return RESULT_STILL;
         }
 
-        if(event.getInteraction().getMember() == null)
-            return RESULT_STILL;
+        if(forServer) {
+            if(event.getInteraction().getMember() == null)
+                return RESULT_STILL;
 
-        Member mem = event.getInteraction().getMember();
+            Member mem = event.getInteraction().getMember();
 
-        if(!mem.getId().equals(memberID))
-            return RESULT_STILL;
+            if(!mem.getId().equals(memberID))
+                return RESULT_STILL;
+        } else {
+            User u = event.getUser();
+
+            if(!u.getId().equals(memberID))
+                return RESULT_STILL;
+        }
 
         Message m = event.getMessage();
 
@@ -178,7 +186,7 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
                 int lang = config.lang;
 
                 if(lang == -1)
-                    lang = holder.config.lang;
+                    lang = holder == null ? LangID.EN : holder.config.lang;
 
                 event.deferEdit()
                         .setContent(LangID.getStringByID("config_apply", lang))
@@ -237,7 +245,7 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
         int lang = config.lang;
 
         if(lang == -1)
-            lang = holder.config.lang;
+            lang = holder == null ? LangID.EN : holder.config.lang;
 
         List<ActionRow> m = new ArrayList<>();
 
@@ -323,7 +331,7 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
 
                     break;
                 case 5:
-                    if(forServer) {
+                    if(forServer && holder != null) {
                         List<SelectOption> forces = new ArrayList<>();
 
                         if(holder.forceCompact) {
@@ -367,7 +375,7 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
         int lang = config.lang;
 
         if(lang == -1)
-            lang = holder.config.lang;
+            lang = holder == null ? LangID.EN : holder.config.lang;
 
         String locale;
 
@@ -444,8 +452,8 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
                 comp;
 
         if(forServer) {
-            String force = LangID.getStringByID(holder.forceCompact ? "data_true" : "data_false", lang);
-            String forc = LangID.getStringByID(holder.forceCompact ? "config_fortrue" : "config_forfalse", lang);
+            String force = LangID.getStringByID((holder != null && holder.forceCompact) ? "data_true" : "data_false", lang);
+            String forc = LangID.getStringByID((holder != null && holder.forceCompact) ? "config_fortrue" : "config_forfalse", lang);
 
             message += "\n\n" +
                     "**" + LangID.getStringByID("config_force", lang).replace("_", force) + "**\n" +

@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class Save extends ConstraintCommand {
     public Save(ROLE role, int lang, IDHolder holder) {
-        super(role, lang, holder);
+        super(role, lang, holder, false);
     }
 
     @Override

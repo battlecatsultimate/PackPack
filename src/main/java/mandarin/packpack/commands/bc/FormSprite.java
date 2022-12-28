@@ -12,8 +12,8 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.FormSpriteMessageHolder;
 import mandarin.packpack.supporter.server.holder.SearchHolder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
@@ -26,7 +26,7 @@ public class FormSprite extends TimedConstraintCommand {
     private static final int PARAM_EDI = 8;
 
     public FormSprite(ConstraintCommand.ROLE role, int lang, IDHolder id, long time) {
-        super(role, lang, id, time, StaticStore.COMMAND_FORMSPRITE_ID);
+        super(role, lang, id, time, StaticStore.COMMAND_FORMSPRITE_ID, false);
     }
 
     @Override
@@ -91,13 +91,13 @@ public class FormSprite extends TimedConstraintCommand {
                 Message res = getRepliedMessageSafely(ch, sb.toString(), getMessage(event), a -> registerSearchComponents(a, forms.size(), data, lang));
 
                 if(res != null) {
-                    Member m = getMember(event);
+                    User u = getUser(event);
 
-                    if(m != null) {
+                    if(u != null) {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(m.getId(), new FormSpriteMessageHolder(forms, msg, res, ch.getId(), mode, lang));
+                            StaticStore.putHolder(u.getId(), new FormSpriteMessageHolder(forms, msg, res, ch.getId(), mode, lang));
                     }
                 }
 

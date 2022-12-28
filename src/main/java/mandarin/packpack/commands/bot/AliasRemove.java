@@ -8,7 +8,6 @@ import common.util.stage.Stage;
 import common.util.stage.StageMap;
 import common.util.unit.Enemy;
 import common.util.unit.Form;
-import mandarin.packpack.commands.Command;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
@@ -18,8 +17,8 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.alias.AliasEnemyMessageHolder;
 import mandarin.packpack.supporter.server.holder.alias.AliasFormMessageHolder;
 import mandarin.packpack.supporter.server.holder.alias.AliasStageMessageHolder;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
@@ -28,15 +27,15 @@ import java.util.ArrayList;
 public class AliasRemove extends ConstraintCommand {
 
     public AliasRemove(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, false);
     }
 
     @Override
     public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
-        Member m = getMember(event);
+        User u = getUser(event);
 
-        if(ch == null || m == null)
+        if(ch == null || u == null)
             return;
 
         AliasHolder.TYPE type = getType(getContent(event));
@@ -132,7 +131,7 @@ public class AliasRemove extends ConstraintCommand {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(m.getId(), new AliasFormMessageHolder(forms, msg, res, ch.getId(), AliasHolder.MODE.REMOVE, lang, getAliasName(getContent(event))));
+                            StaticStore.putHolder(u.getId(), new AliasFormMessageHolder(forms, msg, res, ch.getId(), AliasHolder.MODE.REMOVE, lang, getAliasName(getContent(event))));
                     }
                 }
                 break;
@@ -224,7 +223,7 @@ public class AliasRemove extends ConstraintCommand {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(m.getId(), new AliasEnemyMessageHolder(enemies, msg, res, ch.getId(), AliasHolder.MODE.REMOVE, lang, getAliasName(getContent(event))));
+                            StaticStore.putHolder(u.getId(), new AliasEnemyMessageHolder(enemies, msg, res, ch.getId(), AliasHolder.MODE.REMOVE, lang, getAliasName(getContent(event))));
                     }
                 }
                 break;
@@ -380,7 +379,7 @@ public class AliasRemove extends ConstraintCommand {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(m.getId(), new AliasStageMessageHolder(stages, msg, res, ch.getId(), AliasHolder.MODE.REMOVE, lang, getAliasName(getContent(event))));
+                            StaticStore.putHolder(u.getId(), new AliasStageMessageHolder(stages, msg, res, ch.getId(), AliasHolder.MODE.REMOVE, lang, getAliasName(getContent(event))));
                     }
                 }
                 break;

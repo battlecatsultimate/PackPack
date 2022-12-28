@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class Statistic extends Command {
     public Statistic(int lang) {
-        super(lang);
+        super(lang, false);
     }
 
     @Override

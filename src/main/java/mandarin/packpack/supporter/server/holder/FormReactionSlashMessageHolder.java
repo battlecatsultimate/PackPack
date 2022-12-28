@@ -60,7 +60,7 @@ public class FormReactionSlashMessageHolder extends MessageHolder<MessageReactio
 
                 StaticStore.removeHolder(memberID, FormReactionSlashMessageHolder.this);
 
-                if(m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
+                if(!(m.getChannel() instanceof GuildChannel) || m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
                     m.clearReactions().queue();
                 }
             }
@@ -82,12 +82,12 @@ public class FormReactionSlashMessageHolder extends MessageHolder<MessageReactio
         if(!event.getMessageId().equals(embID))
             return RESULT_STILL;
 
-        if(event.getMember() == null)
+        if(event.getUser() == null)
             return RESULT_STILL;
 
-        Member mem = event.getMember();
+        User u = event.getUser();
 
-        if(!mem.getId().equals(memberID))
+        if(!u.getId().equals(memberID))
             return RESULT_STILL;
 
         Emoji emoji = event.getEmoji();
@@ -96,11 +96,6 @@ public class FormReactionSlashMessageHolder extends MessageHolder<MessageReactio
             return RESULT_STILL;
 
         boolean emojiClicked = false;
-
-        Guild g = event.getGuild();
-
-        if(!g.getId().equals(StaticStore.PACKPACK_SERVER))
-            return RESULT_STILL;
 
         switch (emoji.getName()) {
             case "TwoPrevious":
@@ -178,7 +173,7 @@ public class FormReactionSlashMessageHolder extends MessageHolder<MessageReactio
         }
 
         if(emojiClicked) {
-            if(m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
+            if(!(ch instanceof GuildChannel) || m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
                 m.clearReactions().queue();
             }
 
@@ -202,9 +197,9 @@ public class FormReactionSlashMessageHolder extends MessageHolder<MessageReactio
 
         StaticStore.removeHolder(id, this);
 
-        GuildChannel gc = m.getGuildChannel();
+        MessageChannel ch = m.getChannel();
 
-        if(m.getGuild().getSelfMember().hasPermission(gc, Permission.MESSAGE_MANAGE)) {
+        if(!(ch instanceof GuildChannel) || m.getGuild().getSelfMember().hasPermission((GuildChannel) ch, Permission.MESSAGE_MANAGE)) {
             m.clearReactions().queue();
         }
     }

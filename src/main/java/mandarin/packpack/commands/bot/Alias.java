@@ -18,8 +18,8 @@ import mandarin.packpack.supporter.server.holder.SearchHolder;
 import mandarin.packpack.supporter.server.holder.alias.AliasEnemyMessageHolder;
 import mandarin.packpack.supporter.server.holder.alias.AliasFormMessageHolder;
 import mandarin.packpack.supporter.server.holder.alias.AliasStageMessageHolder;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
@@ -28,7 +28,7 @@ import java.util.ArrayList;
 public class Alias extends ConstraintCommand {
 
     public Alias(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, false);
     }
 
     @Override
@@ -38,9 +38,9 @@ public class Alias extends ConstraintCommand {
         if(ch == null)
             return;
 
-        Member m = getMember(event);
+        User u = getUser(event);
 
-        if(m == null)
+        if(u == null)
             return;
 
         AliasHolder.TYPE type = getType(getContent(event));
@@ -143,7 +143,7 @@ public class Alias extends ConstraintCommand {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(m.getId(), new AliasFormMessageHolder(forms, msg, res, ch.getId(), AliasHolder.MODE.GET, lang, null));
+                            StaticStore.putHolder(u.getId(), new AliasFormMessageHolder(forms, msg, res, ch.getId(), AliasHolder.MODE.GET, lang, null));
                     }
                 }
                 break;
@@ -240,7 +240,7 @@ public class Alias extends ConstraintCommand {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(m.getId(), new AliasEnemyMessageHolder(enemies, msg, res, ch.getId(), AliasHolder.MODE.GET, lang, null));
+                            StaticStore.putHolder(u.getId(), new AliasEnemyMessageHolder(enemies, msg, res, ch.getId(), AliasHolder.MODE.GET, lang, null));
                     }
                 }
                 break;
@@ -404,7 +404,7 @@ public class Alias extends ConstraintCommand {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(m.getId(), new AliasStageMessageHolder(stages, msg, res, ch.getId(), AliasHolder.MODE.GET, lang, null));
+                            StaticStore.putHolder(u.getId(), new AliasStageMessageHolder(stages, msg, res, ch.getId(), AliasHolder.MODE.GET, lang, null));
                     }
                 }
                 break;

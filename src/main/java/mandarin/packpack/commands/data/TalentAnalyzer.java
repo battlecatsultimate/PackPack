@@ -32,7 +32,7 @@ public class TalentAnalyzer extends ConstraintCommand {
     );
 
     public TalentAnalyzer(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, false);
     }
 
     public CustomTalent talent;

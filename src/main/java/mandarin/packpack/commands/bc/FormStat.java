@@ -15,8 +15,9 @@ import mandarin.packpack.supporter.server.holder.FormStatMessageHolder;
 import mandarin.packpack.supporter.server.holder.SearchHolder;
 import mandarin.packpack.supporter.server.slash.SlashOption;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
@@ -37,23 +38,21 @@ public class FormStat extends ConstraintCommand {
 
         int lang = LangID.EN;
 
-        if(interaction.getMember() != null) {
-            Member m = interaction.getMember();
+        User u = interaction.getUser();
 
-            if(StaticStore.config.containsKey(m.getUser().getId())) {
-                lang = StaticStore.config.get(m.getUser().getId()).lang;
+        if(StaticStore.config.containsKey(u.getId())) {
+            lang = StaticStore.config.get(u.getId()).lang;
 
-                if(lang == -1) {
-                    if(interaction.getGuild() == null) {
+            if(lang == -1) {
+                if(interaction.getGuild() == null) {
+                    lang = LangID.EN;
+                } else {
+                    IDHolder idh = StaticStore.idHolder.get(interaction.getGuild().getId());
+
+                    if(idh == null) {
                         lang = LangID.EN;
                     } else {
-                        IDHolder idh = StaticStore.idHolder.get(interaction.getGuild().getId());
-
-                        if(idh == null) {
-                            lang = LangID.EN;
-                        } else {
-                            lang = idh.config.lang;
-                        }
+                        lang = idh.config.lang;
                     }
                 }
             }
@@ -83,20 +82,14 @@ public class FormStat extends ConstraintCommand {
         try {
             ConfigHolder config;
 
-            if(interaction.getMember() != null) {
-                Member member = interaction.getMember();
-
-                config = StaticStore.config.getOrDefault(member.getUser().getId(), new ConfigHolder());
-            } else {
-                config = new ConfigHolder();
-            }
+            config = StaticStore.config.getOrDefault(u.getId(), StaticStore.defaultConfig);
 
             Message m = EntityHandler.performUnitEmb(f, event, config, frame, talent, extra, lvs, finalLang);
 
-            if(m != null && interaction.getMember() != null && m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_MANAGE)) {
+            if(m != null && (!(m.getChannel() instanceof TextChannel) || m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_MANAGE))) {
                 StaticStore.putHolder(
-                        interaction.getMember().getId(),
-                        new FormReactionSlashMessageHolder(m, f, interaction.getMember().getId(), m.getChannel().getId(), m.getId(), config, frame && config.useFrame, talent, extra || config.extra, lvs, finalLang)
+                        u.getId(),
+                        new FormReactionSlashMessageHolder(m, f, u.getId(), m.getChannel().getId(), m.getId(), config, frame && config.useFrame, talent, extra || config.extra, lvs, finalLang)
                 );
             }
         } catch (Exception e) {
@@ -125,10 +118,10 @@ public class FormStat extends ConstraintCommand {
     private final ConfigHolder config;
 
     public FormStat(ROLE role, int lang, IDHolder holder, ConfigHolder config) {
-        super(role, lang, holder);
+        super(role, lang, holder, false);
 
         if(config == null)
-            this.config = holder.config;
+            this.config = holder == null ? StaticStore.defaultConfig : holder.config;
         else
             this.config = config;
     }
@@ -173,18 +166,18 @@ public class FormStat extends ConstraintCommand {
                 boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
                 boolean talent = (param & PARAM_TALENT) > 0 || lv.size() > 1;
                 boolean extra = (param & PARAM_EXTRA) > 0 || config.extra;
-                boolean compact = (param & PARAM_COMPACT) > 0 || (holder.forceCompact ? holder.config.compact : config.compact);
+                boolean compact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
 
                 Message result = EntityHandler.showUnitEmb(forms.get(0), ch, getMessage(event), config, isFrame, talent, extra, lv, lang, true, compact);
 
                 if(result != null) {
-                    Member m = getMember(event);
+                    User u = getUser(event);
 
-                    if (m != null) {
+                    if (u != null) {
                         Message author = getMessage(event);
 
                         if(author != null) {
-                            StaticStore.putHolder(m.getId(), new FormButtonHolder(forms.get(0), author, result, config, isFrame, talent, extra, compact, lv, lang, ch.getId()));
+                            StaticStore.putHolder(u.getId(), new FormButtonHolder(forms.get(0), author, result, config, isFrame, talent, extra, compact, lv, lang, ch.getId()));
                         }
                     }
                 }
@@ -219,13 +212,13 @@ public class FormStat extends ConstraintCommand {
                 ArrayList<Integer> lv = handleLevel(command);
 
                 if(res != null) {
-                    Member m = getMember(event);
+                    User u = getUser(event);
 
-                    if(m != null) {
+                    if(u != null) {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(m.getId(), new FormStatMessageHolder(forms, msg, config, holder, res, ch.getId(), param, lv, lang));
+                            StaticStore.putHolder(u.getId(), new FormStatMessageHolder(forms, msg, config, holder, res, ch.getId(), param, lv, lang));
                     }
                 }
 

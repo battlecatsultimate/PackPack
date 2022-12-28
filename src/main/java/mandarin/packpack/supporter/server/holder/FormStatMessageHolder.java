@@ -8,8 +8,8 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 
@@ -35,7 +35,7 @@ public class FormStatMessageHolder extends SearchHolder {
         this.talent = (param & 2) > 0;
         this.isFrame = (param & 4) == 0 && config.useFrame;
         this.extra = (param & 8) > 0 || config.extra;
-        this.compact = (param & 16) > 0 || (holder.forceCompact ? holder.config.compact : config.compact);
+        this.compact = (param & 16) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
         this.lv = lv;
 
         registerAutoFinish(this, msg, author, lang, FIVE_MIN);
@@ -79,13 +79,11 @@ public class FormStatMessageHolder extends SearchHolder {
             Message result = EntityHandler.showUnitEmb(form.get(id), ch, getAuthorMessage(), config, isFrame, talent, extra, lv, lang, true, compact);
 
             if(result != null) {
-                Member m = event.getMember();
+                User u = event.getUser();
 
-                if(m != null) {
-                    StaticStore.removeHolder(m.getId(), FormStatMessageHolder.this);
+                StaticStore.removeHolder(u.getId(), FormStatMessageHolder.this);
 
-                    StaticStore.putHolder(m.getId(), new FormButtonHolder(form.get(id), getAuthorMessage(), result, config, isFrame, talent, extra, compact, lv, lang, channelID));
-                }
+                StaticStore.putHolder(u.getId(), new FormButtonHolder(form.get(id), getAuthorMessage(), result, config, isFrame, talent, extra, compact, lv, lang, channelID));
             }
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/FormStatMessageHolder::onSelected - Failed to perform showing unit embed");

@@ -12,7 +12,7 @@ import java.io.File;
 
 public class ServerJson extends ConstraintCommand {
     public ServerJson(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, false);
     }
 
     @Override

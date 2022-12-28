@@ -23,7 +23,7 @@ public class BoosterRole extends ConstraintCommand {
     private final static Pattern p = Pattern.compile("\".+\"");
 
     public BoosterRole(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, true);
     }
 
     @Override

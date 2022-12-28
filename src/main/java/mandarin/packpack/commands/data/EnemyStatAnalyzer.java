@@ -36,7 +36,7 @@ public class EnemyStatAnalyzer extends ConstraintCommand {
     );
 
     public EnemyStatAnalyzer(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, false);
     }
 
     @Override

@@ -18,7 +18,7 @@ public class IDSet extends ConstraintCommand {
     private final IDHolder holder;
 
     public IDSet(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, true);
 
         holder = id;
     }

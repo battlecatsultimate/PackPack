@@ -5,7 +5,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
@@ -14,7 +14,7 @@ import java.util.List;
 
 public class PrintItemEvent extends ConstraintCommand {
     public PrintItemEvent(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, false);
     }
 
     @Override
@@ -33,10 +33,10 @@ public class PrintItemEvent extends ConstraintCommand {
          int t = 0;
 
         if(now) {
-            Member m = getMember(event);
+            User u = getUser(event);
 
-            if(m != null) {
-                t = StaticStore.timeZones.getOrDefault(m.getId(), 0);
+            if(u != null) {
+                t = StaticStore.timeZones.getOrDefault(u.getId(), 0);
 
                 String content;
 
@@ -51,9 +51,9 @@ public class PrintItemEvent extends ConstraintCommand {
 
         boolean full = isFull(getContent(event));
 
-        Member m = getMember(event);
+        User u = getUser(event);
 
-        if(m == null || !StaticStore.contributors.contains(m.getId())) {
+        if(u == null || !StaticStore.contributors.contains(u.getId())) {
             full = false;
 
             createMessageWithNoPings(ch, LangID.getStringByID("event_ignorefull", lang));

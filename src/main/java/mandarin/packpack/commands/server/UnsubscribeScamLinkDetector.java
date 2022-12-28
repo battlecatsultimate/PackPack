@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class UnsubscribeScamLinkDetector extends ConstraintCommand {
     public UnsubscribeScamLinkDetector(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, true);
     }
 
     @Override

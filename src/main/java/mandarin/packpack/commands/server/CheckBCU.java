@@ -9,20 +9,24 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 public class CheckBCU extends Command {
     private final IDHolder holder;
 
-    public CheckBCU(int lang, IDHolder holder) {
-        super(lang);
+    public CheckBCU(int lang, @Nullable IDHolder holder) {
+        super(lang, true);
 
         this.holder = holder;
     }
 
     @Override
     public void doSomething(GenericMessageEvent event) {
+        if(holder == null)
+            return;
+
         Message msg = getMessage(event);
 
         if(msg == null)

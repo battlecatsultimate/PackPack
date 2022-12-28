@@ -31,6 +31,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -248,9 +249,15 @@ public class EntityHandler {
             Message msg = hook.retrieveOriginal().complete();
             MessageChannel ch = msg.getChannel();
 
-            Guild g = msg.getGuild();
+            Guild g;
 
-            if(ch instanceof GuildChannel && g.getSelfMember().hasPermission((GuildChannel) ch, Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_MANAGE)) {
+            if(ch instanceof GuildChannel) {
+                g = msg.getGuild();
+            } else {
+                g = null;
+            }
+
+            if(!(ch instanceof GuildChannel) || g.getSelfMember().hasPermission((GuildChannel) ch, Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_MANAGE)) {
                 if(canFirstForm(f)) {
                     msg.addReaction(EmojiStore.TWO_PREVIOUS).queue();
                 }
@@ -1399,10 +1406,17 @@ public class EntityHandler {
         Message msg = hook.retrieveOriginal().complete();
 
         if(msg != null) {
-            Guild g = msg.getGuild();
             MessageChannel ch = msg.getChannel();
 
-            if(ch instanceof GuildChannel && g.getSelfMember().hasPermission((GuildChannel) ch, Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_MANAGE)) {
+            Guild g;
+
+            if(ch instanceof GuildChannel) {
+                g = msg.getGuild();
+            } else {
+                g = null;
+            }
+
+            if(!(ch instanceof GuildChannel) || g.getSelfMember().hasPermission((GuildChannel) ch, Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_MANAGE)) {
                 msg.addReaction(EmojiStore.CASTLE).queue();
                 msg.addReaction(EmojiStore.BACKGROUND).queue();
 

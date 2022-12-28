@@ -6,11 +6,13 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,20 +22,31 @@ public abstract class TimedConstraintCommand extends Command {
 
     final String constRole;
     protected final long time;
+    @Nullable
     protected final IDHolder holder;
     protected final String id;
 
     private boolean startTimer = true;
 
-    public TimedConstraintCommand(ConstraintCommand.ROLE role, int lang, IDHolder idHolder, long time, String id) {
-        super(lang);
+    public TimedConstraintCommand(ConstraintCommand.ROLE role, int lang, @Nullable IDHolder idHolder, long time, String id, boolean requireGuild) {
+        super(lang, requireGuild);
 
         switch (role) {
             case MOD:
-                constRole = idHolder.MOD;
+                if(idHolder != null) {
+                    constRole = idHolder.MOD;
+                } else {
+                    constRole = null;
+                }
+
                 break;
             case MEMBER:
-                constRole = idHolder.MEMBER;
+                if(idHolder != null) {
+                    constRole = idHolder.MEMBER;
+                } else {
+                    constRole = null;
+                }
+
                 break;
             case MANDARIN:
                 constRole = "MANDARIN";
@@ -61,23 +74,26 @@ public abstract class TimedConstraintCommand extends Command {
         }
 
         MessageChannel ch = getChannel(event);
-        Guild g = getGuild(event);
 
-        if(ch == null || g == null)
+        if(ch == null)
             return;
 
-        Member m = getMember(event);
+        Message msg = getMessage(event);
 
-        if(m == null)
+        if(msg == null)
             return;
 
-        String memberID = m.getId();
+        if(requireGuild && !(ch instanceof TextChannel)) {
+            replyToMessageSafely(ch, LangID.getStringByID("require_server", lang), msg, a -> a);
+
+            return;
+        }
+
+        User u = msg.getAuthor();
+
+        String memberID = u.getId();
         boolean hasRole;
         boolean canBypass = memberID.equals(StaticStore.MANDARIN_SMELL);
-
-        String role = StaticStore.rolesToString(m.getRoles());
-
-        boolean isMod = holder.MOD != null && role.contains(holder.MOD);
 
         if (!canBypass && StaticStore.timeLimit.containsKey(memberID) && StaticStore.timeLimit.get(memberID).containsKey(id)) {
             long oldTime = StaticStore.timeLimit.get(memberID).get(id);
@@ -97,10 +113,24 @@ public abstract class TimedConstraintCommand extends Command {
         } else if(constRole.equals("TRUSTED")) {
             hasRole = StaticStore.contributors.contains(memberID);
         } else {
-            hasRole = isMod || role.contains(constRole) || m.getId().equals(StaticStore.MANDARIN_SMELL);
+            Member me = getMember(event);
+
+            if(me == null)
+                return;
+
+            String role = StaticStore.rolesToString(me.getRoles());
+
+            boolean isMod = holder != null && holder.MOD != null && role.contains(holder.MOD);
+
+            hasRole = isMod || role.contains(constRole) || u.getId().equals(StaticStore.MANDARIN_SMELL);
         }
 
         if(ch instanceof GuildMessageChannel) {
+            Guild g = getGuild(event);
+
+            if(g == null)
+                return;
+
             GuildMessageChannel tc = ((GuildMessageChannel) ch);
 
             if(!tc.canTalk()) {
@@ -111,7 +141,7 @@ public abstract class TimedConstraintCommand extends Command {
 
                 content = LangID.getStringByID("no_permch", lang).replace("_SSS_", serverName).replace("_CCC_", channelName);
 
-                m.getUser().openPrivateChannel()
+                u.openPrivateChannel()
                         .flatMap(pc -> pc.sendMessage(content))
                         .queue();
 
@@ -121,7 +151,7 @@ public abstract class TimedConstraintCommand extends Command {
             List<Permission> missingPermission = getMissingPermissions((GuildChannel) ch, g.getSelfMember());
 
             if(!missingPermission.isEmpty()) {
-                m.getUser().openPrivateChannel()
+                u.openPrivateChannel()
                         .flatMap(pc -> pc.sendMessage(LangID.getStringByID("missing_permission", lang).replace("_PPP_", parsePermissionAsList(missingPermission)).replace("_SSS_", g.getName()).replace("_CCC_", ch.getName())))
                         .queue();
 
@@ -135,6 +165,11 @@ public abstract class TimedConstraintCommand extends Command {
             } else if(constRole.equals("TRUSTED")) {
                 createMessageWithNoPings(ch, LangID.getStringByID("const_con", lang));
             } else {
+                Guild g = getGuild(event);
+
+                if(g == null)
+                    return;
+
                 ch.sendMessage(LangID.getStringByID("const_role", lang).replace("_", StaticStore.roleNameFromID(g, constRole))).queue();
             }
         } else {
@@ -156,9 +191,14 @@ public abstract class TimedConstraintCommand extends Command {
                         }
                     } catch (Exception e) {
                         String data = "Command : " + getContent(event) + "\n\n" +
-                                "Guild : " + g.getName() + " (" + g.getId() + ")\n\n" +
-                                "Member  : " + m.getEffectiveName() + " (" + m.getId() + ")\n\n" +
+                                "Member  : " + u.getId() + " (" + u.getId() + ")\n\n" +
                                 "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+
+                        Guild g = getGuild(event);
+
+                        if(g != null) {
+                            data += "\n\nGuild : " + g.getName() + " (" + g.getId() + ")";
+                        }
 
                         StaticStore.logger.uploadErrorLog(e, "Failed to perform timed constraint command : "+this.getClass()+"\n\n" + data);
 
@@ -171,9 +211,14 @@ public abstract class TimedConstraintCommand extends Command {
                 }).start();
             } catch (Exception e) {
                 String data = "Command : " + getContent(event) + "\n\n" +
-                        "Guild : " + g.getName() + " (" + g.getId() + ")\n\n" +
-                        "Member  : " + m.getEffectiveName() + " (" + m.getId() + ")\n\n" +
+                        "Member  : " + u.getId() + " (" + u.getId() + ")\n\n" +
                         "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+
+                Guild g = getGuild(event);
+
+                if(g != null) {
+                    data += "\n\nGuild : " + g.getName() + " (" + g.getId() + ")";
+                }
 
                 StaticStore.logger.uploadErrorLog(e, "Failed to perform timed constraint command : "+this.getClass()+"\n\n" + data);
 
@@ -188,9 +233,14 @@ public abstract class TimedConstraintCommand extends Command {
                 onSuccess(event);
             } catch (Exception e) {
                 String data = "Command : " + getContent(event) + "\n\n" +
-                        "Guild : " + g.getName() + " (" + g.getId() + ")\n\n" +
-                        "Member  : " + m.getEffectiveName() + " (" + m.getId() + ")\n\n" +
+                        "Member  : " + u.getId() + " (" + u.getId() + ")\n\n" +
                         "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+
+                Guild g = getGuild(event);
+
+                if(g != null) {
+                    data += "\n\nGuild : " + g.getName() + " (" + g.getId() + ")";
+                }
 
                 StaticStore.logger.uploadErrorLog(e, "Failed to perform timed constraint command : "+this.getClass()+"\n\n" + data);
                 e.printStackTrace();

@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class Test extends GlobalTimedConstraintCommand {
     public Test(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID) {
-        super(role, lang, id, mainID, TimeUnit.SECONDS.toMillis(1));
+        super(role, lang, id, mainID, TimeUnit.SECONDS.toMillis(1), true);
     }
 
     @Override

@@ -8,6 +8,7 @@ import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.holder.SearchHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -18,12 +19,13 @@ import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.utils.FileUpload;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -109,7 +111,7 @@ public abstract class Command {
                 action.queue();
             }
         } else {
-            action.queue();
+            action.setMessageReference(reference).mentionRepliedUser(false).queue();
         }
     }
 
@@ -128,7 +130,7 @@ public abstract class Command {
                 return action.complete();
             }
         } else {
-            return action.complete();
+            return action.setMessageReference(reference).mentionRepliedUser(false).complete();
         }
     }
 
@@ -143,6 +145,8 @@ public abstract class Command {
             if(g.getSelfMember().hasPermission((GuildChannel) ch, Permission.MESSAGE_HISTORY)) {
                 action = action.setMessageReference(reference).mentionRepliedUser(false);
             }
+        } else {
+            action = action.setMessageReference(reference).mentionRepliedUser(false);
         }
 
         action.queue(m -> {
@@ -169,6 +173,8 @@ public abstract class Command {
             if(g.getSelfMember().hasPermission((GuildChannel) ch, Permission.MESSAGE_HISTORY)) {
                 action = action.setMessageReference(reference).mentionRepliedUser(false);
             }
+        } else {
+            action = action.setMessageReference(reference).mentionRepliedUser(false);
         }
 
         action.queue(m -> {
@@ -213,6 +219,8 @@ public abstract class Command {
             if(g.getSelfMember().hasPermission((GuildChannel) ch, Permission.MESSAGE_HISTORY)) {
                 action = action.setMessageReference(reference).mentionRepliedUser(false);
             }
+        } else {
+            action = action.setMessageReference(reference).mentionRepliedUser(false);
         }
 
         action.queue(m -> {
@@ -232,11 +240,13 @@ public abstract class Command {
     public final int SERVER_ERROR = -2;
     public Pauser pause = new Pauser();
     public final int lang;
+    public final boolean requireGuild;
 
     protected final List<Permission> requiredPermission = new ArrayList<>();
 
-    public Command(int lang) {
+    public Command(int lang, boolean requireGuild) {
         this.lang = lang;
+        this.requireGuild = requireGuild;
     }
 
     public void execute(GenericMessageEvent event) {
@@ -249,28 +259,35 @@ public abstract class Command {
         }
 
         MessageChannel ch = getChannel(event);
-        Guild g = getGuild(event);
 
-        if(ch == null || g == null)
+        if(ch == null)
             return;
 
         AtomicReference<Boolean> prevented = new AtomicReference<>(false);
 
-        Member m = getMember(event);
+        Message msg = getMessage(event);
 
-        if(m == null)
+        if(msg == null)
             return;
+
+        if(requireGuild && !(ch instanceof TextChannel)) {
+            replyToMessageSafely(ch, LangID.getStringByID("require_server", lang), msg, a -> a);
+
+            return;
+        }
+
+        User u = msg.getAuthor();
 
         SpamPrevent spam;
 
-        if(StaticStore.spamData.containsKey(m.getId())) {
-            spam = StaticStore.spamData.get(m.getId());
+        if(StaticStore.spamData.containsKey(u.getId())) {
+            spam = StaticStore.spamData.get(u.getId());
 
-            prevented.set(spam.isPrevented(ch, lang, m.getId()));
+            prevented.set(spam.isPrevented(ch, lang, u.getId()));
         } else {
             spam = new SpamPrevent();
 
-            StaticStore.spamData.put(m.getId(), spam);
+            StaticStore.spamData.put(u.getId(), spam);
         }
 
         if (prevented.get())
@@ -281,6 +298,11 @@ public abstract class Command {
         boolean canTry = false;
 
         if(ch instanceof GuildMessageChannel) {
+            Guild g = getGuild(event);
+
+            if(g == null)
+                return;
+
             GuildMessageChannel tc = ((GuildMessageChannel) ch);
 
             if(!tc.canTalk()) {
@@ -291,7 +313,7 @@ public abstract class Command {
 
                 content = LangID.getStringByID("no_permch", lang).replace("_SSS_", serverName).replace("_CCC_", channelName);
 
-                m.getUser().openPrivateChannel()
+                u.openPrivateChannel()
                         .flatMap(pc -> pc.sendMessage(content))
                         .queue();
 
@@ -301,7 +323,7 @@ public abstract class Command {
             List<Permission> missingPermission = getMissingPermissions((GuildChannel) ch, g.getSelfMember());
 
             if(!missingPermission.isEmpty()) {
-                m.getUser().openPrivateChannel()
+                u.openPrivateChannel()
                         .flatMap(pc -> pc.sendMessage(LangID.getStringByID("missing_permission", lang).replace("_PPP_", parsePermissionAsList(missingPermission)).replace("_SSS_", g.getName()).replace("_CCC_", ch.getName())))
                         .queue();
 
@@ -315,9 +337,14 @@ public abstract class Command {
                     doSomething(event);
                 } catch (Exception e) {
                     String data = "Command : " + getContent(event) + "\n\n" +
-                            "Guild : " + g.getName() + " (" + g.getId() + ")\n\n" +
-                            "Member  : " + m.getEffectiveName() + " (" + m.getId() + ")\n\n" +
+                            "User  : " + u.getName() + " (" + u.getId() + ")\n\n" +
                             "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+
+                    Guild g = getGuild(event);
+
+                    if(g != null) {
+                        data += "\n\nGuild : " + g.getName() + " (" + g.getId() + ")";
+                    }
 
                     StaticStore.logger.uploadErrorLog(e, "Failed to perform command : "+this.getClass()+"\n\n" + data);
 
@@ -330,9 +357,14 @@ public abstract class Command {
             }).start();
         } catch (Exception e) {
             String data = "Command : " + getContent(event) + "\n\n" +
-                    "Guild : " + g.getName() + " (" + g.getId() + ")\n\n" +
-                    "Member  : " + m.getEffectiveName() + " (" + m.getId() + ")\n\n" +
+                    "Member  : " + u.getName() + " (" + u.getId() + ")\n\n" +
                     "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+
+            Guild g = getGuild(event);
+
+            if(g != null) {
+                data += "\n\nGuild : " + g.getName() + " (" + g.getId() + ")";
+            }
 
             StaticStore.logger.uploadErrorLog(e, "Failed to perform command : "+this.getClass()+"\n\n" + data);
 
@@ -410,7 +442,11 @@ public abstract class Command {
         return msg == null ? null : msg.getContentRaw();
     }
 
+    @Nullable
     public Member getMember(GenericMessageEvent event) {
+        if(!(event.getChannel() instanceof GuildChannel))
+            return null;
+
         try {
             Method m = event.getClass().getMethod("getMember");
 
@@ -425,7 +461,18 @@ public abstract class Command {
         return null;
     }
 
+    @Nullable
+    public User getUser(GenericMessageEvent event) {
+        Message msg = getMessage(event);
+
+        return msg == null ? null : msg.getAuthor();
+    }
+
+    @Nullable
     public Guild getGuild(GenericMessageEvent event) {
+        if(!(event.getChannel() instanceof GuildChannel))
+            return null;
+
         return event.getGuild();
     }
 

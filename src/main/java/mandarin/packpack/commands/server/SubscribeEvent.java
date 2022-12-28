@@ -12,14 +12,18 @@ import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class SubscribeEvent extends ConstraintCommand {
     public SubscribeEvent(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, true);
     }
 
     @Override
     public void doSomething(GenericMessageEvent event) throws Exception {
+        if(holder == null)
+            return;
+
         MessageChannel ch = getChannel(event);
         Guild g = getGuild(event);
 
@@ -123,7 +127,7 @@ public class SubscribeEvent extends ConstraintCommand {
     }
 
     private int filterLocale() {
-        switch (holder.config.lang) {
+        switch (Objects.requireNonNull(holder).config.lang) {
             case LangID.ZH:
                 return LangID.ZH;
             case LangID.KR:

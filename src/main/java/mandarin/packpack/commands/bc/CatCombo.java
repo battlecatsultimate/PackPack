@@ -19,6 +19,7 @@ import mandarin.packpack.supporter.server.holder.SearchHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
@@ -28,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 
 public class CatCombo extends TimedConstraintCommand {
     public CatCombo(ConstraintCommand.ROLE role, int lang, IDHolder id) {
-        super(role, lang, id, TimeUnit.SECONDS.toMillis(5), StaticStore.COMMAND_COMBO_ID);
+        super(role, lang, id, TimeUnit.SECONDS.toMillis(5), StaticStore.COMMAND_COMBO_ID, false);
     }
 
     @Override
@@ -76,13 +77,13 @@ public class CatCombo extends TimedConstraintCommand {
                 Message res = getRepliedMessageSafely(ch, sb.toString(), getMessage(event), a -> registerSearchComponents(a, combos.size(), data, lang));
 
                 if(res != null) {
-                    Member m = getMember(event);
+                    User u = getUser(event);
 
-                    if(m != null) {
+                    if(u != null) {
                         Message msg = getMessage(event);
 
                         if(msg != null) {
-                            StaticStore.putHolder(m.getId(), new ComboMessageHolder(combos, msg, res, null, ch.getId(), lang));
+                            StaticStore.putHolder(u.getId(), new ComboMessageHolder(combos, msg, res, null, ch.getId(), lang));
                         }
                     }
                 }
@@ -127,13 +128,13 @@ public class CatCombo extends TimedConstraintCommand {
                     Message res = getRepliedMessageSafely(ch, sb.toString(), getMessage(event), a -> registerSearchComponents(a, combos.size(), data, lang));
 
                     if(res != null) {
-                        Member m = getMember(event);
+                        User u = getUser(event);
 
-                        if(m != null) {
+                        if(u != null) {
                             Message msg = getMessage(event);
 
                             if(msg != null) {
-                                StaticStore.putHolder(m.getId(), new ComboMessageHolder(combos, msg, res, null, ch.getId(), lang));
+                                StaticStore.putHolder(u.getId(), new ComboMessageHolder(combos, msg, res, null, ch.getId(), lang));
                             }
                         }
                     }
@@ -161,13 +162,13 @@ public class CatCombo extends TimedConstraintCommand {
                 Message res = getRepliedMessageSafely(ch, sb.toString(), getMessage(event), a -> registerSearchComponents(a, forms.size(), data, lang));
 
                 if(res != null) {
-                    Member m = getMember(event);
+                    User u = getUser(event);
 
-                    if(m != null) {
+                    if(u != null) {
                         Message msg = getMessage(event);
 
                         if(msg != null) {
-                            StaticStore.putHolder(m.getId(), new ComboFormMessageHolder(forms, msg, res, ch.getId(), lang, cName, name));
+                            StaticStore.putHolder(u.getId(), new ComboFormMessageHolder(forms, msg, res, ch.getId(), lang, cName, name));
                         }
                     }
                 }

@@ -15,8 +15,8 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.FormAnimMessageHolder;
 import mandarin.packpack.supporter.server.holder.SearchHolder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
@@ -30,7 +30,7 @@ public class FormImage extends TimedConstraintCommand {
     private static final int PARAM_DEBUG = 4;
 
     public FormImage(ConstraintCommand.ROLE role, int lang, IDHolder id, long time) {
-        super(role, lang, id, time, StaticStore.COMMAND_FORMIMAGE_ID);
+        super(role, lang, id, time, StaticStore.COMMAND_FORMIMAGE_ID, false);
     }
 
     @Override
@@ -133,13 +133,13 @@ public class FormImage extends TimedConstraintCommand {
                 int frame = getFrame(getContent(event));
 
                 if(res != null) {
-                    Member member = getMember(event);
+                    User u = getUser(event);
 
-                    if(member != null) {
+                    if(u != null) {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(member.getId(), new FormAnimMessageHolder(forms, msg, res, ch.getId(), mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang, false, false, false));
+                            StaticStore.putHolder(u.getId(), new FormAnimMessageHolder(forms, msg, res, ch.getId(), mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang, false, false, false));
                     }
                 }
 

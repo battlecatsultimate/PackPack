@@ -21,7 +21,7 @@ import java.util.List;
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class Setup extends ConstraintCommand {
     public Setup(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, true);
     }
 
     @Override
@@ -80,6 +80,9 @@ public class Setup extends ConstraintCommand {
     }
 
     private boolean alreadySet(Guild g) {
+        if(holder == null)
+            throw new IllegalStateException("E/Setup::alreadySet - IDHolder must not be null");
+
         if(holder.MOD != null) {
             Role r = g.getRoleById(holder.MOD);
 

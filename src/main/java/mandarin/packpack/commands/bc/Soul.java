@@ -10,11 +10,11 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
+import javax.annotation.Nullable;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -27,7 +27,7 @@ public class Soul extends GlobalTimedConstraintCommand {
     private final int PARAM_GIF = 8;
 
     public Soul(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID) {
-        super(role, lang, id, mainID, TimeUnit.SECONDS.toMillis(30));
+        super(role, lang, id, mainID, TimeUnit.SECONDS.toMillis(30), false);
     }
 
     @Override
@@ -38,10 +38,11 @@ public class Soul extends GlobalTimedConstraintCommand {
     @Override
     protected void doThing(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
-        Member m = getMember(event);
+        User u = getUser(event);
+        @Nullable
         Guild g = getGuild(event);
 
-        if(ch == null || m == null || g == null)
+        if(ch == null || u == null)
             return;
 
         int id = findSoulID(getContent(event));
@@ -54,7 +55,7 @@ public class Soul extends GlobalTimedConstraintCommand {
             return;
         }
 
-        boolean isTrusted = StaticStore.contributors.contains(m.getId()) || m.getId().equals(StaticStore.MANDARIN_SMELL);
+        boolean isTrusted = StaticStore.contributors.contains(u.getId()) || u.getId().equals(StaticStore.MANDARIN_SMELL);
 
         int param = checkParameters(getContent(event));
         boolean debug = (param & PARAM_DEBUG) > 0;
@@ -66,10 +67,10 @@ public class Soul extends GlobalTimedConstraintCommand {
             ch.sendMessage(LangID.getStringByID("gif_ignore", lang)).queue();
         }
 
-        boolean result = EntityHandler.generateSoulAnim(s, ch, getMessage(event), g.getBoostTier().getKey(), debug, frame, lang, raw && isTrusted, gif);
+        boolean result = EntityHandler.generateSoulAnim(s, ch, getMessage(event), g == null ? 0 : g.getBoostTier().getKey(), debug, frame, lang, raw && isTrusted, gif);
 
         if(raw && isTrusted && result) {
-            StaticStore.logger.uploadLog("Generated mp4 by user " + m.getEffectiveName() + " for soul ID " + Data.trio(s.getID().id));
+            StaticStore.logger.uploadLog("Generated mp4 by user " + u.getName() + " for soul ID " + Data.trio(s.getID().id));
         }
 
         if(raw && isTrusted) {

@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class RemoveScamLinkHelpingServer extends ConstraintCommand {
     public RemoveScamLinkHelpingServer(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, false);
     }
 
     @Override

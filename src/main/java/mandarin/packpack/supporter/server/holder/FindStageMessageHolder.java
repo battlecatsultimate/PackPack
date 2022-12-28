@@ -11,7 +11,6 @@ import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -127,10 +126,6 @@ public class FindStageMessageHolder extends SearchHolder {
     @Override
     public void onSelected(GenericComponentInteractionCreateEvent event) {
         MessageChannel ch = event.getChannel();
-        Guild g = event.getGuild();
-
-        if(g == null)
-            return;
 
         int id = parseDataToInt(event);
 
@@ -151,7 +146,7 @@ public class FindStageMessageHolder extends SearchHolder {
         try {
             Message msg = EntityHandler.showStageEmb(actualStage.get(id), ch, getAuthorMessage(), isFrame, isExtra, isCompact, star, lang);
 
-            if(msg != null && StaticStore.idHolder.containsKey(g.getId())) {
+            if(msg != null) {
                 StaticStore.putHolder(getAuthorMessage().getAuthor().getId(), new StageInfoButtonHolder(actualStage.get(id), getAuthorMessage(), msg, channelID, isCompact));
             }
         } catch (Exception e) {

@@ -115,10 +115,6 @@ public class StageInfoMessageHolder extends SearchHolder {
     @Override
     public void onSelected(GenericComponentInteractionCreateEvent event) {
         MessageChannel ch = event.getChannel();
-        Guild g = event.getGuild();
-
-        if(g == null)
-            return;
 
         int id = parseDataToInt(event);
 
@@ -139,7 +135,7 @@ public class StageInfoMessageHolder extends SearchHolder {
         try {
             Message msg = EntityHandler.showStageEmb(stage.get(id), ch, getAuthorMessage(), isFrame, isExtra, isCompact, star, lang);
 
-            if(msg != null && StaticStore.idHolder.containsKey(g.getId())) {
+            if(msg != null) {
                 StaticStore.putHolder(author.getAuthor().getId(), new StageInfoButtonHolder(stage.get(id), author, msg, channelID, isCompact));
             }
         } catch (Exception e) {

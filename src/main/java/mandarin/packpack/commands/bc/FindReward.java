@@ -14,10 +14,13 @@ import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import mandarin.packpack.supporter.server.holder.*;
+import mandarin.packpack.supporter.server.holder.FindRewardMessageHolder;
+import mandarin.packpack.supporter.server.holder.SearchHolder;
+import mandarin.packpack.supporter.server.holder.StageInfoButtonHolder;
+import mandarin.packpack.supporter.server.holder.StageInfoMessageHolder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
@@ -31,10 +34,10 @@ public class FindReward extends TimedConstraintCommand {
     private final ConfigHolder config;
 
     public FindReward(ConstraintCommand.ROLE role, int lang, IDHolder idHolder, long time, ConfigHolder config) {
-        super(role, lang, idHolder, time, StaticStore.COMMAND_FINDREWARD_ID);
+        super(role, lang, idHolder, time, StaticStore.COMMAND_FINDREWARD_ID, false);
 
         if(config == null)
-            this.config = idHolder.config;
+            this.config = idHolder == null ? StaticStore.defaultConfig : idHolder.config;
         else
             this.config = config;
     }
@@ -56,7 +59,7 @@ public class FindReward extends TimedConstraintCommand {
         int param = checkParameters(getContent(event));
 
         boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
-        boolean isCompact = (param & PARAM_COMPACT) > 0 || (holder.forceCompact ? holder.config.compact : config.compact);
+        boolean isCompact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
 
         double chance = getChance(getContent(event));
         int amount = getAmount(getContent(event));
@@ -93,15 +96,15 @@ public class FindReward extends TimedConstraintCommand {
 
                 disableTimer();
             } else if(stages.size() == 1) {
-                Message result = EntityHandler.showStageEmb(stages.get(0), ch, getMessage(event), holder.config.useFrame, isExtra, isCompact, 0, lang);
+                Message result = EntityHandler.showStageEmb(stages.get(0), ch, getMessage(event), holder == null || holder.config.useFrame, isExtra, isCompact, 0, lang);
 
-                Member m = getMember(event);
+                User u = getUser(event);
 
-                if(m != null) {
+                if(u != null) {
                     Message msg = getMessage(event);
 
                     if(msg != null) {
-                        StaticStore.putHolder(m.getId(), new StageInfoButtonHolder(stages.get(0), msg, result, ch.getId(), isCompact));
+                        StaticStore.putHolder(u.getId(), new StageInfoButtonHolder(stages.get(0), msg, result, ch.getId(), isCompact));
                     }
                 }
             } else {
@@ -129,13 +132,13 @@ public class FindReward extends TimedConstraintCommand {
                 Message res = getRepliedMessageSafely(ch, sb.toString(), getMessage(event), a -> registerSearchComponents(a, stages.size(), accumulateStage(stages, false), lang));
 
                 if(res != null) {
-                    Member member = getMember(event);
+                    User u = getUser(event);
 
-                    if(member != null) {
+                    if(u != null) {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(member.getId(), new StageInfoMessageHolder(stages, msg, res, ch.getId(), 0, config.useFrame, isExtra, isCompact, lang));
+                            StaticStore.putHolder(u.getId(), new StageInfoMessageHolder(stages, msg, res, ch.getId(), 0, config.useFrame, isExtra, isCompact, lang));
                     }
                 }
             }
@@ -164,13 +167,13 @@ public class FindReward extends TimedConstraintCommand {
             Message res = registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), rewards.size(), data, lang).complete();
 
             if(res != null) {
-                Member member = getMember(event);
+                User u = getUser(event);
 
-                if(member != null) {
+                if(u != null) {
                     Message msg = getMessage(event);
 
                     if(msg != null) {
-                        StaticStore.putHolder(member.getId(), new FindRewardMessageHolder(res, msg, ch.getId(), rewards, rewardName, chance, amount, isExtra, isCompact, config.useFrame, lang));
+                        StaticStore.putHolder(u.getId(), new FindRewardMessageHolder(res, msg, ch.getId(), rewards, rewardName, chance, amount, isExtra, isCompact, config.useFrame, lang));
                     }
                 }
             }

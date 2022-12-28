@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 public class Calculator extends ConstraintCommand {
 
     public Calculator(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, false);
     }
 
     @Override

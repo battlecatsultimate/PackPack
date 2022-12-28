@@ -13,8 +13,8 @@ import mandarin.packpack.supporter.server.holder.FormAnimMessageHolder;
 import mandarin.packpack.supporter.server.holder.SearchHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
@@ -42,7 +42,7 @@ public class FormGif extends GlobalTimedConstraintCommand {
     }
 
     public FormGif(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID) {
-        super(role, lang, id, mainID, TimeUnit.SECONDS.toMillis(30));
+        super(role, lang, id, mainID, TimeUnit.SECONDS.toMillis(30), false);
     }
 
     @Override
@@ -58,12 +58,12 @@ public class FormGif extends GlobalTimedConstraintCommand {
             return;
 
         Guild g = getGuild(event);
-        Member m = getMember(event);
+        User u = getUser(event);
 
-        if(g == null || m == null)
+        if(u == null)
             return;
 
-        boolean isTrusted = StaticStore.contributors.contains(m.getId()) || m.getId().equals(StaticStore.MANDARIN_SMELL);
+        boolean isTrusted = StaticStore.contributors.contains(u.getId()) || u.getId().equals(StaticStore.MANDARIN_SMELL);
 
         String[] list = getContent(event).split(" ");
 
@@ -113,10 +113,10 @@ public class FormGif extends GlobalTimedConstraintCommand {
                     ch.sendMessage(LangID.getStringByID("gif_ignore", lang)).queue();
                 }
 
-                boolean result = EntityHandler.generateFormAnim(f, ch, getMessage(event), g.getBoostTier().getKey(), mode, debug, frame, lang, raw && isTrusted, gif);
+                boolean result = EntityHandler.generateFormAnim(f, ch, getMessage(event), (g == null ? 0 : g.getBoostTier().getKey()), mode, debug, frame, lang, raw && isTrusted, gif);
 
                 if(raw && isTrusted && result) {
-                    StaticStore.logger.uploadLog("Generated mp4 by user " + m.getEffectiveName() + " for unit ID " + Data.trio(f.unit.id.id) + " with mode of " + mode);
+                    StaticStore.logger.uploadLog("Generated mp4 by user " + u.getName() + " for unit ID " + Data.trio(f.unit.id.id) + " with mode of " + mode);
                 }
 
                 if(raw && isTrusted) {
@@ -165,7 +165,7 @@ public class FormGif extends GlobalTimedConstraintCommand {
                     Message msg = getMessage(event);
 
                     if(msg != null)
-                        StaticStore.putHolder(m.getId(), new FormAnimMessageHolder(forms, msg, res, ch.getId(), mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isTrusted, gif));
+                        StaticStore.putHolder(u.getId(), new FormAnimMessageHolder(forms, msg, res, ch.getId(), mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isTrusted, gif));
                 }
 
                 disableTimer();

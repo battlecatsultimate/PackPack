@@ -36,7 +36,7 @@ public class StatAnalyzer extends ConstraintCommand {
     );
 
     public StatAnalyzer(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, false);
     }
 
     @Override

@@ -49,9 +49,9 @@ public abstract class SearchHolder extends InteractionHolder<GenericComponentInt
         if(!ch.getId().equals(channelID))
             return RESULT_STILL;
 
-        Member member = event.getInteraction().getMember();
+        User u = event.getUser();
 
-        if(member == null || !member.getId().equals(memberID))
+        if(!u.getId().equals(memberID))
             return RESULT_STILL;
 
         Message m = event.getMessage();

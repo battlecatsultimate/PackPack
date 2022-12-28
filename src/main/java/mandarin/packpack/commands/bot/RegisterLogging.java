@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class RegisterLogging extends ConstraintCommand {
     public RegisterLogging(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, true);
     }
 
     @Override

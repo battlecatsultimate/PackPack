@@ -11,8 +11,8 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.AliasHolder;
 import mandarin.packpack.supporter.server.holder.MessageHolder;
 import mandarin.packpack.supporter.server.holder.SearchHolder;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
@@ -89,20 +89,18 @@ public class AliasStageMessageHolder extends MessageHolder<MessageReceivedEvent>
 
             msg.delete().queue();
 
-            Member m = event.getMember();
+            User u = event.getAuthor();
 
-            if(m != null) {
-                String mid = m.getId();
+            String mid = u.getId();
 
-                if(StaticStore.timeLimit.containsKey(mid)) {
-                    StaticStore.timeLimit.get(mid).put(StaticStore.COMMAND_STAGEINFO_ID, System.currentTimeMillis());
-                } else {
-                    Map<String, Long> memberLimit = new HashMap<>();
+            if(StaticStore.timeLimit.containsKey(mid)) {
+                StaticStore.timeLimit.get(mid).put(StaticStore.COMMAND_STAGEINFO_ID, System.currentTimeMillis());
+            } else {
+                Map<String, Long> memberLimit = new HashMap<>();
 
-                    memberLimit.put(StaticStore.COMMAND_STAGEINFO_ID, System.currentTimeMillis());
+                memberLimit.put(StaticStore.COMMAND_STAGEINFO_ID, System.currentTimeMillis());
 
-                    StaticStore.timeLimit.put(mid, memberLimit);
-                }
+                StaticStore.timeLimit.put(mid, memberLimit);
             }
 
             String stName = StaticStore.safeMultiLangGet(stage.get(id), lang);

@@ -31,7 +31,7 @@ public class StageStatAnalyzer extends ConstraintCommand {
     );
 
     public StageStatAnalyzer(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, false);
     }
 
     @Override

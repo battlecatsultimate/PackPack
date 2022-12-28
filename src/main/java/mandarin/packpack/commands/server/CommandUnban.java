@@ -14,11 +14,14 @@ import java.util.ArrayList;
 
 public class CommandUnban extends ConstraintCommand {
     public CommandUnban(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, true);
     }
 
     @Override
     public void doSomething(GenericMessageEvent event) throws Exception {
+        if(holder == null)
+            return;
+
         MessageChannel ch = getChannel(event);
         Guild g = getGuild(event);
 

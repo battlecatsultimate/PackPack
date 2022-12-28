@@ -10,7 +10,7 @@ import java.io.File;
 
 public class ClearTemp extends ConstraintCommand {
     public ClearTemp(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, false);
     }
 
     @Override

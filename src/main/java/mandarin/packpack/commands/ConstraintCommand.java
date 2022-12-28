@@ -6,11 +6,13 @@ import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -22,18 +24,28 @@ public abstract class ConstraintCommand extends Command {
         TRUSTED
     }
 
+    @Nullable
     final String constRole;
     protected final IDHolder holder;
 
-    public ConstraintCommand(ROLE role, int lang, IDHolder id) {
-        super(lang);
+    public ConstraintCommand(ROLE role, int lang, @Nullable IDHolder id, boolean requireGuild) {
+        super(lang, requireGuild);
 
         switch (role) {
             case MOD:
-                constRole = id.MOD;
+                if(id != null) {
+                    constRole = id.MOD;
+                } else {
+                    constRole = null;
+                }
                 break;
             case MEMBER:
-                constRole = id.MEMBER;
+                if(id != null) {
+                    constRole = id.MEMBER;
+                } else {
+                    constRole = null;
+                }
+
                 break;
             case MANDARIN:
                 constRole = "MANDARIN";
@@ -59,49 +71,66 @@ public abstract class ConstraintCommand extends Command {
         }
 
         MessageChannel ch = getChannel(event);
-        Guild g = getGuild(event);
 
-        if(ch == null || g == null)
+        if(ch == null)
             return;
+
+        Message msg = getMessage(event);
+
+        if(msg == null)
+            return;
+
+        if(requireGuild && !(ch instanceof TextChannel)) {
+            replyToMessageSafely(ch, LangID.getStringByID("require_server", lang), msg, a -> a);
+
+            return;
+        }
 
         boolean hasRole;
         boolean isMod = false;
 
-        Member m = getMember(event);
-
-        if(m == null)
-            return;
+        User u = msg.getAuthor();
 
         SpamPrevent spam;
 
-        if(StaticStore.spamData.containsKey(m.getId())) {
-            spam = StaticStore.spamData.get(m.getId());
+        if(StaticStore.spamData.containsKey(u.getId())) {
+            spam = StaticStore.spamData.get(u.getId());
 
-            if(spam.isPrevented(ch, lang, m.getId()))
+            if(spam.isPrevented(ch, lang, u.getId()))
                 return;
         } else {
             spam = new SpamPrevent();
 
-            StaticStore.spamData.put(m.getId(), spam);
+            StaticStore.spamData.put(u.getId(), spam);
         }
-
-        String role = StaticStore.rolesToString(m.getRoles());
 
         if(constRole == null) {
             hasRole = true;
         } else if(constRole.equals("MANDARIN")) {
-            hasRole = m.getId().equals(StaticStore.MANDARIN_SMELL);
+            hasRole = u.getId().equals(StaticStore.MANDARIN_SMELL);
         } else if(constRole.equals("TRUSTED")) {
-            hasRole = StaticStore.contributors.contains(m.getId());
+            hasRole = StaticStore.contributors.contains(u.getId());
         } else {
-            hasRole = role.contains(constRole) || m.getId().equals(StaticStore.MANDARIN_SMELL);
+            Member me = getMember(event);
+
+            if(me == null)
+                return;
+
+            String role = StaticStore.rolesToString(me.getRoles());
+
+            hasRole = role.contains(constRole) || u.getId().equals(StaticStore.MANDARIN_SMELL);
 
             if(!hasRole) {
-                isMod = holder.MOD != null && role.contains(holder.MOD);
+                isMod = holder != null && holder.MOD != null && role.contains(holder.MOD);
             }
         }
 
         if(ch instanceof GuildMessageChannel) {
+            Guild g = getGuild(event);
+
+            if(g == null)
+                return;
+
             GuildMessageChannel tc = ((GuildMessageChannel) ch);
 
             if(!tc.canTalk()) {
@@ -112,7 +141,7 @@ public abstract class ConstraintCommand extends Command {
 
                 content = LangID.getStringByID("no_permch", lang).replace("_SSS_", serverName).replace("_CCC_", channelName);
 
-                m.getUser().openPrivateChannel()
+                u.openPrivateChannel()
                         .flatMap(pc -> pc.sendMessage(content))
                         .queue();
 
@@ -122,7 +151,7 @@ public abstract class ConstraintCommand extends Command {
             List<Permission> missingPermission = getMissingPermissions((GuildChannel) ch, g.getSelfMember());
 
             if(!missingPermission.isEmpty()) {
-                m.getUser().openPrivateChannel()
+                u.openPrivateChannel()
                         .flatMap(pc -> pc.sendMessage(LangID.getStringByID("missing_permission", lang).replace("_PPP_", parsePermissionAsList(missingPermission)).replace("_SSS_", g.getName()).replace("_CCC_", ch.getName())))
                         .queue();
 
@@ -136,6 +165,11 @@ public abstract class ConstraintCommand extends Command {
             } else if(constRole.equals("TRUSTED")) {
                 createMessageWithNoPings(ch, LangID.getStringByID("const_con", lang));
             } else {
+                Guild g = getGuild(event);
+
+                if(g == null)
+                    return;
+
                 ch.sendMessage(LangID.getStringByID("const_role", lang).replace("_", StaticStore.roleNameFromID(g, constRole))).queue();
             }
         } else {
@@ -147,9 +181,14 @@ public abstract class ConstraintCommand extends Command {
                         doSomething(event);
                     } catch (Exception e) {
                         String data = "Command : " + getContent(event) + "\n\n" +
-                                "Guild : " + g.getName() + " (" + g.getId() + ")\n\n" +
-                                "Member  : " + m.getEffectiveName() + " (" + m.getId() + ")\n\n" +
+                                "Member  : " + u.getName() + " (" + u.getId() + ")\n\n" +
                                 "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+
+                        Guild g = getGuild(event);
+
+                        if(g != null) {
+                            data += "\n\nGuild : " + g.getName() + " (" + g.getId() + ")";
+                        }
 
                         StaticStore.logger.uploadErrorLog(e, "Failed to perform constraint command : "+this.getClass()+"\n\n" + data);
 
@@ -162,9 +201,14 @@ public abstract class ConstraintCommand extends Command {
                 }).start();
             } catch (Exception e) {
                 String data = "Command : " + getContent(event) + "\n\n" +
-                        "Guild : " + g.getName() + " (" + g.getId() + ")\n\n" +
-                        "Member  : " + m.getEffectiveName() + " (" + m.getId() + ")\n\n" +
+                        "Member  : " + u.getName() + " (" + u.getId() + ")\n\n" +
                         "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+
+                Guild g = getGuild(event);
+
+                if(g != null) {
+                    data += "\n\nGuild : " + g.getName() + " (" + g.getId() + ")";
+                }
 
                 StaticStore.logger.uploadErrorLog(e, "Failed to perform constraint command : "+this.getClass()+"\n\n" + data);
 

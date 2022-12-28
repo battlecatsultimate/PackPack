@@ -28,7 +28,7 @@ import java.util.*;
 
 public class ComboAnalyzer extends ConstraintCommand {
     public ComboAnalyzer(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, false);
     }
 
     List<CustomCombo> combos = new ArrayList<>();

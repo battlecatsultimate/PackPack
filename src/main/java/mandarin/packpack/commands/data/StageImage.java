@@ -16,7 +16,6 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
-import net.dv8tion.jda.api.utils.FileUpload;
 
 import java.awt.*;
 import java.io.File;
@@ -28,7 +27,7 @@ public class StageImage extends ConstraintCommand {
     private static final int PARAM_FORCE = 4;
 
     public StageImage(ROLE role, int lang, IDHolder holder) {
-        super(role, lang, holder);
+        super(role, lang, holder, false);
     }
 
     private File f;
@@ -65,7 +64,7 @@ public class StageImage extends ConstraintCommand {
                 String[] messages = getContent(event).split(" ", startIndex+1);
 
                 if(messages.length <= startIndex) {
-                    replyToMessageSafely(ch, LangID.getStringByID("stimg_more", lang).replace("_", holder.serverPrefix), getMessage(event), a -> a);
+                    replyToMessageSafely(ch, LangID.getStringByID("stimg_more", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.serverPrefix), getMessage(event), a -> a);
 
                     return;
                 }
@@ -92,7 +91,7 @@ public class StageImage extends ConstraintCommand {
 
                 handleLast(message, ch, getMessage(event), generator);
             } else {
-                replyToMessageSafely(ch, LangID.getStringByID("stimg_argu", lang).replace("_", holder.serverPrefix), getMessage(event), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("stimg_argu", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.serverPrefix), getMessage(event), a -> a);
             }
         } catch (Exception e) {
             e.printStackTrace();

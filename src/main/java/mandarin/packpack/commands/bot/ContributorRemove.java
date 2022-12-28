@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 public class ContributorRemove extends ConstraintCommand {
 
     public ContributorRemove(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, false);
     }
 
     @Override

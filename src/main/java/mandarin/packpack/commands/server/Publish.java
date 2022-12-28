@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 public class Publish extends ConstraintCommand {
     public Publish(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, false);
     }
 
     @Override

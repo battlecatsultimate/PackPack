@@ -8,8 +8,8 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 
@@ -83,18 +83,16 @@ public class ComboMessageHolder extends SearchHolder {
         try {
             EntityHandler.showComboEmbed(ch, getAuthorMessage(), combo.get(id), lang);
 
-            Member m = event.getMember();
+            User u = event.getUser();
 
-            if(m != null) {
-                if(StaticStore.timeLimit.containsKey(m.getId())) {
-                    StaticStore.timeLimit.get(m.getId()).put(StaticStore.COMMAND_COMBO_ID, System.currentTimeMillis());
-                } else {
-                    Map<String, Long> memberLimit = new HashMap<>();
+            if(StaticStore.timeLimit.containsKey(u.getId())) {
+                StaticStore.timeLimit.get(u.getId()).put(StaticStore.COMMAND_COMBO_ID, System.currentTimeMillis());
+            } else {
+                Map<String, Long> memberLimit = new HashMap<>();
 
-                    memberLimit.put(StaticStore.COMMAND_COMBO_ID, System.currentTimeMillis());
+                memberLimit.put(StaticStore.COMMAND_COMBO_ID, System.currentTimeMillis());
 
-                    StaticStore.timeLimit.put(m.getId(), memberLimit);
-                }
+                StaticStore.timeLimit.put(u.getId(), memberLimit);
             }
         } catch (Exception e) {
             e.printStackTrace();

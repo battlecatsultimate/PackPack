@@ -13,8 +13,8 @@ import mandarin.packpack.supporter.server.holder.EnemyStatMessageHolder;
 import mandarin.packpack.supporter.server.holder.SearchHolder;
 import mandarin.packpack.supporter.server.slash.SlashOption;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
@@ -32,23 +32,21 @@ public class EnemyStat extends ConstraintCommand {
 
         int lang = LangID.EN;
 
-        if(interaction.getMember() != null) {
-            Member m = interaction.getMember();
+        User u = interaction.getUser();
 
-            if(StaticStore.config.containsKey(m.getId())) {
-                lang =  StaticStore.config.get(m.getId()).lang;
+        if(StaticStore.config.containsKey(u.getId())) {
+            lang =  StaticStore.config.get(u.getId()).lang;
 
-                if(lang == -1) {
-                    if(interaction.getGuild() == null) {
+            if(lang == -1) {
+                if(interaction.getGuild() == null) {
+                    lang = LangID.EN;
+                } else {
+                    IDHolder idh = StaticStore.idHolder.get(interaction.getGuild().getId());
+
+                    if(idh == null) {
                         lang = LangID.EN;
                     } else {
-                        IDHolder idh = StaticStore.idHolder.get(interaction.getGuild().getId());
-
-                        if(idh == null) {
-                            lang = LangID.EN;
-                        } else {
-                            lang = idh.config.lang;
-                        }
+                        lang = idh.config.lang;
                     }
                 }
             }
@@ -88,10 +86,10 @@ public class EnemyStat extends ConstraintCommand {
     private final ConfigHolder config;
 
     public EnemyStat(ROLE role, int lang, IDHolder id, ConfigHolder config) {
-        super(role, lang, id);
+        super(role, lang, id, false);
 
         if(config == null)
-            this.config = id.config;
+            this.config = id == null ? StaticStore.defaultConfig : id.config;
         else
             this.config = config;
     }
@@ -135,7 +133,7 @@ public class EnemyStat extends ConstraintCommand {
 
                 boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
                 boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
-                boolean isCompact = (param & PARAM_COMPACT) > 0 || (holder.forceCompact ? holder.config.compact : config.compact);
+                boolean isCompact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
 
                 EntityHandler.showEnemyEmb(enemies.get(0), ch, getMessage(event), isFrame, isExtra, isCompact, magnification, lang);
             } else if(enemies.size() == 0) {
@@ -170,16 +168,16 @@ public class EnemyStat extends ConstraintCommand {
 
                 boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
                 boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
-                boolean isCompact = (param & PARAM_COMPACT) > 0 || (holder.forceCompact ? holder.config.compact : config.compact);
+                boolean isCompact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
 
                 if(res != null) {
-                    Member member = getMember(event);
+                    User u = getUser(event);
 
-                    if(member != null) {
+                    if(u != null) {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(member.getId(), new EnemyStatMessageHolder(enemies, msg, res, ch.getId(), magnification, isFrame, isExtra, isCompact, lang));
+                            StaticStore.putHolder(u.getId(), new EnemyStatMessageHolder(enemies, msg, res, ch.getId(), magnification, isFrame, isExtra, isCompact, lang));
                     }
                 }
             }

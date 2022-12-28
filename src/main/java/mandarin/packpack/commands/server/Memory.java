@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class Memory extends ConstraintCommand {
     public Memory(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, false);
     }
 
     @Override

@@ -20,8 +20,9 @@ import mandarin.packpack.supporter.server.holder.StageInfoMessageHolder;
 import mandarin.packpack.supporter.server.holder.StageReactionSlashMessageHolder;
 import mandarin.packpack.supporter.server.slash.SlashOption;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
@@ -62,28 +63,24 @@ public class StageInfo extends TimedConstraintCommand {
                 return;
             }
         } else {
-            event.deferReply().setContent("Please use this command in any server where PackPack is in!").queue();
-
-            return;
+            holder = null;
         }
 
-        if(interaction.getMember() != null) {
-            Member member = interaction.getMember();
+        User u = interaction.getUser();
 
-            if(StaticStore.config.containsKey(member.getId())) {
-                lang = StaticStore.config.get(member.getId()).lang;
+        if(StaticStore.config.containsKey(u.getId())) {
+            lang = StaticStore.config.get(u.getId()).lang;
 
-                if(lang == -1) {
-                    if(interaction.getGuild() == null) {
+            if(lang == -1) {
+                if(interaction.getGuild() == null) {
+                    lang = LangID.EN;
+                } else {
+                    IDHolder idh = StaticStore.idHolder.get(interaction.getGuild().getId());
+
+                    if(idh == null) {
                         lang = LangID.EN;
                     } else {
-                        IDHolder idh = StaticStore.idHolder.get(interaction.getGuild().getId());
-
-                        if(idh == null) {
-                            lang = LangID.EN;
-                        } else {
-                            lang = idh.config.lang;
-                        }
+                        lang = idh.config.lang;
                     }
                 }
             }
@@ -113,12 +110,10 @@ public class StageInfo extends TimedConstraintCommand {
             try {
                 Message m = EntityHandler.performStageEmb(st, event, frame, extra, star, lang);
 
-                if(m != null && interaction.getMember() != null && m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_MANAGE)) {
-                    Member member = interaction.getMember();
-
+                if(m != null && (!(m.getChannel() instanceof TextChannel) || m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_MANAGE))) {
                     StaticStore.putHolder(
-                            member.getId(),
-                            new StageReactionSlashMessageHolder(m, st, m.getId(), m.getChannel().getId(), member.getId(), holder, lang)
+                            u.getId(),
+                            new StageReactionSlashMessageHolder(m, st, m.getId(), m.getChannel().getId(), u.getId(), holder, lang)
                     );
                 }
             } catch (Exception e) {
@@ -130,10 +125,10 @@ public class StageInfo extends TimedConstraintCommand {
     private final ConfigHolder config;
 
     public StageInfo(ConstraintCommand.ROLE role, int lang, IDHolder id, ConfigHolder config, long time) {
-        super(role, lang, id, time, StaticStore.COMMAND_STAGEINFO_ID);
+        super(role, lang, id, time, StaticStore.COMMAND_STAGEINFO_ID, false);
 
         if(config == null)
-            this.config = id.config;
+            this.config = id == null ? StaticStore.defaultConfig : id.config;
         else
             this.config = config;
     }
@@ -178,26 +173,26 @@ public class StageInfo extends TimedConstraintCommand {
                 int star = getLevel(getContent((event)));
                 boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
                 boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
-                boolean isCompact = (param & PARAM_COMPACT) > 0 || (holder.forceCompact ? holder.config.compact : config.compact);
+                boolean isCompact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
 
                 CommonStatic.getConfig().lang = lang;
 
                 Message result = EntityHandler.showStageEmb(stages.get(0), ch, getMessage(event), isFrame, isExtra, isCompact, star, lang);
 
-                Member m = getMember(event);
+                User u = getUser(event);
 
-                if(m != null) {
+                if(u != null) {
                     Message author = getMessage(event);
 
                     if(author != null)
-                        StaticStore.putHolder(m.getId(), new StageInfoButtonHolder(stages.get(0), author, result, ch.getId(), isCompact));
+                        StaticStore.putHolder(u.getId(), new StageInfoButtonHolder(stages.get(0), author, result, ch.getId(), isCompact));
                 }
             } else {
                 int param = checkParameters(getContent(event));
                 int star = getLevel(getContent((event)));
                 boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
                 boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
-                boolean isCompact = (param & PARAM_COMPACT) > 0 || (holder.forceCompact ? holder.config.compact : config.compact);
+                boolean isCompact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
 
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("stinfo_several", lang).replace("_", generateSearchName(names)))
                         .append("```md\n")
@@ -225,13 +220,13 @@ public class StageInfo extends TimedConstraintCommand {
                 Message res = getRepliedMessageSafely(ch, sb.toString(), getMessage(event), a -> registerSearchComponents(a, finalStages.size(), accumulateData(finalStages, false), lang));
 
                 if(res != null) {
-                    Member member = getMember(event);
+                    User u = getUser(event);
 
-                    if(member != null) {
+                    if(u != null) {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(member.getId(), new StageInfoMessageHolder(stages, msg, res, ch.getId(), star, isFrame, isExtra, isCompact, lang));
+                            StaticStore.putHolder(u.getId(), new StageInfoMessageHolder(stages, msg, res, ch.getId(), star, isFrame, isExtra, isCompact, lang));
                     }
                 }
 

@@ -16,7 +16,7 @@ public class Announcement extends ConstraintCommand {
     private static final int PARAM_TW = 16;
 
     public Announcement(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, false);
     }
 
     @Override

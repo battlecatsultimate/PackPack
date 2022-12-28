@@ -2,8 +2,8 @@ package mandarin.packpack.supporter.server.holder;
 
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 
@@ -54,12 +54,9 @@ public class CultButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
             return RESULT_STILL;
         }
 
-        if(event.getInteraction().getMember() == null)
-            return RESULT_STILL;
+        User u = event.getUser();
 
-        Member mem = event.getInteraction().getMember();
-
-        if(!mem.getId().equals(memberID))
+        if(!u.getId().equals(memberID))
             return RESULT_STILL;
 
         Message m = event.getMessage();

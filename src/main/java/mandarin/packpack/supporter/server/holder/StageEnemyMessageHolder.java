@@ -13,7 +13,6 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -21,8 +20,8 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 
 import java.util.*;
 
@@ -99,10 +98,9 @@ public class StageEnemyMessageHolder extends SearchHolder {
     @Override
     public void onSelected(GenericComponentInteractionCreateEvent event) {
         MessageChannel ch = event.getChannel();
-        Guild g = event.getGuild();
         Message author = getAuthorMessage();
 
-        if(g == null || author == null)
+        if(author == null)
             return;
 
         try {
@@ -128,9 +126,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
                         StaticStore.timeLimit.put(author.getAuthor().getId(), memberLimit);
                     }
 
-                    if(StaticStore.idHolder.containsKey(g.getId())) {
-                        StaticStore.putHolder(author.getAuthor().getId(), new StageInfoButtonHolder(stages.get(0), author, result, channelID, isCompact));
-                    }
+                    StaticStore.putHolder(author.getAuthor().getId(), new StageInfoButtonHolder(stages.get(0), author, result, channelID, isCompact));
                 }
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("fstage_several", lang)).append("```md\n");

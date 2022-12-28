@@ -23,7 +23,7 @@ public class SoulImage extends TimedConstraintCommand {
     private static final int PARAM_DEBUG = 4;
 
     public SoulImage(ConstraintCommand.ROLE role, int lang, IDHolder idHolder, long time) {
-        super(role, lang, idHolder, time, "soulimage");
+        super(role, lang, idHolder, time, "soulimage", false);
     }
 
     @Override

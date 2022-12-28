@@ -8,7 +8,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
@@ -27,12 +27,10 @@ public class Music extends GlobalTimedConstraintCommand {
 
         int lang = LangID.EN;
 
-        if(interaction.getMember() != null) {
-            Member m = interaction.getMember();
+        User u = interaction.getUser();
 
-            if(StaticStore.config.containsKey(m.getId())) {
-                lang =  StaticStore.config.get(m.getId()).lang;
-            }
+        if(StaticStore.config.containsKey(u.getId())) {
+            lang =  StaticStore.config.get(u.getId()).lang;
         }
 
         if(ms != null && ms.id != null) {
@@ -82,11 +80,11 @@ public class Music extends GlobalTimedConstraintCommand {
     private common.util.stage.Music ms;
 
     public Music(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID) {
-        super(role, lang, id, mainID, TimeUnit.SECONDS.toMillis(10));
+        super(role, lang, id, mainID, TimeUnit.SECONDS.toMillis(10), false);
     }
 
     public Music(ConstraintCommand.ROLE role, int lang, IDHolder id, String mainID, common.util.stage.Music ms) {
-        super(role, lang, id, mainID, 0);
+        super(role, lang, id, mainID, 0, false);
         this.ms = ms;
     }
 

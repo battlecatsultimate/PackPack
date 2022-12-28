@@ -3,8 +3,8 @@ package mandarin.packpack.commands;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.holder.CultButtonHolder;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
@@ -15,21 +15,21 @@ import java.util.TimerTask;
 
 public class SayHi extends Command {
     public SayHi(int lang) {
-        super(lang);
+        super(lang, false);
     }
 
     @Override
     public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
-        Member m = getMember(event);
+        User u = getUser(event);
 
-        if(ch == null || m == null)
+        if(ch == null || u == null)
             return;
 
         double chance = StaticStore.random.nextDouble();
 
         if(chance <= 0.01) {
-            if (StaticStore.cultist.contains(m.getId())) {
+            if (StaticStore.cultist.contains(u.getId())) {
                 replyToMessageSafely(ch, LangID.getStringByID("hi_sp_1", lang), getMessage(event), a -> a);
             } else {
                 Message msg = getRepliedMessageSafely(ch, LangID.getStringByID("hi_sp_0", lang), getMessage(event), a -> a.setActionRow(
@@ -37,11 +37,11 @@ public class SayHi extends Command {
                         Button.of(ButtonStyle.DANGER, "no", LangID.getStringByID("button_no", lang))
                 ));
 
-                StaticStore.putHolder(m.getId(), new CultButtonHolder(getMessage(event), msg, ch.getId(), m.getId(), lang));
+                StaticStore.putHolder(u.getId(), new CultButtonHolder(getMessage(event), msg, ch.getId(), u.getId(), lang));
             }
         } else if(chance <= 0.05) {
             replyToMessageSafely(ch, LangID.getStringByID("hi_d", lang), getMessage(event), a -> a);
-        } else if(StaticStore.cultist.contains(m.getId()) && chance <= 0.1) {
+        } else if(StaticStore.cultist.contains(u.getId()) && chance <= 0.1) {
             replyToMessageSafely(ch, LangID.getStringByID("hi_sp_1", lang), getMessage(event), a -> a);
         } else {
             int index = StaticStore.random.nextInt(13);

@@ -9,11 +9,14 @@ import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class ServerLocale extends ConstraintCommand {
     public ServerLocale(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, true);
     }
 
     @Override
     public void doSomething(GenericMessageEvent event) throws Exception {
+        if(holder == null)
+            return;
+
         MessageChannel ch = getChannel(event);
 
         if(ch != null) {

@@ -12,17 +12,21 @@ import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ChannelPermission extends ConstraintCommand {
     private static final int PARAM_ADD = 2;
     private static final int PARAM_REMOVE = 4;
 
     public ChannelPermission(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, true);
     }
 
     @Override
     public void doSomething(GenericMessageEvent event) throws Exception {
+        if(holder == null)
+            return;
+
         MessageChannel ch = getChannel(event);
 
         if(ch == null)
@@ -244,7 +248,7 @@ public class ChannelPermission extends ConstraintCommand {
         if(id == null)
             return LangID.getStringByID("channelpermission_all", lang);
 
-        List<String> channels = holder.channel.get(id);
+        List<String> channels = Objects.requireNonNull(holder).channel.get(id);
 
         if(channels == null) {
             return LangID.getStringByID("channelpermission_all", lang);

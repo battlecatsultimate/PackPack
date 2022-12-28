@@ -5,14 +5,14 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class Locale extends ConstraintCommand {
 
     public Locale(ROLE role, int lang, IDHolder holder) {
-        super(role, lang, holder);
+        super(role, lang, holder, false);
     }
 
     @Override
@@ -29,19 +29,19 @@ public class Locale extends ConstraintCommand {
                     if(lan >= 0 && lan <= StaticStore.langIndex.length - 1) {
                         int loc = StaticStore.langIndex[lan];
 
-                        Member m = getMember(event);
+                        User u = getUser(event);
                         
-                        if(m != null) {
+                        if(u != null) {
                             ConfigHolder holder;
 
-                            if(StaticStore.config.containsKey(m.getId()))
-                                holder = StaticStore.config.get(m.getId());
+                            if(StaticStore.config.containsKey(u.getId()))
+                                holder = StaticStore.config.get(u.getId());
                             else
-                                holder = this.holder.config;
+                                holder = new ConfigHolder();
 
                             holder.lang = loc;
 
-                            StaticStore.config.put(m.getId(), holder);
+                            StaticStore.config.put(u.getId(), holder);
 
                             String locale;
 
@@ -80,15 +80,15 @@ public class Locale extends ConstraintCommand {
                             replyToMessageSafely(ch, "Can't find member!", getMessage(event), a -> a);
                         }
                     } else if(lan == -1) {
-                        Member m = getMember(event);
+                        User u = getUser(event);
                         
-                        if(m != null) {
-                            if(StaticStore.config.containsKey(m.getId())) {
-                                ConfigHolder holder = StaticStore.config.get(m.getId());
+                        if(u != null) {
+                            if(StaticStore.config.containsKey(u.getId())) {
+                                ConfigHolder holder = StaticStore.config.get(u.getId());
 
                                 holder.lang = -1;
 
-                                StaticStore.config.put(m.getId(), holder);
+                                StaticStore.config.put(u.getId(), holder);
                             }
                         }
 

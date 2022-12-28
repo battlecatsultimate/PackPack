@@ -36,7 +36,7 @@ public class TrueFormAnalyzer extends ConstraintCommand {
     );
 
     public TrueFormAnalyzer(ConstraintCommand.ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, false);
     }
 
     @Override

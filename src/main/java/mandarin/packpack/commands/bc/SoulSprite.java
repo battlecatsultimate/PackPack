@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class SoulSprite extends TimedConstraintCommand {
     public SoulSprite(ConstraintCommand.ROLE role, int lang, IDHolder idHolder, long time) {
-        super(role, lang, idHolder, time, "soulsprite");
+        super(role, lang, idHolder, time, "soulsprite", false);
     }
 
     @Override

@@ -19,11 +19,14 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class BoosterEmoji extends ConstraintCommand {
     public BoosterEmoji(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, true);
     }
 
     @Override
     public void doSomething(GenericMessageEvent event) throws Exception {
+        if(holder == null)
+            return;
+
         File temp = new File("./temp");
 
         if(!temp.exists() && temp.mkdirs()) {

@@ -8,6 +8,7 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.ConfigButtonHolder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
@@ -26,7 +27,7 @@ public class Config extends ConstraintCommand {
     private final boolean forServer;
 
     public Config(ROLE role, int lang, IDHolder id, ConfigHolder config, boolean forServer) {
-        super(role, lang, id);
+        super(role, lang, id, forServer);
 
         this.config = Objects.requireNonNullElseGet(config, ConfigHolder::new);
 
@@ -171,10 +172,13 @@ public class Config extends ConstraintCommand {
                 ActionRow.of(components)
         ));
 
-        Member m = getMember(event);
+        Message original = getMessage(event);
 
-        if(m != null) {
-            StaticStore.putHolder(m.getId(), new ConfigButtonHolder(msg, getMessage(event), config, holder, ch.getId(), m.getId(), forServer));
-        }
+        if(original == null)
+            return;
+
+        User u = original.getAuthor();
+
+        StaticStore.putHolder(u.getId(), new ConfigButtonHolder(msg, original, config, holder, ch.getId(), u.getId(), forServer));
     }
 }

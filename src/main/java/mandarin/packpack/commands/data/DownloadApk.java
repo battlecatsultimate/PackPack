@@ -16,7 +16,7 @@ import java.nio.charset.StandardCharsets;
 
 public class DownloadApk extends ConstraintCommand {
     public DownloadApk(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, false);
     }
 
     @Override

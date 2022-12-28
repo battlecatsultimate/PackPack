@@ -26,7 +26,7 @@ public class Analyze extends ConstraintCommand {
     private Message msg;
 
     public Analyze(ROLE role, int lang, IDHolder holder) {
-        super(role, lang, holder);
+        super(role, lang, holder, false);
     }
 
     @Override

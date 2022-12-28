@@ -13,7 +13,7 @@ import java.io.FileWriter;
 
 public class AnalyzeServer extends ConstraintCommand {
     public AnalyzeServer(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, true);
     }
 
     @Override

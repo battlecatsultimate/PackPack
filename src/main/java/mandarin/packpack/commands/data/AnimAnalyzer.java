@@ -33,7 +33,7 @@ public class AnimAnalyzer extends ConstraintCommand {
     private static final int PARAM_USEAPK = 64;
 
     public AnimAnalyzer(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id);
+        super(role, lang, id, false);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class AnimAnalyzer extends ConstraintCommand {
         MessageChannel ch = getChannel(event);
         Guild g = getGuild(event);
 
-        if(ch == null || g == null)
+        if(ch == null)
             return;
 
         int param = checkParam(getContent(event));
@@ -135,7 +135,7 @@ public class AnimAnalyzer extends ConstraintCommand {
 
             mixer.png = ImageIO.read(new File(workspace, "NumberLocal/"+animCode+".png"));
 
-            EntityHandler.generateBCAnim(ch, g.getBoostTier().getKey(), mixer, lang);
+            EntityHandler.generateBCAnim(ch, g == null ? 0 : g.getBoostTier().getKey(), mixer, lang);
         } else {
             int anim = getAnimNumber(getContent(event));
 

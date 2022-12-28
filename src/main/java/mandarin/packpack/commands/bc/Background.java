@@ -10,8 +10,7 @@ import mandarin.packpack.supporter.bc.ImageDrawing;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
@@ -29,12 +28,10 @@ public class Background extends TimedConstraintCommand {
 
         int lang = LangID.EN;
 
-        if(interaction.getMember() != null) {
-            Member m = interaction.getMember();
+        User u = interaction.getUser();
 
-            if(StaticStore.config.containsKey(m.getId())) {
-                lang =  StaticStore.config.get(m.getId()).lang;
-            }
+        if(StaticStore.config.containsKey(u.getId())) {
+            lang =  StaticStore.config.get(u.getId()).lang;
         }
 
         File img = ImageDrawing.drawBGImage(bg, 960, 520, false);
@@ -61,11 +58,11 @@ public class Background extends TimedConstraintCommand {
     private common.util.pack.Background bg;
 
     public Background(ConstraintCommand.ROLE role, int lang, IDHolder id, long time) {
-        super(role, lang, id, time, StaticStore.COMMAND_BG_ID);
+        super(role, lang, id, time, StaticStore.COMMAND_BG_ID, false);
     }
 
     public Background(ConstraintCommand.ROLE role, int lang, IDHolder id, long time, common.util.pack.Background bg) {
-        super(role, lang, id, time, StaticStore.COMMAND_BG_ID);
+        super(role, lang, id, time, StaticStore.COMMAND_BG_ID, false);
 
         this.bg = bg;
     }
@@ -78,9 +75,8 @@ public class Background extends TimedConstraintCommand {
     @Override
     public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
-        Guild g = getGuild(event);
 
-        if(ch == null || g == null)
+        if(ch == null)
             return;
 
         if(bg != null) {
@@ -112,16 +108,16 @@ public class Background extends TimedConstraintCommand {
                     return;
                 }
 
-                Member m = getMember(event);
+                User u = getUser(event);
 
-                if(m == null)
+                if(u == null)
                     return;
 
                 int w = Math.max(1, getWidth(getContent(event)));
                 int h = Math.max(1, getHeight(getContent(event)));
                 boolean eff = drawEffect(getContent(event));
                 boolean anim = generateAnim(getContent(event));
-                boolean isTrusted = StaticStore.contributors.contains(m.getId());
+                boolean isTrusted = StaticStore.contributors.contains(u.getId());
 
                 String cache = StaticStore.imgur.get("BG - "+Data.trio(bg.id.id), false, true);
 
