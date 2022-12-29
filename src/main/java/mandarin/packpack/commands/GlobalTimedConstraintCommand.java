@@ -7,8 +7,10 @@ import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.TimeBoolean;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -94,7 +96,7 @@ public abstract class GlobalTimedConstraintCommand extends Command {
         if(msg == null)
             return;
 
-        if(requireGuild && !(ch instanceof TextChannel)) {
+        if(requireGuild && !(ch instanceof GuildChannel)) {
             replyToMessageSafely(ch, LangID.getStringByID("require_server", lang), msg, a -> a);
 
             return;

@@ -22,7 +22,7 @@ import mandarin.packpack.supporter.server.slash.SlashOption;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
@@ -110,7 +110,7 @@ public class StageInfo extends TimedConstraintCommand {
             try {
                 Message m = EntityHandler.performStageEmb(st, event, frame, extra, star, lang);
 
-                if(m != null && (!(m.getChannel() instanceof TextChannel) || m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_MANAGE))) {
+                if(m != null && (!(m.getChannel() instanceof GuildChannel) || m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_MANAGE))) {
                     StaticStore.putHolder(
                             u.getId(),
                             new StageReactionSlashMessageHolder(m, st, m.getId(), m.getChannel().getId(), u.getId(), holder, lang)

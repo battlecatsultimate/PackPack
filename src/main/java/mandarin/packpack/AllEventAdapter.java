@@ -25,7 +25,6 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -356,7 +355,7 @@ public class AllEventAdapter extends ListenerAdapter {
                     lang = LangID.EN;
 
                 performCommand(event, msg, lang, prefix, null, c);
-            } else if(mc instanceof TextChannel) {
+            } else if(mc instanceof GuildChannel) {
                 Member m = event.getMember();
 
                 if(m == null)
