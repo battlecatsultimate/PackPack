@@ -10,10 +10,13 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
+import javax.annotation.Nullable;
+
 public class Help extends Command {
+    @Nullable
     private final IDHolder holder;
 
-    public Help(int lang, IDHolder holder) {
+    public Help(int lang, @Nullable IDHolder holder) {
         super(lang, false);
 
         this.holder = holder;
@@ -429,8 +432,8 @@ public class Help extends Command {
         EmbedBuilder builder = new EmbedBuilder();
 
         builder.setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)]);
-        builder.setTitle(holder.serverPrefix+mainCommand);
-        builder.addField(LangID.getStringByID("help_use", lang), LangID.getStringByID("help_"+mainCommand+"_use", lang).replace("_", holder.serverPrefix), false);
+        builder.setTitle((holder == null ? StaticStore.globalPrefix : holder.serverPrefix) + mainCommand);
+        builder.addField(LangID.getStringByID("help_use", lang), LangID.getStringByID("help_"+mainCommand+"_use", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.serverPrefix), false);
         builder.addField(LangID.getStringByID("help_desc", lang), LangID.getStringByID("help_"+mainCommand+"_desc", lang), false);
 
         if(argument) {
