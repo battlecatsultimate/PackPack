@@ -1015,11 +1015,6 @@ public class EntityHandler {
             sta = 0;
             stmMagnification = 100;
         } else {
-            sta = Math.min(Math.max(level-1, 0), st.getCont().stars.length-1);
-            stmMagnification = stm.stars[sta];
-        }
-
-        if(stm != null) {
             MapColc mc = stm.getCont();
 
             if(mc != null && mc.getSID().equals("000003") && stm.id.id == 9) {
@@ -1027,8 +1022,14 @@ public class EntityHandler {
                     sta = 1;
                 } else if(st.id.id == 50) {
                     sta = 2;
+                } else {
+                    sta = Math.min(Math.max(level-1, 0), st.getCont().stars.length-1);
                 }
+            } else {
+                sta = Math.min(Math.max(level-1, 0), st.getCont().stars.length-1);
             }
+
+            stmMagnification = stm.stars[sta];
         }
 
         File img = generateScheme(st, isFrame, lang, stmMagnification);
@@ -1251,7 +1252,20 @@ public class EntityHandler {
             sta = 0;
             stmMagnification = 100;
         } else {
-            sta = Math.min(Math.max(level-1, 0), st.getCont().stars.length-1);
+            MapColc mc = stm.getCont();
+
+            if(mc != null && mc.getSID().equals("000003") && stm.id.id == 9) {
+                if(st.id.id == 49) {
+                    sta = 1;
+                } else if(st.id.id == 50) {
+                    sta = 2;
+                } else {
+                    sta = Math.min(Math.max(level-1, 0), st.getCont().stars.length-1);
+                }
+            } else {
+                sta = Math.min(Math.max(level-1, 0), st.getCont().stars.length-1);
+            }
+
             stmMagnification = stm.stars[sta];
         }
 
