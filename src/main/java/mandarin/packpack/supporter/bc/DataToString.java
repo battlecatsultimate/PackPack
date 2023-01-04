@@ -1435,12 +1435,14 @@ public class DataToString extends Data {
         int oldConfig = CommonStatic.getConfig().lang;
         CommonStatic.getConfig().lang = lang;
 
-        String[] cf = MultiLangCont.getStatic().CFEXP.getCont(f.unit.info);
+        String cfText = MultiLangCont.getStatic().CFEXP.getCont(f.unit.info);
 
         CommonStatic.getConfig().lang = oldConfig;
 
-        if(cf == null)
+        if(cfText == null)
             return null;
+
+        String[] cf = cfText.split("\n");
 
         boolean canGo = false;
 

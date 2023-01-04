@@ -983,18 +983,18 @@ public class EntityHandler {
                     FakeImage fi = FIBI.build(icon);
 
                     g.drawImage(fi, 510, 10, 80, 80);
-                    g.drawCenteredText(String.valueOf(f.unit.info.evo[i][0]), 550, 125);
+                    g.drawCenteredText(String.valueOf(f.unit.info.xp), 550, 125);
                 }
             } else {
-                if(f.unit.info.evo[i][0] != 0) {
-                    VFile vf = VFile.get("./org/page/catfruit/gatyaitemD_"+f.unit.info.evo[i][0]+"_f.png");
+                if(f.unit.info.evo[i - 1][0] != 0) {
+                    VFile vf = VFile.get("./org/page/catfruit/gatyaitemD_"+f.unit.info.evo[i - 1][0]+"_f.png");
 
                     if(vf != null) {
                         BufferedImage icon = (BufferedImage) vf.getData().getImg().bimg();
                         FakeImage fi = FIBI.build(icon);
 
                         g.drawImage(fi, 100 * (i-1)+5, 10, 80, 80);
-                        g.drawCenteredText(String.valueOf(f.unit.info.evo[i][1]), 100 * (i-1) + 50, 125);
+                        g.drawCenteredText(String.valueOf(f.unit.info.evo[i - 1][1]), 100 * (i-1) + 50, 125);
                     }
                 }
             }

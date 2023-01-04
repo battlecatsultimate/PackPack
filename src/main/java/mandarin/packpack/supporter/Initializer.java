@@ -232,7 +232,7 @@ public class Initializer {
                                 if(u == null)
                                     continue;
 
-                                String[] lines = str[1].split("<br>");
+                                String lines = str[1].replace("<br>", "\n");
 
                                 MultiLangCont.getStatic().CFEXP.put(f, u.info, lines);
                             }
