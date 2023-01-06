@@ -205,12 +205,20 @@ public class GachaSchedule extends EventFactor implements Schedule {
 
         if(date.dateStart.year != currentYear) {
             result.append(date.dateStart.year)
-                    .append(" ");
+                    .append(LangID.getStringByID("year", lang));
+
+            if(lang != LangID.ZH) {
+                result.append(" ");
+            }
         }
 
-        result.append(getMonth(date.dateStart.month, lang))
-                .append(" ")
-                .append(date.dateStart.day)
+        result.append(getMonth(date.dateStart.month, lang));
+
+        if(lang != LangID.ZH) {
+            result.append(" ");
+        }
+
+        result.append(date.dateStart.day)
                 .append(getNumberWithDayFormat(date.dateStart.day, lang));
 
         if(date.section.start.hour * 100 + date.section.start.minute != 1100 && date.section.start.hour * 100 + date.section.start.minute != 0) {
@@ -224,14 +232,21 @@ public class GachaSchedule extends EventFactor implements Schedule {
             result.append(" ~ ");
 
             if(!date.dateEnd.equals(END)) {
-                if(date.dateStart.year != date.dateEnd.year) {
+                if(date.dateStart.year != date.dateEnd.year || (date.dateStart.year != currentYear && lang == ZH)) {
                     result.append(date.dateEnd.year)
-                            .append(" ");
+                            .append(LangID.getStringByID("year", lang));
+
+                    if(lang != LangID.ZH) {
+                        result.append(" ");
+                    }
                 }
 
-                if(date.dateStart.month != date.dateEnd.month) {
-                    result.append(getMonth(date.dateEnd.month, lang))
-                            .append(" ");
+                if(date.dateStart.month != date.dateEnd.month || lang == ZH) {
+                    result.append(getMonth(date.dateEnd.month, lang));
+
+                    if (lang != LangID.ZH) {
+                        result.append(" ");
+                    }
                 }
 
                 result.append(date.dateEnd.day)
