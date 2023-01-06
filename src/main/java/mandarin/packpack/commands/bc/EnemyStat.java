@@ -214,6 +214,7 @@ public class EnemyStat extends ConstraintCommand {
                         command.append(content[i]);
                         written = true;
                     }
+                    break;
                 case "-m":
                     if(!isLevel && i < content.length -1) {
                         String text = getLevelText(content, i + 1);
