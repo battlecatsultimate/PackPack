@@ -6,7 +6,7 @@ import mandarin.packpack.commands.bot.*;
 import mandarin.packpack.commands.data.*;
 import mandarin.packpack.commands.server.*;
 import mandarin.packpack.supporter.EmojiStore;
-import mandarin.packpack.supporter.KoreanSeparater;
+import mandarin.packpack.supporter.lang.KoreanSeparater;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.ScamLinkHandler;

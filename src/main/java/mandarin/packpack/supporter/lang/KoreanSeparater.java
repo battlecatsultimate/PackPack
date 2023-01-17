@@ -1,4 +1,4 @@
-package mandarin.packpack.supporter;
+package mandarin.packpack.supporter.lang;
 
 public class KoreanSeparater {
     private static final String[] INIT = {"ㄱ","ㄲ","ㄴ","ㄷ","ㄸ","ㄹ","ㅁ","ㅂ","ㅃ", "ㅅ","ㅆ","ㅇ","ㅈ","ㅉ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"};
