@@ -301,7 +301,7 @@ public class EntityHandler {
         return null;
     }
 
-    public static Message showUnitEmb(Form f, MessageChannel ch, Message reference, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, ArrayList<Integer> lv, int lang, boolean addEmoji, boolean compact) throws Exception {
+    public static Message showUnitEmb(Form f, MessageChannel ch, Message reference, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, boolean isTrueForm, boolean trueFormPossible, ArrayList<Integer> lv, int lang, boolean addEmoji, boolean compact) throws Exception {
         int level = lv.get(0);
         int levelp = 0;
 
@@ -356,6 +356,8 @@ public class EntityHandler {
         else
             c = StaticStore.rainbow[2];
 
+        String desc = "";
+
         ArrayList<Integer> t;
 
         if(talent && f.du.getPCoin() != null) {
@@ -373,7 +375,17 @@ public class EntityHandler {
         }
 
         if(talent && f.du.getPCoin() != null && talentExists(t)) {
-            spec.setDescription(LangID.getStringByID("data_talent", lang));
+            desc += LangID.getStringByID("data_talent", lang) + "\n";
+        } else if(talent && f.du.getPCoin() == null) {
+            desc += LangID.getStringByID("data_notalent", lang) + "\n";
+        }
+
+        if(isTrueForm && !trueFormPossible) {
+            desc += LangID.getStringByID("formst_notrue", lang);
+        }
+
+        if(!desc.isBlank()) {
+            spec.setDescription(desc);
         }
 
         spec.setColor(c);

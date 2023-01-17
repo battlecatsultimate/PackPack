@@ -4,6 +4,7 @@ import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Form;
+import common.util.unit.Unit;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
@@ -24,6 +25,7 @@ public class FormStatMessageHolder extends SearchHolder {
     private final boolean isFrame;
     private final boolean extra;
     private final boolean compact;
+    private final boolean isTrueForm;
     private final ArrayList<Integer> lv;
 
     public FormStatMessageHolder(ArrayList<Form> form, Message author, ConfigHolder config, IDHolder holder, Message msg, String channelID, int param, ArrayList<Integer> lv, int lang) {
@@ -36,6 +38,7 @@ public class FormStatMessageHolder extends SearchHolder {
         this.isFrame = (param & 4) == 0 && config.useFrame;
         this.extra = (param & 8) > 0 || config.extra;
         this.compact = (param & 16) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
+        this.isTrueForm = (param & 32) > 0;
         this.lv = lv;
 
         registerAutoFinish(this, msg, author, lang, FIVE_MIN);
@@ -76,7 +79,18 @@ public class FormStatMessageHolder extends SearchHolder {
         msg.delete().queue();
 
         try {
-            Message result = EntityHandler.showUnitEmb(form.get(id), ch, getAuthorMessage(), config, isFrame, talent, extra, lv, lang, true, compact);
+            Form f = form.get(id);
+
+            Unit unit = f.unit;
+
+            boolean trueFormPossible = false;
+
+            if(unit != null && isTrueForm && unit.forms.length == 3) {
+                f = unit.forms[2];
+                trueFormPossible = true;
+            }
+
+            Message result = EntityHandler.showUnitEmb(f, ch, getAuthorMessage(), config, isFrame, talent, extra, isTrueForm, trueFormPossible, lv, lang, true, compact);
 
             if(result != null) {
                 User u = event.getUser();

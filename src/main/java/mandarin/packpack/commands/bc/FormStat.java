@@ -2,6 +2,7 @@ package mandarin.packpack.commands.bc;
 
 import common.util.Data;
 import common.util.unit.Form;
+import common.util.unit.Unit;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
@@ -114,6 +115,7 @@ public class FormStat extends ConstraintCommand {
     private static final int PARAM_SECOND = 4;
     private static final int PARAM_EXTRA = 8;
     private static final int PARAM_COMPACT = 16;
+    private static final int PARAM_TRUE_FORM = 32;
 
     private final ConfigHolder config;
 
@@ -167,8 +169,20 @@ public class FormStat extends ConstraintCommand {
                 boolean talent = (param & PARAM_TALENT) > 0 || lv.size() > 1;
                 boolean extra = (param & PARAM_EXTRA) > 0 || config.extra;
                 boolean compact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
+                boolean isTrueForm = (param & PARAM_TRUE_FORM) > 0;
 
-                Message result = EntityHandler.showUnitEmb(forms.get(0), ch, getMessage(event), config, isFrame, talent, extra, lv, lang, true, compact);
+                boolean trueFormPossible = false;
+
+                Form f = forms.get(0);
+
+                Unit unit = f.unit;
+
+                if (isTrueForm && unit.forms.length == 3) {
+                    f = unit.forms[2];
+                    trueFormPossible = true;
+                }
+
+                Message result = EntityHandler.showUnitEmb(f, ch, getMessage(event), config, isFrame, talent, extra, isTrueForm, trueFormPossible, lv, lang, true, compact);
 
                 if(result != null) {
                     User u = getUser(event);
@@ -263,6 +277,13 @@ public class FormStat extends ConstraintCommand {
                         } else
                             break label;
                         break;
+                    case "-tf":
+                    case "-trueform":
+                        if ((result & PARAM_TRUE_FORM) == 0) {
+                            result |= PARAM_TRUE_FORM;
+                        } else
+                            break label;
+                        break;
                 }
             }
         }
@@ -278,6 +299,7 @@ public class FormStat extends ConstraintCommand {
         boolean isTalent = false;
         boolean isExtra = false;
         boolean isCompact = false;
+        boolean isTrueForm = false;
 
         StringBuilder command = new StringBuilder();
 
@@ -331,6 +353,15 @@ public class FormStat extends ConstraintCommand {
                 case "-compact":
                     if(!isCompact)
                         isCompact = true;
+                    else {
+                        command.append(content[i]);
+                        written = true;
+                    }
+                    break;
+                case "-tf":
+                case "-trueform":
+                    if (!isTrueForm)
+                        isTrueForm = true;
                     else {
                         command.append(content[i]);
                         written = true;
