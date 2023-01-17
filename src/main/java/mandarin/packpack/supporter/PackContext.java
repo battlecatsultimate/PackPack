@@ -5,6 +5,7 @@ import common.io.Backup;
 import common.io.PackLoader;
 import common.io.assets.Admin;
 import common.pack.Context;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -65,6 +66,12 @@ public class PackContext implements Context {
     @Override
     public File getBackupFile(String string) {
         return null;
+    }
+
+    @NotNull
+    @Override
+    public File getBCUFolder() {
+        return new File("./");
     }
 
     @Override
