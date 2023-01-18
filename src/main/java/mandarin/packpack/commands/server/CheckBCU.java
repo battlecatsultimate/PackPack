@@ -54,10 +54,13 @@ public class CheckBCU extends Command {
             StringBuilder both = new StringBuilder("BOTH : ");
             StringBuilder none = new StringBuilder("NONE : ");
 
+            int bothMember = 0;
+            int noneMember = 0;
+
             Guild g = getGuild(event);
 
             if(g != null) {
-                List<Member> members = g.getMembers();
+                List<Member> members = g.loadMembers().get();
 
                 for(int i = 0; i < members.size(); i++) {
                     Member m = members.get(i);
@@ -74,15 +77,25 @@ public class CheckBCU extends Command {
                         if(holder.MEMBER != null && role.contains(holder.MEMBER))
                             mem = true;
 
-                        if (!pre && !mem)
-                            none.append(m.getNickname()).append(", ");
+                        if (!pre && !mem) {
+                            none.append(m.getEffectiveName()).append(", ");
+                            noneMember++;
+                        }
 
-                        if (pre && mem)
-                            both.append(m.getNickname()).append(", ");
+                        if (pre && mem) {
+                            both.append(m.getEffectiveName()).append(", ");
+                            bothMember++;
+                        }
                     }
                 }
 
-                ch.sendMessage(both.substring(0, both.length()-2)+"\n"+none.substring(0, none.length()-2)).queue();
+                String message = both.substring(0, both.length()-2)+"\n"+none.substring(0, none.length()-2);
+
+                if(message.length() >= 2000) {
+                    message = String.format("BOTH : %d\nNONE : %d", bothMember, noneMember);
+                }
+
+                ch.sendMessage(message).queue();
             }
 
             StaticStore.checkingBCU = false;

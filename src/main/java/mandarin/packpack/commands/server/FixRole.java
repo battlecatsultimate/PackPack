@@ -83,7 +83,7 @@ public class FixRole extends ConstraintCommand {
 
                 long fixed = 0L;
 
-                List<Member> members = g.getMembers();
+                List<Member> members = g.loadMembers().get();
 
                 for(Member m : members) {
                     String roles = StaticStore.rolesToString(m.getRoles());
