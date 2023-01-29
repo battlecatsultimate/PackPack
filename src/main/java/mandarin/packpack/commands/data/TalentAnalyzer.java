@@ -238,13 +238,13 @@ public class TalentAnalyzer extends ConstraintCommand {
             }
         }
 
-        int talentSet = (talentLine.length - 2) / 13;
+        int talentSet = (talentLine.length - 2) / 14;
 
         for(int i = 0; i < talentSet; i++) {
             String desc = null;
             String title = null;
 
-            int abilityID = StaticStore.safeParseInt(talentLine[2 + i * 13]);
+            int abilityID = StaticStore.safeParseInt(talentLine[2 + i * 14]);
 
             if(abilityID == 0)
                 continue;
@@ -256,10 +256,10 @@ public class TalentAnalyzer extends ConstraintCommand {
                     return false;
                 }
 
-                if(!StaticStore.isNumeric(talentLine[2 + i * 13 + 10]))
+                if(!StaticStore.isNumeric(talentLine[2 + i * 14 + 10]))
                     return false;
 
-                int textID = StaticStore.safeParseInt(talentLine[2 + i * 13 + 10]);
+                int textID = StaticStore.safeParseInt(talentLine[2 + i * 14 + 10]);
 
                 BufferedReader descReader = new BufferedReader(new FileReader(description, StandardCharsets.UTF_8));
 
@@ -275,8 +275,8 @@ public class TalentAnalyzer extends ConstraintCommand {
 
                         title = String.format(LangID.getStringByID("talanalyzer_dummy", lang), abilityID);
 
-                        if(StaticStore.isNumeric(talentLine[2 + i * 13 + 1])) {
-                            int maxLevel = StaticStore.safeParseInt(talentLine[2 + i * 13 + 1]);
+                        if(StaticStore.isNumeric(talentLine[2 + i * 14 + 1])) {
+                            int maxLevel = StaticStore.safeParseInt(talentLine[2 + i * 14 + 1]);
 
                             if(maxLevel >= 2) {
                                 title += " [1 ~ " + maxLevel + "]";
@@ -300,7 +300,7 @@ public class TalentAnalyzer extends ConstraintCommand {
 
             int[] levels = null;
 
-            int levelID = StaticStore.safeParseInt(talentLine[2 + i * 13 + 11]);
+            int levelID = StaticStore.safeParseInt(talentLine[2 + i * 14 + 11]);
 
             if(!DataToString.talentLevel.containsKey(levelID)) {
                 File curve = new File(dataLocal, "SkillLevel.csv");

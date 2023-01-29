@@ -4,6 +4,7 @@ import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Form;
+import common.util.unit.Level;
 import common.util.unit.Unit;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
@@ -26,9 +27,9 @@ public class FormStatMessageHolder extends SearchHolder {
     private final boolean extra;
     private final boolean compact;
     private final boolean isTrueForm;
-    private final ArrayList<Integer> lv;
+    private final Level lv;
 
-    public FormStatMessageHolder(ArrayList<Form> form, Message author, ConfigHolder config, IDHolder holder, Message msg, String channelID, int param, ArrayList<Integer> lv, int lang) {
+    public FormStatMessageHolder(ArrayList<Form> form, Message author, ConfigHolder config, IDHolder holder, Message msg, String channelID, int param, Level lv, int lang) {
         super(msg, author, channelID, lang);
 
         this.form = form;

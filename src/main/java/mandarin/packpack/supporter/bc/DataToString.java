@@ -110,6 +110,7 @@ public class DataToString extends Data {
         addTalentData(58, "data_shieldbreak", "SHIELDBREAK");
         addTalentData(59, "data_corpsekiller", "data_corpsekiller");
         addTalentData(60, "data_curse", "CURSE");
+        addTalentData(61, "data_tba", "TBA");
 
         VFile pCoinLevel = VFile.get("./org/data/SkillLevel.csv");
 
@@ -323,14 +324,20 @@ public class DataToString extends Data {
         }
     }
 
-    public static String getTBA(MaskUnit f, boolean isFrame) {
+    public static String getTBA(MaskUnit f,  boolean talent, Level lv, boolean isFrame) {
         if(f == null)
             return "";
 
+        MaskUnit du = f;
+
+        if(talent && f.getPCoin() != null) {
+            du = f.getPCoin().improve(lv.getTalents());
+        }
+
         if(isFrame) {
-            return f.getTBA()+"f";
+            return du.getTBA()+"f";
         } else {
-            return df.format(f.getTBA()/30.0)+"s";
+            return df.format(du.getTBA()/30.0)+"s";
         }
     }
 
@@ -548,7 +555,7 @@ public class DataToString extends Data {
         return true;
     }
 
-    public static String getCD(MaskUnit f, boolean isFrame, boolean talent, ArrayList<Integer> lvs) {
+    public static String getCD(MaskUnit f, boolean isFrame, boolean talent, Level lvs) {
         if(f == null)
             return "";
 
@@ -556,7 +563,7 @@ public class DataToString extends Data {
 
         if(lvs != null && f.getPCoin() != null) {
             if(talent)
-                du = f.getPCoin().improve(lvs);
+                du = f.getPCoin().improve(lvs.getTalents());
             else
                 du = f;
         } else
@@ -569,14 +576,14 @@ public class DataToString extends Data {
         }
     }
 
-    public static String getAtk(MaskUnit f, UnitLevel lv, boolean talent, ArrayList<Integer> lvs) {
+    public static String getAtk(MaskUnit f, UnitLevel lv, boolean talent, Level lvs) {
         if(f == null)
             return "";
 
         MaskUnit du;
 
         if(f.getPCoin() != null && talent)
-            du = f.getPCoin().improve(lvs);
+            du = f.getPCoin().improve(lvs.getTalents());
         else
             du = f;
 
@@ -596,7 +603,7 @@ public class DataToString extends Data {
             return getTotalAtk(e, magnification);
     }
 
-    public static String getTotalAtk(UnitLevel lv, MaskUnit du, boolean talent, ArrayList<Integer> lvs) {
+    public static String getTotalAtk(UnitLevel lv, MaskUnit du, boolean talent, Level lvs) {
         Treasure t = BasisSet.current().t();
 
         int result = 0;
@@ -605,9 +612,9 @@ public class DataToString extends Data {
 
         for(int[] atk : raw) {
             if(du.getPCoin() != null && talent) {
-                result += (int) ((int) (Math.round(atk[0] * lv.getMult(lvs.get(0))) * t.getAtkMulti()) * du.getPCoin().getAtkMultiplication(lvs));
+                result += (int) ((int) (Math.round(atk[0] * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getAtkMulti()) * du.getPCoin().getAtkMultiplication(lvs));
             } else {
-                result += (int) (Math.round(atk[0] * lv.getMult(lvs.get(0))) * t.getAtkMulti());
+                result += (int) (Math.round(atk[0] * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getAtkMulti());
             }
         }
 
@@ -629,7 +636,7 @@ public class DataToString extends Data {
         return String.valueOf(result);
     }
 
-    public static String getAtks(UnitLevel lv, MaskUnit du, boolean talent, ArrayList<Integer> lvs) {
+    public static String getAtks(UnitLevel lv, MaskUnit du, boolean talent, Level lvs) {
         if(du == null)
             return "";
 
@@ -643,9 +650,9 @@ public class DataToString extends Data {
             int result;
 
             if(du.getPCoin() != null && talent) {
-                result = (int) ((int) (Math.round(atk[0] * lv.getMult(lvs.get(0))) * t.getAtkMulti()) * du.getPCoin().getAtkMultiplication(lvs));
+                result = (int) ((int) (Math.round(atk[0] * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getAtkMulti()) * du.getPCoin().getAtkMultiplication(lvs));
             } else {
-                result = (int) (Math.round(atk[0] * lv.getMult(lvs.get(0))) * t.getAtkMulti());
+                result = (int) (Math.round(atk[0] * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getAtkMulti());
             }
 
             damage.add(result);
@@ -687,7 +694,7 @@ public class DataToString extends Data {
         return sb.toString();
     }
 
-    public static String getDPS(MaskUnit f, UnitLevel lv, boolean talent, ArrayList<Integer> lvs) {
+    public static String getDPS(MaskUnit f, UnitLevel lv, boolean talent, Level lvs) {
         if(f == null)
             return "";
 
@@ -695,7 +702,7 @@ public class DataToString extends Data {
 
         if(lvs != null && f.getPCoin() != null)
             if(talent)
-                du = f.getPCoin().improve(lvs);
+                du = f.getPCoin().improve(lvs.getTalents());
             else
                 du = f;
         else
@@ -711,7 +718,7 @@ public class DataToString extends Data {
         return df.format(Double.parseDouble(getTotalAtk(e, magnification)) / (e.getItv() / 30.0));
     }
 
-    public static String getSpeed(MaskUnit f, boolean talent, ArrayList<Integer> lvs) {
+    public static String getSpeed(MaskUnit f, boolean talent, Level lvs) {
         if(f == null)
             return "";
 
@@ -719,7 +726,7 @@ public class DataToString extends Data {
 
         if(lvs != null && f.getPCoin() != null)
             if(talent)
-                du = f.getPCoin().improve(lvs);
+                du = f.getPCoin().improve(lvs.getTalents());
             else
                 du = f;
         else
@@ -735,7 +742,7 @@ public class DataToString extends Data {
         return String.valueOf(e.getSpeed());
     }
 
-    public static String getHitback(MaskUnit f, boolean talent, ArrayList<Integer> lvs) {
+    public static String getHitback(MaskUnit f, boolean talent, Level lvs) {
         if(f == null)
             return "";
 
@@ -743,7 +750,7 @@ public class DataToString extends Data {
 
         if(lvs != null && f.getPCoin() != null)
             if(talent)
-                du = f.getPCoin().improve(lvs);
+                du = f.getPCoin().improve(lvs.getTalents());
             else
                 du = f;
         else
@@ -759,14 +766,14 @@ public class DataToString extends Data {
         return String.valueOf(e.getHb());
     }
 
-    public static String getHP(MaskUnit f, UnitLevel lv, boolean talent, ArrayList<Integer> lvs) {
+    public static String getHP(MaskUnit f, UnitLevel lv, boolean talent, Level lvs) {
         if(f == null)
             return "";
 
         MaskUnit du;
 
         if(f.getPCoin() != null && talent)
-            du = f.getPCoin().improve(lvs);
+            du = f.getPCoin().improve(lvs.getTalents());
         else
             du = f;
 
@@ -775,9 +782,9 @@ public class DataToString extends Data {
         int result;
 
         if(f.getPCoin() != null && talent) {
-            result = (int) ((int) (Math.round(du.getHp() * lv.getMult(lvs.get(0))) * t.getDefMulti()) * f.getPCoin().getHPMultiplication(lvs));
+            result = (int) ((int) (Math.round(du.getHp() * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getDefMulti()) * f.getPCoin().getHPMultiplication(lvs));
         } else {
-            result = (int) (Math.round(du.getHp() * lv.getMult(lvs.get(0))) * t.getDefMulti());
+            result = (int) (Math.round(du.getHp() * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getDefMulti());
         }
 
         return String.valueOf(result);
@@ -790,7 +797,7 @@ public class DataToString extends Data {
         return "" + (long) (e.multi(BasisSet.current()) * e.getHp() * magnification / 100.0);
     }
 
-    public static String getTrait(MaskUnit f, boolean talent, ArrayList<Integer> lvs, boolean icon, int lang) {
+    public static String getTrait(MaskUnit f, boolean talent, Level lvs, boolean icon, int lang) {
         if(f == null)
             return "";
 
@@ -798,7 +805,7 @@ public class DataToString extends Data {
 
         if(lvs != null & f.getPCoin() != null)
             if(talent)
-                du = f.getPCoin().improve(lvs);
+                du = f.getPCoin().improve(lvs.getTalents());
             else
                 du = f;
         else
@@ -864,7 +871,7 @@ public class DataToString extends Data {
         return trait;
     }
 
-    public static String getCost(MaskUnit f, boolean talent, ArrayList<Integer> lvs) {
+    public static String getCost(MaskUnit f, boolean talent, Level lvs) {
         if(f == null)
             return "";
 
@@ -872,7 +879,7 @@ public class DataToString extends Data {
 
         if(lvs != null & f.getPCoin() != null)
             if(talent)
-                du = f.getPCoin().improve(lvs);
+                du = f.getPCoin().improve(lvs.getTalents());
             else
                 du = f;
         else
@@ -910,7 +917,7 @@ public class DataToString extends Data {
             return LangID.getStringByID("data_single", lang);
     }
 
-    public static String getTalent(MaskUnit f, ArrayList<Integer> lv, int lang) {
+    public static String getTalent(MaskUnit f, Level lv, int lang) {
         if(f == null || f.getPCoin() == null)
             return LangID.getStringByID("data_notalent", lang);
 
@@ -929,17 +936,29 @@ public class DataToString extends Data {
             sb.append(trait).append("] ");
         }
 
+        int[] talents = lv.getTalents();
+
         for(int i = 0; i < info.size(); i++) {
             int[] data = info.get(i);
 
             if(talentText.containsKey(data[0])) {
-                sb.append(LangID.getStringByID(talentText.get(data[0]), lang)).append(" [").append(lv.get(i + 1)).append("]");
+                sb.append(LangID.getStringByID(talentText.get(data[0]), lang));
+
+                if(info.get(i)[13] == 1) {
+                    sb.append("*");
+                }
+
+                sb.append(" [").append(talents[i]).append("]");
             } else {
-                sb.append("??? [").append(lv.get(i + 1)).append("]");
+                sb.append("??? [").append(talents[i]).append("]");
             }
 
             if(i != info.size() - 1)
                 sb.append(", ");
+        }
+
+        if(sb.toString().contains("*")) {
+            sb.append("\n\n").append(LangID.getStringByID("data_supertalentdesc", lang));
         }
 
         return sb.toString();
@@ -2195,7 +2214,7 @@ public class DataToString extends Data {
         }
     }
 
-    public static String getHealthHitback(MaskUnit f, UnitLevel lv, boolean talent, ArrayList<Integer> lvs) {
+    public static String getHealthHitback(MaskUnit f, UnitLevel lv, boolean talent, Level lvs) {
         return getHP(f, lv, talent, lvs) + " - " + getHitback(f, talent, lvs);
     }
 
@@ -2203,14 +2222,14 @@ public class DataToString extends Data {
         return getHP(e, m) + " - " + getHitback(e);
     }
 
-    public static String getCompactAtk(MaskUnit f, boolean talent, UnitLevel lv, ArrayList<Integer> lvs) {
+    public static String getCompactAtk(MaskUnit f, boolean talent, UnitLevel lv, Level lvs) {
         if(f == null)
             return "";
 
         MaskUnit du;
 
         if(f.getPCoin() != null && talent)
-            du = f.getPCoin().improve(lvs);
+            du = f.getPCoin().improve(lvs.getTalents());
         else
             du = f;
 
@@ -2230,7 +2249,7 @@ public class DataToString extends Data {
             return getTotalAtk(e, m) + " [" + getDPS(e, m) + "]";
     }
 
-    private static String getCompactAtks(MaskUnit du, boolean talent, UnitLevel lv, ArrayList<Integer> lvs) {
+    private static String getCompactAtks(MaskUnit du, boolean talent, UnitLevel lv, Level lvs) {
         if(du == null)
             return "";
 
@@ -2244,9 +2263,9 @@ public class DataToString extends Data {
             int result;
 
             if(du.getPCoin() != null && talent) {
-                result = (int) ((int) (Math.round(atk[0] * lv.getMult(lvs.get(0))) * t.getAtkMulti()) * du.getPCoin().getAtkMultiplication(lvs));
+                result = (int) ((int) (Math.round(atk[0] * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getAtkMulti()) * du.getPCoin().getAtkMultiplication(lvs));
             } else {
-                result = (int) (Math.round(atk[0] * lv.getMult(lvs.get(0))) * t.getAtkMulti());
+                result = (int) (Math.round(atk[0] * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getAtkMulti());
             }
 
             damage.add(result);
@@ -2304,15 +2323,15 @@ public class DataToString extends Data {
         return result.toString();
     }
 
-    public static String getCompactAtkTimings(MaskUnit f, boolean isFrame) {
-        return getAtkTime(f, isFrame) + " : " + getPre(f, isFrame) + " -> " + getPost(f, isFrame) + " -> " + getTBA(f, isFrame);
+    public static String getCompactAtkTimings(MaskUnit f, boolean talent, Level lv, boolean isFrame) {
+        return getAtkTime(f, isFrame) + " : " + getPre(f, isFrame) + " -> " + getPost(f, isFrame) + " -> " + getTBA(f, talent, lv, isFrame);
     }
 
     public static String getCompactAtkTimings(MaskEnemy e, boolean isFrame) {
         return getAtkTime(e, isFrame) + " : " + getPre(e, isFrame) + " -> " + getPost(e, isFrame) + " -> " + getTBA(e, isFrame);
     }
 
-    public static String getCostCooldownSpeed(MaskUnit f, boolean isFrame, boolean talent, ArrayList<Integer> lvs) {
+    public static String getCostCooldownSpeed(MaskUnit f, boolean isFrame, boolean talent, Level lvs) {
         return getCost(f, talent, lvs) + " - " + getCD(f, isFrame, talent, lvs) + " - " + getSpeed(f, talent, lvs);
     }
 
@@ -2429,6 +2448,10 @@ public class DataToString extends Data {
             name += " [1 ~ " + data[1] + "]";
         }
 
+        if(data[13] == 1) {
+            name += " " + LangID.getStringByID("talentinfo_super", lang);
+        }
+
         if(talentIcon.containsKey(data[0])) {
             String code = talentIcon.get(data[0]);
 
@@ -2470,11 +2493,11 @@ public class DataToString extends Data {
     }
 
     public static String getTalentTitle(String[] data, int index, int lang) {
-        if(!StaticStore.isNumeric(data[2 + index * 13]) || !StaticStore.isNumeric(data[2 + index * 13 + 1]))
+        if(!StaticStore.isNumeric(data[2 + index * 14]) || !StaticStore.isNumeric(data[2 + index * 14 + 1]))
             return "";
 
-        int maxLevel = StaticStore.safeParseInt(data[2 + index * 13 + 1]);
-        int abilityID = StaticStore.safeParseInt(data[2 + index * 13]);
+        int maxLevel = StaticStore.safeParseInt(data[2 + index * 14 + 1]);
+        int abilityID = StaticStore.safeParseInt(data[2 + index * 14]);
 
         String name;
 
@@ -2485,7 +2508,11 @@ public class DataToString extends Data {
         }
 
         if(maxLevel >= 2) {
-            name += " [1 ~ " + data[2 + index * 13 + 1] + "]";
+            name += " [1 ~ " + data[2 + index * 14 + 1] + "]";
+        }
+
+        if(StaticStore.isNumeric(data[2 + index * 14 + 13]) && StaticStore.safeParseInt(data[2 + index * 14 + 13]) == 1) {
+            name += " " + LangID.getStringByID("talentinfo_super", lang);
         }
 
         return name;
@@ -2631,6 +2658,10 @@ public class DataToString extends Data {
                         key = "talentinfo_kb";
 
                         break;
+                    case PC2_TBA:
+                        key = "talentinfo_tba";
+
+                        break;
                     default:
                         throw new IllegalStateException("Invalid P_BASE ID : " + type[1]);
                 }
@@ -2649,8 +2680,8 @@ public class DataToString extends Data {
     public static String getTalentExplanation(String[] data, MaskUnit du, int index, boolean isFrame, int lang) {
         String talentName;
 
-        int abilityID = StaticStore.safeParseInt(data[2 + index * 13]);
-        int maxLevel = StaticStore.safeParseInt(data[2 + index * 13 + 1]);
+        int abilityID = StaticStore.safeParseInt(data[2 + index * 14]);
+        int maxLevel = StaticStore.safeParseInt(data[2 + index * 14 + 1]);
         int traitID = StaticStore.safeParseInt(data[1]);
 
         List<Trait> traits = Trait.convertType(traitID);
@@ -2689,8 +2720,8 @@ public class DataToString extends Data {
 
                     int changedIndex = findDifferentTalentIndex(data, index);
 
-                    int min = StaticStore.safeParseInt(data[2 + index * 13 + 2 * (changedIndex + 1)]);
-                    int max = StaticStore.safeParseInt(data[2 + index * 13 + 1 + 2 * (changedIndex + 1)]);
+                    int min = StaticStore.safeParseInt(data[2 + index * 14 + 2 * (changedIndex + 1)]);
+                    int max = StaticStore.safeParseInt(data[2 + index * 14 + 1 + 2 * (changedIndex + 1)]);
 
                     if(p.exists()) {
                         min += p.get(changedIndex);
@@ -2756,8 +2787,8 @@ public class DataToString extends Data {
                     return "";
                 }
 
-                int min = StaticStore.safeParseInt(data[2 + index * 13 + 2 * (changedIndex + 1)]);
-                int max = StaticStore.safeParseInt(data[2 + index * 13 + 1 + 2 * (changedIndex + 1)]);
+                int min = StaticStore.safeParseInt(data[2 + index * 14 + 2 * (changedIndex + 1)]);
+                int max = StaticStore.safeParseInt(data[2 + index * 14 + 1 + 2 * (changedIndex + 1)]);
 
                 if(type[1] == PC2_COST) {
                     min = (int) (min * 1.5);
@@ -2791,6 +2822,10 @@ public class DataToString extends Data {
                         key = "talentinfo_kb";
 
                         break;
+                    case PC2_TBA:
+                        key = "talentinfo_tba";
+
+                        break;
                     default:
                         throw new IllegalStateException("Invalid P_BASE ID : " + type[1]);
                 }
@@ -2817,10 +2852,10 @@ public class DataToString extends Data {
 
     private static int findDifferentTalentIndex(String[] data, int index) {
         for(int i = 0; i < 4; i++) {
-            if(!StaticStore.isNumeric(data[2 + index * 13 + 2 * (i + 1)]) || !StaticStore.isNumeric(data[2 + index * 13 + 1 + 2 * (i + 1)]))
+            if(!StaticStore.isNumeric(data[2 + index * 14 + 2 * (i + 1)]) || !StaticStore.isNumeric(data[2 + index * 14 + 1 + 2 * (i + 1)]))
                 continue;
 
-            if(StaticStore.safeParseInt(data[2 + index * 13 + 2 * (i + 1)]) != StaticStore.safeParseInt(data[2 + index * 13 + 1 + 2 * (i + 1)])) {
+            if(StaticStore.safeParseInt(data[2 + index * 14 + 2 * (i + 1)]) != StaticStore.safeParseInt(data[2 + index * 14 + 1 + 2 * (i + 1)])) {
                 return i;
             }
         }
@@ -2833,7 +2868,7 @@ public class DataToString extends Data {
         int[] modification = new int[4];
 
         for(int i = 0; i < 4; i++) {
-            modification[i] = StaticStore.safeParseInt(data[2 + 13 * index + 2 * (i + 1)]);
+            modification[i] = StaticStore.safeParseInt(data[2 + 14 * index + 2 * (i + 1)]);
         }
 
         if(type == P_VOLC) {

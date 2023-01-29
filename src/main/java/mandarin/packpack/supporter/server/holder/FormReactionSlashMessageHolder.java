@@ -1,18 +1,19 @@
 package mandarin.packpack.supporter.server.holder;
 
 import common.util.unit.Form;
+import common.util.unit.Level;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 
-import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -29,9 +30,9 @@ public class FormReactionSlashMessageHolder extends MessageHolder<MessageReactio
     private final boolean isFrame;
     private final boolean talent;
     private final boolean extra;
-    private final ArrayList<Integer> lv;
+    private final Level lv;
 
-    public FormReactionSlashMessageHolder(Message m, Form f, String memberID, String channelID, String embID, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, ArrayList<Integer> lv, int lang) {
+    public FormReactionSlashMessageHolder(Message m, Form f, String memberID, String channelID, String embID, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, Level lv, int lang) {
         super(MessageReactionAddEvent.class, null);
 
         this.f = f;

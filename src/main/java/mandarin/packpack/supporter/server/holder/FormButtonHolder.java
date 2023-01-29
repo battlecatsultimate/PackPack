@@ -1,6 +1,7 @@
 package mandarin.packpack.supporter.server.holder;
 
 import common.util.unit.Form;
+import common.util.unit.Level;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
@@ -29,9 +30,9 @@ public class FormButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
     private final boolean compact;
     private final String channelID;
     private final String memberID;
-    private final ArrayList<Integer> lv;
+    private final Level lv;
 
-    public FormButtonHolder(Form f, Message author, Message msg, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, boolean compact, ArrayList<Integer> lv, int lang, String channelID) {
+    public FormButtonHolder(Form f, Message author, Message msg, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, boolean compact, Level lv, int lang, String channelID) {
         super(ButtonInteractionEvent.class, author);
 
         this.embed = msg;
