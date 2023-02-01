@@ -1,6 +1,7 @@
-package mandarin.packpack.supporter;
+package mandarin.packpack.supporter.event;
 
 import common.CommonStatic;
+import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.event.EventFactor;
 import mandarin.packpack.supporter.lang.LangID;
 

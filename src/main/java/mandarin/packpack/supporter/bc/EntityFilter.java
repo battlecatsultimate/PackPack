@@ -13,7 +13,7 @@ import common.util.unit.Combo;
 import common.util.unit.Enemy;
 import common.util.unit.Form;
 import common.util.unit.Unit;
-import mandarin.packpack.supporter.KoreanSeparater;
+import mandarin.packpack.supporter.lang.KoreanSeparater;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.AliasHolder;

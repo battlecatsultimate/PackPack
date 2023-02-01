@@ -77,11 +77,11 @@ public class EntityHandler {
         }
     }
 
-    public static Message performUnitEmb(Form f, GenericCommandInteractionEvent event, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, ArrayList<Integer> lv, int lang) throws Exception {
+    public static Message performUnitEmb(Form f, GenericCommandInteractionEvent event, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, Level lv, int lang) throws Exception {
         ReplyCallbackAction action = event.deferReply();
 
-        int level = lv.get(0);
-        int levelp = 0;
+        int level = lv.getLv();
+        int levelp = lv.getPlusLv();
 
         if(level <= 0) {
             if(f.unit.rarity == 0)
@@ -105,7 +105,8 @@ public class EntityHandler {
                 levelp = 0;
         }
 
-        lv.set(0, level + levelp);
+        lv.setLevel(level);
+        lv.setPlusLevel(levelp);
 
         String l;
 
@@ -133,25 +134,22 @@ public class EntityHandler {
         else
             c = StaticStore.rainbow[2];
 
-        ArrayList<Integer> t;
+        int[] t;
 
         if(talent && f.du.getPCoin() != null) {
-            t = new ArrayList<>(f.du.getPCoin().max);
-            t.set(0, lv.get(0));
+            t = f.du.getPCoin().max.clone();
         } else
             t = null;
 
-        if(t != null)
-            t = handleTalent(lv, t);
-        else {
-            t = new ArrayList<>();
+        if(t != null) {
+            t = handleTalent(f, lv, t);
 
-            t.add(lv.get(0));
+            lv.setTalents(t);
         }
 
         spec.setTitle(DataToString.getTitle(f, lang));
 
-        if(talent && f.du.getPCoin() != null && talentExists(t)) {
+        if(talent && f.du.getPCoin() != null && t != null && talentExists(t)) {
             spec.setDescription(LangID.getStringByID("data_talent", lang));
         }
 
@@ -159,26 +157,26 @@ public class EntityHandler {
         spec.setThumbnail("attachment://icon.png");
         spec.addField(LangID.getStringByID("data_id", lang), DataToString.getID(f.uid.id, f.fid), true);
         spec.addField(LangID.getStringByID("data_level", lang), l, true);
-        spec.addField(LangID.getStringByID("data_hp", lang), DataToString.getHP(f.du, f.unit.lv, talent, t), true);
-        spec.addField(LangID.getStringByID("data_hb", lang), DataToString.getHitback(f.du, talent, t), true);
-        spec.addField(LangID.getStringByID("data_cooldown", lang), DataToString.getCD(f.du,isFrame, talent, t), true);
-        spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(f.du, talent, t), true);
-        spec.addField(LangID.getStringByID("data_cost", lang), DataToString.getCost(f.du, talent, t), true);
+        spec.addField(LangID.getStringByID("data_hp", lang), DataToString.getHP(f.du, f.unit.lv, talent, lv), true);
+        spec.addField(LangID.getStringByID("data_hb", lang), DataToString.getHitback(f.du, talent, lv), true);
+        spec.addField(LangID.getStringByID("data_cooldown", lang), DataToString.getCD(f.du,isFrame, talent, lv), true);
+        spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(f.du, talent, lv), true);
+        spec.addField(LangID.getStringByID("data_cost", lang), DataToString.getCost(f.du, talent, lv), true);
         spec.addField(LangID.getStringByID("data_range", lang), DataToString.getRange(f.du), true);
         spec.addField(LangID.getStringByID("data_atktime", lang), DataToString.getAtkTime(f.du, isFrame), true);
         spec.addField(LangID.getStringByID("data_preatk", lang), DataToString.getPre(f.du, isFrame), true);
         spec.addField(LangID.getStringByID("data_postatk", lang), DataToString.getPost(f.du, isFrame), true);
-        spec.addField(LangID.getStringByID("data_tba", lang), DataToString.getTBA(f.du, isFrame), true);
+        spec.addField(LangID.getStringByID("data_tba", lang), DataToString.getTBA(f.du, talent, lv, isFrame), true);
         spec.addField(LangID.getStringByID("data_atktype", lang), DataToString.getSiMu(f.du, lang), true);
-        spec.addField(LangID.getStringByID("data_dps", lang), DataToString.getDPS(f.du, f.unit.lv, talent, t), true);
+        spec.addField(LangID.getStringByID("data_dps", lang), DataToString.getDPS(f.du, f.unit.lv, talent, lv), true);
         spec.addField(LangID.getStringByID("data_abilt", lang), DataToString.getAbilT(f.du, lang), true);
-        spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(f.du, f.unit.lv, talent, t), true);
-        spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(f.du, talent, t, true, lang), true);
+        spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(f.du, f.unit.lv, talent, lv), true);
+        spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(f.du, talent, lv, true, lang), true);
 
         MaskUnit du;
 
         if(f.du.getPCoin() != null)
-            if(talent)
+            if(talent && t != null)
                 du = f.du.getPCoin().improve(t);
             else
                 du = f.du;
@@ -233,8 +231,8 @@ public class EntityHandler {
             spec.setImage("attachment://cf.png");
         }
 
-        if(talentExists(t))
-            spec.setFooter(DataToString.getTalent(f.du, t, lang), null);
+        if(t != null && talentExists(t))
+            spec.setFooter(DataToString.getTalent(f.du, lv, lang), null);
 
         action = action.addEmbeds(spec.build());
 
@@ -301,9 +299,9 @@ public class EntityHandler {
         return null;
     }
 
-    public static Message showUnitEmb(Form f, MessageChannel ch, Message reference, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, ArrayList<Integer> lv, int lang, boolean addEmoji, boolean compact) throws Exception {
-        int level = lv.get(0);
-        int levelp = 0;
+    public static Message showUnitEmb(Form f, MessageChannel ch, Message reference, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, boolean isTrueForm, boolean trueFormPossible, Level lv, int lang, boolean addEmoji, boolean compact) throws Exception {
+        int level = lv.getLv();
+        int levelp = lv.getPlusLv();
 
         if(level <= 0) {
             if(f.unit.rarity == 0)
@@ -327,7 +325,8 @@ public class EntityHandler {
                 levelp = 0;
         }
 
-        lv.set(0, level + levelp);
+        lv.setLevel(level);
+        lv.setPlusLevel(levelp);
 
         String l;
 
@@ -356,24 +355,33 @@ public class EntityHandler {
         else
             c = StaticStore.rainbow[2];
 
-        ArrayList<Integer> t;
+        String desc = "";
+
+        int[] t;
 
         if(talent && f.du.getPCoin() != null) {
-            t = new ArrayList<>(f.du.getPCoin().max);
-            t.set(0, lv.get(0));
+            t = f.du.getPCoin().max.clone();
         } else
             t = null;
 
-        if(t != null)
-            t = handleTalent(lv, t);
-        else {
-            t = new ArrayList<>();
+        if(t != null) {
+            t = handleTalent(f, lv, t);
 
-            t.add(lv.get(0));
+            lv.setTalents(t);
         }
 
-        if(talent && f.du.getPCoin() != null && talentExists(t)) {
-            spec.setDescription(LangID.getStringByID("data_talent", lang));
+        if(talent && f.du.getPCoin() != null && t != null && talentExists(t)) {
+            desc += LangID.getStringByID("data_talent", lang) + "\n";
+        } else if(talent && f.du.getPCoin() == null) {
+            desc += LangID.getStringByID("data_notalent", lang) + "\n";
+        }
+
+        if(isTrueForm && !trueFormPossible) {
+            desc += LangID.getStringByID("formst_notrue", lang);
+        }
+
+        if(!desc.isBlank()) {
+            spec.setDescription(desc);
         }
 
         spec.setColor(c);
@@ -383,38 +391,38 @@ public class EntityHandler {
             spec.setTitle(DataToString.getCompactTitle(f, lang));
 
             spec.addField(LangID.getStringByID("data_level", lang), l, false);
-            spec.addField(LangID.getStringByID("data_hpkb", lang), DataToString.getHealthHitback(f.du, f.unit.lv, talent, t), false);
-            spec.addField(LangID.getStringByID("data_cocosp", lang), DataToString.getCostCooldownSpeed(f.du, isFrame, talent, t), true);
+            spec.addField(LangID.getStringByID("data_hpkb", lang), DataToString.getHealthHitback(f.du, f.unit.lv, talent, lv), false);
+            spec.addField(LangID.getStringByID("data_cocosp", lang), DataToString.getCostCooldownSpeed(f.du, isFrame, talent, lv), true);
             spec.addField(LangID.getStringByID("data_range", lang), DataToString.getRange(f.du), true);
-            spec.addField(LangID.getStringByID("data_times", lang), DataToString.getCompactAtkTimings(f.du, isFrame), false);
-            spec.addField(LangID.getStringByID("data_atkdps", lang).replace("_TTT_", DataToString.getSiMu(f.du, lang)), DataToString.getCompactAtk(f.du, talent, f.unit.lv, t), false);
+            spec.addField(LangID.getStringByID("data_times", lang), DataToString.getCompactAtkTimings(f.du, talent, lv, isFrame), false);
+            spec.addField(LangID.getStringByID("data_atkdps", lang).replace("_TTT_", DataToString.getSiMu(f.du, lang)), DataToString.getCompactAtk(f.du, talent, f.unit.lv, lv), false);
         } else {
             spec.setTitle(DataToString.getTitle(f, lang));
 
             spec.addField(LangID.getStringByID("data_id", lang), DataToString.getID(f.uid.id, f.fid), true);
             spec.addField(LangID.getStringByID("data_level", lang), l, true);
-            spec.addField(LangID.getStringByID("data_hp", lang), DataToString.getHP(f.du, f.unit.lv, talent, t), true);
-            spec.addField(LangID.getStringByID("data_hb", lang), DataToString.getHitback(f.du, talent, t), true);
-            spec.addField(LangID.getStringByID("data_cooldown", lang), DataToString.getCD(f.du,isFrame, talent, t), true);
-            spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(f.du, talent, t), true);
-            spec.addField(LangID.getStringByID("data_cost", lang), DataToString.getCost(f.du, talent, t), true);
+            spec.addField(LangID.getStringByID("data_hp", lang), DataToString.getHP(f.du, f.unit.lv, talent, lv), true);
+            spec.addField(LangID.getStringByID("data_hb", lang), DataToString.getHitback(f.du, talent, lv), true);
+            spec.addField(LangID.getStringByID("data_cooldown", lang), DataToString.getCD(f.du,isFrame, talent, lv), true);
+            spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(f.du, talent, lv), true);
+            spec.addField(LangID.getStringByID("data_cost", lang), DataToString.getCost(f.du, talent, lv), true);
             spec.addField(LangID.getStringByID("data_range", lang), DataToString.getRange(f.du), true);
             spec.addField(LangID.getStringByID("data_atktime", lang), DataToString.getAtkTime(f.du, isFrame), true);
             spec.addField(LangID.getStringByID("data_preatk", lang), DataToString.getPre(f.du, isFrame), true);
             spec.addField(LangID.getStringByID("data_postatk", lang), DataToString.getPost(f.du, isFrame), true);
-            spec.addField(LangID.getStringByID("data_tba", lang), DataToString.getTBA(f.du, isFrame), true);
+            spec.addField(LangID.getStringByID("data_tba", lang), DataToString.getTBA(f.du, talent, lv, isFrame), true);
             spec.addField(LangID.getStringByID("data_atktype", lang), DataToString.getSiMu(f.du, lang), true);
-            spec.addField(LangID.getStringByID("data_dps", lang), DataToString.getDPS(f.du, f.unit.lv, talent, t), true);
+            spec.addField(LangID.getStringByID("data_dps", lang), DataToString.getDPS(f.du, f.unit.lv, talent, lv), true);
             spec.addField(LangID.getStringByID("data_abilt", lang), DataToString.getAbilT(f.du, lang), true);
-            spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(f.du, f.unit.lv, talent, t), true);
+            spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(f.du, f.unit.lv, talent, lv), true);
         }
 
-        spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(f.du, talent, t, true, lang), true);
+        spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(f.du, talent, lv, true, lang), true);
 
         MaskUnit du;
 
         if(f.du.getPCoin() != null)
-            if(talent)
+            if(talent && t != null)
                 du = f.du.getPCoin().improve(t);
             else
                 du = f.du;
@@ -477,8 +485,8 @@ public class EntityHandler {
             spec.setImage("attachment://cf.png");
         }
 
-        if(talentExists(t))
-            spec.setFooter(DataToString.getTalent(f.du, t, lang));
+        if(t != null && talentExists(t))
+            spec.setFooter(DataToString.getTalent(f.du, lv, lang));
 
         Message msg = Command.getRepliedMessageSafely(ch, "", reference, a -> {
             MessageCreateAction action = a.setEmbeds(spec.build());
@@ -552,13 +560,13 @@ public class EntityHandler {
         if(unit.du == null || unit.du.getPCoin() == null)
             throw new IllegalStateException("E/EntityHandler::showTalentEmbed - Unit which has no talent has been passed");
 
-        ArrayList<Integer> levels = new ArrayList<>();
+        Level levels = new Level(unit.du.getPCoin().max.length);
 
-        for(int i = 0; i < unit.du.getPCoin().max.size(); i++) {
-            levels.add(1);
+        for(int i = 0; i < unit.du.getPCoin().max.length; i++) {
+            levels.getTalents()[i] = 1;
         }
 
-        MaskUnit improved = unit.du.getPCoin().improve(levels);
+        MaskUnit improved = unit.du.getPCoin().improve(levels.getTalents());
 
         EmbedBuilder spec = new EmbedBuilder();
 
@@ -577,6 +585,14 @@ public class EntityHandler {
             unitName = Data.trio(unit.unit.id.id);
 
         spec.setTitle(LangID.getStringByID("talentinfo_title", lang).replace("_", unitName));
+
+        for(int i = 0; i < talent.info.size(); i++) {
+            if(talent.info.get(i)[13] == 1) {
+                spec.setDescription(LangID.getStringByID("talentinfo_superdesc", lang));
+
+                break;
+            }
+        }
 
         for(int i = 0; i < talent.info.size(); i++) {
             String title = DataToString.getTalentTitle(unit.du, i, lang);
@@ -605,32 +621,35 @@ public class EntityHandler {
         });
     }
 
-    private static ArrayList<Integer> handleTalent(ArrayList<Integer> lv, ArrayList<Integer> t) {
-        ArrayList<Integer> res = new ArrayList<>(t);
+    private static int[] handleTalent(Form f, Level lv, int[] t) {
+        int[] res = new int[t.length];
+        int[] talents = lv.getTalents();
 
-        res.set(0, lv.get(0));
+        for(int i = 0; i < t.length; i++) {
+            if(i >= talents.length && talents.length == 0)
+                res[i] = t[i];
+            else if(i < talents.length)
+                res[i] = Math.min(t[i], talents[i]);
+        }
 
-        for(int i = 0; i < t.size(); i++) {
-            if(i >= lv.size())
-                if(lv.size() == 1)
-                    res.set(i, t.get(i));
-                else
-                    res.set(i, 0);
-            else
-                res.set(i, Math.min(t.get(i), lv.get(i)));
+        if(f.du.getPCoin() != null) {
+            PCoin pc = f.du.getPCoin();
 
-            if(res.get(i) < 0)
-                res.set(i, t.get(i));
+            for(int i = 0; i < res.length; i++) {
+                if(pc.info.get(i)[13] == 1 && lv.getLv() + lv.getPlusLv() < 60) {
+                    res[i] = 0;
+                }
+            }
         }
 
         return res;
     }
 
-    private static boolean talentExists(ArrayList<Integer> t) {
+    private static boolean talentExists(int[] t) {
         boolean empty = true;
 
-        for(int i = 1; i < t.size(); i++) {
-            empty &= t.get(i) == 0;
+        for(int i = 1; i < t.length; i++) {
+            empty &= t[i] == 0;
         }
 
         return !empty;
@@ -3231,9 +3250,9 @@ public class EntityHandler {
     private static List<CellDrawer> addCell(List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilData, List<FlagCellData> traitData, CustomMaskUnit u, int lang, int lv, boolean isFrame) {
         List<CellDrawer> cells = new ArrayList<>();
 
-        ArrayList<Integer> lvs = new ArrayList<>();
+        Level lvs = new Level(0);
 
-        lvs.add(lv);
+        lvs.setLevel(lv);
 
         cells.add(new NormalCellDrawer(
                 new String[] {LangID.getStringByID("data_hp", lang), LangID.getStringByID("data_hb", lang), LangID.getStringByID("data_speed", lang)},
@@ -3249,7 +3268,7 @@ public class EntityHandler {
 
         cells.add(new NormalCellDrawer(
                 new String[] {LangID.getStringByID("data_preatk", lang), LangID.getStringByID("data_postatk", lang), LangID.getStringByID("data_tba", lang)},
-                new String[] {DataToString.getPre(u, isFrame), DataToString.getPost(u, isFrame), DataToString.getTBA(u, isFrame)}
+                new String[] {DataToString.getPre(u, isFrame), DataToString.getPost(u, isFrame), DataToString.getTBA(u, false, lvs, isFrame)}
         ));
 
         StringBuilder trait = new StringBuilder(DataToString.getTrait(u, false, lvs, false, lang));

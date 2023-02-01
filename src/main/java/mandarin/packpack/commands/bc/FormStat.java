@@ -2,6 +2,8 @@ package mandarin.packpack.commands.bc;
 
 import common.util.Data;
 import common.util.unit.Form;
+import common.util.unit.Level;
+import common.util.unit.Unit;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
@@ -64,7 +66,7 @@ public class FormStat extends ConstraintCommand {
         boolean frame = SlashOption.getBooleanOption(options, "frame", true);
         boolean talent = SlashOption.getBooleanOption(options, "talent", false);
         boolean extra = SlashOption.getBooleanOption(options, "extra", false);
-        ArrayList<Integer> lvs = prepareLevels(options);
+        Level lv = prepareLevels(options);
 
         Form f = EntityFilter.pickOneForm(name, lang);
 
@@ -84,12 +86,12 @@ public class FormStat extends ConstraintCommand {
 
             config = StaticStore.config.getOrDefault(u.getId(), StaticStore.defaultConfig);
 
-            Message m = EntityHandler.performUnitEmb(f, event, config, frame, talent, extra, lvs, finalLang);
+            Message m = EntityHandler.performUnitEmb(f, event, config, frame, talent, extra, lv, finalLang);
 
             if(m != null && (!(m.getChannel() instanceof GuildChannel) || m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_MANAGE))) {
                 StaticStore.putHolder(
                         u.getId(),
-                        new FormReactionSlashMessageHolder(m, f, u.getId(), m.getChannel().getId(), m.getId(), config, frame && config.useFrame, talent, extra || config.extra, lvs, finalLang)
+                        new FormReactionSlashMessageHolder(m, f, u.getId(), m.getChannel().getId(), m.getId(), config, frame && config.useFrame, talent, extra || config.extra, lv, finalLang)
                 );
             }
         } catch (Exception e) {
@@ -97,7 +99,7 @@ public class FormStat extends ConstraintCommand {
         }
     }
 
-    private static ArrayList<Integer> prepareLevels(List<OptionMapping> options) {
+    private static Level prepareLevels(List<OptionMapping> options) {
         ArrayList<Integer> levels = new ArrayList<>();
 
         for(int i = 0; i < 7; i++) {
@@ -107,13 +109,31 @@ public class FormStat extends ConstraintCommand {
                 levels.add(SlashOption.getIntOption(options, "talent_level_"+i, -1));
         }
 
-        return levels;
+        Level lv = new Level(0);
+
+        if(levels.size() > 0)
+            lv.setLevel(levels.get(0));
+        else
+            lv.setLevel(-1);
+
+        if(levels.size() > 1) {
+            int[] t = new int[levels.size() - 1];
+
+            for(int i = 1; i < levels.size(); i++) {
+                t[i - 1] = levels.get(i);
+            }
+
+            lv.setTalents(t);
+        }
+
+        return lv;
     }
 
     private static final int PARAM_TALENT = 2;
     private static final int PARAM_SECOND = 4;
     private static final int PARAM_EXTRA = 8;
     private static final int PARAM_COMPACT = 16;
+    private static final int PARAM_TRUE_FORM = 32;
 
     private final ConfigHolder config;
 
@@ -161,14 +181,26 @@ public class FormStat extends ConstraintCommand {
             if (forms.size() == 1) {
                 int param = checkParameters(command);
 
-                ArrayList<Integer> lv = handleLevel(command);
+                Level lv = handleLevel(command);
 
                 boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
-                boolean talent = (param & PARAM_TALENT) > 0 || lv.size() > 1;
+                boolean talent = (param & PARAM_TALENT) > 0 || lv.getTalents().length > 1;
                 boolean extra = (param & PARAM_EXTRA) > 0 || config.extra;
                 boolean compact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
+                boolean isTrueForm = (param & PARAM_TRUE_FORM) > 0;
 
-                Message result = EntityHandler.showUnitEmb(forms.get(0), ch, getMessage(event), config, isFrame, talent, extra, lv, lang, true, compact);
+                boolean trueFormPossible = false;
+
+                Form f = forms.get(0);
+
+                Unit unit = f.unit;
+
+                if (isTrueForm && unit.forms.length == 3) {
+                    f = unit.forms[2];
+                    trueFormPossible = true;
+                }
+
+                Message result = EntityHandler.showUnitEmb(f, ch, getMessage(event), config, isFrame, talent, extra, isTrueForm, trueFormPossible, lv, lang, true, compact);
 
                 if(result != null) {
                     User u = getUser(event);
@@ -209,7 +241,7 @@ public class FormStat extends ConstraintCommand {
 
                 int param = checkParameters(command);
 
-                ArrayList<Integer> lv = handleLevel(command);
+                Level lv = handleLevel(command);
 
                 if(res != null) {
                     User u = getUser(event);
@@ -263,6 +295,13 @@ public class FormStat extends ConstraintCommand {
                         } else
                             break label;
                         break;
+                    case "-tf":
+                    case "-trueform":
+                        if ((result & PARAM_TRUE_FORM) == 0) {
+                            result |= PARAM_TRUE_FORM;
+                        } else
+                            break label;
+                        break;
                 }
             }
         }
@@ -278,6 +317,7 @@ public class FormStat extends ConstraintCommand {
         boolean isTalent = false;
         boolean isExtra = false;
         boolean isCompact = false;
+        boolean isTrueForm = false;
 
         StringBuilder command = new StringBuilder();
 
@@ -336,6 +376,15 @@ public class FormStat extends ConstraintCommand {
                         written = true;
                     }
                     break;
+                case "-tf":
+                case "-trueform":
+                    if (!isTrueForm)
+                        isTrueForm = true;
+                    else {
+                        command.append(content[i]);
+                        written = true;
+                    }
+                    break;
                 default:
                     command.append(content[i]);
                     written = true;
@@ -353,7 +402,7 @@ public class FormStat extends ConstraintCommand {
         return command.toString().trim();
     }
 
-    private ArrayList<Integer> handleLevel(String msg) {
+    private Level handleLevel(String msg) {
         if(msg.contains("-lv")) {
             String[] content = msg.split(" ");
 
@@ -371,9 +420,9 @@ public class FormStat extends ConstraintCommand {
                     }
 
                     if(length == 0) {
-                        ArrayList<Integer> res = new ArrayList<>();
+                        Level res = new Level(0);
 
-                        res.add(-1);
+                        res.setLevel(-1);
 
                         return res;
                     }
@@ -384,21 +433,38 @@ public class FormStat extends ConstraintCommand {
                             lv.add(StaticStore.safeParseInt(trial[j]));
                         }
 
-                        return lv;
+                        Level level = new Level(0);
+
+                        if(lv.size() > 0)
+                            level.setLevel(lv.get(0));
+                        else
+                            level.setLevel(-1);
+
+                        if(lv.size() > 1) {
+                            int[] t = new int[lv.size() - 1];
+
+                            for(int j = 1; j < lv.size(); j++) {
+                                t[j - 1] = lv.get(j);
+                            }
+
+                            level.setTalents(t);
+                        }
+
+                        return level;
                     }
                 }
             }
         } else {
-            ArrayList<Integer> res = new ArrayList<>();
+            Level res = new Level(0);
 
-            res.add(-1);
+            res.setLevel(-1);
 
             return res;
         }
 
-        ArrayList<Integer> res = new ArrayList<>();
+        Level res = new Level(0);
 
-        res.add(-1);
+        res.setLevel(-1);
 
         return res;
     }
