@@ -117,13 +117,24 @@ public class FormStat extends ConstraintCommand {
             lv.setLevel(-1);
 
         if(levels.size() > 1) {
-            int[] t = new int[levels.size() - 1];
+            boolean allEmpty = true;
 
             for(int i = 1; i < levels.size(); i++) {
-                t[i - 1] = levels.get(i);
+                if (levels.get(i) > 0) {
+                    allEmpty = false;
+                    break;
+                }
             }
 
-            lv.setTalents(t);
+            if(!allEmpty) {
+                int[] t = new int[levels.size() - 1];
+
+                for(int i = 1; i < levels.size(); i++) {
+                    t[i - 1] = Math.max(0, levels.get(i));
+                }
+
+                lv.setTalents(t);
+            }
         }
 
         return lv;
@@ -184,7 +195,7 @@ public class FormStat extends ConstraintCommand {
                 Level lv = handleLevel(command);
 
                 boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
-                boolean talent = (param & PARAM_TALENT) > 0 || lv.getTalents().length > 1;
+                boolean talent = (param & PARAM_TALENT) > 0 || lv.getTalents().length > 0;
                 boolean extra = (param & PARAM_EXTRA) > 0 || config.extra;
                 boolean compact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
                 boolean isTrueForm = (param & PARAM_TRUE_FORM) > 0;

@@ -35,7 +35,7 @@ public class FormStatMessageHolder extends SearchHolder {
         this.form = form;
         this.config = config;
 
-        this.talent = (param & 2) > 0;
+        this.talent = (param & 2) > 0 || lv.getTalents().length > 0;
         this.isFrame = (param & 4) == 0 && config.useFrame;
         this.extra = (param & 8) > 0 || config.extra;
         this.compact = (param & 16) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);

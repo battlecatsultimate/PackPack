@@ -646,13 +646,12 @@ public class EntityHandler {
     }
 
     private static boolean talentExists(int[] t) {
-        boolean empty = true;
-
-        for(int i = 1; i < t.length; i++) {
-            empty &= t[i] == 0;
+        for(int i = 0; i < t.length; i++) {
+            if (t[i] > 0)
+                return true;
         }
 
-        return !empty;
+        return false;
     }
 
     public static void showEnemyEmb(Enemy e, MessageChannel ch, Message reference, boolean isFrame, boolean extra, boolean compact, int[] magnification, int lang) throws Exception {
