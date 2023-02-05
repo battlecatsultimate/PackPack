@@ -118,6 +118,11 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
 
                 boolean result = EntityHandler.generateEnemyAnim(en, ch, getMessage(event), g == null ? 0 : g.getBoostTier().getKey(), mode, debug, frame, lang, raw && isTrusted, gif);
 
+                if(!StaticStore.conflictedAnimation.isEmpty()) {
+                    StaticStore.logger.uploadLog("Warning - Bot generated animation while this animation is already cached\n\nCommand : " + getContent(event));
+                    StaticStore.conflictedAnimation.clear();
+                }
+
                 if(raw && isTrusted && result) {
                     StaticStore.logger.uploadLog("Generated mp4 by user " + u.getName() + " for enemy ID " + Data.trio(en.id.id) + " with mode of " + mode);
                 }

@@ -47,6 +47,11 @@ public class ImgurDataHolder {
             if(elem.isJsonObject()) {
                 JsonObject obj = elem.getAsJsonObject();
 
+                if(raw && obj.has("mp4"))
+                    StaticStore.conflictedAnimation.put(md5, url);
+                else if(!raw && obj.has("gif"))
+                    StaticStore.conflictedAnimation.put(md5, url);
+
                 if(raw && !obj.has("mp4"))
                     obj.addProperty("mp4", url);
                 else if(!obj.has("gif"))
