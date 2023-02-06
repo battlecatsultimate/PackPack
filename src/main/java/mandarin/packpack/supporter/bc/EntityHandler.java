@@ -163,7 +163,7 @@ public class EntityHandler {
         spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(f.du, talent, lv), true);
         spec.addField(LangID.getStringByID("data_cost", lang), DataToString.getCost(f.du, talent, lv), true);
         spec.addField(LangID.getStringByID("data_range", lang), DataToString.getRange(f.du), true);
-        spec.addField(LangID.getStringByID("data_atktime", lang), DataToString.getAtkTime(f.du, isFrame), true);
+        spec.addField(LangID.getStringByID("data_atktime", lang), DataToString.getAtkTime(f.du, talent, isFrame, lv), true);
         spec.addField(LangID.getStringByID("data_preatk", lang), DataToString.getPre(f.du, isFrame), true);
         spec.addField(LangID.getStringByID("data_postatk", lang), DataToString.getPost(f.du, isFrame), true);
         spec.addField(LangID.getStringByID("data_tba", lang), DataToString.getTBA(f.du, talent, lv, isFrame), true);
@@ -407,7 +407,7 @@ public class EntityHandler {
             spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(f.du, talent, lv), true);
             spec.addField(LangID.getStringByID("data_cost", lang), DataToString.getCost(f.du, talent, lv), true);
             spec.addField(LangID.getStringByID("data_range", lang), DataToString.getRange(f.du), true);
-            spec.addField(LangID.getStringByID("data_atktime", lang), DataToString.getAtkTime(f.du, isFrame), true);
+            spec.addField(LangID.getStringByID("data_atktime", lang), DataToString.getAtkTime(f.du, talent, isFrame, lv), true);
             spec.addField(LangID.getStringByID("data_preatk", lang), DataToString.getPre(f.du, isFrame), true);
             spec.addField(LangID.getStringByID("data_postatk", lang), DataToString.getPost(f.du, isFrame), true);
             spec.addField(LangID.getStringByID("data_tba", lang), DataToString.getTBA(f.du, talent, lv, isFrame), true);
@@ -3262,7 +3262,7 @@ public class EntityHandler {
 
         cells.add(new NormalCellDrawer(
                 new String[] {LangID.getStringByID("data_dps", lang), LangID.getStringByID("data_atktime", lang), LangID.getStringByID("data_abilt", lang)},
-                new String[] {DataToString.getDPS(u, u.curve, false, lvs), DataToString.getAtkTime(u, isFrame), DataToString.getAbilT(u, lang)}
+                new String[] {DataToString.getDPS(u, u.curve, false, lvs), DataToString.getAtkTime(u, false, isFrame, lvs), DataToString.getAbilT(u, lang)}
         ));
 
         cells.add(new NormalCellDrawer(
