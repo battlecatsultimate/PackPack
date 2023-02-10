@@ -47,7 +47,7 @@ public class TalentInfo extends ConstraintCommand {
         if(list.length == 1 || filterCommand(getContent(event)).isBlank()) {
             replyToMessageSafely(ch, LangID.getStringByID("formst_noname", lang), getMessage(event), a -> a);
         } else {
-            ArrayList<Form> forms = EntityFilter.findUnitWithName(filterCommand(getContent(event)), lang);
+            ArrayList<Form> forms = EntityFilter.findUnitWithName(filterCommand(getContent(event)), false, lang);
 
             if (forms.size() == 1) {
                 boolean isFrame = isFrame(getContent(event)) && config.useFrame;

@@ -88,7 +88,7 @@ public class FormGif extends GlobalTimedConstraintCommand {
                 return;
             }
 
-            ArrayList<Form> forms = EntityFilter.findUnitWithName(search, lang);
+            ArrayList<Form> forms = EntityFilter.findUnitWithName(search, false, lang);
 
             if(forms.isEmpty()) {
                 replyToMessageSafely(ch, LangID.getStringByID("formst_nounit", lang).replace("_", filterCommand(getContent(event))), getMessage(event), a -> a);

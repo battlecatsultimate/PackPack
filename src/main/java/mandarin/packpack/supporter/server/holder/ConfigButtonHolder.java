@@ -24,6 +24,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class ConfigButtonHolder extends InteractionHolder<GenericComponentInteractionCreateEvent> {
+    private static final int TOTAL_CONFIG = 6;
+
     private final Message msg;
     private final ConfigHolder config;
     private final ConfigHolder backup;
@@ -163,6 +165,17 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
                 }
 
                 holder.forceCompact = es.getValues().get(0).equals("true");
+
+                performResult(event);
+
+                break;
+            case "trueform":
+                es = (StringSelectInteractionEvent) event;
+
+                if(es.getValues().size() != 1)
+                    return;
+
+                config.trueForm = es.getValues().get(0).equals("true");
 
                 performResult(event);
 
@@ -331,6 +344,20 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
 
                     break;
                 case 5:
+                    List<SelectOption> trueForms = new ArrayList<>();
+
+                    if(config.trueForm) {
+                        trueForms.add(SelectOption.of(String.format(LangID.getStringByID("config_trueform", lang), LangID.getStringByID("data_true", lang)), "true").withDefault(true));
+                        trueForms.add(SelectOption.of(String.format(LangID.getStringByID("config_trueform", lang), LangID.getStringByID("data_false", lang)), "false"));
+                    } else {
+                        trueForms.add(SelectOption.of(String.format(LangID.getStringByID("config_trueform", lang), LangID.getStringByID("data_true", lang)), "true"));
+                        trueForms.add(SelectOption.of(String.format(LangID.getStringByID("config_trueform", lang), LangID.getStringByID("data_false", lang)), "false").withDefault(true));
+                    }
+
+                    m.add(ActionRow.of(StringSelectMenu.create("trueform").addOptions(trueForms).build()));
+
+                    break;
+                case 6:
                     if(forServer && holder != null) {
                         List<SelectOption> forces = new ArrayList<>();
 
@@ -354,9 +381,12 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
         if(page == 0) {
             pages.add(Button.secondary("prev", LangID.getStringByID("search_prev", lang)).withEmoji(Emoji.fromCustom(EmojiStore.PREVIOUS)).asDisabled());
             pages.add(Button.secondary("next", LangID.getStringByID("search_next", lang)).withEmoji(Emoji.fromCustom(EmojiStore.NEXT)));
-        } else {
+        } else if((page + 1) * 3 >= (holder != null && forServer ? TOTAL_CONFIG + 1 : TOTAL_CONFIG)) {
             pages.add(Button.secondary("prev", LangID.getStringByID("search_prev", lang)).withEmoji(Emoji.fromCustom(EmojiStore.PREVIOUS)));
             pages.add(Button.secondary("next", LangID.getStringByID("search_next", lang)).withEmoji(Emoji.fromCustom(EmojiStore.NEXT)).asDisabled());
+        } else {
+            pages.add(Button.secondary("prev", LangID.getStringByID("search_prev", lang)).withEmoji(Emoji.fromCustom(EmojiStore.PREVIOUS)));
+            pages.add(Button.secondary("next", LangID.getStringByID("search_next", lang)).withEmoji(Emoji.fromCustom(EmojiStore.NEXT)));
         }
 
         m.add(ActionRow.of(pages));
@@ -441,6 +471,17 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
             comp = LangID.getStringByID("config_comfalse", lang);
         }
 
+        String trueForm;
+        String tr;
+
+        if(config.trueForm) {
+            trueForm = LangID.getStringByID("data_true", lang);
+            tr = LangID.getStringByID("config_truetrue", lang);
+        } else {
+            trueForm = LangID.getStringByID("data_false", lang);
+            tr = LangID.getStringByID("config_truefalse", lang);
+        }
+
         String message = "**" + LangID.getStringByID("config_locale", lang).replace("_", locale) + "**\n\n" +
                 "**" + LangID.getStringByID("config_default", lang).replace("_", ""+ config.defLevel) + "**\n" +
                 LangID.getStringByID("config_deflvdesc", lang).replace("_", config.defLevel+"") + "\n\n" +
@@ -449,7 +490,9 @@ public class ConfigButtonHolder extends InteractionHolder<GenericComponentIntera
                 "**" + LangID.getStringByID("config_unit", lang).replace("_", unit) + "**\n" +
                 LangID.getStringByID("config_unitdesc", lang) + "\n\n" +
                 "**" + LangID.getStringByID("config_compact", lang).replace("_", compact) + "**\n" +
-                comp;
+                comp + "\n\n" +
+                "**" + String.format(LangID.getStringByID("config_trueform", lang), trueForm) + "**\n" +
+                tr;
 
         if(forServer) {
             String force = LangID.getStringByID((holder != null && holder.forceCompact) ? "data_true" : "data_false", lang);

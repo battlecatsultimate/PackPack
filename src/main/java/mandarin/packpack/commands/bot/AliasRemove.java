@@ -54,7 +54,7 @@ public class AliasRemove extends ConstraintCommand {
                     return;
                 }
 
-                ArrayList<Form> forms = EntityFilter.findUnitWithName(name, lang);
+                ArrayList<Form> forms = EntityFilter.findUnitWithName(name, false, lang);
 
                 if(forms.isEmpty()) {
                     createMessageWithNoPings(ch, LangID.getStringByID("formst_nounit", lang).replace("_", name));

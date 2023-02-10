@@ -3,7 +3,6 @@ package mandarin.packpack.commands.bc;
 import common.util.Data;
 import common.util.unit.Form;
 import common.util.unit.Level;
-import common.util.unit.Unit;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
@@ -183,35 +182,25 @@ public class FormStat extends ConstraintCommand {
         }
 
         String command = removeMistake.toString();
+        int param = checkParameters(command);
+
+        Level lv = handleLevel(command);
+
+        boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
+        boolean talent = (param & PARAM_TALENT) > 0 || lv.getTalents().length > 0;
+        boolean extra = (param & PARAM_EXTRA) > 0 || config.extra;
+        boolean compact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
+        boolean isTrueForm = (param & PARAM_TRUE_FORM) > 0 || config.trueForm;
 
         if(list.length == 1 || filterCommand(command).isBlank()) {
             replyToMessageSafely(ch, LangID.getStringByID("formst_noname", lang), getMessage(event), a -> a);
         } else {
-            ArrayList<Form> forms = EntityFilter.findUnitWithName(filterCommand(command), lang);
+            ArrayList<Form> forms = EntityFilter.findUnitWithName(filterCommand(command), isTrueForm, lang);
 
             if (forms.size() == 1) {
-                int param = checkParameters(command);
-
-                Level lv = handleLevel(command);
-
-                boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
-                boolean talent = (param & PARAM_TALENT) > 0 || lv.getTalents().length > 0;
-                boolean extra = (param & PARAM_EXTRA) > 0 || config.extra;
-                boolean compact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
-                boolean isTrueForm = (param & PARAM_TRUE_FORM) > 0;
-
-                boolean trueFormPossible = false;
-
                 Form f = forms.get(0);
 
-                Unit unit = f.unit;
-
-                if (isTrueForm && unit.forms.length == 3) {
-                    f = unit.forms[2];
-                    trueFormPossible = true;
-                }
-
-                Message result = EntityHandler.showUnitEmb(f, ch, getMessage(event), config, isFrame, talent, extra, isTrueForm, trueFormPossible, lv, lang, true, compact);
+                Message result = EntityHandler.showUnitEmb(f, ch, getMessage(event), config, isFrame, talent, extra, isTrueForm, f.fid < 2, lv, lang, true, compact);
 
                 if(result != null) {
                     User u = getUser(event);
@@ -249,10 +238,6 @@ public class FormStat extends ConstraintCommand {
                 sb.append("```");
 
                 Message res = getRepliedMessageSafely(ch, sb.toString(), getMessage(event), a -> registerSearchComponents(a, forms.size(), data, lang));
-
-                int param = checkParameters(command);
-
-                Level lv = handleLevel(command);
 
                 if(res != null) {
                     User u = getUser(event);

@@ -6,7 +6,6 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.ConfigButtonHolder;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -15,8 +14,8 @@ import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -105,7 +104,18 @@ public class Config extends ConstraintCommand {
             comp = LangID.getStringByID("config_comfalse", lang);
         }
 
-        String builder = "**" + LangID.getStringByID("config_locale", lang).replace("_", locale) + "**\n\n" +
+        String trueForm;
+        String tr;
+
+        if(config.trueForm) {
+            trueForm = LangID.getStringByID("data_true", lang);
+            tr = LangID.getStringByID("config_truetrue", lang);
+        } else {
+            trueForm = LangID.getStringByID("data_false", lang);
+            tr = LangID.getStringByID("config_truefalse", lang);
+        }
+
+        String message = "**" + LangID.getStringByID("config_locale", lang).replace("_", locale) + "**\n\n" +
                 "**" + LangID.getStringByID("config_default", lang).replace("_", ""+ config.defLevel) + "**\n" +
                 LangID.getStringByID("config_deflvdesc", lang).replace("_", config.defLevel+"") + "\n\n" +
                 "**" + LangID.getStringByID("config_extra", lang).replace("_", bool) + "**\n" +
@@ -113,7 +123,18 @@ public class Config extends ConstraintCommand {
                 "**" + LangID.getStringByID("config_unit", lang).replace("_", unit) + "**\n" +
                 LangID.getStringByID("config_unitdesc", lang) + "\n\n" +
                 "**" + LangID.getStringByID("config_compact", lang).replace("_", compact) + "**\n" +
-                comp;
+                comp + "\n\n" +
+                "**" + String.format(LangID.getStringByID("config_trueform", lang), trueForm) + "**\n" +
+                tr;
+
+        if(forServer) {
+            String force = LangID.getStringByID((holder != null && holder.forceCompact) ? "data_true" : "data_false", lang);
+            String forc = LangID.getStringByID((holder != null && holder.forceCompact) ? "config_fortrue" : "config_forfalse", lang);
+
+            message += "\n\n" +
+                    "**" + LangID.getStringByID("config_force", lang).replace("_", force) + "**\n" +
+                    forc;
+        }
 
         List<SelectOption> languages = new ArrayList<>();
 
@@ -164,7 +185,7 @@ public class Config extends ConstraintCommand {
         pages.add(Button.secondary("prev", LangID.getStringByID("search_prev", lang)).withEmoji(Emoji.fromCustom(EmojiStore.PREVIOUS)).asDisabled());
         pages.add(Button.secondary("next", LangID.getStringByID("search_next", lang)).withEmoji(Emoji.fromCustom(EmojiStore.NEXT)));
 
-        Message msg = getRepliedMessageSafely(ch, builder, getMessage(event), a -> a.setComponents(
+        Message msg = getRepliedMessageSafely(ch, message, getMessage(event), a -> a.setComponents(
                 ActionRow.of(StringSelectMenu.create("language").addOptions(languages).build()),
                 ActionRow.of(StringSelectMenu.create("defLevels").addOptions(levels).build()),
                 ActionRow.of(StringSelectMenu.create("extra").addOptions(extras).build()),
