@@ -40,7 +40,7 @@ public class Equation {
                     continue;
                 }
 
-                filtered.add(new Number(((Operator) e).calculate((Number) filtered.get(filtered.size() - 1), (Number) elements.get(i + 1), lang)));
+                filtered.add(((Operator) e).calculate((Number) filtered.get(filtered.size() - 1), (Number) elements.get(i + 1), lang));
                 filtered.remove(filtered.size() - 2);
 
                 i++;
@@ -65,7 +65,7 @@ public class Equation {
                     continue;
                 }
 
-                filtered.add(new Number(((Operator) e).calculate((Number) filtered.get(filtered.size() - 1), (Number) elements.get(i + 1), lang)));
+                filtered.add(((Operator) e).calculate((Number) filtered.get(filtered.size() - 1), (Number) elements.get(i + 1), lang));
                 filtered.remove(filtered.size() - 2);
 
                 i++;
@@ -90,7 +90,7 @@ public class Equation {
                     continue;
                 }
 
-                filtered.add(new Number(((Operator) e).calculate((Number) filtered.get(filtered.size() - 1), (Number) elements.get(i + 1), lang)));
+                filtered.add(((Operator) e).calculate((Number) filtered.get(filtered.size() - 1), (Number) elements.get(i + 1), lang));
                 filtered.remove(filtered.size() - 2);
 
                 i++;
@@ -195,7 +195,7 @@ public class Equation {
                     }
 
                     if(start == last) {
-                        elements.add(new Number(0));
+                        elements.add(new Number(0, "0"));
                     } else {
                         builder.append(equation, start, last);
 
@@ -361,7 +361,7 @@ public class Equation {
 
                                                 return new ArrayList<>();
                                             } else if(inner % (Math.PI / 2) == 0) {
-                                                elements.add(new Number(0));
+                                                elements.add(new Number(0, "0"));
                                             } else {
                                                 elements.add(new Number(1.0 / Math.tan(inner)));
                                             }
@@ -615,7 +615,7 @@ public class Equation {
                         prefix = builder.toString();
 
                         if(StaticStore.isNumeric(prefix)) {
-                            elements.add(new Number(Double.parseDouble(prefix)));
+                            elements.add(new Number(Double.parseDouble(prefix), prefix));
                         } else {
                             switch (prefix) {
                                 case "pi":
@@ -763,7 +763,7 @@ public class Equation {
             String prefix = builder.toString();
 
             if(StaticStore.isNumeric(prefix)) {
-                elements.add(new Number(Double.parseDouble(prefix)));
+                elements.add(new Number(Double.parseDouble(prefix), prefix));
             } else {
                 switch (prefix) {
                     case "pi":
