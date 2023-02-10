@@ -445,7 +445,20 @@ public class Help extends Command {
         }
 
         if(tip) {
-            builder.addField(LangID.getStringByID("help_tip", lang), LangID.getStringByID("help_"+mainCommand+"_tip", lang), false);
+            int tipIndex = 1;
+
+            while(true) {
+                String id = "help_" + mainCommand + "_tip" + (tipIndex == 1 ? "" : ("" + tipIndex));
+                System.out.println(id);
+                String tips = LangID.getStringByID(id, lang);
+
+                if(!tips.equals(id)) {
+                    builder.addField(tipIndex == 1 ? LangID.getStringByID("help_tip", lang) : "** **", tips, false);
+                    tipIndex++;
+                } else {
+                    break;
+                }
+            }
         }
 
         return builder.build();
