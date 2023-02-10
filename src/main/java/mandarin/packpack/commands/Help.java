@@ -449,7 +449,6 @@ public class Help extends Command {
 
             while(true) {
                 String id = "help_" + mainCommand + "_tip" + (tipIndex == 1 ? "" : ("" + tipIndex));
-                System.out.println(id);
                 String tips = LangID.getStringByID(id, lang);
 
                 if(!tips.equals(id)) {
