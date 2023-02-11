@@ -768,6 +768,8 @@ public class EntityHandler {
 
         if(img != null)
             Command.sendMessageWithFile(ch, "", spec.build(), img, "icon.png", reference);
+        else
+            Command.replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(spec.build()));
 
         e.anim.unload();
     }
@@ -901,7 +903,7 @@ public class EntityHandler {
 
         Object image;
 
-        if(e.anim.getEdi() != null)
+        if(e.anim.getEdi() != null && e.anim.getEdi().getImg() != null)
             image = e.anim.getEdi().getImg().bimg();
         else
             return null;
