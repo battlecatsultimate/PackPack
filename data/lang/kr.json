@@ -639,7 +639,7 @@
   "help_memory_desc" : "봇의 메모리 상태를 표시합니다. `mm` 또한 유효한 명령어 입니다. **서버 관리자 이상만 해당 명령어를 사용할 수 있습니다**",
   "help_idset_use" : "`p!idset [역할] [ID]`",
   "help_idset_desc" : "직접 특정 역할을 가진 유저들이 특정 명령어를 사용할 수 있도록 허용하기 위해 역할 ID를 직접 지정합니다. ID 는 숫자 형식으로 전해져야 합니다. **봇 명령어의 허용 여부를 결정하므로 서버 관리자 이상만 사용 가능합니다**",
-  "help_idset_argu" : "`-m` 또는 `-mod` : **서버 관리자**의 역할 ID를 정합니다\n`-me` 또는 `-member` : **멤버**의 역할 ID를 정합니다\n`-g` 또는 `-getaccess` : **Get-Access**의 채널 ID를 정합니다\n`-ann` 또는 `-announcement` : **Announcement**의 채널 ID를 정합니다\n`-pub` 또는 `-publish` : 봇 공지를 게시할지 정합니다. 값은 `true` 혹은 `false` 여야만 합니다\n`-b` 또는 `-booster` : **Booster**의 역할 ID를 정합니다\n`-c` 또는 `-custom` : 커스텀 역할 ID 데이터를 추가힙니다. 형식은 `-c \"역할 이름\" [ID]` 여야 합니다",
+  "help_idset_argu" : "`-m` 또는 `-mod` : **서버 관리자**의 역할 ID를 정합니다\n`-me` 또는 `-member` : **멤버**의 역할 ID를 정합니다\n`-g` 또는 `-getaccess` : **Get-Access**의 채널 ID를 정합니다\n`-ann` 또는 `-announcement` : **Announcement**의 채널 ID를 정합니다\n`-pub` 또는 `-publish` : 봇 공지를 게시할지 정합니다. 값은 `true` 혹은 `false` 여야만 합니다\n`-b` 또는 `-booster` : **Booster**의 역할 ID를 정합니다\n`-s` 또는 `-sta` : 봇의 상태를 알려줄 채널을 정합니다. 이곳이 봇이 오프라인이나 온라인이 될 경우 유저들에가 알려줍니다\n`-c` 또는 `-custom` : 커스텀 역할 ID 데이터를 추가힙니다. 형식은 `-c \"역할 이름\" [ID]` 여야 합니다",
   "help_idset_exam" : "`p!idset -m MOD_ID -me MEMBER_ID ...`",
   "help_idset_tip" : "만약 봇이 해당 서버의 역할을 인식하지 못하면 `PackPackMod` 라는 역할을 추가합니다. **서버 관리자**역할을 요구하는 모든 명령어들은 직접 관리자가 ID를 바꾸기 전까지는 `PackPackMod` 역할을 가진 유저들만 사용할 수 있습니다.\nID는 숫자 형식으로 전해져야만 하고 역할은 한 명령어당 한번만 설정돼야 합니다. 예를들어, `p!idset -m MOD -m MOD1`, 이 명령어에서, `MOD1` 는 무시됩니다\n\n커스텀 역할 데이터를 추가할 때, 역할 이름을 \" 글자로 묶어야 합니다. 예를 들어, 역할 이름을 `ABC` 로 추가하고 싶다면, `\"ABC\"` 처럼 이름을 적어야 합니다. 그 뒤 역할 ID를 제공해 줍니다. 역할 ID를 `none` 로 설정하여 (만약 이 역할이 이미 존재하고 있다면), 해당 커스텀 역할을 제거할 수 있습니다",
   "help_clearcache_use" : "`p!clearcache`",
