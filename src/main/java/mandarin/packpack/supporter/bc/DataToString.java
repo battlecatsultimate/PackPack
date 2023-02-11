@@ -620,7 +620,7 @@ public class DataToString extends Data {
 
         for(int[] atk : raw) {
             if(du.getPCoin() != null && talent) {
-                result += (int) ((int) (Math.round(atk[0] * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getAtkMulti()) * du.getPCoin().getAtkMultiplication(lvs));
+                result += (int) ((int) (Math.round(atk[0] * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getAtkMulti()) * du.getPCoin().getAtkMultiplication(lvs.getTalents()));
             } else {
                 result += (int) (Math.round(atk[0] * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getAtkMulti());
             }
@@ -658,7 +658,7 @@ public class DataToString extends Data {
             int result;
 
             if(du.getPCoin() != null && talent) {
-                result = (int) ((int) (Math.round(atk[0] * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getAtkMulti()) * du.getPCoin().getAtkMultiplication(lvs));
+                result = (int) ((int) (Math.round(atk[0] * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getAtkMulti()) * du.getPCoin().getAtkMultiplication(lvs.getTalents()));
             } else {
                 result = (int) (Math.round(atk[0] * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getAtkMulti());
             }
@@ -790,7 +790,7 @@ public class DataToString extends Data {
         int result;
 
         if(f.getPCoin() != null && talent) {
-            result = (int) ((int) (Math.round(du.getHp() * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getDefMulti()) * f.getPCoin().getHPMultiplication(lvs));
+            result = (int) ((int) (Math.round(du.getHp() * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getDefMulti()) * f.getPCoin().getHPMultiplication(lvs.getTalents()));
         } else {
             result = (int) (Math.round(du.getHp() * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getDefMulti());
         }
@@ -2271,7 +2271,7 @@ public class DataToString extends Data {
             int result;
 
             if(du.getPCoin() != null && talent) {
-                result = (int) ((int) (Math.round(atk[0] * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getAtkMulti()) * du.getPCoin().getAtkMultiplication(lvs));
+                result = (int) ((int) (Math.round(atk[0] * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getAtkMulti()) * du.getPCoin().getAtkMultiplication(lvs.getTalents()));
             } else {
                 result = (int) (Math.round(atk[0] * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getAtkMulti());
             }
