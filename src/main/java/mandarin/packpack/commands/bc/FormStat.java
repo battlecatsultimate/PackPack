@@ -200,7 +200,7 @@ public class FormStat extends ConstraintCommand {
             if (forms.size() == 1) {
                 Form f = forms.get(0);
 
-                Message result = EntityHandler.showUnitEmb(f, ch, getMessage(event), config, isFrame, talent, extra, isTrueForm, f.fid < 2, lv, lang, true, compact);
+                Message result = EntityHandler.showUnitEmb(f, ch, getMessage(event), config, isFrame, talent, extra, isTrueForm, f.fid == 2, lv, lang, true, compact);
 
                 if(result != null) {
                     User u = getUser(event);
