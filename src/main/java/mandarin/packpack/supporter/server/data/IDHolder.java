@@ -38,6 +38,10 @@ public class IDHolder {
             id.ANNOUNCE = id.setOrNull(obj.get("ann").getAsString());
         }
 
+        if(obj.has("status")) {
+            id.STATUS = id.setOrNull(obj.get("status").getAsString());
+        }
+
         if(obj.has("bo")) {
             id.BOOSTER = id.setOrNull(obj.get("bo").getAsString());
         }
@@ -103,6 +107,7 @@ public class IDHolder {
 
     public String GET_ACCESS;
     public String ANNOUNCE;
+    public String STATUS;
 
     public Map<String, String> ID = new TreeMap<>();
     public Map<String, List<String>> channel = new TreeMap<>();
@@ -136,6 +141,7 @@ public class IDHolder {
         obj.addProperty("mem", getOrNull(MEMBER));
         obj.addProperty("acc", getOrNull(GET_ACCESS));
         obj.addProperty("ann", getOrNull(ANNOUNCE));
+        obj.addProperty("status", getOrNull(STATUS));
         obj.addProperty("bo", getOrNull(BOOSTER));
         obj.add("channel", jsonfyMap(channel));
         obj.add("id", jsonfyIDs());

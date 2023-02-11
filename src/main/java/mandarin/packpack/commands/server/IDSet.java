@@ -48,6 +48,7 @@ public class IDSet extends ConstraintCommand {
                     "Booster User : " + (holder.BOOSTER == null ? "None" : getRoleIDWithName(holder.BOOSTER)) + "\n" +
                     "Get-Access : " + (holder.GET_ACCESS == null ? "None" : getChannelIDWithName(holder.GET_ACCESS, g)) + "\n" +
                     "Announcement : " + (holder.ANNOUNCE == null ? "None" : getChannelIDWithName(holder.ANNOUNCE, g)) + "\n" +
+                    "Status : " + (holder.STATUS == null ? "None" : getChannelIDWithName(holder.STATUS, g)) + "\n" +
                     "Publish : "+ holder.publish);
 
             if(!holder.ID.isEmpty()) {
@@ -72,6 +73,7 @@ public class IDSet extends ConstraintCommand {
             boolean ann = false;
             boolean pub = false;
             boolean boo = false;
+            boolean sta = false;
 
             for(int i = 0; i < msg.length; i++) {
                 switch (msg[i]) {
@@ -303,6 +305,39 @@ public class IDSet extends ConstraintCommand {
                             i++;
                         } else if(i <msg.length - 1) {
                             result.append(LangID.getStringByID("idset_ignore", lang).replace("_", "Booster User")).append("\n");
+                        }
+                        break;
+                    case "-s":
+                    case "-status":
+                        if(!sta && i < msg.length - 1) {
+                            String id = msg[i+1];
+
+                            if(isValidChannel(g, id)) {
+                                holder.STATUS = id;
+
+                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
+                                result.append(LangID.getStringByID("idset_statchange", lang).replace("_", getChannelIDWithName(id, g))).append("\n");
+
+                                get = true;
+                            } else if(id.toLowerCase(Locale.ENGLISH).equals("none")) {
+                                holder.STATUS = null;
+
+                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
+                                result.append(LangID.getStringByID("idset_statchange", lang).replace("_", LangID.getStringByID("idset_none", lang))).append("\n");
+
+                                get = true;
+                            } else if(StaticStore.isNumeric(id)) {
+                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
+                                result.append(LangID.getStringByID("idset_chaninvalid", lang).replace("_", id)).append("\n");
+                            } else {
+                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
+                                result.append(LangID.getStringByID("idset_numeric", lang).replace("_", id)).append("\n");
+                            }
+
+                            i++;
+                        } else if(i <msg.length - 1) {
+                            result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
+                            result.append(LangID.getStringByID("idset_chanignore", lang)).append("\n");
                         }
                         break;
                     case "-c":

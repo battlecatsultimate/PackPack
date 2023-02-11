@@ -183,6 +183,9 @@ public class AllEventAdapter extends ListenerAdapter {
             if(idh.logDM != null && idh.logDM.equals(ch.getId()))
                 idh.logDM = null;
 
+            if(idh.STATUS != null && idh.STATUS.equals(ch.getId()))
+                idh.STATUS = null;
+
             StaticStore.idHolder.put(g.getId(), idh);
 
             if(StaticStore.scamLinkHandlers.servers.containsKey(g.getId())) {
@@ -1154,6 +1157,29 @@ public class AllEventAdapter extends ListenerAdapter {
         }
 
         StaticStore.saveServerInfo();
+
+        for(String key : StaticStore.idHolder.keySet()) {
+            try {
+                IDHolder holder = StaticStore.idHolder.get(key);
+
+                if(holder == null || holder.STATUS == null)
+                    continue;
+
+                Guild g = client.getGuildById(key);
+
+                if(g == null)
+                    continue;
+
+                GuildChannel ch = g.getGuildChannelById(holder.STATUS);
+
+                if(!(ch instanceof MessageChannel) || !((MessageChannel) ch).canTalk())
+                    continue;
+
+                ((MessageChannel) ch).sendMessage(String.format(LangID.getStringByID("bot_online", holder.config.lang), client.getSelfUser().getAsMention()))
+                        .setAllowedMentions(new ArrayList<>())
+                        .queue();
+            } catch (Exception ignored) {}
+        }
 
         StaticStore.logger.uploadLog("Bot ready to be used!");
     }
