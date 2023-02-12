@@ -70,7 +70,7 @@ public class AddStatusChannel extends ConstraintCommand {
                 } else {
                     holder.status.add(filtered);
 
-                    result.append(String.format(LangID.getStringByID("statuschann_added", lang), filteredID[i], filtered)).append("\n");
+                    result.append(String.format(LangID.getStringByID("statuschan_added", lang), filteredID[i], filtered)).append("\n");
                 }
             } catch (Exception ignored) {
                 result.append(String.format(LangID.getStringByID("statuschan_invalid", lang), filteredID[i])).append("\n");
