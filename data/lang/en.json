@@ -868,6 +868,12 @@
   "help_comboanalyzer_desc" : "Find new cat combo data, or specified one, anlyze them, and upload images of analyzed result. **Only Trusted users can use this command.** `catcomboanalyzer`, `cca`, `ca` are also valid command",
   "help_comboanalyzer_argu" : "`-c` or `-cid` : Decide ID of combo\n`-en/tw/kr/jp` : Decide BC version which you will use",
   "help_comboanalyzer_tip" : "You can make bot analyze new cat combo only, or analyze specific combo by passing its ID. You can't decide name for this, but bot will automatically grab combo name from files",
+  "help_addstatuschannel_use" : "`p!addstatuschannel [Channels]`",
+  "help_addstatuschannel_desc" : "Add the channels where bot will upload its status update. Channels can be passed via either mention or ID. **Only Moderators can use this command.** `asc` is also valid command",
+  "help_addstatuschannel_tip" : "Bot can be offline due to any reason; bug fix, update, etc. In this case, bot will upload that it will be offline/online in assigned channel, so that users can notice what happened to the bot\n\nWhen passing the channel, put any non numeric letter between each IDs, and each channels must be place where bot can talk. For example, `1234567890123, #example, 3210987654321 1234567891234`, etc.",
+  "help_removestatuschannel_use" : "`p!removestatuschannel [Channels]`",
+  "help_removestatuschannel_desc" : "Remove the channels where bot will upload its status update. Channels can be passed via either mention or ID. **Only Moderators can use this command.** `rsc` is also valid command",
+  "help_removestatuschannel_tip" : "When passing the channel, put any non numeric letter between each IDs. For example, `1234567890123, #example, 3210987654321 1234567891234`, etc.",
   "prefix_space" : "Prefix can't be white spaces!",
   "prefix_set" : "Prefix setting compelete! Your personal prefix is now : %s",
   "prefix_setnone" : "Your prefix has been updated!",
@@ -1371,5 +1377,12 @@
   "talanalyzer_fail" : "Failed to generate talent image...",
   "talanalyzer_success" : "Successfully analyzed talent data",
   "comanalyzer_nosuch" : "Failed to generate combo image, or bot couldn't find such combo ID from data",
-  "comanalyzer_notfound" : "Failed to generate combo image, or bot couldn't find new combo form data"
+  "comanalyzer_notfound" : "Failed to generate combo image, or bot couldn't find new combo form data",
+  "statuschan_channel" : "Please offer the channel that will be added/removed!",
+  "statuschan_invalid" : "%s : Bot couldn't find channel that has specified ID",
+  "statuschan_addcant" : "%s : Bot can't talk in this channel, please allow bot to talk before adding this channel",
+  "statuschan_addalready" : "%s : Bot already assigned this channel [<#%s>]",
+  "statuschan_added" : "%s : Added channel [<#%s>]",
+  "statuschan_remalready" : "%s : This channel isn't assigned yet [<#%s>]",
+  "statuschan_removed" : "%s : Removed channel [<#%s>]"
 }

@@ -48,7 +48,7 @@ public class IDSet extends ConstraintCommand {
                     "Booster User : " + (holder.BOOSTER == null ? "None" : getRoleIDWithName(holder.BOOSTER)) + "\n" +
                     "Get-Access : " + (holder.GET_ACCESS == null ? "None" : getChannelIDWithName(holder.GET_ACCESS, g)) + "\n" +
                     "Announcement : " + (holder.ANNOUNCE == null ? "None" : getChannelIDWithName(holder.ANNOUNCE, g)) + "\n" +
-                    "Status : " + (holder.STATUS == null ? "None" : getChannelIDWithName(holder.STATUS, g)) + "\n" +
+                    "Status : " + (holder.status.isEmpty() ? "None" : getChannelsWithName(holder.status, g)) + "\n" +
                     "Publish : "+ holder.publish);
 
             if(!holder.ID.isEmpty()) {
@@ -73,7 +73,6 @@ public class IDSet extends ConstraintCommand {
             boolean ann = false;
             boolean pub = false;
             boolean boo = false;
-            boolean sta = false;
 
             for(int i = 0; i < msg.length; i++) {
                 switch (msg[i]) {
@@ -307,39 +306,6 @@ public class IDSet extends ConstraintCommand {
                             result.append(LangID.getStringByID("idset_ignore", lang).replace("_", "Booster User")).append("\n");
                         }
                         break;
-                    case "-s":
-                    case "-status":
-                        if(!sta && i < msg.length - 1) {
-                            String id = msg[i+1];
-
-                            if(isValidChannel(g, id)) {
-                                holder.STATUS = id;
-
-                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                result.append(LangID.getStringByID("idset_statchange", lang).replace("_", getChannelIDWithName(id, g))).append("\n");
-
-                                get = true;
-                            } else if(id.toLowerCase(Locale.ENGLISH).equals("none")) {
-                                holder.STATUS = null;
-
-                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                result.append(LangID.getStringByID("idset_statchange", lang).replace("_", LangID.getStringByID("idset_none", lang))).append("\n");
-
-                                get = true;
-                            } else if(StaticStore.isNumeric(id)) {
-                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                result.append(LangID.getStringByID("idset_chaninvalid", lang).replace("_", id)).append("\n");
-                            } else {
-                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                result.append(LangID.getStringByID("idset_numeric", lang).replace("_", id)).append("\n");
-                            }
-
-                            i++;
-                        } else if(i <msg.length - 1) {
-                            result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                            result.append(LangID.getStringByID("idset_chanignore", lang)).append("\n");
-                        }
-                        break;
                     case "-c":
                     case "-custom":
                         if(i < msg.length - 1 && msg[i + 1].startsWith("\"")) {
@@ -473,6 +439,24 @@ public class IDSet extends ConstraintCommand {
         }
 
         return "`"+id+"`" + "[**<#"+id+">**]";
+    }
+
+    private String getChannelsWithName(List<String> ids, Guild g) {
+        StringBuilder builder = new StringBuilder("\n");
+
+        for(int i = 0; i < ids.size(); i++) {
+            GuildChannel gc = g.getGuildChannelById(ids.get(i));
+
+            if(gc == null)
+                builder.append("`").append(ids.get(i)).append("`");
+            else
+                builder.append("`").append(ids.get(i)).append("` [**<#").append(ids.get(i)).append(">**]");
+
+            if(i < ids.size() - 1)
+                builder.append("\n");
+        }
+
+        return builder.toString();
     }
 
     private Object[] getName(String[] contents, int start) {

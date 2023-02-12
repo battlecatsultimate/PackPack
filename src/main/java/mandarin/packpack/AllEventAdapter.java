@@ -183,8 +183,7 @@ public class AllEventAdapter extends ListenerAdapter {
             if(idh.logDM != null && idh.logDM.equals(ch.getId()))
                 idh.logDM = null;
 
-            if(idh.STATUS != null && idh.STATUS.equals(ch.getId()))
-                idh.STATUS = null;
+            idh.status.remove(ch.getId());
 
             StaticStore.idHolder.put(g.getId(), idh);
 
@@ -931,6 +930,14 @@ public class AllEventAdapter extends ListenerAdapter {
             case "ca":
                 new ComboAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
                 break;
+            case "addstatuschannel":
+            case "asc":
+                new AddStatusChannel(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+                break;
+            case "removestatuschannel":
+            case "rsc":
+                new RemoveStatusChannel(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+                break;
         }
     }
 
@@ -1162,7 +1169,7 @@ public class AllEventAdapter extends ListenerAdapter {
             try {
                 IDHolder holder = StaticStore.idHolder.get(key);
 
-                if(holder == null || holder.STATUS == null)
+                if(holder == null || holder.status.isEmpty())
                     continue;
 
                 Guild g = client.getGuildById(key);
@@ -1170,14 +1177,16 @@ public class AllEventAdapter extends ListenerAdapter {
                 if(g == null)
                     continue;
 
-                GuildChannel ch = g.getGuildChannelById(holder.STATUS);
+                for(int i = 0; i < holder.status.size(); i++) {
+                    GuildChannel ch = g.getGuildChannelById(holder.status.get(i));
 
-                if(!(ch instanceof MessageChannel) || !((MessageChannel) ch).canTalk())
-                    continue;
+                    if(!(ch instanceof MessageChannel) || !((MessageChannel) ch).canTalk())
+                        continue;
 
-                ((MessageChannel) ch).sendMessage(String.format(LangID.getStringByID("bot_online", holder.config.lang), client.getSelfUser().getAsMention()))
-                        .setAllowedMentions(new ArrayList<>())
-                        .queue();
+                    ((MessageChannel) ch).sendMessage(String.format(LangID.getStringByID("bot_online", holder.config.lang), client.getSelfUser().getAsMention()))
+                            .setAllowedMentions(new ArrayList<>())
+                            .queue();
+                }
             } catch (Exception ignored) {}
         }
 

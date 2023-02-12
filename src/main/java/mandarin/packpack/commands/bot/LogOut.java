@@ -61,7 +61,7 @@ public class LogOut extends ConstraintCommand {
                         try {
                             IDHolder id = StaticStore.idHolder.get(key);
 
-                            if(id == null || id.STATUS == null)
+                            if(id == null || id.status.isEmpty())
                                 continue;
 
                             Guild guild = client.getGuildById(key);
@@ -69,16 +69,18 @@ public class LogOut extends ConstraintCommand {
                             if(guild == null)
                                 continue;
 
-                            GuildChannel channel = guild.getGuildChannelById(id.STATUS);
+                            for(int i = 0; i < id.status.size(); i++) {
+                                GuildChannel c = guild.getGuildChannelById(id.status.get(i));
 
-                            if(!(channel instanceof MessageChannel) || !((MessageChannel) channel).canTalk())
-                                continue;
+                                if(!(c instanceof MessageChannel) || !((MessageChannel) c).canTalk())
+                                    continue;
 
-                            String fullMessage = String.format(LangID.getStringByID("bot_offline", id.config.lang), self, LangID.getStringByID(code, id.config.lang));
+                                String fullMessage = String.format(LangID.getStringByID("bot_offline", id.config.lang), self, LangID.getStringByID(code, id.config.lang));
 
-                            ((MessageChannel) channel).sendMessage(fullMessage)
-                                    .setAllowedMentions(new ArrayList<>())
-                                    .complete();
+                                ((MessageChannel) c).sendMessage(fullMessage)
+                                        .setAllowedMentions(new ArrayList<>())
+                                        .complete();
+                            }
                         } catch (Exception ignored) {}
                     }
 
