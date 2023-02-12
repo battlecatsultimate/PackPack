@@ -46,9 +46,9 @@ public class Help extends Command {
                     .setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)])
                     .addField(LangID.getStringByID("help_normal", lang), "```analyze, calculator, config, locale, optout, prefix, timezone```", false)
                     .addField(LangID.getStringByID("help_bc", lang), "```background, castle, catcombo, enemygif, enemyimage, enemysprite, enemystat, findreward, findstage, formgif, formimage, formsprite, formstat, medal, music, soul, soulimage, soulsprite, stageinfo, talentinfo```", false)
-                    .addField(LangID.getStringByID("help_server", lang), "```addstatuschannel, boosteremoji, boosteremojiremove, boosterrole, boosterroleremove, channelpermission, checkbcu, clearcache, commandban, commandunban, fixrole, idset, memory, removestatuschannel, save, serverconfig, serverjson, serverpre, serverstat, setup, subscribeevent, subscribescamlinkdetector, unsubscribescamlinkdetector, watchdm```", false)
+                    .addField(LangID.getStringByID("help_server", lang), "```addstatuschannel, boosteremoji, boosteremojiremove, boosterrole, boosterroleremove, channelpermission, checkbcu, clearcache, commandban, commandunban, fixrole, idset, removestatuschannel, save, serverconfig, serverjson, serverpre, serverstat, setup, subscribeevent, subscribescamlinkdetector, unsubscribescamlinkdetector, watchdm```", false)
                     .addField(LangID.getStringByID("help_data", lang), "```animanalyzer, announcement, checkeventupdate, comboanalyzer, downloadapk, enemystatanalyzer, eventdataarchive, printevent, printgachaevent, printitemevent, printstageevent, stageimage, stagestatanalyzer, statanalyzer, stagemapimage, talentanalyzer, trueformanalyzer```", false)
-                    .addField(LangID.getStringByID("help_packpack", lang), "```alias, aliasadd, aliasremove, registerscamlink, statistic, suggest, unregisterscamlink```", false);
+                    .addField(LangID.getStringByID("help_packpack", lang), "```alias, aliasadd, aliasremove, memory, registerscamlink, statistic, suggest, unregisterscamlink```", false);
 
             replyToMessageSafely(ch, "", getMessage(event), a -> a.setEmbeds(builder.build()));
         }

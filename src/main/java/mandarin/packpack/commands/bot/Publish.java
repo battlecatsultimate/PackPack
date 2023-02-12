@@ -1,4 +1,4 @@
-package mandarin.packpack.commands.server;
+package mandarin.packpack.commands.bot;
 
 import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
