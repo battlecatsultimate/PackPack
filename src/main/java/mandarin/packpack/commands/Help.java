@@ -89,6 +89,10 @@ public class Help extends Command {
                 break;
             case "formstat":
             case "fs":
+            case "catstat":
+            case "cs":
+            case "unitstat":
+            case "us":
                 replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "formstat", true, true, false)));
                 break;
             case "locale":
@@ -104,7 +108,7 @@ public class Help extends Command {
                 replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "enemystat", true, true, false)));
                 break;
             case "castle":
-            case "cs":
+            case "cas":
                 replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "castle", true, true, false)));
                 break;
             case "stageinfo":
@@ -119,6 +123,14 @@ public class Help extends Command {
             case "formimg":
             case "fimage":
             case "fimg":
+            case "catimage":
+            case "catimg":
+            case "cimage":
+            case "cimg":
+            case "unitimage":
+            case "unitimg":
+            case "uimage":
+            case "uimg":
                 replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "formimage", true, true, true)));
                 break;
             case "enemyimage":
@@ -134,6 +146,12 @@ public class Help extends Command {
             case "formgif":
             case "fgif":
             case "fg":
+            case "catgif":
+            case "cgif":
+            case "cg":
+            case "unitgif":
+            case "ugif":
+            case "ug":
                 replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "formgif", true, true, true)));
                 break;
             case "enemygif":
@@ -162,6 +180,14 @@ public class Help extends Command {
             case "fsprite":
             case "formsp":
             case "fsp":
+            case "catsprite":
+            case "csprite":
+            case "catsp":
+            case "csp":
+            case "unitsprite":
+            case "usprite":
+            case "unitsp":
+            case "usp":
                 replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "formsprite", true, true, false)));
                 break;
             case "enemysprite":
