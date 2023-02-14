@@ -1354,5 +1354,12 @@
   "talanalyzer_fail" : "본능 이미지 생성 실패...",
   "talanalyzer_success" : "성공적으로 본능 데이터를 분석했습니다",
   "comanalyzer_nosuch" : "냥콤보 이미지 생성에 실패했거나, 해당 냥콤보 ID를 갖고 있는 데이터를 발견하지 못했습니다",
-  "comanalyzer_notfound" : "냥콤보 이미지 생성에 실패했거나, 새로운 냥톰보 데이터를 봇이 찾지 못했습니다"
+  "comanalyzer_notfound" : "냥콤보 이미지 생성에 실패했거나, 새로운 냥톰보 데이터를 봇이 찾지 못했습니다",
+  "statuschan_channel" : "추가될/제거될 채널을 적어도 1개 이상 제공해 주세요!",
+  "statuschan_invalid" : "%s : 봇이 제공된 ID를 가진 채널을 발견하지 못했습니다",
+  "statuschan_addcant" : "%s : 봇이 해당 채널에 메세지를 보낼 수 없습니다, 권한을 허용한 뒤에 추가해 주세요",
+  "statuschan_addalready" : "%s : 봇이 이미 이 채널을 등록해 놨습니다 [<#%s>]",
+  "statuschan_added" : "%s : 채널을 추가했습니다 [<#%s>]",
+  "statuschan_remalready" : "%s : 해당 채널은 아직 등록되어 있지 않습니다 [<#%s>]",
+  "statuschan_removed" : "%s : 채널을 제거했습니다 [<#%s>]"
 }

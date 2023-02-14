@@ -1375,5 +1375,14 @@
   "talanalyzer_singlenp" : "所需NP: %dNP",
   "talanalyzer_npcost" : "所需NP => 總NP需求",
   "talanalyzer_fail" : "未能生成本能資訊圖...",
-  "talanalyzer_success" : "成功分析本能數據"
+  "talanalyzer_success" : "成功分析本能數據",
+  "comanalyzer_nosuch" : "Failed to generate combo image, or bot couldn't find such combo ID from data",
+  "comanalyzer_notfound" : "Failed to generate combo image, or bot couldn't find new combo form data",
+  "statuschan_channel" : "Please offer the channel that will be added/removed!",
+  "statuschan_invalid" : "%s : Bot couldn't find channel that has specified ID",
+  "statuschan_addcant" : "%s : Bot can't talk in this channel, please allow bot to talk before adding this channel",
+  "statuschan_addalready" : "%s : Bot already assigned this channel [<#%s>]",
+  "statuschan_added" : "%s : Added channel [<#%s>]",
+  "statuschan_remalready" : "%s : This channel isn't assigned yet [<#%s>]",
+  "statuschan_removed" : "%s : Removed channel [<#%s>]"
 }

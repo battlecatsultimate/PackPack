@@ -1343,5 +1343,12 @@
   "talanalyzer_fail" : "Failed to generate talent image...",
   "talanalyzer_success" : "Successfully analyzed talent data",
   "comanalyzer_nosuch" : "Failed to generate combo image, or bot couldn't find such combo ID from data",
-  "comanalyzer_notfound" : "Failed to generate combo image, or bot couldn't find new combo form data"
+  "comanalyzer_notfound" : "Failed to generate combo image, or bot couldn't find new combo form data",
+  "statuschan_channel" : "Please offer the channel that will be added/removed!",
+  "statuschan_invalid" : "%s : Bot couldn't find channel that has specified ID",
+  "statuschan_addcant" : "%s : Bot can't talk in this channel, please allow bot to talk before adding this channel",
+  "statuschan_addalready" : "%s : Bot already assigned this channel [<#%s>]",
+  "statuschan_added" : "%s : Added channel [<#%s>]",
+  "statuschan_remalready" : "%s : This channel isn't assigned yet [<#%s>]",
+  "statuschan_removed" : "%s : Removed channel [<#%s>]"
 }
