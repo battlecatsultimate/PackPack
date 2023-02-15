@@ -2103,7 +2103,9 @@ public class EntityHandler {
             String link = StaticStore.imgur.uploadFile(img);
 
             if(link == null) {
-                m.editMessage(LangID.getStringByID("gif_failimgur", lang)).queue(message -> {
+                m.editMessage(LangID.getStringByID("gif_failimgur", lang))
+                        .setAllowedMentions(new ArrayList<>())
+                        .queue(message -> {
                     if(img.exists() && !img.delete()) {
                         StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
                     }
@@ -2124,6 +2126,7 @@ public class EntityHandler {
                 long finalEnd = System.currentTimeMillis();
 
                 m.editMessage(LangID.getStringByID("gif_uploadimgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link)
+                        .setAllowedMentions(new ArrayList<>())
                         .queue(message -> {
                             if(img.exists() && !img.delete()) {
                                 StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
@@ -2274,7 +2277,9 @@ public class EntityHandler {
             String link = StaticStore.imgur.uploadFile(img);
 
             if(link == null) {
-                m.editMessage(LangID.getStringByID("gif_failimgur", lang)).queue(message -> {
+                m.editMessage(LangID.getStringByID("gif_failimgur", lang))
+                        .setAllowedMentions(new ArrayList<>())
+                        .queue(message -> {
                     if(img.exists() && !img.delete()) {
                         StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
                     }
@@ -2295,6 +2300,7 @@ public class EntityHandler {
                 long finalEnd = System.currentTimeMillis();
 
                 m.editMessage(LangID.getStringByID("gif_uploadimgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link)
+                        .setAllowedMentions(new ArrayList<>())
                         .queue(message -> {
                             if(img.exists() && !img.delete()) {
                                 StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
