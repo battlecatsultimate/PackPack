@@ -2681,7 +2681,7 @@ public class EntityHandler {
             ch.sendMessage(LangID.getStringByID("gif_faile", lang)).queue();
 
             return false;
-        } else if(img.length() >= max && img.length() < (raw ? 200 * 1024 * 1024 : 8 * 1024 * 1024)) {
+        } else if(img.length() >= max && img.length() < (raw ? 200 * 1024 * 1024 : 10 * 1024 * 1024)) {
             Message m = Command.getRepliedMessageSafely(ch, LangID.getStringByID("gif_filesize", lang), reference, a -> a);
 
             if(m == null) {
