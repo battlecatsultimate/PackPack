@@ -4,8 +4,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import mandarin.packpack.supporter.StaticStore;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
+import org.apache.http.*;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
@@ -186,6 +186,39 @@ public class ImgurDataHolder {
         } else {
             return null;
         }
+    }
+
+    public String uploadCatbox(File image) throws Exception {
+        HttpPost post = new HttpPost("https://catbox.moe/user/api.php");
+
+        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+
+        builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+
+        FileBody fileBody = new FileBody(image);
+
+        builder.addPart("fileToUpload", fileBody);
+        builder.addTextBody("reqtype", "fileupload");
+
+        HttpEntity entity = builder.build();
+
+        post.setEntity(entity);
+
+        CloseableHttpClient client = HttpClientBuilder.create().build();
+
+        HttpResponse response = client.execute(post);
+
+        StringBuilder result = new StringBuilder();
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+
+        String line;
+
+        while((line = reader.readLine()) != null) {
+            result.append(line).append("\n");
+        }
+
+        return result.toString().trim();
     }
 
     private void reformatData() {
