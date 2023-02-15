@@ -938,6 +938,10 @@ public class AllEventAdapter extends ListenerAdapter {
             case "rsc":
                 new RemoveStatusChannel(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
                 break;
+            case "say":
+            case "s":
+                new Say(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+                break;
         }
     }
 
