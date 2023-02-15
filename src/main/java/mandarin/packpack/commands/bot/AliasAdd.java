@@ -90,6 +90,10 @@ public class AliasAdd extends ConstraintCommand {
                     AliasHolder.FALIAS.put(AliasHolder.getLangCode(lang), forms.get(0), alias);
 
                     createMessageWithNoPings(ch, LangID.getStringByID("alias_added", lang).replace("_DDD_", fname).replace("_AAA_", aliasName));
+
+                    User us = getUser(event);
+
+                    StaticStore.logger.uploadLog("Alias added\n\nUnit : " + fname + "\nAlias : " + aliasName + "\nBy : " + (us == null ? "Unknown" : u.getAsMention()));
                 } else {
                     StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", name));
 
@@ -183,6 +187,10 @@ public class AliasAdd extends ConstraintCommand {
                     AliasHolder.EALIAS.put(AliasHolder.getLangCode(lang), enemies.get(0), alias);
 
                     createMessageWithNoPings(ch, LangID.getStringByID("alias_added", lang).replace("_DDD_", eName).replace("_AAA_", aliasName));
+
+                    User us = getUser(event);
+
+                    StaticStore.logger.uploadLog("Alias added\n\nEnemy : " + eName + "\nAlias : " + aliasName + "\nBy : " + (us == null ? "Unknown" : u.getAsMention()));
                 } else {
                     StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", name));
 
@@ -287,6 +295,10 @@ public class AliasAdd extends ConstraintCommand {
                     AliasHolder.SALIAS.put(AliasHolder.getLangCode(lang), stages.get(0), alias);
 
                     createMessageWithNoPings(ch, LangID.getStringByID("alias_added", lang).replace("_DDD_", stName).replace("_AAA_", aliasName));
+
+                    User us = getUser(event);
+
+                    StaticStore.logger.uploadLog("Alias added\n\nStage : " + stName + "\nAlias : " + aliasName + "\nBy : " + (us == null ? "Unknown" : u.getAsMention()));
                 } else {
                     String check;
 

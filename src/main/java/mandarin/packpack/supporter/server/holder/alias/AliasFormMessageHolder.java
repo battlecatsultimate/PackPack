@@ -156,6 +156,9 @@ public class AliasFormMessageHolder extends MessageHolder<MessageReceivedEvent> 
                     AliasHolder.FALIAS.put(AliasHolder.getLangCode(lang), form.get(id), alias);
 
                     createMessageWithNoPings(ch, LangID.getStringByID("alias_added", lang).replace("_DDD_", fname).replace("_AAA_", aliasName));
+
+                    StaticStore.logger.uploadLog("Alias added\n\nUnit : " + fname + "\nAlias : " + aliasName + "\nBy : " + event.getAuthor().getAsMention());
+
                     break;
                 case REMOVE:
                     if(alias == null || alias.isEmpty()) {
@@ -178,6 +181,9 @@ public class AliasFormMessageHolder extends MessageHolder<MessageReceivedEvent> 
                     AliasHolder.FALIAS.put(AliasHolder.getLangCode(lang), form.get(id), alias);
 
                     createMessageWithNoPings(ch, LangID.getStringByID("alias_removed", lang).replace("_DDD_", fname).replace("_AAA_", aliasName));
+
+                    StaticStore.logger.uploadLog("Alias removed\n\nUnit : " + fname + "\nAlias : " + aliasName + "\nBy : " + event.getAuthor().getAsMention());
+
                     break;
             }
 

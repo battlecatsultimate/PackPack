@@ -140,6 +140,9 @@ public class AliasEnemyMessageHolder extends MessageHolder<MessageReceivedEvent>
                     AliasHolder.EALIAS.put(AliasHolder.getLangCode(lang), enemy.get(id), alias);
 
                     createMessageWithNoPings(ch, LangID.getStringByID("alias_added", lang).replace("_DDD_", eName).replace("_AAA_", aliasName));
+
+                    StaticStore.logger.uploadLog("Alias added\n\nEnemy : " + eName + "\nAlias : " + aliasName + "\nBy : " + event.getAuthor().getAsMention());
+
                     break;
                 case REMOVE:
                     if(alias == null || alias.isEmpty()) {
@@ -162,6 +165,9 @@ public class AliasEnemyMessageHolder extends MessageHolder<MessageReceivedEvent>
                     AliasHolder.EALIAS.put(AliasHolder.getLangCode(lang), enemy.get(id), alias);
 
                     createMessageWithNoPings(ch, LangID.getStringByID("alias_removed", lang).replace("_DDD_", eName).replace("_AAA_", aliasName));
+
+                    StaticStore.logger.uploadLog("Alias removed\n\nEnemy : " + eName + "\nAlias : " + aliasName + "\nBy : " + event.getAuthor().getAsMention());
+
                     break;
             }
 
