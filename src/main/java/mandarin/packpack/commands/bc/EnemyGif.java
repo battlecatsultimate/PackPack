@@ -35,7 +35,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
 
     static {
         int[] data = {
-
+            564, 565, 566, 567, 568
         };
 
         for(int d : data)
