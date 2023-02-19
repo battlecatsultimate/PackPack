@@ -2,6 +2,9 @@ package mandarin.packpack.supporter.calculation;
 
 import mandarin.packpack.supporter.lang.LangID;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+
 public class Operator extends Element {
     public enum TYPE {
         ADDITION,
@@ -19,24 +22,45 @@ public class Operator extends Element {
         this.type = type;
     }
 
-    public double calculate(Number n0, Number n1, int lang) {
+    public Number calculate(Number n0, Number n1, int lang) {
+        BigDecimal d0;
+        BigDecimal d1;
+
+        if (n0.raw != null)
+            d0 = new BigDecimal(n0.raw);
+        else if(n0.bd != null)
+            d0 = new BigDecimal(n0.bd.toString());
+        else
+            d0 = new BigDecimal(n0.value);
+
+        if (n1.raw != null)
+            d1 = new BigDecimal(n1.raw);
+        else if(n1.bd != null)
+            d1 = new BigDecimal(n1.bd.toString());
+        else
+            d1 = new BigDecimal(n1.value);
+
         switch (type) {
             case ADDITION:
-                return n0.value + n1.value;
+                return new Number(d0.add(d1));
             case SUBTRACTION:
-                return n0.value - n1.value;
+                return new Number(d0.subtract(d1));
             case MULTIPLICATION:
-                return n0.value * n1.value;
+                return new Number(d0.multiply(d1));
             case DIVISION:
-                if(n1.value == 0) {
+                if(d1.doubleValue() == 0) {
                     Equation.error.add(LangID.getStringByID("calc_division0", lang));
 
-                    return 0;
+                    return new Number(0, "0");
                 }
 
-                return n0.value / n1.value;
+                return new Number(d0.divide(d1, MathContext.DECIMAL64));
             case SQUARE:
-                return Math.pow(n0.value, n1.value);
+                if(d1.equals(new BigDecimal(d1.intValue())) && Math.abs(d1.intValue()) <= 999999999) {
+                    return new Number(d0.pow(d1.intValue(), MathContext.DECIMAL64));
+                } else {
+                    return new Number(Math.pow(n0.value, n1.value));
+                }
             default:
                 throw new IllegalStateException("Invalid operator type : " + type);
         }

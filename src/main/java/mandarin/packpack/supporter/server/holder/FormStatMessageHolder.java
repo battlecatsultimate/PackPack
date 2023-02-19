@@ -5,7 +5,6 @@ import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Form;
 import common.util.unit.Level;
-import common.util.unit.Unit;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
@@ -35,7 +34,7 @@ public class FormStatMessageHolder extends SearchHolder {
         this.form = form;
         this.config = config;
 
-        this.talent = (param & 2) > 0;
+        this.talent = (param & 2) > 0 || lv.getTalents().length > 0;
         this.isFrame = (param & 4) == 0 && config.useFrame;
         this.extra = (param & 8) > 0 || config.extra;
         this.compact = (param & 16) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
@@ -82,16 +81,7 @@ public class FormStatMessageHolder extends SearchHolder {
         try {
             Form f = form.get(id);
 
-            Unit unit = f.unit;
-
-            boolean trueFormPossible = false;
-
-            if(unit != null && isTrueForm && unit.forms.length == 3) {
-                f = unit.forms[2];
-                trueFormPossible = true;
-            }
-
-            Message result = EntityHandler.showUnitEmb(f, ch, getAuthorMessage(), config, isFrame, talent, extra, isTrueForm, trueFormPossible, lv, lang, true, compact);
+            Message result = EntityHandler.showUnitEmb(f, ch, getAuthorMessage(), config, isFrame, talent, extra, isTrueForm, f.fid == 2, lv, lang, true, compact);
 
             if(result != null) {
                 User u = event.getUser();

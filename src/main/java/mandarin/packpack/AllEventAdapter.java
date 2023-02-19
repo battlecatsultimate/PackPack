@@ -183,6 +183,8 @@ public class AllEventAdapter extends ListenerAdapter {
             if(idh.logDM != null && idh.logDM.equals(ch.getId()))
                 idh.logDM = null;
 
+            idh.status.remove(ch.getId());
+
             StaticStore.idHolder.put(g.getId(), idh);
 
             if(StaticStore.scamLinkHandlers.servers.containsKey(g.getId())) {
@@ -928,6 +930,14 @@ public class AllEventAdapter extends ListenerAdapter {
             case "ca":
                 new ComboAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
                 break;
+            case "addstatuschannel":
+            case "asc":
+                new AddStatusChannel(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+                break;
+            case "removestatuschannel":
+            case "rsc":
+                new RemoveStatusChannel(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+                break;
         }
     }
 
@@ -1154,6 +1164,31 @@ public class AllEventAdapter extends ListenerAdapter {
         }
 
         StaticStore.saveServerInfo();
+
+        for(String key : StaticStore.idHolder.keySet()) {
+            try {
+                IDHolder holder = StaticStore.idHolder.get(key);
+
+                if(holder == null || holder.status.isEmpty())
+                    continue;
+
+                Guild g = client.getGuildById(key);
+
+                if(g == null)
+                    continue;
+
+                for(int i = 0; i < holder.status.size(); i++) {
+                    GuildChannel ch = g.getGuildChannelById(holder.status.get(i));
+
+                    if(!(ch instanceof MessageChannel) || !((MessageChannel) ch).canTalk())
+                        continue;
+
+                    ((MessageChannel) ch).sendMessage(String.format(LangID.getStringByID("bot_online", holder.config.lang), client.getSelfUser().getAsMention()))
+                            .setAllowedMentions(new ArrayList<>())
+                            .queue();
+                }
+            } catch (Exception ignored) {}
+        }
 
         StaticStore.logger.uploadLog("Bot ready to be used!");
     }

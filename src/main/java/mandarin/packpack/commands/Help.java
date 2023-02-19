@@ -46,9 +46,9 @@ public class Help extends Command {
                     .setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)])
                     .addField(LangID.getStringByID("help_normal", lang), "```analyze, calculator, config, locale, optout, prefix, timezone```", false)
                     .addField(LangID.getStringByID("help_bc", lang), "```background, castle, catcombo, enemygif, enemyimage, enemysprite, enemystat, findreward, findstage, formgif, formimage, formsprite, formstat, medal, music, soul, soulimage, soulsprite, stageinfo, talentinfo```", false)
-                    .addField(LangID.getStringByID("help_server", lang), "```boosteremoji, boosteremojiremove, boosterrole, boosterroleremove, channelpermission, checkbcu, clearcache, commandban, commandunban, fixrole, idset, memory, save, serverconfig, serverjson, serverpre, serverstat, setup, subscribeevent, subscribescamlinkdetector, unsubscribescamlinkdetector, watchdm```", false)
+                    .addField(LangID.getStringByID("help_server", lang), "```addstatuschannel, boosteremoji, boosteremojiremove, boosterrole, boosterroleremove, channelpermission, checkbcu, clearcache, commandban, commandunban, fixrole, idset, removestatuschannel, save, serverconfig, serverjson, serverpre, serverstat, setup, subscribeevent, subscribescamlinkdetector, unsubscribescamlinkdetector, watchdm```", false)
                     .addField(LangID.getStringByID("help_data", lang), "```animanalyzer, announcement, checkeventupdate, comboanalyzer, downloadapk, enemystatanalyzer, eventdataarchive, printevent, printgachaevent, printitemevent, printstageevent, stageimage, stagestatanalyzer, statanalyzer, stagemapimage, talentanalyzer, trueformanalyzer```", false)
-                    .addField(LangID.getStringByID("help_packpack", lang), "```alias, aliasadd, aliasremove, registerscamlink, statistic, suggest, unregisterscamlink```", false);
+                    .addField(LangID.getStringByID("help_packpack", lang), "```alias, aliasadd, aliasremove, memory, registerscamlink, statistic, suggest, unregisterscamlink```", false);
 
             replyToMessageSafely(ch, "", getMessage(event), a -> a.setEmbeds(builder.build()));
         }
@@ -89,6 +89,10 @@ public class Help extends Command {
                 break;
             case "formstat":
             case "fs":
+            case "catstat":
+            case "cs":
+            case "unitstat":
+            case "us":
                 replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "formstat", true, true, false)));
                 break;
             case "locale":
@@ -104,7 +108,7 @@ public class Help extends Command {
                 replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "enemystat", true, true, false)));
                 break;
             case "castle":
-            case "cs":
+            case "cas":
                 replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "castle", true, true, false)));
                 break;
             case "stageinfo":
@@ -119,6 +123,14 @@ public class Help extends Command {
             case "formimg":
             case "fimage":
             case "fimg":
+            case "catimage":
+            case "catimg":
+            case "cimage":
+            case "cimg":
+            case "unitimage":
+            case "unitimg":
+            case "uimage":
+            case "uimg":
                 replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "formimage", true, true, true)));
                 break;
             case "enemyimage":
@@ -134,6 +146,12 @@ public class Help extends Command {
             case "formgif":
             case "fgif":
             case "fg":
+            case "catgif":
+            case "cgif":
+            case "cg":
+            case "unitgif":
+            case "ugif":
+            case "ug":
                 replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "formgif", true, true, true)));
                 break;
             case "enemygif":
@@ -162,6 +180,14 @@ public class Help extends Command {
             case "fsprite":
             case "formsp":
             case "fsp":
+            case "catsprite":
+            case "csprite":
+            case "catsp":
+            case "csp":
+            case "unitsprite":
+            case "usprite":
+            case "unitsp":
+            case "usp":
                 replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "formsprite", true, true, false)));
                 break;
             case "enemysprite":
@@ -423,6 +449,14 @@ public class Help extends Command {
             case "ca":
                 replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("comboanalyzer", true, false, true)));
                 break;
+            case "addstatuschannel":
+            case "asc":
+                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("addstatuschannel", false, false, true)));
+                break;
+            case "removestatuschannel":
+            case "rsc":
+                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("removestatuschannel", false, false, true)));
+                break;
             default:
                 replyToMessageSafely(ch, LangID.getStringByID("help_nocomm", lang).replace("_", command), reference, a -> a);
         }
@@ -445,7 +479,19 @@ public class Help extends Command {
         }
 
         if(tip) {
-            builder.addField(LangID.getStringByID("help_tip", lang), LangID.getStringByID("help_"+mainCommand+"_tip", lang), false);
+            int tipIndex = 1;
+
+            while(true) {
+                String id = "help_" + mainCommand + "_tip" + (tipIndex == 1 ? "" : ("" + tipIndex));
+                String tips = LangID.getStringByID(id, lang);
+
+                if(!tips.equals(id)) {
+                    builder.addField(tipIndex == 1 ? LangID.getStringByID("help_tip", lang) : "** **", tips, false);
+                    tipIndex++;
+                } else {
+                    break;
+                }
+            }
         }
 
         return builder.build();

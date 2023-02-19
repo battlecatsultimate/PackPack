@@ -117,7 +117,9 @@ public class ImageDrawing {
             4400, //1025
             3600, //1026
             4900, //1027
-            3600 //1029
+            3600, //1029
+            3600, //1030
+            4900 //1031
     };
 
     private static Font titleFont;

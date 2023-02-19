@@ -179,6 +179,8 @@ public class StaticStore {
 
     public static List<String> cultist = new ArrayList<>();
 
+    public static Map<String, String> conflictedAnimation = new HashMap<>();
+
     public static String rolesToString(List<Role> roles) {
         StringBuilder builder = new StringBuilder();
 

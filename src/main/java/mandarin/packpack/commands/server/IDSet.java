@@ -48,6 +48,7 @@ public class IDSet extends ConstraintCommand {
                     "Booster User : " + (holder.BOOSTER == null ? "None" : getRoleIDWithName(holder.BOOSTER)) + "\n" +
                     "Get-Access : " + (holder.GET_ACCESS == null ? "None" : getChannelIDWithName(holder.GET_ACCESS, g)) + "\n" +
                     "Announcement : " + (holder.ANNOUNCE == null ? "None" : getChannelIDWithName(holder.ANNOUNCE, g)) + "\n" +
+                    "Status : " + (holder.status.isEmpty() ? "None" : getChannelsWithName(holder.status, g)) + "\n" +
                     "Publish : "+ holder.publish);
 
             if(!holder.ID.isEmpty()) {
@@ -438,6 +439,24 @@ public class IDSet extends ConstraintCommand {
         }
 
         return "`"+id+"`" + "[**<#"+id+">**]";
+    }
+
+    private String getChannelsWithName(List<String> ids, Guild g) {
+        StringBuilder builder = new StringBuilder("\n");
+
+        for(int i = 0; i < ids.size(); i++) {
+            GuildChannel gc = g.getGuildChannelById(ids.get(i));
+
+            if(gc == null)
+                builder.append("`").append(ids.get(i)).append("`");
+            else
+                builder.append("`").append(ids.get(i)).append("` [**<#").append(ids.get(i)).append(">**]");
+
+            if(i < ids.size() - 1)
+                builder.append("\n");
+        }
+
+        return builder.toString();
     }
 
     private Object[] getName(String[] contents, int start) {

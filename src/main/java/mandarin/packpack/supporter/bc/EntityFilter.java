@@ -34,7 +34,7 @@ public class EntityFilter {
             18, 19, 20, 21, 22, 23, 35, 36, 49
     };
 
-    public static ArrayList<Form> findUnitWithName(String name, int lang) {
+    public static ArrayList<Form> findUnitWithName(String name, boolean trueForm, int lang) {
         ArrayList<Form> res = new ArrayList<>();
         ArrayList<Form> clear = new ArrayList<>();
 
@@ -242,21 +242,36 @@ public class EntityFilter {
                 }
             }
 
-            ArrayList<Form> finalResult = new ArrayList<>();
-
             for(int i = 0; i < similar.size(); i++) {
                 if(similarity.get(i) == sMin)
-                    finalResult.add(similar.get(i));
+                    res.add(similar.get(i));
+            }
+        }
+
+        if(trueForm) {
+            ArrayList<Form> filtered = new ArrayList<>();
+
+            for(int i = 0; i < res.size(); i++) {
+                Form f = res.get(i);
+
+                if(f.fid == 2 && !filtered.contains(f)) {
+                    filtered.add(f);
+                } else if(f.fid != 2) {
+                    Form finalForm = f.unit.forms[f.unit.forms.length - 1];
+
+                    if(!filtered.contains(finalForm))
+                        filtered.add(finalForm);
+                }
             }
 
-            return finalResult;
-        } else {
-            return res;
+            return filtered;
         }
+
+        return res;
     }
 
     public static Form pickOneForm(String name, int lang) {
-        ArrayList<Form> forms = findUnitWithName(name, lang);
+        ArrayList<Form> forms = findUnitWithName(name, false, lang);
 
         if(forms.isEmpty())
             return null;

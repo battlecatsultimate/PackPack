@@ -237,14 +237,22 @@ public class DataToString extends Data {
         return rarity;
     }
 
-    public static String getAtkTime(MaskUnit f, boolean isFrame) {
+    public static String getAtkTime(MaskUnit f, boolean talent, boolean isFrame, Level lv) {
         if(f == null)
             return "";
 
-        if(isFrame) {
-            return f.getItv()+"f";
+        MaskUnit du;
+
+        if(f.getPCoin() != null && talent) {
+            du = f.getPCoin().improve(lv.getTalents());
         } else {
-            return df.format(f.getItv()/30.0)+"s";
+            du = f;
+        }
+
+        if(isFrame) {
+            return du.getItv()+"f";
+        } else {
+            return df.format(du.getItv()/30.0)+"s";
         }
     }
 
@@ -612,7 +620,7 @@ public class DataToString extends Data {
 
         for(int[] atk : raw) {
             if(du.getPCoin() != null && talent) {
-                result += (int) ((int) (Math.round(atk[0] * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getAtkMulti()) * du.getPCoin().getAtkMultiplication(lvs));
+                result += (int) ((int) (Math.round(atk[0] * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getAtkMulti()) * du.getPCoin().getAtkMultiplication(lvs.getTalents()));
             } else {
                 result += (int) (Math.round(atk[0] * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getAtkMulti());
             }
@@ -650,7 +658,7 @@ public class DataToString extends Data {
             int result;
 
             if(du.getPCoin() != null && talent) {
-                result = (int) ((int) (Math.round(atk[0] * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getAtkMulti()) * du.getPCoin().getAtkMultiplication(lvs));
+                result = (int) ((int) (Math.round(atk[0] * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getAtkMulti()) * du.getPCoin().getAtkMultiplication(lvs.getTalents()));
             } else {
                 result = (int) (Math.round(atk[0] * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getAtkMulti());
             }
@@ -782,7 +790,7 @@ public class DataToString extends Data {
         int result;
 
         if(f.getPCoin() != null && talent) {
-            result = (int) ((int) (Math.round(du.getHp() * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getDefMulti()) * f.getPCoin().getHPMultiplication(lvs));
+            result = (int) ((int) (Math.round(du.getHp() * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getDefMulti()) * f.getPCoin().getHPMultiplication(lvs.getTalents()));
         } else {
             result = (int) (Math.round(du.getHp() * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getDefMulti());
         }
@@ -2263,7 +2271,7 @@ public class DataToString extends Data {
             int result;
 
             if(du.getPCoin() != null && talent) {
-                result = (int) ((int) (Math.round(atk[0] * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getAtkMulti()) * du.getPCoin().getAtkMultiplication(lvs));
+                result = (int) ((int) (Math.round(atk[0] * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getAtkMulti()) * du.getPCoin().getAtkMultiplication(lvs.getTalents()));
             } else {
                 result = (int) (Math.round(atk[0] * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getAtkMulti());
             }
@@ -2324,7 +2332,7 @@ public class DataToString extends Data {
     }
 
     public static String getCompactAtkTimings(MaskUnit f, boolean talent, Level lv, boolean isFrame) {
-        return getAtkTime(f, isFrame) + " : " + getPre(f, isFrame) + " -> " + getPost(f, isFrame) + " -> " + getTBA(f, talent, lv, isFrame);
+        return getAtkTime(f, talent, isFrame, lv) + " : " + getPre(f, isFrame) + " -> " + getPost(f, isFrame) + " -> " + getTBA(f, talent, lv, isFrame);
     }
 
     public static String getCompactAtkTimings(MaskEnemy e, boolean isFrame) {

@@ -288,7 +288,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
             CommonStatic.getConfig().lang = oldConfig;
 
             if(g == null)
-                g = tryGetGachaName(section.gachaID, lang);
+                g = tryGetGachaName(section, lang);
 
             result.append("\u001B[1;38m").append(g);
 
@@ -518,7 +518,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
         for (GachaSection section : gacha) {
             result.append("<").append(section.index + 1).append(getNumberWithDayFormat(section.index + 1, lang)).append(" Gacha>\n\n");
 
-            result.append("Gacha Name : ").append(tryGetGachaName(section.gachaID, lang)).append("\n");
+            result.append("Gacha Name : ").append(tryGetGachaName(section, lang)).append("\n");
             result.append("Cf per roll : ").append(section.requiredCatFruit).append("\n");
             result.append("Rarity Data : ");
 
@@ -571,9 +571,16 @@ public class GachaSchedule extends EventFactor implements Schedule {
             return ""+n;
     }
 
-    public String tryGetGachaName(int gachaID, int lang) {
-        if(gachaID <= 100)
-            return LangID.getStringByID("printgacha_gacha", lang).replace("_", Data.trio(gachaID));
+    public String tryGetGachaName(GachaSection section, int lang) {
+        int gachaID = section.gachaID;
+
+        if(gachaID <= 100) {
+            if(section.message != null && !section.message.trim().isBlank()) {
+                return section.message.trim();
+            } else {
+                return LangID.getStringByID("printgacha_gacha", lang).replace("_", Data.trio(gachaID));
+            }
+        }
 
         String loc;
 
@@ -597,20 +604,33 @@ public class GachaSchedule extends EventFactor implements Schedule {
         try {
             String html = getHtmlFromUrl(url);
 
-            if(html == null)
-                return LangID.getStringByID("printgacha_gacha", lang).replace("_", Data.trio(gachaID));
+            if(html == null) {
+                if(section.message != null && !section.message.trim().isBlank()) {
+                    return section.message.trim();
+                } else {
+                    return LangID.getStringByID("printgacha_gacha", lang).replace("_", Data.trio(gachaID));
+                }
+            }
 
             Matcher m = p.matcher(html);
 
             boolean res = m.find();
 
             if(!res) {
-                return LangID.getStringByID("printgacha_gacha", lang).replace("_", Data.trio(gachaID));
+                if(section.message != null && !section.message.trim().isBlank()) {
+                    return section.message.trim();
+                } else {
+                    return LangID.getStringByID("printgacha_gacha", lang).replace("_", Data.trio(gachaID));
+                }
             }
 
             return m.group(0).replace("<h2>", "").replace("</h2>", "").replaceAll("<span.+</span>", "");
         } catch (Exception ignored) {
-            return LangID.getStringByID("printgacha_gacha", lang).replace("_", Data.trio(gachaID));
+            if(section.message != null && !section.message.trim().isBlank()) {
+                return section.message.trim();
+            } else {
+                return LangID.getStringByID("printgacha_gacha", lang).replace("_", Data.trio(gachaID));
+            }
         }
     }
 

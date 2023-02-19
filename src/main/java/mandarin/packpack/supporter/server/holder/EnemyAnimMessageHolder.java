@@ -31,6 +31,8 @@ public class EnemyAnimMessageHolder extends SearchHolder {
     private final boolean raw;
     private final boolean gifMode;
 
+    private final String command;
+
     public EnemyAnimMessageHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, int mode, int frame, boolean transparent, boolean debug, int lang, boolean isGif, boolean raw, boolean gifMode) {
         super(msg, author, channelID, lang);
 
@@ -43,6 +45,8 @@ public class EnemyAnimMessageHolder extends SearchHolder {
         this.gif = isGif;
         this.raw = raw;
         this.gifMode = gifMode;
+
+        this.command = author.getContentRaw();
 
         registerAutoFinish(this, msg, author, lang, FIVE_MIN);
     }
@@ -106,6 +110,11 @@ public class EnemyAnimMessageHolder extends SearchHolder {
                             }
 
                             boolean result = EntityHandler.generateEnemyAnim(e, ch, getAuthorMessage(), g == null ? 0 : g.getBoostTier().getKey(), mode, debug, frame, lang, raw, gifMode);
+
+                            if(!StaticStore.conflictedAnimation.isEmpty()) {
+                                StaticStore.logger.uploadLog("Warning - Bot generated animation while this animation is already cached\n\nCommand : " + command);
+                                StaticStore.conflictedAnimation.clear();
+                            }
 
                             User u = event.getUser();
 

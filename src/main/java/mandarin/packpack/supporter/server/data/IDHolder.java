@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
+import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
@@ -36,6 +37,14 @@ public class IDHolder {
 
         if(obj.has("ann")) {
             id.ANNOUNCE = id.setOrNull(obj.get("ann").getAsString());
+        }
+
+        if(obj.has("status")) {
+            JsonElement elem = obj.get("status");
+
+            if(!elem.isJsonPrimitive()) {
+                id.status = StaticStore.jsonToListString(elem.getAsJsonArray());
+            }
         }
 
         if(obj.has("bo")) {
@@ -106,6 +115,7 @@ public class IDHolder {
 
     public Map<String, String> ID = new TreeMap<>();
     public Map<String, List<String>> channel = new TreeMap<>();
+    public List<String> status = new ArrayList<>();
     public List<Integer> eventLocale = new ArrayList<>();
     public boolean eventRaw = false, forceCompact = false;
     public ConfigHolder config = new ConfigHolder();
@@ -136,6 +146,7 @@ public class IDHolder {
         obj.addProperty("mem", getOrNull(MEMBER));
         obj.addProperty("acc", getOrNull(GET_ACCESS));
         obj.addProperty("ann", getOrNull(ANNOUNCE));
+        obj.add("status", StaticStore.listToJsonString(status));
         obj.addProperty("bo", getOrNull(BOOSTER));
         obj.add("channel", jsonfyMap(channel));
         obj.add("id", jsonfyIDs());

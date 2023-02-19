@@ -88,7 +88,7 @@ public class FormGif extends GlobalTimedConstraintCommand {
                 return;
             }
 
-            ArrayList<Form> forms = EntityFilter.findUnitWithName(search, lang);
+            ArrayList<Form> forms = EntityFilter.findUnitWithName(search, false, lang);
 
             if(forms.isEmpty()) {
                 replyToMessageSafely(ch, LangID.getStringByID("formst_nounit", lang).replace("_", filterCommand(getContent(event))), getMessage(event), a -> a);
@@ -114,6 +114,11 @@ public class FormGif extends GlobalTimedConstraintCommand {
                 }
 
                 boolean result = EntityHandler.generateFormAnim(f, ch, getMessage(event), (g == null ? 0 : g.getBoostTier().getKey()), mode, debug, frame, lang, raw && isTrusted, gif);
+
+                if(!StaticStore.conflictedAnimation.isEmpty()) {
+                    StaticStore.logger.uploadLog("Warning - Bot generated animation while this animation is already cached\n\nCommand : " + getContent(event));
+                    StaticStore.conflictedAnimation.clear();
+                }
 
                 if(raw && isTrusted && result) {
                     StaticStore.logger.uploadLog("Generated mp4 by user " + u.getName() + " for unit ID " + Data.trio(f.unit.id.id) + " with mode of " + mode);
