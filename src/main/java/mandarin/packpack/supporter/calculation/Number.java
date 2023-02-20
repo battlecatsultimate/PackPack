@@ -7,6 +7,8 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 public class Number extends Element {
+    public static BigDecimal cutOff = BigDecimal.valueOf(1E-128);
+
     public final String raw;
     @Nonnull
     public final BigDecimal bd;
@@ -22,14 +24,26 @@ public class Number extends Element {
         super(true);
 
         this.raw = raw;
-        this.bd = new BigDecimal(raw);
+
+        BigDecimal test = new BigDecimal(raw);
+
+        if(test.abs().compareTo(cutOff) < 0) {
+            this.bd = BigDecimal.valueOf(0);
+        } else {
+            this.bd = test;
+        }
     }
 
     public Number(@Nonnull BigDecimal bd) {
         super(true);
 
-        this.raw = bd.toString();
-        this.bd = bd;
+        if(bd.abs().compareTo(cutOff) < 0) {
+            this.bd = BigDecimal.valueOf(0);
+            this.raw = "0";
+        } else {
+            this.bd = bd;
+            this.raw = bd.toString();
+        }
     }
 
     public Number(@Nonnull BigInteger bi) {

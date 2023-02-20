@@ -5,6 +5,7 @@ import mandarin.packpack.supporter.lang.LangID;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
+import java.math.RoundingMode;
 
 public class Operator extends Element {
     public enum TYPE {
@@ -51,7 +52,7 @@ public class Operator extends Element {
                     return new Number("0");
                 }
 
-                return new Number(d0.divide(d1, MathContext.UNLIMITED));
+                return new Number(d0.divide(d1, Equation.context));
             case SQUARE:
                 if(d1.compareTo(new BigDecimal(d1.toBigInteger())) == 0) {
                     try {
@@ -71,11 +72,12 @@ public class Operator extends Element {
                         }
 
                         if(d1.compareTo(BigDecimal.ZERO) < 0) {
-                            result = result.pow(-1, MathContext.UNLIMITED);
+                            result = result.pow(-1, Equation.context);
                         }
 
                         return new Number(result);
-                    } catch (ArithmeticException ignored) {
+                    } catch (ArithmeticException e) {
+                        e.printStackTrace();
                         Equation.error.add(LangID.getStringByID("calc_outofrange", lang));
 
                         return new Number(0);

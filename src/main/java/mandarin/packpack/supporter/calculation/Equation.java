@@ -15,7 +15,8 @@ import java.util.Locale;
 
 public class Equation {
     public static List<String> error = new ArrayList<>();
-    public static DecimalFormat df = new DecimalFormat("#.######");
+    public static DecimalFormat df = new DecimalFormat("#.########");
+    public static MathContext context = new MathContext(256, RoundingMode.HALF_EVEN);
 
     private static final String[] suffix = { "k", "m", "b", "t" };
 
@@ -346,7 +347,7 @@ public class Equation {
                                                 return new ArrayList<>();
                                             }
 
-                                            elements.add(new Number(BigDecimal.ONE.divide(check, MathContext.UNLIMITED)));
+                                            elements.add(new Number(BigDecimal.ONE.divide(check, Equation.context)));
 
                                             break;
                                         case "sec":
@@ -358,7 +359,7 @@ public class Equation {
                                                 return new ArrayList<>();
                                             }
 
-                                            elements.add(new Number(BigDecimal.ONE.divide(check, MathContext.UNLIMITED)));
+                                            elements.add(new Number(BigDecimal.ONE.divide(check, Equation.context)));
 
                                             break;
                                         case "cot":
@@ -369,7 +370,7 @@ public class Equation {
                                             } else if(inner.remainder(BigDecimal.valueOf(Math.PI / 2)).compareTo(BigDecimal.ZERO) == 0) {
                                                 elements.add(new Number("0"));
                                             } else {
-                                                elements.add(new Number(BigDecimal.ONE.divide(BigDecimal.valueOf(Math.tan(inner.doubleValue())), MathContext.UNLIMITED)));
+                                                elements.add(new Number(BigDecimal.ONE.divide(BigDecimal.valueOf(Math.tan(inner.doubleValue())), Equation.context)));
                                             }
 
                                             break;
@@ -403,7 +404,7 @@ public class Equation {
                                                 return new ArrayList<>();
                                             }
 
-                                            elements.add(new Number(inner.sqrt(MathContext.UNLIMITED)));
+                                            elements.add(new Number(inner.sqrt(Equation.context)));
 
                                             break;
                                         case "exp":
@@ -514,7 +515,7 @@ public class Equation {
                                                         return new ArrayList<>();
                                                     }
 
-                                                    elements.add(new Number(bigDecimal.divide(BigDecimal.valueOf(Math.log(Double.parseDouble(base))), MathContext.UNLIMITED)));
+                                                    elements.add(new Number(bigDecimal.divide(BigDecimal.valueOf(Math.log(Double.parseDouble(base))), Equation.context)));
                                                 } else {
                                                     int originalLength = error.size();
 
@@ -531,7 +532,7 @@ public class Equation {
                                                             return new ArrayList<>();
                                                         }
 
-                                                        elements.add(new Number(bigDecimal.divide(BigDecimal.valueOf(Math.log(value.doubleValue())), MathContext.UNLIMITED)));
+                                                        elements.add(new Number(bigDecimal.divide(BigDecimal.valueOf(Math.log(value.doubleValue())), Equation.context)));
                                                     }
                                                 }
                                             } else if(prefix.startsWith("sqrt")) {
@@ -546,7 +547,7 @@ public class Equation {
                                                         return new ArrayList<>();
                                                     }
 
-                                                    double checkValue = Math.pow(inner.doubleValue(), BigDecimal.ONE.divide(value, MathContext.UNLIMITED).doubleValue());
+                                                    double checkValue = Math.pow(inner.doubleValue(), BigDecimal.ONE.divide(value, Equation.context).doubleValue());
 
                                                     if(Double.isNaN(checkValue)) {
                                                         error.add(String.format(LangID.getStringByID("calc_sqrtbase", lang), prefix + "(" + builder + ")"));
@@ -571,7 +572,7 @@ public class Equation {
                                                             return new ArrayList<>();
                                                         }
 
-                                                        double checkValue = Math.pow(inner.doubleValue(), BigDecimal.ONE.divide(value, MathContext.UNLIMITED).doubleValue());
+                                                        double checkValue = Math.pow(inner.doubleValue(), BigDecimal.ONE.divide(value, Equation.context).doubleValue());
 
                                                         if(Double.isNaN(checkValue)) {
                                                             error.add(String.format(LangID.getStringByID("calc_sqrtbase", lang), prefix + "(" + builder + ")"));
@@ -961,11 +962,11 @@ public class Equation {
     }
 
     private static BigDecimal nPr(BigInteger n, BigInteger r) {
-        return factorial(n).divide(factorial(n.subtract(r)), MathContext.UNLIMITED);
+        return factorial(n).divide(factorial(n.subtract(r)), Equation.context);
     }
 
     private static BigDecimal nCr(BigInteger n, BigInteger r) {
-        return factorial(n).divide(factorial(r).multiply(factorial(n.subtract(r))), MathContext.UNLIMITED);
+        return factorial(n).divide(factorial(r).multiply(factorial(n.subtract(r))), Equation.context);
     }
 
     private static BigDecimal factorial(BigInteger n) {
