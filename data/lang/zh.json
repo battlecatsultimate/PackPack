@@ -1356,6 +1356,7 @@
   "calc_factrange" : "Number in factorial must be higher or same than 0 (No gamma function support) : %s",
   "calc_absfail" : "Failed to calculate equation in abs : %s",
   "calc_abspre" : "Failed to calculate previous equation provided before abs : %s",
+  "calc_outofrange" : "Returned value was not a number, or infinite",
   "asset_no" : "Bot couldn't bring asset data...",
   "asset_goup" : "Go to parent folder",
   "asset_current" : "Current path : `_`",

@@ -4,24 +4,23 @@ import mandarin.packpack.supporter.bc.DataToString;
 
 import javax.annotation.Nonnull;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 public class Number extends Element {
-    public final double value;
     public final String raw;
+    @Nonnull
     public final BigDecimal bd;
 
     public Number(double value) {
         super(true);
 
-        this.value = value;
+        this.bd = new BigDecimal(value);
         this.raw = null;
-        this.bd = null;
     }
 
-    public Number(double value, @Nonnull String raw) {
+    public Number(@Nonnull String raw) {
         super(true);
 
-        this.value = value;
         this.raw = raw;
         this.bd = new BigDecimal(raw);
     }
@@ -29,13 +28,19 @@ public class Number extends Element {
     public Number(@Nonnull BigDecimal bd) {
         super(true);
 
-        this.value = bd.doubleValue();
         this.raw = bd.toString();
         this.bd = bd;
     }
 
+    public Number(@Nonnull BigInteger bi) {
+        super(true);
+
+        this.raw = bi.toString();
+        this.bd = new BigDecimal(bi);
+    }
+
     @Override
     public String toString() {
-        return DataToString.df.format(value);
+        return DataToString.df.format(bd.doubleValue());
     }
 }

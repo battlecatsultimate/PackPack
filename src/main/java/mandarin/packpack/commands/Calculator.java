@@ -6,6 +6,8 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
+import java.math.BigDecimal;
+
 public class Calculator extends ConstraintCommand {
 
     public Calculator(ROLE role, int lang, IDHolder id) {
@@ -27,7 +29,7 @@ public class Calculator extends ConstraintCommand {
             return;
         }
 
-        double result = Equation.calculate(equation[1].replace(" ", ""), null, lang);
+        BigDecimal result = Equation.calculate(equation[1].replace(" ", ""), null, lang);
 
         if(Equation.error.isEmpty()) {
             replyToMessageSafely(ch, String.format(LangID.getStringByID("calc_result", lang), Equation.df.format(result)), getMessage(event), a -> a);
