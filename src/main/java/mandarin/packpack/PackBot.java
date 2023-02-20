@@ -140,7 +140,7 @@ public class PackBot {
                     pfp++;
                 }
 
-                if(event % 2 == 0) {
+                if(event % 30 == 0) {
                     System.out.println("Checking event data");
 
                     try {
