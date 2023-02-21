@@ -29,7 +29,7 @@ public class Calculator extends ConstraintCommand {
             return;
         }
 
-        BigDecimal result = Equation.calculate(equation[1].replace(" ", ""), null, lang);
+        BigDecimal result = Equation.calculate(equation[1].replace(" ", ""), null, false, lang);
 
         if(Equation.error.isEmpty()) {
             replyToMessageSafely(ch, String.format(LangID.getStringByID("calc_result", lang), Equation.df.format(result)), getMessage(event), a -> a);

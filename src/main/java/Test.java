@@ -1,35 +1,18 @@
-import mandarin.packpack.supporter.calculation.Matrix;
-
-import java.math.BigDecimal;
-import java.util.Random;
+import mandarin.packpack.supporter.calculation.Equation;
+import mandarin.packpack.supporter.calculation.Formula;
 
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class Test {
     public static void main(String[] args) throws Exception {
-        int n = 500;
+        String formula = "3x^4 + 10x^3 - 2x^2 + 10x - 54";
 
-        Matrix a = new Matrix(n, n);
-        Matrix b = new Matrix(n, 1);
+        Formula f = new Formula(formula, 0);
+        String input = "5";
 
-        Random r = new Random();
-
-        int min = 0;
-        int max = 100;
-
-        for(int x = 0; x < a.getRow(); x++) {
-            for(int y = 0; y < a.getColumn(); y++) {
-                a.setValue(x, y, BigDecimal.valueOf(min + (max - min) * r.nextDouble()));
-            }
-
-            b.setValue(x, 0, BigDecimal.valueOf(min + (max - min) * r.nextDouble()));
-        }
-
-        long start = System.currentTimeMillis();
-
-        Matrix.solvePolynomial(a, b, Matrix.ALGORITHM.LU);
-
-        long end = System.currentTimeMillis();
-
-        System.out.printf("%d equations\nLU Decomposition (%.4g sec)", n, (end - start) / 1000.0);
+        System.out.println("Formula : " + formula);
+        System.out.println("Found variable : " + f.variable.name);
+        System.out.println("Input : " + input);
+        System.out.println("Substitution : " + f.substitute(input, 0));
+        System.out.println("Result : " + Equation.calculate(f.substitute(input, 0), null,  false,0));
     }
 }

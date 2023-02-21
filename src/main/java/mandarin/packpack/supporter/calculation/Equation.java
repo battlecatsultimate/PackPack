@@ -20,14 +20,14 @@ public class Equation {
 
     private static final String[] suffix = { "k", "m", "b", "t" };
 
-    public static BigDecimal calculate(String equation, String parent, int lang) {
+    public static BigDecimal calculate(String equation, String parent, boolean formula, int lang) {
         if(equation.equals(parent)) {
             error.add(String.format(LangID.getStringByID("calc_notnum", lang), equation));
 
             return new BigDecimal(0);
         }
 
-        List<Element> elements = parse(equation, lang);
+        List<Element> elements = parse(equation, formula, lang);
 
         if(elements.isEmpty())
             return new BigDecimal(0);
@@ -143,7 +143,7 @@ public class Equation {
         return builder.toString();
     }
 
-    private static List<Element> parse(String equation, int lang) {
+    private static List<Element> parse(String equation, boolean formula, int lang) {
         if(openedBracket(equation)) {
             error.add(LangID.getStringByID("calc_opened", lang));
 
@@ -206,7 +206,7 @@ public class Equation {
 
                         int size = error.size();
 
-                        BigDecimal test = calculate(builder.toString(), equation, lang);
+                        BigDecimal test = calculate(builder.toString(), equation, formula, lang);
 
                         if(size != error.size()) {
                             error.add(String.format(LangID.getStringByID("calc_absfail", lang), builder));
@@ -215,7 +215,7 @@ public class Equation {
                         }
 
                         if(pre != null) {
-                            BigDecimal preTest = calculate(builder.toString(), equation, lang);
+                            BigDecimal preTest = calculate(builder.toString(), equation, formula, lang);
 
                             if(size != error.size()) {
                                 error.add(String.format(LangID.getStringByID("calc_abspre", lang), pre + "|" + builder + "|"));
@@ -280,7 +280,7 @@ public class Equation {
                                 for(int j = 0; j < data.size(); j++) {
                                     int originalLength = error.size();
 
-                                    BigDecimal valD = calculate(data.get(j), null, lang);
+                                    BigDecimal valD = calculate(data.get(j), null, formula, lang);
 
                                     if(originalLength != error.size()) {
                                         error.add(String.format(LangID.getStringByID("calc_npcrnum", lang), prefix + "(" + data.get(0) + ", " + data.get(1) + ")", data.get(j)));
@@ -297,8 +297,8 @@ public class Equation {
                                     }
                                 }
 
-                                BigInteger n = calculate(data.get(0), null, lang).toBigInteger();
-                                BigInteger r = calculate(data.get(1), null, lang).toBigInteger();
+                                BigInteger n = calculate(data.get(0), null, formula, lang).toBigInteger();
+                                BigInteger r = calculate(data.get(1), null, formula, lang).toBigInteger();
 
                                 if(n.compareTo(r) < 0) {
                                     error.add(String.format(LangID.getStringByID("calc_npcrsize", lang), prefix + "(" + data.get(0) + ", " + data.get(1)+ ")", data.get(0), data.get(1)));
@@ -312,7 +312,7 @@ public class Equation {
 
                                 break;
                             default:
-                                BigDecimal inner = calculate(builder.toString(), equation, lang);
+                                BigDecimal inner = calculate(builder.toString(), equation, formula, lang);
 
                                 if(StaticStore.isNumeric(prefix)) {
                                     elements.add(new Number(inner.multiply(new BigDecimal(prefix))));
@@ -519,7 +519,7 @@ public class Equation {
                                                 } else {
                                                     int originalLength = error.size();
 
-                                                    BigDecimal value = calculate(base, prefix + "(" + builder + ")", lang);
+                                                    BigDecimal value = calculate(base, prefix + "(" + builder + ")", formula, lang);
 
                                                     if(originalLength != error.size()) {
                                                         error.add(String.format(LangID.getStringByID("calc_unknownfunc", lang), prefix + "(" + builder + ")"));
@@ -559,7 +559,7 @@ public class Equation {
                                                 } else {
                                                     int originalLength = error.size();
 
-                                                    BigDecimal value = calculate(base, prefix + "(" + builder + ")", lang);
+                                                    BigDecimal value = calculate(base, prefix + "(" + builder + ")", formula, lang);
 
                                                     if(originalLength != error.size()) {
                                                         error.add(String.format(LangID.getStringByID("calc_unknownfunc", lang), prefix + "(" + builder + ")"));
@@ -586,7 +586,7 @@ public class Equation {
                                             } else {
                                                 int len = error.size();
 
-                                                check = calculate(prefix, prefix + "(" + builder + ")", lang);
+                                                check = calculate(prefix, prefix + "(" + builder + ")", formula, lang);
 
                                                 if(len != error.size()) {
                                                     error.add(String.format(LangID.getStringByID("calc_unknownfunc", lang), prefix + "(" + builder + ")"));
@@ -609,6 +609,11 @@ public class Equation {
                 case '*':
                 case '×':
                 case 'x':
+                    if(formula) {
+                        error.add(String.format(LangID.getStringByID("calc_notnum", lang), "x"));
+
+                        return new ArrayList<>();
+                    }
                 case '/':
                 case '÷':
                 case '^':
@@ -646,7 +651,7 @@ public class Equation {
 
                                         int originalSize = error.size();
 
-                                        BigDecimal valD = calculate(filtered, null, lang);
+                                        BigDecimal valD = calculate(filtered, null, formula, lang);
 
                                         if(originalSize != error.size()) {
                                             error.add(String.format(LangID.getStringByID("calc_notnum", lang), prefix));
@@ -719,7 +724,7 @@ public class Equation {
                                         if(Double.isNaN(suffixCheck)) {
                                             int len = error.size();
 
-                                            BigDecimal check = calculate(prefix, equation, lang);
+                                            BigDecimal check = calculate(prefix, equation, formula, lang);
 
                                             if(len != error.size()) {
                                                 error.add(String.format(LangID.getStringByID("calc_notnum", lang), prefix));
@@ -794,7 +799,7 @@ public class Equation {
 
                             int originalSize = error.size();
 
-                            BigDecimal valD = calculate(filtered, null, lang);
+                            BigDecimal valD = calculate(filtered, null, formula, lang);
 
                             if(originalSize != error.size()) {
                                 error.add(String.format(LangID.getStringByID("calc_notnum", lang), prefix));
@@ -867,7 +872,7 @@ public class Equation {
                             if(Double.isNaN(suffixCheck)) {
                                 int len = error.size();
 
-                                BigDecimal check = calculate(prefix, equation, lang);
+                                BigDecimal check = calculate(prefix, equation, formula, lang);
 
                                 if(len != error.size()) {
                                     error.add(String.format(LangID.getStringByID("calc_notnum", lang), prefix));
@@ -975,7 +980,7 @@ public class Equation {
 
         BigDecimal f = new BigDecimal("1");
 
-        for(BigInteger i = new BigInteger("2"); i.compareTo(n) < 0; i = i.add(new BigInteger("1"))) {
+        for(BigInteger i = new BigInteger("2"); i.compareTo(n) <= 0; i = i.add(new BigInteger("1"))) {
             f = f.multiply(new BigDecimal(i));
         }
 
