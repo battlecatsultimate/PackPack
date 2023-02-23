@@ -228,10 +228,36 @@ public class FG2D implements FakeGraphics {
 
 	public void drawVerticalCenteredText(String text, int x, int y) {
 		FontMetrics fm = g.getFontMetrics();
+		Rectangle2D rect = g.getFont().createGlyphVector(fm.getFontRenderContext(), text).getPixelBounds(null, 0, 0);
 
-		Rectangle2D rect = fm.getStringBounds(text, g);
+		g.drawString(text, (int) Math.round(x - rect.getX()), (int) Math.round(y - rect.getHeight() / 2.0 - rect.getY()));
 
-		g.drawString(text, x, (int) (y + (rect.getHeight() - fm.getDescent()) / 2));
+		exportProgress();
+	}
+
+	public void drawHorizontalCenteredText(String text, int x, int y) {
+		FontMetrics fm = g.getFontMetrics();
+		Rectangle2D rect = g.getFont().createGlyphVector(fm.getFontRenderContext(), text).getPixelBounds(null, 0, 0);
+
+		g.drawString(text, (int) Math.round(x - rect.getWidth() / 2.0 - rect.getX()), (int) Math.round(y - rect.getY()));
+
+		exportProgress();
+	}
+
+	public void drawVerticalLowerCenteredText(String text, int x, int y) {
+		FontMetrics fm = g.getFontMetrics();
+		Rectangle2D rect = g.getFont().createGlyphVector(fm.getFontRenderContext(), text).getPixelBounds(null, 0, 0);
+
+		g.drawString(text, (int) Math.round(x - rect.getX() - rect.getWidth()), (int) Math.round(y - rect.getHeight() / 2.0 - rect.getY()));
+
+		exportProgress();
+	}
+
+	public void drawHorizontalLowerCenteredText(String text, int x, int y) {
+		FontMetrics fm = g.getFontMetrics();
+		Rectangle2D rect = g.getFont().createGlyphVector(fm.getFontRenderContext(), text).getPixelBounds(null, 0, 0);
+
+		g.drawString(text, (int) Math.round(x - rect.getWidth() / 2.0 - rect.getX()), (int) Math.round(y - rect.getY() - rect.getHeight()));
 
 		exportProgress();
 	}

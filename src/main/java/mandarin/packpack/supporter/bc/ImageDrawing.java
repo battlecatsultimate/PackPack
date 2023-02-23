@@ -25,6 +25,7 @@ import mandarin.packpack.supporter.awt.FIBI;
 import mandarin.packpack.supporter.bc.cell.AbilityCellDrawer;
 import mandarin.packpack.supporter.bc.cell.CellDrawer;
 import mandarin.packpack.supporter.bc.cell.NormalCellDrawer;
+import mandarin.packpack.supporter.calculation.Equation;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.lzw.AnimatedGifEncoder;
 import net.dv8tion.jda.api.entities.Message;
@@ -40,6 +41,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -128,6 +132,7 @@ public class ImageDrawing {
     private static Font contentFont;
     private static Font levelFont;
     private static Font fruitFont;
+    private static Font plotFont;
 
     private static final int statPanelMargin = 120;
     private static final int bgMargin = 80;
@@ -178,6 +183,15 @@ public class ImageDrawing {
     private static final int comboIconNameGap = 80;
     private static final int comboContentGap = 120;
 
+    private static final int plotWidthHeight = 1024;
+    private static final float axisStroke = 1.5f;
+    private static final float indicatorStroke = 2f;
+    private static final double indicatorRatio = 0.025;
+    private static final float subIndicatorStroke = 1f;
+    private static final int indicatorGap = 10;
+    private static final float plotStroke = 3f;
+    private static final double angleLimit = 89.9995;
+
     private static final int CHANCE_WIDTH = 0;
     private static final int REWARD_WIDTH = 1;
     private static final int AMOUNT_WIDTH = 2;
@@ -207,6 +221,7 @@ public class ImageDrawing {
             contentFont = Font.createFont(Font.TRUETYPE_FONT, regular).deriveFont(84f);
             levelFont = Font.createFont(Font.TRUETYPE_FONT, medium).deriveFont(96f);
             fruitFont = Font.createFont(Font.TRUETYPE_FONT, medium).deriveFont(120f);
+            plotFont = Font.createFont(Font.TRUETYPE_FONT, medium).deriveFont(28f);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -2496,6 +2511,215 @@ public class ImageDrawing {
         ImageIO.write(result, "PNG", image);
 
         return image;
+    }
+
+    public static Object[] plotGraph(BigDecimal[][] coordinates, BigDecimal[] xRange, BigDecimal[] yRange, boolean keepRatio, int lang) throws Exception {
+        File temp = new File("./temp");
+
+        if(!temp.exists() && !temp.mkdirs())
+            return null;
+
+        File image = StaticStore.generateTempFile(temp, "plot", ".png", false);
+
+        if(image == null)
+            return null;
+
+        BigDecimal xWidth = xRange[1].subtract(xRange[0]);
+        BigDecimal yWidth = yRange[1].subtract(yRange[0]);
+
+        if(yWidth.divide(xWidth, Equation.context).compareTo(BigDecimal.valueOf(10)) > 0 || yWidth.compareTo(BigDecimal.ZERO) == 0)
+            keepRatio = true;
+
+        BufferedImage result = new BufferedImage(plotWidthHeight, plotWidthHeight, BufferedImage.TYPE_INT_ARGB);
+        FG2D g = new FG2D(result.getGraphics());
+
+        g.setRenderingHint(3, 2);
+        g.enableAntialiasing();
+
+        g.setColor(51, 53, 60, 255);
+        g.fillRect(0, 0, plotWidthHeight, plotWidthHeight);
+
+        if(keepRatio) {
+            BigDecimal center = yRange[0].add(yWidth.divide(BigDecimal.valueOf(2), Equation.context));
+
+            yRange[0] = center.subtract(xWidth.divide(BigDecimal.valueOf(2), Equation.context));
+            yRange[1] = center.add(xWidth.divide(BigDecimal.valueOf(2), Equation.context));
+
+            yWidth = yRange[1].subtract(yRange[0]);
+        }
+
+        BigDecimal centerX = xRange[0].add(xWidth.divide(BigDecimal.valueOf(2), Equation.context));
+        BigDecimal centerY = yRange[0].add(yWidth.divide(BigDecimal.valueOf(2), Equation.context));
+
+        int xLine = convertCoordinateToPixel(BigDecimal.ZERO, xWidth, centerX, true);
+        int yLine = convertCoordinateToPixel(BigDecimal.ZERO, yWidth, centerY, false);
+
+        g.setColor(238, 238, 238, 255);
+        g.setStroke(axisStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+        g.drawLine(xLine, 0, xLine, plotWidthHeight);
+        g.drawLine(0, yLine, plotWidthHeight, yLine);
+
+        BigDecimal xSegment = xWidth.divide(BigDecimal.TEN, Equation.context);
+
+        int xScale = (int) - (Math.round(Math.log10(xSegment.doubleValue())) + 0.5 - 0.5 * Math.signum(xSegment.doubleValue()));
+
+        if (xScale >= 0) {
+            xSegment = xSegment.round(new MathContext(1, RoundingMode.HALF_EVEN));
+        } else {
+            xSegment = xSegment.divide(BigDecimal.TEN.pow(-xScale), Equation.context).round(new MathContext(1, RoundingMode.HALF_EVEN)).multiply(BigDecimal.TEN.pow(-xScale));
+        }
+
+        BigDecimal ySegment = yWidth.divide(BigDecimal.TEN, Equation.context);
+
+        int yScale = (int) - (Math.round(Math.log10(ySegment.doubleValue())) + 0.5 - 0.5 * Math.signum(ySegment.doubleValue()));
+
+        if (yScale >= 0) {
+            ySegment = ySegment.round(new MathContext(1, RoundingMode.HALF_EVEN));
+        } else {
+            ySegment = ySegment.divide(BigDecimal.TEN.pow(-yScale), Equation.context).round(new MathContext(1, RoundingMode.HALF_EVEN)).multiply(BigDecimal.TEN.pow(-yScale));
+        }
+
+        BigDecimal xPosition = xRange[0].divideToIntegralValue(xSegment).multiply(xSegment);
+        BigDecimal yPosition = yRange[0].divideToIntegralValue(ySegment).multiply(ySegment);
+
+        while(xPosition.compareTo(xRange[1]) <= 0) {
+            if(xPosition.compareTo(BigDecimal.ZERO) != 0) {
+                int xPos = convertCoordinateToPixel(xPosition, xWidth, centerX, true);
+
+                g.setColor(238, 238, 238, 255);
+                g.setStroke(indicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+                g.drawLine(xPos, (int) Math.round(yLine - plotWidthHeight * indicatorRatio / 2.0), xPos, (int) Math.round(yLine + plotWidthHeight * indicatorRatio / 2.0));
+
+                g.setColor(238, 238, 238, 64);
+                g.setStroke(subIndicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+                g.drawLine(xPos, 0, xPos, plotWidthHeight);
+
+                long textPosition;
+
+                boolean positive = true;
+
+                if(yLine < - plotWidthHeight * indicatorRatio / 2.0) {
+                    textPosition = Math.round(indicatorGap);
+                } else if(yLine >= plotWidthHeight * (1 + indicatorRatio / 2.0)) {
+                    positive = false;
+
+                    textPosition = Math.round(plotWidthHeight - indicatorGap);
+                } else {
+                    textPosition = Math.round(yLine + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap);
+
+                    if(textPosition > plotWidthHeight) {
+                        positive = false;
+                        textPosition = Math.round(yLine - plotWidthHeight * indicatorRatio / 2.0 - indicatorGap);
+                    }
+                }
+
+                g.setFont(plotFont);
+                g.setColor(238, 238, 238, 255);
+
+                if(positive) {
+                    g.drawHorizontalCenteredText(Equation.df.format(xPosition), xPos, (int) textPosition);
+                } else {
+                    g.drawHorizontalLowerCenteredText(Equation.df.format(xPosition), xPos, (int) textPosition);
+                }
+            }
+
+            xPosition = xPosition.add(xSegment);
+        }
+
+        while(yPosition.compareTo(yRange[1]) <= 0) {
+            if(yPosition.compareTo(BigDecimal.ZERO) != 0) {
+                int yPos = convertCoordinateToPixel(yPosition, yWidth, centerY, false);
+
+                g.setColor(238, 238, 238, 255);
+                g.setStroke(indicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+                g.drawLine((int) Math.round(xLine - plotWidthHeight * indicatorRatio / 2.0), yPos, (int) Math.round(xLine + plotWidthHeight * indicatorRatio / 2.0), yPos);
+
+                g.setColor(238, 238, 238, 64);
+                g.setStroke(subIndicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+                g.drawLine(0, yPos, plotWidthHeight, yPos);
+
+                long textPosition;
+
+                boolean positive = true;
+
+                if(xLine < - plotWidthHeight * indicatorRatio / 2.0) {
+                    textPosition = Math.round(indicatorGap);
+                } else if(xLine >= plotWidthHeight * (1 + indicatorRatio / 2.0)) {
+                    positive = false;
+
+                    textPosition = Math.round(plotWidthHeight - indicatorGap);
+                } else {
+                    textPosition = Math.round(xLine + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap);
+
+                    if(textPosition > plotWidthHeight) {
+                        positive = false;
+
+                        textPosition = Math.round(xLine - plotWidthHeight * indicatorRatio / 2.0 - indicatorGap);
+                    }
+                }
+
+                g.setFont(plotFont);
+                g.setColor(238, 238, 238, 255);
+
+                if(positive) {
+                    g.drawVerticalCenteredText(Equation.df.format(yPosition), (int) textPosition, yPos);
+                } else {
+                    g.drawVerticalLowerCenteredText(Equation.df.format(yPosition), (int) textPosition, yPos);
+                }
+            }
+
+            yPosition = yPosition.add(ySegment);
+        }
+
+        g.setColor(118, 224, 85, 255);
+        g.setStroke(plotStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+        for(int i = 0; i < coordinates.length - 1; i++) {
+            if(coordinates[i][1] == null || coordinates[i + 1][1] == null)
+                continue;
+
+            int x0 = convertCoordinateToPixel(coordinates[i][0], xWidth, centerX, true);
+            int x1 = convertCoordinateToPixel(coordinates[i + 1][0], xWidth, centerX, true);
+
+            int y0 = convertCoordinateToPixel(coordinates[i][1], yWidth, centerY, false);
+            int y1 = convertCoordinateToPixel(coordinates[i + 1][1], yWidth, centerY, false);
+
+            double angle = Math.abs(Math.toDegrees(Math.atan2(coordinates[i + 1][1].subtract(coordinates[i][1]).doubleValue(), coordinates[i + 1][0].subtract(coordinates[i][0]).doubleValue())));
+
+            if (angle > angleLimit) {
+                continue;
+            }
+
+            g.drawLine(x0, y0, x1, y1);
+        }
+
+        String text = String.format(
+                LangID.getStringByID("plot_success", lang),
+                Equation.df.format(centerX.subtract(xWidth.divide(BigDecimal.valueOf(2), Equation.context))),
+                Equation.df.format(centerX.add(xWidth.divide(BigDecimal.valueOf(2), Equation.context))),
+                Equation.df.format(centerY.subtract(yWidth.divide(BigDecimal.valueOf(2), Equation.context))),
+                Equation.df.format(centerY.add(yWidth.divide(BigDecimal.valueOf(2), Equation.context)))
+        );
+
+        ImageIO.write(result, "PNG", image);
+
+        return new Object[] {image, text};
+    }
+
+    private static int convertCoordinateToPixel(BigDecimal coordinate, BigDecimal range, BigDecimal center, boolean x) {
+        if(range.compareTo(BigDecimal.ZERO) == 0)
+            return -1;
+
+        if(x) {
+            return coordinate.subtract(center).add(range.divide(BigDecimal.valueOf(2), Equation.context)).divide(range, Equation.context).multiply(BigDecimal.valueOf(plotWidthHeight)).round(new MathContext(0, RoundingMode.HALF_EVEN)).intValue();
+        } else {
+            return range.divide(BigDecimal.valueOf(2), Equation.context).subtract(coordinate.subtract(center)).divide(range, Equation.context).multiply(BigDecimal.valueOf(plotWidthHeight)).round(new MathContext(0, RoundingMode.HALF_EVEN)).intValue();
+        }
     }
 
     private static String getUnitCode(int ind) {

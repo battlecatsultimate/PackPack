@@ -250,6 +250,9 @@ public class Matrix {
             BigDecimal factor = getValue(x, x);
 
             for(int y = 0; y < getColumn(); y++) {
+                if(getValue(x, y).compareTo(BigDecimal.ZERO) == 0)
+                    continue;
+
                 setValue(x, y, getValue(x, y).divide(factor, Equation.context));
 
                 if(getValue(x, y).abs().compareTo(Number.cutOff) < 0)
@@ -262,7 +265,13 @@ public class Matrix {
             for(int i = x - 1; i >= 0; i--) {
                 factor = getValue(i, x);
 
+                if(factor.compareTo(BigDecimal.ZERO) == 0)
+                    continue;
+
                 for(int j = 0; j < getColumn(); j++) {
+                    if(getValue(i, j).compareTo(BigDecimal.ZERO) == 0)
+                        continue;
+
                     setValue(i, j, getValue(i, j).subtract(getValue(x, j).multiply(factor)));
 
                     if(getValue(i, j).abs().compareTo(Number.cutOff) < 0)

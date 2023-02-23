@@ -878,6 +878,11 @@
   "help_removestatuschannel_use" : "`p!removestatuschannel [Channels]`",
   "help_removestatuschannel_desc" : "Remove the channels where bot will upload its status update. Channels can be passed via either mention or ID. **Only Moderators can use this command.** `rsc` is also valid command",
   "help_removestatuschannel_tip" : "When passing the channel, put any non numeric letter between each IDs. For example, `1234567890123, #example, 3210987654321 1234567891234`, etc.",
+  "help_plot_use" : "`p!plot [Formula] <-xr X Range> <-yr Y Range>`",
+  "help_plot_desc" : "Draw graph image with provided formula and range data. `p` is also valid command",
+  "help_plot_argu" : "`-xr` : Decide X range, must be wrapped with square brackets (`[]`)\n`-yr` : Decide Y range, must be wrapped with square brackets (`[]`)\n`-r` or `-ratio` : Keep ratio between X range and Y range 1:1",
+  "help_plot_exam" : "`p!p x + 2`\n`p!p x^4 + x^3 - 2x^2 - x -xr [-10, 6]`",
+  "help_plot_tip" : "When you writing x/y range, you have to wrap range with `[]` sqaure brackets. For example, `[2, 3]`, `[-2, 10]`, etc. Also, you can put calculator functions as well, such as `[sqrt(2), 2 + ln(3)]`, `[3 * pi, 6 * pi]`, etc. If bot fails to calculate the range, it will ignore it. Default x range is `[-5, 5]` if not specified\n\nIt only accepts one variable, `f(x,y)` or `f(r,θ` aren't supported. You don't need to use `x` as variable always, any set of letters can be variable like `a`, `b`, etc.",
   "prefix_space" : "Prefix can't be white spaces!",
   "prefix_set" : "Prefix setting compelete! Your personal prefix is now : %s",
   "prefix_setnone" : "Your prefix has been updated!",
@@ -1357,6 +1362,7 @@
   "calc_absfail" : "Failed to calculate equation in abs : %s",
   "calc_abspre" : "Failed to calculate previous equation provided before abs : %s",
   "calc_outofrange" : "Returned value was not a number, or infinite",
+  "calc_twovar" : "%s : There must be only one variable, f(x,y) format isn't supported currently\nPreviously found variable : %s",
   "asset_no" : "Bot couldn't bring asset data...",
   "asset_goup" : "Go to parent folder",
   "asset_current" : "Current path : `_`",
@@ -1391,5 +1397,8 @@
   "statuschan_addalready" : "%s : Bot already assigned this channel [<#%s>]",
   "statuschan_added" : "%s : Added channel [<#%s>]",
   "statuschan_remalready" : "%s : This channel isn't assigned yet [<#%s>]",
-  "statuschan_removed" : "%s : Removed channel [<#%s>]"
+  "statuschan_removed" : "%s : Removed channel [<#%s>]",
+  "plot_formula" : "Please specify the formula!",
+  "plot_fail" : "Failed to generate plot image...",
+  "plot_success" : "Generated plot image successfully!\nX Range : [%s, %s]\nY Range : [%s, %s]"
 }

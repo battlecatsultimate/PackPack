@@ -12,7 +12,7 @@ public class Formula {
     public static List<String> error = new ArrayList<>();
 
     private static final char[] operators = {
-            '(', ')', '|', '+', '-', '/', '*', '×', '÷', '^', '.'
+            '(', ')', '|', '+', '-', '/', '*', '×', '÷', '^', '.', ','
     };
 
     private static final String[] knownFunction = {
@@ -20,6 +20,29 @@ public class Formula {
             "sqrt2", "exp", "arcsin", "asin", "arccos", "acos", "arctan", "atan", "arccsc", "acsc", "arcsec", "asec",
             "arccot", "acot", "abs", "sign", "sgn", "floor", "ceil", "round", "loge", "logpi"
     };
+
+    public static String getErrorMessage() {
+        StringBuilder builder = new StringBuilder();
+
+        List<String> realError = new ArrayList<>();
+
+        for(String e : error) {
+            if(!realError.contains(e))
+                realError.add(e);
+        }
+
+        for(int i = 0; i < realError.size(); i++) {
+            builder.append(realError.get(i));
+
+            if(i < realError.size() - 1) {
+                builder.append("\n\n");
+            }
+        }
+
+        error.clear();
+
+        return builder.toString();
+    }
 
     @Nonnull
     public final String formula;
@@ -52,86 +75,8 @@ public class Formula {
             char ch = equation.charAt(i);
 
             if(Character.isDigit(ch) || isOperator(ch)) {
-                if(builder.length() != 0) {
-                    String trial = builder.toString();
-
-                    if(!StaticStore.isNumeric(trial) && !isKnownFunction(trial)) {
-                        if(trial.matches(".+p.+")) {
-                            String[] data = trial.split("p", 2);
-
-                            Equation.calculate(data[0], null, true, lang);
-
-                            if(!Equation.error.isEmpty() && !analyze(data[0], 0)) {
-                                Equation.error.clear();
-
-                                return false;
-                            }
-
-                            Equation.error.clear();
-
-                            Equation.calculate(data[1], null, true, lang);
-
-                            if(!Equation.error.isEmpty() && !analyze(data[1], lang)) {
-                                Equation.error.clear();
-
-                                return false;
-                            }
-
-                            Equation.error.clear();
-                        } else if(trial.matches(".+c.+")) {
-                            String[] data = trial.split("c", 2);
-
-                            Equation.calculate(data[0], null, true, lang);
-
-                            if(!Equation.error.isEmpty() && !analyze(data[0], 0)) {
-                                Equation.error.clear();
-
-                                return false;
-                            }
-
-                            Equation.error.clear();
-
-                            Equation.calculate(data[1], null, true, lang);
-
-                            if(!Equation.error.isEmpty() && !analyze(data[1], lang)) {
-                                Equation.error.clear();
-
-                                return false;
-                            }
-
-                            Equation.error.clear();
-                        }else if(trial.matches(".+!")) {
-                            String data = trial.replaceAll("!$", "");
-
-                            Equation.calculate(data, null, true, lang);
-
-                            if(!Equation.error.isEmpty() && !analyze(data, lang)) {
-                                Equation.error.clear();
-
-                                return false;
-                            }
-                        } else if(trial.matches("(sqrt|log).+")) {
-                            String data = trial.replaceAll("^(sqrt|log)", "");
-
-                            Equation.calculate(data, null, true, lang);
-
-                            if(!Equation.error.isEmpty() && !analyze(data, lang)) {
-                                Equation.error.clear();
-
-                                return false;
-                            }
-                        } else {
-                            String v = trial.replaceAll("^(pi|e)", "");
-
-                            if(variable != null && !variable.name.equals(v)) {
-                                error.add(LangID.getStringByID("calc_twovar", lang));
-
-                                return false;
-                            } else {
-                                variable = new Variable(v);
-                            }
-                        }
-                    }
+                if(builder.length() != 0 && handleVariable(builder, lang)) {
+                    return false;
                 }
 
                 builder.setLength(0);
@@ -140,7 +85,7 @@ public class Formula {
             }
         }
 
-        return true;
+        return builder.length() == 0 || !handleVariable(builder, lang);
     }
 
     private boolean isOperator(char ch) {
@@ -156,6 +101,90 @@ public class Formula {
         for(int i = 0; i < knownFunction.length; i++) {
             if(func.equals(knownFunction[i]))
                 return true;
+        }
+
+        return false;
+    }
+
+    private boolean handleVariable(StringBuilder builder, int lang) {
+        String trial = builder.toString();
+
+        if(!StaticStore.isNumeric(trial) && !isKnownFunction(trial)) {
+            if(trial.matches(".+p.+")) {
+                String[] data = trial.split("p", 2);
+
+                Equation.calculate(data[0], null, true, lang);
+
+                if(!Equation.error.isEmpty() && !analyze(data[0], 0)) {
+                    Equation.error.clear();
+
+                    return true;
+                }
+
+                Equation.error.clear();
+
+                Equation.calculate(data[1], null, true, lang);
+
+                if(!Equation.error.isEmpty() && !analyze(data[1], lang)) {
+                    Equation.error.clear();
+
+                    return true;
+                }
+
+                Equation.error.clear();
+            } else if(trial.matches(".+c.+")) {
+                String[] data = trial.split("c", 2);
+
+                Equation.calculate(data[0], null, true, lang);
+
+                if(!Equation.error.isEmpty() && !analyze(data[0], 0)) {
+                    Equation.error.clear();
+
+                    return true;
+                }
+
+                Equation.error.clear();
+
+                Equation.calculate(data[1], null, true, lang);
+
+                if(!Equation.error.isEmpty() && !analyze(data[1], lang)) {
+                    Equation.error.clear();
+
+                    return true;
+                }
+
+                Equation.error.clear();
+            }else if(trial.matches(".+!")) {
+                String data = trial.replaceAll("!$", "");
+
+                Equation.calculate(data, null, true, lang);
+
+                if(!Equation.error.isEmpty() && !analyze(data, lang)) {
+                    Equation.error.clear();
+
+                    return true;
+                }
+            } else if(trial.matches("(sqrt|log).+")) {
+                String data = trial.replaceAll("^(sqrt|log)", "");
+
+                Equation.calculate(data, null, true, lang);
+
+                if(!Equation.error.isEmpty() && !analyze(data, lang)) {
+                    Equation.error.clear();
+
+                    return true;
+                }
+            } else {
+                String v = trial.replaceAll("^(pi|e)", "");
+
+                if(variable != null && !variable.name.equals(v)) {
+                    error.add(String.format(LangID.getStringByID("calc_twovar", lang), v, variable.name));
+
+                    return true;
+                } else {
+                    variable = new Variable(v);
+                }
+            }
         }
 
         return false;

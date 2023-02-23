@@ -942,6 +942,10 @@ public class AllEventAdapter extends ListenerAdapter {
             case "s":
                 new Say(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
                 break;
+            case "plot":
+            case "p":
+                new Plot(ConstraintCommand.ROLE.MEMBER, lang, idh, 30000).execute(event);
+                break;
         }
     }
 
