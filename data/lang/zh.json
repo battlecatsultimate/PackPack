@@ -1382,6 +1382,7 @@
   "announce_toolong" : "Message must contain less than 1500 letters!",
   "announce_success" : "Successfully assigned message. From now on, whenever bot sends announcement, it will sends content below together : \n\n%s",
   "announce_removed" : "Successfully removed assigned message, now bot will send only announcements without any additional messages",
+  "announce_notimpor" : "\n\nThis announcement is minor, so bot won't mention any roles or users this time",
   "talanalyzer_uid" : "需提供角色ID之參數",
   "talanalyzer_dummy" : "本能%d",
   "talanalyzer_title" : "%s的本能",

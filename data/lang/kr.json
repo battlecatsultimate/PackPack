@@ -1357,6 +1357,7 @@
   "announce_toolong" : "메세지 내용은 1500 글자 이내여야 합니다!",
   "announce_success" : "성공적으로 메세지를 등록했습니다. 이제부터 봇이 공지를 올릴 때마다 아래와 같은 내용의 메세지도 같이 올립니다 : \n\n%s",
   "announce_removed" : "성공적으로 등록된 메세지를 제거했습니다, 이제부터 봇이 추가적인 메세지 없이 공지만 올리게 됩니다",
+  "announce_notimpor" : "\n\n이번 공지는 중요도가 낮아 역할이나 유저들을 멘션하지 않습니다",
   "talanalyzer_uid" : "유닛 ID를 정해주세요!",
   "talanalyzer_dummy" : "본능 %d",
   "talanalyzer_title" : "%s의 본능",

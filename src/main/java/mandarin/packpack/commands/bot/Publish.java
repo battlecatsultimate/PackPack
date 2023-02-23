@@ -3,6 +3,7 @@ package mandarin.packpack.commands.bot;
 import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
@@ -25,6 +26,16 @@ public class Publish extends ConstraintCommand {
 
         if(ch == null)
             return;
+
+        String[] contents = getContent(event).split(" ");
+
+        if(contents.length < 2) {
+            replyToMessageSafely(ch, "`p!pub [Importance]`\n-i : Important\n-n : Not important", getMessage(event), a -> a);
+
+            return;
+        }
+
+        boolean important = contents[1].equals("-i");
 
         JDA client = event.getJDA();
 
@@ -71,7 +82,13 @@ public class Publish extends ConstraintCommand {
                         m.crosspost().queue();
 
                     if(!holder.announceMessage.isBlank()) {
-                        ((NewsChannel) c).sendMessage(holder.announceMessage).queue();
+                        if(important) {
+                            ((NewsChannel) c).sendMessage(holder.announceMessage).queue();
+                        } else {
+                            ((NewsChannel) c).sendMessage(holder.announceMessage + LangID.getStringByID("announce_notimpor", holder.config.lang))
+                                    .setAllowedMentions(new ArrayList<>())
+                                    .queue();
+                        }
                     }
                 }
             } else if(c instanceof GuildMessageChannel) {
@@ -94,7 +111,13 @@ public class Publish extends ConstraintCommand {
                     }
 
                     if(!holder.announceMessage.isBlank()) {
-                        ((GuildMessageChannel) c).sendMessage(holder.announceMessage).queue();
+                        if(important) {
+                            ((GuildMessageChannel) c).sendMessage(holder.announceMessage).queue();
+                        } else {
+                            ((GuildMessageChannel) c).sendMessage(holder.announceMessage + LangID.getStringByID("announce_notimpor", holder.config.lang))
+                                    .setAllowedMentions(new ArrayList<>())
+                                    .queue();
+                        }
                     }
                 }
             }
