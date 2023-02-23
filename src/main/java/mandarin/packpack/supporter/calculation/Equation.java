@@ -152,6 +152,10 @@ public class Equation {
 
         equation = equation.replaceAll("[\\[{]", "(").replaceAll("[]}]", ")").replaceAll("\\)\\(", ")*(").toLowerCase(Locale.ENGLISH);
 
+        if(equation.length() >= 2 && equation.substring(0, 2).matches("^-[^.\\d]")) {
+            equation = "-1*" + equation.substring(1);
+        }
+
         List<Element> elements = new ArrayList<>();
 
         StringBuilder builder = new StringBuilder();
@@ -604,16 +608,16 @@ public class Equation {
                     }
 
                     break;
-                case '+':
-                case '-':
-                case '*':
-                case '×':
                 case 'x':
                     if(formula) {
                         error.add(String.format(LangID.getStringByID("calc_notnum", lang), "x"));
 
                         return new ArrayList<>();
                     }
+                case '+':
+                case '-':
+                case '*':
+                case '×':
                 case '/':
                 case '÷':
                 case '^':
