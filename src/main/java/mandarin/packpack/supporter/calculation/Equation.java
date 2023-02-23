@@ -15,10 +15,26 @@ import java.util.Locale;
 
 public class Equation {
     public static List<String> error = new ArrayList<>();
-    public static DecimalFormat df = new DecimalFormat("#.########");
+    public static final DecimalFormat df = new DecimalFormat("#.########");
     public static MathContext context = new MathContext(256, RoundingMode.HALF_EVEN);
 
     private static final String[] suffix = { "k", "m", "b", "t" };
+
+    public static String formatNumber(BigDecimal value) {
+        if (value.compareTo(BigDecimal.TEN.pow(5)) > 0) {
+            int m = 0;
+
+            while(value.compareTo(BigDecimal.TEN) > 0) {
+                value = value.divide(BigDecimal.TEN, context);
+
+                m++;
+            }
+
+            return df.format(value) + "E+" + m;
+        } else {
+            return df.format(value);
+        }
+    }
 
     public static BigDecimal calculate(String equation, String parent, boolean formula, int lang) {
         if(equation.equals(parent)) {

@@ -423,7 +423,7 @@ public class Matrix {
 
         for(int x = 0; x < getRow(); x++) {
             for(int y = 0; y < getColumn(); y++) {
-                maxLength = Math.max(maxLength, Equation.df.format(getValue(x, y)).length());
+                maxLength = Math.max(maxLength, Equation.formatNumber(getValue(x, y)).length());
             }
         }
 
@@ -431,7 +431,7 @@ public class Matrix {
             StringBuilder builder = new StringBuilder("[ ");
 
             for(int y = 0; y < getColumn(); y++) {
-                String value = Equation.df.format(getValue(0, y));
+                String value = Equation.formatNumber(getValue(0, y));
 
                 builder.append(value).append(" ".repeat(Math.max(0, value.length() - maxLength)));
 
@@ -456,7 +456,7 @@ public class Matrix {
                 }
 
                 for(int y = 0; y < getColumn(); y++) {
-                    String value = Equation.df.format(getValue(x, y));
+                    String value = Equation.formatNumber(getValue(x, y));
 
                     builder.append(value).append(" ".repeat(Math.max(0, maxLength - value.length())));
 

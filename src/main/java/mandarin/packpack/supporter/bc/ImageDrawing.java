@@ -2620,9 +2620,9 @@ public class ImageDrawing {
                 g.setColor(238, 238, 238, 255);
 
                 if(positive) {
-                    g.drawHorizontalCenteredText(Equation.df.format(xPosition), xPos, (int) textPosition);
+                    g.drawHorizontalCenteredText(Equation.formatNumber(xPosition), xPos, (int) textPosition);
                 } else {
-                    g.drawHorizontalLowerCenteredText(Equation.df.format(xPosition), xPos, (int) textPosition);
+                    g.drawHorizontalLowerCenteredText(Equation.formatNumber(xPosition), xPos, (int) textPosition);
                 }
             }
 
@@ -2667,9 +2667,9 @@ public class ImageDrawing {
                 g.setColor(238, 238, 238, 255);
 
                 if(positive) {
-                    g.drawVerticalCenteredText(Equation.df.format(yPosition), (int) textPosition, yPos);
+                    g.drawVerticalCenteredText(Equation.formatNumber(yPosition), (int) textPosition, yPos);
                 } else {
-                    g.drawVerticalLowerCenteredText(Equation.df.format(yPosition), (int) textPosition, yPos);
+                    g.drawVerticalLowerCenteredText(Equation.formatNumber(yPosition), (int) textPosition, yPos);
                 }
             }
 
@@ -2700,10 +2700,10 @@ public class ImageDrawing {
 
         String text = String.format(
                 LangID.getStringByID("plot_success", lang),
-                Equation.df.format(centerX.subtract(xWidth.divide(BigDecimal.valueOf(2), Equation.context))),
-                Equation.df.format(centerX.add(xWidth.divide(BigDecimal.valueOf(2), Equation.context))),
-                Equation.df.format(centerY.subtract(yWidth.divide(BigDecimal.valueOf(2), Equation.context))),
-                Equation.df.format(centerY.add(yWidth.divide(BigDecimal.valueOf(2), Equation.context)))
+                Equation.formatNumber(centerX.subtract(xWidth.divide(BigDecimal.valueOf(2), Equation.context))),
+                Equation.formatNumber(centerX.add(xWidth.divide(BigDecimal.valueOf(2), Equation.context))),
+                Equation.formatNumber(centerY.subtract(yWidth.divide(BigDecimal.valueOf(2), Equation.context))),
+                Equation.formatNumber(centerY.add(yWidth.divide(BigDecimal.valueOf(2), Equation.context)))
         );
 
         ImageIO.write(result, "PNG", image);
