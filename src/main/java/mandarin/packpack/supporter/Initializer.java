@@ -266,9 +266,14 @@ public class Initializer {
 
                                 String[] str = line.trim().split("\t");
 
-                                Enemy e = def.enemies.get(CommonStatic.parseIntN(str[0]));
+                                int eID = CommonStatic.parseIntN(str[0]);
+
+                                Enemy e = def.enemies.get(eID);
 
                                 if(e == null)
+                                    continue;
+
+                                if(eID != e.id.id)
                                     continue;
 
                                 if(str.length == 1)
