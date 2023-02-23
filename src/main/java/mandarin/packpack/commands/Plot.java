@@ -53,6 +53,9 @@ public class Plot extends TimedConstraintCommand {
 
             xRange[0] = new BigDecimal("-5");
             xRange[1] = new BigDecimal("5");
+        } else if(xRange[1].subtract(xRange[0]).compareTo(BigDecimal.ZERO) == 0) {
+            xRange[0] = new BigDecimal("-5");
+            xRange[1] = new BigDecimal("5");
         }
 
         boolean yRangeUpdate = yRange == null;
