@@ -502,7 +502,15 @@ public class Equation {
                                             if(prefix.startsWith("log")) {
                                                 String base = prefix.replaceAll("^log", "");
 
-                                                final BigDecimal bigDecimal = BigDecimal.valueOf(Math.log(inner.doubleValue()));
+                                                double log = Math.log(inner.doubleValue());
+
+                                                if(!Double.isFinite(log)) {
+                                                    error.add(LangID.getStringByID("calc_outofrange", lang));
+
+                                                    return new ArrayList<>();
+                                                }
+
+                                                final BigDecimal bigDecimal = BigDecimal.valueOf(log);
 
                                                 if(StaticStore.isNumeric(base)) {
                                                     double value = Double.parseDouble(base);
@@ -519,7 +527,15 @@ public class Equation {
                                                         return new ArrayList<>();
                                                     }
 
-                                                    elements.add(new Number(bigDecimal.divide(BigDecimal.valueOf(Math.log(Double.parseDouble(base))), Equation.context)));
+                                                    double l = Math.log(Double.parseDouble(base));
+
+                                                    if(!Double.isFinite(l)) {
+                                                        error.add(LangID.getStringByID("calc_outofrange", lang));
+
+                                                        return new ArrayList<>();
+                                                    }
+
+                                                    elements.add(new Number(bigDecimal.divide(BigDecimal.valueOf(l), Equation.context)));
                                                 } else {
                                                     int originalLength = error.size();
 
@@ -536,7 +552,15 @@ public class Equation {
                                                             return new ArrayList<>();
                                                         }
 
-                                                        elements.add(new Number(bigDecimal.divide(BigDecimal.valueOf(Math.log(value.doubleValue())), Equation.context)));
+                                                        double l = Math.log(value.doubleValue());
+
+                                                        if(!Double.isFinite(l)) {
+                                                            error.add(LangID.getStringByID("calc_outofrange", lang));
+
+                                                            return new ArrayList<>();
+                                                        }
+
+                                                        elements.add(new Number(bigDecimal.divide(BigDecimal.valueOf(l), Equation.context)));
                                                     }
                                                 }
                                             } else if(prefix.startsWith("sqrt")) {
@@ -553,7 +577,7 @@ public class Equation {
 
                                                     double checkValue = Math.pow(inner.doubleValue(), BigDecimal.ONE.divide(value, Equation.context).doubleValue());
 
-                                                    if(Double.isNaN(checkValue)) {
+                                                    if(!Double.isFinite(checkValue)) {
                                                         error.add(String.format(LangID.getStringByID("calc_sqrtbase", lang), prefix + "(" + builder + ")"));
 
                                                         return new ArrayList<>();
@@ -578,7 +602,7 @@ public class Equation {
 
                                                         double checkValue = Math.pow(inner.doubleValue(), BigDecimal.ONE.divide(value, Equation.context).doubleValue());
 
-                                                        if(Double.isNaN(checkValue)) {
+                                                        if(!Double.isFinite(checkValue)) {
                                                             error.add(String.format(LangID.getStringByID("calc_sqrtbase", lang), prefix + "(" + builder + ")"));
 
                                                             return new ArrayList<>();
