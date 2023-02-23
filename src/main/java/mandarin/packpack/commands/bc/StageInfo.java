@@ -145,9 +145,25 @@ public class StageInfo extends TimedConstraintCommand {
         if(ch == null)
             return;
 
-        String[] list = getContent(event).split(" ", 2);
+        String[] segments = getContent(event).split(" ");
 
-        String[] names = generateStageNameSeries(getContent(event));
+        StringBuilder removeMistake = new StringBuilder();
+
+        for(int i = 0; i < segments.length; i++) {
+            if(segments[i].matches("-lv(l)?(\\d+(,)?)+")) {
+                removeMistake.append("-lv ").append(segments[i].replace("-lvl", "").replace("-lv", ""));
+            } else {
+                removeMistake.append(segments[i]);
+            }
+
+            if(i < segments.length - 1)
+                removeMistake.append(" ");
+        }
+
+        String command = removeMistake.toString();
+        String[] list = command.split(" ", 2);
+
+        String[] names = generateStageNameSeries(command);
 
         if(list.length == 1 || allNull(names)) {
             replyToMessageSafely(ch, LangID.getStringByID("stinfo_noname", lang), getMessage(event), a -> a);
@@ -169,8 +185,8 @@ public class StageInfo extends TimedConstraintCommand {
 
                 disableTimer();
             } else if(stages.size() == 1) {
-                int param = checkParameters(getContent(event));
-                int star = getLevel(getContent((event)));
+                int param = checkParameters(command);
+                int star = getLevel(command);
                 boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
                 boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
                 boolean isCompact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
@@ -188,8 +204,8 @@ public class StageInfo extends TimedConstraintCommand {
                         StaticStore.putHolder(u.getId(), new StageInfoButtonHolder(stages.get(0), author, result, ch.getId(), isCompact));
                 }
             } else {
-                int param = checkParameters(getContent(event));
-                int star = getLevel(getContent((event)));
+                int param = checkParameters(command);
+                int star = getLevel(command);
                 boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
                 boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
                 boolean isCompact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);

@@ -83,13 +83,30 @@ public class FindStage extends TimedConstraintCommand {
         if(ch == null)
             return;
 
-        String enemyName = getEnemyName(getContent(event));
+        String[] segments = getContent(event).split(" ");
 
-        int param = checkParameters(getContent(event));
-        int star = getLevel(getContent(event));
-        int music = getMusic(getContent(event));
-        int castle = getCastle(getContent(event));
-        int background = getBackground(getContent(event));
+        StringBuilder removeMistake = new StringBuilder();
+
+        for(int i = 0; i < segments.length; i++) {
+            if(segments[i].matches("-lv(l)?(\\d+(,)?)+")) {
+                removeMistake.append("-lv ").append(segments[i].replace("-lvl", "").replace("-lv", ""));
+            } else {
+                removeMistake.append(segments[i]);
+            }
+
+            if(i < segments.length - 1)
+                removeMistake.append(" ");
+        }
+
+        String command = removeMistake.toString();
+
+        String enemyName = getEnemyName(command);
+
+        int param = checkParameters(command);
+        int star = getLevel(command);
+        int music = getMusic(command);
+        int castle = getCastle(command);
+        int background = getBackground(command);
 
         boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
         boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
