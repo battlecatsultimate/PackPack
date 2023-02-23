@@ -35,7 +35,7 @@ public class AnnounceMessage extends ConstraintCommand {
             return;
         }
 
-        if(contents[1].length() > 2000) {
+        if(contents[1].length() > 1500) {
             replyToMessageSafely(ch, LangID.getStringByID("announce_toolong", lang), getMessage(event), a -> a);
 
             return;
@@ -43,7 +43,7 @@ public class AnnounceMessage extends ConstraintCommand {
 
         holder.announceMessage = contents[1];
 
-        if(contents[1].length() > 1500) {
+        if(contents[1].length() > 1000) {
             replyToMessageSafely(ch, String.format(LangID.getStringByID("announce_success", lang), contents[1].substring(0, 1500) + "..."), getMessage(event), a -> a);
         } else {
             replyToMessageSafely(ch, String.format(LangID.getStringByID("announce_success", lang), contents[1]), getMessage(event), a -> a);
