@@ -317,7 +317,7 @@ public class EntityFilter {
 
             for(int i = 0; i < StaticStore.langIndex.length; i++) {
                 StringBuilder ename = new StringBuilder(Data.trio(e.id.id))
-                        .append(" ").append(duo(i)).append(" ");
+                        .append(" ").append(" ");
 
                 String enemyName = null;
 
