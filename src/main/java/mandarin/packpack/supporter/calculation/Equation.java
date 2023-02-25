@@ -335,7 +335,9 @@ public class Equation {
                                 BigDecimal inner = calculate(builder.toString(), equation, formula, lang);
 
                                 if(StaticStore.isNumeric(prefix)) {
-                                    elements.add(new Number(inner.multiply(new BigDecimal(prefix))));
+                                    elements.add(new Number(new BigDecimal(prefix)));
+                                    elements.add(new Operator(Operator.TYPE.MULTIPLICATION));
+                                    elements.add(new Number(inner));
                                 } else {
                                     final boolean b1 = inner.compareTo(BigDecimal.valueOf(-1)) < 0 || inner.compareTo(BigDecimal.ONE) > 0;
                                     final boolean b = inner.compareTo(BigDecimal.valueOf(-1)) > 0 && inner.compareTo(BigDecimal.ONE) < 0;
