@@ -51,7 +51,7 @@ public class Equation {
         List<Element> filtered = new ArrayList<>();
 
         //Remove squares
-        for(int i = 0; i < elements.size(); i++) {
+        for(int i = elements.size() - 1; i >= 0; i--) {
             Element e = elements.get(i);
 
             if(e instanceof Operator && ((Operator) e).type == Operator.TYPE.SQUARE) {
@@ -61,12 +61,12 @@ public class Equation {
                     continue;
                 }
 
-                filtered.add(((Operator) e).calculate((Number) filtered.get(filtered.size() - 1), (Number) elements.get(i + 1), lang));
-                filtered.remove(filtered.size() - 2);
+                filtered.add(0, ((Operator) e).calculate((Number) elements.get(i - 1), (Number) filtered.get(0), lang));
+                filtered.remove(1);
 
-                i++;
+                i--;
             } else {
-                filtered.add(e);
+                filtered.add(0, e);
             }
         }
 
