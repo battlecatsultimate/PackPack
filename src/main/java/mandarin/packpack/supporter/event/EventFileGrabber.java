@@ -42,8 +42,6 @@ public class EventFileGrabber {
 
         id = reader.readLine();
         key = reader.readLine();
-        StaticStore.GOOGLE_EMAIL = reader.readLine();
-        StaticStore.GOOGLE_APP = reader.readLine();
 
         for(int i = 0; i < 4; i++) {
             TasteApk.VECTOR.add(reader.readLine());

@@ -47,9 +47,6 @@ public class StaticStore {
 
     public static String globalPrefix = "p!";
 
-    public static String GOOGLE_EMAIL;
-    public static String GOOGLE_APP;
-
     public static boolean apkDownloading = false;
 
     public static final String COMMAND_BG_ID = "bg";

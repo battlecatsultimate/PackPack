@@ -13,6 +13,8 @@ import org.apache.commons.lang3.SystemUtils;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DownloadApk extends ConstraintCommand {
     public DownloadApk(ROLE role, int lang, IDHolder id) {
@@ -39,7 +41,7 @@ public class DownloadApk extends ConstraintCommand {
 
         StaticStore.apkDownloading = true;
 
-        File googlePlay = new File("./googlePlay");
+        File googlePlay = new File("./googlePlay/cmd/googleplay");
 
         if(!googlePlay.exists() || googlePlay.isFile()) {
             ch.sendMessage("Failed to find apk downloader scripts. Download process aborted").queue();
@@ -60,19 +62,24 @@ public class DownloadApk extends ConstraintCommand {
         int loc = getLocale(m.getContentRaw());
 
         String localeCode;
+        String packageName;
 
         switch (loc) {
             case LangID.JP:
                 localeCode = "jp";
+                packageName = "jp.co.ponos.battlecats";
                 break;
             case LangID.ZH:
                 localeCode = "tw";
+                packageName = "jp.co.ponos.battlecatstw";
                 break;
             case LangID.KR:
                 localeCode = "kr";
+                packageName = "jp.co.ponos.battlecatskr";
                 break;
             default:
                 localeCode = "en";
+                packageName = "jp.co.ponos.battlecatsen";
                 break;
         }
 
@@ -84,9 +91,25 @@ public class DownloadApk extends ConstraintCommand {
             StaticStore.deleteFile(workspace, true);
         }
 
-        ch.sendMessage("Downloading apk files...").queue();
+        File[] googleFiles = googlePlay.listFiles();
 
-        ProcessBuilder builder = new ProcessBuilder(SystemUtils.IS_OS_WINDOWS ? "googlePlay/.venv/Scripts/python.exe" : "googlePlay/.venv/bin/python3", "googlePlay/downloader/"+localeCode+".py", "-e", StaticStore.GOOGLE_EMAIL, "-p", StaticStore.GOOGLE_APP);
+        if(googleFiles == null) {
+            ch.sendMessage("Something went wrong while resetting workspace...").queue();
+
+            StaticStore.apkDownloading = false;
+
+            return;
+        }
+
+        for(File f : googleFiles) {
+            if(f.getName().endsWith(".apk")) {
+                StaticStore.deleteFile(f, true);
+            }
+        }
+
+        ch.sendMessage("Getting apk version code...").queue();
+
+        ProcessBuilder builder = new ProcessBuilder("./googlePlay/cmd/googleplay/googleplay", "-a", packageName);
         builder.redirectErrorStream(true);
 
         Process pro = builder.start();
@@ -95,13 +118,102 @@ public class DownloadApk extends ConstraintCommand {
 
         String line;
 
+        List<String> lines = new ArrayList<>();
+
+        while((line = reader.readLine()) != null) {
+            lines.add(line);
+        }
+
+        pro.waitFor();
+
+        reader.close();
+
+        String versionCode = null;
+
+        for(int i = 0; i < lines.size(); i++) {
+            if(lines.get(i).startsWith("Version Code:")) {
+                String[] data = lines.get(i).split(": ");
+
+                if(data.length != 2) {
+                    ch.sendMessage("Failed to get version code, aborted downloading process").queue();
+
+                    StaticStore.apkDownloading = false;
+
+                    return;
+                }
+
+                ch.sendMessage("Version found, code is `" + data[1] + "`").queue();
+
+                versionCode = data[1];
+
+                break;
+            }
+        }
+
+        if(versionCode == null) {
+            ch.sendMessage("Failed to get version code, aborted downloading process").queue();
+
+            StaticStore.apkDownloading = false;
+
+            return;
+        } else {
+            ch.sendMessage("Downloading apk file...").queue();
+        }
+
+        builder = new ProcessBuilder("./googlePlay/cmd/googleplay/googleplay", "-a", packageName, "-v", versionCode, "-s");
+        builder.redirectErrorStream(false);
+
+        pro = builder.start();
+
+        reader = new BufferedReader(new InputStreamReader(pro.getInputStream()));
+
         while((line = reader.readLine()) != null) {
             System.out.println(line);
         }
 
         pro.waitFor();
+        reader.close();
+
+        File tempApkFolder = new File("./");
+
+        File apkFile = null;
+        File[] tempFolderList = tempApkFolder.listFiles();
+
+        if(tempFolderList == null) {
+            ch.sendMessage("Something went wrong while checking downloaded apk file...").queue();
+
+            StaticStore.apkDownloading = false;
+
+            return;
+        }
+
+        for(File f : tempFolderList) {
+            System.out.println(f.getName());
+            if(f.getName().endsWith(".apk")) {
+                System.out.println(f.getName() +" | " + f.length());
+                apkFile = f;
+
+                break;
+            }
+        }
+
+        if(apkFile == null) {
+            ch.sendMessage("It seems that apk downloading was unsuccessful, analyzing process aborted").queue();
+
+            StaticStore.apkDownloading = false;
+
+            return;
+        }
 
         File apk = new File("./data/bc/"+localeCode.replace("tw", "zh")+"/app.apk");
+
+        if(!apkFile.renameTo(apk)) {
+            ch.sendMessage("Failed to move downloaded apk file to proper place...").queue();
+
+            StaticStore.apkDownloading = false;
+
+            return;
+        }
 
         if(!apk.exists()) {
             ch.sendMessage("It seems that apk downloading was unsuccessful, analyzing process aborted").queue();
