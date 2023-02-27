@@ -4,8 +4,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import mandarin.packpack.supporter.StaticStore;
-import org.apache.http.*;
-import org.apache.http.client.HttpClient;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
@@ -41,11 +41,15 @@ public class ImgurDataHolder {
                 obj.addProperty("gif", url);
 
             data.add(md5, obj);
+
+            StaticStore.logger.uploadLog("Added new cache, there was no tag called : " + md5 + "\nURL : " + url + "\nRaw? : " + raw);
         } else {
             JsonElement elem = data.get(md5);
 
             if(elem.isJsonObject()) {
                 JsonObject obj = elem.getAsJsonObject();
+
+                StaticStore.logger.uploadLog("Before injecting cache\n\nCache : " + md5 + "\nGIF? : " + obj.has("gif") + "\nMP4? : " + obj.has("mp4"));
 
                 if(raw && obj.has("mp4"))
                     StaticStore.conflictedAnimation.put(md5, url);
@@ -58,7 +62,11 @@ public class ImgurDataHolder {
                     obj.addProperty("gif", url);
 
                 data.add(md5, obj);
+
+                StaticStore.logger.uploadLog("Added new cache on existing tag\nURL : " + url + "\nRaw? : " + raw);
             } else {
+                StaticStore.logger.uploadLog("Non-Json Object cache found\n\nJSON : \n\n" + elem);
+
                 JsonObject obj = new JsonObject();
 
                 if(raw)
