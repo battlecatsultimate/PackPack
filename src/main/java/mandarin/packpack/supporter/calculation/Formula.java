@@ -27,7 +27,7 @@ public class Formula {
     public static List<String> error = new ArrayList<>();
 
     public static final BigDecimal H = BigDecimal.ONE.divide(BigDecimal.TEN.pow(5), Equation.context);
-    public static final int maximumIteration = 200;
+    public static final int maximumIteration = 100;
     public static final BigDecimal minimumError = new BigDecimal("0.001");
 
     private static final char[] operators = {
