@@ -38,7 +38,7 @@ public class Test {
             BigDecimal[] c = new BigDecimal[2];
 
             c[0] = xRange[0].add(xRange[1].subtract(xRange[0]).divide(BigDecimal.valueOf(len), Equation.context).multiply(BigDecimal.valueOf(i)));
-            c[1] = Equation.calculate(f.substitute(c[0].toString(), 0), null, false, 0);
+            c[1] = Equation.calculate(f.substitute(c[0].toPlainString(), 0), null, false, 0);
 
             if(!Equation.error.isEmpty()) {
                 c[1] = null;

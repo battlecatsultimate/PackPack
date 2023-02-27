@@ -4,6 +4,10 @@ import mandarin.packpack.commands.*;
 import mandarin.packpack.commands.bc.*;
 import mandarin.packpack.commands.bot.*;
 import mandarin.packpack.commands.data.*;
+import mandarin.packpack.commands.math.Calculator;
+import mandarin.packpack.commands.math.Plot;
+import mandarin.packpack.commands.math.Solve;
+import mandarin.packpack.commands.math.TPlot;
 import mandarin.packpack.commands.server.*;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.lang.KoreanSeparater;
@@ -945,6 +949,14 @@ public class AllEventAdapter extends ListenerAdapter {
             case "plot":
             case "p":
                 new Plot(ConstraintCommand.ROLE.MEMBER, lang, idh, 30000).execute(event);
+                break;
+            case "tplot":
+            case "tp":
+                new TPlot(ConstraintCommand.ROLE.MEMBER, lang, idh, 30000).execute(event);
+                break;
+            case "solve":
+            case "sv":
+                new Solve(ConstraintCommand.ROLE.MEMBER, lang, idh, 30000).execute(event);
                 break;
         }
     }

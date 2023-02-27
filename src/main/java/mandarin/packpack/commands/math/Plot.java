@@ -1,5 +1,7 @@
-package mandarin.packpack.commands;
+package mandarin.packpack.commands.math;
 
+import mandarin.packpack.commands.ConstraintCommand;
+import mandarin.packpack.commands.TimedConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.ImageDrawing;
 import mandarin.packpack.supporter.calculation.Equation;
@@ -73,7 +75,7 @@ public class Plot extends TimedConstraintCommand {
             BigDecimal[] c = new BigDecimal[2];
 
             c[0] = xRange[0].add(xRange[1].subtract(xRange[0]).divide(BigDecimal.valueOf(numberOfElements), Equation.context).multiply(BigDecimal.valueOf(i)));
-            c[1] = Equation.calculate(f.substitute(c[0].toString(), 0), null, false, 0);
+            c[1] = Equation.calculate(f.substitute(c[0].toPlainString(), lang), null, false, lang);
 
             if(!Equation.error.isEmpty()) {
                 c[1] = null;

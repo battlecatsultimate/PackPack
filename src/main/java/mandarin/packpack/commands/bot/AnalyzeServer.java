@@ -1,5 +1,6 @@
-package mandarin.packpack.commands;
+package mandarin.packpack.commands.bot;
 
+import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.JDA;

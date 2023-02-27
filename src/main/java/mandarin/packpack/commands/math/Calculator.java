@@ -1,5 +1,6 @@
-package mandarin.packpack.commands;
+package mandarin.packpack.commands.math;
 
+import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.calculation.Equation;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
