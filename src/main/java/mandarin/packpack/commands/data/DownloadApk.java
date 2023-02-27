@@ -83,6 +83,14 @@ public class DownloadApk extends ConstraintCommand {
                 break;
         }
 
+        File locFolder = new File("./data/bc/"+localeCode.replace("tw", "zh"));
+
+        if(!locFolder.exists() && !locFolder.mkdirs()) {
+            ch.sendMessage("Failed to create folder to store apk file...").queue();
+
+            return;
+        }
+
         File workspace = new File("./data/bc/"+localeCode.replace("tw", "zh")+"/workspace");
 
         if(workspace.exists()) {
@@ -188,9 +196,7 @@ public class DownloadApk extends ConstraintCommand {
         }
 
         for(File f : tempFolderList) {
-            System.out.println(f.getName());
             if(f.getName().endsWith(".apk")) {
-                System.out.println(f.getName() +" | " + f.length());
                 apkFile = f;
 
                 break;
