@@ -45,6 +45,12 @@ public class AddStatusChannel extends ConstraintCommand {
             builder.append(matcher.group()).append(",");
         }
 
+        if(builder.length() == 0) {
+            replyToMessageSafely(ch, LangID.getStringByID("statuschan_channel", lang), getMessage(event), a -> a);
+
+            return;
+        }
+
         String[] filteredID = builder.substring(0, builder.length() - 1).split(",");
 
         StringBuilder result = new StringBuilder("---------- RESULTS ----------\n\n");
