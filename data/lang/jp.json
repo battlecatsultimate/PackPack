@@ -874,7 +874,7 @@
   "help_tplot_argu" : "`-xt` : Define x(t)\n`-yt` : Define y(t)\n`-tr` : Decide T range, must be wrapped with square brackets(`[]`)\n`-r` or `-ratio` : Keep ratio between X range and Y range 1:1",
   "help_tplot_exam" : "`p!tp -xt sin(t) -yt cos(t) -tr [0, 2 * pi]`\n`p!tp -xt 2 * cos(t) + sin(2t) * cos(60t) -yt sin(2t) + sin(60t) -tr [0, 2 * pi] -r`",
   "help_tplot_tip" : "When you writing t range, you have to wrap range with `[]` square brackets. For example, `[2, 3]`, `[-2, 10]`, etc. Also, you can put calculator functions as well, such as `[sqrt(2), 2 + ln(3)]`, `[3 * pi, 6 * pi]`, etc. If bot fails to calculate the range, it will ignore it. Default x range is `[-5, 5]` if not specified",
-  "help_solve_use" : "`p!solve [Equation] <Algorithm> <Range> <Iteration|Margin Error>",
+  "help_solve_use" : "`p!solve [Equation] <Algorithm> <Range> <Iteration|Margin Error>`",
   "help_solve_desc" : "Find solution(s) for specified equation. Keep in mind that this isn't exact solution always, it approaches with numerical methods. `sv` is also valid command",
   "help_solve_argu" : "`-n` or `-newton` : Use Newton-Raphson/Newton method algorithm\n`-b` or `-bisection` : Apply bisection method algorithm\n`-s` or `-secant` : Apply secant method algorithm\n`-f` or `-false` : Apply false position method algorithm\n`-r` or `-range` : Apply range for finding solutions\n`-i` or `-iteration` : Define how many times bot will perform repeated-calculations\n`-e` or `-error` : Define what margin error will be that will make bot stop repeated-calculations",
   "help_solve_exam" : "`p!sv sin(x)` [3 solutions will be found]\n`p!sv x - 2 = -x^2` [2 solutions will be found]",
