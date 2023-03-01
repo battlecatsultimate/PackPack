@@ -26,7 +26,7 @@ public class Formula {
 
     public static List<String> error = new ArrayList<>();
 
-    public static final BigDecimal H = BigDecimal.ONE.divide(BigDecimal.TEN.pow(5), Equation.context);
+    public static final BigDecimal H = BigDecimal.ONE.divide(BigDecimal.TEN.pow(8), Equation.context);
     public static final int maximumIteration = 100;
     public static final BigDecimal minimumError = new BigDecimal("0.001");
 
@@ -478,13 +478,22 @@ public class Formula {
         }
     }
 
-    private BigDecimal differentiate(BigDecimal x, BigDecimal h, SNAP snap, int lang) {
+    public BigDecimal differentiate(BigDecimal x, BigDecimal h, SNAP snap, int lang) {
         if(h.compareTo(BigDecimal.ZERO) == 0)
             throw new IllegalStateException("h must not be 0");
 
         switch (snap) {
             case BACK:
-            case FRONT:
+                BigDecimal fha = Equation.calculate(substitute(x.subtract(h).toPlainString(), lang), null, false, lang);
+
+                if(!Equation.error.isEmpty()) {
+                    Equation.error.clear();
+
+                    error.add(LangID.getStringByID("calc_diffback", lang));
+
+                    return null;
+                }
+
                 BigDecimal fa = Equation.calculate(substitute(x.toPlainString(), lang), null, false, lang);
 
                 if(!Equation.error.isEmpty()) {
@@ -495,28 +504,36 @@ public class Formula {
                     return null;
                 }
 
+                return fa.subtract(fha).divide(h, Equation.context);
+            case FRONT:
+                fa = Equation.calculate(substitute(x.toPlainString(), lang), null, false, lang);
+
+                if(!Equation.error.isEmpty()) {
+                    Equation.error.clear();
+
+                    error.add(LangID.getStringByID("calc_difffront", lang));
+
+                    return null;
+                }
+
                 BigDecimal fah = Equation.calculate(substitute(x.add(h).toPlainString(), lang), null, false, lang);
 
                 if(!Equation.error.isEmpty()) {
                     Equation.error.clear();
 
-                    error.add(LangID.getStringByID("calc_diffback", lang));
+                    error.add(LangID.getStringByID("calc_difffront", lang));
 
                     return null;
                 }
 
-                if(snap == SNAP.BACK) {
-                    return fa.subtract(fah).divide(h, Equation.context);
-                } else {
-                    return fah.subtract(fa).divide(h, Equation.context);
-                }
+                return fah.subtract(fa).divide(h, Equation.context);
             case CENTER:
-                BigDecimal fha = Equation.calculate(substitute(x.toPlainString(), lang), null, false, lang);
+                fha = Equation.calculate(substitute(x.subtract(h).toPlainString(), lang), null, false, lang);
 
                 if(!Equation.error.isEmpty()) {
                     Equation.error.clear();
 
-                    error.add(LangID.getStringByID("calc_diffback", lang));
+                    error.add(LangID.getStringByID("calc_diffcenter", lang));
 
                     return null;
                 }
@@ -526,12 +543,12 @@ public class Formula {
                 if(!Equation.error.isEmpty()) {
                     Equation.error.clear();
 
-                    error.add(LangID.getStringByID("calc_diffback", lang));
+                    error.add(LangID.getStringByID("calc_diffcenter", lang));
 
                     return null;
                 }
 
-                return fah.subtract(fha).divide(h, Equation.context);
+                return fah.subtract(fha).divide(h.multiply(BigDecimal.valueOf(2)), Equation.context);
             default:
                 throw new IllegalStateException("Invalid snap : " + snap);
         }

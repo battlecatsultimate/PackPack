@@ -43,6 +43,8 @@ public class Equation {
             return new BigDecimal(0);
         }
 
+        equation = equation.replaceAll("\\s", "");
+
         List<Element> elements = parse(equation, formula, lang);
 
         if(elements.isEmpty())
@@ -136,8 +138,18 @@ public class Equation {
         }
     }
 
-    public static String getErrorMessage() {
+    public static String getErrorMessage(String... messages) {
         StringBuilder builder = new StringBuilder();
+
+        for(int i = 0; i < messages.length; i++) {
+            builder.append(messages[i]);
+
+            if(i < messages.length - 1)
+                builder.append("\n");
+        }
+
+        if(messages.length > 0)
+            builder.append("\n\n");
 
         List<String> realError = new ArrayList<>();
 

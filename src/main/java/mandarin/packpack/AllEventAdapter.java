@@ -4,10 +4,7 @@ import mandarin.packpack.commands.*;
 import mandarin.packpack.commands.bc.*;
 import mandarin.packpack.commands.bot.*;
 import mandarin.packpack.commands.data.*;
-import mandarin.packpack.commands.math.Calculator;
-import mandarin.packpack.commands.math.Plot;
-import mandarin.packpack.commands.math.Solve;
-import mandarin.packpack.commands.math.TPlot;
+import mandarin.packpack.commands.math.*;
 import mandarin.packpack.commands.server.*;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.lang.KoreanSeparater;
@@ -957,6 +954,11 @@ public class AllEventAdapter extends ListenerAdapter {
             case "solve":
             case "sv":
                 new Solve(ConstraintCommand.ROLE.MEMBER, lang, idh, 30000).execute(event);
+                break;
+            case "differentiate":
+            case "diff":
+            case "dx":
+                new Differentiate(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
                 break;
         }
     }
