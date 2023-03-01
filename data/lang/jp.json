@@ -1360,6 +1360,12 @@
   "calc_secant" : "Secant Method",
   "calc_false" : "False Position Method",
   "calc_auto" : "Auto",
+  "calc_diffback" : "Failed to get differentiated value using backward difference method",
+  "calc_diffcenter" : "Failed to get differentiated value using central difference method",
+  "calc_difffront" : "Failed to get differentiated value using forward difference method",
+  "calc_front" : "Forward Difference Method",
+  "calc_center" : "Central Difference Method",
+  "calc_back" : "Backward Difference Method",
   "asset_no" : "Bot couldn't bring asset data...",
   "asset_goup" : "Go to parent folder",
   "asset_current" : "Current path : `_`",
@@ -1399,5 +1405,13 @@
   "solve_root" : "\u001B[1;37mSolution \u001B[32m#%d\n\n\u001B[0m\u001B[1;31mRoot : \u001B[4m\u001B[1;37m%s\u001B[0;0m\n\u001B[1;34mRange : \u001B[0m[%s, %s] \u001B[0;0m| \u001B[1;34mRelative Error : \u001B[0m%s%%",
   "solve_successiter" : "Successfully found the root\nTotal range : [%s, %s]\nFound roots : %d\nSuccess : %d\nFail : %d\nNumber of iteration : %d\nUsed algorithm : %s\n\n",
   "solve_successerr" : "Successfully found the root\nTotal range : [%s, %s]\nFound roots : %d\nSuccess : %d\nFail : %d\nMargin error : %s%%\nUsed algorithm : %s\n\n",
-  "solve_noroot" : "Bot couldn't find root in this range, [%s, %s], or fail to calculate formula in this range"
+  "solve_noroot" : "Bot couldn't find root in this range, [%s, %s], or fail to calculate formula in this range",
+  "diff_noforval" : "You have to provide formula and value!",
+  "diff_novalue" : "You didn't specify the value!",
+  "diff_valuefail" : "Failed to calculate the provided value",
+  "diff_stepfail" : "Failed to calculate the provided step value",
+  "diff_stepzero" : "Step can't be zero!",
+  "diff_noformula" : "You didn't specify the formula!",
+  "diff_cant" : "Can't differentiate at this point",
+  "diff_success" : "Successfully differentiated formula\n\n**f'(%s) = %s**\n\nUsed algorithm : %s\nStep size : %s"
 }

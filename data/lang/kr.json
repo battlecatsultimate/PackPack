@@ -1364,6 +1364,12 @@
   "calc_secant" : "할선법",
   "calc_false" : "가위치법",
   "calc_auto" : "자동",
+  "calc_diffback" : "후진차분법으로 미분된 값을 계산하지 못했습니다",
+  "calc_diffcenter" : "중심차분법으로 미분된 값을 계산하지 못했습니다",
+  "calc_difffront" : "전진차분법으로 미분된 값을 계산하지 못했습니다",
+  "calc_front" : "전진차분법",
+  "calc_center" : "중심차분법",
+  "calc_back" : "후진차분법",
   "asset_no" : "봇이 에셋 데이터를 불러오지 못했습니다...",
   "asset_goup" : "상위 폴더로",
   "asset_current" : "현재 경로 : `_`",
@@ -1410,5 +1416,13 @@
   "solve_root" : "\u001B[1;37m솔루션 \u001B[32m#%d\n\n\u001B[0m\u001B[1;31m해 : \u001B[4m\u001B[1;37m%s\u001B[0;0m\n\u001B[1;34m범위 : \u001B[0m[%s, %s] \u001B[0;0m| \u001B[1;34m상대 오차 : \u001B[0m%s%%",
   "solve_successiter" : "성공적으로 해를 찾았습니다\n총 범위 : [%s, %s]\n발견된 해 : %d\n성공 : %d\n실패 : %d\n반복계산 횟수 : %d\n사용된 알고리즘 : %s\n\n",
   "solve_successerr" : "성공적으로 해를 찾았습니다\n총 범위 : [%s, %s]\n발견된 해 : %d\n성공 : %d\n실패 : %d\n허용 오차 : %s%%\n사용된 알고리즘 : %s\n\n",
-  "solve_noroot" : "봇이 해당 범위 [%s, %s]에서 해를 찾지 못했거나, 해당 범위 내에서 공식 계산에 실패하였습니다"
+  "solve_noroot" : "봇이 해당 범위 [%s, %s]에서 해를 찾지 못했거나, 해당 범위 내에서 공식 계산에 실패하였습니다",
+  "diff_noforval" : "공시과 값을 제공해 주세요!",
+  "diff_novalue" : "값을 제공해 주세요!",
+  "diff_valuefail" : "제공된 값을 계산하는데 실패했습니다",
+  "diff_stepfail" : "제공된 간격 크기를 계산하는데 실패했습니다",
+  "diff_stepzero" : "간격 크기는 0이 될 수 없습니다!",
+  "diff_noformula" : "공식을 제공해 주세요!",
+  "diff_cant" : "해당 점에서 미분할 수 없었습니다",
+  "diff_success" : "성공적으로 공식을 미분했습니다\n\n**f'(%s) = %s**\n\n사용된 알고리즘 : %s\n간격 (스탭) 크기 : %s"
 }
