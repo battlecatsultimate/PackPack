@@ -10,12 +10,20 @@ import java.util.List;
 import java.util.Locale;
 
 public class Formula {
-    public enum ALGORITHM {
+    public enum ROOT {
         SMART,
         NEWTON_RAPHSON,
         FALSE_POSITION,
         SECANT,
         BISECTION
+    }
+
+    public enum INTEGRATION {
+        SMART,
+        BOOLE,
+        SIMPSON38,
+        SIMPSON,
+        TRAPEZOIDAL
     }
 
     public enum SNAP {
@@ -29,6 +37,7 @@ public class Formula {
     public static final BigDecimal H = BigDecimal.ONE.divide(BigDecimal.TEN.pow(8), Equation.context);
     public static final int maximumIteration = 100;
     public static final BigDecimal minimumError = new BigDecimal("0.001");
+    public static final int maximumSections = 100;
 
     private static final char[] operators = {
             '(', ')', '|', '+', '-', '/', '*', '×', '÷', '^', '.', ','
@@ -87,11 +96,11 @@ public class Formula {
         }
     }
 
-    public NumericalResult solveByIteration(BigDecimal startPoint, BigDecimal endPoint, int numberOfIteration, ALGORITHM algorithm, int lang) {
+    public NumericalResult solveByIteration(BigDecimal startPoint, BigDecimal endPoint, int numberOfIteration, ROOT ROOT, int lang) {
         BigDecimal err = BigDecimal.TEN.multiply(BigDecimal.TEN);
         BigDecimal pre;
 
-        switch (algorithm) {
+        switch (ROOT) {
             case NEWTON_RAPHSON:
                 for(int i = 0; i < numberOfIteration; i++) {
                     pre = startPoint;
@@ -99,7 +108,7 @@ public class Formula {
                     BigDecimal y = Equation.calculate(substitute(startPoint.toPlainString(), lang), null, false, lang);
 
                     if(y.compareTo(BigDecimal.ZERO) == 0) {
-                        return new NumericalResult(pre, BigDecimal.ZERO, algorithm);
+                        return new NumericalResult(pre, BigDecimal.ZERO, ROOT);
                     }
 
                     if(!Equation.error.isEmpty()) {
@@ -117,7 +126,7 @@ public class Formula {
                     }
                 }
 
-                return new NumericalResult(startPoint, err, algorithm);
+                return new NumericalResult(startPoint, err, ROOT);
             case FALSE_POSITION:
                 for(int i = 0; i < numberOfIteration; i++) {
                     pre = endPoint;
@@ -133,7 +142,7 @@ public class Formula {
                     }
 
                     if(ey.compareTo(BigDecimal.ZERO) == 0) {
-                        return new NumericalResult(endPoint, BigDecimal.ZERO, algorithm);
+                        return new NumericalResult(endPoint, BigDecimal.ZERO, ROOT);
                     }
 
                     BigDecimal sy = Equation.calculate(substitute(startPoint.toPlainString(), lang), null, false, lang);
@@ -153,7 +162,7 @@ public class Formula {
                     }
                 }
 
-                return new NumericalResult(endPoint, err, algorithm);
+                return new NumericalResult(endPoint, err, ROOT);
             case SECANT:
                 for(int i = 0; i < numberOfIteration; i++) {
                     pre = endPoint;
@@ -169,7 +178,7 @@ public class Formula {
                     }
 
                     if(ey.compareTo(BigDecimal.ZERO) == 0) {
-                        return new NumericalResult(endPoint, BigDecimal.ZERO, algorithm);
+                        return new NumericalResult(endPoint, BigDecimal.ZERO, ROOT);
                     }
 
                     BigDecimal sy = Equation.calculate(substitute(startPoint.toPlainString(), lang), null, false, lang);
@@ -192,7 +201,7 @@ public class Formula {
                     }
                 }
 
-                return new NumericalResult(endPoint, err, algorithm);
+                return new NumericalResult(endPoint, err, ROOT);
             case BISECTION:
                 BigDecimal m = BigDecimal.ZERO;
 
@@ -212,7 +221,7 @@ public class Formula {
                     }
 
                     if(fm.compareTo(BigDecimal.ZERO) == 0)
-                        return new NumericalResult(m, BigDecimal.ZERO, algorithm);
+                        return new NumericalResult(m, BigDecimal.ZERO, ROOT);
 
                     BigDecimal fs = Equation.calculate(substitute(startPoint.toPlainString(), lang), null, false, lang);
 
@@ -234,9 +243,9 @@ public class Formula {
                     }
                 }
 
-                return new NumericalResult(m, err, algorithm);
+                return new NumericalResult(m, err, ROOT);
             case SMART:
-                NumericalResult trial = solveByIteration(startPoint, endPoint, numberOfIteration, ALGORITHM.NEWTON_RAPHSON, lang);
+                NumericalResult trial = solveByIteration(startPoint, endPoint, numberOfIteration, Formula.ROOT.NEWTON_RAPHSON, lang);
 
                 if(trial != null && error.isEmpty()) {
                     return trial;
@@ -244,7 +253,7 @@ public class Formula {
                     error.clear();
                 }
 
-                trial = solveByIteration(startPoint, endPoint, numberOfIteration, ALGORITHM.BISECTION, lang);
+                trial = solveByIteration(startPoint, endPoint, numberOfIteration, Formula.ROOT.BISECTION, lang);
 
                 if(trial != null && error.isEmpty()) {
                     return trial;
@@ -256,17 +265,17 @@ public class Formula {
 
                 return null;
             default:
-                throw new IllegalStateException("Invalid algorithm : " +algorithm);
+                throw new IllegalStateException("Invalid algorithm : " + ROOT);
         }
     }
 
-    public NumericalResult solveByError(BigDecimal startPoint, BigDecimal endPoint, BigDecimal endError, ALGORITHM algorithm, int lang) {
+    public NumericalResult solveByError(BigDecimal startPoint, BigDecimal endPoint, BigDecimal endError, ROOT ROOT, int lang) {
         BigDecimal err = BigDecimal.TEN.multiply(BigDecimal.TEN);
         BigDecimal pre;
 
         int iteration = 0;
 
-        switch (algorithm) {
+        switch (ROOT) {
             case NEWTON_RAPHSON:
                 while (iteration < maximumIteration) {
                     pre = startPoint;
@@ -298,7 +307,7 @@ public class Formula {
                     }
                 }
 
-                NumericalResult result = new NumericalResult(startPoint, err, algorithm);
+                NumericalResult result = new NumericalResult(startPoint, err, ROOT);
 
                 if(iteration >= maximumIteration) {
                     result.warning = String.format(LangID.getStringByID("calc_solvefail", lang), Equation.formatNumber(err));
@@ -342,7 +351,7 @@ public class Formula {
                     }
                 }
 
-                result = new NumericalResult(startPoint, err, algorithm);
+                result = new NumericalResult(startPoint, err, ROOT);
 
                 if(iteration >= maximumIteration) {
                     result.warning = String.format(LangID.getStringByID("calc_solvefail", lang), Equation.formatNumber(err));
@@ -364,7 +373,7 @@ public class Formula {
                     }
 
                     if(ey.compareTo(BigDecimal.ZERO) == 0) {
-                        return new NumericalResult(endPoint, BigDecimal.ZERO, algorithm);
+                        return new NumericalResult(endPoint, BigDecimal.ZERO, ROOT);
                     }
 
                     BigDecimal sy = Equation.calculate(substitute(startPoint.toPlainString(), lang), null, false, lang);
@@ -393,7 +402,7 @@ public class Formula {
                     }
                 }
 
-                result = new NumericalResult(startPoint, err, algorithm);
+                result = new NumericalResult(startPoint, err, ROOT);
 
                 if(iteration >= maximumIteration) {
                     result.warning = String.format(LangID.getStringByID("calc_solvefail", lang), Equation.formatNumber(err));
@@ -418,7 +427,7 @@ public class Formula {
                     }
 
                     if(fm.compareTo(BigDecimal.ZERO) == 0)
-                        return new NumericalResult(m, BigDecimal.ZERO, algorithm);
+                        return new NumericalResult(m, BigDecimal.ZERO, ROOT);
 
                     BigDecimal fs = Equation.calculate(substitute(startPoint.toPlainString(), lang), null, false, lang);
 
@@ -446,7 +455,7 @@ public class Formula {
                     }
                 }
 
-                result = new NumericalResult(startPoint, err, algorithm);
+                result = new NumericalResult(startPoint, err, ROOT);
 
                 if(iteration >= maximumIteration) {
                     result.warning = String.format(LangID.getStringByID("calc_solvefail", lang), Equation.formatNumber(err));
@@ -454,7 +463,7 @@ public class Formula {
 
                 return result;
             case SMART:
-                NumericalResult trial = solveByError(startPoint, endPoint, endError, ALGORITHM.NEWTON_RAPHSON, lang);
+                NumericalResult trial = solveByError(startPoint, endPoint, endError, Formula.ROOT.NEWTON_RAPHSON, lang);
 
                 if(trial != null && error.isEmpty()) {
                     return trial;
@@ -462,7 +471,7 @@ public class Formula {
                     error.clear();
                 }
 
-                trial = solveByError(startPoint, endPoint, endError, ALGORITHM.BISECTION, lang);
+                trial = solveByError(startPoint, endPoint, endError, Formula.ROOT.BISECTION, lang);
 
                 if(trial != null && error.isEmpty()) {
                     return trial;
@@ -474,12 +483,12 @@ public class Formula {
 
                 return null;
             default:
-                throw new IllegalStateException("Invalid algorithm : " +algorithm);
+                throw new IllegalStateException("Invalid algorithm : " + ROOT);
         }
     }
 
     public BigDecimal differentiate(BigDecimal x, BigDecimal h, SNAP snap, int lang) {
-        if(h.compareTo(BigDecimal.ZERO) == 0)
+        if(h.compareTo(BigDecimal.ZERO) <= 0)
             throw new IllegalStateException("h must not be 0");
 
         switch (snap) {
@@ -551,6 +560,154 @@ public class Formula {
                 return fah.subtract(fha).divide(h.multiply(BigDecimal.valueOf(2)), Equation.context);
             default:
                 throw new IllegalStateException("Invalid snap : " + snap);
+        }
+    }
+
+    public BigDecimal integrate(BigDecimal start, BigDecimal end, int section, INTEGRATION algorithm, int lang) {
+        if(section <= 0) {
+            throw new IllegalStateException("Step size can't be zero");
+        }
+
+        switch (algorithm) {
+            case SIMPSON:
+                if(section % 2 != 0) {
+                    error.add(LangID.getStringByID("int_simpson", lang));
+
+                    return BigDecimal.ZERO;
+                }
+
+                break;
+            case SIMPSON38:
+                if(section % 3 != 0) {
+                    error.add(LangID.getStringByID("int_sipson38", lang));
+
+                    return BigDecimal.ZERO;
+                }
+
+                break;
+            case BOOLE:
+                if(section % 4 != 0) {
+                    error.add(LangID.getStringByID("int_boole", lang));
+
+                    return BigDecimal.ZERO;
+                }
+        }
+
+        BigDecimal[][] coordinates = new BigDecimal[section + 1][];
+
+        BigDecimal h = end.subtract(start).divide(BigDecimal.valueOf(section), Equation.context);
+
+        for(int i = 0; i < section + 1; i++) {
+            BigDecimal[] c = new BigDecimal[2];
+
+            BigDecimal x = start.add(h.multiply(BigDecimal.valueOf(i)));
+
+            BigDecimal y = Equation.calculate(substitute(x.toPlainString(), lang), null, false, lang);
+
+            if(!Equation.error.isEmpty()) {
+                error.add(LangID.getStringByID("int_fail", lang));
+
+                return BigDecimal.ZERO;
+            }
+
+            c[0] = x;
+            c[1] = y;
+
+            coordinates[i] = c;
+        }
+
+        switch (algorithm) {
+            case TRAPEZOIDAL:
+                BigDecimal result = BigDecimal.ZERO;
+
+                for(int i = 0; i < coordinates.length - 1; i++) {
+                    result = result.add(h.multiply(coordinates[i][1].add(coordinates[i + 1][1]).divide(BigDecimal.valueOf(2), Equation.context)));
+                }
+
+                return result;
+            case SIMPSON:
+                result = BigDecimal.ZERO;
+
+                if((coordinates.length - 1) / 2 != section / 2) {
+                    System.out.println("W/Formula::integrate - Desynced section size : " + ((coordinates.length - 1) / 2) + " | " + (section / 2) + " - " + algorithm);
+                }
+
+                for(int i = 0; i < (coordinates.length - 1) / 2; i++) {
+                    result = result.add(h.multiply(coordinates[i * 2][1].add(coordinates[i * 2 + 1][1].multiply(BigDecimal.valueOf(4))).add(coordinates[i * 2 + 2][1])).divide(BigDecimal.valueOf(3), Equation.context));
+                }
+
+                return result;
+            case SIMPSON38:
+                result = BigDecimal.ZERO;
+
+                if((coordinates.length - 1) / 3 != section / 3) {
+                    System.out.println("W/Formula::integrate - Desynced section size : " + ((coordinates.length - 1) / 3) + " | " + (section / 3) + " - " + algorithm);
+                }
+
+                for(int i = 0; i < (coordinates.length - 1) / 3; i++) {
+                    result = result.add(h.multiply(coordinates[i * 3][1].add(coordinates[i * 3 + 1][1].multiply(BigDecimal.valueOf(3))).add(coordinates[i * 3 + 2][1].multiply(BigDecimal.valueOf(3))).add(coordinates[i * 3 + 3][1])).multiply(BigDecimal.valueOf(3)).divide(BigDecimal.valueOf(8), Equation.context));
+                }
+
+                return result;
+            case BOOLE:
+                result = BigDecimal.ZERO;
+
+                if((coordinates.length - 1) / 4 != section / 4) {
+                    System.out.println("W/Formula::integrate - Desynced section size : " + ((coordinates.length - 1) / 4) + " | " + (section / 4) + " - " + algorithm);
+                }
+
+                for(int i = 0; i < (coordinates.length - 1) / 4; i++) {
+                    result = result.add(h.multiply(coordinates[i * 4][1].multiply(BigDecimal.valueOf(7)).add(coordinates[i * 4 + 1][1].multiply(BigDecimal.valueOf(32))).add(coordinates[i * 4 + 2][1].multiply(BigDecimal.valueOf(12))).add(coordinates[i * 4 + 3][1].multiply(BigDecimal.valueOf(32))).add(coordinates[i * 4 + 4][1].multiply(BigDecimal.valueOf(7)))).multiply(BigDecimal.valueOf(2)).divide(BigDecimal.valueOf(45), Equation.context));
+                }
+
+                return result;
+            case SMART:
+                result = BigDecimal.ZERO;
+
+                int index = 0;
+                int s = section;
+
+                int boole, simp, simp38, trape;
+
+                boole = s / 4;
+
+                s -= boole * 4;
+
+                simp38 = s / 3;
+
+                s -= simp38 * 3;
+
+                simp = s / 2;
+
+                s -= simp * 2;
+
+                trape = s;
+
+                for(int i = 0; i < boole; i++) {
+                    result = result.add(h.multiply(coordinates[index][1].multiply(BigDecimal.valueOf(7)).add(coordinates[index + 1][1].multiply(BigDecimal.valueOf(32))).add(coordinates[index + 2][1].multiply(BigDecimal.valueOf(12))).add(coordinates[index + 3][1].multiply(BigDecimal.valueOf(32))).add(coordinates[index + 4][1].multiply(BigDecimal.valueOf(7)))).multiply(BigDecimal.valueOf(2)).divide(BigDecimal.valueOf(45), Equation.context));
+
+                    index += 4;
+                }
+
+                for(int i = 0; i < simp38; i++) {
+                    result = result.add(h.multiply(coordinates[index][1].add(coordinates[index + 1][1].multiply(BigDecimal.valueOf(3))).add(coordinates[index + 2][1].multiply(BigDecimal.valueOf(3))).add(coordinates[index + 3][1])).multiply(BigDecimal.valueOf(3)).divide(BigDecimal.valueOf(8), Equation.context));
+
+                    index += 3;
+                }
+
+                for(int i = 0; i < simp; i++) {
+                    result = result.add(h.multiply(coordinates[index][1].add(coordinates[index + 1][1].multiply(BigDecimal.valueOf(4))).add(coordinates[index + 2][1])).divide(BigDecimal.valueOf(3), Equation.context));
+
+                    index += 2;
+                }
+
+                for(int i = 0; i < trape; i++) {
+                    result = result.add(h.multiply(coordinates[index][1].add(coordinates[index + 1][1]).divide(BigDecimal.valueOf(2), Equation.context)));
+                }
+
+                return result;
+            default:
+                throw new IllegalStateException("Invalid algorithm : " + algorithm);
         }
     }
 

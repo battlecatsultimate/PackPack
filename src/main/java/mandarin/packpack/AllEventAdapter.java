@@ -960,6 +960,10 @@ public class AllEventAdapter extends ListenerAdapter {
             case "dx":
                 new Differentiate(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
                 break;
+            case "integrate":
+            case "int":
+                new Integrate(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
+                break;
         }
     }
 

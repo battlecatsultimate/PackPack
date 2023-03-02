@@ -45,7 +45,7 @@ public class Help extends Command {
                     .setDescription(LangID.getStringByID("help_explain", lang))
                     .setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)])
                     .addField(LangID.getStringByID("help_normal", lang), "```analyze, config, locale, optout, prefix, timezone```", false)
-                    .addField(LangID.getStringByID("help_math", lang), "```calculator, differentiate, plot, tplot, solve```", false)
+                    .addField(LangID.getStringByID("help_math", lang), "```calculator, differentiate, integrate, plot, tplot, solve```", false)
                     .addField(LangID.getStringByID("help_bc", lang), "```background, castle, catcombo, enemygif, enemyimage, enemysprite, enemystat, findreward, findstage, formgif, formimage, formsprite, formstat, medal, music, soul, soulimage, soulsprite, stageinfo, talentinfo```", false)
                     .addField(LangID.getStringByID("help_server", lang), "```addstatuschannel, boosteremoji, boosteremojiremove, boosterrole, boosterroleremove, channelpermission, checkbcu, clearcache, commandban, commandunban, fixrole, idset, removestatuschannel, save, serverconfig, serverjson, serverpre, serverstat, setup, subscribeevent, subscribescamlinkdetector, unsubscribescamlinkdetector, watchdm```", false)
                     .addField(LangID.getStringByID("help_data", lang), "```animanalyzer, announcement, checkeventupdate, comboanalyzer, downloadapk, enemystatanalyzer, eventdataarchive, printevent, printgachaevent, printitemevent, printstageevent, stageimage, stagestatanalyzer, statanalyzer, stagemapimage, talentanalyzer, trueformanalyzer```", false)
@@ -474,6 +474,10 @@ public class Help extends Command {
             case "diff":
             case "dx":
                 replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("differentiate", true, true, true)));
+                break;
+            case "integrate":
+            case "int":
+                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("integrate", true, true, true)));
                 break;
             default:
                 replyToMessageSafely(ch, LangID.getStringByID("help_nocomm", lang).replace("_", command), reference, a -> a);

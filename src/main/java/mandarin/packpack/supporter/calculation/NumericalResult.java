@@ -9,14 +9,14 @@ public class NumericalResult {
     @Nonnull
     public final BigDecimal error;
     @Nonnull
-    public final Formula.ALGORITHM algorithm;
+    public final Formula.ROOT ROOT;
 
 
     public String warning;
 
-    public NumericalResult(@Nonnull BigDecimal value, @Nonnull BigDecimal error, @Nonnull Formula.ALGORITHM algorithm) {
+    public NumericalResult(@Nonnull BigDecimal value, @Nonnull BigDecimal error, @Nonnull Formula.ROOT ROOT) {
         this.value = value;
         this.error = error;
-        this.algorithm = algorithm;
+        this.ROOT = ROOT;
     }
 }

@@ -1,6 +1,5 @@
 package mandarin.packpack.commands.math;
 
-import common.util.unit.Form;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.TimedConstraintCommand;
 import mandarin.packpack.supporter.EmojiStore;
@@ -52,7 +51,7 @@ public class Solve extends TimedConstraintCommand {
 
         String command = commands[1];
 
-        Formula.ALGORITHM algorithm = findAlgorithm(command);
+        Formula.ROOT ROOT = findAlgorithm(command);
         int iteration = getIteration(command);
         BigDecimal error = getErrorMargin(command);
 
@@ -140,7 +139,7 @@ public class Solve extends TimedConstraintCommand {
 
         if(error.compareTo(BigDecimal.ONE.negate()) != 0) {
             for(int i = 0; i < targetRanges.size(); i++) {
-                NumericalResult result = f.solveByError(targetRanges.get(i)[0], targetRanges.get(i)[1], error, algorithm, lang);
+                NumericalResult result = f.solveByError(targetRanges.get(i)[0], targetRanges.get(i)[1], error, ROOT, lang);
 
                 if(result != null) {
                     solutions.add(result);
@@ -154,10 +153,10 @@ public class Solve extends TimedConstraintCommand {
                 }
             }
 
-            summary = String.format(LangID.getStringByID("solve_successerr", lang), Equation.formatNumber(range[0]), Equation.formatNumber(range[1]), targetRanges.size(), success, fail, Equation.formatNumber(error), getAlgorithmName(algorithm));
+            summary = String.format(LangID.getStringByID("solve_successerr", lang), Equation.formatNumber(range[0]), Equation.formatNumber(range[1]), targetRanges.size(), success, fail, Equation.formatNumber(error), getAlgorithmName(ROOT));
         } else {
             for(int i = 0; i < targetRanges.size(); i++) {
-                NumericalResult result = f.solveByIteration(targetRanges.get(i)[0], targetRanges.get(i)[1], iteration, algorithm, lang);
+                NumericalResult result = f.solveByIteration(targetRanges.get(i)[0], targetRanges.get(i)[1], iteration, ROOT, lang);
 
                 if(result != null) {
                     solutions.add(result);
@@ -171,7 +170,7 @@ public class Solve extends TimedConstraintCommand {
                 }
             }
 
-            summary = String.format(LangID.getStringByID("solve_successiter", lang), Equation.formatNumber(range[0]), Equation.formatNumber(range[1]), targetRanges.size(), success, fail, iteration, getAlgorithmName(algorithm));
+            summary = String.format(LangID.getStringByID("solve_successiter", lang), Equation.formatNumber(range[0]), Equation.formatNumber(range[1]), targetRanges.size(), success, fail, iteration, getAlgorithmName(ROOT));
         }
 
         if(!targetRanges.isEmpty() && success == 0) {
@@ -211,27 +210,27 @@ public class Solve extends TimedConstraintCommand {
         }
     }
 
-    private Formula.ALGORITHM findAlgorithm(String command) {
+    private Formula.ROOT findAlgorithm(String command) {
         String[] contents = command.split(" ");
 
         for(int i = 0; i < contents.length; i++) {
             switch (contents[i]) {
                 case "-f":
                 case "-false":
-                    return Formula.ALGORITHM.FALSE_POSITION;
+                    return Formula.ROOT.FALSE_POSITION;
                 case "-n":
                 case "-newton":
-                    return Formula.ALGORITHM.NEWTON_RAPHSON;
+                    return Formula.ROOT.NEWTON_RAPHSON;
                 case "-s":
                 case "-secant":
-                    return Formula.ALGORITHM.SECANT;
+                    return Formula.ROOT.SECANT;
                 case "-b":
                 case "-bisection":
-                    return Formula.ALGORITHM.BISECTION;
+                    return Formula.ROOT.BISECTION;
             }
         }
 
-        return Formula.ALGORITHM.SMART;
+        return Formula.ROOT.SMART;
     }
 
     private int getIteration(String command) {
@@ -297,8 +296,8 @@ public class Solve extends TimedConstraintCommand {
         return null;
     }
 
-    private String getAlgorithmName(Formula.ALGORITHM algorithm) {
-        switch (algorithm) {
+    private String getAlgorithmName(Formula.ROOT ROOT) {
+        switch (ROOT) {
             case NEWTON_RAPHSON:
                 return LangID.getStringByID("calc_newton", lang);
             case FALSE_POSITION:
@@ -310,7 +309,7 @@ public class Solve extends TimedConstraintCommand {
             case SMART:
                 return LangID.getStringByID("calc_auto", lang);
             default:
-                throw new IllegalStateException("Unknown algorithm : " + algorithm);
+                throw new IllegalStateException("Unknown algorithm : " + ROOT);
         }
     }
 

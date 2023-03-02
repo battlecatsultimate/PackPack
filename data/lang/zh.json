@@ -1395,6 +1395,11 @@
   "calc_front" : "Forward Difference Method",
   "calc_center" : "Central Difference Method",
   "calc_back" : "Backward Difference Method",
+  "calc_trapezoidal" : "Trapezoidal Rule",
+  "calc_simpson" : "Simpson's Rule (Simpson's 1/3 Rule)",
+  "calc_simpson38" : "Simpson's 3/8 Rule",
+  "calc_boole" : "Boole's Rule",
+  "calc_newtoncotes" : "Auto (Closed Newton-Cotes Formula)",
   "asset_no" : "Bot couldn't bring asset data...",
   "asset_goup" : "Go to parent folder",
   "asset_current" : "Current path : `_`",
@@ -1449,5 +1454,15 @@
   "diff_stepzero" : "Step can't be zero!",
   "diff_noformula" : "You didn't specify the formula!",
   "diff_cant" : "Can't differentiate at this point",
-  "diff_success" : "Successfully differentiated formula\n\n**f'(%s) = %s**\n\nUsed algorithm : %s\nStep size : %s"
+  "diff_success" : "Successfully differentiated formula\n\n**f'(%s) = %s**\n\nUsed algorithm : %s\nStep size : %s",
+  "int_forran" : "You have to provide formula and range!",
+  "int_norange" : "You didn't specify the range!",
+  "int_toorange" : "You must specify only one range [start, end]",
+  "int_rangefail" : "Failed to calculate range value",
+  "int_sectionfail" : "Failed to calculate number of section",
+  "int_sectionzero" : "Number of section cannot be zero or less!",
+  "int_success" : "Success fully integrated formula!\n\n**Result : %s**\n\nRange : [%s, %s]\nNumber of section : %d\nUsed algorithm : %s",
+  "int_simpson" : "Number of section must be multiple of 2 to use Simpson's Rule (Simpson's 1/3 Rule)",
+  "int_simpson38" : "Number of section must be multiple of 3 to use Simpson's 3/8 Rule",
+  "int_boole" : "Number of section must be multiple of 4 to use Boole's Rule"
 }
