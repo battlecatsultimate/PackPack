@@ -41,7 +41,7 @@ public class TPlot extends TimedConstraintCommand {
             return;
         }
 
-        Formula fx = new Formula(xt, lang);
+        Formula fx = new Formula(xt, 1, lang);
 
         if(!Formula.error.isEmpty()) {
             replyToMessageSafely(ch, Formula.getErrorMessage(), getMessage(event), a -> a);
@@ -57,7 +57,7 @@ public class TPlot extends TimedConstraintCommand {
             return;
         }
 
-        Formula fy = new Formula(yt, lang);
+        Formula fy = new Formula(yt, 1, lang);
 
         if(!Formula.error.isEmpty()) {
             replyToMessageSafely(ch, Formula.getErrorMessage(), getMessage(event), a -> a);

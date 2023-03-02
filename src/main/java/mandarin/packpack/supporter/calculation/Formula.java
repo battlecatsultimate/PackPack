@@ -2,6 +2,7 @@ package mandarin.packpack.supporter.calculation;
 
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import org.jetbrains.annotations.Range;
 
 import javax.annotation.Nonnull;
 import java.math.BigDecimal;
@@ -74,9 +75,11 @@ public class Formula {
 
     @Nonnull
     public final String formula;
-    public Variable variable;
+    public final int maxVariable;
+    @Nonnull
+    public List<Variable> variable = new ArrayList<>();
     
-    public Formula(String formula, int lang) {
+    public Formula(String formula, @Range(from = 1, to = Integer.MAX_VALUE) int maxVariable, int lang) {
         String stabilized = formula.replaceAll("[\\[{]", "(").replaceAll("[]}]", ")").replaceAll("\\)\\(", ")*(").replaceAll("\\s", "").toLowerCase(Locale.ENGLISH).trim();
 
         if(analyze(stabilized, lang)) {
@@ -84,13 +87,35 @@ public class Formula {
         } else {
             this.formula = "0";
         }
+
+        this.maxVariable = maxVariable;
+    }
+
+    public String substitute(String[] equation, int lang) {
+        if (variable.isEmpty()) {
+            return formula;
+        }
+
+        if (equation.length != variable.size()) {
+            throw new IllegalStateException("Desynced number of variable and substitution : " + equation.length + " -> " + variable.size());
+        }
+
+        String f = formula;
+
+        for(int i = 0; i < equation.length; i++) {
+            String stabilized = equation[i].replaceAll("[\\[{]", "(").replaceAll("[]}]", ")").replaceAll("\\)\\(", ")*(").replaceAll("\\s", "").toLowerCase(Locale.ENGLISH);
+
+            f = f.replace("sqrt" + variable.get(i).name, "sqrt" + Equation.calculate(stabilized, null, false, lang)).replace("log" + variable.get(i).name, "log" + Equation.calculate(stabilized, null, false, lang)).replace(variable.get(i).name, "(" + stabilized + ")");
+        }
+
+        return f;
     }
 
     public String substitute(String equation, int lang) {
         String stabilized = equation.replaceAll("[\\[{]", "(").replaceAll("[]}]", ")").replaceAll("\\)\\(", ")*(").replaceAll("\\s", "").toLowerCase(Locale.ENGLISH);
 
-        if(variable != null) {
-            return formula.replace("sqrt" + variable.name, "sqrt" + Equation.calculate(stabilized, null, false, lang)).replace("log" + variable.name, "log" + Equation.calculate(stabilized, null, false, lang)).replace(variable.name, "(" + stabilized + ")");
+        if(!variable.isEmpty()) {
+            return formula.replace("sqrt" + variable.get(0).name, "sqrt" + Equation.calculate(stabilized, null, false, lang)).replace("log" + variable.get(0).name, "log" + Equation.calculate(stabilized, null, false, lang)).replace(variable.get(0).name, "(" + stabilized + ")");
         } else {
             return formula;
         }
@@ -820,12 +845,12 @@ public class Formula {
             } else {
                 String v = trial.replaceAll("^(pi|e)", "");
 
-                if(variable != null && !variable.name.equals(v)) {
-                    error.add(String.format(LangID.getStringByID("calc_twovar", lang), v, variable.name));
+                if(variable.size() >= maxVariable) {
+                    error.add(String.format(LangID.getStringByID("calc_var", lang), v, maxVariable, variable.get(0).name));
 
                     return true;
                 } else {
-                    variable = new Variable(v);
+                    variable.add(new Variable(v));
                 }
             }
         }

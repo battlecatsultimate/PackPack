@@ -1382,7 +1382,7 @@
   "calc_absfail" : "Failed to calculate equation in abs : %s",
   "calc_abspre" : "Failed to calculate previous equation provided before abs : %s",
   "calc_outofrange" : "Returned value was not a number, or infinite",
-  "calc_twovar" : "%s : There must be only one variable, f(x,y) format isn't supported currently\nPreviously found variable : %s",
+  "calc_var" : "%s : There must be only %d variable(s)\nPreviously found variable : %s",
   "calc_newtonfail" : "Failed to get root while using Newton-Raphson method",
   "calc_bisectionfail" : "Failed to get root while using bisection method",
   "calc_secantfail" : "Failed to get root while using secant method",

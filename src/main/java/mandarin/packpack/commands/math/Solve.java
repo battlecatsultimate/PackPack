@@ -69,7 +69,7 @@ public class Solve extends TimedConstraintCommand {
             formula = side[0] + "- (" + side[1] + ")";
         }
 
-        Formula f = new Formula(formula, lang);
+        Formula f = new Formula(formula, 1, lang);
 
         if(!Formula.error.isEmpty()) {
             replyToMessageSafely(ch, Formula.getErrorMessage(), getMessage(event), a -> a);

@@ -45,7 +45,7 @@ public class Integrate extends TimedConstraintCommand {
             return;
         }
 
-        Formula formula = new Formula(f, lang);
+        Formula formula = new Formula(f, 1, lang);
 
         if(!Formula.error.isEmpty()) {
             replyToMessageSafely(ch, Formula.getErrorMessage(), getMessage(event), a -> a);

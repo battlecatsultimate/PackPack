@@ -19,7 +19,7 @@ public class Test {
     public static void main(String[] args) throws Exception {
         String formula = "x^3 - 3x^2 - 2x + 4";
 
-        Formula f = new Formula(formula, 0);
+        Formula f = new Formula(formula, 1, 0);
 
         int len = 2000;
 

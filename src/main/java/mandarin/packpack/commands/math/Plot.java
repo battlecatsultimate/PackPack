@@ -42,7 +42,7 @@ public class Plot extends TimedConstraintCommand {
         BigDecimal[] xRange = getXRange(getContent(event));
         BigDecimal[] yRange = getYRange(getContent(event));
 
-        Formula f = new Formula(filterFormula(getContent(event)), lang);
+        Formula f = new Formula(filterFormula(getContent(event)), 1, lang);
 
         if(!Formula.error.isEmpty()) {
             replyToMessageSafely(ch, Formula.getErrorMessage(), getMessage(event), a -> a);
