@@ -363,7 +363,7 @@ public class Equation {
 
                                             break;
                                         case "tan":
-                                            if(inner.divideAndRemainder(BigDecimal.valueOf(Math.PI / 2))[1].doubleValue() == 0) {
+                                            if(inner.compareTo(BigDecimal.ZERO) != 0 && inner.divideAndRemainder(BigDecimal.valueOf(Math.PI / 2))[1].doubleValue() == 0) {
                                                 error.add(String.format(LangID.getStringByID("calc_tan", lang), "tan(" + builder + ")"));
 
                                                 return new ArrayList<>();
