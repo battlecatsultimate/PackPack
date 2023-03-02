@@ -1468,5 +1468,6 @@
   "int_success" : "Success fully integrated formula!\n\n**Result : %s**\n\nRange : [%s, %s]\nNumber of section : %d\nUsed algorithm : %s",
   "int_simpson" : "Number of section must be multiple of 2 to use Simpson's Rule (Simpson's 1/3 Rule)",
   "int_simpson38" : "Number of section must be multiple of 3 to use Simpson's 3/8 Rule",
-  "int_boole" : "Number of section must be multiple of 4 to use Boole's Rule"
+  "int_boole" : "Number of section must be multiple of 4 to use Boole's Rule",
+  "int_fail" : "Failed to integrate formula"
 }
