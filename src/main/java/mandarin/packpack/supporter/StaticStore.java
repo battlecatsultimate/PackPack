@@ -63,6 +63,7 @@ public class StaticStore {
     public static final String COMMAND_TPLOT_ID = "tplot";
     public static final String COMMAND_SOLVE_ID = "solve";
     public static final String COMMAND_INTEGRATE_ID = "integrate";
+    public static final String COMMAND_RTHETA_ID = "rtheta";
 
     public static String englishVersion = "110000";
     public static String taiwaneseVersion = "110000";
