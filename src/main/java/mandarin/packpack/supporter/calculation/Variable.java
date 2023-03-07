@@ -11,4 +11,9 @@ public class Variable extends Element {
 
         this.name = name;
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

@@ -87,9 +87,9 @@ public class Differentiate extends ConstraintCommand {
             return;
         }
 
-        Equation.calculate(formula.substitute(value.toPlainString(), lang), null, false, lang);
+        formula.substitute(value);
 
-        if(!Equation.error.isEmpty()) {
+        if(!formula.element.isCritical()) {
             replyToMessageSafely(ch, Equation.getErrorMessage(LangID.getStringByID("diff_cant", lang)), getMessage(event), a -> a);
 
             return;

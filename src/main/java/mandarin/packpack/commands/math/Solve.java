@@ -92,17 +92,17 @@ public class Solve extends TimedConstraintCommand {
             BigDecimal s = range[0].add(range[1].subtract(range[0]).divide(BigDecimal.valueOf(numberOfElements), Equation.context).multiply(BigDecimal.valueOf(i)));
             BigDecimal e = range[0].add(range[1].subtract(range[0]).divide(BigDecimal.valueOf(numberOfElements), Equation.context).multiply(BigDecimal.valueOf(i + 1)));
 
-            BigDecimal sy = Equation.calculate(f.substitute(s.toPlainString(), lang), null, false, lang);
+            BigDecimal sy = f.substitute(s);
 
-            if(!Equation.error.isEmpty()) {
+            if(!Equation.error.isEmpty() || sy == null) {
                 Equation.error.clear();
 
                 continue;
             }
 
-            BigDecimal ey = Equation.calculate(f.substitute(e.toPlainString(), lang), null, false, lang);
+            BigDecimal ey = f.substitute(e);
 
-            if(!Equation.error.isEmpty()) {
+            if(!Equation.error.isEmpty() || ey == null) {
                 Equation.error.clear();
 
                 i++;

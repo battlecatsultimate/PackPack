@@ -42,7 +42,19 @@ public class Plot extends TimedConstraintCommand {
         BigDecimal[] xRange = getXRange(getContent(event));
         BigDecimal[] yRange = getYRange(getContent(event));
 
-        Formula f = new Formula(filterFormula(getContent(event)), 1, lang);
+        String f = filterFormula(getContent(event));
+
+        String[] test = f.split("=");
+
+        if(test.length > 2) {
+            replyToMessageSafely(ch, LangID.getStringByID("plot_invalid", lang), getMessage(event), a -> a);
+
+            return;
+        } else if(test.length == 2) {
+            f = test[0] + " - (" + test[1] + ")";
+        }
+
+        Formula formula = new Formula(f, 2, lang);
 
         if(!Formula.error.isEmpty()) {
             replyToMessageSafely(ch, Formula.getErrorMessage(), getMessage(event), a -> a);
@@ -60,46 +72,68 @@ public class Plot extends TimedConstraintCommand {
             xRange[1] = new BigDecimal("5");
         }
 
-        boolean yRangeUpdate = yRange == null;
+        if(formula.variable.size() == 1) {
+            boolean yRangeUpdate = yRange == null;
 
-        if(yRange == null) {
-            yRange = new BigDecimal[2];
+            if(yRange == null) {
+                yRange = new BigDecimal[2];
 
-            yRange[0] = BigDecimal.ZERO;
-            yRange[1] = BigDecimal.ZERO;
-        }
-
-        BigDecimal[][] coordinates = new BigDecimal[numberOfElements + 1][];
-
-        for(int i = 0; i < numberOfElements + 1; i++) {
-            BigDecimal[] c = new BigDecimal[2];
-
-            c[0] = xRange[0].add(xRange[1].subtract(xRange[0]).divide(BigDecimal.valueOf(numberOfElements), Equation.context).multiply(BigDecimal.valueOf(i)));
-            c[1] = Equation.calculate(f.substitute(c[0].toPlainString(), lang), null, false, lang);
-
-            if(!Equation.error.isEmpty()) {
-                c[1] = null;
-
-                Equation.error.clear();
-            } else if(yRangeUpdate) {
-                if(i == 0) {
-                    yRange[0] = c[1];
-                    yRange[1] = c[1];
-                } else {
-                    yRange[0] = yRange[0].min(c[1]);
-                    yRange[1] = yRange[1].max(c[1]);
-                }
+                yRange[0] = BigDecimal.ZERO;
+                yRange[1] = BigDecimal.ZERO;
             }
 
-            coordinates[i] = c;
-        }
+            BigDecimal[][] coordinates = new BigDecimal[numberOfElements + 1][];
 
-        Object[] plots = ImageDrawing.plotGraph(coordinates, xRange, yRange, keepRatio(getContent(event)), lang);
+            for(int i = 0; i < numberOfElements + 1; i++) {
+                BigDecimal[] c = new BigDecimal[2];
 
-        if(plots == null) {
-            replyToMessageSafely(ch, LangID.getStringByID("plot_fail", lang), getMessage(event), a -> a);
+                c[0] = xRange[0].add(xRange[1].subtract(xRange[0]).divide(BigDecimal.valueOf(numberOfElements), Equation.context).multiply(BigDecimal.valueOf(i)));
+                c[1] = formula.substitute(c[0]);
+
+                if(!Equation.error.isEmpty() || c[1] == null) {
+                    c[1] = null;
+
+                    Equation.error.clear();
+                } else if(yRangeUpdate) {
+                    if(i == 0) {
+                        yRange[0] = c[1];
+                        yRange[1] = c[1];
+                    } else {
+                        yRange[0] = yRange[0].min(c[1]);
+                        yRange[1] = yRange[1].max(c[1]);
+                    }
+                }
+
+                coordinates[i] = c;
+            }
+
+            Object[] plots = ImageDrawing.plotGraph(coordinates, xRange, yRange, keepRatio(getContent(event)), lang);
+
+            if(plots == null) {
+                replyToMessageSafely(ch, LangID.getStringByID("plot_fail", lang), getMessage(event), a -> a);
+            } else {
+                sendMessageWithFile(ch, (String) plots[1], (File) plots[0], "plot.png", getMessage(event));
+            }
         } else {
-            sendMessageWithFile(ch, (String) plots[1], (File) plots[0], "plot.png", getMessage(event));
+            if(yRange == null) {
+                yRange = xRange.clone();
+            }
+
+            double[] xr = new double[2];
+            double[] yr = new double[2];
+
+            for(int i = 0; i < xr.length; i++) {
+                xr[i] = xRange[i].min(BigDecimal.valueOf(Double.MAX_VALUE)).max(BigDecimal.valueOf(-Double.MAX_VALUE)).doubleValue();
+                yr[i] = yRange[i].min(BigDecimal.valueOf(Double.MAX_VALUE)).max(BigDecimal.valueOf(-Double.MAX_VALUE)).doubleValue();
+            }
+
+            Object[] plots = ImageDrawing.plotXYGraph(formula, xr, yr, keepRatio(getContent(event)), lang);
+
+            if(plots == null) {
+                replyToMessageSafely(ch, LangID.getStringByID("plot_fail", lang), getMessage(event), a -> a);
+            } else {
+                sendMessageWithFile(ch, (String) plots[1], (File) plots[0], "plot.png", getMessage(event));
+            }
         }
     }
 

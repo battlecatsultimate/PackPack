@@ -1,10 +1,12 @@
 package mandarin.packpack.supporter.calculation;
 
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.calculation.nested.*;
 import mandarin.packpack.supporter.lang.LangID;
 import org.jetbrains.annotations.Range;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,15 +41,10 @@ public class Formula {
     public static final int maximumIteration = 100;
     public static final BigDecimal minimumError = new BigDecimal("0.001");
     public static final int maximumSections = 1000;
+    public static final int numberOfElements = 1536;
 
     private static final char[] operators = {
-            '(', ')', '|', '+', '-', '/', '*', '×', '÷', '^', '.', ','
-    };
-
-    private static final String[] knownFunction = {
-            "pi", "e", "π", "npr", "ncr", "sin", "cos", "tan", "csc", "sec", "cot", "ln", "loge", "log", "sqrt", "root",
-            "sqrt2", "exp", "arcsin", "asin", "arccos", "acos", "arctan", "atan", "arccsc", "acsc", "arcsec", "asec",
-            "arccot", "acot", "abs", "sign", "sgn", "floor", "ceil", "round", "loge", "logpi"
+            '+', '-', '/', '*', '×', '÷', '^'
     };
 
     public static String getErrorMessage() {
@@ -73,52 +70,121 @@ public class Formula {
         return builder.toString();
     }
 
-    @Nonnull
-    public final String formula;
     public final int maxVariable;
     @Nonnull
-    public List<Variable> variable = new ArrayList<>();
+    public List<NestedVariable> variable = new ArrayList<>();
+
+    public NestedElement element;
+
+    private String full;
+    private String retry;
     
     public Formula(String formula, @Range(from = 1, to = Integer.MAX_VALUE) int maxVariable, int lang) {
-        String stabilized = formula.replaceAll("[\\[{]", "(").replaceAll("[]}]", ")").replaceAll("\\)\\(", ")*(").replaceAll("\\s", "").toLowerCase(Locale.ENGLISH).trim();
+        String stabilized = formula
+                .replaceAll("[\\[{]", "(")
+                .replaceAll("[]}]", ")")
+                .replaceAll("\\)\\(", ")*(")
+                .replaceAll("\\|\\(", "|*(")
+                .replaceAll("\\)\\|", ")*|")
+                .replaceAll("\\s", "")
+                .toLowerCase(Locale.ENGLISH).trim();
 
-        if(analyze(stabilized, lang)) {
-            this.formula = stabilized;
-        } else {
-            this.formula = "0";
+        if(stabilized.length() >= 2 && stabilized.substring(0, 2).matches("^-[^.\\d]")) {
+            stabilized = "-1*" + stabilized.substring(1);
         }
 
         this.maxVariable = maxVariable;
+
+        full = stabilized;
+
+        NestedElement e = analyze(stabilized, lang);
+
+        while(retry != null) {
+            String backup = retry;
+
+            retry = null;
+
+            e = analyze(backup, lang);
+        }
+
+        if(e == null) {
+            error.add(LangID.getStringByID("calc_formulafail", lang));
+
+            element = new NestedNumber(this, BigDecimal.ZERO);
+        } else {
+            element = e;
+        }
+
+        boolean xy = variable.size() == 2;
+
+        for(int i = 0; i < variable.size(); i++) {
+            if(!variable.get(i).name.equals("x") && !variable.get(i).name.equals("y")) {
+                xy = false;
+
+                break;
+            }
+        }
+
+        if(xy && !variable.get(0).name.equals("x")) {
+            List<NestedVariable> changed = new ArrayList<>();
+
+            changed.add(variable.get(1));
+            changed.add(variable.get(0));
+
+            variable = changed;
+        }
     }
 
-    public String substitute(String[] equation, int lang) {
+    public Formula(int maxVariable) {
+        this.maxVariable = maxVariable;
+    }
+
+    public Formula getInjectedFormula(double value, int index) {
+        if(index < 0 || index >= variable.size())
+            return null;
+
+        Formula formula = new Formula(maxVariable - 1);
+
+        formula.element = element.injectVariableFast(formula, value, variable.get(index));
+
+        if(formula.element == null)
+            return null;
+
+        List<NestedVariable> changed = new ArrayList<>();
+
+        for(int i = 0; i < variable.size(); i++) {
+            if(i != index)
+                changed.add(variable.get(i));
+        }
+
+        formula.variable = changed;
+
+        return formula;
+    }
+
+    @Nullable
+    public BigDecimal substitute(BigDecimal... equation) {
         if (variable.isEmpty()) {
-            return formula;
+            return element.calculate();
         }
 
         if (equation.length != variable.size()) {
-            throw new IllegalStateException("Desynced number of variable and substitution : " + equation.length + " -> " + variable.size());
+            throw new IllegalStateException("Desynced number of variable and substitution : " + equation.length + " -> " + variable.size() + " : " + variable);
         }
 
-        String f = formula;
-
-        for(int i = 0; i < equation.length; i++) {
-            String stabilized = equation[i].replaceAll("[\\[{]", "(").replaceAll("[]}]", ")").replaceAll("\\)\\(", ")*(").replaceAll("\\s", "").toLowerCase(Locale.ENGLISH);
-
-            f = f.replace("sqrt" + variable.get(i).name, "sqrt" + Equation.calculate(stabilized, null, false, lang)).replace("log" + variable.get(i).name, "log" + Equation.calculate(stabilized, null, false, lang)).replace(variable.get(i).name, "(" + stabilized + ")");
-        }
-
-        return f;
+        return element.calculate(equation);
     }
 
-    public String substitute(String equation, int lang) {
-        String stabilized = equation.replaceAll("[\\[{]", "(").replaceAll("[]}]", ")").replaceAll("\\)\\(", ")*(").replaceAll("\\s", "").toLowerCase(Locale.ENGLISH);
-
-        if(!variable.isEmpty()) {
-            return formula.replace("sqrt" + variable.get(0).name, "sqrt" + Equation.calculate(stabilized, null, false, lang)).replace("log" + variable.get(0).name, "log" + Equation.calculate(stabilized, null, false, lang)).replace(variable.get(0).name, "(" + stabilized + ")");
-        } else {
-            return formula;
+    public double substitute(double... equation) {
+        if (variable.isEmpty()) {
+            return element.calculateFast();
         }
+
+        if (equation.length != variable.size()) {
+            throw new IllegalStateException("Desynced number of variable and substitution : " + equation.length + " -> " + variable.size() + " : " + variable);
+        }
+
+        return element.calculateFast(equation);
     }
 
     public NumericalResult solveByIteration(BigDecimal startPoint, BigDecimal endPoint, int numberOfIteration, ROOT ROOT, int lang) {
@@ -130,18 +196,18 @@ public class Formula {
                 for(int i = 0; i < numberOfIteration; i++) {
                     pre = startPoint;
 
-                    BigDecimal y = Equation.calculate(substitute(startPoint.toPlainString(), lang), null, false, lang);
+                    BigDecimal y = substitute(startPoint);
 
-                    if(y.compareTo(BigDecimal.ZERO) == 0) {
-                        return new NumericalResult(pre, BigDecimal.ZERO, ROOT);
-                    }
-
-                    if(!Equation.error.isEmpty()) {
+                    if(!Equation.error.isEmpty() || y == null) {
                         error.add(LangID.getStringByID("calc_newtonfail", lang));
 
                         Equation.error.clear();
 
                         return null;
+                    }
+
+                    if(y.compareTo(BigDecimal.ZERO) == 0) {
+                        return new NumericalResult(pre, BigDecimal.ZERO, ROOT);
                     }
 
                     startPoint = startPoint.subtract(y.divide(differentiate(startPoint, H, SNAP.CENTER, lang), Equation.context));
@@ -156,9 +222,9 @@ public class Formula {
                 for(int i = 0; i < numberOfIteration; i++) {
                     pre = endPoint;
 
-                    BigDecimal ey = Equation.calculate(substitute(endPoint.toPlainString(), lang), null, false, lang);
+                    BigDecimal ey = substitute(endPoint);
 
-                    if(!Equation.error.isEmpty()) {
+                    if(!Equation.error.isEmpty() || ey == null) {
                         Equation.error.clear();
 
                         error.add(LangID.getStringByID("calc_falsefail", lang));
@@ -170,9 +236,9 @@ public class Formula {
                         return new NumericalResult(endPoint, BigDecimal.ZERO, ROOT);
                     }
 
-                    BigDecimal sy = Equation.calculate(substitute(startPoint.toPlainString(), lang), null, false, lang);
+                    BigDecimal sy = substitute(startPoint);
 
-                    if(!Equation.error.isEmpty()) {
+                    if(!Equation.error.isEmpty() || sy == null) {
                         Equation.error.clear();
 
                         error.add(LangID.getStringByID("calc_falsefail", lang));
@@ -192,9 +258,9 @@ public class Formula {
                 for(int i = 0; i < numberOfIteration; i++) {
                     pre = endPoint;
 
-                    BigDecimal ey = Equation.calculate(substitute(endPoint.toPlainString(), lang), null, false, lang);
+                    BigDecimal ey = substitute(endPoint);
 
-                    if(!Equation.error.isEmpty()) {
+                    if(!Equation.error.isEmpty() || ey == null) {
                         error.add(LangID.getStringByID("calc_secantfail", lang));
 
                         Equation.error.clear();
@@ -206,9 +272,9 @@ public class Formula {
                         return new NumericalResult(endPoint, BigDecimal.ZERO, ROOT);
                     }
 
-                    BigDecimal sy = Equation.calculate(substitute(startPoint.toPlainString(), lang), null, false, lang);
+                    BigDecimal sy = substitute(startPoint);
 
-                    if(!Equation.error.isEmpty()) {
+                    if(!Equation.error.isEmpty() || sy == null) {
                         error.add(LangID.getStringByID("calc_secantfail", lang));
 
                         Equation.error.clear();
@@ -235,9 +301,9 @@ public class Formula {
 
                     m = endPoint.add(startPoint).divide(BigDecimal.valueOf(2), Equation.context);
 
-                    BigDecimal fm = Equation.calculate(substitute(m.toPlainString(), lang), null, false, lang);
+                    BigDecimal fm = substitute(m);
 
-                    if(!Equation.error.isEmpty()) {
+                    if(!Equation.error.isEmpty() || fm == null) {
                         error.add(LangID.getStringByID("calc_bisectionfail", lang));
 
                         Equation.error.clear();
@@ -248,9 +314,9 @@ public class Formula {
                     if(fm.compareTo(BigDecimal.ZERO) == 0)
                         return new NumericalResult(m, BigDecimal.ZERO, ROOT);
 
-                    BigDecimal fs = Equation.calculate(substitute(startPoint.toPlainString(), lang), null, false, lang);
+                    BigDecimal fs = substitute(startPoint);
 
-                    if(!Equation.error.isEmpty()) {
+                    if(!Equation.error.isEmpty() || fs == null) {
                         error.add(LangID.getStringByID("calc_bisectionfail", lang));
 
                         Equation.error.clear();
@@ -305,9 +371,9 @@ public class Formula {
                 while (iteration < maximumIteration) {
                     pre = startPoint;
 
-                    BigDecimal y = Equation.calculate(substitute(startPoint.toPlainString(), lang), null, false, lang);
+                    BigDecimal y = substitute(startPoint);
 
-                    if(!Equation.error.isEmpty()) {
+                    if(!Equation.error.isEmpty() || y == null) {
                         error.add(LangID.getStringByID("calc_newtonfail", lang));
 
                         Equation.error.clear();
@@ -343,9 +409,9 @@ public class Formula {
                 while(iteration < maximumIteration) {
                     pre = endPoint;
 
-                    BigDecimal sy = Equation.calculate(substitute(startPoint.toPlainString(), lang), null, false, lang);
+                    BigDecimal sy = substitute(startPoint);
 
-                    if(!Equation.error.isEmpty()) {
+                    if(!Equation.error.isEmpty() || sy == null) {
                         Equation.error.clear();
 
                         error.add(LangID.getStringByID("calc_falsefail", lang));
@@ -353,9 +419,9 @@ public class Formula {
                         return null;
                     }
 
-                    BigDecimal ey = Equation.calculate(substitute(endPoint.toPlainString(), lang), null, false, lang);
+                    BigDecimal ey = substitute(endPoint);
 
-                    if(!Equation.error.isEmpty()) {
+                    if(!Equation.error.isEmpty() || ey == null) {
                         Equation.error.clear();
 
                         error.add(LangID.getStringByID("calc_falsefail", lang));
@@ -387,9 +453,9 @@ public class Formula {
                 while(iteration < maximumIteration) {
                     pre = endPoint;
 
-                    BigDecimal ey = Equation.calculate(substitute(endPoint.toPlainString(), lang), null, false, lang);
+                    BigDecimal ey = substitute(endPoint);
 
-                    if(!Equation.error.isEmpty()) {
+                    if(!Equation.error.isEmpty() || ey == null) {
                         error.add(LangID.getStringByID("calc_secantfail", lang));
 
                         Equation.error.clear();
@@ -401,9 +467,9 @@ public class Formula {
                         return new NumericalResult(endPoint, BigDecimal.ZERO, ROOT);
                     }
 
-                    BigDecimal sy = Equation.calculate(substitute(startPoint.toPlainString(), lang), null, false, lang);
+                    BigDecimal sy = substitute(startPoint);
 
-                    if(!Equation.error.isEmpty()) {
+                    if(!Equation.error.isEmpty() || sy == null) {
                         error.add(LangID.getStringByID("calc_secantfail", lang));
 
                         Equation.error.clear();
@@ -441,9 +507,9 @@ public class Formula {
                     pre = m;
                     m = endPoint.add(startPoint).divide(BigDecimal.valueOf(2), Equation.context);
 
-                    BigDecimal fm = Equation.calculate(substitute(m.toPlainString(), lang), null, false, lang);
+                    BigDecimal fm = substitute(m);
 
-                    if(!Equation.error.isEmpty()) {
+                    if(!Equation.error.isEmpty() || fm == null) {
                         error.add(LangID.getStringByID("calc_bisectionfail", lang));
 
                         Equation.error.clear();
@@ -454,9 +520,9 @@ public class Formula {
                     if(fm.compareTo(BigDecimal.ZERO) == 0)
                         return new NumericalResult(m, BigDecimal.ZERO, ROOT);
 
-                    BigDecimal fs = Equation.calculate(substitute(startPoint.toPlainString(), lang), null, false, lang);
+                    BigDecimal fs = substitute(startPoint);
 
-                    if(!Equation.error.isEmpty()) {
+                    if(!Equation.error.isEmpty() || fs == null) {
                         error.add(LangID.getStringByID("calc_bisectionfail", lang));
 
                         Equation.error.clear();
@@ -518,9 +584,9 @@ public class Formula {
 
         switch (snap) {
             case BACK:
-                BigDecimal fha = Equation.calculate(substitute(x.subtract(h).toPlainString(), lang), null, false, lang);
+                BigDecimal fha = substitute(x.subtract(h));
 
-                if(!Equation.error.isEmpty()) {
+                if(!Equation.error.isEmpty() || fha == null) {
                     Equation.error.clear();
 
                     error.add(LangID.getStringByID("calc_diffback", lang));
@@ -528,9 +594,9 @@ public class Formula {
                     return null;
                 }
 
-                BigDecimal fa = Equation.calculate(substitute(x.toPlainString(), lang), null, false, lang);
+                BigDecimal fa = substitute(x);
 
-                if(!Equation.error.isEmpty()) {
+                if(!Equation.error.isEmpty() || fa == null) {
                     Equation.error.clear();
 
                     error.add(LangID.getStringByID("calc_diffback", lang));
@@ -540,9 +606,9 @@ public class Formula {
 
                 return fa.subtract(fha).divide(h, Equation.context);
             case FRONT:
-                fa = Equation.calculate(substitute(x.toPlainString(), lang), null, false, lang);
+                fa = substitute(x);
 
-                if(!Equation.error.isEmpty()) {
+                if(!Equation.error.isEmpty() || fa == null) {
                     Equation.error.clear();
 
                     error.add(LangID.getStringByID("calc_difffront", lang));
@@ -550,9 +616,9 @@ public class Formula {
                     return null;
                 }
 
-                BigDecimal fah = Equation.calculate(substitute(x.add(h).toPlainString(), lang), null, false, lang);
+                BigDecimal fah = substitute(x.add(h));
 
-                if(!Equation.error.isEmpty()) {
+                if(!Equation.error.isEmpty() || fah == null) {
                     Equation.error.clear();
 
                     error.add(LangID.getStringByID("calc_difffront", lang));
@@ -562,9 +628,9 @@ public class Formula {
 
                 return fah.subtract(fa).divide(h, Equation.context);
             case CENTER:
-                fha = Equation.calculate(substitute(x.subtract(h).toPlainString(), lang), null, false, lang);
+                fha = substitute(x.subtract(h));
 
-                if(!Equation.error.isEmpty()) {
+                if(!Equation.error.isEmpty() || fha == null) {
                     Equation.error.clear();
 
                     error.add(LangID.getStringByID("calc_diffcenter", lang));
@@ -572,9 +638,9 @@ public class Formula {
                     return null;
                 }
 
-                fah = Equation.calculate(substitute(x.add(h).toPlainString(), lang), null, false, lang);
+                fah = substitute(x.add(h));
 
-                if(!Equation.error.isEmpty()) {
+                if(!Equation.error.isEmpty() || fah == null) {
                     Equation.error.clear();
 
                     error.add(LangID.getStringByID("calc_diffcenter", lang));
@@ -627,9 +693,9 @@ public class Formula {
 
             BigDecimal x = start.add(h.multiply(BigDecimal.valueOf(i)));
 
-            BigDecimal y = Equation.calculate(substitute(x.toPlainString(), lang), null, false, lang);
+            BigDecimal y = substitute(x);
 
-            if(!Equation.error.isEmpty()) {
+            if(!Equation.error.isEmpty() || y == null) {
                 error.add(LangID.getStringByID("int_fail", lang));
 
                 return BigDecimal.ZERO;
@@ -736,24 +802,635 @@ public class Formula {
         }
     }
 
-    private boolean analyze(String equation, int lang) {
-        StringBuilder builder = new StringBuilder();
+    private NestedElement analyze(String equation, int lang) {
+        if(openedBracket(equation)) {
+            return null;
+        }
+
+        int depth = 0;
+        int absDepth = 0;
+
+        for(int i = equation.length() - 1; i >= 0; i--) {
+            char ch = equation.charAt(i);
+
+            if((ch == '+' || ch == '-') && depth <= 0 && absDepth <= 0) {
+                if(ch == '-' && i == 0)
+                    continue;
+
+                NestedElement primary = analyze(equation.substring(0, i), lang);
+
+                if(primary == null)
+                    return null;
+
+                NestedElement secondary = analyze(equation.substring(i + 1), lang);
+
+                if(secondary == null)
+                    return null;
+
+                NestedOperator operator = new NestedOperator(this, ch == '+' ? Operator.TYPE.ADDITION : Operator.TYPE.SUBTRACTION);
+
+                operator.addChild(primary);
+                operator.addChild(secondary);
+
+                return operator;
+            } else if(ch == '(') {
+                depth--;
+            } else if(ch == ')') {
+                depth++;
+            } else if(ch == '|') {
+                if(endOfAbs(equation, i)) {
+                    absDepth++;
+                } else {
+                    absDepth--;
+                }
+            }
+        }
+
+        depth = 0;
+        absDepth = 0;
+
+        for(int i = equation.length() - 1; i >= 0; i--) {
+            char ch = equation.charAt(i);
+
+            if((ch == '*' || ch == '×' || ch == '/' || ch == '÷') && depth <= 0 && absDepth <= 0) {
+                NestedElement primary = analyze(equation.substring(0, i), lang);
+
+                if(primary == null)
+                    return null;
+
+                NestedElement secondary = analyze(equation.substring(i + 1), lang);
+
+                if(secondary == null)
+                    return null;
+
+                Operator.TYPE type;
+
+                if(ch == '*' || ch == '×') {
+                    type = Operator.TYPE.MULTIPLICATION;
+                } else {
+                    type = Operator.TYPE.DIVISION;
+                }
+
+                NestedOperator operator = new NestedOperator(this, type);
+
+                operator.addChild(primary);
+                operator.addChild(secondary);
+
+                return operator;
+            } else if(ch == '(') {
+                depth--;
+            } else if(ch == ')') {
+                depth++;
+            } else if(ch == '|') {
+                if(endOfAbs(equation, i)) {
+                    absDepth++;
+                } else {
+                    absDepth--;
+                }
+            }
+        }
+
+        depth = 0;
+        absDepth = 0;
 
         for(int i = 0; i < equation.length(); i++) {
             char ch = equation.charAt(i);
 
-            if(Character.isDigit(ch) || isOperator(ch)) {
-                if(builder.length() != 0 && handleVariable(builder, lang)) {
-                    return false;
-                }
+            if(ch == '^' && depth <= 0 && absDepth <= 0) {
+                NestedElement primary = analyze(equation.substring(0, i), lang);
 
-                builder.setLength(0);
-            } else {
-                builder.append(ch);
+                if(primary == null)
+                    return null;
+
+                NestedElement secondary = analyze(equation.substring(i + 1), lang);
+
+                if(secondary == null)
+                    return null;
+
+                NestedOperator operator = new NestedOperator(this, Operator.TYPE.SQUARE);
+
+                operator.addChild(primary);
+                operator.addChild(secondary);
+
+                return operator;
+            } else if(ch == '(') {
+                depth++;
+            } else if(ch == ')') {
+                depth--;
+            } else if(ch == '|') {
+                if(endOfAbs(equation, i)) {
+                    absDepth--;
+                } else {
+                    absDepth++;
+                }
             }
         }
 
-        return builder.length() == 0 || !handleVariable(builder, lang);
+        StringBuilder builder = new StringBuilder();
+
+        for(int i = 0; i < equation.length(); i++) {
+            switch (equation.charAt(i)) {
+                case '|':
+                    String pre;
+
+                    if(builder.length() != 0) {
+                        pre = builder.toString();
+
+                        builder.setLength(0);
+                    } else {
+                        pre = null;
+                    }
+
+                    i++;
+
+                    int start = i;
+
+                    int max = 1;
+                    int level = 1;
+                    int last = i;
+
+                    while (i < equation.length()) {
+                        if (endOfAbs(equation, i)) {
+                            level--;
+
+                            if (level < max) {
+                                last = i;
+                            }
+
+                            max = Math.min(max, level);
+                        } else if (equation.charAt(i) == '|') {
+                            level++;
+                        }
+
+                        i++;
+                    }
+
+                    if(start == last) {
+                        return new NestedNumber(this, BigDecimal.ZERO);
+                    } else {
+                        builder.append(equation, start, last);
+
+                        NestedElement test = analyze(builder.toString(), lang);
+
+                        if(test == null) {
+                            return null;
+                        }
+
+                        NestedElement abs = new NestedFunction(this, NestedFunction.FUNC.ABS);
+
+                        abs.addChild(test);
+
+                        if(pre != null) {
+                            NestedElement preTest = analyze(pre, lang);
+
+                            if(preTest == null) {
+                                return null;
+                            }
+
+                            NestedOperator operator = new NestedOperator(this, Operator.TYPE.MULTIPLICATION);
+
+                            operator.addChild(preTest);
+                            operator.addChild(abs);
+
+                            return operator;
+                        } else {
+                            return abs;
+                        }
+                    }
+                case '(':
+                    String prefix;
+
+                    if(builder.length() != 0) {
+                        prefix = builder.toString();
+
+                        builder.setLength(0);
+                    } else {
+                        prefix = null;
+                    }
+
+                    i++;
+
+                    int open = 0;
+
+                    while(true) {
+                        if(i >= equation.length())
+                            throw new IllegalStateException("E/Parenthesis::parse - Bracket is opened even though it passed validation\n\nCode : " + equation);
+
+                        if(equation.charAt(i) == '(')
+                            open++;
+
+                        if(equation.charAt(i) == ')')
+                            if(open != 0)
+                                open--;
+                            else
+                                break;
+
+                        builder.append(equation.charAt(i));
+
+                        i++;
+                    }
+
+                    if(prefix != null) {
+                        switch (prefix) {
+                            case "npr":
+                            case "ncr":
+                                List<String> data = filterData(builder.toString(), ',');
+
+                                if(data.size() != 2) {
+                                    return null;
+                                }
+
+                                NestedElement n = analyze(data.get(0), lang);
+
+                                if(n == null) {
+                                    return null;
+                                }
+
+                                NestedElement r = analyze(data.get(1), lang);
+
+                                if(r == null) {
+                                    return null;
+                                }
+
+                                NestedFunction func = new NestedFunction(this, prefix.equals("npr") ? NestedFunction.FUNC.NPR : NestedFunction.FUNC.NCR);
+
+                                func.addChild(n);
+                                func.addChild(r);
+
+                                return func;
+                            default:
+                                NestedElement inner = analyze(builder.toString(), lang);
+
+                                if(inner == null) {
+                                    return null;
+                                }
+
+                                if(StaticStore.isNumeric(prefix)) {
+                                    NestedOperator operator = new NestedOperator(this, Operator.TYPE.MULTIPLICATION);
+
+                                    NestedNumber number = new NestedNumber(this, new BigDecimal(prefix));
+
+                                    operator.addChild(number);
+                                    operator.addChild(inner);
+
+                                    return operator;
+                                } else {
+                                    NestedFunction.FUNC type;
+
+                                    List<NestedElement> elements = new ArrayList<>();
+
+                                    switch (prefix) {
+                                        case "sin":
+                                            type = NestedFunction.FUNC.SIN;
+
+                                            break;
+                                        case "cos":
+                                            type = NestedFunction.FUNC.COS;
+
+                                            break;
+                                        case "tan":
+                                            type = NestedFunction.FUNC.TAN;
+
+                                            break;
+                                        case "csc":
+                                            type = NestedFunction.FUNC.CSC;
+
+                                            break;
+                                        case "sec":
+                                            type = NestedFunction.FUNC.SEC;
+
+                                            break;
+                                        case "cot":
+                                            type = NestedFunction.FUNC.COT;
+
+                                            break;
+                                        case "ln":
+                                        case "loge":
+                                            type = NestedFunction.FUNC.LOG;
+
+                                            elements.add(new NestedNumber(this, BigDecimal.valueOf(Math.E)));
+
+                                            break;
+                                        case "log":
+                                            type = NestedFunction.FUNC.LOG;
+
+                                            elements.add(new NestedNumber(this, BigDecimal.TEN));
+
+                                            break;
+                                        case "sqrt":
+                                        case "root":
+                                        case "sqrt2":
+                                            type = NestedFunction.FUNC.SQRT;
+
+                                            elements.add(new NestedNumber(this, BigDecimal.valueOf(2)));
+
+                                            break;
+                                        case "exp":
+                                            type = NestedFunction.FUNC.EXP;
+
+                                            break;
+                                        case "arcsin":
+                                        case "asin":
+                                            type = NestedFunction.FUNC.ARCSIN;
+
+                                            break;
+                                        case "arccos":
+                                        case "acos":
+                                            type = NestedFunction.FUNC.ARCCOS;
+
+                                            break;
+                                        case "arctan":
+                                        case "atan":
+                                            type = NestedFunction.FUNC.ARCTAN;
+
+                                            break;
+                                        case "arccsc":
+                                        case "acsc":
+                                            type = NestedFunction.FUNC.ARCCSC;
+
+                                            break;
+                                        case "arcsec":
+                                        case "asec":
+                                            type = NestedFunction.FUNC.ARCSEC;
+
+                                            break;
+                                        case "arccot":
+                                        case "acot":
+                                            type = NestedFunction.FUNC.ARCCOT;
+
+                                            break;
+                                        case "abs":
+                                            type = NestedFunction.FUNC.ABS;
+
+                                            break;
+                                        case "sign":
+                                        case "sgn":
+                                            type = NestedFunction.FUNC.SIGN;
+
+                                            break;
+                                        case "floor":
+                                            type = NestedFunction.FUNC.FLOOR;
+
+                                            break;
+                                        case "ceil":
+                                            type = NestedFunction.FUNC.CEIL;
+
+                                            break;
+                                        case "round":
+                                            type = NestedFunction.FUNC.ROUND;
+
+                                            break;
+                                        default:
+                                            type = null;
+                                    }
+
+                                    if(type != null) {
+                                        elements.add(inner);
+
+                                        NestedFunction function = new NestedFunction(this, type);
+
+                                        for(int j = 0; j < elements.size(); j++) {
+                                            function.addChild(elements.get(j));
+                                        }
+
+                                        return function;
+                                    } else {
+                                        if(prefix.startsWith("log")) {
+                                            String b = prefix.replaceAll("^log", "");
+
+                                            NestedElement base = analyze(b, lang);
+
+                                            if(base == null)
+                                                return null;
+
+                                            NestedFunction function = new NestedFunction(this, NestedFunction.FUNC.LOG);
+
+                                            function.addChild(base);
+                                            function.addChild(inner);
+
+                                            return function;
+                                        } else if(prefix.startsWith("sqrt")) {
+                                            String b = prefix.replaceAll("^sqrt", "");
+
+                                            NestedElement base = analyze(b, lang);
+
+                                            if(base == null) {
+                                                return null;
+                                            }
+
+                                            NestedFunction function = new NestedFunction(this, NestedFunction.FUNC.SQRT);
+
+                                            function.addChild(base);
+                                            function.addChild(inner);
+
+                                            return function;
+                                        } else {
+                                            NestedElement test = analyze(prefix, lang);
+
+                                            if(test == null) {
+                                                NestedOperator operator = new NestedOperator(this, Operator.TYPE.MULTIPLICATION);
+
+                                                NestedVariable v = new NestedVariable(this, prefix);
+
+                                                if(!variable.contains(v)) {
+                                                    if(variable.size() >= maxVariable) {
+                                                        error.add(String.format(LangID.getStringByID("calc_var", lang), v.name, maxVariable, variable.get(variable.size() - 1).name));
+                                                    } else {
+                                                        variable.add(v);
+                                                    }
+                                                }
+
+                                                operator.addChild(v);
+                                                operator.addChild(inner);
+
+                                                return operator;
+                                            }
+
+                                            NestedOperator operator = new NestedOperator(this, Operator.TYPE.MULTIPLICATION);
+
+                                            operator.addChild(test);
+                                            operator.addChild(inner);
+
+                                            return operator;
+                                        }
+                                    }
+                                }
+                        }
+                    }
+
+                    break;
+                default:
+                    builder.append(equation.charAt(i));
+            }
+        }
+
+        if(builder.length() != 0) {
+            String prefix = builder.toString();
+
+            if(StaticStore.isNumeric(prefix)) {
+                return new NestedNumber(this, new BigDecimal(prefix));
+            } else {
+                switch (prefix) {
+                    case "pi":
+                    case "π":
+                        return new NestedNumber(this, BigDecimal.valueOf(Math.PI));
+                    case "e":
+                        return new NestedNumber(this, BigDecimal.valueOf(Math.E));
+                    default:
+                        if(prefix.endsWith("!")) {
+                            String filtered = prefix.replaceAll("!$", "");
+
+                            NestedElement test = analyze(filtered, lang);
+
+                            if(test == null)
+                                return null;
+
+                            NestedFunction function = new NestedFunction(this, NestedFunction.FUNC.FACTORIAL);
+
+                            function.addChild(test);
+
+                            return function;
+                        } else if(prefix.matches(".+p.+") || prefix.matches(".+c.+")) {
+                            String[] data;
+
+                            if(prefix.matches(".+p.+")) {
+                                data = builder.toString().split("p");
+                            } else {
+                                data = builder.toString().split("c");
+                            }
+
+                            if(data.length != 2) {
+                                return handleLast(equation, prefix, lang);
+                            }
+
+                            NestedElement n = analyze(data[0], lang);
+
+                            if(n == null) {
+                                return handleLast(equation, prefix, lang);
+                            }
+
+                            NestedElement r = analyze(data[1], lang);
+
+                            if(r == null)
+                                return handleLast(equation, prefix, lang);
+
+                            NestedFunction function = new NestedFunction(this, prefix.matches(".+p.+") ? NestedFunction.FUNC.NPR : NestedFunction.FUNC.NCR);
+
+                            function.addChild(n);
+                            function.addChild(r);
+
+                            return function;
+                        } else if(prefix.matches("^(\\d+)?(\\.\\d+)?[a-z]$")) {
+                            String decimal = prefix.replaceAll("[a-z]$", "");
+                            String v = prefix.replaceAll("^(\\d+)?(\\.\\d+)?", "");
+
+                            if(StaticStore.isNumeric(decimal)) {
+                                retry = full.replace(prefix, decimal + "*" + v);
+
+                                return null;
+                            } else {
+                                NestedVariable va = new NestedVariable(this, prefix);
+
+                                if(!variable.contains(va)) {
+                                    if(variable.size() >= maxVariable) {
+                                        error.add(String.format(LangID.getStringByID("calc_var", lang), va.name, maxVariable, variable.get(variable.size() - 1).name));
+
+                                        return null;
+                                    } else {
+                                        variable.add(va);
+                                    }
+                                }
+
+                                return va;
+                            }
+                        } else {
+                            return handleLast(equation, prefix, lang);
+                        }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private boolean openedBracket(String raw) {
+        int open = 0;
+        int count = 0;
+
+        for (int i = 0; i < raw.length(); i++) {
+            if (raw.charAt(i) == '(')
+                open++;
+            else if (raw.charAt(i) == ')')
+                open--;
+            else if (raw.charAt(i) == '|')
+                count++;
+        }
+
+        return open != 0 || count % 2 == 1;
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    private List<String> filterData(String raw, char separator) {
+        List<String> result = new ArrayList<>();
+
+        StringBuilder builder = new StringBuilder();
+
+        int depth = 0;
+
+        for(int i = 0; i < raw.length(); i++) {
+            char letter = raw.charAt(i);
+
+            if(letter == '(') {
+                depth++;
+            } else if(letter == ')') {
+                if(depth == 0)
+                    return new ArrayList<>();
+                else
+                    depth--;
+            }
+
+            if(letter == separator) {
+                if(depth == 0) {
+                    result.add(builder.toString());
+
+                    builder.setLength(0);
+                } else {
+                    builder.append(letter);
+                }
+            } else {
+                builder.append(letter);
+            }
+        }
+
+        if(builder.length() != 0)
+            result.add(builder.toString());
+
+        return result;
+    }
+
+    private boolean endOfAbs(String equation, int index) {
+        char c = equation.charAt(index);
+
+        if(c == '|') {
+            if(index - 1 < 0) {
+                return false;
+            }
+
+            char before = equation.charAt(index - 1);
+
+            if(Character.isDigit(before) || before == ')' || before == '|') {
+                return true;
+            }
+
+            if(isOperator(before))
+                return false;
+
+            String previous = equation.substring(0, index);
+
+            return previous.matches("(.+)?(pi|[a-z])$");
+        } else {
+            return false;
+        }
     }
 
     private boolean isOperator(char ch) {
@@ -765,96 +1442,26 @@ public class Formula {
         return false;
     }
 
-    private boolean isKnownFunction(String func) {
-        for(int i = 0; i < knownFunction.length; i++) {
-            if(func.equals(knownFunction[i]))
-                return true;
+    private NestedElement handleLast(String equation, String last, int lang) {
+        if(!equation.equals(last)) {
+            NestedElement test = analyze(last, lang);
+
+            if(test != null)
+                return test;
         }
 
-        return false;
-    }
+        NestedVariable v = new NestedVariable(this, last);
 
-    private boolean handleVariable(StringBuilder builder, int lang) {
-        String trial = builder.toString();
+        if(!variable.contains(v)) {
+            if(variable.size() >= maxVariable) {
+                error.add(String.format(LangID.getStringByID("calc_var", lang), v.name, maxVariable, variable.get(variable.size() - 1).name));
 
-        if(!StaticStore.isNumeric(trial) && !isKnownFunction(trial)) {
-            if(trial.matches(".+p.+")) {
-                String[] data = trial.split("p", 2);
-
-                Equation.calculate(data[0], null, true, lang);
-
-                if(!Equation.error.isEmpty() && !analyze(data[0], 0)) {
-                    Equation.error.clear();
-
-                    return true;
-                }
-
-                Equation.error.clear();
-
-                Equation.calculate(data[1], null, true, lang);
-
-                if(!Equation.error.isEmpty() && !analyze(data[1], lang)) {
-                    Equation.error.clear();
-
-                    return true;
-                }
-
-                Equation.error.clear();
-            } else if(trial.matches(".+c.+")) {
-                String[] data = trial.split("c", 2);
-
-                Equation.calculate(data[0], null, true, lang);
-
-                if(!Equation.error.isEmpty() && !analyze(data[0], 0)) {
-                    Equation.error.clear();
-
-                    return true;
-                }
-
-                Equation.error.clear();
-
-                Equation.calculate(data[1], null, true, lang);
-
-                if(!Equation.error.isEmpty() && !analyze(data[1], lang)) {
-                    Equation.error.clear();
-
-                    return true;
-                }
-
-                Equation.error.clear();
-            }else if(trial.matches(".+!")) {
-                String data = trial.replaceAll("!$", "");
-
-                Equation.calculate(data, null, true, lang);
-
-                if(!Equation.error.isEmpty() && !analyze(data, lang)) {
-                    Equation.error.clear();
-
-                    return true;
-                }
-            } else if(trial.matches("(sqrt|log).+")) {
-                String data = trial.replaceAll("^(sqrt|log)", "");
-
-                Equation.calculate(data, null, true, lang);
-
-                if(!Equation.error.isEmpty() && !analyze(data, lang)) {
-                    Equation.error.clear();
-
-                    return true;
-                }
+                return null;
             } else {
-                String v = trial.replaceAll("^(pi|e)", "");
-
-                if(variable.size() >= maxVariable) {
-                    error.add(String.format(LangID.getStringByID("calc_var", lang), v, maxVariable, variable.get(0).name));
-
-                    return true;
-                } else {
-                    variable.add(new Variable(v));
-                }
+                variable.add(v);
             }
         }
 
-        return false;
+        return v;
     }
 }

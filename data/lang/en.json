@@ -1443,6 +1443,8 @@
   "plot_formula" : "Please specify the formula!",
   "plot_fail" : "Failed to generate plot image...",
   "plot_success" : "Generated plot image successfully!\nX Range : [%s, %s]\nY Range : [%s, %s]",
+  "plot_generate" : "Calculating f(x,y) graph...",
+  "plot_image" : "Generating f(x,y) image...",
   "tplot_noxt" : "You didn't specify x(t)!",
   "tplot_noyt" : "You didn't specify y(t)!",
   "tplot_success" : "Generated plot image successfully!\nT Range : [%s, %s]\nX Range : [%s, %s]\nY Range : [%s, %s]",

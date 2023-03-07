@@ -72,6 +72,12 @@ public class Operator extends Element {
                         }
 
                         if(d1.compareTo(BigDecimal.ZERO) < 0) {
+                            if(result.compareTo(BigDecimal.ZERO) == 0) {
+                                Equation.error.add(LangID.getStringByID("calc_division0", lang));
+
+                                return new Number("0");
+                            }
+
                             result = result.pow(-1, Equation.context);
                         }
 

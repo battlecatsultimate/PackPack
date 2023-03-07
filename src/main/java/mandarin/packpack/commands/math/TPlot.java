@@ -90,9 +90,9 @@ public class TPlot extends TimedConstraintCommand {
 
             BigDecimal tc = tRange[0].add(tRange[1].subtract(tRange[0]).divide(BigDecimal.valueOf(numberOfElements), Equation.context).multiply(BigDecimal.valueOf(t)));
 
-            c[0] = Equation.calculate(fx.substitute(tc.toPlainString(), lang), null, false, lang);
+            c[0] = fx.substitute(tc);
 
-            if(!Equation.error.isEmpty()) {
+            if(!Equation.error.isEmpty() || c[0] == null) {
                 c[0] = null;
                 c[1] = null;
 
@@ -103,9 +103,9 @@ public class TPlot extends TimedConstraintCommand {
                 continue;
             }
 
-            c[1] = Equation.calculate(fy.substitute(tc.toPlainString(), lang), null, false, lang);
+            c[1] = fy.substitute(tc);
 
-            if(!Equation.error.isEmpty()) {
+            if(!Equation.error.isEmpty() || c[1] == null) {
                 c[0] = null;
                 c[1] = null;
 
