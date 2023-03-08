@@ -2016,7 +2016,13 @@ public class EntityHandler {
     public static boolean generateFormAnim(Form f, MessageChannel ch, Message reference, int booster, int mode, boolean debug, int limit, int lang, boolean raw, boolean gif) throws Exception {
         if(f.unit == null || f.unit.id == null)
             return false;
-        else if(!debug && limit <= 0) {
+
+        f.anim.load();
+
+        if(mode >= f.anim.anims.length)
+            mode = 0;
+
+        if(!debug && limit <= 0) {
             String id = generateID(f, mode);
 
             String link = StaticStore.imgur.get(id, gif, raw);
@@ -2029,11 +2035,6 @@ public class EntityHandler {
 
         JDA client = ch.getJDA();
 
-        f.anim.load();
-
-        if(mode >= f.anim.anims.length)
-            mode = 0;
-
         if(limit > 0)  {
             ch.sendMessage(LangID.getStringByID("gif_lengthlim", lang).replace("_", f.anim.len(getAnimType(mode, f.anim.anims.length))+"").replace("-", limit+"")).queue();
         } else if(!raw && f.anim.len(getAnimType(mode, f.anim.anims.length)) >= 300) {
@@ -2043,9 +2044,6 @@ public class EntityHandler {
         }
 
         CommonStatic.getConfig().ref = false;
-
-        if(mode >= f.anim.anims.length)
-            mode = 0;
 
         Message msg = ch.sendMessage(LangID.getStringByID("gif_anbox", lang)).complete();
 
@@ -2260,7 +2258,13 @@ public class EntityHandler {
     public static boolean generateEnemyAnim(Enemy en, MessageChannel ch, Message reference, int booster, int mode, boolean debug, int limit, int lang, boolean raw, boolean gif) throws Exception {
         if(en.id == null)
             return false;
-        else if(!debug && limit <= 0) {
+
+        en.anim.load();
+
+        if(mode >= en.anim.anims.length)
+            mode = 0;
+
+        if(!debug && limit <= 0) {
             String id = generateID(en, mode);
 
             String link = StaticStore.imgur.get(id, gif, raw);
@@ -2272,11 +2276,6 @@ public class EntityHandler {
         }
 
         JDA client = ch.getJDA();
-
-        en.anim.load();
-
-        if(mode >= en.anim.anims.length)
-            mode = 0;
 
         EAnimD<?> anim = en.getEAnim(getAnimType(mode, en.anim.anims.length));
 
