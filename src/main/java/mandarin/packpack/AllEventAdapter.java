@@ -964,6 +964,13 @@ public class AllEventAdapter extends ListenerAdapter {
             case "int":
                 new Integrate(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
                 break;
+            case "plotrtheta":
+            case "plotrt":
+            case "prtheta":
+            case "prt":
+            case "rt":
+                new RTheta(ConstraintCommand.ROLE.MEMBER, lang, idh, 30000).execute(event);
+                break;
         }
     }
 

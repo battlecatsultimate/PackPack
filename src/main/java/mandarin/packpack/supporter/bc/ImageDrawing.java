@@ -3111,7 +3111,7 @@ public class ImageDrawing {
                 }
 
                 if(v0 == 0) {
-                    g.fillOval((int) Math.round(x * segment), (int) Math.round(y * segment), 2, 2);
+                    g.fillOval((int) Math.round(x * segment), (int) Math.round(y * segment), 3, 3);
 
                     continue;
                 }
@@ -3127,7 +3127,7 @@ public class ImageDrawing {
                 }
 
                 if(v1 == 0) {
-                    g.fillOval((int) Math.round(x * segment), (int) Math.round((y + 1) * segment), 2, 2);
+                    g.fillOval((int) Math.round(x * segment), (int) Math.round((y + 1) * segment), 3, 3);
 
                     y++;
                 } else if(v0 * v1 < 0) {
@@ -3161,7 +3161,7 @@ public class ImageDrawing {
                 }
 
                 if(v0 == 0) {
-                    g.fillOval((int) Math.round(x * segment), (int) Math.round(y * segment), 2, 2);
+                    g.fillOval((int) Math.round(x * segment), (int) Math.round(y * segment), 3, 3);
                 }
 
                 double v1 = substituted.substitute(x1);
@@ -3175,7 +3175,7 @@ public class ImageDrawing {
                 }
 
                 if(v1 == 0) {
-                    g.fillOval((int) Math.round((x + 1) * segment), (int) Math.round(y * segment), 2, 2);
+                    g.fillOval((int) Math.round((x + 1) * segment), (int) Math.round(y * segment), 3, 3);
 
                     x++;
                 } else if(v0 * v1 < 0) {
@@ -3188,6 +3188,329 @@ public class ImageDrawing {
 
         String text = String.format(
                 LangID.getStringByID("plot_success", lang),
+                DataToString.df.format(centerX - xWidth / 2.0),
+                DataToString.df.format(centerX + xWidth / 2.0),
+                DataToString.df.format(centerY - yWidth / 2.0),
+                DataToString.df.format(centerY + yWidth / 2.0)
+        );
+
+        return new Object[] {image, text};
+    }
+
+    public static Object[] plotRThetaGraph(Formula formula, double[] xRange, double[] yRange, double[] rRange, double[] tRange, boolean keepRatio, int lang) throws Exception {
+        File temp = new File("./temp");
+
+        if(!temp.exists() && !temp.mkdirs())
+            return null;
+
+        File image = StaticStore.generateTempFile(temp, "plot", ".png", false);
+
+        if(image == null)
+            return null;
+
+        double xWidth = xRange[1] - xRange[0];
+        double yWidth = yRange[1] - yRange[0];
+
+        if(yWidth / xWidth > 10 || yWidth == 0)
+            keepRatio = true;
+
+        BufferedImage result = new BufferedImage(plotWidthHeight, plotWidthHeight, BufferedImage.TYPE_INT_ARGB);
+        FG2D g = new FG2D(result.getGraphics());
+
+        g.setRenderingHint(3, 2);
+        g.enableAntialiasing();
+
+        g.setColor(51, 53, 60, 255);
+        g.fillRect(0, 0, plotWidthHeight, plotWidthHeight);
+
+        if(keepRatio) {
+            double center = yRange[0] + yWidth / 2.0;
+
+            yRange[0] = center - xWidth / 2.0;
+            yRange[1] = center + xWidth / 2.0;
+
+            yWidth = yRange[1] - yRange[0];
+        }
+
+        double centerX = xRange[0] + xWidth / 2.0;
+        double centerY = yRange[0] + yWidth / 2.0;
+
+        int xLine = convertCoordinateToPixel(0, xWidth, centerX, true);
+        int yLine = convertCoordinateToPixel(0, yWidth, centerY, false);
+
+        g.setColor(238, 238, 238, 255);
+        g.setStroke(axisStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+        g.drawLine(xLine, 0, xLine, plotWidthHeight);
+        g.drawLine(0, yLine, plotWidthHeight, yLine);
+
+        BigDecimal xSegment = BigDecimal.valueOf(xWidth).divide(BigDecimal.TEN, Equation.context);
+
+        int xScale = (int) - (Math.round(Math.log10(xSegment.doubleValue())) + 0.5 - 0.5 * Math.signum(xSegment.doubleValue()));
+
+        if (xScale >= 0) {
+            xSegment = xSegment.round(new MathContext(1, RoundingMode.HALF_EVEN));
+        } else {
+            xSegment = xSegment.divide(BigDecimal.TEN.pow(-xScale), Equation.context).round(new MathContext(1, RoundingMode.HALF_EVEN)).multiply(BigDecimal.TEN.pow(-xScale));
+        }
+
+        BigDecimal ySegment = BigDecimal.valueOf(yWidth).divide(BigDecimal.TEN, Equation.context);
+
+        int yScale = (int) - (Math.round(Math.log10(ySegment.doubleValue())) + 0.5 - 0.5 * Math.signum(ySegment.doubleValue()));
+
+        if (yScale >= 0) {
+            ySegment = ySegment.round(new MathContext(1, RoundingMode.HALF_EVEN));
+        } else {
+            ySegment = ySegment.divide(BigDecimal.TEN.pow(-yScale), Equation.context).round(new MathContext(1, RoundingMode.HALF_EVEN)).multiply(BigDecimal.TEN.pow(-yScale));
+        }
+
+        double xPosition = (int) (xRange[0] / xSegment.doubleValue()) * xSegment.doubleValue();
+        double yPosition = (int) (yRange[0] / ySegment.doubleValue()) * ySegment.doubleValue();
+
+        while(xPosition <= xRange[1]) {
+            if(xPosition != 0) {
+                int xPos = convertCoordinateToPixel(xPosition, xWidth, centerX, true);
+
+                g.setColor(238, 238, 238, 255);
+                g.setStroke(indicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+                g.drawLine(xPos, (int) Math.round(yLine - plotWidthHeight * indicatorRatio / 2.0), xPos, (int) Math.round(yLine + plotWidthHeight * indicatorRatio / 2.0));
+
+                g.setColor(238, 238, 238, 64);
+                g.setStroke(subIndicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+                g.drawLine(xPos, 0, xPos, plotWidthHeight);
+
+                long textPosition;
+
+                boolean positive = true;
+
+                if(yLine < - plotWidthHeight * indicatorRatio / 2.0) {
+                    textPosition = Math.round(indicatorGap);
+                } else if(yLine >= plotWidthHeight * (1 + indicatorRatio / 2.0)) {
+                    positive = false;
+
+                    textPosition = Math.round(plotWidthHeight - indicatorGap);
+                } else {
+                    textPosition = Math.round(yLine + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap);
+
+                    if(textPosition > plotWidthHeight) {
+                        positive = false;
+                        textPosition = Math.round(yLine - plotWidthHeight * indicatorRatio / 2.0 - indicatorGap);
+                    }
+                }
+
+                g.setFont(plotFont);
+                g.setColor(238, 238, 238, 255);
+
+                if(positive) {
+                    g.drawHorizontalCenteredText(DataToString.df.format(xPosition), xPos, (int) textPosition);
+                } else {
+                    g.drawHorizontalLowerCenteredText(DataToString.df.format(xPosition), xPos, (int) textPosition);
+                }
+            }
+
+            xPosition = xPosition + xSegment.doubleValue();
+        }
+
+        while(yPosition <= yRange[1]) {
+            if(yPosition != 0) {
+                int yPos = convertCoordinateToPixel(yPosition, yWidth, centerY, false);
+
+                g.setColor(238, 238, 238, 255);
+                g.setStroke(indicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+                g.drawLine((int) Math.round(xLine - plotWidthHeight * indicatorRatio / 2.0), yPos, (int) Math.round(xLine + plotWidthHeight * indicatorRatio / 2.0), yPos);
+
+                g.setColor(238, 238, 238, 64);
+                g.setStroke(subIndicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+                g.drawLine(0, yPos, plotWidthHeight, yPos);
+
+                long textPosition;
+
+                boolean positive = true;
+
+                if(xLine < - plotWidthHeight * indicatorRatio / 2.0) {
+                    textPosition = Math.round(indicatorGap);
+                } else if(xLine >= plotWidthHeight * (1 + indicatorRatio / 2.0)) {
+                    positive = false;
+
+                    textPosition = Math.round(plotWidthHeight - indicatorGap);
+                } else {
+                    textPosition = Math.round(xLine + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap);
+
+                    if(textPosition > plotWidthHeight) {
+                        positive = false;
+
+                        textPosition = Math.round(xLine - plotWidthHeight * indicatorRatio / 2.0 - indicatorGap);
+                    }
+                }
+
+                g.setFont(plotFont);
+                g.setColor(238, 238, 238, 255);
+
+                if(positive) {
+                    g.drawVerticalCenteredText(DataToString.df.format(yPosition), (int) textPosition, yPos);
+                } else {
+                    g.drawVerticalLowerCenteredText(DataToString.df.format(yPosition), (int) textPosition, yPos);
+                }
+            }
+
+            yPosition += ySegment.doubleValue();
+        }
+
+        g.setColor(118, 224, 85, 255);
+        g.setStroke(plotStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+        int number = 4096;
+
+        double segment = 1.0 / number;
+
+        double rWidth = rRange[1] - rRange[0];
+        double tWidth = tRange[1] - tRange[0];
+
+        for(int t = 0; t < number + 1; t++) {
+            double tv = tRange[0] + t * segment * tWidth;
+
+            Formula substituted = formula.getInjectedFormula(tv, 1);
+
+            if(substituted == null)
+                continue;
+
+            for(int r = 0; r < number; r++) {
+                double r0 = rRange[0] + r * segment * rWidth;
+                double r1 = rRange[0] + (r + 1) * segment * rWidth;
+
+                double v0 = substituted.substitute(r0);
+
+                if(formula.element.isCritical()) {
+                    return null;
+                }
+
+                if(!Equation.error.isEmpty() || substituted.element.isAborted()) {
+                    Equation.error.clear();
+
+                    continue;
+                }
+
+                if(v0 == 0) {
+                    g.fillOval(
+                            convertCoordinateToPixel(r0 * Math.cos(tv), xWidth, centerX, true),
+                            convertCoordinateToPixel(r0 * Math.sin(tv), yWidth, centerY, false),
+                            3, 3
+                    );
+                }
+
+                double v1 = substituted.substitute(r1);
+
+                if(!Equation.error.isEmpty() || substituted.element.isAborted()) {
+                    Equation.error.clear();
+
+                    r++;
+
+                    continue;
+                }
+
+                if(v1 == 0) {
+                    g.fillOval(
+                            convertCoordinateToPixel(r1 * Math.cos(tv), xWidth, centerX, true),
+                            convertCoordinateToPixel(r1 * Math.sin(tv), yWidth, centerY, false),
+                            3, 3
+                    );
+
+                    r++;
+                } else if(v0 * v1 < 0) {
+                    double rp = -v1 * (r1 - r0) / (v1 - v0) + r1;
+
+                    g.fillOval(
+                            convertCoordinateToPixel(rp * Math.cos(tv), xWidth, centerX, true),
+                            convertCoordinateToPixel(rp * Math.sin(tv), yWidth, centerY, false),
+                            3, 3
+                    );
+                }
+            }
+        }
+
+        for(int r = 0; r < number + 1; r++) {
+            double rv = rRange[0] + r * segment * rWidth;
+
+            Formula substituted = formula.getInjectedFormula(rv, 0);
+
+            if(substituted == null)
+                continue;
+
+            for(int t = 0; t < number; t++) {
+                double t0 = tRange[0] + t * segment * tWidth;
+                double t1 = tRange[0] + (t + 1) * segment * tWidth;
+
+                double v0 = substituted.substitute(t0);
+
+                if(formula.element.isCritical()) {
+                    return null;
+                }
+
+                if(!Equation.error.isEmpty() || substituted.element.isAborted()) {
+                    Equation.error.clear();
+
+                    continue;
+                }
+
+                if(v0 == 0) {
+                    g.fillOval(
+                            convertCoordinateToPixel(rv * Math.cos(t0), xWidth, centerX, true),
+                            convertCoordinateToPixel(rv * Math.sin(t0), yWidth, centerY, false),
+                            3, 3
+                    );
+                }
+
+                double v1 = substituted.substitute(t1);
+
+                if(!Equation.error.isEmpty() || substituted.element.isAborted()) {
+                    Equation.error.clear();
+
+                    t++;
+
+                    continue;
+                }
+
+                if(v1 == 0) {
+                    g.fillOval(
+                            convertCoordinateToPixel(rv * Math.cos(t1), xWidth, centerX, true),
+                            convertCoordinateToPixel(rv * Math.sin(t1), yWidth, centerY, false),
+                            3, 3
+                    );
+
+                    t++;
+                } else if(v0 * v1 < 0) {
+                    double slope = (v1 - v0) / (t1 - t0);
+                    double angle = Math.toDegrees(Math.atan(Math.abs(slope)));
+
+                    if(angle > 89.99) {
+                        System.out.printf("%d : %.4f, %.4f | slope = %.4f | angle = %.4f | %.4f, %.4f%n", t, v1, v0, slope, angle, t1, t0);
+
+                        continue;
+                    }
+
+                    double tp = -v1 * (t1 - t0) / (v1 - v0) + t1;
+
+                    g.fillOval(
+                            convertCoordinateToPixel(rv * Math.cos(tp), xWidth, centerX, true),
+                            convertCoordinateToPixel(rv * Math.sin(tp), yWidth, centerY, false),
+                            3, 3
+                    );
+                }
+            }
+        }
+
+        ImageIO.write(result, "PNG", image);
+
+        String text = String.format(
+                LangID.getStringByID("rplot_success", lang),
+                DataToString.df.format(tRange[0]),
+                DataToString.df.format(tRange[1]),
+                DataToString.df.format(rRange[0]),
+                DataToString.df.format(rRange[1]),
                 DataToString.df.format(centerX - xWidth / 2.0),
                 DataToString.df.format(centerX + xWidth / 2.0),
                 DataToString.df.format(centerY - yWidth / 2.0),

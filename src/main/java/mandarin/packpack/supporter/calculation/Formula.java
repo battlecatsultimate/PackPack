@@ -105,6 +105,7 @@ public class Formula {
             retry = null;
 
             e = analyze(backup, lang);
+            variable.clear();
         }
 
         if(e == null) {
@@ -133,6 +134,25 @@ public class Formula {
 
             variable = changed;
         }
+
+        boolean rt = variable.size() == 2;
+
+        for(int i = 0; i < variable.size(); i++) {
+            if(!variable.get(i).name.equals("r") && !variable.get(i).name.equals("t")) {
+                rt = false;
+
+                break;
+            }
+        }
+
+        if(rt && !variable.get(0).name.equals("r")) {
+            List<NestedVariable> changed = new ArrayList<>();
+
+            changed.add(variable.get(1));
+            changed.add(variable.get(0));
+
+            variable = changed;
+        }
     }
 
     public Formula(int maxVariable) {
@@ -140,12 +160,16 @@ public class Formula {
     }
 
     public Formula getInjectedFormula(double value, int index) {
+        NestedVariable v;
+
         if(index < 0 || index >= variable.size())
-            return null;
+            v = null;
+        else
+            v = variable.get(index);
 
         Formula formula = new Formula(maxVariable - 1);
 
-        formula.element = element.injectVariableFast(formula, value, variable.get(index));
+        formula.element = element.injectVariableFast(formula, value, v);
 
         if(formula.element == null)
             return null;
