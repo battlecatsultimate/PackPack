@@ -2621,9 +2621,9 @@ public class ImageDrawing {
                 g.setColor(238, 238, 238, 255);
 
                 if(positive) {
-                    g.drawHorizontalCenteredText(Equation.formatNumber(xPosition), xPos, (int) textPosition);
+                    g.drawHorizontalCenteredText(Equation.simpleNumber(xPosition), xPos, (int) textPosition);
                 } else {
-                    g.drawHorizontalLowerCenteredText(Equation.formatNumber(xPosition), xPos, (int) textPosition);
+                    g.drawHorizontalLowerCenteredText(Equation.simpleNumber(xPosition), xPos, (int) textPosition);
                 }
             }
 
@@ -2668,9 +2668,9 @@ public class ImageDrawing {
                 g.setColor(238, 238, 238, 255);
 
                 if(positive) {
-                    g.drawVerticalCenteredText(Equation.formatNumber(yPosition), (int) textPosition, yPos);
+                    g.drawVerticalCenteredText(Equation.simpleNumber(yPosition), (int) textPosition, yPos);
                 } else {
-                    g.drawVerticalLowerCenteredText(Equation.formatNumber(yPosition), (int) textPosition, yPos);
+                    g.drawVerticalLowerCenteredText(Equation.simpleNumber(yPosition), (int) textPosition, yPos);
                 }
             }
 
@@ -2822,9 +2822,9 @@ public class ImageDrawing {
                 g.setColor(238, 238, 238, 255);
 
                 if(positive) {
-                    g.drawHorizontalCenteredText(Equation.formatNumber(xPosition), xPos, (int) textPosition);
+                    g.drawHorizontalCenteredText(Equation.simpleNumber(xPosition), xPos, (int) textPosition);
                 } else {
-                    g.drawHorizontalLowerCenteredText(Equation.formatNumber(xPosition), xPos, (int) textPosition);
+                    g.drawHorizontalLowerCenteredText(Equation.simpleNumber(xPosition), xPos, (int) textPosition);
                 }
             }
 
@@ -2869,9 +2869,9 @@ public class ImageDrawing {
                 g.setColor(238, 238, 238, 255);
 
                 if(positive) {
-                    g.drawVerticalCenteredText(Equation.formatNumber(yPosition), (int) textPosition, yPos);
+                    g.drawVerticalCenteredText(Equation.simpleNumber(yPosition), (int) textPosition, yPos);
                 } else {
-                    g.drawVerticalLowerCenteredText(Equation.formatNumber(yPosition), (int) textPosition, yPos);
+                    g.drawVerticalLowerCenteredText(Equation.simpleNumber(yPosition), (int) textPosition, yPos);
                 }
             }
 
@@ -3025,9 +3025,9 @@ public class ImageDrawing {
                 g.setColor(238, 238, 238, 255);
 
                 if(positive) {
-                    g.drawHorizontalCenteredText(DataToString.df.format(xPosition), xPos, (int) textPosition);
+                    g.drawHorizontalCenteredText(Equation.simpleNumber(xPosition), xPos, (int) textPosition);
                 } else {
-                    g.drawHorizontalLowerCenteredText(DataToString.df.format(xPosition), xPos, (int) textPosition);
+                    g.drawHorizontalLowerCenteredText(Equation.simpleNumber(xPosition), xPos, (int) textPosition);
                 }
             }
 
@@ -3072,9 +3072,9 @@ public class ImageDrawing {
                 g.setColor(238, 238, 238, 255);
 
                 if(positive) {
-                    g.drawVerticalCenteredText(DataToString.df.format(yPosition), (int) textPosition, yPos);
+                    g.drawVerticalCenteredText(Equation.simpleNumber(yPosition), (int) textPosition, yPos);
                 } else {
-                    g.drawVerticalLowerCenteredText(DataToString.df.format(yPosition), (int) textPosition, yPos);
+                    g.drawVerticalLowerCenteredText(Equation.simpleNumber(yPosition), (int) textPosition, yPos);
                 }
             }
 
@@ -3316,9 +3316,9 @@ public class ImageDrawing {
                     g.setColor(238, 238, 238, 255);
 
                     if(positive) {
-                        g.drawHorizontalCenteredText(DataToString.df.format(xPosition), xPos, (int) textPosition);
+                        g.drawHorizontalCenteredText(Equation.simpleNumber(xPosition), xPos, (int) textPosition);
                     } else {
-                        g.drawHorizontalLowerCenteredText(DataToString.df.format(xPosition), xPos, (int) textPosition);
+                        g.drawHorizontalLowerCenteredText(Equation.simpleNumber(xPosition), xPos, (int) textPosition);
                     }
                 }
             }
@@ -3359,9 +3359,9 @@ public class ImageDrawing {
                 g.setColor(238, 238, 238, 255);
 
                 if(positive) {
-                    g.drawVerticalCenteredText(DataToString.df.format(yPosition), (int) textPosition, yPos);
+                    g.drawVerticalCenteredText(Equation.simpleNumber(yPosition), (int) textPosition, yPos);
                 } else {
-                    g.drawVerticalLowerCenteredText(DataToString.df.format(yPosition), (int) textPosition, yPos);
+                    g.drawVerticalLowerCenteredText(Equation.simpleNumber(yPosition), (int) textPosition, yPos);
                 }
             }
 

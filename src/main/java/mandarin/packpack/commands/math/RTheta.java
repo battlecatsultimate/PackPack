@@ -56,8 +56,6 @@ public class RTheta extends TimedConstraintCommand {
 
         Formula formula = new Formula(f, 2, lang);
 
-        System.out.println(f);
-
         if(!Formula.error.isEmpty()) {
             replyToMessageSafely(ch, Formula.getErrorMessage(), getMessage(event), a -> a);
 
