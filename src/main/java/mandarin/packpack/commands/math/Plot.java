@@ -119,15 +119,7 @@ public class Plot extends TimedConstraintCommand {
                 yRange = xRange.clone();
             }
 
-            double[] xr = new double[2];
-            double[] yr = new double[2];
-
-            for(int i = 0; i < xr.length; i++) {
-                xr[i] = xRange[i].min(BigDecimal.valueOf(Double.MAX_VALUE)).max(BigDecimal.valueOf(-Double.MAX_VALUE)).doubleValue();
-                yr[i] = yRange[i].min(BigDecimal.valueOf(Double.MAX_VALUE)).max(BigDecimal.valueOf(-Double.MAX_VALUE)).doubleValue();
-            }
-
-            Object[] plots = ImageDrawing.plotXYGraph(formula, xr, yr, keepRatio(getContent(event)), lang);
+            Object[] plots = ImageDrawing.plotXYGraph(formula, xRange, yRange, keepRatio(getContent(event)), lang);
 
             if(plots == null) {
                 replyToMessageSafely(ch, LangID.getStringByID("plot_fail", lang), getMessage(event), a -> a);

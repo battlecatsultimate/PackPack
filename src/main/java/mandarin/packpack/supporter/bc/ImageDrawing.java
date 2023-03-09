@@ -2918,7 +2918,7 @@ public class ImageDrawing {
         return new Object[] {image, text};
     }
 
-    public static Object[] plotXYGraph(Formula formula, double[] xRange, double[] yRange, boolean keepRatio, int lang) throws Exception {
+    public static Object[] plotXYGraph(Formula formula, BigDecimal[] xRange, BigDecimal[] yRange, boolean keepRatio, int lang) throws Exception {
         File temp = new File("./temp");
 
         if(!temp.exists() && !temp.mkdirs())
@@ -2929,8 +2929,8 @@ public class ImageDrawing {
         if(image == null)
             return null;
 
-        double xWidth = xRange[1] - xRange[0];
-        double yWidth = yRange[1] - yRange[0];
+        double xWidth = xRange[1].doubleValue() - xRange[0].doubleValue();
+        double yWidth = yRange[1].doubleValue() - yRange[0].doubleValue();
 
         if(yWidth / xWidth > 10 || yWidth == 0)
             keepRatio = true;
@@ -2945,16 +2945,16 @@ public class ImageDrawing {
         g.fillRect(0, 0, plotWidthHeight, plotWidthHeight);
 
         if(keepRatio) {
-            double center = yRange[0] + yWidth / 2.0;
+            BigDecimal center = yRange[0].add(yRange[1]).divide(BigDecimal.valueOf(2), Equation.context);
 
-            yRange[0] = center - xWidth / 2.0;
-            yRange[1] = center + xWidth / 2.0;
+            yRange[0] = center.subtract(xRange[1].subtract(xRange[0]).divide(BigDecimal.valueOf(2), Equation.context));
+            yRange[1] = center.add(xRange[1].subtract(xRange[0]).divide(BigDecimal.valueOf(2), Equation.context));
 
-            yWidth = yRange[1] - yRange[0];
+            yWidth = yRange[1].doubleValue() - yRange[0].doubleValue();
         }
 
-        double centerX = xRange[0] + xWidth / 2.0;
-        double centerY = yRange[0] + yWidth / 2.0;
+        double centerX = xRange[0].doubleValue() + xWidth / 2.0;
+        double centerY = yRange[0].doubleValue() + yWidth / 2.0;
 
         int xLine = convertCoordinateToPixel(0, xWidth, centerX, true);
         int yLine = convertCoordinateToPixel(0, yWidth, centerY, false);
@@ -2985,12 +2985,12 @@ public class ImageDrawing {
             ySegment = ySegment.divide(BigDecimal.TEN.pow(-yScale), Equation.context).round(new MathContext(1, RoundingMode.HALF_EVEN)).multiply(BigDecimal.TEN.pow(-yScale));
         }
 
-        double xPosition = (int) (xRange[0] / xSegment.doubleValue()) * xSegment.doubleValue();
-        double yPosition = (int) (yRange[0] / ySegment.doubleValue()) * ySegment.doubleValue();
+        BigDecimal xPosition = xRange[0].divideToIntegralValue(xSegment).multiply(xSegment);
+        BigDecimal yPosition = yRange[0].divideToIntegralValue(ySegment).multiply(ySegment);
 
-        while(xPosition <= xRange[1]) {
-            if(xPosition != 0) {
-                int xPos = convertCoordinateToPixel(xPosition, xWidth, centerX, true);
+        while(xPosition.compareTo(xRange[1]) <= 0) {
+            if(xPosition.compareTo(BigDecimal.ZERO) != 0) {
+                int xPos = convertCoordinateToPixel(xPosition.doubleValue(), xWidth, centerX, true);
 
                 g.setColor(238, 238, 238, 255);
                 g.setStroke(indicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
@@ -3031,12 +3031,12 @@ public class ImageDrawing {
                 }
             }
 
-            xPosition = xPosition + xSegment.doubleValue();
+            xPosition = xPosition.add(xSegment);
         }
 
-        while(yPosition <= yRange[1]) {
-            if(yPosition != 0) {
-                int yPos = convertCoordinateToPixel(yPosition, yWidth, centerY, false);
+        while(yPosition.compareTo(yRange[1]) <= 0) {
+            if(yPosition.compareTo(BigDecimal.ZERO) != 0) {
+                int yPos = convertCoordinateToPixel(yPosition.doubleValue(), yWidth, centerY, false);
 
                 g.setColor(238, 238, 238, 255);
                 g.setStroke(indicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
@@ -3078,7 +3078,7 @@ public class ImageDrawing {
                 }
             }
 
-            yPosition += ySegment.doubleValue();
+            yPosition = yPosition.add(ySegment);
         }
 
         g.setColor(118, 224, 85, 255);
@@ -3197,7 +3197,7 @@ public class ImageDrawing {
         return new Object[] {image, text};
     }
 
-    public static Object[] plotRThetaGraph(Formula formula, double[] xRange, double[] yRange, double[] rRange, double[] tRange, int lang) throws Exception {
+    public static Object[] plotRThetaGraph(Formula formula, BigDecimal[] xRange, BigDecimal[] yRange, double[] rRange, double[] tRange, int lang) throws Exception {
         File temp = new File("./temp");
 
         if(!temp.exists() && !temp.mkdirs())
@@ -3208,16 +3208,16 @@ public class ImageDrawing {
         if(image == null)
             return null;
 
-        double xWidth = xRange[1] - xRange[0];
-        double yWidth = yRange[1] - yRange[0];
+        double xWidth = xRange[1].doubleValue() - xRange[0].doubleValue();
+        double yWidth = yRange[1].doubleValue() - yRange[0].doubleValue();
 
         if(yWidth != xWidth) {
-            double center = yRange[0] + yWidth / 2.0;
+            BigDecimal center = yRange[0].add(yRange[1]).divide(BigDecimal.valueOf(2), Equation.context);
 
-            yRange[0] = center - xWidth / 2.0;
-            yRange[1] = center + xWidth / 2.0;
+            yRange[0] = center.subtract(xRange[1].subtract(xRange[0]).divide(BigDecimal.valueOf(2), Equation.context));
+            yRange[1] = center.add(xRange[1].subtract(xRange[0]).divide(BigDecimal.valueOf(2), Equation.context));
 
-            yWidth = yRange[1] - yRange[0];
+            yWidth = yRange[1].doubleValue() - yRange[0].doubleValue();
         }
 
         BufferedImage result = new BufferedImage(plotWidthHeight, plotWidthHeight, BufferedImage.TYPE_INT_ARGB);
@@ -3229,8 +3229,8 @@ public class ImageDrawing {
         g.setColor(51, 53, 60, 255);
         g.fillRect(0, 0, plotWidthHeight, plotWidthHeight);
 
-        double centerX = xRange[0] + xWidth / 2.0;
-        double centerY = yRange[0] + yWidth / 2.0;
+        double centerX = xRange[0].doubleValue() + xWidth / 2.0;
+        double centerY = yRange[0].doubleValue() + yWidth / 2.0;
 
         int xLine = convertCoordinateToPixel(0, xWidth, centerX, true);
         int yLine = convertCoordinateToPixel(0, yWidth, centerY, false);
@@ -3261,18 +3261,18 @@ public class ImageDrawing {
             ySegment = ySegment.divide(BigDecimal.TEN.pow(-yScale), Equation.context).round(new MathContext(1, RoundingMode.HALF_EVEN)).multiply(BigDecimal.TEN.pow(-yScale));
         }
 
-        double xPosition = (int) (xRange[0] / xSegment.doubleValue()) * xSegment.doubleValue();
-        double yPosition = (int) (yRange[0] / ySegment.doubleValue()) * ySegment.doubleValue();
+        BigDecimal xPosition = xRange[0].divideToIntegralValue(xSegment).multiply(xSegment);
+        BigDecimal yPosition = yRange[0].divideToIntegralValue(ySegment).multiply(ySegment);
 
         int zeroX = convertCoordinateToPixel(0, xWidth, centerX, true);
         int zeroY = convertCoordinateToPixel(0, yWidth, centerY, false);
 
-        double xw = Math.max(Math.abs(xRange[0]), Math.abs(xRange[1]));
-        double yw = Math.max(Math.abs(yRange[0]), Math.abs(yRange[1]));
+        BigDecimal xw = xRange[1].max(xRange[0]);
+        BigDecimal yw = yRange[1].max(yRange[0]);
 
-        while(xPosition <= Math.sqrt(xw * xw + yw * yw)) {
-            if(xPosition != 0) {
-                int xPos = convertCoordinateToPixel(xPosition, xWidth, centerX, true);
+        while(xPosition.compareTo(xw.pow(2).add(yw.pow(2)).sqrt(Equation.context)) <= 0) {
+            if(xPosition.compareTo(BigDecimal.ZERO) != 0) {
+                int xPos = convertCoordinateToPixel(xPosition.doubleValue(), xWidth, centerX, true);
 
                 g.setColor(238, 238, 238, 64);
                 g.setStroke(indicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
@@ -3282,12 +3282,12 @@ public class ImageDrawing {
                 g.setStroke(indicatorStroke / 4f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
                 for(int i = 1; i < 5; i++) {
-                    int subXPos = convertCoordinateToPixel(xPosition + xSegment.doubleValue() / 5.0 * i, xWidth, centerX, true);
+                    int subXPos = convertCoordinateToPixel(xPosition.doubleValue() + xSegment.doubleValue() / 5.0 * i, xWidth, centerX, true);
 
                     g.drawOval(zeroX * 2 - subXPos, zeroY + zeroX - subXPos, (subXPos - zeroX) * 2, (subXPos - zeroX) * 2);
                 }
 
-                if(xPosition <= xRange[1]) {
+                if(xPosition.compareTo(xRange[1]) <= 0) {
                     g.setColor(238, 238, 238, 255);
                     g.setStroke(indicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
@@ -3323,12 +3323,12 @@ public class ImageDrawing {
                 }
             }
 
-            xPosition = xPosition + xSegment.doubleValue();
+            xPosition = xPosition.add(xSegment);
         }
 
-        while(yPosition <= yRange[1]) {
-            if(yPosition != 0) {
-                int yPos = convertCoordinateToPixel(yPosition, yWidth, centerY, false);
+        while(yPosition.compareTo(yRange[1]) <= 0) {
+            if(yPosition.compareTo(BigDecimal.ZERO) != 0) {
+                int yPos = convertCoordinateToPixel(yPosition.doubleValue(), yWidth, centerY, false);
 
                 g.setColor(238, 238, 238, 255);
                 g.setStroke(indicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
@@ -3365,7 +3365,7 @@ public class ImageDrawing {
                 }
             }
 
-            yPosition += ySegment.doubleValue();
+            yPosition = yPosition.add(ySegment);
         }
 
         g.setColor(238, 238, 238, 64);
@@ -3377,8 +3377,8 @@ public class ImageDrawing {
 
             double slope = Math.tan(Math.PI / 12.0 * i);
 
-            int yMin = convertCoordinateToPixel(xRange[0] * slope, yWidth, centerY, false);
-            int yMax = convertCoordinateToPixel(xRange[1] * slope, yWidth, centerY, false);
+            int yMin = convertCoordinateToPixel(xRange[0].doubleValue() * slope, yWidth, centerY, false);
+            int yMax = convertCoordinateToPixel(xRange[1].doubleValue() * slope, yWidth, centerY, false);
 
             g.drawLine(0, yMin,plotWidthHeight, yMax);
         }
@@ -3396,10 +3396,10 @@ public class ImageDrawing {
         double totalAngle = tRange[1] - tRange[0];
 
         double[] square = new double[] {
-                Math.atan2(yRange[1], xRange[0]),
-                Math.atan2(yRange[0], xRange[0]),
-                Math.atan2(yRange[0], xRange[1]),
-                Math.atan2(yRange[1], xRange[1])
+                Math.atan2(yRange[1].doubleValue(), xRange[0].doubleValue()),
+                Math.atan2(yRange[0].doubleValue(), xRange[0].doubleValue()),
+                Math.atan2(yRange[0].doubleValue(), xRange[1].doubleValue()),
+                Math.atan2(yRange[1].doubleValue(), xRange[1].doubleValue())
         };
 
         double minAngle = square[0];

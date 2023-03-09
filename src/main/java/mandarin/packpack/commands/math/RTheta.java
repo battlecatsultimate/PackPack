@@ -92,19 +92,15 @@ public class RTheta extends TimedConstraintCommand {
             };
         }
 
-        double[] xr = new double[2];
-        double[] yr = new double[2];
         double[] tr = new double[2];
         double[] rr = new double[2];
 
-        for(int i = 0; i < xr.length; i++) {
-            xr[i] = xRange[i].min(BigDecimal.valueOf(Double.MAX_VALUE)).max(BigDecimal.valueOf(-Double.MAX_VALUE)).doubleValue();
-            yr[i] = yRange[i].min(BigDecimal.valueOf(Double.MAX_VALUE)).max(BigDecimal.valueOf(-Double.MAX_VALUE)).doubleValue();
+        for(int i = 0; i < tr.length; i++) {
             tr[i] = tRange[i].min(BigDecimal.valueOf(Double.MAX_VALUE)).max(BigDecimal.valueOf(-Double.MAX_VALUE)).doubleValue();
             rr[i] = rRange[i].min(BigDecimal.valueOf(Double.MAX_VALUE)).max(BigDecimal.valueOf(-Double.MAX_VALUE)).doubleValue();
         }
 
-        Object[] plots = ImageDrawing.plotRThetaGraph(formula, xr, yr, rr, tr, lang);
+        Object[] plots = ImageDrawing.plotRThetaGraph(formula, xRange, yRange, rr, tr, lang);
 
         if(plots == null) {
             replyToMessageSafely(ch, LangID.getStringByID("plot_fail", lang), getMessage(event), a -> a);
