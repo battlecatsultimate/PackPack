@@ -139,7 +139,7 @@ public class TPlot extends TimedConstraintCommand {
     }
 
     private String getXt(String command) {
-        String[] contents = command.replaceAll("-tr(\\s+)?[(\\[].+?,.+?[)\\]]", "").split(" ");
+        String[] contents = command.replaceAll("-tr(\\s+)?\\[.+?,.+?]", "").split(" ");
 
         for(int i = 0; i < contents.length; i++) {
             if(contents[i].equals("-x") || contents[i].equals("-xt")) {
@@ -167,7 +167,7 @@ public class TPlot extends TimedConstraintCommand {
     }
 
     private String getYt(String command) {
-        String[] contents = command.replaceAll("-tr(\\s+)?[(\\[].+?,.+?[)\\]]", "").split(" ");
+        String[] contents = command.replaceAll("-tr(\\s+)?\\[.+?,.+?]", "").split(" ");
 
         for(int i = 0; i < contents.length; i++) {
             if(contents[i].equals("-y") || contents[i].equals("-yt")) {
@@ -207,7 +207,7 @@ public class TPlot extends TimedConstraintCommand {
     }
 
     private BigDecimal[] getTRange(String command) {
-        Pattern pattern = Pattern.compile("-tr(\\s+)?[(\\[].+?,.+?[)\\]]");
+        Pattern pattern = Pattern.compile("-tr(\\s+)?\\[.+?,.+?]");
         Matcher matcher = pattern.matcher(command);
 
         if(matcher.find()) {

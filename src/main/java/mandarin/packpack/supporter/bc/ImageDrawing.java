@@ -3197,7 +3197,7 @@ public class ImageDrawing {
         return new Object[] {image, text};
     }
 
-    public static Object[] plotRThetaGraph(Formula formula, double[] xRange, double[] yRange, double[] rRange, double[] tRange, boolean keepRatio, int lang) throws Exception {
+    public static Object[] plotRThetaGraph(Formula formula, double[] xRange, double[] yRange, double[] rRange, double[] tRange, int lang) throws Exception {
         File temp = new File("./temp");
 
         if(!temp.exists() && !temp.mkdirs())
@@ -3211,8 +3211,14 @@ public class ImageDrawing {
         double xWidth = xRange[1] - xRange[0];
         double yWidth = yRange[1] - yRange[0];
 
-        if(yWidth / xWidth > 10 || yWidth == 0)
-            keepRatio = true;
+        if(yWidth != xWidth) {
+            double center = yRange[0] + yWidth / 2.0;
+
+            yRange[0] = center - xWidth / 2.0;
+            yRange[1] = center + xWidth / 2.0;
+
+            yWidth = yRange[1] - yRange[0];
+        }
 
         BufferedImage result = new BufferedImage(plotWidthHeight, plotWidthHeight, BufferedImage.TYPE_INT_ARGB);
         FG2D g = new FG2D(result.getGraphics());
@@ -3222,15 +3228,6 @@ public class ImageDrawing {
 
         g.setColor(51, 53, 60, 255);
         g.fillRect(0, 0, plotWidthHeight, plotWidthHeight);
-
-        if(keepRatio) {
-            double center = yRange[0] + yWidth / 2.0;
-
-            yRange[0] = center - xWidth / 2.0;
-            yRange[1] = center + xWidth / 2.0;
-
-            yWidth = yRange[1] - yRange[0];
-        }
 
         double centerX = xRange[0] + xWidth / 2.0;
         double centerY = yRange[0] + yWidth / 2.0;
@@ -3267,46 +3264,62 @@ public class ImageDrawing {
         double xPosition = (int) (xRange[0] / xSegment.doubleValue()) * xSegment.doubleValue();
         double yPosition = (int) (yRange[0] / ySegment.doubleValue()) * ySegment.doubleValue();
 
-        while(xPosition <= xRange[1]) {
+        int zeroX = convertCoordinateToPixel(0, xWidth, centerX, true);
+        int zeroY = convertCoordinateToPixel(0, yWidth, centerY, false);
+
+        double xw = Math.max(Math.abs(xRange[0]), Math.abs(xRange[1]));
+        double yw = Math.max(Math.abs(yRange[0]), Math.abs(yRange[1]));
+
+        while(xPosition <= Math.sqrt(xw * xw + yw * yw)) {
             if(xPosition != 0) {
                 int xPos = convertCoordinateToPixel(xPosition, xWidth, centerX, true);
 
-                g.setColor(238, 238, 238, 255);
+                g.setColor(238, 238, 238, 64);
                 g.setStroke(indicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
-                g.drawLine(xPos, (int) Math.round(yLine - plotWidthHeight * indicatorRatio / 2.0), xPos, (int) Math.round(yLine + plotWidthHeight * indicatorRatio / 2.0));
+                g.drawOval(zeroX * 2 - xPos, zeroY + zeroX - xPos, (xPos - zeroX) * 2, (xPos - zeroX) * 2);
 
-                g.setColor(238, 238, 238, 64);
-                g.setStroke(subIndicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+                g.setStroke(indicatorStroke / 4f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
-                g.drawLine(xPos, 0, xPos, plotWidthHeight);
+                for(int i = 1; i < 5; i++) {
+                    int subXPos = convertCoordinateToPixel(xPosition + xSegment.doubleValue() / 5.0 * i, xWidth, centerX, true);
 
-                long textPosition;
-
-                boolean positive = true;
-
-                if(yLine < - plotWidthHeight * indicatorRatio / 2.0) {
-                    textPosition = Math.round(indicatorGap);
-                } else if(yLine >= plotWidthHeight * (1 + indicatorRatio / 2.0)) {
-                    positive = false;
-
-                    textPosition = Math.round(plotWidthHeight - indicatorGap);
-                } else {
-                    textPosition = Math.round(yLine + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap);
-
-                    if(textPosition > plotWidthHeight) {
-                        positive = false;
-                        textPosition = Math.round(yLine - plotWidthHeight * indicatorRatio / 2.0 - indicatorGap);
-                    }
+                    g.drawOval(zeroX * 2 - subXPos, zeroY + zeroX - subXPos, (subXPos - zeroX) * 2, (subXPos - zeroX) * 2);
                 }
 
-                g.setFont(plotFont);
-                g.setColor(238, 238, 238, 255);
+                if(xPosition <= xRange[1]) {
+                    g.setColor(238, 238, 238, 255);
+                    g.setStroke(indicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
-                if(positive) {
-                    g.drawHorizontalCenteredText(DataToString.df.format(xPosition), xPos, (int) textPosition);
-                } else {
-                    g.drawHorizontalLowerCenteredText(DataToString.df.format(xPosition), xPos, (int) textPosition);
+                    g.drawLine(xPos, (int) Math.round(yLine - plotWidthHeight * indicatorRatio / 2.0), xPos, (int) Math.round(yLine + plotWidthHeight * indicatorRatio / 2.0));
+
+                    long textPosition;
+
+                    boolean positive = true;
+
+                    if(yLine < - plotWidthHeight * indicatorRatio / 2.0) {
+                        textPosition = Math.round(indicatorGap);
+                    } else if(yLine >= plotWidthHeight * (1 + indicatorRatio / 2.0)) {
+                        positive = false;
+
+                        textPosition = Math.round(plotWidthHeight - indicatorGap);
+                    } else {
+                        textPosition = Math.round(yLine + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap);
+
+                        if(textPosition > plotWidthHeight) {
+                            positive = false;
+                            textPosition = Math.round(yLine - plotWidthHeight * indicatorRatio / 2.0 - indicatorGap);
+                        }
+                    }
+
+                    g.setFont(plotFont);
+                    g.setColor(238, 238, 238, 255);
+
+                    if(positive) {
+                        g.drawHorizontalCenteredText(DataToString.df.format(xPosition), xPos, (int) textPosition);
+                    } else {
+                        g.drawHorizontalLowerCenteredText(DataToString.df.format(xPosition), xPos, (int) textPosition);
+                    }
                 }
             }
 
@@ -3321,11 +3334,6 @@ public class ImageDrawing {
                 g.setStroke(indicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
                 g.drawLine((int) Math.round(xLine - plotWidthHeight * indicatorRatio / 2.0), yPos, (int) Math.round(xLine + plotWidthHeight * indicatorRatio / 2.0), yPos);
-
-                g.setColor(238, 238, 238, 64);
-                g.setStroke(subIndicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-
-                g.drawLine(0, yPos, plotWidthHeight, yPos);
 
                 long textPosition;
 
@@ -3360,6 +3368,21 @@ public class ImageDrawing {
             yPosition += ySegment.doubleValue();
         }
 
+        g.setColor(238, 238, 238, 64);
+        g.setStroke(indicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+        for(int i = 1; i < 12; i++) {
+            if(i == 6)
+                continue;
+
+            double slope = Math.tan(Math.PI / 12.0 * i);
+
+            int yMin = convertCoordinateToPixel(xRange[0] * slope, yWidth, centerY, false);
+            int yMax = convertCoordinateToPixel(xRange[1] * slope, yWidth, centerY, false);
+
+            g.drawLine(0, yMin,plotWidthHeight, yMax);
+        }
+
         g.setColor(118, 224, 85, 255);
         g.setStroke(plotStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
@@ -3368,15 +3391,77 @@ public class ImageDrawing {
         double segment = 1.0 / number;
 
         double rWidth = rRange[1] - rRange[0];
-        double tWidth = tRange[1] - tRange[0];
+        double tWidth;
+
+        double totalAngle = tRange[1] - tRange[0];
+
+        double[] square = new double[] {
+                Math.atan2(yRange[1], xRange[0]),
+                Math.atan2(yRange[0], xRange[0]),
+                Math.atan2(yRange[0], xRange[1]),
+                Math.atan2(yRange[1], xRange[1])
+        };
+
+        double minAngle = square[0];
+        double maxAngle = square[0];
+
+        for(int i = 1; i < square.length; i++) {
+            minAngle = Math.min(minAngle, square[i]);
+            maxAngle = Math.max(maxAngle, square[i]);
+        }
+
+        double angleRange= maxAngle - minAngle;
+
+        if(0 <= zeroX && zeroX <= plotWidthHeight && 0 <= zeroY && zeroY <= plotWidthHeight) {
+            tWidth = tRange[1] - tRange[0];
+        } else {
+            double actualAngle = 0;
+            double summedAngle = 0;
+
+            while(summedAngle <= totalAngle) {
+                summedAngle += minAngle;
+
+                if(summedAngle > totalAngle)
+                    break;
+
+                if(summedAngle + angleRange > totalAngle) {
+                    actualAngle += totalAngle - summedAngle;
+
+                    break;
+                } else {
+                    actualAngle += angleRange;
+                    summedAngle += Math.PI;
+                }
+            }
+
+            tWidth = actualAngle;
+        }
+
+        int pi = 0;
+        int back = 0;
 
         for(int t = 0; t < number + 1; t++) {
-            double tv = tRange[0] + t * segment * tWidth;
+            double tv;
+
+            if(tWidth == totalAngle) {
+                tv = tRange[0] + (t - back) * segment * tWidth;
+            } else {
+                tv = Math.PI * pi + minAngle + (t - back) * segment * tWidth;
+            }
+
+            if(tv > tRange[1])
+                break;
 
             Formula substituted = formula.getInjectedFormula(tv, 1);
 
-            if(substituted == null)
+            if(substituted == null) {
+                if(tWidth != totalAngle && tv - Math.PI * pi > maxAngle) {
+                    pi++;
+                    back = t;
+                }
+
                 continue;
+            }
 
             for(int r = 0; r < number; r++) {
                 double r0 = rRange[0] + r * segment * rWidth;
@@ -3430,6 +3515,11 @@ public class ImageDrawing {
                     );
                 }
             }
+
+            if(tWidth != totalAngle && tv - Math.PI * pi > maxAngle) {
+                pi++;
+                back = t;
+            }
         }
 
         for(int r = 0; r < number + 1; r++) {
@@ -3440,9 +3530,23 @@ public class ImageDrawing {
             if(substituted == null)
                 continue;
 
+            pi = 0;
+            back = 0;
+
             for(int t = 0; t < number; t++) {
-                double t0 = tRange[0] + t * segment * tWidth;
-                double t1 = tRange[0] + (t + 1) * segment * tWidth;
+                double t0;
+                double t1;
+
+                if(tWidth == totalAngle) {
+                    t0 = tRange[0] + (t - back) * segment * tWidth;
+                    t1 = tRange[0] + (t - back + 1) * segment * tWidth;
+                } else {
+                    t0 = Math.PI * pi + minAngle + t * segment * angleRange;
+                    t1 = Math.PI * pi + minAngle + (t + 1) * segment * angleRange;
+                }
+
+                if(t1 > tRange[1])
+                    break;
 
                 double v0 = substituted.substitute(t0);
 
@@ -3451,6 +3555,11 @@ public class ImageDrawing {
                 }
 
                 if(!Equation.error.isEmpty() || substituted.element.isAborted()) {
+                    if(tWidth != totalAngle && t0 - Math.PI * pi > maxAngle) {
+                        pi++;
+                        back = t;
+                    }
+
                     Equation.error.clear();
 
                     continue;
@@ -3471,6 +3580,11 @@ public class ImageDrawing {
 
                     t++;
 
+                    if(tWidth != totalAngle && t0 - Math.PI * pi > maxAngle) {
+                        pi++;
+                        back = t;
+                    }
+
                     continue;
                 }
 
@@ -3487,7 +3601,10 @@ public class ImageDrawing {
                     double angle = Math.toDegrees(Math.atan(Math.abs(slope)));
 
                     if(angle > 89.99) {
-                        System.out.printf("%d : %.4f, %.4f | slope = %.4f | angle = %.4f | %.4f, %.4f%n", t, v1, v0, slope, angle, t1, t0);
+                        if(tWidth != totalAngle && t0 - Math.PI * pi > maxAngle) {
+                            pi++;
+                            back = t;
+                        }
 
                         continue;
                     }
@@ -3499,6 +3616,11 @@ public class ImageDrawing {
                             convertCoordinateToPixel(rv * Math.sin(tp), yWidth, centerY, false),
                             3, 3
                     );
+                }
+
+                if(tWidth != totalAngle && t0 - Math.PI * pi > maxAngle) {
+                    pi++;
+                    back = t;
                 }
             }
         }

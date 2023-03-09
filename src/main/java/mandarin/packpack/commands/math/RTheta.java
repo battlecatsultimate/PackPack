@@ -56,6 +56,8 @@ public class RTheta extends TimedConstraintCommand {
 
         Formula formula = new Formula(f, 2, lang);
 
+        System.out.println(f);
+
         if(!Formula.error.isEmpty()) {
             replyToMessageSafely(ch, Formula.getErrorMessage(), getMessage(event), a -> a);
 
@@ -104,7 +106,7 @@ public class RTheta extends TimedConstraintCommand {
             rr[i] = rRange[i].min(BigDecimal.valueOf(Double.MAX_VALUE)).max(BigDecimal.valueOf(-Double.MAX_VALUE)).doubleValue();
         }
 
-        Object[] plots = ImageDrawing.plotRThetaGraph(formula, xr, yr, rr, tr, keepRatio(getContent(event)), lang);
+        Object[] plots = ImageDrawing.plotRThetaGraph(formula, xr, yr, rr, tr, lang);
 
         if(plots == null) {
             replyToMessageSafely(ch, LangID.getStringByID("plot_fail", lang), getMessage(event), a -> a);
@@ -114,7 +116,7 @@ public class RTheta extends TimedConstraintCommand {
     }
 
     private BigDecimal[] getXRange(String command) {
-        Pattern pattern = Pattern.compile("-xr(\\s+)?[(\\[].+?,.+?[)\\]]");
+        Pattern pattern = Pattern.compile("-xr(\\s+)?\\[.+?,.+?]");
         Matcher matcher = pattern.matcher(command);
 
         if(matcher.find()) {
@@ -147,7 +149,7 @@ public class RTheta extends TimedConstraintCommand {
     }
 
     private BigDecimal[] getYRange(String command) {
-        Pattern pattern = Pattern.compile("-yr(\\s+)?[(\\[].+?,.+?[)\\]]");
+        Pattern pattern = Pattern.compile("-yr(\\s+)?\\[.+?,.+?]");
         Matcher matcher = pattern.matcher(command);
 
         if(matcher.find()) {
@@ -180,7 +182,7 @@ public class RTheta extends TimedConstraintCommand {
     }
 
     private BigDecimal[] getTRange(String command) {
-        Pattern pattern = Pattern.compile("-tr(\\s+)?[(\\[].+?,.+?[)\\]]");
+        Pattern pattern = Pattern.compile("-tr(\\s+)?\\[.+?,.+?]");
         Matcher matcher = pattern.matcher(command);
 
         if(matcher.find()) {
@@ -213,7 +215,7 @@ public class RTheta extends TimedConstraintCommand {
     }
 
     private BigDecimal[] getRRange(String command) {
-        Pattern pattern = Pattern.compile("-rr(\\s+)?[(\\[].+?,.+?[)\\]]");
+        Pattern pattern = Pattern.compile("-rr(\\s+)?\\[.+?,.+?]");
         Matcher matcher = pattern.matcher(command);
 
         if(matcher.find()) {
@@ -245,21 +247,9 @@ public class RTheta extends TimedConstraintCommand {
         return null;
     }
 
-    private boolean keepRatio(String command) {
-        String[] contents = command.split(" ");
-
-        for(int i = 0; i < contents.length; i++) {
-            if(contents[i].equals("-r") || contents[i].equals("-ratio")) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     private String filterFormula(String command) {
         String removePrefix = command.split(" ", 2)[1];
 
-        return removePrefix.replaceAll("-(r|ratio)\\s", "").replaceAll("-[xytr]r(\\s+)?[(\\[].+?,.+?[)\\]]", "");
+        return removePrefix.replaceAll("-(r|ratio)\\s", "").replaceAll("-[xytr]r(\\s+)?\\[.+?,.+?]", "");
     }
 }

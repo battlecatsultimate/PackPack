@@ -138,7 +138,7 @@ public class Plot extends TimedConstraintCommand {
     }
 
     private BigDecimal[] getXRange(String command) {
-        Pattern pattern = Pattern.compile("-xr(\\s+)?[(\\[].+?,.+?[)\\]]");
+        Pattern pattern = Pattern.compile("-xr(\\s+)?\\[.+?,.+?]");
         Matcher matcher = pattern.matcher(command);
 
         if(matcher.find()) {
@@ -171,7 +171,7 @@ public class Plot extends TimedConstraintCommand {
     }
 
     private BigDecimal[] getYRange(String command) {
-        Pattern pattern = Pattern.compile("-yr(\\s+)?[(\\[].+?,.+?[)\\]]");
+        Pattern pattern = Pattern.compile("-yr(\\s+)?\\[.+?,.+?]");
         Matcher matcher = pattern.matcher(command);
 
         if(matcher.find()) {
@@ -218,6 +218,6 @@ public class Plot extends TimedConstraintCommand {
     private String filterFormula(String command) {
         String removePrefix = command.split(" ", 2)[1];
 
-        return removePrefix.replaceAll("-(r|ratio)", "").replaceAll("-[xy]r(\\s+)?[(\\[].+?,.+?[)\\]]", "");
+        return removePrefix.replaceAll("-(r|ratio)", "").replaceAll("-[xy]r(\\s+)?\\[.+?,.+?]", "");
     }
 }

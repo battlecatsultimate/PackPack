@@ -260,11 +260,11 @@ public class Solve extends TimedConstraintCommand {
     private String filterFormula(String command) {
         command = command.replaceAll("-(f|false|n|newton|s|secant|b|bisection)", "");
         command = command.replaceAll("-(e|error|i|iteration)\\s+([^\\s]+)?", "");
-        return command.replaceAll("-r(\\s+)?[(\\[].+?,.+?[)\\]]", "");
+        return command.replaceAll("-r(\\s+)?\\[.+?,.+?]", "");
     }
 
     private BigDecimal[] getRange(String command) {
-        Pattern pattern = Pattern.compile("-r(\\s+)?[(\\[].+?,.+?[)\\]]");
+        Pattern pattern = Pattern.compile("-r(\\s+)?\\[.+?,.+?]");
         Matcher matcher = pattern.matcher(command);
 
         if(matcher.find()) {
