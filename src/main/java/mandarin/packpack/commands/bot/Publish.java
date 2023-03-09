@@ -85,8 +85,8 @@ public class Publish extends ConstraintCommand {
                         if(important) {
                             ((NewsChannel) c).sendMessage(holder.announceMessage).queue();
                         } else {
-                            ((NewsChannel) c).sendMessage(holder.announceMessage + LangID.getStringByID("announce_notimpor", holder.config.lang))
-                                    .setAllowedMentions(new ArrayList<>())
+                            ((NewsChannel) c).sendMessage(holder.announceMessage)
+                                    .setSuppressedNotifications(true)
                                     .queue();
                         }
                     }
@@ -114,8 +114,8 @@ public class Publish extends ConstraintCommand {
                         if(important) {
                             ((GuildMessageChannel) c).sendMessage(holder.announceMessage).queue();
                         } else {
-                            ((GuildMessageChannel) c).sendMessage(holder.announceMessage + LangID.getStringByID("announce_notimpor", holder.config.lang))
-                                    .setAllowedMentions(new ArrayList<>())
+                            ((GuildMessageChannel) c).sendMessage(holder.announceMessage)
+                                    .setSuppressedNotifications(true)
                                     .queue();
                         }
                     }
