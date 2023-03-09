@@ -288,6 +288,9 @@ public class AllEventAdapter extends ListenerAdapter {
 
             User u = event.getAuthor();
 
+            if(u.getId().equals(event.getJDA().getSelfUser().getId()) || u.isBot())
+                return;
+
             if(StaticStore.optoutMembers.contains(u.getId())) {
                 return;
             }
@@ -970,6 +973,10 @@ public class AllEventAdapter extends ListenerAdapter {
             case "prt":
             case "rt":
                 new RTheta(ConstraintCommand.ROLE.MEMBER, lang, idh, 30000).execute(event);
+                break;
+            case "getid":
+            case "gi":
+                new GetID(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
                 break;
         }
     }
