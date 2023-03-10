@@ -4,8 +4,6 @@ import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
@@ -18,10 +16,6 @@ public class PrintGachaEvent extends ConstraintCommand {
         super(role, lang, id, false);
     }
 
-    @Override
-    public void prepare() throws Exception {
-        registerRequiredPermission(Permission.MESSAGE_ATTACH_FILES);
-    }
 
     @Override
     public void doSomething(GenericMessageEvent event) throws Exception {
