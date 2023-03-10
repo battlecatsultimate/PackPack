@@ -100,12 +100,14 @@ public class Formula {
         NestedElement e = analyze(stabilized, lang);
 
         while(retry != null) {
-            String backup = retry;
+            error.clear();
+            variable.clear();
+
+            String backup = full = retry;
 
             retry = null;
 
             e = analyze(backup, lang);
-            variable.clear();
         }
 
         if(e == null) {
@@ -1249,33 +1251,9 @@ public class Formula {
 
                                             return function;
                                         } else {
-                                            NestedElement test = analyze(prefix, lang);
+                                            retry = full.replace(prefix + "(" + inner + ")", prefix + "*(" + inner +")");
 
-                                            if(test == null) {
-                                                NestedOperator operator = new NestedOperator(this, Operator.TYPE.MULTIPLICATION);
-
-                                                NestedVariable v = new NestedVariable(this, prefix);
-
-                                                if(!variable.contains(v)) {
-                                                    if(variable.size() >= maxVariable) {
-                                                        error.add(String.format(LangID.getStringByID("calc_var", lang), v.name, maxVariable, variable.get(variable.size() - 1).name));
-                                                    } else {
-                                                        variable.add(v);
-                                                    }
-                                                }
-
-                                                operator.addChild(v);
-                                                operator.addChild(inner);
-
-                                                return operator;
-                                            }
-
-                                            NestedOperator operator = new NestedOperator(this, Operator.TYPE.MULTIPLICATION);
-
-                                            operator.addChild(test);
-                                            operator.addChild(inner);
-
-                                            return operator;
+                                            return null;
                                         }
                                     }
                                 }
