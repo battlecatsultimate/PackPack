@@ -53,12 +53,11 @@ public class PrintItemEvent extends ConstraintCommand {
 
         User u = getUser(event);
 
-        if(u == null || !StaticStore.contributors.contains(u.getId())) {
+        if(full && (u == null || !StaticStore.contributors.contains(u.getId()))) {
             full = false;
 
             createMessageWithNoPings(ch, LangID.getStringByID("event_ignorefull", lang));
         }
-
         List<String> result = StaticStore.event.printItemEvent(getLocale(getContent(event)), lang, full, isRaw(getContent(event)), now, t);
 
         if(result.isEmpty()) {

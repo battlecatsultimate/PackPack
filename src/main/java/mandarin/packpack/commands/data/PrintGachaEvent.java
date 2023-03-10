@@ -54,7 +54,7 @@ public class PrintGachaEvent extends ConstraintCommand {
 
         User u = getUser(event);
 
-        if(u == null || !StaticStore.contributors.contains(u.getId())) {
+        if(full && (u == null || !StaticStore.contributors.contains(u.getId()))) {
             full = false;
 
             createMessageWithNoPings(ch, LangID.getStringByID("event_ignorefull", lang));
