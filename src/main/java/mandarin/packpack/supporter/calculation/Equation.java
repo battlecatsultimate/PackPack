@@ -22,6 +22,9 @@ public class Equation {
     private static final String[] suffix = { "k", "m", "b", "t" };
 
     public static String formatNumber(BigDecimal value) {
+        if(value.abs().compareTo(BigDecimal.ZERO) == 0)
+            return "0";
+
         if (value.abs().compareTo(BigDecimal.TEN.pow(5)) > 0) {
             int m = 0;
 
@@ -48,6 +51,9 @@ public class Equation {
     }
 
     public static String simpleNumber(BigDecimal value) {
+        if(value.abs().compareTo(BigDecimal.ZERO) == 0)
+            return "0";
+
         if (value.abs().compareTo(BigDecimal.TEN.pow(5)) > 0) {
             int m = 0;
 
@@ -63,32 +69,6 @@ public class Equation {
 
             while(value.abs().compareTo(BigDecimal.ONE) < 0) {
                 value = value.multiply(BigDecimal.TEN);
-
-                m++;
-            }
-
-            return simple.format(value) + "E-" + m;
-        } else {
-            return simple.format(value);
-        }
-    }
-
-    public static String simpleNumber(double value) {
-        if (Math.abs(value) >= 100000) {
-            int m = 0;
-
-            while(Math.abs(value) > 10) {
-                value /= 10.0;
-
-                m++;
-            }
-
-            return simple.format(value) + "E+" + m;
-        } else if(Math.abs(value) <= 0.0001) {
-            int m = 0;
-
-            while(Math.abs(value) < 1) {
-                value *= 10;
 
                 m++;
             }
