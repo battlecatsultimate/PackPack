@@ -110,6 +110,25 @@ public class EntityFilter {
         }
 
         if(!clear.isEmpty()) {
+            if(trueForm) {
+                ArrayList<Form> filtered = new ArrayList<>();
+
+                for(int i = 0; i < clear.size(); i++) {
+                    Form f = clear.get(i);
+
+                    if(f.fid == 2 && !filtered.contains(f)) {
+                        filtered.add(f);
+                    } else if(f.fid != 2) {
+                        Form finalForm = f.unit.forms[f.unit.forms.length - 1];
+
+                        if(!filtered.contains(finalForm))
+                            filtered.add(finalForm);
+                    }
+                }
+
+                return filtered;
+            }
+
             return clear;
         }
 
@@ -1914,13 +1933,6 @@ public class EntityFilter {
         }
 
         return result;
-    }
-
-    private static String duo(int i) {
-        if(i < 10)
-            return "0"+i;
-        else
-            return String.valueOf(i);
     }
 
     private static boolean searchMapColc(String[] names) {
