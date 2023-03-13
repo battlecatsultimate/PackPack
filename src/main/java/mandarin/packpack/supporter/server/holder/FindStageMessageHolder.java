@@ -32,17 +32,20 @@ public class FindStageMessageHolder extends SearchHolder {
     private final boolean isFrame;
     private final boolean isExtra;
     private final boolean isCompact;
-    private final int star;
+    private final int star, itf, cotc;
 
     private FindStage.MONTHLY selected = FindStage.MONTHLY.ALL;
 
-    public FindStageMessageHolder(List<Stage> stage, List<FindStage.MONTHLY> monthly, Message author, Message msg, String channelID, int star, boolean isFrame, boolean isExtra, boolean isCompact, int lang) {
+    public FindStageMessageHolder(List<Stage> stage, List<FindStage.MONTHLY> monthly, Message author, Message msg, String channelID, int star, int itf, int cotc, boolean isFrame, boolean isExtra, boolean isCompact, int lang) {
         super(msg, author, channelID, lang);
 
         this.stage = stage;
         this.monthly = monthly;
 
         this.star = star;
+        this.itf = itf;
+        this.cotc = cotc;
+
         this.isFrame = isFrame;
         this.isExtra = isExtra;
         this.isCompact = isCompact;
@@ -144,7 +147,7 @@ public class FindStageMessageHolder extends SearchHolder {
         }
 
         try {
-            Message msg = EntityHandler.showStageEmb(actualStage.get(id), ch, getAuthorMessage(), isFrame, isExtra, isCompact, star, lang);
+            Message msg = EntityHandler.showStageEmb(actualStage.get(id), ch, getAuthorMessage(), isFrame, isExtra, isCompact, star, itf, cotc, lang);
 
             if(msg != null) {
                 StaticStore.putHolder(getAuthorMessage().getAuthor().getId(), new StageInfoButtonHolder(actualStage.get(id), getAuthorMessage(), msg, channelID, isCompact));

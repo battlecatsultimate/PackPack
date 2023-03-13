@@ -93,7 +93,7 @@ public class FindRewardMessageHolder extends SearchHolder {
             if(stages.isEmpty()) {
                 ch.sendMessage(LangID.getStringByID("freward_nosta", lang).replace("_", keyword)).queue();
             } else if(stages.size() == 1) {
-                Message result = EntityHandler.showStageEmb(stages.get(0), ch, getAuthorMessage(), isFrame, isExtra, isCompact, 0, lang);
+                Message result = EntityHandler.showStageEmb(stages.get(0), ch, getAuthorMessage(), isFrame, isExtra, isCompact, 0, 1, 1, lang);
 
                 if(result != null) {
                     if(StaticStore.timeLimit.containsKey(author.getAuthor().getId())) {
@@ -131,7 +131,7 @@ public class FindRewardMessageHolder extends SearchHolder {
                 Message res = Command.registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), stages.size(), accumulateStage(stages, false), lang).complete();
 
                 if(res != null) {
-                    StaticStore.putHolder(author.getAuthor().getId(), new StageInfoMessageHolder(stages, author, res, ch.getId(), 0, isFrame, isExtra, isCompact, lang));
+                    StaticStore.putHolder(author.getAuthor().getId(), new StageInfoMessageHolder(stages, author, res, ch.getId(), 0, 1, 1, isFrame, isExtra, isCompact, lang));
                 }
             }
         } catch (Exception e) {

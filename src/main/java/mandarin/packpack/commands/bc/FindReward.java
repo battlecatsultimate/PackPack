@@ -96,7 +96,7 @@ public class FindReward extends TimedConstraintCommand {
 
                 disableTimer();
             } else if(stages.size() == 1) {
-                Message result = EntityHandler.showStageEmb(stages.get(0), ch, getMessage(event), holder == null || holder.config.useFrame, isExtra, isCompact, 0, lang);
+                Message result = EntityHandler.showStageEmb(stages.get(0), ch, getMessage(event), holder == null || holder.config.useFrame, isExtra, isCompact, 0, 1, 1, lang);
 
                 User u = getUser(event);
 
@@ -138,7 +138,7 @@ public class FindReward extends TimedConstraintCommand {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(u.getId(), new StageInfoMessageHolder(stages, msg, res, ch.getId(), 0, config.useFrame, isExtra, isCompact, lang));
+                            StaticStore.putHolder(u.getId(), new StageInfoMessageHolder(stages, msg, res, ch.getId(), 0, 1, 1, config.useFrame, isExtra, isCompact, lang));
                     }
                 }
             }

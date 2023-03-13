@@ -107,6 +107,8 @@ public class FindStage extends TimedConstraintCommand {
         int music = getMusic(command);
         int castle = getCastle(command);
         int background = getBackground(command);
+        int itf = calculateItFCrystal(command);
+        int cotc = calculateCotCCrystal(command);
 
         boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
         boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
@@ -194,7 +196,7 @@ public class FindStage extends TimedConstraintCommand {
 
                 disableTimer();
             } else if(stages.size() == 1) {
-                Message result = EntityHandler.showStageEmb(stages.get(0), ch, getMessage(event), isFrame, isExtra, isCompact, star, lang);
+                Message result = EntityHandler.showStageEmb(stages.get(0), ch, getMessage(event), isFrame, isExtra, isCompact, star, itf, cotc, lang);
 
                 User u = getUser(event);
 
@@ -234,7 +236,7 @@ public class FindStage extends TimedConstraintCommand {
                         Message msg = getMessage(event);
 
                         if(msg != null) {
-                            StaticStore.putHolder(u.getId(), new FindStageMessageHolder(stages, monthly ? accumulateCategory(stages) : null, getMessage(event), res, ch.getId(), star, isFrame, isExtra, isCompact, lang));
+                            StaticStore.putHolder(u.getId(), new FindStageMessageHolder(stages, monthly ? accumulateCategory(stages) : null, getMessage(event), res, ch.getId(), star, itf, cotc, isFrame, isExtra, isCompact, lang));
                         }
                         disableTimer();
                     }
@@ -277,7 +279,7 @@ public class FindStage extends TimedConstraintCommand {
                     Message msg = getMessage(event);
 
                     if(msg != null)
-                        StaticStore.putHolder(u.getId(), new StageEnemyMessageHolder(enemySequences, filterEnemy, enemyList, msg, res, ch.getId(), isFrame, isExtra, isCompact, orOperate, hasBoss, monthly, star, background, castle, music, lang));
+                        StaticStore.putHolder(u.getId(), new StageEnemyMessageHolder(enemySequences, filterEnemy, enemyList, msg, res, ch.getId(), isFrame, isExtra, isCompact, orOperate, hasBoss, monthly, star, itf, cotc, background, castle, music, lang));
                 }
             }
         }
@@ -302,6 +304,8 @@ public class FindStage extends TimedConstraintCommand {
         boolean monthly = false;
         boolean extra = false;
         boolean compact = false;
+        boolean itf = false;
+        boolean cotc = false;
 
         for(int i = 1; i < contents.length; i++) {
             if(contents[i].equals("-lv") && !level) {
@@ -338,6 +342,10 @@ public class FindStage extends TimedConstraintCommand {
                 extra = true;
             } else if (!compact && (contents[i].equals("-c") || contents[i].equals("-compact"))) {
                 compact = true;
+            } else if (!itf && contents[i].matches("^-i(tf)?\\d$")) {
+                itf = true;
+            } else if (!cotc && contents[i].matches("^-c(otc)?\\d$")) {
+                cotc = true;
             } else {
                 result.append(contents[i]);
 
@@ -704,5 +712,39 @@ public class FindStage extends TimedConstraintCommand {
         if(!data.contains(element)) {
             data.add(element);
         }
+    }
+
+    private int calculateItFCrystal(String command) {
+        String[] contents = command.split(" ");
+
+        for(int i = 0; i < contents.length; i++) {
+            if(contents[i].matches("^-i(tf)?\\d$")) {
+                int crystal = StaticStore.safeParseInt(contents[i].replace("-i", ""));
+
+                if(crystal >= 3 || crystal < 0)
+                    continue;
+
+                return 7 - 2 * crystal;
+            }
+        }
+
+        return 1;
+    }
+
+    private int calculateCotCCrystal(String command) {
+        String[] contents = command.split(" ");
+
+        for(int i = 0; i < contents.length; i++) {
+            if(contents[i].matches("^-c(otc)?\\d$")) {
+                int crystal = StaticStore.safeParseInt(contents[i].replace("-i", ""));
+
+                if(crystal >= 3 || crystal < 0)
+                    continue;
+
+                return 16 - 5 * crystal;
+            }
+        }
+
+        return 1;
     }
 }

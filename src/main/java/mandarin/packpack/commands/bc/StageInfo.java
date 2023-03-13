@@ -37,6 +37,10 @@ public class StageInfo extends TimedConstraintCommand {
     private static final int PARAM_EXTRA = 4;
     private static final int PARAM_COMPACT = 8;
 
+    private static final int STAGE = 0;
+    private static final int MAP = 1;
+    private static final int COLLECTION = 2;
+
     public static void performInteraction(GenericCommandInteractionEvent event) {
         Interaction interaction = event.getInteraction();
 
@@ -163,7 +167,7 @@ public class StageInfo extends TimedConstraintCommand {
         String command = removeMistake.toString();
         String[] list = command.split(" ", 2);
 
-        String[] names = generateStageNameSeries(command);
+        String[] names = filterStageNames(command);
 
         if(list.length == 1 || allNull(names)) {
             replyToMessageSafely(ch, LangID.getStringByID("stinfo_noname", lang), getMessage(event), a -> a);
@@ -193,7 +197,7 @@ public class StageInfo extends TimedConstraintCommand {
 
                 CommonStatic.getConfig().lang = lang;
 
-                Message result = EntityHandler.showStageEmb(stages.get(0), ch, getMessage(event), isFrame, isExtra, isCompact, star, lang);
+                Message result = EntityHandler.showStageEmb(stages.get(0), ch, getMessage(event), isFrame, isExtra, isCompact, star, calculateItFCrystal(getContent(event)), calculateCotCCrystal(getContent(event)), lang);
 
                 User u = getUser(event);
 
@@ -242,7 +246,7 @@ public class StageInfo extends TimedConstraintCommand {
                         Message msg = getMessage(event);
 
                         if(msg != null)
-                            StaticStore.putHolder(u.getId(), new StageInfoMessageHolder(stages, msg, res, ch.getId(), star, isFrame, isExtra, isCompact, lang));
+                            StaticStore.putHolder(u.getId(), new StageInfoMessageHolder(stages, msg, res, ch.getId(), star, calculateItFCrystal(getContent(event)), calculateCotCCrystal(getContent(event)), isFrame, isExtra, isCompact, lang));
                     }
                 }
 
@@ -303,151 +307,94 @@ public class StageInfo extends TimedConstraintCommand {
         return level;
     }
 
-    private String[] generateStageNameSeries(String command) {
-        String[] res = {null, null, null};
+    private String[] filterStageNames(String command) {
+        String[] contents = command.split(" ");
 
-        String[] segments = command.split(" ", 2);
+        String[] names = new String[3];
 
-        if(segments.length == 2) {
-            String[] contents = segments[1].split(" ");
+        StringBuilder stage = new StringBuilder();
+        StringBuilder map = new StringBuilder();
+        StringBuilder collection = new StringBuilder();
 
-            //Find MapColc Name
+        int mode = 0;
 
-            int mcIndex = -1;
-            int stmIndex = -1;
+        boolean second = false;
+        boolean level = false;
+        boolean stm = false;
+        boolean mc = false;
+        boolean extra = false;
+        boolean compact = false;
+        boolean itf = false;
+        boolean cotc = false;
 
-            if (segments[1].contains("-mc")) {
-                mcIndex = 0;
-
-                for(String content : contents) {
-                    if(content.equals("-mc"))
-                        break;
-
-                    mcIndex++;
-                }
-            }
-
-            if(segments[1].contains("-stm")) {
-                stmIndex = 0;
-
-                for(String content : contents) {
-                    if(content.equals("-stm"))
-                        break;
-
-                    stmIndex++;
-                }
-            }
-
-            if(segments[1].contains("-mc")) {
-                res[0] = getMapColcName(contents, mcIndex, stmIndex);
-
-                if(res[0].isBlank())
-                    res[0] = null;
-            }
-
-            //Find StageMap Name
-
-            if(segments[1].contains("-stm")) {
-                res[1] = getStageMapName(contents, stmIndex, mcIndex);
-
-                if(res[1].isBlank())
-                    res[1] = null;
-            }
-
-            res[2] = getStageName(contents);
-
-            if(res[2].isBlank())
-                res[2] = null;
-        }
-
-        return res;
-    }
-
-    private String getMapColcName(String[] contents, int start, int stm) {
-        StringBuilder mc = new StringBuilder();
-
-        boolean stmDone = stm < start;
-
-        for(int i = start+1; i < contents.length; i++) {
-            if(contents[i].equals("-stm") && !stmDone)
-                break;
-            else if((contents[i].equals("-lv") || contents[i].equals("-lvl")) && i < contents.length - 1 && StaticStore.isNumeric(contents[i+1]))
-                i++;
-            else
-                mc.append(contents[i]).append(" ");
-        }
-
-        String res = mc.toString();
-
-        if(res.endsWith(" "))
-            res = res.substring(0, res.length() - 1);
-
-        return res;
-    }
-
-    private String getStageMapName(String[] contents, int start, int mc) {
-        StringBuilder stm = new StringBuilder();
-
-        boolean mcDone = mc < start;
-
-        for (int i = start + 1; i < contents.length; i++) {
-            if (contents[i].equals("-mc") && !mcDone)
-                break;
-            else if((contents[i].equals("-lv") || contents[i].equals("-lvl")) && i < contents.length - 1 && StaticStore.isNumeric(contents[i+1]))
-                i++;
-            else
-                stm.append(contents[i]).append(" ");
-        }
-
-        String res = stm.toString();
-
-        if(res.endsWith(" "))
-            res = res.substring(0, res.length() - 1);
-
-        return res;
-    }
-
-    private String getStageName(String[] contents) {
-        boolean isSecond = false;
-        boolean isExtra = false;
-        boolean isCompact = false;
-
-        StringBuilder st = new StringBuilder();
-
-        for(int i = 0; i < contents.length; i++) {
-            if(contents[i].equals("-mc") || contents[i].equals("-stm"))
-                break;
-            else if(contents[i].equals("-s")) {
-                if(!isSecond) {
-                    isSecond = true;
-                } else {
-                    st.append(contents[i]).append(" ");
-                }
-            } else if(contents[i].equals("-e") || contents[i].equals("-extra")) {
-                if(!isExtra) {
-                    isExtra = true;
-                } else {
-                    st.append(contents[i]).append(" ");
-                }
-            } else if(contents[i].equals("-c") || contents[i].equals("-compact")) {
-                if(!isCompact) {
-                    isCompact = true;
-                } else {
-                    st.append(contents[i]).append(" ");
-                }
-            } else if((contents[i].equals("-lvl") || contents[i].equals("-lv")) && i < contents.length - 1 && StaticStore.isNumeric(contents[i+1])) {
-                i++;
+        for(int i = 1; i < contents.length; i++) {
+            if(!second && contents[i].equals("-s")) {
+                second = true;
+            } else if(!level && contents[i].matches("-lv(l)?") && i < contents.length - 1 && StaticStore.isNumeric(contents[i + 1])) {
+                level = true;
+            } else if(!stm && contents[i].equals("-stm")) {
+                stm = true;
+                mode = MAP;
+            } else if(!mc && contents[i].equals("-mc")) {
+                mc = true;
+                mode = COLLECTION;
+            } else if(!extra && contents[i].matches("-e(xtra)?")) {
+                extra = true;
+            } else if(!compact && contents[i].equals("-c(ompact)?")) {
+                compact = true;
+            } else if(!itf && contents[i].matches("-i(tf)?\\d")) {
+                itf = true;
+            } else if(!cotc && contents[i].matches("-c(otc)?\\d")) {
+                cotc = true;
             } else {
-                st.append(contents[i]).append(" ");
+                switch (mode) {
+                    case STAGE:
+                        stage.append(contents[i]);
+
+                        if(i < contents.length - 1) {
+                            stage.append(" ");
+                        }
+
+                        break;
+                    case MAP:
+                        map.append(contents[i]);
+
+                        if(i < contents.length - 1) {
+                            map.append(" ");
+                        }
+
+                        break;
+                    case COLLECTION:
+                        collection.append(contents[i]);
+
+                        if(i < contents.length - 1) {
+                            collection.append(" ");
+                        }
+
+                        break;
+                }
             }
         }
 
-        String res = st.toString();
+        String result = stage.toString().trim();
 
-        if(res.endsWith(" "))
-            res = res.substring(0, res.length() - 1);
+        if(!result.isBlank()) {
+            names[2] = result;
+        }
 
-        return res;
+        result = map.toString().trim();
+
+        if(!result.isBlank()) {
+            names[1] = result;
+        }
+
+        result = collection.toString().trim();
+
+        if(!result.isBlank()) {
+            names[0] = result;
+        }
+
+        return names;
     }
 
     private String generateSearchName(String[] names) {
@@ -541,5 +488,39 @@ public class StageInfo extends TimedConstraintCommand {
         }
 
         return data;
+    }
+
+    private int calculateItFCrystal(String command) {
+        String[] contents = command.split(" ");
+
+        for(int i = 0; i < contents.length; i++) {
+            if(contents[i].matches("^-i(tf)?\\d$")) {
+                int crystal = StaticStore.safeParseInt(contents[i].replace("-i", ""));
+
+                if(crystal >= 3 || crystal < 0)
+                    continue;
+
+                return 7 - 2 * crystal;
+            }
+        }
+
+        return 1;
+    }
+
+    private int calculateCotCCrystal(String command) {
+        String[] contents = command.split(" ");
+
+        for(int i = 0; i < contents.length; i++) {
+            if(contents[i].matches("^-c(otc)?\\d$")) {
+                int crystal = StaticStore.safeParseInt(contents[i].replace("-i", ""));
+
+                if(crystal >= 3 || crystal < 0)
+                    continue;
+
+                return 16 - 5 * crystal;
+            }
+        }
+
+        return 1;
     }
 }

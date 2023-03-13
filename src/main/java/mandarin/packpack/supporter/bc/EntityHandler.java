@@ -5,6 +5,7 @@ import common.CommonStatic;
 import common.battle.data.MaskUnit;
 import common.battle.data.PCoin;
 import common.pack.PackData;
+import common.pack.UserProfile;
 import common.system.fake.FakeImage;
 import common.system.files.VFile;
 import common.util.Data;
@@ -1025,7 +1026,7 @@ public class EntityHandler {
         return img;
     }
 
-    public static Message showStageEmb(Stage st, MessageChannel ch, Message reference, boolean isFrame, boolean isExtra, boolean isCompact, int level, int lang) throws Exception {
+    public static Message showStageEmb(Stage st, MessageChannel ch, Message reference, boolean isFrame, boolean isExtra, boolean isCompact, int level, int itf, int cotc, int lang) throws Exception {
         StageMap stm = st.getCont();
 
         int sta;
@@ -1052,7 +1053,7 @@ public class EntityHandler {
             stmMagnification = stm.stars[sta];
         }
 
-        File img = generateScheme(st, isFrame, lang, stmMagnification);
+        File img = generateScheme(st, isFrame, lang, stmMagnification, itf, cotc);
 
         EmbedBuilder spec = new EmbedBuilder();
 
@@ -1289,7 +1290,7 @@ public class EntityHandler {
             stmMagnification = stm.stars[sta];
         }
 
-        File img = generateScheme(st, isFrame, lang, stmMagnification);
+        File img = generateScheme(st, isFrame, lang, stmMagnification, 1 , 1);
 
         EmbedBuilder spec = new EmbedBuilder();
 
@@ -1483,7 +1484,7 @@ public class EntityHandler {
         return msg;
     }
 
-    private static File generateScheme(Stage st, boolean isFrame, int lang, int star) throws Exception {
+    private static File generateScheme(Stage st, boolean isFrame, int lang, int star, int itf, int cotc) throws Exception {
         File temp = new File("./temp/");
 
         if(!temp.exists()) {
@@ -1539,6 +1540,9 @@ public class EntityHandler {
             if(enemy == null)
                 continue;
 
+            int hp = line.multiple;
+            int atk = line.mult_atk;
+
             if(enemy instanceof Enemy) {
                 int oldConfig = CommonStatic.getConfig().lang;
                 CommonStatic.getConfig().lang = lang;
@@ -1554,6 +1558,14 @@ public class EntityHandler {
                     eName = DataToString.getPackName(((Enemy) enemy).id.pack, lang)+" - "+Data.trio(((Enemy) enemy).id.id);
 
                 enemies.add(eName);
+
+                if(((Enemy) enemy).de.getTraits().contains(UserProfile.getBCData().traits.get(Data.TRAIT_ALIEN)) && ((Enemy) enemy).de.getStar() == 0) {
+                    hp *= itf;
+                    atk *= itf;
+                } else if(((Enemy) enemy).de.getStar() == 1) {
+                    hp *= cotc;
+                    atk *= cotc;
+                }
             } else if(enemy instanceof EneRand) {
                 String name = ((EneRand) enemy).name;
 
@@ -1579,7 +1591,8 @@ public class EntityHandler {
             if(st.getCont() != null && st.getCont().getCont() != null && st.getCont().getCont().getSID().equals("000003") && st.getCont().id.id == 9) {
                 magnification = new int[] {100, 100};
             } else {
-                magnification = new int[] {line.multiple, line.mult_atk};
+
+                magnification = new int[] {hp, atk};
             }
 
             String magnif = DataToString.getMagnification(magnification, star);

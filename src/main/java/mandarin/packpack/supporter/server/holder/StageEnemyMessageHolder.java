@@ -40,11 +40,14 @@ public class StageEnemyMessageHolder extends SearchHolder {
     private final boolean monthly;
 
     private final int star;
+    private final int itf;
+    private final int cotc;
+
     private final int background;
     private final int castle;
     private final int music;
 
-    public StageEnemyMessageHolder(List<List<Enemy>> enemySequences, List<Enemy> filterEnemy, StringBuilder enemyList, Message author, Message msg, String channelID, boolean isFrame, boolean isExtra, boolean isCompact, boolean orOperate, boolean hasBoss, boolean monthly, int star, int background, int castle, int music, int lang) {
+    public StageEnemyMessageHolder(List<List<Enemy>> enemySequences, List<Enemy> filterEnemy, StringBuilder enemyList, Message author, Message msg, String channelID, boolean isFrame, boolean isExtra, boolean isCompact, boolean orOperate, boolean hasBoss, boolean monthly, int star, int itf, int cotc, int background, int castle, int music, int lang) {
         super(msg, author, channelID, lang);
 
         this.enemySequences = enemySequences;
@@ -59,6 +62,9 @@ public class StageEnemyMessageHolder extends SearchHolder {
         this.monthly = monthly;
 
         this.star = star;
+        this.itf = itf;
+        this.cotc = cotc;
+
         this.background = background;
         this.castle = castle;
         this.music = music;
@@ -113,7 +119,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
             } else if(stages.size() == 1) {
                 msg.delete().queue();
 
-                Message result = EntityHandler.showStageEmb(stages.get(0), ch, getAuthorMessage(), isFrame, isExtra, isCompact, star, lang);
+                Message result = EntityHandler.showStageEmb(stages.get(0), ch, getAuthorMessage(), isFrame, isExtra, isCompact, star, itf, cotc, lang);
 
                 if(result != null) {
                     if(StaticStore.timeLimit.containsKey(author.getAuthor().getId())) {
@@ -151,7 +157,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
                 Message res = createMonthlyMessage(ch, sb.toString(), accumulateStage(stages, false), stages, stages.size(), monthly);
 
                 if(res != null) {
-                    StaticStore.putHolder(author.getAuthor().getId(), new FindStageMessageHolder(stages, monthly ? accumulateCategory(stages) : null, getAuthorMessage(), res, ch.getId(), star, isFrame, isExtra, isCompact, lang));
+                    StaticStore.putHolder(author.getAuthor().getId(), new FindStageMessageHolder(stages, monthly ? accumulateCategory(stages) : null, getAuthorMessage(), res, ch.getId(), star, itf, cotc, isFrame, isExtra, isCompact, lang));
                 }
 
                 msg.delete().queue();
