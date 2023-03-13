@@ -49,6 +49,8 @@ public class StaticStore {
 
     public static boolean apkDownloading = false;
 
+    public static boolean safeClose = false;
+
     public static final String COMMAND_BG_ID = "bg";
     public static final String COMMAND_COMBO_ID = "combo";
     public static final String COMMAND_ENEMYIMAGE_ID = "eimage";
@@ -511,6 +513,7 @@ public class StaticStore {
     public static void saveServerInfo() {
         JsonObject obj = new JsonObject();
 
+        obj.addProperty("safeClose", safeClose);
         obj.addProperty("rating", ratingChannel);
         obj.addProperty("serverpre", globalPrefix);
         obj.addProperty("executed", executed);
@@ -592,6 +595,10 @@ public class StaticStore {
         JsonObject obj = getJsonFile("serverinfo");
 
         if(obj != null) {
+            if(obj.has("safeClose")) {
+                safeClose = obj.get("safeClose").getAsBoolean();
+            }
+
             if(obj.has("rating")) {
                 ratingChannel = obj.get("rating").getAsString();
             }

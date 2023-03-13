@@ -1223,12 +1223,20 @@ public class AllEventAdapter extends ListenerAdapter {
                     if(!(ch instanceof MessageChannel) || !((MessageChannel) ch).canTalk())
                         continue;
 
-                    ((MessageChannel) ch).sendMessage(String.format(LangID.getStringByID("bot_online", holder.config.lang), client.getSelfUser().getAsMention()))
-                            .setAllowedMentions(new ArrayList<>())
-                            .queue();
+                    if(StaticStore.safeClose) {
+                        ((MessageChannel) ch).sendMessage(String.format(LangID.getStringByID("bot_online", holder.config.lang), client.getSelfUser().getAsMention()))
+                                .setAllowedMentions(new ArrayList<>())
+                                .queue();
+                    } else {
+                        ((MessageChannel) ch).sendMessage(String.format(LangID.getStringByID("bot_issue", holder.config.lang), client.getSelfUser().getAsMention()))
+                                .setAllowedMentions(new ArrayList<>())
+                                .queue();
+                    }
                 }
             } catch (Exception ignored) {}
         }
+
+        StaticStore.safeClose = false;
 
         StaticStore.logger.uploadLog("Bot ready to be used!");
     }

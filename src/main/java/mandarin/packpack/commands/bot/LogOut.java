@@ -88,8 +88,13 @@ public class LogOut extends ConstraintCommand {
 
                     StaticStore.saver.cancel();
                     StaticStore.saver.purge();
+
+                    StaticStore.safeClose = true;
+
                     StaticStore.saveServerInfo();
+
                     client.shutdown();
+
                     System.exit(0);
                 }, lang));
             }
