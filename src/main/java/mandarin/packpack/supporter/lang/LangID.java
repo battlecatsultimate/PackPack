@@ -39,6 +39,8 @@ public class LangID {
                 }
             }
         }
+
+        printMissingTags();
     }
 
     public static String getStringByID(String id, int locale) {
@@ -107,5 +109,36 @@ public class LangID {
         }
 
         return id;
+    }
+
+    public static void printMissingTags() {
+        for(int i = ZH; i <= JP; i++) {
+            JsonObject target;
+
+            switch (i) {
+                case ZH:
+                    target = ZH_OBJ;
+                    System.out.println("---------- TW ----------");
+                    break;
+                case KR:
+                    target = KR_OBJ;
+                    System.out.println("---------- KR ----------");
+                    break;
+                case JP:
+                    target = JP_OBJ;
+                    System.out.println("---------- JP ----------");
+                    break;
+                default:
+                    return;
+            }
+
+            for(String key : EN_OBJ.keySet()) {
+                if (!target.has(key)) {
+                    System.out.println(key);
+                }
+            }
+
+            System.out.println("------------------------");
+        }
     }
 }

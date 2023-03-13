@@ -114,7 +114,7 @@ public class Help extends Command {
                 break;
             case "stageinfo":
             case "si":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "stageinfo", true, true, false)));
+                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "stageinfo", true, true, true)));
                 break;
             case "memory":
             case "mm":
