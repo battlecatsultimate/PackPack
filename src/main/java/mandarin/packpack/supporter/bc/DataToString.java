@@ -40,7 +40,7 @@ public class DataToString extends Data {
     private static final List<String> mapIds = Arrays.asList("000000", "000001", "000002", "000003", "000004", "000006", "000007", "000011", "000012", "000013", "000014", "000024", "000025", "000027", "000031", "000033", "000034");
     private static final String[] mapCodes = {"N", "S", "C", "CH", "E", "T", "V", "R", "M", "NA", "B", "A", "H", "CA", "Q", "L", "ND"};
     private static final int maxDifficulty = 11;
-    private static final int[] materialDrops = {85, 86, 87, 88, 89, 90, 91, 140};
+    private static final int[] materialDrops = {85, 86, 87, 88, 89, 90, 91, 140, 187, 188, 189, 190, 191, 192, 193, 194};
 
     static {
         NumberFormat nf = NumberFormat.getInstance(Locale.US);
@@ -111,6 +111,7 @@ public class DataToString extends Data {
         addTalentData(59, "data_corpsekiller", "data_corpsekiller");
         addTalentData(60, "data_curse", "CURSE");
         addTalentData(61, "data_tba", "TBA");
+        addTalentData(62, "data_miniwave", "MINIWAVE");
 
         VFile pCoinLevel = VFile.get("./org/data/SkillLevel.csv");
 
