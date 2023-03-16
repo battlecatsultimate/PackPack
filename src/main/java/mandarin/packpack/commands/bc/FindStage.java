@@ -463,7 +463,7 @@ public class FindStage extends TimedConstraintCommand {
     private int getCastle(String command) {
         int castle = -1;
 
-        if (command.contains("-cs")) {
+        if (command.contains("-cs") || command.contains("-castle")) {
             String[] contents = command.split(" ");
 
             for(int i = 0; i < contents.length; i++) {
@@ -480,7 +480,7 @@ public class FindStage extends TimedConstraintCommand {
     private int getMusic(String command) {
         int music = -1;
 
-        if (command.contains("-ms")) {
+        if (command.contains("-ms") || command.contains("-music")) {
             String[] contents = command.split(" ");
 
             for(int i = 0; i < contents.length; i++) {
@@ -719,7 +719,7 @@ public class FindStage extends TimedConstraintCommand {
 
         for(int i = 0; i < contents.length; i++) {
             if(contents[i].matches("^-i(tf)?\\d$")) {
-                int crystal = StaticStore.safeParseInt(contents[i].replace("-i", ""));
+                int crystal = StaticStore.safeParseInt(contents[i].replaceAll("-i(tf)?", ""));
 
                 if(crystal >= 3 || crystal < 0)
                     continue;
@@ -736,7 +736,7 @@ public class FindStage extends TimedConstraintCommand {
 
         for(int i = 0; i < contents.length; i++) {
             if(contents[i].matches("^-c(otc)?\\d$")) {
-                int crystal = StaticStore.safeParseInt(contents[i].replace("-i", ""));
+                int crystal = StaticStore.safeParseInt(contents[i].replaceAll("-c(otc)?", ""));
 
                 if(crystal >= 3 || crystal < 0)
                     continue;

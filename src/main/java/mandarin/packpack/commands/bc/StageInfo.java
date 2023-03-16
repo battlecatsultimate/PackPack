@@ -495,7 +495,7 @@ public class StageInfo extends TimedConstraintCommand {
 
         for(int i = 0; i < contents.length; i++) {
             if(contents[i].matches("^-i(tf)?\\d$")) {
-                int crystal = StaticStore.safeParseInt(contents[i].replace("-i", ""));
+                int crystal = StaticStore.safeParseInt(contents[i].replaceAll("-i(tf)?", ""));
 
                 if(crystal >= 3 || crystal < 0)
                     continue;
@@ -512,7 +512,7 @@ public class StageInfo extends TimedConstraintCommand {
 
         for(int i = 0; i < contents.length; i++) {
             if(contents[i].matches("^-c(otc)?\\d$")) {
-                int crystal = StaticStore.safeParseInt(contents[i].replace("-i", ""));
+                int crystal = StaticStore.safeParseInt(contents[i].replaceAll("-c(otc)?", ""));
 
                 if(crystal >= 3 || crystal < 0)
                     continue;
