@@ -91,7 +91,7 @@ public class FindRewardMessageHolder extends SearchHolder {
             List<Stage> stages = EntityFilter.findStageByReward(rewards.get(id), chance, amount);
 
             if(stages.isEmpty()) {
-                ch.sendMessage(LangID.getStringByID("freward_nosta", lang).replace("_", keyword)).queue();
+                ch.sendMessage(LangID.getStringByID("freward_nosta", lang).replace("_", validateName(keyword))).queue();
             } else if(stages.size() == 1) {
                 Message result = EntityHandler.showStageEmb(stages.get(0), ch, getAuthorMessage(), isFrame, isExtra, isCompact, 0, 1, 1, lang);
 
@@ -109,7 +109,7 @@ public class FindRewardMessageHolder extends SearchHolder {
                     StaticStore.putHolder(author.getAuthor().getId(), new StageInfoButtonHolder(stages.get(0), author, result, channelID, isCompact));
                 }
             } else {
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("freward_several", lang).replace("_", keyword)).append("```md\n");
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("freward_several", lang).replace("_", validateName(keyword))).append("```md\n");
 
                 List<String> data = accumulateStage(stages, true);
 
@@ -212,5 +212,12 @@ public class FindRewardMessageHolder extends SearchHolder {
         }
 
         return data;
+    }
+
+    private String validateName(String name) {
+        if(name.length() > 1500)
+            return name.substring(0, 1500) + "...";
+        else
+            return name;
     }
 }

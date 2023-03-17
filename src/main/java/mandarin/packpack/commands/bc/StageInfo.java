@@ -400,6 +400,12 @@ public class StageInfo extends TimedConstraintCommand {
     private String generateSearchName(String[] names) {
         String result = "";
 
+        for(int i = 0; i < names.length; i++) {
+            if(names[i] != null && names[i].length() > 500) {
+                names[i] = names[i].substring(0, 500) + "...";
+            }
+        }
+
         if(names[0] != null) {
             result += LangID.getStringByID("stinfo_mc", lang).replace("_", names[0])+", ";
         }

@@ -44,11 +44,11 @@ public class Medal extends ConstraintCommand {
             ArrayList<Integer> id = EntityFilter.findMedalByName(realContents[1], lang);
 
             if(id.isEmpty()) {
-                createMessageWithNoPings(ch, LangID.getStringByID("medal_nomed", lang).replace("_", realContents[1]));
+                createMessageWithNoPings(ch, LangID.getStringByID("medal_nomed", lang).replace("_", getSearchKeyword(realContents[1])));
             } else if(id.size() == 1) {
                 EntityHandler.showMedalEmbed(id.get(0), ch, getMessage(event), lang);
             } else {
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", realContents[1]));
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", getSearchKeyword(realContents[1])));
 
                 sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang));
 
@@ -105,5 +105,12 @@ public class Medal extends ConstraintCommand {
         }
 
         return data;
+    }
+
+    private String getSearchKeyword(String command) {
+        if(command.length() > 1500)
+            command = command.substring(0, 1500) + "...";
+
+        return command;
     }
 }

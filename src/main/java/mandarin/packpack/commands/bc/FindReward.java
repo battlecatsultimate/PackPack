@@ -85,14 +85,14 @@ public class FindReward extends TimedConstraintCommand {
         List<Integer> rewards = EntityFilter.findRewardByName(rewardName, lang);
 
         if(rewards.isEmpty()) {
-            replyToMessageSafely(ch, LangID.getStringByID("freward_norew", lang).replace("_", rewardName), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("freward_norew", lang).replace("_", validateName(rewardName)), getMessage(event), a -> a);
 
             disableTimer();
         } else if(rewards.size() == 1) {
             List<Stage> stages = EntityFilter.findStageByReward(rewards.get(0), chance, amount);
 
             if(stages.isEmpty()) {
-                replyToMessageSafely(ch, LangID.getStringByID("freward_nosta", lang).replace("_", rewardName), getMessage(event), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("freward_nosta", lang).replace("_", validateName(rewardName)), getMessage(event), a -> a);
 
                 disableTimer();
             } else if(stages.size() == 1) {
@@ -108,7 +108,7 @@ public class FindReward extends TimedConstraintCommand {
                     }
                 }
             } else {
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("freward_severalst", lang).replace("_", rewardName))
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("freward_severalst", lang).replace("_", validateName(rewardName)))
                         .append("```md\n")
                         .append(LangID.getStringByID("formst_pick", lang));
 
@@ -143,7 +143,7 @@ public class FindReward extends TimedConstraintCommand {
                 }
             }
         } else {
-            StringBuilder sb = new StringBuilder(LangID.getStringByID("freward_several", lang).replace("_", rewardName))
+            StringBuilder sb = new StringBuilder(LangID.getStringByID("freward_several", lang).replace("_", validateName(rewardName)))
                     .append("```md\n")
                     .append(LangID.getStringByID("formst_pick", lang));
 
@@ -378,5 +378,12 @@ public class FindReward extends TimedConstraintCommand {
         }
 
         return data;
+    }
+
+    private String validateName(String name) {
+        if(name.length() > 1500)
+            return name.substring(0, 1500) + "...";
+        else
+            return name;
     }
 }

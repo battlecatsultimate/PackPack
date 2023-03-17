@@ -214,9 +214,9 @@ public class FormStat extends ConstraintCommand {
                     }
                 }
             } else if (forms.isEmpty()) {
-                replyToMessageSafely(ch, LangID.getStringByID("formst_nounit", lang).replace("_", filterCommand(command)), getMessage(event), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("formst_nounit", lang).replace("_", getSearchKeyword(getContent(event))), getMessage(event), a -> a);
             } else {
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", filterCommand(command)));
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", getSearchKeyword(command)));
 
                 sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang));
 
@@ -542,5 +542,14 @@ public class FormStat extends ConstraintCommand {
         }
 
         return data;
+    }
+
+    private String getSearchKeyword(String command) {
+        String result = filterCommand(command);
+
+        if(result.length() > 1500)
+            result = result.substring(0, 1500) + "...";
+
+        return result;
     }
 }

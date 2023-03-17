@@ -58,7 +58,7 @@ public class AliasAdd extends ConstraintCommand {
                 ArrayList<Form> forms = EntityFilter.findUnitWithName(name, false, lang);
 
                 if(forms.isEmpty()) {
-                    createMessageWithNoPings(ch, LangID.getStringByID("formst_nounit", lang).replace("_", name));
+                    createMessageWithNoPings(ch, LangID.getStringByID("formst_nounit", lang).replace("_", validateName(name)));
                 } else if(forms.size() == 1) {
                     String fname = StaticStore.safeMultiLangGet(forms.get(0), lang);
 
@@ -95,7 +95,7 @@ public class AliasAdd extends ConstraintCommand {
 
                     StaticStore.logger.uploadLog("Alias added\n\nUnit : " + fname + "\nAlias : " + aliasName + "\nBy : " + (us == null ? "Unknown" : u.getAsMention()));
                 } else {
-                    StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", name));
+                    StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", validateName(name)));
 
                     String check;
 
@@ -155,7 +155,7 @@ public class AliasAdd extends ConstraintCommand {
                 ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(name, lang);
 
                 if(enemies.isEmpty()) {
-                    createMessageWithNoPings(ch, LangID.getStringByID("enemyst_noenemy", lang));
+                    createMessageWithNoPings(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", validateName(name)));
                 } else if(enemies.size() == 1) {
                     String eName = StaticStore.safeMultiLangGet(enemies.get(0), lang);
 
@@ -192,7 +192,7 @@ public class AliasAdd extends ConstraintCommand {
 
                     StaticStore.logger.uploadLog("Alias added\n\nEnemy : " + eName + "\nAlias : " + aliasName + "\nBy : " + (us == null ? "Unknown" : u.getAsMention()));
                 } else {
-                    StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", name));
+                    StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", validateName(name)));
 
                     String check;
 
@@ -624,5 +624,12 @@ public class AliasAdd extends ConstraintCommand {
             return "";
         else
             return contents[1].trim();
+    }
+
+    private String validateName(String name) {
+        if(name.length() > 1500)
+            return name.substring(0, 1500) + "...";
+        else
+            return name;
     }
 }

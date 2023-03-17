@@ -62,7 +62,7 @@ public class Alias extends ConstraintCommand {
                 ArrayList<Form> forms = EntityFilter.findUnitWithName(name, false, lang);
 
                 if(forms.isEmpty()) {
-                    createMessageWithNoPings(ch, LangID.getStringByID("formst_nounit", lang).replace("_", name));
+                    createMessageWithNoPings(ch, LangID.getStringByID("formst_nounit", lang).replace("_", validateName(name)));
                 } else if(forms.size() == 1) {
                     String fname = StaticStore.safeMultiLangGet(forms.get(0), lang);
 
@@ -98,7 +98,7 @@ public class Alias extends ConstraintCommand {
                         createMessageWithNoPings(ch, result.toString());
                     }
                 } else {
-                    StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", name));
+                    StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", validateName(name)));
 
                     String check;
 
@@ -158,7 +158,7 @@ public class Alias extends ConstraintCommand {
                 ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(name, lang);
 
                 if(enemies.isEmpty()) {
-                    createMessageWithNoPings(ch, LangID.getStringByID("enemyst_noenemy", lang));
+                    createMessageWithNoPings(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", validateName(name)));
                 } else if(enemies.size() == 1) {
                     String eName = StaticStore.safeMultiLangGet(enemies.get(0), lang);
 
@@ -195,7 +195,7 @@ public class Alias extends ConstraintCommand {
                         createMessageWithNoPings(ch, result.toString());
                     }
                 } else {
-                    StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", name));
+                    StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", validateName(name)));
 
                     String check;
 
@@ -462,6 +462,12 @@ public class Alias extends ConstraintCommand {
     private String generateSearchName(String[] names) {
         String result = "";
 
+        for(int i = 0; i < names.length; i++) {
+            if(names[i] != null && names[i].length() > 500) {
+                names[i] = names[i].substring(0, 500) + "...";
+            }
+        }
+
         if(names[0] != null) {
             result += LangID.getStringByID("stinfo_mc", lang).replace("_", names[0])+", ";
         }
@@ -615,5 +621,12 @@ public class Alias extends ConstraintCommand {
             res = res.substring(0, res.length() - 1);
 
         return res;
+    }
+
+    private String validateName(String name) {
+        if(name.length() > 1500)
+            return name.substring(0, 1500) + "...";
+        else
+            return name;
     }
 }

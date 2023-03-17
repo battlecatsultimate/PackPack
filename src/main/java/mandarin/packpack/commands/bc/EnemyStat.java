@@ -137,9 +137,9 @@ public class EnemyStat extends ConstraintCommand {
 
                 EntityHandler.showEnemyEmb(enemies.get(0), ch, getMessage(event), isFrame, isExtra, isCompact, magnification, lang);
             } else if(enemies.size() == 0) {
-                replyToMessageSafely(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(command)), getMessage(event), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", getSearchKeyword(command)), getMessage(event), a -> a);
             } else {
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", filterCommand(command)));
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", getSearchKeyword(command)));
 
                 sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang));
 
@@ -434,5 +434,14 @@ public class EnemyStat extends ConstraintCommand {
         }
 
         return data;
+    }
+
+    private String getSearchKeyword(String command) {
+        String result = filterCommand(command);
+
+        if(result.length() > 1500)
+            result = result.substring(0, 1500) + "...";
+
+        return result;
     }
 }

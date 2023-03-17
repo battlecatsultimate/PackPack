@@ -49,7 +49,7 @@ public class CatCombo extends TimedConstraintCommand {
 
             if(combos.isEmpty()) {
                 disableTimer();
-                replyToMessageSafely(ch, LangID.getStringByID("combo_noname", lang).replace("_", getSearchKeywords(name, cName, lang)), getMessage(event), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("combo_noname", lang).replace("_", validateKeyword(getSearchKeywords(name, cName, lang))), getMessage(event), a -> a);
             } else if(combos.size() == 1) {
                 EntityHandler.showComboEmbed(ch, getMessage(event), combos.get(0), lang);
             } else {
@@ -93,14 +93,14 @@ public class CatCombo extends TimedConstraintCommand {
 
             if(forms.isEmpty()) {
                 disableTimer();
-                replyToMessageSafely(ch, LangID.getStringByID("combo_noname", lang).replace("_", getSearchKeywords(name, cName, lang)), getMessage(event), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("combo_noname", lang).replace("_", validateKeyword(getSearchKeywords(name, cName, lang))), getMessage(event), a -> a);
             } else if(forms.size() == 1) {
                 ArrayList<Combo> combos = EntityFilter.filterComboWithUnit(forms.get(0), cName);
 
                 if(combos.isEmpty()) {
                     disableTimer();
 
-                    replyToMessageSafely(ch, LangID.getStringByID("combo_noname", lang).replace("_", getSearchKeywords(name, cName, lang)), getMessage(event), a -> a);
+                    replyToMessageSafely(ch, LangID.getStringByID("combo_noname", lang).replace("_", validateKeyword(getSearchKeywords(name, cName, lang))), getMessage(event), a -> a);
                 } else if(combos.size() == 1) {
                     EntityHandler.showComboEmbed(ch, getMessage(event), combos.get(0), lang);
                 } else {
@@ -284,5 +284,12 @@ public class CatCombo extends TimedConstraintCommand {
         }
 
         return data;
+    }
+
+    private String validateKeyword(String keyword) {
+        if(keyword.length() > 1500)
+            return keyword.substring(0, 1500) + "...";
+        else
+            return keyword;
     }
 }

@@ -55,7 +55,7 @@ public class EnemySprite extends TimedConstraintCommand {
             ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(search, lang);
 
             if(enemies.isEmpty()) {
-                replyToMessageSafely(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(getContent(event))), getMessage(event), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", getSearchKeyword(getContent(event))), getMessage(event), a -> a);
 
                 disableTimer();
             } else if(enemies.size() == 1) {
@@ -63,7 +63,7 @@ public class EnemySprite extends TimedConstraintCommand {
 
                 EntityHandler.getEnemySprite(enemies.get(0), ch, getMessage(event), getModeFromParam(param), lang);
             } else {
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", filterCommand(getContent(event))));
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", getSearchKeyword(getContent(event))));
 
                 sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang));
 
@@ -186,5 +186,17 @@ public class EnemySprite extends TimedConstraintCommand {
         }
 
         return data;
+    }
+
+    private String getSearchKeyword(String command) {
+        String result = filterCommand(command);
+
+        if(result == null)
+            return "";
+
+        if(result.length() > 1500)
+            result = result.substring(0, 1500) + "...";
+
+        return result;
     }
 }

@@ -79,7 +79,7 @@ public class ComboFormMessageHolder extends SearchHolder {
             if(combos.isEmpty()) {
                 msg.delete().queue();
 
-                createMessageWithNoPings(ch, LangID.getStringByID("combo_noname", lang).replace("_", getSearchKeywords(fName, cName, lang)));
+                createMessageWithNoPings(ch, LangID.getStringByID("combo_noname", lang).replace("_", validateKeyword(getSearchKeywords(fName, cName, lang))));
             } else if(combos.size() == 1) {
                 User u = event.getUser();
 
@@ -196,5 +196,12 @@ public class ComboFormMessageHolder extends SearchHolder {
         }
 
         return data;
+    }
+
+    private String validateKeyword(String keyword) {
+        if(keyword.length() > 1500)
+            return keyword.substring(0, 1500) + "...";
+        else
+            return keyword;
     }
 }

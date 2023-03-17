@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-@SuppressWarnings({"MismatchedReadAndWriteOfArray", "RedundantOperationOnEmptyContainer"})
 public class EnemyGif extends GlobalTimedConstraintCommand {
     private static final int PARAM_DEBUG = 2;
     private static final int PARAM_RAW = 4;
@@ -93,7 +92,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
             ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(search, lang);
 
             if(enemies.isEmpty()) {
-                replyToMessageSafely(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", filterCommand(getContent(event))), getMessage(event), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", getSearchKeyword(getContent(event))), getMessage(event), a -> a);
 
                 disableTimer();
             } else if(enemies.size() == 1) {
@@ -135,7 +134,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
                     disableTimer();
                 }
             } else {
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", filterCommand(getContent(event))));
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", getSearchKeyword(getContent(event))));
 
                 sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang));
 
@@ -398,5 +397,17 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
         }
 
         return data;
+    }
+
+    private String getSearchKeyword(String command) {
+        String result = filterCommand(command);
+
+        if(result == null)
+            return "";
+
+        if(result.length() > 1500)
+            result = result.substring(0, 1500) + "...";
+
+        return result;
     }
 }
