@@ -90,6 +90,17 @@ public class StageStatAnalyzer extends ConstraintCommand {
             return;
         }
 
+        String stageCode;
+
+        if(code.equals("E")) {
+            code = "RE";
+            stageCode = "EX";
+        } else if(code.equals("RE")) {
+            stageCode = "EX";
+        } else {
+            stageCode = "R" + code;
+        }
+
         File dataLocal = new File(workspace, "DataLocal");
         File imageLocal = new File(workspace, "ImageLocal");
         File resLocal = new File(workspace, "resLocal");
@@ -170,7 +181,7 @@ public class StageStatAnalyzer extends ConstraintCommand {
         VFile[] stages = new VFile[len];
 
         for(int i = 0; i < len; i++) {
-            stages[i] = VFile.getFile(new File(dataLocal, "stageR" + code + Data.trio(mid % 1000) + "_" + Data.duo(i) + ".csv"));
+            stages[i] = VFile.getFile(new File(dataLocal, "stage" + stageCode + Data.trio(mid % 1000) + "_" + Data.duo(i) + ".csv"));
         }
 
         CustomStageMap map = new CustomStageMap(option, VFile.getFile(mapData), VFile.getFile(stageOption), VFile.getFile(characterGroup), stages, mid);
@@ -334,6 +345,17 @@ public class StageStatAnalyzer extends ConstraintCommand {
     }
 
     private boolean validateFile(File workspace, String code, int mID, String locale) throws Exception {
+        String stageCode;
+
+        if(code.equals("E")) {
+            code = "RE";
+            stageCode = "EX";
+        } else if(code.equals("RE")) {
+            stageCode = "EX";
+        } else {
+            stageCode = "R" + code;
+        }
+
         File dataLocal = new File(workspace, "DataLocal");
         File imageLocal = new File(workspace, "ImageLocal");
         File resLocal = new File(workspace, "resLocal");
@@ -367,7 +389,7 @@ public class StageStatAnalyzer extends ConstraintCommand {
         boolean newEnemy = false;
 
         for(int i = 0; i < len; i++) {
-            File stageData = new File(dataLocal, "stageR" + code + Data.trio(mID % 1000) + "_" + Data.duo(i) + ".csv");
+            File stageData = new File(dataLocal, "stage" + stageCode + Data.trio(mID % 1000) + "_" + Data.duo(i) + ".csv");
 
             if(!stageData.exists())
                 return false;
