@@ -4183,7 +4183,7 @@ public class ImageDrawing {
 
                             g.setColor(191, 191, 191, 64);
 
-                            g.drawLine((int) (x1 + tx * 2.0), y + ly, (int) (x1 + tx * 2.0), y + innerTableCellMargin - ly);
+                            g.drawLine((int) (x1 + tx * 2.0), y1 + ly, (int) (x1 + tx * 2.0), y1 + innerTableCellMargin - ly);
 
                             y1 += innerTableCellMargin;
                         }
