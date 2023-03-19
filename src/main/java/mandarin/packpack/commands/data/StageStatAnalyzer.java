@@ -609,6 +609,8 @@ public class StageStatAnalyzer extends ConstraintCommand {
 
                 count++;
             }
+
+            buyReader.close();
         }
 
         File mapOption = new File(dataLocal, "Map_option.csv");
