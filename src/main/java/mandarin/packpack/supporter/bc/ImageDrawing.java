@@ -3742,7 +3742,7 @@ public class ImageDrawing {
         FontRenderContext bfrc = bfm.getFontRenderContext();
         FontRenderContext lfrc = lfm.getFontRenderContext();
 
-        Rectangle2D nRect = nameFont.createGlyphVector(bfrc, name).getPixelBounds(null, 0, 0);
+        Rectangle2D nRect = titleFont.createGlyphVector(bfrc, name).getPixelBounds(null, 0, 0);
         Rectangle2D lRect = levelFont.createGlyphVector(lfrc, mag).getPixelBounds(null, 0, 0);
 
         int h = (int) Math.round(nRect.getHeight() + nameMargin + lRect.getHeight() + enemyIconGap * 3);
