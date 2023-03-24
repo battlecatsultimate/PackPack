@@ -1489,7 +1489,7 @@
   "int_boole" : "Number of section must be multiple of 4 to use Boole's Rule",
   "int_fail" : "Failed to integrate formula",
   "donate_donation" : "Donations",
-  "donate_below" : "Belows are possible donation links. Support me to keep this bot running!",
+  "donate_below" : "Below are possible donation links. Support me to keep this bot running!",
   "donate_paypal" : "PayPal",
   "donate_cashapp" : "Cash App",
   "donate_link" : "** **\nLink\n** **"
