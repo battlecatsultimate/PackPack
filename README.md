@@ -22,4 +22,11 @@ Thanks to user called Xerpy, you can follow [this guide](https://docs.google.com
 
 ---
 
+You can support me to keep the bot online
+
+[![paypal](https://img.shields.io/badge/Donate-PayPal-blue.svg)](https://www.paypal.com/paypalme/GidGalG2)<br>
+[![cashapp](https://img.shields.io/badge/Donate-CashApp-green.svg)](https://cash.app/$Gideon9787)
+
+---
+
 [Privacy Policy](Privacy%20Policy.md)
