@@ -170,6 +170,9 @@ public class StaticStore {
 
     public static final String UDP_LINK = "https://api.github.com/repos/ThanksFeanor/UDP-Data/contents";
 
+    public static final String PAYPAL = "https://www.paypal.com/paypalme/GidGalG2";
+    public static final String CASHAPP = "https://cash.app/$Gideon9787";
+
     public static String downPack = "./pack/download";
     public static String tempPack = "./pack/download";
 

@@ -978,6 +978,11 @@ public class AllEventAdapter extends ListenerAdapter {
             case "gi":
                 new GetID(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
                 break;
+            case "donate":
+            case "donation":
+            case "don":
+                new Donate(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
+                break;
         }
     }
 

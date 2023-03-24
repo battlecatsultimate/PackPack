@@ -38,6 +38,8 @@ public class EmojiStore {
         IMGCUT = StaticStore.getEmoteWitNameAndID(jda, "Imgcut", 1021728290895056936L, false, true);
         MAMODEL = StaticStore.getEmoteWitNameAndID(jda, "Mamodel", 1021728318510342184L, false, true);
         MAANIM = StaticStore.getEmoteWitNameAndID(jda, "Maanim", 1021728344632467517L, false, true);
+        PAYPAL = StaticStore.getEmoteWitNameAndID(jda, "PayPal", 1088764164274663536L, false, true);
+        CASHAPP = StaticStore.getEmoteWitNameAndID(jda, "CashApp", 1088764190505836564L, false, true);
 
         File iconData = new File("./data/abilityIcons.txt");
 
@@ -102,6 +104,8 @@ public class EmojiStore {
     public static RichCustomEmoji IMGCUT;
     public static RichCustomEmoji MAMODEL;
     public static RichCustomEmoji MAANIM;
+    public static RichCustomEmoji PAYPAL;
+    public static RichCustomEmoji CASHAPP;
 
     public static Map<String, RichCustomEmoji> ABILITY = new HashMap<>();
     public static MultiLangCont<String, RichCustomEmoji> TRAIT = new MultiLangCont<>();

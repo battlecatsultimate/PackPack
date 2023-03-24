@@ -44,7 +44,7 @@ public class Help extends Command {
             builder.setTitle(LangID.getStringByID("help_command", lang))
                     .setDescription(LangID.getStringByID("help_explain", lang))
                     .setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)])
-                    .addField(LangID.getStringByID("help_normal", lang), "```analyze, config, locale, optout, prefix, timezone```", false)
+                    .addField(LangID.getStringByID("help_normal", lang), "```analyze, config, donate, locale, optout, prefix, timezone```", false)
                     .addField(LangID.getStringByID("help_math", lang), "```calculator, differentiate, integrate, plot, plotrtheta, tplot, solve```", false)
                     .addField(LangID.getStringByID("help_bc", lang), "```background, castle, catcombo, enemygif, enemyimage, enemysprite, enemystat, findreward, findstage, formgif, formimage, formsprite, formstat, medal, music, soul, soulimage, soulsprite, stageinfo, talentinfo```", false)
                     .addField(LangID.getStringByID("help_server", lang), "```addstatuschannel, boosteremoji, boosteremojiremove, boosterrole, boosterroleremove, channelpermission, checkbcu, clearcache, commandban, commandunban, fixrole, idset, removestatuschannel, save, serverconfig, serverjson, serverpre, serverstat, setup, subscribeevent, subscribescamlinkdetector, unsubscribescamlinkdetector, watchdm```", false)
@@ -485,6 +485,11 @@ public class Help extends Command {
             case "prt":
             case "rt":
                 replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("plotrtheta", true, true, true)));
+                break;
+            case "donate":
+            case "donation":
+            case "don":
+                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("donate", false, false, false)));
                 break;
             default:
                 replyToMessageSafely(ch, LangID.getStringByID("help_nocomm", lang).replace("_", command), reference, a -> a);
