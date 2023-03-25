@@ -210,8 +210,11 @@ public class ComboAnalyzer extends ConstraintCommand {
         while((line = dataReader.readLine()) != null) {
             String[] data = line.split(",");
 
-            if(data.length == 2)
+            if(data.length == 2) {
+                dataReader.close();
+
                 return null;
+            }
 
             if(StaticStore.isNumeric(data[0]) && StaticStore.safeParseInt(data[0]) == cid && StaticStore.isNumeric(data[1]) && StaticStore.safeParseInt(data[1]) != -1) {
                 comboLine = data;
@@ -365,14 +368,20 @@ public class ComboAnalyzer extends ConstraintCommand {
             int index = 0;
 
             while((line = typeReader.readLine()) != null) {
-                if(line.isBlank())
+                if(line.isBlank()) {
+                    typeReader.close();
+
                     return null;
+                }
 
                 if(index == comboIndex) {
                     String[] data = line.split(getSeparator(locale));
 
-                    if(data.length < 1)
+                    if(data.length < 1) {
+                        typeReader.close();
+
                         return null;
+                    }
 
                     type = data[0];
 
