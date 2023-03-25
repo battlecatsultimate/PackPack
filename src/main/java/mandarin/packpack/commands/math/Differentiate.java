@@ -29,6 +29,8 @@ public class Differentiate extends ConstraintCommand {
 
         if(contents.length < 2) {
             replyToMessageSafely(ch, LangID.getStringByID("diff_noforval", lang), getMessage(event), a -> a);
+
+            return;
         }
 
         String command = contents[1];
