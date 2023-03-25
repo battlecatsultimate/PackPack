@@ -921,7 +921,7 @@
   "help_eventmessage_use" : "`p!eventmessage [Locale] [Contents]`",
   "help_eventmessage_desc" : "Assign additional message that will be sent whenever bot caught new event data for specific BC version. **Only Moderators can use this command.** `em` is also valid command",
   "help_eventmessage_argu" : "`-en/tw/kr/jp` : Decide locale of BC",
-  "help_eventmessage_tip" : "Moderators may want to send additional message whenever bot caught new event data. But since bot catches event data separately for each BC version (BCEN, BCTW, BCKR, BCJP), moderators may want to assign different message for each BC version\n\nYou have to specify which version of BC will be used for assigning message first. For example, if you want to make bot send specific message when bot caught new event data of BCEN, then you have to call `p!em -en ...`\n\nAfter specifying locale, you can put any contents for additional message",
+  "help_eventmessage_tip" : "Moderators may want to send additional message whenever bot caught new event data. But since bot catches event data separately for each BC version (BCEN, BCTW, BCKR, BCJP), moderators may want to assign different message for each BC version\n\nYou have to specify which version of BC will be used for assigning message first. For example, if you want to make bot send specific message when bot caught new event data of BCEN, then you have to call `p!em -en ...`\n\nAfter specifying locale, you can put any contents for additional message\n\nPassing empty message will remove assigned message",
   "prefix_space" : "Prefix can't be white spaces!",
   "prefix_set" : "Prefix setting complete! Your personal prefix is now : %s",
   "prefix_setnone" : "Your prefix has been updated!",
@@ -1505,5 +1505,6 @@
   "eventmes_mention" : "Bot noticed that this message mentions role or users. Are you fine with it?",
   "eventmes_removed" : "Removed message successfully! Now bot won't send any additional message when bot caught new event data for this version",
   "eventmes_noempty" : "You can't assign empty message!",
-  "eventmes_added" : "Added message successfully! Now bot will send additional message with said contents when bot caught new event data for this version"
+  "eventmes_added" : "Added message successfully! Now bot will send additional message with said contents when bot caught new event data for this version",
+  "eventmes_toolong" : "Message contents were too long!"
 }
