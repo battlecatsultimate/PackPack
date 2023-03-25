@@ -328,6 +328,8 @@ public class TalentAnalyzer extends ConstraintCommand {
                     }
                 }
 
+                curveReader.close();
+
                 if(levels == null)
                     return false;
             } else {
@@ -441,6 +443,8 @@ public class TalentAnalyzer extends ConstraintCommand {
         statReader.readLine();
 
         unit = new CustomMaskUnit(statReader.readLine().split(","), curve, ma, rare);
+
+        statReader.close();
     }
 
     private boolean validateUnitFile(File workspace, int uID) throws Exception {
