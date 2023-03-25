@@ -586,6 +586,7 @@
   "help_argu" : "Arguments",
   "help_exam" : "Example",
   "help_tip" : "Tips",
+  "help_guide" : "Click link above for more detailed guide or explanation",
   "help_bcustat_use": "`_bcustat`",
   "help_bcustat_desc" : "Display user statistics of BCU server with percentage data. This command will show number of human, members, pre-members, bcu-pc users, bcu-android users",
   "help_checkbcu_use" : "`_checkbcu`",

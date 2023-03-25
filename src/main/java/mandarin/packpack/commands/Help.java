@@ -504,7 +504,14 @@ public class Help extends Command {
         EmbedBuilder builder = new EmbedBuilder();
 
         builder.setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)]);
-        builder.setTitle((holder == null ? StaticStore.globalPrefix : holder.serverPrefix) + mainCommand);
+
+        if(LangID.hasID("help_" + mainCommand + "_url", lang)) {
+            builder.setTitle((holder == null ? StaticStore.globalPrefix : holder.serverPrefix) + mainCommand, LangID.getStringByID("help_" + mainCommand + "_url", lang));
+            builder.setDescription(LangID.getStringByID("help_guide", lang));
+        } else {
+            builder.setTitle((holder == null ? StaticStore.globalPrefix : holder.serverPrefix) + mainCommand);
+        }
+
         builder.addField(LangID.getStringByID("help_use", lang), LangID.getStringByID("help_"+mainCommand+"_use", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.serverPrefix), false);
         builder.addField(LangID.getStringByID("help_desc", lang), LangID.getStringByID("help_"+mainCommand+"_desc", lang), false);
 

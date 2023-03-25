@@ -585,6 +585,7 @@
   "help_argu" : "引数",
   "help_exam" : "例",
   "help_tip" : "ヒント",
+  "help_guide" : "Click link above for more detailed guide or explanation",
   "help_bcustat_use": "`_bcustat`",
   "help_bcustat_desc" : "BCUサーバーのユーザーの統計を%で表示します。 このコマンドは、ユーザー、Members、Pre-members、BCU-PC Users、BCU-Android Usersの数を表示します。",
   "help_checkbcu_use" : "`_checkbcu`",

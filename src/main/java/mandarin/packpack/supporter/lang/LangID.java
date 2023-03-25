@@ -111,6 +111,21 @@ public class LangID {
         return id;
     }
 
+    public static boolean hasID(String id, int locale) {
+        switch (locale) {
+            case EN:
+                return EN_OBJ != null && EN_OBJ.has(id);
+            case JP:
+                return JP_OBJ != null && JP_OBJ.has(id);
+            case KR:
+                return KR_OBJ != null && KR_OBJ.has(id);
+            case ZH:
+                return ZH_OBJ != null && ZH_OBJ.has(id);
+            default:
+                return false;
+        }
+    }
+
     public static void printMissingTags() {
         for(int i = ZH; i <= JP; i++) {
             JsonObject target;
