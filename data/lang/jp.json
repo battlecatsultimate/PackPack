@@ -914,6 +914,10 @@
   "help_plotrtheta_tip" : "When you writing x/y/r/θ range, you have to wrap range with `[]` square brackets. For example, `[2, 3]`, `[-2, 10]`, etc. Also, you can put calculator functions as well, such as `[sqrt(2), 2 + ln(3)]`, `[3 * pi, 6 * pi]`, etc. If bot fails to calculate the range, it will ignore it\n\nIt's recommended to use `r`, and `t` as variable, `r` being r, and `t` being θ. Then bot will calculate variables with correct order",
   "help_donate_use" : "`p!donate`",
   "help_donate_desc" : "Uploads embed that contains donation links for supporting the bot. `donation`, `don` are also valid commands",
+  "help_eventmessage_use" : "`p!eventmessage [Locale] [Contents]`",
+  "help_eventmessage_desc" : "Assign additional message that will be sent whenever bot caught new event data for specific BC version. **Only Moderators can use this command.** `em` is also valid command",
+  "help_eventmessage_argu" : "`-en/tw/kr/jp` : Decide locale of BC",
+  "help_eventmessage_tip" : "Moderators may want to send additional message whenever bot caught new event data. But since bot catches event data separately for each BC version (BCEN, BCTW, BCKR, BCJP), moderators may want to assign different message for each BC version\n\nYou have to specify which version of BC will be used for assigning message first. For example, if you want to make bot send specific message when bot caught new event data of BCEN, then you have to call `p!em -en ...`\n\nAfter specifying locale, you can put any contents for additional message",
   "prefix_space" : "Prefixはスペースにはできません!",
   "prefix_set" : "Prefixは %s にセットされました!",
   "prefix_setnone" : "あなたのPrefixはアップデートされました!",
@@ -1492,5 +1496,11 @@
   "donate_below" : "Below are possible donation links. Support me to keep this bot running!",
   "donate_paypal" : "PayPal",
   "donate_cashapp" : "Cash App",
-  "donate_link" : "** **\nLink\n** **"
+  "donate_link" : "** **\nLink\n** **",
+  "eventmes_noloc" : "You have to pass locale code! Below are possible locale codes\n\n`-en` : BCEN\n`-tw` : BCTW\n`-kr` : BCKR\n`-jp` : BCJP",
+  "eventmes_invalidloc" : "Invalid locale! Below are possible locale codes\n\n`-en` : BCEN\n`-tw` : BCTW\n`-kr` : BCKR\n`-jp` : BCJP",
+  "eventmes_mention" : "Bot noticed that this message mentions role or users. Are you fine with it?",
+  "eventmes_removed" : "Removed message successfully! Now bot won't send any additional message when bot caught new event data for this version",
+  "eventmes_noempty" : "You can't assign empty message!",
+  "eventmes_added" : "Added message successfully! Now bot will send additional message with said contents when bot caught new event data for this version"
 }

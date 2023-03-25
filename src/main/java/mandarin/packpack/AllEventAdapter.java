@@ -983,6 +983,10 @@ public class AllEventAdapter extends ListenerAdapter {
             case "don":
                 new Donate(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
                 break;
+            case "eventmessage":
+            case "em":
+                new EventMessage(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+                break;
         }
     }
 

@@ -95,6 +95,10 @@ public class IDHolder {
             id.announceMessage = obj.get("announceMessage").getAsString();
         }
 
+        if(obj.has("eventMessage")) {
+            id.eventMessage = StaticStore.jsonToMapString(obj.getAsJsonArray("eventMessage").getAsJsonArray());
+        }
+
         if(id.config.lang < 0)
             id.config.lang = 0;
 
@@ -123,6 +127,7 @@ public class IDHolder {
     public Map<String, List<String>> channelException = new HashMap<>();
 
     public String announceMessage = "";
+    public Map<String, String> eventMessage = new HashMap<>();
 
     public IDHolder(String m, String me, String bo, String acc) {
         this.MOD = m;
@@ -158,6 +163,7 @@ public class IDHolder {
         obj.add("channelException", jsonfyMap(channelException));
         obj.addProperty("forceCompact", forceCompact);
         obj.addProperty("announceMessage", announceMessage);
+        obj.add("eventMessage", StaticStore.mapToJsonString(eventMessage));
 
         return obj;
     }

@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 /**
  * Usage : java -jar JARNAME DISCORD_BOT_TOKEN IMGUR_API_ACCESS_TOKEN
@@ -242,11 +243,17 @@ public class PackBot {
             }
 
             boolean done = false;
+            boolean[] gachaChange = new boolean[4];
+            int[] dataFound = new int[4];
 
             for(int i = 0; i < r.length; i++) {
                 boolean eventDone = false;
 
                 for(int j = 0; j < r[i].length; j++) {
+                    if(j == EventFactor.GATYA) {
+                        gachaChange[i] = r[i][j];
+                    }
+
                     if(r[i][j] && holder.eventLocale.contains(i) && holder.event != null) {
                         try {
                             GuildChannel ch = client.getGuildChannelById(holder.event);
@@ -342,6 +349,7 @@ public class PackBot {
                                                     builder.append("\n");
 
                                                 data.remove(0);
+                                                dataFound[i] += 1;
                                             }
 
                                             builder.append("```");
@@ -408,6 +416,7 @@ public class PackBot {
                                             builder.append(line).append("\n");
 
                                             result.remove(0);
+                                            dataFound[i] += 1;
                                         }
 
                                         if(result.isEmpty() && j == EventFactor.GATYA) {
@@ -464,6 +473,18 @@ public class PackBot {
 
                 if(ch instanceof GuildMessageChannel) {
                     ((GuildMessageChannel) ch).sendMessage(LangID.getStringByID("event_warning", holder.config.lang)).queue();
+
+                    if(!holder.eventMessage.isEmpty()) {
+                        Pattern p = Pattern.compile("(<@(&)?\\d+>|@everyone|@here)");
+
+                        for(int i = 0; i < gachaChange.length; i++) {
+                            if(holder.eventMessage.containsKey(getLocale(i))) {
+                                if(!p.matcher(holder.eventMessage.get(getLocale(i))).find() || (gachaChange[i] || dataFound[i] >= 5)) {
+                                    ((GuildMessageChannel) ch).sendMessage(holder.eventMessage.get(getLocale(i))).queue();
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
