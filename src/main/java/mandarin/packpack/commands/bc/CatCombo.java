@@ -17,7 +17,6 @@ import mandarin.packpack.supporter.server.holder.ComboFormMessageHolder;
 import mandarin.packpack.supporter.server.holder.ComboMessageHolder;
 import mandarin.packpack.supporter.server.holder.SearchHolder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;

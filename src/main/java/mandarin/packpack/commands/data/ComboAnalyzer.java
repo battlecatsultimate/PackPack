@@ -180,6 +180,8 @@ public class ComboAnalyzer extends ConstraintCommand {
                 }
             }
 
+            dataReader.close();
+
             for(int i = 0; i < unknownIDs.size(); i++) {
                 CustomCombo combo = generateCombo(dataLocal, resLocal, unitLocal, unknownIDs.get(i), locale);
 
@@ -254,6 +256,8 @@ public class ComboAnalyzer extends ConstraintCommand {
 
                 index++;
             }
+
+            nameReader.close();
         }
 
         if (title == null) {
@@ -377,6 +381,8 @@ public class ComboAnalyzer extends ConstraintCommand {
 
                 index++;
             }
+
+            typeReader.close();
         }
 
         if(type == null)
@@ -422,6 +428,8 @@ public class ComboAnalyzer extends ConstraintCommand {
 
                 index++;
             }
+
+            descReader.close();
         } else {
             desc = DataToString.getComboDescription(comboType, comboLevel, lang);
         }
@@ -464,6 +472,8 @@ public class ComboAnalyzer extends ConstraintCommand {
 
                 index++;
             }
+
+            explanationReader.close();
 
             if(name == null)
                 name = Data.trio(uid) + " - " + Data.trio(form);

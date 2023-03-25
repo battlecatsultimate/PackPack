@@ -4,7 +4,6 @@ import common.system.fake.FakeGraphics;
 import common.system.fake.FakeImage;
 import common.system.fake.FakeTransform;
 import mandarin.packpack.supporter.StaticStore;
-import mandarin.packpack.supporter.lzw.AnimatedGifEncoder;
 import org.apache.commons.lang3.SystemUtils;
 
 import javax.imageio.ImageIO;
@@ -16,7 +15,6 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 
 import static java.awt.AlphaComposite.SRC_OVER;

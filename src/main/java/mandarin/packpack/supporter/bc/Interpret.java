@@ -4,7 +4,6 @@ import common.CommonStatic;
 import common.battle.data.MaskAtk;
 import common.battle.data.MaskEnemy;
 import common.battle.data.MaskEntity;
-import common.battle.data.MaskUnit;
 import common.pack.Identifier;
 import common.util.Data;
 import common.util.lang.Formatter;
