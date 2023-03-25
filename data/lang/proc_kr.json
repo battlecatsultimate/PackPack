@@ -813,7 +813,7 @@
         "abbr_name" : "소파동",
         "full_name" : "소파동",
         "tooltip" : "파동과 비슷하지만 더 빨리 움직이고 파동보다 적은 데미지를 가하는 소형 파동입니다",
-        "format" : "(prob)% 확률로 레벨 (lv) 소파동 (_left)타겟에게 발동자 데미지의 (multi)% 만큼 공격(_right)",
+        "format" : "(prob)% 확률로 레벨 (lv) (_left)범위 (_waveRange(lv))(_right) 소파동 (_left)타겟에게 발동자 데미지의 (multi)% 만큼 공격(_right)",
         "class" : {
             "prob" : {
                 "name" : "확률",
