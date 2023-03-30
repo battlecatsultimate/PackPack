@@ -18,47 +18,17 @@ public class Test extends GlobalTimedConstraintCommand {
     @Override
     protected void doThing(GenericMessageEvent event) {
         MessageChannel ch = getChannel(event);
+        Guild g = getGuild(event);
 
-        if(ch == null)
+        if(ch == null || g == null)
             return;
 
-        String[] contents = getContent(event).split(" ");
+        String[] contents = getContent(event).split(" ", 2);
 
-        if(contents.length < 3) {
-            ch.sendMessage("`p!test -s/c/m [ID]`").queue();
-
+        if(contents.length < 2)
             return;
-        }
 
-        JDA gate = event.getJDA();
-
-        switch (contents[1]) {
-            case "-m":
-                gate.retrieveUserById(contents[2]).queue(u -> {
-                    if(u != null) {
-                        ch.sendMessage("User Name : "+u.getName()+u.getDiscriminator()).queue();
-                    }
-                });
-                break;
-            case "-c":
-                GuildChannel c = gate.getGuildChannelById(contents[2]);
-
-                if(c != null) {
-                    ch.sendMessage("Channel type : "+c.getType()).queue();
-                    ch.sendMessage("Channel Name : "+ c.getName()).queue();
-                    ch.sendMessage("Server name : "+ c.getGuild().getName()).queue();
-                }
-
-                break;
-            case "-s":
-                Guild g = gate.getGuildById(contents[2]);
-
-                if(g != null) {
-                    ch.sendMessage("Guild Name : "+g.getName()).queue();
-                }
-
-                break;
-        }
+        g.modifyNickname(g.getSelfMember(), contents[1]).queue();
     }
 
     @Override

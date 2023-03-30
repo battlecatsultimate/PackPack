@@ -105,7 +105,11 @@ public class PackBot {
                                 fileName = "BotMar.png";
                                 break;
                             case 4:
-                                fileName = "BotApr.png";
+                                if(c.get(Calendar.DAY_OF_MONTH) == 1) {
+                                    fileName = "BotDoge.png";
+                                } else {
+                                    fileName = "BotApr.png";
+                                }
                                 break;
                             case 6:
                                 fileName = "BotJun.png";
