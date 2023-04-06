@@ -332,6 +332,7 @@ public class StageInfo extends TimedConstraintCommand {
                 second = true;
             } else if(!level && contents[i].matches("-lv(l)?") && i < contents.length - 1 && StaticStore.isNumeric(contents[i + 1])) {
                 level = true;
+                i++;
             } else if(!stm && contents[i].equals("-stm")) {
                 stm = true;
                 mode = MAP;
