@@ -23,6 +23,12 @@ public class GachaSet {
         int i = 0;
 
         while((line = q.poll()) != null) {
+            if(i < 100) {
+                i++;
+
+                continue;
+            }
+
             gachaSet.put(i, new GachaSet(line));
             i++;
         }
