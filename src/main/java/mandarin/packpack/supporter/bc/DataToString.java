@@ -1964,7 +1964,7 @@ public class DataToString extends Data {
             case 7:
                 return 150 + 150 * lv;
             case 11:
-                return 26 + 26 * lv;
+                return (int)(264.0 * (1 + lv) / 10.0);
             case 21:
                 return 20 + 10 * lv;
             case 22:
