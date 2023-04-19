@@ -246,7 +246,7 @@ public class PackBot {
                 continue;
             }
 
-            boolean done = false;
+            boolean[] done = { false, false, false, false };
             boolean[] gachaChange = new boolean[4];
             int[] dataFound = new int[4];
 
@@ -258,9 +258,9 @@ public class PackBot {
                         gachaChange[i] = r[i][j];
                     }
 
-                    if(r[i][j] && holder.eventLocale.contains(i) && holder.event != null) {
+                    if(r[i][j] && holder.eventMap.containsKey(i) && holder.eventMap.get(i) != null) {
                         try {
-                            GuildChannel ch = client.getGuildChannelById(holder.event);
+                            GuildChannel ch = client.getGuildChannelById(holder.eventMap.get(i));
 
                             if(ch instanceof GuildMessageChannel && ((GuildMessageChannel) ch).canTalk()) {
                                 if(j == EventFactor.SALE) {
@@ -269,9 +269,9 @@ public class PackBot {
                                     if(result.isEmpty())
                                         continue;
 
-                                    boolean wasDone = done;
+                                    boolean wasDone = done[i];
 
-                                    done = true;
+                                    done[i] = true;
 
                                     if(!eventDone) {
                                         eventDone = true;
@@ -374,9 +374,9 @@ public class PackBot {
                                     if(result.isEmpty())
                                         continue;
 
-                                    boolean wasDone = done;
+                                    boolean wasDone = done[i];
 
-                                    done = true;
+                                    done[i] = true;
 
                                     if(!eventDone) {
                                         eventDone = true;
@@ -470,18 +470,21 @@ public class PackBot {
                 }
             }
 
-            if(done && holder.event != null) {
-                sent = true;
+            List<String> sentChannels = new ArrayList<>();
 
-                GuildChannel ch = client.getGuildChannelById(holder.event);
+            for(int i = 0; i < done.length; i++) {
+                if(done[i] && holder.eventMap.containsKey(i) && !sentChannels.contains(holder.eventMap.get(i))) {
+                    sent = true;
+                    sentChannels.add(holder.eventMap.get(i));
 
-                if(ch instanceof GuildMessageChannel) {
-                    ((GuildMessageChannel) ch).sendMessage(LangID.getStringByID("event_warning", holder.config.lang)).queue();
+                    GuildChannel ch = client.getGuildChannelById(holder.eventMap.get(i));
 
-                    if(!holder.eventMessage.isEmpty()) {
-                        Pattern p = Pattern.compile("(<@(&)?\\d+>|@everyone|@here)");
+                    if(ch instanceof GuildMessageChannel) {
+                        ((GuildMessageChannel) ch).sendMessage(LangID.getStringByID("event_warning", holder.config.lang)).queue();
 
-                        for(int i = 0; i < gachaChange.length; i++) {
+                        if(!holder.eventMessage.isEmpty()) {
+                            Pattern p = Pattern.compile("(<@(&)?\\d+>|@everyone|@here)");
+
                             if(holder.eventMessage.containsKey(getLocale(i))) {
                                 if(!p.matcher(holder.eventMessage.get(getLocale(i))).find() || (gachaChange[i] || dataFound[i] >= 5)) {
                                     ((GuildMessageChannel) ch).sendMessage(holder.eventMessage.get(getLocale(i))).queue();

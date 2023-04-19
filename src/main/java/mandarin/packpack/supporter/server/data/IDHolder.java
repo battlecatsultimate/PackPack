@@ -63,14 +63,6 @@ public class IDHolder {
             id.logDM = id.setOrNull(obj.get("logDM").getAsString());
         }
 
-        if(obj.has("event")) {
-            id.event = id.setOrNull(obj.get("event").getAsString());
-        }
-
-        if(obj.has("eventLocale")) {
-            id.eventLocale = id.jsonObjectToListInteger(obj.getAsJsonArray("eventLocale"));
-        }
-
         if(obj.has("config")) {
             id.config = ConfigHolder.parseJson(obj.getAsJsonObject("config"));
         }
@@ -99,6 +91,21 @@ public class IDHolder {
             id.eventMessage = StaticStore.jsonToMapString(obj.getAsJsonArray("eventMessage").getAsJsonArray());
         }
 
+        if(obj.has("event") && obj.has("eventLocale")) {
+            List<Integer> locales = id.jsonObjectToListInteger(obj.getAsJsonArray("eventLocale"));
+            String channel = id.setOrNull(obj.get("event").getAsString());
+
+            if(locales != null && channel != null && !channel.isBlank()) {
+                for(int l : locales) {
+                    id.eventMap.put(l, channel);
+                }
+            }
+        }
+
+        if(obj.has("eventMap")) {
+            id.eventMap = id.jsonObjectToMapIntegerString(obj.get("eventMap"));
+        }
+
         if(id.config.lang < 0)
             id.config.lang = 0;
 
@@ -108,7 +115,6 @@ public class IDHolder {
     public String serverPrefix = "p!";
     public boolean publish = false;
     public String logDM = null;
-    public String event = null;
 
     public String MOD;
     public String MEMBER;
@@ -119,6 +125,7 @@ public class IDHolder {
 
     public Map<String, String> ID = new TreeMap<>();
     public Map<String, List<String>> channel = new TreeMap<>();
+    public Map<Integer, String> eventMap = new TreeMap<>();
     public List<String> status = new ArrayList<>();
     public List<Integer> eventLocale = new ArrayList<>();
     public boolean eventRaw = false, forceCompact = false;
@@ -156,8 +163,7 @@ public class IDHolder {
         obj.add("channel", jsonfyMap(channel));
         obj.add("id", jsonfyIDs());
         obj.addProperty("logDM", getOrNull(logDM));
-        obj.addProperty("event", getOrNull(event));
-        obj.add("eventLocale", listIntegerToJsonObject(eventLocale));
+        obj.add("eventMap", mapIntegerStringToJsonArray(eventMap));
         obj.add("config", config.jsonfy());
         obj.add("banned", listStringToJsonObject(banned));
         obj.add("channelException", jsonfyMap(channelException));
@@ -236,15 +242,19 @@ public class IDHolder {
         return array;
     }
 
-    private JsonElement listIntegerToJsonObject(List<Integer> arr) {
-        if(arr == null) {
-            return JsonNull.INSTANCE;
-        }
-
+    private JsonElement mapIntegerStringToJsonArray(Map<Integer, String> map) {
         JsonArray array = new JsonArray();
 
-        for(int i : arr) {
-            array.add(i);
+        for(int key : map.keySet()) {
+            if(map.get(key) == null || map.get(key).isBlank())
+                continue;
+
+            JsonObject obj = new JsonObject();
+
+            obj.addProperty("key", key);
+            obj.addProperty("val", map.get(key));
+
+            array.add(obj);
         }
 
         return array;
@@ -280,6 +290,26 @@ public class IDHolder {
         }
 
         return null;
+    }
+
+    private Map<Integer, String> jsonObjectToMapIntegerString(JsonElement obj) {
+        if(obj.isJsonArray()) {
+            JsonArray arr = obj.getAsJsonArray();
+
+            Map<Integer, String> result = new TreeMap<>();
+
+            for(int i = 0; i < arr.size(); i++) {
+                JsonObject o = arr.get(i).getAsJsonObject();
+
+                if(o.has("key") && o.has("val")) {
+                    result.put(o.get("key").getAsInt(), o.get("val").getAsString());
+                }
+            }
+
+            return result;
+        }
+
+        return new TreeMap<>();
     }
 
     private JsonObject jsonfyMap(Map<String, List<String>> map) {

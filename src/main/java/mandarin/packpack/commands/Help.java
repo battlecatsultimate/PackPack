@@ -301,7 +301,7 @@ public class Help extends Command {
                 break;
             case "subscribeevent":
             case "se":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("subscribeevent", false, true, true)));
+                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("subscribeevent", true, true, true)));
                 break;
             case "printevent":
             case "pe":

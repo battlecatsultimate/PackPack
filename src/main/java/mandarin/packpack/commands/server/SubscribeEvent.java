@@ -4,15 +4,13 @@ import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class SubscribeEvent extends ConstraintCommand {
     public SubscribeEvent(ROLE role, int lang, IDHolder id) {
@@ -30,14 +28,32 @@ public class SubscribeEvent extends ConstraintCommand {
         if(ch == null || g == null)
             return;
 
+        List<Integer> locales = getLocales(getContent(event).replaceAll("[ ]+,[ ]+|,[ ]+|[ ]+,", ","));
+
+        if(locales.isEmpty()) {
+            replyToMessageSafely(ch, LangID.getStringByID("subevent_noloc", lang), getMessage(event), a -> a);
+
+            return;
+        }
+
         String channel = getChannelID(getContent(event));
 
-        if(channel == null && holder.event != null) {
-            holder.event = null;
-            holder.eventLocale.clear();
+        StringBuilder result = new StringBuilder();
+
+        if(channel == null && removable(locales, holder.eventMap)) {
+            for(int i : locales) {
+                if(holder.eventMap.containsKey(i)) {
+                    holder.eventMap.remove(i);
+
+                    result.append(getLocaleFrom(i)).append(LangID.getStringByID("subevent_remove", lang)).append("\n\n");
+                } else {
+                    result.append(getLocaleFrom(i)).append(LangID.getStringByID("subevent_notassigned", lang)).append("\n\n");
+                }
+            }
+
             StaticStore.idHolder.put(g.getId(), holder);
 
-            ch.sendMessage(LangID.getStringByID("subevent_remove", lang)).queue();
+            replyToMessageSafely(ch, LangID.getStringByID("subevent_set", lang) + result, getMessage(event), a -> a);
 
             return;
         } else if(channel == null) {
@@ -54,38 +70,32 @@ public class SubscribeEvent extends ConstraintCommand {
             return;
         }
 
-        List<Integer> locales = getLocales(getContent(event).replaceAll("[ ]+,[ ]+|,[ ]+|[ ]+,", ","));
+        holder.eventRaw = isRaw(getContent(event));
 
-        if(locales.isEmpty()) {
-            locales.add(filterLocale());
-        }
+        for(int i : locales) {
+            String previous = holder.eventMap.put(i, channel);
 
-        holder.eventLocale.clear();
-
-        for(int i = 0; i < locales.size(); i++) {
-            int l = locales.get(i);
-
-            if(l >= 0 && l <= 3) {
-                holder.eventLocale.add(l);
+            if(previous != null) {
+                result.append(getLocaleFrom(i)).append(String.format(LangID.getStringByID("subevent_replace", lang), previous, previous, channel, channel)).append("\n\n");
+            } else {
+                result.append(getLocaleFrom(i)).append(String.format(LangID.getStringByID("subevent_add", lang), channel, channel)).append("\n\n");
             }
         }
 
-        holder.eventRaw = isRaw(getContent(event));
-
-        holder.eventLocale.sort(Integer::compare);
-
-        holder.event = channel;
+        replyToMessageSafely(ch, LangID.getStringByID("subevent_set", lang) + result, getMessage(event), a -> a);
 
         StaticStore.idHolder.put(g.getId(), holder);
-
-        ch.sendMessage(LangID.getStringByID("subevent_set", lang).replace("_CCC_", channel).replace("_BC_", getBCList(holder.eventLocale))).queue();
     }
 
     private String getChannelID(String content) {
         String[] contents = content.split(" ");
 
-        if(contents.length >= 2) {
-            return contents[1].replace("<#", "").replace(">", "");
+        for(int i = 0; i < contents.length; i++) {
+            if(contents[i].matches("\\d+")) {
+                return contents[i];
+            } else if(contents[i].matches("<#\\d+>")) {
+                return contents[i].replace("<#", "").replace(">", "");
+            }
         }
 
         return null;
@@ -104,66 +114,28 @@ public class SubscribeEvent extends ConstraintCommand {
     }
 
     private List<Integer> getLocales(String content) {
-        List<Integer> result = new ArrayList<>();
+        Set<Integer> set = new HashSet<>();
 
         String[] contents = content.split(" ");
 
-        if(contents.length >= 3) {
-            String[] numbers = contents[2].split(",");
-
-            for(int i = 0; i < numbers.length; i++) {
-                if(!StaticStore.isNumeric(numbers[i]))
-                    continue;
-
-                int loc = StaticStore.safeParseInt(numbers[i]) - 1;
-
-                if(loc >= 0 && loc <= 3 && !result.contains(loc)) {
-                    result.add(loc);
-                }
+        for(int i = 0; i < contents.length; i++) {
+            switch (contents[i]) {
+                case "-en":
+                    set.add(LangID.EN);
+                    break;
+                case "-tw":
+                    set.add(LangID.ZH);
+                    break;
+                case "-kr":
+                    set.add(LangID.KR);
+                    break;
+                case "-jp":
+                    set.add(LangID.JP);
+                    break;
             }
         }
 
-        return result;
-    }
-
-    private int filterLocale() {
-        switch (Objects.requireNonNull(holder).config.lang) {
-            case LangID.ZH:
-                return LangID.ZH;
-            case LangID.KR:
-                return LangID.KR;
-            case LangID.JP:
-                return LangID.JP;
-            default:
-                return LangID.EN;
-        }
-    }
-
-    private String getBCList(List<Integer> locales) {
-        StringBuilder builder = new StringBuilder();
-
-        for(int i = 0; i < locales.size(); i++) {
-            switch (locales.get(i)) {
-                case LangID.EN:
-                    builder.append(LangID.getStringByID("subevent_en", lang));
-                    break;
-                case LangID.ZH:
-                    builder.append(LangID.getStringByID("subevent_zh", lang));
-                    break;
-                case LangID.KR:
-                    builder.append(LangID.getStringByID("subevent_kr", lang));
-                    break;
-                case LangID.JP:
-                    builder.append(LangID.getStringByID("subevent_jp", lang));
-                    break;
-            }
-
-            if(i < locales.size() - 1) {
-                builder.append(", ");
-            }
-        }
-
-        return builder.toString();
+        return new ArrayList<>(set);
     }
 
     private boolean isRaw(String content) {
@@ -175,5 +147,27 @@ public class SubscribeEvent extends ConstraintCommand {
         }
 
         return false;
+    }
+
+    private boolean removable(List<Integer> locales, Map<Integer, String> map) {
+        for(int i : locales) {
+            if(map.containsKey(i))
+                return true;
+        }
+
+        return false;
+    }
+
+    private String getLocaleFrom(int loc) {
+        switch (loc) {
+            case LangID.ZH:
+                return LangID.getStringByID("subevent_zh", lang);
+            case LangID.KR:
+                return LangID.getStringByID("subevent_kr", lang);
+            case LangID.JP:
+                return LangID.getStringByID("subevent_jp", lang);
+            default:
+                return LangID.getStringByID("subevent_en", lang);
+        }
     }
 }

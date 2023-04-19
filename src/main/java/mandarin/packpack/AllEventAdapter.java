@@ -178,8 +178,13 @@ public class AllEventAdapter extends ListenerAdapter {
             if(idh.GET_ACCESS != null && idh.GET_ACCESS.equals(ch.getId()))
                 idh.GET_ACCESS = null;
 
-            if(idh.event != null && idh.event.equals(ch.getId()))
-                idh.event = null;
+            for(int key : idh.eventMap.keySet()) {
+                String channel = idh.eventMap.get(key);
+
+                if(channel == null || channel.isBlank() || channel.equals(ch.getId())) {
+                    idh.eventMap.remove(key);
+                }
+            }
 
             if(idh.logDM != null && idh.logDM.equals(ch.getId()))
                 idh.logDM = null;
