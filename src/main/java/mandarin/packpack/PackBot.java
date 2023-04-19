@@ -473,14 +473,16 @@ public class PackBot {
             List<String> sentChannels = new ArrayList<>();
 
             for(int i = 0; i < done.length; i++) {
-                if(done[i] && holder.eventMap.containsKey(i) && !sentChannels.contains(holder.eventMap.get(i))) {
-                    sent = true;
-                    sentChannels.add(holder.eventMap.get(i));
-
+                if(done[i] && holder.eventMap.containsKey(i)) {
                     GuildChannel ch = client.getGuildChannelById(holder.eventMap.get(i));
 
                     if(ch instanceof GuildMessageChannel) {
-                        ((GuildMessageChannel) ch).sendMessage(LangID.getStringByID("event_warning", holder.config.lang)).queue();
+                        if (!sentChannels.contains(holder.eventMap.get(i))) {
+                            sent = true;
+                            sentChannels.add(holder.eventMap.get(i));
+
+                            ((GuildMessageChannel) ch).sendMessage(LangID.getStringByID("event_warning", holder.config.lang)).queue();
+                        }
 
                         if(!holder.eventMessage.isEmpty()) {
                             Pattern p = Pattern.compile("(<@(&)?\\d+>|@everyone|@here)");
