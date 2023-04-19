@@ -1245,6 +1245,17 @@ public class AllEventAdapter extends ListenerAdapter {
             } catch (Exception ignored) {}
         }
 
+        for(String key : StaticStore.prefix.keySet()) {
+            String prefix = StaticStore.prefix.get(key);
+
+            if(prefix == null)
+                continue;
+
+            if(prefix.matches("(.+)?http(s)?://(.+)?")) {
+                StaticStore.prefix.remove(key);
+            }
+        }
+
         StaticStore.safeClose = false;
 
         StaticStore.logger.uploadLog("Bot ready to be used!");

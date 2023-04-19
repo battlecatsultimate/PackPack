@@ -27,6 +27,12 @@ public class Prefix extends ConstraintCommand {
                 return;
             }
 
+            if(list[1].matches("(.+)?http(s)?://(.+)?")) {
+                replyToMessageSafely(ch, LangID.getStringByID("prefix_nourl", lang), getMessage(event), a -> a);
+
+                return;
+            }
+
             User u = getUser(event);
 
             if(u != null) {

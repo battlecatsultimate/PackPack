@@ -926,6 +926,7 @@
   "prefix_setnone" : "あなたのPrefixはアップデートされました!",
   "prefix_argu" : "このコマンドはもう一つ引数が必要です。 : [Prefix]",
   "prefix_tooarg" : "引数が多すぎます! このコマンドは一つだけの引数です。 : [Prefix]",
+  "prefix_nourl" : "URL format isn't allowed due to spamming problem or causing confusion to other users",
   "save_save" : "データをセーブしています...",
   "save_done" : "完了!",
   "serverpre_set" : "サーバーのPrefixは _ にセットされました!",
