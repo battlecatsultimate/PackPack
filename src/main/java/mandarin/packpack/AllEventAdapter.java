@@ -1140,9 +1140,15 @@ public class AllEventAdapter extends ListenerAdapter {
 
         JDA client = event.getJDA();
 
+        System.out.println("Initializing emojis...");
+
         EmojiStore.initialize(client);
 
+        System.out.println("Building slash commands...");
+
         SlashBuilder.build(client);
+
+        System.out.println("Validating roles...");
 
         List<Guild> l = client.getGuilds();
 
@@ -1203,6 +1209,8 @@ public class AllEventAdapter extends ListenerAdapter {
             }
         }
 
+        System.out.println("Filtering out unreachable guilds...");
+
         List<String> unreachableGuilds = new ArrayList<>();
 
         for(String key : StaticStore.idHolder.keySet()) {
@@ -1218,6 +1226,8 @@ public class AllEventAdapter extends ListenerAdapter {
         }
 
         StaticStore.saveServerInfo();
+
+        System.out.println("Sending online status...");
 
         for(String key : StaticStore.idHolder.keySet()) {
             try {
@@ -1250,6 +1260,8 @@ public class AllEventAdapter extends ListenerAdapter {
             } catch (Exception ignored) {}
         }
 
+        System.out.println("Filtering out url format prefixes...");
+
         for(String key : StaticStore.prefix.keySet()) {
             String prefix = StaticStore.prefix.get(key);
 
@@ -1260,6 +1272,8 @@ public class AllEventAdapter extends ListenerAdapter {
                 StaticStore.prefix.remove(key);
             }
         }
+
+        System.out.println("Sending online notification log...");
 
         StaticStore.safeClose = false;
 
