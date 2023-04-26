@@ -1000,6 +1000,10 @@ public class AllEventAdapter extends ListenerAdapter {
             case "gl":
                 new GrabLanguage(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
                 break;
+            case "reloadlanguage":
+            case "rel":
+                new ReloadLanguage(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+                break;
         }
     }
 
