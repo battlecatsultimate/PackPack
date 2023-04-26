@@ -17,6 +17,7 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Icon;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -38,10 +39,13 @@ public class PackBot {
     public static int event = 0;
     public static int pfp = 0;
     public static int udp = 0;
+    public static int status = 0;
     public static boolean develop = false;
 
     public static final String normal = "p!help for command info!";
     public static final String dev = "p!help, being developed, bot may not respond";
+
+    public static Message statusMessage = null;
 
     public static void main(String[] args) throws LoginException {
         initialize(args);
@@ -89,6 +93,8 @@ public class PackBot {
                 } else {
                     udp++;
                 }
+
+                StaticStore.updateStatus();
 
                 if(pfp % 60 == 0) {
                     try {

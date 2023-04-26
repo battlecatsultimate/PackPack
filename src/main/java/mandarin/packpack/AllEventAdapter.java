@@ -69,6 +69,8 @@ public class AllEventAdapter extends ListenerAdapter {
             StaticStore.idHolder.remove(g.getId());
 
             StaticStore.saveServerInfo();
+
+            StaticStore.updateStatus();
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::onGuildLeave - Error happened");
         }
@@ -107,6 +109,8 @@ public class AllEventAdapter extends ListenerAdapter {
 
                 handleInitialModRole(g, id, warned);
             }
+
+            StaticStore.updateStatus();
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::onGuildJoin - Error happened");
         }
@@ -1260,6 +1264,20 @@ public class AllEventAdapter extends ListenerAdapter {
             } catch (Exception ignored) {}
         }
 
+        System.out.println("Initializing status message...");
+
+        try {
+            Guild g = client.getGuildById("964054872649515048");
+
+            if(g != null) {
+                GuildChannel ch = g.getGuildChannelById("1100615571424419910");
+
+                if(ch instanceof MessageChannel) {
+                    PackBot.statusMessage = ((MessageChannel) ch).getHistory().getMessageById("1100615782272090213");
+                }
+            }
+        } catch (Exception ignore) { }
+
         System.out.println("Filtering out url format prefixes...");
 
         for(String key : StaticStore.prefix.keySet()) {
@@ -1268,7 +1286,9 @@ public class AllEventAdapter extends ListenerAdapter {
             if(prefix == null)
                 continue;
 
-            if(prefix.matches("(.+)?http(s)?://(.+)?")) {
+            System.out.println(prefix);
+
+            if(prefix.matches("(.+)?http(s)?:\\/\\/(.+)?")) {
                 StaticStore.prefix.remove(key);
             }
         }

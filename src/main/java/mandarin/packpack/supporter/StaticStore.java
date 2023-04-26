@@ -11,6 +11,7 @@ import common.CommonStatic;
 import common.io.WebFileIO;
 import common.io.assets.UpdateCheck;
 import common.util.lang.MultiLangCont;
+import mandarin.packpack.PackBot;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.event.EventHolder;
 import mandarin.packpack.supporter.lang.LangID;
@@ -1067,5 +1068,14 @@ public class StaticStore {
 
     private static int rgb(int r, int g, int b) {
         return new Color(r, g, b).getRGB();
+    }
+
+    public static void updateStatus() {
+        if(PackBot.statusMessage != null) {
+            PackBot.statusMessage.editMessage(LangID.getStringByID("stat_info", LangID.EN)
+                    .replace("_SSS_", StaticStore.idHolder.size()+"")
+                    .replace("_CCC_", StaticStore.executed+"")
+                    .replace("_MMM_", StaticStore.spamData.size()+"")).queue();
+        }
     }
 }
