@@ -996,6 +996,10 @@ public class AllEventAdapter extends ListenerAdapter {
             case "em":
                 new EventMessage(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
                 break;
+            case "grablanguage":
+            case "gl":
+                new GrabLanguage(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
+                break;
         }
     }
 
