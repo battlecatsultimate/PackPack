@@ -16,5 +16,7 @@ public class Test {
         System.out.println("Formula : " + f);
         System.out.println(formula.element.printTree(""));
         System.out.println("f(2) = " + formula.substitute(new BigDecimal("2")));
+
+        System.out.println(String.format("%2$d, %1$s will be offline", "Due to bug fix", 123123));
     }
 }

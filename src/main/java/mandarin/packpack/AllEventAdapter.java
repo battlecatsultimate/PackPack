@@ -1004,6 +1004,10 @@ public class AllEventAdapter extends ListenerAdapter {
             case "rel":
                 new ReloadLanguage(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
                 break;
+            case "reactto":
+            case "ret":
+                new ReactTo(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+                break;
         }
     }
 
