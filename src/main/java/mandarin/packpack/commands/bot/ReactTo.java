@@ -11,7 +11,6 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
-import net.dv8tion.jda.internal.entities.emoji.RichCustomEmojiImpl;
 import org.jetbrains.annotations.Nullable;
 
 public class ReactTo extends ConstraintCommand {
