@@ -6,6 +6,7 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -74,7 +75,7 @@ public class ReactTo extends ConstraintCommand {
                 return;
             }
 
-            Message m = ((MessageChannel) chan).getHistory().getMessageById(contents[3]);
+            Message m = ((MessageChannel) chan).retrieveMessageById(contents[3]).complete();
 
             if(m == null) {
                 replyToMessageSafely(ch, "No such message", getMessage(event), a -> a);
@@ -84,7 +85,17 @@ public class ReactTo extends ConstraintCommand {
 
             EmojiUnion em = Emoji.fromFormatted(contents[4]);
 
-            m.addReaction(em).queue();
+            MessageReaction mr = m.getReaction(em);
+
+            if(mr != null) {
+                if(mr.isSelf()) {
+                    m.removeReaction(em).queue();
+                } else {
+                    m.addReaction(em).queue();
+                }
+            } else {
+                m.addReaction(em).queue();
+            }
         } catch (Exception ignored) { }
     }
 }
