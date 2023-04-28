@@ -1304,7 +1304,7 @@ public class AllEventAdapter extends ListenerAdapter {
 
             System.out.println(prefix);
 
-            if(prefix.matches("(.+)?http(s)?:\\/\\/(.+)?")) {
+            if(prefix.matches("(.+)?http(s)?://(.+)?")) {
                 StaticStore.prefix.remove(key);
             }
         }
@@ -1447,7 +1447,7 @@ public class AllEventAdapter extends ListenerAdapter {
                     if(owner != null) {
                         owner.getUser().openPrivateChannel()
                                 .flatMap(pc -> pc.sendMessage(LangID.getStringByID("maxrole", holder.config.lang).replace("_", g.getName())))
-                                .queue();
+                                .queue(null, e -> { });
 
                         warned.set(true);
                     }
