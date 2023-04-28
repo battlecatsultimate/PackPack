@@ -20,7 +20,7 @@ public class GrabLanguage extends ConstraintCommand {
         if (ch == null)
             return;
 
-        String[] contents = getContent(event).split(" ", 3);
+        String[] contents = getContent(event).split(" ", 4);
 
         if(contents.length < 3) {
             replyToMessageSafely(ch, "Format : `p!gl [Locale Number] [ID]`", getMessage(event), a -> a);
@@ -34,6 +34,14 @@ public class GrabLanguage extends ConstraintCommand {
             l = StaticStore.safeParseInt(contents[1]);
         }
 
-        replyToMessageSafely(ch, LangID.getStringByID(contents[2], l), getMessage(event), a -> a);
+        if(contents.length > 3) {
+            try {
+                replyToMessageSafely(ch, String.format(LangID.getStringByID(contents[2], l), (Object[]) contents[3].split("\\\\")), getMessage(event), a -> a);
+            } catch (Exception e) {
+                replyToMessageSafely(ch, LangID.getStringByID(contents[2], l), getMessage(event), a -> a);
+            }
+        } else {
+            replyToMessageSafely(ch, LangID.getStringByID(contents[2], l), getMessage(event), a -> a);
+        }
     }
 }
