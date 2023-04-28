@@ -1289,7 +1289,7 @@ public class AllEventAdapter extends ListenerAdapter {
                 GuildChannel ch = g.getGuildChannelById("1100615571424419910");
 
                 if(ch instanceof MessageChannel) {
-                    PackBot.statusMessage = ((MessageChannel) ch).getHistory().getMessageById("1100615782272090213");
+                    PackBot.statusMessage = ((MessageChannel) ch).retrieveMessageById("1100615782272090213").complete();
                 }
             }
         } catch (Exception ignore) { }
