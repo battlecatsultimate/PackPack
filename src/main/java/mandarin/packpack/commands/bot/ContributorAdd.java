@@ -45,7 +45,7 @@ public class ContributorAdd extends ConstraintCommand {
     private boolean validUser(String id, JDA client) {
         id = id.replaceAll("<@!|<@|>", "");
 
-        User u = client.getUserById(id);
+        User u = client.retrieveUserById(id).complete();
 
         return u != null;
     }
