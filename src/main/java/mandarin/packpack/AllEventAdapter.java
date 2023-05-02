@@ -1302,8 +1302,6 @@ public class AllEventAdapter extends ListenerAdapter {
             if(prefix == null)
                 continue;
 
-            System.out.println(prefix);
-
             if(prefix.matches("(.+)?http(s)?://(.+)?")) {
                 StaticStore.prefix.remove(key);
             }
