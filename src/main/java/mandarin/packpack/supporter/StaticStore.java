@@ -1075,7 +1075,7 @@ public class StaticStore {
             PackBot.statusMessage.editMessage(LangID.getStringByID("stat_info", LangID.EN)
                     .replace("_SSS_", StaticStore.idHolder.size()+"")
                     .replace("_CCC_", StaticStore.executed+"")
-                    .replace("_MMM_", StaticStore.spamData.size()+"")).queue();
+                    .replace("_MMM_", StaticStore.spamData.size()+"")).queue(null, e -> { });
         }
     }
 }
