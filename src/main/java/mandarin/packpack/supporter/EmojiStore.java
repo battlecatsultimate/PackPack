@@ -58,7 +58,7 @@ public class EmojiStore {
                     if(data.length <= 3) {
                         putAbility(jda, data[0], data[1], Long.parseLong(data[2]));
                     } else {
-                        if(data[0].startsWith("T_")) {
+                        if(data[1].contains("LOC")) {
                             for(int i = 2; i < data.length; i++) {
                                 String[] localeID = data[i].split("\\|");
 

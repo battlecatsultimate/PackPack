@@ -449,6 +449,35 @@ public class DataToString extends Data {
         return Data.trio(eid);
     }
 
+    public static String getRangeTitle(MaskEntity e, int lang) {
+        if(e == null)
+            return LangID.getStringByID("data_range", lang);
+
+        if(e.isOmni()) {
+            int oldConfig = CommonStatic.getConfig().lang;
+            CommonStatic.getConfig().lang = lang;
+
+            RichCustomEmoji emoji = EmojiStore.TRAIT.getCont("OMNI");
+
+            CommonStatic.getConfig().lang = oldConfig;
+
+            return LangID.getStringByID("data_range", lang) + (emoji == null ? "" : " " + emoji.getAsMention());
+        }
+
+        if(e.isLD()) {
+            int oldConfig = CommonStatic.getConfig().lang;
+            CommonStatic.getConfig().lang = lang;
+
+            RichCustomEmoji emoji = EmojiStore.TRAIT.getCont("LD");
+
+            CommonStatic.getConfig().lang = oldConfig;
+
+            return LangID.getStringByID("data_range", lang) + (emoji == null ? "" : " " + emoji.getAsMention());
+        }
+
+        return LangID.getStringByID("data_range", lang);
+    }
+
     public static String getRange(MaskUnit f) {
         if(f == null)
             return "";
