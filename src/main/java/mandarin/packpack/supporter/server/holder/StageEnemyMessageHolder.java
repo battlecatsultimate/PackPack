@@ -1,6 +1,5 @@
 package mandarin.packpack.supporter.server.holder;
 
-import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.stage.MapColc;
@@ -78,8 +77,6 @@ public class StageEnemyMessageHolder extends SearchHolder {
     public List<String> accumulateListData(boolean onText) {
         List<String> data = new ArrayList<>();
 
-        int oldConfig = CommonStatic.getConfig().lang;
-
         for(int i = PAGE_CHUNK * page; i < PAGE_CHUNK * (page +1); i++) {
             if(i >= enemy.size())
                 break;
@@ -88,12 +85,8 @@ public class StageEnemyMessageHolder extends SearchHolder {
 
             String ename = Data.trio(e.id.id) + " - ";
 
-            CommonStatic.getConfig().lang = lang;
-
-            if(MultiLangCont.get(e) != null)
-                ename += MultiLangCont.get(e);
-
-            CommonStatic.getConfig().lang = oldConfig;
+            if(MultiLangCont.get(e, lang) != null)
+                ename += MultiLangCont.get(e, lang);
 
             data.add(ename);
         }
@@ -241,44 +234,34 @@ public class StageEnemyMessageHolder extends SearchHolder {
             String name = "";
 
             if(onText) {
-                if(mc != null)
-                    name = mc.getSID()+"/";
+                if (mc != null)
+                    name = mc.getSID() + "/";
                 else
                     name = "Unknown/";
 
-                if(stm.id != null)
-                    name += Data.trio(stm.id.id)+"/";
+                if (stm.id != null)
+                    name += Data.trio(stm.id.id) + "/";
                 else
                     name += "Unknown/";
 
-                if(st.id != null)
-                    name += Data.trio(st.id.id)+" | ";
+                if (st.id != null)
+                    name += Data.trio(st.id.id) + " | ";
                 else
                     name += "Unknown | ";
 
-                if(mc != null) {
-                    int oldConfig = CommonStatic.getConfig().lang;
-                    CommonStatic.getConfig().lang = lang;
+                if (mc != null) {
+                    String mcn = MultiLangCont.get(mc, lang);
 
-                    String mcn = MultiLangCont.get(mc);
-
-                    CommonStatic.getConfig().lang = oldConfig;
-
-                    if(mcn == null || mcn.isBlank())
+                    if (mcn == null || mcn.isBlank())
                         mcn = mc.getSID();
 
-                    name += mcn+" - ";
+                    name += mcn + " - ";
                 } else {
                     name += "Unknown - ";
                 }
             }
 
-            int oldConfig = CommonStatic.getConfig().lang;
-            CommonStatic.getConfig().lang = lang;
-
-            String stmn = MultiLangCont.get(stm);
-
-            CommonStatic.getConfig().lang = oldConfig;
+            String stmn = MultiLangCont.get(stm, lang);
 
             if(stm.id != null) {
                 if(stmn == null || stmn.isBlank())
@@ -290,11 +273,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
 
             name += stmn+" - ";
 
-            CommonStatic.getConfig().lang = lang;
-
-            String stn = MultiLangCont.get(st);
-
-            CommonStatic.getConfig().lang = oldConfig;
+            String stn = MultiLangCont.get(st, lang);
 
             if(st.id != null) {
                 if(stn == null || stn.isBlank())

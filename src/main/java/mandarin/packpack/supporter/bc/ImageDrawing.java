@@ -3985,12 +3985,7 @@ public class ImageDrawing {
                 AbEnemy enemy = id.get();
 
                 if(enemy instanceof Enemy) {
-                    int oldConfig = CommonStatic.getConfig().lang;
-                    CommonStatic.getConfig().lang = lang;
-
-                    enemyName = MultiLangCont.get(enemy);
-
-                    CommonStatic.getConfig().lang = oldConfig;
+                    enemyName = MultiLangCont.get(enemy, lang);
 
                     if(enemyName == null || enemyName.isBlank()) {
                         enemyName = ((Enemy) enemy).names.toString();
@@ -4379,12 +4374,7 @@ public class ImageDrawing {
                             AbEnemy enemy = id.get();
 
                             if(enemy instanceof Enemy) {
-                                int oldConfig = CommonStatic.getConfig().lang;
-                                CommonStatic.getConfig().lang = lang;
-
-                                content = MultiLangCont.get(enemy);
-
-                                CommonStatic.getConfig().lang = oldConfig;
+                                content = MultiLangCont.get(enemy, lang);
 
                                 if(content == null || content.isBlank()) {
                                     content = ((Enemy) enemy).names.toString();

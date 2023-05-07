@@ -53,7 +53,7 @@ public class EntityFilter {
 
                     String formName = null;
 
-                    if(MultiLangCont.get(f) != null) {
+                    if(MultiLangCont.get(f, lang) != null) {
                         fname.append(StaticStore.safeMultiLangGet(f, StaticStore.langIndex[i]));
 
                         formName = StaticStore.safeMultiLangGet(f, StaticStore.langIndex[i]);
@@ -340,7 +340,7 @@ public class EntityFilter {
 
                 String enemyName = null;
 
-                if(MultiLangCont.get(e) != null) {
+                if(MultiLangCont.get(e, lang) != null) {
                     ename.append(StaticStore.safeMultiLangGet(e, StaticStore.langIndex[i]));
 
                     enemyName = StaticStore.safeMultiLangGet(e, StaticStore.langIndex[i]);

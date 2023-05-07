@@ -1,6 +1,5 @@
 package mandarin.packpack.supporter.server.holder;
 
-import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.stage.MapColc;
@@ -58,12 +57,7 @@ public class StageInfoMessageHolder extends SearchHolder {
 
             if(onText) {
                 if(mc != null) {
-                    int oldConfig = CommonStatic.getConfig().lang;
-                    CommonStatic.getConfig().lang = lang;
-
-                    String mcn = MultiLangCont.get(mc);
-
-                    CommonStatic.getConfig().lang = oldConfig;
+                    String mcn = MultiLangCont.get(mc, lang);
 
                     if(mcn == null || mcn.isBlank())
                         mcn = mc.getSID();
@@ -74,12 +68,7 @@ public class StageInfoMessageHolder extends SearchHolder {
                 }
             }
 
-            int oldConfig = CommonStatic.getConfig().lang;
-            CommonStatic.getConfig().lang = lang;
-
-            String stmn = MultiLangCont.get(stm);
-
-            CommonStatic.getConfig().lang = oldConfig;
+            String stmn = MultiLangCont.get(stm, lang);
 
             if(stm.id != null) {
                 if(stmn == null || stmn.isBlank())
@@ -91,11 +80,7 @@ public class StageInfoMessageHolder extends SearchHolder {
 
             name += stmn+" - ";
 
-            CommonStatic.getConfig().lang = lang;
-
-            String stn = MultiLangCont.get(st);
-
-            CommonStatic.getConfig().lang = oldConfig;
+            String stn = MultiLangCont.get(st, lang);
 
             if(st.id != null) {
                 if(stn == null || stn.isBlank())

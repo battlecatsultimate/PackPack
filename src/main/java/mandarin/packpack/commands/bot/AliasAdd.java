@@ -211,13 +211,8 @@ public class AliasAdd extends ConstraintCommand {
 
                         String ename = e.id == null ? "UNKNOWN " : Data.trio(e.id.id)+" ";
 
-                        int oldConfig = CommonStatic.getConfig().lang;
-                        CommonStatic.getConfig().lang = lang;
-
-                        if(MultiLangCont.get(e) != null)
-                            ename += MultiLangCont.get(e);
-
-                        CommonStatic.getConfig().lang = oldConfig;
+                        if(MultiLangCont.get(e, lang) != null)
+                            ename += MultiLangCont.get(e, lang);
 
                         sb.append(i+1).append(". ").append(ename).append("\n");
                     }
@@ -335,12 +330,7 @@ public class AliasAdd extends ConstraintCommand {
                             stageName += "Unknown | ";
 
                         if(mc != null) {
-                            int oldConfig = CommonStatic.getConfig().lang;
-                            CommonStatic.getConfig().lang = lang;
-
-                            String mcn = MultiLangCont.get(mc);
-
-                            CommonStatic.getConfig().lang = oldConfig;
+                            String mcn = MultiLangCont.get(mc, lang);
 
                             if(mcn == null || mcn.isBlank())
                                 mcn = mc.getSID();
@@ -350,12 +340,7 @@ public class AliasAdd extends ConstraintCommand {
                             stageName += "Unknown - ";
                         }
 
-                        int oldConfig = CommonStatic.getConfig().lang;
-                        CommonStatic.getConfig().lang = lang;
-
-                        String stmn = MultiLangCont.get(stm);
-
-                        CommonStatic.getConfig().lang = oldConfig;
+                        String stmn = MultiLangCont.get(stm, lang);
 
                         if(stm.id != null) {
                             if(stmn == null || stmn.isBlank())
@@ -367,11 +352,7 @@ public class AliasAdd extends ConstraintCommand {
 
                         stageName += stmn+" - ";
 
-                        CommonStatic.getConfig().lang = lang;
-
-                        String stn = MultiLangCont.get(st);
-
-                        CommonStatic.getConfig().lang = oldConfig;
+                        String stn = MultiLangCont.get(st, lang);
 
                         if(st.id != null) {
                             if(stn == null || stn.isBlank())

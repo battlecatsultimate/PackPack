@@ -575,12 +575,7 @@ public class EntityHandler {
 
         File img = generateIcon(unit);
 
-        int oldConfig = CommonStatic.getConfig().lang;
-        CommonStatic.getConfig().lang = lang;
-
-        String unitName = MultiLangCont.get(unit);
-
-        CommonStatic.getConfig().lang = oldConfig;
+        String unitName = MultiLangCont.get(unit, lang);
 
         if(unitName == null)
             unitName = Data.trio(unit.unit.id.id);
@@ -1070,23 +1065,14 @@ public class EntityHandler {
 
         MapColc mc = stm.getCont();
 
-        int oldConfig = CommonStatic.getConfig().lang;
-        CommonStatic.getConfig().lang = lang;
-
-        String mcName = MultiLangCont.get(mc);
-
-        CommonStatic.getConfig().lang = oldConfig;
+        String mcName = MultiLangCont.get(mc, lang);
 
         if(mcName == null || mcName.isBlank())
             mcName = mc.getSID();
 
         name += mcName+" - ";
 
-        CommonStatic.getConfig().lang = lang;
-
-        String stmName = MultiLangCont.get(stm);
-
-        CommonStatic.getConfig().lang = oldConfig;
+        String stmName = MultiLangCont.get(stm, lang);
 
         if(stmName == null || stmName.isBlank())
             if(stm.id != null)
@@ -1096,11 +1082,7 @@ public class EntityHandler {
 
         name += stmName + " - ";
 
-        CommonStatic.getConfig().lang = lang;
-
-        String stName = MultiLangCont.get(st);
-
-        CommonStatic.getConfig().lang = oldConfig;
+        String stName = MultiLangCont.get(st, lang);
 
         if(stName == null || stName.isBlank())
             if(st.id != null)
@@ -1306,23 +1288,14 @@ public class EntityHandler {
 
         MapColc mc = stm.getCont();
 
-        int oldConfig = CommonStatic.getConfig().lang;
-        CommonStatic.getConfig().lang = lang;
-
-        String mcName = MultiLangCont.get(mc);
-
-        CommonStatic.getConfig().lang = oldConfig;
+        String mcName = MultiLangCont.get(mc, lang);
 
         if(mcName == null || mcName.isBlank())
             mcName = mc.getSID();
 
         name += mcName+" - ";
 
-        CommonStatic.getConfig().lang = lang;
-
-        String stmName = MultiLangCont.get(stm);
-
-        CommonStatic.getConfig().lang = oldConfig;
+        String stmName = MultiLangCont.get(stm, lang);
 
         if(stmName == null || stmName.isBlank())
             if(stm.id != null)
@@ -1332,11 +1305,7 @@ public class EntityHandler {
 
         name += stmName + " - ";
 
-        CommonStatic.getConfig().lang = lang;
-
-        String stName = MultiLangCont.get(st);
-
-        CommonStatic.getConfig().lang = oldConfig;
+        String stName = MultiLangCont.get(st, lang);
 
         if(stName == null || stName.isBlank())
             if(st.id != null)
@@ -1544,12 +1513,7 @@ public class EntityHandler {
             int atk = line.mult_atk;
 
             if(enemy instanceof Enemy) {
-                int oldConfig = CommonStatic.getConfig().lang;
-                CommonStatic.getConfig().lang = lang;
-
-                String eName = MultiLangCont.get(enemy);
-
-                CommonStatic.getConfig().lang = oldConfig;
+                String eName = MultiLangCont.get(enemy, lang);
 
                 if(eName == null || eName.isBlank())
                     eName = ((Enemy) enemy).names.toString();
@@ -1953,14 +1917,7 @@ public class EntityHandler {
         f.anim.unload();
 
         if(img != null) {
-            CommonStatic.getConfig().lang = lang;
-
-            int oldConfig = CommonStatic.getConfig().lang;
-            CommonStatic.getConfig().lang = lang;
-
-            String fName = MultiLangCont.get(f);
-
-            CommonStatic.getConfig().lang = oldConfig;
+            String fName = MultiLangCont.get(f, lang);
 
             if(fName == null || fName.isBlank())
                 fName = f.names.toString();
@@ -1985,14 +1942,7 @@ public class EntityHandler {
         en.anim.unload();
 
         if(img != null) {
-            CommonStatic.getConfig().lang = lang;
-
-            int oldConfig = CommonStatic.getConfig().lang;
-            CommonStatic.getConfig().lang = lang;
-
-            String eName = MultiLangCont.get(en);
-
-            CommonStatic.getConfig().lang = oldConfig;
+            String eName = MultiLangCont.get(en, lang);
 
             if(eName == null || eName.isBlank())
                 eName = en.names.toString();

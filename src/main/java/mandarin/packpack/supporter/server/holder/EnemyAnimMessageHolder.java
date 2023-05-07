@@ -1,6 +1,5 @@
 package mandarin.packpack.supporter.server.holder;
 
-import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Enemy;
@@ -63,13 +62,8 @@ public class EnemyAnimMessageHolder extends SearchHolder {
 
             String ename = Data.trio(e.id.id) + " ";
 
-            int oldConfig = CommonStatic.getConfig().lang;
-            CommonStatic.getConfig().lang = lang;
-
-            if (MultiLangCont.get(e) != null)
-                ename += MultiLangCont.get(e);
-
-            CommonStatic.getConfig().lang = oldConfig;
+            if (MultiLangCont.get(e, lang) != null)
+                ename += MultiLangCont.get(e, lang);
 
             data.add(ename);
         }

@@ -1,6 +1,5 @@
 package mandarin.packpack.supporter.server.holder;
 
-import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Form;
@@ -38,14 +37,8 @@ public class FormSpriteMessageHolder extends SearchHolder {
 
             String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
 
-            int oldConfig = CommonStatic.getConfig().lang;
-            CommonStatic.getConfig().lang = lang;
-
-            if(MultiLangCont.get(f) != null)
-                fname += MultiLangCont.get(f);
-
-            CommonStatic.getConfig().lang = oldConfig;
-
+            if(MultiLangCont.get(f, lang) != null)
+                fname += MultiLangCont.get(f, lang);
             data.add(fname);
         }
 

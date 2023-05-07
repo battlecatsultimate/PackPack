@@ -1,6 +1,5 @@
 package mandarin.packpack.supporter.server.holder.alias;
 
-import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Form;
@@ -267,13 +266,8 @@ public class AliasFormMessageHolder extends MessageHolder<MessageReceivedEvent> 
 
             String fname = Data.trio(f.uid.id)+"-"+Data.trio(f.fid)+" ";
 
-            int oldConfig = CommonStatic.getConfig().lang;
-            CommonStatic.getConfig().lang = lang;
-
-            if(MultiLangCont.get(f) != null)
-                fname += MultiLangCont.get(f);
-
-            CommonStatic.getConfig().lang = oldConfig;
+            if(MultiLangCont.get(f, lang) != null)
+                fname += MultiLangCont.get(f, lang);
 
             sb.append(i+1).append(". ").append(fname).append("\n");
         }

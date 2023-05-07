@@ -440,12 +440,7 @@ public class StageInfo extends TimedConstraintCommand {
 
             if(full) {
                 if(mc != null) {
-                    int oldConfig = CommonStatic.getConfig().lang;
-                    CommonStatic.getConfig().lang = lang;
-
-                    String mcn = MultiLangCont.get(mc);
-
-                    CommonStatic.getConfig().lang = oldConfig;
+                    String mcn = MultiLangCont.get(mc, lang);
 
                     if(mcn == null || mcn.isBlank())
                         mcn = mc.getSID();
@@ -458,12 +453,7 @@ public class StageInfo extends TimedConstraintCommand {
                 name = "";
             }
 
-            int oldConfig = CommonStatic.getConfig().lang;
-            CommonStatic.getConfig().lang = lang;
-
-            String stmn = MultiLangCont.get(stm);
-
-            CommonStatic.getConfig().lang = oldConfig;
+            String stmn = MultiLangCont.get(stm, lang);
 
             if(stm.id != null) {
                 if(stmn == null || stmn.isBlank())
@@ -475,11 +465,7 @@ public class StageInfo extends TimedConstraintCommand {
 
             name += stmn+" - ";
 
-            CommonStatic.getConfig().lang = lang;
-
-            String stn = MultiLangCont.get(st);
-
-            CommonStatic.getConfig().lang = oldConfig;
+            String stn = MultiLangCont.get(st, lang);
 
             if(st.id != null) {
                 if(stn == null || stn.isBlank())

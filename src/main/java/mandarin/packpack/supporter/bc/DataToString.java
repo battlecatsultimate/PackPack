@@ -165,12 +165,7 @@ public class DataToString extends Data {
         if(f == null)
             return "";
 
-        int oldConfig = CommonStatic.getConfig().lang;
-        CommonStatic.getConfig().lang = lang;
-
-        String name = MultiLangCont.get(f);
-
-        CommonStatic.getConfig().lang = oldConfig;
+        String name = MultiLangCont.get(f, lang);
 
         if(name == null)
             name = "";
@@ -203,17 +198,10 @@ public class DataToString extends Data {
         if(e == null)
             return "";
 
-        int oldConfig = CommonStatic.getConfig().lang;
-        CommonStatic.getConfig().lang = lang;
-
-        if(MultiLangCont.get(e) == null) {
-            CommonStatic.getConfig().lang = oldConfig;
-
+        if(MultiLangCont.get(e, lang) == null) {
             return Data.trio(e.id.id);
         } else {
-            String res = MultiLangCont.get(e);
-
-            CommonStatic.getConfig().lang = oldConfig;
+            String res = MultiLangCont.get(e, lang);
 
             return res;
         }
@@ -1243,12 +1231,7 @@ public class DataToString extends Data {
                 if(u.get(i).forms == null || u.get(i).forms.length == 0)
                     continue;
 
-                int oldConfig = CommonStatic.getConfig().lang;
-                CommonStatic.getConfig().lang = lang;
-
-                String f = MultiLangCont.get(u.get(i).forms[0]);
-
-                CommonStatic.getConfig().lang = oldConfig;
+                String f = MultiLangCont.get(u.get(i).forms[0], lang);
 
                 if(f == null)
                     f = u.get(i).forms[0].names.toString();
@@ -1333,12 +1316,7 @@ public class DataToString extends Data {
                     if(unit == null)
                         continue;
 
-                    int oldConfig = CommonStatic.getConfig().lang;
-                    CommonStatic.getConfig().lang = lang;
-
-                    f = MultiLangCont.get(unit.forms[0]);
-
-                    CommonStatic.getConfig().lang = oldConfig;
+                    f = MultiLangCont.get(unit.forms[0], lang);
 
                     if(f == null)
                         f = unit.forms[0].names.toString();
@@ -2153,13 +2131,8 @@ public class DataToString extends Data {
     }
 
     private static String getMapStageName(Stage st, int lang) {
-        int oldConfig = CommonStatic.getConfig().lang;
-        CommonStatic.getConfig().lang = lang;
-
-        String map = MultiLangCont.get(st.getCont());
-        String stage = MultiLangCont.get(st);
-
-        CommonStatic.getConfig().lang = oldConfig;
+        String map = MultiLangCont.get(st.getCont(), lang);
+        String stage = MultiLangCont.get(st, lang);
 
         if(map == null || map.isBlank()) {
             map = st.getCont().getCont().getSID()+"/"+Data.trio(st.getCont().id.id);
@@ -2215,12 +2188,7 @@ public class DataToString extends Data {
         if(f == null)
             return "";
 
-        int oldConfig = CommonStatic.getConfig().lang;
-        CommonStatic.getConfig().lang = lang;
-
-        String name = MultiLangCont.get(f);
-
-        CommonStatic.getConfig().lang = oldConfig;
+        String name = MultiLangCont.get(f, lang);
 
         if(name == null || name.isBlank())
             name = f.names.toString();
@@ -2383,12 +2351,7 @@ public class DataToString extends Data {
         if(e == null)
             return "";
 
-        int oldConfig = CommonStatic.getConfig().lang;
-        CommonStatic.getConfig().lang = lang;
-
-        String name = MultiLangCont.get(e);
-
-        CommonStatic.getConfig().lang = oldConfig;
+        String name = MultiLangCont.get(e, lang);
 
         if(name == null || name.isBlank()) {
             name = e.names.toString();

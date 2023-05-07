@@ -90,13 +90,7 @@ public class EnemyImage extends TimedConstraintCommand {
                 enemies.get(0).anim.unload();
 
                 if(img != null) {
-
-                    int oldConfig = CommonStatic.getConfig().lang;
-                    CommonStatic.getConfig().lang = lang;
-
-                    String fName = MultiLangCont.get(enemies.get(0));
-
-                    CommonStatic.getConfig().lang = oldConfig;
+                    String fName = MultiLangCont.get(enemies.get(0), lang);
 
                     if(fName == null || fName.isBlank())
                         fName = enemies.get(0).names.toString();

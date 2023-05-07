@@ -89,12 +89,7 @@ public class FormImage extends TimedConstraintCommand {
                 forms.get(0).anim.unload();
 
                 if(img != null) {
-                    int oldConfig = CommonStatic.getConfig().lang;
-                    CommonStatic.getConfig().lang = lang;
-
-                    String fName = MultiLangCont.get(forms.get(0));
-
-                    CommonStatic.getConfig().lang = oldConfig;
+                    String fName = MultiLangCont.get(forms.get(0), lang);
 
                     if(fName == null || fName.isBlank())
                         fName = forms.get(0).names.toString();

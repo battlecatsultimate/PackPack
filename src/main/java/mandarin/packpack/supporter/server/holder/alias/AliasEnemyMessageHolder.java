@@ -1,6 +1,5 @@
 package mandarin.packpack.supporter.server.holder.alias;
 
-import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Enemy;
@@ -251,13 +250,8 @@ public class AliasEnemyMessageHolder extends MessageHolder<MessageReceivedEvent>
 
             String ename = Data.trio(e.id.id)+" ";
 
-            int oldConfig = CommonStatic.getConfig().lang;
-            CommonStatic.getConfig().lang = lang;
-
-            if(MultiLangCont.get(e) != null)
-                ename += MultiLangCont.get(e);
-
-            CommonStatic.getConfig().lang = oldConfig;
+            if(MultiLangCont.get(e, lang) != null)
+                ename += MultiLangCont.get(e, lang);
 
             sb.append(i+1).append(". ").append(ename).append("\n");
         }
