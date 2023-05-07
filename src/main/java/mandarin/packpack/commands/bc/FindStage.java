@@ -368,56 +368,50 @@ public class FindStage extends TimedConstraintCommand {
             label:
             for(String str : pureMessage) {
                 switch (str) {
-                    case "-s":
+                    case "-s" -> {
                         if ((result & PARAM_SECOND) == 0) {
                             result |= PARAM_SECOND;
                         } else
                             break label;
-                        break;
-                    case "-e":
-                    case "-extra":
+                    }
+                    case "-e", "-extra" -> {
                         if ((result & PARAM_EXTRA) == 0) {
                             result |= PARAM_EXTRA;
                         } else
                             break label;
-                        break;
-                    case "-c":
-                    case "-compact":
+                    }
+                    case "-c", "-compact" -> {
                         if ((result & PARAM_COMPACT) == 0) {
                             result |= PARAM_COMPACT;
                         } else
                             break label;
-                        break;
-                    case "-o":
-                    case "-or":
+                    }
+                    case "-o", "-or" -> {
                         if ((result & PARAM_OR) == 0) {
                             result |= PARAM_OR;
                         } else
                             break label;
-                        break;
-                    case "-a":
-                    case "-and":
+                    }
+                    case "-a", "-and" -> {
                         if ((result & PARAM_AND) == 0) {
                             result |= PARAM_AND;
                         } else
                             break label;
-                        break;
-                    case "-b":
-                    case "-boss":
+                    }
+                    case "-b", "-boss" -> {
                         if ((result & PARAM_BOSS) == 0) {
                             result |= PARAM_BOSS;
                         } else {
                             break label;
                         }
-                        break;
-                    case "-m":
-                    case "-monthly":
+                    }
+                    case "-m", "-monthly" -> {
                         if ((result & PARAM_MONTHLY) == 0) {
                             result |= PARAM_MONTHLY;
                         } else {
                             break label;
                         }
-                        break;
+                    }
                 }
             }
         }
@@ -650,38 +644,19 @@ public class FindStage extends TimedConstraintCommand {
                 continue;
 
             switch (mc.getSID()) {
-                case "000003":
+                case "000003" -> {
                     switch (map.id.id) {
-                        case 3:
-                            addIfNone(category, MONTHLY.ITF1);
-                            break;
-                        case 4:
-                            addIfNone(category, MONTHLY.ITF2);
-                            break;
-                        case 5:
-                            addIfNone(category, MONTHLY.ITF3);
-                            break;
-                        case 6:
-                            addIfNone(category, MONTHLY.COTC1);
-                            break;
-                        case 7:
-                            addIfNone(category, MONTHLY.COTC2);
-                            break;
-                        case 8:
-                            addIfNone(category, MONTHLY.COTC3);
-                            break;
-                        case 9:
-                            addIfNone(category, MONTHLY.EOC);
-                            break;
+                        case 3 -> addIfNone(category, MONTHLY.ITF1);
+                        case 4 -> addIfNone(category, MONTHLY.ITF2);
+                        case 5 -> addIfNone(category, MONTHLY.ITF3);
+                        case 6 -> addIfNone(category, MONTHLY.COTC1);
+                        case 7 -> addIfNone(category, MONTHLY.COTC2);
+                        case 8 -> addIfNone(category, MONTHLY.COTC3);
+                        case 9 -> addIfNone(category, MONTHLY.EOC);
                     }
-
-                    break;
-                case "000001":
-                    addIfNone(category, MONTHLY.CYCLONE);
-                    break;
-                case "000000":
-                    addIfNone(category, MONTHLY.SOL);
-                    break;
+                }
+                case "000001" -> addIfNone(category, MONTHLY.CYCLONE);
+                case "000000" -> addIfNone(category, MONTHLY.SOL);
             }
         }
 

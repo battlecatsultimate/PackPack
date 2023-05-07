@@ -974,16 +974,12 @@ public class StaticStore {
     }
 
     public static String getVersion(int lang) {
-        switch (lang) {
-            case 0:
-                return englishVersion;
-            case 1:
-                return taiwaneseVersion;
-            case 2:
-                return koreanVersion;
-            default:
-                return japaneseVersion;
-        }
+        return switch (lang) {
+            case 0 -> englishVersion;
+            case 1 -> taiwaneseVersion;
+            case 2 -> koreanVersion;
+            default -> japaneseVersion;
+        };
     }
 
     public static String beautifyFileSize(File f) {
@@ -1037,12 +1033,10 @@ public class StaticStore {
     public static void fetchUDPData() throws Exception {
         JsonElement data = WebFileIO.directRead(UDP_LINK);
 
-        if(!(data instanceof JsonArray))
+        if(!(data instanceof JsonArray arr))
             return;
 
         availableUDP.clear();
-
-        JsonArray arr = (JsonArray) data;
 
         for(int i = 0; i < arr.size(); i++) {
             JsonObject obj = arr.get(i).getAsJsonObject();

@@ -113,17 +113,17 @@ public class AliasStageMessageHolder extends MessageHolder<MessageReceivedEvent>
             ArrayList<String> alias = AliasHolder.getAlias(AliasHolder.TYPE.STAGE, lang, stage.get(id));
 
             switch (mode) {
-                case GET:
-                    if(alias == null || alias.isEmpty()) {
+                case GET -> {
+                    if (alias == null || alias.isEmpty()) {
                         createMessageWithNoPings(ch, LangID.getStringByID("alias_noalias", lang).replace("_", stName));
                     } else {
                         StringBuilder result = new StringBuilder(LangID.getStringByID("alias_stalias", lang).replace("_SSS_", stName).replace("_NNN_", String.valueOf(alias.size())));
                         result.append("\n\n");
 
-                        for(int i = 0; i < alias.size(); i++) {
+                        for (int i = 0; i < alias.size(); i++) {
                             String temp = " - " + alias.get(i);
 
-                            if(result.length() + temp.length() > 1900) {
+                            if (result.length() + temp.length() > 1900) {
                                 result.append("\n")
                                         .append(LangID.getStringByID("alias_etc", lang));
                                 break;
@@ -131,62 +131,48 @@ public class AliasStageMessageHolder extends MessageHolder<MessageReceivedEvent>
 
                             result.append(temp);
 
-                            if(i < alias.size() - 1) {
+                            if (i < alias.size() - 1) {
                                 result.append("\n");
                             }
                         }
 
                         createMessageWithNoPings(ch, result.toString());
                     }
-                    break;
-                case ADD:
-                    if(alias == null)
+                }
+                case ADD -> {
+                    if (alias == null)
                         alias = new ArrayList<>();
-
-                    if(aliasName.isBlank()) {
+                    if (aliasName.isBlank()) {
                         createMessageWithNoPings(ch, LangID.getStringByID("alias_aliasblank", lang));
                         break;
                     }
-
-                    if(alias.contains(aliasName)) {
+                    if (alias.contains(aliasName)) {
                         createMessageWithNoPings(ch, LangID.getStringByID("alias_contain", lang).replace("_", stName));
                         break;
                     }
-
                     alias.add(aliasName);
-
                     AliasHolder.SALIAS.put(AliasHolder.getLangCode(lang), stage.get(id), alias);
-
                     createMessageWithNoPings(ch, LangID.getStringByID("alias_added", lang).replace("_DDD_", stName).replace("_AAA_", aliasName));
-
                     StaticStore.logger.uploadLog("Alias added\n\nStage : " + stName + "\nAlias : " + aliasName + "\nBy : " + event.getAuthor().getAsMention());
-
-                    break;
-                case REMOVE:
-                    if(alias == null || alias.isEmpty()) {
+                }
+                case REMOVE -> {
+                    if (alias == null || alias.isEmpty()) {
                         createMessageWithNoPings(ch, LangID.getStringByID("alias_noalias", lang).replace("_", stName));
                         break;
                     }
-
-                    if(aliasName.isBlank()) {
+                    if (aliasName.isBlank()) {
                         createMessageWithNoPings(ch, LangID.getStringByID("alias_aliasblank", lang));
                         break;
                     }
-
-                    if(!alias.contains(aliasName)) {
+                    if (!alias.contains(aliasName)) {
                         createMessageWithNoPings(ch, LangID.getStringByID("alias_nosuch", lang).replace("_", stName));
                         break;
                     }
-
                     alias.remove(aliasName);
-
                     AliasHolder.SALIAS.put(AliasHolder.getLangCode(lang), stage.get(id), alias);
-
                     createMessageWithNoPings(ch, LangID.getStringByID("alias_removed", lang).replace("_DDD_", stName).replace("_AAA_", aliasName));
-
                     StaticStore.logger.uploadLog("Alias removed\n\nStage : " + stName + "\nAlias : " + aliasName + "\nBy : " + event.getAuthor().getAsMention());
-
-                    break;
+                }
             }
 
             expired = true;

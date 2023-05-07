@@ -372,38 +372,19 @@ public class StageEnemyMessageHolder extends SearchHolder {
                 continue;
 
             switch (mc.getSID()) {
-                case "000003":
+                case "000003" -> {
                     switch (map.id.id) {
-                        case 3:
-                            addIfNone(category, FindStage.MONTHLY.ITF1);
-                            break;
-                        case 4:
-                            addIfNone(category, FindStage.MONTHLY.ITF2);
-                            break;
-                        case 5:
-                            addIfNone(category, FindStage.MONTHLY.ITF3);
-                            break;
-                        case 6:
-                            addIfNone(category, FindStage.MONTHLY.COTC1);
-                            break;
-                        case 7:
-                            addIfNone(category, FindStage.MONTHLY.COTC2);
-                            break;
-                        case 8:
-                            addIfNone(category, FindStage.MONTHLY.COTC3);
-                            break;
-                        case 9:
-                            addIfNone(category, FindStage.MONTHLY.EOC);
-                            break;
+                        case 3 -> addIfNone(category, FindStage.MONTHLY.ITF1);
+                        case 4 -> addIfNone(category, FindStage.MONTHLY.ITF2);
+                        case 5 -> addIfNone(category, FindStage.MONTHLY.ITF3);
+                        case 6 -> addIfNone(category, FindStage.MONTHLY.COTC1);
+                        case 7 -> addIfNone(category, FindStage.MONTHLY.COTC2);
+                        case 8 -> addIfNone(category, FindStage.MONTHLY.COTC3);
+                        case 9 -> addIfNone(category, FindStage.MONTHLY.EOC);
                     }
-
-                    break;
-                case "000001":
-                    addIfNone(category, FindStage.MONTHLY.CYCLONE);
-                    break;
-                case "000000":
-                    addIfNone(category, FindStage.MONTHLY.SOL);
-                    break;
+                }
+                case "000001" -> addIfNone(category, FindStage.MONTHLY.CYCLONE);
+                case "000000" -> addIfNone(category, FindStage.MONTHLY.SOL);
             }
         }
 

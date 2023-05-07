@@ -1049,10 +1049,8 @@ public class DataToString extends Data {
     }
 
     public static String getEnergy(Stage st, int lang) {
-        if(!(st.info instanceof DefStageInfo))
+        if(!(st.info instanceof DefStageInfo info))
             return LangID.getStringByID("data_none", lang);
-
-        DefStageInfo info = (DefStageInfo) st.info;
 
         StageMap stm = st.getCont();
 
@@ -1082,10 +1080,8 @@ public class DataToString extends Data {
     }
 
     public static String getXP(Stage st) {
-        if(!(st.info instanceof DefStageInfo))
+        if(!(st.info instanceof DefStageInfo info))
             return "" + 0;
-
-        DefStageInfo info = (DefStageInfo) st.info;
 
         Treasure t = BasisSet.current().t();
 
@@ -1501,10 +1497,8 @@ public class DataToString extends Data {
     }
 
     public static String getRewards(Stage s, int lang) {
-        if(s == null || !(s.info instanceof DefStageInfo) || ((DefStageInfo) s.info).drop == null || ((DefStageInfo) s.info).drop.length == 0)
+        if(s == null || !(s.info instanceof DefStageInfo info) || ((DefStageInfo) s.info).drop == null || ((DefStageInfo) s.info).drop.length == 0)
             return null;
-
-        DefStageInfo info = (DefStageInfo) s.info;
 
         ArrayList<String> chances = getDropData(s);
 
@@ -1561,10 +1555,8 @@ public class DataToString extends Data {
     }
 
     public static List<String[]> getRewards(Stage s, CustomStageMap map, int lang) {
-        if(s == null || !(s.info instanceof DefStageInfo) || ((DefStageInfo) s.info).drop == null || ((DefStageInfo) s.info).drop.length == 0)
+        if(s == null || !(s.info instanceof DefStageInfo info) || ((DefStageInfo) s.info).drop == null || ((DefStageInfo) s.info).drop.length == 0)
             return null;
-
-        DefStageInfo info = (DefStageInfo) s.info;
 
         ArrayList<String> chances = getDropData(s);
 
@@ -1620,10 +1612,8 @@ public class DataToString extends Data {
     private static ArrayList<String> getDropData(Stage s) {
         ArrayList<String> res = new ArrayList<>();
 
-        if(!(s.info instanceof DefStageInfo))
+        if(!(s.info instanceof DefStageInfo info))
             return res;
-
-        DefStageInfo info = (DefStageInfo) s.info;
 
         int[][] data = info.drop;
 
@@ -1693,10 +1683,8 @@ public class DataToString extends Data {
     public static ArrayList<Double> getDropChances(Stage s) {
         ArrayList<Double> res = new ArrayList<>();
 
-        if(!(s.info instanceof DefStageInfo))
+        if(!(s.info instanceof DefStageInfo info))
             return null;
-
-        DefStageInfo info = (DefStageInfo) s.info;
 
         int[][] data = info.drop;
 
@@ -1764,10 +1752,8 @@ public class DataToString extends Data {
     }
 
     public static String getScoreDrops(Stage st, int lang) {
-        if(st == null || !(st.info instanceof DefStageInfo) || ((DefStageInfo) st.info).time == null || ((DefStageInfo) st.info).time.length == 0)
+        if(st == null || !(st.info instanceof DefStageInfo info) || ((DefStageInfo) st.info).time == null || ((DefStageInfo) st.info).time.length == 0)
             return null;
-
-        DefStageInfo info = (DefStageInfo) st.info;
 
         StringBuilder builder = new StringBuilder();
 
@@ -1789,10 +1775,8 @@ public class DataToString extends Data {
     }
 
     public static List<String[]> getScoreDrops(Stage st, CustomStageMap map, int lang) {
-        if(st == null || !(st.info instanceof DefStageInfo) || ((DefStageInfo) st.info).time == null || ((DefStageInfo) st.info).time.length == 0)
+        if(st == null || !(st.info instanceof DefStageInfo info) || ((DefStageInfo) st.info).time == null || ((DefStageInfo) st.info).time.length == 0)
             return null;
-
-        DefStageInfo info = (DefStageInfo) st.info;
 
         List<String[]> result = new ArrayList<>();
 
@@ -1916,42 +1900,30 @@ public class DataToString extends Data {
     }
 
     public static String getComboLevel(int lv, int lang) {
-        switch (lv) {
-            case 0:
-                return LangID.getStringByID("data_combosm", lang);
-            case 1:
-                return LangID.getStringByID("data_combom", lang);
-            case 2:
-                return LangID.getStringByID("data_combol", lang);
-            case 3:
-                return LangID.getStringByID("data_comboxl", lang);
-            default:
-                return "Lv. "+lv;
-        }
+        return switch (lv) {
+            case 0 -> LangID.getStringByID("data_combosm", lang);
+            case 1 -> LangID.getStringByID("data_combom", lang);
+            case 2 -> LangID.getStringByID("data_combol", lang);
+            case 3 -> LangID.getStringByID("data_comboxl", lang);
+            default -> "Lv. " + lv;
+        };
     }
 
     private static int getComboFactor(int type, int lv) {
         switch (type) {
-            case 0:
-            case 2:
+            case 0, 2 -> {
                 return 10 + lv * 5;
-            case 1:
-            case 20:
-            case 19:
-            case 18:
-            case 17:
-            case 16:
-            case 15:
-            case 14:
-            case 13:
-            case 12:
-            case 9:
+            }
+            case 1, 20, 19, 18, 17, 16, 15, 14, 13, 12, 9 -> {
                 return 10 + 10 * lv;
-            case 3:
+            }
+            case 3 -> {
                 return 20 + 20 * lv;
-            case 4:
+            }
+            case 4 -> {
                 return 2 + lv;
-            case 5:
+            }
+            case 5 -> {
                 if (lv == 0) {
                     return 300;
                 } else if (lv == 1) {
@@ -1959,78 +1931,59 @@ public class DataToString extends Data {
                 } else {
                     return 1000;
                 }
-            case 6:
-            case 10:
+            }
+            case 6, 10 -> {
                 return 20 + 30 * lv;
-            case 7:
+            }
+            case 7 -> {
                 return 150 + 150 * lv;
-            case 11:
-                return (int)(264.0 * (1 + lv) / 10.0);
-            case 21:
+            }
+            case 11 -> {
+                return (int) (264.0 * (1 + lv) / 10.0);
+            }
+            case 21 -> {
                 return 20 + 10 * lv;
-            case 22:
-            case 23:
+            }
+            case 22, 23 -> {
                 return 100 + 100 * lv;
-            case 24:
+            }
+            case 24 -> {
                 return 1 + lv;
-            default:
+            }
+            default -> {
                 return 0;
+            }
         }
     }
 
     private static String getComboKeyword(int type) {
-        switch (type) {
-            case 0:
-                return "atk";
-            case 1:
-                return "health";
-            case 2:
-                return "speed";
-            case 14:
-                return "strong";
-            case 15:
-                return "massive";
-            case 16:
-                return "resistant";
-            case 17:
-                return "kb";
-            case 18:
-                return "slow";
-            case 19:
-                return "freeze";
-            case 20:
-                return "weaken";
-            case 21:
-                return "strengthen";
-            case 23:
-                return "eva";
-            case 22:
-                return "witch";
-            case 24:
-                return "critical";
-            case 3:
-                return "caninitchar";
-            case 6:
-                return "canatk";
-            case 7:
-                return "canchar";
-            case 10:
-                return "basehp";
-            case 5:
-                return "initmon";
-            case 4:
-                return "worker";
-            case 9:
-                return "wallet";
-            case 11:
-                return "cooldown";
-            case 12:
-                return "acc";
-            case 13:
-                return "study";
-            default:
-                throw new IllegalStateException("Invalid Combo Type : "+type);
-        }
+        return switch (type) {
+            case 0 -> "atk";
+            case 1 -> "health";
+            case 2 -> "speed";
+            case 14 -> "strong";
+            case 15 -> "massive";
+            case 16 -> "resistant";
+            case 17 -> "kb";
+            case 18 -> "slow";
+            case 19 -> "freeze";
+            case 20 -> "weaken";
+            case 21 -> "strengthen";
+            case 23 -> "eva";
+            case 22 -> "witch";
+            case 24 -> "critical";
+            case 3 -> "caninitchar";
+            case 6 -> "canatk";
+            case 7 -> "canchar";
+            case 10 -> "basehp";
+            case 5 -> "initmon";
+            case 4 -> "worker";
+            case 9 -> "wallet";
+            case 11 -> "cooldown";
+            case 12 -> "acc";
+            case 13 -> "study";
+            default -> throw new IllegalStateException("Invalid Combo Type : " + type);
+        };
     }
 
     public static int getDifficultyColor(int diff) {
@@ -2048,36 +2001,37 @@ public class DataToString extends Data {
         q = 1 - f * 0.6;
         t = 1 - (1 - f) * 0.6;
 
-        switch ((int) (i%6)) {
-            case 1:
+        switch ((int) (i % 6)) {
+            case 1 -> {
                 r = q;
                 g = 1.0;
                 b = p;
-                break;
-            case 2:
+            }
+            case 2 -> {
                 r = p;
                 g = 1.0;
                 b = t;
-                break;
-            case 3:
+            }
+            case 3 -> {
                 r = p;
                 g = q;
                 b = 1.0;
-                break;
-            case 4:
+            }
+            case 4 -> {
                 r = t;
                 g = p;
                 b = 1.0;
-                break;
-            case 5:
+            }
+            case 5 -> {
                 r = 1.0;
                 g = p;
                 b = q;
-                break;
-            default:
+            }
+            default -> {
                 r = 1.0;
                 g = t;
                 b = p;
+            }
         }
 
         return new int[] {(int) (r * 255), (int) (g * 255), (int) (b * 255)};
@@ -2140,11 +2094,9 @@ public class DataToString extends Data {
     }
 
     public static String getEXStage(Stage st, int lang) {
-        if(!(st.info instanceof DefStageInfo) || (!((DefStageInfo) st.info).exConnection && ((DefStageInfo) st.info).exStages == null)) {
+        if(!(st.info instanceof DefStageInfo info) || (!((DefStageInfo) st.info).exConnection && ((DefStageInfo) st.info).exStages == null)) {
             return null;
         }
-
-        DefStageInfo info = (DefStageInfo) st.info;
 
         StringBuilder sb = new StringBuilder();
 
@@ -2538,7 +2490,7 @@ public class DataToString extends Data {
         }
 
         switch (type[0]) {
-            case PC_P:
+            case PC_P -> {
                 if (data[1] >= 1) {
                     Proc.ProcItem p = du.getProc().getArr(type[1]);
 
@@ -2560,7 +2512,7 @@ public class DataToString extends Data {
                     int min = data[2 + changedIndex * 2];
                     int max = data[3 + changedIndex * 2];
 
-                    if(p.exists()) {
+                    if (p.exists()) {
                         min += p.get(changedIndex);
                         max += p.get(changedIndex);
                     }
@@ -2572,24 +2524,13 @@ public class DataToString extends Data {
                     }
 
                     String fieldName = p.getFieldName(changedIndex);
-                    String descID;
 
-                    switch (fieldName) {
-                        case "prob":
-                            descID = "talentinfo_chance";
-
-                            break;
-                        case "time":
-                            descID = "talentinfo_duration";
-
-                            break;
-                        case "mult":
-                            descID = "talentinfo_multiplier";
-
-                            break;
-                        default:
-                            throw new IllegalStateException("Unknown proc field name : " + fieldName);
-                    }
+                    String descID = switch (fieldName) {
+                        case "prob" -> "talentinfo_chance";
+                        case "time" -> "talentinfo_duration";
+                        case "mult" -> "talentinfo_multiplier";
+                        default -> throw new IllegalStateException("Unknown proc field name : " + fieldName);
+                    };
 
                     if (fieldName.equals("time")) {
                         if (isFrame) {
@@ -2606,15 +2547,15 @@ public class DataToString extends Data {
                         desc += LangID.getStringByID(descID, lang).replace("_mmm_", String.valueOf(min)).replace("_MMM_", String.valueOf(max)) + "\n\n";
                     }
                 }
-
                 return desc + fillUpNpCost(data, lang, desc.isBlank());
-            case PC_IMU:
-            case PC_AB:
+            }
+            case PC_IMU, PC_AB -> {
                 return desc + fillUpNpCost(data, lang, desc.isBlank());
-            case PC_BASE:
+            }
+            case PC_BASE -> {
                 int changedIndex = findDifferentTalentIndex(data);
 
-                if(changedIndex == -1) {
+                if (changedIndex == -1) {
                     StaticStore.logger.uploadLog("W/DataToString::getTalentExplanation - Failed to find different value set in talent : " + data[0]);
 
                     return "";
@@ -2623,54 +2564,32 @@ public class DataToString extends Data {
                 int min = data[2 + changedIndex * 2];
                 int max = data[3 + changedIndex * 2];
 
-                if(type[1] == PC2_COST) {
+                if (type[1] == PC2_COST) {
                     min = (int) (min * 1.5);
                     max = (int) (max * 1.5);
                 }
 
-                String key;
-
-                switch (type[1]) {
-                    case PC2_HP:
-                        key = "talentinfo_health";
-
-                        break;
-                    case PC2_ATK:
-                        key = "talentinfo_attack";
-
-                        break;
-                    case PC2_SPEED:
-                        key = "talentinfo_speed";
-
-                        break;
-                    case PC2_COST:
-                        key = "talentinfo_cost";
-
-                        break;
-                    case PC2_CD:
-                        key = "talentinfo_cooldown";
-
-                        break;
-                    case PC2_HB:
-                        key = "talentinfo_kb";
-
-                        break;
-                    case PC2_TBA:
-                        key = "talentinfo_tba";
-
-                        break;
-                    default:
-                        throw new IllegalStateException("Invalid P_BASE ID : " + type[1]);
-                }
+                String key = switch (type[1]) {
+                    case PC2_HP -> "talentinfo_health";
+                    case PC2_ATK -> "talentinfo_attack";
+                    case PC2_SPEED -> "talentinfo_speed";
+                    case PC2_COST -> "talentinfo_cost";
+                    case PC2_CD -> "talentinfo_cooldown";
+                    case PC2_HB -> "talentinfo_kb";
+                    case PC2_TBA -> "talentinfo_tba";
+                    default -> throw new IllegalStateException("Invalid P_BASE ID : " + type[1]);
+                };
 
                 return desc + LangID.getStringByID(key, lang)
                         .replace("_mmm_", String.valueOf(min))
                         .replace("_MMM_", String.valueOf(max)) +
                         fillUpNpCost(data, lang, true);
-            case PC_TRAIT:
+            }
+            case PC_TRAIT -> {
                 return desc + LangID.getStringByID("talentinfo_trait", lang).replace("_", talentName) + fillUpNpCost(data, lang, true);
-            default:
-                throw new IllegalStateException("E/DataToString::getTalentExplanation - Somehow reached point where bot couldn't get description of talent " + data[0] + " | Type : " + type[0]);
+            }
+            default ->
+                    throw new IllegalStateException("E/DataToString::getTalentExplanation - Somehow reached point where bot couldn't get description of talent " + data[0] + " | Type : " + type[0]);
         }
     }
 
@@ -2698,7 +2617,7 @@ public class DataToString extends Data {
         }
 
         switch (type[0]) {
-            case PC_P:
+            case PC_P -> {
                 if (maxLevel >= 1) {
                     Proc.ProcItem p = du.getProc().getArr(type[1]).clone();
 
@@ -2720,7 +2639,7 @@ public class DataToString extends Data {
                     int min = StaticStore.safeParseInt(data[2 + index * 14 + 2 * (changedIndex + 1)]);
                     int max = StaticStore.safeParseInt(data[2 + index * 14 + 1 + 2 * (changedIndex + 1)]);
 
-                    if(p.exists()) {
+                    if (p.exists()) {
                         min += p.get(changedIndex);
                         max += p.get(changedIndex);
                     }
@@ -2732,24 +2651,12 @@ public class DataToString extends Data {
                     }
 
                     String fieldName = p.getFieldName(changedIndex);
-                    String descID;
-
-                    switch (fieldName) {
-                        case "prob":
-                            descID = "talentinfo_chance";
-
-                            break;
-                        case "time":
-                            descID = "talentinfo_duration";
-
-                            break;
-                        case "mult":
-                            descID = "talentinfo_multiplier";
-
-                            break;
-                        default:
-                            throw new IllegalStateException("Unknown proc field name : " + fieldName);
-                    }
+                    String descID = switch (fieldName) {
+                        case "prob" -> "talentinfo_chance";
+                        case "time" -> "talentinfo_duration";
+                        case "mult" -> "talentinfo_multiplier";
+                        default -> throw new IllegalStateException("Unknown proc field name : " + fieldName);
+                    };
 
                     if (fieldName.equals("time")) {
                         if (isFrame) {
@@ -2766,19 +2673,19 @@ public class DataToString extends Data {
                         desc += LangID.getStringByID(descID, lang).replace("_mmm_", String.valueOf(min)).replace("_MMM_", String.valueOf(max)) + "\n\n";
                     }
 
-                    if(p instanceof Proc.IMU && ((Proc.IMU) p).mult == 100) {
+                    if (p instanceof Proc.IMU && ((Proc.IMU) p).mult == 100) {
                         desc += "<IMU>";
                     }
                 }
-
                 return desc;
-            case PC_IMU:
-            case PC_AB:
+            }
+            case PC_IMU, PC_AB -> {
                 return desc;
-            case PC_BASE:
+            }
+            case PC_BASE -> {
                 int changedIndex = findDifferentTalentIndex(data, index);
 
-                if(changedIndex == -1) {
+                if (changedIndex == -1) {
                     StaticStore.logger.uploadLog("W/DataToString::getTalentExplanation - Failed to find different value set in talent : " + abilityID);
 
                     return "";
@@ -2787,53 +2694,31 @@ public class DataToString extends Data {
                 int min = StaticStore.safeParseInt(data[2 + index * 14 + 2 * (changedIndex + 1)]);
                 int max = StaticStore.safeParseInt(data[2 + index * 14 + 1 + 2 * (changedIndex + 1)]);
 
-                if(type[1] == PC2_COST) {
+                if (type[1] == PC2_COST) {
                     min = (int) (min * 1.5);
                     max = (int) (max * 1.5);
                 }
 
-                String key;
-
-                switch (type[1]) {
-                    case PC2_HP:
-                        key = "talentinfo_health";
-
-                        break;
-                    case PC2_ATK:
-                        key = "talentinfo_attack";
-
-                        break;
-                    case PC2_SPEED:
-                        key = "talentinfo_speed";
-
-                        break;
-                    case PC2_COST:
-                        key = "talentinfo_cost";
-
-                        break;
-                    case PC2_CD:
-                        key = "talentinfo_cooldown";
-
-                        break;
-                    case PC2_HB:
-                        key = "talentinfo_kb";
-
-                        break;
-                    case PC2_TBA:
-                        key = "talentinfo_tba";
-
-                        break;
-                    default:
-                        throw new IllegalStateException("Invalid P_BASE ID : " + type[1]);
-                }
+                String key = switch (type[1]) {
+                    case PC2_HP -> "talentinfo_health";
+                    case PC2_ATK -> "talentinfo_attack";
+                    case PC2_SPEED -> "talentinfo_speed";
+                    case PC2_COST -> "talentinfo_cost";
+                    case PC2_CD -> "talentinfo_cooldown";
+                    case PC2_HB -> "talentinfo_kb";
+                    case PC2_TBA -> "talentinfo_tba";
+                    default -> throw new IllegalStateException("Invalid P_BASE ID : " + type[1]);
+                };
 
                 return desc + LangID.getStringByID(key, lang)
                         .replace("_mmm_", String.valueOf(min))
                         .replace("_MMM_", String.valueOf(max));
-            case PC_TRAIT:
+            }
+            case PC_TRAIT -> {
                 return desc + LangID.getStringByID("talentinfo_trait", lang).replace("_", talentName);
-            default:
-                throw new IllegalStateException("E/DataToString::getTalentExplanation - Somehow reached point where bot couldn't get description of talent " + abilityID + " | Type : " + type[0]);
+            }
+            default ->
+                    throw new IllegalStateException("E/DataToString::getTalentExplanation - Somehow reached point where bot couldn't get description of talent " + abilityID + " | Type : " + type[0]);
         }
     }
 

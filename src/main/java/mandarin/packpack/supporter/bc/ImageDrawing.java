@@ -1255,21 +1255,10 @@ public class ImageDrawing {
 
             if(anim != null) {
                 switch (i) {
-                    case 0:
-                    case 1:
-                        totalFrame += Math.max(60, Math.min(150, anim.len()));
-                        break;
-                    case 2:
-                        totalFrame += Math.max(60, anim.len());
-                        break;
-                    case 3:
-                    case 5:
-                        totalFrame += 60;
-                        break;
-                    case 4:
-                    case 6:
-                        totalFrame += anim.len();
-                        break;
+                    case 0, 1 -> totalFrame += Math.max(60, Math.min(150, anim.len()));
+                    case 2 -> totalFrame += Math.max(60, anim.len());
+                    case 3, 5 -> totalFrame += 60;
+                    case 4, 6 -> totalFrame += anim.len();
                 }
             }
         }
@@ -1282,27 +1271,13 @@ public class ImageDrawing {
             EAnimD<?> anim = mixer.getAnim(i);
 
             if(anim != null) {
-                int frame;
-
-                switch (i) {
-                    case 0:
-                    case 1:
-                        frame = Math.max(60, Math.min(150, anim.len()));
-                        break;
-                    case 2:
-                        frame = Math.max(60, anim.len());
-                        break;
-                    case 3:
-                    case 5:
-                        frame = 60;
-                        break;
-                    case 4:
-                    case 6:
-                        frame = anim.len();
-                        break;
-                    default:
-                        frame = 0;
-                }
+                int frame = switch (i) {
+                    case 0, 1 -> Math.max(60, Math.min(150, anim.len()));
+                    case 2 -> Math.max(60, anim.len());
+                    case 3, 5 -> 60;
+                    case 4, 6 -> anim.len();
+                    default -> 0;
+                };
 
                 if(i == 2) {
                     int stackFrame = 0;
@@ -3691,16 +3666,12 @@ public class ImageDrawing {
     }
 
     private static String getUnitCode(int ind) {
-        switch (ind) {
-            case 0:
-                return "f";
-            case 1:
-                return "c";
-            case 2:
-                return "s";
-            default:
-                return String.valueOf(ind);
-        }
+        return switch (ind) {
+            case 0 -> "f";
+            case 1 -> "c";
+            case 2 -> "s";
+            default -> String.valueOf(ind);
+        };
     }
 
     private static BufferedImage getUnitTitleImage(File icon, String name, String type, int lv, FontMetrics bfm, FontMetrics sfm, FontMetrics lfm) throws Exception {
@@ -4161,10 +4132,10 @@ public class ImageDrawing {
                 tx /= 2.0;
 
                 switch (i) {
-                    case CHANCE_WIDTH:
+                    case CHANCE_WIDTH -> {
                         String chance;
 
-                        if(data.get(data.size() - 1).length == 1) {
+                        if (data.get(data.size() - 1).length == 1) {
                             data.remove(data.size() - 1);
 
                             chance = LangID.getStringByID("data_rewardno", lang);
@@ -4184,7 +4155,7 @@ public class ImageDrawing {
 
                         int chanceY = y + innerTableCellMargin;
 
-                        for(int j = 0; j < data.size(); j++) {
+                        for (int j = 0; j < data.size(); j++) {
                             g.setColor(239, 239, 239);
 
                             g.drawCenteredText(data.get(j)[i], x1 + (int) tx, chanceY + innerTableCellMargin / 2);
@@ -4195,9 +4166,8 @@ public class ImageDrawing {
 
                             chanceY += innerTableCellMargin;
                         }
-
-                        break;
-                    case REWARD_WIDTH:
+                    }
+                    case REWARD_WIDTH -> {
                         g.setColor(191, 191, 191);
 
                         g.drawCenteredText(LangID.getStringByID("data_reward", lang), x1 + (int) tx, y + innerTableCellMargin / 2);
@@ -4212,7 +4182,7 @@ public class ImageDrawing {
 
                         int rx = (int) Math.round((tx * 2.0 - desiredGap - rewardIconSize) / 2.0);
 
-                        for(int j = 0; j < data.size(); j++) {
+                        for (int j = 0; j < data.size(); j++) {
                             g.setColor(239, 239, 239);
 
                             g.drawCenteredText(data.get(j)[i], x1 + desiredGap + rewardIconSize + rx, rewardY + innerTableCellMargin / 2);
@@ -4223,13 +4193,13 @@ public class ImageDrawing {
 
                             BufferedImage icon;
 
-                            if(reward) {
+                            if (reward) {
                                 icon = getRewardImage(((DefStageInfo) st.info).drop[j][i], map);
                             } else {
                                 icon = getRewardImage(((DefStageInfo) st.info).time[j][i], map);
                             }
 
-                            if(icon != null) {
+                            if (icon != null) {
                                 g.drawImage(icon, x1 + desiredGap, rewardY + (innerTableCellMargin - rewardIconSize) / 2.0, rewardIconSize, rewardIconSize);
                             }
 
@@ -4239,18 +4209,13 @@ public class ImageDrawing {
 
                             rewardY += innerTableCellMargin;
                         }
-
-                        break;
-                    case AMOUNT_WIDTH:
+                    }
+                    case AMOUNT_WIDTH -> {
                         g.setColor(191, 191, 191);
-
                         g.drawCenteredText(LangID.getStringByID("data_amount", lang), x1 + (int) tx, y + innerTableCellMargin / 2);
-
                         g.setStroke(headerStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-
                         int amountY = y + innerTableCellMargin;
-
-                        for(int j = 0; j < data.size(); j++) {
+                        for (int j = 0; j < data.size(); j++) {
                             g.setColor(239, 239, 239);
 
                             g.drawCenteredText(data.get(j)[i], x1 + (int) tx, amountY + innerTableCellMargin / 2);
@@ -4259,8 +4224,7 @@ public class ImageDrawing {
 
                             amountY += innerTableCellMargin;
                         }
-
-                        break;
+                    }
                 }
 
                 x1 += (int) (tx * 2.0);
@@ -4363,45 +4327,43 @@ public class ImageDrawing {
                 int ly = (int) Math.round((innerTableCellMargin - headerSeparatorHeight) / 2.0);
 
                 switch (j) {
-                    case ENEMY:
+                    case ENEMY -> {
                         Identifier<AbEnemy> id = line.enemy;
 
                         content = null;
 
-                        if(id.id >= UserProfile.getBCData().enemies.size()) {
+                        if (id.id >= UserProfile.getBCData().enemies.size()) {
                             content = map.enemyNames.get(id.id);
                         } else {
                             AbEnemy enemy = id.get();
 
-                            if(enemy instanceof Enemy) {
+                            if (enemy instanceof Enemy) {
                                 content = MultiLangCont.get(enemy, lang);
 
-                                if(content == null || content.isBlank()) {
+                                if (content == null || content.isBlank()) {
                                     content = ((Enemy) enemy).names.toString();
                                 }
 
-                                if(content.isBlank()) {
+                                if (content.isBlank()) {
                                     content = map.enemyNames.get(id.id);
                                 }
                             }
                         }
 
-                        if(content == null || content.isBlank()) {
-                            content = LangID.getStringByID("data_enemy", lang)+" - "+Data.trio(id.id);
+                        if (content == null || content.isBlank()) {
+                            content = LangID.getStringByID("data_enemy", lang) + " - " + Data.trio(id.id);
                         }
-
-                        break;
-                    case NUMBER:
-                        if(line.number == 0)
+                    }
+                    case NUMBER -> {
+                        if (line.number == 0)
                             content = LangID.getStringByID("data_infinite", lang);
                         else
                             content = String.valueOf(line.number);
-
-                        break;
-                    case BASE:
+                    }
+                    case BASE -> {
                         String suffix = isRanking ? "" : "%";
 
-                        if(line.castle_0 == line.castle_1 || line.castle_1 == 0)
+                        if (line.castle_0 == line.castle_1 || line.castle_1 == 0)
                             content = line.castle_0 + suffix;
                         else {
                             int minHealth = Math.min(line.castle_0, line.castle_1);
@@ -4409,52 +4371,48 @@ public class ImageDrawing {
 
                             content = minHealth + " ~ " + maxHealth + suffix;
                         }
-
-                        break;
-                    case MAGNIFICATION:
-                        content = DataToString.getMagnification(new int[] {line.multiple, line.mult_atk}, map.stars[lv]);
-
-                        break;
-                    case START:
+                    }
+                    case MAGNIFICATION ->
+                            content = DataToString.getMagnification(new int[]{line.multiple, line.mult_atk}, map.stars[lv]);
+                    case START -> {
                         String start;
 
-                        if(line.spawn_1 == 0)
-                            if(isFrame)
-                                start = Math.abs(line.spawn_0)+"f";
+                        if (line.spawn_1 == 0)
+                            if (isFrame)
+                                start = Math.abs(line.spawn_0) + "f";
                             else
-                                start = DataToString.df.format(Math.abs(line.spawn_0) / 30.0)+"s";
+                                start = DataToString.df.format(Math.abs(line.spawn_0) / 30.0) + "s";
                         else {
                             int minSpawn = Math.abs(Math.min(line.spawn_0, line.spawn_1));
                             int maxSpawn = Math.abs(Math.max(line.spawn_0, line.spawn_1));
 
-                            if(isFrame)
-                                start = minSpawn+"f ~ "+maxSpawn+"f";
+                            if (isFrame)
+                                start = minSpawn + "f ~ " + maxSpawn + "f";
                             else
-                                start = DataToString.df.format(minSpawn/30.0)+"s ~ "+DataToString.df.format(maxSpawn/30.0)+"s";
+                                start = DataToString.df.format(minSpawn / 30.0) + "s ~ " + DataToString.df.format(maxSpawn / 30.0) + "s";
                         }
 
                         String respawn;
 
-                        if(line.respawn_0 == line.respawn_1)
-                            if(isFrame)
-                                respawn = line.respawn_0+"f";
+                        if (line.respawn_0 == line.respawn_1)
+                            if (isFrame)
+                                respawn = line.respawn_0 + "f";
                             else
-                                respawn = DataToString.df.format(line.respawn_0/30.0)+"s";
+                                respawn = DataToString.df.format(line.respawn_0 / 30.0) + "s";
                         else {
                             int minSpawn = Math.min(line.respawn_0, line.respawn_1);
                             int maxSpawn = Math.max(line.respawn_0, line.respawn_1);
 
-                            if(isFrame)
-                                respawn = minSpawn+"f ~ "+maxSpawn+"f";
+                            if (isFrame)
+                                respawn = minSpawn + "f ~ " + maxSpawn + "f";
                             else
-                                respawn = DataToString.df.format(minSpawn/30.0)+"s ~ "+DataToString.df.format(maxSpawn/30.0)+"s";
+                                respawn = DataToString.df.format(minSpawn / 30.0) + "s ~ " + DataToString.df.format(maxSpawn / 30.0) + "s";
                         }
 
-                        content = start+" ("+respawn+")";
-
-                        break;
-                    case LAYER:
-                        if(line.layer_0 != line.layer_1) {
+                        content = start + " (" + respawn + ")";
+                    }
+                    case LAYER -> {
+                        if (line.layer_0 != line.layer_1) {
                             int minLayer = Math.min(line.layer_0, line.layer_1);
                             int maxLayer = Math.max(line.layer_0, line.layer_1);
 
@@ -4462,23 +4420,16 @@ public class ImageDrawing {
                         } else {
                             content = String.valueOf(line.layer_0);
                         }
-
-                        break;
-                    case RESPECT:
-                        content = (line.spawn_0 < 0 || line.spawn_1 < 0) ? LangID.getStringByID("data_true", lang) : "";
-
-                        break;
-                    case KILL:
-                        content = String.valueOf(line.kill_count);
-
-                        break;
-                    case BOSS:
-                        if(line.boss == 0)
+                    }
+                    case RESPECT ->
+                            content = (line.spawn_0 < 0 || line.spawn_1 < 0) ? LangID.getStringByID("data_true", lang) : "";
+                    case KILL -> content = String.valueOf(line.kill_count);
+                    case BOSS -> {
+                        if (line.boss == 0)
                             content = "";
                         else
                             content = LangID.getStringByID("data_boss", lang);
-
-                        break;
+                    }
                 }
 
                 if(j == ENEMY) {
@@ -4526,23 +4477,30 @@ public class ImageDrawing {
 
     public static AnimU.UType getAnimType(int mode, int max) {
         switch (mode) {
-            case 1:
+            case 1 -> {
                 return AnimU.UType.IDLE;
-            case 2:
+            }
+            case 2 -> {
                 return AnimU.UType.ATK;
-            case 3:
+            }
+            case 3 -> {
                 return AnimU.UType.HB;
-            case 4:
-                if(max == 5)
+            }
+            case 4 -> {
+                if (max == 5)
                     return AnimU.UType.ENTER;
                 else
                     return AnimU.UType.BURROW_DOWN;
-            case 5:
+            }
+            case 5 -> {
                 return AnimU.UType.BURROW_MOVE;
-            case 6:
+            }
+            case 6 -> {
                 return AnimU.UType.BURROW_UP;
-            default:
+            }
+            default -> {
                 return AnimU.UType.WALK;
+            }
         }
     }
 

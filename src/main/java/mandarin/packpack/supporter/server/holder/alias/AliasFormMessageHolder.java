@@ -111,17 +111,17 @@ public class AliasFormMessageHolder extends MessageHolder<MessageReceivedEvent> 
             ArrayList<String> alias = AliasHolder.getAlias(AliasHolder.TYPE.FORM, lang, form.get(id));
 
             switch (mode) {
-                case GET:
-                    if(alias == null || alias.isEmpty()) {
+                case GET -> {
+                    if (alias == null || alias.isEmpty()) {
                         createMessageWithNoPings(ch, LangID.getStringByID("alias_noalias", lang).replace("_", fname));
                     } else {
                         StringBuilder result = new StringBuilder(LangID.getStringByID("alias_formalias", lang).replace("_FFF_", fname).replace("_NNN_", String.valueOf(alias.size())));
                         result.append("\n\n");
 
-                        for(int i = 0; i < alias.size(); i++) {
-                            String temp = " - "+alias.get(i);
+                        for (int i = 0; i < alias.size(); i++) {
+                            String temp = " - " + alias.get(i);
 
-                            if(result.length() + temp.length() > 1900) {
+                            if (result.length() + temp.length() > 1900) {
                                 result.append("\n")
                                         .append(LangID.getStringByID("alias_etc", lang));
                                 break;
@@ -129,61 +129,47 @@ public class AliasFormMessageHolder extends MessageHolder<MessageReceivedEvent> 
 
                             result.append(temp);
 
-                            if(i < alias.size() - 1)
+                            if (i < alias.size() - 1)
                                 result.append("\n");
                         }
 
                         createMessageWithNoPings(ch, result.toString());
                     }
-                    break;
-                case ADD:
-                    if(alias == null)
+                }
+                case ADD -> {
+                    if (alias == null)
                         alias = new ArrayList<>();
-
-                    if(aliasName.isBlank()) {
+                    if (aliasName.isBlank()) {
                         createMessageWithNoPings(ch, LangID.getStringByID("alias_aliasblank", lang));
                         break;
                     }
-
-                    if(alias.contains(aliasName)) {
+                    if (alias.contains(aliasName)) {
                         createMessageWithNoPings(ch, LangID.getStringByID("alias_contain", lang).replace("_", fname));
                         break;
                     }
-
                     alias.add(aliasName);
-
                     AliasHolder.FALIAS.put(AliasHolder.getLangCode(lang), form.get(id), alias);
-
                     createMessageWithNoPings(ch, LangID.getStringByID("alias_added", lang).replace("_DDD_", fname).replace("_AAA_", aliasName));
-
                     StaticStore.logger.uploadLog("Alias added\n\nUnit : " + fname + "\nAlias : " + aliasName + "\nBy : " + event.getAuthor().getAsMention());
-
-                    break;
-                case REMOVE:
-                    if(alias == null || alias.isEmpty()) {
+                }
+                case REMOVE -> {
+                    if (alias == null || alias.isEmpty()) {
                         createMessageWithNoPings(ch, LangID.getStringByID("alias_noalias", lang).replace("_", fname));
                         break;
                     }
-
-                    if(aliasName.isBlank()) {
+                    if (aliasName.isBlank()) {
                         createMessageWithNoPings(ch, LangID.getStringByID("alias_aliasblank", lang));
                         break;
                     }
-
-                    if(!alias.contains(aliasName)) {
+                    if (!alias.contains(aliasName)) {
                         createMessageWithNoPings(ch, LangID.getStringByID("alias_nosuch", lang));
                         break;
                     }
-
                     alias.remove(aliasName);
-
                     AliasHolder.FALIAS.put(AliasHolder.getLangCode(lang), form.get(id), alias);
-
                     createMessageWithNoPings(ch, LangID.getStringByID("alias_removed", lang).replace("_DDD_", fname).replace("_AAA_", aliasName));
-
                     StaticStore.logger.uploadLog("Alias removed\n\nUnit : " + fname + "\nAlias : " + aliasName + "\nBy : " + event.getAuthor().getAsMention());
-
-                    break;
+                }
             }
 
             expired = true;

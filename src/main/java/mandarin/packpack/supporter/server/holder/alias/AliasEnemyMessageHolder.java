@@ -94,17 +94,17 @@ public class AliasEnemyMessageHolder extends MessageHolder<MessageReceivedEvent>
             ArrayList<String> alias = AliasHolder.getAlias(AliasHolder.TYPE.ENEMY, lang, enemy.get(id));
 
             switch (mode) {
-                case GET:
-                    if(alias == null || alias.isEmpty()) {
+                case GET -> {
+                    if (alias == null || alias.isEmpty()) {
                         createMessageWithNoPings(ch, LangID.getStringByID("alias_noalias", lang).replace("_", eName));
                     } else {
                         StringBuilder result = new StringBuilder(LangID.getStringByID("alias_enemalias", lang).replace("_EEE_", eName).replace("_NNN_", String.valueOf(alias.size())));
                         result.append("\n\n");
 
-                        for(int i = 0; i < alias.size(); i++) {
+                        for (int i = 0; i < alias.size(); i++) {
                             String temp = " - " + alias.get(i);
 
-                            if(result.length() + temp.length() > 1900) {
+                            if (result.length() + temp.length() > 1900) {
                                 result.append("\n")
                                         .append(LangID.getStringByID("alias_etc", lang));
                                 break;
@@ -112,62 +112,48 @@ public class AliasEnemyMessageHolder extends MessageHolder<MessageReceivedEvent>
 
                             result.append(temp);
 
-                            if(i < alias.size() - 1) {
+                            if (i < alias.size() - 1) {
                                 result.append("\n");
                             }
                         }
 
                         createMessageWithNoPings(ch, result.toString());
                     }
-                    break;
-                case ADD:
-                    if(alias == null)
+                }
+                case ADD -> {
+                    if (alias == null)
                         alias = new ArrayList<>();
-
-                    if(aliasName.isBlank()) {
+                    if (aliasName.isBlank()) {
                         createMessageWithNoPings(ch, LangID.getStringByID("alias_aliasblank", lang));
                         break;
                     }
-
-                    if(alias.contains(aliasName)) {
+                    if (alias.contains(aliasName)) {
                         createMessageWithNoPings(ch, LangID.getStringByID("alias_contain", lang).replace("_", eName));
                         break;
                     }
-
                     alias.add(aliasName);
-
                     AliasHolder.EALIAS.put(AliasHolder.getLangCode(lang), enemy.get(id), alias);
-
                     createMessageWithNoPings(ch, LangID.getStringByID("alias_added", lang).replace("_DDD_", eName).replace("_AAA_", aliasName));
-
                     StaticStore.logger.uploadLog("Alias added\n\nEnemy : " + eName + "\nAlias : " + aliasName + "\nBy : " + event.getAuthor().getAsMention());
-
-                    break;
-                case REMOVE:
-                    if(alias == null || alias.isEmpty()) {
+                }
+                case REMOVE -> {
+                    if (alias == null || alias.isEmpty()) {
                         createMessageWithNoPings(ch, LangID.getStringByID("alias_noalias", lang).replace("_", eName));
                         break;
                     }
-
-                    if(aliasName.isBlank()) {
+                    if (aliasName.isBlank()) {
                         createMessageWithNoPings(ch, LangID.getStringByID("alias_aliasblank", lang));
                         break;
                     }
-
-                    if(!alias.contains(aliasName)) {
+                    if (!alias.contains(aliasName)) {
                         createMessageWithNoPings(ch, LangID.getStringByID("alias_nosuch", lang).replace("_", eName));
                         break;
                     }
-
                     alias.remove(aliasName);
-
                     AliasHolder.EALIAS.put(AliasHolder.getLangCode(lang), enemy.get(id), alias);
-
                     createMessageWithNoPings(ch, LangID.getStringByID("alias_removed", lang).replace("_DDD_", eName).replace("_AAA_", aliasName));
-
                     StaticStore.logger.uploadLog("Alias removed\n\nEnemy : " + eName + "\nAlias : " + aliasName + "\nBy : " + event.getAuthor().getAsMention());
-
-                    break;
+                }
             }
 
             expired = true;

@@ -201,36 +201,34 @@ public class FormImage extends TimedConstraintCommand {
             label:
             for(int i = 0; i < pureMessage.length; i++) {
                 switch (pureMessage[i]) {
-                    case "-t":
-                        if((result & PARAM_TRANSPARENT) == 0) {
+                    case "-t" -> {
+                        if ((result & PARAM_TRANSPARENT) == 0) {
                             result |= PARAM_TRANSPARENT;
                         } else {
                             break label;
                         }
-                        break;
-                    case "-d":
-                    case "-debug":
-                        if((result & PARAM_DEBUG) == 0) {
+                    }
+                    case "-d", "-debug" -> {
+                        if ((result & PARAM_DEBUG) == 0) {
                             result |= PARAM_DEBUG;
                         } else {
                             break label;
                         }
-                        break;
-                    case "-f":
-                    case "-fr":
-                        if(i < pureMessage.length - 1 && StaticStore.isNumeric(pureMessage[i+1])) {
+                    }
+                    case "-f", "-fr" -> {
+                        if (i < pureMessage.length - 1 && StaticStore.isNumeric(pureMessage[i + 1])) {
                             i++;
                         } else {
                             break label;
                         }
-                        break;
-                    case "-m":
-                    case "-mode":
-                        if(i < pureMessage.length -1) {
+                    }
+                    case "-m", "-mode" -> {
+                        if (i < pureMessage.length - 1) {
                             i++;
                         } else {
                             break label;
                         }
+                    }
                 }
             }
         }
@@ -256,46 +254,44 @@ public class FormImage extends TimedConstraintCommand {
             boolean written = false;
 
             switch (contents[i]) {
-                case "-t":
-                    if(!trans) {
+                case "-t" -> {
+                    if (!trans) {
                         trans = true;
                     } else {
                         result.append(contents[i]);
                         written = true;
                     }
-                    break;
-                case "-d":
-                case "-debug":
-                    if(!debug) {
+                }
+                case "-d", "-debug" -> {
+                    if (!debug) {
                         debug = true;
                     } else {
                         result.append(contents[i]);
                         written = true;
                     }
-                    break;
-                case "-m":
-                case "-mode":
-                    if(!mode && i < contents.length - 1) {
+                }
+                case "-m", "-mode" -> {
+                    if (!mode && i < contents.length - 1) {
                         mode = true;
                         i++;
                     } else {
                         result.append(contents[i]);
                         written = true;
                     }
-                    break;
-                case "-f":
-                case "-fr":
-                    if(!frame && i < contents.length - 1 && StaticStore.isNumeric(contents[i + 1])) {
+                }
+                case "-f", "-fr" -> {
+                    if (!frame && i < contents.length - 1 && StaticStore.isNumeric(contents[i + 1])) {
                         frame = true;
                         i++;
                     } else {
                         result.append(contents[i]);
                         written = true;
                     }
-                    break;
-                default:
+                }
+                default -> {
                     result.append(contents[i]);
                     written = true;
+                }
             }
 
             if(written && i < contents.length - 1)
@@ -307,23 +303,30 @@ public class FormImage extends TimedConstraintCommand {
 
     private String getModeName(int mode, int max) {
         switch (mode) {
-            case 1:
+            case 1 -> {
                 return LangID.getStringByID("fimg_idle", lang);
-            case 2:
+            }
+            case 2 -> {
                 return LangID.getStringByID("fimg_atk", lang);
-            case 3:
+            }
+            case 3 -> {
                 return LangID.getStringByID("fimg_hitback", lang);
-            case 4:
-                if(max == 5)
+            }
+            case 4 -> {
+                if (max == 5)
                     return LangID.getStringByID("fimg_enter", lang);
                 else
                     return LangID.getStringByID("fimg_burrowdown", lang);
-            case 5:
+            }
+            case 5 -> {
                 return LangID.getStringByID("fimg_burrowmove", lang);
-            case 6:
+            }
+            case 6 -> {
                 return LangID.getStringByID("fimg_burrowup", lang);
-            default:
+            }
+            default -> {
                 return LangID.getStringByID("fimg_walk", lang);
+            }
         }
     }
 

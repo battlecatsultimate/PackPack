@@ -1956,23 +1956,30 @@ public class EntityHandler {
 
     private static String getModeName(int mode, int max, int lang) {
         switch (mode) {
-            case 1:
+            case 1 -> {
                 return LangID.getStringByID("fimg_idle", lang);
-            case 2:
+            }
+            case 2 -> {
                 return LangID.getStringByID("fimg_atk", lang);
-            case 3:
+            }
+            case 3 -> {
                 return LangID.getStringByID("fimg_hitback", lang);
-            case 4:
-                if(max == 5)
+            }
+            case 4 -> {
+                if (max == 5)
                     return LangID.getStringByID("fimg_enter", lang);
                 else
                     return LangID.getStringByID("fimg_burrowdown", lang);
-            case 5:
+            }
+            case 5 -> {
                 return LangID.getStringByID("fimg_burrowmove", lang);
-            case 6:
+            }
+            case 6 -> {
                 return LangID.getStringByID("fimg_burrowup", lang);
-            default:
+            }
+            default -> {
                 return LangID.getStringByID("fimg_walk", lang);
+            }
         }
     }
 
@@ -3006,26 +3013,22 @@ public class EntityHandler {
         FakeImage img;
 
         switch (mode) {
-            case 0:
-                img = f.anim.getNum();
-                break;
-            case 1:
-                img = f.anim.getUni().getImg();
-                break;
-            case 2:
-                if(f.unit.getCont() instanceof PackData.DefPack) {
+            case 0 -> img = f.anim.getNum();
+            case 1 -> img = f.anim.getUni().getImg();
+            case 2 -> {
+                if (f.unit.getCont() instanceof PackData.DefPack) {
                     String code;
 
-                    if(f.fid == 0)
+                    if (f.fid == 0)
                         code = "f";
-                    else if(f.fid == 1)
+                    else if (f.fid == 1)
                         code = "c";
                     else
                         code = "s";
 
-                    VFile vf = VFile.get("./org/unit/"+Data.trio(f.unit.id.id)+"/"+code+"/udi"+Data.trio(f.unit.id.id)+"_"+code+".png");
+                    VFile vf = VFile.get("./org/unit/" + Data.trio(f.unit.id.id) + "/" + code + "/udi" + Data.trio(f.unit.id.id) + "_" + code + ".png");
 
-                    if(vf != null) {
+                    if (vf != null) {
                         img = vf.getData().getImg();
                     } else {
                         img = null;
@@ -3033,12 +3036,9 @@ public class EntityHandler {
                 } else {
                     img = null;
                 }
-                break;
-            case 3:
-                img = f.anim.getEdi().getImg();
-                break;
-            default:
-                throw new IllegalStateException("Mode in sprite getter is incorrect : "+mode);
+            }
+            case 3 -> img = f.anim.getEdi().getImg();
+            default -> throw new IllegalStateException("Mode in sprite getter is incorrect : " + mode);
         }
 
         if(img == null) {
@@ -3086,21 +3086,12 @@ public class EntityHandler {
 
         e.anim.load();
 
-        FakeImage img;
-
-        switch (mode) {
-            case 0:
-                img = e.anim.getNum();
-                break;
-            case 1:
-                img = e.anim.getUni().getImg();
-                break;
-            case 3:
-                img = e.anim.getEdi().getImg();
-                break;
-            default:
-                throw new IllegalStateException("Mode in sprite getter is incorrect : "+mode);
-        }
+        FakeImage img = switch (mode) {
+            case 0 -> e.anim.getNum();
+            case 1 -> e.anim.getUni().getImg();
+            case 3 -> e.anim.getEdi().getImg();
+            default -> throw new IllegalStateException("Mode in sprite getter is incorrect : " + mode);
+        };
 
         if(img == null) {
             Command.replyToMessageSafely(ch, LangID.getStringByID("fsp_nodata", lang).replace("_", getIconName(mode, lang)), reference, a -> a);
@@ -3840,23 +3831,30 @@ public class EntityHandler {
 
     private static AnimU.UType getAnimType(int mode, int max) {
         switch (mode) {
-            case 1:
+            case 1 -> {
                 return AnimU.UType.IDLE;
-            case 2:
+            }
+            case 2 -> {
                 return AnimU.UType.ATK;
-            case 3:
+            }
+            case 3 -> {
                 return AnimU.UType.HB;
-            case 4:
-                if(max == 5)
+            }
+            case 4 -> {
+                if (max == 5)
                     return AnimU.UType.ENTER;
                 else
                     return AnimU.UType.BURROW_DOWN;
-            case 5:
+            }
+            case 5 -> {
                 return AnimU.UType.BURROW_MOVE;
-            case 6:
+            }
+            case 6 -> {
                 return AnimU.UType.BURROW_UP;
-            default:
+            }
+            default -> {
                 return AnimU.UType.WALK;
+            }
         }
     }
 
@@ -3892,14 +3890,11 @@ public class EntityHandler {
     }
 
     private static int getBoosterFileLimit(int level) {
-        switch (level) {
-            case 2:
-                return 50;
-            case 3:
-                return 100;
-            default:
-                return 8;
-        }
+        return switch (level) {
+            case 2 -> 50;
+            case 3 -> 100;
+            default -> 8;
+        };
     }
 
     private static List<String> mergeImmune(List<String> abilities, int lang) {
@@ -3910,23 +3905,23 @@ public class EntityHandler {
             String actualName = abilities.get(i).replaceAll("<:.+:\\d+> ", "");
 
             switch (lang) {
-                case LangID.KR:
-                case LangID.JP:
-                    if(actualName.endsWith(LangID.getStringByID("data_immune", lang))) {
+                case LangID.KR, LangID.JP -> {
+                    if (actualName.endsWith(LangID.getStringByID("data_immune", lang))) {
                         immunes.add(actualName);
                     } else {
                         result.add(abilities.get(i));
                     }
-                    break;
-                case LangID.EN:
-                    if(actualName.startsWith(LangID.getStringByID("data_immune", lang))) {
+                }
+                case LangID.EN -> {
+                    if (actualName.startsWith(LangID.getStringByID("data_immune", lang))) {
                         immunes.add(actualName);
                     } else {
                         result.add(abilities.get(i));
                     }
-                    break;
-                default:
+                }
+                default -> {
                     return abilities;
+                }
             }
         }
 
@@ -3949,12 +3944,8 @@ public class EntityHandler {
         String e = emoji == null ? "" : emoji.getAsMention() + " ";
 
         switch (lang) {
-            case LangID.KR:
-            case LangID.JP:
-                result.add(e + sb + LangID.getStringByID("data_immune", lang));
-                break;
-            default:
-                result.add(e + LangID.getStringByID("data_immune", lang) + sb);
+            case LangID.KR, LangID.JP -> result.add(e + sb + LangID.getStringByID("data_immune", lang));
+            default -> result.add(e + LangID.getStringByID("data_immune", lang) + sb);
         }
 
         return result;
