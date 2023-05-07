@@ -115,7 +115,7 @@ public class AliasFormMessageHolder extends MessageHolder<MessageReceivedEvent> 
                     if(alias == null || alias.isEmpty()) {
                         createMessageWithNoPings(ch, LangID.getStringByID("alias_noalias", lang).replace("_", fname));
                     } else {
-                        StringBuilder result = new StringBuilder(LangID.getStringByID("alias_formalias", lang).replace("_FFF_", fname).replace("_NNN_", alias.size()+""));
+                        StringBuilder result = new StringBuilder(LangID.getStringByID("alias_formalias", lang).replace("_FFF_", fname).replace("_NNN_", String.valueOf(alias.size())));
                         result.append("\n\n");
 
                         for(int i = 0; i < alias.size(); i++) {

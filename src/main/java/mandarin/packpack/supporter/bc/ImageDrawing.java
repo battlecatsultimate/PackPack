@@ -399,7 +399,7 @@ public class ImageDrawing {
 
         eff.initialize(len, bgHeight, midH, bg);
 
-        String cont = LangID.getStringByID("bg_dimen", lang).replace("_WWW_", w+"").replace("_HHH_", bgAnimHeight+"") +"\n\n"+
+        String cont = LangID.getStringByID("bg_dimen", lang).replace("_WWW_", String.valueOf(w)).replace("_HHH_", bgAnimHeight+"") +"\n\n"+
                 LangID.getStringByID("bg_prog", lang)
                         .replace("_PPP_", "  0")
                         .replace("_LLL_", bgAnimTime + "")
@@ -417,8 +417,8 @@ public class ImageDrawing {
             if(System.currentTimeMillis() - current >= 1500) {
                 String prog = DataToString.df.format(i * 100.0 / bgAnimTime);
                 String eta = getETA(start, System.currentTimeMillis(), i, bgAnimTime);
-                String ind = ""+ i;
-                String content = LangID.getStringByID("bg_dimen", lang).replace("_WWW_", finalW+"").replace("_HHH_", bgAnimHeight+"") +"\n\n"+
+                String ind = String.valueOf(i);
+                String content = LangID.getStringByID("bg_dimen", lang).replace("_WWW_", String.valueOf(finalW)).replace("_HHH_", bgAnimHeight+"") +"\n\n"+
                         LangID.getStringByID("bg_prog", lang)
                                 .replace("_PPP_", " ".repeat(Math.max(0, 3 - ind.length()))+ind)
                                 .replace("_LLL_", bgAnimTime+"")
@@ -497,7 +497,7 @@ public class ImageDrawing {
             eff.update(len, bgHeight, midH);
         }
 
-        String content = LangID.getStringByID("bg_dimen", lang).replace("_WWW_", finalW+"").replace("_HHH_", bgAnimHeight+"") +"\n\n"+
+        String content = LangID.getStringByID("bg_dimen", lang).replace("_WWW_", String.valueOf(finalW)).replace("_HHH_", bgAnimHeight+"") +"\n\n"+
                 LangID.getStringByID("bg_prog", lang)
                         .replace("_PPP_", bgAnimTime + "")
                         .replace("_LLL_", bgAnimTime + "")
@@ -731,9 +731,9 @@ public class ImageDrawing {
         double ratio;
 
         String cont = LangID.getStringByID("gif_anbox", lang)+ "\n"
-                + LangID.getStringByID("gif_result", lang).replace("_WWW_", ""+rect.width)
-                .replace("_HHH_", rect.height+"").replace("_XXX_", rect.x+"")
-                .replace("_YYY_", rect.x+"");
+                + LangID.getStringByID("gif_result", lang).replace("_WWW_", String.valueOf(rect.width))
+                .replace("_HHH_", String.valueOf(rect.height)).replace("_XXX_", String.valueOf(rect.x))
+                .replace("_YYY_", String.valueOf(rect.x));
 
         msg.editMessage(cont).queue();
 
@@ -776,9 +776,9 @@ public class ImageDrawing {
         if(rect.height == 0)
             rect.height = 2;
 
-        finCont += LangID.getStringByID("gif_final", lang).replace("_WWW_", ""+rect.width)
-                .replace("_HHH_", rect.height+"").replace("_XXX_", rect.x+"")
-                .replace("_YYY_", rect.x+"")+"\n";
+        finCont += LangID.getStringByID("gif_final", lang).replace("_WWW_", String.valueOf(rect.width))
+                .replace("_HHH_", String.valueOf(rect.height)).replace("_XXX_", String.valueOf(rect.x))
+                .replace("_YYY_", String.valueOf(rect.x))+"\n";
 
         msg.editMessage(finCont).queue();
 
@@ -793,8 +793,8 @@ public class ImageDrawing {
 
                 String prog = DataToString.df.format(i * 100.0 / frame);
                 String eta = getETA(start, System.currentTimeMillis(), i, frame);
-                String ind = ""+ i;
-                String len = frame +"";
+                String ind = String.valueOf(i);
+                String len = String.valueOf(frame);
 
                 content += LangID.getStringByID("bg_prog", lang)
                         .replace("_PPP_", " ".repeat(Math.max(0, len.length() - ind.length()))+ind)
@@ -883,8 +883,8 @@ public class ImageDrawing {
         content = finCont + "\n\n" +
                 LangID.getStringByID("gif_makepng", lang).replace("_", "100") + "\n\n" +
                 LangID.getStringByID("bg_prog", lang)
-                        .replace("_PPP_", frame + "")
-                        .replace("_LLL_", frame + "")
+                        .replace("_PPP_", String.valueOf(frame))
+                        .replace("_LLL_", String.valueOf(frame))
                         .replace("_BBB_", getProgressBar(frame, frame))
                         .replace("_VVV_", "100.00")
                         .replace("_SSS_", "     0") + "\n" +
@@ -989,9 +989,9 @@ public class ImageDrawing {
         }
 
         String cont = LangID.getStringByID("gif_anbox", lang)+ "\n"
-                + LangID.getStringByID("gif_result", lang).replace("_WWW_", ""+rect.width)
-                .replace("_HHH_", rect.height+"").replace("_XXX_", rect.x+"")
-                .replace("_YYY_", rect.x+"")+"\n";
+                + LangID.getStringByID("gif_result", lang).replace("_WWW_", String.valueOf(rect.width))
+                .replace("_HHH_", String.valueOf(rect.height)).replace("_XXX_", String.valueOf(rect.x))
+                .replace("_YYY_", String.valueOf(rect.x))+"\n";
 
         if(ratio != 1.0) {
             cont += LangID.getStringByID("gif_adjust", lang).replace("_", DataToString.df.format(ratio * 100.0))+"\n";
@@ -999,9 +999,9 @@ public class ImageDrawing {
             cont += LangID.getStringByID("gif_cango", lang)+"\n";
         }
 
-        cont += LangID.getStringByID("gif_final", lang).replace("_WWW_", (int) (ratio * rect.width) + "")
-                .replace("_HHH_", (int) (ratio* rect.height)+"").replace("_XXX_", (int) (ratio * rect.x)+"")
-                .replace("_YYY_", (int) (ratio * rect.y)+"");
+        cont += LangID.getStringByID("gif_final", lang).replace("_WWW_", String.valueOf((int) (ratio * rect.width)))
+                .replace("_HHH_", String.valueOf((int) (ratio * rect.height))).replace("_XXX_", String.valueOf((int) (ratio * rect.x)))
+                .replace("_YYY_", String.valueOf((int) (ratio * rect.y)));
 
         msg.editMessage(cont).queue();
 
@@ -1040,8 +1040,8 @@ public class ImageDrawing {
 
                 String prog = DataToString.df.format(i * 100.0 / frame);
                 String eta = getETA(start, System.currentTimeMillis(), i, frame);
-                String ind = ""+ i;
-                String len = frame + "";
+                String ind = String.valueOf(i);
+                String len = String.valueOf(frame);
 
                 content += LangID.getStringByID("bg_prog", lang)
                         .replace("_PPP_", " ".repeat(Math.max(0, len.length() - ind.length()))+ind)
@@ -1099,8 +1099,8 @@ public class ImageDrawing {
 
         String content = cont + "\n\n"+
                 LangID.getStringByID("bg_prog", lang)
-                        .replace("_PPP_", frame + "")
-                        .replace("_LLL_", frame + "")
+                        .replace("_PPP_", String.valueOf(frame))
+                        .replace("_LLL_", String.valueOf(frame))
                         .replace("_BBB_", getProgressBar(frame, frame))
                         .replace("_VVV_", "100.00")
                         .replace("_SSS_", "     0") + "\n"+
@@ -1192,9 +1192,9 @@ public class ImageDrawing {
         double ratio;
 
         String cont = LangID.getStringByID("gif_anbox", lang) + "\n"
-                + LangID.getStringByID("gif_result", lang).replace("_WWW_", ""+rect.width)
-                .replace("_HHH_", ""+rect.height).replace("_XXX_", rect.x+"")
-                .replace("_YYY_", ""+rect.y);
+                + LangID.getStringByID("gif_result", lang).replace("_WWW_", String.valueOf(rect.width))
+                .replace("_HHH_", String.valueOf(rect.height)).replace("_XXX_", String.valueOf(rect.x))
+                .replace("_YYY_", String.valueOf(rect.y));
 
         msg.editMessage(cont).queue();
 
@@ -1237,9 +1237,9 @@ public class ImageDrawing {
         if(rect.height == 0)
             rect.height = 2;
 
-        finCont += LangID.getStringByID("gif_final", lang).replace("_WWW_", ""+rect.width)
-                .replace("_HHH_", rect.height+"").replace("_XXX_", rect.x+"")
-                .replace("_YYY_", rect.x+"")+"\n";
+        finCont += LangID.getStringByID("gif_final", lang).replace("_WWW_", String.valueOf(rect.width))
+                .replace("_HHH_", String.valueOf(rect.height)).replace("_XXX_", String.valueOf(rect.x))
+                .replace("_YYY_", String.valueOf(rect.x))+"\n";
 
         msg.editMessage(finCont).queue();
 
@@ -1317,8 +1317,8 @@ public class ImageDrawing {
 
                                 content += LangID.getStringByID("gif_makepng", lang) +
                                         LangID.getStringByID("bg_prog", lang)
-                                                .replace("_PPP_", progress + "")
-                                                .replace("_LLL_", totalFrame + "")
+                                                .replace("_PPP_", String.valueOf(progress))
+                                                .replace("_LLL_", String.valueOf(totalFrame))
                                                 .replace("_BBB_", getProgressBar(progress, totalFrame))
                                                 .replace("_VVV_", " ".repeat(Math.max(0, 6 - prog.length())) + prog)
                                                 .replace("_SSS_", " ".repeat(Math.max(0, 6 - eta.length())) + eta);
@@ -1371,8 +1371,8 @@ public class ImageDrawing {
 
                             content += LangID.getStringByID("gif_makepng", lang) +
                                     LangID.getStringByID("bg_prog", lang)
-                                            .replace("_PPP_", progress + "")
-                                            .replace("_LLL_", totalFrame + "")
+                                            .replace("_PPP_", String.valueOf(progress))
+                                            .replace("_LLL_", String.valueOf(totalFrame))
                                             .replace("_BBB_", getProgressBar(progress, totalFrame))
                                             .replace("_VVV_", " ".repeat(Math.max(0, 6 - prog.length())) + prog)
                                             .replace("_SSS_", " ".repeat(Math.max(0, 6 - eta.length())) + eta);
@@ -1421,8 +1421,8 @@ public class ImageDrawing {
         String content = finCont + "\n\n" +
                 LangID.getStringByID("gif_makepng", lang) +
                 LangID.getStringByID("bg_prog", lang)
-                        .replace("_PPP_", totalFrame + "")
-                        .replace("_LLL_", totalFrame + "")
+                        .replace("_PPP_", String.valueOf(totalFrame))
+                        .replace("_LLL_", String.valueOf(totalFrame))
                         .replace("_BBB_", getProgressBar(totalFrame, totalFrame))
                         .replace("_VVV_", "100.00")
                         .replace("_SSS_", "     0") + "\n" +
@@ -1451,8 +1451,8 @@ public class ImageDrawing {
         content = finCont + "\n\n" +
                 LangID.getStringByID("gif_makepng", lang) +
                 LangID.getStringByID("bg_prog", lang)
-                        .replace("_PPP_", totalFrame + "")
-                        .replace("_LLL_", totalFrame + "")
+                        .replace("_PPP_", String.valueOf(totalFrame))
+                        .replace("_LLL_", String.valueOf(totalFrame))
                         .replace("_BBB_", getProgressBar(totalFrame, totalFrame))
                         .replace("_VVV_", "100.00")
                         .replace("_SSS_", "     0") + "\n" +
@@ -2206,13 +2206,13 @@ public class ImageDrawing {
 
         int talentIconDimension = (int) Math.round(maxTitleHeight * 1.5);
 
-        String totalCostText = LangID.getStringByID("talentinfo_total", lang).replace("_", "" + totalCost);
+        String totalCostText = LangID.getStringByID("talentinfo_total", lang).replace("_", String.valueOf(totalCost));
         Rectangle2D totalRect = nameFont.createGlyphVector(nfm.getFontRenderContext(), totalCostText).getPixelBounds(null, 0, 0);
 
         int totalCostWidth = (int) Math.round(totalRect.getWidth());
         int totalCostHeight = (int) Math.round(totalRect.getHeight());
 
-        int panelWidth = statPanelMargin * 2 + Math.round(Math.max(maxCostWidth, Math.max(maxDescLineWidth, talentIconDimension * 2 + talentNameGap + maxTitleWidth)));
+        int panelWidth = statPanelMargin * 2 + Math.max(maxCostWidth, Math.max(maxDescLineWidth, talentIconDimension * 2 + talentNameGap + maxTitleWidth));
         int panelHeight = statPanelMargin * 2;
 
         for(int i = 0; i < talent.talents.size(); i++) {
@@ -2616,11 +2616,11 @@ public class ImageDrawing {
                 boolean positive = true;
 
                 if(yLine < - plotWidthHeight * indicatorRatio / 2.0) {
-                    textPosition = Math.round(indicatorGap);
+                    textPosition = indicatorGap;
                 } else if(yLine >= plotWidthHeight * (1 + indicatorRatio / 2.0)) {
                     positive = false;
 
-                    textPosition = Math.round(plotWidthHeight - indicatorGap);
+                    textPosition = plotWidthHeight - indicatorGap;
                 } else {
                     textPosition = Math.round(yLine + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap);
 
@@ -2662,11 +2662,11 @@ public class ImageDrawing {
                 boolean positive = true;
 
                 if(xLine < - plotWidthHeight * indicatorRatio / 2.0) {
-                    textPosition = Math.round(indicatorGap);
+                    textPosition = indicatorGap;
                 } else if(xLine >= plotWidthHeight * (1 + indicatorRatio / 2.0)) {
                     positive = false;
 
-                    textPosition = Math.round(plotWidthHeight - indicatorGap);
+                    textPosition = plotWidthHeight - indicatorGap;
                 } else {
                     textPosition = Math.round(xLine + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap);
 
@@ -2817,11 +2817,11 @@ public class ImageDrawing {
                 boolean positive = true;
 
                 if(yLine < - plotWidthHeight * indicatorRatio / 2.0) {
-                    textPosition = Math.round(indicatorGap);
+                    textPosition = indicatorGap;
                 } else if(yLine >= plotWidthHeight * (1 + indicatorRatio / 2.0)) {
                     positive = false;
 
-                    textPosition = Math.round(plotWidthHeight - indicatorGap);
+                    textPosition = plotWidthHeight - indicatorGap;
                 } else {
                     textPosition = Math.round(yLine + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap);
 
@@ -2863,11 +2863,11 @@ public class ImageDrawing {
                 boolean positive = true;
 
                 if(xLine < - plotWidthHeight * indicatorRatio / 2.0) {
-                    textPosition = Math.round(indicatorGap);
+                    textPosition = indicatorGap;
                 } else if(xLine >= plotWidthHeight * (1 + indicatorRatio / 2.0)) {
                     positive = false;
 
-                    textPosition = Math.round(plotWidthHeight - indicatorGap);
+                    textPosition = plotWidthHeight - indicatorGap;
                 } else {
                     textPosition = Math.round(xLine + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap);
 
@@ -3020,11 +3020,11 @@ public class ImageDrawing {
                 boolean positive = true;
 
                 if(yLine < - plotWidthHeight * indicatorRatio / 2.0) {
-                    textPosition = Math.round(indicatorGap);
+                    textPosition = indicatorGap;
                 } else if(yLine >= plotWidthHeight * (1 + indicatorRatio / 2.0)) {
                     positive = false;
 
-                    textPosition = Math.round(plotWidthHeight - indicatorGap);
+                    textPosition = plotWidthHeight - indicatorGap;
                 } else {
                     textPosition = Math.round(yLine + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap);
 
@@ -3066,11 +3066,11 @@ public class ImageDrawing {
                 boolean positive = true;
 
                 if(xLine < - plotWidthHeight * indicatorRatio / 2.0) {
-                    textPosition = Math.round(indicatorGap);
+                    textPosition = indicatorGap;
                 } else if(xLine >= plotWidthHeight * (1 + indicatorRatio / 2.0)) {
                     positive = false;
 
-                    textPosition = Math.round(plotWidthHeight - indicatorGap);
+                    textPosition = plotWidthHeight - indicatorGap;
                 } else {
                     textPosition = Math.round(xLine + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap);
 
@@ -3311,11 +3311,11 @@ public class ImageDrawing {
                     boolean positive = true;
 
                     if(yLine < - plotWidthHeight * indicatorRatio / 2.0) {
-                        textPosition = Math.round(indicatorGap);
+                        textPosition = indicatorGap;
                     } else if(yLine >= plotWidthHeight * (1 + indicatorRatio / 2.0)) {
                         positive = false;
 
-                        textPosition = Math.round(plotWidthHeight - indicatorGap);
+                        textPosition = plotWidthHeight - indicatorGap;
                     } else {
                         textPosition = Math.round(yLine + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap);
 
@@ -3353,11 +3353,11 @@ public class ImageDrawing {
                 boolean positive = true;
 
                 if(xLine < - plotWidthHeight * indicatorRatio / 2.0) {
-                    textPosition = Math.round(indicatorGap);
+                    textPosition = indicatorGap;
                 } else if(xLine >= plotWidthHeight * (1 + indicatorRatio / 2.0)) {
                     positive = false;
 
-                    textPosition = Math.round(plotWidthHeight - indicatorGap);
+                    textPosition = plotWidthHeight - indicatorGap;
                 } else {
                     textPosition = Math.round(xLine + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap);
 
@@ -3699,7 +3699,7 @@ public class ImageDrawing {
             case 2:
                 return "s";
             default:
-                return ""+ind;
+                return String.valueOf(ind);
         }
     }
 
@@ -4083,7 +4083,7 @@ public class ImageDrawing {
 
             rw = Math.max(rw, cfm.stringWidth(respect));
 
-            kw = Math.max(kw, cfm.stringWidth(line.kill_count + ""));
+            kw = Math.max(kw, cfm.stringWidth(String.valueOf(line.kill_count)));
 
             String boss;
 
@@ -4178,22 +4178,22 @@ public class ImageDrawing {
 
                         g.setStroke(headerStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
-                        int ly = (int) Math.round((innerTableCellMargin - headerSeparatorHeight) / 2.0);
+                        int chaneLineY = (int) Math.round((innerTableCellMargin - headerSeparatorHeight) / 2.0);
 
-                        g.drawLine((int) (x1 + tx * 2.0), y + ly, (int) (x1 + tx * 2.0), y + innerTableCellMargin - ly);
+                        g.drawLine((int) (x1 + tx * 2.0), y + chaneLineY, (int) (x1 + tx * 2.0), y + innerTableCellMargin - chaneLineY);
 
-                        int y1 = y + innerTableCellMargin;
+                        int chanceY = y + innerTableCellMargin;
 
                         for(int j = 0; j < data.size(); j++) {
                             g.setColor(239, 239, 239);
 
-                            g.drawCenteredText(data.get(j)[i], x1 + (int) tx, y1 + innerTableCellMargin / 2);
+                            g.drawCenteredText(data.get(j)[i], x1 + (int) tx, chanceY + innerTableCellMargin / 2);
 
                             g.setColor(191, 191, 191, 64);
 
-                            g.drawLine((int) (x1 + tx * 2.0), y1 + ly, (int) (x1 + tx * 2.0), y1 + innerTableCellMargin - ly);
+                            g.drawLine((int) (x1 + tx * 2.0), chanceY + chaneLineY, (int) (x1 + tx * 2.0), chanceY + innerTableCellMargin - chaneLineY);
 
-                            y1 += innerTableCellMargin;
+                            chanceY += innerTableCellMargin;
                         }
 
                         break;
@@ -4204,22 +4204,22 @@ public class ImageDrawing {
 
                         g.setStroke(headerStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
-                        ly = (int) Math.round((innerTableCellMargin - headerSeparatorHeight) / 2.0);
+                        int rewardLineY = (int) Math.round((innerTableCellMargin - headerSeparatorHeight) / 2.0);
 
-                        g.drawLine((int) (x1 + tx * 2.0), y + ly, (int) (x1 + tx * 2.0), y + innerTableCellMargin - ly);
+                        g.drawLine((int) (x1 + tx * 2.0), y + rewardLineY, (int) (x1 + tx * 2.0), y + innerTableCellMargin - rewardLineY);
 
-                        y1 = y + innerTableCellMargin;
+                        int rewardY = y + innerTableCellMargin;
 
                         int rx = (int) Math.round((tx * 2.0 - desiredGap - rewardIconSize) / 2.0);
 
                         for(int j = 0; j < data.size(); j++) {
                             g.setColor(239, 239, 239);
 
-                            g.drawCenteredText(data.get(j)[i], x1 + desiredGap + rewardIconSize + rx, y1 + innerTableCellMargin / 2);
+                            g.drawCenteredText(data.get(j)[i], x1 + desiredGap + rewardIconSize + rx, rewardY + innerTableCellMargin / 2);
 
                             g.setColor(65, 69, 76);
 
-                            g.fillOval(x1 + desiredGap, y1 + (innerTableCellMargin - rewardIconSize) / 2, rewardIconSize, rewardIconSize);
+                            g.fillOval(x1 + desiredGap, rewardY + (innerTableCellMargin - rewardIconSize) / 2, rewardIconSize, rewardIconSize);
 
                             BufferedImage icon;
 
@@ -4230,14 +4230,14 @@ public class ImageDrawing {
                             }
 
                             if(icon != null) {
-                                g.drawImage(icon, x1 + desiredGap, y1 + (innerTableCellMargin - rewardIconSize) / 2.0, rewardIconSize, rewardIconSize);
+                                g.drawImage(icon, x1 + desiredGap, rewardY + (innerTableCellMargin - rewardIconSize) / 2.0, rewardIconSize, rewardIconSize);
                             }
 
                             g.setColor(191, 191, 191, 64);
 
-                            g.drawLine((int) (x1 + tx * 2.0), y1 + ly, (int) (x1 + tx * 2.0), y1 + innerTableCellMargin - ly);
+                            g.drawLine((int) (x1 + tx * 2.0), rewardY + rewardLineY, (int) (x1 + tx * 2.0), rewardY + innerTableCellMargin - rewardLineY);
 
-                            y1 += innerTableCellMargin;
+                            rewardY += innerTableCellMargin;
                         }
 
                         break;
@@ -4248,16 +4248,16 @@ public class ImageDrawing {
 
                         g.setStroke(headerStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
-                        y1 = y + innerTableCellMargin;
+                        int amountY = y + innerTableCellMargin;
 
                         for(int j = 0; j < data.size(); j++) {
                             g.setColor(239, 239, 239);
 
-                            g.drawCenteredText(data.get(j)[i], x1 + (int) tx, y1 + innerTableCellMargin / 2);
+                            g.drawCenteredText(data.get(j)[i], x1 + (int) tx, amountY + innerTableCellMargin / 2);
 
                             g.setColor(191, 191, 191, 64);
 
-                            y1 += innerTableCellMargin;
+                            amountY += innerTableCellMargin;
                         }
 
                         break;
@@ -4469,7 +4469,7 @@ public class ImageDrawing {
 
                         break;
                     case KILL:
-                        content = line.kill_count + "";
+                        content = String.valueOf(line.kill_count);
 
                         break;
                     case BOSS:
@@ -4590,7 +4590,7 @@ public class ImageDrawing {
         } else if(n < 1000) {
             return "0"+n;
         } else {
-            return ""+n;
+            return String.valueOf(n);
         }
     }
 

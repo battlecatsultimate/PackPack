@@ -98,7 +98,7 @@ public class AliasEnemyMessageHolder extends MessageHolder<MessageReceivedEvent>
                     if(alias == null || alias.isEmpty()) {
                         createMessageWithNoPings(ch, LangID.getStringByID("alias_noalias", lang).replace("_", eName));
                     } else {
-                        StringBuilder result = new StringBuilder(LangID.getStringByID("alias_enemalias", lang).replace("_EEE_", eName).replace("_NNN_", alias.size()+""));
+                        StringBuilder result = new StringBuilder(LangID.getStringByID("alias_enemalias", lang).replace("_EEE_", eName).replace("_NNN_", String.valueOf(alias.size())));
                         result.append("\n\n");
 
                         for(int i = 0; i < alias.size(); i++) {

@@ -7,7 +7,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import common.CommonStatic;
 import common.io.WebFileIO;
 import common.io.assets.UpdateCheck;
 import common.util.lang.MultiLangCont;
@@ -20,7 +19,10 @@ import mandarin.packpack.supporter.server.TimeBoolean;
 import mandarin.packpack.supporter.server.data.*;
 import mandarin.packpack.supporter.server.holder.Holder;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.events.Event;
 
@@ -32,8 +34,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
@@ -1068,9 +1070,9 @@ public class StaticStore {
     public static void updateStatus() {
         if(PackBot.statusMessage != null) {
             PackBot.statusMessage.editMessage(LangID.getStringByID("stat_info", LangID.EN)
-                    .replace("_SSS_", StaticStore.idHolder.size()+"")
-                    .replace("_CCC_", StaticStore.executed+"")
-                    .replace("_MMM_", StaticStore.spamData.size()+"")).queue(null, e -> { });
+                    .replace("_SSS_", String.valueOf(StaticStore.idHolder.size()))
+                    .replace("_CCC_", String.valueOf(StaticStore.executed))
+                    .replace("_MMM_", String.valueOf(StaticStore.spamData.size()))).queue(null, e -> { });
         }
     }
 }

@@ -201,9 +201,7 @@ public class DataToString extends Data {
         if(MultiLangCont.get(e, lang) == null) {
             return Data.trio(e.id.id);
         } else {
-            String res = MultiLangCont.get(e, lang);
-
-            return res;
+            return MultiLangCont.get(e, lang);
         }
     }
 
@@ -473,7 +471,7 @@ public class DataToString extends Data {
         int r = f.getRange();
 
         if(!f.isLD() && !f.isOmni())
-            return r + "";
+            return String.valueOf(r);
 
         if(f.getAtkCount() == 0 || allRangeSame(f)) {
             MaskAtk ma = f.getAtkModel(0);
@@ -519,7 +517,7 @@ public class DataToString extends Data {
         int r = e.getRange();
 
         if(!e.isLD() && !e.isOmni())
-            return r + "";
+            return String.valueOf(r);
 
         if(e.getAtkCount() == 0 || allRangeSame(e)) {
             MaskAtk atk = e.getAtkModel(0);
@@ -822,7 +820,7 @@ public class DataToString extends Data {
         if( e == null)
             return "";
 
-        return "" + (long) (e.multi(BasisSet.current()) * e.getHp() * magnification / 100.0);
+        return String.valueOf((long) (e.multi(BasisSet.current()) * e.getHp() * magnification / 100.0));
     }
 
     public static String getTrait(MaskUnit f, boolean talent, Level lvs, boolean icon, int lang) {
@@ -855,10 +853,10 @@ public class DataToString extends Data {
         if(trait.isBlank())
             trait = LangID.getStringByID("data_none", lang);
 
-        if(trait.equals(allColor.toString()))
+        if(trait.contentEquals(allColor))
             trait = LangID.getStringByID("data_allcolor", lang);
 
-        if(trait.equals(allTrait.toString()))
+        if(trait.contentEquals(allTrait))
             trait = LangID.getStringByID("data_alltrait", lang);
 
         if(trait.endsWith(", "))
@@ -887,10 +885,10 @@ public class DataToString extends Data {
         if(trait.isBlank())
             trait = LangID.getStringByID("data_none", lang);
 
-        if(trait.equals(allColor.toString()))
+        if(trait.contentEquals(allColor))
             trait = LangID.getStringByID("data_allcolor", lang);
 
-        if(trait.equals(allTrait.toString()))
+        if(trait.contentEquals(allTrait))
             trait = LangID.getStringByID("data_alltrait", lang);
 
         if(trait.endsWith(", "))
@@ -1004,9 +1002,9 @@ public class DataToString extends Data {
 
     public static String getMagnification(int[] mag, int star) {
         if(mag[0] == mag[1]) {
-            return StaticStore.safeParseInt((mag[0] * 1.0 * star / 100)+"") + "%";
+            return StaticStore.safeParseInt(String.valueOf(mag[0] * 1.0 * star / 100)) + "%";
         } else {
-            return "["+StaticStore.safeParseInt((mag[0] * 1.0 * star / 100)+"")+", "+StaticStore.safeParseInt((mag[1] * 1.0 * star / 100)+"")+"] %";
+            return "["+StaticStore.safeParseInt(String.valueOf(mag[0] * 1.0 * star / 100))+", "+StaticStore.safeParseInt(String.valueOf(mag[1] * 1.0 * star / 100))+"] %";
         }
     }
 
@@ -1059,28 +1057,28 @@ public class DataToString extends Data {
         StageMap stm = st.getCont();
 
         if(stm == null)
-            return info.energy+"";
+            return String.valueOf(info.energy);
 
         MapColc mc = stm.getCont();
 
         if(mc == null)
-            return info.energy+"";
+            return String.valueOf(info.energy);
 
         if(mc.getSID().equals("000014")) {
             if(info.energy < 1000) {
-                return LangID.getStringByID("data_catamina", lang).replace("_", info.energy+"")+"!!drink!!";
+                return LangID.getStringByID("data_catamina", lang).replace("_", String.valueOf(info.energy))+"!!drink!!";
             } else if(info.energy < 2000) {
-                return LangID.getStringByID("data_cataminb", lang).replace("_", (info.energy-1000)+"")+"!!drink!!";
+                return LangID.getStringByID("data_cataminb", lang).replace("_", String.valueOf(info.energy - 1000))+"!!drink!!";
             } else {
-                return LangID.getStringByID("data_cataminc", lang).replace("_", (info.energy-2000)+"")+"!!drink!!";
+                return LangID.getStringByID("data_cataminc", lang).replace("_", String.valueOf(info.energy - 2000))+"!!drink!!";
             }
         } else {
-            return info.energy+"";
+            return String.valueOf(info.energy);
         }
     }
 
     public static String getBaseHealth(Stage st) {
-        return ""+st.health;
+        return String.valueOf(st.health);
     }
 
     public static String getXP(Stage st) {
@@ -1094,9 +1092,9 @@ public class DataToString extends Data {
         MapColc mc = st.getCont().getCont();
 
         if(mc.getSID().equals("000000") || mc.getSID().equals("000013"))
-            return "" + (int) (info.xp * t.getXPMult() * 9);
+            return String.valueOf((int) (info.xp * t.getXPMult() * 9));
         else
-            return "" + (int) (info.xp * t.getXPMult());
+            return String.valueOf((int) (info.xp * t.getXPMult()));
     }
 
     public static String getDifficulty(Stage st, int lang) {
@@ -1129,11 +1127,11 @@ public class DataToString extends Data {
     }
 
     public static String getLength(Stage st) {
-        return ""+st.len;
+        return String.valueOf(st.len);
     }
 
     public static String getMaxEnemy(Stage st) {
-        return ""+st.max;
+        return String.valueOf(st.max);
     }
 
     public static String getMusic(Stage st, int lang) {
@@ -1340,11 +1338,7 @@ public class DataToString extends Data {
             res.add(result);
         }
 
-        for(int i = 0; i < res.size(); i++) {
-            String filtered = " - " + res.get(i).replace("**", "");
-
-            res.set(i, filtered);
-        }
+        res.replaceAll(s -> " - " + s.replace("**", ""));
 
         return res;
     }
@@ -1612,7 +1606,7 @@ public class DataToString extends Data {
 
             data[1] = reward;
 
-            data[2] = info.drop[i][2] + "";
+            data[2] = String.valueOf(info.drop[i][2]);
 
             result.add(data);
         }
@@ -1820,9 +1814,9 @@ public class DataToString extends Data {
             if(reward == null || reward.isBlank())
                 reward = LangID.getStringByID("data_dumreward", lang).replace("_", Data.trio(data[i][1]));
 
-            drop[0] = data[i][0] + "";
+            drop[0] = String.valueOf(data[i][0]);
             drop[1] = reward;
-            drop[2] = data[i][2] + "";
+            drop[2] = String.valueOf(data[i][2]);
 
             result.add(drop);
         }
@@ -2105,7 +2099,7 @@ public class DataToString extends Data {
         }
 
         if(info.clearLimit != -1) {
-            result.add(LangID.getStringByID("data_numberplay", lang).replace("_", ""+info.clearLimit));
+            result.add(LangID.getStringByID("data_numberplay", lang).replace("_", String.valueOf(info.clearLimit)));
         }
 
         if(info.waitTime != -1) {
@@ -2116,7 +2110,7 @@ public class DataToString extends Data {
             else
                 min = LangID.getStringByID("smin", lang);
 
-            result.add(LangID.getStringByID("data_waittime", lang).replace("_NNN_", ""+info.waitTime).replace("_TTT_", min));
+            result.add(LangID.getStringByID("data_waittime", lang).replace("_NNN_", String.valueOf(info.waitTime)).replace("_TTT_", min));
         }
 
         if(info.hiddenUponClear) {
@@ -2417,7 +2411,7 @@ public class DataToString extends Data {
             CommonStatic.getConfig().lang = oldConfig;
 
             if(name == null || name.isBlank()) {
-                name = "" + materialDrops[i - 1];
+                name = String.valueOf(materialDrops[i - 1]);
             }
 
             result.append(name)
@@ -2609,7 +2603,7 @@ public class DataToString extends Data {
                             max = 100 - max;
                         }
 
-                        desc += LangID.getStringByID(descID, lang).replace("_mmm_", min + "").replace("_MMM_", max + "") + "\n\n";
+                        desc += LangID.getStringByID(descID, lang).replace("_mmm_", String.valueOf(min)).replace("_MMM_", String.valueOf(max)) + "\n\n";
                     }
                 }
 
@@ -2670,8 +2664,8 @@ public class DataToString extends Data {
                 }
 
                 return desc + LangID.getStringByID(key, lang)
-                        .replace("_mmm_", min + "")
-                        .replace("_MMM_", max + "") +
+                        .replace("_mmm_", String.valueOf(min))
+                        .replace("_MMM_", String.valueOf(max)) +
                         fillUpNpCost(data, lang, true);
             case PC_TRAIT:
                 return desc + LangID.getStringByID("talentinfo_trait", lang).replace("_", talentName) + fillUpNpCost(data, lang, true);
@@ -2769,7 +2763,7 @@ public class DataToString extends Data {
                             max = 100 - max;
                         }
 
-                        desc += LangID.getStringByID(descID, lang).replace("_mmm_", min + "").replace("_MMM_", max + "") + "\n\n";
+                        desc += LangID.getStringByID(descID, lang).replace("_mmm_", String.valueOf(min)).replace("_MMM_", String.valueOf(max)) + "\n\n";
                     }
 
                     if(p instanceof Proc.IMU && ((Proc.IMU) p).mult == 100) {
@@ -2834,8 +2828,8 @@ public class DataToString extends Data {
                 }
 
                 return desc + LangID.getStringByID(key, lang)
-                        .replace("_mmm_", min + "")
-                        .replace("_MMM_", max + "");
+                        .replace("_mmm_", String.valueOf(min))
+                        .replace("_MMM_", String.valueOf(max));
             case PC_TRAIT:
                 return desc + LangID.getStringByID("talentinfo_trait", lang).replace("_", talentName);
             default:
@@ -2900,7 +2894,7 @@ public class DataToString extends Data {
     private static String fillUpNpCost(int[] data, int lang, boolean space) {
         if(talentLevel.containsKey(data[11])) {
             if(data[1] < 2) {
-                return (space ? "\n** **\n" : "") + LangID.getStringByID("talentinfo_npsingle", lang).replace("_", talentLevel.get(data[11])[0] + "");
+                return (space ? "\n** **\n" : "") + LangID.getStringByID("talentinfo_npsingle", lang).replace("_", String.valueOf(talentLevel.get(data[11])[0]));
             } else {
                 int[] costs = talentLevel.get(data[11]);
 
@@ -2919,7 +2913,7 @@ public class DataToString extends Data {
                     }
                 }
 
-                return (space ? "\n** **\n" : "") + LangID.getStringByID("talentinfo_np", lang).replace("_CCC_", cost.toString()).replace("_TTT_", totalCost + "");
+                return (space ? "\n** **\n" : "") + LangID.getStringByID("talentinfo_np", lang).replace("_CCC_", cost.toString()).replace("_TTT_", String.valueOf(totalCost));
             }
         } else {
             StaticStore.logger.uploadLog("W/DataToString::fillUpNpCost - Unknown talent cost group ID : " + data[11]);
@@ -2948,6 +2942,6 @@ public class DataToString extends Data {
             }
         }
 
-        return LangID.getStringByID("talentinfo_total", lang).replace("_", cost + "");
+        return LangID.getStringByID("talentinfo_total", lang).replace("_", String.valueOf(cost));
     }
 }

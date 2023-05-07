@@ -1,6 +1,5 @@
 package mandarin.packpack.commands.bot;
 
-import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.stage.MapColc;
@@ -52,17 +51,17 @@ public class Alias extends ConstraintCommand {
 
         switch (type) {
             case FORM:
-                String name = getName(getContent(event));
+                String unitName = getName(getContent(event));
 
-                if(name.isBlank()) {
+                if(unitName.isBlank()) {
                     createMessageWithNoPings(ch, LangID.getStringByID("alias_formnoname", lang));
                     return;
                 }
 
-                ArrayList<Form> forms = EntityFilter.findUnitWithName(name, false, lang);
+                ArrayList<Form> forms = EntityFilter.findUnitWithName(unitName, false, lang);
 
                 if(forms.isEmpty()) {
-                    createMessageWithNoPings(ch, LangID.getStringByID("formst_nounit", lang).replace("_", validateName(name)));
+                    createMessageWithNoPings(ch, LangID.getStringByID("formst_nounit", lang).replace("_", validateName(unitName)));
                 } else if(forms.size() == 1) {
                     String fname = StaticStore.safeMultiLangGet(forms.get(0), lang);
 
@@ -77,7 +76,7 @@ public class Alias extends ConstraintCommand {
                     if(alias == null || alias.isEmpty()) {
                         createMessageWithNoPings(ch, LangID.getStringByID("alias_noalias", lang).replace("_", fname));
                     } else {
-                        StringBuilder result = new StringBuilder(LangID.getStringByID("alias_formalias", lang).replace("_FFF_", fname).replace("_NNN_", alias.size()+""));
+                        StringBuilder result = new StringBuilder(LangID.getStringByID("alias_formalias", lang).replace("_FFF_", fname).replace("_NNN_", String.valueOf(alias.size())));
                         result.append("\n\n");
 
                         for(int i = 0; i < alias.size(); i++) {
@@ -98,7 +97,7 @@ public class Alias extends ConstraintCommand {
                         createMessageWithNoPings(ch, result.toString());
                     }
                 } else {
-                    StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", validateName(name)));
+                    StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", validateName(unitName)));
 
                     String check;
 
@@ -148,17 +147,17 @@ public class Alias extends ConstraintCommand {
                 }
                 break;
             case ENEMY:
-                name = getName(getContent(event));
+                String enemyName = getName(getContent(event));
 
-                if(name.isBlank()) {
+                if(enemyName.isBlank()) {
                     createMessageWithNoPings(ch, LangID.getStringByID("alias_enemnoname", lang));
                     return;
                 }
 
-                ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(name, lang);
+                ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(enemyName, lang);
 
                 if(enemies.isEmpty()) {
-                    createMessageWithNoPings(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", validateName(name)));
+                    createMessageWithNoPings(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", validateName(enemyName)));
                 } else if(enemies.size() == 1) {
                     String eName = StaticStore.safeMultiLangGet(enemies.get(0), lang);
 
@@ -173,7 +172,7 @@ public class Alias extends ConstraintCommand {
                     if(alias == null || alias.isEmpty()) {
                         createMessageWithNoPings(ch, LangID.getStringByID("alias_noalias", lang).replace("_", eName));
                     } else {
-                        StringBuilder result = new StringBuilder(LangID.getStringByID("alias_enemalias", lang).replace("_EEE_", eName).replace("_NNN_", alias.size()+""));
+                        StringBuilder result = new StringBuilder(LangID.getStringByID("alias_enemalias", lang).replace("_EEE_", eName).replace("_NNN_", String.valueOf(alias.size())));
                         result.append("\n\n");
 
                         for(int i = 0; i < alias.size(); i++) {
@@ -195,7 +194,7 @@ public class Alias extends ConstraintCommand {
                         createMessageWithNoPings(ch, result.toString());
                     }
                 } else {
-                    StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", validateName(name)));
+                    StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", validateName(enemyName)));
 
                     String check;
 
@@ -278,7 +277,7 @@ public class Alias extends ConstraintCommand {
                     if(alias == null || alias.isEmpty()) {
                         createMessageWithNoPings(ch, LangID.getStringByID("alias_noalias", lang).replace("_", stName));
                     } else {
-                        StringBuilder result = new StringBuilder(LangID.getStringByID("alias_stalias", lang).replace("_SSS_", stName).replace("_NNN_", alias.size()+""));
+                        StringBuilder result = new StringBuilder(LangID.getStringByID("alias_stalias", lang).replace("_SSS_", stName).replace("_NNN_", String.valueOf(alias.size())));
                         result.append("\n\n");
 
                         for(int i = 0; i < alias.size(); i++) {

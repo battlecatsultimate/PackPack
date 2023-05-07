@@ -112,7 +112,7 @@ public class EntityHandler {
         String l;
 
         if(levelp == 0)
-            l = "" + level;
+            l = String.valueOf(level);
         else
             l = level + " + " + levelp;
 
@@ -332,7 +332,7 @@ public class EntityHandler {
         String l;
 
         if(levelp == 0)
-            l = "" + level;
+            l = String.valueOf(level);
         else
             l = level + " + " + levelp;
 
@@ -1108,7 +1108,7 @@ public class EntityHandler {
             }
 
             spec.addField(LangID.getStringByID("data_encole", lang), DataToString.getEnemyContinuableLength(st, lang), false);
-            spec.addField(LangID.getStringByID("data_mubaca", lang).replace("_BBB_", st.mush + ""), DataToString.getMusciBackgroundCastle(st, lang), false);
+            spec.addField(LangID.getStringByID("data_mubaca", lang).replace("_BBB_", String.valueOf(st.mush)), DataToString.getMusciBackgroundCastle(st, lang), false);
             spec.setFooter(LangID.getStringByID("data_minres", lang).replace("_RRR_", DataToString.getMinSpawn(st, isFrame)));
         } else {
             spec.addField(LangID.getStringByID("data_id", lang), DataToString.getStageCode(st), true);
@@ -1604,7 +1604,7 @@ public class EntityHandler {
             String baseHP;
 
             if(st.trail) {
-                baseHP = line.castle_0 + "";
+                baseHP = String.valueOf(line.castle_0);
             } else {
                 if(line.castle_0 == line.castle_1 || line.castle_1 == 0)
                     baseHP = line.castle_0+"%";
@@ -1651,7 +1651,7 @@ public class EntityHandler {
             }
 
             if(needCount) {
-                killCounts.add(line.kill_count + "");
+                killCounts.add(String.valueOf(line.kill_count));
             }
         }
 
@@ -1999,11 +1999,11 @@ public class EntityHandler {
         JDA client = ch.getJDA();
 
         if(limit > 0)  {
-            ch.sendMessage(LangID.getStringByID("gif_lengthlim", lang).replace("_", f.anim.len(getAnimType(mode, f.anim.anims.length))+"").replace("-", limit+"")).queue();
+            ch.sendMessage(LangID.getStringByID("gif_lengthlim", lang).replace("_", String.valueOf(f.anim.len(getAnimType(mode, f.anim.anims.length)))).replace("-", String.valueOf(limit))).queue();
         } else if(!raw && f.anim.len(getAnimType(mode, f.anim.anims.length)) >= 300) {
-            ch.sendMessage(LangID.getStringByID("gif_lengthlim", lang).replace("_", f.anim.len(getAnimType(mode, f.anim.anims.length))+"").replace("-", 300+"")).queue();
+            ch.sendMessage(LangID.getStringByID("gif_lengthlim", lang).replace("_", String.valueOf(f.anim.len(getAnimType(mode, f.anim.anims.length)))).replace("-", 300+"")).queue();
         } else {
-            ch.sendMessage(LangID.getStringByID("gif_length", lang).replace("_", f.anim.len(getAnimType(mode, f.anim.anims.length))+"")).queue();
+            ch.sendMessage(LangID.getStringByID("gif_length", lang).replace("_", String.valueOf(f.anim.len(getAnimType(mode, f.anim.anims.length))))).queue();
         }
 
         CommonStatic.getConfig().ref = false;
@@ -2243,11 +2243,11 @@ public class EntityHandler {
         EAnimD<?> anim = en.getEAnim(getAnimType(mode, en.anim.anims.length));
 
         if(limit > 0)  {
-            ch.sendMessage(LangID.getStringByID("gif_lengthlim", lang).replace("_", anim.len()+"").replace("-", limit+"")).queue();
+            ch.sendMessage(LangID.getStringByID("gif_lengthlim", lang).replace("_", String.valueOf(anim.len())).replace("-", String.valueOf(limit))).queue();
         } else if(!raw && anim.len() >= 300) {
-            ch.sendMessage(LangID.getStringByID("gif_lengthlim", lang).replace("_", anim.len()+"").replace("-", 300+"")).queue();
+            ch.sendMessage(LangID.getStringByID("gif_lengthlim", lang).replace("_", String.valueOf(anim.len())).replace("-", 300+"")).queue();
         } else {
-            ch.sendMessage(LangID.getStringByID("gif_length", lang).replace("_", anim.len()+"")).queue();
+            ch.sendMessage(LangID.getStringByID("gif_length", lang).replace("_", String.valueOf(anim.len()))).queue();
         }
 
         CommonStatic.getConfig().ref = false;
@@ -2474,7 +2474,7 @@ public class EntityHandler {
             return;
         }
 
-        ch.sendMessage(LangID.getStringByID("gif_length", lang).replace("_", anim.len()+"")).queue();
+        ch.sendMessage(LangID.getStringByID("gif_length", lang).replace("_", String.valueOf(anim.len()))).queue();
 
         CommonStatic.getConfig().ref = false;
 
@@ -2792,11 +2792,11 @@ public class EntityHandler {
         EAnimD<?> anim = s.anim.getEAnim(AnimU.UType.SOUL);
 
         if(limit > 0)  {
-            ch.sendMessage(LangID.getStringByID("gif_lengthlim", lang).replace("_", anim.len()+"").replace("-", limit+"")).queue();
+            ch.sendMessage(LangID.getStringByID("gif_lengthlim", lang).replace("_", String.valueOf(anim.len())).replace("-", String.valueOf(limit))).queue();
         } else if(!raw && anim.len() >= 300) {
-            ch.sendMessage(LangID.getStringByID("gif_lengthlim", lang).replace("_", anim.len()+"").replace("-", 300+"")).queue();
+            ch.sendMessage(LangID.getStringByID("gif_lengthlim", lang).replace("_", String.valueOf(anim.len())).replace("-", 300+"")).queue();
         } else {
-            ch.sendMessage(LangID.getStringByID("gif_length", lang).replace("_", anim.len()+"")).queue();
+            ch.sendMessage(LangID.getStringByID("gif_length", lang).replace("_", String.valueOf(anim.len()))).queue();
         }
 
         CommonStatic.getConfig().ref = false;
@@ -3295,7 +3295,7 @@ public class EntityHandler {
     public static void generateEnemyStatImage(MessageChannel ch, List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilData, List<FlagCellData> traitData, CustomMaskEnemy enemy, String name, File container, int m, boolean isFrame, int eid, int lang) throws Exception {
         List<CellDrawer> cellGroup = getEnemyCell(data, procData, abilData, traitData, enemy, lang, m, isFrame);
 
-        File result = ImageDrawing.drawEnemyStatImage(cellGroup, LangID.getStringByID("stat_magnif", lang).replace("_", m+""), name, container, eid);
+        File result = ImageDrawing.drawEnemyStatImage(cellGroup, LangID.getStringByID("stat_magnif", lang).replace("_", String.valueOf(m)), name, container, eid);
 
         if(result == null) {
             ch.sendMessage(LangID.getStringByID("stat_fail", lang)).queue();
@@ -3712,9 +3712,7 @@ public class EntityHandler {
 
         List<String> misc = DataToString.getMiscellaneous(st, lang);
 
-        for(int i = 0; i < misc.size(); i++) {
-            misc.set(i, " - " + misc.get(i));
-        }
+        misc.replaceAll(s -> " - " + s);
 
         if(misc.isEmpty())
             misc.add(LangID.getStringByID("data_none", lang));

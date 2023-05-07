@@ -1,6 +1,5 @@
 package mandarin.packpack.commands.bot;
 
-import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.stage.MapColc;
@@ -47,17 +46,17 @@ public class AliasRemove extends ConstraintCommand {
 
         switch (type) {
             case FORM:
-                String name = getName(getContent(event));
+                String unitName = getName(getContent(event));
 
-                if(name.isBlank()) {
+                if(unitName.isBlank()) {
                     createMessageWithNoPings(ch, LangID.getStringByID("alias_formnoname", lang));
                     return;
                 }
 
-                ArrayList<Form> forms = EntityFilter.findUnitWithName(name, false, lang);
+                ArrayList<Form> forms = EntityFilter.findUnitWithName(unitName, false, lang);
 
                 if(forms.isEmpty()) {
-                    createMessageWithNoPings(ch, LangID.getStringByID("formst_nounit", lang).replace("_", validateName(name)));
+                    createMessageWithNoPings(ch, LangID.getStringByID("formst_nounit", lang).replace("_", validateName(unitName)));
                 } else if(forms.size() == 1) {
                     String fname = StaticStore.safeMultiLangGet(forms.get(0), lang);
 
@@ -96,7 +95,7 @@ public class AliasRemove extends ConstraintCommand {
 
                     StaticStore.logger.uploadLog("Alias removed\n\nUnit : " + fname + "\nAlias : " + aliasName + "\nBy : " + (us == null ? "Unknown" : u.getAsMention()));
                 } else {
-                    StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", validateName(name)));
+                    StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", validateName(unitName)));
 
                     String check;
 
@@ -140,17 +139,17 @@ public class AliasRemove extends ConstraintCommand {
                 }
                 break;
             case ENEMY:
-                name = getName(getContent(event));
+                String enemyName = getName(getContent(event));
 
-                if(name.isBlank()) {
+                if(enemyName.isBlank()) {
                     createMessageWithNoPings(ch, LangID.getStringByID("alias_enemnoname", lang));
                     return;
                 }
 
-                ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(name, lang);
+                ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(enemyName, lang);
 
                 if(enemies.isEmpty()) {
-                    createMessageWithNoPings(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", validateName(name)));
+                    createMessageWithNoPings(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", validateName(enemyName)));
                 } else if(enemies.size() == 1) {
                     String eName = StaticStore.safeMultiLangGet(enemies.get(0), lang);
 
@@ -189,7 +188,7 @@ public class AliasRemove extends ConstraintCommand {
 
                     StaticStore.logger.uploadLog("Alias removed\n\nEnemy : " + eName + "\nAlias : " + aliasName + "\nBy : " + (us == null ? "Unknown" : u.getAsMention()));
                 } else {
-                    StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", validateName(name)));
+                    StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", validateName(enemyName)));
 
                     String check;
 
