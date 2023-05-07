@@ -1063,10 +1063,13 @@ public class StaticStore {
 
     public static void updateStatus() {
         if(PackBot.statusMessage != null) {
-            PackBot.statusMessage.editMessage(LangID.getStringByID("stat_info", LangID.EN)
-                    .replace("_SSS_", String.valueOf(StaticStore.idHolder.size()))
-                    .replace("_CCC_", String.valueOf(StaticStore.executed))
-                    .replace("_MMM_", String.valueOf(StaticStore.spamData.size()))).queue(null, e -> { });
+            try {
+                PackBot.statusMessage.editMessage(LangID.getStringByID("stat_info", LangID.EN)
+                        .replace("_SSS_", String.valueOf(StaticStore.idHolder.size()))
+                        .replace("_CCC_", String.valueOf(StaticStore.executed))
+                        .replace("_MMM_", String.valueOf(StaticStore.spamData.size()))).queue(null, e -> {
+                });
+            } catch (Exception ignored) { }
         }
     }
 }
