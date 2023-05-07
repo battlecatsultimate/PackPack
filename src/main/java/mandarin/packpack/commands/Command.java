@@ -296,13 +296,11 @@ public abstract class Command {
 
         boolean canTry = false;
 
-        if(ch instanceof GuildMessageChannel) {
+        if(ch instanceof GuildMessageChannel tc) {
             Guild g = getGuild(event);
 
             if(g == null)
                 return;
-
-            GuildMessageChannel tc = ((GuildMessageChannel) ch);
 
             if(!tc.canTalk()) {
                 String serverName = g.getName();
@@ -513,33 +511,16 @@ public abstract class Command {
         for(int i = 0; i < missingPermissions.size(); i++) {
             Permission permission = missingPermissions.get(i);
 
-            String id;
-
-            switch (permission.getName()) {
-                case "Attach Files":
-                    id = "permission_file";
-                    break;
-                case "Manage Messages":
-                    id = "permission_managemsg";
-                    break;
-                case "Add Reactions":
-                    id = "permission_addreact";
-                    break;
-                case "Manage Roles":
-                    id = "permission_addrole";
-                    break;
-                case "Manage Emojis and Stickers":
-                    id = "permission_addemoji";
-                    break;
-                case "Use External Emojis":
-                    id = "permission_externalemoji";
-                    break;
-                case "Embed Links":
-                    id = "permission_embed";
-                    break;
-                default:
-                    id = permission.getName();
-            }
+            String id = switch (permission.getName()) {
+                case "Attach Files" -> "permission_file";
+                case "Manage Messages" -> "permission_managemsg";
+                case "Add Reactions" -> "permission_addreact";
+                case "Manage Roles" -> "permission_addrole";
+                case "Manage Emojis and Stickers" -> "permission_addemoji";
+                case "Use External Emojis" -> "permission_externalemoji";
+                case "Embed Links" -> "permission_embed";
+                default -> permission.getName();
+            };
 
             builder.append(LangID.getStringByID(id, lang));
 

@@ -314,7 +314,7 @@ public class AllEventAdapter extends ListenerAdapter {
             if(msg.getContentRaw().toLowerCase(java.util.Locale.ENGLISH).startsWith(StaticStore.globalPrefix))
                 prefix = StaticStore.globalPrefix;
 
-            int lang = LangID.EN;
+            int lang = -1;
 
             ConfigHolder c;
 
@@ -328,8 +328,7 @@ public class AllEventAdapter extends ListenerAdapter {
             if(StaticStore.holderContainsKey(u.getId())) {
                 Holder<? extends Event> holder = StaticStore.getHolder(u.getId());
 
-                if(holder instanceof MessageHolder) {
-                    MessageHolder<? extends GenericMessageEvent> messageHolder = (MessageHolder<? extends GenericMessageEvent>) holder;
+                if(holder instanceof MessageHolder<? extends GenericMessageEvent> messageHolder) {
 
                     if(messageHolder.canCastTo(MessageReceivedEvent.class)) {
                         MessageHolder<MessageReceivedEvent> h = (MessageHolder<MessageReceivedEvent>) messageHolder;
@@ -458,560 +457,178 @@ public class AllEventAdapter extends ListenerAdapter {
 
     public void performCommand(MessageReceivedEvent event, Message msg, int lang, String prefix, @Nullable IDHolder idh, @Nullable ConfigHolder c) {
         switch (StaticStore.getCommand(msg.getContentRaw(), prefix)) {
-            case "checkbcu":
-                new CheckBCU(lang, idh).execute(event);
-                break;
-            case "serverstat":
-            case "ss":
-                new ServerStat(lang, idh).execute(event);
-                break;
-            case "analyze":
-                new Analyze(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
-                break;
-            case "help":
-                new Help(lang, idh).execute(event);
-                break;
-            case "prefix":
-                new Prefix(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
-                break;
-            case "serverpre":
-                new ServerPrefix(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-                break;
-            case "save":
-                new Save(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
-                break;
-            case "stimg":
-            case "stimage":
-            case "stageimg":
-            case "stageimage":
-                new StageImage(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
-                break;
-            case "stmimg":
-            case "stmimage":
-            case "stagemapimg":
-            case "stagemapimage":
-                new StmImage(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
-                break;
-            case "formstat":
-            case "fs":
-            case "catstat":
-            case "cs":
-            case "unitstat":
-            case "us":
-                new FormStat(ConstraintCommand.ROLE.MEMBER, lang, idh, c).execute(event);
-                break;
-            case "locale":
-            case "loc":
-                new Locale(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
-                break;
-            case "music":
-            case "ms":
-                new Music(ConstraintCommand.ROLE.MEMBER, lang, idh, "music_").execute(event);
-                break;
-            case "enemystat":
-            case "es":
-                new EnemyStat(ConstraintCommand.ROLE.MEMBER, lang, idh, c).execute(event);
-                break;
-            case "castle":
-            case "cas":
-                new Castle(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
-                break;
-            case "stageinfo":
-            case "si":
-                new StageInfo(ConstraintCommand.ROLE.MEMBER, lang, idh, c,5000).execute(event);
-                break;
-            case "memory":
-            case "mm":
-                new Memory(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-                break;
-            case "formimage":
-            case "formimg":
-            case "fimage":
-            case "fimg":
-            case "catimage":
-            case "catimg":
-            case "cimage":
-            case "cimg":
-            case "unitimage":
-            case "unitimg":
-            case "uimage":
-            case "uimg":
-                new FormImage(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
-                break;
-            case "enemyimage":
-            case "enemyimg":
-            case "eimage":
-            case "eimg":
-                new EnemyImage(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
-                break;
-            case "background":
-            case "bg":
-                new Background(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
-                break;
-            case "test":
-                new Test(ConstraintCommand.ROLE.MANDARIN, lang, idh, "test").execute(event);
-                break;
-            case "formgif":
-            case "fgif":
-            case "fg":
-            case "catgif":
-            case "cgif":
-            case "cg":
-            case "unitgif":
-            case "ugif":
-            case "ug":
-                new FormGif(ConstraintCommand.ROLE.MEMBER, lang, idh, "gif").execute(event);
-                break;
-            case "enemygif":
-            case "egif":
-            case "eg":
-                new EnemyGif(ConstraintCommand.ROLE.MEMBER, lang, idh, "gif").execute(event);
-                break;
-            case "idset":
-                new IDSet(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-                break;
-            case "clearcache":
-                new ClearCache(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
-                break;
-            case "aa":
-            case "animanalyzer":
-                new AnimAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
-                break;
-            case "channelpermission":
-            case "channelperm":
-            case "chpermission":
-            case "chperm":
-            case "chp":
-                new ChannelPermission(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-                break;
-            case "formsprite":
-            case "fsprite":
-            case "formsp":
-            case "fsp":
-            case "catsprite":
-            case "csprite":
-            case "catsp":
-            case "csp":
-            case "unitsprite":
-            case "usprite":
-            case "unitsp":
-            case "usp":
-                new FormSprite(ConstraintCommand.ROLE.MEMBER, lang, idh, TimeUnit.SECONDS.toMillis(10)).execute(event);
-                break;
-            case "enemysprite":
-            case "esprite":
-            case "enemysp":
-            case "esp":
-                new EnemySprite(ConstraintCommand.ROLE.MEMBER, lang, idh, TimeUnit.SECONDS.toMillis(10)).execute(event);
-                break;
-            case "medal":
-            case "md":
-                new Medal(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
-                break;
-            case "announcement":
-            case "ann":
-                new Announcement(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
-                break;
-            case "catcombo":
-            case "combo":
-            case "cc":
-                new CatCombo(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
-                break;
-            case "serverjson":
-            case "json":
-            case "sj":
-                new ServerJson(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
-                break;
-            case "findstage":
-            case "findst":
-            case "fstage":
-            case "fst":
-                new FindStage(ConstraintCommand.ROLE.MEMBER, lang, idh, c, 5000).execute(event);
-                break;
-            case "suggest":
-                new Suggest(ConstraintCommand.ROLE.MEMBER, lang, idh, TimeUnit.MINUTES.toMillis(60)).execute(event);
-                break;
-            case "suggestban":
-            case "sgb":
-                new SuggestBan(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
-                break;
-            case "suggestunban":
-            case "sgub":
-                new SuggestUnban(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
-                break;
-            case "suggestresponse":
-            case "sgr":
-                new SuggestResponse(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
-                break;
-            case "alias":
-            case "al":
-                new Alias(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
-                break;
-            case "aliasadd":
-            case "ala":
-                new AliasAdd(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
-                break;
-            case "aliasremove":
-            case "alr":
-                new AliasRemove(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
-                break;
-            case "contributoradd":
-            case "coa":
-                new ContributorAdd(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
-                break;
-            case "contributorremove":
-            case "cor":
-                new ContributorRemove(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
-                break;
-            case "statistic":
-            case "stat":
-                new Statistic(lang).execute(event);
-                break;
-            case "serverlocale":
-            case "serverloc":
-            case "sloc":
-                new ServerLocale(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-                break;
-            case "news":
-                new News(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
-                break;
-            case "publish":
-            case "pub":
-                new Publish(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
-                break;
-            case "boosterrole":
-            case "boosterr":
-            case "brole":
-            case "br":
-                new BoosterRole(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-                break;
-            case "boosterroleremove":
-            case "brremove":
-            case "boosterrolerem":
-            case "brrem":
-            case "brr":
-                new BoosterRoleRemove(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-                break;
-            case "boosteremoji":
-            case "boostere":
-            case "bemoji":
-            case "be":
-                new BoosterEmoji(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-                break;
-            case "boosteremojiremove":
-            case "beremove":
-            case"boosteremojirem":
-            case "berem":
-            case "ber":
-                new BoosterEmojiRemove(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-                break;
-            case "registerlogging":
-            case "rlogging":
-            case "registerl":
-            case "rl":
-                new RegisterLogging(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
-                break;
-            case "unregisterlogging":
-            case "urlogging":
-            case "unregisterl":
-            case "url":
-                new UnregisterLogging(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-                break;
-            case "setup":
-                new Setup(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
-                break;
-            case "fixrole":
-            case "fir":
-                new FixRole(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-                break;
-            case "registerfixing":
-            case "rf":
-                new RegisterFixing(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
-                break;
-            case "unregisterfixing":
-            case "urf":
-                new UnregisterFixing(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
-                break;
-            case "watchdm":
-            case "wd":
-                new WatchDM(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-                break;
-            case "checkeventupdate":
-            case "ceu":
-                new CheckEventUpdate(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
-                break;
-            case "printstageevent":
-            case "pse":
-                new PrintStageEvent(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
-                break;
-            case "subscribeevent":
-            case "se":
-                new SubscribeEvent(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-                break;
-            case "printgachaevent":
-            case "pge":
-                new PrintGachaEvent(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
-                break;
-            case "setbcversion":
-            case "sbv":
-                new SetBCVersion(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
-                break;
-            case "logout":
-            case "lo":
-                new LogOut(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
-                break;
-            case "printitemevent":
-            case "pie":
-                new PrintItemEvent(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
-                break;
-            case "printevent":
-            case "pe":
-                new PrintEvent(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-                break;
-            case "statanalyzer":
-            case "sa":
-                new StatAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
-                break;
-            case "addscamlinkhelpingserver":
-            case "aslhs":
-            case "ashs":
-                new AddScamLinkHelpingServer(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
-                break;
-            case "removescamlinkhelpingserver":
-            case "rslhs":
-            case "rshs":
-                new RemoveScamLinkHelpingServer(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
-                break;
-            case "registerscamlink":
-            case "rsl":
-                new RegisterScamLink(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-                break;
-            case "unregisterscamlink":
-            case "usl":
-                new UnregisterScamLink(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-                break;
-            case "subscribescamlinkdetector":
-            case "ssld":
-            case "ssd":
-                new SubscribeScamLinkDetector(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-                break;
-            case "unsubscribescamlinkdetector":
-            case "usld":
-            case "usd":
-                new UnsubscribeScamLinkDetector(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-                break;
-            case "timezone":
-            case "tz":
-                new TimeZone(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
-                break;
-            case "optout":
-                new OptOut(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
-                break;
-            case "config":
-                new Config(ConstraintCommand.ROLE.MEMBER, lang, idh, c, false).execute(event);
-                break;
-            case "removecache":
-            case "rc":
-                new RemoveCache(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
-                break;
-            case "sendmessage":
-            case "sm":
-                new SendMessage(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
-                break;
-            case "analyzeserver":
-            case "as":
-                new AnalyzeServer(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
-                break;
-            case "cleartemp":
-            case "ct":
-                new ClearTemp(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
-                break;
-            case "downloadapk":
-            case "da":
-                new DownloadApk(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
-                break;
-            case "trueformanalyzer":
-            case "tfanalyzer":
-            case "trueforma":
-            case "tfa":
-                new TrueFormAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
-                break;
-            case "enemystatanalyzer":
-            case "estatanalyzer":
-            case "enemysa":
-            case "esa":
-                new EnemyStatAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
-                break;
-            case "stagestatanalyzer":
-            case "sstatanalyzer":
-            case "stagesa":
-            case "ssa":
-                new StageStatAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
-                break;
-            case "serverconfig":
-            case "sconfig":
-            case "serverc":
-            case "sc":
-                if(idh != null) {
+            case "checkbcu" -> new CheckBCU(lang, idh).execute(event);
+            case "serverstat", "ss" -> new ServerStat(lang, idh).execute(event);
+            case "analyze" -> new Analyze(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "help" -> new Help(lang, idh).execute(event);
+            case "prefix" -> new Prefix(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
+            case "serverpre" -> new ServerPrefix(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+            case "save" -> new Save(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
+            case "stimg", "stimage", "stageimg", "stageimage" ->
+                    new StageImage(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
+            case "stmimg", "stmimage", "stagemapimg", "stagemapimage" ->
+                    new StmImage(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
+            case "formstat", "fs", "catstat", "cs", "unitstat", "us" ->
+                    new FormStat(ConstraintCommand.ROLE.MEMBER, lang, idh, c).execute(event);
+            case "locale", "loc" -> new Locale(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
+            case "music", "ms" -> new Music(ConstraintCommand.ROLE.MEMBER, lang, idh, "music_").execute(event);
+            case "enemystat", "es" -> new EnemyStat(ConstraintCommand.ROLE.MEMBER, lang, idh, c).execute(event);
+            case "castle", "cas" -> new Castle(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
+            case "stageinfo", "si" -> new StageInfo(ConstraintCommand.ROLE.MEMBER, lang, idh, c, 5000).execute(event);
+            case "memory", "mm" -> new Memory(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+            case "formimage", "formimg", "fimage", "fimg", "catimage", "catimg", "cimage", "cimg", "unitimage", "unitimg", "uimage", "uimg" ->
+                    new FormImage(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
+            case "enemyimage", "enemyimg", "eimage", "eimg" ->
+                    new EnemyImage(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
+            case "background", "bg" -> new Background(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
+            case "test" -> new Test(ConstraintCommand.ROLE.MANDARIN, lang, idh, "test").execute(event);
+            case "formgif", "fgif", "fg", "catgif", "cgif", "cg", "unitgif", "ugif", "ug" ->
+                    new FormGif(ConstraintCommand.ROLE.MEMBER, lang, idh, "gif").execute(event);
+            case "enemygif", "egif", "eg" ->
+                    new EnemyGif(ConstraintCommand.ROLE.MEMBER, lang, idh, "gif").execute(event);
+            case "idset" -> new IDSet(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+            case "clearcache" -> new ClearCache(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "aa", "animanalyzer" -> new AnimAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
+            case "channelpermission", "channelperm", "chpermission", "chperm", "chp" ->
+                    new ChannelPermission(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+            case "formsprite", "fsprite", "formsp", "fsp", "catsprite", "csprite", "catsp", "csp", "unitsprite", "usprite", "unitsp", "usp" ->
+                    new FormSprite(ConstraintCommand.ROLE.MEMBER, lang, idh, TimeUnit.SECONDS.toMillis(10)).execute(event);
+            case "enemysprite", "esprite", "enemysp", "esp" ->
+                    new EnemySprite(ConstraintCommand.ROLE.MEMBER, lang, idh, TimeUnit.SECONDS.toMillis(10)).execute(event);
+            case "medal", "md" -> new Medal(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
+            case "announcement", "ann" -> new Announcement(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
+            case "catcombo", "combo", "cc" -> new CatCombo(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
+            case "serverjson", "json", "sj" -> new ServerJson(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
+            case "findstage", "findst", "fstage", "fst" ->
+                    new FindStage(ConstraintCommand.ROLE.MEMBER, lang, idh, c, 5000).execute(event);
+            case "suggest" ->
+                    new Suggest(ConstraintCommand.ROLE.MEMBER, lang, idh, TimeUnit.MINUTES.toMillis(60)).execute(event);
+            case "suggestban", "sgb" -> new SuggestBan(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "suggestunban", "sgub" -> new SuggestUnban(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "suggestresponse", "sgr" ->
+                    new SuggestResponse(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "alias", "al" -> new Alias(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
+            case "aliasadd", "ala" -> new AliasAdd(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
+            case "aliasremove", "alr" -> new AliasRemove(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
+            case "contributoradd", "coa" ->
+                    new ContributorAdd(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "contributorremove", "cor" ->
+                    new ContributorRemove(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "statistic", "stat" -> new Statistic(lang).execute(event);
+            case "serverlocale", "serverloc", "sloc" ->
+                    new ServerLocale(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+            case "news" -> new News(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "publish", "pub" -> new Publish(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "boosterrole", "boosterr", "brole", "br" ->
+                    new BoosterRole(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+            case "boosterroleremove", "brremove", "boosterrolerem", "brrem", "brr" ->
+                    new BoosterRoleRemove(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+            case "boosteremoji", "boostere", "bemoji", "be" ->
+                    new BoosterEmoji(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+            case "boosteremojiremove", "beremove", "boosteremojirem", "berem", "ber" ->
+                    new BoosterEmojiRemove(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+            case "registerlogging", "rlogging", "registerl", "rl" ->
+                    new RegisterLogging(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "unregisterlogging", "urlogging", "unregisterl", "url" ->
+                    new UnregisterLogging(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+            case "setup" -> new Setup(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "fixrole", "fir" -> new FixRole(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+            case "registerfixing", "rf" ->
+                    new RegisterFixing(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "unregisterfixing", "urf" ->
+                    new UnregisterFixing(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "watchdm", "wd" -> new WatchDM(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+            case "checkeventupdate", "ceu" ->
+                    new CheckEventUpdate(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
+            case "printstageevent", "pse" ->
+                    new PrintStageEvent(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
+            case "subscribeevent", "se" -> new SubscribeEvent(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+            case "printgachaevent", "pge" ->
+                    new PrintGachaEvent(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
+            case "setbcversion", "sbv" -> new SetBCVersion(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
+            case "logout", "lo" -> new LogOut(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "printitemevent", "pie" -> new PrintItemEvent(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
+            case "printevent", "pe" -> new PrintEvent(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+            case "statanalyzer", "sa" -> new StatAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
+            case "addscamlinkhelpingserver", "aslhs", "ashs" ->
+                    new AddScamLinkHelpingServer(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "removescamlinkhelpingserver", "rslhs", "rshs" ->
+                    new RemoveScamLinkHelpingServer(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "registerscamlink", "rsl" ->
+                    new RegisterScamLink(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+            case "unregisterscamlink", "usl" ->
+                    new UnregisterScamLink(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+            case "subscribescamlinkdetector", "ssld", "ssd" ->
+                    new SubscribeScamLinkDetector(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+            case "unsubscribescamlinkdetector", "usld", "usd" ->
+                    new UnsubscribeScamLinkDetector(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+            case "timezone", "tz" -> new TimeZone(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
+            case "optout" -> new OptOut(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
+            case "config" -> new Config(ConstraintCommand.ROLE.MEMBER, lang, idh, c, false).execute(event);
+            case "removecache", "rc" -> new RemoveCache(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "sendmessage", "sm" -> new SendMessage(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "analyzeserver", "as" -> new AnalyzeServer(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "cleartemp", "ct" -> new ClearTemp(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "downloadapk", "da" -> new DownloadApk(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
+            case "trueformanalyzer", "tfanalyzer", "trueforma", "tfa" ->
+                    new TrueFormAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
+            case "enemystatanalyzer", "estatanalyzer", "enemysa", "esa" ->
+                    new EnemyStatAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
+            case "stagestatanalyzer", "sstatanalyzer", "stagesa", "ssa" ->
+                    new StageStatAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
+            case "serverconfig", "sconfig", "serverc", "sc" -> {
+                if (idh != null) {
                     new Config(ConstraintCommand.ROLE.MOD, lang, idh, idh.config, true).execute(event);
                 }
-
-                break;
-            case "commandban":
-            case "cb":
-                new CommandBan(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-                break;
-            case "commandunban":
-            case "cub":
-                new CommandUnban(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-                break;
-            case "ignorechannelpermission":
-            case "ichannelpermission":
-            case "ignorechp":
-            case "ichp":
-                new IgnoreChannelPermission(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-                break;
-            case "allowchannelpermission":
-            case "achannelpermission":
-            case "allowchp":
-            case "achp":
-                new AllowChannelPermission(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-                break;
-            case "talentinfo":
-            case "ti":
-                new TalentInfo(ConstraintCommand.ROLE.MEMBER, lang, idh, c).execute(event);
-                break;
-            case "soul":
-            case "sl":
-                new Soul(ConstraintCommand.ROLE.MEMBER, lang, idh, "gif").execute(event);
-                break;
-            case "soulimage":
-            case "soulimg":
-            case "simage":
-            case "simg":
-                new SoulImage(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
-                break;
-            case "soulsprite":
-            case "ssprite":
-            case "soulsp":
-            case "ssp":
-                new SoulSprite(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
-                break;
-            case "sayhi":
-            case "hi":
-                new SayHi(lang).execute(event);
-                break;
-            case "calculator":
-            case "calc":
-            case "c":
-                new Calculator(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
-                break;
-            case "assetbrowser":
-            case "abroswer":
-            case "assetb":
-            case "ab":
-                new AssetBrowser(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
-                break;
-            case "garbagecollect":
-            case "gc":
-                new GarbageCollect(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
-                break;
-            case "findreward":
-            case "freward":
-            case "findr":
-            case "fr":
-                new FindReward(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000, c).execute(event);
-                break;
-            case "eventdataarchive":
-            case "eventddataa":
-            case "earchive":
-            case "eda":
-                new EventDataArchive(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
-                break;
-            case "announcemessage":
-            case "am":
-                new AnnounceMessage(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-                break;
-            case "talanetanalyzer":
-            case "tala":
-            case "ta":
-                new TalentAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
-                break;
-            case "catcomboanalyzer":
-            case "comboanalyzer":
-            case "cca":
-            case "ca":
-                new ComboAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
-                break;
-            case "addstatuschannel":
-            case "asc":
-                new AddStatusChannel(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-                break;
-            case "removestatuschannel":
-            case "rsc":
-                new RemoveStatusChannel(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-                break;
-            case "say":
-            case "s":
-                new Say(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-                break;
-            case "plot":
-            case "p":
-                new Plot(ConstraintCommand.ROLE.MEMBER, lang, idh, 30000).execute(event);
-                break;
-            case "tplot":
-            case "tp":
-                new TPlot(ConstraintCommand.ROLE.MEMBER, lang, idh, 30000).execute(event);
-                break;
-            case "solve":
-            case "sv":
-                new Solve(ConstraintCommand.ROLE.MEMBER, lang, idh, 30000).execute(event);
-                break;
-            case "differentiate":
-            case "diff":
-            case "dx":
-                new Differentiate(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
-                break;
-            case "integrate":
-            case "int":
-                new Integrate(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
-                break;
-            case "plotrtheta":
-            case "plotrt":
-            case "prtheta":
-            case "prt":
-            case "rt":
-                new RTheta(ConstraintCommand.ROLE.MEMBER, lang, idh, 30000).execute(event);
-                break;
-            case "getid":
-            case "gi":
-                new GetID(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
-                break;
-            case "donate":
-            case "donation":
-            case "don":
-                new Donate(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
-                break;
-            case "eventmessage":
-            case "em":
-                new EventMessage(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-                break;
-            case "grablanguage":
-            case "gl":
-                new GrabLanguage(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
-                break;
-            case "reloadlanguage":
-            case "rel":
-                new ReloadLanguage(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
-                break;
-            case "reactto":
-            case "ret":
-                new ReactTo(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
-                break;
-            case "react":
-            case "r":
-                new React(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-                break;
+            }
+            case "commandban", "cb" -> new CommandBan(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+            case "commandunban", "cub" -> new CommandUnban(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+            case "ignorechannelpermission", "ichannelpermission", "ignorechp", "ichp" ->
+                    new IgnoreChannelPermission(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+            case "allowchannelpermission", "achannelpermission", "allowchp", "achp" ->
+                    new AllowChannelPermission(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+            case "talentinfo", "ti" -> new TalentInfo(ConstraintCommand.ROLE.MEMBER, lang, idh, c).execute(event);
+            case "soul", "sl" -> new Soul(ConstraintCommand.ROLE.MEMBER, lang, idh, "gif").execute(event);
+            case "soulimage", "soulimg", "simage", "simg" ->
+                    new SoulImage(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
+            case "soulsprite", "ssprite", "soulsp", "ssp" ->
+                    new SoulSprite(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
+            case "sayhi", "hi" -> new SayHi(lang).execute(event);
+            case "calculator", "calc", "c" -> new Calculator(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
+            case "assetbrowser", "abroswer", "assetb", "ab" ->
+                    new AssetBrowser(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
+            case "garbagecollect", "gc" ->
+                    new GarbageCollect(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "findreward", "freward", "findr", "fr" ->
+                    new FindReward(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000, c).execute(event);
+            case "eventdataarchive", "eventddataa", "earchive", "eda" ->
+                    new EventDataArchive(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
+            case "announcemessage", "am" -> new AnnounceMessage(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+            case "talanetanalyzer", "tala", "ta" ->
+                    new TalentAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
+            case "catcomboanalyzer", "comboanalyzer", "cca", "ca" ->
+                    new ComboAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
+            case "addstatuschannel", "asc" ->
+                    new AddStatusChannel(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+            case "removestatuschannel", "rsc" ->
+                    new RemoveStatusChannel(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+            case "say", "s" -> new Say(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+            case "plot", "p" -> new Plot(ConstraintCommand.ROLE.MEMBER, lang, idh, 30000).execute(event);
+            case "tplot", "tp" -> new TPlot(ConstraintCommand.ROLE.MEMBER, lang, idh, 30000).execute(event);
+            case "solve", "sv" -> new Solve(ConstraintCommand.ROLE.MEMBER, lang, idh, 30000).execute(event);
+            case "differentiate", "diff", "dx" ->
+                    new Differentiate(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
+            case "integrate", "int" -> new Integrate(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
+            case "plotrtheta", "plotrt", "prtheta", "prt", "rt" ->
+                    new RTheta(ConstraintCommand.ROLE.MEMBER, lang, idh, 30000).execute(event);
+            case "getid", "gi" -> new GetID(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "donate", "donation", "don" -> new Donate(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
+            case "eventmessage", "em" -> new EventMessage(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+            case "grablanguage", "gl" -> new GrabLanguage(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
+            case "reloadlanguage", "rel" ->
+                    new ReloadLanguage(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "reactto", "ret" -> new ReactTo(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "react", "r" -> new React(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
         }
     }
 
@@ -1028,10 +645,8 @@ public class AllEventAdapter extends ListenerAdapter {
             if(StaticStore.holderContainsKey(u.getId())) {
                 Holder<? extends Event> holder = StaticStore.getHolder(u.getId());
 
-                if(!(holder instanceof MessageHolder))
+                if(!(holder instanceof MessageHolder<? extends GenericMessageEvent> messageHolder))
                     return;
-
-                MessageHolder<? extends GenericMessageEvent> messageHolder = (MessageHolder<? extends GenericMessageEvent>) holder;
 
                 if(messageHolder.canCastTo(MessageReactionAddEvent.class)) {
                     MessageHolder<MessageReactionAddEvent> h = (MessageHolder<MessageReactionAddEvent>) messageHolder;
@@ -1057,8 +672,7 @@ public class AllEventAdapter extends ListenerAdapter {
         super.onGenericInteractionCreate(event);
 
         try {
-            if(event instanceof GenericComponentInteractionCreateEvent) {
-                GenericComponentInteractionCreateEvent c = (GenericComponentInteractionCreateEvent) event;
+            if(event instanceof GenericComponentInteractionCreateEvent c) {
 
                 User u = c.getInteraction().getUser();
 
@@ -1091,8 +705,7 @@ public class AllEventAdapter extends ListenerAdapter {
                             h.performInteraction((GenericComponentInteractionCreateEvent) event);
                     }
                 }
-            } else if(event instanceof GenericCommandInteractionEvent) {
-                GenericCommandInteractionEvent i = (GenericCommandInteractionEvent) event;
+            } else if(event instanceof GenericCommandInteractionEvent i) {
 
                 SpamPrevent spam;
 
@@ -1114,15 +727,9 @@ public class AllEventAdapter extends ListenerAdapter {
                 }
 
                 switch (i.getName()) {
-                    case "fs":
-                        FormStat.performInteraction(i);
-                        break;
-                    case "es":
-                        EnemyStat.performInteraction(i);
-                        break;
-                    case "si":
-                        StageInfo.performInteraction(i);
-                        break;
+                    case "fs" -> FormStat.performInteraction(i);
+                    case "es" -> EnemyStat.performInteraction(i);
+                    case "si" -> StageInfo.performInteraction(i);
                 }
             }
         } catch (Exception e) {

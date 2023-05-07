@@ -40,40 +40,18 @@ public class Config extends ConstraintCommand {
         if(ch == null)
             return;
 
-        String locale;
-
-        switch (config.lang) {
-            case LangID.EN:
-                locale = LangID.getStringByID("lang_en", lang);
-                break;
-            case LangID.JP:
-                locale = LangID.getStringByID("lang_jp", lang);
-                break;
-            case LangID.KR:
-                locale = LangID.getStringByID("lang_kr", lang);
-                break;
-            case LangID.ZH:
-                locale = LangID.getStringByID("lang_zh", lang);
-                break;
-            case LangID.FR:
-                locale = LangID.getStringByID("lang_fr", lang);
-                break;
-            case LangID.IT:
-                locale = LangID.getStringByID("lang_it", lang);
-                break;
-            case LangID.ES:
-                locale = LangID.getStringByID("lang_es", lang);
-                break;
-            case LangID.DE:
-                locale = LangID.getStringByID("lang_de", lang);
-                break;
-            case LangID.TH:
-                locale = LangID.getStringByID("lang_th", lang);
-                break;
-            default:
-                locale = LangID.getStringByID("config_auto", lang);
-                break;
-        }
+        String locale = switch (config.lang) {
+            case LangID.EN -> LangID.getStringByID("lang_en", lang);
+            case LangID.JP -> LangID.getStringByID("lang_jp", lang);
+            case LangID.KR -> LangID.getStringByID("lang_kr", lang);
+            case LangID.ZH -> LangID.getStringByID("lang_zh", lang);
+            case LangID.FR -> LangID.getStringByID("lang_fr", lang);
+            case LangID.IT -> LangID.getStringByID("lang_it", lang);
+            case LangID.ES -> LangID.getStringByID("lang_es", lang);
+            case LangID.DE -> LangID.getStringByID("lang_de", lang);
+            case LangID.TH -> LangID.getStringByID("lang_th", lang);
+            default -> LangID.getStringByID("config_auto", lang);
+        };
 
         String ex;
         String bool;
@@ -116,8 +94,8 @@ public class Config extends ConstraintCommand {
         }
 
         String message = "**" + LangID.getStringByID("config_locale", lang).replace("_", locale) + "**\n\n" +
-                "**" + LangID.getStringByID("config_default", lang).replace("_", ""+ config.defLevel) + "**\n" +
-                LangID.getStringByID("config_deflvdesc", lang).replace("_", config.defLevel+"") + "\n\n" +
+                "**" + LangID.getStringByID("config_default", lang).replace("_", String.valueOf(config.defLevel)) + "**\n" +
+                LangID.getStringByID("config_deflvdesc", lang).replace("_", String.valueOf(config.defLevel)) + "\n\n" +
                 "**" + LangID.getStringByID("config_extra", lang).replace("_", bool) + "**\n" +
                 ex + "\n\n" +
                 "**" + LangID.getStringByID("config_unit", lang).replace("_", unit) + "**\n" +
@@ -149,19 +127,21 @@ public class Config extends ConstraintCommand {
             String l = LangID.getStringByID("lang_"+StaticStore.langCode[i], config.lang);
 
             if(config.lang == StaticStore.langIndex[i]) {
-                languages.add(SelectOption.of(LangID.getStringByID("config_locale", lang).replace("_", l), ""+StaticStore.langIndex[i]).withDefault(true));
+                languages.add(SelectOption.of(LangID.getStringByID("config_locale", lang).replace("_", l), String.valueOf(StaticStore.langIndex[i])).withDefault(true));
             } else {
-                languages.add(SelectOption.of(LangID.getStringByID("config_locale", lang).replace("_", l), ""+StaticStore.langIndex[i]));
+                languages.add(SelectOption.of(LangID.getStringByID("config_locale", lang).replace("_", l), String.valueOf(StaticStore.langIndex[i])));
             }
         }
 
         List<SelectOption> levels = new ArrayList<>();
 
         for(int i = 0; i <= 50; i += 5) {
+            final String level = i == 0 ? "1" : String.valueOf(i);
+
             if(config.defLevel == i) {
-                levels.add(SelectOption.of(LangID.getStringByID("config_default", lang).replace("_", i == 0 ? "1" : ""+i), i == 0 ? "1" : ""+i).withDefault(true));
+                levels.add(SelectOption.of(LangID.getStringByID("config_default", lang).replace("_", level), level).withDefault(true));
             } else {
-                levels.add(SelectOption.of(LangID.getStringByID("config_default", lang).replace("_", i == 0 ? "1" : ""+i), i == 0 ? "1" : ""+i));
+                levels.add(SelectOption.of(LangID.getStringByID("config_default", lang).replace("_", level), level));
             }
         }
 
