@@ -36,3 +36,4 @@ hs_err_pid*
 /googlePlay/
 /googlePlay/*
 /data/abilityIcons.txt
+/build/tmp/compileJava/previous-compilation-data.bin

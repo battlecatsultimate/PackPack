@@ -4,6 +4,10 @@ apply plugin: 'application'
 group 'org.example'
 version '1.0-SNAPSHOT'
 
+compileJava {
+    options.compilerArgs += ['--enable-preview']
+}
+
 repositories {
     mavenCentral()
     maven { url 'https://jitpack.io' }
