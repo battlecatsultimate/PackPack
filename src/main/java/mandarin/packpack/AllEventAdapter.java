@@ -328,7 +328,8 @@ public class AllEventAdapter extends ListenerAdapter {
             if(StaticStore.holderContainsKey(u.getId())) {
                 Holder<? extends Event> holder = StaticStore.getHolder(u.getId());
 
-                if(holder instanceof MessageHolder<? extends GenericMessageEvent> messageHolder) {
+                if(holder instanceof MessageHolder) {
+                    MessageHolder<? extends GenericMessageEvent> messageHolder = (MessageHolder<? extends GenericMessageEvent>) holder;
 
                     if(messageHolder.canCastTo(MessageReceivedEvent.class)) {
                         MessageHolder<MessageReceivedEvent> h = (MessageHolder<MessageReceivedEvent>) messageHolder;
@@ -645,8 +646,10 @@ public class AllEventAdapter extends ListenerAdapter {
             if(StaticStore.holderContainsKey(u.getId())) {
                 Holder<? extends Event> holder = StaticStore.getHolder(u.getId());
 
-                if(!(holder instanceof MessageHolder<? extends GenericMessageEvent> messageHolder))
+                if(!(holder instanceof MessageHolder))
                     return;
+
+                MessageHolder<? extends GenericMessageEvent> messageHolder = (MessageHolder<? extends GenericMessageEvent>) holder;
 
                 if(messageHolder.canCastTo(MessageReactionAddEvent.class)) {
                     MessageHolder<MessageReactionAddEvent> h = (MessageHolder<MessageReactionAddEvent>) messageHolder;
