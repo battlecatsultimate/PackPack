@@ -37,7 +37,6 @@ public abstract class MessageHolder extends Holder {
 
     private boolean canHandleEvent(MessageReceivedEvent event) {
         return event.getChannel().getId().equals(channelID)
-                && event.getMessage().getId().equals(messageID)
                 && event.getAuthor().getId().equals(userID);
     }
 

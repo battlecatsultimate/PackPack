@@ -229,7 +229,8 @@ public class ConfigButtonHolder extends ComponentHolder {
 
         for(int i = page * 3; i < (page + 1) * 3; i++) {
             switch (i) {
-                case 0 -> {
+                case 0 -> m.add(ActionRow.of(Button.secondary("defLevels", String.format(LangID.getStringByID("config_setlevel", lang), config.defLevel)).withEmoji(Emoji.fromUnicode("⚙"))));
+                case 1 -> {
                     List<SelectOption> languages = new ArrayList<>();
 
                     if (!forServer) {
@@ -251,7 +252,6 @@ public class ConfigButtonHolder extends ComponentHolder {
 
                     m.add(ActionRow.of(StringSelectMenu.create("language").addOptions(languages).build()));
                 }
-                case 1 -> m.add(ActionRow.of(Button.secondary("defLevels", String.format(LangID.getStringByID("config_setlevel", lang), config.defLevel)).withEmoji(Emoji.fromUnicode("⚙"))));
                 case 2 -> {
                     List<SelectOption> extras = new ArrayList<>();
 

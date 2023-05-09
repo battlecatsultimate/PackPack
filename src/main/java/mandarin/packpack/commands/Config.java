@@ -154,8 +154,8 @@ public class Config extends ConstraintCommand {
         pages.add(Button.secondary("next", LangID.getStringByID("search_next", lang)).withEmoji(Emoji.fromCustom(EmojiStore.NEXT)));
 
         Message msg = getRepliedMessageSafely(ch, message, getMessage(event), a -> a.setComponents(
-                ActionRow.of(StringSelectMenu.create("language").addOptions(languages).build()),
                 ActionRow.of(Button.secondary("defLevels", String.format(LangID.getStringByID("config_setlevel", lang), config.defLevel)).withEmoji(Emoji.fromUnicode("⚙"))),
+                ActionRow.of(StringSelectMenu.create("language").addOptions(languages).build()),
                 ActionRow.of(StringSelectMenu.create("extra").addOptions(extras).build()),
                 ActionRow.of(pages),
                 ActionRow.of(components)
