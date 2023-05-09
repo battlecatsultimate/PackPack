@@ -7,8 +7,6 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class HolderHub {
-    public String userID;
-
     public MessageHolder messageHolder;
     public ComponentHolder componentHolder;
     public ModalHolder modalHolder;
