@@ -11,12 +11,14 @@ import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.TimeBoolean;
+import mandarin.packpack.supporter.server.holder.segment.MessageHolder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
+import javax.annotation.Nonnull;
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.util.ArrayList;
@@ -25,7 +27,7 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class BCAnimMessageHolder extends MessageHolder<MessageReceivedEvent> {
+public class BCAnimMessageHolder extends MessageHolder {
     private enum FILE {
         PNG(-1),
         IMGCUT(-1),
@@ -46,7 +48,6 @@ public class BCAnimMessageHolder extends MessageHolder<MessageReceivedEvent> {
     private final AnimMixer mixer;
     private final Message msg;
     private final int lang;
-    private final String channelID;
     private final File container;
 
     private boolean pngDone = false;
@@ -58,12 +59,11 @@ public class BCAnimMessageHolder extends MessageHolder<MessageReceivedEvent> {
     private final AtomicReference<String> imgcut = new AtomicReference<>("IMGCUT : -");
     private final ArrayList<AtomicReference<String>> maanim = new ArrayList<>();
 
-    public BCAnimMessageHolder(Message msg, Message target, int lang, String channelID, File container, MessageChannel ch, boolean zombie) throws Exception {
-        super(MessageReceivedEvent.class, msg);
+    public BCAnimMessageHolder(@Nonnull Message author, @Nonnull Message target, int lang, @Nonnull String channelID, File container, MessageChannel ch, boolean zombie) throws Exception {
+        super(author, channelID, target.getId());
 
         this.msg = target;
         this.lang = lang;
-        this.channelID = channelID;
         this.container = container;
 
         int len = zombie ? 7 : 4;
@@ -76,8 +76,8 @@ public class BCAnimMessageHolder extends MessageHolder<MessageReceivedEvent> {
 
         AtomicReference<Long> now = new AtomicReference<>(System.currentTimeMillis());
 
-        if(!msg.getAttachments().isEmpty()) {
-            for(Message.Attachment a : msg.getAttachments()) {
+        if(!author.getAttachments().isEmpty()) {
+            for(Message.Attachment a : author.getAttachments()) {
                 if(a.getFileName().endsWith(".png") && mixer.png == null) {
                     downloadAndValidate("PNG : ", a, FILE.PNG, now);
                 } else if(a.getFileName().endsWith(".imgcut") && mixer.imgCut == null) {
@@ -101,7 +101,7 @@ public class BCAnimMessageHolder extends MessageHolder<MessageReceivedEvent> {
                 Guild g;
 
                 if(ch instanceof GuildChannel) {
-                    g = msg.getGuild();
+                    g = author.getGuild();
                 } else {
                     g = null;
                 }
@@ -141,24 +141,24 @@ public class BCAnimMessageHolder extends MessageHolder<MessageReceivedEvent> {
                 }, 1000);
             }).start();
         } else {
-            StaticStore.putHolder(msg.getAuthor().getId(), this);
+            StaticStore.putHolder(author.getAuthor().getId(), this);
 
-            registerAutoFinish(this, target, msg, lang, "animanalyze_expire", TimeUnit.MINUTES.toMillis(5));
+            registerAutoFinish(this, target, author, lang, "animanalyze_expire", TimeUnit.MINUTES.toMillis(5));
         }
     }
 
     @Override
-    public int handleEvent(MessageReceivedEvent event) {
+    public STATUS onReceivedEvent(MessageReceivedEvent event) {
         try {
             if(expired) {
                 System.out.println("Expired!!");
-                return RESULT_FAIL;
+                return STATUS.FAIL;
             }
 
             MessageChannel ch = event.getMessage().getChannel();
 
             if(!ch.getId().equals(channelID))
-                return RESULT_STILL;
+                return STATUS.WAIT;
 
             AtomicReference<Long> now = new AtomicReference<>(System.currentTimeMillis());
 
@@ -167,7 +167,6 @@ public class BCAnimMessageHolder extends MessageHolder<MessageReceivedEvent> {
             if(!m.getAttachments().isEmpty()) {
                 for(Message.Attachment a : m.getAttachments()) {
                     if(a.getFileName().endsWith(".png") && mixer.png == null) {
-                        System.out.println("PNG");
                         downloadAndValidate("PNG : ", a, FILE.PNG, now);
                     } else if(a.getFileName().endsWith(".imgcut") && mixer.imgCut == null) {
                         downloadAndValidate("IMGCUT : ", a, FILE.IMGCUT, now);
@@ -224,20 +223,20 @@ public class BCAnimMessageHolder extends MessageHolder<MessageReceivedEvent> {
                         }
                     }).start();
 
-                    return RESULT_FINISH;
+                    return STATUS.FINISH;
                 }
             } else if(m.getContentRaw().equals("c")) {
                 msg.editMessage(LangID.getStringByID("animanalyze_cancel", lang)).queue();
 
                 StaticStore.deleteFile(container, true);
 
-                return RESULT_FINISH;
+                return STATUS.FINISH;
             }
 
-            return RESULT_STILL;
+            return STATUS.WAIT;
         } catch (Exception e) {
             e.printStackTrace();
-            return RESULT_STILL;
+            return STATUS.WAIT;
         }
     }
 
@@ -247,7 +246,7 @@ public class BCAnimMessageHolder extends MessageHolder<MessageReceivedEvent> {
     }
 
     @Override
-    public void expire(String id) {
+    public void onExpire(String id) {
         if(expired)
             return;
 
@@ -281,24 +280,16 @@ public class BCAnimMessageHolder extends MessageHolder<MessageReceivedEvent> {
     }
 
     private String getMaanimTitle(int index) {
-        switch (index) {
-            case 0:
-                return "MAANIM WALKING : ";
-            case 1:
-                return "MAANIM IDLE : ";
-            case 2:
-                return "MAANIM ATTACK : ";
-            case 3:
-                return "MAANIM HITBACK : ";
-            case 4:
-                return "MAANIM BURROW DOWN : ";
-            case 5:
-                return "MAANIM BURROW MOVE : ";
-            case 6:
-                return "MAANIM BURROW UP : ";
-            default:
-                return "MAANIM "+index+" : ";
-        }
+        return switch (index) {
+            case 0 -> "MAANIM WALKING : ";
+            case 1 -> "MAANIM IDLE : ";
+            case 2 -> "MAANIM ATTACK : ";
+            case 3 -> "MAANIM HITBACK : ";
+            case 4 -> "MAANIM BURROW DOWN : ";
+            case 5 -> "MAANIM BURROW MOVE : ";
+            case 6 -> "MAANIM BURROW UP : ";
+            default -> "MAANIM " + index + " : ";
+        };
     }
 
     private void edit() {
@@ -316,29 +307,21 @@ public class BCAnimMessageHolder extends MessageHolder<MessageReceivedEvent> {
     }
 
     private boolean validFile(FILE fileType, File file) throws Exception {
-        switch (fileType) {
-            case PNG:
-                return AnimMixer.validPng(file);
-            case IMGCUT:
-                return mixer.validImgCut(file);
-            case MAMODEL:
-                return mixer.validMamodel(file);
-            default:
-                return AnimMixer.validMaanim(file);
-        }
+        return switch (fileType) {
+            case PNG -> AnimMixer.validPng(file);
+            case IMGCUT -> mixer.validImgCut(file);
+            case MAMODEL -> mixer.validMamodel(file);
+            default -> AnimMixer.validMaanim(file);
+        };
     }
 
     private AtomicReference<String> getReference(FILE fileType) {
-        switch (fileType) {
-            case PNG:
-                return png;
-            case IMGCUT:
-                return imgcut;
-            case MAMODEL:
-                return mamodel;
-            default:
-                return maanim.get(fileType.index);
-        }
+        return switch (fileType) {
+            case PNG -> png;
+            case IMGCUT -> imgcut;
+            case MAMODEL -> mamodel;
+            default -> maanim.get(fileType.index);
+        };
     }
 
     private void downloadAndValidate(String prefix, Message.Attachment attachment, FILE fileType, AtomicReference<Long> now) throws Exception {
@@ -372,35 +355,30 @@ public class BCAnimMessageHolder extends MessageHolder<MessageReceivedEvent> {
                     reference.set(prefix+"SUCCESS");
 
                     switch (fileType) {
-                        case PNG:
+                        case PNG -> {
                             pngDone = true;
-
                             mixer.png = ImageIO.read(res);
-                            break;
-                        case IMGCUT:
+                        }
+                        case IMGCUT -> {
                             cutDone = true;
-
-                            VFile vf = VFile.getFile(res);
-
-                            if(vf != null) {
-                                mixer.imgCut = ImgCut.newIns(vf.getData());
+                            VFile cutFile = VFile.getFile(res);
+                            if (cutFile != null) {
+                                mixer.imgCut = ImgCut.newIns(cutFile.getData());
                             }
-                            break;
-                        case MAMODEL:
+                        }
+                        case MAMODEL -> {
                             modelDone = true;
-
-                            vf = VFile.getFile(res);
-
-                            if(vf != null) {
-                                mixer.model = MaModel.newIns(vf.getData());
+                            VFile modelFile = VFile.getFile(res);
+                            if (modelFile != null) {
+                                mixer.model = MaModel.newIns(modelFile.getData());
                             }
-                            break;
-                        default:
-                            vf = VFile.getFile(res);
-
-                            if(vf != null) {
-                                mixer.anim[fileType.index] = MaAnim.newIns(vf.getData());
+                        }
+                        default -> {
+                            VFile animationFile = VFile.getFile(res);
+                            if (animationFile != null) {
+                                mixer.anim[fileType.index] = MaAnim.newIns(animationFile.getData());
                             }
+                        }
                     }
                 } else {
                     reference.set(prefix+"INVALID");

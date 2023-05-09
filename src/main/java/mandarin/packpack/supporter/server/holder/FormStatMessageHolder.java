@@ -8,6 +8,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import mandarin.packpack.supporter.server.holder.segment.SearchHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -28,7 +29,7 @@ public class FormStatMessageHolder extends SearchHolder {
     private final Level lv;
 
     public FormStatMessageHolder(ArrayList<Form> form, Message author, ConfigHolder config, IDHolder holder, Message msg, String channelID, int param, Level lv, int lang) {
-        super(msg, author, channelID, lang);
+        super(author, msg, channelID, lang);
 
         this.form = form;
         this.config = config;

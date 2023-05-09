@@ -7,7 +7,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.AssetBrowserHolder;
-import mandarin.packpack.supporter.server.holder.SearchHolder;
+import mandarin.packpack.supporter.server.holder.segment.SearchHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
@@ -71,7 +71,7 @@ public class AssetBrowser extends ConstraintCommand {
         User u = getUser(event);
 
         if(u != null) {
-            StaticStore.putHolder(u.getId(), new AssetBrowserHolder(res, getMessage(event), ch.getId(), vf, lang));
+            StaticStore.putHolder(u.getId(), new AssetBrowserHolder(getMessage(event), res, ch.getId(), vf, lang));
         }
     }
 

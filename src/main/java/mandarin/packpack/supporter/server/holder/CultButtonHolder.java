@@ -2,27 +2,22 @@ package mandarin.packpack.supporter.server.holder;
 
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.holder.segment.InteractionHolder;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class CultButtonHolder extends InteractionHolder<ButtonInteractionEvent> {
+public class CultButtonHolder extends InteractionHolder {
     private final Message msg;
-    private final String channelID;
-    private final String memberID;
 
     private final int lang;
 
     public CultButtonHolder(Message author, Message msg, String channelID, String memberID, int lang) {
-        super(ButtonInteractionEvent.class, author);
+        super(author, channelID, msg.getId());
 
         this.msg = msg;
-        this.channelID = channelID;
-        this.memberID = memberID;
 
         this.lang = lang;
 
@@ -47,31 +42,10 @@ public class CultButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
     }
 
     @Override
-    public int handleEvent(ButtonInteractionEvent event) {
-        MessageChannel ch = msg.getChannel();
-
-        if (!ch.getId().equals(channelID)) {
-            return RESULT_STILL;
-        }
-
-        User u = event.getUser();
-
-        if(!u.getId().equals(memberID))
-            return RESULT_STILL;
-
-        Message m = event.getMessage();
-
-        if(!m.getId().equals(msg.getId()))
-            return RESULT_STILL;
-
-        return RESULT_FINISH;
-    }
-
-    @Override
-    public void performInteraction(ButtonInteractionEvent event) {
+    public void onEvent(GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
-            case "yes":
-                StaticStore.cultist.add(memberID);
+            case "yes" -> {
+                StaticStore.cultist.add(userID);
 
                 msg.editMessage(LangID.getStringByID("hi_sp_0_0", lang))
                         .setComponents()
@@ -80,10 +54,9 @@ public class CultButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
 
                 expired = true;
 
-                StaticStore.removeHolder(memberID, this);
-
-                break;
-            case "no":
+                StaticStore.removeHolder(userID, this);
+            }
+            case "no" -> {
                 msg.editMessage(LangID.getStringByID("hi_sp_0_1", lang))
                         .setComponents()
                         .mentionRepliedUser(false)
@@ -91,7 +64,8 @@ public class CultButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
 
                 expired = true;
 
-                StaticStore.removeHolder(memberID, this);
+                StaticStore.removeHolder(userID, this);
+            }
         }
     }
 
@@ -101,7 +75,7 @@ public class CultButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
     }
 
     @Override
-    public void expire(String id) {
+    public void onExpire(String id) {
         expired = true;
 
         msg.editMessage(LangID.getStringByID("hi_sp_0_2", lang))

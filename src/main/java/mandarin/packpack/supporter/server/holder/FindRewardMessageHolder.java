@@ -11,6 +11,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.holder.segment.SearchHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
@@ -33,7 +34,7 @@ public class FindRewardMessageHolder extends SearchHolder {
     private final boolean isFrame;
 
     public FindRewardMessageHolder(@NotNull Message msg, @NotNull Message author, @NotNull String channelID, List<Integer> rewards, String keyword, double chance, int amount, boolean isExtra, boolean isCompact, boolean isFrame, int lang) {
-        super(msg, author, channelID, lang);
+        super(author, msg, channelID, lang);
 
         this.rewards = rewards;
         this.keyword = keyword;

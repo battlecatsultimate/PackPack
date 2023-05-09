@@ -4,6 +4,7 @@ import common.CommonStatic;
 import common.util.Data;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
+import mandarin.packpack.supporter.server.holder.segment.SearchHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
@@ -15,7 +16,7 @@ public class MedalMessageHolder extends SearchHolder {
     private final ArrayList<Integer> id;
     
     public MedalMessageHolder(ArrayList<Integer> id, Message author, Message msg, int lang, String channelID) {
-        super(msg, author, channelID, lang);
+        super(author, msg, channelID, lang);
 
         this.id = id;
 

@@ -4,6 +4,7 @@ import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import mandarin.packpack.supporter.server.holder.segment.InteractionHolder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
@@ -15,10 +16,8 @@ import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SetupMemberButtonHolder extends InteractionHolder<GenericComponentInteractionCreateEvent> {
+public class SetupMemberButtonHolder extends InteractionHolder {
     private final Message msg;
-    private final String channelID;
-    private final String memberID;
 
     private final IDHolder holder;
     private final String modID;
@@ -27,11 +26,9 @@ public class SetupMemberButtonHolder extends InteractionHolder<GenericComponentI
     private String roleID;
 
     public SetupMemberButtonHolder(Message msg, Message author, String channelID, IDHolder holder, String modID, int lang) {
-        super(GenericComponentInteractionCreateEvent.class, author);
+        super(author, channelID, msg.getId());
 
         this.msg = msg;
-        this.channelID = channelID;
-        this.memberID = author.getAuthor().getId();
 
         this.holder = holder;
         this.modID = modID;
@@ -39,44 +36,21 @@ public class SetupMemberButtonHolder extends InteractionHolder<GenericComponentI
     }
 
     @Override
-    public int handleEvent(GenericComponentInteractionCreateEvent event) {
+    public void onEvent(GenericComponentInteractionCreateEvent event) {
         MessageChannel ch = msg.getChannel();
-
-        if(!ch.getId().equals(channelID)) {
-            return RESULT_STILL;
-        }
-
-        if(event.getInteraction().getMember() == null)
-            return RESULT_STILL;
-
-        Member m = event.getInteraction().getMember();
-
-        if(!m.getId().equals(memberID))
-            return RESULT_STILL;
-
-        Message me = event.getMessage();
-
-        if(!me.getId().equals(msg.getId()))
-            return RESULT_STILL;
-
-        return RESULT_FINISH;
-    }
-
-    @Override
-    public void performInteraction(GenericComponentInteractionCreateEvent event) {
-        MessageChannel ch = msg.getChannel();
+        
         Guild g = msg.getGuild();
 
         switch (event.getComponentId()) {
-            case "role":
+            case "role" -> {
                 EntitySelectInteractionEvent es = (EntitySelectInteractionEvent) event;
-
-                if(es.getValues().size() != 1)
+                
+                if (es.getValues().size() != 1)
                     return;
-
+                
                 roleID = es.getValues().get(0).getId();
-
-                if(roleID.equals(modID)) {
+                
+                if (roleID.equals(modID)) {
                     roleID = null;
 
                     event.deferEdit()
@@ -91,35 +65,34 @@ public class SetupMemberButtonHolder extends InteractionHolder<GenericComponentI
                             .setAllowedMentions(new ArrayList<>())
                             .queue();
                 }
-
-                break;
-            case "confirm":
+            }
+            case "confirm" -> {
                 expired = true;
-                StaticStore.removeHolder(memberID, this);
-
+                
+                StaticStore.removeHolder(userID, this);
+                
                 holder.MOD = modID;
                 holder.MEMBER = roleID;
-
+                
                 StaticStore.idHolder.put(g.getId(), holder);
-
+                
                 Command.replyToMessageSafely(ch, LangID.getStringByID("setup_done", lang).replace("_MOD_", modID).replace("_MEM_", roleID), msg, a -> a);
-
+                
                 event.deferEdit()
                         .setContent(LangID.getStringByID("setup_memsele", lang).replace("_RRR_", roleID))
                         .setComponents()
                         .queue();
-
-                break;
-            case "cancel":
+            }
+            case "cancel" -> {
                 expired = true;
-                StaticStore.removeHolder(memberID, this);
-
+                
+                StaticStore.removeHolder(userID, this);
+                
                 event.deferEdit()
                         .setContent(LangID.getStringByID("setup_cancel", lang))
                         .setComponents()
                         .queue();
-
-                break;
+            }
         }
     }
 
@@ -129,7 +102,7 @@ public class SetupMemberButtonHolder extends InteractionHolder<GenericComponentI
     }
 
     @Override
-    public void expire(String id) {
+    public void onExpire(String id) {
         expired = true;
 
         msg.editMessage(LangID.getStringByID("setup_expire", lang))

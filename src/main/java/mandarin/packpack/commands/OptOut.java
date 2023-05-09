@@ -28,7 +28,7 @@ public class OptOut extends ConstraintCommand {
 
             Message m = getRepliedMessageSafely(ch, LangID.getStringByID("optout_warn", lang), getMessage(event), a -> registerConfirmButtons(a, lang));
 
-            StaticStore.putHolder(id, new ConfirmButtonHolder(m, getMessage(event), ch.getId(), () -> {
+            StaticStore.putHolder(id, new ConfirmButtonHolder(getMessage(event), m, ch.getId(), () -> {
                 StaticStore.optoutMembers.add(id);
 
                 StaticStore.spamData.remove(id);

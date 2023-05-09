@@ -14,7 +14,7 @@ import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import mandarin.packpack.supporter.server.holder.SearchHolder;
+import mandarin.packpack.supporter.server.holder.segment.SearchHolder;
 import mandarin.packpack.supporter.server.holder.StageInfoButtonHolder;
 import mandarin.packpack.supporter.server.holder.StageInfoMessageHolder;
 import mandarin.packpack.supporter.server.holder.StageReactionSlashMessageHolder;
@@ -117,7 +117,7 @@ public class StageInfo extends TimedConstraintCommand {
                 if(m != null && (!(m.getChannel() instanceof GuildChannel) || m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_MANAGE))) {
                     StaticStore.putHolder(
                             u.getId(),
-                            new StageReactionSlashMessageHolder(m, st, m.getId(), m.getChannel().getId(), u.getId(), holder, lang)
+                            new StageReactionSlashMessageHolder(m, st, m.getChannel().getId(), u.getId(), holder, lang)
                     );
                 }
             } catch (Exception e) {
@@ -349,30 +349,27 @@ public class StageInfo extends TimedConstraintCommand {
                 cotc = true;
             } else {
                 switch (mode) {
-                    case STAGE:
+                    case STAGE -> {
                         stage.append(contents[i]);
 
-                        if(i < contents.length - 1) {
+                        if (i < contents.length - 1) {
                             stage.append(" ");
                         }
-
-                        break;
-                    case MAP:
+                    }
+                    case MAP -> {
                         map.append(contents[i]);
 
-                        if(i < contents.length - 1) {
+                        if (i < contents.length - 1) {
                             map.append(" ");
                         }
-
-                        break;
-                    case COLLECTION:
+                    }
+                    case COLLECTION -> {
                         collection.append(contents[i]);
 
-                        if(i < contents.length - 1) {
+                        if (i < contents.length - 1) {
                             collection.append(" ");
                         }
-
-                        break;
+                    }
                 }
             }
         }

@@ -77,7 +77,7 @@ public class FixRole extends ConstraintCommand {
         if(me != null) {
             List<Member> members = g.loadMembers().get();
 
-            StaticStore.putHolder(me.getId(), new ConfirmButtonHolder(msg, getMessage(event), ch.getId(), () -> {
+            StaticStore.putHolder(me.getId(), new ConfirmButtonHolder(getMessage(event), msg, ch.getId(), () -> {
                 Role role = g.getRoleById(finalPre);
 
                 if(role == null)

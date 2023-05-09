@@ -2,28 +2,24 @@ package mandarin.packpack.supporter.server.holder;
 
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.holder.segment.InteractionHolder;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class ConfirmButtonHolder extends InteractionHolder<ButtonInteractionEvent> {
+public class ConfirmButtonHolder extends InteractionHolder {
     private final Runnable action;
     private final int lang;
-    private final String channelID;
-    private final String memberID;
 
     private final Message msg;
 
-    public ConfirmButtonHolder(Message msg, Message author, String channelID, Runnable action, int lang) {
-        super(ButtonInteractionEvent.class, author);
+    public ConfirmButtonHolder(Message author, Message msg, String channelID, Runnable action, int lang) {
+        super(author, channelID, msg.getId());
+
         this.action = action;
         this.lang = lang;
-        this.channelID = channelID;
-        this.memberID = author.getAuthor().getId();
 
         this.msg = msg;
 
@@ -39,46 +35,23 @@ public class ConfirmButtonHolder extends InteractionHolder<ButtonInteractionEven
 
                 StaticStore.removeHolder(author.getAuthor().getId(), ConfirmButtonHolder.this);
 
-                expire("");
+                expire(userID);
             }
         }, FIVE_MIN);
     }
 
     @Override
-    public int handleEvent(ButtonInteractionEvent event) {
-        MessageChannel ch = msg.getChannel();
-
-        if(!ch.getId().equals(channelID)) {
-            return RESULT_STILL;
-        }
-
-        User u = event.getUser();
-
-        if(!u.getId().equals(memberID))
-            return RESULT_STILL;
-
-        Message me = event.getMessage();
-
-        if(!me.getId().equals(msg.getId()))
-            return RESULT_STILL;
-
-        return RESULT_FINISH;
-    }
-
-    @Override
-    public void performInteraction(ButtonInteractionEvent event) {
+    public void onEvent(GenericComponentInteractionCreateEvent event) {
         expired = true;
 
-        StaticStore.removeHolder(memberID, this);
+        StaticStore.removeHolder(userID, this);
 
         switch (event.getComponentId()) {
-            case "confirm":
+            case "confirm" -> {
                 event.getMessage().delete().queue();
                 action.run();
-
-                break;
-            case "cancel":
-                event.getMessage().delete().queue();
+            }
+            case "cancel" -> event.getMessage().delete().queue();
         }
     }
 
@@ -88,7 +61,7 @@ public class ConfirmButtonHolder extends InteractionHolder<ButtonInteractionEven
     }
 
     @Override
-    public void expire(String id) {
+    public void onExpire(String id) {
         expired = true;
 
         msg.editMessage(LangID.getStringByID("confirm_expired", lang))

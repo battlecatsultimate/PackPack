@@ -12,6 +12,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.holder.segment.SearchHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -47,7 +48,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
     private final int music;
 
     public StageEnemyMessageHolder(List<List<Enemy>> enemySequences, List<Enemy> filterEnemy, StringBuilder enemyList, Message author, Message msg, String channelID, boolean isFrame, boolean isExtra, boolean isCompact, boolean orOperate, boolean hasBoss, boolean monthly, int star, int itf, int cotc, int background, int castle, int music, int lang) {
-        super(msg, author, channelID, lang);
+        super(author, msg, channelID, lang);
 
         this.enemySequences = enemySequences;
         this.filterEnemy = filterEnemy;
@@ -98,9 +99,6 @@ public class StageEnemyMessageHolder extends SearchHolder {
     public void onSelected(GenericComponentInteractionCreateEvent event) {
         MessageChannel ch = event.getChannel();
         Message author = getAuthorMessage();
-
-        if(author == null)
-            return;
 
         try {
             ArrayList<Stage> stages = EntityFilter.findStage(filterEnemy, music, background, castle, hasBoss, orOperate, monthly);

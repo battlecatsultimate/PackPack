@@ -1,4 +1,4 @@
-package mandarin.packpack.supporter.server.holder;
+package mandarin.packpack.supporter.server.holder.segment;
 
 import common.io.assets.UpdateCheck;
 import mandarin.packpack.supporter.StaticStore;
@@ -8,29 +8,27 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-public abstract class FileAnalyzerHolder extends MessageHolder<MessageReceivedEvent> {
+public abstract class FileAnalyzerHolder extends MessageHolder {
     private static final int INVALID = -3, FAILED = -2, READY = -1, SUCCESS = 1;
 
     protected final int lang;
     protected final Message msg;
     protected final File container;
 
-    private final String channelID;
-
     private final Map<String, File> resultFiles = new HashMap<>();
 
     private final List<String> requiredFiles;
     private final List<Integer> fileDownloaded = new ArrayList<>();
 
-    public FileAnalyzerHolder(Message msg, Message author, String channelID, File container, List<String> requiredFiles, int lang) {
-        super(MessageReceivedEvent.class, author);
+    public FileAnalyzerHolder(@Nonnull Message msg, @Nonnull Message author, @Nonnull String channelID, File container, List<String> requiredFiles, int lang) {
+        super(author, channelID, msg.getId());
 
         this.msg = msg;
-        this.channelID = channelID;
         this.container = container;
         this.lang = lang;
 
@@ -48,16 +46,17 @@ public abstract class FileAnalyzerHolder extends MessageHolder<MessageReceivedEv
     }
 
     @Override
-    public int handleEvent(MessageReceivedEvent event) {
+    public STATUS onReceivedEvent(MessageReceivedEvent event) {
         if(expired) {
             StaticStore.logger.uploadLog("Expired Holder : "+this.getClass().getName());
-            return RESULT_FAIL;
+
+            return STATUS.FAIL;
         }
 
         MessageChannel ch = event.getChannel();
 
         if(!ch.getId().equals(channelID))
-            return RESULT_STILL;
+            return STATUS.WAIT;
 
         Message m = event.getMessage();
 
@@ -68,12 +67,12 @@ public abstract class FileAnalyzerHolder extends MessageHolder<MessageReceivedEv
 
             m.delete().queue();
 
-            return RESULT_FINISH;
+            return STATUS.FINISH;
         } else if(checkAttachments(m, true)) {
-            return RESULT_FINISH;
+            return STATUS.FINISH;
         }
 
-        return RESULT_STILL;
+        return STATUS.WAIT;
     }
 
     @Override
@@ -82,7 +81,7 @@ public abstract class FileAnalyzerHolder extends MessageHolder<MessageReceivedEv
     }
 
     @Override
-    public void expire(String id) {
+    public void onExpire(String id) {
         if(expired)
             return;
 
@@ -196,19 +195,11 @@ public abstract class FileAnalyzerHolder extends MessageHolder<MessageReceivedEv
         StringBuilder builder = new StringBuilder("- Required File List -\n\n");
 
         for(int i = 0; i < requiredFiles.size(); i++) {
-            String status;
-
-            switch (fileDownloaded.get(i)) {
-                case FAILED:
-                    status = "Failed";
-                    break;
-                case READY:
-                    status = "Ready";
-                    break;
-                default:
-                    status = "Done";
-                    break;
-            }
+            String status = switch (fileDownloaded.get(i)) {
+                case FAILED -> "Failed";
+                case READY -> "Ready";
+                default -> "Done";
+            };
 
             builder.append(requiredFiles.get(i))
                     .append(" : ")

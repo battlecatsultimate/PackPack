@@ -60,7 +60,7 @@ public class EventMessage extends ConstraintCommand {
             Message msg = getRepliedMessageSafely(ch, LangID.getStringByID("eventmes_mention", lang), getMessage(event), a -> registerConfirmButtons(a, lang));
 
             if(m != null) {
-                StaticStore.putHolder(m.getId(), new ConfirmButtonHolder(msg, getMessage(event), ch.getId(), () -> {
+                StaticStore.putHolder(m.getId(), new ConfirmButtonHolder(getMessage(event), msg, ch.getId(), () -> {
                     if(message.isBlank()) {
                         if(holder.eventMessage.containsKey(loc)) {
                             holder.eventMessage.remove(loc);

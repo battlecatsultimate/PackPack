@@ -8,8 +8,8 @@ import common.util.stage.StageMap;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.AliasHolder;
-import mandarin.packpack.supporter.server.holder.MessageHolder;
-import mandarin.packpack.supporter.server.holder.SearchHolder;
+import mandarin.packpack.supporter.server.holder.segment.MessageHolder;
+import mandarin.packpack.supporter.server.holder.segment.SearchHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AliasStageMessageHolder extends MessageHolder<MessageReceivedEvent> {
+public class AliasStageMessageHolder extends MessageHolder {
     private final ArrayList<Stage> stage;
     private final Message msg;
     private final String channelID;
@@ -34,7 +34,7 @@ public class AliasStageMessageHolder extends MessageHolder<MessageReceivedEvent>
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
     public AliasStageMessageHolder(ArrayList<Stage> stage, Message author, Message msg, String channelID, AliasHolder.MODE mode, int lang, @Nullable String aliasName) {
-        super(MessageReceivedEvent.class, author);
+        super(author, channelID, msg.getId());
 
         this.stage = stage;
         this.msg = msg;
@@ -48,22 +48,22 @@ public class AliasStageMessageHolder extends MessageHolder<MessageReceivedEvent>
     }
 
     @Override
-    public int handleEvent(MessageReceivedEvent event) {
+    public STATUS onReceivedEvent(MessageReceivedEvent event) {
         if(expired) {
             System.out.println("Expired!!");
-            return RESULT_FAIL;
+            return STATUS.FAIL;
         }
 
         MessageChannel ch = event.getMessage().getChannel();
 
         if(!ch.getId().equals(channelID))
-            return RESULT_STILL;
+            return STATUS.WAIT;
 
         String content = event.getMessage().getContentRaw();
 
         if(content.equals("n")) {
             if(20 * (page + 1) >= stage.size()) {
-                return RESULT_STILL;
+                return STATUS.WAIT;
             }
 
             page++;
@@ -73,7 +73,7 @@ public class AliasStageMessageHolder extends MessageHolder<MessageReceivedEvent>
             cleaner.add(event.getMessage());
         } else if(content.equals("p")) {
             if(page == 0)
-                return RESULT_STILL;
+                return STATUS.WAIT;
 
             page--;
 
@@ -84,7 +84,7 @@ public class AliasStageMessageHolder extends MessageHolder<MessageReceivedEvent>
             int id = StaticStore.safeParseInt(content) - 1;
 
             if(id < 0 || id >= stage.size())
-                return RESULT_STILL;
+                return STATUS.WAIT;
 
             msg.delete().queue();
 
@@ -181,7 +181,7 @@ public class AliasStageMessageHolder extends MessageHolder<MessageReceivedEvent>
 
             clean();
 
-            return RESULT_STILL;
+            return STATUS.WAIT;
         } else if(content.equals("c")) {
             msg.editMessage(LangID.getStringByID("formst_cancel", lang)).queue();
 
@@ -189,7 +189,7 @@ public class AliasStageMessageHolder extends MessageHolder<MessageReceivedEvent>
 
             cleaner.add(event.getMessage());
 
-            return RESULT_FINISH;
+            return STATUS.FINISH;
         } else if(content.startsWith("n ")) {
             String[] contents = content.split(" ");
 
@@ -198,7 +198,7 @@ public class AliasStageMessageHolder extends MessageHolder<MessageReceivedEvent>
                     int p = StaticStore.safeParseInt(contents[1]) -1;
 
                     if(p < 0 || p * 20 >= stage.size()) {
-                        return RESULT_STILL;
+                        return STATUS.WAIT;
                     }
 
                     page = p;
@@ -210,7 +210,7 @@ public class AliasStageMessageHolder extends MessageHolder<MessageReceivedEvent>
             }
         }
 
-        return RESULT_STILL;
+        return STATUS.WAIT;
     }
 
     @Override
@@ -222,7 +222,7 @@ public class AliasStageMessageHolder extends MessageHolder<MessageReceivedEvent>
     }
 
     @Override
-    public void expire(String id) {
+    public void onExpire(String id) {
         if(expired)
             return;
 

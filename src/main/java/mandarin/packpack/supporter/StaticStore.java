@@ -17,14 +17,16 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.TimeBoolean;
 import mandarin.packpack.supporter.server.data.*;
-import mandarin.packpack.supporter.server.holder.Holder;
+import mandarin.packpack.supporter.server.holder.segment.Holder;
+import mandarin.packpack.supporter.server.holder.segment.HolderHub;
+import mandarin.packpack.supporter.server.holder.segment.InteractionHolder;
+import mandarin.packpack.supporter.server.holder.segment.MessageHolder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
-import net.dv8tion.jda.api.events.Event;
 
 import java.awt.*;
 import java.io.*;
@@ -120,7 +122,7 @@ public class StaticStore {
 
     public static Timer saver = null;
 
-    private static final Map<String, Holder<? extends Event>> holders = new HashMap<>();
+    private static final Map<String, HolderHub> holders = new HashMap<>();
     private static final List<String> queuedFileNames = new ArrayList<>();
 
     public static final int[] langIndex = {
@@ -932,25 +934,41 @@ public class StaticStore {
         return id.get();
     }
 
-    synchronized public static void putHolder(String id, Holder<? extends Event> messageHolder) {
-        Holder<? extends Event> oldMessageHolder = holders.get(id);
+    synchronized public static void putHolder(String id, Holder holder) {
+        HolderHub hub = holders.getOrDefault(id, new HolderHub());
 
-        if(oldMessageHolder != null) {
-            oldMessageHolder.expire(id);
+        if(holder instanceof MessageHolder messageHolder) {
+            if(hub.messageHolder != null) {
+                hub.messageHolder.expire(id);
+            }
+
+            hub.messageHolder = messageHolder;
+        } else if(holder instanceof InteractionHolder interactionHolder) {
+            if(hub.interactionHolder != null) {
+                hub.interactionHolder.expire(id);
+            }
+
+            hub.interactionHolder = interactionHolder;
         }
 
-        holders.put(id, messageHolder);
-    }
-
-    synchronized public static void removeHolder(String id, Holder<? extends Event> messageHolder) {
-        Holder<? extends Event> thisMessageHolder = holders.get(id);
-
-        if(thisMessageHolder != null && thisMessageHolder.equals(messageHolder)) {
-            holders.remove(id);
+        if(!holders.containsKey(id)) {
+            holders.put(id, hub);
         }
     }
 
-    synchronized public static Holder<? extends Event> getHolder(String id) {
+    synchronized public static void removeHolder(String id, Holder holder) {
+        if(holders.containsKey(id)) {
+            HolderHub hub = holders.get(id);
+
+            if(holder instanceof MessageHolder messageHolder && messageHolder == hub.messageHolder) {
+                hub.messageHolder = null;
+            } else if(holder instanceof InteractionHolder interactionHolder && interactionHolder == hub.interactionHolder) {
+                hub.interactionHolder = null;
+            }
+        }
+    }
+
+    synchronized public static HolderHub getHolderHub(String id) {
         return holders.get(id);
     }
 

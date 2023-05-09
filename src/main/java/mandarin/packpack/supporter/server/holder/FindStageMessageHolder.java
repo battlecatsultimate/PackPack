@@ -10,6 +10,7 @@ import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.holder.segment.SearchHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
@@ -21,6 +22,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 
 public class FindStageMessageHolder extends SearchHolder {
@@ -35,8 +37,8 @@ public class FindStageMessageHolder extends SearchHolder {
 
     private FindStage.MONTHLY selected = FindStage.MONTHLY.ALL;
 
-    public FindStageMessageHolder(List<Stage> stage, List<FindStage.MONTHLY> monthly, Message author, Message msg, String channelID, int star, int itf, int cotc, boolean isFrame, boolean isExtra, boolean isCompact, int lang) {
-        super(msg, author, channelID, lang);
+    public FindStageMessageHolder(List<Stage> stage, List<FindStage.MONTHLY> monthly, @Nonnull Message author, @Nonnull Message msg, String channelID, int star, int itf, int cotc, boolean isFrame, boolean isExtra, boolean isCompact, int lang) {
+        super(author, msg, channelID, lang);
 
         this.stage = stage;
         this.monthly = monthly;
@@ -148,7 +150,7 @@ public class FindStageMessageHolder extends SearchHolder {
     }
 
     @Override
-    public void performInteraction(GenericComponentInteractionCreateEvent event) {
+    public void onEvent(GenericComponentInteractionCreateEvent event) {
         if(event.getComponentId().equals("category")) {
             String name = ((StringSelectInteractionEvent) event).getValues().get(0);
 
@@ -158,7 +160,7 @@ public class FindStageMessageHolder extends SearchHolder {
 
             apply(event);
         } else {
-            super.performInteraction(event);
+            super.onEvent(event);
         }
     }
 
@@ -180,51 +182,42 @@ public class FindStageMessageHolder extends SearchHolder {
                     continue;
 
                 switch (data) {
-                    case EOC:
-                        if(!mc.getSID().equals("000003") || map.id.id != 9)
+                    case EOC -> {
+                        if (!mc.getSID().equals("000003") || map.id.id != 9)
                             continue;
-
-                        break;
-                    case ITF1:
-                        if(!mc.getSID().equals("000003") || map.id.id != 3)
+                    }
+                    case ITF1 -> {
+                        if (!mc.getSID().equals("000003") || map.id.id != 3)
                             continue;
-
-                        break;
-                    case ITF2:
-                        if(!mc.getSID().equals("000003") || map.id.id != 4)
+                    }
+                    case ITF2 -> {
+                        if (!mc.getSID().equals("000003") || map.id.id != 4)
                             continue;
-
-                        break;
-                    case ITF3:
-                        if(!mc.getSID().equals("000003") || map.id.id != 5)
+                    }
+                    case ITF3 -> {
+                        if (!mc.getSID().equals("000003") || map.id.id != 5)
                             continue;
-
-                        break;
-                    case COTC1:
-                        if(!mc.getSID().equals("000003") || map.id.id != 6)
+                    }
+                    case COTC1 -> {
+                        if (!mc.getSID().equals("000003") || map.id.id != 6)
                             continue;
-
-                        break;
-                    case COTC2:
-                        if(!mc.getSID().equals("000003") || map.id.id != 7)
+                    }
+                    case COTC2 -> {
+                        if (!mc.getSID().equals("000003") || map.id.id != 7)
                             continue;
-
-                        break;
-                    case COTC3:
-                        if(!mc.getSID().equals("000003") || map.id.id != 8)
+                    }
+                    case COTC3 -> {
+                        if (!mc.getSID().equals("000003") || map.id.id != 8)
                             continue;
-
-                        break;
-                    case SOL:
-                        if(!mc.getSID().equals("000000"))
+                    }
+                    case SOL -> {
+                        if (!mc.getSID().equals("000000"))
                             continue;
-
-                        break;
-                    case CYCLONE:
-                        if(!mc.getSID().equals("000001") && !mc.getSID().equals("000014"))
+                    }
+                    case CYCLONE -> {
+                        if (!mc.getSID().equals("000001") && !mc.getSID().equals("000014"))
                             continue;
-
-                        break;
+                    }
                 }
 
                 actualStage.add(stage.get(i));
@@ -285,7 +278,7 @@ public class FindStageMessageHolder extends SearchHolder {
             String[] elements = element.split("\\\\\\\\");
 
             if(elements.length == 2) {
-                if(elements[0].matches("<:[^\\s]+?:\\d+>")) {
+                if(elements[0].matches("<:\\S+?:\\d+>")) {
                     options.add(SelectOption.of(elements[1], String.valueOf(page * PAGE_CHUNK + i)).withEmoji(Emoji.fromFormatted(elements[0])));
                 } else {
                     options.add(SelectOption.of(element, String.valueOf(page * PAGE_CHUNK + i)));

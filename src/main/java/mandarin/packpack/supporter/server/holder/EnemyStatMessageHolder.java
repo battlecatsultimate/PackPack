@@ -4,10 +4,12 @@ import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Enemy;
 import mandarin.packpack.supporter.bc.EntityHandler;
+import mandarin.packpack.supporter.server.holder.segment.SearchHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,8 +21,8 @@ public class EnemyStatMessageHolder extends SearchHolder {
     private final boolean isCompact;
     private final int[] magnification;
 
-    public EnemyStatMessageHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, int[] magnification, boolean isFrame, boolean isExtra, boolean isCompact, int lang) {
-        super(msg, author, channelID, lang);
+    public EnemyStatMessageHolder(ArrayList<Enemy> enemy, @Nonnull Message author, @Nonnull Message msg, String channelID, int[] magnification, boolean isFrame, boolean isExtra, boolean isCompact, int lang) {
+        super(author, msg, channelID, lang);
 
         this.enemy = enemy;
 

@@ -75,7 +75,7 @@ public class CommandBan extends ConstraintCommand {
                     ch.sendMessage(LangID.getStringByID("comban_confirm", lang).replace("_", m.getId()))
                             .setAllowedMentions(new ArrayList<>())
                     , lang
-            ).queue(msg -> StaticStore.putHolder(me.getId(), new ConfirmButtonHolder(msg, getMessage(event), ch.getId(), () -> {
+            ).queue(msg -> StaticStore.putHolder(me.getId(), new ConfirmButtonHolder(getMessage(event), msg, ch.getId(), () -> {
                 holder.banned.add(m.getId());
 
                 createMessageWithNoPings(ch, LangID.getStringByID("comban_success", lang).replace("_", m.getId()));

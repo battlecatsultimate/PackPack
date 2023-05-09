@@ -173,13 +173,13 @@ public class Config extends ConstraintCommand {
                 ActionRow.of(components)
         ));
 
-        Message original = getMessage(event);
+        Message author = getMessage(event);
 
-        if(original == null)
+        if(author == null)
             return;
 
-        User u = original.getAuthor();
+        User u = author.getAuthor();
 
-        StaticStore.putHolder(u.getId(), new ConfigButtonHolder(msg, original, config, holder, ch.getId(), u.getId(), forServer));
+        StaticStore.putHolder(u.getId(), new ConfigButtonHolder(author, msg, config, holder, ch.getId(), forServer));
     }
 }

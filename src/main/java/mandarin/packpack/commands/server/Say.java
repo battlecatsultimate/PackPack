@@ -69,7 +69,7 @@ public class Say extends ConstraintCommand {
 
                 Message target = registerConfirmButtons(ch.sendMessage("This message may mention role or a lot of users, are you sure you want to send this message?"), lang).complete();
 
-                StaticStore.putHolder(m.getAuthor().getId(), new ConfirmButtonHolder(target, m, ch.getId(), () -> ((MessageChannel) gc).sendMessage(contents[2]).queue(), lang));
+                StaticStore.putHolder(m.getAuthor().getId(), new ConfirmButtonHolder(m, target, ch.getId(), () -> ((MessageChannel) gc).sendMessage(contents[2]).queue(), lang));
             } else {
                 ((MessageChannel) gc).sendMessage(contents[2]).queue();
             }

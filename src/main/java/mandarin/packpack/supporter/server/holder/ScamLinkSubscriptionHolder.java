@@ -4,8 +4,8 @@ import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.ScamLinkHandler;
+import mandarin.packpack.supporter.server.holder.segment.InteractionHolder;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
@@ -13,16 +13,14 @@ import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionE
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ScamLinkSubscriptionHolder extends InteractionHolder<GenericComponentInteractionCreateEvent> {
+public class ScamLinkSubscriptionHolder extends InteractionHolder {
     private final Message msg;
-    private final String channelID;
-    private final String memberID;
     private final int lang;
 
     private final String targetChannel;
@@ -31,12 +29,10 @@ public class ScamLinkSubscriptionHolder extends InteractionHolder<GenericCompone
     private ScamLinkHandler.ACTION action = ScamLinkHandler.ACTION.MUTE;
     private boolean noticeAll = false;
 
-    public ScamLinkSubscriptionHolder(Message msg, Message author, String channelID, int lang, String targetChannel, String mute) {
-        super(GenericComponentInteractionCreateEvent.class, author);
+    public ScamLinkSubscriptionHolder(Message author, Message msg, String channelID, int lang, String targetChannel, String mute) {
+        super(author, channelID, msg.getId());
 
         this.msg = msg;
-        this.channelID = channelID;
-        this.memberID = author.getAuthor().getId();
         this.lang = lang;
 
         this.targetChannel = targetChannel;
@@ -44,79 +40,48 @@ public class ScamLinkSubscriptionHolder extends InteractionHolder<GenericCompone
     }
 
     @Override
-    public int handleEvent(GenericComponentInteractionCreateEvent event) {
-        MessageChannel ch = msg.getChannel();
-
-        if(!ch.getId().equals(channelID)) {
-            return RESULT_STILL;
-        }
-
-        if(event.getInteraction().getMember() == null)
-            return RESULT_STILL;
-
-        Member m = event.getInteraction().getMember();
-
-        if(!m.getId().equals(memberID))
-            return RESULT_STILL;
-
-        Message me = event.getMessage();
-
-        if(!me.getId().equals(msg.getId()))
-            return RESULT_STILL;
-
-        return RESULT_FINISH;
-    }
-
-    @Override
-    public void performInteraction(GenericComponentInteractionCreateEvent event) {
+    public void onEvent(GenericComponentInteractionCreateEvent event) {
         MessageChannel ch = msg.getChannel();
         Guild g = msg.getGuild();
 
         switch (event.getComponentId()) {
-            case "action":
+            case "action" -> {
                 StringSelectInteractionEvent es = (StringSelectInteractionEvent) event;
-
-                if(es.getValues().size() != 1)
+                
+                if (es.getValues().size() != 1)
                     return;
-
+                
                 switch (es.getValues().get(0)) {
-                    case "mute":
-                        action = ScamLinkHandler.ACTION.MUTE;
-                        break;
-                    case "kick":
-                        action = ScamLinkHandler.ACTION.KICK;
-                        break;
-                    case "ban":
-                        action = ScamLinkHandler.ACTION.BAN;
-                        break;
+                    case "mute" -> action = ScamLinkHandler.ACTION.MUTE;
+                    case "kick" -> action = ScamLinkHandler.ACTION.KICK;
+                    case "ban" -> action = ScamLinkHandler.ACTION.BAN;
                 }
                 
                 event.deferEdit()
                         .setContent(parseMessage())
                         .setComponents(getComponents())
                         .queue();
-
-                break;
-            case "notice":
-                es = (StringSelectInteractionEvent) event;
-
-                if(es.getValues().size() != 1)
+            }
+            case "notice" -> {
+                StringSelectInteractionEvent es = (StringSelectInteractionEvent) event;
+                
+                if (es.getValues().size() != 1)
                     return;
-
+                
                 noticeAll = es.getValues().get(0).equals("noticeAll");
-
+                
                 event.deferEdit()
                         .setContent(parseMessage())
                         .setComponents(getComponents())
                         .queue();
-
-                break;
-            case "confirm":
-                if(action != ScamLinkHandler.ACTION.MUTE || mute != null) {
+            }
+            case "confirm" -> {
+                if (action != ScamLinkHandler.ACTION.MUTE || mute != null) {
                     expired = true;
-                    StaticStore.removeHolder(memberID, this);
+                    
+                    StaticStore.removeHolder(userID, this);
 
-                    ScamLinkHandler handler = new ScamLinkHandler(memberID, g.getId(), targetChannel, mute, action, noticeAll);
+                    ScamLinkHandler handler = new ScamLinkHandler(userID, g.getId(), targetChannel, mute, action, noticeAll);
 
                     StaticStore.scamLinkHandlers.servers.put(g.getId(), handler);
 
@@ -132,18 +97,15 @@ public class ScamLinkSubscriptionHolder extends InteractionHolder<GenericCompone
                             .setComponents()
                             .queue();
                 }
-
-                break;
-            case "cancel":
+            }
+            case "cancel" -> {
                 expired = true;
-                StaticStore.removeHolder(memberID, this);
-
+                StaticStore.removeHolder(userID, this);
                 event.deferEdit()
                         .setContent(LangID.getStringByID("subscam_cancel", lang))
                         .setComponents()
                         .queue();
-
-                break;
+            }
         }
     }
 
@@ -153,7 +115,7 @@ public class ScamLinkSubscriptionHolder extends InteractionHolder<GenericCompone
     }
 
     @Override
-    public void expire(String id) {
+    public void onExpire(String id) {
         expired = true;
 
         msg.editMessage(LangID.getStringByID("subscam_expire", lang)).setAllowedMentions(new ArrayList<>()).mentionRepliedUser(false).queue();
@@ -163,14 +125,9 @@ public class ScamLinkSubscriptionHolder extends InteractionHolder<GenericCompone
         String result = LangID.getStringByID("subscam_before", lang) + "\n\n";
 
         switch (action) {
-            case MUTE:
-                result += LangID.getStringByID("subscam_actionmute", lang) + "\n\n";
-                break;
-            case KICK:
-                result += LangID.getStringByID("subscam_actionkick", lang) + "\n\n";
-                break;
-            case BAN:
-                result += LangID.getStringByID("subscam_actionban", lang) + "\n\n";
+            case MUTE -> result += LangID.getStringByID("subscam_actionmute", lang) + "\n\n";
+            case KICK -> result += LangID.getStringByID("subscam_actionkick", lang) + "\n\n";
+            case BAN -> result += LangID.getStringByID("subscam_actionban", lang) + "\n\n";
         }
 
         if(noticeAll) {

@@ -7,8 +7,8 @@ import mandarin.packpack.commands.data.*;
 import mandarin.packpack.commands.math.*;
 import mandarin.packpack.commands.server.*;
 import mandarin.packpack.supporter.EmojiStore;
-import mandarin.packpack.supporter.lang.KoreanSeparater;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.lang.KoreanSeparater;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.ScamLinkHandler;
 import mandarin.packpack.supporter.server.SpamPrevent;
@@ -16,9 +16,7 @@ import mandarin.packpack.supporter.server.data.BoosterData;
 import mandarin.packpack.supporter.server.data.BoosterHolder;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import mandarin.packpack.supporter.server.holder.Holder;
-import mandarin.packpack.supporter.server.holder.InteractionHolder;
-import mandarin.packpack.supporter.server.holder.MessageHolder;
+import mandarin.packpack.supporter.server.holder.segment.HolderHub;
 import mandarin.packpack.supporter.server.slash.SlashBuilder;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
@@ -30,7 +28,6 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
-import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
@@ -38,9 +35,7 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberUpdateEvent;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.role.RoleDeleteEvent;
@@ -55,7 +50,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-@SuppressWarnings("unchecked")
 public class AllEventAdapter extends ListenerAdapter {
     @Override
     public void onGuildLeave(@NotNull GuildLeaveEvent event) {
@@ -326,25 +320,9 @@ public class AllEventAdapter extends ListenerAdapter {
             }
 
             if(StaticStore.holderContainsKey(u.getId())) {
-                Holder<? extends Event> holder = StaticStore.getHolder(u.getId());
+                HolderHub holder = StaticStore.getHolderHub(u.getId());
 
-                if(holder instanceof MessageHolder) {
-                    MessageHolder<? extends GenericMessageEvent> messageHolder = (MessageHolder<? extends GenericMessageEvent>) holder;
-
-                    if(messageHolder.canCastTo(MessageReceivedEvent.class)) {
-                        MessageHolder<MessageReceivedEvent> h = (MessageHolder<MessageReceivedEvent>) messageHolder;
-
-                        int result = h.handleEvent(event);
-
-                        if(result == Holder.RESULT_FINISH) {
-                            messageHolder.clean();
-                            StaticStore.removeHolder(u.getId(), messageHolder);
-                        } else if(result == Holder.RESULT_FAIL) {
-                            StaticStore.logger.uploadLog("Error : Expired process tried to be handled : "+u.getId()+" | "+messageHolder.getClass().getName());
-                            StaticStore.removeHolder(u.getId(), messageHolder);
-                        }
-                    }
-                }
+                holder.handleEvent(event);
             }
 
             if(mc instanceof PrivateChannel) {
@@ -644,26 +622,9 @@ public class AllEventAdapter extends ListenerAdapter {
                 return;
 
             if(StaticStore.holderContainsKey(u.getId())) {
-                Holder<? extends Event> holder = StaticStore.getHolder(u.getId());
+                HolderHub hub = StaticStore.getHolderHub(u.getId());
 
-                if(!(holder instanceof MessageHolder))
-                    return;
-
-                MessageHolder<? extends GenericMessageEvent> messageHolder = (MessageHolder<? extends GenericMessageEvent>) holder;
-
-                if(messageHolder.canCastTo(MessageReactionAddEvent.class)) {
-                    MessageHolder<MessageReactionAddEvent> h = (MessageHolder<MessageReactionAddEvent>) messageHolder;
-
-                    int result = h.handleEvent(event);
-
-                    if(result == Holder.RESULT_FINISH) {
-                        h.clean();
-                        StaticStore.removeHolder(u.getId(), holder);
-                    } else if(result == Holder.RESULT_FAIL) {
-                        StaticStore.logger.uploadLog("W/AllEventAdapter::onMessageReactionAdd - Expired process tried to be handled : "+u.getId()+" | "+h.getClass().getName());
-                        StaticStore.removeHolder(u.getId(), holder);
-                    }
-                }
+                hub.handleEvent(event);
             }
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::onMessageReactionAdd - Error happened");
@@ -680,36 +641,11 @@ public class AllEventAdapter extends ListenerAdapter {
                 User u = c.getInteraction().getUser();
 
                 if(StaticStore.holderContainsKey(u.getId())) {
-                    Holder<? extends Event> holder = StaticStore.getHolder(u.getId());
+                    HolderHub holder = StaticStore.getHolderHub(u.getId());
 
-                    if(!(holder instanceof InteractionHolder)) {
-                        return;
-                    }
-
-                    InteractionHolder<? extends GenericComponentInteractionCreateEvent> interactionHolder = (InteractionHolder<? extends GenericComponentInteractionCreateEvent>) holder;
-
-                    if(event instanceof ButtonInteractionEvent && interactionHolder.canCastTo(ButtonInteractionEvent.class)) {
-                        InteractionHolder<ButtonInteractionEvent> h = (InteractionHolder<ButtonInteractionEvent>) interactionHolder;
-
-                        int result = h.handleEvent((ButtonInteractionEvent) event);
-
-                        if(result == Holder.RESULT_FINISH || result == Holder.RESULT_FAIL) {
-                            StaticStore.removeHolder(u.getId(), holder);
-                        }
-
-                        if(result == Holder.RESULT_FINISH)
-                            h.performInteraction((ButtonInteractionEvent) event);
-                    } else if(interactionHolder.canCastTo(GenericComponentInteractionCreateEvent.class)) {
-                        InteractionHolder<GenericComponentInteractionCreateEvent> h = (InteractionHolder<GenericComponentInteractionCreateEvent>) interactionHolder;
-
-                        int result = h.handleEvent((GenericComponentInteractionCreateEvent) event);
-
-                        if(result == Holder.RESULT_FINISH)
-                            h.performInteraction((GenericComponentInteractionCreateEvent) event);
-                    }
+                    holder.handleEvent(c);
                 }
             } else if(event instanceof GenericCommandInteractionEvent i) {
-
                 SpamPrevent spam;
 
                 User u = i.getInteraction().getUser();
@@ -741,11 +677,13 @@ public class AllEventAdapter extends ListenerAdapter {
             User u = event.getUser();
 
             if(StaticStore.holderContainsKey(u.getId())) {
-                message += "\n\nTried to handle the holder : " + StaticStore.getHolder(u.getId()).getClass().getName();
+                message += "\n\nTried to handle the holder : " + StaticStore.getHolderHub(u.getId()).getClass().getName();
 
-                Message author = StaticStore.getHolder(u.getId()).getAuthorMessage();
+                HolderHub hub = StaticStore.getHolderHub(u.getId());
 
-                if(author != null) {
+                if(hub.interactionHolder != null) {
+                    Message author = hub.interactionHolder.getAuthorMessage();
+
                     MessageChannel ch = author.getChannel();
 
                     message += "\n\nCommand : " + author.getContentRaw() + "\n\n" +

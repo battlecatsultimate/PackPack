@@ -1,6 +1,7 @@
 package mandarin.packpack.supporter.server.holder;
 
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.holder.segment.SearchHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
@@ -16,7 +17,7 @@ public class EventDataArchiveHolder extends SearchHolder {
     private final String fileName;
 
     public EventDataArchiveHolder(@NotNull Message msg, @NotNull Message author, @NotNull String channelID, List<File> files, String fileName, int lang) {
-        super(msg, author, channelID, lang);
+        super(author, msg, channelID, lang);
 
         this.files = files;
         this.fileName = fileName;

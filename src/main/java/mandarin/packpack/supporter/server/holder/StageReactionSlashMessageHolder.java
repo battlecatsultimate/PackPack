@@ -11,6 +11,7 @@ import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.bc.Castle;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import mandarin.packpack.supporter.server.holder.segment.MessageHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
@@ -24,24 +25,18 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
-public class StageReactionSlashMessageHolder extends MessageHolder<MessageReactionAddEvent> {
-    private final String embedID;
+public class StageReactionSlashMessageHolder extends MessageHolder {
     private final IDHolder holder;
     private final int lang;
-    private final String channelID;
-    private final String memberID;
     private final Stage st;
 
     private final Message m;
 
-    public StageReactionSlashMessageHolder(Message m, Stage st, String embedID, String channelID, String memberID, IDHolder holder, int lang) {
-        super(MessageReactionAddEvent.class, null);
+    public StageReactionSlashMessageHolder(Message m, Stage st, String channelID, String memberID, IDHolder holder, int lang) {
+        super(channelID, m.getId(), memberID);
 
-        this.embedID = embedID;
         this.holder = holder;
         this.lang = lang;
-        this.channelID = channelID;
-        this.memberID = memberID;
         this.st = st;
 
         this.m = m;
@@ -66,92 +61,75 @@ public class StageReactionSlashMessageHolder extends MessageHolder<MessageReacti
     }
 
     @Override
-    public int handleEvent(MessageReactionAddEvent event) {
+    public STATUS onReactionEvent(MessageReactionAddEvent event) {
         if(expired) {
             System.out.println("Expired at StageReactionHolder!");
-            return RESULT_FAIL;
+
+            return STATUS.FAIL;
         }
 
         MessageChannel ch = event.getChannel();
 
-        if(!ch.getId().equals(channelID))
-            return RESULT_STILL;
-
-        if(!m.getId().equals(embedID))
-            return RESULT_STILL;
-
-        if(event.getUser() == null)
-            return RESULT_STILL;
-
-        User u = event.getUser();
-
-        if(!u.getId().equals(memberID))
-            return RESULT_STILL;
-
         Emoji e = event.getEmoji();
 
         if(!(e instanceof CustomEmoji))
-            return RESULT_STILL;
+            return STATUS.WAIT;
 
         boolean emojiClicked = false;
 
         switch (e.getName()) {
-            case "Castle":
+            case "Castle" -> {
                 emojiClicked = true;
 
                 CastleImg cs = Identifier.get(st.castle);
 
-                if(cs == null) {
+                if (cs == null) {
                     ArrayList<CastleList> lists = new ArrayList<>(CastleList.defset());
 
                     cs = lists.get(0).get(0);
                 }
 
                 new Castle(ConstraintCommand.ROLE.MEMBER, lang, holder, cs).execute(event);
-
-                break;
-            case "Background":
+            }
+            case "Background" -> {
                 emojiClicked = true;
 
                 Background bg = Identifier.get(st.bg);
 
-                if(bg == null) {
+                if (bg == null) {
                     bg = UserProfile.getBCData().bgs.get(0);
                 }
 
                 new mandarin.packpack.commands.bc.Background(ConstraintCommand.ROLE.MEMBER, lang, holder, 10000, bg).execute(event);
-
-                break;
-            case "Music":
+            }
+            case "Music" -> {
                 emojiClicked = true;
 
-                if(st.mus0 == null)
+                if (st.mus0 == null)
                     break;
 
                 Music ms = Identifier.get(st.mus0);
 
-                if(ms == null) {
+                if (ms == null) {
                     ms = UserProfile.getBCData().musics.get(0);
                 }
 
                 new mandarin.packpack.commands.bc.Music(ConstraintCommand.ROLE.MEMBER, lang, holder, "music_", ms).execute(event);
-
-                break;
-            case "MusicBoss":
+            }
+            case "MusicBoss" -> {
                 emojiClicked = true;
 
-                if(st.mus1 == null)
+                if (st.mus1 == null)
                     break;
 
                 Music ms2 = Identifier.get(st.mus1);
 
-                if(ms2 == null) {
+                if (ms2 == null) {
                     ms2 = UserProfile.getBCData().musics.get(0);
                 }
 
                 new mandarin.packpack.commands.bc.Music(ConstraintCommand.ROLE.MEMBER, lang, holder, "music_", ms2).execute(event);
-
-                break;
+            }
         }
 
         if(emojiClicked) {
@@ -162,7 +140,7 @@ public class StageReactionSlashMessageHolder extends MessageHolder<MessageReacti
             expired = true;
         }
 
-        return emojiClicked ? RESULT_FINISH : RESULT_STILL;
+        return emojiClicked ? STATUS.FINISH : STATUS.WAIT;
     }
 
     @Override
@@ -171,13 +149,13 @@ public class StageReactionSlashMessageHolder extends MessageHolder<MessageReacti
     }
 
     @Override
-    public void expire(String id) {
+    public void onExpire(String id) {
         if(expired)
             return;
 
         expired = true;
 
-        StaticStore.removeHolder(memberID, StageReactionSlashMessageHolder.this);
+        StaticStore.removeHolder(userID, StageReactionSlashMessageHolder.this);
 
         MessageChannel ch = m.getChannel();
 

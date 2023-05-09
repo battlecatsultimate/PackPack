@@ -5,6 +5,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.calculation.Equation;
 import mandarin.packpack.supporter.calculation.NumericalResult;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.holder.segment.SearchHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
@@ -23,7 +24,7 @@ public class SolutionHolder extends SearchHolder {
     private final List<NumericalResult> solutions;
 
     public SolutionHolder(@NotNull Message msg, @NotNull Message author, @NotNull String channelID, String summary, List<BigDecimal[]> targetRanges, List<NumericalResult> solutions, int lang) {
-        super(msg, author, channelID, lang);
+        super(author, msg, channelID, lang);
 
         this.summary = summary;
         this.targetRanges = targetRanges;
@@ -140,7 +141,7 @@ public class SolutionHolder extends SearchHolder {
     }
 
     @Override
-    public void expire(String id) {
+    public void onExpire(String id) {
         if(expired)
             return;
 

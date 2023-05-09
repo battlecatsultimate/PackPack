@@ -11,11 +11,13 @@ import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.holder.segment.SearchHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,8 +30,8 @@ public class ComboFormMessageHolder extends SearchHolder {
     private final String cName;
     private final String fName;
 
-    public ComboFormMessageHolder(ArrayList<Form> form, Message author, Message msg, String channelID, int lang, String cName, String fName) {
-        super(msg, author, channelID, lang);
+    public ComboFormMessageHolder(ArrayList<Form> form, @Nonnull Message author, @Nonnull Message msg, @Nonnull String channelID, int lang, String cName, String fName) {
+        super(author, msg, channelID, lang);
 
         this.form = form;
 

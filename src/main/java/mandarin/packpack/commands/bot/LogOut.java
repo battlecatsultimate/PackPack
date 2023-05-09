@@ -39,7 +39,7 @@ public class LogOut extends ConstraintCommand {
             User u = getUser(event);
 
             if(u != null) {
-                StaticStore.putHolder(u.getId(), new ConfirmButtonHolder(msg, getMessage(event), ch.getId(), () -> {
+                StaticStore.putHolder(u.getId(), new ConfirmButtonHolder(getMessage(event), msg, ch.getId(), () -> {
                     String self = client.getSelfUser().getAsMention();
                     String code;
 

@@ -5,6 +5,7 @@ import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.holder.segment.SearchHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
@@ -26,8 +27,8 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
 
     private final List<VFile> files = new ArrayList<>();
 
-    public AssetBrowserHolder(@NotNull Message msg, @NotNull Message author, @NotNull String channelID, @Nonnull VFile vf, int lang) {
-        super(msg, author, channelID, lang);
+    public AssetBrowserHolder(@NotNull Message author, @NotNull Message msg, @NotNull String channelID, @Nonnull VFile vf, int lang) {
+        super(author, msg, channelID, lang);
 
         this.vf = vf;
 
@@ -73,46 +74,17 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
                 if (!onText) {
                     String[] nameData = vf.getName().split("\\.");
 
-                    RichCustomEmoji emoji;
-
-                    switch (nameData[1]) {
-                        case "png":
-                            emoji = EmojiStore.PNG;
-
-                            break;
-                        case "csv":
-                            emoji = EmojiStore.CSV;
-
-                            break;
-                        case "tsv":
-                            emoji = EmojiStore.TSV;
-
-                            break;
-                        case "json":
-                            emoji = EmojiStore.JSON;
-
-                            break;
-                        case "ini":
-                            emoji = EmojiStore.INI;
-
-                            break;
-                        case "imgcut":
-                            emoji = EmojiStore.IMGCUT;
-
-                            break;
-                        case "mamodel":
-                            emoji = EmojiStore.MAMODEL;
-
-                            break;
-                        case "maanim":
-                            emoji = EmojiStore.MAANIM;
-
-                            break;
-                        default:
-                            emoji = EmojiStore.FILE;
-
-                            break;
-                    }
+                    RichCustomEmoji emoji = switch (nameData[1]) {
+                        case "png" -> EmojiStore.PNG;
+                        case "csv" -> EmojiStore.CSV;
+                        case "tsv" -> EmojiStore.TSV;
+                        case "json" -> EmojiStore.JSON;
+                        case "ini" -> EmojiStore.INI;
+                        case "imgcut" -> EmojiStore.IMGCUT;
+                        case "mamodel" -> EmojiStore.MAMODEL;
+                        case "maanim" -> EmojiStore.MAANIM;
+                        default -> EmojiStore.FILE;
+                    };
 
                     name += emoji.getAsMention() + "\\\\";
                 }
@@ -257,7 +229,7 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
             if(files.size() % SearchHolder.PAGE_CHUNK != 0)
                 totalPage++;
 
-            builder.append(LangID.getStringByID("formst_page", lang).replace("_", (page + 1) + "").replace("-", String.valueOf(totalPage))).append("\n");
+            builder.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page + 1)).replace("-", String.valueOf(totalPage))).append("\n");
         }
 
         builder.append("```");

@@ -9,6 +9,7 @@ import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.bc.cell.AbilityData;
 import mandarin.packpack.supporter.bc.cell.CellData;
 import mandarin.packpack.supporter.bc.cell.FlagCellData;
+import mandarin.packpack.supporter.server.holder.segment.FileAnalyzerHolder;
 import net.dv8tion.jda.api.entities.Message;
 
 import java.io.BufferedReader;
@@ -245,26 +246,19 @@ public class StatAnalyzerMessageHolder extends FileAnalyzerHolder {
             return Data.trio(egg[ind]) + "_m02.maanim";
         }
 
-        switch (ind) {
-            case 0:
-                return Data.trio(uID)+"_f02.maanim";
-            case 1:
-                return Data.trio(uID)+"_c02.maanim";
-            case 2:
-                return Data.trio(uID)+"_s02.maanim";
-            default:
-                return Data.trio(uID)+"_"+ind+"02.maanim";
-        }
+        return switch (ind) {
+            case 0 -> Data.trio(uID) + "_f02.maanim";
+            case 1 -> Data.trio(uID) + "_c02.maanim";
+            case 2 -> Data.trio(uID) + "_s02.maanim";
+            default -> Data.trio(uID) + "_" + ind + "02.maanim";
+        };
     }
 
     private String getUnitCode(int ind) {
-        switch (ind) {
-            case 0:
-                return "f";
-            case 1:
-                return "c";
-            default:
-                return "s";
-        }
+        return switch (ind) {
+            case 0 -> "f";
+            case 1 -> "c";
+            default -> "s";
+        };
     }
 }

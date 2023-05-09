@@ -7,6 +7,7 @@ import common.util.stage.Stage;
 import common.util.stage.StageMap;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
+import mandarin.packpack.supporter.server.holder.segment.SearchHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
@@ -26,7 +27,7 @@ public class StageInfoMessageHolder extends SearchHolder {
     private final int star, itf, cotc;
 
     public StageInfoMessageHolder(List<Stage> stage, Message author, Message msg, String channelID, int star, int itf, int cotc, boolean isFrame, boolean isExtra, boolean isCompact, int lang) {
-        super(msg, author, channelID, lang);
+        super(author, msg, channelID, lang);
 
         this.stage = stage;
         this.author = author;

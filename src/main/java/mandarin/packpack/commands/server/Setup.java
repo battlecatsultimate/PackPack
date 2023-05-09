@@ -52,7 +52,7 @@ public class Setup extends ConstraintCommand {
             if(author == null || member == null)
                 return;
 
-            StaticStore.putHolder(member.getId(), new ConfirmButtonHolder(m, author, ch.getId(), () -> initializeSetup(ch, author), lang));
+            StaticStore.putHolder(member.getId(), new ConfirmButtonHolder(author, m, ch.getId(), () -> initializeSetup(ch, author), lang));
         } else {
             Message author = getMessage(event);
 
@@ -76,7 +76,7 @@ public class Setup extends ConstraintCommand {
         if(m == null)
             return;
 
-        StaticStore.putHolder(author.getAuthor().getId(), new SetupModButtonHolder(m, author, ch.getId(), holder, lang));
+        StaticStore.putHolder(author.getAuthor().getId(), new SetupModButtonHolder(author, m, ch.getId(), holder, lang));
     }
 
     private boolean alreadySet(Guild g) {

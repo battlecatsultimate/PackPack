@@ -8,6 +8,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.holder.segment.SearchHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -24,7 +25,7 @@ public class ComboMessageHolder extends SearchHolder {
     private final Message fMsg;
 
     public ComboMessageHolder(ArrayList<Combo> combo, Message author, Message msg, Message fMsg, String channelID, int lang) {
-        super(msg, author, channelID, lang);
+        super(author, msg, channelID, lang);
 
         this.combo = combo;
         this.fMsg = fMsg;
@@ -105,8 +106,8 @@ public class ComboMessageHolder extends SearchHolder {
     }
 
     @Override
-    public void expire(String id) {
-        super.expire(id);
+    public void onExpire(String id) {
+        super.onExpire(id);
 
         if(fMsg != null)
             fMsg.delete().queue();

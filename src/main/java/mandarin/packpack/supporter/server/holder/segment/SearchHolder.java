@@ -1,69 +1,38 @@
-package mandarin.packpack.supporter.server.holder;
+package mandarin.packpack.supporter.server.holder.segment;
 
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
-import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class SearchHolder extends InteractionHolder<GenericComponentInteractionCreateEvent> {
+public abstract class SearchHolder extends InteractionHolder {
     public static final int PAGE_CHUNK = 20;
 
     protected final Message msg;
-    protected final String channelID;
-    protected final String memberID;
     protected final int lang;
 
     protected int page = 0;
 
-    public SearchHolder(@Nonnull Message msg, @Nonnull Message author, @Nonnull String channelID, int lang) {
-        super(GenericComponentInteractionCreateEvent.class, author);
+    public SearchHolder(@Nonnull Message author, @Nonnull Message msg, @Nonnull String channelID, int lang) {
+        super(author, channelID, msg.getId());
 
         this.msg = msg;
-        this.channelID = channelID;
-        this.memberID = author.getAuthor().getId();
         this.lang = lang;
     }
 
     @Override
-    public int handleEvent(GenericComponentInteractionCreateEvent event) {
-        if(expired) {
-            System.out.println("Expired!!");
-
-            return RESULT_FAIL;
-        }
-
-        MessageChannel ch = event.getChannel();
-
-        if(!ch.getId().equals(channelID))
-            return RESULT_STILL;
-
-        User u = event.getUser();
-
-        if(!u.getId().equals(memberID))
-            return RESULT_STILL;
-
-        Message m = event.getMessage();
-
-        if(!msg.getId().equals(m.getId()))
-            return RESULT_STILL;
-
-        return RESULT_FINISH;
-    }
-
-    @Override
-    public void expire(String id) {
+    public void onExpire(String id) {
         if(expired)
             return;
 
@@ -79,32 +48,20 @@ public abstract class SearchHolder extends InteractionHolder<GenericComponentInt
     }
 
     @Override
-    public void performInteraction(GenericComponentInteractionCreateEvent event) {
+    public void onEvent(GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
-            case "prev10":
-                page -= 10;
-
-                break;
-            case "prev":
-                page--;
-
-                break;
-            case "next":
-                page++;
-
-                break;
-            case "next10":
-                page += 10;
-
-                break;
-            case "data":
+            case "prev10" -> page -= 10;
+            case "prev" -> page--;
+            case "next" -> page++;
+            case "next10" -> page += 10;
+            case "data" -> {
                 finish(event);
-
                 return;
-            case "cancel":
+            }
+            case "cancel" -> {
                 cancel(event);
-
                 return;
+            }
         }
 
         apply(event);

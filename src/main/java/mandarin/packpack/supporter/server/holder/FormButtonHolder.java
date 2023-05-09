@@ -5,20 +5,20 @@ import common.util.unit.Level;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
+import mandarin.packpack.supporter.server.holder.segment.InteractionHolder;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class FormButtonHolder extends InteractionHolder<ButtonInteractionEvent> {
-
+public class FormButtonHolder extends InteractionHolder {
     private final Message embed;
     private final ConfigHolder config;
     private final int lang;
@@ -28,18 +28,14 @@ public class FormButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
     private final boolean talent;
     private final boolean extra;
     private final boolean compact;
-    private final String channelID;
-    private final String memberID;
     private final Level lv;
 
-    public FormButtonHolder(Form f, Message author, Message msg, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, boolean compact, Level lv, int lang, String channelID) {
-        super(ButtonInteractionEvent.class, author);
+    public FormButtonHolder(Form f, @Nonnull Message author,@Nonnull Message msg, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, boolean compact, Level lv, int lang, @Nonnull String channelID) {
+        super(author, channelID, msg.getId());
 
         this.embed = msg;
         this.config = config;
         this.lang = lang;
-        this.channelID = channelID;
-        this.memberID = author.getAuthor().getId();
         this.f = f;
 
         this.isFrame = isFrame;
@@ -48,9 +44,9 @@ public class FormButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
         this.compact = compact;
         this.lv = lv;
 
-        Timer autoFinsh = new Timer();
+        Timer autoFinish = new Timer();
 
-        autoFinsh.schedule(new TimerTask() {
+        autoFinish.schedule(new TimerTask() {
             @Override
             public void run() {
                 if(expired)
@@ -60,32 +56,20 @@ public class FormButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
 
                 StaticStore.removeHolder(author.getAuthor().getId(), FormButtonHolder.this);
 
-                expire("");
+                expire(userID);
             }
         }, FIVE_MIN);
     }
 
     @Override
-    public int handleEvent(ButtonInteractionEvent event) {
-        MessageChannel ch = embed.getChannel();
+    public void onEvent(GenericComponentInteractionCreateEvent event) {
+        event.getMessage().delete().queue();
 
-        if (!ch.getId().equals(channelID)) {
-            return RESULT_STILL;
-        }
-
-        User u = event.getUser();
-
-        if(!u.getId().equals(memberID))
-            return RESULT_STILL;
-
-        Message m = event.getMessage();
-
-        if(!m.getId().equals(embed.getId()))
-            return RESULT_STILL;
+        MessageChannel ch = event.getMessageChannel();
 
         if(event.getComponentId().equals("talent")) {
             if(f.du.getPCoin() == null)
-                return RESULT_STILL;
+                return;
 
             try {
                 EntityHandler.showTalentEmbed(ch, getAuthorMessage(), f, isFrame, lang);
@@ -93,32 +77,23 @@ public class FormButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
                 StaticStore.logger.uploadErrorLog(e, "E/FormButtonHolder::handleEvent - Failed to show talent embed on button click");
             }
         } else {
-            int diff = 0;
-
-            switch (event.getComponentId()) {
-                case "first":
-                    diff = -2;
-                    break;
-                case "pre":
-                    diff = -1;
-                    break;
-                case "next":
-                    diff = 1;
-                    break;
-                case "final":
-                    diff = 2;
-                    break;
-            }
+            int diff = switch (event.getComponentId()) {
+                case "first" -> -2;
+                case "pre" -> -1;
+                case "next" -> 1;
+                case "final" -> 2;
+                default -> 0;
+            };
 
             if(diff == 0) {
-                return RESULT_STILL;
+                return;
             }
 
             if(f.fid + diff < 0)
-                return RESULT_STILL;
+                return;
 
             if(f.unit == null)
-                return RESULT_STILL;
+                return;
 
             Form newForm = f.unit.forms[f.fid + diff];
 
@@ -128,13 +103,6 @@ public class FormButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
                 StaticStore.logger.uploadErrorLog(e, "E/FormButtonHolder::handleEvent - Failed to show unit embed on button click");
             }
         }
-
-        return RESULT_FINISH;
-    }
-
-    @Override
-    public void performInteraction(ButtonInteractionEvent event) {
-        event.getMessage().delete().queue();
     }
 
     @Override
@@ -143,7 +111,7 @@ public class FormButtonHolder extends InteractionHolder<ButtonInteractionEvent> 
     }
 
     @Override
-    public void expire(String id) {
+    public void onExpire(String id) {
         ArrayList<Button> buttons = new ArrayList<>();
 
         for(Button button : embed.getButtons()) {

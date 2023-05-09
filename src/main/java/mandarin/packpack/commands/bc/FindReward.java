@@ -15,7 +15,7 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.FindRewardMessageHolder;
-import mandarin.packpack.supporter.server.holder.SearchHolder;
+import mandarin.packpack.supporter.server.holder.segment.SearchHolder;
 import mandarin.packpack.supporter.server.holder.StageInfoButtonHolder;
 import mandarin.packpack.supporter.server.holder.StageInfoMessageHolder;
 import net.dv8tion.jda.api.Permission;

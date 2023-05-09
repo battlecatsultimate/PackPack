@@ -9,10 +9,10 @@ import common.util.stage.Music;
 import common.util.stage.Stage;
 import mandarin.packpack.commands.bc.Castle;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.server.holder.segment.InteractionHolder;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
@@ -21,20 +21,16 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
-public class StageInfoButtonHolder extends InteractionHolder<ButtonInteractionEvent> {
+public class StageInfoButtonHolder extends InteractionHolder {
     private final Message embed;
-    private final String channelID;
-    private final String memberID;
     private final Stage st;
     private final boolean compact;
 
     public StageInfoButtonHolder(Stage st, Message author, Message msg, String channelID, boolean compact) {
-        super(ButtonInteractionEvent.class, author);
+        super(author, channelID, msg.getId());
 
         this.st = st;
         embed = msg;
-        this.channelID = channelID;
-        this.memberID = author.getAuthor().getId();
         this.compact = compact;
 
         Timer autoFinish = new Timer();
@@ -49,48 +45,27 @@ public class StageInfoButtonHolder extends InteractionHolder<ButtonInteractionEv
 
                 StaticStore.removeHolder(author.getAuthor().getId(), StageInfoButtonHolder.this);
 
-                expire("");
+                expire(userID);
             }
         }, TimeUnit.MINUTES.toMillis(5));
     }
 
     @Override
-    public int handleEvent(ButtonInteractionEvent event) {
-        if(expired) {
-            System.out.println("Expired at StageReactionHolder!");
-            return RESULT_FAIL;
+    public void onEvent(GenericComponentInteractionCreateEvent ev) {
+        expire(userID);
+
+        if(!(ev instanceof ButtonInteractionEvent event)) {
+            return;
         }
 
-        MessageChannel ch = embed.getChannel();
-
-        if(!ch.getId().equals(channelID))
-            return RESULT_STILL;
-
-        User u = event.getUser();
-
-        if(!u.getId().equals(memberID))
-            return RESULT_STILL;
-
-        Message m = event.getMessage();
-
-        if(!m.getId().equals(embed.getId()))
-            return RESULT_STILL;
-
-        return RESULT_FINISH;
-    }
-
-    @Override
-    public void performInteraction(ButtonInteractionEvent event) {
-        expire("");
-
         switch (event.getComponentId()) {
-            case "music":
-                if(st.mus0 == null)
+            case "music" -> {
+                if (st.mus0 == null)
                     return;
 
                 Music ms = Identifier.get(st.mus0);
 
-                if(ms == null) {
+                if (ms == null) {
                     ms = UserProfile.getBCData().musics.get(0);
                 }
 
@@ -99,14 +74,14 @@ public class StageInfoButtonHolder extends InteractionHolder<ButtonInteractionEv
                 } catch (Exception e) {
                     StaticStore.logger.uploadErrorLog(e, "E/StageInfoButtonHolder | Failed to prepare interaction data for music");
                 }
-                break;
-            case "music2":
-                if(st.mus1 == null)
+            }
+            case "music2" -> {
+                if (st.mus1 == null)
                     return;
 
-                ms = Identifier.get(st.mus1);
+                Music ms = Identifier.get(st.mus1);
 
-                if(ms == null) {
+                if (ms == null) {
                     ms = UserProfile.getBCData().musics.get(0);
                 }
 
@@ -115,11 +90,11 @@ public class StageInfoButtonHolder extends InteractionHolder<ButtonInteractionEv
                 } catch (Exception e) {
                     StaticStore.logger.uploadErrorLog(e, "E/StageInfoButtonHolder | Failed to prepare interaction data for music");
                 }
-                break;
-            case "bg":
+            }
+            case "bg" -> {
                 Background bg = Identifier.get(st.bg);
 
-                if(bg == null)
+                if (bg == null)
                     bg = UserProfile.getBCData().bgs.get(0);
 
                 try {
@@ -127,11 +102,11 @@ public class StageInfoButtonHolder extends InteractionHolder<ButtonInteractionEv
                 } catch (Exception e) {
                     StaticStore.logger.uploadErrorLog(e, "E/StageInfoButtonHolder | Failed to prepare interaction data for bg");
                 }
-                break;
-            case "castle":
+            }
+            case "castle" -> {
                 CastleImg cs = Identifier.get(st.castle);
 
-                if(cs == null) {
+                if (cs == null) {
                     ArrayList<CastleList> lists = new ArrayList<>(CastleList.defset());
 
                     cs = lists.get(0).get(0);
@@ -141,9 +116,10 @@ public class StageInfoButtonHolder extends InteractionHolder<ButtonInteractionEv
                     Castle.performButton(event, cs);
                 } catch (Exception e) {
                     StaticStore.logger.uploadErrorLog(e, "E/StageInfoButtonHolder | Failed to prepare interaction data for castle");
+
                     e.printStackTrace();
                 }
-                break;
+            }
         }
     }
 
@@ -153,7 +129,7 @@ public class StageInfoButtonHolder extends InteractionHolder<ButtonInteractionEv
     }
 
     @Override
-    public void expire(String id) {
+    public void onExpire(String id) {
         if(compact) {
             embed.editMessageComponents()
                     .mentionRepliedUser(false)

@@ -4,6 +4,7 @@ import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Form;
 import mandarin.packpack.supporter.bc.EntityHandler;
+import mandarin.packpack.supporter.server.holder.segment.SearchHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
@@ -17,7 +18,7 @@ public class FormSpriteMessageHolder extends SearchHolder {
     private final int mode;
 
     public FormSpriteMessageHolder(ArrayList<Form> form, Message author, Message msg, String channelID, int mode, int lang) {
-        super(msg, author, channelID, lang);
+        super(author, msg, channelID, lang);
 
         this.form = form;
         this.mode = mode;

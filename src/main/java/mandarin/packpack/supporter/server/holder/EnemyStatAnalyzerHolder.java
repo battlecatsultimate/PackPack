@@ -8,8 +8,10 @@ import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.bc.cell.AbilityData;
 import mandarin.packpack.supporter.bc.cell.CellData;
 import mandarin.packpack.supporter.bc.cell.FlagCellData;
+import mandarin.packpack.supporter.server.holder.segment.FileAnalyzerHolder;
 import net.dv8tion.jda.api.entities.Message;
 
+import javax.annotation.Nonnull;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -27,7 +29,7 @@ public class EnemyStatAnalyzerHolder extends FileAnalyzerHolder {
     private final int m;
     private final String name;
 
-    public EnemyStatAnalyzerHolder(Message msg, Message author, String channelID, File container, List<String> requiredFiles, List<CellData> cellData, List<AbilityData> procData, List<FlagCellData> abilityData, List<FlagCellData> traitData, int eID, boolean isSecond, int m, String name, int lang) {
+    public EnemyStatAnalyzerHolder(@Nonnull Message msg, @Nonnull Message author, String channelID, File container, List<String> requiredFiles, List<CellData> cellData, List<AbilityData> procData, List<FlagCellData> abilityData, List<FlagCellData> traitData, int eID, boolean isSecond, int m, String name, int lang) {
         super(msg, author, channelID, container, requiredFiles, lang);
 
         this.cellData = cellData;

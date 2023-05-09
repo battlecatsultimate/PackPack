@@ -10,12 +10,14 @@ import mandarin.packpack.supporter.bc.AnimMixer;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.holder.segment.MessageHolder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
+import javax.annotation.Nonnull;
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.util.ArrayList;
@@ -24,11 +26,10 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class AnimMessageHolder extends MessageHolder<MessageReceivedEvent> {
+public class AnimMessageHolder extends MessageHolder {
     private final AnimMixer mixer;
     private final Message msg;
     private final int lang;
-    private final String channelID;
     private final File container;
 
     private final boolean debug;
@@ -44,12 +45,11 @@ public class AnimMessageHolder extends MessageHolder<MessageReceivedEvent> {
     private final AtomicReference<String> mamodel = new AtomicReference<>("MAMODEL : -");
     private final ArrayList<AtomicReference<String>> maanim = new ArrayList<>();
 
-    public AnimMessageHolder(Message msg, Message target, int lang, String channelID, File container, boolean debug, MessageChannel ch, boolean raw, boolean transparent, int len) throws Exception {
-        super(MessageReceivedEvent.class, msg);
+    public AnimMessageHolder(@Nonnull Message author, @Nonnull Message target, int lang, @Nonnull String channelID, File container, boolean debug, MessageChannel ch, boolean raw, boolean transparent, int len) throws Exception {
+        super(author, channelID, target.getId());
 
         this.msg = target;
         this.lang = lang;
-        this.channelID = channelID;
         this.container = container;
 
         this.debug = debug;
@@ -64,8 +64,8 @@ public class AnimMessageHolder extends MessageHolder<MessageReceivedEvent> {
 
         AtomicReference<Long> now = new AtomicReference<>(System.currentTimeMillis());
 
-        if(!msg.getAttachments().isEmpty()) {
-            for(Message.Attachment a : msg.getAttachments()) {
+        if(!author.getAttachments().isEmpty()) {
+            for(Message.Attachment a : author.getAttachments()) {
                 if(a.getFileName().endsWith(".png") && mixer.png == null) {
                     UpdateCheck.Downloader down = StaticStore.getDownloader(a, container);
 
@@ -247,7 +247,7 @@ public class AnimMessageHolder extends MessageHolder<MessageReceivedEvent> {
                 Guild g;
 
                 if(ch instanceof GuildChannel) {
-                    g = msg.getGuild();
+                    g = author.getGuild();
                 } else {
                     g = null;
                 }
@@ -268,24 +268,24 @@ public class AnimMessageHolder extends MessageHolder<MessageReceivedEvent> {
                 }
             }).start();
         } else {
-            StaticStore.putHolder(msg.getAuthor().getId(), this);
+            StaticStore.putHolder(author.getAuthor().getId(), this);
 
-            registerAutoFinish(this, target, msg, lang, "animanalyze_expire", TimeUnit.MINUTES.toMillis(5));
+            registerAutoFinish(this, target, author, lang, "animanalyze_expire", TimeUnit.MINUTES.toMillis(5));
         }
     }
 
     @Override
-    public int handleEvent(MessageReceivedEvent event) {
+    public STATUS onReceivedEvent(MessageReceivedEvent event) {
         try {
             if(expired) {
                 System.out.println("Expired!!");
-                return RESULT_FAIL;
+                return STATUS.FAIL;
             }
 
             MessageChannel ch = event.getMessage().getChannel();
 
             if(!ch.getId().equals(channelID)) {
-                return RESULT_STILL;
+                return STATUS.WAIT;
             }
 
             AtomicReference<Long> now = new AtomicReference<>(System.currentTimeMillis());
@@ -497,19 +497,19 @@ public class AnimMessageHolder extends MessageHolder<MessageReceivedEvent> {
                         }
                     }).start();
 
-                    return RESULT_FINISH;
+                    return STATUS.FINISH;
                 }
             } else if(m.getContentRaw().equals("c")) {
                 msg.editMessage(LangID.getStringByID("animanalyze_cancel", lang)).queue();
 
                 StaticStore.deleteFile(container, true);
 
-                return RESULT_FINISH;
+                return STATUS.FINISH;
             }
 
-            return RESULT_STILL;
+            return STATUS.WAIT;
         } catch (Exception e) {
-            return RESULT_STILL;
+            return STATUS.WAIT;
         }
     }
 
@@ -519,7 +519,7 @@ public class AnimMessageHolder extends MessageHolder<MessageReceivedEvent> {
     }
 
     @Override
-    public void expire(String id) {
+    public void onExpire(String id) {
         if(expired)
             return;
 

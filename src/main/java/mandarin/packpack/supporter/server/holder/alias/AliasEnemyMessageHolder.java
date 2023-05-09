@@ -6,8 +6,8 @@ import common.util.unit.Enemy;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.AliasHolder;
-import mandarin.packpack.supporter.server.holder.MessageHolder;
-import mandarin.packpack.supporter.server.holder.SearchHolder;
+import mandarin.packpack.supporter.server.holder.segment.MessageHolder;
+import mandarin.packpack.supporter.server.holder.segment.SearchHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
-public class AliasEnemyMessageHolder extends MessageHolder<MessageReceivedEvent> {
+public class AliasEnemyMessageHolder extends MessageHolder {
     private final ArrayList<Enemy> enemy;
     private final Message msg;
     private final String channelID;
@@ -30,7 +30,7 @@ public class AliasEnemyMessageHolder extends MessageHolder<MessageReceivedEvent>
     private final ArrayList<Message> cleaner = new ArrayList<>();
 
     public AliasEnemyMessageHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, AliasHolder.MODE mode, int lang, @Nullable String aliasName) {
-        super(MessageReceivedEvent.class, author);
+        super(author, channelID, msg.getId());
 
         this.enemy = enemy;
         this.msg = msg;
@@ -44,22 +44,22 @@ public class AliasEnemyMessageHolder extends MessageHolder<MessageReceivedEvent>
     }
 
     @Override
-    public int handleEvent(MessageReceivedEvent event) {
+    public STATUS onReceivedEvent(MessageReceivedEvent event) {
         if(expired) {
             System.out.println("Expired!!");
-            return RESULT_FAIL;
+            return STATUS.FAIL;
         }
 
         MessageChannel ch = event.getMessage().getChannel();
 
         if(!ch.getId().equals(channelID))
-            return RESULT_STILL;
+            return STATUS.WAIT;
 
         String content = event.getMessage().getContentRaw();
 
         if(content.equals("n")) {
             if(20 * (page + 1) >= enemy.size())
-                return RESULT_STILL;
+                return STATUS.WAIT;
 
             page++;
 
@@ -68,7 +68,7 @@ public class AliasEnemyMessageHolder extends MessageHolder<MessageReceivedEvent>
             cleaner.add(event.getMessage());
         } else if(content.equals("p")) {
             if(page == 0)
-                return RESULT_STILL;
+                return STATUS.WAIT;
 
             page--;
 
@@ -79,7 +79,7 @@ public class AliasEnemyMessageHolder extends MessageHolder<MessageReceivedEvent>
             int id = StaticStore.safeParseInt(content)-1;
 
             if(id < 0 || id >= enemy.size())
-                return RESULT_STILL;
+                return STATUS.WAIT;
 
             msg.delete().queue();
 
@@ -160,7 +160,7 @@ public class AliasEnemyMessageHolder extends MessageHolder<MessageReceivedEvent>
 
             cleaner.add(event.getMessage());
 
-            return RESULT_FINISH;
+            return STATUS.FINISH;
         } else if(content.equals("c")) {
             msg.editMessage(LangID.getStringByID("formst_cancel", lang)).queue();
 
@@ -168,7 +168,7 @@ public class AliasEnemyMessageHolder extends MessageHolder<MessageReceivedEvent>
 
             cleaner.add(event.getMessage());
 
-            return RESULT_FINISH;
+            return STATUS.FINISH;
         } else if(content.startsWith("n ")) {
             String[] contents = content.split(" ");
 
@@ -177,7 +177,7 @@ public class AliasEnemyMessageHolder extends MessageHolder<MessageReceivedEvent>
                     int p = StaticStore.safeParseInt(contents[1]) - 1;
 
                     if (p < 0 || p * 20 >= enemy.size()) {
-                        return RESULT_STILL;
+                        return STATUS.WAIT;
                     }
 
                     page = p;
@@ -189,7 +189,7 @@ public class AliasEnemyMessageHolder extends MessageHolder<MessageReceivedEvent>
             }
         }
 
-        return RESULT_STILL;
+        return STATUS.WAIT;
     }
 
     @Override
@@ -201,7 +201,7 @@ public class AliasEnemyMessageHolder extends MessageHolder<MessageReceivedEvent>
     }
 
     @Override
-    public void expire(String id) {
+    public void onExpire(String id) {
         if(expired)
             return;
 

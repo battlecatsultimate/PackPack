@@ -13,7 +13,7 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.FormButtonHolder;
 import mandarin.packpack.supporter.server.holder.FormReactionSlashMessageHolder;
 import mandarin.packpack.supporter.server.holder.FormStatMessageHolder;
-import mandarin.packpack.supporter.server.holder.SearchHolder;
+import mandarin.packpack.supporter.server.holder.segment.SearchHolder;
 import mandarin.packpack.supporter.server.slash.SlashOption;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
@@ -90,7 +90,7 @@ public class FormStat extends ConstraintCommand {
             if(m != null && (!(m.getChannel() instanceof GuildChannel) || m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_MANAGE))) {
                 StaticStore.putHolder(
                         u.getId(),
-                        new FormReactionSlashMessageHolder(m, f, u.getId(), m.getChannel().getId(), m.getId(), config, frame && config.useFrame, talent, extra || config.extra, lv, finalLang)
+                        new FormReactionSlashMessageHolder(m, f, u.getId(), m.getChannel().getId(), config, frame && config.useFrame, talent, extra || config.extra, lv, finalLang)
                 );
             }
         } catch (Exception e) {
