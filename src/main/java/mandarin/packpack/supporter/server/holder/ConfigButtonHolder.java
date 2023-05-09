@@ -5,7 +5,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import mandarin.packpack.supporter.server.holder.segment.InteractionHolder;
+import mandarin.packpack.supporter.server.holder.segment.ComponentHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
@@ -15,13 +15,16 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
+import net.dv8tion.jda.api.interactions.components.text.TextInput;
+import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
+import net.dv8tion.jda.api.interactions.modals.Modal;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class ConfigButtonHolder extends InteractionHolder {
+public class ConfigButtonHolder extends ComponentHolder {
     private static final int TOTAL_CONFIG = 6;
 
     private final Message msg;
@@ -42,9 +45,9 @@ public class ConfigButtonHolder extends InteractionHolder {
         
         this.forServer = forServer;
 
-        Timer autoFinsh = new Timer();
+        Timer autoFinish = new Timer();
 
-        autoFinsh.schedule(new TimerTask() {
+        autoFinish.schedule(new TimerTask() {
             @Override
             public void run() {
                 if(expired)
@@ -73,14 +76,19 @@ public class ConfigButtonHolder extends InteractionHolder {
                 performResult(event);
             }
             case "defLevels" -> {
-                StringSelectInteractionEvent es = (StringSelectInteractionEvent) event;
+                TextInput input = TextInput.create("level", "Level", TextInputStyle.SHORT)
+                        .setPlaceholder("Please specify the level here")
+                        .setRequiredRange(1, 2)
+                        .setRequired(true)
+                        .build();
+
+                Modal modal = Modal.create("level", "Level Setting")
+                        .addActionRow(input)
+                        .build();
                 
-                if (es.getValues().size() != 1)
-                    return;
-                
-                config.defLevel = StaticStore.safeParseInt(es.getValues().get(0));
-                
-                performResult(event);
+                event.replyModal(modal).queue();
+
+                StaticStore.putHolder(userID, new LevelModalHolder(getAuthorMessage(), msg, channelID));
             }
             case "extra" -> {
                 StringSelectInteractionEvent es = (StringSelectInteractionEvent) event;

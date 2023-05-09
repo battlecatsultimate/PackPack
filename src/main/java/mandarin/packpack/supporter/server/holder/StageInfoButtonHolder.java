@@ -9,7 +9,7 @@ import common.util.stage.Music;
 import common.util.stage.Stage;
 import mandarin.packpack.commands.bc.Castle;
 import mandarin.packpack.supporter.StaticStore;
-import mandarin.packpack.supporter.server.holder.segment.InteractionHolder;
+import mandarin.packpack.supporter.server.holder.segment.ComponentHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
@@ -21,7 +21,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
-public class StageInfoButtonHolder extends InteractionHolder {
+public class StageInfoButtonHolder extends ComponentHolder {
     private final Message embed;
     private final Stage st;
     private final boolean compact;

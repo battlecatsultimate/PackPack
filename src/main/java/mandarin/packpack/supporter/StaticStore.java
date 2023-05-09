@@ -17,10 +17,7 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.TimeBoolean;
 import mandarin.packpack.supporter.server.data.*;
-import mandarin.packpack.supporter.server.holder.segment.Holder;
-import mandarin.packpack.supporter.server.holder.segment.HolderHub;
-import mandarin.packpack.supporter.server.holder.segment.InteractionHolder;
-import mandarin.packpack.supporter.server.holder.segment.MessageHolder;
+import mandarin.packpack.supporter.server.holder.segment.*;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -943,12 +940,18 @@ public class StaticStore {
             }
 
             hub.messageHolder = messageHolder;
-        } else if(holder instanceof InteractionHolder interactionHolder) {
-            if(hub.interactionHolder != null) {
-                hub.interactionHolder.expire(id);
+        } else if(holder instanceof ComponentHolder componentHolder) {
+            if(hub.componentHolder != null) {
+                hub.componentHolder.expire(id);
             }
 
-            hub.interactionHolder = interactionHolder;
+            hub.componentHolder = componentHolder;
+        } else if(holder instanceof ModalHolder modalHolder) {
+            if(hub.modalHolder != null) {
+                hub.modalHolder.expire(id);
+            }
+
+            hub.modalHolder = modalHolder;
         }
 
         if(!holders.containsKey(id)) {
@@ -962,8 +965,10 @@ public class StaticStore {
 
             if(holder instanceof MessageHolder messageHolder && messageHolder == hub.messageHolder) {
                 hub.messageHolder = null;
-            } else if(holder instanceof InteractionHolder interactionHolder && interactionHolder == hub.interactionHolder) {
-                hub.interactionHolder = null;
+            } else if(holder instanceof ComponentHolder componentHolder && componentHolder == hub.componentHolder) {
+                hub.componentHolder = null;
+            } else if(holder instanceof ModalHolder modalHolder && modalHolder == hub.modalHolder) {
+                hub.modalHolder = null;
             }
         }
     }

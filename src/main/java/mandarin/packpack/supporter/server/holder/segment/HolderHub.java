@@ -3,16 +3,21 @@ package mandarin.packpack.supporter.server.holder.segment;
 import mandarin.packpack.supporter.StaticStore;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class HolderHub {
     public String userID;
 
     public MessageHolder messageHolder;
-    public InteractionHolder interactionHolder;
+    public ComponentHolder componentHolder;
+    public ModalHolder modalHolder;
 
     public void handleEvent(Event e) {
         try {
+            System.out.println(e instanceof GenericInteractionCreateEvent);
+
             if(e instanceof GenericMessageEvent && messageHolder != null) {
                 if(messageHolder.expired) {
                     StaticStore.logger.uploadLog("W/HolderHub::handleEvent - Expired message holder didn't get removed : " + messageHolder.getClass().getName());
@@ -26,16 +31,28 @@ public class HolderHub {
                         messageHolder = null;
                     }
                 }
-            } else if(e instanceof GenericInteractionCreateEvent && interactionHolder != null) {
-                if(interactionHolder.expired) {
-                    StaticStore.logger.uploadLog("W/HolderHub::handleEvent - Expired interaction holder didn't get removed : " + interactionHolder.getClass().getName());
+            } else if(e instanceof GenericComponentInteractionCreateEvent && componentHolder != null) {
+                if(componentHolder.expired) {
+                    StaticStore.logger.uploadLog("W/HolderHub::handleEvent - Expired interaction holder didn't get removed : " + componentHolder.getClass().getName());
 
-                    interactionHolder = null;
+                    componentHolder = null;
                 } else {
-                    Holder.STATUS result = interactionHolder.handleEvent(e);
+                    Holder.STATUS result = componentHolder.handleEvent(e);
 
-                    if(result == Holder.STATUS.FINISH && interactionHolder != null && interactionHolder.expired) {
-                        interactionHolder = null;
+                    if(result == Holder.STATUS.FINISH && componentHolder != null && componentHolder.expired) {
+                        componentHolder = null;
+                    }
+                }
+            } else if(e instanceof ModalInteractionEvent && modalHolder != null) {
+                if(modalHolder.expired) {
+                    StaticStore.logger.uploadLog("W/HolderHub::handleEvent - Expired modal holder didn't get removed : " + modalHolder.getClass().getName());
+
+                    modalHolder = null;
+                } else {
+                    Holder.STATUS result = modalHolder.handleEvent(e);
+
+                    if(result == Holder.STATUS.FINISH && modalHolder != null && modalHolder.expired) {
+                        modalHolder = null;
                     }
                 }
             }

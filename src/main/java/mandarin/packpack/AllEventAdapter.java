@@ -34,6 +34,7 @@ import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberUpdateEvent;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -635,54 +636,59 @@ public class AllEventAdapter extends ListenerAdapter {
     public void onGenericInteractionCreate(@NotNull GenericInteractionCreateEvent event) {
         super.onGenericInteractionCreate(event);
 
+        User u = event.getUser();
+
         try {
-            if(event instanceof GenericComponentInteractionCreateEvent c) {
+            switch (event) {
+                case GenericComponentInteractionCreateEvent c -> {
+                    if (StaticStore.holderContainsKey(u.getId())) {
+                        HolderHub holder = StaticStore.getHolderHub(u.getId());
 
-                User u = c.getInteraction().getUser();
-
-                if(StaticStore.holderContainsKey(u.getId())) {
-                    HolderHub holder = StaticStore.getHolderHub(u.getId());
-
-                    holder.handleEvent(c);
-                }
-            } else if(event instanceof GenericCommandInteractionEvent i) {
-                SpamPrevent spam;
-
-                User u = i.getInteraction().getUser();
-
-                if(StaticStore.spamData.containsKey(u.getId())) {
-                    spam = StaticStore.spamData.get(u.getId());
-
-                    String result = spam.isPrevented(event);
-
-                    if(result != null) {
-                        if (!result.isBlank()) {
-
-                            i.deferReply().setContent(result).queue();
-                        }
-
-                        return;
+                        holder.handleEvent(c);
                     }
                 }
+                case ModalInteractionEvent m -> {
+                    if (StaticStore.holderContainsKey(u.getId())) {
+                        HolderHub holder = StaticStore.getHolderHub(u.getId());
 
-                switch (i.getName()) {
-                    case "fs" -> FormStat.performInteraction(i);
-                    case "es" -> EnemyStat.performInteraction(i);
-                    case "si" -> StageInfo.performInteraction(i);
+                        holder.handleEvent(m);
+                    }
+                }
+                case GenericCommandInteractionEvent i -> {
+                    if (StaticStore.spamData.containsKey(u.getId())) {
+                        SpamPrevent spam = StaticStore.spamData.get(u.getId());
+
+                        String result = spam.isPrevented(event);
+
+                        if (result != null) {
+                            if (!result.isBlank()) {
+
+                                i.deferReply().setContent(result).queue();
+                            }
+
+                            return;
+                        }
+                    }
+
+                    switch (i.getName()) {
+                        case "fs" -> FormStat.performInteraction(i);
+                        case "es" -> EnemyStat.performInteraction(i);
+                        case "si" -> StageInfo.performInteraction(i);
+                    }
+                }
+                default -> {
                 }
             }
         } catch (Exception e) {
             String message = "E/AllEventAdapter::onGenericInteractionCreate - Error happened";
-
-            User u = event.getUser();
 
             if(StaticStore.holderContainsKey(u.getId())) {
                 message += "\n\nTried to handle the holder : " + StaticStore.getHolderHub(u.getId()).getClass().getName();
 
                 HolderHub hub = StaticStore.getHolderHub(u.getId());
 
-                if(hub.interactionHolder != null) {
-                    Message author = hub.interactionHolder.getAuthorMessage();
+                if(hub.componentHolder != null) {
+                    Message author = hub.componentHolder.getAuthorMessage();
 
                     MessageChannel ch = author.getChannel();
 

@@ -8,8 +8,8 @@ import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionE
 
 import javax.annotation.Nonnull;
 
-public abstract class InteractionHolder extends Holder {
-    public InteractionHolder(@Nonnull Message author, @Nonnull String channelID, @Nonnull String messageID) {
+public abstract class ComponentHolder extends Holder {
+    public ComponentHolder(@Nonnull Message author, @Nonnull String channelID, @Nonnull String messageID) {
         super(author, channelID, messageID);
     }
 

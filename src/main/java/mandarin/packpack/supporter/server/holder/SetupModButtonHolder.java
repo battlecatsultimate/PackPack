@@ -4,7 +4,7 @@ import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import mandarin.packpack.supporter.server.holder.segment.InteractionHolder;
+import mandarin.packpack.supporter.server.holder.segment.ComponentHolder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class SetupModButtonHolder extends InteractionHolder {
+public class SetupModButtonHolder extends ComponentHolder {
     private final Message msg;
     private final String channelID;
     private final String memberID;

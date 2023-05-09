@@ -4,7 +4,7 @@ import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import mandarin.packpack.supporter.server.holder.segment.InteractionHolder;
+import mandarin.packpack.supporter.server.holder.segment.ComponentHolder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
@@ -16,7 +16,7 @@ import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SetupMemberButtonHolder extends InteractionHolder {
+public class SetupMemberButtonHolder extends ComponentHolder {
     private final Message msg;
 
     private final IDHolder holder;

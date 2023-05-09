@@ -4,7 +4,7 @@ import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.ScamLinkHandler;
-import mandarin.packpack.supporter.server.holder.segment.InteractionHolder;
+import mandarin.packpack.supporter.server.holder.segment.ComponentHolder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -19,7 +19,7 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ScamLinkSubscriptionHolder extends InteractionHolder {
+public class ScamLinkSubscriptionHolder extends ComponentHolder {
     private final Message msg;
     private final int lang;
 

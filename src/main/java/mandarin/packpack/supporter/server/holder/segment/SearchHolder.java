@@ -16,7 +16,7 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class SearchHolder extends InteractionHolder {
+public abstract class SearchHolder extends ComponentHolder {
     public static final int PAGE_CHUNK = 20;
 
     protected final Message msg;
