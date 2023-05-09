@@ -2,7 +2,6 @@ package mandarin.packpack.supporter.server.holder.segment;
 
 import mandarin.packpack.supporter.StaticStore;
 import net.dv8tion.jda.api.events.Event;
-import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
@@ -16,8 +15,6 @@ public class HolderHub {
 
     public void handleEvent(Event e) {
         try {
-            System.out.println(e instanceof GenericInteractionCreateEvent);
-
             if(e instanceof GenericMessageEvent && messageHolder != null) {
                 if(messageHolder.expired) {
                     StaticStore.logger.uploadLog("W/HolderHub::handleEvent - Expired message holder didn't get removed : " + messageHolder.getClass().getName());

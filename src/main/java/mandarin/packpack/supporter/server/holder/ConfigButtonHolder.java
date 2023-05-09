@@ -76,19 +76,25 @@ public class ConfigButtonHolder extends ComponentHolder {
                 performResult(event);
             }
             case "defLevels" -> {
-                TextInput input = TextInput.create("level", "Level", TextInputStyle.SHORT)
-                        .setPlaceholder("Please specify the level here")
+                TextInput input = TextInput.create("level", LangID.getStringByID("config_levelsubject", config.lang), TextInputStyle.SHORT)
+                        .setPlaceholder(LangID.getStringByID("config_levelplace", config.lang))
                         .setRequiredRange(1, 2)
                         .setRequired(true)
+                        .setValue(String.valueOf(config.defLevel))
                         .build();
 
-                Modal modal = Modal.create("level", "Level Setting")
+                Modal modal = Modal.create("level", LangID.getStringByID("config_leveltitle", config.lang))
                         .addActionRow(input)
                         .build();
                 
                 event.replyModal(modal).queue();
 
-                StaticStore.putHolder(userID, new LevelModalHolder(getAuthorMessage(), msg, channelID));
+                StaticStore.putHolder(userID, new LevelModalHolder(getAuthorMessage(), msg, channelID, config, e -> e.deferEdit()
+                        .setContent(parseMessage())
+                        .setComponents(parseComponents())
+                        .mentionRepliedUser(false)
+                        .setAllowedMentions(new ArrayList<>())
+                        .queue()));
             }
             case "extra" -> {
                 StringSelectInteractionEvent es = (StringSelectInteractionEvent) event;
@@ -245,21 +251,7 @@ public class ConfigButtonHolder extends ComponentHolder {
 
                     m.add(ActionRow.of(StringSelectMenu.create("language").addOptions(languages).build()));
                 }
-                case 1 -> {
-                    List<SelectOption> levels = new ArrayList<>();
-
-                    for (int j = 0; j <= 50; j += 5) {
-                        final String level = j == 0 ? "1" : String.valueOf(j);
-
-                        if (config.defLevel == j) {
-                            levels.add(SelectOption.of(LangID.getStringByID("config_default", lang).replace("_", level), level).withDefault(true));
-                        } else {
-                            levels.add(SelectOption.of(LangID.getStringByID("config_default", lang).replace("_", level), level));
-                        }
-                    }
-
-                    m.add(ActionRow.of(StringSelectMenu.create("defLevels").addOptions(levels).build()));
-                }
+                case 1 -> m.add(ActionRow.of(Button.secondary("defLevels", String.format(LangID.getStringByID("config_setlevel", lang), config.defLevel)).withEmoji(Emoji.fromUnicode("⚙"))));
                 case 2 -> {
                     List<SelectOption> extras = new ArrayList<>();
 

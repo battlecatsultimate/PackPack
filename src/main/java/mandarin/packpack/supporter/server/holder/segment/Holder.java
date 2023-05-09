@@ -167,10 +167,4 @@ public abstract class Holder {
                 .setAllowedMentions(new ArrayList<>())
                 .queue();
     }
-
-    public Message getMessageWithNoPings(MessageChannel ch, String content) {
-        return ch.sendMessage(content)
-                .setAllowedMentions(new ArrayList<>())
-                .complete();
-    }
 }

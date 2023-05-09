@@ -133,18 +133,6 @@ public class Config extends ConstraintCommand {
             }
         }
 
-        List<SelectOption> levels = new ArrayList<>();
-
-        for(int i = 0; i <= 50; i += 5) {
-            final String level = i == 0 ? "1" : String.valueOf(i);
-
-            if(config.defLevel == i) {
-                levels.add(SelectOption.of(LangID.getStringByID("config_default", lang).replace("_", level), level).withDefault(true));
-            } else {
-                levels.add(SelectOption.of(LangID.getStringByID("config_default", lang).replace("_", level), level));
-            }
-        }
-
         List<SelectOption> extras = new ArrayList<>();
 
         if(config.extra) {
@@ -167,7 +155,7 @@ public class Config extends ConstraintCommand {
 
         Message msg = getRepliedMessageSafely(ch, message, getMessage(event), a -> a.setComponents(
                 ActionRow.of(StringSelectMenu.create("language").addOptions(languages).build()),
-                ActionRow.of(StringSelectMenu.create("defLevels").addOptions(levels).build()),
+                ActionRow.of(Button.secondary("defLevels", String.format(LangID.getStringByID("config_setlevel", lang), config.defLevel)).withEmoji(Emoji.fromUnicode("⚙"))),
                 ActionRow.of(StringSelectMenu.create("extra").addOptions(extras).build()),
                 ActionRow.of(pages),
                 ActionRow.of(components)
