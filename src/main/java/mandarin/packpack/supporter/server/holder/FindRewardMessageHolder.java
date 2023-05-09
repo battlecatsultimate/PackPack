@@ -81,9 +81,6 @@ public class FindRewardMessageHolder extends SearchHolder {
         MessageChannel ch = event.getChannel();
         Message author = getAuthorMessage();
 
-        if(author == null)
-            return;
-
         try {
             int id = parseDataToInt(event);
 

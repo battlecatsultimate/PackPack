@@ -35,21 +35,12 @@ public class EventDataArchive extends ConstraintCommand {
         int locale = getLocale(getContent(event));
         String fileName = getFileName(getContent(event));
 
-        String l;
-
-        switch (locale) {
-            case LangID.ZH:
-                l = "zh";
-                break;
-            case LangID.JP:
-                l = "jp";
-                break;
-            case LangID.KR:
-                l = "kr";
-                break;
-            default:
-                l = "en";
-        }
+        String l = switch (locale) {
+            case LangID.ZH -> "zh";
+            case LangID.JP -> "jp";
+            case LangID.KR -> "kr";
+            default -> "en";
+        };
 
         File archive = new File("./data/event/" + l + "/archive/" + fileName);
 
@@ -119,14 +110,18 @@ public class EventDataArchive extends ConstraintCommand {
 
         for(int i = 0; i < contents.length; i++) {
             switch (contents[i]) {
-                case "-jp":
+                case "-jp" -> {
                     return LangID.JP;
-                case "-zh":
+                }
+                case "-zh" -> {
                     return LangID.ZH;
-                case "-kr":
+                }
+                case "-kr" -> {
                     return LangID.KR;
-                case "-en":
+                }
+                case "-en" -> {
                     return LangID.EN;
+                }
             }
         }
 
@@ -138,16 +133,15 @@ public class EventDataArchive extends ConstraintCommand {
 
         for(int i = 0; i < contents.length; i++) {
             switch (contents[i]) {
-                case "-g":
-                case "-gatya":
-                case "-gacha":
+                case "-g", "-gatya", "-gacha" -> {
                     return "gatya";
-                case "-i":
-                case "-item":
+                }
+                case "-i", "-item" -> {
                     return "item";
-                case "-s":
-                case "-sale":
+                }
+                case "-s", "-sale" -> {
                     return "sale";
+                }
             }
         }
 

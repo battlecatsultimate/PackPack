@@ -5,7 +5,6 @@ import mandarin.packpack.supporter.lang.LangID;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.Event;
-import net.dv8tion.jda.internal.entities.ReceivedMessage;
 import org.jcodec.api.NotSupportedException;
 
 import javax.annotation.Nonnull;

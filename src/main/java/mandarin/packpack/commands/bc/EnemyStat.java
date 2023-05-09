@@ -198,30 +198,29 @@ public class EnemyStat extends ConstraintCommand {
             boolean written = false;
 
             switch (content[i]) {
-                case "-s":
-                    if(!isSec)
+                case "-s" -> {
+                    if (!isSec)
                         isSec = true;
                     else {
                         command.append(content[i]);
                         written = true;
                     }
-                    break;
-                case "-e":
-                case "-extra":
-                    if(!isExtra)
+                }
+                case "-e", "-extra" -> {
+                    if (!isExtra)
                         isExtra = true;
                     else {
                         command.append(content[i]);
                         written = true;
                     }
-                    break;
-                case "-m":
-                    if(!isLevel && i < content.length -1) {
+                }
+                case "-m" -> {
+                    if (!isLevel && i < content.length - 1) {
                         String text = getLevelText(content, i + 1);
 
-                        if(text.contains(" ")) {
+                        if (text.contains(" ")) {
                             i += text.split(" ").length;
-                        } else if(msg.endsWith(text)) {
+                        } else if (msg.endsWith(text)) {
                             i++;
                         }
 
@@ -230,19 +229,19 @@ public class EnemyStat extends ConstraintCommand {
                         command.append(content[i]);
                         written = true;
                     }
-                    break;
-                case "-c":
-                case "-compact":
-                    if(!isCompact)
+                }
+                case "-c", "-compact" -> {
+                    if (!isCompact)
                         isCompact = true;
                     else {
                         command.append(content[i]);
                         written = true;
                     }
-                    break;
-                default:
+                }
+                default -> {
                     command.append(content[i]);
                     written = true;
+                }
             }
 
             if(written && i < content.length - 1) {
@@ -267,28 +266,26 @@ public class EnemyStat extends ConstraintCommand {
             label:
             for(String str : pureMessage) {
                 switch (str) {
-                    case "-s":
+                    case "-s" -> {
                         if ((result & PARAM_SECOND) == 0) {
                             result |= PARAM_SECOND;
                         } else
                             break label;
-                        break;
-                    case "-e":
-                    case "-extra":
+                    }
+                    case "-e", "-extra" -> {
                         if ((result & PARAM_EXTRA) == 0) {
                             result |= PARAM_EXTRA;
                         } else {
                             break label;
                         }
-                        break;
-                    case "-c":
-                    case "-compact":
+                    }
+                    case "-c", "-compact" -> {
                         if ((result & PARAM_COMPACT) == 0) {
                             result |= PARAM_COMPACT;
                         } else {
                             break label;
                         }
-                        break;
+                    }
                 }
             }
         }

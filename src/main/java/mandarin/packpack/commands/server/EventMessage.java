@@ -94,17 +94,12 @@ public class EventMessage extends ConstraintCommand {
     }
 
     private String getLocale(String loc) {
-        switch (loc) {
-            case "-en":
-                return "en";
-            case "-tw":
-                return "tw";
-            case "-kr":
-                return "kr";
-            case "-jp":
-                return "jp";
-            default:
-                return null;
-        }
+        return switch (loc) {
+            case "-en" -> "en";
+            case "-tw" -> "tw";
+            case "-kr" -> "kr";
+            case "-jp" -> "jp";
+            default -> null;
+        };
     }
 }

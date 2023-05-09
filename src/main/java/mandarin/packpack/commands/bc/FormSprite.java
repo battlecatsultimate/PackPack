@@ -145,33 +145,34 @@ public class FormSprite extends TimedConstraintCommand {
             boolean written = false;
 
             switch (contents[i]) {
-                case "-uni":
+                case "-uni" -> {
                     if (!uni) {
                         uni = true;
                     } else {
                         result.append(contents[i]);
                         written = true;
                     }
-                    break;
-                case "-udi":
-                    if(!udi) {
+                }
+                case "-udi" -> {
+                    if (!udi) {
                         udi = true;
                     } else {
                         result.append(contents[i]);
                         written = true;
                     }
-                    break;
-                case "-edi":
-                    if(!edi) {
+                }
+                case "-edi" -> {
+                    if (!edi) {
                         edi = true;
                     } else {
                         result.append(contents[i]);
                         written = true;
                     }
-                    break;
-                default:
+                }
+                default -> {
                     result.append(contents[i]);
                     written = true;
+                }
             }
 
             if(written && i < contents.length - 1)

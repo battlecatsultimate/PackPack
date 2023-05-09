@@ -97,7 +97,7 @@ public class FixRole extends ConstraintCommand {
                 if(fixed == 0) {
                     ch.sendMessage(LangID.getStringByID("fixrole_noneed", lang)).queue();
                 } else {
-                    ch.sendMessage(LangID.getStringByID("fixrole_fixed", lang).replace("_", "" + fixed)).queue();
+                    ch.sendMessage(LangID.getStringByID("fixrole_fixed", lang).replace("_", String.valueOf(fixed))).queue();
                 }
             }, lang));
         }

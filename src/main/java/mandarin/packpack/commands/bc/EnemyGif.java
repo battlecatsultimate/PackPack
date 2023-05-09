@@ -245,46 +245,41 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
             label:
             for(int i = 0; i < pureMessage.length; i++) {
                 switch (pureMessage[i]) {
-                    case "-d":
-                    case "-debug":
-                        if((result & PARAM_DEBUG) == 0) {
+                    case "-d", "-debug" -> {
+                        if ((result & PARAM_DEBUG) == 0) {
                             result |= PARAM_DEBUG;
                         } else {
                             break label;
                         }
-                        break;
-                    case "-r":
-                    case "-raw":
-                        if((result & PARAM_RAW) == 0) {
+                    }
+                    case "-r", "-raw" -> {
+                        if ((result & PARAM_RAW) == 0) {
                             result |= PARAM_RAW;
                         } else {
                             break label;
                         }
-                        break;
-                    case "-f":
-                    case "-fr":
-                        if(i < pureMessage.length - 1 && StaticStore.isNumeric(pureMessage[i+1])) {
+                    }
+                    case "-f", "-fr" -> {
+                        if (i < pureMessage.length - 1 && StaticStore.isNumeric(pureMessage[i + 1])) {
                             i++;
                         } else {
                             break label;
                         }
-                        break;
-                    case "-m":
-                    case "-mode":
-                        if(i < pureMessage.length -1) {
+                    }
+                    case "-m", "-mode" -> {
+                        if (i < pureMessage.length - 1) {
                             i++;
                         } else {
                             break label;
                         }
-                        break;
-                    case "-g":
-                    case "-gif":
-                        if((result & PARAM_GIF) == 0) {
+                    }
+                    case "-g", "-gif" -> {
+                        if ((result & PARAM_GIF) == 0) {
                             result |= PARAM_GIF;
                         } else {
                             break label;
                         }
-                        break;
+                    }
                 }
             }
         }
@@ -311,56 +306,52 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
             boolean written = false;
 
             switch (contents[i]) {
-                case "-debug":
-                case "-d":
-                    if(!debug) {
+                case "-debug", "-d" -> {
+                    if (!debug) {
                         debug = true;
                     } else {
                         result.append(contents[i]);
                         written = true;
                     }
-                    break;
-                case "-r":
-                case "-raw":
-                    if(!raw) {
+                }
+                case "-r", "-raw" -> {
+                    if (!raw) {
                         raw = true;
                     } else {
                         result.append(contents[i]);
                         written = true;
                     }
-                    break;
-                case "-mode":
-                case "-m":
-                    if(!mode && i < contents.length - 1) {
+                }
+                case "-mode", "-m" -> {
+                    if (!mode && i < contents.length - 1) {
                         mode = true;
                         i++;
                     } else {
                         result.append(contents[i]);
                         written = true;
                     }
-                    break;
-                case "-fr":
-                case "-f":
-                    if(!frame && i < contents.length - 1 && StaticStore.isNumeric(contents[i + 1])) {
+                }
+                case "-fr", "-f" -> {
+                    if (!frame && i < contents.length - 1 && StaticStore.isNumeric(contents[i + 1])) {
                         frame = true;
                         i++;
                     } else {
                         result.append(contents[i]);
                         written = true;
                     }
-                    break;
-                case "-g":
-                case "-gif":
-                    if(!gif) {
+                }
+                case "-g", "-gif" -> {
+                    if (!gif) {
                         gif = true;
                     } else {
                         result.append(contents[i]);
                         written = true;
                     }
-                    break;
-                default:
+                }
+                default -> {
                     result.append(contents[i]);
                     written = true;
+                }
             }
 
             if(written && i < contents.length - 1)

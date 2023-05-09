@@ -229,20 +229,18 @@ public class FindReward extends TimedConstraintCommand {
             label:
             for(String str : pureMessage) {
                 switch (str) {
-                    case "-e":
-                    case "-extra":
+                    case "-e", "-extra" -> {
                         if ((result & PARAM_EXTRA) == 0) {
                             result |= PARAM_EXTRA;
                         } else
                             break label;
-                        break;
-                    case "-c":
-                    case "-compact":
+                    }
+                    case "-c", "-compact" -> {
                         if ((result & PARAM_COMPACT) == 0) {
                             result |= PARAM_COMPACT;
                         } else
                             break label;
-                        break;
+                    }
                 }
             }
         }

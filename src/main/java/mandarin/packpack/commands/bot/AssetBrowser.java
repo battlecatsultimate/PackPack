@@ -103,46 +103,17 @@ public class AssetBrowser extends ConstraintCommand {
                 if(onData) {
                     String[] nameData = vf.getName().split("\\.");
 
-                    RichCustomEmoji emoji;
-
-                    switch (nameData[1]) {
-                        case "png":
-                            emoji = EmojiStore.PNG;
-
-                            break;
-                        case "csv":
-                            emoji = EmojiStore.CSV;
-
-                            break;
-                        case "tsv":
-                            emoji = EmojiStore.TSV;
-
-                            break;
-                        case "json":
-                            emoji = EmojiStore.JSON;
-
-                            break;
-                        case "ini":
-                            emoji = EmojiStore.INI;
-
-                            break;
-                        case "imgcut":
-                            emoji = EmojiStore.IMGCUT;
-
-                            break;
-                        case "mamodel":
-                            emoji = EmojiStore.MAMODEL;
-
-                            break;
-                        case "maanim":
-                            emoji = EmojiStore.MAANIM;
-
-                            break;
-                        default:
-                            emoji = EmojiStore.FILE;
-
-                            break;
-                    }
+                    RichCustomEmoji emoji = switch (nameData[1]) {
+                        case "png" -> EmojiStore.PNG;
+                        case "csv" -> EmojiStore.CSV;
+                        case "tsv" -> EmojiStore.TSV;
+                        case "json" -> EmojiStore.JSON;
+                        case "ini" -> EmojiStore.INI;
+                        case "imgcut" -> EmojiStore.IMGCUT;
+                        case "mamodel" -> EmojiStore.MAMODEL;
+                        case "maanim" -> EmojiStore.MAANIM;
+                        default -> EmojiStore.FILE;
+                    };
 
                     name += emoji.getAsMention() + "\\\\";
                 }

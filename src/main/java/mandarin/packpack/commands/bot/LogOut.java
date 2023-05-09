@@ -41,21 +41,13 @@ public class LogOut extends ConstraintCommand {
             if(u != null) {
                 StaticStore.putHolder(u.getId(), new ConfirmButtonHolder(getMessage(event), msg, ch.getId(), () -> {
                     String self = client.getSelfUser().getAsMention();
-                    String code;
 
-                    switch (contents[1]) {
-                        case "-b":
-                            code = "bot_bug";
-                            break;
-                        case "-a":
-                            code = "bot_api";
-                            break;
-                        case "-p":
-                            code = "bot_end";
-                            break;
-                        default:
-                            code = "bot_update";
-                    }
+                    String code = switch (contents[1]) {
+                        case "-b" -> "bot_bug";
+                        case "-a" -> "bot_api";
+                        case "-p" -> "bot_end";
+                        default -> "bot_update";
+                    };
 
                     for(String key : StaticStore.idHolder.keySet()) {
                         try {
