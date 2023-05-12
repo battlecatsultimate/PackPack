@@ -4,8 +4,9 @@
 
 <div align="right">
 
-| <image align="left" src="https://flagicons.lipis.dev/flags/4x3/us.svg"> [English]() |
-|:-----------------------------------------------------------------------------------:|
+| 🌐 언어 |
+| :---: |  
+| [🇺🇸 English ](https://github.com/battlecatsultimate/PackPack/edit/main/Change%20Log/en/Update%20Log%200.md) |
 
 </div>
 
