@@ -4,8 +4,9 @@
 
 <div align="right">
 
-| <image align="left" src="https://flagicons.lipis.dev/flags/4x3/kr.svg"> [한국어]() |
-|:-------------------------------------------------------------------------------:|
+| 🌐 Language |
+| :---: |  
+| [🇰🇷 한국어](https://github.com/battlecatsultimate/PackPack/edit/main/Change%20Log/kr/Update%20Log%200.md) |
 
 </div>
 
@@ -77,7 +78,7 @@ percentage by summing up `Power` like the picture below.
 
 <div align="center">
 
-| <image src="https://static.wikia.nocookie.net/battle-cats/images/5/58/Energy_Drink_Activated.png"> |
+| <image width=50% height=50% src="https://static.wikia.nocookie.net/battle-cats/images/5/58/Energy_Drink_Activated.png"> |
 |:--------------------------------------------------------------------------------------------------:|
 |                                     Treasure power in the game                                     |
 
