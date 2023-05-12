@@ -21,7 +21,8 @@ import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
-import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 
 import java.awt.*;
 import java.text.DecimalFormat;
@@ -443,22 +444,22 @@ public class DataToString extends Data {
             int oldConfig = CommonStatic.getConfig().lang;
             CommonStatic.getConfig().lang = lang;
 
-            RichCustomEmoji emoji = EmojiStore.TRAIT.getCont("OMNI");
+            Emoji emoji = EmojiStore.TRAIT.getCont("OMNI");
 
             CommonStatic.getConfig().lang = oldConfig;
 
-            return LangID.getStringByID("data_range", lang) + (emoji == null ? "" : " " + emoji.getAsMention());
+            return LangID.getStringByID("data_range", lang) + (emoji == null ? "" : " " + emoji.getFormatted());
         }
 
         if(e.isLD()) {
             int oldConfig = CommonStatic.getConfig().lang;
             CommonStatic.getConfig().lang = lang;
 
-            RichCustomEmoji emoji = EmojiStore.TRAIT.getCont("LD");
+            Emoji emoji = EmojiStore.TRAIT.getCont("LD");
 
             CommonStatic.getConfig().lang = oldConfig;
 
-            return LangID.getStringByID("data_range", lang) + (emoji == null ? "" : " " + emoji.getAsMention());
+            return LangID.getStringByID("data_range", lang) + (emoji == null ? "" : " " + emoji.getFormatted());
         }
 
         return LangID.getStringByID("data_range", lang);
@@ -1108,9 +1109,9 @@ public class DataToString extends Data {
 
         for(int i = 0; i < stm.stars.length; i++) {
             if(i <= star) {
-                res.append(EmojiStore.CROWN_ON.getAsMention());
+                res.append(EmojiStore.CROWN_ON.getFormatted());
             } else {
-                res.append(EmojiStore.CROWN_OFF.getAsMention());
+                res.append(EmojiStore.CROWN_OFF.getFormatted());
             }
         }
 
@@ -1607,7 +1608,7 @@ public class DataToString extends Data {
                 builder.append(LangID.getStringByID("data_once", lang));
 
             if(i == 0 && info.drop[i][0] != 100 && info.rand != -4 && !chances.isEmpty())
-                builder.append(EmojiStore.TREASURE_RADAR.getAsMention());
+                builder.append(EmojiStore.TREASURE_RADAR.getFormatted());
 
             builder.append("  |  ").append(info.drop[i][2]);
 
@@ -2525,7 +2526,7 @@ public class DataToString extends Data {
         if(talentIcon.containsKey(data[0])) {
             String code = talentIcon.get(data[0]);
 
-            RichCustomEmoji emoji;
+            Emoji emoji;
 
             if(code.startsWith("T_")) {
                 int oldConfig = CommonStatic.getConfig().lang;
@@ -2539,7 +2540,7 @@ public class DataToString extends Data {
             }
 
             if(emoji != null) {
-                name = emoji.getAsMention() + " " + name;
+                name = emoji.getFormatted() + " " + name;
             }
         }
 
@@ -2549,12 +2550,12 @@ public class DataToString extends Data {
             int oldConfig = CommonStatic.getConfig().lang;
             CommonStatic.getConfig().lang = lang;
 
-            RichCustomEmoji emoji = EmojiStore.TRAIT.getCont(code);
+            Emoji emoji = EmojiStore.TRAIT.getCont(code);
 
             CommonStatic.getConfig().lang = oldConfig;
 
             if(emoji != null)
-                return emoji.getAsMention() + name;
+                return emoji.getFormatted() + name;
             else
                 return name;
         } else {

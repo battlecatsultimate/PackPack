@@ -27,8 +27,8 @@ public class Donate extends ConstraintCommand {
         builder.setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)]);
         builder.setDescription(LangID.getStringByID("donate_below", lang));
 
-        builder.addField(EmojiStore.PAYPAL.getAsMention() + " " + LangID.getStringByID("donate_paypal", lang), "[" + LangID.getStringByID("donate_link", lang) + "](" + StaticStore.PAYPAL + ")", false);
-        builder.addField(EmojiStore.CASHAPP.getAsMention() + " " + LangID.getStringByID("donate_cashapp", lang), "[" + LangID.getStringByID("donate_link", lang) + "](" + StaticStore.CASHAPP + ")", false);
+        builder.addField(EmojiStore.PAYPAL.getFormatted() + " " + LangID.getStringByID("donate_paypal", lang), "[" + LangID.getStringByID("donate_link", lang) + "](" + StaticStore.PAYPAL + ")", false);
+        builder.addField(EmojiStore.CASHAPP.getFormatted() + " " + LangID.getStringByID("donate_cashapp", lang), "[" + LangID.getStringByID("donate_link", lang) + "](" + StaticStore.CASHAPP + ")", false);
 
         replyToMessageSafely(ch, "", getMessage(event), a -> a.setEmbeds(builder.build()));
     }

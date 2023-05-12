@@ -8,7 +8,7 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.holder.segment.SearchHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -51,7 +51,7 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
             if(onText) {
                 result.add(LangID.getStringByID("asset_goup", lang));
             } else {
-                result.add(EmojiStore.FOLDERUP.getAsMention() + "\\\\" + LangID.getStringByID("asset_goup", lang));
+                result.add(EmojiStore.FOLDERUP.getFormatted() + "\\\\" + LangID.getStringByID("asset_goup", lang));
             }
         }
 
@@ -64,7 +64,7 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
 
             if(vf.getData() == null) {
                 if(!onText) {
-                    result.add(EmojiStore.FOLDER.getAsMention() + "\\\\" + vf.getName().replace("_", "＿"));
+                    result.add(EmojiStore.FOLDER.getFormatted() + "\\\\" + vf.getName().replace("_", "＿"));
                 } else {
                     result.add(vf.getName().replace("_", "＿"));
                 }
@@ -74,7 +74,7 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
                 if (!onText) {
                     String[] nameData = vf.getName().split("\\.");
 
-                    RichCustomEmoji emoji = switch (nameData[1]) {
+                    Emoji emoji = switch (nameData[1]) {
                         case "png" -> EmojiStore.PNG;
                         case "csv" -> EmojiStore.CSV;
                         case "tsv" -> EmojiStore.TSV;
@@ -86,7 +86,7 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
                         default -> EmojiStore.FILE;
                     };
 
-                    name += emoji.getAsMention() + "\\\\";
+                    name += emoji.getFormatted() + "\\\\";
                 }
 
                 result.add(name + vf.getName().replace("_", "＿"));

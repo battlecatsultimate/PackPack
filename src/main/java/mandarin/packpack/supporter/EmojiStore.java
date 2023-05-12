@@ -2,7 +2,8 @@ package mandarin.packpack.supporter;
 
 import common.util.lang.MultiLangCont;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -86,46 +87,46 @@ public class EmojiStore {
         }
     }
 
-    public static RichCustomEmoji TWO_PREVIOUS;
-    public static RichCustomEmoji PREVIOUS;
-    public static RichCustomEmoji NEXT;
-    public static RichCustomEmoji TWO_NEXT;
-    public static RichCustomEmoji CASTLE;
-    public static RichCustomEmoji BACKGROUND;
-    public static RichCustomEmoji MUSIC;
-    public static RichCustomEmoji MUSIC_BOSS;
-    public static RichCustomEmoji CROWN_OFF;
-    public static RichCustomEmoji CROWN_ON;
-    public static RichCustomEmoji TREASURE_RADAR;
-    public static RichCustomEmoji UDP;
-    public static RichCustomEmoji NP;
-    public static RichCustomEmoji FILE;
-    public static RichCustomEmoji FOLDER;
-    public static RichCustomEmoji FOLDERUP;
-    public static RichCustomEmoji PNG;
-    public static RichCustomEmoji CSV;
-    public static RichCustomEmoji TSV;
-    public static RichCustomEmoji JSON;
-    public static RichCustomEmoji INI;
-    public static RichCustomEmoji IMGCUT;
-    public static RichCustomEmoji MAMODEL;
-    public static RichCustomEmoji MAANIM;
-    public static RichCustomEmoji PAYPAL;
-    public static RichCustomEmoji CASHAPP;
-    public static RichCustomEmoji SWITCHON;
-    public static RichCustomEmoji SWITCHOFF;
-    public static RichCustomEmoji ORB;
-    public static RichCustomEmoji DOGE;
-    public static RichCustomEmoji SHIBALIEN;
-    public static RichCustomEmoji SHIBALIENELITE;
+    public static Emoji TWO_PREVIOUS;
+    public static Emoji PREVIOUS;
+    public static Emoji NEXT;
+    public static Emoji TWO_NEXT;
+    public static Emoji CASTLE;
+    public static Emoji BACKGROUND;
+    public static Emoji MUSIC;
+    public static Emoji MUSIC_BOSS;
+    public static Emoji CROWN_OFF;
+    public static Emoji CROWN_ON;
+    public static Emoji TREASURE_RADAR;
+    public static Emoji UDP;
+    public static Emoji NP;
+    public static Emoji FILE;
+    public static Emoji FOLDER;
+    public static Emoji FOLDERUP;
+    public static Emoji PNG;
+    public static Emoji CSV;
+    public static Emoji TSV;
+    public static Emoji JSON;
+    public static Emoji INI;
+    public static Emoji IMGCUT;
+    public static Emoji MAMODEL;
+    public static Emoji MAANIM;
+    public static Emoji PAYPAL;
+    public static Emoji CASHAPP;
+    public static Emoji SWITCHON;
+    public static Emoji SWITCHOFF;
+    public static Emoji ORB;
+    public static Emoji DOGE;
+    public static Emoji SHIBALIEN;
+    public static Emoji SHIBALIENELITE;
 
-    public static Map<String, RichCustomEmoji> ABILITY = new HashMap<>();
-    public static MultiLangCont<String, RichCustomEmoji> TRAIT = new MultiLangCont<>();
+    public static Map<String, Emoji> ABILITY = new HashMap<>();
+    public static MultiLangCont<String, Emoji> TRAIT = new MultiLangCont<>();
 
     private static void putAbility(JDA jda, String key, String name, long id) {
-        RichCustomEmoji emoji = StaticStore.getEmoteWitNameAndID(jda, name, id, false, true);
+        Emoji emoji = StaticStore.getEmoteWitNameAndID(jda, name, id, false, true);
 
-        if(emoji == null) {
+        if(emoji instanceof UnicodeEmoji) {
             System.out.println("W/EmojiStore::putAbility - Couldn't get Emoji : " + name + " (" + id + ")");
 
             return;
@@ -137,9 +138,9 @@ public class EmojiStore {
     private static void putTrait(JDA jda, String key, String name, String loc, long id) {
         String locale = name.replace("LOC", loc.toUpperCase(Locale.ENGLISH));
 
-        RichCustomEmoji emoji = StaticStore.getEmoteWitNameAndID(jda, locale, id, false, true);
+        Emoji emoji = StaticStore.getEmoteWitNameAndID(jda, locale, id, false, true);
 
-        if(emoji == null) {
+        if(emoji instanceof UnicodeEmoji) {
             System.out.println("W/EmojiStore::putAbility - Couldn't get Emoji : " + locale + " (" + id + ")");
 
             return;

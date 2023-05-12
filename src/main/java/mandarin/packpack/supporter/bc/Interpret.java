@@ -12,7 +12,7 @@ import common.util.unit.Trait;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
-import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -268,20 +268,20 @@ public class Interpret extends Data {
             code = code.replace("IMU", "RES");
         }
 
-        RichCustomEmoji emoji = EmojiStore.ABILITY.get(code);
+        Emoji emoji = EmojiStore.ABILITY.get(code);
 
         if(emoji != null) {
-            return emoji.getAsMention() + " ";
+            return emoji.getFormatted() + " ";
         } else {
             return "";
         }
     }
 
     private static String getAbilityEmoji(String code) {
-        RichCustomEmoji emoji = EmojiStore.ABILITY.get(code);
+        Emoji emoji = EmojiStore.ABILITY.get(code);
 
         if(emoji != null) {
-            return emoji.getAsMention() + " ";
+            return emoji.getFormatted() + " ";
         } else {
             return "";
         }
@@ -292,21 +292,21 @@ public class Interpret extends Data {
             int oldConfig = CommonStatic.getConfig().lang;
             CommonStatic.getConfig().lang = lang;
 
-            RichCustomEmoji emoji = EmojiStore.TRAIT.getCont(code);
+            Emoji emoji = EmojiStore.TRAIT.getCont(code);
 
             CommonStatic.getConfig().lang = oldConfig;
 
             if(emoji == null)
                 return "";
             else
-                return emoji.getAsMention() + " ";
+                return emoji.getFormatted() + " ";
         } else {
-            RichCustomEmoji emoji = EmojiStore.ABILITY.get(code);
+            Emoji emoji = EmojiStore.ABILITY.get(code);
 
             if(emoji == null)
                 return "";
             else
-                return emoji.getAsMention() + " ";
+                return emoji.getFormatted() + " ";
         }
     }
 }

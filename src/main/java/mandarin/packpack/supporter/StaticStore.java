@@ -23,8 +23,10 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 
+import javax.annotation.Nonnull;
 import java.awt.*;
 import java.io.*;
 import java.math.BigDecimal;
@@ -1061,24 +1063,28 @@ public class StaticStore {
         return DataToString.df.format(size)+unit[2];
     }
 
-    public static RichCustomEmoji getEmoteWitNameAndID(JDA jda, String name, long id, boolean animated, boolean force) {
+    @Nonnull
+    public static Emoji getEmoteWitNameAndID(JDA jda, String name, long id, boolean animated, boolean force) {
         List<RichCustomEmoji> emotes = jda.getEmojisByName(name, false);
 
         if (force) {
-            while(emotes.isEmpty()) {
+            int trial = 0;
+
+            while(emotes.isEmpty() && trial < 50) {
                 emotes = jda.getEmojisByName(name, false);
+                trial++;
             }
         }
 
         if(emotes.isEmpty())
-            return null;
+            return Emoji.fromUnicode("❔");
 
         for(RichCustomEmoji e : emotes) {
             if(e.getIdLong() == id && e.isAnimated() == animated)
                 return e;
         }
 
-        return null;
+        return Emoji.fromUnicode("❔");
     }
 
     public static int getHighestRolePosition(Member m) {

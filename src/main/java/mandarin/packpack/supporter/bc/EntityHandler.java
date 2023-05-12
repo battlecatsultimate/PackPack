@@ -38,7 +38,6 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
-import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
@@ -577,28 +576,28 @@ public class EntityHandler {
 
             if(addEmoji) {
                 if(canFirstForm(f)) {
-                    components.add(Button.secondary("first", LangID.getStringByID("button_firf", lang)).withEmoji(Emoji.fromCustom(EmojiStore.TWO_PREVIOUS)));
+                    components.add(Button.secondary("first", LangID.getStringByID("button_firf", lang)).withEmoji(EmojiStore.TWO_PREVIOUS));
                 }
 
                 if(canPreviousForm(f)) {
-                    components.add(Button.secondary("pre", LangID.getStringByID("button_pref", lang)).withEmoji(Emoji.fromCustom(EmojiStore.PREVIOUS)));
+                    components.add(Button.secondary("pre", LangID.getStringByID("button_pref", lang)).withEmoji(EmojiStore.PREVIOUS));
                 }
 
                 if(canNextForm(f)) {
-                    components.add(Button.secondary("next", LangID.getStringByID("button_nexf", lang)).withEmoji(Emoji.fromCustom(EmojiStore.NEXT)));
+                    components.add(Button.secondary("next", LangID.getStringByID("button_nexf", lang)).withEmoji(EmojiStore.NEXT));
                 }
 
                 if(canFinalForm(f)) {
-                    components.add(Button.secondary("final", LangID.getStringByID("button_finf", lang)).withEmoji(Emoji.fromCustom(EmojiStore.TWO_NEXT)));
+                    components.add(Button.secondary("final", LangID.getStringByID("button_finf", lang)).withEmoji(EmojiStore.TWO_NEXT));
                 }
 
                 if(talent && f.du.getPCoin() != null) {
-                    components.add(Button.secondary("talent", LangID.getStringByID("button_talent", lang)).withEmoji(Emoji.fromCustom(EmojiStore.NP)));
+                    components.add(Button.secondary("talent", LangID.getStringByID("button_talent", lang)).withEmoji(EmojiStore.NP));
                 }
             }
 
             if(StaticStore.availableUDP.contains(f.unit.id.id)) {
-                components.add(Button.link("https://thanksfeanor.pythonanywhere.com/UDP/"+Data.trio(f.unit.id.id), "UDP").withEmoji(Emoji.fromCustom(EmojiStore.UDP)));
+                components.add(Button.link("https://thanksfeanor.pythonanywhere.com/UDP/"+Data.trio(f.unit.id.id), "UDP").withEmoji(EmojiStore.UDP));
             }
 
             if(!components.isEmpty()) {
@@ -1310,15 +1309,15 @@ public class EntityHandler {
 
             ArrayList<Button> buttons = new ArrayList<>();
 
-            buttons.add(Button.secondary("castle", LangID.getStringByID("button_castle", lang)).withEmoji(Emoji.fromCustom(EmojiStore.CASTLE)));
-            buttons.add(Button.secondary("bg", LangID.getStringByID("button_bg", lang)).withEmoji(Emoji.fromCustom(EmojiStore.BACKGROUND)));
+            buttons.add(Button.secondary("castle", LangID.getStringByID("button_castle", lang)).withEmoji(EmojiStore.CASTLE));
+            buttons.add(Button.secondary("bg", LangID.getStringByID("button_bg", lang)).withEmoji(EmojiStore.BACKGROUND));
 
             if(st.mus0 != null) {
-                buttons.add(Button.secondary("music", LangID.getStringByID("button_mus", lang)).withEmoji(Emoji.fromCustom(EmojiStore.MUSIC)));
+                buttons.add(Button.secondary("music", LangID.getStringByID("button_mus", lang)).withEmoji(EmojiStore.MUSIC));
             }
 
             if(hasTwoMusic(st)) {
-                buttons.add(Button.secondary("music2", LangID.getStringByID("button_mus2", lang)).withEmoji(Emoji.fromCustom(EmojiStore.MUSIC_BOSS)));
+                buttons.add(Button.secondary("music2", LangID.getStringByID("button_mus2", lang)).withEmoji(EmojiStore.MUSIC_BOSS));
             }
 
             action = action.setComponents(ActionRow.of(buttons));
@@ -4038,9 +4037,9 @@ public class EntityHandler {
                 sb.append(LangID.getStringByID("data_comma", lang));
         }
 
-        RichCustomEmoji emoji = EmojiStore.ABILITY.get("IMMUNITY");
+        Emoji emoji = EmojiStore.ABILITY.get("IMMUNITY");
 
-        String e = emoji == null ? "" : emoji.getAsMention() + " ";
+        String e = emoji == null ? "" : emoji.getFormatted() + " ";
 
         switch (lang) {
             case LangID.KR, LangID.JP -> result.add(e + sb + LangID.getStringByID("data_immune", lang));

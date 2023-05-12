@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.util.ArrayList;
@@ -93,7 +93,7 @@ public class AssetBrowser extends ConstraintCommand {
 
             if(vf.getData() == null) {
                 if(onData) {
-                    result.add(EmojiStore.FOLDER.getAsMention() + "\\\\" + vf.getName().replace("_", "＿"));
+                    result.add(EmojiStore.FOLDER.getFormatted() + "\\\\" + vf.getName().replace("_", "＿"));
                 } else {
                     result.add(vf.getName().replace("_", "＿"));
                 }
@@ -103,7 +103,7 @@ public class AssetBrowser extends ConstraintCommand {
                 if(onData) {
                     String[] nameData = vf.getName().split("\\.");
 
-                    RichCustomEmoji emoji = switch (nameData[1]) {
+                    Emoji emoji = switch (nameData[1]) {
                         case "png" -> EmojiStore.PNG;
                         case "csv" -> EmojiStore.CSV;
                         case "tsv" -> EmojiStore.TSV;
@@ -115,7 +115,7 @@ public class AssetBrowser extends ConstraintCommand {
                         default -> EmojiStore.FILE;
                     };
 
-                    name += emoji.getAsMention() + "\\\\";
+                    name += emoji.getFormatted() + "\\\\";
                 }
 
                 result.add(name + vf.getName().replace("_", "＿"));
