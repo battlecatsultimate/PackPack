@@ -258,7 +258,7 @@ public class Solve extends TimedConstraintCommand {
 
     private String filterFormula(String command) {
         command = command.replaceAll("-(f|false|n|newton|s|secant|b|bisection)", "");
-        command = command.replaceAll("-(e|error|i|iteration)\\s+([^\\s]+)?", "");
+        command = command.replaceAll("-(e|error|i|iteration)\\s+(\\S+)?", "");
         return command.replaceAll("-r(\\s+)?\\[.+?,.+?]", "");
     }
 
