@@ -13,7 +13,6 @@ import mandarin.packpack.supporter.server.holder.SolutionHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
@@ -215,18 +214,18 @@ public class Solve extends TimedConstraintCommand {
 
         for(int i = 0; i < contents.length; i++) {
             switch (contents[i]) {
-                case "-f":
-                case "-false":
+                case "-f", "-false" -> {
                     return Formula.ROOT.FALSE_POSITION;
-                case "-n":
-                case "-newton":
+                }
+                case "-n", "-newton" -> {
                     return Formula.ROOT.NEWTON_RAPHSON;
-                case "-s":
-                case "-secant":
+                }
+                case "-s", "-secant" -> {
                     return Formula.ROOT.SECANT;
-                case "-b":
-                case "-bisection":
+                }
+                case "-b", "-bisection" -> {
                     return Formula.ROOT.BISECTION;
+                }
             }
         }
 
@@ -297,20 +296,14 @@ public class Solve extends TimedConstraintCommand {
     }
 
     private String getAlgorithmName(Formula.ROOT ROOT) {
-        switch (ROOT) {
-            case NEWTON_RAPHSON:
-                return LangID.getStringByID("calc_newton", lang);
-            case FALSE_POSITION:
-                return LangID.getStringByID("calc_false", lang);
-            case SECANT:
-                return LangID.getStringByID("calc_secant", lang);
-            case BISECTION:
-                return LangID.getStringByID("calc_bisection", lang);
-            case SMART:
-                return LangID.getStringByID("calc_auto", lang);
-            default:
-                throw new IllegalStateException("Unknown algorithm : " + ROOT);
-        }
+        return switch (ROOT) {
+            case NEWTON_RAPHSON -> LangID.getStringByID("calc_newton", lang);
+            case FALSE_POSITION -> LangID.getStringByID("calc_false", lang);
+            case SECANT -> LangID.getStringByID("calc_secant", lang);
+            case BISECTION -> LangID.getStringByID("calc_bisection", lang);
+            case SMART -> LangID.getStringByID("calc_auto", lang);
+            default -> throw new IllegalStateException("Unknown algorithm : " + ROOT);
+        };
     }
 
     public List<String> accumulateListData(List<NumericalResult> solutions, List<BigDecimal[]> targetRanges) {

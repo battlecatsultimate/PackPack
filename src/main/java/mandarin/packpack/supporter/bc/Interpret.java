@@ -243,10 +243,12 @@ public class Interpret extends Data {
         return lang != LangID.KR && lang != LangID.JP && lang != LangID.ZH;
     }
 
+    @SuppressWarnings("unused")
     private static String getNumberAttack(String pre, int lang) {
         return pre + " Attack";
     }
 
+    @SuppressWarnings("SameParameterValue")
     private static String getNumberExtension(int n) {
         if (n == 11 || n == 12 || n == 13)
             return "th";
