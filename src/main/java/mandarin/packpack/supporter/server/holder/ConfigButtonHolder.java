@@ -118,7 +118,7 @@ public class ConfigButtonHolder extends ComponentHolder {
                 performResult(event);
             }
             case "force" -> {
-                holder.forceCompact = !holder.forceFullTreasure;
+                holder.forceCompact = !holder.forceCompact;
                 
                 performResult(event);
             }
