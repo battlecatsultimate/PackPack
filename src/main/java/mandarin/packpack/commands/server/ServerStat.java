@@ -56,8 +56,11 @@ public class ServerStat extends Command {
             long member = 0L;
 
             for(int i = 0; i < members.size(); i++) {
-                if(holder.MEMBER != null && StaticStore.rolesToString(members.get(i).getRoles()).contains(holder.MEMBER))
+                if(holder.MEMBER != null && StaticStore.rolesToString(members.get(i).getRoles()).contains(holder.MEMBER)) {
                     member++;
+                } else if(holder.MEMBER == null) {
+                    member++;
+                }
             }
 
             result.append(LangID.getStringByID("bcustat_mem", lang).replace("_", String.valueOf(member)).replace("=", df.format(member * 100.0 / allUsers)));
