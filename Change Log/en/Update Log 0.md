@@ -6,7 +6,7 @@
 
 | 🌐 Language |
 | :---: |  
-| [🇰🇷 한국어](https://github.com/battlecatsultimate/PackPack/edit/main/Change%20Log/kr/Update%20Log%200.md) |
+| [🇰🇷 한국어](https://github.com/battlecatsultimate/PackPack/blob/main/Change%20Log/kr/Update%20Log%200.md) |
 
 </div>
 
