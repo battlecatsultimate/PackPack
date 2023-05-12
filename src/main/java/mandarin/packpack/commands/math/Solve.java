@@ -302,7 +302,6 @@ public class Solve extends TimedConstraintCommand {
             case SECANT -> LangID.getStringByID("calc_secant", lang);
             case BISECTION -> LangID.getStringByID("calc_bisection", lang);
             case SMART -> LangID.getStringByID("calc_auto", lang);
-            default -> throw new IllegalStateException("Unknown algorithm : " + ROOT);
         };
     }
 
