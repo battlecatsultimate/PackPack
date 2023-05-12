@@ -609,6 +609,7 @@ public class AllEventAdapter extends ListenerAdapter {
                     new ReloadLanguage(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "reactto", "ret" -> new ReactTo(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "react", "r" -> new React(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
+            case "treasure", "tr" -> new Treasure(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
         }
     }
 

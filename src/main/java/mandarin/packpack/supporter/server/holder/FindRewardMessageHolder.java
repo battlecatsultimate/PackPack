@@ -11,6 +11,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.segment.SearchHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -32,8 +33,9 @@ public class FindRewardMessageHolder extends SearchHolder {
     private final boolean isExtra;
     private final boolean isCompact;
     private final boolean isFrame;
+    private final TreasureHolder treasure;
 
-    public FindRewardMessageHolder(@NotNull Message msg, @NotNull Message author, @NotNull String channelID, List<Integer> rewards, String keyword, double chance, int amount, boolean isExtra, boolean isCompact, boolean isFrame, int lang) {
+    public FindRewardMessageHolder(@NotNull Message msg, @NotNull Message author, @NotNull String channelID, List<Integer> rewards, String keyword, double chance, int amount, boolean isExtra, boolean isCompact, boolean isFrame, TreasureHolder treasure, int lang) {
         super(author, msg, channelID, lang);
 
         this.rewards = rewards;
@@ -46,7 +48,9 @@ public class FindRewardMessageHolder extends SearchHolder {
         this.isCompact = isCompact;
         this.isFrame = isFrame;
 
-        registerAutoFinish(this, msg, author, lang, FIVE_MIN);
+        this.treasure = treasure;
+
+        registerAutoFinish(this, msg, lang, FIVE_MIN);
     }
 
     @Override
@@ -91,7 +95,7 @@ public class FindRewardMessageHolder extends SearchHolder {
             if(stages.isEmpty()) {
                 ch.sendMessage(LangID.getStringByID("freward_nosta", lang).replace("_", validateName(keyword))).queue();
             } else if(stages.size() == 1) {
-                Message result = EntityHandler.showStageEmb(stages.get(0), ch, getAuthorMessage(), isFrame, isExtra, isCompact, 0, 1, 1, lang);
+                Message result = EntityHandler.showStageEmb(stages.get(0), ch, getAuthorMessage(), isFrame, isExtra, isCompact, 0, treasure, lang);
 
                 if(result != null) {
                     if(StaticStore.timeLimit.containsKey(author.getAuthor().getId())) {
@@ -129,7 +133,7 @@ public class FindRewardMessageHolder extends SearchHolder {
                 Message res = Command.registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), stages.size(), accumulateStage(stages, false), lang).complete();
 
                 if(res != null) {
-                    StaticStore.putHolder(author.getAuthor().getId(), new StageInfoMessageHolder(stages, author, res, ch.getId(), 0, 1, 1, isFrame, isExtra, isCompact, lang));
+                    StaticStore.putHolder(author.getAuthor().getId(), new StageInfoMessageHolder(stages, author, res, ch.getId(), 0, treasure, isFrame, isExtra, isCompact, lang));
                 }
             }
         } catch (Exception e) {

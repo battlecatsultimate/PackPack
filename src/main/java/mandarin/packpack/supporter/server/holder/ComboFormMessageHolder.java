@@ -38,7 +38,7 @@ public class ComboFormMessageHolder extends SearchHolder {
         this.cName = cName;
         this.fName = fName;
 
-        registerAutoFinish(this, msg, author, lang, TimeUnit.MINUTES.toMillis(5));
+        registerAutoFinish(this, msg, lang, TimeUnit.MINUTES.toMillis(5));
     }
 
     @Override

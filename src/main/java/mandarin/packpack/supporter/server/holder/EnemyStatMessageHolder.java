@@ -4,6 +4,7 @@ import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Enemy;
 import mandarin.packpack.supporter.bc.EntityHandler;
+import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.segment.SearchHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -20,8 +21,9 @@ public class EnemyStatMessageHolder extends SearchHolder {
     private final boolean isExtra;
     private final boolean isCompact;
     private final int[] magnification;
+    private final TreasureHolder treasure;
 
-    public EnemyStatMessageHolder(ArrayList<Enemy> enemy, @Nonnull Message author, @Nonnull Message msg, String channelID, int[] magnification, boolean isFrame, boolean isExtra, boolean isCompact, int lang) {
+    public EnemyStatMessageHolder(ArrayList<Enemy> enemy, @Nonnull Message author, @Nonnull Message msg, String channelID, int[] magnification, boolean isFrame, boolean isExtra, boolean isCompact, TreasureHolder treasure, int lang) {
         super(author, msg, channelID, lang);
 
         this.enemy = enemy;
@@ -30,8 +32,9 @@ public class EnemyStatMessageHolder extends SearchHolder {
         this.isFrame = isFrame;
         this.isExtra = isExtra;
         this.isCompact = isCompact;
+        this.treasure = treasure;
 
-        registerAutoFinish(this, msg, author, lang, FIVE_MIN);
+        registerAutoFinish(this, msg, lang, FIVE_MIN);
     }
 
     @Override
@@ -64,7 +67,7 @@ public class EnemyStatMessageHolder extends SearchHolder {
         msg.delete().queue();
 
         try {
-            EntityHandler.showEnemyEmb(enemy.get(id), ch, getAuthorMessage(), isFrame, isExtra, isCompact, magnification, lang);
+            EntityHandler.showEnemyEmb(enemy.get(id), ch, getAuthorMessage(), isFrame, isExtra, isCompact, magnification, treasure, lang);
         } catch (Exception e) {
             e.printStackTrace();
         }

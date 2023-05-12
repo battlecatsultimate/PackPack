@@ -83,6 +83,10 @@ public class IDHolder {
             id.forceCompact = obj.get("forceCompact").getAsBoolean();
         }
 
+        if(obj.has("forceFullTreasure")) {
+            id.forceFullTreasure = obj.get("forceFullTreasure").getAsBoolean();
+        }
+
         if(obj.has("announceMessage")) {
             id.announceMessage = obj.get("announceMessage").getAsString();
         }
@@ -128,7 +132,7 @@ public class IDHolder {
     public Map<Integer, String> eventMap = new TreeMap<>();
     public List<String> status = new ArrayList<>();
     public List<Integer> eventLocale = new ArrayList<>();
-    public boolean eventRaw = false, forceCompact = false;
+    public boolean eventRaw = false, forceCompact = false, forceFullTreasure = false;
     public ConfigHolder config = new ConfigHolder();
     public List<String> banned = new ArrayList<>();
     public Map<String, List<String>> channelException = new HashMap<>();
@@ -168,6 +172,7 @@ public class IDHolder {
         obj.add("banned", listStringToJsonObject(banned));
         obj.add("channelException", jsonfyMap(channelException));
         obj.addProperty("forceCompact", forceCompact);
+        obj.addProperty("forceFullTreasure", forceFullTreasure);
         obj.addProperty("announceMessage", announceMessage);
         obj.add("eventMessage", StaticStore.mapToJsonString(eventMessage));
 

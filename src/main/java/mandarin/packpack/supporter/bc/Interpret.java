@@ -11,10 +11,12 @@ import common.util.lang.ProcLang;
 import common.util.unit.Trait;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.data.TreasureHolder;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class Interpret extends Data {
@@ -84,23 +86,17 @@ public class Interpret extends Data {
     public static boolean isType(MaskEntity du, int type) {
         int[][] raw = du.rawAtkData();
 
-        switch (type) {
-            case 0:
-                return !du.isRange();
-            case 1:
-                return du.isRange();
-            case 2:
-                return du.isLD();
-            case 3:
-                return raw.length > 1;
-            case 4:
-                return du.isOmni();
-            default:
-                return false;
-        }
+        return switch (type) {
+            case 0 -> !du.isRange();
+            case 1 -> du.isRange();
+            case 2 -> du.isLD();
+            case 3 -> raw.length > 1;
+            case 4 -> du.isOmni();
+            default -> false;
+        };
     }
 
-    public static ArrayList<String> getAbi(MaskEntity mu, boolean icon, int lang) {
+    public static ArrayList<String> getAbi(MaskEntity mu, boolean icon, int lang, List<Trait> traits, TreasureHolder holder) {
         ArrayList<String> l = new ArrayList<>();
 
         for(int i = 0; i < ABIS.length; i++) {
@@ -111,30 +107,44 @@ public class Interpret extends Data {
                     ab = ab.replace("Imu.", "Immune to");
                 else
                     switch (i) {
-                        case 0:
-                            ab += LangID.getStringByID("data_add0", lang);
-                            break;
-                        case 1:
-                            ab += LangID.getStringByID("data_add1", lang);
-                            break;
-                        case 2:
-                            ab += LangID.getStringByID("data_add2", lang);
-                            break;
-                        case 10:
-                            ab += LangID.getStringByID("data_add3", lang);
-                            break;
-                        case 13:
-                            ab += LangID.getStringByID("data_add4", lang);
-                            break;
-                        case 15:
-                            ab += LangID.getStringByID("data_add5", lang);
-                            break;
-                        case 16:
-                            ab += LangID.getStringByID("data_add6", lang);
-                            break;
-                        case 17:
-                            ab += LangID.getStringByID("data_add7", lang);
-                            break;
+                        case 0 -> {
+                            if(traits != null && holder != null) {
+                                ab += String.format(LangID.getStringByID("data_add0t", lang), DataToString.df.format(holder.getStrongHealthMultiplier(traits)), DataToString.df.format(holder.getStrongAttackMultiplier(traits)));
+                            } else {
+                                ab += LangID.getStringByID("data_add0", lang);
+                            }
+                        }
+                        case 1 -> {
+                            if(traits != null && holder != null) {
+                                ab += String.format(LangID.getStringByID("data_add1t", lang), DataToString.df.format(holder.getResistHealthMultiplier(traits)));
+                            } else {
+                                ab += LangID.getStringByID("data_add1", lang);
+                            }
+                        }
+                        case 2 -> {
+                            if(traits != null && holder != null) {
+                                ab += String.format(LangID.getStringByID("data_add2t", lang), DataToString.df.format(holder.getMassiveAttackMultiplier(traits)));
+                            } else {
+                                ab += LangID.getStringByID("data_add2", lang);
+                            }
+                        }
+                        case 10 -> ab += LangID.getStringByID("data_add3", lang);
+                        case 13 -> ab += LangID.getStringByID("data_add4", lang);
+                        case 15 -> {
+                            if(traits != null && holder != null) {
+                                ab += String.format(LangID.getStringByID("data_add5t", lang), DataToString.df.format(holder.getInsaneResistHealthMultiplier(traits)));
+                            } else {
+                                ab += LangID.getStringByID("data_add5", lang);
+                            }
+                        }
+                        case 16 -> {
+                            if(traits != null && holder != null) {
+                                ab += String.format(LangID.getStringByID("data_add6t", lang), DataToString.df.format(holder.getInsaneMassiveAttackMultiplier(traits)));
+                            } else {
+                                ab += LangID.getStringByID("data_add6", lang);
+                            }
+                        }
+                        case 17 -> ab += LangID.getStringByID("data_add7", lang);
                     }
 
                 if(!l.contains(ab))
@@ -145,12 +155,12 @@ public class Interpret extends Data {
         return l;
     }
 
-    public static ArrayList<String> getProc(MaskEntity du, boolean useSecond, boolean icon, int lang, double multi, double amulti) {
+    public static ArrayList<String> getProc(MaskEntity du, boolean useSecond, boolean icon, int lang, double multi, double amulti, boolean treasure, List<Trait> traits, Function<List<Trait>, Double> function) {
         ArrayList<String> l = new ArrayList<>();
         ArrayList<Integer> id = new ArrayList<>();
 
         MaskAtk mr = du.getRepAtk();
-        Formatter.Context c = new Formatter.Context(du instanceof MaskEnemy, useSecond, new double[] { multi, amulti });
+        Formatter.Context c = new Formatter.Context(du instanceof MaskEnemy, useSecond, new double[] { multi, amulti }, treasure, traits, function);
 
         for(int i = 0; i < PROCIND.length; i++) {
             if(isValidProc(i, mr)) {
@@ -241,16 +251,12 @@ public class Interpret extends Data {
         if (n == 11 || n == 12 || n == 13)
             return "th";
 
-        switch (n%10) {
-            case 1:
-                return "st";
-            case 2:
-                return "nd";
-            case 3:
-                return "rd";
-            default:
-                return "th";
-        }
+        return switch (n % 10) {
+            case 1 -> "st";
+            case 2 -> "nd";
+            case 3 -> "rd";
+            default -> "th";
+        };
     }
 
     private static String getProcEmoji(String code, Object proc) {

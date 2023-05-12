@@ -28,6 +28,7 @@ import mandarin.packpack.supporter.awt.FIBI;
 import mandarin.packpack.supporter.bc.cell.*;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
+import mandarin.packpack.supporter.server.data.TreasureHolder;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
@@ -78,7 +79,7 @@ public class EntityHandler {
         }
     }
 
-    public static Message performUnitEmb(Form f, GenericCommandInteractionEvent event, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, Level lv, int lang) throws Exception {
+    public static Message performUnitEmb(Form f, GenericCommandInteractionEvent event, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, Level lv, boolean treasure, TreasureHolder holder, int lang) throws Exception {
         ReplyCallbackAction action = event.deferReply();
 
         int level = lv.getLv();
@@ -150,17 +151,42 @@ public class EntityHandler {
 
         spec.setTitle(DataToString.getTitle(f, lang));
 
+        String desc = "";
+
         if(talent && f.du.getPCoin() != null && t != null && talentExists(t)) {
-            spec.setDescription(LangID.getStringByID("data_talent", lang));
+            desc += LangID.getStringByID("data_talent", lang) + "\n";
+        }
+
+        if(holder.differentFromGlobal()) {
+            desc += LangID.getStringByID("data_customtrea", lang);
+        }
+
+        if(!desc.isBlank()) {
+            spec.setDescription(desc);
         }
 
         spec.setColor(c);
         spec.setThumbnail("attachment://icon.png");
         spec.addField(LangID.getStringByID("data_id", lang), DataToString.getID(f.uid.id, f.fid), true);
         spec.addField(LangID.getStringByID("data_level", lang), l, true);
-        spec.addField(LangID.getStringByID("data_hp", lang), DataToString.getHP(f.du, f.unit.lv, talent, lv), true);
+
+        String hpNormal = DataToString.getHP(f.du, f.unit.lv, talent, lv, false, holder);
+        String hpWithTreasure;
+
+        if(treasure) {
+            hpWithTreasure = DataToString.getHP(f.du, f.unit.lv, talent, lv, true, holder);
+        } else {
+            hpWithTreasure = "";
+        }
+
+        if(hpWithTreasure.isBlank() || hpNormal.equals(hpWithTreasure)) {
+            spec.addField(LangID.getStringByID("data_hp", lang), hpNormal, true);
+        } else {
+            spec.addField(LangID.getStringByID("data_hp", lang), hpNormal + " <" + hpWithTreasure + ">", true);
+        }
+
         spec.addField(LangID.getStringByID("data_hb", lang), DataToString.getHitback(f.du, talent, lv), true);
-        spec.addField(LangID.getStringByID("data_cooldown", lang), DataToString.getCD(f.du,isFrame, talent, lv), true);
+        spec.addField(LangID.getStringByID("data_cooldown", lang), DataToString.getCD(f.du,isFrame, talent, lv, holder), true);
         spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(f.du, talent, lv), true);
         spec.addField(LangID.getStringByID("data_cost", lang), DataToString.getCost(f.du, talent, lv), true);
         spec.addField(DataToString.getRangeTitle(f.du, lang), DataToString.getRange(f.du), true);
@@ -169,9 +195,24 @@ public class EntityHandler {
         spec.addField(LangID.getStringByID("data_postatk", lang), DataToString.getPost(f.du, isFrame), true);
         spec.addField(LangID.getStringByID("data_tba", lang), DataToString.getTBA(f.du, talent, lv, isFrame), true);
         spec.addField(LangID.getStringByID("data_atktype", lang), DataToString.getSiMu(f.du, lang), true);
-        spec.addField(LangID.getStringByID("data_dps", lang), DataToString.getDPS(f.du, f.unit.lv, talent, lv), true);
+
+        String dpsNormal = DataToString.getDPS(f.du, f.unit.lv, talent, lv, false, holder);
+        String dpsWithTreasure;
+
+        if(treasure) {
+            dpsWithTreasure = DataToString.getDPS(f.du, f.unit.lv, talent, lv, true, holder);
+        } else {
+            dpsWithTreasure = "";
+        }
+
+        if(dpsWithTreasure.isBlank() || dpsNormal.equals(dpsWithTreasure)) {
+            spec.addField(LangID.getStringByID("data_dps", lang), dpsNormal, true);
+        } else {
+            spec.addField(LangID.getStringByID("data_dps", lang), dpsNormal + " <" + dpsWithTreasure + ">", true);
+        }
+
         spec.addField(LangID.getStringByID("data_abilt", lang), DataToString.getAbilT(f.du, lang), true);
-        spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(f.du, f.unit.lv, talent, lv), true);
+        spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(f.du, f.unit.lv, talent, lv, treasure, holder), true);
         spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(f.du, talent, lv, true, lang), true);
 
         MaskUnit du;
@@ -184,8 +225,8 @@ public class EntityHandler {
         else
             du = f.du;
 
-        List<String> abis = Interpret.getAbi(du, true, lang);
-        abis.addAll(Interpret.getProc(du, !isFrame, true, lang, 1.0, 1.0));
+        List<String> abis = Interpret.getAbi(du, true, lang, treasure ? du.getTraits() : null, holder);
+        abis.addAll(Interpret.getProc(du, !isFrame, true, lang, 1.0, 1.0, treasure, du.getTraits(), holder::getAbilityMultiplier));
 
         StringBuilder sb = new StringBuilder();
 
@@ -201,8 +242,8 @@ public class EntityHandler {
         if(res.isBlank())
             res = LangID.getStringByID("data_none", lang);
         else if(res.length() > 1024) {
-            abis = Interpret.getAbi(du, false, lang);
-            abis.addAll(Interpret.getProc(du, !isFrame, false, lang, 1.0, 1.0));
+            abis = Interpret.getAbi(du, false, lang, treasure ? du.getTraits() : null, holder);
+            abis.addAll(Interpret.getProc(du, !isFrame, false, lang, 1.0, 1.0, treasure, du.getTraits(), holder::getAbilityMultiplier));
 
             sb = new StringBuilder();
 
@@ -300,7 +341,7 @@ public class EntityHandler {
         return null;
     }
 
-    public static Message showUnitEmb(Form f, MessageChannel ch, Message reference, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, boolean isTrueForm, boolean trueFormPossible, Level lv, int lang, boolean addEmoji, boolean compact) throws Exception {
+    public static Message showUnitEmb(Form f, MessageChannel ch, Message reference, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, boolean isTrueForm, boolean trueFormPossible, Level lv, boolean treasure, TreasureHolder holder, int lang, boolean addEmoji, boolean compact) throws Exception {
         int level = lv.getLv();
         int levelp = lv.getPlusLv();
 
@@ -378,7 +419,11 @@ public class EntityHandler {
         }
 
         if(isTrueForm && !trueFormPossible) {
-            desc += LangID.getStringByID("formst_notrue", lang);
+            desc += LangID.getStringByID("formst_notrue", lang) + "\n";
+        }
+
+        if(holder.differentFromGlobal()) {
+            desc += LangID.getStringByID("data_customtrea", lang);
         }
 
         if(!desc.isBlank()) {
@@ -392,19 +437,34 @@ public class EntityHandler {
             spec.setTitle(DataToString.getCompactTitle(f, lang));
 
             spec.addField(LangID.getStringByID("data_level", lang), l, false);
-            spec.addField(LangID.getStringByID("data_hpkb", lang), DataToString.getHealthHitback(f.du, f.unit.lv, talent, lv), false);
-            spec.addField(LangID.getStringByID("data_cocosp", lang), DataToString.getCostCooldownSpeed(f.du, isFrame, talent, lv), true);
+            spec.addField(LangID.getStringByID("data_hpkb", lang), DataToString.getHealthHitback(f.du, f.unit.lv, talent, lv, treasure, holder), false);
+            spec.addField(LangID.getStringByID("data_cocosp", lang), DataToString.getCostCooldownSpeed(f.du, isFrame, talent, lv, holder), true);
             spec.addField(DataToString.getRangeTitle(f.du, lang), DataToString.getRange(f.du), true);
             spec.addField(LangID.getStringByID("data_times", lang), DataToString.getCompactAtkTimings(f.du, talent, lv, isFrame), false);
-            spec.addField(LangID.getStringByID("data_atkdps", lang).replace("_TTT_", DataToString.getSiMu(f.du, lang)), DataToString.getCompactAtk(f.du, talent, f.unit.lv, lv), false);
+            spec.addField(LangID.getStringByID("data_atkdps", lang).replace("_TTT_", DataToString.getSiMu(f.du, lang)), DataToString.getCompactAtk(f.du, talent, f.unit.lv, lv, treasure, holder), false);
         } else {
             spec.setTitle(DataToString.getTitle(f, lang));
 
             spec.addField(LangID.getStringByID("data_id", lang), DataToString.getID(f.uid.id, f.fid), true);
             spec.addField(LangID.getStringByID("data_level", lang), l, true);
-            spec.addField(LangID.getStringByID("data_hp", lang), DataToString.getHP(f.du, f.unit.lv, talent, lv), true);
+
+            String hpNormal = DataToString.getHP(f.du, f.unit.lv, talent, lv, false, holder);
+            String hpWithTreasure;
+
+            if(treasure) {
+                hpWithTreasure = DataToString.getHP(f.du, f.unit.lv, talent, lv, true, holder);
+            } else {
+                hpWithTreasure = "";
+            }
+
+            if(hpWithTreasure.isBlank() || hpNormal.equals(hpWithTreasure)) {
+                spec.addField(LangID.getStringByID("data_hp", lang), hpNormal, true);
+            } else {
+                spec.addField(LangID.getStringByID("data_hp", lang), hpNormal + " <" + hpWithTreasure + ">", true);
+            }
+
             spec.addField(LangID.getStringByID("data_hb", lang), DataToString.getHitback(f.du, talent, lv), true);
-            spec.addField(LangID.getStringByID("data_cooldown", lang), DataToString.getCD(f.du,isFrame, talent, lv), true);
+            spec.addField(LangID.getStringByID("data_cooldown", lang), DataToString.getCD(f.du,isFrame, talent, lv, holder), true);
             spec.addField(LangID.getStringByID("data_speed", lang), DataToString.getSpeed(f.du, talent, lv), true);
             spec.addField(LangID.getStringByID("data_cost", lang), DataToString.getCost(f.du, talent, lv), true);
             spec.addField(DataToString.getRangeTitle(f.du, lang), DataToString.getRange(f.du), true);
@@ -413,9 +473,24 @@ public class EntityHandler {
             spec.addField(LangID.getStringByID("data_postatk", lang), DataToString.getPost(f.du, isFrame), true);
             spec.addField(LangID.getStringByID("data_tba", lang), DataToString.getTBA(f.du, talent, lv, isFrame), true);
             spec.addField(LangID.getStringByID("data_atktype", lang), DataToString.getSiMu(f.du, lang), true);
-            spec.addField(LangID.getStringByID("data_dps", lang), DataToString.getDPS(f.du, f.unit.lv, talent, lv), true);
+
+            String dpsNormal = DataToString.getDPS(f.du, f.unit.lv, talent, lv, false, holder);
+            String dpsWithTreasure;
+
+            if(treasure) {
+                dpsWithTreasure = DataToString.getDPS(f.du, f.unit.lv, talent, lv, true, holder);
+            } else {
+                dpsWithTreasure = "";
+            }
+
+            if(dpsWithTreasure.isBlank() || dpsNormal.equals(dpsWithTreasure)) {
+                spec.addField(LangID.getStringByID("data_dps", lang), dpsNormal, true);
+            } else {
+                spec.addField(LangID.getStringByID("data_dps", lang), dpsNormal + " <" + dpsWithTreasure + ">", true);
+            }
+
             spec.addField(LangID.getStringByID("data_abilt", lang), DataToString.getAbilT(f.du, lang), true);
-            spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(f.du, f.unit.lv, talent, lv), true);
+            spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(f.du, f.unit.lv, talent, lv, treasure, holder), true);
         }
 
         spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(f.du, talent, lv, true, lang), true);
@@ -430,8 +505,8 @@ public class EntityHandler {
         else
             du = f.du;
 
-        List<String> abis = Interpret.getAbi(du, true, lang);
-        abis.addAll(Interpret.getProc(du, !isFrame, true, lang, 1.0, 1.0));
+        List<String> abis = Interpret.getAbi(du, true, lang, treasure ? du.getTraits() : null, holder);
+        abis.addAll(Interpret.getProc(du, !isFrame, true, lang, 1.0, 1.0, treasure, du.getTraits(), holder::getAbilityMultiplier));
 
         if(compact) {
             abis = mergeImmune(abis, lang);
@@ -451,8 +526,8 @@ public class EntityHandler {
         if(res.isBlank())
             res = LangID.getStringByID("data_none", lang);
         else if(res.length() > 1024) {
-            abis = Interpret.getAbi(du, false, lang);
-            abis.addAll(Interpret.getProc(du, !isFrame, false, lang, 1.0, 1.0));
+            abis = Interpret.getAbi(du, false, lang, treasure ? du.getTraits() : null, holder);
+            abis.addAll(Interpret.getProc(du, !isFrame, false, lang, 1.0, 1.0, treasure, du.getTraits(), holder::getAbilityMultiplier));
 
             if(compact) {
                 abis = mergeImmune(abis, lang);
@@ -650,7 +725,7 @@ public class EntityHandler {
         return false;
     }
 
-    public static void showEnemyEmb(Enemy e, MessageChannel ch, Message reference, boolean isFrame, boolean extra, boolean compact, int[] magnification, int lang) throws Exception {
+    public static void showEnemyEmb(Enemy e, MessageChannel ch, Message reference, boolean isFrame, boolean extra, boolean compact, int[] magnification, TreasureHolder holder, int lang) throws Exception {
         File img = generateIcon(e);
 
         EmbedBuilder spec = new EmbedBuilder();
@@ -675,15 +750,26 @@ public class EntityHandler {
                 mag[1] = 0;
         }
 
+        if (e.de.getTraits().contains(TreasureHolder.fullTraits.get(Data.TRAIT_ALIEN))) {
+            for(int i = 0; i < mag.length; i++)
+                mag[i] *= e.de.getStar() == 0 ? holder.getAlienMultiplier() : holder.getStarredAlienMultiplier();
+        }
+
+        System.out.println(Arrays.toString(mag));
+
         spec.setColor(c);
         spec.setThumbnail("attachment://icon.png");
+
+        if(holder.differentFromGlobal()) {
+            spec.setDescription(LangID.getStringByID("data_customtrea", lang));
+        }
 
         if(compact) {
             spec.setTitle(DataToString.getCompactTitle(e, lang));
 
             spec.addField(LangID.getStringByID("data_magnif", lang), DataToString.getMagnification(mag, 100), false);
             spec.addField(LangID.getStringByID("data_hpkb", lang), DataToString.getHealthHitback(e.de, mag[0]), false);
-            spec.addField(LangID.getStringByID("data_drbasp", lang), DataToString.getDropBarrierSpeed(e.de, lang), true);
+            spec.addField(LangID.getStringByID("data_drbasp", lang), DataToString.getDropBarrierSpeed(e.de, holder, lang), true);
             spec.addField(DataToString.getRangeTitle(e.de, lang), DataToString.getRange(e.de), true);
             spec.addField(LangID.getStringByID("data_times", lang), DataToString.getCompactAtkTimings(e.de, isFrame), false);
             spec.addField(LangID.getStringByID("data_atkdps", lang).replace("_TTT_", DataToString.getSiMu(e.de, lang)), DataToString.getCompactAtk(e.de, mag[1]), false);
@@ -701,7 +787,7 @@ public class EntityHandler {
             spec.addField(LangID.getStringByID("data_preatk", lang), DataToString.getPre(e.de, isFrame), true);
             spec.addField(LangID.getStringByID("data_postatk", lang), DataToString.getPost(e.de, isFrame), true);
             spec.addField(LangID.getStringByID("data_tba", lang), DataToString.getTBA(e.de, isFrame), true);
-            spec.addField(LangID.getStringByID("data_drop", lang), DataToString.getDrop(e.de), true);
+            spec.addField(LangID.getStringByID("data_drop", lang), DataToString.getDrop(e.de, holder), true);
             spec.addField(DataToString.getRangeTitle(e.de, lang), DataToString.getRange(e.de), true);
             spec.addField(LangID.getStringByID("data_atktype", lang), DataToString.getSiMu(e.de, lang), true);
             spec.addField(LangID.getStringByID("data_dps", lang), DataToString.getDPS(e.de, mag[1]), true);
@@ -710,8 +796,8 @@ public class EntityHandler {
             spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(e.de, true, lang), true);
         }
 
-        List<String> abis = Interpret.getAbi(e.de, true, lang);
-        abis.addAll(Interpret.getProc(e.de, !isFrame, true, lang, mag[0] / 100.0, mag[1] / 100.0));
+        List<String> abis = Interpret.getAbi(e.de, true, lang, null, null);
+        abis.addAll(Interpret.getProc(e.de, !isFrame, true, lang, mag[0] / 100.0, mag[1] / 100.0, false, null, null));
 
         if(compact) {
             abis = mergeImmune(abis, lang);
@@ -731,8 +817,8 @@ public class EntityHandler {
         if(res.isBlank())
             res = LangID.getStringByID("data_none", lang);
         else if(res.length() > 1024) {
-            abis = Interpret.getAbi(e.de, false, lang);
-            abis.addAll(Interpret.getProc(e.de, !isFrame, false, lang, mag[0] / 100.0, mag[1] / 100.0));
+            abis = Interpret.getAbi(e.de, false, lang, null, null);
+            abis.addAll(Interpret.getProc(e.de, !isFrame, false, lang, mag[0] / 100.0, mag[1] / 100.0, false, null, null));
 
             if(compact) {
                 abis = mergeImmune(abis, lang);
@@ -770,7 +856,7 @@ public class EntityHandler {
         e.anim.unload();
     }
 
-    public static void performEnemyEmb(Enemy e, GenericCommandInteractionEvent event, boolean isFrame, boolean extra, int[] magnification, int lang) throws Exception {
+    public static void performEnemyEmb(Enemy e, GenericCommandInteractionEvent event, boolean isFrame, boolean extra, int[] magnification, TreasureHolder holder, int lang) throws Exception {
         File img = generateIcon(e);
 
         EmbedBuilder spec = new EmbedBuilder();
@@ -795,6 +881,15 @@ public class EntityHandler {
                 mag[1] = 0;
         }
 
+        if (e.de.getTraits().contains(TreasureHolder.fullTraits.get(Data.TRAIT_ALIEN))) {
+            for(int i = 0; i < mag.length; i++)
+                mag[i] *= e.de.getStar() == 0 ? holder.getAlienMultiplier() : holder.getStarredAlienMultiplier();
+        }
+
+        if(holder.differentFromGlobal()) {
+            spec.setDescription(LangID.getStringByID("data_customtrea", lang));
+        }
+
         spec.setTitle(DataToString.getTitle(e, lang));
         spec.setColor(c);
         spec.setThumbnail("attachment://icon.png");
@@ -808,7 +903,7 @@ public class EntityHandler {
         spec.addField(LangID.getStringByID("data_preatk", lang), DataToString.getPre(e.de, isFrame), true);
         spec.addField(LangID.getStringByID("data_postatk", lang), DataToString.getPost(e.de, isFrame), true);
         spec.addField(LangID.getStringByID("data_tba", lang), DataToString.getTBA(e.de, isFrame), true);
-        spec.addField(LangID.getStringByID("data_drop", lang), DataToString.getDrop(e.de), true);
+        spec.addField(LangID.getStringByID("data_drop", lang), DataToString.getDrop(e.de, holder), true);
         spec.addField(DataToString.getRangeTitle(e.de, lang), DataToString.getRange(e.de), true);
         spec.addField(LangID.getStringByID("data_atktype", lang), DataToString.getSiMu(e.de, lang), true);
         spec.addField(LangID.getStringByID("data_dps", lang), DataToString.getDPS(e.de, mag[1]), true);
@@ -816,8 +911,8 @@ public class EntityHandler {
         spec.addField(LangID.getStringByID("data_atk", lang), DataToString.getAtk(e.de, mag[1]), true);
         spec.addField(LangID.getStringByID("data_trait", lang), DataToString.getTrait(e.de, true, lang), true);
 
-        List<String> abis = Interpret.getAbi(e.de, true, lang);
-        abis.addAll(Interpret.getProc(e.de, !isFrame, true, lang, mag[0] / 100.0, mag[1] / 100.0));
+        List<String> abis = Interpret.getAbi(e.de, true, lang, null, null);
+        abis.addAll(Interpret.getProc(e.de, !isFrame, true, lang, mag[0] / 100.0, mag[1] / 100.0, false, null, null));
 
         StringBuilder sb = new StringBuilder();
 
@@ -833,8 +928,8 @@ public class EntityHandler {
         if(res.isBlank())
             res = LangID.getStringByID("data_none", lang);
         else if(res.length() > 1024) {
-            abis = Interpret.getAbi(e.de, false, lang);
-            abis.addAll(Interpret.getProc(e.de, !isFrame, false, lang, mag[0] / 100.0, mag[1] / 100.0));
+            abis = Interpret.getAbi(e.de, false, lang, null, null);
+            abis.addAll(Interpret.getProc(e.de, !isFrame, false, lang, mag[0] / 100.0, mag[1] / 100.0, false, null, null));
 
             sb = new StringBuilder();
 
@@ -1021,7 +1116,7 @@ public class EntityHandler {
         return img;
     }
 
-    public static Message showStageEmb(Stage st, MessageChannel ch, Message reference, boolean isFrame, boolean isExtra, boolean isCompact, int level, int itf, int cotc, int lang) throws Exception {
+    public static Message showStageEmb(Stage st, MessageChannel ch, Message reference, boolean isFrame, boolean isExtra, boolean isCompact, int level, TreasureHolder holder, int lang) throws Exception {
         StageMap stm = st.getCont();
 
         int sta;
@@ -1048,7 +1143,7 @@ public class EntityHandler {
             stmMagnification = stm.stars[sta];
         }
 
-        File img = generateScheme(st, isFrame, lang, stmMagnification, itf, cotc);
+        File img = generateScheme(st, isFrame, lang, stmMagnification, holder);
 
         EmbedBuilder spec = new EmbedBuilder();
 
@@ -1094,10 +1189,14 @@ public class EntityHandler {
 
         spec.setTitle(name);
 
+        if(holder.differentFromGlobal()) {
+            spec.setDescription(LangID.getStringByID("data_customtrea", lang));
+        }
+
         if(isCompact) {
             spec.addField(LangID.getStringByID("data_iddile", lang), DataToString.getIdDifficultyLevel(st, sta, lang), false);
 
-            String secondField = DataToString.getEnergyBaseXP(st, lang);
+            String secondField = DataToString.getEnergyBaseXP(st, holder, lang);
 
             if(secondField.contains("!!drink!!")) {
                 secondField = secondField.replace("!!drink!!", "");
@@ -1123,7 +1222,7 @@ public class EntityHandler {
             }
 
             spec.addField(LangID.getStringByID("data_base", lang), DataToString.getBaseHealth(st), true);
-            spec.addField(LangID.getStringByID("data_xp", lang), DataToString.getXP(st), true);
+            spec.addField(LangID.getStringByID("data_xp", lang), DataToString.getXP(st, holder), true);
             spec.addField(LangID.getStringByID("data_diff", lang), DataToString.getDifficulty(st, lang), true);
             spec.addField(LangID.getStringByID("data_continuable", lang), DataToString.getContinuable(st, lang), true);
             spec.addField(LangID.getStringByID("data_music", lang), DataToString.getMusic(st, lang), true);
@@ -1245,7 +1344,7 @@ public class EntityHandler {
         return msg;
     }
 
-    public static Message performStageEmb(Stage st, GenericCommandInteractionEvent event, boolean isFrame, boolean isExtra, int level, int lang) throws Exception {
+    public static Message performStageEmb(Stage st, GenericCommandInteractionEvent event, boolean isFrame, boolean isExtra, int level, int lang, TreasureHolder holder) throws Exception {
         StageMap stm = st.getCont();
 
         int sta;
@@ -1272,7 +1371,7 @@ public class EntityHandler {
             stmMagnification = stm.stars[sta];
         }
 
-        File img = generateScheme(st, isFrame, lang, stmMagnification, 1 , 1);
+        File img = generateScheme(st, isFrame, lang, stmMagnification, holder);
 
         EmbedBuilder spec = new EmbedBuilder();
 
@@ -1328,7 +1427,7 @@ public class EntityHandler {
         }
 
         spec.addField(LangID.getStringByID("data_base", lang), DataToString.getBaseHealth(st), true);
-        spec.addField(LangID.getStringByID("data_xp", lang), DataToString.getXP(st), true);
+        spec.addField(LangID.getStringByID("data_xp", lang), DataToString.getXP(st, holder), true);
         spec.addField(LangID.getStringByID("data_diff", lang), DataToString.getDifficulty(st, lang), true);
         spec.addField(LangID.getStringByID("data_continuable", lang), DataToString.getContinuable(st, lang), true);
         spec.addField(LangID.getStringByID("data_music", lang), DataToString.getMusic(st, lang), true);
@@ -1453,7 +1552,7 @@ public class EntityHandler {
         return msg;
     }
 
-    private static File generateScheme(Stage st, boolean isFrame, int lang, int star, int itf, int cotc) throws Exception {
+    private static File generateScheme(Stage st, boolean isFrame, int lang, int star, TreasureHolder holder) throws Exception {
         File temp = new File("./temp/");
 
         if(!temp.exists()) {
@@ -1524,11 +1623,11 @@ public class EntityHandler {
                 enemies.add(eName);
 
                 if(((Enemy) enemy).de.getTraits().contains(UserProfile.getBCData().traits.get(Data.TRAIT_ALIEN)) && ((Enemy) enemy).de.getStar() == 0) {
-                    hp *= itf;
-                    atk *= itf;
+                    hp *= holder.getAlienMultiplier();
+                    atk *= holder.getAlienMultiplier();
                 } else if(((Enemy) enemy).de.getStar() == 1) {
-                    hp *= cotc;
-                    atk *= cotc;
+                    hp *= holder.getStarredAlienMultiplier();
+                    atk *= holder.getStarredAlienMultiplier();
                 }
             } else if(enemy instanceof EneRand) {
                 String name = ((EneRand) enemy).name;
@@ -3406,14 +3505,14 @@ public class EntityHandler {
 
         cells.add(new NormalCellDrawer(
                 new String[] {LangID.getStringByID("data_hp", lang), LangID.getStringByID("data_hb", lang), LangID.getStringByID("data_speed", lang)},
-                new String[] {DataToString.getHP(u, u.curve, false, lvs), DataToString.getHitback(u, false, lvs), DataToString.getSpeed(u, false , lvs)}
+                new String[] {DataToString.getHP(u, u.curve, false, lvs, false, TreasureHolder.global), DataToString.getHitback(u, false, lvs), DataToString.getSpeed(u, false , lvs)}
         ));
 
-        cells.add(new NormalCellDrawer(new String[] {LangID.getStringByID("data_atk", lang)}, new String[] {DataToString.getAtk(u, u.curve, false, lvs)}));
+        cells.add(new NormalCellDrawer(new String[] {LangID.getStringByID("data_atk", lang)}, new String[] {DataToString.getAtk(u, u.curve, false, lvs, false, TreasureHolder.global)}));
 
         cells.add(new NormalCellDrawer(
                 new String[] {LangID.getStringByID("data_dps", lang), LangID.getStringByID("data_atktime", lang), LangID.getStringByID("data_abilt", lang)},
-                new String[] {DataToString.getDPS(u, u.curve, false, lvs), DataToString.getAtkTime(u, false, isFrame, lvs), DataToString.getAbilT(u, lang)}
+                new String[] {DataToString.getDPS(u, u.curve, false, lvs, false, TreasureHolder.global), DataToString.getAtkTime(u, false, isFrame, lvs), DataToString.getAbilT(u, lang)}
         ));
 
         cells.add(new NormalCellDrawer(
@@ -3443,7 +3542,7 @@ public class EntityHandler {
 
         cells.add(new NormalCellDrawer(
                 new String[] {LangID.getStringByID("data_cooldown", lang)},
-                new String[] {DataToString.getCD(u, isFrame, false, lvs)}
+                new String[] {DataToString.getCD(u, isFrame, false, lvs, TreasureHolder.global)}
         ));
 
         List<List<CellData>> cellGroup = new ArrayList<>();
@@ -3500,7 +3599,7 @@ public class EntityHandler {
             cells.add(new NormalCellDrawer(names, contents));
         }
 
-        List<String> abil = Interpret.getAbi(u, false, lang);
+        List<String> abil = Interpret.getAbi(u, false, lang, null, null);
 
         for(int i = 0; i < abilData.size(); i++) {
             String a = abilData.get(i).dataToString(u.data);
@@ -3510,7 +3609,7 @@ public class EntityHandler {
             }
         }
 
-        abil.addAll(Interpret.getProc(u, !isFrame, false, lang, 1.0, 1.0));
+        abil.addAll(Interpret.getProc(u, !isFrame, false, lang, 1.0, 1.0, false, null, null));
 
         for(int i = 0; i < procData.size(); i++) {
             String p = procData.get(i).beautify(u.data, isFrame);
@@ -3572,7 +3671,7 @@ public class EntityHandler {
 
         cells.add(new NormalCellDrawer(
                 new String[] {LangID.getStringByID("data_atktype", lang), LangID.getStringByID("data_drop", lang), LangID.getStringByID("data_range", lang)},
-                new String[] {DataToString.getSiMu(e, lang), DataToString.getDrop(e), DataToString.getRange(e)}
+                new String[] {DataToString.getSiMu(e, lang), DataToString.getDrop(e, TreasureHolder.global), DataToString.getRange(e)}
         ));
 
         cells.add(new NormalCellDrawer(
@@ -3634,7 +3733,7 @@ public class EntityHandler {
             cells.add(new NormalCellDrawer(names, contents));
         }
 
-        List<String> abil = Interpret.getAbi(e, false, lang);
+        List<String> abil = Interpret.getAbi(e, false, lang, null, null);
 
         for(int i = 0; i < abilData.size(); i++) {
             String a = abilData.get(i).dataToString(e.data);
@@ -3644,7 +3743,7 @@ public class EntityHandler {
             }
         }
 
-        abil.addAll(Interpret.getProc(e, !isFrame, false, lang, 1.0, 1.0));
+        abil.addAll(Interpret.getProc(e, !isFrame, false, lang, 1.0, 1.0, false, null, null));
 
         for(int i = 0; i < procData.size(); i++) {
             String p = procData.get(i).beautify(e.data, isFrame);
@@ -3676,7 +3775,7 @@ public class EntityHandler {
 
         cells.add(new NormalCellDrawer(
                 new String[] {LangID.getStringByID("data_energy", lang), LangID.getStringByID("data_base", lang), LangID.getStringByID("data_xp", lang), LangID.getStringByID("data_level", lang)},
-                new String[] {DataToString.getEnergy(st, lang), DataToString.getBaseHealth(st), DataToString.getXP(st), DataToString.getLevelMagnification(map)},
+                new String[] {DataToString.getEnergy(st, lang), DataToString.getBaseHealth(st), DataToString.getXP(st, TreasureHolder.global), DataToString.getLevelMagnification(map)},
                 new BufferedImage[] {null, null, null, drawLevelImage(map.stars.length, lv)},
                 new boolean[] {false, false ,false, true}
         ));

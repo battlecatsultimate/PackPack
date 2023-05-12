@@ -81,6 +81,7 @@ public class StaticStore {
     public static Map<String, String> musics = new HashMap<>();
     public static Map<String, Integer> timeZones = new HashMap<>();
     public static Map<String, ConfigHolder> config = new HashMap<>();
+    public static Map<String, TreasureHolder> treasure = new HashMap<>();
 
     public static final Map<Integer, String> announcements = new HashMap<>();
 
@@ -275,6 +276,26 @@ public class StaticStore {
         return arr;
     }
 
+    public static JsonArray mapToJsonTreasureHolder(Map<String, TreasureHolder> map) {
+        JsonArray arr = new JsonArray();
+
+        for(String key : map.keySet()) {
+            TreasureHolder value = map.get(key);
+
+            if(value == null)
+                continue;
+
+            JsonObject set = new JsonObject();
+
+            set.addProperty("key", key);
+            set.add("val", value.toJson());
+
+            arr.add(set);
+        }
+
+        return arr;
+    }
+
     public static JsonArray mapToJsonString(Map<String, String> map) {
         JsonArray arr = new JsonArray();
 
@@ -458,6 +479,20 @@ public class StaticStore {
         return map;
     }
 
+    public static Map<String, TreasureHolder> jsonToMapTreasureHolder(JsonArray arr) {
+        Map<String, TreasureHolder> map = new HashMap<>();
+
+        for(int i = 0; i < arr.size(); i++) {
+            JsonObject set = arr.get(i).getAsJsonObject();
+
+            if(set.has("key") && set.has("val")) {
+                map.put(set.get("key").getAsString(), TreasureHolder.toData(set.getAsJsonObject("val")));
+            }
+        }
+
+        return map;
+    }
+
     public static Map<Integer, List<Integer>> jsonToMapIntegerList(JsonArray arr) {
         Map<Integer, List<Integer>> map = new HashMap<>();
 
@@ -530,6 +565,7 @@ public class StaticStore {
         obj.add("lang", mapToJsonString(langs));
         obj.add("music", mapToJsonString(musics));
         obj.add("config", mapToJsonConfigHolder(config));
+        obj.add("treasure", mapToJsonTreasureHolder(treasure));
         obj.add("imgur", imgur.getData());
         obj.add("idholder", mapToJsonIDHolder(idHolder));
         obj.add("suggestBanned", mapToJsonString(suggestBanned));
@@ -630,6 +666,10 @@ public class StaticStore {
 
             if(obj.has("config")) {
                 config = jsonToMapConfigHolder(obj.getAsJsonArray("config"));
+            }
+
+            if(obj.has("treasure")) {
+                treasure = jsonToMapTreasureHolder(obj.getAsJsonArray("treasure"));
             }
 
             if(obj.has("locale")) {

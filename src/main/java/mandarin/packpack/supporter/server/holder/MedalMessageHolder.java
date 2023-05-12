@@ -20,7 +20,7 @@ public class MedalMessageHolder extends SearchHolder {
 
         this.id = id;
 
-        registerAutoFinish(this, msg, author, lang, FIVE_MIN);
+        registerAutoFinish(this, msg, lang, FIVE_MIN);
     }
 
     @Override

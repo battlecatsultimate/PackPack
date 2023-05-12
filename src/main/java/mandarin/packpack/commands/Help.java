@@ -46,7 +46,7 @@ public class Help extends Command {
                     .setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)])
                     .addField(LangID.getStringByID("help_normal", lang), "```analyze, config, donate, locale, optout, prefix, timezone```", false)
                     .addField(LangID.getStringByID("help_math", lang), "```calculator, differentiate, integrate, plot, plotrtheta, tplot, solve```", false)
-                    .addField(LangID.getStringByID("help_bc", lang), "```background, castle, catcombo, enemygif, enemyimage, enemysprite, enemystat, findreward, findstage, formgif, formimage, formsprite, formstat, medal, music, soul, soulimage, soulsprite, stageinfo, talentinfo```", false)
+                    .addField(LangID.getStringByID("help_bc", lang), "```background, castle, catcombo, enemygif, enemyimage, enemysprite, enemystat, findreward, findstage, formgif, formimage, formsprite, formstat, medal, music, soul, soulimage, soulsprite, stageinfo, talentinfo, treasure```", false)
                     .addField(LangID.getStringByID("help_server", lang), "```addstatuschannel, boosteremoji, boosteremojiremove, boosterrole, boosterroleremove, channelpermission, checkbcu, clearcache, commandban, commandunban, eventmessage, fixrole, idset, removestatuschannel, save, serverconfig, serverjson, serverpre, serverstat, setup, subscribeevent, subscribescamlinkdetector, unsubscribescamlinkdetector, watchdm```", false)
                     .addField(LangID.getStringByID("help_data", lang), "```animanalyzer, announcement, checkeventupdate, comboanalyzer, downloadapk, enemystatanalyzer, eventdataarchive, printevent, printgachaevent, printitemevent, printstageevent, stageimage, stagestatanalyzer, statanalyzer, stagemapimage, talentanalyzer, trueformanalyzer```", false)
                     .addField(LangID.getStringByID("help_packpack", lang), "```alias, aliasadd, aliasremove, memory, registerscamlink, statistic, suggest, unregisterscamlink```", false);
@@ -57,258 +57,107 @@ public class Help extends Command {
 
     public void createEmbedOfSpecificCommand(String command, MessageChannel ch, Message reference) {
         switch (command) {
-            case "checkbcu":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("checkbcu", true, false, false)));
-                break;
-            case "serverstat":
-            case "ss":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "bcustat", false, false, false)));
-                break;
-            case "analyze":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "analyze", false, false, false)));
-                break;
-            case "prefix":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "prefix", false, false, false)));
-                break;
-            case "serverpre":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "serverpre", false, false, false)));
-                break;
-            case "save":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "save", false, false, false)));
-                break;
-            case "stimg":
-            case "stimage":
-            case "stageimg":
-            case "stageimage":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "stageimage", true, true, false)));
-                break;
-            case "stmimg":
-            case "stmimage":
-            case "stagemapimg":
-            case "stagemapimage":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "stagemapimage", true, true, false)));
-                break;
-            case "formstat":
-            case "fs":
-            case "catstat":
-            case "cs":
-            case "unitstat":
-            case "us":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "formstat", true, true, false)));
-                break;
-            case "locale":
-            case "loc":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "locale", false, false, false)));
-                break;
-            case "music":
-            case "ms":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "music", false, false, false)));
-                break;
-            case "enemystat":
-            case "es":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "enemystat", true, true, false)));
-                break;
-            case "castle":
-            case "cas":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "castle", true, true, false)));
-                break;
-            case "stageinfo":
-            case "si":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "stageinfo", true, true, true)));
-                break;
-            case "memory":
-            case "mm":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "memory", false, false,false)));
-                break;
-            case "formimage":
-            case "formimg":
-            case "fimage":
-            case "fimg":
-            case "catimage":
-            case "catimg":
-            case "cimage":
-            case "cimg":
-            case "unitimage":
-            case "unitimg":
-            case "uimage":
-            case "uimg":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "formimage", true, true, true)));
-                break;
-            case "enemyimage":
-            case "enemyimg":
-            case "eimage":
-            case "eimg":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "enemyimage", true, true, true)));
-                break;
-            case "background":
-            case "bg":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "background", true, true, false)));
-                break;
-            case "formgif":
-            case "fgif":
-            case "fg":
-            case "catgif":
-            case "cgif":
-            case "cg":
-            case "unitgif":
-            case "ugif":
-            case "ug":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "formgif", true, true, true)));
-                break;
-            case "enemygif":
-            case "egif":
-            case "eg":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "enemygif", true, true, true)));
-                break;
-            case "idset":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "idset", true, true, true)));
-                break;
-            case "clearcache":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "clearcache", false, false, false)));
-                break;
-            case "aa":
-            case "animanalyzer":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "animanalyzer", true, false, true)));
-                break;
-            case "channelpermission":
-            case "channelperm":
-            case "chpermission":
-            case "chperm":
-            case "chp":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "channelpermission", true, true, true)));
-                break;
-            case "formsprite":
-            case "fsprite":
-            case "formsp":
-            case "fsp":
-            case "catsprite":
-            case "csprite":
-            case "catsp":
-            case "csp":
-            case "unitsprite":
-            case "usprite":
-            case "unitsp":
-            case "usp":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "formsprite", true, true, false)));
-                break;
-            case "enemysprite":
-            case "esprite":
-            case "enemysp":
-            case "esp":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "enemysprite", true, true, false)));
-                break;
-            case "medal":
-            case "md":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "medal", false, true, false)));
-                break;
-            case "announcement":
-            case "ann":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "announcement", true, true, false)));
-                break;
-            case "catcombo":
-            case "combo":
-            case "cc":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "catcombo", true, true, false)));
-                break;
-            case "serverjson":
-            case "json":
-            case "sj":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "serverjson", false, false ,false)));
-                break;
-            case "findstage":
-            case "findst":
-            case "fstage":
-            case "fst":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "findstage", true, true, true)));
-                break;
-            case "suggest":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "suggest", true, true, true)));
-                break;
-            case "alias":
-            case "al":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "alias", true, true, true)));
-                break;
-            case "aliasadd":
-            case "ala":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "aliasadd", true, true, true)));
-                break;
-            case "aliasremove":
-            case "alr":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "aliasremove", true, true, true)));
-                break;
-            case "statistic":
-            case "stat":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "statistic", false, false, false)));
-                break;
-            case "serverlocale":
-            case "slocale":
-            case "serverloc":
-            case "sloc":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "serverlocale", false, false, false)));
-                break;
-            case "boosterrole":
-            case "boosterr":
-            case "brole":
-            case "br":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "boosterrole", true, true, true)));
-                break;
-            case "boosterroleremove":
-            case "brremove":
-            case "boosterrolerem":
-            case "brrem":
-            case "brr":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "boosterroleremove", true, false, false)));
-                break;
-            case "boosteremoji":
-            case "boostere":
-            case "bemoji":
-            case "be":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "boosteremoji", false, true, true)));
-                break;
-            case "boosteremojiremove":
-            case "beremove":
-            case"boosteremojirem":
-            case "berem":
-            case "ber":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields( "boosteremojiremove", true, false, false)));
-                break;
-            case "setup":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("setup", false, false, true)));
-                break;
-            case "fixrole":
-            case "fir":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("fixrole", true, true, true)));
-                break;
-            case "watchdm":
-            case "wd":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("watchdm", false, false, true)));
-                break;
-            case "checkeventupdate":
-            case "ceu":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("checkeventupdate", false, false, false)));
-                break;
-            case "printgachaevent":
-            case "pge":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("printgachaevent", true, true, false)));
-                break;
-            case "printitemevent":
-            case "pie":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("printitemevent", true, true, false)));
-                break;
-            case "printstageevent":
-            case "pse":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("printstageevent", true, true, false)));
-                break;
-            case "subscribeevent":
-            case "se":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("subscribeevent", true, true, true)));
-                break;
-            case "printevent":
-            case "pe":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("printevent", true, true, false)));
-                break;
-            case "statanalyzer":
-            case "sa":
+            case "checkbcu" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("checkbcu", true, false, false)));
+            case "serverstat", "ss" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("bcustat", false, false, false)));
+            case "analyze" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("analyze", false, false, false)));
+            case "prefix" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("prefix", false, false, false)));
+            case "serverpre" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("serverpre", false, false, false)));
+            case "save" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("save", false, false, false)));
+            case "stimg", "stimage", "stageimg", "stageimage" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("stageimage", true, true, false)));
+            case "stmimg", "stmimage", "stagemapimg", "stagemapimage" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("stagemapimage", true, true, false)));
+            case "formstat", "fs", "catstat", "cs", "unitstat", "us" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("formstat", true, true, false)));
+            case "locale", "loc" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("locale", false, false, false)));
+            case "music", "ms" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("music", false, false, false)));
+            case "enemystat", "es" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("enemystat", true, true, false)));
+            case "castle", "cas" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("castle", true, true, false)));
+            case "stageinfo", "si" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("stageinfo", true, true, true)));
+            case "memory", "mm" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("memory", false, false, false)));
+            case "formimage", "formimg", "fimage", "fimg", "catimage", "catimg", "cimage", "cimg", "unitimage", "unitimg", "uimage", "uimg" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("formimage", true, true, true)));
+            case "enemyimage", "enemyimg", "eimage", "eimg" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("enemyimage", true, true, true)));
+            case "background", "bg" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("background", true, true, false)));
+            case "formgif", "fgif", "fg", "catgif", "cgif", "cg", "unitgif", "ugif", "ug" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("formgif", true, true, true)));
+            case "enemygif", "egif", "eg" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("enemygif", true, true, true)));
+            case "idset" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("idset", true, true, true)));
+            case "clearcache" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("clearcache", false, false, false)));
+            case "aa", "animanalyzer" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("animanalyzer", true, false, true)));
+            case "channelpermission", "channelperm", "chpermission", "chperm", "chp" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("channelpermission", true, true, true)));
+            case "formsprite", "fsprite", "formsp", "fsp", "catsprite", "csprite", "catsp", "csp", "unitsprite", "usprite", "unitsp", "usp" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("formsprite", true, true, false)));
+            case "enemysprite", "esprite", "enemysp", "esp" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("enemysprite", true, true, false)));
+            case "medal", "md" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("medal", false, true, false)));
+            case "announcement", "ann" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("announcement", true, true, false)));
+            case "catcombo", "combo", "cc" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("catcombo", true, true, false)));
+            case "serverjson", "json", "sj" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("serverjson", false, false, false)));
+            case "findstage", "findst", "fstage", "fst" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("findstage", true, true, true)));
+            case "suggest" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("suggest", true, true, true)));
+            case "alias", "al" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("alias", true, true, true)));
+            case "aliasadd", "ala" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("aliasadd", true, true, true)));
+            case "aliasremove", "alr" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("aliasremove", true, true, true)));
+            case "statistic", "stat" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("statistic", false, false, false)));
+            case "serverlocale", "slocale", "serverloc", "sloc" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("serverlocale", false, false, false)));
+            case "boosterrole", "boosterr", "brole", "br" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("boosterrole", true, true, true)));
+            case "boosterroleremove", "brremove", "boosterrolerem", "brrem", "brr" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("boosterroleremove", true, false, false)));
+            case "boosteremoji", "boostere", "bemoji", "be" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("boosteremoji", false, true, true)));
+            case "boosteremojiremove", "beremove", "boosteremojirem", "berem", "ber" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("boosteremojiremove", true, false, false)));
+            case "setup" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("setup", false, false, true)));
+            case "fixrole", "fir" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("fixrole", true, true, true)));
+            case "watchdm", "wd" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("watchdm", false, false, true)));
+            case "checkeventupdate", "ceu" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("checkeventupdate", false, false, false)));
+            case "printgachaevent", "pge" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("printgachaevent", true, true, false)));
+            case "printitemevent", "pie" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("printitemevent", true, true, false)));
+            case "printstageevent", "pse" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("printstageevent", true, true, false)));
+            case "subscribeevent", "se" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("subscribeevent", true, true, true)));
+            case "printevent", "pe" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("printevent", true, true, false)));
+            case "statanalyzer", "sa" -> {
                 replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("statanalyzer", true, true, true)));
                 replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(new EmbedBuilder()
                         .setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)])
@@ -319,39 +168,22 @@ public class Help extends Command {
                         .addField("-abil", LangID.getStringByID("help_statanalyzer_abil", lang), false)
                         .addField("-proc", LangID.getStringByID("help_statanalyzer_proc", lang), false)
                         .build()));
-                break;
-            case "registerscamlink":
-            case "rsl":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("registerscamlink", false, false, true)));
-                break;
-            case "unregisterscamlink":
-            case "usl":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("unregisterscamlink", false, false, false)));
-                break;
-            case "subscribescamlinkdetector":
-            case "ssld":
-            case "ssd":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("subscribescamlinkdetector", true, false, true)));
-                break;
-            case "unsubscribescamlinkdetector":
-            case "usld":
-            case "usd":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("unsubscribescamlinkdetector", false, false, false)));
-                break;
-            case "optout":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("optout", false, false, false)));
-                break;
-            case "config":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("config", false, false, true)));
-                break;
-            case "downloadapk":
-            case "da":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("downloadapk", true, true, false)));
-                break;
-            case "trueformanalyzer":
-            case "tfanalyzer":
-            case "trueforma":
-            case "tfa":
+            }
+            case "registerscamlink", "rsl" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("registerscamlink", false, false, true)));
+            case "unregisterscamlink", "usl" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("unregisterscamlink", false, false, false)));
+            case "subscribescamlinkdetector", "ssld", "ssd" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("subscribescamlinkdetector", true, false, true)));
+            case "unsubscribescamlinkdetector", "usld", "usd" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("unsubscribescamlinkdetector", false, false, false)));
+            case "optout" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("optout", false, false, false)));
+            case "config" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("config", false, false, true)));
+            case "downloadapk", "da" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("downloadapk", true, true, false)));
+            case "trueformanalyzer", "tfanalyzer", "trueforma", "tfa" -> {
                 replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("trueformanalyzer", true, true, true)));
                 replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(new EmbedBuilder()
                         .setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)])
@@ -362,11 +194,8 @@ public class Help extends Command {
                         .addField("-abil", LangID.getStringByID("help_statanalyzer_abil", lang), false)
                         .addField("-proc", LangID.getStringByID("help_statanalyzer_proc", lang), false)
                         .build()));
-                break;
-            case "enemystatanalyzer":
-            case "estatanalyzer":
-            case "enemysa":
-            case "esa":
+            }
+            case "enemystatanalyzer", "estatanalyzer", "enemysa", "esa" -> {
                 replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("enemystatanalyzer", true, true, true)));
                 replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(new EmbedBuilder()
                         .setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)])
@@ -377,126 +206,59 @@ public class Help extends Command {
                         .addField("-abil", LangID.getStringByID("help_statanalyzer_abil", lang), false)
                         .addField("-proc", LangID.getStringByID("help_statanalyzer_proc", lang), false)
                         .build()));
-                break;
-            case "stagestatanalyzer":
-            case "sstatanalyzer":
-            case "stagesa":
-            case "ssa":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("stagestatanalyzer", true, true, true)));
-                break;
-            case "serverconfig":
-            case "sconfig":
-            case "serverc":
-            case "sc":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("serverconfig", false, false, true)));
-                break;
-            case "commandban":
-            case "cb":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("commandban", false, false, false)));
-                break;
-            case "commandunban":
-            case "cub":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("commandunban", false, false, false)));
-                break;
-            case "talentinfo":
-            case "ti":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("talentinfo", true, false, false)));
-                break;
-            case "soul":
-            case "sl":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("soul", true, true, false)));
-                break;
-            case "soulimage":
-            case "soulimg":
-            case "simage":
-            case "simg":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("soulimage", true, true, false)));
-                break;
-            case "soulsprite":
-            case "ssprite":
-            case "soulsp":
-            case "ssp":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("soulsprite", false, false, false)));
-                break;
-            case "calculator":
-            case "calc":
-            case "c":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("calculator", false, true, true)));
-                break;
-            case "findreward":
-            case "freward":
-            case "findr":
-            case "fr":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("findreward", true, true, false)));
-                break;
-            case "eventdataarchive":
-            case "eventddataa":
-            case "earchive":
-            case "eda":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("eventdataarchive", true, true, false)));
-                break;
-            case "announcemessage":
-            case "am":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("announcemessage", false, false, true)));
-                break;
-            case "talentanalyzer":
-            case "tala":
-            case "ta":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("talentanalyzer", true, true, false)));
-                break;
-            case "comboanalyzer":
-            case "catcomboanalyzer":
-            case "cca":
-            case "ca":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("comboanalyzer", true, false, true)));
-                break;
-            case "addstatuschannel":
-            case "asc":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("addstatuschannel", false, false, true)));
-                break;
-            case "removestatuschannel":
-            case "rsc":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("removestatuschannel", false, false, true)));
-                break;
-            case "plot":
-            case "p":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("plot", true, true, true)));
-                break;
-            case "tplot":
-            case "tp":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("tplot", true, true, true)));
-                break;
-            case "solve":
-            case "sv":
-                replyToMessageSafely(ch, "", reference, a -> a .setEmbeds(addFields("solve", true, true, true)));
-                break;
-            case "differentiate":
-            case "diff":
-            case "dx":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("differentiate", true, true, true)));
-                break;
-            case "integrate":
-            case "int":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("integrate", true, true, true)));
-                break;
-            case "plotrtheta":
-            case "prtheta":
-            case "plotrt":
-            case "prt":
-            case "rt":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("plotrtheta", true, true, true)));
-                break;
-            case "donate":
-            case "donation":
-            case "don":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("donate", false, false, false)));
-                break;
-            case "eventmessage":
-            case "em":
-                replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("eventmessage", true, false, true)));
-                break;
-            default:
-                replyToMessageSafely(ch, LangID.getStringByID("help_nocomm", lang).replace("_", command), reference, a -> a);
+            }
+            case "stagestatanalyzer", "sstatanalyzer", "stagesa", "ssa" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("stagestatanalyzer", true, true, true)));
+            case "serverconfig", "sconfig", "serverc", "sc" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("serverconfig", false, false, true)));
+            case "commandban", "cb" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("commandban", false, false, false)));
+            case "commandunban", "cub" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("commandunban", false, false, false)));
+            case "talentinfo", "ti" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("talentinfo", true, false, false)));
+            case "soul", "sl" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("soul", true, true, false)));
+            case "soulimage", "soulimg", "simage", "simg" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("soulimage", true, true, false)));
+            case "soulsprite", "ssprite", "soulsp", "ssp" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("soulsprite", false, false, false)));
+            case "calculator", "calc", "c" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("calculator", false, true, true)));
+            case "findreward", "freward", "findr", "fr" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("findreward", true, true, false)));
+            case "eventdataarchive", "eventddataa", "earchive", "eda" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("eventdataarchive", true, true, false)));
+            case "announcemessage", "am" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("announcemessage", false, false, true)));
+            case "talentanalyzer", "tala", "ta" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("talentanalyzer", true, true, false)));
+            case "comboanalyzer", "catcomboanalyzer", "cca", "ca" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("comboanalyzer", true, false, true)));
+            case "addstatuschannel", "asc" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("addstatuschannel", false, false, true)));
+            case "removestatuschannel", "rsc" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("removestatuschannel", false, false, true)));
+            case "plot", "p" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("plot", true, true, true)));
+            case "tplot", "tp" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("tplot", true, true, true)));
+            case "solve", "sv" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("solve", true, true, true)));
+            case "differentiate", "diff", "dx" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("differentiate", true, true, true)));
+            case "integrate", "int" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("integrate", true, true, true)));
+            case "plotrtheta", "prtheta", "plotrt", "prt", "rt" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("plotrtheta", true, true, true)));
+            case "donate", "donation", "don" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("donate", false, false, false)));
+            case "eventmessage", "em" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("eventmessage", true, false, true)));
+            case "treasure", "tr" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("treasure", false, false, true)));
+            default ->
+                    replyToMessageSafely(ch, LangID.getStringByID("help_nocomm", lang).replace("_", command), reference, a -> a);
         }
     }
 
@@ -527,7 +289,7 @@ public class Help extends Command {
             int tipIndex = 1;
 
             while(true) {
-                String id = "help_" + mainCommand + "_tip" + (tipIndex == 1 ? "" : ("" + tipIndex));
+                String id = "help_" + mainCommand + "_tip" + (tipIndex == 1 ? "" : String.valueOf(tipIndex));
                 String tips = LangID.getStringByID(id, lang);
 
                 if(!tips.equals(id)) {

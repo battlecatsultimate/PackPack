@@ -17,6 +17,7 @@ import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.FindStageMessageHolder;
 import mandarin.packpack.supporter.server.holder.segment.SearchHolder;
 import mandarin.packpack.supporter.server.holder.StageEnemyMessageHolder;
@@ -106,8 +107,6 @@ public class FindStage extends TimedConstraintCommand {
         int music = getMusic(command);
         int castle = getCastle(command);
         int background = getBackground(command);
-        int itf = calculateItFCrystal(command);
-        int cotc = calculateCotCCrystal(command);
 
         boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
         boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
@@ -195,7 +194,9 @@ public class FindStage extends TimedConstraintCommand {
 
                 disableTimer();
             } else if(stages.size() == 1) {
-                Message result = EntityHandler.showStageEmb(stages.get(0), ch, getMessage(event), isFrame, isExtra, isCompact, star, itf, cotc, lang);
+                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(getMessage(event).getAuthor().getId(), TreasureHolder.global);
+
+                Message result = EntityHandler.showStageEmb(stages.get(0), ch, getMessage(event), isFrame, isExtra, isCompact, star, treasure, lang);
 
                 User u = getUser(event);
 
@@ -234,8 +235,10 @@ public class FindStage extends TimedConstraintCommand {
                     if(u != null) {
                         Message msg = getMessage(event);
 
+                        TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
+
                         if(msg != null) {
-                            StaticStore.putHolder(u.getId(), new FindStageMessageHolder(stages, monthly ? accumulateCategory(stages) : null, getMessage(event), res, ch.getId(), star, itf, cotc, isFrame, isExtra, isCompact, lang));
+                            StaticStore.putHolder(u.getId(), new FindStageMessageHolder(stages, monthly ? accumulateCategory(stages) : null, getMessage(event), res, ch.getId(), star, treasure, isFrame, isExtra, isCompact, lang));
                         }
                         disableTimer();
                     }
@@ -277,8 +280,10 @@ public class FindStage extends TimedConstraintCommand {
                 if(u != null) {
                     Message msg = getMessage(event);
 
+                    TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
+
                     if(msg != null)
-                        StaticStore.putHolder(u.getId(), new StageEnemyMessageHolder(enemySequences, filterEnemy, enemyList, msg, res, ch.getId(), isFrame, isExtra, isCompact, orOperate, hasBoss, monthly, star, itf, cotc, background, castle, music, lang));
+                        StaticStore.putHolder(u.getId(), new StageEnemyMessageHolder(enemySequences, filterEnemy, enemyList, msg, res, ch.getId(), isFrame, isExtra, isCompact, orOperate, hasBoss, monthly, star, treasure, background, castle, music, lang));
                 }
             }
         }
@@ -596,7 +601,7 @@ public class FindStage extends TimedConstraintCommand {
             String[] elements = element.split("\\\\\\\\");
 
             if(elements.length == 2) {
-                if(elements[0].matches("<:[^\\s]+?:\\d+>")) {
+                if(elements[0].matches("<:\\S+?:\\d+>")) {
                     options.add(SelectOption.of(elements[1], String.valueOf(i)).withEmoji(Emoji.fromFormatted(elements[0])));
                 } else {
                     options.add(SelectOption.of(element, String.valueOf(i)));
@@ -667,39 +672,5 @@ public class FindStage extends TimedConstraintCommand {
         if(!data.contains(element)) {
             data.add(element);
         }
-    }
-
-    private int calculateItFCrystal(String command) {
-        String[] contents = command.split(" ");
-
-        for(int i = 0; i < contents.length; i++) {
-            if(contents[i].matches("^-i(tf)?\\d$")) {
-                int crystal = StaticStore.safeParseInt(contents[i].replaceAll("-i(tf)?", ""));
-
-                if(crystal >= 3 || crystal < 0)
-                    continue;
-
-                return 7 - 2 * crystal;
-            }
-        }
-
-        return 1;
-    }
-
-    private int calculateCotCCrystal(String command) {
-        String[] contents = command.split(" ");
-
-        for(int i = 0; i < contents.length; i++) {
-            if(contents[i].matches("^-c(otc)?\\d$")) {
-                int crystal = StaticStore.safeParseInt(contents[i].replaceAll("-c(otc)?", ""));
-
-                if(crystal >= 3 || crystal < 0)
-                    continue;
-
-                return 16 - 5 * crystal;
-            }
-        }
-
-        return 1;
     }
 }

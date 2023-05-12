@@ -12,6 +12,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.segment.SearchHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -40,14 +41,13 @@ public class StageEnemyMessageHolder extends SearchHolder {
     private final boolean monthly;
 
     private final int star;
-    private final int itf;
-    private final int cotc;
+    private final TreasureHolder treasure;
 
     private final int background;
     private final int castle;
     private final int music;
 
-    public StageEnemyMessageHolder(List<List<Enemy>> enemySequences, List<Enemy> filterEnemy, StringBuilder enemyList, Message author, Message msg, String channelID, boolean isFrame, boolean isExtra, boolean isCompact, boolean orOperate, boolean hasBoss, boolean monthly, int star, int itf, int cotc, int background, int castle, int music, int lang) {
+    public StageEnemyMessageHolder(List<List<Enemy>> enemySequences, List<Enemy> filterEnemy, StringBuilder enemyList, Message author, Message msg, String channelID, boolean isFrame, boolean isExtra, boolean isCompact, boolean orOperate, boolean hasBoss, boolean monthly, int star, TreasureHolder treasure, int background, int castle, int music, int lang) {
         super(author, msg, channelID, lang);
 
         this.enemySequences = enemySequences;
@@ -62,8 +62,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
         this.monthly = monthly;
 
         this.star = star;
-        this.itf = itf;
-        this.cotc = cotc;
+        this.treasure = treasure;
 
         this.background = background;
         this.castle = castle;
@@ -71,7 +70,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
 
         enemy = enemySequences.remove(0);
 
-        registerAutoFinish(this, msg, author, lang, FIVE_MIN);
+        registerAutoFinish(this, msg, lang, FIVE_MIN);
     }
 
     @Override
@@ -110,7 +109,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
             } else if(stages.size() == 1) {
                 msg.delete().queue();
 
-                Message result = EntityHandler.showStageEmb(stages.get(0), ch, getAuthorMessage(), isFrame, isExtra, isCompact, star, itf, cotc, lang);
+                Message result = EntityHandler.showStageEmb(stages.get(0), ch, getAuthorMessage(), isFrame, isExtra, isCompact, star, treasure, lang);
 
                 if(result != null) {
                     if(StaticStore.timeLimit.containsKey(author.getAuthor().getId())) {
@@ -148,7 +147,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
                 Message res = createMonthlyMessage(ch, sb.toString(), accumulateStage(stages, false), stages, stages.size(), monthly);
 
                 if(res != null) {
-                    StaticStore.putHolder(author.getAuthor().getId(), new FindStageMessageHolder(stages, monthly ? accumulateCategory(stages) : null, getAuthorMessage(), res, ch.getId(), star, itf, cotc, isFrame, isExtra, isCompact, lang));
+                    StaticStore.putHolder(author.getAuthor().getId(), new FindStageMessageHolder(stages, monthly ? accumulateCategory(stages) : null, getAuthorMessage(), res, ch.getId(), star, treasure, isFrame, isExtra, isCompact, lang));
                 }
 
                 msg.delete().queue();

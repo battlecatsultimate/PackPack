@@ -40,7 +40,7 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
 
         files.addAll(fileList);
 
-        registerAutoFinish(this, msg, author, lang, FIVE_MIN);
+        registerAutoFinish(this, msg, lang, FIVE_MIN);
     }
 
     @Override

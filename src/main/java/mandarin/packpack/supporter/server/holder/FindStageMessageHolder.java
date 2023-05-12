@@ -10,6 +10,7 @@ import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.segment.SearchHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -33,19 +34,19 @@ public class FindStageMessageHolder extends SearchHolder {
     private final boolean isFrame;
     private final boolean isExtra;
     private final boolean isCompact;
-    private final int star, itf, cotc;
+    private final int star;
+    private final TreasureHolder treasure;
 
     private FindStage.MONTHLY selected = FindStage.MONTHLY.ALL;
 
-    public FindStageMessageHolder(List<Stage> stage, List<FindStage.MONTHLY> monthly, @Nonnull Message author, @Nonnull Message msg, String channelID, int star, int itf, int cotc, boolean isFrame, boolean isExtra, boolean isCompact, int lang) {
+    public FindStageMessageHolder(List<Stage> stage, List<FindStage.MONTHLY> monthly, @Nonnull Message author, @Nonnull Message msg, String channelID, int star, TreasureHolder treasure, boolean isFrame, boolean isExtra, boolean isCompact, int lang) {
         super(author, msg, channelID, lang);
 
         this.stage = stage;
         this.monthly = monthly;
 
         this.star = star;
-        this.itf = itf;
-        this.cotc = cotc;
+        this.treasure = treasure;
 
         this.isFrame = isFrame;
         this.isExtra = isExtra;
@@ -53,7 +54,7 @@ public class FindStageMessageHolder extends SearchHolder {
 
         actualStage.addAll(stage);
 
-        registerAutoFinish(this, msg, author, lang, FIVE_MIN);
+        registerAutoFinish(this, msg, lang, FIVE_MIN);
     }
 
     @Override
@@ -134,7 +135,7 @@ public class FindStageMessageHolder extends SearchHolder {
         }
 
         try {
-            Message msg = EntityHandler.showStageEmb(actualStage.get(id), ch, getAuthorMessage(), isFrame, isExtra, isCompact, star, itf, cotc, lang);
+            Message msg = EntityHandler.showStageEmb(actualStage.get(id), ch, getAuthorMessage(), isFrame, isExtra, isCompact, star, treasure, lang);
 
             if(msg != null) {
                 StaticStore.putHolder(getAuthorMessage().getAuthor().getId(), new StageInfoButtonHolder(actualStage.get(id), getAuthorMessage(), msg, channelID, isCompact));

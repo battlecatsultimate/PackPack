@@ -22,7 +22,7 @@ public class EventDataArchiveHolder extends SearchHolder {
         this.files = files;
         this.fileName = fileName;
 
-        registerAutoFinish(this, msg, author, lang, FIVE_MIN);
+        registerAutoFinish(this, msg, lang, FIVE_MIN);
     }
 
     @Override

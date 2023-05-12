@@ -30,7 +30,7 @@ public class ComboMessageHolder extends SearchHolder {
         this.combo = combo;
         this.fMsg = fMsg;
 
-        registerAutoFinish(this, msg, author, lang, TimeUnit.MINUTES.toMillis(5), () -> {
+        registerAutoFinish(this, msg, lang, TimeUnit.MINUTES.toMillis(5), () -> {
             if(fMsg != null)
                 fMsg.delete().queue();
         });

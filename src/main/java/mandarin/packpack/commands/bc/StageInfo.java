@@ -14,6 +14,7 @@ import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.segment.SearchHolder;
 import mandarin.packpack.supporter.server.holder.StageInfoButtonHolder;
 import mandarin.packpack.supporter.server.holder.StageInfoMessageHolder;
@@ -112,7 +113,9 @@ public class StageInfo extends TimedConstraintCommand {
             event.deferReply().setContent(LangID.getStringByID("formst_specific", lang)).queue();
         } else {
             try {
-                Message m = EntityHandler.performStageEmb(st, event, frame, extra, star, lang);
+                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
+
+                Message m = EntityHandler.performStageEmb(st, event, frame, extra, star, lang, treasure);
 
                 if(m != null && (!(m.getChannel() instanceof GuildChannel) || m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_MANAGE))) {
                     StaticStore.putHolder(
@@ -197,7 +200,9 @@ public class StageInfo extends TimedConstraintCommand {
 
                 CommonStatic.getConfig().lang = lang;
 
-                Message result = EntityHandler.showStageEmb(stages.get(0), ch, getMessage(event), isFrame, isExtra, isCompact, star, calculateItFCrystal(getContent(event)), calculateCotCCrystal(getContent(event)), lang);
+                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(getMessage(event).getAuthor().getId(), TreasureHolder.global);
+
+                Message result = EntityHandler.showStageEmb(stages.get(0), ch, getMessage(event), isFrame, isExtra, isCompact, star, treasure, lang);
 
                 User u = getUser(event);
 
@@ -245,8 +250,10 @@ public class StageInfo extends TimedConstraintCommand {
                     if(u != null) {
                         Message msg = getMessage(event);
 
+                        TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
+
                         if(msg != null)
-                            StaticStore.putHolder(u.getId(), new StageInfoMessageHolder(stages, msg, res, ch.getId(), star, calculateItFCrystal(getContent(event)), calculateCotCCrystal(getContent(event)), isFrame, isExtra, isCompact, lang));
+                            StaticStore.putHolder(u.getId(), new StageInfoMessageHolder(stages, msg, res, ch.getId(), star, treasure, isFrame, isExtra, isCompact, lang));
                     }
                 }
 
@@ -478,39 +485,5 @@ public class StageInfo extends TimedConstraintCommand {
         }
 
         return data;
-    }
-
-    private int calculateItFCrystal(String command) {
-        String[] contents = command.split(" ");
-
-        for(int i = 0; i < contents.length; i++) {
-            if(contents[i].matches("^-i(tf)?\\d$")) {
-                int crystal = StaticStore.safeParseInt(contents[i].replaceAll("-i(tf)?", ""));
-
-                if(crystal >= 3 || crystal < 0)
-                    continue;
-
-                return 7 - 2 * crystal;
-            }
-        }
-
-        return 1;
-    }
-
-    private int calculateCotCCrystal(String command) {
-        String[] contents = command.split(" ");
-
-        for(int i = 0; i < contents.length; i++) {
-            if(contents[i].matches("^-c(otc)?\\d$")) {
-                int crystal = StaticStore.safeParseInt(contents[i].replaceAll("-c(otc)?", ""));
-
-                if(crystal >= 3 || crystal < 0)
-                    continue;
-
-                return 16 - 5 * crystal;
-            }
-        }
-
-        return 1;
     }
 }

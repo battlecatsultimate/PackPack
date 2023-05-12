@@ -10,12 +10,14 @@ import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.FormButtonHolder;
 import mandarin.packpack.supporter.server.holder.FormReactionSlashMessageHolder;
 import mandarin.packpack.supporter.server.holder.FormStatMessageHolder;
 import mandarin.packpack.supporter.server.holder.segment.SearchHolder;
 import mandarin.packpack.supporter.server.slash.SlashOption;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
@@ -59,12 +61,22 @@ public class FormStat extends ConstraintCommand {
             }
         }
 
+        IDHolder holder;
+        Guild g = event.getGuild();
+
+        if(g == null) {
+            holder = null;
+        } else {
+            holder = StaticStore.idHolder.get(g.getId());
+        }
+
         List<OptionMapping> options = event.getOptions();
 
         String name = SlashOption.getStringOption(options, "name", "");
         boolean frame = SlashOption.getBooleanOption(options, "frame", true);
         boolean talent = SlashOption.getBooleanOption(options, "talent", false);
         boolean extra = SlashOption.getBooleanOption(options, "extra", false);
+        boolean treasure = SlashOption.getBooleanOption(options, "treasure", false);
         Level lv = prepareLevels(options);
 
         Form f = EntityFilter.pickOneForm(name, lang);
@@ -85,12 +97,14 @@ public class FormStat extends ConstraintCommand {
 
             config = StaticStore.config.getOrDefault(u.getId(), StaticStore.defaultConfig);
 
-            Message m = EntityHandler.performUnitEmb(f, event, config, frame, talent, extra, lv, finalLang);
+            TreasureHolder t = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
+
+            Message m = EntityHandler.performUnitEmb(f, event, config, frame, talent, extra, lv, treasure, t, finalLang);
 
             if(m != null && (!(m.getChannel() instanceof GuildChannel) || m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_MANAGE))) {
                 StaticStore.putHolder(
                         u.getId(),
-                        new FormReactionSlashMessageHolder(m, f, u.getId(), m.getChannel().getId(), config, frame && config.useFrame, talent, extra || config.extra, lv, finalLang)
+                        new FormReactionSlashMessageHolder(m, f, u.getId(), m.getChannel().getId(), config, frame && config.useFrame, talent, extra || config.extra, lv, treasure, t, finalLang)
                 );
             }
         } catch (Exception e) {
@@ -144,6 +158,7 @@ public class FormStat extends ConstraintCommand {
     private static final int PARAM_EXTRA = 8;
     private static final int PARAM_COMPACT = 16;
     private static final int PARAM_TRUE_FORM = 32;
+    private static final int PARAM_TREASURE = 64;
 
     private final ConfigHolder config;
 
@@ -191,6 +206,7 @@ public class FormStat extends ConstraintCommand {
         boolean extra = (param & PARAM_EXTRA) > 0 || config.extra;
         boolean compact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
         boolean isTrueForm = (param & PARAM_TRUE_FORM) > 0 || config.trueForm;
+        boolean isTreasure = (param & PARAM_TREASURE) > 0 || config.treasure;
 
         if(list.length == 1 || filterCommand(command).isBlank()) {
             replyToMessageSafely(ch, LangID.getStringByID("formst_noname", lang), getMessage(event), a -> a);
@@ -200,7 +216,9 @@ public class FormStat extends ConstraintCommand {
             if (forms.size() == 1) {
                 Form f = forms.get(0);
 
-                Message result = EntityHandler.showUnitEmb(f, ch, getMessage(event), config, isFrame, talent, extra, isTrueForm, f.fid == 2, lv, lang, true, compact);
+                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(getMessage(event).getAuthor().getId(), TreasureHolder.global);
+
+                Message result = EntityHandler.showUnitEmb(f, ch, getMessage(event), config, isFrame, talent, extra, isTrueForm, f.fid == 2, lv, isTreasure, treasure, lang, true, compact);
 
                 if(result != null) {
                     User u = getUser(event);
@@ -209,7 +227,7 @@ public class FormStat extends ConstraintCommand {
                         Message author = getMessage(event);
 
                         if(author != null) {
-                            StaticStore.putHolder(u.getId(), new FormButtonHolder(forms.get(0), author, result, config, isFrame, talent, extra, compact, lv, lang, ch.getId()));
+                            StaticStore.putHolder(u.getId(), new FormButtonHolder(forms.get(0), author, result, config, isFrame, talent, extra, compact, isTreasure, treasure, lv, lang, ch.getId()));
                         }
                     }
                 }
@@ -245,8 +263,10 @@ public class FormStat extends ConstraintCommand {
                     if(u != null) {
                         Message msg = getMessage(event);
 
+                        TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
+
                         if(msg != null)
-                            StaticStore.putHolder(u.getId(), new FormStatMessageHolder(forms, msg, config, holder, res, ch.getId(), param, lv, lang));
+                            StaticStore.putHolder(u.getId(), new FormStatMessageHolder(forms, msg, config, holder, res, ch.getId(), param, lv, treasure, lang));
                     }
                 }
 
@@ -295,6 +315,12 @@ public class FormStat extends ConstraintCommand {
                         } else
                             break label;
                     }
+                    case "-tr", "-treasure" -> {
+                        if ((result & PARAM_TREASURE) == 0) {
+                            result |= PARAM_TREASURE;
+                        } else
+                            break label;
+                    }
                 }
             }
         }
@@ -311,6 +337,7 @@ public class FormStat extends ConstraintCommand {
         boolean isExtra = false;
         boolean isCompact = false;
         boolean isTrueForm = false;
+        boolean isTreasure = false;
 
         StringBuilder command = new StringBuilder();
 
@@ -369,6 +396,14 @@ public class FormStat extends ConstraintCommand {
                 case "-tf", "-trueform" -> {
                     if (!isTrueForm)
                         isTrueForm = true;
+                    else {
+                        command.append(content[i]);
+                        written = true;
+                    }
+                }
+                case "-tr", "-treasure" -> {
+                    if (!isTreasure)
+                        isTreasure = true;
                     else {
                         command.append(content[i]);
                         written = true;

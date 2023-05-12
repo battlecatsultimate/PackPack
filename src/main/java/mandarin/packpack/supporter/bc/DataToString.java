@@ -2,7 +2,6 @@ package mandarin.packpack.supporter.bc;
 
 import common.CommonStatic;
 import common.battle.BasisSet;
-import common.battle.Treasure;
 import common.battle.data.*;
 import common.pack.Identifier;
 import common.pack.PackData;
@@ -21,6 +20,7 @@ import common.util.unit.*;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.data.TreasureHolder;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 
 import java.awt.*;
@@ -581,7 +581,7 @@ public class DataToString extends Data {
         return true;
     }
 
-    public static String getCD(MaskUnit f, boolean isFrame, boolean talent, Level lvs) {
+    public static String getCD(MaskUnit f, boolean isFrame, boolean talent, Level lvs, TreasureHolder t) {
         if(f == null)
             return "";
 
@@ -598,11 +598,11 @@ public class DataToString extends Data {
         if(isFrame) {
             return BasisSet.current().t().getFinRes(du.getRespawn())+"f";
         } else {
-            return df.format(BasisSet.current().t().getFinRes(du.getRespawn())/30.0)+"s";
+            return df.format(t.getCooldown(du.getRespawn())/30.0)+"s";
         }
     }
 
-    public static String getAtk(MaskUnit f, UnitLevel lv, boolean talent, Level lvs) {
+    public static String getAtk(MaskUnit f, UnitLevel lv, boolean talent, Level lvs, boolean treasure, TreasureHolder t) {
         if(f == null)
             return "";
 
@@ -613,10 +613,31 @@ public class DataToString extends Data {
         else
             du = f;
 
+        String normal;
+        String withTreasure;
+
+        if(du.rawAtkData().length > 1) {
+            normal = getTotalAtk(lv, du, talent, lvs, false, t) + " " + getAtks(lv, du, talent, lvs, false, t);
+
+            if(treasure) {
+                withTreasure = getTotalAtk(lv, du, talent, lvs, true, t) + " " + getAtks(lv, du, talent, lvs, true, t);
+            } else {
+                withTreasure = "";
+            }
+
+            if (withTreasure.isBlank() || normal.equals(withTreasure)) {
+                return normal;
+            } else {
+                return normal + "\n<" + withTreasure + ">";
+            }
+        }
+
         if(du.rawAtkData().length > 1)
-            return getTotalAtk(lv, du, talent, lvs) + " " + getAtks(lv, du, talent, lvs);
+            return getTotalAtk(lv, du, talent, lvs, false, t) + " " + getAtks(lv, du, talent, lvs, false, t) +
+                    (treasure ? "\n<" + getTotalAtk(lv, du, talent, lvs, true, t) + " " + getAtks(lv, du, talent, lvs, true, t) + ">" : "");
         else
-            return getTotalAtk(lv, du, talent, lvs);
+            return getTotalAtk(lv, du, talent, lvs, false, t) +
+                    (treasure ? " <" + getTotalAtk(lv, du, talent, lvs, true, t) + ">" : "");
     }
 
     public static String getAtk(MaskEnemy e, int magnification) {
@@ -629,19 +650,37 @@ public class DataToString extends Data {
             return getTotalAtk(e, magnification);
     }
 
-    public static String getTotalAtk(UnitLevel lv, MaskUnit du, boolean talent, Level lvs) {
-        Treasure t = BasisSet.current().t();
-
+    public static String getTotalAtk(UnitLevel lv, MaskUnit du, boolean talent, Level lvs, boolean treasure, TreasureHolder t) {
         int result = 0;
 
         int[][] raw = du.rawAtkData();
 
         for(int[] atk : raw) {
+            int factor;
+
             if(du.getPCoin() != null && talent) {
-                result += (int) ((int) (Math.round(atk[0] * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getAtkMulti()) * du.getPCoin().getAtkMultiplication(lvs.getTalents()));
+                factor = (int) ((int) (Math.round(atk[0] * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getAtkMultiplier()) * du.getPCoin().getAtkMultiplication(lvs.getTalents()));
             } else {
-                result += (int) (Math.round(atk[0] * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getAtkMulti());
+                factor = (int) (Math.round(atk[0] * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getAtkMultiplier());
             }
+
+            if(treasure) {
+                List<Trait> traits = du.getTraits();
+
+                if((du.getAbi() & Data.AB_GOOD) > 0) {
+                    factor = (int) (factor * t.getStrongAttackMultiplier(traits));
+                }
+
+                if((du.getAbi() & Data.AB_MASSIVE) > 0) {
+                    factor = (int) (factor * t.getMassiveAttackMultiplier(traits));
+                }
+
+                if((du.getAbi() & Data.AB_MASSIVES) > 0) {
+                    factor = (int) (factor * t.getInsaneMassiveAttackMultiplier(traits));
+                }
+            }
+
+            result += factor;
         }
 
         return String.valueOf(result);
@@ -662,13 +701,11 @@ public class DataToString extends Data {
         return String.valueOf(result);
     }
 
-    public static String getAtks(UnitLevel lv, MaskUnit du, boolean talent, Level lvs) {
+    public static String getAtks(UnitLevel lv, MaskUnit du, boolean talent, Level lvs, boolean treasure, TreasureHolder t) {
         if(du == null)
             return "";
 
         int[][] raw = du.rawAtkData();
-
-        Treasure t = BasisSet.current().t();
 
         ArrayList<Integer> damage = new ArrayList<>();
 
@@ -676,9 +713,25 @@ public class DataToString extends Data {
             int result;
 
             if(du.getPCoin() != null && talent) {
-                result = (int) ((int) (Math.round(atk[0] * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getAtkMulti()) * du.getPCoin().getAtkMultiplication(lvs.getTalents()));
+                result = (int) ((int) (Math.round(atk[0] * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getAtkMultiplier()) * du.getPCoin().getAtkMultiplication(lvs.getTalents()));
             } else {
-                result = (int) (Math.round(atk[0] * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getAtkMulti());
+                result = (int) (Math.round(atk[0] * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getAtkMultiplier());
+            }
+
+            if(treasure) {
+                List<Trait> traits = du.getTraits();
+
+                if((du.getAbi() & Data.AB_GOOD) > 0) {
+                    result = (int) (result * t.getStrongAttackMultiplier(traits));
+                }
+
+                if((du.getAbi() & Data.AB_MASSIVE) > 0) {
+                    result = (int) (result * t.getMassiveAttackMultiplier(traits));
+                }
+
+                if((du.getAbi() & Data.AB_MASSIVES) > 0) {
+                    result = (int) (result * t.getInsaneMassiveAttackMultiplier(traits));
+                }
             }
 
             damage.add(result);
@@ -720,7 +773,7 @@ public class DataToString extends Data {
         return sb.toString();
     }
 
-    public static String getDPS(MaskUnit f, UnitLevel lv, boolean talent, Level lvs) {
+    public static String getDPS(MaskUnit f, UnitLevel lv, boolean talent, Level lvs, boolean treasure, TreasureHolder t) {
         if(f == null)
             return "";
 
@@ -734,7 +787,7 @@ public class DataToString extends Data {
         else
             du = f;
 
-        return df.format(Double.parseDouble(getTotalAtk(lv, du, talent, lvs)) / (du.getItv() / 30.0));
+        return df.format(Double.parseDouble(getTotalAtk(lv, du, talent, lvs, treasure, t)) / (du.getItv() / 30.0));
     }
 
     public static String getDPS(MaskEnemy e, int magnification) {
@@ -792,7 +845,7 @@ public class DataToString extends Data {
         return String.valueOf(e.getHb());
     }
 
-    public static String getHP(MaskUnit f, UnitLevel lv, boolean talent, Level lvs) {
+    public static String getHP(MaskUnit f, UnitLevel lv, boolean talent, Level lvs, boolean treasure, TreasureHolder t) {
         if(f == null)
             return "";
 
@@ -803,14 +856,28 @@ public class DataToString extends Data {
         else
             du = f;
 
-        Treasure t = BasisSet.current().t();
-
         int result;
 
         if(f.getPCoin() != null && talent) {
-            result = (int) ((int) (Math.round(du.getHp() * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getDefMulti()) * f.getPCoin().getHPMultiplication(lvs.getTalents()));
+            result = (int) ((int) (Math.round(du.getHp() * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getHealthMultiplier()) * f.getPCoin().getHPMultiplication(lvs.getTalents()));
         } else {
-            result = (int) (Math.round(du.getHp() * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getDefMulti());
+            result = (int) (Math.round(du.getHp() * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getHealthMultiplier());
+        }
+
+        if(treasure) {
+            List<Trait> traits = du.getTraits();
+
+            if((du.getAbi() & Data.AB_GOOD) > 0) {
+                result = (int) (result / t.getStrongHealthMultiplier(traits));
+            }
+
+            if((du.getAbi() & Data.AB_RESIST) > 0) {
+                result = (int) (result / t.getResistHealthMultiplier(traits));
+            }
+
+            if((du.getAbi() & Data.AB_RESISTS) > 0) {
+                result = (int) (result / t.getInsaneResistHealthMultiplier(traits));
+            }
         }
 
         return String.valueOf(result);
@@ -914,13 +981,11 @@ public class DataToString extends Data {
         return String.valueOf((int)(du.getPrice()*1.5));
     }
 
-    public static String getDrop(MaskEnemy e) {
+    public static String getDrop(MaskEnemy e, TreasureHolder t) {
         if(e == null)
             return "";
 
-        Treasure t = BasisSet.current().t();
-
-        return String.valueOf((int) (e.getDrop() * t.getDropMulti() / 100));
+        return String.valueOf((int) (e.getDrop() * t.getDropMultiplier() / 100));
     }
 
     public static String getSiMu(MaskUnit f, int lang) {
@@ -1014,17 +1079,23 @@ public class DataToString extends Data {
 
         PackData pack = UserProfile.getPack(id);
 
-        if(pack == null)
-            return id;
-        else if(pack instanceof PackData.DefPack) {
-            return LangID.getStringByID("data_default", lang);
-        } else if(pack instanceof PackData.UserPack) {
-            String p = ((PackData.UserPack) pack).desc.name;
+        switch (pack) {
+            case null -> {
+                return id;
+            }
+            case PackData.DefPack ignored -> {
+                return LangID.getStringByID("data_default", lang);
+            }
+            case PackData.UserPack userPack -> {
+                String p = userPack.desc.name;
 
-            if(p == null)
-                p = id;
+                if (p == null)
+                    p = id;
 
-            return p;
+                return p;
+            }
+            default -> {
+            }
         }
 
         return id;
@@ -1079,18 +1150,16 @@ public class DataToString extends Data {
         return String.valueOf(st.health);
     }
 
-    public static String getXP(Stage st) {
+    public static String getXP(Stage st, TreasureHolder t) {
         if(!(st.info instanceof DefStageInfo info))
             return "" + 0;
-
-        Treasure t = BasisSet.current().t();
 
         MapColc mc = st.getCont().getCont();
 
         if(mc.getSID().equals("000000") || mc.getSID().equals("000013"))
-            return String.valueOf((int) (info.xp * t.getXPMult() * 9));
+            return String.valueOf((int) (info.xp * t.getStudyMultiplier() * 9));
         else
-            return String.valueOf((int) (info.xp * t.getXPMult()));
+            return String.valueOf((int) (info.xp * t.getStudyMultiplier()));
     }
 
     public static String getDifficulty(Stage st, int lang) {
@@ -2168,15 +2237,25 @@ public class DataToString extends Data {
         }
     }
 
-    public static String getHealthHitback(MaskUnit f, UnitLevel lv, boolean talent, Level lvs) {
-        return getHP(f, lv, talent, lvs) + " - " + getHitback(f, talent, lvs);
+    public static String getHealthHitback(MaskUnit f, UnitLevel lv, boolean talent, Level lvs, boolean treasure, TreasureHolder t) {
+        String normal = getHP(f, lv, talent, lvs, false, t);
+        String withTreasure = "";
+
+        if(treasure)
+            withTreasure = getHP(f, lv, talent, lvs, true, t);
+
+        if(withTreasure.isBlank() || normal.equals(withTreasure)) {
+            return normal + " - " + getHitback(f, talent, lvs);
+        } else {
+            return normal + " <" + withTreasure + ">" + " - " + getHitback(f, talent, lvs);
+        }
     }
 
     public static String getHealthHitback(MaskEnemy e, int m) {
         return getHP(e, m) + " - " + getHitback(e);
     }
 
-    public static String getCompactAtk(MaskUnit f, boolean talent, UnitLevel lv, Level lvs) {
+    public static String getCompactAtk(MaskUnit f, boolean talent, UnitLevel lv, Level lvs, boolean treasure, TreasureHolder t) {
         if(f == null)
             return "";
 
@@ -2187,10 +2266,38 @@ public class DataToString extends Data {
         else
             du = f;
 
-        if(du.rawAtkData().length > 1)
-            return getTotalAtk(lv, du, talent, lvs) + " " + getCompactAtks(du, talent, lv, lvs) + " [" + getDPS(f, lv, talent, lvs) + "]";
-        else
-            return getTotalAtk(lv, du, talent, lvs) + " [" + getDPS(f, lv, talent, lvs) + "]";
+        String normal;
+        String withTreasure;
+
+        if(du.rawAtkData().length > 1) {
+            normal = getTotalAtk(lv, du, talent, lvs, false, t) + " " + getCompactAtks(du, talent, lv, lvs, false, t) + " [" + getDPS(f, lv, talent, lvs, false, t) + "]";
+
+            if(treasure) {
+                withTreasure = getTotalAtk(lv, du, talent, lvs, true, t) + " " + getCompactAtks(du, talent, lv, lvs, true, t) + " [" + getDPS(f, lv, talent, lvs, true, t) + "]";
+            } else {
+                withTreasure = "";
+            }
+
+            if (withTreasure.isBlank() || normal.equals(withTreasure)) {
+                return normal + "\n<" + withTreasure + ">";
+            } else {
+                return normal;
+            }
+        } else {
+            normal = getTotalAtk(lv, du, talent, lvs, false, t) + " [" + getDPS(f, lv, talent, lvs, false, t) + "]";
+
+            if(treasure) {
+                withTreasure = getTotalAtk(lv, du, talent, lvs, true, t) + " [" + getDPS(f, lv, talent, lvs, true, t) + "]";
+            } else {
+                withTreasure = "";
+            }
+
+            if(withTreasure.isBlank() || normal.equals(withTreasure)) {
+                return normal;
+            } else {
+                return normal + "\n<" + withTreasure + ">";
+            }
+        }
     }
 
     public static String getCompactAtk(MaskEnemy e, int m) {
@@ -2203,13 +2310,11 @@ public class DataToString extends Data {
             return getTotalAtk(e, m) + " [" + getDPS(e, m) + "]";
     }
 
-    private static String getCompactAtks(MaskUnit du, boolean talent, UnitLevel lv, Level lvs) {
+    private static String getCompactAtks(MaskUnit du, boolean talent, UnitLevel lv, Level lvs, boolean treasure, TreasureHolder t) {
         if(du == null)
             return "";
 
         int[][] raw = du.rawAtkData();
-
-        Treasure t = BasisSet.current().t();
 
         ArrayList<Integer> damage = new ArrayList<>();
 
@@ -2217,9 +2322,25 @@ public class DataToString extends Data {
             int result;
 
             if(du.getPCoin() != null && talent) {
-                result = (int) ((int) (Math.round(atk[0] * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getAtkMulti()) * du.getPCoin().getAtkMultiplication(lvs.getTalents()));
+                result = (int) ((int) (Math.round(atk[0] * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getAtkMultiplier()) * du.getPCoin().getAtkMultiplication(lvs.getTalents()));
             } else {
-                result = (int) (Math.round(atk[0] * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getAtkMulti());
+                result = (int) (Math.round(atk[0] * lv.getMult(lvs.getLv() + lvs.getPlusLv())) * t.getAtkMultiplier());
+            }
+
+            if(treasure) {
+                List<Trait> traits = du.getTraits();
+
+                if((du.getAbi() & Data.AB_GOOD) > 0) {
+                    result = (int) (result * t.getStrongAttackMultiplier(traits));
+                }
+
+                if((du.getAbi() & Data.AB_MASSIVE) > 0) {
+                    result = (int) (result * t.getMassiveAttackMultiplier(traits));
+                }
+
+                if((du.getAbi() & Data.AB_MASSIVES) > 0) {
+                    result = (int) (result * t.getInsaneMassiveAttackMultiplier(traits));
+                }
             }
 
             damage.add(result);
@@ -2285,12 +2406,12 @@ public class DataToString extends Data {
         return getAtkTime(e, isFrame) + " : " + getPre(e, isFrame) + " -> " + getPost(e, isFrame) + " -> " + getTBA(e, isFrame);
     }
 
-    public static String getCostCooldownSpeed(MaskUnit f, boolean isFrame, boolean talent, Level lvs) {
-        return getCost(f, talent, lvs) + " - " + getCD(f, isFrame, talent, lvs) + " - " + getSpeed(f, talent, lvs);
+    public static String getCostCooldownSpeed(MaskUnit f, boolean isFrame, boolean talent, Level lvs, TreasureHolder t) {
+        return getCost(f, talent, lvs) + " - " + getCD(f, isFrame, talent, lvs, t) + " - " + getSpeed(f, talent, lvs);
     }
 
-    public static String getDropBarrierSpeed(MaskEnemy e, int lang) {
-        return getDrop(e) + " - " + getBarrier(e, lang) + " - " + getSpeed(e);
+    public static String getDropBarrierSpeed(MaskEnemy e, TreasureHolder t, int lang) {
+        return getDrop(e, t) + " - " + getBarrier(e, lang) + " - " + getSpeed(e);
     }
 
     public static String getCompactTitle(Enemy e, int lang) {
@@ -2316,8 +2437,8 @@ public class DataToString extends Data {
         return getStageCode(st) +" - " + getDifficulty(st, lang) + " - " + getStar(st, star);
     }
 
-    public static String getEnergyBaseXP(Stage st, int lang) {
-        return getEnergy(st, lang) + " - " + getBaseHealth(st) + " - " + getXP(st);
+    public static String getEnergyBaseXP(Stage st, TreasureHolder t, int lang) {
+        return getEnergy(st, lang) + " - " + getBaseHealth(st) + " - " + getXP(st, t);
     }
 
     public static String getEnemyContinuableLength(Stage st, int lang) {

@@ -49,7 +49,7 @@ public class FormAnimMessageHolder extends SearchHolder {
 
         this.command = author.getContentRaw();
 
-        registerAutoFinish(this, msg, author, lang, FIVE_MIN);
+        registerAutoFinish(this, msg, lang, FIVE_MIN);
     }
 
     @Override

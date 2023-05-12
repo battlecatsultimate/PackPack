@@ -27,7 +27,7 @@
         "abbr_name": "멈춘다",
         "full_name": "멈춘다",
         "tooltip": "타겟을 일정 시간동안 멈추게 합니다",
-        "format": "(prob)% 확률로 (_dispTime(time)) 동안 멈춘다",
+        "format": "(prob)% 확률로 (_dispFruit(time)) 동안 멈춘다",
         "class": {
             "prob": {
                 "name": "확률",
@@ -43,7 +43,7 @@
         "abbr_name": "느리게",
         "full_name": "느리게 한다",
         "tooltip": "타겟의 이동속도를 느리게 합니다",
-        "format": "(prob)% 확률로 (_dispTime(time)) 동안 느리게 한다",
+        "format": "(prob)% 확률로 (_dispFruit(time)) 동안 느리게 한다",
         "class": {
             "prob": {
                 "name": "확률",
@@ -95,7 +95,7 @@
         "abbr_name": "약하게",
         "full_name": "약하게 한다",
         "tooltip": "타겟의 공격력을 특정 %로 감소시킵니다",
-        "format": "(prob)% 확률로 타겟을 (mult)% 로 (_dispTime(time)) 동안 약하게 한다",
+        "format": "(prob)% 확률로 타겟을 (mult)% 로 (_dispFruit(time)) 동안 약하게 한다",
         "class": {
             "prob": {
                 "name": "확률",
@@ -147,7 +147,7 @@
         "abbr_name": "저주",
         "full_name": "저주",
         "tooltip": "속성과 관련된 능력들을 무효화시킵니다",
-        "format": "(prob)% 확률로 (_dispTime(time)) 동안 저주",
+        "format": "(prob)% 확률로 (_dispFruit(time)) 동안 저주",
         "class": {
             "prob": {
                 "name": "확률",
@@ -676,7 +676,7 @@
         "abbr_name": "공격 무효",
         "full_name": "공격 무효",
         "tooltip": "특정 확률로 일정 시간동안 들어오는 모든 공격을 무시합니다",
-        "format": "(prob)% 확률로 (_dispTime(time)) 동안 공격 무효",
+        "format": "(prob)% 확률로 (_dispFruit(time)) 동안 공격 무효",
         "class": {
             "prob": {
                 "name": "확률",

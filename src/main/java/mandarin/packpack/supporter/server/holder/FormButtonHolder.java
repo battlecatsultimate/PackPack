@@ -5,6 +5,7 @@ import common.util.unit.Level;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
+import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.segment.ComponentHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -29,8 +30,10 @@ public class FormButtonHolder extends ComponentHolder {
     private final boolean extra;
     private final boolean compact;
     private final Level lv;
+    private final boolean treasure;
+    private final TreasureHolder t;
 
-    public FormButtonHolder(Form f, @Nonnull Message author,@Nonnull Message msg, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, boolean compact, Level lv, int lang, @Nonnull String channelID) {
+    public FormButtonHolder(Form f, @Nonnull Message author,@Nonnull Message msg, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, boolean compact, boolean treasure, TreasureHolder t, Level lv, int lang, @Nonnull String channelID) {
         super(author, channelID, msg.getId());
 
         this.embed = msg;
@@ -42,6 +45,8 @@ public class FormButtonHolder extends ComponentHolder {
         this.talent = talent;
         this.extra = extra;
         this.compact = compact;
+        this.treasure = treasure;
+        this.t = t;
         this.lv = lv;
 
         Timer autoFinish = new Timer();
@@ -98,7 +103,7 @@ public class FormButtonHolder extends ComponentHolder {
             Form newForm = f.unit.forms[f.fid + diff];
 
             try {
-                EntityHandler.showUnitEmb(newForm, ch, getAuthorMessage(), config, isFrame, talent, extra, false, false, lv, lang, false, compact);
+                EntityHandler.showUnitEmb(newForm, ch, getAuthorMessage(), config, isFrame, talent, extra, false, false, lv, treasure, t, lang, false, compact);
             } catch (Exception e) {
                 StaticStore.logger.uploadErrorLog(e, "E/FormButtonHolder::handleEvent - Failed to show unit embed on button click");
             }

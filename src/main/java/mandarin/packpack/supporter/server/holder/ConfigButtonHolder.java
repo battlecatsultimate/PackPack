@@ -25,7 +25,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class ConfigButtonHolder extends ComponentHolder {
-    private static final int TOTAL_CONFIG = 6;
+    private static final int TOTAL_CONFIG = 7;
+    private static final int SERVER_CONFIG = 2;
 
     private final Message msg;
     private final ConfigHolder config;
@@ -97,12 +98,7 @@ public class ConfigButtonHolder extends ComponentHolder {
                         .queue()));
             }
             case "extra" -> {
-                StringSelectInteractionEvent es = (StringSelectInteractionEvent) event;
-                
-                if (es.getValues().size() != 1)
-                    return;
-                
-                config.extra = es.getValues().get(0).equals("true");
+                config.extra = !config.extra;
                 
                 performResult(event);
             }
@@ -117,36 +113,28 @@ public class ConfigButtonHolder extends ComponentHolder {
                 performResult(event);
             }
             case "compact" -> {
-                StringSelectInteractionEvent es = (StringSelectInteractionEvent) event;
-                
-                if (es.getValues().size() != 1)
-                    return;
-                
-                config.compact = es.getValues().get(0).equals("true");
+                config.compact = !config.compact;
                 
                 performResult(event);
             }
             case "force" -> {
-                StringSelectInteractionEvent es = (StringSelectInteractionEvent) event;
-                
-                if (!forServer) {
-                    StaticStore.logger.uploadLog("W/ConfigButtonHolder::performInteraction - Force compact mode is visible for personal config");
-
-                    return;
-                }
-                
-                holder.forceCompact = es.getValues().get(0).equals("true");
+                holder.forceCompact = !holder.forceFullTreasure;
                 
                 performResult(event);
             }
-            case "trueform" -> {
-                StringSelectInteractionEvent es = (StringSelectInteractionEvent) event;
+            case "trueForm" -> {
+                config.trueForm = !config.trueForm;
                 
-                if (es.getValues().size() != 1)
-                    return;
-                
-                config.trueForm = es.getValues().get(0).equals("true");
-                
+                performResult(event);
+            }
+            case "treasure" -> {
+                config.treasure = !config.treasure;
+
+                performResult(event);
+            }
+            case "forceTreasure" -> {
+                holder.forceFullTreasure = !holder.forceFullTreasure;
+
                 performResult(event);
             }
             case "next" -> {
@@ -230,7 +218,7 @@ public class ConfigButtonHolder extends ComponentHolder {
         for(int i = page * 3; i < (page + 1) * 3; i++) {
             switch (i) {
                 case 0 -> m.add(ActionRow.of(Button.secondary("defLevels", String.format(LangID.getStringByID("config_setlevel", lang), config.defLevel)).withEmoji(Emoji.fromUnicode("⚙"))));
-                case 1 -> {
+                case 2 -> {
                     List<SelectOption> languages = new ArrayList<>();
 
                     if (!forServer) {
@@ -252,20 +240,28 @@ public class ConfigButtonHolder extends ComponentHolder {
 
                     m.add(ActionRow.of(StringSelectMenu.create("language").addOptions(languages).build()));
                 }
-                case 2 -> {
-                    List<SelectOption> extras = new ArrayList<>();
-
-                    if (config.extra) {
-                        extras.add(SelectOption.of(LangID.getStringByID("config_extra", lang).replace("_", LangID.getStringByID("data_true", lang)), "true").withDefault(true));
-                        extras.add(SelectOption.of(LangID.getStringByID("config_extra", lang).replace("_", LangID.getStringByID("data_false", lang)), "false"));
+                case 1 -> {
+                    if(config.extra) {
+                        m.add(ActionRow.of(Button.secondary("extra", LangID.getStringByID("config_extra", lang).replace("_", LangID.getStringByID("data_true", lang))).withEmoji(EmojiStore.SWITCHON)));
                     } else {
-                        extras.add(SelectOption.of(LangID.getStringByID("config_extra", lang).replace("_", LangID.getStringByID("data_true", lang)), "true"));
-                        extras.add(SelectOption.of(LangID.getStringByID("config_extra", lang).replace("_", LangID.getStringByID("data_false", lang)), "false").withDefault(true));
+                        m.add(ActionRow.of(Button.secondary("extra", LangID.getStringByID("config_extra", lang).replace("_", LangID.getStringByID("data_false", lang))).withEmoji(EmojiStore.SWITCHOFF)));
                     }
-
-                    m.add(ActionRow.of(StringSelectMenu.create("extra").addOptions(extras).build()));
                 }
                 case 3 -> {
+                    if(config.compact) {
+                        m.add(ActionRow.of(Button.secondary("compact", LangID.getStringByID("config_compact", lang).replace("_", LangID.getStringByID("data_true", lang))).withEmoji(EmojiStore.SWITCHON)));
+                    } else {
+                        m.add(ActionRow.of(Button.secondary("compact", LangID.getStringByID("config_compact", lang).replace("_", LangID.getStringByID("data_false", lang))).withEmoji(EmojiStore.SWITCHOFF)));
+                    }
+                }
+                case 4 -> {
+                    if(config.trueForm) {
+                        m.add(ActionRow.of(Button.secondary("trueForm", String.format(LangID.getStringByID("config_trueform", lang), LangID.getStringByID("data_true", lang))).withEmoji(EmojiStore.SWITCHON)));
+                    } else {
+                        m.add(ActionRow.of(Button.secondary("trueForm", String.format(LangID.getStringByID("config_trueform", lang), LangID.getStringByID("data_false", lang))).withEmoji(EmojiStore.SWITCHOFF)));
+                    }
+                }
+                case 5 -> {
                     List<SelectOption> units = new ArrayList<>();
 
                     if (config.useFrame) {
@@ -278,45 +274,29 @@ public class ConfigButtonHolder extends ComponentHolder {
 
                     m.add(ActionRow.of(StringSelectMenu.create("unit").addOptions(units).build()));
                 }
-                case 4 -> {
-                    List<SelectOption> compacts = new ArrayList<>();
-
-                    if (config.compact) {
-                        compacts.add(SelectOption.of(LangID.getStringByID("config_compact", lang).replace("_", LangID.getStringByID("data_true", lang)), "true").withDefault(true));
-                        compacts.add(SelectOption.of(LangID.getStringByID("config_compact", lang).replace("_", LangID.getStringByID("data_false", lang)), "false"));
-                    } else {
-                        compacts.add(SelectOption.of(LangID.getStringByID("config_compact", lang).replace("_", LangID.getStringByID("data_true", lang)), "true"));
-                        compacts.add(SelectOption.of(LangID.getStringByID("config_compact", lang).replace("_", LangID.getStringByID("data_false", lang)), "false").withDefault(true));
-                    }
-
-                    m.add(ActionRow.of(StringSelectMenu.create("compact").addOptions(compacts).build()));
-                }
-                case 5 -> {
-                    List<SelectOption> trueForms = new ArrayList<>();
-
-                    if (config.trueForm) {
-                        trueForms.add(SelectOption.of(String.format(LangID.getStringByID("config_trueform", lang), LangID.getStringByID("data_true", lang)), "true").withDefault(true));
-                        trueForms.add(SelectOption.of(String.format(LangID.getStringByID("config_trueform", lang), LangID.getStringByID("data_false", lang)), "false"));
-                    } else {
-                        trueForms.add(SelectOption.of(String.format(LangID.getStringByID("config_trueform", lang), LangID.getStringByID("data_true", lang)), "true"));
-                        trueForms.add(SelectOption.of(String.format(LangID.getStringByID("config_trueform", lang), LangID.getStringByID("data_false", lang)), "false").withDefault(true));
-                    }
-
-                    m.add(ActionRow.of(StringSelectMenu.create("trueform").addOptions(trueForms).build()));
-                }
                 case 6 -> {
+                    if(config.treasure) {
+                        m.add(ActionRow.of(Button.secondary("treasure", String.format(LangID.getStringByID("config_treasure", lang), LangID.getStringByID("data_true", lang))).withEmoji(EmojiStore.SWITCHON)));
+                    } else {
+                        m.add(ActionRow.of(Button.secondary("treasure", String.format(LangID.getStringByID("config_treasure", lang), LangID.getStringByID("data_false", lang))).withEmoji(EmojiStore.SWITCHOFF)));
+                    }
+                }
+                case 7 -> {
                     if (forServer && holder != null) {
-                        List<SelectOption> forces = new ArrayList<>();
-
-                        if (holder.forceCompact) {
-                            forces.add(SelectOption.of(LangID.getStringByID("config_force", lang).replace("_", LangID.getStringByID("data_true", lang)), "true").withDefault(true));
-                            forces.add(SelectOption.of(LangID.getStringByID("config_force", lang).replace("_", LangID.getStringByID("data_false", lang)), "false"));
+                        if(holder.forceCompact) {
+                            m.add(ActionRow.of(Button.secondary("force", LangID.getStringByID("config_force", lang).replace("_", LangID.getStringByID("data_true", lang))).withEmoji(EmojiStore.SWITCHON)));
                         } else {
-                            forces.add(SelectOption.of(LangID.getStringByID("config_force", lang).replace("_", LangID.getStringByID("data_true", lang)), "true"));
-                            forces.add(SelectOption.of(LangID.getStringByID("config_force", lang).replace("_", LangID.getStringByID("data_false", lang)), "false").withDefault(true));
+                            m.add(ActionRow.of(Button.secondary("force", LangID.getStringByID("config_force", lang).replace("_", LangID.getStringByID("data_false", lang))).withEmoji(EmojiStore.SWITCHOFF)));
                         }
-
-                        m.add(ActionRow.of(StringSelectMenu.create("force").addOptions(forces).build()));
+                    }
+                }
+                case 8 -> {
+                    if (forServer && holder != null) {
+                        if(holder.forceFullTreasure) {
+                            m.add(ActionRow.of(Button.secondary("forceTreasure", String.format(LangID.getStringByID("config_forcetrea", lang), LangID.getStringByID("data_true", lang))).withEmoji(EmojiStore.SWITCHON)));
+                        } else {
+                            m.add(ActionRow.of(Button.secondary("forceTreasure", String.format(LangID.getStringByID("config_forcetrea", lang), LangID.getStringByID("data_false", lang))).withEmoji(EmojiStore.SWITCHOFF)));
+                        }
                     }
                 }
             }
@@ -327,7 +307,7 @@ public class ConfigButtonHolder extends ComponentHolder {
         if(page == 0) {
             pages.add(Button.secondary("prev", LangID.getStringByID("search_prev", lang)).withEmoji(Emoji.fromCustom(EmojiStore.PREVIOUS)).asDisabled());
             pages.add(Button.secondary("next", LangID.getStringByID("search_next", lang)).withEmoji(Emoji.fromCustom(EmojiStore.NEXT)));
-        } else if((page + 1) * 3 >= (holder != null && forServer ? TOTAL_CONFIG + 1 : TOTAL_CONFIG)) {
+        } else if((page + 1) * 3 >= (holder != null && forServer ? TOTAL_CONFIG + SERVER_CONFIG : TOTAL_CONFIG)) {
             pages.add(Button.secondary("prev", LangID.getStringByID("search_prev", lang)).withEmoji(Emoji.fromCustom(EmojiStore.PREVIOUS)));
             pages.add(Button.secondary("next", LangID.getStringByID("search_next", lang)).withEmoji(Emoji.fromCustom(EmojiStore.NEXT)).asDisabled());
         } else {
@@ -366,65 +346,46 @@ public class ConfigButtonHolder extends ComponentHolder {
             default -> LangID.getStringByID("config_auto", lang);
         };
 
-        String ex;
-        String bool;
+        String ex = LangID.getStringByID(config.extra ? "config_extrue" : "config_exfalse", lang);
+        String bool = LangID.getStringByID(config.extra ? "data_true" : "data_false", lang);
 
-        if(config.extra) {
-            ex = LangID.getStringByID("config_extrue", lang);
-            bool = LangID.getStringByID("data_true", lang);
-        } else {
-            ex = LangID.getStringByID("config_exfalse", lang);
-            bool = LangID.getStringByID("data_false", lang);
-        }
+        String unit = LangID.getStringByID(config.useFrame ? "config_frame" : "config_second", lang);
 
-        String unit;
+        String compact = LangID.getStringByID(config.compact ? "data_true" : "data_false", lang);
+        String comp = LangID.getStringByID(config.compact ? "config_comtrue" : "config_comfalse", lang);
 
-        if(config.useFrame)
-            unit = LangID.getStringByID("config_frame", lang);
-        else
-            unit = LangID.getStringByID("config_second", lang);
+        String trueForm = LangID.getStringByID(config.trueForm ? "data_true" : "data_false", lang);
+        String tr = LangID.getStringByID(config.trueForm ? "config_truetrue" : "config_truefalse", lang);
 
-        String compact;
-        String comp;
-
-        if(config.compact) {
-            compact = LangID.getStringByID("data_true", lang);
-            comp = LangID.getStringByID("config_comtrue", lang);
-        } else {
-            compact = LangID.getStringByID("data_false", lang);
-            comp = LangID.getStringByID("config_comfalse", lang);
-        }
-
-        String trueForm;
-        String tr;
-
-        if(config.trueForm) {
-            trueForm = LangID.getStringByID("data_true", lang);
-            tr = LangID.getStringByID("config_truetrue", lang);
-        } else {
-            trueForm = LangID.getStringByID("data_false", lang);
-            tr = LangID.getStringByID("config_truefalse", lang);
-        }
+        String treasure = LangID.getStringByID(config.treasure ? "data_true" : "data_false", lang);
+        String trea = LangID.getStringByID(config.treasure ? "config_treasuretrue" : "config_treasurefalse", lang);
 
         String message = "**" + LangID.getStringByID("config_locale", lang).replace("_", locale) + "**\n\n" +
-                "**" + LangID.getStringByID("config_default", lang).replace("_", String.valueOf(config.defLevel)) + "**\n" +
+                "**" + LangID.getStringByID("config_default", lang).replace("_", String.valueOf(config.defLevel)) + "**\n\n" +
                 LangID.getStringByID("config_deflvdesc", lang).replace("_", String.valueOf(config.defLevel)) + "\n\n" +
-                "**" + LangID.getStringByID("config_extra", lang).replace("_", bool) + "**\n" +
+                "**" + LangID.getStringByID("config_extra", lang).replace("_", bool) + "**\n\n" +
                 ex + "\n\n" +
-                "**" + LangID.getStringByID("config_unit", lang).replace("_", unit) + "**\n" +
+                "**" + LangID.getStringByID("config_unit", lang).replace("_", unit) + "**\n\n" +
                 LangID.getStringByID("config_unitdesc", lang) + "\n\n" +
-                "**" + LangID.getStringByID("config_compact", lang).replace("_", compact) + "**\n" +
+                "**" + LangID.getStringByID("config_compact", lang).replace("_", compact) + "**\n\n" +
                 comp + "\n\n" +
-                "**" + String.format(LangID.getStringByID("config_trueform", lang), trueForm) + "**\n" +
-                tr;
+                "**" + String.format(LangID.getStringByID("config_trueform", lang), trueForm) + "**\n\n" +
+                tr + "\n\n" +
+                "**" + String.format(LangID.getStringByID("config_treasure", lang), treasure) + "**\n\n" +
+                trea;
 
         if(forServer) {
             String force = LangID.getStringByID((holder != null && holder.forceCompact) ? "data_true" : "data_false", lang);
             String forc = LangID.getStringByID((holder != null && holder.forceCompact) ? "config_fortrue" : "config_forfalse", lang);
 
+            String forcet = LangID.getStringByID((holder != null && holder.forceFullTreasure) ? "data_true" : "data_false", lang);
+            String fort = LangID.getStringByID((holder != null && holder.forceFullTreasure) ? "config_forcetreatrue" : "config_forcetreafalse", lang);
+
             message += "\n\n" +
-                    "**" + LangID.getStringByID("config_force", lang).replace("_", force) + "**\n" +
-                    forc;
+                    "**" + LangID.getStringByID("config_force", lang).replace("_", force) + "**\n\n" +
+                    forc + "\n\n" +
+                    "**" + String.format(LangID.getStringByID("config_forcetrea", lang), forcet) + "**\n\n" +
+                    fort;
         }
 
         return message;

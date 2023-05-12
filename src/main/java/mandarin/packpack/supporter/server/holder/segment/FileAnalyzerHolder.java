@@ -41,7 +41,7 @@ public abstract class FileAnalyzerHolder extends MessageHolder {
         if(!checkAttachments(author, false)) {
             StaticStore.putHolder(author.getAuthor().getId(), this);
 
-            registerAutoFinish(this, msg, author, lang, "stat_expire", TimeUnit.MINUTES.toMillis(5));
+            registerAutoFinish(this, msg, lang, "stat_expire", TimeUnit.MINUTES.toMillis(5));
         }
     }
 

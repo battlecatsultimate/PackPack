@@ -26,7 +26,7 @@
     "abbr_name": "止める",
     "full_name": "動きを止める",
     "tooltip": null,
-    "format": "(prob)%の確率で(_dispTime(time))の間動きを止める",
+    "format": "(prob)%の確率で(_dispFruit(time))の間動きを止める",
     "class": {
       "prob": {
         "name": "確率",
@@ -42,7 +42,7 @@
     "abbr_name": "遅くする",
     "full_name": "動きを遅くする",
     "tooltip": null,
-    "format": "(prob)%の確率で(_dispTime(time))の間動きを遅くする",
+    "format": "(prob)%の確率で(_dispFruit(time))の間動きを遅くする",
     "class": {
       "prob": {
         "name": "確率",
@@ -93,7 +93,7 @@
     "abbr_name": "攻撃力低減",
     "full_name": "攻撃力ダウン",
     "tooltip": null,
-    "format": "(prob)%の確率で(_dispTime(time))の間攻撃力を(mult)%にダウンさせる",
+    "format": "(prob)%の確率で(_dispFruit(time))の間攻撃力を(mult)%にダウンさせる",
     "class": {
       "prob": {
         "name": "確率",
@@ -145,7 +145,7 @@
     "abbr_name": "呪い",
     "full_name": "呪い",
     "tooltip": "特殊能力封印",
-    "format": "(prob)%の確率で(_dispTime(time))の間[(_isEnemy){古代の}]呪う",
+    "format": "(prob)%の確率で(_dispFruit(time))の間[(_isEnemy){古代の}]呪う",
     "class": {
       "prob": {
         "name": "確率",
@@ -722,7 +722,7 @@
     "abbr_name": "攻撃無効",
     "full_name": "攻撃無効",
     "tooltip": null,
-    "format": "(prob)%の確率で(_dispTime(time))の間攻撃を無効にする",
+    "format": "(prob)%の確率で(_dispFruit(time))の間攻撃を無効にする",
     "class": {
       "prob": {
         "name": "確率",

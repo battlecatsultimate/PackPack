@@ -27,7 +27,7 @@
         "abbr_name": "para",
         "full_name": "Parálisis",
         "tooltip": null,
-        "format": "Probabilidad del (prob)% de paralizar por (_dispTime(time))",
+        "format": "Probabilidad del (prob)% de paralizar por (_dispFruit(time))",
         "class": {
             "prob": {
                 "name": "probabilidad",
@@ -43,7 +43,7 @@
         "abbr_name": "ralent.",
         "full_name": "Ralentización",
         "tooltip": null,
-        "format": "Probabilidad del (prob)% de ralentizar por (_dispTime(time))",
+        "format": "Probabilidad del (prob)% de ralentizar por (_dispFruit(time))",
         "class": {
             "prob": {
                 "name": "probabilidad",
@@ -95,7 +95,7 @@
         "abbr_name": "desgaste",
         "full_name": "Desgaste",
         "tooltip": null,
-        "format": "Probabilidad del (prob)% de [(mult>100){fortalecer}(mult<=100){desgastar}] el ataque del objetivo al [(mult>100){(mult)}(mult<=100){(mult)}]% durante (_dispTime(time))",
+        "format": "Probabilidad del (prob)% de [(mult>100){fortalecer}(mult<=100){desgastar}] el ataque del objetivo al [(mult>100){(mult)}(mult<=100){(mult)}]% durante (_dispFruit(time))",
         "class": {
             "prob": {
                 "name": "probabilidad",
@@ -147,7 +147,7 @@
         "abbr_name": "maldición",
         "full_name": "Maldición",
         "tooltip": "Elimina habilidades relacionadas con los rasgos",
-        "format": "Probabilidad del (prob)% de maldecir por (_dispTime(time))",
+        "format": "Probabilidad del (prob)% de maldecir por (_dispFruit(time))",
         "class": {
             "prob": {
                 "name": "probabilidad",
@@ -771,7 +771,7 @@
         "abbr_name": "evasión",
         "full_name": "Evasión",
         "tooltip": null,
-        "format": "Probabilidad del (prob)% de esquivar ataques por (_dispTime(time))",
+        "format": "Probabilidad del (prob)% de esquivar ataques por (_dispFruit(time))",
         "class": {
             "prob": {
                 "name": "probabilidad",

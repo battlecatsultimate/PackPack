@@ -23,7 +23,7 @@ public abstract class Holder {
 
     protected static final long FIVE_MIN = TimeUnit.MINUTES.toMillis(5);
 
-    public static void registerAutoFinish(Holder holder, Message msg, Message author, int lang, long millis) {
+    public static void registerAutoFinish(Holder holder, Message msg, int lang, long millis) {
         Timer autoFinish = new Timer();
 
         autoFinish.schedule(new TimerTask() {
@@ -32,9 +32,9 @@ public abstract class Holder {
                 if(holder.expired)
                     return;
 
+                holder.expire(holder.userID);
                 holder.expired = true;
 
-                StaticStore.removeHolder(author.getAuthor().getId(), holder);
                 msg.editMessage(LangID.getStringByID("formst_expire", lang))
                         .setComponents()
                         .queue();
@@ -42,7 +42,7 @@ public abstract class Holder {
         }, millis);
     }
 
-    public static void registerAutoFinish(Holder holder, Message msg, Message author, int lang, long millis, @Nullable Runnable run) {
+    public static void registerAutoFinish(Holder holder, Message msg, int lang, long millis, @Nullable Runnable run) {
         Timer autoFinish = new Timer();
 
         autoFinish.schedule(new TimerTask() {
@@ -51,9 +51,9 @@ public abstract class Holder {
                 if(holder.expired)
                     return;
 
+                holder.expire(holder.userID);
                 holder.expired = true;
 
-                StaticStore.removeHolder(author.getAuthor().getId(), holder);
                 msg.editMessage(LangID.getStringByID("formst_expire", lang))
                         .setComponents()
                         .queue();
@@ -64,7 +64,7 @@ public abstract class Holder {
         }, millis);
     }
 
-    public static void registerAutoFinish(Holder holder, Message msg, Message author, int lang, String langID, long millis) {
+    public static void registerAutoFinish(Holder holder, Message msg, int lang, String langID, long millis) {
         Timer autoFinish = new Timer();
 
         autoFinish.schedule(new TimerTask() {
@@ -73,9 +73,9 @@ public abstract class Holder {
                 if(holder.expired)
                     return;
 
+                holder.expire(holder.userID);
                 holder.expired = true;
 
-                StaticStore.removeHolder(author.getAuthor().getId(), holder);
                 msg.editMessage(LangID.getStringByID(langID, lang))
                         .setComponents()
                         .queue();
@@ -83,7 +83,7 @@ public abstract class Holder {
         }, millis);
     }
 
-    public static void registerAutoFinish(Holder holder, Message msg, Message author, int lang, String langID, long millis, @Nullable Runnable run) {
+    public static void registerAutoFinish(Holder holder, Message msg, int lang, String langID, long millis, @Nullable Runnable run) {
         Timer autoFinish = new Timer();
 
         autoFinish.schedule(new TimerTask() {
@@ -92,9 +92,9 @@ public abstract class Holder {
                 if (holder.expired)
                     return;
 
+                holder.expire(holder.userID);
                 holder.expired = true;
 
-                StaticStore.removeHolder(author.getAuthor().getId(), holder);
                 msg.editMessage(LangID.getStringByID(langID, lang))
                         .setComponents()
                         .queue();

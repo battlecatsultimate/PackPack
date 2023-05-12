@@ -40,6 +40,12 @@ public class EmojiStore {
         MAANIM = StaticStore.getEmoteWitNameAndID(jda, "Maanim", 1021728344632467517L, false, true);
         PAYPAL = StaticStore.getEmoteWitNameAndID(jda, "PayPal", 1088764164274663536L, false, true);
         CASHAPP = StaticStore.getEmoteWitNameAndID(jda, "CashApp", 1088764190505836564L, false, true);
+        SWITCHON = StaticStore.getEmoteWitNameAndID(jda, "SwitchOn", 1105684864985993216L, false, true);
+        SWITCHOFF = StaticStore.getEmoteWitNameAndID(jda, "SwitchOff", 1105684863236976691L, false, true);
+        ORB = StaticStore.getEmoteWitNameAndID(jda, "Orb", 1105772389255614534L, false, true);
+        DOGE = StaticStore.getEmoteWitNameAndID(jda, "Doge", 1105766783077584936L, false, true);
+        SHIBALIEN = StaticStore.getEmoteWitNameAndID(jda, "Shibalien", 1105766785002774610L, false, true);
+        SHIBALIENELITE = StaticStore.getEmoteWitNameAndID(jda, "Shibalien_Elite", 1105766780439380048L, false, true);
 
         File iconData = new File("./data/abilityIcons.txt");
 
@@ -106,6 +112,12 @@ public class EmojiStore {
     public static RichCustomEmoji MAANIM;
     public static RichCustomEmoji PAYPAL;
     public static RichCustomEmoji CASHAPP;
+    public static RichCustomEmoji SWITCHON;
+    public static RichCustomEmoji SWITCHOFF;
+    public static RichCustomEmoji ORB;
+    public static RichCustomEmoji DOGE;
+    public static RichCustomEmoji SHIBALIEN;
+    public static RichCustomEmoji SHIBALIENELITE;
 
     public static Map<String, RichCustomEmoji> ABILITY = new HashMap<>();
     public static MultiLangCont<String, RichCustomEmoji> TRAIT = new MultiLangCont<>();

@@ -19,6 +19,7 @@ import common.util.unit.Enemy;
 import common.util.unit.Unit;
 import mandarin.packpack.supporter.awt.PCIB;
 import mandarin.packpack.supporter.event.EventFactor;
+import mandarin.packpack.supporter.server.data.TreasureHolder;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -163,11 +164,11 @@ public class Initializer {
                     Queue<String> qs = vf.getData().readLine();
 
                     switch (fi) {
-                        case "UnitName.txt":
+                        case "UnitName.txt" -> {
                             int size = qs.size();
                             int i = 0;
 
-                            while(i < size) {
+                            while (i < size) {
                                 String line = qs.poll();
 
                                 if (line == null) {
@@ -179,28 +180,29 @@ public class Initializer {
 
                                 Unit u = def.units.get(CommonStatic.parseIntN(str[0]));
 
-                                if(u == null) {
+                                if (u == null) {
                                     i++;
                                     continue;
                                 }
 
                                 int j = 0;
 
-                                while(j < Math.min(str.length-1, u.forms.length)) {
-                                    MultiLangCont.getStatic().FNAME.put(f, u.forms[j], str[j+1].trim());
+                                while (j < Math.min(str.length - 1, u.forms.length)) {
+                                    MultiLangCont.getStatic().FNAME.put(f, u.forms[j], str[j + 1].trim());
                                     j++;
                                 }
 
                                 i++;
                             }
-                            break;
-                        case "UnitExplanation.txt":
-                            size = qs.size();
-                            i = 0;
+                        }
+                        case "UnitExplanation.txt" -> {
+                            int size = qs.size();
+                            int i = 0;
+
                             while (i < size) {
                                 String line = qs.poll();
 
-                                if(line == null) {
+                                if (line == null) {
                                     i++;
                                     continue;
                                 }
@@ -211,57 +213,57 @@ public class Initializer {
 
                                 int j = 0;
 
-                                while(j < Math.min(u.forms.length, str.length-1)) {
-                                    String[] lines = str[j+1].trim().split("<br>");
+                                while (j < Math.min(u.forms.length, str.length - 1)) {
+                                    String[] lines = str[j + 1].trim().split("<br>");
                                     MultiLangCont.getStatic().FEXP.put(f, u.forms[j], lines);
                                     j++;
                                 }
 
                                 i++;
                             }
-                            break;
-                        case "CatFruitExplanation.txt":
-                            for(String line : qs) {
-                                if(line == null)
+                        }
+                        case "CatFruitExplanation.txt" -> {
+                            for (String line : qs) {
+                                if (line == null)
                                     continue;
 
                                 String[] str = line.trim().split("\t");
 
                                 Unit u = def.units.get(CommonStatic.parseIntN(str[0]));
 
-                                if(u == null)
+                                if (u == null)
                                     continue;
 
                                 String lines = str[1].replace("<br>", "\n");
 
                                 MultiLangCont.getStatic().CFEXP.put(f, u.info, lines);
                             }
-                            break;
-                        case "ComboName.txt":
-                            for(String line : qs) {
-                                if(line == null)
+                        }
+                        case "ComboName.txt" -> {
+                            for (String line : qs) {
+                                if (line == null)
                                     continue;
 
                                 String[] str = line.trim().split("\t");
 
-                                if(str.length <= 1)
+                                if (str.length <= 1)
                                     continue;
 
                                 int id = Integer.parseInt(str[0].trim());
 
                                 Combo c = findComboWithID(id);
 
-                                if(c == null)
+                                if (c == null)
                                     continue;
 
                                 String name = str[1].trim();
 
                                 MultiLangCont.getStatic().COMNAME.put(f, c, name);
                             }
-                            break;
-                        case "EnemyName.txt":
-                            for(String line : qs) {
-                                if(line == null)
+                        }
+                        case "EnemyName.txt" -> {
+                            for (String line : qs) {
+                                if (line == null)
                                     continue;
 
                                 String[] str = line.trim().split("\t");
@@ -270,57 +272,57 @@ public class Initializer {
 
                                 Enemy e = def.enemies.get(eID);
 
-                                if(e == null)
+                                if (e == null)
                                     continue;
 
-                                if(eID != e.id.id)
+                                if (eID != e.id.id)
                                     continue;
 
-                                if(str.length == 1)
+                                if (str.length == 1)
                                     continue;
 
                                 String name;
 
-                                if(str[1].trim().startsWith("\u3010")) {
-                                    name = str[1].trim().substring(1, str[1].trim().length()-1);
+                                if (str[1].trim().startsWith("【")) {
+                                    name = str[1].trim().substring(1, str[1].trim().length() - 1);
                                 } else {
                                     name = str[1].trim();
                                 }
 
                                 MultiLangCont.getStatic().ENAME.put(f, e, name);
                             }
-                            break;
-                        case "EnemyExplanation.txt":
-                            for(String line : qs) {
-                                if(line == null)
+                        }
+                        case "EnemyExplanation.txt" -> {
+                            for (String line : qs) {
+                                if (line == null)
                                     continue;
 
                                 String[] str = line.trim().split("\t");
 
                                 Enemy e = def.enemies.get(CommonStatic.parseIntN(str[0]));
 
-                                if(str.length == 1)
+                                if (str.length == 1)
                                     continue;
 
                                 String[] lines = str[1].trim().split("<br>");
 
                                 MultiLangCont.getStatic().EEXP.put(f, e, lines);
                             }
-                            break;
-                        case "StageName.txt":
-                            for(String line : qs) {
-                                if(line == null)
+                        }
+                        case "StageName.txt" -> {
+                            for (String line : qs) {
+                                if (line == null)
                                     continue;
 
                                 String[] str = line.trim().split("\t");
 
-                                if(str.length == 1)
+                                if (str.length == 1)
                                     continue;
 
                                 String id = str[0].trim();
                                 String name = str[str.length - 1].trim();
 
-                                if(id.isBlank() || name.isBlank())
+                                if (id.isBlank() || name.isBlank())
                                     continue;
 
                                 String[] ids = id.trim().split("-");
@@ -329,44 +331,44 @@ public class Initializer {
 
                                 MapColc mc = MapColc.get(Data.hex(id0));
 
-                                if(mc == null)
+                                if (mc == null)
                                     continue;
 
-                                if(ids.length == 1) {
+                                if (ids.length == 1) {
                                     MultiLangCont.getStatic().MCNAME.put(f, mc, name);
                                     continue;
                                 }
 
                                 int id1 = CommonStatic.parseIntN(ids[1].trim());
 
-                                if(id1 >= mc.maps.getList().size() || id1 < 0)
+                                if (id1 >= mc.maps.getList().size() || id1 < 0)
                                     continue;
 
                                 StageMap stm = mc.maps.getList().get(id1);
 
-                                if(ids.length == 2) {
+                                if (ids.length == 2) {
                                     MultiLangCont.getStatic().SMNAME.put(f, stm, name);
                                     continue;
                                 }
 
                                 int id2 = CommonStatic.parseIntN(ids[2].trim());
 
-                                if(id2 >= stm.list.getList().size() || id2 < 0)
+                                if (id2 >= stm.list.getList().size() || id2 < 0)
                                     continue;
 
                                 Stage st = stm.list.getList().get(id2);
 
                                 MultiLangCont.getStatic().STNAME.put(f, st, name);
                             }
-                            break;
-                        case "RewardName.txt":
-                            for(String line : qs) {
-                                if(line == null)
+                        }
+                        case "RewardName.txt" -> {
+                            for (String line : qs) {
+                                if (line == null)
                                     continue;
 
                                 String[] str = line.trim().split("\t");
 
-                                if(str.length <= 1)
+                                if (str.length <= 1)
                                     continue;
 
                                 String id = str[0].trim();
@@ -374,15 +376,15 @@ public class Initializer {
 
                                 MultiLangCont.getStatic().RWNAME.put(f, Integer.parseInt(id), name);
                             }
-                            break;
-                        case "MedalName.txt":
-                            for(String line : qs) {
-                                if(line == null)
+                        }
+                        case "MedalName.txt" -> {
+                            for (String line : qs) {
+                                if (line == null)
                                     continue;
 
                                 String[] str = line.trim().split("\t");
 
-                                if(str.length == 1)
+                                if (str.length == 1)
                                     continue;
 
                                 int id = Integer.parseInt(str[0].trim());
@@ -390,15 +392,15 @@ public class Initializer {
 
                                 StaticStore.MEDNAME.put(f, id, name);
                             }
-                            break;
-                        case "MedalExplanation.txt":
-                            for(String line : qs) {
-                                if(line == null)
+                        }
+                        case "MedalExplanation.txt" -> {
+                            for (String line : qs) {
+                                if (line == null)
                                     continue;
 
                                 String[] str = line.trim().split("\t");
 
-                                if(str.length == 1)
+                                if (str.length == 1)
                                     continue;
 
                                 int id = Integer.parseInt(str[0].trim());
@@ -406,39 +408,38 @@ public class Initializer {
 
                                 StaticStore.MEDEXP.put(f, id, name);
                             }
-                            break;
-                        case "GachaName.txt":
+                        }
+                        case "GachaName.txt" -> {
                             int oldConfig = CommonStatic.getConfig().lang;
                             CommonStatic.getConfig().lang = loc[n];
-
-                            for(String line : qs) {
-                                if(line == null)
+                            for (String line : qs) {
+                                if (line == null)
                                     continue;
 
                                 String[] str = line.trim().split("\t");
 
-                                if(str.length == 1)
+                                if (str.length == 1)
                                     continue;
 
-                                if(str[0].startsWith("E")) {
+                                if (str[0].startsWith("E")) {
                                     int id = Integer.parseInt(str[0].replace("E", "").trim());
                                     String name = str[1].trim();
 
                                     StaticStore.EXTRAGACHA.put(f, id, name);
-                                } else if(str[0].startsWith("N")) {
+                                } else if (str[0].startsWith("N")) {
                                     int id = Integer.parseInt(str[0].replace("N", "").trim());
                                     String name = str[1].trim();
 
                                     StaticStore.NORMALGACHA.put(f, id, name);
-                                } else if(StaticStore.isNumeric(str[0])) {
+                                } else if (StaticStore.isNumeric(str[0])) {
                                     int id = Integer.parseInt(str[0].trim());
                                     String name = str[1].trim();
 
-                                    if(StaticStore.isNumeric(name) && StaticStore.safeParseInt(name) < 0) {
+                                    if (StaticStore.isNumeric(name) && StaticStore.safeParseInt(name) < 0) {
                                         name = StaticStore.GACHANAME.getCont(StaticStore.safeParseInt(name));
                                     }
 
-                                    if(str.length == 3 && name != null) {
+                                    if (str.length == 3 && name != null) {
                                         int[] units = CommonStatic.parseIntsN(str[2]);
 
                                         EventFactor.newUnits.put(id, units);
@@ -447,17 +448,16 @@ public class Initializer {
                                     StaticStore.GACHANAME.put(f, id, name);
                                 }
                             }
-
                             CommonStatic.getConfig().lang = oldConfig;
-                            break;
-                        case "MissionName.txt":
-                            for(String line : qs) {
-                                if(line == null)
+                        }
+                        case "MissionName.txt" -> {
+                            for (String line : qs) {
+                                if (line == null)
                                     continue;
 
                                 String[] str = line.trim().split("\t");
 
-                                if(str.length == 1)
+                                if (str.length == 1)
                                     continue;
 
                                 int id = Integer.parseInt(str[0].trim());
@@ -466,6 +466,7 @@ public class Initializer {
 
                                 StaticStore.MISSIONNAME.put(f, id, name);
                             }
+                        }
                     }
                 }
             }
@@ -571,6 +572,8 @@ public class Initializer {
         }
 
         StaticStore.existingRewards.sort(Integer::compareTo);
+
+        TreasureHolder.initialize();
     }
 
     private static Combo findComboWithID(int id) {

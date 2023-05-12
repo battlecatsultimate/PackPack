@@ -53,65 +53,46 @@ public class Config extends ConstraintCommand {
             default -> LangID.getStringByID("config_auto", lang);
         };
 
-        String ex;
-        String bool;
+        String ex = LangID.getStringByID(config.extra ? "config_extrue" : "config_exfalse", lang);;
+        String bool = LangID.getStringByID(config.extra ? "data_true" : "data_false", lang);;
 
-        if(config.extra) {
-            ex = LangID.getStringByID("config_extrue", lang);
-            bool = LangID.getStringByID("data_true", lang);
-        } else {
-            ex = LangID.getStringByID("config_exfalse", lang);
-            bool = LangID.getStringByID("data_false", lang);
-        }
+        String unit = LangID.getStringByID(config.useFrame ? "config_frame" : "config_second", lang);
 
-        String unit;
+        String compact = LangID.getStringByID(config.compact ? "data_true" : "data_false", lang);
+        String comp = LangID.getStringByID(config.compact ? "config_comtrue" : "config_comfalse", lang);;
 
-        if(config.useFrame)
-            unit = LangID.getStringByID("config_frame", lang);
-        else
-            unit = LangID.getStringByID("config_second", lang);
+        String trueForm = LangID.getStringByID(config.trueForm ? "data_true" : "data_false", lang);
+        String tr = LangID.getStringByID(config.trueForm ? "config_truetrue" : "config_truefalse", lang);
 
-        String compact;
-        String comp;
-
-        if(config.compact) {
-            compact = LangID.getStringByID("data_true", lang);
-            comp = LangID.getStringByID("config_comtrue", lang);
-        } else {
-            compact = LangID.getStringByID("data_false", lang);
-            comp = LangID.getStringByID("config_comfalse", lang);
-        }
-
-        String trueForm;
-        String tr;
-
-        if(config.trueForm) {
-            trueForm = LangID.getStringByID("data_true", lang);
-            tr = LangID.getStringByID("config_truetrue", lang);
-        } else {
-            trueForm = LangID.getStringByID("data_false", lang);
-            tr = LangID.getStringByID("config_truefalse", lang);
-        }
+        String treasure = LangID.getStringByID(config.treasure ? "data_true" : "data_false", lang);
+        String trea = LangID.getStringByID(config.treasure ? "config_treasuretrue" : "config_treasurefalse", lang);
 
         String message = "**" + LangID.getStringByID("config_locale", lang).replace("_", locale) + "**\n\n" +
-                "**" + LangID.getStringByID("config_default", lang).replace("_", String.valueOf(config.defLevel)) + "**\n" +
+                "**" + LangID.getStringByID("config_default", lang).replace("_", String.valueOf(config.defLevel)) + "**\n\n" +
                 LangID.getStringByID("config_deflvdesc", lang).replace("_", String.valueOf(config.defLevel)) + "\n\n" +
-                "**" + LangID.getStringByID("config_extra", lang).replace("_", bool) + "**\n" +
+                "**" + LangID.getStringByID("config_extra", lang).replace("_", bool) + "**\n\n" +
                 ex + "\n\n" +
-                "**" + LangID.getStringByID("config_unit", lang).replace("_", unit) + "**\n" +
+                "**" + LangID.getStringByID("config_unit", lang).replace("_", unit) + "**\n\n" +
                 LangID.getStringByID("config_unitdesc", lang) + "\n\n" +
-                "**" + LangID.getStringByID("config_compact", lang).replace("_", compact) + "**\n" +
+                "**" + LangID.getStringByID("config_compact", lang).replace("_", compact) + "**\n\n" +
                 comp + "\n\n" +
-                "**" + String.format(LangID.getStringByID("config_trueform", lang), trueForm) + "**\n" +
-                tr;
+                "**" + String.format(LangID.getStringByID("config_trueform", lang), trueForm) + "**\n\n" +
+                tr + "\n\n" +
+                "**" + String.format(LangID.getStringByID("config_treasure", lang), treasure) + "**\n\n" +
+                trea;
 
         if(forServer) {
             String force = LangID.getStringByID((holder != null && holder.forceCompact) ? "data_true" : "data_false", lang);
             String forc = LangID.getStringByID((holder != null && holder.forceCompact) ? "config_fortrue" : "config_forfalse", lang);
 
+            String forcet = LangID.getStringByID((holder != null && holder.forceFullTreasure) ? "data_true" : "data_false", lang);
+            String fort = LangID.getStringByID((holder != null && holder.forceFullTreasure) ? "config_forcetreatrue" : "config_forcetreafalse", lang);
+
             message += "\n\n" +
-                    "**" + LangID.getStringByID("config_force", lang).replace("_", force) + "**\n" +
-                    forc;
+                    "**" + LangID.getStringByID("config_force", lang).replace("_", force) + "**\n\n" +
+                    forc + "\n\n" +
+                    "**" + String.format(LangID.getStringByID("config_forcetrea", lang), forcet) + "**\n\n" +
+                    fort;
         }
 
         List<SelectOption> languages = new ArrayList<>();
@@ -133,14 +114,12 @@ public class Config extends ConstraintCommand {
             }
         }
 
-        List<SelectOption> extras = new ArrayList<>();
+        Button extra;
 
         if(config.extra) {
-            extras.add(SelectOption.of(LangID.getStringByID("config_extra", lang).replace("_", LangID.getStringByID("data_true", lang)), "true").withDefault(true));
-            extras.add(SelectOption.of(LangID.getStringByID("config_extra", lang).replace("_", LangID.getStringByID("data_false", lang)), "false"));
+            extra = Button.secondary("extra", LangID.getStringByID("config_extra", lang).replace("_", LangID.getStringByID("data_true", lang))).withEmoji(EmojiStore.SWITCHON);
         } else {
-            extras.add(SelectOption.of(LangID.getStringByID("config_extra", lang).replace("_", LangID.getStringByID("data_true", lang)), "true"));
-            extras.add(SelectOption.of(LangID.getStringByID("config_extra", lang).replace("_", LangID.getStringByID("data_false", lang)), "false").withDefault(true));
+            extra = Button.secondary("extra", LangID.getStringByID("config_extra", lang).replace("_", LangID.getStringByID("data_false", lang))).withEmoji(EmojiStore.SWITCHOFF);
         }
 
         List<ActionComponent> components = new ArrayList<>();
@@ -155,8 +134,8 @@ public class Config extends ConstraintCommand {
 
         Message msg = getRepliedMessageSafely(ch, message, getMessage(event), a -> a.setComponents(
                 ActionRow.of(Button.secondary("defLevels", String.format(LangID.getStringByID("config_setlevel", lang), config.defLevel)).withEmoji(Emoji.fromUnicode("⚙"))),
+                ActionRow.of(extra),
                 ActionRow.of(StringSelectMenu.create("language").addOptions(languages).build()),
-                ActionRow.of(StringSelectMenu.create("extra").addOptions(extras).build()),
                 ActionRow.of(pages),
                 ActionRow.of(components)
         ));

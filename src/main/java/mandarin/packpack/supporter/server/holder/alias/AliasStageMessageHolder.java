@@ -44,7 +44,7 @@ public class AliasStageMessageHolder extends MessageHolder {
 
         this.lang = lang;
 
-        registerAutoFinish(this, msg, author, lang, FIVE_MIN);
+        registerAutoFinish(this, msg, lang, FIVE_MIN);
     }
 
     @Override

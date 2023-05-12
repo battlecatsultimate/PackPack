@@ -9,6 +9,7 @@ import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.EnemyStatMessageHolder;
 import mandarin.packpack.supporter.server.holder.segment.SearchHolder;
 import mandarin.packpack.supporter.server.slash.SlashOption;
@@ -72,7 +73,7 @@ public class EnemyStat extends ConstraintCommand {
             interaction.deferReply().setAllowedMentions(new ArrayList<>()).setContent(LangID.getStringByID("formst_specific", finalLang)).queue();
         } else {
             try {
-                EntityHandler.performEnemyEmb(e, interaction, frame, extra, magnification, finalLang);
+                EntityHandler.performEnemyEmb(e, interaction, frame, extra, magnification, StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global), finalLang);
             } catch (Exception exception) {
                 StaticStore.logger.uploadErrorLog(exception, "E/EnemyStat::performInteraction - Failed to show enemy embed");
             }
@@ -135,7 +136,11 @@ public class EnemyStat extends ConstraintCommand {
                 boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
                 boolean isCompact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
 
-                EntityHandler.showEnemyEmb(enemies.get(0), ch, getMessage(event), isFrame, isExtra, isCompact, magnification, lang);
+                Message m = getMessage(event);
+
+                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(m.getAuthor().getId(), TreasureHolder.global);
+
+                EntityHandler.showEnemyEmb(enemies.get(0), ch, m, isFrame, isExtra, isCompact, magnification, treasure, lang);
             } else if(enemies.size() == 0) {
                 replyToMessageSafely(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", getSearchKeyword(command)), getMessage(event), a -> a);
             } else {
@@ -176,8 +181,10 @@ public class EnemyStat extends ConstraintCommand {
                     if(u != null) {
                         Message msg = getMessage(event);
 
+                        TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
+
                         if(msg != null)
-                            StaticStore.putHolder(u.getId(), new EnemyStatMessageHolder(enemies, msg, res, ch.getId(), magnification, isFrame, isExtra, isCompact, lang));
+                            StaticStore.putHolder(u.getId(), new EnemyStatMessageHolder(enemies, msg, res, ch.getId(), magnification, isFrame, isExtra, isCompact, treasure, lang));
                     }
                 }
             }

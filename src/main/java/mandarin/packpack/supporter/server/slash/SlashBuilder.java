@@ -26,6 +26,7 @@ public class SlashBuilder {
                         new SlashOption("frame", "Show time info with frame", false, SlashOption.TYPE.BOOLEAN),
                         new SlashOption("talent", "Apply talent to this unit if bot can", false, SlashOption.TYPE.BOOLEAN),
                         new SlashOption("extra", "Show extra information", false, SlashOption.TYPE.BOOLEAN),
+                        new SlashOption("treasure", "Show values with treasure applied", false, SlashOption.TYPE.BOOLEAN),
                         new SlashOption("level", "Level of this unit", false, SlashOption.TYPE.INT),
                         new SlashOption("talent_lv_1", "First talent level of this unit, only available when talent mode is on", false, SlashOption.TYPE.INT),
                         new SlashOption("talent_lv_2", "Second talent level of this unit, only available when talent mode is on", false, SlashOption.TYPE.INT),

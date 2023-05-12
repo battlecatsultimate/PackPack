@@ -23,7 +23,7 @@ public class EnemySpriteMessageHolder extends SearchHolder {
         this.enemy = enemy;
         this.mode = mode;
 
-        registerAutoFinish(this, msg, author, lang, FIVE_MIN);
+        registerAutoFinish(this, msg, lang, FIVE_MIN);
     }
 
     @Override

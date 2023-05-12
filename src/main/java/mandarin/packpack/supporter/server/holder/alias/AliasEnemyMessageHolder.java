@@ -40,7 +40,7 @@ public class AliasEnemyMessageHolder extends MessageHolder {
 
         this.lang = lang;
 
-        registerAutoFinish(this, msg, author, lang, TimeUnit.MINUTES.toMillis(5));
+        registerAutoFinish(this, msg, lang, TimeUnit.MINUTES.toMillis(5));
     }
 
     @Override

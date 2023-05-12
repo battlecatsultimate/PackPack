@@ -27,7 +27,7 @@
         "abbr_name": "stop",
         "full_name": "Freeze",
         "tooltip": null,
-        "format": "(prob)% chance to freeze for (_dispTime(time))",
+        "format": "(prob)% chance to freeze for (_dispFruit(time))",
         "class": {
             "prob": {
                 "name": "chance",
@@ -43,7 +43,7 @@
         "abbr_name": "slow",
         "full_name": "Slow",
         "tooltip": null,
-        "format": "(prob)% chance to slow for (_dispTime(time))",
+        "format": "(prob)% chance to slow for (_dispFruit(time))",
         "class": {
             "prob": {
                 "name": "chance",
@@ -95,7 +95,7 @@
         "abbr_name": "weak",
         "full_name": "Weaken",
         "tooltip": null,
-        "format": "(prob)% chance to [(mult>100){strengthen}(mult<=100){weaken}] target's attack to [(mult>100){(mult)}(mult<=100){(mult)}]% for (_dispTime(time))",
+        "format": "(prob)% chance to [(mult>100){strengthen}(mult<=100){weaken}] target's attack to [(mult>100){(mult)}(mult<=100){(mult)}]% for (_dispFruit(time))",
         "class": {
             "prob": {
                 "name": "chance",
@@ -147,7 +147,7 @@
         "abbr_name": "curse",
         "full_name": "Curse",
         "tooltip": "Disable trait related abilities",
-        "format": "(prob)% chance to curse for (_dispTime(time))",
+        "format": "(prob)% chance to curse for (_dispFruit(time))",
         "class": {
             "prob": {
                 "name": "chance",
@@ -771,7 +771,7 @@
         "abbr_name": "Invi.",
         "full_name": "Invincibility",
         "tooltip": null,
-        "format": "(prob)% chance to gain invincibility for (_dispTime(time))",
+        "format": "(prob)% chance to gain invincibility for (_dispFruit(time))",
         "class": {
             "prob": {
                 "name": "chance",

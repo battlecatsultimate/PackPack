@@ -31,11 +31,15 @@ public class ConfigHolder implements Cloneable {
             holder.trueForm = obj.get("trueForm").getAsBoolean();
         }
 
+        if(obj.has("treasure")) {
+            holder.treasure = obj.get("treasure").getAsBoolean();
+        }
+
         return holder;
     }
 
     public int lang = -1, defLevel = 30;
-    public boolean useFrame = true, extra = false, compact = false, trueForm = false;
+    public boolean useFrame = true, extra = false, compact = false, trueForm = false, treasure = false;
 
     public JsonObject jsonfy() {
         JsonObject obj = new JsonObject();
@@ -46,6 +50,7 @@ public class ConfigHolder implements Cloneable {
         obj.addProperty("extra", extra);
         obj.addProperty("compact", compact);
         obj.addProperty("trueForm", trueForm);
+        obj.addProperty("treasure", treasure);
 
         return obj;
     }
@@ -68,6 +73,7 @@ public class ConfigHolder implements Cloneable {
         c.extra = extra;
         c.compact = compact;
         c.trueForm = trueForm;
+        c.treasure = treasure;
 
         return c;
     }

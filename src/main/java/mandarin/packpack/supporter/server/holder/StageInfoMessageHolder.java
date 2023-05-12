@@ -7,6 +7,7 @@ import common.util.stage.Stage;
 import common.util.stage.StageMap;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
+import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.segment.SearchHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -24,22 +25,22 @@ public class StageInfoMessageHolder extends SearchHolder {
     private final boolean isFrame;
     private final boolean isExtra;
     private final boolean isCompact;
-    private final int star, itf, cotc;
+    private final int star;
+    private final TreasureHolder treasure;
 
-    public StageInfoMessageHolder(List<Stage> stage, Message author, Message msg, String channelID, int star, int itf, int cotc, boolean isFrame, boolean isExtra, boolean isCompact, int lang) {
+    public StageInfoMessageHolder(List<Stage> stage, Message author, Message msg, String channelID, int star, TreasureHolder treasure, boolean isFrame, boolean isExtra, boolean isCompact, int lang) {
         super(author, msg, channelID, lang);
 
         this.stage = stage;
         this.author = author;
 
         this.star = star;
-        this.itf = itf;
-        this.cotc = cotc;
+        this.treasure = treasure;
         this.isFrame = isFrame;
         this.isExtra = isExtra;
         this.isCompact = isCompact;
 
-        registerAutoFinish(this, msg, author, lang, FIVE_MIN);
+        registerAutoFinish(this, msg, lang, FIVE_MIN);
     }
 
     @Override
@@ -120,7 +121,7 @@ public class StageInfoMessageHolder extends SearchHolder {
         }
 
         try {
-            Message msg = EntityHandler.showStageEmb(stage.get(id), ch, getAuthorMessage(), isFrame, isExtra, isCompact, star, itf, cotc, lang);
+            Message msg = EntityHandler.showStageEmb(stage.get(id), ch, getAuthorMessage(), isFrame, isExtra, isCompact, star, treasure, lang);
 
             if(msg != null) {
                 StaticStore.putHolder(author.getAuthor().getId(), new StageInfoButtonHolder(stage.get(id), author, msg, channelID, isCompact));

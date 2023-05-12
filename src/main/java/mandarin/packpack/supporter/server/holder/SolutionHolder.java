@@ -30,7 +30,7 @@ public class SolutionHolder extends SearchHolder {
         this.targetRanges = targetRanges;
         this.solutions = solutions;
 
-        registerAutoFinish(this, msg, author, lang, FIVE_MIN);
+        registerAutoFinish(this, msg, lang, FIVE_MIN);
     }
 
     @Override

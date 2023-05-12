@@ -14,6 +14,7 @@ import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.FindRewardMessageHolder;
 import mandarin.packpack.supporter.server.holder.segment.SearchHolder;
 import mandarin.packpack.supporter.server.holder.StageInfoButtonHolder;
@@ -96,7 +97,9 @@ public class FindReward extends TimedConstraintCommand {
 
                 disableTimer();
             } else if(stages.size() == 1) {
-                Message result = EntityHandler.showStageEmb(stages.get(0), ch, getMessage(event), holder == null || holder.config.useFrame, isExtra, isCompact, 0, 1, 1, lang);
+                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(getMessage(event).getAuthor().getId(), TreasureHolder.global);
+
+                Message result = EntityHandler.showStageEmb(stages.get(0), ch, getMessage(event), holder == null || holder.config.useFrame, isExtra, isCompact, 0, treasure, lang);
 
                 User u = getUser(event);
 
@@ -137,8 +140,10 @@ public class FindReward extends TimedConstraintCommand {
                     if(u != null) {
                         Message msg = getMessage(event);
 
+                        TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
+
                         if(msg != null)
-                            StaticStore.putHolder(u.getId(), new StageInfoMessageHolder(stages, msg, res, ch.getId(), 0, 1, 1, config.useFrame, isExtra, isCompact, lang));
+                            StaticStore.putHolder(u.getId(), new StageInfoMessageHolder(stages, msg, res, ch.getId(), 0, treasure, config.useFrame, isExtra, isCompact, lang));
                     }
                 }
             }
@@ -173,7 +178,9 @@ public class FindReward extends TimedConstraintCommand {
                     Message msg = getMessage(event);
 
                     if(msg != null) {
-                        StaticStore.putHolder(u.getId(), new FindRewardMessageHolder(res, msg, ch.getId(), rewards, rewardName, chance, amount, isExtra, isCompact, config.useFrame, lang));
+                        TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
+
+                        StaticStore.putHolder(u.getId(), new FindRewardMessageHolder(res, msg, ch.getId(), rewards, rewardName, chance, amount, isExtra, isCompact, config.useFrame, treasure, lang));
                     }
                 }
             }

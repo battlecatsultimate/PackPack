@@ -143,7 +143,7 @@ public class BCAnimMessageHolder extends MessageHolder {
         } else {
             StaticStore.putHolder(author.getAuthor().getId(), this);
 
-            registerAutoFinish(this, target, author, lang, "animanalyze_expire", TimeUnit.MINUTES.toMillis(5));
+            registerAutoFinish(this, target, lang, "animanalyze_expire", TimeUnit.MINUTES.toMillis(5));
         }
     }
 
