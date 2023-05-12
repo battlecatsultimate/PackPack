@@ -131,7 +131,6 @@ public class IDHolder {
     public Map<String, List<String>> channel = new TreeMap<>();
     public Map<Integer, String> eventMap = new TreeMap<>();
     public List<String> status = new ArrayList<>();
-    public List<Integer> eventLocale = new ArrayList<>();
     public boolean eventRaw = false, forceCompact = false, forceFullTreasure = false;
     public ConfigHolder config = new ConfigHolder();
     public List<String> banned = new ArrayList<>();

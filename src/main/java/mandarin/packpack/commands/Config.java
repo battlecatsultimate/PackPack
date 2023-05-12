@@ -53,13 +53,13 @@ public class Config extends ConstraintCommand {
             default -> LangID.getStringByID("config_auto", lang);
         };
 
-        String ex = LangID.getStringByID(config.extra ? "config_extrue" : "config_exfalse", lang);;
-        String bool = LangID.getStringByID(config.extra ? "data_true" : "data_false", lang);;
+        String ex = LangID.getStringByID(config.extra ? "config_extrue" : "config_exfalse", lang);
+        String bool = LangID.getStringByID(config.extra ? "data_true" : "data_false", lang);
 
         String unit = LangID.getStringByID(config.useFrame ? "config_frame" : "config_second", lang);
 
         String compact = LangID.getStringByID(config.compact ? "data_true" : "data_false", lang);
-        String comp = LangID.getStringByID(config.compact ? "config_comtrue" : "config_comfalse", lang);;
+        String comp = LangID.getStringByID(config.compact ? "config_comtrue" : "config_comfalse", lang);
 
         String trueForm = LangID.getStringByID(config.trueForm ? "data_true" : "data_false", lang);
         String tr = LangID.getStringByID(config.trueForm ? "config_truetrue" : "config_truefalse", lang);
