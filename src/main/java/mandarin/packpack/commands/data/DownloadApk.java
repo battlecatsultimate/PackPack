@@ -64,22 +64,22 @@ public class DownloadApk extends ConstraintCommand {
         String packageName;
 
         switch (loc) {
-            case LangID.JP:
+            case LangID.JP -> {
                 localeCode = "jp";
                 packageName = "jp.co.ponos.battlecats";
-                break;
-            case LangID.ZH:
+            }
+            case LangID.ZH -> {
                 localeCode = "tw";
                 packageName = "jp.co.ponos.battlecatstw";
-                break;
-            case LangID.KR:
+            }
+            case LangID.KR -> {
                 localeCode = "kr";
                 packageName = "jp.co.ponos.battlecatskr";
-                break;
-            default:
+            }
+            default -> {
                 localeCode = "en";
                 packageName = "jp.co.ponos.battlecatsen";
-                break;
+            }
         }
 
         File locFolder = new File("./data/bc/"+localeCode.replace("tw", "zh"));
@@ -116,7 +116,7 @@ public class DownloadApk extends ConstraintCommand {
 
         ch.sendMessage("Getting apk version code...").queue();
 
-        ProcessBuilder builder = new ProcessBuilder("./googlePlay/cmd/googleplay/googleplay", "-a", packageName);
+        ProcessBuilder builder = new ProcessBuilder("./googlePlay/cmd/googleplay/googleplay", "-d", packageName);
         builder.redirectErrorStream(true);
 
         Process pro = builder.start();
@@ -138,7 +138,7 @@ public class DownloadApk extends ConstraintCommand {
         String versionCode = null;
 
         for(int i = 0; i < lines.size(); i++) {
-            if(lines.get(i).startsWith("Version Code:")) {
+            if(lines.get(i).startsWith("version code:")) {
                 String[] data = lines.get(i).split(": ");
 
                 if(data.length != 2) {
@@ -167,7 +167,7 @@ public class DownloadApk extends ConstraintCommand {
             ch.sendMessage("Downloading apk file...").queue();
         }
 
-        builder = new ProcessBuilder("./googlePlay/cmd/googleplay/googleplay", "-a", packageName, "-v", versionCode, "-s");
+        builder = new ProcessBuilder("./googlePlay/cmd/googleplay/googleplay", "-d", packageName, "-v", versionCode, "-s");
         builder.redirectErrorStream(false);
 
         pro = builder.start();
