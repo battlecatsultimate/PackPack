@@ -126,6 +126,8 @@ public class TasteApk {
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
+                System.gc();
+
                 File temp = new File(workspace, "temp");
 
                 StaticStore.deleteFile(temp, true);
