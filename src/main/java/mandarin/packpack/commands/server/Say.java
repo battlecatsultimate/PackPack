@@ -3,7 +3,7 @@ package mandarin.packpack.commands.server;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import mandarin.packpack.supporter.server.holder.ConfirmButtonHolder;
+import mandarin.packpack.supporter.server.holder.component.ConfirmButtonHolder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;

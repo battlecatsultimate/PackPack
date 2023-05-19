@@ -12,7 +12,7 @@ import mandarin.packpack.supporter.bc.cell.CellData;
 import mandarin.packpack.supporter.bc.cell.FlagCellData;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import mandarin.packpack.supporter.server.holder.StatAnalyzerMessageHolder;
+import mandarin.packpack.supporter.server.holder.message.StatAnalyzerMessageHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;

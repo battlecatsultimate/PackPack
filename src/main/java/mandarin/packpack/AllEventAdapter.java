@@ -16,7 +16,7 @@ import mandarin.packpack.supporter.server.data.BoosterData;
 import mandarin.packpack.supporter.server.data.BoosterHolder;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import mandarin.packpack.supporter.server.holder.segment.HolderHub;
+import mandarin.packpack.supporter.server.holder.HolderHub;
 import mandarin.packpack.supporter.server.slash.SlashBuilder;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
