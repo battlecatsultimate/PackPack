@@ -1361,6 +1361,15 @@
   "config_forcetrea" : "Force users to use full treasure : %s",
   "config_forcetreatrue" : "Users will always have to use full treasure even though they have their own customized treasure",
   "config_forcetreafalse" : "Users will be able to use their own customized treasure. Keep in mind that this may lead to bot showing different stats for each users",
+  "config_booster" : "Allow boosters to pin message : %s",
+  "config_boochan" : "Select channels [None for all channels]",
+  "config_boofalse" : "Boosters can't pin message unless message managing permission is given",
+  "config_booother" : "... and %d more channels",
+  "config_boootherset" : "Other channels are assigned/removed successfully",
+  "config_boodescall" : "Boosters will be able to pin message via `p!boosterpin` command in all channels. Of course, this command will work only when moderator assigned booster role to the bot via `p!idset` command",
+  "config_boodescchan" : "Boosters will be able to pin message via `p!boostrepin` command in specified channels below. Of course, this command will work only when moderator assigned booster role to the bot via `p!idset` command\n\nAllowed channels : %s",
+  "config_bootalk" : "%s : Bot can't talk in this message or doesn't have permission to pin the message",
+  "config_boosuccess" : "Successfully assigned/removed allowed channels for boosters!",
   "stanalyzer_sid" : "Please specify ID of the map you want to analyze",
   "stanalyzer_code": "Please specify code of the map you want to analyzer (ex : S, RA, NA, etc.)",
   "stanalyzer_range" : "The range you gave exceeds total number of stage in this map",
@@ -1608,5 +1617,11 @@
   "treasure_eocdone" : "Successfully finished setting EoC treasures! Check the result above",
   "treasure_itfdone" : "Successfully finished setting ItF treasures! Check the result above",
   "treasure_cotcdone" : "Successfully finished setting CotC treasures! Check the result above",
-  "treasure_cancel" : "Canceled treasure setting"
+  "treasure_cancel" : "Canceled treasure setting",
+  "boostpin_noperm" : "You don't have permission to pin the message!",
+  "boostpin_nothere" : "You can't pin messages in this channel!",
+  "boostpin_id" : "Please specify the message via either ID of it, link to the message, or reply to the message that will be pinned/unpinned",
+  "boostpin_nomsg" : "Bot couldn't find such message in this channel",
+  "boostpin_pin" : "Successfully pinned the message : %s",
+  "boostpin_unpin" : "Successfully unpinned the message : %s"
 }

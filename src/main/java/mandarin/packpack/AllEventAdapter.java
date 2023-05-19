@@ -199,6 +199,8 @@ public class AllEventAdapter extends ListenerAdapter {
                     StaticStore.scamLinkHandlers.servers.remove(g.getId());
                 }
             }
+
+            idh.boosterPinChannel.remove(ch.getId());
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::onChannelDelete - Error happened");
         }
@@ -478,7 +480,7 @@ public class AllEventAdapter extends ListenerAdapter {
             case "medal", "md" -> new Medal(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
             case "announcement", "ann" -> new Announcement(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
             case "catcombo", "combo", "cc" -> new CatCombo(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
-            case "serverjson", "json", "sj" -> new ServerJson(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
+            case "serverjson", "json", "sj" -> new ServerJson(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "findstage", "findst", "fstage", "fst" ->
                     new FindStage(ConstraintCommand.ROLE.MEMBER, lang, idh, c, 5000).execute(event);
             case "suggest" ->
@@ -610,6 +612,7 @@ public class AllEventAdapter extends ListenerAdapter {
             case "reactto", "ret" -> new ReactTo(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "react", "r" -> new React(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
             case "treasure", "tr" -> new Treasure(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
+            case "boosterpin", "bp" -> new BoosterPin(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
         }
     }
 

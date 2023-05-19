@@ -6,13 +6,21 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.segment.ComponentHolder;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
@@ -26,12 +34,13 @@ import java.util.TimerTask;
 
 public class ConfigButtonHolder extends ComponentHolder {
     private static final int TOTAL_CONFIG = 7;
-    private static final int SERVER_CONFIG = 2;
+    private static final int SERVER_CONFIG = 4;
 
     private final Message msg;
     private final ConfigHolder config;
     private final ConfigHolder backup;
     private final IDHolder holder;
+    private final IDHolder holderBackup;
     private final boolean forServer;
 
     private int page = 0;
@@ -43,6 +52,12 @@ public class ConfigButtonHolder extends ComponentHolder {
         this.config = config;
         this.backup = config.clone();
         this.holder = holder;
+
+        if(this.holder != null) {
+            holderBackup = this.holder.clone();
+        } else {
+            holderBackup = null;
+        }
         
         this.forServer = forServer;
 
@@ -137,6 +152,64 @@ public class ConfigButtonHolder extends ComponentHolder {
 
                 performResult(event);
             }
+            case "boosterPin" -> {
+                holder.boosterPin = !holder.boosterPin;
+
+                performResult(event);
+            }
+            case "boosterPinChannel" -> {
+                if(event instanceof EntitySelectInteractionEvent e) {
+                    List<IMentionable> mentionables = e.getValues();
+
+                    holder.boosterPinChannel.clear();
+
+                    StringBuilder result = new StringBuilder();
+
+                    int succeed = 0;
+
+                    for(int i = 0; i < mentionables.size(); i++) {
+                        if(mentionables.get(i) instanceof GuildMessageChannel t) {
+                            if(t.canTalk() && t.getGuild().getSelfMember().hasPermission(t, Permission.MESSAGE_MANAGE)) {
+                                holder.boosterPinChannel.add(t.getId());
+                                succeed++;
+                            } else {
+                                result.append(String.format(LangID.getStringByID("config_bootalk", config.lang), t.getAsMention()))
+                                        .append("\n\n");
+                            }
+                        } else if(mentionables.get(i) instanceof ForumChannel f) {
+                            if(f.getGuild().getSelfMember().hasPermission(f, Permission.MESSAGE_MANAGE, Permission.MESSAGE_SEND, Permission.MESSAGE_SEND_IN_THREADS)) {
+                                holder.boosterPinChannel.add(f.getId());
+                                succeed++;
+                            } else {
+                                result.append(String.format(LangID.getStringByID("config_bootalk", config.lang), f.getAsMention()))
+                                        .append("\n\n");
+                            }
+                        }
+                    }
+
+                    if(succeed != mentionables.size()) {
+                        if(succeed != 0) {
+                            result.append(LangID.getStringByID("config_boootherset", config.lang));
+                        }
+
+                        event.deferReply(true)
+                                .setContent(result.toString())
+                                .mentionRepliedUser(false)
+                                .queue();
+                    } else {
+                        event.deferReply(true)
+                                .setContent(LangID.getStringByID("config_boosuccess", config.lang))
+                                .mentionRepliedUser(false)
+                                .queue();
+                    }
+                }
+
+                msg.editMessage(parseMessage())
+                        .setComponents(parseComponents())
+                        .mentionRepliedUser(false)
+                        .setAllowedMentions(new ArrayList<>())
+                        .queue();
+            }
             case "next" -> {
                 page++;
                 performResult(event);
@@ -171,8 +244,20 @@ public class ConfigButtonHolder extends ComponentHolder {
 
                 if (forServer) {
                     holder.config = backup;
+
+                    if(getAuthorMessage().getChannel() instanceof GuildMessageChannel m) {
+                        Guild g = m.getGuild();
+
+                        holderBackup.config = backup;
+
+                        if(StaticStore.idHolder.containsKey(g.getId())) {
+                            StaticStore.idHolder.put(g.getId(), holderBackup);
+                        }
+                    }
                 } else {
-                    StaticStore.config.put(userID, backup);
+                    if(StaticStore.config.containsKey(userID)) {
+                        StaticStore.config.put(userID, backup);
+                    }
                 }
 
                 event.deferEdit()
@@ -191,6 +276,26 @@ public class ConfigButtonHolder extends ComponentHolder {
     @Override
     public void onExpire(String id) {
         expired = true;
+
+        if(forServer) {
+            if(holder != null) {
+                holder.config = backup;
+
+                if(getAuthorMessage().getChannel() instanceof GuildMessageChannel m) {
+                    Guild g = m.getGuild();
+
+                    holderBackup.config = backup;
+
+                    if(StaticStore.idHolder.containsKey(g.getId())) {
+                        StaticStore.idHolder.put(g.getId(), holderBackup);
+                    }
+                }
+            }
+        } else {
+            if(StaticStore.config.containsKey(id)) {
+                StaticStore.config.put(id, backup);
+            }
+        }
 
         msg.editMessage(LangID.getStringByID("config_expire", config.lang))
                 .setComponents()
@@ -218,6 +323,13 @@ public class ConfigButtonHolder extends ComponentHolder {
         for(int i = page * 3; i < (page + 1) * 3; i++) {
             switch (i) {
                 case 0 -> m.add(ActionRow.of(Button.secondary("defLevels", String.format(LangID.getStringByID("config_setlevel", lang), config.defLevel)).withEmoji(Emoji.fromUnicode("⚙"))));
+                case 1 -> {
+                    if(config.extra) {
+                        m.add(ActionRow.of(Button.secondary("extra", LangID.getStringByID("config_extra", lang).replace("_", LangID.getStringByID("data_true", lang))).withEmoji(EmojiStore.SWITCHON)));
+                    } else {
+                        m.add(ActionRow.of(Button.secondary("extra", LangID.getStringByID("config_extra", lang).replace("_", LangID.getStringByID("data_false", lang))).withEmoji(EmojiStore.SWITCHOFF)));
+                    }
+                }
                 case 2 -> {
                     List<SelectOption> languages = new ArrayList<>();
 
@@ -239,13 +351,6 @@ public class ConfigButtonHolder extends ComponentHolder {
                     }
 
                     m.add(ActionRow.of(StringSelectMenu.create("language").addOptions(languages).build()));
-                }
-                case 1 -> {
-                    if(config.extra) {
-                        m.add(ActionRow.of(Button.secondary("extra", LangID.getStringByID("config_extra", lang).replace("_", LangID.getStringByID("data_true", lang))).withEmoji(EmojiStore.SWITCHON)));
-                    } else {
-                        m.add(ActionRow.of(Button.secondary("extra", LangID.getStringByID("config_extra", lang).replace("_", LangID.getStringByID("data_false", lang))).withEmoji(EmojiStore.SWITCHOFF)));
-                    }
                 }
                 case 3 -> {
                     if(config.compact) {
@@ -299,6 +404,30 @@ public class ConfigButtonHolder extends ComponentHolder {
                         }
                     }
                 }
+                case 9 -> {
+                    if(forServer && holder != null) {
+                        if(holder.boosterPin) {
+                            m.add(ActionRow.of(Button.secondary("boosterPin", String.format(LangID.getStringByID("config_booster", lang), LangID.getStringByID("data_true", lang))).withEmoji(EmojiStore.SWITCHON)));
+                        } else {
+                            m.add(ActionRow.of(Button.secondary("boosterPin", String.format(LangID.getStringByID("config_booster", lang), LangID.getStringByID("data_false", lang))).withEmoji(EmojiStore.SWITCHOFF)));
+                        }
+                    }
+                }
+                case 10 -> {
+                    if(forServer && holder != null) {
+                        m.add(
+                                ActionRow.of(
+                                    EntitySelectMenu.create("boosterPinChannel", EntitySelectMenu.SelectTarget.CHANNEL)
+                                            .setChannelTypes(ChannelType.TEXT, ChannelType.NEWS, ChannelType.FORUM)
+                                            .setMaxValues(25)
+                                            .setMinValues(0)
+                                            .setPlaceholder(LangID.getStringByID("config_boochan", lang))
+                                            .setDisabled(!holder.boosterPin)
+                                            .build()
+                                )
+                        );
+                    }
+                }
             }
         }
 
@@ -333,61 +462,146 @@ public class ConfigButtonHolder extends ComponentHolder {
         if(lang == -1)
             lang = holder == null ? LangID.EN : holder.config.lang;
 
-        String locale = switch (config.lang) {
-            case LangID.EN -> LangID.getStringByID("lang_en", lang);
-            case LangID.JP -> LangID.getStringByID("lang_jp", lang);
-            case LangID.KR -> LangID.getStringByID("lang_kr", lang);
-            case LangID.ZH -> LangID.getStringByID("lang_zh", lang);
-            case LangID.FR -> LangID.getStringByID("lang_fr", lang);
-            case LangID.IT -> LangID.getStringByID("lang_it", lang);
-            case LangID.ES -> LangID.getStringByID("lang_es", lang);
-            case LangID.DE -> LangID.getStringByID("lang_de", lang);
-            case LangID.TH -> LangID.getStringByID("lang_th", lang);
-            default -> LangID.getStringByID("config_auto", lang);
-        };
+        StringBuilder message = new StringBuilder();
 
-        String ex = LangID.getStringByID(config.extra ? "config_extrue" : "config_exfalse", lang);
-        String bool = LangID.getStringByID(config.extra ? "data_true" : "data_false", lang);
+        for(int i = page * 3; i < (page + 1) * 3; i++) {
+            switch (i) {
+                case 0 -> message.append("**")
+                        .append(LangID.getStringByID("config_default", lang).replace("_", String.valueOf(config.defLevel)))
+                        .append("**\n\n")
+                        .append(LangID.getStringByID("config_deflvdesc", lang).replace("_", String.valueOf(config.defLevel)));
+                case 1 -> {
+                    String ex = LangID.getStringByID(config.extra ? "config_extrue" : "config_exfalse", lang);
+                    String bool = LangID.getStringByID(config.extra ? "data_true" : "data_false", lang);
 
-        String unit = LangID.getStringByID(config.useFrame ? "config_frame" : "config_second", lang);
+                    message.append("**")
+                            .append(LangID.getStringByID("config_extra", lang).replace("_", bool))
+                            .append("**\n\n")
+                            .append(ex);
+                }
+                case 2 -> {
+                    String locale = switch (config.lang) {
+                        case LangID.EN -> LangID.getStringByID("lang_en", lang);
+                        case LangID.JP -> LangID.getStringByID("lang_jp", lang);
+                        case LangID.KR -> LangID.getStringByID("lang_kr", lang);
+                        case LangID.ZH -> LangID.getStringByID("lang_zh", lang);
+                        case LangID.FR -> LangID.getStringByID("lang_fr", lang);
+                        case LangID.IT -> LangID.getStringByID("lang_it", lang);
+                        case LangID.ES -> LangID.getStringByID("lang_es", lang);
+                        case LangID.DE -> LangID.getStringByID("lang_de", lang);
+                        case LangID.TH -> LangID.getStringByID("lang_th", lang);
+                        default -> LangID.getStringByID("config_auto", lang);
+                    };
 
-        String compact = LangID.getStringByID(config.compact ? "data_true" : "data_false", lang);
-        String comp = LangID.getStringByID(config.compact ? "config_comtrue" : "config_comfalse", lang);
+                    message.append("**")
+                            .append(LangID.getStringByID("config_locale", lang).replace("_", locale))
+                            .append("**");
+                }
+                case 3 -> {
+                    String compact = LangID.getStringByID(config.compact ? "data_true" : "data_false", lang);
+                    String comp = LangID.getStringByID(config.compact ? "config_comtrue" : "config_comfalse", lang);
 
-        String trueForm = LangID.getStringByID(config.trueForm ? "data_true" : "data_false", lang);
-        String tr = LangID.getStringByID(config.trueForm ? "config_truetrue" : "config_truefalse", lang);
+                    message.append("**")
+                            .append(LangID.getStringByID("config_compact", lang).replace("_", compact))
+                            .append("**\n\n")
+                            .append(comp);
+                }
+                case 4 -> {
+                    String trueForm = LangID.getStringByID(config.trueForm ? "data_true" : "data_false", lang);
+                    String tr = LangID.getStringByID(config.trueForm ? "config_truetrue" : "config_truefalse", lang);
 
-        String treasure = LangID.getStringByID(config.treasure ? "data_true" : "data_false", lang);
-        String trea = LangID.getStringByID(config.treasure ? "config_treasuretrue" : "config_treasurefalse", lang);
+                    message.append("**")
+                            .append(String.format(LangID.getStringByID("config_trueform", lang), trueForm))
+                            .append("**\n\n")
+                            .append(tr);
+                }
+                case 5 -> {
+                    String unit = LangID.getStringByID(config.useFrame ? "config_frame" : "config_second", lang);
 
-        String message = "**" + LangID.getStringByID("config_locale", lang).replace("_", locale) + "**\n\n" +
-                "**" + LangID.getStringByID("config_default", lang).replace("_", String.valueOf(config.defLevel)) + "**\n\n" +
-                LangID.getStringByID("config_deflvdesc", lang).replace("_", String.valueOf(config.defLevel)) + "\n\n" +
-                "**" + LangID.getStringByID("config_extra", lang).replace("_", bool) + "**\n\n" +
-                ex + "\n\n" +
-                "**" + LangID.getStringByID("config_unit", lang).replace("_", unit) + "**\n\n" +
-                LangID.getStringByID("config_unitdesc", lang) + "\n\n" +
-                "**" + LangID.getStringByID("config_compact", lang).replace("_", compact) + "**\n\n" +
-                comp + "\n\n" +
-                "**" + String.format(LangID.getStringByID("config_trueform", lang), trueForm) + "**\n\n" +
-                tr + "\n\n" +
-                "**" + String.format(LangID.getStringByID("config_treasure", lang), treasure) + "**\n\n" +
-                trea;
+                    message.append("**")
+                            .append(LangID.getStringByID("config_unit", lang).replace("_", unit))
+                            .append("**\n\n")
+                            .append(LangID.getStringByID("config_unitdesc", lang));
+                }
+                case 6 -> {
+                    String treasure = LangID.getStringByID(config.treasure ? "data_true" : "data_false", lang);
+                    String trea = LangID.getStringByID(config.treasure ? "config_treasuretrue" : "config_treasurefalse", lang);
 
-        if(forServer) {
-            String force = LangID.getStringByID((holder != null && holder.forceCompact) ? "data_true" : "data_false", lang);
-            String forc = LangID.getStringByID((holder != null && holder.forceCompact) ? "config_fortrue" : "config_forfalse", lang);
+                    message.append("**")
+                            .append(String.format(LangID.getStringByID("config_treasure", lang), treasure))
+                            .append("**\n\n")
+                            .append(trea);
+                }
+                case 7 -> {
+                    if (holder != null && forServer) {
+                        String force = LangID.getStringByID(holder.forceCompact ? "data_true" : "data_false", lang);
+                        String forc = LangID.getStringByID(holder.forceCompact ? "config_fortrue" : "config_forfalse", lang);
 
-            String forcet = LangID.getStringByID((holder != null && holder.forceFullTreasure) ? "data_true" : "data_false", lang);
-            String fort = LangID.getStringByID((holder != null && holder.forceFullTreasure) ? "config_forcetreatrue" : "config_forcetreafalse", lang);
+                        message.append("**")
+                                .append(LangID.getStringByID("config_force", lang).replace("_", force))
+                                .append("**\n\n")
+                                .append(forc);
+                    }
+                }
+                case 8 -> {
+                    if (holder != null && forServer) {
+                        String forcet = LangID.getStringByID(holder.forceFullTreasure ? "data_true" : "data_false", lang);
+                        String fort = LangID.getStringByID(holder.forceFullTreasure ? "config_forcetreatrue" : "config_forcetreafalse", lang);
 
-            message += "\n\n" +
-                    "**" + LangID.getStringByID("config_force", lang).replace("_", force) + "**\n\n" +
-                    forc + "\n\n" +
-                    "**" + String.format(LangID.getStringByID("config_forcetrea", lang), forcet) + "**\n\n" +
-                    fort;
+                        message.append("**")
+                                .append(String.format(LangID.getStringByID("config_forcetrea", lang), forcet))
+                                .append("**\n\n")
+                                .append(fort);
+                    }
+                }
+                case 9 -> {
+                    if (holder != null && forServer) {
+                        String boost = LangID.getStringByID(holder.boosterPin ? "data_true" : "data_false", lang);
+                        String boo;
+
+                        if(holder.boosterPin) {
+                            if(holder.boosterPinChannel.isEmpty()) {
+                                boo = LangID.getStringByID("config_boodescall", lang);
+                            } else {
+                                StringBuilder builder = new StringBuilder();
+
+                                for(int j = 0; j < holder.boosterPinChannel.size(); j++) {
+                                    builder.append(formatChannel(holder.boosterPinChannel.get(j)));
+
+                                    if(j < holder.boosterPinChannel.size() - 1) {
+                                        if(j == 39) {
+                                            builder.append(String.format(LangID.getStringByID("config_booother", lang), holder.boosterPinChannel.size() - 40));
+
+                                            break;
+                                        } else {
+                                            builder.append(", ");
+                                        }
+                                    }
+                                }
+
+                                boo = String.format(LangID.getStringByID("config_boodescchan", lang), builder);
+                            }
+                        } else {
+                            boo = LangID.getStringByID("config_boofalse", lang);
+                        }
+
+                        message.append("**")
+                                .append(String.format(LangID.getStringByID("config_booster", lang), boost))
+                                .append("**\n\n")
+                                .append(boo);
+                    }
+                }
+            }
+
+            if(i < (page + 1) * 3 - 1) {
+                message.append("\n\n");
+            }
         }
 
-        return message;
+        return message.toString();
+    }
+
+    private String formatChannel(String id) {
+        return "<#" + id + ">";
     }
 }

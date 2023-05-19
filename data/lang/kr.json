@@ -1356,6 +1356,15 @@
   "config_forcetrea" : "유저들이 풀 보물을 사용해야함 : %s",
   "config_forcetreatrue" : "유저가 유저만의 커스텀 보물 설정이 있어도 항상 풀 보물을 사용하게 됩니다",
   "config_forcetreafalse" : "유저가 개인적으로 설정해 놓은 커스텀 보물을 사용할 수 있게 됩니다. 이는 각 유저들에게 응답할 때 표시되는 스탯이 달라질 수 있음에 유의해 주세요",
+  "config_booster" : "서버 부스터에게 메세지 고정 권한 부여 : %s",
+  "config_boochan" : "허용할 채널을 선택해 주세요 [선택된 채널이 없을이 모든 채널에서 허용]",
+  "config_boofalse" : "메세지 관리 권한이 주어지지 않는 한 서버 부스터들은 메세지를 고정할 수 없습니다",
+  "config_booother" : "... 그 외 %d개의 채널",
+  "config_boootherset" : "나머지 채널들은 성공적으로 허용/제거되었습니다",
+  "config_boodescall" : "서버 부스터들은 `p!boosterpin` 명령어를 통해 모든 채널에서 메세지를 고정할 수 있게 됩니다. 물론 이 명령어는 서버 관리자들이 `p!idset` 명령어로 부스터 역할을 할당해 놨을 때에만 작동합니다",
+  "config_boodescchan" : "서버 부스터들은 `p!boosterpin` 명령어를 통해 아래의 허용된 채널 내에서 메세지를 고정할 수 있게 됩니다. 물론 이 명령어는 서버 관리자들이 `p!idset` 명령어로 부스터 역할을 할당해 놨을 때에만 작동합니다\n\n허용된 채널 : %s",
+  "config_bootalk" : "%s : 봇이 해당 채널에서 메세지를 보낼 수 없거나 메세지를 고정할 권한이 없습니다",
+  "config_boosuccess" : "성공적으로 채널들을 허용/제거했습니다!",
   "stanalyzer_sid" : "분석할 맵의 ID를 제공해 주세요",
   "stanalyzer_code": "분석할 맵의 코드를 제공해 주세요 (예시 : S, RA, NA, 등)",
   "stanalyzer_range" : "제공된 범위 값들 중 하나가 이 맵이 갖고 있는 총 스테이지 개수보다 큰 값을 가지고 있습니다",
@@ -1603,5 +1612,11 @@
   "treasure_eocdone" : "세계편 보물 설정에 성공하였습니다! 위의 적용된 결과를 확인해주세요",
   "treasure_itfdone" : "미래편 보물 설정에 성공하였습니다! 위의 적용된 결과를 확인해주세요",
   "treasure_cotcdone" : "우주편 보물 설정에 성공하였습니다! 위의 적용된 결과를 확인해주세요",
-  "treasure_cancel" : "보물 설정을 취소하였습니다"
+  "treasure_cancel" : "보물 설정을 취소하였습니다",
+  "boostpin_noperm" : "메세지를 고정할 수 있는 권한을 갖고 있지 않습니다!",
+  "boostpin_nothere" : "이 채널에서는 메세지를 고정할 수 없습니다!",
+  "boostpin_id" : "ID나 링크로 고정될 메세지를 제공하거나, 고정될 메세지에 답장해주세요",
+  "boostpin_nomsg" : "이 채널에서 해당하는 메세지를 찾을 수 없었습니다",
+  "boostpin_pin" : "성공적으로 메세지를 고정하였습니다 : %s",
+  "boostpin_unpin" : "성공적으로 메세지 고정을 해제하였습니다 : %s"
 }

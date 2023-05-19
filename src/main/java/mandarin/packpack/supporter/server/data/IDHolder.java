@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.entities.Role;
 
 import java.util.*;
 
-public class IDHolder {
+public class IDHolder implements Cloneable {
     public static IDHolder jsonToIDHolder(JsonObject obj) {
         IDHolder id = new IDHolder();
 
@@ -110,6 +110,14 @@ public class IDHolder {
             id.eventMap = id.jsonObjectToMapIntegerString(obj.get("eventMap"));
         }
 
+        if(obj.has("boosterPin")) {
+            id.boosterPin = obj.get("boosterPin").getAsBoolean();
+        }
+
+        if(obj.has("boosterPinChannel")) {
+            id.boosterPinChannel = id.jsonObjectToListString(obj.getAsJsonArray("boosterPinChannel"));
+        }
+
         if(id.config.lang < 0)
             id.config.lang = 0;
 
@@ -117,8 +125,6 @@ public class IDHolder {
     }
 
     public String serverPrefix = "p!";
-    public boolean publish = false;
-    public String logDM = null;
 
     public String MOD;
     public String MEMBER;
@@ -126,18 +132,23 @@ public class IDHolder {
 
     public String GET_ACCESS;
     public String ANNOUNCE;
+    public String logDM = null;
+
+    public boolean publish = false, eventRaw = false, forceCompact = false, forceFullTreasure = false, boosterPin = false;
+
+    public ConfigHolder config = new ConfigHolder();
+
+    public List<String> status = new ArrayList<>();
+    public List<String> banned = new ArrayList<>();
+    public List<String> boosterPinChannel = new ArrayList<>();
 
     public Map<String, String> ID = new TreeMap<>();
-    public Map<String, List<String>> channel = new TreeMap<>();
+    public Map<String, String> eventMessage = new HashMap<>();
     public Map<Integer, String> eventMap = new TreeMap<>();
-    public List<String> status = new ArrayList<>();
-    public boolean eventRaw = false, forceCompact = false, forceFullTreasure = false;
-    public ConfigHolder config = new ConfigHolder();
-    public List<String> banned = new ArrayList<>();
+    public Map<String, List<String>> channel = new TreeMap<>();
     public Map<String, List<String>> channelException = new HashMap<>();
 
     public String announceMessage = "";
-    public Map<String, String> eventMessage = new HashMap<>();
 
     public IDHolder(String m, String me, String bo, String acc) {
         this.MOD = m;
@@ -174,6 +185,8 @@ public class IDHolder {
         obj.addProperty("forceFullTreasure", forceFullTreasure);
         obj.addProperty("announceMessage", announceMessage);
         obj.add("eventMessage", StaticStore.mapToJsonString(eventMessage));
+        obj.addProperty("boosterPin", boosterPin);
+        obj.add("boosterPinChannel", listStringToJsonObject(boosterPinChannel));
 
         return obj;
     }
@@ -414,6 +427,8 @@ public class IDHolder {
         return map;
     }
 
+
+
     @Override
     public String toString() {
         return "IDHolder{" +
@@ -427,5 +442,50 @@ public class IDHolder {
                 ", ID=" + ID +
                 ", channel=" + channel +
                 '}';
+    }
+
+    @Override
+    public IDHolder clone() {
+        try {
+            IDHolder id = (IDHolder) super.clone();
+
+            id.serverPrefix = serverPrefix;
+
+            id.MOD = MOD;
+            id.MEMBER = MEMBER;
+            id.BOOSTER = BOOSTER;
+
+            id.GET_ACCESS = GET_ACCESS;
+            id.ANNOUNCE = ANNOUNCE;
+            id.logDM = logDM;
+
+            id.publish = publish;
+            id.eventRaw = eventRaw;
+            id.forceCompact = forceCompact;
+            id.forceFullTreasure = forceFullTreasure;
+            id.boosterPin = boosterPin;
+
+            id.config = config.clone();
+
+            id.status = new ArrayList<>(status);
+            id.banned = new ArrayList<>(banned);
+            id.boosterPinChannel = new ArrayList<>(boosterPinChannel);
+
+            id.ID = new HashMap<>(ID);
+            id.eventMessage = new HashMap<>(eventMessage);
+            id.eventMap = new HashMap<>(eventMap);
+
+            for(String key : channel.keySet()) {
+                id.channel.put(key, new ArrayList<>(channel.get(key)));
+            }
+
+            for(String key : channelException.keySet()) {
+                id.channelException.put(key, new ArrayList<>(channelException.get(key)));
+            }
+
+            return id;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }
