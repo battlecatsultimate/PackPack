@@ -90,7 +90,7 @@ public class StatAnalyzer extends ConstraintCommand {
         } else if(name.length != len) {
             int nLen = name.length;
 
-            ch.sendMessage(LangID.getStringByID("stat_name", lang).replace("_RRR_", len+"").replace("_PPP_", nLen+"")).queue();
+            ch.sendMessage(LangID.getStringByID("stat_name", lang).replace("_RRR_", String.valueOf(len)).replace("_PPP_", String.valueOf(nLen))).queue();
 
             return;
         }

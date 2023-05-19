@@ -85,7 +85,7 @@ public class TrueFormAnalyzer extends ConstraintCommand {
         } else if(name.length != 1) {
             int nLen = name.length;
 
-            ch.sendMessage(LangID.getStringByID("stat_name", lang).replace("_RRR_", 1+"").replace("_PPP_", nLen+"")).queue();
+            ch.sendMessage(LangID.getStringByID("stat_name", lang).replace("_RRR_", 1+"").replace("_PPP_", String.valueOf(nLen))).queue();
 
             return;
         }

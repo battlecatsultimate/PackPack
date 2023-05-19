@@ -1,7 +1,6 @@
 package mandarin.packpack.supporter.server.holder.component;
 
 import mandarin.packpack.supporter.lang.LangID;
-import mandarin.packpack.supporter.server.holder.component.SearchHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;

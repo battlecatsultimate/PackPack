@@ -9,14 +9,14 @@ import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.bc.cell.AbilityData;
 import mandarin.packpack.supporter.bc.cell.CellData;
 import mandarin.packpack.supporter.bc.cell.FlagCellData;
-import mandarin.packpack.supporter.server.holder.message.FileAnalyzerHolder;
 import net.dv8tion.jda.api.entities.Message;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class StatAnalyzerMessageHolder extends FileAnalyzerHolder {

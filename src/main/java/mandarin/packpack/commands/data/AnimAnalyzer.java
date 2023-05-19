@@ -67,21 +67,12 @@ public class AnimAnalyzer extends ConstraintCommand {
                 return;
             }
 
-            String localeCode;
-
-            switch (getLocale(getContent(event))) {
-                case LangID.EN:
-                    localeCode = "en";
-                    break;
-                case LangID.ZH:
-                    localeCode = "zh";
-                    break;
-                case LangID.KR:
-                    localeCode = "kr";
-                    break;
-                default:
-                    localeCode = "jp";
-            }
+            String localeCode = switch (getLocale(getContent(event))) {
+                case LangID.EN -> "en";
+                case LangID.ZH -> "zh";
+                case LangID.KR -> "kr";
+                default -> "jp";
+            };
 
             File workspace = new File("./data/bc/"+localeCode+"/workspace");
 
@@ -201,52 +192,48 @@ public class AnimAnalyzer extends ConstraintCommand {
             label:
             for (String s : pureMessage) {
                 switch (s) {
-                    case "-r":
-                    case "-raw":
+                    case "-r", "-raw" -> {
                         if ((result & PARAM_RAW) == 0) {
                             result |= PARAM_RAW;
                         } else {
                             break label;
                         }
-                        break;
-                    case "-d":
-                    case "-debug":
+                    }
+                    case "-d", "-debug" -> {
                         if ((result & PARAM_DEBUG) == 0) {
                             result |= PARAM_DEBUG;
                         } else {
                             break label;
                         }
-                        break;
-                    case "-bc":
-                    case "-b":
-                        if((result & PARAM_BC) == 0) {
+                    }
+                    case "-bc", "-b" -> {
+                        if ((result & PARAM_BC) == 0) {
                             result |= PARAM_BC;
                         } else {
                             break label;
                         }
-                        break;
-                    case "-zombie":
-                    case "-z":
-                        if((result & PARAM_ZOMBIE) == 0) {
+                    }
+                    case "-zombie", "-z" -> {
+                        if ((result & PARAM_ZOMBIE) == 0) {
                             result |= PARAM_ZOMBIE;
                         } else {
                             break label;
                         }
-                        break;
-                    case "-t":
-                        if((result & PARAM_TRANSPARENT) == 0) {
+                    }
+                    case "-t" -> {
+                        if ((result & PARAM_TRANSPARENT) == 0) {
                             result |= PARAM_TRANSPARENT;
                         } else {
                             break label;
                         }
-                        break;
-                    case "-apk":
-                    case "-a":
-                        if((result & PARAM_USEAPK) == 0) {
+                    }
+                    case "-apk", "-a" -> {
+                        if ((result & PARAM_USEAPK) == 0) {
                             result |= PARAM_USEAPK;
                         } else {
                             break label;
                         }
+                    }
                 }
             }
         }
@@ -267,24 +254,16 @@ public class AnimAnalyzer extends ConstraintCommand {
     }
 
     private String getMaanimTitle(int index) {
-        switch (index) {
-            case 0:
-                return "MAANIM WALKING : ";
-            case 1:
-                return "MAANIM IDLE : ";
-            case 2:
-                return "MAANIM ATTACK : ";
-            case 3:
-                return "MAANIM HITBACK : ";
-            case 4:
-                return "MAANIM BURROW DOWN : ";
-            case 5:
-                return "MAANIM BURROW MOVE : ";
-            case 6:
-                return "MAANIM BURROW UP : ";
-            default:
-                return "MAANIM "+index+" : ";
-        }
+        return switch (index) {
+            case 0 -> "MAANIM WALKING : ";
+            case 1 -> "MAANIM IDLE : ";
+            case 2 -> "MAANIM ATTACK : ";
+            case 3 -> "MAANIM HITBACK : ";
+            case 4 -> "MAANIM BURROW DOWN : ";
+            case 5 -> "MAANIM BURROW MOVE : ";
+            case 6 -> "MAANIM BURROW UP : ";
+            default -> "MAANIM " + index + " : ";
+        };
     }
 
     private String getAnimCode(String content) {

@@ -1,7 +1,6 @@
 package mandarin.packpack.supporter.server.holder;
 
 import mandarin.packpack.supporter.StaticStore;
-import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder;
 import mandarin.packpack.supporter.server.holder.message.MessageHolder;
 import mandarin.packpack.supporter.server.holder.modal.ModalHolder;

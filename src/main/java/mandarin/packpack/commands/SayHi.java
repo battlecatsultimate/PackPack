@@ -47,10 +47,10 @@ public class SayHi extends Command {
             int index = StaticStore.random.nextInt(13);
 
             switch (index) {
-                case 0:
+                case 0 -> {
                     Message msg = getRepliedMessageSafely(ch, LangID.getStringByID("hi_" + index, lang), getMessage(event), a -> a);
 
-                    if(msg != null) {
+                    if (msg != null) {
                         Timer changer = new Timer();
 
                         changer.schedule(new TimerTask() {
@@ -60,12 +60,11 @@ public class SayHi extends Command {
                             }
                         }, 5000);
                     }
-
-                    break;
-                case 2:
+                }
+                case 2 -> {
                     Message message = getRepliedMessageSafely(ch, LangID.getStringByID("hi_" + index, lang), getMessage(event), a -> a);
 
-                    if(message != null) {
+                    if (message != null) {
                         Timer changer = new Timer();
 
                         changer.schedule(new TimerTask() {
@@ -80,12 +79,11 @@ public class SayHi extends Command {
                             }
                         }, 5000);
                     }
-
-                    break;
-                case 8:
+                }
+                case 8 -> {
                     Message ms = getRepliedMessageSafely(ch, LangID.getStringByID("hi_" + index, lang), getMessage(event), a -> a);
 
-                    if(ms != null) {
+                    if (ms != null) {
                         Timer changer = new Timer();
 
                         changer.schedule(new TimerTask() {
@@ -98,10 +96,9 @@ public class SayHi extends Command {
                             }
                         }, 5000);
                     }
-
-                    break;
-                default:
-                    replyToMessageSafely(ch, LangID.getStringByID("hi_" + index, lang), getMessage(event), a -> a);
+                }
+                default ->
+                        replyToMessageSafely(ch, LangID.getStringByID("hi_" + index, lang), getMessage(event), a -> a);
             }
         }
     }
