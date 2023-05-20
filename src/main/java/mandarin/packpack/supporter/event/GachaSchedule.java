@@ -269,23 +269,11 @@ public class GachaSchedule extends EventFactor implements Schedule {
             if(section == null)
                 continue;
 
-            int oldConfig = CommonStatic.getConfig().lang;
-            CommonStatic.getConfig().lang = lang;
-
-            String g;
-
-            switch (section.gachaType) {
-                case NORMAL:
-                    g = StaticStore.NORMALGACHA.getCont(section.gachaID);
-                    break;
-                case EXTRA:
-                    g = StaticStore.EXTRAGACHA.getCont(section.gachaID);
-                    break;
-                default:
-                    g = StaticStore.GACHANAME.getCont(section.gachaID);
-            }
-
-            CommonStatic.getConfig().lang = oldConfig;
+            String g = switch (section.gachaType) {
+                case NORMAL -> StaticStore.NORMALGACHA.getCont(section.gachaID, lang);
+                case EXTRA -> StaticStore.EXTRAGACHA.getCont(section.gachaID, lang);
+                default -> StaticStore.GACHANAME.getCont(section.gachaID, lang);
+            };
 
             if(g == null)
                 g = tryGetGachaName(section, lang);

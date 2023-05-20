@@ -3288,13 +3288,8 @@ public class EntityHandler {
 
             EmbedBuilder e = new EmbedBuilder();
 
-            int oldConfig = CommonStatic.getConfig().lang;
-            CommonStatic.getConfig().lang = lang;
-
-            String name = StaticStore.MEDNAME.getCont(id);
-            String desc = StaticStore.MEDEXP.getCont(id);
-
-            CommonStatic.getConfig().lang = oldConfig;
+            String name = StaticStore.MEDNAME.getCont(id, lang);
+            String desc = StaticStore.MEDEXP.getCont(id, lang);
 
             if(StaticStore.medalData != null) {
                 JsonObject obj = StaticStore.medalData.getAsJsonArray().get(id).getAsJsonObject();
@@ -3316,24 +3311,19 @@ public class EntityHandler {
 
         EmbedBuilder e = new EmbedBuilder();
 
-        int oldConfig = CommonStatic.getConfig().lang;
-        CommonStatic.getConfig().lang = lang;
+        String comboName = MultiLangCont.getStatic().COMNAME.getCont(c, lang);
 
-        String comboName = MultiLangCont.getStatic().COMNAME.getCont(c);
-
-        CommonStatic.getConfig().lang = oldConfig;
-
-        if(comboName == null || comboName.isBlank()) {
-            comboName = "Combo "+c.name;
+        if (comboName == null || comboName.isBlank()) {
+            comboName = "Combo " + c.name;
         }
 
         e.setTitle(comboName);
 
-        if(c.lv == 0) {
+        if (c.lv == 0) {
             e.setColor(StaticStore.rainbow[4]);
-        } else if(c.lv == 1) {
+        } else if (c.lv == 1) {
             e.setColor(StaticStore.rainbow[3]);
-        } else if(c.lv == 2) {
+        } else if (c.lv == 2) {
             e.setColor(StaticStore.rainbow[2]);
         } else {
             e.setColor(StaticStore.rainbow[0]);
@@ -3341,11 +3331,11 @@ public class EntityHandler {
 
         e.addField(DataToString.getComboType(c, lang), DataToString.getComboDescription(c, lang), false);
 
-        if(icon != null) {
+        if (icon != null) {
             e.setImage("attachment://combo.png");
         }
 
-        if(icon != null)
+        if (icon != null)
             Command.sendMessageWithFile(ch, "", e.build(), icon, "combo.png", reference);
     }
 

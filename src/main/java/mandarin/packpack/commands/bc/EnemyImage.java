@@ -106,8 +106,6 @@ public class EnemyImage extends TimedConstraintCommand {
                     );
                 }
             } else {
-                CommonStatic.getConfig().lang = lang;
-
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", getSearchKeyword(getContent(event))));
 
                 sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang));

@@ -1,6 +1,5 @@
 package mandarin.packpack.supporter.bc;
 
-import common.CommonStatic;
 import common.battle.data.MaskAtk;
 import common.battle.data.MaskEnemy;
 import common.battle.data.MaskEntity;
@@ -164,12 +163,7 @@ public class Interpret extends Data {
 
         for(int i = 0; i < PROCIND.length; i++) {
             if(isValidProc(i, mr)) {
-                int oldConfig = CommonStatic.getConfig().lang;
-                CommonStatic.getConfig().lang = lang;
-
-                String f = ProcLang.get().get(PROCIND[i]).format;
-
-                CommonStatic.getConfig().lang = oldConfig;
+                String f = ProcLang.getWithLang(lang).get(PROCIND[i]).format;
 
                 Object proc = getProcObject(i, mr);
 
@@ -195,12 +189,7 @@ public class Interpret extends Data {
 
             for(int i = 0; i < PROCIND.length; i++) {
                 if(isValidProc(i, ma)) {
-                    int oldConfig = CommonStatic.getConfig().lang;
-                    CommonStatic.getConfig().lang = lang;
-
-                    String f = ProcLang.get().get(PROCIND[i]).format;
-
-                    CommonStatic.getConfig().lang = oldConfig;
+                    String f = ProcLang.getWithLang(lang).get(PROCIND[i]).format;
 
                     Object proc = getProcObject(i, ma);
 
@@ -291,12 +280,7 @@ public class Interpret extends Data {
 
     private static String getTraitEmoji(String code, int lang) {
         if(code.startsWith("T_")) {
-            int oldConfig = CommonStatic.getConfig().lang;
-            CommonStatic.getConfig().lang = lang;
-
-            Emoji emoji = EmojiStore.TRAIT.getCont(code);
-
-            CommonStatic.getConfig().lang = oldConfig;
+            Emoji emoji = EmojiStore.TRAIT.getCont(code, lang);
 
             if(emoji == null)
                 return "";

@@ -57,19 +57,14 @@ public class FindRewardMessageHolder extends SearchHolder {
         List<String> data = new ArrayList<>();
 
         for(int i = PAGE_CHUNK * page; i < PAGE_CHUNK * (page + 1); i++) {
-            if(i >= rewards.size())
+            if (i >= rewards.size())
                 break;
 
             String rname = Data.trio(rewards.get(i)) + " ";
 
-            int oldConfig = CommonStatic.getConfig().lang;
-            CommonStatic.getConfig().lang = lang;
+            String name = MultiLangCont.getStatic().RWNAME.getCont(rewards.get(i), lang);
 
-            String name = MultiLangCont.getStatic().RWNAME.getCont(rewards.get(i));
-
-            CommonStatic.getConfig().lang = oldConfig;
-
-            if(name != null && !name.isBlank()) {
+            if (name != null && !name.isBlank()) {
                 rname += name;
             }
 

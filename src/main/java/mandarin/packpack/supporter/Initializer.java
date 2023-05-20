@@ -423,8 +423,6 @@ public class Initializer {
                             }
                         }
                         case "GachaName.txt" -> {
-                            int oldConfig = CommonStatic.getConfig().lang;
-                            CommonStatic.getConfig().lang = loc[n];
                             for (String line : qs) {
                                 if (line == null)
                                     continue;
@@ -449,7 +447,7 @@ public class Initializer {
                                     String name = str[1].trim();
 
                                     if (StaticStore.isNumeric(name) && StaticStore.safeParseInt(name) < 0) {
-                                        name = StaticStore.GACHANAME.getCont(StaticStore.safeParseInt(name));
+                                        name = StaticStore.GACHANAME.getCont(StaticStore.safeParseInt(name), loc[n]);
                                     }
 
                                     if (str.length == 3 && name != null) {
@@ -461,7 +459,6 @@ public class Initializer {
                                     StaticStore.GACHANAME.put(f, id, name);
                                 }
                             }
-                            CommonStatic.getConfig().lang = oldConfig;
                         }
                         case "MissionName.txt" -> {
                             for (String line : qs) {

@@ -1,6 +1,5 @@
 package mandarin.packpack.supporter.server.holder.component;
 
-import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Combo;
@@ -172,13 +171,8 @@ public class ComboFormMessageHolder extends SearchHolder {
 
             String comboName = Data.trio(Integer.parseInt(c.name));
 
-            int oldConfig = CommonStatic.getConfig().lang;
-            CommonStatic.getConfig().lang = lang;
-
             if(MultiLangCont.getStatic().COMNAME.getCont(c) != null)
-                comboName += " " + MultiLangCont.getStatic().COMNAME.getCont(c);
-
-            CommonStatic.getConfig().lang = oldConfig;
+                comboName += " " + MultiLangCont.getStatic().COMNAME.getCont(c, lang);
 
             comboName += " | " + DataToString.getComboType(c, lang) + " ";
 

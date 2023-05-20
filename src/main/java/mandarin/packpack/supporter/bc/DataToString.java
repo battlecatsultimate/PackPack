@@ -444,23 +444,13 @@ public class DataToString extends Data {
             return LangID.getStringByID("data_range", lang);
 
         if(e.isOmni()) {
-            int oldConfig = CommonStatic.getConfig().lang;
-            CommonStatic.getConfig().lang = lang;
-
-            Emoji emoji = EmojiStore.TRAIT.getCont("OMNI");
-
-            CommonStatic.getConfig().lang = oldConfig;
+            Emoji emoji = EmojiStore.TRAIT.getCont("OMNI", lang);
 
             return LangID.getStringByID("data_range", lang) + (emoji == null ? "" : " " + emoji.getFormatted());
         }
 
         if(e.isLD()) {
-            int oldConfig = CommonStatic.getConfig().lang;
-            CommonStatic.getConfig().lang = lang;
-
-            Emoji emoji = EmojiStore.TRAIT.getCont("LD");
-
-            CommonStatic.getConfig().lang = oldConfig;
+            Emoji emoji = EmojiStore.TRAIT.getCont("LD", lang);
 
             return LangID.getStringByID("data_range", lang) + (emoji == null ? "" : " " + emoji.getFormatted());
         }
@@ -1457,12 +1447,7 @@ public class DataToString extends Data {
         if(f.unit == null)
             return null;
 
-        int oldConfig = CommonStatic.getConfig().lang;
-        CommonStatic.getConfig().lang = lang;
-
-        String[] desc = MultiLangCont.getStatic().FEXP.getCont(f);
-
-        CommonStatic.getConfig().lang = oldConfig;
+        String[] desc = MultiLangCont.getStatic().FEXP.getCont(f, lang);
 
         if(desc == null)
             return null;
@@ -1493,12 +1478,7 @@ public class DataToString extends Data {
     }
 
     public static String getDescription(Enemy e, int lang) {
-        int oldConfig = CommonStatic.getConfig().lang;
-        CommonStatic.getConfig().lang = lang;
-
-        String[] desc = MultiLangCont.getStatic().EEXP.getCont(e);
-
-        CommonStatic.getConfig().lang = oldConfig;
+        String[] desc = MultiLangCont.getStatic().EEXP.getCont(e, lang);
 
         if(desc == null)
             return null;
@@ -1529,37 +1509,32 @@ public class DataToString extends Data {
     }
 
     public static String getCatruitEvolve(Form f, int lang) {
-        if(f.unit == null)
+        if (f.unit == null)
             return null;
 
-        int oldConfig = CommonStatic.getConfig().lang;
-        CommonStatic.getConfig().lang = lang;
+        String cfText = MultiLangCont.getStatic().CFEXP.getCont(f.unit.info, lang);
 
-        String cfText = MultiLangCont.getStatic().CFEXP.getCont(f.unit.info);
-
-        CommonStatic.getConfig().lang = oldConfig;
-
-        if(cfText == null)
+        if (cfText == null)
             return null;
 
         String[] cf = cfText.split("\n");
 
         boolean canGo = false;
 
-        for(String s : cf) {
-            if(s != null && !s.isBlank()) {
+        for (String s : cf) {
+            if (s != null && !s.isBlank()) {
                 canGo = true;
                 break;
             }
         }
 
-        if(canGo) {
+        if (canGo) {
             StringBuilder builder = new StringBuilder();
 
-            for(int i = 0; i < cf.length; i++) {
+            for (int i = 0; i < cf.length; i++) {
                 builder.append(cf[i]);
 
-                if(i != cf.length -1)
+                if (i != cf.length - 1)
                     builder.append("\n");
             }
 
@@ -1848,17 +1823,12 @@ public class DataToString extends Data {
         for(int i = 0; i < info.time.length; i++) {
             String[] drop = new String[3];
 
-            int oldConfig = CommonStatic.getConfig().lang;
-            CommonStatic.getConfig().lang = lang;
+            String reward = MultiLangCont.getStatic().RWNAME.getCont(data[i][1], lang);
 
-            String reward = MultiLangCont.getStatic().RWNAME.getCont(data[i][1]);
-
-            CommonStatic.getConfig().lang = oldConfig;
-
-            if(reward == null || reward.isBlank())
+            if (reward == null || reward.isBlank())
                 reward = map.rewardNames.get(data[i][1]);
 
-            if(reward == null || reward.isBlank())
+            if (reward == null || reward.isBlank())
                 reward = LangID.getStringByID("data_dumreward", lang).replace("_", Data.trio(data[i][1]));
 
             drop[0] = String.valueOf(data[i][0]);
@@ -2465,17 +2435,11 @@ public class DataToString extends Data {
 
         int max = (int) Math.round(map.info.multiplier[star] * ((DefStageInfo) st.info).maxMaterial);
 
-        int oldConfig = CommonStatic.getConfig().lang;
-
         for(int i = 1; i < map.info.materialDrop.length; i++) {
             if(map.info.materialDrop[i] <= 0)
                 continue;
 
-            CommonStatic.getConfig().lang = lang;
-
-            String name = MultiLangCont.getStatic().RWNAME.getCont(materialDrops[i - 1]);
-
-            CommonStatic.getConfig().lang = oldConfig;
+            String name = MultiLangCont.getStatic().RWNAME.getCont(materialDrops[i - 1], lang);
 
             if(name == null || name.isBlank()) {
                 name = String.valueOf(materialDrops[i - 1]);
@@ -2522,12 +2486,7 @@ public class DataToString extends Data {
             Emoji emoji;
 
             if(code.startsWith("T_")) {
-                int oldConfig = CommonStatic.getConfig().lang;
-                CommonStatic.getConfig().lang = lang;
-
-                emoji = EmojiStore.TRAIT.getCont(code);
-
-                CommonStatic.getConfig().lang = oldConfig;
+                emoji = EmojiStore.TRAIT.getCont(code, lang);
             } else {
                 emoji = EmojiStore.ABILITY.get(code);
             }
@@ -2540,12 +2499,7 @@ public class DataToString extends Data {
         if(du.getPCoin().trait.size() == 1 && index == 0) {
             String code = Interpret.TRAITICON[du.getPCoin().trait.get(0).id.id];
 
-            int oldConfig = CommonStatic.getConfig().lang;
-            CommonStatic.getConfig().lang = lang;
-
-            Emoji emoji = EmojiStore.TRAIT.getCont(code);
-
-            CommonStatic.getConfig().lang = oldConfig;
+            Emoji emoji = EmojiStore.TRAIT.getCont(code, lang);
 
             if(emoji != null)
                 return emoji.getFormatted() + name;
@@ -2612,12 +2566,7 @@ public class DataToString extends Data {
                     if (!p.exists()) {
                         Formatter.Context c = new Formatter.Context(true, !isFrame, new double[]{0, 0});
 
-                        int oldConfig = CommonStatic.getConfig().lang;
-                        CommonStatic.getConfig().lang = lang;
-
-                        String f = ProcLang.get().get(type[1]).format;
-
-                        CommonStatic.getConfig().lang = oldConfig;
+                        String f = ProcLang.getWithLang(lang).get(type[1]).format;
 
                         desc += Formatter.format(f, improved.getProc().getArr(type[1]), c) + "\n\n";
                     }
@@ -2739,12 +2688,7 @@ public class DataToString extends Data {
                     if (!p.exists()) {
                         Formatter.Context c = new Formatter.Context(true, !isFrame, new double[]{0, 0});
 
-                        int oldConfig = CommonStatic.getConfig().lang;
-                        CommonStatic.getConfig().lang = lang;
-
-                        String f = ProcLang.get().get(type[1]).format;
-
-                        CommonStatic.getConfig().lang = oldConfig;
+                        String f = ProcLang.getWithLang(lang).get(type[1]).format;
 
                         desc += Formatter.format(f, improveManually(p.clone(), data, index, type[1]), c) + "\n\n";
                     }

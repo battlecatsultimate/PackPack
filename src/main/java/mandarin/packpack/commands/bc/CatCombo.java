@@ -1,6 +1,5 @@
 package mandarin.packpack.commands.bc;
 
-import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Combo;
@@ -238,13 +237,8 @@ public class CatCombo extends TimedConstraintCommand {
 
             String comboName = Data.trio(Integer.parseInt(c.name));
 
-            int oldConfig = CommonStatic.getConfig().lang;
-            CommonStatic.getConfig().lang = lang;
-
-            if(MultiLangCont.getStatic().COMNAME.getCont(c) != null)
-                comboName += " " + MultiLangCont.getStatic().COMNAME.getCont(c);
-
-            CommonStatic.getConfig().lang = oldConfig;
+            if(MultiLangCont.getStatic().COMNAME.getCont(c, lang) != null)
+                comboName += " " + MultiLangCont.getStatic().COMNAME.getCont(c, lang);
 
             comboName += " | " + DataToString.getComboType(c, lang) + " ";
 

@@ -71,12 +71,7 @@ public class EntityFilter {
                         added = true;
                     }
 
-                    int oldConfig = CommonStatic.getConfig().lang;
-                    CommonStatic.getConfig().lang = StaticStore.langIndex[i];
-
-                    ArrayList<String> alias = AliasHolder.FALIAS.getCont(f);
-
-                    CommonStatic.getConfig().lang = oldConfig;
+                    ArrayList<String> alias = AliasHolder.FALIAS.getCont(f, lang);
 
                     if(alias != null && !alias.isEmpty()) {
                         for(String a : alias) {
@@ -201,12 +196,7 @@ public class EntityFilter {
                     }
 
                     if(!done) {
-                        int oldConfig = CommonStatic.getConfig().lang;
-                        CommonStatic.getConfig().lang = lang;
-
-                        ArrayList<String> alias = AliasHolder.FALIAS.getCont(f);
-
-                        CommonStatic.getConfig().lang = oldConfig;
+                        ArrayList<String> alias = AliasHolder.FALIAS.getCont(f, lang);
 
                         if(alias != null && !alias.isEmpty()) {
                             for(String a : alias) {
@@ -354,12 +344,7 @@ public class EntityFilter {
                     added = true;
                 }
 
-                int oldConfig = CommonStatic.getConfig().lang;
-                CommonStatic.getConfig().lang = StaticStore.langIndex[i];
-
-                ArrayList<String> alias = AliasHolder.EALIAS.getCont(e);
-
-                CommonStatic.getConfig().lang = oldConfig;
+                ArrayList<String> alias = AliasHolder.EALIAS.getCont(e, lang);
 
                 if(alias != null && !alias.isEmpty()) {
                     for(String a : alias) {
@@ -460,12 +445,7 @@ public class EntityFilter {
                 }
 
                 if(!done) {
-                    int oldConfig = CommonStatic.getConfig().lang;
-                    CommonStatic.getConfig().lang = lang;
-
-                    ArrayList<String> alias = AliasHolder.EALIAS.getCont(e);
-
-                    CommonStatic.getConfig().lang = oldConfig;
+                    ArrayList<String> alias = AliasHolder.EALIAS.getCont(e, lang);
 
                     if(alias != null && !alias.isEmpty()) {
                         for(String a : alias) {
@@ -569,6 +549,7 @@ public class EntityFilter {
         }
     }
 
+    @SuppressWarnings("DataFlowIssue")
     public static ArrayList<Stage> findStageWithName(String[] names, int lang) {
         ArrayList<Stage> result = new ArrayList<>();
         ArrayList<Stage> clear = new ArrayList<>();
@@ -937,12 +918,7 @@ public class EntityFilter {
                                             }
                                         }
 
-                                        int oldConfig = CommonStatic.getConfig().lang;
-                                        CommonStatic.getConfig().lang = StaticStore.langIndex[i];
-
-                                        ArrayList<String> alias = AliasHolder.SALIAS.getCont(st);
-
-                                        CommonStatic.getConfig().lang = oldConfig;
+                                        ArrayList<String> alias = AliasHolder.SALIAS.getCont(st, StaticStore.langIndex[i]);
 
                                         if(alias != null && !alias.isEmpty()) {
                                             for(String a : alias) {
@@ -1066,12 +1042,7 @@ public class EntityFilter {
                                                     }
                                                 }
 
-                                                int oldConfig = CommonStatic.getConfig().lang;
-                                                CommonStatic.getConfig().lang = StaticStore.langIndex[i];
-
-                                                ArrayList<String> alias = AliasHolder.SALIAS.getCont(st);
-
-                                                CommonStatic.getConfig().lang = oldConfig;
+                                                ArrayList<String> alias = AliasHolder.SALIAS.getCont(st, StaticStore.langIndex[i]);
 
                                                 if(alias != null && !alias.isEmpty()) {
                                                     for(String a : alias) {
@@ -1234,12 +1205,7 @@ public class EntityFilter {
                                                     }
                                                 }
 
-                                                int oldConfig = CommonStatic.getConfig().lang;
-                                                CommonStatic.getConfig().lang = StaticStore.langIndex[i];
-
-                                                ArrayList<String> alias = AliasHolder.SALIAS.getCont(st);
-
-                                                CommonStatic.getConfig().lang = oldConfig;
+                                                ArrayList<String> alias = AliasHolder.SALIAS.getCont(st, StaticStore.langIndex[i]);
 
                                                 if(alias != null && !alias.isEmpty()) {
                                                     for(String a : alias) {
@@ -1363,12 +1329,7 @@ public class EntityFilter {
                                                             }
                                                         }
 
-                                                        int oldConfig = CommonStatic.getConfig().lang;
-                                                        CommonStatic.getConfig().lang = StaticStore.langIndex[i];
-
-                                                        ArrayList<String> alias = AliasHolder.SALIAS.getCont(st);
-
-                                                        CommonStatic.getConfig().lang = oldConfig;
+                                                        ArrayList<String> alias = AliasHolder.SALIAS.getCont(st, StaticStore.langIndex[i]);
 
                                                         if(alias != null && !alias.isEmpty()) {
                                                             for(String a : alias) {
@@ -1599,12 +1560,7 @@ public class EntityFilter {
 
         for(int i = 0; i < StaticStore.medalNumber; i++) {
             for(int j = 0; j < 4; j++) {
-                int oldConfg = CommonStatic.getConfig().lang;
-                CommonStatic.getConfig().lang = j;
-
-                String medalName = StaticStore.MEDNAME.getCont(i);
-
-                CommonStatic.getConfig().lang = oldConfg;
+                String medalName = StaticStore.MEDNAME.getCont(i, j);
 
                 if(medalName == null || medalName.isBlank()) {
                     medalName = Data.trio(i);
@@ -1631,15 +1587,10 @@ public class EntityFilter {
                 name = KoreanSeparater.separate(name);
 
             for(int i = 0; i < StaticStore.medalNumber; i++) {
-                int oldConfig = CommonStatic.getConfig().lang;
-                CommonStatic.getConfig().lang = lang;
-
-                String medalName = StaticStore.MEDNAME.getCont(i);
+                String medalName = StaticStore.MEDNAME.getCont(i, lang);
 
                 if(medalName == null || medalName.isBlank())
                     continue;
-
-                CommonStatic.getConfig().lang = oldConfig;
 
                 medalName = medalName.toLowerCase(Locale.ENGLISH);
 
@@ -1701,12 +1652,7 @@ public class EntityFilter {
             if(f == null) {
                 if(cName != null) {
                     for(int l = 0; l < 4; l++) {
-                        int oldConfig = CommonStatic.getConfig().lang;
-                        CommonStatic.getConfig().lang = l;
-
-                        String comboName = MultiLangCont.getStatic().COMNAME.getCont(c) + " | " + DataToString.getComboType(c, l);
-
-                        CommonStatic.getConfig().lang = oldConfig;
+                        String comboName = MultiLangCont.getStatic().COMNAME.getCont(c, l) + " | " + DataToString.getComboType(c, l);
 
                         if(comboName.toLowerCase(Locale.ENGLISH).contains(cName.toLowerCase(Locale.ENGLISH))) {
                             result.add(c);
@@ -1726,12 +1672,7 @@ public class EntityFilter {
                     if(c.forms[k].unit.id.id == f.unit.id.id && c.forms[k].fid <= f.fid) {
                         if(cName != null) {
                             for(int l = 0; l < 4; l++) {
-                                int oldConfig = CommonStatic.getConfig().lang;
-                                CommonStatic.getConfig().lang = l;
-
-                                String comboName = MultiLangCont.getStatic().COMNAME.getCont(c) + " | " + DataToString.getComboType(c, l);
-
-                                CommonStatic.getConfig().lang = oldConfig;
+                                String comboName = MultiLangCont.getStatic().COMNAME.getCont(c, l) + " | " + DataToString.getComboType(c, l);
 
                                 if(comboName.toLowerCase(Locale.ENGLISH).contains(cName.toLowerCase(Locale.ENGLISH))) {
                                     result.add(c);
@@ -1761,20 +1702,15 @@ public class EntityFilter {
 
         for(int i = 0; i < StaticStore.existingRewards.size(); i++) {
             for(int j = 0; j < StaticStore.langIndex.length; j++) {
-                int oldConfig = CommonStatic.getConfig().lang;
-                CommonStatic.getConfig().lang = StaticStore.langIndex[j];
+                String rewardName = MultiLangCont.getStatic().RWNAME.getCont(StaticStore.existingRewards.get(i), StaticStore.langIndex[j]);
 
-                String rewardName = MultiLangCont.getStatic().RWNAME.getCont(StaticStore.existingRewards.get(i));
-
-                CommonStatic.getConfig().lang = oldConfig;
-
-                if(rewardName == null || rewardName.isBlank()) {
+                if (rewardName == null || rewardName.isBlank()) {
                     rewardName = Data.trio(StaticStore.existingRewards.get(i));
                 } else {
                     rewardName = Data.trio(StaticStore.existingRewards.get(i)) + " " + rewardName;
                 }
 
-                if(rewardName.toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
+                if (rewardName.toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
                     result.add(StaticStore.existingRewards.get(i));
 
                     break;
@@ -1794,15 +1730,10 @@ public class EntityFilter {
                 name = KoreanSeparater.separate(name);
 
             for(int i = 0; i < StaticStore.existingRewards.size(); i++) {
-                int oldConfig = CommonStatic.getConfig().lang;
-                CommonStatic.getConfig().lang = lang;
-
-                String rewardName = MultiLangCont.getStatic().RWNAME.getCont(StaticStore.existingRewards.get(i));
+                String rewardName = MultiLangCont.getStatic().RWNAME.getCont(StaticStore.existingRewards.get(i), lang);
 
                 if(rewardName == null || rewardName.isBlank())
                     continue;
-
-                CommonStatic.getConfig().lang = oldConfig;
 
                 rewardName = rewardName.toLowerCase(Locale.ENGLISH);
 
@@ -2021,19 +1952,15 @@ public class EntityFilter {
                     if(name.toLowerCase(Locale.ENGLISH).contains(keyword))
                         return true;
 
-                    int oldConfig = CommonStatic.getConfig().lang;
-                    CommonStatic.getConfig().lang = StaticStore.langIndex[i];
-
                     ArrayList<String> alias;
 
                     if(cls == Form.class) {
-                        alias = AliasHolder.FALIAS.getCont((Form) t);
+                        alias = AliasHolder.FALIAS.getCont((Form) t, StaticStore.langIndex[i]);
                     } else if(cls == Enemy.class) {
-                        alias = AliasHolder.EALIAS.getCont((Enemy) t);
+                        alias = AliasHolder.EALIAS.getCont((Enemy) t, StaticStore.langIndex[i]);
                     } else if(cls == Stage.class) {
-                        alias = AliasHolder.SALIAS.getCont((Stage) t);
+                        alias = AliasHolder.SALIAS.getCont((Stage) t, StaticStore.langIndex[i]);
                     } else {
-                        CommonStatic.getConfig().lang = oldConfig;
                         continue;
                     }
 
@@ -2044,19 +1971,15 @@ public class EntityFilter {
                         }
                     }
                 } else {
-                    int oldConfig = CommonStatic.getConfig().lang;
-                    CommonStatic.getConfig().lang = StaticStore.langIndex[i];
-
                     ArrayList<String> alias;
 
                     if(cls == Form.class) {
-                        alias = AliasHolder.FALIAS.getCont((Form) t);
+                        alias = AliasHolder.FALIAS.getCont((Form) t, StaticStore.langIndex[i]);
                     } else if(cls == Enemy.class) {
-                        alias = AliasHolder.EALIAS.getCont((Enemy) t);
+                        alias = AliasHolder.EALIAS.getCont((Enemy) t, StaticStore.langIndex[i]);
                     } else if(cls == Stage.class) {
-                        alias = AliasHolder.SALIAS.getCont((Stage) t);
+                        alias = AliasHolder.SALIAS.getCont((Stage) t, StaticStore.langIndex[i]);
                     } else {
-                        CommonStatic.getConfig().lang = oldConfig;
                         continue;
                     }
 
@@ -2120,23 +2043,16 @@ public class EntityFilter {
 
                 ArrayList<String> alias;
 
-                int oldConfig = CommonStatic.getConfig().lang;
-                CommonStatic.getConfig().lang = lang;
-
                 if(cls == Form.class) {
-                    alias = AliasHolder.FALIAS.getCont((Form) t);
+                    alias = AliasHolder.FALIAS.getCont((Form) t, lang);
                 } else if(cls == Enemy.class) {
-                    alias = AliasHolder.EALIAS.getCont((Enemy) t);
+                    alias = AliasHolder.EALIAS.getCont((Enemy) t, lang);
                 } else if(cls == Stage.class) {
-                    alias = AliasHolder.SALIAS.getCont((Stage) t);
+                    alias = AliasHolder.SALIAS.getCont((Stage) t, lang);
                 } else {
-                    CommonStatic.getConfig().lang = oldConfig;
-
                     distances.add(disMin);
                     continue;
                 }
-
-                CommonStatic.getConfig().lang = oldConfig;
 
                 if(alias != null && !alias.isEmpty()) {
                     for(String a : alias) {
@@ -2170,23 +2086,16 @@ public class EntityFilter {
                 if(disMin > allMin) {
                     ArrayList<String> alias;
 
-                    int oldConfig = CommonStatic.getConfig().lang;
-                    CommonStatic.getConfig().lang = lang;
-
                     if(cls == Form.class) {
-                        alias = AliasHolder.FALIAS.getCont((Form) t);
+                        alias = AliasHolder.FALIAS.getCont((Form) t, lang);
                     } else if(cls == Enemy.class) {
-                        alias = AliasHolder.EALIAS.getCont((Enemy) t);
+                        alias = AliasHolder.EALIAS.getCont((Enemy) t, lang);
                     } else if(cls == Stage.class) {
-                        alias = AliasHolder.SALIAS.getCont((Stage) t);
+                        alias = AliasHolder.SALIAS.getCont((Stage) t, lang);
                     } else {
-                        CommonStatic.getConfig().lang = oldConfig;
-
                         distances.add(disMin);
                         continue;
                     }
-
-                    CommonStatic.getConfig().lang = oldConfig;
 
                     if(alias != null && !alias.isEmpty()) {
                         for(String a : alias) {
@@ -2259,23 +2168,16 @@ public class EntityFilter {
             if(disMin > allMin) {
                 ArrayList<String> alias;
 
-                int oldConfig = CommonStatic.getConfig().lang;
-                CommonStatic.getConfig().lang = lang;
-
                 if(cls == Form.class) {
-                    alias = AliasHolder.FALIAS.getCont((Form) t);
+                    alias = AliasHolder.FALIAS.getCont((Form) t, lang);
                 } else if(cls == Enemy.class) {
-                    alias = AliasHolder.EALIAS.getCont((Enemy) t);
+                    alias = AliasHolder.EALIAS.getCont((Enemy) t, lang);
                 } else if(cls == Stage.class) {
-                    alias = AliasHolder.SALIAS.getCont((Stage) t);
+                    alias = AliasHolder.SALIAS.getCont((Stage) t, lang);
                 } else {
-                    CommonStatic.getConfig().lang = oldConfig;
-
                     distances.add(disMin);
                     continue;
                 }
-
-                CommonStatic.getConfig().lang = oldConfig;
 
                 if(alias != null && !alias.isEmpty()) {
                     for(String a : alias) {
@@ -2347,7 +2249,7 @@ public class EntityFilter {
 
     private static boolean isMonthly(MapColc mc, StageMap map) {
         switch (mc.getSID()) {
-            case "000003": {
+            case "000003" -> {
                 int id = map.id.id;
 
                 for (int i = 0; i < storyChapterMonthly.length; i++) {
@@ -2355,9 +2257,8 @@ public class EntityFilter {
                         return true;
                 }
 
-                break;
             }
-            case "000001": {
+            case "000001" -> {
                 int id = map.id.id;
 
                 for (int i = 0; i < cycloneMonthly.length; i++) {
@@ -2365,9 +2266,8 @@ public class EntityFilter {
                         return true;
                 }
 
-                break;
             }
-            case "000014": {
+            case "000014" -> {
                 int id = map.id.id;
 
                 for (int i = 0; i < cycloneCatamin.length; i++) {
@@ -2375,7 +2275,6 @@ public class EntityFilter {
                         return true;
                 }
 
-                break;
             }
         }
 

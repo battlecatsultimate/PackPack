@@ -454,20 +454,15 @@ public class StageSchedule extends EventFactor implements Schedule {
                 for(int i = 0; i < unknownStages.size(); i++) {
                     int id = StaticStore.safeParseInt(unknownStages.get(i)) - 13000;
 
-                    int oldConfig = CommonStatic.getConfig().lang;
-                    CommonStatic.getConfig().lang = lang;
+                    String trueForm = MultiLangCont.getStatic().RWNAME.getCont(id, lang);
 
-                    String trueForm = MultiLangCont.getStatic().RWNAME.getCont(id);
-
-                    CommonStatic.getConfig().lang = oldConfig;
-
-                    if(trueForm == null || trueForm.isBlank()) {
+                    if (trueForm == null || trueForm.isBlank()) {
                         trueForm = Integer.toString(id + 13000);
                     }
 
                     units.append(trueForm);
 
-                    if(i < unknownStages.size() - 1)
+                    if (i < unknownStages.size() - 1)
                         units.append(", ");
                 }
 
@@ -479,14 +474,9 @@ public class StageSchedule extends EventFactor implements Schedule {
                     if(id >= 28000 && id < 29000) {
                         id -= 13000;
 
-                        int oldConfig = CommonStatic.getConfig().lang;
-                        CommonStatic.getConfig().lang = lang;
+                        String trueForm = MultiLangCont.getStatic().RWNAME.getCont(id, lang);
 
-                        String trueForm = MultiLangCont.getStatic().RWNAME.getCont(id);
-
-                        CommonStatic.getConfig().lang = oldConfig;
-
-                        if(trueForm == null || trueForm.isBlank()) {
+                        if (trueForm == null || trueForm.isBlank()) {
                             trueForm = Integer.toString(id + 13000);
                         }
 
@@ -638,12 +628,7 @@ public class StageSchedule extends EventFactor implements Schedule {
                 if(permanent)
                     id -= 15000;
 
-                int oldConfig = CommonStatic.getConfig().lang;
-                CommonStatic.getConfig().lang = lang;
-
-                String mission = StaticStore.MISSIONNAME.getCont(id);
-
-                CommonStatic.getConfig().lang = oldConfig;
+                String mission = StaticStore.MISSIONNAME.getCont(id, lang);
 
                 if(mission == null) {
                     mission = LangID.getStringByID("printstage_mission", lang).replace("_", unknownStages.get(i));

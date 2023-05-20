@@ -456,25 +456,20 @@ public class EventFactor {
     }
 
     public static String beautifyGameItem(int lang, int itemID, int itemAmount) {
-        int oldConfig = CommonStatic.getConfig().lang;
-        CommonStatic.getConfig().lang = lang;
+        String item = MultiLangCont.getStatic().RWNAME.getCont(itemID, lang);
 
-        String item = MultiLangCont.getStatic().RWNAME.getCont(itemID);
-
-        CommonStatic.getConfig().lang = oldConfig;
-
-        if(item == null || item.isBlank()) {
+        if (item == null || item.isBlank()) {
             item = LangID.getStringByID("printitem_item", lang).replace("_", String.valueOf(itemID));
         }
 
         char c = item.charAt(item.length() - 1);
 
-        if(itemAmount > 1 && lang == LangID.EN && ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || Character.isDigit(c)) && !item.endsWith("XP") && !item.endsWith("s") && !item.endsWith("Choco"))
+        if (itemAmount > 1 && lang == LangID.EN && ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || Character.isDigit(c)) && !item.endsWith("XP") && !item.endsWith("s") && !item.endsWith("Choco"))
             item = getPlural(item);
 
-        if(itemID == 11 || itemID == 12 || itemID == 20 || itemID == 21) {
+        if (itemID == 11 || itemID == 12 || itemID == 20 || itemID == 21) {
             return LangID.getStringByID("printitem_formattic", lang).replace("_NNN_", String.valueOf(itemAmount)).replace("_III_", item);
-        } else if(itemID == 6) {
+        } else if (itemID == 6) {
             return LangID.getStringByID("printitem_formatxp", lang).replace("_NNN_", String.valueOf(itemAmount)).replace("_III_", item);
         } else {
             return LangID.getStringByID("printitem_format", lang).replace("_NNN_", String.valueOf(itemAmount)).replace("_III_", item);

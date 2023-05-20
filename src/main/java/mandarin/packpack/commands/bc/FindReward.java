@@ -1,6 +1,5 @@
 package mandarin.packpack.commands.bc;
 
-import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.stage.MapColc;
@@ -298,12 +297,7 @@ public class FindReward extends TimedConstraintCommand {
 
             String rname = Data.trio(rewards.get(i)) + " ";
 
-            int oldConfig = CommonStatic.getConfig().lang;
-            CommonStatic.getConfig().lang = lang;
-
-            String name = MultiLangCont.getStatic().RWNAME.getCont(rewards.get(i));
-
-            CommonStatic.getConfig().lang = oldConfig;
+            String name = MultiLangCont.getStatic().RWNAME.getCont(rewards.get(i), lang);
 
             if(name != null && !name.isBlank()) {
                 rname += name;

@@ -198,8 +198,6 @@ public class StageInfo extends TimedConstraintCommand {
                 boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
                 boolean isCompact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
 
-                CommonStatic.getConfig().lang = lang;
-
                 TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(getMessage(event).getAuthor().getId(), TreasureHolder.global);
 
                 Message result = EntityHandler.showStageEmb(stages.get(0), ch, getMessage(event), isFrame, isExtra, isCompact, star, treasure, lang);

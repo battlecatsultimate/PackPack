@@ -37,15 +37,7 @@ public class PackContext implements Context {
     @Override
     public InputStream getLangFile(String file) {
         try {
-            if (CommonStatic.getConfig().lang == 2) {
-                return new FileInputStream("./data/lang/proc_kr.json");
-            } else if(CommonStatic.getConfig().lang == 3) {
-                return new FileInputStream("./data/lang/proc_jp.json");
-            } else if(CommonStatic.getConfig().lang == 8) {
-                return new FileInputStream("./data/lang/proc_es.json");
-            } else {
-                return new FileInputStream("./data/lang/proc.json");
-            }
+            return new FileInputStream("./data/lang/" + file);
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "Failed to open lang file");
             e.printStackTrace();
