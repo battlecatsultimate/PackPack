@@ -17,6 +17,7 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.TimeBoolean;
 import mandarin.packpack.supporter.server.data.*;
+import mandarin.packpack.supporter.server.holder.Conflictable;
 import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.holder.HolderHub;
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder;
@@ -978,6 +979,10 @@ public class StaticStore {
     }
 
     synchronized public static void putHolder(String id, Holder holder) {
+        if (holder instanceof Conflictable c) {
+            handleConflict(c);
+        }
+
         HolderHub hub = holders.getOrDefault(id, new HolderHub());
 
         if(holder instanceof MessageHolder messageHolder) {
@@ -1021,6 +1026,18 @@ public class StaticStore {
 
     synchronized public static HolderHub getHolderHub(String id) {
         return holders.get(id);
+    }
+
+    synchronized private static void handleConflict(Conflictable holder) {
+        for(HolderHub hub : holders.values()) {
+            if(holder instanceof MessageHolder m && hub.messageHolder instanceof Conflictable c && c.isConflicted(m)) {
+                c.onConflict(m);
+            } else if (holder instanceof ComponentHolder c && hub.componentHolder instanceof Conflictable co && co.isConflicted(c)) {
+                co.onConflict(c);
+            } else if (holder instanceof ModalHolder m && hub.modalHolder instanceof Conflictable c && c.isConflicted(m)) {
+                c.onConflict(m);
+            }
+        }
     }
 
     public static boolean holderContainsKey(String id) {

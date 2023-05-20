@@ -21,6 +21,8 @@ import mandarin.packpack.supporter.server.slash.SlashBuilder;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.audit.ActionType;
+import net.dv8tion.jda.api.audit.AuditLogEntry;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
@@ -173,9 +175,6 @@ public class AllEventAdapter extends ListenerAdapter {
 
             if(idh.ANNOUNCE != null && idh.ANNOUNCE.equals(ch.getId()))
                 idh.ANNOUNCE = null;
-
-            if(idh.GET_ACCESS != null && idh.GET_ACCESS.equals(ch.getId()))
-                idh.GET_ACCESS = null;
 
             for(int key : idh.eventMap.keySet()) {
                 String channel = idh.eventMap.get(key);
@@ -392,10 +391,6 @@ public class AllEventAdapter extends ListenerAdapter {
                     canGo = channels.contains(mc.getId());
                 }
 
-                String acc = idh.GET_ACCESS;
-
-                canGo &= acc == null || !mc.getId().equals(acc);
-
                 if(!mandarin && !isMod && !canGo)
                     return;
 
@@ -519,7 +514,6 @@ public class AllEventAdapter extends ListenerAdapter {
                     new RegisterFixing(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "unregisterfixing", "urf" ->
                     new UnregisterFixing(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
-            case "watchdm", "wd" -> new WatchDM(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
             case "checkeventupdate", "ceu" ->
                     new CheckEventUpdate(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
             case "printstageevent", "pse" ->
@@ -886,14 +880,14 @@ public class AllEventAdapter extends ListenerAdapter {
     private static void handleInitialModRole(Guild g, IDHolder id, AtomicReference<Boolean> warned) {
         String modID = StaticStore.getRoleIDByName("PackPackMod", g);
 
+        Member inviter = findInviter(g);
+
         if(modID == null) {
             if (g.getSelfMember().hasPermission(Permission.MANAGE_ROLES)) {
                 if(g.getRoles().size() == 250) {
                     if(!warned.get()) {
-                        Member owner = g.retrieveOwner().complete();
-
-                        if(owner != null) {
-                            owner.getUser().openPrivateChannel()
+                        if(inviter != null) {
+                            inviter.getUser().openPrivateChannel()
                                     .flatMap(pc -> pc.sendMessage(LangID.getStringByID("maxrole", id.config.lang).replace("_", g.getName())))
                                     .queue();
 
@@ -921,33 +915,20 @@ public class AllEventAdapter extends ListenerAdapter {
                             String roleName = role != null ? role.getName() : null;
                             String roleID = role != null ? role.getId() : null;
 
-                            g.retrieveOwner().queue(owner -> {
-                                if(owner != null) {
-                                    owner.getUser().openPrivateChannel()
-                                            .flatMap(pc -> {
-                                                String message;
+                            if(inviter != null) {
+                                inviter.getUser().openPrivateChannel()
+                                        .flatMap(pc -> {
+                                            String message = LangID.getStringByID("first_join", id.config.lang)
+                                                    .replace("_SSS_", g.getName());
 
-                                                if(roleName != null) {
-                                                    message = LangID.getStringByID("first_joinmod", id.config.lang)
-                                                            .replace("_III_", roleID)
-                                                            .replace("_MMM_", roleName)
-                                                            .replace("_SSS_", g.getName());
-                                                } else {
-                                                    message = LangID.getStringByID("first_join", id.config.lang)
-                                                            .replace("_SSS_", g.getName());
-                                                }
-
-                                                return pc.sendMessage(message);
-                                            }).queue();
-                                }
-                            });
+                                            return pc.sendMessage(message);
+                                        }).queue();
+                            }
                         }, e -> StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::handleInitialModRole - Error happened while trying to create role"));
             } else {
                 if(!warned.get()) {
-                    Member owner = g.retrieveOwner().complete();
-
-                    if(owner != null) {
-                        owner.getUser().openPrivateChannel()
+                    if(inviter != null) {
+                        inviter.getUser().openPrivateChannel()
                                 .flatMap(pc -> pc.sendMessage(LangID.getStringByID("needroleperm", id.config.lang).replace("_", g.getName())))
                                 .queue();
                     }
@@ -971,10 +952,8 @@ public class AllEventAdapter extends ListenerAdapter {
             String roleName = role != null ? role.getName() : null;
             String roleID = role != null ? role.getId() : null;
 
-            Member owner = g.retrieveOwner().complete();
-
-            if(owner != null) {
-                owner.getUser().openPrivateChannel()
+            if(inviter != null) {
+                inviter.getUser().openPrivateChannel()
                         .flatMap(pc -> {
                             String message;
 
@@ -998,10 +977,10 @@ public class AllEventAdapter extends ListenerAdapter {
         if (g.getSelfMember().hasPermission(Permission.MANAGE_ROLES)) {
             if(g.getRoles().size() == 250) {
                 if(!warned.get()) {
-                    Member owner = g.retrieveOwner().complete();
+                    Member inviter = findInviter(g);
 
-                    if(owner != null) {
-                        owner.getUser().openPrivateChannel()
+                    if(inviter != null) {
+                        inviter.getUser().openPrivateChannel()
                                 .flatMap(pc -> pc.sendMessage(LangID.getStringByID("maxrole", holder.config.lang).replace("_", g.getName())))
                                 .queue(null, e -> { });
 
@@ -1017,10 +996,10 @@ public class AllEventAdapter extends ListenerAdapter {
                     .queue(r -> holder.MOD = r.getId(), e -> StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::reassignTempModRole - Error happened while trying to create role"));
         } else {
             if(!warned.get()) {
-                Member owner = g.retrieveOwner().complete();
+                Member inviter = findInviter(g);
 
-                if(owner != null) {
-                    owner.getUser().openPrivateChannel()
+                if(inviter != null) {
+                    inviter.getUser().openPrivateChannel()
                             .flatMap(pc -> pc.sendMessage(LangID.getStringByID("needroleperm", holder.config.lang).replace("_", g.getName())))
                             .queue();
 
@@ -1064,6 +1043,20 @@ public class AllEventAdapter extends ListenerAdapter {
                     }
                 }
             }
+        }
+    }
+
+    private static Member findInviter(Guild g) {
+        if (g.getSelfMember().hasPermission(Permission.VIEW_AUDIT_LOGS)) {
+            for(AuditLogEntry entry : g.retrieveAuditLogs()) {
+                if(entry.getType() == ActionType.BOT_ADD) {
+                    return g.retrieveMemberById(entry.getUserId()).complete();
+                }
+            }
+
+            return null;
+        } else {
+            return g.getOwner();
         }
     }
 }

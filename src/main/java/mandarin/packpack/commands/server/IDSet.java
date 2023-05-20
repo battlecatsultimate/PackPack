@@ -1,516 +1,117 @@
 package mandarin.packpack.commands.server;
 
 import mandarin.packpack.commands.ConstraintCommand;
+import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.entities.channel.ChannelType;
-import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import mandarin.packpack.supporter.server.holder.component.IDManagerHolder;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
+import net.dv8tion.jda.api.interactions.components.ActionComponent;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class IDSet extends ConstraintCommand {
-    private final IDHolder holder;
 
     public IDSet(ROLE role, int lang, IDHolder id) {
         super(role, lang, id, true);
-
-        holder = id;
     }
 
     @Override
     public void doSomething(GenericMessageEvent event) throws Exception {
         MessageChannel ch = getChannel(event);
+        User u = getUser(event);
+        Guild g = getGuild(event);
 
-        if(ch == null)
+        if(ch == null || u == null || g == null || holder == null)
             return;
 
-        Guild g = getGuild(event);
+        Message msg = getRepliedMessageSafely(ch, generateIDData(g), getMessage(event), this::registerComponents);
+
+        StaticStore.putHolder(u.getId(), new IDManagerHolder(getMessage(event), ch.getId(), msg, holder, g));
+    }
+
+    private String generateIDData(Guild g) {
+        if(holder == null)
+            throw new IllegalStateException("E/IDSet::generateIDData - IDHolder is required to perform IDHolder");
+
+        String[] data = { "moderator", "member", "booster" };
+        String[] ids = { holder.MOD, holder.MEMBER, holder.BOOSTER };
 
         StringBuilder result = new StringBuilder();
 
-        if(g == null) {
-            result.append(LangID.getStringByID("idset_noguild", lang));
-            ch.sendMessage(result.toString()).queue();
-            return;
-        }
-
-        String[] msg = getContent(event).split(" ");
-
-        if(msg.length == 1) {
-            StringBuilder res = new StringBuilder("Moderator : " + getRoleIDWithName(holder.MOD) + "\n" +
-                    "Member : " + (holder.MEMBER == null ? "Everyone" : getRoleIDWithName(holder.MEMBER)) + "\n" +
-                    "Booster User : " + (holder.BOOSTER == null ? "None" : getRoleIDWithName(holder.BOOSTER)) + "\n" +
-                    "Get-Access : " + (holder.GET_ACCESS == null ? "None" : getChannelIDWithName(holder.GET_ACCESS, g)) + "\n" +
-                    "Announcement : " + (holder.ANNOUNCE == null ? "None" : getChannelIDWithName(holder.ANNOUNCE, g)) + "\n" +
-                    "Status : " + (holder.status.isEmpty() ? "None" : getChannelsWithName(holder.status, g)) + "\n" +
-                    "Publish : "+ holder.publish);
-
-            if(!holder.ID.isEmpty()) {
-                res.append("\n\nCustom roles\n\n");
-            }
-
-            for(String name : holder.ID.keySet()) {
-                String id = holder.ID.get(name);
-
-                res.append(name).append(" : ").append(id == null ? "None" : getRoleIDWithName(id)).append("\n");
-            }
-
-            createMessageWithNoPings(ch, res.toString());
-        } else {
-            result.append(LangID.getStringByID("idset_result", lang));
-
-            List<String> customName = new ArrayList<>();
-
-            boolean mod = false;
-            boolean mem = false;
-            boolean get = false;
-            boolean ann = false;
-            boolean pub = false;
-            boolean boo = false;
-
-            for(int i = 0; i < msg.length; i++) {
-                switch (msg[i]) {
-                    case "-m":
-                    case "-mod":
-                        if(!mod && i < msg.length - 1) {
-                            String id = msg[i+1];
-
-                            if(isValidID(g, id)) {
-                                if(alreadyBeingUsed(id)) {
-                                    result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                    result.append(LangID.getStringByID("idset_used", lang).replace("_", id)).append("\n");
-                                    continue;
-                                }
-
-                                holder.MOD = id;
-
-                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                result.append(LangID.getStringByID("idset_idchange", lang).replace("_", "Moderator").replace("=", getRoleIDWithName(id))).append("\n");
-
-                                mod = true;
-                            } else if(StaticStore.isNumeric(id)) {
-                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                result.append(LangID.getStringByID("idset_invalid", lang).replace("_", id)).append("\n");
-                            } else {
-                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                result.append(LangID.getStringByID("idset_numeric", lang).replace("_", id)).append("\n");
-                            }
-
-                            i++;
-                        } else if(i <msg.length - 1) {
-                            result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                            result.append(LangID.getStringByID("idset_ignore", lang).replace("_", "Moderator")).append("\n");
-                        }
-                        break;
-                    case "-me":
-                    case "-member":
-                        if(!mem && i < msg.length - 1) {
-                            String id = msg[i+1];
-
-                            if(isValidID(g, id)) {
-                                if(alreadyBeingUsed(id)) {
-                                    result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                    result.append(LangID.getStringByID("idset_used", lang).replace("_", id)).append("\n");
-                                    continue;
-                                }
-
-                                String oldID = holder.MEMBER;
-
-                                if(oldID == null)
-                                    oldID = "Member";
-
-                                holder.MEMBER = id;
-
-                                if(holder.channel.containsKey(oldID)) {
-                                    List<String> arr = holder.channel.get(oldID);
-
-                                    holder.channel.put(id, arr);
-                                    holder.channel.remove(oldID);
-                                }
-
-                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                result.append(LangID.getStringByID("idset_idchange", lang).replace("_", "Member").replace("=", getRoleIDWithName(id))).append("\n");
-
-                                mem = true;
-                            } else if(id.toLowerCase(Locale.ENGLISH).equals("none")) {
-                                List<String> oldChannels = holder.channel.remove(holder.MEMBER);
-
-                                holder.channel.put("Member", oldChannels);
-
-                                holder.MEMBER = null;
-
-                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                result.append(LangID.getStringByID("idset_idchange", lang).replace("_", "Member").replace("=", LangID.getStringByID("idset_everyone", lang))).append("\n");
-
-                                mem = true;
-                            } else if(StaticStore.isNumeric(id)) {
-                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                result.append(LangID.getStringByID("idset_invalid", lang).replace("_", id)).append("\n");
-                            } else {
-                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                result.append(LangID.getStringByID("idset_numeric", lang).replace("_", id)).append("\n");
-                            }
-
-                            i++;
-                        } else if(i <msg.length - 1) {
-                            result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                            result.append(LangID.getStringByID("idset_ignore", lang).replace("_", "Member")).append("\n");
-                        }
-                        break;
-                    case "-g":
-                    case "-getaccess":
-                        if(!get && i < msg.length - 1) {
-                            String id = msg[i+1];
-
-                            if(isValidChannel(g, id)) {
-                                holder.GET_ACCESS = id;
-
-                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                result.append(LangID.getStringByID("idset_chanchange", lang).replace("_", getChannelIDWithName(id, g))).append("\n");
-
-                                get = true;
-                            } else if(id.toLowerCase(Locale.ENGLISH).equals("none")) {
-                                holder.GET_ACCESS = null;
-
-                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                result.append(LangID.getStringByID("idset_chanchange", lang).replace("_", LangID.getStringByID("idset_none", lang))).append("\n");
-
-                                get = true;
-                            } else if(StaticStore.isNumeric(id)) {
-                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                result.append(LangID.getStringByID("idset_chaninvalid", lang).replace("_", id)).append("\n");
-                            } else {
-                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                result.append(LangID.getStringByID("idset_numeric", lang).replace("_", id)).append("\n");
-                            }
-
-                            i++;
-                        } else if(i <msg.length - 1) {
-                            result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                            result.append(LangID.getStringByID("idset_chanignore", lang)).append("\n");
-                        }
-                        break;
-                    case "-ann":
-                    case "-announcement":
-                        if(!ann && i < msg.length - 1) {
-                            String id = msg[i+1];
-
-                            if(isValidChannel(g, id)) {
-                                holder.ANNOUNCE = id;
-
-                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                result.append(LangID.getStringByID("idset_annchange", lang).replace("_", getChannelIDWithName(id, g))).append("\n");
-
-                                ann = true;
-                            } else if(id.toLowerCase(Locale.ENGLISH).equals("none")) {
-                                holder.ANNOUNCE = null;
-
-                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                result.append(LangID.getStringByID("idset_annchange", lang).replace("_", LangID.getStringByID("idset_none", lang))).append("\n");
-
-                                ann = true;
-                            } else if(StaticStore.isNumeric(id)) {
-                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                result.append(LangID.getStringByID("idset_chaninvalid", lang).replace("_", id)).append("\n");
-                            } else {
-                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                result.append(LangID.getStringByID("idset_numeric", lang).replace("_", id)).append("\n");
-                            }
-
-                            i++;
-                        } else if(i <msg.length - 1) {
-                            result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                            result.append(LangID.getStringByID("idset_annignore", lang)).append("\n");
-                        }
-                        break;
-                    case "-pub":
-                    case "-publish":
-                        if(!pub && i < msg.length - 1) {
-                            String value = msg[i+1];
-
-                            if(value.toLowerCase(Locale.ENGLISH).equals("true")) {
-                                holder.publish = true;
-
-                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                result.append(LangID.getStringByID("idset_pubchangetrue", lang)).append("\n");
-
-                                pub = true;
-                            } else if(value.toLowerCase(Locale.ENGLISH).equals("false")) {
-                                holder.publish = false;
-
-                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                result.append(LangID.getStringByID("idset_pubchangefalse", lang)).append("\n");
-
-                                pub = true;
-                            } else {
-                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                result.append(LangID.getStringByID("idset_pubinvalid", lang)).append("\n");
-                            }
-                        } else if(i < msg.length - 1) {
-                            result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                            result.append(LangID.getStringByID("idset_pubignore", lang)).append("\n");
-                        }
-                        break;
-                    case "-b":
-                    case "-booster":
-                        if(!boo && i < msg.length - 1) {
-                            String id = msg[i+1];
-
-                            if(isValidID(g, id)) {
-                                if(alreadyBeingUsed(id)) {
-                                    result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                    result.append(LangID.getStringByID("idset_used", lang).replace("_", id)).append("\n");
-                                    continue;
-                                }
-
-                                String oldID = holder.BOOSTER;
-
-                                holder.BOOSTER = id;
-
-                                if(oldID != null && holder.channel.containsKey(oldID)) {
-                                    List<String> arr = holder.channel.get(oldID);
-
-                                    holder.channel.put(id, arr);
-                                    holder.channel.remove(oldID);
-                                }
-
-                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                result.append(LangID.getStringByID("idset_idchange", lang).replace("_", "Booster User").replace("=", getRoleIDWithName(id))).append("\n");
-
-                                boo = true;
-                            } else if(id.toLowerCase(Locale.ENGLISH).equals("none")) {
-                                holder.channel.remove(holder.BOOSTER);
-
-                                holder.BOOSTER = null;
-
-                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                result.append(LangID.getStringByID("idset_idchange", lang).replace("_", "Booster User").replace("=", LangID.getStringByID("idset_none", lang))).append("\n");
-
-                                boo = true;
-                            } else if(StaticStore.isNumeric(id)) {
-                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                result.append(LangID.getStringByID("idset_invalid", lang).replace("_", id)).append("\n");
-                            } else {
-                                result.append(msg[i]).append(" ").append(msg[i+1]).append(" : ");
-                                result.append(LangID.getStringByID("idset_numeric", lang).replace("_", id)).append("\n");
-                            }
-
-                            i++;
-                        } else if(i <msg.length - 1) {
-                            result.append(LangID.getStringByID("idset_ignore", lang).replace("_", "Booster User")).append("\n");
-                        }
-                        break;
-                    case "-c":
-                    case "-custom":
-                        if(i < msg.length - 1 && msg[i + 1].startsWith("\"")) {
-                            Object[] set = getName(msg, i + 1);
-
-                            if(set == null) {
-                                result.append(msg[i]).append(" : ");
-                                result.append(LangID.getStringByID("idset_opened", lang)).append("\n");
-                                continue;
-                            }
-
-                            String name = (String) set[0];
-                            int index = (int) set[1];
-
-                            if(index >= msg.length) {
-                                result.append(msg[i]).append(" ").append(limitName(name)).append(" : ");
-                                result.append(LangID.getStringByID("idset_noroleid", lang)).append("\n");
-                                continue;
-                            }
-
-                            if(!StaticStore.isNumeric(msg[index]) && !msg[index].toLowerCase(Locale.ENGLISH).equals("none")) {
-                                result.append(msg[i]).append(" ").append(limitName(name)).append(" : ");
-                                result.append(LangID.getStringByID("idset_numeric", lang).replace("_", msg[index])).append("\n");
-                                continue;
-                            }
-
-                            String id = msg[index].toLowerCase(Locale.ENGLISH);
-
-                            if(!id.equals("none") && !isValidID(g, id)) {
-                                result.append(msg[i]).append(" ").append(limitName(name)).append(" : ");
-                                result.append(LangID.getStringByID("idset_invalid", lang).replace("_", id)).append("\n");
-                                continue;
-                            }
-
-                            if(alreadyBeingUsed(id)) {
-                                result.append(msg[i]).append(" ").append(limitName(name)).append(" : ");
-                                result.append(LangID.getStringByID("idset_used", lang).replace("_", id)).append("\n");
-                                continue;
-                            }
-
-                            if(customName.contains(name)) {
-                                result.append(msg[i]).append(" ").append(limitName(name)).append(" : ");
-                                result.append(LangID.getStringByID("idset_already", lang)).append("\n");
-                                i = index;
-                                continue;
-                            }
-
-                            if(!holder.ID.containsKey(name) && id.equals("none")) {
-                                result.append(msg[i]).append(" ").append(limitName(name)).append(" : ");
-                                result.append(LangID.getStringByID("idset_noid", lang)).append("\n");
-                                i = index;
-                                continue;
-                            }
-
-                            if(holder.ID.containsKey(name)) {
-                                String oldID = holder.ID.get(name);
-
-                                if(id.equals("none")) {
-                                    holder.ID.remove(name);
-                                } else {
-                                    holder.ID.put(name, id);
-
-                                    List<String> channel = holder.channel.get(oldID);
-
-                                    holder.channel.put(id, channel);
-                                }
-
-                                holder.channel.remove(oldID);
-
-                                result.append(msg[i]).append(" ").append(limitName(name)).append(" : ");
-                                result.append(LangID.getStringByID("idset_change", lang).replace("_OOO_", getRoleIDWithName(oldID)).replace("_III_", id.equals("none") ? "None" : getRoleIDWithName(id)).replace("_NNN_", name)).append("\n");
-                            } else {
-                                holder.ID.put(name, id);
-
-                                result.append(msg[i]).append(" ").append(limitName(name)).append(" : ");
-                                result.append(LangID.getStringByID("idset_custom", lang).replace("_III_", getRoleIDWithName(id)).replace("_NNN_", name)).append("\n");
-                            }
-
-                            customName.add(name);
-
-                            i = index;
-                        } else if(i < msg.length - 1 && !msg[i + 1].startsWith("\"")) {
-                            result.append(msg[i]).append(" ").append(" : ");
-                            result.append(LangID.getStringByID("idset_format", lang)).append("\n");
-                        }
+        for(int i = 0; i < data.length; i++) {
+            result.append("**")
+                    .append(LangID.getStringByID("idset_" + data[i], lang))
+                    .append("** : ");
+
+            if(ids[i] == null) {
+                result.append(LangID.getStringByID(i == 1 ? "data_everyone" : "data_none", lang));
+            } else {
+                Role r = getRoleSafelyWithID(ids[i], g);
+
+                if (r == null) {
+                    result.append(LangID.getStringByID(i == 1 ? "data_everyone" : "data_none", lang));
+                } else {
+                    result.append(r.getId())
+                            .append(" [")
+                            .append(r.getAsMention())
+                            .append("]");
                 }
             }
 
-            result.append("\n").append(LangID.getStringByID("idset_result", lang));
-
-            if(result.length() > 2000) {
-                createMessageWithNoPings(ch, LangID.getStringByID("idset_toobig", lang));
-            } else {
-                createMessageWithNoPings(ch, result.toString());
-            }
-        }
-    }
-
-    private boolean isValidID(Guild g, String id) {
-        List<Role> roles = g.getRoles();
-
-        for(Role role : roles) {
-            if(role.getId().equals(id))
-                return true;
-        }
-
-        return false;
-    }
-
-    private boolean isValidChannel(Guild g, String id) {
-        List<GuildChannel> channels = g.getChannels();
-
-        for(GuildChannel gc : channels) {
-            if((gc.getType() == ChannelType.TEXT || gc.getType() == ChannelType.NEWS) && id.equals(gc.getId())) {
-                return true;
+            if(i < data.length - 1) {
+                result.append("\n\n");
             }
         }
 
-        return false;
+        return result.toString();
     }
 
-    private String getRoleIDWithName(String id) {
-        return "`"+id+"`" + " [<@&"+id+">]";
-    }
-
-    private String getChannelIDWithName(String id, Guild g) {
-        GuildChannel gc = g.getGuildChannelById(id);
-
-        if(gc == null) {
-            return id;
-        }
-
-        return "`"+id+"`" + "[**<#"+id+">**]";
-    }
-
-    private String getChannelsWithName(List<String> ids, Guild g) {
-        StringBuilder builder = new StringBuilder("\n");
-
-        for(int i = 0; i < ids.size(); i++) {
-            GuildChannel gc = g.getGuildChannelById(ids.get(i));
-
-            if(gc == null)
-                builder.append("`").append(ids.get(i)).append("`");
-            else
-                builder.append("`").append(ids.get(i)).append("` [**<#").append(ids.get(i)).append(">**]");
-
-            if(i < ids.size() - 1)
-                builder.append("\n");
-        }
-
-        return builder.toString();
-    }
-
-    private Object[] getName(String[] contents, int start) {
-        StringBuilder res = new StringBuilder();
-
-        res.append(contents[start]);
-
-        if(contents[start].endsWith("\""))
-            return new Object[] {res.substring(1, res.length() - 1), start + 1};
-        else
-            res.append(" ");
-
-        int last;
-        boolean ended = false;
-
-        for(last = start + 1; last < contents.length; last++) {
-            res.append(contents[last]);
-
-            if(contents[last].endsWith("\"")) {
-                ended = true;
-                break;
-            } else {
-                res.append(" ");
-            }
-        }
-
-        if(!ended)
+    private Role getRoleSafelyWithID(String id, Guild g) {
+        try {
+            return g.getRoleById(id);
+        } catch (Exception ignored) {
             return null;
-
-        return new Object[] {res.substring(1, res.length() - 1), last + 1};
+        }
     }
 
-    private boolean alreadyBeingUsed(String id) {
-        if(id.equals("none"))
-            return false;
+    private MessageCreateAction registerComponents(MessageCreateAction m) {
+        List<ActionComponent> pages = new ArrayList<>();
 
-        boolean res = id.equals(holder.MOD) || id.equals(holder.MEMBER) || id.equals(holder.BOOSTER);
+        pages.add(Button.secondary("prev", LangID.getStringByID("search_prev", lang)).withEmoji(EmojiStore.PREVIOUS).asDisabled());
+        pages.add(Button.secondary("next", LangID.getStringByID("search_next", lang)).withEmoji(EmojiStore.NEXT));
 
-        if(res)
-            return true;
-
-        for(String i : holder.ID.values()) {
-            if (id.equals(i))
-                return true;
-        }
-
-        return false;
-    }
-
-    private String limitName(String name) {
-        if(name.length() > 20) {
-            return name.substring(0, 17) + "...";
-        }
-
-        return name;
+        return m.addComponents(
+                ActionRow.of(
+                        EntitySelectMenu.create("mod", EntitySelectMenu.SelectTarget.ROLE)
+                                .setRequiredRange(1, 1)
+                                .setPlaceholder(LangID.getStringByID("idset_modselect", lang))
+                                .build()),
+                ActionRow.of(
+                        EntitySelectMenu.create("member", EntitySelectMenu.SelectTarget.ROLE)
+                                .setRequiredRange(0, 1)
+                                .setPlaceholder(LangID.getStringByID("idset_memberselect", lang))
+                                .build()
+                ),
+                ActionRow.of(
+                        EntitySelectMenu.create("booster", EntitySelectMenu.SelectTarget.ROLE)
+                                .setRequiredRange(0, 1)
+                                .setPlaceholder(LangID.getStringByID("idset_boosterselect", lang))
+                                .build()
+                ),
+                ActionRow.of(pages),
+                ActionRow.of(Button.primary("confirm", LangID.getStringByID("button_confirm", lang)))
+        );
     }
 }

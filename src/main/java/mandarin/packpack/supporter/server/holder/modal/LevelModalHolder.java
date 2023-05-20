@@ -23,8 +23,6 @@ public class LevelModalHolder extends ModalHolder {
     public void onEvent(ModalInteractionEvent event) {
         String value = getValueFromMap(event.getValues(), "level");
 
-        System.out.println(value);
-
         if(!StaticStore.isNumeric(value)) {
             event.reply(LangID.getStringByID("config_nonumber", config.lang)).setEphemeral(true).queue();
         } else {

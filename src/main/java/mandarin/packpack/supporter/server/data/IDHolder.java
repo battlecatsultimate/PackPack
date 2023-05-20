@@ -8,6 +8,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 
 import java.util.*;
 
@@ -29,10 +30,6 @@ public class IDHolder implements Cloneable {
 
         if(obj.has("mem")) {
             id.MEMBER = id.setOrNull(obj.get("mem").getAsString());
-        }
-
-        if(obj.has("acc")) {
-            id.GET_ACCESS = id.setOrNull(obj.get("acc").getAsString());
         }
 
         if(obj.has("ann")) {
@@ -57,6 +54,12 @@ public class IDHolder implements Cloneable {
 
         if(obj.has("id")) {
             id.ID = id.toIDMap(obj.getAsJsonObject("id"));
+
+            while(id.ID.size() > SelectMenu.OPTIONS_MAX_AMOUNT) {
+                String[] keys = id.ID.keySet().toArray(new String[0]);
+
+                id.ID.remove(keys[keys.length - 1]);
+            }
         }
 
         if(obj.has("logDM")) {
@@ -129,8 +132,6 @@ public class IDHolder implements Cloneable {
     public String MOD;
     public String MEMBER;
     public String BOOSTER;
-
-    public String GET_ACCESS;
     public String ANNOUNCE;
     public String logDM = null;
 
@@ -150,10 +151,9 @@ public class IDHolder implements Cloneable {
 
     public String announceMessage = "";
 
-    public IDHolder(String m, String me, String bo, String acc) {
+    public IDHolder(String m, String me, String bo) {
         this.MOD = m;
         this.MEMBER = me;
-        this.GET_ACCESS = acc;
         this.BOOSTER = bo;
 
         config.lang = LangID.EN;
@@ -170,7 +170,6 @@ public class IDHolder implements Cloneable {
         obj.addProperty("publish", publish);
         obj.addProperty("mod", getOrNull(MOD));
         obj.addProperty("mem", getOrNull(MEMBER));
-        obj.addProperty("acc", getOrNull(GET_ACCESS));
         obj.addProperty("ann", getOrNull(ANNOUNCE));
         obj.add("status", StaticStore.listToJsonString(status));
         obj.addProperty("bo", getOrNull(BOOSTER));
@@ -437,7 +436,6 @@ public class IDHolder implements Cloneable {
                 ", MOD='" + MOD + '\'' +
                 ", MEMBER='" + MEMBER + '\'' +
                 ", BOOSTER='" + BOOSTER + '\'' +
-                ", GET_ACCESS='" + GET_ACCESS + '\'' +
                 ", ANNOUNCE='" + ANNOUNCE + '\'' +
                 ", ID=" + ID +
                 ", channel=" + channel +
@@ -455,7 +453,6 @@ public class IDHolder implements Cloneable {
             id.MEMBER = MEMBER;
             id.BOOSTER = BOOSTER;
 
-            id.GET_ACCESS = GET_ACCESS;
             id.ANNOUNCE = ANNOUNCE;
             id.logDM = logDM;
 
