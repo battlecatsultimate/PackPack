@@ -7,7 +7,6 @@ import java.util.Map;
 
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class Test {
-    private static final double indicatorLengthRatio = 0.025;
 
     public static void main(String[] args) throws Exception {
         String f = "2*x";
@@ -20,7 +19,7 @@ public class Test {
         System.out.println(formula.element.printTree(""));
         System.out.println("f(2) = " + formula.substitute(new BigDecimal("2")));
 
-        System.out.println(String.format("%2$d, %1$s will be offline", "Due to bug fix", 123123));
+        System.out.printf("%2$d, %1$s will be offline%n", "Due to bug fix", 123123);
 
         Map<String, String> map = new HashMap<>();
 

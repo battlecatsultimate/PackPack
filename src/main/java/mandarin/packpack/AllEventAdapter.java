@@ -866,17 +866,6 @@ public class AllEventAdapter extends ListenerAdapter {
         StaticStore.logger.uploadLog("Bot ready to be used!");
     }
 
-    private static boolean isModerator(EnumSet<Permission> set) {
-        return set.contains(Permission.MODERATE_MEMBERS) ||
-                set.contains(Permission.ADMINISTRATOR) ||
-                set.contains(Permission.BAN_MEMBERS) ||
-                set.contains(Permission.VOICE_MUTE_OTHERS) ||
-                set.contains(Permission.KICK_MEMBERS) ||
-                set.contains(Permission.MANAGE_CHANNEL) ||
-                set.contains(Permission.MANAGE_SERVER) ||
-                set.contains(Permission.MANAGE_ROLES);
-    }
-
     private static void handleInitialModRole(Guild g, IDHolder id, AtomicReference<Boolean> warned) {
         String modID = StaticStore.getRoleIDByName("PackPackMod", g);
 
@@ -903,18 +892,6 @@ public class AllEventAdapter extends ListenerAdapter {
                         .queue(r -> {
                             id.MOD = r.getId();
 
-                            Role role = null;
-
-                            for(Role ro : g.getRoles()) {
-                                if(!ro.isManaged() && !ro.isPublicRole() && isModerator(ro.getPermissions())) {
-                                    role = ro;
-                                    break;
-                                }
-                            }
-
-                            String roleName = role != null ? role.getName() : null;
-                            String roleID = role != null ? role.getId() : null;
-
                             if(inviter != null) {
                                 inviter.getUser().openPrivateChannel()
                                         .flatMap(pc -> {
@@ -940,32 +917,11 @@ public class AllEventAdapter extends ListenerAdapter {
         } else {
             id.MOD = modID;
 
-            Role role = null;
-
-            for(Role ro : g.getRoles()) {
-                if(!ro.isManaged() && !ro.isPublicRole() && isModerator(ro.getPermissions())) {
-                    role = ro;
-                    break;
-                }
-            }
-
-            String roleName = role != null ? role.getName() : null;
-            String roleID = role != null ? role.getId() : null;
-
             if(inviter != null) {
                 inviter.getUser().openPrivateChannel()
                         .flatMap(pc -> {
-                            String message;
-
-                            if(roleName != null) {
-                                message = LangID.getStringByID("first_joinmod", id.config.lang)
-                                        .replace("_III_", roleID)
-                                        .replace("_MMM_", roleName)
-                                        .replace("_SSS_", g.getName());
-                            } else {
-                                message = LangID.getStringByID("first_join", id.config.lang)
-                                        .replace("_SSS_", g.getName());
-                            }
+                            String message = LangID.getStringByID("first_join", id.config.lang)
+                                    .replace("_SSS_", g.getName());
 
                             return pc.sendMessage(message);
                         }).queue();
