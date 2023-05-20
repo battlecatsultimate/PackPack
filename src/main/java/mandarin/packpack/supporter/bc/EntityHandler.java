@@ -754,8 +754,6 @@ public class EntityHandler {
                 mag[i] *= e.de.getStar() == 0 ? holder.getAlienMultiplier() : holder.getStarredAlienMultiplier();
         }
 
-        System.out.println(Arrays.toString(mag));
-
         spec.setColor(c);
         spec.setThumbnail("attachment://icon.png");
 
