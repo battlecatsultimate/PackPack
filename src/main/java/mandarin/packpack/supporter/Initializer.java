@@ -371,10 +371,23 @@ public class Initializer {
                                 if (str.length <= 1)
                                     continue;
 
-                                String id = str[0].trim();
                                 String name = str[1].trim();
 
-                                MultiLangCont.getStatic().RWNAME.put(f, Integer.parseInt(id), name);
+                                String[] ids = str[0].trim().split("\\|");
+
+                                for(int i = 0; i < ids.length; i++) {
+                                    if (StaticStore.isNumeric(ids[i])) {
+                                        MultiLangCont.getStatic().RWNAME.put(f, Integer.parseInt(ids[i]), name);
+                                    } else if (ids[i].startsWith("S")) {
+                                        String realID = ids[i].replace("S", "");
+
+                                        MultiLangCont.getStatic().RWSTNAME.put(f, Integer.parseInt(realID), name);
+                                    } else if (ids[i].startsWith("I")) {
+                                        String realID = ids[i].replace("I", "");
+
+                                        MultiLangCont.getStatic().RWSVNAME.put(f, Integer.parseInt(realID), name);
+                                    }
+                                }
                             }
                         }
                         case "MedalName.txt" -> {

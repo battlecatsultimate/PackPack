@@ -290,77 +290,58 @@ public class EventFactor {
     }
 
     public static String getMonth(int mon, int lang) {
-        switch (mon) {
-            case 1:
-                return LangID.getStringByID("january", lang);
-            case 2:
-                return LangID.getStringByID("february", lang);
-            case 3:
-                return LangID.getStringByID("march", lang);
-            case 4:
-                return LangID.getStringByID("april", lang);
-            case 5:
-                return LangID.getStringByID("may", lang);
-            case 6:
-                return LangID.getStringByID("june", lang);
-            case 7:
-                return LangID.getStringByID("july", lang);
-            case 8:
-                return LangID.getStringByID("august", lang);
-            case 9:
-                return LangID.getStringByID("september", lang);
-            case 10:
-                return LangID.getStringByID("october", lang);
-            case 11:
-                return LangID.getStringByID("november", lang);
-            case 12:
-                return LangID.getStringByID("december", lang);
-            default:
-                return "Unknown Month "+mon;
-        }
+        return switch (mon) {
+            case 1 -> LangID.getStringByID("january", lang);
+            case 2 -> LangID.getStringByID("february", lang);
+            case 3 -> LangID.getStringByID("march", lang);
+            case 4 -> LangID.getStringByID("april", lang);
+            case 5 -> LangID.getStringByID("may", lang);
+            case 6 -> LangID.getStringByID("june", lang);
+            case 7 -> LangID.getStringByID("july", lang);
+            case 8 -> LangID.getStringByID("august", lang);
+            case 9 -> LangID.getStringByID("september", lang);
+            case 10 -> LangID.getStringByID("october", lang);
+            case 11 -> LangID.getStringByID("november", lang);
+            case 12 -> LangID.getStringByID("december", lang);
+            default -> "Unknown Month " + mon;
+        };
     }
 
     public String getWhichDay(int data, int lang) {
-        switch (data) {
-            case MONDAY:
-                return LangID.getStringByID("monday", lang);
-            case TUESDAY:
-                return LangID.getStringByID("tuesday", lang);
-            case WEDNESDAY:
-                return LangID.getStringByID("wednesday", lang);
-            case THURSDAY:
-                return LangID.getStringByID("thursday", lang);
-            case FRIDAY:
-                return LangID.getStringByID("friday", lang);
-            case SATURDAY:
-                return LangID.getStringByID("saturday", lang);
-            case SUNDAY:
-                return LangID.getStringByID("sunday", lang);
-            case WEEKEND:
-                return LangID.getStringByID("weekend", lang);
-            default:
-                return "Unknown day "+data;
-        }
+        return switch (data) {
+            case MONDAY -> LangID.getStringByID("monday", lang);
+            case TUESDAY -> LangID.getStringByID("tuesday", lang);
+            case WEDNESDAY -> LangID.getStringByID("wednesday", lang);
+            case THURSDAY -> LangID.getStringByID("thursday", lang);
+            case FRIDAY -> LangID.getStringByID("friday", lang);
+            case SATURDAY -> LangID.getStringByID("saturday", lang);
+            case SUNDAY -> LangID.getStringByID("sunday", lang);
+            case WEEKEND -> LangID.getStringByID("weekend", lang);
+            default -> "Unknown day " + data;
+        };
     }
 
     public static String getNumberWithDayFormat(int num, int lang) {
         switch (lang) {
-            case EN:
-                if(num != 11 && num % 10 == 1)
+            case EN -> {
+                if (num != 11 && num % 10 == 1)
                     return "st";
-                else if(num != 12 && num % 10 == 2)
+                else if (num != 12 && num % 10 == 2)
                     return "nd";
-                else if(num != 13 && num % 10 == 3)
+                else if (num != 13 && num % 10 == 3)
                     return "rd";
                 else
                     return "th";
-            case KR:
+            }
+            case KR -> {
                 return "일";
-            case ZH:
-            case JP:
+            }
+            case ZH, JP -> {
                 return "日";
-            default:
+            }
+            default -> {
                 return "";
+            }
         }
     }
 
@@ -438,17 +419,21 @@ public class EventFactor {
             }
         }
 
-        String id = "item_"+itemID;
+        String item = MultiLangCont.getServerDrop(itemID, lang);
 
-        String item = LangID.getStringByID(id, lang);
+        if(item == null || item.isBlank()) {
+            String id = "item_"+itemID;
 
-        if(item.equals(id)) {
-            if(itemID >= 800 && itemID < 900) {
-                item = LangID.getStringByID("printitem_sale", lang).replace("_", "" + itemID);
-            } else if(itemID >= 900 && itemID < 1000) {
-                item = LangID.getStringByID("printitem_stamp", lang).replace("_", "" + itemID);
-            } else {
-                item = LangID.getStringByID("printitem_item", lang).replace("_", "" + itemID);
+            item = LangID.getStringByID(id, lang);
+
+            if (item.equals(id)) {
+                if(itemID >= 800 && itemID < 900) {
+                    item = LangID.getStringByID("printitem_sale", lang).replace("_", String.valueOf(itemID));
+                } else if(itemID >= 900 && itemID < 1000) {
+                    item = LangID.getStringByID("printitem_stamp", lang).replace("_", String.valueOf(itemID));
+                } else {
+                    item = LangID.getStringByID("printitem_item", lang).replace("_", String.valueOf(itemID));
+                }
             }
         }
 
@@ -462,11 +447,11 @@ public class EventFactor {
             item = getPlural(item);
 
         if(itemID == 202 || itemID == 203) {
-            return LangID.getStringByID("printitem_formattic", lang).replace("_NNN_", "" + itemAmount).replace("_III_", item);
+            return LangID.getStringByID("printitem_formattic", lang).replace("_NNN_", String.valueOf(itemAmount)).replace("_III_", item);
         } else if(itemID == 201) {
-            return LangID.getStringByID("printitem_formatxp", lang).replace("_NNN_", "" + itemAmount).replace("_III_", item);
+            return LangID.getStringByID("printitem_formatxp", lang).replace("_NNN_", String.valueOf(itemAmount)).replace("_III_", item);
         } else {
-            return LangID.getStringByID("printitem_format", lang).replace("_NNN_", "" + itemAmount).replace("_III_", item);
+            return LangID.getStringByID("printitem_format", lang).replace("_NNN_", String.valueOf(itemAmount)).replace("_III_", item);
         }
     }
 
@@ -479,7 +464,7 @@ public class EventFactor {
         CommonStatic.getConfig().lang = oldConfig;
 
         if(item == null || item.isBlank()) {
-            item = LangID.getStringByID("printitem_item", lang).replace("_", "" + itemID);
+            item = LangID.getStringByID("printitem_item", lang).replace("_", String.valueOf(itemID));
         }
 
         char c = item.charAt(item.length() - 1);
@@ -488,11 +473,11 @@ public class EventFactor {
             item = getPlural(item);
 
         if(itemID == 11 || itemID == 12 || itemID == 20 || itemID == 21) {
-            return LangID.getStringByID("printitem_formattic", lang).replace("_NNN_", "" + itemAmount).replace("_III_", item);
+            return LangID.getStringByID("printitem_formattic", lang).replace("_NNN_", String.valueOf(itemAmount)).replace("_III_", item);
         } else if(itemID == 6) {
-            return LangID.getStringByID("printitem_formatxp", lang).replace("_NNN_", "" + itemAmount).replace("_III_", item);
+            return LangID.getStringByID("printitem_formatxp", lang).replace("_NNN_", String.valueOf(itemAmount)).replace("_III_", item);
         } else {
-            return LangID.getStringByID("printitem_format", lang).replace("_NNN_", "" + itemAmount).replace("_III_", item);
+            return LangID.getStringByID("printitem_format", lang).replace("_NNN_", String.valueOf(itemAmount)).replace("_III_", item);
         }
     }
 

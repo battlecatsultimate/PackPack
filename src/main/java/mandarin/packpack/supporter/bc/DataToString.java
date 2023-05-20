@@ -1595,12 +1595,7 @@ public class DataToString extends Data {
             else
                 chance = chances.get(i)+"%";
 
-            int oldConfig = CommonStatic.getConfig().lang;
-            CommonStatic.getConfig().lang = lang;
-
-            String reward = MultiLangCont.getStatic().RWNAME.getCont(info.drop[i][1]);
-
-            CommonStatic.getConfig().lang = oldConfig;
+            String reward = MultiLangCont.getStageDrop(info.drop[i][1], lang);
 
             if(reward == null || reward.isBlank())
                 reward = LangID.getStringByID("data_dumreward", lang).replace("_", Data.trio(info.drop[i][1]));
@@ -1653,12 +1648,7 @@ public class DataToString extends Data {
 
             data[0] = chance;
 
-            int oldConfig = CommonStatic.getConfig().lang;
-            CommonStatic.getConfig().lang = lang;
-
-            String reward = MultiLangCont.getStatic().RWNAME.getCont(info.drop[i][1]);
-
-            CommonStatic.getConfig().lang = oldConfig;
+            String reward = MultiLangCont.getStageDrop(info.drop[i][1], lang);
 
             if(reward == null || reward.isBlank())
                 reward = map.rewardNames.get(info.drop[i][1]);
