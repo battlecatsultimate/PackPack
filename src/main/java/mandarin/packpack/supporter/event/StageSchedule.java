@@ -1,6 +1,5 @@
 package mandarin.packpack.supporter.event;
 
-import common.CommonStatic;
 import common.pack.UserProfile;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
@@ -484,7 +483,7 @@ public class StageSchedule extends EventFactor implements Schedule {
                     } else if(id >= 18000 && id < 18100) {
                         int year = id - 18000 + 7;
 
-                        result.append(LangID.getStringByID("sale_18xxx", lang).replace("_", ("" + year).repeat(3)));
+                        result.append(LangID.getStringByID("sale_18xxx", lang).replace("_", (String.valueOf(year)).repeat(3)));
                     } else {
                         String langID = "sale_"+id;
 
@@ -644,45 +643,45 @@ public class StageSchedule extends EventFactor implements Schedule {
                     result.append("\u001B[1;33m");
 
                     switch (data[0]) {
-                        case REWARDNORMAL:
-                            result.append(beautifyGameItem(lang, data[1], data[2]));
-                            break;
-                        case REWARDUNIT:
+                        case REWARDNORMAL -> result.append(beautifyGameItem(lang, data[1], data[2]));
+                        case REWARDUNIT -> {
                             Unit u = UserProfile.getBCData().units.get(data[1]);
 
                             String unit;
 
-                            if(u == null) {
-                                unit = LangID.getStringByID("printstage_unit", lang).replace("_", "" + data[1]);
+                            if (u == null) {
+                                unit = LangID.getStringByID("printstage_unit", lang).replace("_", String.valueOf(data[1]));
                             } else {
                                 unit = StaticStore.safeMultiLangGet(u.forms[0], lang);
 
-                                if(unit == null || unit.isBlank()) {
-                                    unit = LangID.getStringByID("printstage_unit", lang).replace("_", "" + data[1]);
+                                if (unit == null || unit.isBlank()) {
+                                    unit = LangID.getStringByID("printstage_unit", lang).replace("_", String.valueOf(data[1]));
                                 }
                             }
 
                             result.append(unit);
-                            break;
-                        case REWARDTRUE:
-                            u = UserProfile.getBCData().units.get(data[1]);
+                        }
+                        case REWARDTRUE -> {
+                            Unit u = UserProfile.getBCData().units.get(data[1]);
 
-                            if(u == null) {
-                                unit = LangID.getStringByID("printstage_true", lang).replace("_", "" + data[1]);
+                            String unit;
+
+                            if (u == null) {
+                                unit = LangID.getStringByID("printstage_true", lang).replace("_", String.valueOf(data[1]));
                             } else {
-                                if(u.forms.length == 3) {
-                                    unit  = StaticStore.safeMultiLangGet(u.forms[2], lang);
+                                if (u.forms.length == 3) {
+                                    unit = StaticStore.safeMultiLangGet(u.forms[2], lang);
 
-                                    if(unit == null || unit.isBlank()) {
-                                        unit = LangID.getStringByID("printstage_true", lang).replace("_", "" + data[1]);
+                                    if (unit == null || unit.isBlank()) {
+                                        unit = LangID.getStringByID("printstage_true", lang).replace("_", String.valueOf(data[1]));
                                     }
                                 } else {
-                                    unit = LangID.getStringByID("printstage_true", lang).replace("_", "" + data[1]);
+                                    unit = LangID.getStringByID("printstage_true", lang).replace("_", String.valueOf(data[1]));
                                 }
                             }
 
                             result.append(unit);
-                            break;
+                        }
                     }
                 }
 
@@ -821,7 +820,7 @@ public class StageSchedule extends EventFactor implements Schedule {
         if(n < 10)
             return "0"+n;
         else
-            return ""+n;
+            return String.valueOf(n);
     }
 
     private boolean isOnlyTrueForm() {
@@ -844,26 +843,19 @@ public class StageSchedule extends EventFactor implements Schedule {
 
     private int getMaxMonthDay(int year, int month) {
         switch (month) {
-            case 1:
-            case 3:
-            case 5:
-            case 7:
-            case 8:
-            case 10:
-            case 12:
+            case 1, 3, 5, 7, 8, 10, 12 -> {
                 return 31;
-            case 2:
-                if(year % 4 == 0)
+            }
+            case 2 -> {
+                if (year % 4 == 0)
                     return 29;
                 else
                     return 28;
-            case 4:
-            case 6:
-            case 9:
-            case 11:
+            }
+            case 4, 6, 9, 11 -> {
                 return 30;
-            default:
-                throw new IllegalStateException("Wrong month value : "+month);
+            }
+            default -> throw new IllegalStateException("Wrong month value : " + month);
         }
     }
 

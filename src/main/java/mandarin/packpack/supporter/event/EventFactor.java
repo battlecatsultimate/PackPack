@@ -1,6 +1,5 @@
 package mandarin.packpack.supporter.event;
 
-import common.CommonStatic;
 import common.system.files.VFile;
 import common.util.Data;
 import common.util.lang.MultiLangCont;

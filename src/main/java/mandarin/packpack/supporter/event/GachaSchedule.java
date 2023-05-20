@@ -1,6 +1,5 @@
 package mandarin.packpack.supporter.event;
 
-import common.CommonStatic;
 import common.pack.UserProfile;
 import common.util.Data;
 import common.util.unit.Unit;
@@ -114,14 +113,9 @@ public class GachaSchedule extends EventFactor implements Schedule {
                     GachaSection section = new GachaSection();
 
                     switch (gachaType) {
-                        case 4:
-                            section.gachaType = TYPE.EXTRA;
-                            break;
-                        case 0:
-                            section.gachaType = TYPE.NORMAL;
-                            break;
-                        default:
-                            section.gachaType = TYPE.RARE;
+                        case 4 -> section.gachaType = TYPE.EXTRA;
+                        case 0 -> section.gachaType = TYPE.NORMAL;
+                        default -> section.gachaType = TYPE.RARE;
                     }
 
                     section.gachaID = gachaID;
@@ -356,7 +350,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
                             }
                         }
 
-                        result.append(LangID.getStringByID("printgacha_buff", lang).replace("_BBB_", param+"").replace("_UUU_", builder.toString()));
+                        result.append(LangID.getStringByID("printgacha_buff", lang).replace("_BBB_", String.valueOf(param)).replace("_UUU_", builder.toString()));
 
                         if(k < params.size() - 1) {
                             result.append(" | ");
@@ -556,7 +550,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
         if(n < 10)
             return "0"+n;
         else
-            return ""+n;
+            return String.valueOf(n);
     }
 
     public String tryGetGachaName(GachaSection section, int lang) {
@@ -570,21 +564,12 @@ public class GachaSchedule extends EventFactor implements Schedule {
             }
         }
 
-        String loc;
-
-        switch (lang) {
-            case EN:
-                loc = "/en/";
-                break;
-            case ZH:
-                loc = "/tw/";
-                break;
-            case KR:
-                loc = "/kr/";
-                break;
-            default:
-                loc = "/";
-        }
+        String loc = switch (lang) {
+            case EN -> "/en/";
+            case ZH -> "/tw/";
+            case KR -> "/kr/";
+            default -> "/";
+        };
 
 
         String url = GACHAURL.replace("_ID_", Data.trio(gachaID)).replace("_LLL_", loc);
@@ -649,20 +634,14 @@ public class GachaSchedule extends EventFactor implements Schedule {
     }
 
     private String getAdditionalCode(GachaSection.ADDITIONAL a, int lang) {
-        switch (a) {
-            case GRANDON:
-                return LangID.getStringByID("printgacha_gr", lang);
-            case STEP:
-                return LangID.getStringByID("printgacha_s", lang);
-            case LUCKY:
-                return LangID.getStringByID("printgacha_l", lang);
-            case SHARD:
-                return LangID.getStringByID("printgacha_p", lang);
-            case NENEKO:
-                return LangID.getStringByID("printgacha_n", lang);
-            default:
-                return LangID.getStringByID("printgacha_r", lang);
-        }
+        return switch (a) {
+            case GRANDON -> LangID.getStringByID("printgacha_gr", lang);
+            case STEP -> LangID.getStringByID("printgacha_s", lang);
+            case LUCKY -> LangID.getStringByID("printgacha_l", lang);
+            case SHARD -> LangID.getStringByID("printgacha_p", lang);
+            case NENEKO -> LangID.getStringByID("printgacha_n", lang);
+            default -> LangID.getStringByID("printgacha_r", lang);
+        };
     }
 
     private boolean containAll(int[] data, int... ids) {

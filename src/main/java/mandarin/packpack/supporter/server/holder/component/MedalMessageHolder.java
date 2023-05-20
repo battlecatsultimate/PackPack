@@ -1,6 +1,5 @@
 package mandarin.packpack.supporter.server.holder.component;
 
-import common.CommonStatic;
 import common.util.Data;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;

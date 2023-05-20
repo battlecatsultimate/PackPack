@@ -1,6 +1,5 @@
 package mandarin.packpack.commands.bc;
 
-import common.CommonStatic;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.stage.MapColc;

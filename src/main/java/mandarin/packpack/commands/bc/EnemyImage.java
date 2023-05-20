@@ -1,6 +1,5 @@
 package mandarin.packpack.commands.bc;
 
-import common.CommonStatic;
 import common.util.Data;
 import common.util.anim.EAnimD;
 import common.util.lang.MultiLangCont;

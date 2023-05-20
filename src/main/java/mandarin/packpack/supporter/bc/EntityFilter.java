@@ -1,6 +1,5 @@
 package mandarin.packpack.supporter.bc;
 
-import common.CommonStatic;
 import common.pack.UserProfile;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
@@ -13,13 +12,16 @@ import common.util.unit.Combo;
 import common.util.unit.Enemy;
 import common.util.unit.Form;
 import common.util.unit.Unit;
-import mandarin.packpack.supporter.lang.KoreanSeparater;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.lang.KoreanSeparater;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.AliasHolder;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
 
 public class EntityFilter {
     private static  final int[] storyChapterMonthly = {

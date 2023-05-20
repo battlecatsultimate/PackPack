@@ -1,6 +1,5 @@
 package mandarin.packpack.supporter;
 
-import common.CommonStatic;
 import common.io.Backup;
 import common.io.PackLoader;
 import common.io.assets.Admin;
