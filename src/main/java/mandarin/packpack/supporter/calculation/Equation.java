@@ -405,13 +405,13 @@ public class Equation {
                                             elements.add(new Number(Math.tan(inner.doubleValue())));
                                         }
                                         case "csc" -> {
-                                            BigDecimal check = BigDecimal.valueOf(Math.sin(inner.doubleValue()));
-
-                                            if (zeroEnough(check.remainder(PI, context))) {
+                                            if (zeroEnough(inner.remainder(PI, context))) {
                                                 error.add(String.format(LangID.getStringByID("calc_csc", lang), "csc(" + builder + ")"));
 
                                                 return new ArrayList<>();
                                             }
+
+                                            BigDecimal check = BigDecimal.valueOf(Math.sin(inner.doubleValue()));
 
                                             elements.add(new Number(BigDecimal.ONE.divide(check, Equation.context)));
                                         }
