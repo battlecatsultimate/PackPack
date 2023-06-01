@@ -91,7 +91,7 @@ public class Differentiate extends ConstraintCommand {
 
         formula.substitute(value);
 
-        if(!formula.element.isCritical()) {
+        if(formula.element.isCritical()) {
             replyToMessageSafely(ch, Equation.getErrorMessage(LangID.getStringByID("diff_cant", lang)), getMessage(event), a -> a);
 
             return;
@@ -131,15 +131,15 @@ public class Differentiate extends ConstraintCommand {
 
         for(int i = 0; i < contents.length; i++) {
             switch (contents[i]) {
-                case "-f":
-                case "-front":
+                case "-f", "-front" -> {
                     return Formula.SNAP.FRONT;
-                case "-c":
-                case "-center":
+                }
+                case "-c", "-center" -> {
                     return Formula.SNAP.CENTER;
-                case "-b":
-                case "-back":
+                }
+                case "-b", "-back" -> {
                     return Formula.SNAP.BACK;
+                }
             }
         }
 
@@ -161,15 +161,10 @@ public class Differentiate extends ConstraintCommand {
     }
 
     private String getAlgorithmName(Formula.SNAP snap) {
-        switch (snap) {
-            case BACK:
-                return LangID.getStringByID("calc_back", lang);
-            case CENTER:
-                return LangID.getStringByID("calc_center", lang);
-            case FRONT:
-                return LangID.getStringByID("calc_front", lang);
-            default:
-                throw new IllegalStateException("Invalid snapping algorithm : " + snap);
-        }
+        return switch (snap) {
+            case BACK -> LangID.getStringByID("calc_back", lang);
+            case CENTER -> LangID.getStringByID("calc_center", lang);
+            case FRONT -> LangID.getStringByID("calc_front", lang);
+        };
     }
 }
