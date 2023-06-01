@@ -2,7 +2,6 @@ package mandarin.packpack;
 
 import common.CommonStatic;
 import mandarin.packpack.supporter.Initializer;
-import mandarin.packpack.supporter.Logger;
 import mandarin.packpack.supporter.PackContext;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
@@ -61,7 +60,7 @@ public class PackBot {
 
         JDA client = builder.build();
 
-        StaticStore.logger = new Logger(client);
+        StaticStore.logger.assignClient(client);
 
         StaticStore.saver = new Timer();
         StaticStore.saver.schedule(new TimerTask() {
@@ -101,40 +100,22 @@ public class PackBot {
                         String fileName;
 
                         switch (c.get(Calendar.MONTH) + 1) {
-                            case 1:
-                                fileName = "BotJan.png";
-                                break;
-                            case 2:
-                                fileName = "BotFeb.png";
-                                break;
-                            case 3:
-                                fileName = "BotMar.png";
-                                break;
-                            case 4:
-                                if(c.get(Calendar.DAY_OF_MONTH) == 1) {
+                            case 1 -> fileName = "BotJan.png";
+                            case 2 -> fileName = "BotFeb.png";
+                            case 3 -> fileName = "BotMar.png";
+                            case 4 -> {
+                                if (c.get(Calendar.DAY_OF_MONTH) == 1) {
                                     fileName = "BotDoge.png";
                                 } else {
                                     fileName = "BotApr.png";
                                 }
-                                break;
-                            case 6:
-                                fileName = "BotJun.png";
-                                break;
-                            case 7:
-                                fileName = "BotJul.png";
-                                break;
-                            case 10:
-                                fileName = "BotOct.png";
-                                break;
-                            case 11:
-                                fileName = "BotNov.png";
-                                break;
-                            case 12:
-                                fileName = "BotDec.png";
-                                break;
-                            default:
-                                fileName = "Bot.png";
-                                break;
+                            }
+                            case 6 -> fileName = "BotJun.png";
+                            case 7 -> fileName = "BotJul.png";
+                            case 10 -> fileName = "BotOct.png";
+                            case 11 -> fileName = "BotNov.png";
+                            case 12 -> fileName = "BotDec.png";
+                            default -> fileName = "Bot.png";
                         }
 
                         File f = new File("./data/bot/", fileName);
@@ -314,28 +295,17 @@ public class PackBot {
                                                 builder.append(builder.length() == 0 ? "** **\n" : "");
 
                                                 switch (type) {
-                                                    case DAILY:
-                                                        builder.append(LangID.getStringByID("printstage_daily", holder.config.lang)).append("\n\n```ansi\n");
-
-                                                        break;
-                                                    case WEEKLY:
-                                                        builder.append(LangID.getStringByID("printstage_weekly", holder.config.lang)).append("\n\n```ansi\n");
-
-                                                        break;
-                                                    case MONTHLY:
-                                                        builder.append(LangID.getStringByID("printstage_monthly", holder.config.lang)).append("\n\n```ansi\n");
-
-                                                        break;
-                                                    case YEARLY:
-                                                        builder.append(LangID.getStringByID("printstage_yearly", holder.config.lang)).append("\n\n```ansi\n");
-
-                                                        break;
-                                                    case MISSION:
-                                                        builder.append(LangID.getStringByID("event_mission", holder.config.lang)).append("\n\n```ansi\n");
-
-                                                        break;
-                                                    default:
-                                                        builder.append("```ansi\n");
+                                                    case DAILY ->
+                                                            builder.append(LangID.getStringByID("printstage_daily", holder.config.lang)).append("\n\n```ansi\n");
+                                                    case WEEKLY ->
+                                                            builder.append(LangID.getStringByID("printstage_weekly", holder.config.lang)).append("\n\n```ansi\n");
+                                                    case MONTHLY ->
+                                                            builder.append(LangID.getStringByID("printstage_monthly", holder.config.lang)).append("\n\n```ansi\n");
+                                                    case YEARLY ->
+                                                            builder.append(LangID.getStringByID("printstage_yearly", holder.config.lang)).append("\n\n```ansi\n");
+                                                    case MISSION ->
+                                                            builder.append(LangID.getStringByID("event_mission", holder.config.lang)).append("\n\n```ansi\n");
+                                                    default -> builder.append("```ansi\n");
                                                 }
                                             } else {
                                                 builder.append("```ansi\n");
@@ -530,26 +500,19 @@ public class PackBot {
     }
 
     private static String getLocale(int loc) {
-        switch (loc) {
-            case EventFactor.EN:
-                return "en";
-            case EventFactor.ZH:
-                return "tw";
-            case EventFactor.KR:
-                return "kr";
-            default:
-                return "jp";
-        }
+        return switch (loc) {
+            case EventFactor.EN -> "en";
+            case EventFactor.ZH -> "tw";
+            case EventFactor.KR -> "kr";
+            default -> "jp";
+        };
     }
 
     private static String getFile(int f) {
-        switch (f) {
-            case EventFactor.GATYA:
-                return "gatya";
-            case EventFactor.ITEM:
-                return "item";
-            default:
-                return "sale";
-        }
+        return switch (f) {
+            case EventFactor.GATYA -> "gatya";
+            case EventFactor.ITEM -> "item";
+            default -> "sale";
+        };
     }
 }

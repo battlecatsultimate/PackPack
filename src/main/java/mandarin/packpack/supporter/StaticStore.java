@@ -12,6 +12,7 @@ import common.io.assets.UpdateCheck;
 import common.util.lang.MultiLangCont;
 import mandarin.packpack.PackBot;
 import mandarin.packpack.supporter.bc.DataToString;
+import mandarin.packpack.supporter.event.EventFileGrabber;
 import mandarin.packpack.supporter.event.EventHolder;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.SpamPrevent;
@@ -46,7 +47,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
 public class StaticStore {
-    public static Logger logger = null;
+    public static final Logger logger = new Logger();
 
     public static String ratingChannel = "";
 
@@ -405,6 +406,23 @@ public class StaticStore {
         return arr;
     }
 
+    public static JsonArray mapToJsonIntegerBoolean(Map<Integer, Boolean> map) {
+        JsonArray arr = new JsonArray();
+
+        for(int key : map.keySet()) {
+            boolean b = map.get(key);
+
+            JsonObject set = new JsonObject();
+
+            set.addProperty("key", key);
+            set.addProperty("val", b);
+
+            arr.add(set);
+        }
+
+        return arr;
+    }
+
     public static Map<String, IDHolder> jsonToMapIDHolder(JsonArray arr) {
         Map<String, IDHolder> map = new HashMap<>();
 
@@ -537,6 +555,23 @@ public class StaticStore {
         return result;
     }
 
+    public static Map<Integer, Boolean> jsonToMapIntegerBoolean(JsonArray arr) {
+        Map<Integer, Boolean> map = new HashMap<>();
+
+        for(int i = 0; i < arr.size(); i++) {
+            JsonObject set = arr.get(i).getAsJsonObject();
+
+            if(set.has("key") && set.has("val")) {
+                int key = set.get("key").getAsInt();
+                boolean val = set.get("val").getAsBoolean();
+
+                map.put(key, val);
+            }
+        }
+
+        return map;
+    }
+
     public static JsonObject getJsonFile(String name) {
         File f = new File("./data/"+name+".json");
 
@@ -589,6 +624,13 @@ public class StaticStore {
         obj.add("scamLinkHandlers", scamLinkHandlers.jsonfy());
         obj.add("optoutMembers", listToJsonString(optoutMembers));
         obj.add("cultist", listToJsonString(cultist));
+        obj.add("eventNewWay", mapToJsonIntegerBoolean(EventFileGrabber.newWay));
+
+        if (EventFileGrabber.accountCode != null && EventFileGrabber.password != null && EventFileGrabber.passwordRefreshToken != null) {
+            obj.addProperty("accountCode", EventFileGrabber.accountCode);
+            obj.addProperty("password", EventFileGrabber.password);
+            obj.addProperty("passwordRefreshToken", EventFileGrabber.passwordRefreshToken);
+        }
 
         try {
             File folder = new File("./data/");
@@ -771,6 +813,22 @@ public class StaticStore {
 
             if(obj.has("cultist")) {
                 cultist = jsonToListString(obj.getAsJsonArray("cultist"));
+            }
+
+            if(obj.has("eventNewWay")) {
+                EventFileGrabber.newWay = jsonToMapIntegerBoolean(obj.getAsJsonArray("eventNewWay"));
+            }
+
+            if(obj.has("accountCode")) {
+                EventFileGrabber.accountCode = obj.get("accountCode").getAsString();
+            }
+
+            if(obj.has("password")) {
+                EventFileGrabber.password = obj.get("password").getAsString();
+            }
+
+            if(obj.has("passwordRefreshToken")) {
+                EventFileGrabber.passwordRefreshToken = obj.get("passwordRefreshToken").getAsString();
             }
         }
     }

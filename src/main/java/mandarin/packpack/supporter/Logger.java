@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.utils.FileUpload;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -21,13 +22,23 @@ public class Logger {
             "Bruh"
     };
 
-    private final JDA client;
+    @Nullable
+    private JDA client;
 
-    public Logger(JDA client) {
+    public Logger() {
+        client = null;
+    }
+
+    public void assignClient(JDA client) {
         this.client = client;
     }
 
+    @Nullable
+
     private GuildMessageChannel getLoggingChannel() {
+        if (client == null)
+            return null;
+
         if(StaticStore.loggingChannel.isBlank())
             return null;
 
