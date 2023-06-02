@@ -606,6 +606,7 @@ public class AllEventAdapter extends ListenerAdapter {
             case "react", "r" -> new React(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
             case "treasure", "tr" -> new Treasure(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
             case "boosterpin", "bp" -> new BoosterPin(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
+            case "switcheventgrabber", "seg" -> new SwitchEventGrabber(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
         }
     }
 

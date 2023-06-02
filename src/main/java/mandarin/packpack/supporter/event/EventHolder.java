@@ -414,19 +414,23 @@ public class EventHolder extends EventFactor {
         for(GroupHandler handler : EventFactor.handlers) {
             for(EventGroup event : handler.getGroups()) {
                 if(event.finished) {
-                    if(handler instanceof NormalGroupHandler) {
-                        StageSchedule start = (StageSchedule) event.schedules[0];
+                    switch (handler) {
+                        case NormalGroupHandler ignored -> {
+                            StageSchedule start = (StageSchedule) event.schedules[0];
 
-                        appendProperly(start, start.beautifyWithCustomName(LangID.getStringByID(event.name, lang), lang), normals, dailys, weeklys, monthlys, yearlys, missions);
-                    } else if(handler instanceof SequenceGroupHandler) {
-                        StageSchedule start = (StageSchedule) event.schedules[0];
-                        StageSchedule end = (StageSchedule) event.schedules[event.schedules.length - 1];
+                            appendProperly(start, start.beautifyWithCustomName(LangID.getStringByID(event.name, lang), lang), normals, dailys, weeklys, monthlys, yearlys, missions);
+                        }
+                        case SequenceGroupHandler ignored -> {
+                            StageSchedule start = (StageSchedule) event.schedules[0];
+                            StageSchedule end = (StageSchedule) event.schedules[event.schedules.length - 1];
 
-                        appendProperly(start, manualSchedulePrint(start.date.dateStart, end.date.dateEnd, LangID.getStringByID(event.name, lang), lang), normals, dailys, weeklys, monthlys, yearlys, missions);
-                    } else if(handler instanceof ContainedGroupHandler) {
-                        StageSchedule primary = (StageSchedule) event.schedules[0];
-
-                        appendProperly(primary, primary.beautifyWithCustomName(LangID.getStringByID(event.name, lang), lang), normals, dailys, weeklys, monthlys, yearlys, missions);
+                            appendProperly(start, manualSchedulePrint(start.date.dateStart, end.date.dateEnd, LangID.getStringByID(event.name, lang), lang), normals, dailys, weeklys, monthlys, yearlys, missions);
+                        }
+                        case ContainedGroupHandler ignored -> {
+                            StageSchedule primary = (StageSchedule) event.schedules[0];
+                            appendProperly(primary, primary.beautifyWithCustomName(LangID.getStringByID(event.name, lang), lang), normals, dailys, weeklys, monthlys, yearlys, missions);
+                        }
+                        default -> { }
                     }
                 }
             }
@@ -682,15 +686,9 @@ public class EventHolder extends EventFactor {
         }
 
         switch (newSrc.getName()) {
-            case "gatya.tsv":
-                gachaCache.put(loc, newIndex);
-                break;
-            case "item.tsv":
-                itemCache.put(loc, newIndex);
-                break;
-            case "sale.tsv":
-                stageCache.put(loc, newIndex);
-                break;
+            case "gatya.tsv" -> gachaCache.put(loc, newIndex);
+            case "item.tsv" -> itemCache.put(loc, newIndex);
+            case "sale.tsv" -> stageCache.put(loc, newIndex);
         }
 
         return newLines;
@@ -725,16 +723,12 @@ public class EventHolder extends EventFactor {
     }
 
     private String getLocaleName(int locale) {
-        switch (locale) {
-            case EN:
-                return "en";
-            case ZH:
-                return "zh";
-            case KR:
-                return "kr";
-            default:
-                return "jp";
-        }
+        return switch (locale) {
+            case EN -> "en";
+            case ZH -> "zh";
+            case KR -> "kr";
+            default -> "jp";
+        };
     }
 
     private void appendProperly(StageSchedule schedule, String val, ArrayList<String> normal, ArrayList<String> daily, ArrayList<String> weekly, ArrayList<String> monthly, ArrayList<String> yearly, ArrayList<String> missions) {
@@ -744,18 +738,10 @@ public class EventHolder extends EventFactor {
             normal.add(val);
         else {
             switch (schedule.type) {
-                case DAILY:
-                    daily.add(val);
-                    break;
-                case WEEKLY:
-                    weekly.add(val);
-                    break;
-                case MONTHLY:
-                    monthly.add(val);
-                    break;
-                case YEARLY:
-                    yearly.add(val);
-                    break;
+                case DAILY -> daily.add(val);
+                case WEEKLY -> weekly.add(val);
+                case MONTHLY -> monthly.add(val);
+                case YEARLY -> yearly.add(val);
             }
         }
     }
@@ -775,15 +761,9 @@ public class EventHolder extends EventFactor {
 
 
                 switch (i) {
-                    case GATYA:
-                        updateGacha(f, j, true);
-                        break;
-                    case SALE:
-                        updateStage(f, j, true);
-                        break;
-                    case ITEM:
-                        updateItem(f, j, true);
-                        break;
+                    case GATYA -> updateGacha(f, j, true);
+                    case SALE -> updateStage(f, j, true);
+                    case ITEM -> updateItem(f, j, true);
                 }
             }
         }
@@ -893,25 +873,19 @@ public class EventHolder extends EventFactor {
                         }
 
                         switch (j) {
-                            case SALE:
-                                updateStage(target, i, false);
-                                break;
-                            case GATYA:
-                                updateGacha(target, i, false);
-                                break;
-                            case ITEM:
-                                updateItem(target, i, false);
-                                break;
-                            default:
-                                if(f.exists() && !f.delete()) {
-                                    StaticStore.logger.uploadLog("Failed to delete file : "+f.getAbsolutePath());
+                            case SALE -> updateStage(target, i, false);
+                            case GATYA -> updateGacha(target, i, false);
+                            case ITEM -> updateItem(target, i, false);
+                            default -> {
+                                if (f.exists() && !f.delete()) {
+                                    StaticStore.logger.uploadLog("Failed to delete file : " + f.getAbsolutePath());
                                     break;
                                 }
 
-                                if(!target.renameTo(f)) {
-                                    StaticStore.logger.uploadLog("Failed to rename file\nSrc : "+target.getAbsolutePath()+"\nDst : "+f.getAbsolutePath());
+                                if (!target.renameTo(f)) {
+                                    StaticStore.logger.uploadLog("Failed to rename file\nSrc : " + target.getAbsolutePath() + "\nDst : " + f.getAbsolutePath());
                                 }
-                                break;
+                            }
                         }
                     }
                 } else {
@@ -955,25 +929,19 @@ public class EventHolder extends EventFactor {
                     }
 
                     switch (j) {
-                        case SALE:
-                            updateStage(target, i, false);
-                            break;
-                        case GATYA:
-                            updateGacha(target, i, false);
-                            break;
-                        case ITEM:
-                            updateItem(target, i, false);
-                            break;
-                        default:
-                            if(f.exists() && !f.delete()) {
-                                StaticStore.logger.uploadLog("Failed to delete file : "+f.getAbsolutePath());
+                        case SALE -> updateStage(target, i, false);
+                        case GATYA -> updateGacha(target, i, false);
+                        case ITEM -> updateItem(target, i, false);
+                        default -> {
+                            if (f.exists() && !f.delete()) {
+                                StaticStore.logger.uploadLog("Failed to delete file : " + f.getAbsolutePath());
                                 break;
                             }
 
-                            if(!target.renameTo(f)) {
-                                StaticStore.logger.uploadLog("Failed to rename file\nSrc : "+target.getAbsolutePath()+"\nDst : "+f.getAbsolutePath());
+                            if (!target.renameTo(f)) {
+                                StaticStore.logger.uploadLog("Failed to rename file\nSrc : " + target.getAbsolutePath() + "\nDst : " + f.getAbsolutePath());
                             }
-                            break;
+                        }
                     }
 
                     archive(f, i, j);
@@ -1142,13 +1110,10 @@ public class EventHolder extends EventFactor {
     }
 
     private String getFileName(int j) {
-        switch (j) {
-            case 0:
-                return "gatya";
-            case 1:
-                return "item";
-            default:
-                return "sale";
-        }
+        return switch (j) {
+            case 0 -> "gatya";
+            case 1 -> "item";
+            default -> "sale";
+        };
     }
 }

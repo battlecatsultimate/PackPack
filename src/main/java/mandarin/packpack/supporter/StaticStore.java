@@ -632,6 +632,11 @@ public class StaticStore {
             obj.addProperty("passwordRefreshToken", EventFileGrabber.passwordRefreshToken);
         }
 
+        if (EventFileGrabber.jwtToken != null) {
+            obj.addProperty("jwtToken", EventFileGrabber.jwtToken);
+            obj.addProperty("tokenCreatedAt", EventFileGrabber.tokenCreatedAt);
+        }
+
         try {
             File folder = new File("./data/");
 
@@ -829,6 +834,23 @@ public class StaticStore {
 
             if(obj.has("passwordRefreshToken")) {
                 EventFileGrabber.passwordRefreshToken = obj.get("passwordRefreshToken").getAsString();
+            }
+
+            if(obj.has("jwtToken")) {
+                EventFileGrabber.jwtToken = obj.get("jwtToken").getAsString();
+            }
+
+            if(obj.has("tokenCreatedAt")) {
+                EventFileGrabber.tokenCreatedAt = obj.get("tokenCreatedAt").getAsLong();
+            }
+
+            // If any of these are null, bot can't check event data properly, resetting
+            if (EventFileGrabber.accountCode == null || EventFileGrabber.password == null || EventFileGrabber.passwordRefreshToken == null) {
+                EventFileGrabber.accountCode = null;
+                EventFileGrabber.password = null;
+                EventFileGrabber.passwordRefreshToken = null;
+
+                EventFileGrabber.jwtToken = null;
             }
         }
     }
