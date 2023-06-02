@@ -1,5 +1,3 @@
-import java.util.Random;
-
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class Test {
 
