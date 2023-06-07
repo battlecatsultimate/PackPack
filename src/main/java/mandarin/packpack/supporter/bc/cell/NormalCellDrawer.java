@@ -156,7 +156,7 @@ public class NormalCellDrawer implements CellDrawer {
             rx += uw + lineOffset * 2;
         }
 
-        rx = uw;
+        rx = x + uw;
 
         g.setStroke(lineStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
