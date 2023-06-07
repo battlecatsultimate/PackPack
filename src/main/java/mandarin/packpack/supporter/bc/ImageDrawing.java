@@ -1946,7 +1946,7 @@ public class ImageDrawing {
                 desiredRewardGap = (int) Math.round((uw * 2 + CellDrawer.lineOffset * 2 - dw[CHANCE_WIDTH] - dw[REWARD_WIDTH] - dw[AMOUNT_WIDTH] - rewardIconSize) / 7.0);
                 desiredScoreGap = (int) Math.round((uw * 2 + CellDrawer.lineOffset * 2 - sw[CHANCE_WIDTH] - sw[REWARD_WIDTH] - sw[AMOUNT_WIDTH] - rewardIconSize) / 7.0);
 
-                int tempTotalWidth = uw * 4 + CellDrawer.lineOffset * 6;
+                int tempTotalWidth = uw * 4 + CellDrawer.lineOffset * 6 + statPanelMargin * 2;
 
                 for(int i = ENEMY; i <= BOSS; i++) {
                     tempTotalWidth -= stw[i];
@@ -2066,7 +2066,7 @@ public class ImageDrawing {
         }
 
         if(scoreData != null) {
-            drawRewardTable(g, bgMargin + statPanelMargin + uw * 2 + CellDrawer.lineOffset * 4, stack, st, map, dw, desiredScoreGap, lang, false);
+            drawRewardTable(g, bgMargin + statPanelMargin + uw * 2 + CellDrawer.lineOffset * 4, stack, st, map, sw, desiredScoreGap, lang, false);
         } else {
             g.setFont(contentFont);
             g.setColor(239, 239, 239);
@@ -4237,7 +4237,7 @@ public class ImageDrawing {
             int y1 = y + innerTableCellMargin * 2;
 
             for(int i = 0; i < data.size() - 1; i++) {
-                g.drawLine(x + innerTableTextMargin, y1, w - innerTableTextMargin, y1);
+                g.drawLine(x + innerTableTextMargin, y1, x + w - innerTableTextMargin, y1);
 
                 y1 += innerTableCellMargin;
             }
