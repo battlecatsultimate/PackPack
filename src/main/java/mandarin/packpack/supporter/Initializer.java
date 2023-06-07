@@ -98,8 +98,14 @@ public class Initializer {
             }
 
             for(UpdateCheck.Downloader d : lang) {
+                File parent = d.target.getParentFile();
 
-                System.out.println("Downloading Language File : "+d.target.getName());
+                if(parent != null) {
+                    System.out.println("Downloaing Language File : " + parent.getName() + "/" + d.target.getName());
+                } else {
+                    System.out.println("Downloading Language File : "+d.target.getName());
+                }
+
                 d.run((v) -> {});
             }
 

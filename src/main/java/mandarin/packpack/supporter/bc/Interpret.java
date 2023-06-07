@@ -33,7 +33,7 @@ public class Interpret extends Data {
             "data_strong", "data_resistant", "data_massive", "data_attackon", "data_abimetal", "data_waveshie",
             "data_imusnipe", "data_imustoptt", "data_ghost", "data_zombiekill", "data_witchkill", "data_suicide",
             "data_imutheme", "data_evakill", "data_imuboss", "data_insanetou", "data_insanedmg", "data_baronkiller",
-            "data_corpsekiller"
+            "data_corpsekiller", "data_countersurge"
     };
 
     public static final String[] PROCIND = {
