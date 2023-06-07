@@ -1,4 +1,4 @@
-package mandarin.packpack.supporter.server.holder.component.alias;
+package mandarin.packpack.supporter.server.holder.message.alias;
 
 import common.util.Data;
 import common.util.lang.MultiLangCont;
@@ -121,7 +121,7 @@ public class AliasStageMessageHolder extends MessageHolder {
                         result.append("\n\n");
 
                         for (int i = 0; i < alias.size(); i++) {
-                            String temp = " - " + alias.get(i);
+                            String temp = "- " + alias.get(i);
 
                             if (result.length() + temp.length() > 1900) {
                                 result.append("\n")

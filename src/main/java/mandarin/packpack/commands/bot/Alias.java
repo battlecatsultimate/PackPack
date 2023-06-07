@@ -14,9 +14,9 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.AliasHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.SearchHolder;
-import mandarin.packpack.supporter.server.holder.component.alias.AliasEnemyMessageHolder;
-import mandarin.packpack.supporter.server.holder.component.alias.AliasFormMessageHolder;
-import mandarin.packpack.supporter.server.holder.component.alias.AliasStageMessageHolder;
+import mandarin.packpack.supporter.server.holder.message.alias.AliasEnemyMessageHolder;
+import mandarin.packpack.supporter.server.holder.message.alias.AliasFormMessageHolder;
+import mandarin.packpack.supporter.server.holder.message.alias.AliasStageMessageHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -82,7 +82,7 @@ public class Alias extends ConstraintCommand {
                         result.append("\n\n");
 
                         for (int i = 0; i < alias.size(); i++) {
-                            String temp = " - " + alias.get(i);
+                            String temp = "- " + alias.get(i);
 
                             if (result.length() + temp.length() > 1900) {
                                 result.append("\n")
@@ -181,7 +181,7 @@ public class Alias extends ConstraintCommand {
                         result.append("\n\n");
 
                         for (int i = 0; i < alias.size(); i++) {
-                            String temp = " - " + alias.get(i);
+                            String temp = "- " + alias.get(i);
 
                             if (result.length() + temp.length() > 1900) {
                                 result.append("\n")
@@ -282,7 +282,7 @@ public class Alias extends ConstraintCommand {
                         result.append("\n\n");
 
                         for (int i = 0; i < alias.size(); i++) {
-                            String temp = " - " + alias.get(i);
+                            String temp = "- " + alias.get(i);
 
                             if (result.length() + temp.length() > 1900) {
                                 result.append("\n")
