@@ -1593,7 +1593,7 @@
   "treasure_tangelpl" : "천사 적 보물 퍼센트를 입력해 주세요",
   "treasure_ccotcpl" : "우주편 크리스탈 보물 퍼센트를 입력해 주세요",
   "treasure_tmetalpl" : "메탈 적 보물 퍼센트를 입력해 주세요",
-  "treasure_tzombieple" : "좀비 적 보물 퍼센트를 입력해 주세요",
+  "treasure_tzombiepl" : "좀비 적 보물 퍼센트를 입력해 주세요",
   "treasure_talienpl" : "에이리언 적 보물 퍼센트를 입력해 주세요",
   "treasure_tstudy2pl" : "우주편 공부력 보물 퍼센트를 입력해 주세요",
   "treasure_notnum" : "%s : 해당 입력란에 숫자가 아닌 글자를 입력하셨습니다!",

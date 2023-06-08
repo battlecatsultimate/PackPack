@@ -1597,7 +1597,7 @@
   "treasure_tangelpl" : "Set angel enemy treasure here",
   "treasure_ccotcpl" : "Set CotC crystal treasure here",
   "treasure_tmetalpl" : "Set metal enemy treasure here",
-  "treasure_tzombieple" : "Set zombie enemy treasure here",
+  "treasure_tzombiepl" : "Set zombie enemy treasure here",
   "treasure_talienpl" : "Set alien enemy treasure here",
   "treasure_tstudy2pl" : "Set CotC study treasure here",
   "treasure_notnum" : "%s : You passed non-numeric values to this field!",
