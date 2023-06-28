@@ -3,7 +3,7 @@ package mandarin.card.supporter.filter
 import mandarin.card.supporter.Card
 import mandarin.card.supporter.Inventory
 
-public abstract class Filter(val amount: Int, val name: String) {
+abstract class Filter(val amount: Int, val name: String) {
     abstract fun filter(card: Card) : Boolean
 
     fun match(cards: List<Card>, inventory: Inventory) : Boolean {

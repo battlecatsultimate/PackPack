@@ -27,8 +27,8 @@ class Check(private val tier: CardData.Tier) : Command(LangID.EN, true) {
 
         val ids = CardData.inventories.keys
 
-        val members = g.findMembers { member -> member.id in ids }.get().filter { m ->
-            val inventory = Inventory.getInventory(m.id)
+        val members = g.findMembers { member -> member.id in ids }.get().filter { member ->
+            val inventory = Inventory.getInventory(member.id)
 
             inventory.cards.keys.any { c -> c.tier == tier }
         }

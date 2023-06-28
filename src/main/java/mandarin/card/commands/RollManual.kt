@@ -1,7 +1,6 @@
 package mandarin.card.commands
 
 import mandarin.card.CardBot
-import mandarin.card.supporter.Activator
 import mandarin.card.supporter.Card
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
@@ -12,7 +11,6 @@ import mandarin.packpack.supporter.lang.LangID
 import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.events.message.GenericMessageEvent
 import net.dv8tion.jda.api.utils.FileUpload
-import java.lang.IllegalStateException
 import kotlin.random.Random
 
 class RollManual : Command(LangID.EN, true) {
