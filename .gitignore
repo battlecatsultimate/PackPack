@@ -38,3 +38,6 @@ hs_err_pid*
 /data/abilityIcons.txt
 /build/tmp/
 /build/tmp/*
+/data/cards/
+/data/cardSave.json
+/data/serverData.json

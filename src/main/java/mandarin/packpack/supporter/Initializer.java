@@ -60,7 +60,13 @@ public class Initializer {
             }
 
             asset = UpdateCheck.checkAsset(json, "android", "bot");
-            music = UpdateCheck.checkMusic(json.music).get();
+
+            if (CommonStatic.getConfig().updateOldMusic) {
+                music = UpdateCheck.checkMusic(json.music).get();
+            } else {
+                music = UpdateCheck.checkNewMusic(json.music);
+            }
+
             lang = UpdateCheck.checkLang(langFile.toArray(new String[0])).get();
 
             if(!asset.isEmpty()) {

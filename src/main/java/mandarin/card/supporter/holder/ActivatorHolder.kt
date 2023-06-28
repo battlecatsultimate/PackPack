@@ -1,0 +1,157 @@
+package mandarin.card.supporter.holder
+
+import mandarin.card.supporter.Activator
+import mandarin.card.supporter.CardData
+import mandarin.packpack.supporter.EmojiStore
+import mandarin.packpack.supporter.StaticStore
+import mandarin.packpack.supporter.server.holder.component.ComponentHolder
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.interactions.components.ActionRow
+import net.dv8tion.jda.api.interactions.components.LayoutComponent
+import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import kotlin.math.min
+
+class ActivatorHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message.id) {
+    private val activators = Activator.values()
+
+    private var page = 0
+
+    override fun clean() {
+
+    }
+
+    override fun onExpire(id: String?) {
+
+    }
+
+    override fun onEvent(event: GenericComponentInteractionCreateEvent) {
+        when(event.componentId) {
+            "prev" -> {
+                page--
+
+                applyResult(event)
+            }
+            "prev10" -> {
+                page -= 10
+
+                applyResult(event)
+            }
+            "next" -> {
+                page++
+
+                applyResult(event)
+            }
+            "next10" -> {
+                page -= 10
+
+                applyResult(event)
+            }
+            "confirm" -> {
+                event.deferEdit()
+                    .setContent("Confirmed activation of banners")
+                    .setComponents()
+                    .setAllowedMentions(ArrayList())
+                    .mentionRepliedUser(false)
+                    .queue()
+
+                expired = true
+
+                expire(authorMessage.author.id)
+            }
+            else -> {
+                if (event !is ButtonInteractionEvent)
+                    return
+
+                if (!StaticStore.isNumeric(event.componentId))
+                    return
+
+                val index = event.componentId.toInt()
+
+                if (activators[index] in CardData.activatedBanners) {
+                    CardData.activatedBanners.remove(activators[index])
+                } else {
+                    CardData.activatedBanners.add(activators[index])
+                }
+
+                applyResult(event)
+            }
+        }
+    }
+
+    private fun applyResult(event: GenericComponentInteractionCreateEvent) {
+        event.deferEdit()
+            .setContent(getText())
+            .setComponents(getComponents())
+            .mentionRepliedUser(false)
+            .setAllowedMentions(ArrayList())
+            .queue()
+    }
+
+    private fun getComponents() : List<LayoutComponent> {
+        val rows = ArrayList<ActionRow>()
+
+        val activators = Activator.values()
+
+        val dataSize = Activator.values().size
+
+        for (i in page * 3 until min(dataSize, 3 * (page + 1))) {
+            rows.add(ActionRow.of(Button.secondary(i.toString(), activators[i].title).withEmoji(if (activators[i] in CardData.activatedBanners) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF)))
+        }
+
+        var totPage = dataSize / 3
+
+        if (dataSize % 3 != 0)
+            totPage++
+
+        if (dataSize > 3) {
+            val buttons = ArrayList<Button>()
+
+            if (totPage > 10) {
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).asDisabled())
+            }
+
+            buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", "Previous Pages", EmojiStore.PREVIOUS).asDisabled())
+
+            buttons.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT))
+
+            if (totPage > 10) {
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT))
+            }
+
+            rows.add(ActionRow.of(buttons))
+        }
+
+        val confirmButtons = ArrayList<Button>()
+
+        confirmButtons.add(Button.primary("confirm", "Close"))
+
+        rows.add(ActionRow.of(confirmButtons))
+
+        return rows
+    }
+
+    private fun getText() : String {
+        val builder = StringBuilder("Select banners to activate/deactivate\n\n")
+
+        val activators = Activator.values()
+
+        for (i in page * 3 until min((page + 1) * 3, activators.size)) {
+            builder.append("**")
+                .append(activators[i].title)
+                .append("** : ")
+
+            if (activators[i] in CardData.activatedBanners) {
+                builder.append("Activated")
+            } else {
+                builder.append("Deactivated")
+            }
+
+            builder.append("\n")
+        }
+
+        return builder.toString()
+    }
+}
