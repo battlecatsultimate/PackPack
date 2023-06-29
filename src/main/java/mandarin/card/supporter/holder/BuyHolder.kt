@@ -55,13 +55,13 @@ class BuyHolder(author: Message, channelID: String, private val message: Message
                 if (selectedRole == CardData.Role.LEGEND) {
                     val cards = inventory.cards.keys.map { c -> c.unitID }
 
-                    val missing = CardData.bannerData.any { tier ->
-                        tier.any { banner ->
-                            banner.any { unit ->
+                    val missing = CardData.permanents.withIndex().any { v ->
+                        v.value.any { index ->
+                            CardData.bannerData[v.index][index].any { unit ->
                                 unit !in cards
                             }
                         }
-                    }
+                    } || CardData.regularLegend.any { it !in cards }
 
                     if (missing) {
                         event.deferEdit()

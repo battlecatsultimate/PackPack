@@ -11,6 +11,12 @@ object CardData {
 
     val cards = ArrayList<Card>()
 
+    val permanents = arrayOf(
+        0 until 9,
+        0 until 2,
+        0 until 3
+    )
+
     //Stored as uber ID
     val bannerData = arrayOf(
         //Tier 1
@@ -112,6 +118,8 @@ object CardData {
     )
 
     val busters = arrayOf(283, 286, 397, 559, 612, 686)
+
+    val regularLegend = arrayOf(48, 49, 450, 451, 455, 461, 463, 478, 481, 493, 586)
 
     var inventories = HashMap<String, Inventory>()
 
