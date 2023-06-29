@@ -1,79 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="ArtifactsWorkspaceSettings">
+    <artifacts-to-build>
+      <artifact name="CardBot:jar" />
+    </artifacts-to-build>
+  </component>
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0c8dc8e9-bf23-4116-b709-41f9bd84114a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/CardBot.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/commands/Activate.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/commands/Buy.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/commands/Cancel.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/commands/Cards.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/commands/Check.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/commands/Confirm.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/commands/Equip.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/commands/ModifyInventory.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/commands/Roll.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/commands/RollManual.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/commands/Save.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/commands/Suggest.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/commands/Trade.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/Activator.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/Card.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/CardComparator.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/CardData.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/Handler.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/Inventory.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/Product.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/ServerData.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/Suggestion.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/TradingSession.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/filter/AbilityFilter.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/filter/AnyFilter.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/filter/BannerFilter.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/filter/CustomFilter.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/filter/Filter.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/filter/ProcFilter.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/filter/TraitFilter.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/holder/ActivatorHolder.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/holder/BuyHolder.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/holder/CardCheckHolder.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/holder/CardInventoryHolder.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/holder/CardModifyHolder.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/holder/CardProcessHolder.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/holder/CatFoodHolder.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/holder/EquipHolder.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/holder/FilterProcessHolder.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/holder/ModifyCategoryHolder.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/holder/ModifyModeSelectHolder.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/holder/PackSelectHolder.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/holder/RequirementSelectHolder.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/holder/RoleModifyHolder.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/holder/SuggestInventoryHolder.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/transaction/TatsuHandler.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/transaction/TransactionGroup.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/transaction/TransactionLogger.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/transaction/TransactionQueue.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/TestUnit.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/artifacts/PackPack_jar.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/aws.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/discord.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/discord.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries-with-intellij-classes.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/uiDesigner.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/ImageExtracter.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Test.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/mandarin/packpack/supporter/Initializer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mandarin/packpack/supporter/Initializer.java" afterDir="false" />
+    <list default="true" id="0c8dc8e9-bf23-4116-b709-41f9bd84114a" name="Changes" comment="clean up codes">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/META-INF/MANIFEST.MF" beforeDir="false" afterPath="$PROJECT_DIR$/META-INF/MANIFEST.MF" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/CardData.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/CardData.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/holder/BuyHolder.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mandarin/card/supporter/holder/BuyHolder.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -146,26 +86,26 @@
     <option name="showMembers" value="true" />
     <option name="showVisibilityIcons" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.preview.features.used&quot;: &quot;true&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.3800797&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;discord-application&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "main",
+    "ignore.preview.features.used": "true",
+    "ignore.virus.scanning.warn.message": "true",
+    "project.structure.last.edited": "Artifacts",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.3800797",
+    "settings.editor.selected.configurable": "discord-application"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveKotlinTopLevelDeclarationsDialog.RECENTS_KEY">
       <recent name="mandarin.card.supporter.transaction" />
       <recent name="mandarin.card.supporter" />
     </key>
   </component>
-  <component name="RunManager" selected="Kotlin.CardBot">
+  <component name="RunManager" selected="Application.Test PackPack">
     <configuration name="Test PackPack" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="mandarin.packpack.PackBot" />
       <module name="PackPack.main" />
@@ -207,7 +147,34 @@
       <option name="presentableId" value="Default" />
       <updated>1686803063952</updated>
     </task>
+    <task id="LOCAL-00001" summary="initial commit for cardbot">
+      <created>1687916948095</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1687916948095</updated>
+    </task>
+    <task id="LOCAL-00002" summary="initial commit for cardbot">
+      <created>1687916969036</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1687916969036</updated>
+    </task>
+    <task id="LOCAL-00003" summary="clean up codes">
+      <created>1687917041816</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1687917041816</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="initial commit for cardbot" />
+    <MESSAGE value="clean up codes" />
+    <option name="LAST_COMMIT_MESSAGE" value="clean up codes" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
