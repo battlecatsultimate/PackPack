@@ -50,7 +50,7 @@ public class GetID extends ConstraintCommand {
                     if(u == null)
                         return;
 
-                    replyToMessageSafely(ch, "User : " + u.getAsTag() + " (" + u.getAsMention() + ")", getMessage(event), a -> a);
+                    replyToMessageSafely(ch, "User : " + u.getEffectiveName() + " (" + u.getAsMention() + ")", getMessage(event), a -> a);
 
                     break;
                 case "-c":

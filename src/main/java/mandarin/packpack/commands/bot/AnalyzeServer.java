@@ -73,9 +73,7 @@ public class AnalyzeServer extends ConstraintCommand {
 
                     User user = owner.getUser();
 
-                    builder.append(user.getName())
-                            .append("#")
-                            .append(user.getDiscriminator())
+                    builder.append(user.getEffectiveName())
                             .append(" (")
                             .append(user.getId())
                             .append(")")

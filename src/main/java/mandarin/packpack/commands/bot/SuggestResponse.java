@@ -71,7 +71,7 @@ public class SuggestResponse extends ConstraintCommand {
             User user = client.getUserById(contents[3]);
 
             if(user != null) {
-                builder.setFooter(LangID.getStringByID("response_suggestedby", lang).replace("_UUU_", user.getAsTag()), user.getAvatarUrl());
+                builder.setFooter(LangID.getStringByID("response_suggestedby", lang).replace("_UUU_", user.getEffectiveName()), user.getAvatarUrl());
 
                 user.openPrivateChannel()
                         .flatMap(pc -> pc.sendMessageEmbeds(builder.build()))
