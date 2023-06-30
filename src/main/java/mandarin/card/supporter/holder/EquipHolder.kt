@@ -65,7 +65,10 @@ class EquipHolder(author: Message, channelID: String, private val message: Messa
                 if (event !is ButtonInteractionEvent)
                     return
 
-                val selectedRole = CardData.Role.valueOf(event.componentId)
+                if (!event.componentId.startsWith("role/"))
+                    return
+
+                val selectedRole = CardData.Role.valueOf(event.componentId.replace("role/", ""))
 
                 val g = event.guild ?: return
 
@@ -162,8 +165,8 @@ class EquipHolder(author: Message, channelID: String, private val message: Messa
 
                 rows.add(
                     ActionRow.of(
-                        Button.secondary("${roles[i].title} : $equipped", "role/${roles[i].name}").withEmoji(
-                            EmojiStore.ABILITY[roles[i].id])))
+                        Button.secondary("role/${roles[i].name}", "${roles[i].title} : $equipped").withEmoji(
+                            EmojiStore.ABILITY[roles[i].key])))
             }
         }
         val dataSize = roles.size

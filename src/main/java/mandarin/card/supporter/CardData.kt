@@ -165,6 +165,8 @@ object CardData {
 
     val sessions = ArrayList<TradingSession>()
 
+    val allowedChannel = ServerData.getArray("allowedChannel")
+
     /*
     -------------------------------------------------------
     |                        Packs                        |

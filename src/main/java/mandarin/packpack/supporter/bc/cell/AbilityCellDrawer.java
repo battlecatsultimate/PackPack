@@ -8,7 +8,6 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.geom.Rectangle2D;
 
-@SuppressWarnings("ForLoopReplaceableByForEach")
 public class AbilityCellDrawer implements CellDrawer {
     private static final int abilityMargin = 54;
     private static final int lineSpace = 12;

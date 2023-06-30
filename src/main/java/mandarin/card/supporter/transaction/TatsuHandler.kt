@@ -224,7 +224,27 @@ object TatsuHandler {
         val status = response.statusLine
 
         if (status.statusCode / 100 != 2) {
-            throw HttpResponseException(status.statusCode, status.reasonPhrase)
+            if (response.entity.contentLength < 0) {
+                val responseBuilder = StringBuilder()
+
+                val responseReader = BufferedReader(InputStreamReader(response.entity.content))
+                var line = ""
+
+                while(responseReader.readLine()?.also { line = it } != null) {
+                    responseBuilder.append(line).append("\n")
+                }
+
+                responseReader.close()
+                response.close()
+                client.close()
+
+                throw HttpResponseException(status.statusCode, status.reasonPhrase + "\n$responseBuilder")
+            } else {
+                response.close()
+                client.close()
+
+                throw HttpResponseException(status.statusCode, status.reasonPhrase)
+            }
         }
 
         for(header in response.allHeaders) {

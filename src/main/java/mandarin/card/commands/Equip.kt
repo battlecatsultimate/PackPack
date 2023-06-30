@@ -74,7 +74,7 @@ class Equip : Command(LangID.EN, true) {
                     "Unequipped"
                 }
 
-                rows.add(ActionRow.of(Button.secondary("${roles[i].title} : $equipped", "role/${roles[i].name}").withEmoji(EmojiStore.ABILITY[roles[i].id])))
+                rows.add(ActionRow.of(Button.secondary("role/${roles[i].name}", "${roles[i].title} : $equipped").withEmoji(EmojiStore.ABILITY[roles[i].key])))
             }
         }
         val dataSize = roles.size

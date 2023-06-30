@@ -17,4 +17,15 @@ object ServerData {
 
         return JSON.get(key).asString
     }
+
+    fun getArray(key: String) : Array<String> {
+        if (!JSON.has(key) || !JSON.get(key).isJsonArray)
+            return arrayOf()
+
+        val arr = JSON.getAsJsonArray(key)
+
+        return Array(arr.size()) {
+            arr[it].asString
+        }
+    }
 }
