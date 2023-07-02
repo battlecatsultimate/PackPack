@@ -116,7 +116,7 @@ class RequirementSelectHolder(author: Message, channelID: String, private val me
     private fun registerCardComponents() : List<LayoutComponent> {
         val result = ArrayList<LayoutComponent>()
 
-        val cards = inventory.cards.keys.filter { c -> filters[0].filter(c) }
+        val cards = inventory.cards.keys.filter { c -> filters[0].filter(c) }.sortedWith(CardComparator())
 
         val tierCategoryElements = ArrayList<SelectOption>()
 
