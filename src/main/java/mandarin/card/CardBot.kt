@@ -76,7 +76,7 @@ object CardBot : ListenerAdapter() {
 
         val m = event.member ?: return
 
-        if (m.id != StaticStore.MANDARIN_SMELL && m.id != "731564881530191942" && !CardData.isDealer(m))
+        if (m.id != StaticStore.MANDARIN_SMELL && m.id != "195682910269865984" && !CardData.isDealer(m))
             return
 
         val segments = event.message.contentRaw.lowercase().split(" ")
@@ -181,10 +181,10 @@ object CardBot : ListenerAdapter() {
             }
         }
 
-        CardData.common.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.COMMON })
-        CardData.uncommon.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.UNCOMMON })
-        CardData.ultraRare.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.ULTRA })
-        CardData.legendRare.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.LEGEND })
+        CardData.common.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.COMMON }.filter { r -> CardData.permanents[0].any { i -> r.unitID in CardData.bannerData[0][i] } })
+        CardData.uncommon.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.UNCOMMON }.filter { r -> CardData.permanents[1].any { i -> r.unitID in CardData.bannerData[1][i] } })
+        CardData.ultraRare.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.ULTRA }.filter { r -> CardData.permanents[2].any { i -> r.unitID in CardData.bannerData[2][i] } })
+        CardData.legendRare.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.LEGEND }.filter { r -> CardData.bannerData[3].any { arr -> r.unitID !in arr } })
 
         val serverElement: JsonElement? = StaticStore.getJsonFile("serverinfo")
 

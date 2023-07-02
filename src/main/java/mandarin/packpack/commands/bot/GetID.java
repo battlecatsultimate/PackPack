@@ -43,44 +43,32 @@ public class GetID extends ConstraintCommand {
 
         try {
             switch (contents[1]) {
-                case "-m":
-                case "-u":
+                case "-m", "-u" -> {
                     User u = jda.retrieveUserById(contents[2]).complete();
-
-                    if(u == null)
+                    if (u == null)
                         return;
-
                     replyToMessageSafely(ch, "User : " + u.getEffectiveName() + " (" + u.getAsMention() + ")", getMessage(event), a -> a);
-
-                    break;
-                case "-c":
+                }
+                case "-c" -> {
                     GuildChannel c = jda.getGuildChannelById(contents[2]);
-
-                    if(c == null)
+                    if (c == null)
                         return;
-
-                    String type;
-
-                    if(c instanceof TextChannel) {
-                        type = "Text Channel";
-                    } else if(c instanceof NewsChannel) {
-                        type = "News Channel";
-                    } else if(c instanceof MessageChannel) {
-                        type = "Message Channel";
-                    } else {
-                        type = "Channel";
-                    }
-
+                    String type = switch (c) {
+                        case TextChannel ignored2 -> "Text Channel";
+                        case NewsChannel ignored1 -> "News Channel";
+                        case MessageChannel ignored -> "Message Channel";
+                        case null, default -> "Channel";
+                    };
                     replyToMessageSafely(ch, type + " : " + c.getName() + " (" + c.getAsMention() + ")", getMessage(event), a -> a);
-
-                    break;
-                case "-s":
+                }
+                case "-s" -> {
                     Guild g = jda.getGuildById(contents[2]);
-
-                    if(g == null)
+                    
+                    if (g == null)
                         return;
 
                     replyToMessageSafely(ch, "Guild : " + g.getName() + " | Size : " + g.getMemberCount(), getMessage(event), a -> a);
+                }
             }
         } catch (Exception ignore) {
             replyToMessageSafely(ch, "Failed", getMessage(event), a -> a);

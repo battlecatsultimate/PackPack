@@ -129,7 +129,9 @@ class PackSelectHolder(author: Message, channelID: String, message: Message) : C
                         .mentionRepliedUser(false)
                         .queue()
 
-                    TatsuHandler.modifyPoints(guild.idLong, authorMessage.author.idLong, pack.cost, TatsuHandler.Action.REMOVE, true)
+                    if (pack.cost > 0) {
+                        TatsuHandler.modifyPoints(guild.idLong, authorMessage.author.idLong, pack.cost, TatsuHandler.Action.REMOVE, true)
+                    }
 
                     val result = rollCards(pack)
 
@@ -161,7 +163,9 @@ class PackSelectHolder(author: Message, channelID: String, message: Message) : C
                         .queue()
 
                     TransactionGroup.queue(TransactionQueue(1) {
-                        TatsuHandler.modifyPoints(guild.idLong, authorMessage.author.idLong, pack.cost, TatsuHandler.Action.REMOVE, true)
+                        if (pack.cost > 0) {
+                            TatsuHandler.modifyPoints(guild.idLong, authorMessage.author.idLong, pack.cost, TatsuHandler.Action.REMOVE, true)
+                        }
 
                         val result = rollCards(pack)
 
@@ -207,7 +211,7 @@ class PackSelectHolder(author: Message, channelID: String, message: Message) : C
                     result.add(CardData.ultraRare.random())
                 }
 
-                val nextTime = System.currentTimeMillis() + 3 * 24 * 60 * 60 * 1000
+                val nextTime = System.currentTimeMillis() + CardData.cooldownTerm
 
                 if (CardData.cooldown.containsKey(authorMessage.author.id)) {
                     val cooldown = CardData.cooldown[authorMessage.author.id]
@@ -238,7 +242,7 @@ class PackSelectHolder(author: Message, channelID: String, message: Message) : C
                     result.add(CardData.appendLR(CardData.legendRare).random())
                 }
 
-                val nextTime = System.currentTimeMillis() + 3 * 24 * 60 * 60 * 1000
+                val nextTime = System.currentTimeMillis() + CardData.cooldownTerm
 
                 if (CardData.cooldown.containsKey(authorMessage.author.id)) {
                     val cooldown = CardData.cooldown[authorMessage.author.id]

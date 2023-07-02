@@ -12,6 +12,14 @@ class Test : Command(LangID.EN, true) {
         val g = getGuild(event) ?: return
         val m = getMember(event) ?: return
 
+        ch.sendMessage("Checking cat food you have").queue()
+
+        try {
+            ch.sendMessage("You have ${TatsuHandler.getPoints(g.idLong, m.idLong, false)} cat foods").queue()
+        } catch (e: Exception) {
+            ch.sendMessage(e.message ?: "Error").queue()
+        }
+
         ch.sendMessage("Trying to removed 10 cf from you").queue()
 
         try {

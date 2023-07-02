@@ -127,6 +127,8 @@ object CardData {
 
     val cooldown = HashMap<String, LongArray>()
 
+    const val cooldownTerm = 0 * 60 * 60 * 1000 // 72 hours in milliseconds
+
     /*
     -------------------------------------------------------
     |                   Role and Channel                  |
@@ -174,8 +176,8 @@ object CardData {
      */
 
     enum class Pack(val cost: Int) {
-        LARGE(10000),
-        SMALL(5000),
+        LARGE(0),
+        SMALL(0),
         NONE(-1);
 
         fun getPackName() : String {

@@ -33,8 +33,6 @@ object TatsuHandler {
     var leftRequest = -1
     var nextRefreshTime = -1L
 
-    private var guaranteedRequest = 0L
-
     private const val domain = "https://api.tatsu.gg"
     private const val version = "v1"
     private const val guilds = "guilds"
@@ -129,8 +127,6 @@ object TatsuHandler {
             throw IllegalStateException("Interaction can't be done at this time due to limitation")
         }
 
-        guaranteedRequest--
-
         val link = "$domain/$version/$guilds/$guild/$members/$member/$points"
 
         val get = HttpGet()
@@ -193,8 +189,6 @@ object TatsuHandler {
         if (!canInteract(1, beingQueued)) {
             throw IllegalStateException("Interaction can't be done at this time due to limitation")
         }
-
-        guaranteedRequest--
 
         if (amount !in 1..100000) {
             throw IllegalStateException("Amount of points must be in range from 1 to 100000")
