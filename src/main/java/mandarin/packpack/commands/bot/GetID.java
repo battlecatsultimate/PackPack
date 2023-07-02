@@ -57,13 +57,13 @@ public class GetID extends ConstraintCommand {
                         case TextChannel ignored2 -> "Text Channel";
                         case NewsChannel ignored1 -> "News Channel";
                         case MessageChannel ignored -> "Message Channel";
-                        case null, default -> "Channel";
+                        default -> "Channel";
                     };
                     replyToMessageSafely(ch, type + " : " + c.getName() + " (" + c.getAsMention() + ")", getMessage(event), a -> a);
                 }
                 case "-s" -> {
                     Guild g = jda.getGuildById(contents[2]);
-                    
+
                     if (g == null)
                         return;
 
