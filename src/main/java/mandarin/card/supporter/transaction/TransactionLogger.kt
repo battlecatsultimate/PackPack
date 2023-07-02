@@ -129,7 +129,7 @@ object TransactionLogger {
 
         builder.setColor(StaticStore.rainbow.random())
 
-        builder.setDescription("User <@$member> bought an role <@&${role.id}>")
+        builder.setDescription("User <@$member> bought a role <@&${role.id}>")
 
         logChannel.sendMessageEmbeds(builder.build())
             .setAllowedMentions(ArrayList())
