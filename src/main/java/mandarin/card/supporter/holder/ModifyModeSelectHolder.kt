@@ -69,7 +69,7 @@ class ModifyModeSelectHolder(author: Message, channelID: String, private val mes
                     StaticStore.putHolder(authorMessage.author.id, CardModifyHolder(authorMessage, channelID, message, isAdd, inventory))
                 } else {
                     val roles = if (isAdd)
-                        CardData.Role.values().filter { r -> r !in inventory.vanityRoles }
+                        CardData.Role.values().filter { r -> r !in inventory.vanityRoles && r != CardData.Role.NONE }
                     else
                         inventory.vanityRoles
 

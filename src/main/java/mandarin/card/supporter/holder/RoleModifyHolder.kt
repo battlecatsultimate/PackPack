@@ -128,7 +128,7 @@ class RoleModifyHolder(author: Message, channelID: String, private val message: 
 
         roles.addAll(
             if (isAdd) {
-                CardData.Role.values().filter { r -> r !in inventory.vanityRoles }.filter { r -> r !in selectedRoles }
+                CardData.Role.values().filter { r -> r !in inventory.vanityRoles && r != CardData.Role.NONE }.filter { r -> r !in selectedRoles }
             } else {
                 inventory.vanityRoles.filter { r -> r !in selectedRoles }
             }
@@ -200,8 +200,6 @@ class RoleModifyHolder(author: Message, channelID: String, private val message: 
             roles.forEachIndexed { i, role ->
                 builder.append(i + 1)
                     .append(". ")
-                    .append(EmojiStore.ABILITY[role.key]?.formatted ?: "")
-                    .append(" ")
                     .append(role.title)
                     .append("\n")
             }
