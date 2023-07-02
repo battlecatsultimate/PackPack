@@ -111,7 +111,9 @@ class FilterProcessHolder : ComponentHolder {
                                 "it seems your selected cards satisfied current requirement too. You can skip to next requirement"
                             else
                                 "select cards for next requirement"
-                        ).queue()
+                        )
+                        .setEphemeral(true)
+                        .queue()
 
                     filterCards()
 
