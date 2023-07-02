@@ -33,25 +33,29 @@ class Equip : Command(LangID.EN, true) {
     private fun getText(g: Guild, m: Member, inventory: Inventory) : String {
         val builder = StringBuilder("Purchased vanity roles of ${m.asMention}\n\n")
 
-        for (i in 0 until min(inventory.vanityRoles.size, 3)) {
-            val r = g.roles.find { r -> r.id == inventory.vanityRoles[i].id }
+        if (inventory.vanityRoles.isEmpty()) {
+            builder.append("- No Roles")
+        } else {
+            for (i in 0 until min(inventory.vanityRoles.size, 3)) {
+                val r = g.roles.find { r -> r.id == inventory.vanityRoles[i].id }
 
-            if (r == null) {
-                builder.append("- ").append(inventory.vanityRoles[i].title)
-            } else {
-                val equipped = if (m.roles.contains(r)) {
-                    "Equipped"
+                if (r == null) {
+                    builder.append("- ").append(inventory.vanityRoles[i].title)
                 } else {
-                    "Unequipped"
+                    val equipped = if (m.roles.contains(r)) {
+                        "Equipped"
+                    } else {
+                        "Unequipped"
+                    }
+
+                    builder.append("- ")
+                        .append(inventory.vanityRoles[i].title)
+                        .append(" : ")
+                        .append(equipped)
                 }
 
-                builder.append("- ")
-                    .append(inventory.vanityRoles[i].title)
-                    .append(" : ")
-                    .append(equipped)
+                builder.append("\n")
             }
-
-            builder.append("\n")
         }
 
         return builder.toString()
@@ -77,6 +81,7 @@ class Equip : Command(LangID.EN, true) {
                 rows.add(ActionRow.of(Button.secondary("role/${roles[i].name}", "${roles[i].title} : $equipped").withEmoji(EmojiStore.ABILITY[roles[i].key])))
             }
         }
+
         val dataSize = roles.size
 
         var totPage = dataSize / 3

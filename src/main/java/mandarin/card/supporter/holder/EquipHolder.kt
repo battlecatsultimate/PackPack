@@ -77,7 +77,7 @@ class EquipHolder(author: Message, channelID: String, private val message: Messa
                 val m = event.member ?: return
 
                 if (m.roles.contains(role)) {
-                    g.removeRoleFromMember(UserSnowflake.fromId(m.id), role)
+                    g.removeRoleFromMember(UserSnowflake.fromId(m.id), role).queue()
 
                     event.deferReply()
                         .setContent("Successfully equipped ${role.asMention}")
@@ -85,7 +85,7 @@ class EquipHolder(author: Message, channelID: String, private val message: Messa
                         .setEphemeral(true)
                         .queue()
                 } else {
-                    g.addRoleToMember(UserSnowflake.fromId(m.id), role)
+                    g.addRoleToMember(UserSnowflake.fromId(m.id), role).queue()
 
                     event.deferReply()
                         .setContent("Successfully unequipped ${role.asMention}")
@@ -122,25 +122,29 @@ class EquipHolder(author: Message, channelID: String, private val message: Messa
     private fun getText(g: Guild, m: Member) : String {
         val builder = StringBuilder("Purchased vanity roles of ${m.asMention}\n\n")
 
-        for (i in page * 3 until min(inventory.vanityRoles.size, (page + 1) * 3)) {
-            val r = g.roles.find { r -> r.id == inventory.vanityRoles[i].id }
+        if (inventory.vanityRoles.isEmpty()) {
+            builder.append("- No Roles")
+        } else {
+            for (i in page * 3 until min(inventory.vanityRoles.size, (page + 1) * 3)) {
+                val r = g.roles.find { r -> r.id == inventory.vanityRoles[i].id }
 
-            if (r == null) {
-                builder.append("- ").append(inventory.vanityRoles[i].title)
-            } else {
-                val equipped = if (m.roles.contains(r)) {
-                    "Equipped"
+                if (r == null) {
+                    builder.append("- ").append(inventory.vanityRoles[i].title)
                 } else {
-                    "Unequipped"
+                    val equipped = if (m.roles.contains(r)) {
+                        "Equipped"
+                    } else {
+                        "Unequipped"
+                    }
+
+                    builder.append("- ")
+                        .append(inventory.vanityRoles[i].title)
+                        .append(" : ")
+                        .append(equipped)
                 }
 
-                builder.append("- ")
-                    .append(inventory.vanityRoles[i].title)
-                    .append(" : ")
-                    .append(equipped)
+                builder.append("\n")
             }
-
-            builder.append("\n")
         }
 
         return builder.toString()
