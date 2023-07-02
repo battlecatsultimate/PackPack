@@ -31,7 +31,7 @@ class Product(val requiredFilter: Int, vararg filters: Filter) {
             CustomFilter(3, "3 LD Units") { c ->
                 val u = UserProfile.getBCData().units[c.unitID]
 
-                return@CustomFilter u.forms.any { f -> f.du.isLD || f.du.isOmni }
+                return@CustomFilter u.forms.any { f -> f.du.isLD }
             },
             ProcFilter("BSTHUNT", 1, "1 Unit with Behemoth Slayer")
         )
