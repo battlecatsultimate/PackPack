@@ -77,24 +77,26 @@ class EquipHolder(author: Message, channelID: String, private val message: Messa
                 val m = event.member ?: return
 
                 if (m.roles.contains(role)) {
-                    g.removeRoleFromMember(UserSnowflake.fromId(m.id), role).queue()
-
-                    event.deferReply()
-                        .setContent("Successfully equipped ${role.asMention}")
-                        .setAllowedMentions(ArrayList())
-                        .setEphemeral(true)
-                        .queue()
-                } else {
-                    g.addRoleToMember(UserSnowflake.fromId(m.id), role).queue()
+                    g.removeRoleFromMember(UserSnowflake.fromId(m.id), role).complete()
 
                     event.deferReply()
                         .setContent("Successfully unequipped ${role.asMention}")
                         .setAllowedMentions(ArrayList())
                         .setEphemeral(true)
                         .queue()
+                } else {
+                    g.addRoleToMember(UserSnowflake.fromId(m.id), role).complete()
+
+                    event.deferReply()
+                        .setContent("Successfully equipped ${role.asMention}")
+                        .setAllowedMentions(ArrayList())
+                        .setEphemeral(true)
+                        .queue()
                 }
 
-                applyResult(g, m)
+                val member = g.retrieveMember(UserSnowflake.fromId(m.id)).complete() ?: return
+
+                applyResult(g, member)
             }
         }
     }
