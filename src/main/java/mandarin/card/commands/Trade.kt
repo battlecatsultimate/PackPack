@@ -68,7 +68,7 @@ class Trade : Command(LangID.EN, true) {
                 "\n" +
                 "- This can be done by calling `${CardBot.globalPrefix}suggest` command. Once command is called, it will open up your inventory. You can select cards that will be traded, up to 10 cards in total. Both must suggest something at least to make trading done. If you want to edit what you've suggested, call the command again, and re-suggest\n" +
                 "\n" +
-                "- Since cf transaction still must be done by users manually via other bot, cf suggestion in here will be only visual. **__So if you will suggest cf, you have to give the other traders said amount of cf manually after trading done.__**\n" +
+                "- Cf can be handled by bot, so **we do not recommend users to perform manual cf transferring.** As this warning exists, we won't take any responsibilities from problems that can happen regarding manual transferring\n" +
                 "\n" +
                 "2. Second, both users must agree on what they are trading\n" +
                 "\n" +
