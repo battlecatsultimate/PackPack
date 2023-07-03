@@ -16,7 +16,7 @@ import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionE
 import net.dv8tion.jda.api.utils.FileUpload
 import kotlin.random.Random
 
-class PackSelectHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message.id) {
+class PackSelectHolder(author: Message, channelID: String, message: Message, private val noImage: Boolean) : ComponentHolder(author, channelID, message.id) {
     override fun clean() {
 
     }
@@ -179,11 +179,18 @@ class PackSelectHolder(author: Message, channelID: String, message: Message) : C
                             builder.append("- ").append(card.cardInfo()).append("\n")
                         }
 
-                        event.messageChannel
-                            .sendMessage(builder.toString())
-                            .setMessageReference(authorMessage)
-                            .addFiles(result.map { c -> FileUpload.fromData(c.cardImage, "${c.name}.png") })
-                            .queue()
+                        if (noImage) {
+                            event.messageChannel
+                                .sendMessage(builder.toString())
+                                .setMessageReference(authorMessage)
+                                .queue()
+                        } else {
+                            event.messageChannel
+                                .sendMessage(builder.toString())
+                                .setMessageReference(authorMessage)
+                                .addFiles(result.map { c -> FileUpload.fromData(c.cardImage, "${c.name}.png") })
+                                .queue()
+                        }
 
                         val member = event.member ?: return@TransactionQueue
 

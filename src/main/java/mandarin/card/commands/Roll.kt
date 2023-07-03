@@ -19,7 +19,11 @@ class Roll : Command(LangID.EN, true) {
             a.setComponents(registerComponents())
         }
 
-        StaticStore.putHolder(m.id, PackSelectHolder(getMessage(event), ch.id, msg))
+        val content = getContent(event).split(" ")
+
+        val noImage = arrayOf("-s", "-simple", "-n", "-noimage").any { p -> p in content }
+
+        StaticStore.putHolder(m.id, PackSelectHolder(getMessage(event), ch.id, msg, noImage))
     }
 
     private fun registerComponents() : List<LayoutComponent> {
