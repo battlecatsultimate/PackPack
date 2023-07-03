@@ -64,7 +64,7 @@ class Confirm(private val session: TradingSession) : Command(LangID.EN, true) {
 
                 TransactionLogger.logTrade(session, TransactionLogger.TradeStatus.TRADED)
 
-                ch.sendMessage("Trading has been done, please check each other's inventory to check if trading has been done successfully. If you have suggested cf, please transfer suggested amount of cf to other trader").queue()
+                ch.sendMessage("Trading has been done, please check each other's inventory to check if trading has been done successfully. If you have suggested cf, please keep in mind that cat food transferring may take time").queue()
             } else {
                 ch.sendMessage("${m.asMention} confirmed their trading, waiting for other's confirmation...")
                     .mentionRepliedUser(false)
