@@ -9,7 +9,9 @@ import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.component.SearchHolder
-import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.events.message.GenericMessageEvent
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -23,10 +25,19 @@ class Cards : Command(LangID.EN, true) {
         val ch = getChannel(event) ?: return
         val m = getMember(event) ?: return
         val author = getMessage(event) ?: return
+        val g = getGuild(event) ?: return
 
-        val inventory = Inventory.getInventory(m.id)
+        val member = findMember(getContent(event).split(" "), g) ?: m
 
-        val msg = getRepliedMessageSafely(ch, getText(author, inventory), author) { a ->
+        if (m.id != member.id && !CardData.isMod(m) && m.id != StaticStore.MANDARIN_SMELL) {
+            replyToMessageSafely(ch, "You don't have permission to watch other user's inventory", getMessage(event)) { a -> a }
+
+            return
+        }
+
+        val inventory = Inventory.getInventory(member.id)
+
+        val msg = getRepliedMessageSafely(ch, getText(member, inventory), author) { a ->
             val rows = ArrayList<ActionRow>()
 
             val tierCategoryElements = ArrayList<SelectOption>()
@@ -93,13 +104,13 @@ class Cards : Command(LangID.EN, true) {
             return@getRepliedMessageSafely a.setComponents(rows)
         }
 
-        StaticStore.putHolder(m.id, CardInventoryHolder(author, ch.id, msg, inventory))
+        StaticStore.putHolder(m.id, CardInventoryHolder(author, ch.id, msg, inventory, member))
     }
 
-    private fun getText(message: Message, inventory: Inventory) : String {
+    private fun getText(member: Member, inventory: Inventory) : String {
         val cards = inventory.cards.keys.sortedWith(CardComparator())
 
-        val authorMention = message.author.asMention
+        val authorMention = member.asMention
 
         val builder = StringBuilder("Inventory of ${authorMention}\n\n```md\n")
 
@@ -122,5 +133,25 @@ class Cards : Command(LangID.EN, true) {
         builder.append("```")
 
         return builder.toString()
+    }
+
+    private fun findMember(contents: List<String>, g: Guild) : Member? {
+        for (content in contents) {
+            if (StaticStore.isNumeric(content)) {
+                try {
+                    return g.retrieveMember(UserSnowflake.fromId(content)).complete()
+                } catch (_: Exception) {
+
+                }
+            } else if (content.matches(Regex("<@\\d+>"))) {
+                try {
+                    return g.retrieveMember(UserSnowflake.fromId(content.replace("<@", "").replace(">", ""))).complete()
+                } catch (_: Exception) {
+
+                }
+            }
+        }
+
+        return null
     }
 }

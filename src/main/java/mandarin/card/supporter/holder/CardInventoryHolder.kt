@@ -7,6 +7,7 @@ import mandarin.card.supporter.Inventory
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.SearchHolder
+import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
@@ -18,7 +19,7 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction
 import kotlin.math.min
 
-class CardInventoryHolder(author: Message, channelID: String, private val message: Message, private val inventory: Inventory) : ComponentHolder(author, channelID, message.id) {
+class CardInventoryHolder(author: Message, channelID: String, private val message: Message, private val inventory: Inventory, private val member: Member) : ComponentHolder(author, channelID, message.id) {
     private val cards = ArrayList<Card>(inventory.cards.keys.sortedWith(CardComparator()))
 
     private var page = 0
@@ -241,9 +242,7 @@ class CardInventoryHolder(author: Message, channelID: String, private val messag
     }
 
     private fun getText() : String {
-        val authorMention = authorMessage.author.asMention
-
-        val builder = StringBuilder("Inventory of ${authorMention}\n\n```md\n")
+        val builder = StringBuilder("Inventory of ${member.asMention}\n\n```md\n")
 
         if (cards.size > 0) {
             for (i in page * SearchHolder.PAGE_CHUNK until min((page + 1) * SearchHolder.PAGE_CHUNK, cards.size)) {
