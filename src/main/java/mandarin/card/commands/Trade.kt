@@ -46,6 +46,12 @@ class Trade : Command(LangID.EN, true) {
             return
         }
 
+        if (members[0].id == members[1].id) {
+            replyToMessageSafely(ch, "You provided same two members!", getMessage(event)) { a -> a }
+
+            return
+        }
+
         val forum = g.getForumChannelById(CardData.tradingPlace) ?: return
 
         val postData = MessageCreateData.fromContent("## Welcome to trading session #${CardData.sessionNumber}\n" +
