@@ -149,6 +149,24 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
 
                 applyResult()
             }
+            "remove" -> {
+                selectedCards.clear()
+
+                inventory.cards.keys.forEach { c ->
+                    repeat(inventory.cards[c] ?: 0) {
+                        selectedCards.add(c)
+                    }
+                }
+
+                event.deferReply()
+                    .setContent("Added all cards that this user has. Keep in mind that once you confirm this, you can't undo it")
+                    .setEphemeral(true)
+                    .queue()
+
+                filterCards()
+
+                applyResult()
+            }
             "clear" -> {
                 selectedCards.clear()
 
@@ -344,6 +362,11 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
 
         confirmButtons.add(Button.success("confirm", "Confirm").withDisabled(selectedCards.isEmpty()))
         confirmButtons.add(Button.danger("clear", "Clear").withDisabled(selectedCards.isEmpty()))
+
+        if (!isAdd) {
+            confirmButtons.add(Button.danger("remove", "Mass Remove").withDisabled(inventory.cards.isEmpty() || selectedCards.size == inventory.cards.keys.sumOf { c -> inventory.cards[c] ?: 0 }))
+        }
+
         confirmButtons.add(Button.secondary("back", "Back"))
         confirmButtons.add(Button.danger("close", "Close"))
 
@@ -365,17 +388,25 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
         if (selectedCards.isEmpty()) {
             builder.append("- None\n")
         } else {
+            val checker = StringBuilder()
+
             for (card in selectedCards.toSet()) {
-                builder.append("- ")
+                checker.append("- ")
                     .append(card.cardInfo())
 
                 val amount = selectedCards.filter { c -> c.id == card.id }.size
 
                 if (amount >= 2) {
-                    builder.append(" x$amount")
+                    checker.append(" x$amount")
                 }
 
-                builder.append("\n")
+                checker.append("\n")
+            }
+
+            if (checker.length > 1500) {
+                builder.append("- ${selectedCards.size} Cards Selected")
+            } else {
+                builder.append(checker)
             }
         }
 

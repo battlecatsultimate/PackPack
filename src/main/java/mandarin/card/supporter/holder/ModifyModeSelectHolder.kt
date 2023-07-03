@@ -58,7 +58,7 @@ class ModifyModeSelectHolder(author: Message, channelID: String, private val mes
 
                     event.deferEdit()
                         .setContent(getCardText(cards, isAdd))
-                        .setComponents(getCardComponents(cards))
+                        .setComponents(getCardComponents(cards, isAdd))
                         .mentionRepliedUser(false)
                         .setAllowedMentions(ArrayList())
                         .queue()
@@ -114,7 +114,7 @@ class ModifyModeSelectHolder(author: Message, channelID: String, private val mes
         }
     }
 
-    private fun getCardComponents(cards: List<Card>) : List<LayoutComponent> {
+    private fun getCardComponents(cards: List<Card>, isAdd: Boolean) : List<LayoutComponent> {
         val rows = ArrayList<ActionRow>()
 
         val tierCategoryElements = ArrayList<SelectOption>()
@@ -199,6 +199,11 @@ class ModifyModeSelectHolder(author: Message, channelID: String, private val mes
 
         confirmButtons.add(Button.success("confirm", "Confirm").withDisabled(true))
         confirmButtons.add(Button.danger("clear", "Clear").withDisabled(true))
+
+        if (!isAdd) {
+            confirmButtons.add(Button.danger("remove", "Mass Remove").withDisabled(inventory.cards.isEmpty()))
+        }
+
         confirmButtons.add(Button.secondary("back", "Back"))
         confirmButtons.add(Button.danger("close", "Close"))
 
@@ -274,6 +279,11 @@ class ModifyModeSelectHolder(author: Message, channelID: String, private val mes
 
         confirmButtons.add(Button.success("confirm", "Confirm").asDisabled())
         confirmButtons.add(Button.danger("clear", "Clear").asDisabled())
+
+        if (!isAdd) {
+            confirmButtons.add(Button.danger("remove", "Mass Remove").withDisabled(inventory.vanityRoles.isEmpty()))
+        }
+
         confirmButtons.add(Button.secondary("back", "Back"))
         confirmButtons.add(Button.danger("close", "Close"))
 

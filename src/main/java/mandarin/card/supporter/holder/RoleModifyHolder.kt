@@ -67,6 +67,18 @@ class RoleModifyHolder(author: Message, channelID: String, private val message: 
 
                 applyResult()
             }
+            "remove" -> {
+                selectedRoles.clear()
+
+                selectedRoles.addAll(inventory.vanityRoles)
+
+                event.deferReply()
+                    .setContent("Added all roles that this user has. Keep in mind that once you confirm this, you can't undo it")
+                    .setEphemeral(true)
+                    .queue()
+
+                applyResult()
+            }
             "clear" -> {
                 selectedRoles.clear()
 
@@ -166,6 +178,11 @@ class RoleModifyHolder(author: Message, channelID: String, private val message: 
 
         confirmButtons.add(Button.success("confirm", "Confirm").withDisabled(selectedRoles.isEmpty()))
         confirmButtons.add(Button.danger("clear", "Clear").withDisabled(selectedRoles.isEmpty()))
+
+        if (!isAdd) {
+            confirmButtons.add(Button.danger("remove", "Mass Remove").withDisabled(inventory.vanityRoles.isEmpty() || inventory.vanityRoles.size == selectedRoles.size))
+        }
+
         confirmButtons.add(Button.secondary("back", "Back"))
         confirmButtons.add(Button.danger("close", "Close"))
 
