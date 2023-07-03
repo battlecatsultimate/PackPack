@@ -47,6 +47,12 @@ object CardData {
             //The Almighties
             arrayOf(257, 258, 259, 271, 272, 316, 439, 534, 642),
 
+            //Seasonal Total
+            arrayOf(587, 588, 644, 648, 693, 330, 331, 595, 699, 661, 711, 274, 275, 354, 438, 494, 563, 564, 614, 666, 229, 230, 302, 570, 683, 241, 242, 243, 310, 526, 584, 687),
+
+            //Collaboration Total
+            arrayOf(467, 468, 469, 470, 471, 555, 326, 362, 363, 364, 365, 366, 367, 368, 456, 535, 536, 537, 560, 582, 583, 590, 119, 185, 186, 187, 188, 345, 346, 506, 412, 413, 414, 415, 416, 487, 488, 547, 548, 549, 550, 551, 709, 710, 393, 394, 395, 596, 597, 598, 599, 600, 671, 624, 180, 270, 341, 482, 511, 512, 513, 514, 515, 516, 517, 571, 572, 573, 574, 680, 681, 174, 222, 223, 224, 225),
+
             //Season
 
             //Valentine
@@ -155,7 +161,31 @@ object CardData {
         HERMIT(ServerData.get("hermit"), "HERMIT", "Hermit Cat"),
         EASTER(ServerData.get("easter"), "EASTER", "Easter Duche"),
         RAMIEL(ServerData.get("ramiel"), "RAMIEL", "Ramiel"),
-        LEGEND(ServerData.get("legend"), "LEGEND", "Legend Collector")
+        LEGEND(ServerData.get("legend"), "LEGEND", "Legend Collector");
+
+        fun getProduct() : Product {
+            return when(this) {
+                DOGE -> Product.doge
+                SIRSEAL -> Product.sirSeal
+                ASSASSIN -> Product.assassin
+                ANGELIC -> Product.angelic
+                MOOTH -> Product.mooth
+                SMH -> Product.smh
+                SCISSOR -> Product.scissor
+                LILDOGE -> Product.lilDoge
+                DABOO -> Product.daboo
+                AKUCYCLONE -> Product.akuCyclone
+                RELICBUN -> Product.relicBun
+                WOGE -> Product.wildDoge
+                EXIEL -> Product.exiel
+                OMENS -> Product.omens
+                LUZA -> Product.luza
+                HERMIT -> Product.hermitCat
+                EASTER -> Product.seasonal
+                RAMIEL -> Product.ramiel
+                else -> throw IllegalStateException("You can't get product for $this")
+            }
+        }
     }
 
     val tradingPlace = ServerData.get("tradingPlace")
@@ -214,7 +244,7 @@ object CardData {
 
     val bannerCategoryText = arrayOf(
         arrayOf("Dark Heroes", "Dragon Emperors", "Dynamites", "Elemental Pixies", "Galaxy Gals", "Iron Legion", "Sengoku Wargods", "The Nekoluga Family", "Ultra Souls"),
-        arrayOf("Girls and Monsters", "The Almighties"),
+        arrayOf("Girls and Monsters", "The Almighties", "Seasonal", "Collaboration"),
         arrayOf("Epicfest Exclusives", "Uberfest Exclusives", "Other Exclusives"),
         arrayOf()
     )

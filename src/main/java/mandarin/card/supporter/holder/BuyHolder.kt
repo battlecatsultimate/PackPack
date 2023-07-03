@@ -86,27 +86,7 @@ class BuyHolder(author: Message, channelID: String, private val message: Message
                     return
                 }
 
-                val product = when(selectedRole) {
-                    CardData.Role.DOGE -> Product.doge
-                    CardData.Role.SIRSEAL -> Product.sirSeal
-                    CardData.Role.ASSASSIN -> Product.assassin
-                    CardData.Role.ANGELIC -> Product.angelic
-                    CardData.Role.MOOTH -> Product.mooth
-                    CardData.Role.SMH -> Product.smh
-                    CardData.Role.SCISSOR -> Product.scissor
-                    CardData.Role.LILDOGE -> Product.lilDoge
-                    CardData.Role.DABOO -> Product.daboo
-                    CardData.Role.AKUCYCLONE -> Product.akuCyclone
-                    CardData.Role.RELICBUN -> Product.relicBun
-                    CardData.Role.WOGE -> Product.wildDoge
-                    CardData.Role.EXIEL -> Product.exiel
-                    CardData.Role.OMENS -> Product.omens
-                    CardData.Role.LUZA -> Product.luza
-                    CardData.Role.HERMIT -> Product.hermitCat
-                    CardData.Role.EASTER -> Product.seasonal
-                    CardData.Role.RAMIEL -> Product.ramiel
-                    else -> throw IllegalStateException("Invalid role type $selectedRole found")
-                }
+                val product = selectedRole.getProduct()
 
                 if (product.requiredFilter == product.possibleFilters.size && product.possibleFilters.any { f -> !f.match(inventory.cards.keys.toList(), inventory)}) {
                     event.deferEdit()
@@ -326,7 +306,15 @@ class BuyHolder(author: Message, channelID: String, private val message: Message
             val options = ArrayList<SelectOption>()
 
             product.possibleFilters.forEachIndexed { index, process ->
-                options.add(SelectOption.of(process.name, "condition$index"))
+                val possibleCards = inventory.cards.keys.filter { c -> process.filter(c) }.sumOf { c -> inventory.cards[c] ?: 0 }
+
+                val desc = if (possibleCards < 2) {
+                    "$possibleCards Card Available"
+                } else {
+                    "$possibleCards Cards Available"
+                }
+
+                options.add(SelectOption.of(process.name, "condition$index").withDescription(desc))
             }
 
             val processMenu = StringSelectMenu.create("condition")

@@ -96,7 +96,15 @@ class RequirementSelectHolder(author: Message, channelID: String, private val me
         val options = ArrayList<SelectOption>()
 
         product.possibleFilters.forEachIndexed { index, process ->
-            options.add(SelectOption.of(process.name, "condition$index"))
+            val possibleCards = inventory.cards.keys.filter { c -> process.filter(c) }.sumOf { c -> inventory.cards[c] ?: 0 }
+
+            val desc = if (possibleCards < 2) {
+                "$possibleCards Card Available"
+            } else {
+                "$possibleCards Cards Available"
+            }
+
+            options.add(SelectOption.of(process.name, "condition$index").withDescription(desc))
         }
 
         val processMenu = StringSelectMenu.create("condition")
@@ -204,7 +212,7 @@ class RequirementSelectHolder(author: Message, channelID: String, private val me
     private fun getCardText() : String {
         val builder = StringBuilder("Please select cards that meets the requirement\n\nCondition : ${filters[0].name}\n\n### Cards\n\n- No Cards Selected\n\n```md\n")
 
-        val cards = inventory.cards.keys.filter { c -> product.possibleFilters[0].filter(c) }.sortedWith(CardComparator())
+        val cards = inventory.cards.keys.filter { c -> filters[0].filter(c) }.sortedWith(CardComparator())
 
         for (i in 0 until min(cards.size, SearchHolder.PAGE_CHUNK)) {
             builder.append(i + 1)
