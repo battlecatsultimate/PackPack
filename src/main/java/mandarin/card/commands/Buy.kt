@@ -43,10 +43,10 @@ class Buy : Command(LangID.EN, true) {
                 CardData.permanents.withIndex().any { v ->
                     v.value.any { index ->
                         CardData.bannerData[v.index][index].any { unit ->
-                            unit !in cards
+                            unit in cards
                         }
                     }
-                } || CardData.regularLegend.any { it !in cards }
+                } && CardData.regularLegend.any { it in cards }
             } else {
                 role.getProduct().possibleFilters.filter { f -> inventory.cards.keys.filter { c -> f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 0 } > f.amount }.size >= role.getProduct().requiredFilter
             }
