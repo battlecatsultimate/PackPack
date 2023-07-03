@@ -133,8 +133,6 @@ class BuyHolder(author: Message, channelID: String, private val message: Message
                     return
 
                 val product = when(event.values[0]) {
-                    "250cf" -> Product.cf250
-                    "1cf" -> Product.cf1m
                     "emoji" -> Product.customEmoji
                     "role" -> Product.customRole
                     else -> throw IllegalStateException("Invalid product name ${event.values[0]}")

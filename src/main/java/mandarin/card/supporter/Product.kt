@@ -124,17 +124,10 @@ class Product(val requiredFilter: Int, vararg filters: Filter) {
             BannerFilter(BannerFilter.Banner.Collaboration, 3, "3 Collaboration Units")
         )
 
-        val cf250 = Product(1,
-            BannerFilter(BannerFilter.Banner.BusterExclusives, 2, "2 Buster Exclusive Units")
-        )
-
-        val cf1m = Product(1,
-            BannerFilter(BannerFilter.Banner.BusterExclusives, 5, "5 Buster Exclusive Units")
-        )
-
-        val customEmoji = Product(2,
+        val customEmoji = Product(1,
             BannerFilter(BannerFilter.Banner.UberfestExclusives, 5, "5 Uberfest Exclusive Units"),
-            BannerFilter(BannerFilter.Banner.EpicfestExclusives, 5, "5 Epicfest Exclusive Units")
+            BannerFilter(BannerFilter.Banner.EpicfestExclusives, 5, "5 Epicfest Exclusive Units"),
+            BannerFilter(BannerFilter.Banner.BusterExclusives, 5, "5 Buster Exclusive Units")
         )
 
         val customRole = Product(1,

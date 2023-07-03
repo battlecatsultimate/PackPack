@@ -61,15 +61,7 @@ class Buy : Command(LangID.EN, true) {
 
         val restOptions = ArrayList<SelectOption>()
 
-        var affordable = Product.cf250.possibleFilters.filter { f -> inventory.cards.keys.filter { c -> f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 0 } > f.amount }.size >= Product.cf250.requiredFilter
-
-        restOptions.add(SelectOption.of("250K Cat Foods", "250cf").withEmoji(EmojiStore.ABILITY["CF"]).withDescription(if (affordable) "Affordable" else "Cannot Afford"))
-
-        affordable = Product.cf1m.possibleFilters.filter { f -> inventory.cards.keys.filter { c -> f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 0 } > f.amount }.size >= Product.cf1m.requiredFilter
-
-        restOptions.add(SelectOption.of("1M Cat Foods", "1cf").withEmoji(EmojiStore.ABILITY["CF"]).withDescription(if (affordable) "Affordable" else "Cannot Afford"))
-
-        affordable = Product.customEmoji.possibleFilters.filter { f -> inventory.cards.keys.filter { c -> f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 0 } > f.amount }.size >= Product.customEmoji.requiredFilter
+        var affordable = Product.customEmoji.possibleFilters.filter { f -> inventory.cards.keys.filter { c -> f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 0 } > f.amount }.size >= Product.customEmoji.requiredFilter
 
         restOptions.add(SelectOption.of("Custom Emoji", "emoji").withDescription(if (affordable) "Affordable" else "Cannot Afford"))
 
