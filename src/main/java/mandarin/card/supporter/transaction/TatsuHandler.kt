@@ -109,7 +109,7 @@ object TatsuHandler {
             TransactionLogger.logPointsTransfer(member1, member2, removal, add)
 
             if (removal && add) {
-                channel?.sendMessage("Successfully transferred ${EmojiStore.ABILITY["CF"]} $amount from <@${member1}> to <@${member2}>")
+                channel?.sendMessage("Successfully transferred ${EmojiStore.ABILITY["CF"]?.formatted} $amount from <@${member1}> to <@${member2}>")
                     ?.setAllowedMentions(ArrayList())
                     ?.queue()
             } else {
