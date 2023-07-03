@@ -434,18 +434,22 @@ class FilterProcessHolder : ComponentHolder {
 
         builder.append("\n```md\n")
 
-        for (i in page * SearchHolder.PAGE_CHUNK until min(cards.size, (page + 1) * SearchHolder.PAGE_CHUNK)) {
-            builder.append(i + 1)
-                .append(". ")
-                .append(cards[i].cardInfo())
+        if (cards.isEmpty()) {
+            builder.append("No Cards")
+        } else {
+            for (i in page * SearchHolder.PAGE_CHUNK until min(cards.size, (page + 1) * SearchHolder.PAGE_CHUNK)) {
+                builder.append(i + 1)
+                    .append(". ")
+                    .append(cards[i].cardInfo())
 
-            val amount = (inventory.cards[cards[i]] ?: 1) - cardGroups.maxOf { g -> g.filter { card -> card.id == cards[i].id }.size }
+                val amount = (inventory.cards[cards[i]] ?: 1) - cardGroups.maxOf { g -> g.filter { card -> card.id == cards[i].id }.size }
 
-            if (amount > 1) {
-                builder.append(" x$amount")
+                if (amount > 1) {
+                    builder.append(" x$amount")
+                }
+
+                builder.append("\n")
             }
-
-            builder.append("\n")
         }
 
         builder.append("```")
