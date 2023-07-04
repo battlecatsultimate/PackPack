@@ -16,6 +16,7 @@ object TransactionLogger {
     }
 
     lateinit var logChannel: MessageChannel
+    lateinit var tradeChannel: MessageChannel
 
     fun logRoll(cards: List<Card>, pack: CardData.Pack, member: Member, manual: Boolean) {
         if (!this::logChannel.isInitialized)
@@ -49,7 +50,7 @@ object TransactionLogger {
     }
 
     fun logTrade(session: TradingSession, status: TradeStatus) {
-        if (!this::logChannel.isInitialized)
+        if (!this::logChannel.isInitialized || !this::tradeChannel.isInitialized)
             return
 
         val builder = EmbedBuilder()
@@ -69,7 +70,11 @@ object TransactionLogger {
 
         builder.addField("Post", "<#${session.postID}> [${session.postID}]", false)
 
-        logChannel.sendMessageEmbeds(builder.build()).queue()
+        if (status == TradeStatus.TRADED) {
+            tradeChannel.sendMessageEmbeds(builder.build()).queue()
+        } else {
+            logChannel.sendMessageEmbeds(builder.build()).queue()
+        }
     }
 
     fun logTradeStart(session: TradingSession, opener: Member) {

@@ -190,6 +190,7 @@ object CardData {
 
     val tradingPlace = ServerData.get("tradingPlace")
     val transactionLog = ServerData.get("transactionLog")
+    val tradingLog = ServerData.get("tradingLog")
 
     const val MAX_CARDS = 10
 

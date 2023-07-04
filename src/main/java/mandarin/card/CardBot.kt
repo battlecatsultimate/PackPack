@@ -76,7 +76,7 @@ object CardBot : ListenerAdapter() {
 
         val m = event.member ?: return
 
-        if (m.id != StaticStore.MANDARIN_SMELL && m.id != "195682910269865984" && !CardData.isDealer(m))
+        if (m.id != StaticStore.MANDARIN_SMELL && m.id != "782509095562772512" && !CardData.isDealer(m))
             return
 
         val segments = event.message.contentRaw.lowercase().split(" ")
@@ -134,6 +134,7 @@ object CardBot : ListenerAdapter() {
 
         EmojiStore.initialize(event.jda)
         TransactionLogger.logChannel = event.jda.getGuildChannelById(CardData.transactionLog) as MessageChannel
+        TransactionLogger.tradeChannel = event.jda.getGuildChannelById(CardData.tradingLog) as MessageChannel
 
         StaticStore.loggingChannel = ServerData.get("loggingChannel")
         StaticStore.logger.assignClient(event.jda)
