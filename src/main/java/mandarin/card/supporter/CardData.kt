@@ -191,6 +191,7 @@ object CardData {
     val tradingPlace = ServerData.get("tradingPlace")
     val transactionLog = ServerData.get("transactionLog")
     val tradingLog = ServerData.get("tradingLog")
+    val modLog = ServerData.get("modLog")
 
     const val MAX_CARDS = 10
 

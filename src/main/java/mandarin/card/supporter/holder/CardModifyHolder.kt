@@ -4,10 +4,12 @@ import mandarin.card.supporter.Card
 import mandarin.card.supporter.CardComparator
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
+import mandarin.card.supporter.transaction.TransactionLogger
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.SearchHolder
+import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
@@ -20,7 +22,7 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import kotlin.math.min
 
-class CardModifyHolder(author: Message, channelID: String, private val message: Message, private val isAdd: Boolean, private val inventory: Inventory) : ComponentHolder(author, channelID, message.id) {
+class CardModifyHolder(author: Message, channelID: String, private val message: Message, private val isAdd: Boolean, private val inventory: Inventory, private val targetMember: Member) : ComponentHolder(author, channelID, message.id) {
     private val cards = ArrayList<Card>(
         if (isAdd) {
             CardData.cards.sortedWith(CardComparator())
@@ -140,6 +142,10 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
                     }
                 }
 
+                val m = event.member ?: return
+
+                TransactionLogger.logCardsModify(selectedCards, m, targetMember, isAdd, !isAdd && inventory.cards.isNotEmpty() && selectedCards.size == inventory.cards.keys.sumOf { c -> inventory.cards[c] ?: 0 })
+
                 selectedCards.clear()
 
                 event.deferReply()
@@ -189,7 +195,7 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
 
                 expire(authorMessage.author.id)
 
-                StaticStore.putHolder(authorMessage.author.id, ModifyModeSelectHolder(authorMessage, channelID, message, true, inventory))
+                StaticStore.putHolder(authorMessage.author.id, ModifyModeSelectHolder(authorMessage, channelID, message, true, inventory, targetMember))
             }
             "close" -> {
                 event.deferEdit()
@@ -316,7 +322,7 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
         if (cards.isEmpty()) {
             cardCategoryElements.add(SelectOption.of("a", "-1"))
         } else {
-            for(i in 0 until min(dataSize, SearchHolder.PAGE_CHUNK)) {
+            for(i in page * SearchHolder.PAGE_CHUNK until min(dataSize, (page + 1 ) * SearchHolder.PAGE_CHUNK)) {
                 cardCategoryElements.add(SelectOption.of(cards[i].simpleCardInfo(), i.toString()))
             }
         }
@@ -343,16 +349,32 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
         if (dataSize > SearchHolder.PAGE_CHUNK) {
             val buttons = ArrayList<Button>()
 
-            if (totPage > 10) {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).asDisabled())
+            if(totPage > 10) {
+                if(page - 10 < 0) {
+                    buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).asDisabled())
+                } else {
+                    buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS))
+                }
             }
 
-            buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", "Previous Pages", EmojiStore.PREVIOUS).asDisabled())
+            if(page - 1 < 0) {
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", "Previous Pages", EmojiStore.PREVIOUS).asDisabled())
+            } else {
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", "Previous Pages", EmojiStore.PREVIOUS))
+            }
 
-            buttons.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT))
+            if(page + 1 >= totPage) {
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT).asDisabled())
+            } else {
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT))
+            }
 
-            if (totPage > 10) {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT))
+            if(totPage > 10) {
+                if(page + 10 >= totPage) {
+                    buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT).asDisabled())
+                } else {
+                    buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT))
+                }
             }
 
             rows.add(ActionRow.of(buttons))

@@ -133,8 +133,10 @@ object CardBot : ListenerAdapter() {
         super.onReady(event)
 
         EmojiStore.initialize(event.jda)
+
         TransactionLogger.logChannel = event.jda.getGuildChannelById(CardData.transactionLog) as MessageChannel
         TransactionLogger.tradeChannel = event.jda.getGuildChannelById(CardData.tradingLog) as MessageChannel
+        TransactionLogger.modChannel = event.jda.getGuildChannelById(CardData.modLog) as MessageChannel
 
         StaticStore.loggingChannel = ServerData.get("loggingChannel")
         StaticStore.logger.assignClient(event.jda)

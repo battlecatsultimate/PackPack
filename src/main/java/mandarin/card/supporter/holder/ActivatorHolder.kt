@@ -2,6 +2,7 @@ package mandarin.card.supporter.holder
 
 import mandarin.card.supporter.Activator
 import mandarin.card.supporter.CardData
+import mandarin.card.supporter.transaction.TransactionLogger
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
@@ -76,6 +77,10 @@ class ActivatorHolder(author: Message, channelID: String, message: Message) : Co
                     CardData.activatedBanners.add(activators[index])
                 }
 
+                val m = event.member ?: return
+
+                TransactionLogger.logBannerActivate(activators[index], m, activators[index] in CardData.activatedBanners)
+
                 applyResult(event)
             }
         }
@@ -109,16 +114,32 @@ class ActivatorHolder(author: Message, channelID: String, message: Message) : Co
         if (dataSize > 3) {
             val buttons = ArrayList<Button>()
 
-            if (totPage > 10) {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).asDisabled())
+            if(totPage > 10) {
+                if(page - 10 < 0) {
+                    buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).asDisabled())
+                } else {
+                    buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS))
+                }
             }
 
-            buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", "Previous Pages", EmojiStore.PREVIOUS).asDisabled())
+            if(page - 1 < 0) {
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", "Previous Pages", EmojiStore.PREVIOUS).asDisabled())
+            } else {
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", "Previous Pages", EmojiStore.PREVIOUS))
+            }
 
-            buttons.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT))
+            if(page + 1 >= totPage) {
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT).asDisabled())
+            } else {
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT))
+            }
 
-            if (totPage > 10) {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT))
+            if(totPage > 10) {
+                if(page + 10 >= totPage) {
+                    buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT).asDisabled())
+                } else {
+                    buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT))
+                }
             }
 
             rows.add(ActionRow.of(buttons))
