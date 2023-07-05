@@ -8,6 +8,7 @@ import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.SearchHolder
+import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
@@ -20,7 +21,7 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import java.lang.IllegalStateException
 import kotlin.math.min
 
-class ModifyModeSelectHolder(author: Message, channelID: String, private val message: Message, private val isCard: Boolean, private val inventory: Inventory) : ComponentHolder(author, channelID, message.id) {
+class ModifyModeSelectHolder(author: Message, channelID: String, private val message: Message, private val isCard: Boolean, private val inventory: Inventory, private val targetMember: Member) : ComponentHolder(author, channelID, message.id) {
     override fun clean() {
 
     }
@@ -66,7 +67,7 @@ class ModifyModeSelectHolder(author: Message, channelID: String, private val mes
                     expired = true
                     expire(authorMessage.author.id)
 
-                    StaticStore.putHolder(authorMessage.author.id, CardModifyHolder(authorMessage, channelID, message, isAdd, inventory))
+                    StaticStore.putHolder(authorMessage.author.id, CardModifyHolder(authorMessage, channelID, message, isAdd, inventory, targetMember))
                 } else {
                     val roles = if (isAdd)
                         CardData.Role.values().filter { r -> r !in inventory.vanityRoles && r != CardData.Role.NONE }
@@ -83,7 +84,7 @@ class ModifyModeSelectHolder(author: Message, channelID: String, private val mes
                     expired = true
                     expire(authorMessage.author.id)
 
-                    StaticStore.putHolder(authorMessage.author.id, RoleModifyHolder(authorMessage, channelID, message, isAdd, inventory))
+                    StaticStore.putHolder(authorMessage.author.id, RoleModifyHolder(authorMessage, channelID, message, isAdd, inventory, targetMember))
                 }
             }
             "back" -> {
@@ -97,7 +98,7 @@ class ModifyModeSelectHolder(author: Message, channelID: String, private val mes
                 expired = true
                 expire(authorMessage.author.id)
 
-                StaticStore.putHolder(authorMessage.author.id, ModifyCategoryHolder(authorMessage, channelID, message, inventory))
+                StaticStore.putHolder(authorMessage.author.id, ModifyCategoryHolder(authorMessage, channelID, message, inventory, targetMember))
             }
             "close" -> {
                 event.deferEdit()

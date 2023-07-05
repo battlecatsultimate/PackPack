@@ -3,6 +3,7 @@ package mandarin.card.supporter.holder
 import mandarin.card.supporter.Inventory
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
+import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
@@ -13,7 +14,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 
-class ModifyCategoryHolder(author: Message, channelID: String, private val message: Message, private val inventory: Inventory) : ComponentHolder(author, channelID, message.id) {
+class ModifyCategoryHolder(author: Message, channelID: String, private val message: Message, private val inventory: Inventory, private val targetMember: Member) : ComponentHolder(author, channelID, message.id) {
     override fun clean() {
 
     }
@@ -44,7 +45,7 @@ class ModifyCategoryHolder(author: Message, channelID: String, private val messa
 
                         expire(authorMessage.author.id)
 
-                        StaticStore.putHolder(authorMessage.author.id, ModifyModeSelectHolder(authorMessage, channelID, message, event.values[0] == "card", inventory))
+                        StaticStore.putHolder(authorMessage.author.id, ModifyModeSelectHolder(authorMessage, channelID, message, event.values[0] == "card", inventory, targetMember))
                     }
                     "close" -> {
                         event.deferEdit()

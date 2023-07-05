@@ -42,11 +42,17 @@ class ModifyInventory : Command(LangID.EN, true) {
         try {
             val targetMember = g.retrieveMember(UserSnowflake.fromId(userID)).complete()
 
+            if (targetMember.user.isBot) {
+                replyToMessageSafely(ch, "You can't modify inventory of the bot!", getMessage(event)) { a -> a }
+
+                return
+            }
+
             val inventory = Inventory.getInventory(targetMember.id)
 
             val msg = getRepliedMessageSafely(ch, "Please select which thing you want to modify for inventory of ${targetMember.asMention}", getMessage(event)) { a -> a.setComponents(registerComponents()) }
 
-            StaticStore.putHolder(m.id, ModifyCategoryHolder(getMessage(event), ch.id, msg, inventory))
+            StaticStore.putHolder(m.id, ModifyCategoryHolder(getMessage(event), ch.id, msg, inventory, targetMember))
         } catch (_: Exception) {
             replyToMessageSafely(ch, "Bot failed to find provided user in this server", getMessage(event)) { a -> a }
         }

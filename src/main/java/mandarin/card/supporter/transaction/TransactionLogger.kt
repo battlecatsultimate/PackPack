@@ -1,5 +1,6 @@
 package mandarin.card.supporter.transaction
 
+import mandarin.card.supporter.Activator
 import mandarin.card.supporter.Card
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.TradingSession
@@ -17,6 +18,7 @@ object TransactionLogger {
 
     lateinit var logChannel: MessageChannel
     lateinit var tradeChannel: MessageChannel
+    lateinit var modChannel: MessageChannel
 
     fun logRoll(cards: List<Card>, pack: CardData.Pack, member: Member, manual: Boolean) {
         if (!this::logChannel.isInitialized)
@@ -156,6 +158,170 @@ object TransactionLogger {
         builder.addField("Amount", amount.toString(), true)
 
         logChannel.sendMessageEmbeds(builder.build())
+            .setAllowedMentions(ArrayList())
+            .queue()
+    }
+
+    fun logBannerActivate(activator: Activator, mod: Member, activated: Boolean) {
+        if (!this::modChannel.isInitialized)
+            return
+
+        val builder = EmbedBuilder()
+
+        val text = if (activated) {
+            "Activated"
+        } else {
+            "Deactivated"
+        }
+
+        builder.setTitle("Banner $text")
+
+        builder.setColor(StaticStore.rainbow.random())
+
+        builder.setDescription("Moderator ${mod.asMention} ${text.lowercase()} the banner")
+
+        builder.addField("Banner", activator.title, true)
+
+        modChannel.sendMessageEmbeds(builder.build())
+            .setAllowedMentions(ArrayList())
+            .queue()
+    }
+
+    fun logCardsModify(cards: List<Card>, mod: Member, targetMember: Member, isAdd: Boolean, isMassRemove: Boolean) {
+        if (!this::modChannel.isInitialized)
+            return
+
+        val builder = EmbedBuilder()
+
+        val text = if (isAdd) {
+            "Added"
+        } else if (isMassRemove) {
+            "Mass Removed"
+        } else {
+            "Removed"
+        }
+
+        builder.setTitle("Cards $text")
+
+        builder.setColor(StaticStore.rainbow.random())
+
+        builder.setDescription("Moderator ${mod.asMention} manually ${text.lowercase()} the cards")
+
+        builder.addField("Target Member", targetMember.asMention + " [${targetMember.id}]", false)
+
+        val checker = StringBuilder()
+
+        for (card in cards.toSet()) {
+            checker.append("- ")
+                .append(card.simpleCardInfo())
+
+            val amount = cards.filter { c -> card.id == c.id }.size
+
+            if (amount > 2) {
+                checker.append(" x")
+                    .append(amount)
+            }
+
+            checker.append("\n")
+        }
+
+        if (checker.length >= MessageEmbed.VALUE_MAX_LENGTH) {
+            builder.addField("Cards", "Check cards messages below", false)
+
+            modChannel.sendMessageEmbeds(builder.build())
+                .setAllowedMentions(ArrayList())
+                .queue()
+
+            checker.clear()
+
+            for (card in cards.toSet()) {
+                var line = "- ${card.simpleCardInfo()}"
+
+                val amount = cards.filter { c -> card.id == c.id }.size
+
+                if (amount > 2) {
+                    line += " x$amount"
+                }
+
+                if (checker.length + line.length > 1900) {
+                    modChannel.sendMessage(checker.toString()).queue()
+
+                    checker.clear()
+                }
+
+                checker.append(line)
+                    .append("\n")
+            }
+        } else {
+            builder.addField("Cards", checker.toString(), false)
+
+            modChannel.sendMessageEmbeds(builder.build())
+                .setAllowedMentions(ArrayList())
+                .queue()
+        }
+    }
+
+    fun logRolesModify(roles: List<CardData.Role>, mod: Member, targetMember: Member, isAdd: Boolean, isMassRemove: Boolean) {
+        if (!this::modChannel.isInitialized)
+            return
+
+        val builder = EmbedBuilder()
+
+        val text = if (isAdd) {
+            "Added"
+        } else if (isMassRemove) {
+            "Mass Removed"
+        } else {
+            "Removed"
+        }
+
+        builder.setTitle("Roles $text")
+
+        builder.setColor(StaticStore.rainbow.random())
+
+        builder.setDescription("Moderator ${mod.asMention} manually ${text.lowercase()} the roles")
+
+        builder.addField("Target Member", targetMember.asMention + " [${targetMember.id}]", false)
+
+        val checker = StringBuilder()
+
+        for (role in roles.toSet()) {
+            checker.append("- ")
+                .append(role.title)
+
+            checker.append("\n")
+        }
+
+        if (checker.length >= MessageEmbed.VALUE_MAX_LENGTH) {
+            builder.addField("Roles", "Check roles messages below", false)
+
+            modChannel.sendMessageEmbeds(builder.build())
+                .setAllowedMentions(ArrayList())
+                .queue()
+
+            checker.clear()
+
+            for (role in roles.toSet()) {
+                val line = "- ${role.title}"
+
+                if (checker.length + line.length > 1900) {
+                    modChannel.sendMessage(checker.toString()).queue()
+
+                    checker.clear()
+                }
+
+                checker.append(line)
+                    .append("\n")
+            }
+        } else {
+            builder.addField("Roles", checker.toString(), false)
+
+            modChannel.sendMessageEmbeds(builder.build())
+                .setAllowedMentions(ArrayList())
+                .queue()
+        }
+
+        modChannel.sendMessageEmbeds(builder.build())
             .setAllowedMentions(ArrayList())
             .queue()
     }
