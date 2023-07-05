@@ -55,22 +55,9 @@ class BuyHolder(author: Message, channelID: String, private val message: Message
                 if (selectedRole == CardData.Role.LEGEND) {
                     val cards = inventory.cards.keys.map { c -> c.unitID }
 
-                    val missing = CardData.permanents.withIndex().any { v ->
-                        v.value.any { index ->
-                            CardData.bannerData[v.index][index].any { unit ->
-                                unit !in cards
-                            }
-                        }
-                    } || CardData.regularLegend.any { it !in cards }
+                    val possible = (0..1).any { i -> CardData.permanents[i].any { b -> cards.containsAll(CardData.bannerData[i][b].toList()) && cards.contains(CardData.regularLegend[i * 9 + b]) } }
 
-                    if (missing) {
-                        event.deferEdit()
-                            .setContent("You haven't collected all cards yet, so you can't get this role")
-                            .setComponents()
-                            .setAllowedMentions(ArrayList())
-                            .mentionRepliedUser(false)
-                            .queue()
-                    } else {
+                    if (possible) {
                         inventory.vanityRoles.add(CardData.Role.LEGEND)
 
                         event.deferEdit()
@@ -81,6 +68,13 @@ class BuyHolder(author: Message, channelID: String, private val message: Message
                             .queue()
 
                         CardBot.saveCardData()
+                    } else {
+                        event.deferEdit()
+                            .setContent("You haven't collected all cards yet, so you can't get this role")
+                            .setComponents()
+                            .setAllowedMentions(ArrayList())
+                            .mentionRepliedUser(false)
+                            .queue()
                     }
 
                     return

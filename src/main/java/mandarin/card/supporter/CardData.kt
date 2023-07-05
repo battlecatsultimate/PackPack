@@ -102,7 +102,7 @@ object CardData {
         //Tier 3
         arrayOf(
             //Epicfest Exclusives
-            arrayOf(333, 378, 441, 543, 609, 657, 705),
+            arrayOf(333, 378, 441, 543, 609, 657),
             //Uberfest Exclusives
             arrayOf(269, 318, 380, 529, 585, 641, 690),
             //Other Exclusives
@@ -125,7 +125,7 @@ object CardData {
 
     val busters = arrayOf(283, 286, 397, 559, 612, 686)
 
-    val regularLegend = arrayOf(48, 49, 450, 451, 455, 461, 463, 478, 481, 493, 586)
+    val regularLegend = arrayOf(481, 450, 455, 478, 449, 463, 448, 461, 451, 544, 493)
 
     var inventories = HashMap<String, Inventory>()
 
