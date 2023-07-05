@@ -159,9 +159,9 @@ class PackSelectHolder(author: Message, channelID: String, message: Message, pri
                             }
 
                             if (card.tier == CardData.Tier.ULTRA) {
-                                builder.append(Emoji.fromUnicode("✨").formatted)
+                                builder.append(" ").append(Emoji.fromUnicode("✨").formatted)
                             } else if (card.tier == CardData.Tier.LEGEND) {
-                                builder.append(EmojiStore.ABILITY["LEGEND"]?.formatted)
+                                builder.append(" ").append(EmojiStore.ABILITY["LEGEND"]?.formatted)
                             }
 
                             builder.append("\n")
