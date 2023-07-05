@@ -213,7 +213,7 @@ object TransactionLogger {
 
         for (card in cards.toSet()) {
             checker.append("- ")
-                .append(card.simpleCardInfo())
+                .append(card.cardInfo())
 
             val amount = cards.filter { c -> card.id == c.id }.size
 
@@ -235,7 +235,7 @@ object TransactionLogger {
             checker.clear()
 
             for (card in cards.toSet()) {
-                var line = "- ${card.simpleCardInfo()}"
+                var line = "- ${card.cardInfo()}"
 
                 val amount = cards.filter { c -> card.id == c.id }.size
 
