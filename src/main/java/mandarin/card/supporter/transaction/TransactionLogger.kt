@@ -252,6 +252,8 @@ object TransactionLogger {
                 checker.append(line)
                     .append("\n")
             }
+
+            modChannel.sendMessage(checker.toString()).queue()
         } else {
             builder.addField("Cards", checker.toString(), false)
 
@@ -313,6 +315,8 @@ object TransactionLogger {
                 checker.append(line)
                     .append("\n")
             }
+
+            modChannel.sendMessage(checker.toString()).queue()
         } else {
             builder.addField("Roles", checker.toString(), false)
 
