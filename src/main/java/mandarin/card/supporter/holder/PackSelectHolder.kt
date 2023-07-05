@@ -9,9 +9,11 @@ import mandarin.card.supporter.transaction.TransactionGroup
 import mandarin.card.supporter.transaction.TransactionLogger
 import mandarin.card.supporter.transaction.TransactionQueue
 import mandarin.packpack.commands.Command
+import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.utils.FileUpload
@@ -138,22 +140,41 @@ class PackSelectHolder(author: Message, channelID: String, message: Message, pri
 
                     val inventory = Inventory.getInventory(authorMessage.author.id)
 
+                    try {
+                        val builder = StringBuilder("### ${pack.getPackName()} Result [${result.size} cards in total]\n\n")
+
+                        for (card in result) {
+                            builder.append("- ")
+
+                            if (card.tier == CardData.Tier.ULTRA) {
+                                builder.append(Emoji.fromUnicode("✨").formatted).append(" ")
+                            } else if (card.tier == CardData.Tier.LEGEND) {
+                                builder.append(EmojiStore.ABILITY["LEGEND"]?.formatted).append(" ")
+                            }
+
+                            builder.append(card.cardInfo())
+
+                            if (!inventory.cards.containsKey(card)) {
+                                builder.append(" {**NEW**}")
+                            }
+
+                            if (card.tier == CardData.Tier.ULTRA) {
+                                builder.append(Emoji.fromUnicode("✨").formatted)
+                            } else if (card.tier == CardData.Tier.LEGEND) {
+                                builder.append(EmojiStore.ABILITY["LEGEND"]?.formatted)
+                            }
+
+                            builder.append("\n")
+                        }
+
+                        Command.replyToMessageSafely(event.messageChannel, builder.toString(), authorMessage) { a ->
+                            return@replyToMessageSafely a.addFiles(result.filter { c -> !inventory.cards.containsKey(c) }.map { c -> FileUpload.fromData(c.cardImage, "${c.name}.png") })
+                        }
+                    } catch (e: Exception) {
+                        StaticStore.logger.uploadErrorLog(e, "Failed to upload card roll message")
+                    }
+
                     inventory.addCards(result)
-
-                    val builder = StringBuilder("### ${pack.getPackName()} Result [${result.size} cards in total]\n\n")
-
-                    for (card in result) {
-                        builder.append("- ").append(card.cardInfo()).append("\n")
-                    }
-
-                    Command.replyToMessageSafely(event.messageChannel, builder.toString(), authorMessage) { a ->
-                        return@replyToMessageSafely a.addFiles(result.map { c ->
-                            FileUpload.fromData(
-                                c.cardImage,
-                                "${c.name}.png"
-                            )
-                        })
-                    }
 
                     val member = event.member ?: return
 
