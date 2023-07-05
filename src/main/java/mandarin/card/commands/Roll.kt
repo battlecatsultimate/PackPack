@@ -32,7 +32,7 @@ class Roll : Command(LangID.EN, true) {
         val packOptions = ArrayList<SelectOption>()
 
         packOptions.add(SelectOption.of("Large Card Pack", "large").withDescription("10k Cat Foods : 8 Common + 1 Uncommon + 1 Uncommon/Ultra Rare/Legend Rare"))
-        packOptions.add(SelectOption.of("Small Card Pack", "small").withDescription("5k Cat Foods : 4 Common + 1 Uncommon/Ultra Rare/Legend Rare"))
+        packOptions.add(SelectOption.of("Small Card Pack", "small").withDescription("5k Cat Foods : 4 Common + 1 Uncommon/Ultra Rare"))
 
         val packs = StringSelectMenu.create("pack")
             .addOptions(packOptions)
