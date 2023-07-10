@@ -82,7 +82,7 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
                 tier = if (value == "all") {
                     CardData.Tier.NONE
                 } else {
-                    CardData.Tier.values()[value.replace("tier", "").toInt()]
+                    CardData.Tier.entries[value.replace("tier", "").toInt()]
                 }
 
                 banner[0] = -1
