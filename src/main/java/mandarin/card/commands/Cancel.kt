@@ -8,6 +8,7 @@ import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.component.ConfirmButtonHolder
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 import net.dv8tion.jda.api.events.message.GenericMessageEvent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 
@@ -37,6 +38,10 @@ class Cancel(private val session: TradingSession) : Command(LangID.EN, true) {
             TransactionLogger.logTrade(session, TransactionLogger.TradeStatus.CANCELED)
 
             ch.sendMessage("Trading has been canceled, session is closed now").queue()
+
+            if (ch is ThreadChannel) {
+                ch.manager.setLocked(true).queue()
+            }
         }, LangID.EN))
     }
 }
