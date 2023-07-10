@@ -282,6 +282,16 @@ object CardBot : ListenerAdapter() {
                 }
             }
         }
+
+        if (obj.has("tradeTrialCooldown")) {
+            obj.getAsJsonArray("tradeTrialCooldown").forEach {
+                val o = it.asJsonObject
+
+                if (o.has("key") && o.has("val")) {
+                    CardData.tradeTrialCooldown[o.get("key").asString] = o.get("val").asLong
+                }
+            }
+        }
     }
 
     @Synchronized
@@ -360,6 +370,23 @@ object CardBot : ListenerAdapter() {
         }
 
         obj.add("tradeCooldown", tradeCoolDown)
+
+        val tradeTrialCooldown = JsonArray()
+
+        CardData.tradeTrialCooldown.keys.forEach {
+            val cd = CardData.tradeTrialCooldown[it]
+
+            if (cd != null) {
+                val o = JsonObject()
+
+                o.addProperty("key", it)
+                o.addProperty("val", cd)
+
+                tradeTrialCooldown.add(o)
+            }
+        }
+
+        obj.add("tradeCooldown", tradeTrialCooldown)
 
         try {
             val folder = File("./data/")

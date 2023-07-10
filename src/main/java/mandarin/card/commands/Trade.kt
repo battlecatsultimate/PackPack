@@ -2,7 +2,9 @@ package mandarin.card.commands
 
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
+import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.TradingSession
+import mandarin.card.supporter.transaction.TatsuHandler
 import mandarin.card.supporter.transaction.TransactionLogger
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.StaticStore
@@ -19,10 +21,68 @@ class Trade : Command(LangID.EN, true) {
         val g = getGuild(event) ?: return
         val m = getMember(event) ?: return
 
-        if ((CardData.tradeCooldown[m.id] ?: 0) - CardData.getUnixEpochTime() > 0) {
-            replyToMessageSafely(ch, "You can't trade with others because of cooldown\nCooldown left : ${CardData.convertMillisecondsToText((CardData.tradeCooldown[m.id] ?: 0) - CardData.getUnixEpochTime())}", getMessage(event)) { a -> a }
+        val leftTime = (CardData.tradeCooldown[m.id] ?: 0) - CardData.getUnixEpochTime()
+
+        if (leftTime > 0) {
+            replyToMessageSafely(ch, "You can't trade with others because of cooldown\nCooldown left : ${CardData.convertMillisecondsToText(leftTime)}", getMessage(event)) { a -> a }
 
             return
+        }
+
+        val leftTrialTime = (CardData.tradeTrialCooldown[m.id] ?: 0) - CardData.getUnixEpochTime()
+
+        if (leftTrialTime > 0) {
+            replyToMessageSafely(ch, "You can't trade with others since you didn't meet the requirement to open the trading session\nCooldown left : ${CardData.convertMillisecondsToText(leftTrialTime)}", getMessage(event)) { a -> a }
+
+            return
+        }
+
+        if (Inventory.getInventory(m.id).cards.isEmpty()) {
+            if (TatsuHandler.canInteract(1, false)) {
+                val cf = TatsuHandler.getPoints(g.idLong, m.idLong, false)
+
+                if (cf < 1000) {
+                    val additional = if (!CardData.tradeTrialCooldown.containsKey(m.id)) {
+                        "If you call this command without meeting said requirements again, you won't be able to use this command for 1 hour, so be careful"
+                    } else {
+                        "You won't be able to use this command for 1 hour, please don't call this command unnecessarily"
+                    }
+
+                    replyToMessageSafely(ch, "It seems you don't have any cards yet, and you also don't have more than 1k cf. To open trading session, you have to have at least 1 card or over 1k cf\n\n$additional", getMessage(event)) { a -> a }
+
+                    if (!CardData.tradeTrialCooldown.containsKey(m.id)) {
+                        CardData.tradeTrialCooldown[m.id] = 0
+                    } else {
+                        CardData.tradeTrialCooldown[m.id] = CardData.getUnixEpochTime() + CardData.tradeTrialCooldownTerm
+
+                        TransactionLogger.logTradeTrialFailure(m.idLong, Inventory.getInventory(m.id).cards.isEmpty(), cf)
+                    }
+
+                    CardBot.saveCardData()
+
+                    return
+                }
+            } else {
+                val additional = if (!CardData.tradeTrialCooldown.containsKey(m.id)) {
+                    "If you call this command without meeting said requirements again, you won't be able to use this command for 1 hour, so be careful"
+                } else {
+                    "You won't be able to use this command for 1 hour, please don't call this command unnecessarily"
+                }
+
+                replyToMessageSafely(ch, "It seems you don't have any cards yet, and bot couldn't check your cf due to queue limit. To open trading session, you have to have at least 1 card or over 1k cf\n\n$additional", getMessage(event)) { a -> a }
+
+                if (!CardData.tradeTrialCooldown.containsKey(m.id)) {
+                    CardData.tradeTrialCooldown[m.id] = 0
+                } else {
+                    CardData.tradeTrialCooldown[m.id] = CardData.getUnixEpochTime() + CardData.tradeTrialCooldownTerm
+
+                    TransactionLogger.logTradeTrialFailure(m.idLong, Inventory.getInventory(m.id).cards.isEmpty(), -1)
+                }
+
+                CardBot.saveCardData()
+
+                return
+            }
         }
 
         val contents = getContent(event).split(" ")
@@ -53,8 +113,18 @@ class Trade : Command(LangID.EN, true) {
             return
         }
 
-        if ((CardData.tradeCooldown[targetMember.id] ?: 0) - CardData.getUnixEpochTime() > 0) {
-            replyToMessageSafely(ch, "Provided member can't trade with others due to cooldown\nCooldown left : ${CardData.convertMillisecondsToText((CardData.tradeCooldown[targetMember.id] ?: 0) - CardData.getUnixEpochTime())}", getMessage(event)) { a -> a }
+        val targetLeftTime = (CardData.tradeCooldown[targetMember.id] ?: 0) - CardData.getUnixEpochTime()
+
+        if (targetLeftTime > 0) {
+            replyToMessageSafely(ch, "Provided member can't trade with others due to cooldown\nCooldown left : ${CardData.convertMillisecondsToText(targetLeftTime)}", getMessage(event)) { a -> a }
+
+            return
+        }
+
+        val targetTrialLeftTime = (CardData.tradeTrialCooldown[targetMember.id] ?: 0) - CardData.getUnixEpochTime()
+
+        if (targetTrialLeftTime > 0) {
+            replyToMessageSafely(ch, "Provided member can't trade with others due to cooldown\nCooldown left : ${CardData.convertMillisecondsToText(targetTrialLeftTime)}", getMessage(event)) { a -> a }
 
             return
         }

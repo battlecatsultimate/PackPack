@@ -213,7 +213,11 @@ object CardData {
 
     val tradeCooldown = HashMap<String, Long>()
 
-    val tradeCooldownTerm = 1 * 24 * 60 * 60 * 1000 // 1 day in milliseconds
+    const val tradeCooldownTerm = 1 * 24 * 60 * 60 * 1000 // 1 day in milliseconds
+
+    val tradeTrialCooldown = HashMap<String, Long>()
+
+    const val tradeTrialCooldownTerm = 1 * 60 * 60 * 1000 // 1 hour in milliseconds
 
     val allowedChannel = ServerData.getArray("allowedChannel")
 

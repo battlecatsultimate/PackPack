@@ -329,4 +329,24 @@ object TransactionLogger {
             .setAllowedMentions(ArrayList())
             .queue()
     }
+
+    fun logTradeTrialFailure(m: Long, cardEmpty: Boolean, cf: Int) {
+        if (!this::logChannel.isInitialized)
+            return
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("Trade Open Trial Failed")
+
+        builder.setColor(StaticStore.rainbow.random())
+
+        builder.setDescription("User <@$m> tried to open trading session, but failed despite the initial warning")
+
+        builder.addField("Card Was Empty?", if (cardEmpty) "True" else "False", false)
+        builder.addField("CF", if (cf == -1) "Unknown (API Limit Reached)" else cf.toString(), false)
+
+        logChannel.sendMessageEmbeds(builder.build())
+            .setAllowedMentions(ArrayList())
+            .queue()
+    }
 }
