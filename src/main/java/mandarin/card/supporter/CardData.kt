@@ -1,6 +1,18 @@
 package mandarin.card.supporter
 
+import com.google.api.client.util.DateTime
+import com.google.gson.JsonParser
+import mandarin.packpack.supporter.StaticStore
 import net.dv8tion.jda.api.entities.Member
+import org.apache.http.client.methods.CloseableHttpResponse
+import org.apache.http.client.methods.HttpGet
+import org.apache.http.impl.client.CloseableHttpClient
+import org.apache.http.impl.client.HttpClientBuilder
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.net.URI
+import java.time.Clock
+import java.time.Instant
 
 object CardData {
     /*
@@ -133,7 +145,7 @@ object CardData {
 
     val cooldown = HashMap<String, LongArray>()
 
-    const val cooldownTerm = 0 * 60 * 60 * 1000 // 72 hours in milliseconds
+    const val cooldownTerm = 4 * 60 * 1000 // 72 hours in milliseconds
 
     /*
     -------------------------------------------------------
@@ -289,5 +301,58 @@ object CardData {
         }
 
         return result
+    }
+
+    fun getUnixEpochTime() : Long {
+        try {
+            val get = HttpGet()
+
+            get.uri = URI("http://worldtimeapi.org/api/timezone/Etc/UTC")
+
+            val client = HttpClientBuilder.create().build() as CloseableHttpClient
+
+            val response = client.execute(get) as CloseableHttpResponse
+
+            val statusLine = response.statusLine
+
+            if (statusLine.statusCode / 100 != 2) {
+                StaticStore.logger.uploadLog("W/CardData::getUnixEpochTime - Failed to get unix epoch time from server\n\nStatus Code : ${statusLine.statusCode}\nReason : ${statusLine.reasonPhrase}")
+
+                return Instant.now(Clock.systemUTC()).toEpochMilli()
+            }
+
+            val reader = BufferedReader(InputStreamReader(response.entity.content))
+
+            var line = ""
+
+            val builder = StringBuilder()
+
+            while(reader.readLine()?.also { line = it } != null) {
+                builder.append(line)
+                    .append("\n")
+            }
+
+            reader.close()
+            response.close()
+            client.close()
+
+            val element = JsonParser.parseString(builder.toString())
+
+            if (!element.isJsonObject) {
+                return System.currentTimeMillis()
+            }
+
+            val obj = element.asJsonObject
+
+            if (!obj.has("datetime")) {
+                return System.currentTimeMillis()
+            }
+
+            val dateTime = DateTime(obj.get("datetime").asString)
+
+            return dateTime.value
+        } catch (_: Exception) {
+            return System.currentTimeMillis()
+        }
     }
 }

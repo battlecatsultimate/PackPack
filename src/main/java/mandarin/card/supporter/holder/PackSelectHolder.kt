@@ -52,8 +52,8 @@ class PackSelectHolder(author: Message, channelID: String, message: Message, pri
                 else
                     1
 
-                if (CardData.cooldown.containsKey(authorMessage.author.id) && (CardData.cooldown[authorMessage.author.id]?.get(index) ?: -1) - System.currentTimeMillis() > 0) {
-                    var leftTime = (CardData.cooldown[authorMessage.author.id]?.get(index) ?: -1) - System.currentTimeMillis()
+                if (CardData.cooldown.containsKey(authorMessage.author.id) && (CardData.cooldown[authorMessage.author.id]?.get(index) ?: -1) - CardData.getUnixEpochTime() > 0) {
+                    var leftTime = (CardData.cooldown[authorMessage.author.id]?.get(index) ?: -1) - CardData.getUnixEpochTime()
 
                     val day = leftTime / (24 * 60 * 60 * 1000)
 
@@ -244,7 +244,7 @@ class PackSelectHolder(author: Message, channelID: String, message: Message, pri
                     result.add(CardData.ultraRare.random())
                 }
 
-                val nextTime = System.currentTimeMillis() + CardData.cooldownTerm
+                val nextTime = CardData.getUnixEpochTime() + CardData.cooldownTerm
 
                 if (CardData.cooldown.containsKey(authorMessage.author.id)) {
                     val cooldown = CardData.cooldown[authorMessage.author.id]
@@ -275,7 +275,7 @@ class PackSelectHolder(author: Message, channelID: String, message: Message, pri
                     result.add(CardData.appendLR(CardData.legendRare).random())
                 }
 
-                val nextTime = System.currentTimeMillis() + CardData.cooldownTerm
+                val nextTime = CardData.getUnixEpochTime() + CardData.cooldownTerm
 
                 if (CardData.cooldown.containsKey(authorMessage.author.id)) {
                     val cooldown = CardData.cooldown[authorMessage.author.id]
