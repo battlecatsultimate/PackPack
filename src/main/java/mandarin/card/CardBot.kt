@@ -107,7 +107,6 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}t3" -> Check(CardData.Tier.ULTRA).execute(event)
             "${globalPrefix}checkt4",
             "${globalPrefix}t4" -> Check(CardData.Tier.LEGEND).execute(event)
-            "${globalPrefix}test" -> Test().execute(event)
         }
 
         val session = findSession(event.channel.idLong) ?: return
