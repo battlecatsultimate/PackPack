@@ -8,6 +8,7 @@ import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.component.ConfirmButtonHolder
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 import net.dv8tion.jda.api.events.message.GenericMessageEvent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 
@@ -65,6 +66,10 @@ class Confirm(private val session: TradingSession) : Command(LangID.EN, true) {
                 TransactionLogger.logTrade(session, TransactionLogger.TradeStatus.TRADED)
 
                 ch.sendMessage("Trading has been done, please check each other's inventory to check if trading has been done successfully. If you have suggested cf, please keep in mind that cat food transferring may take time").queue()
+
+                if (ch is ThreadChannel) {
+                    ch.manager.setLocked(true).queue()
+                }
             } else {
                 ch.sendMessage("${m.asMention} confirmed their trading, waiting for other's confirmation...")
                     .mentionRepliedUser(false)
