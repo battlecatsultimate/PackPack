@@ -145,7 +145,7 @@ object CardData {
 
     val cooldown = HashMap<String, LongArray>()
 
-    const val cooldownTerm = 4 * 60 * 1000 // 72 hours in milliseconds
+    const val cardCooldown = 4 * 60 * 1000 // 72 hours in milliseconds
 
     /*
     -------------------------------------------------------
@@ -210,6 +210,10 @@ object CardData {
     var sessionNumber = 1L
 
     val sessions = ArrayList<TradingSession>()
+
+    val tradeCooldown = HashMap<String, Long>()
+
+    val tradeCooldownTerm = 1 * 24 * 60 * 60 * 1000 // 1 day in milliseconds
 
     val allowedChannel = ServerData.getArray("allowedChannel")
 
@@ -354,5 +358,32 @@ object CardData {
         } catch (_: Exception) {
             return Instant.now(Clock.systemUTC()).toEpochMilli()
         }
+    }
+
+    fun convertMillisecondsToText(time: Long) : String {
+        var leftTime = time
+
+        val day = leftTime / (24 * 60 * 60 * 1000)
+
+        leftTime -= day * 24 * 60 * 60 * 1000
+
+        val hour = leftTime / (60 * 60 * 1000)
+
+        leftTime -= hour * 60 * 60 * 1000
+
+        val minute = leftTime / (60 * 1000)
+
+        leftTime -= minute * 60 * 1000
+
+        val second = leftTime / 1000
+
+        leftTime -= second * 1000
+
+        val secondTime = second + leftTime / 1000.0
+
+        return (if (day == 0L) "" else if (day == 1L) "$day day " else "$day days ") +
+                (if (hour == 0L) "" else if (hour == 1L) "$hour hour " else "$hour hours ") +
+                (if (minute == 0L) "" else if (minute == 1L) "$minute minute " else "$minute minutes ") +
+                (if (secondTime == 0.0) "" else if (secondTime <= 1.0) "$secondTime second " else "$secondTime seconds ")
     }
 }

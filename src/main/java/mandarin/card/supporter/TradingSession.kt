@@ -2,7 +2,10 @@ package mandarin.card.supporter
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import mandarin.card.CardBot
 import mandarin.card.supporter.transaction.TatsuHandler
+import mandarin.card.supporter.transaction.TransactionLogger
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 
 class TradingSession(val postID: Long, val member: Array<Long>) {
@@ -129,7 +132,21 @@ class TradingSession(val postID: Long, val member: Array<Long>) {
             }
         }
 
-        return true
+        var cooldownGoing = false
+
+        for (m in member) {
+            val leftTime = (CardData.tradeCooldown[m.toString()] ?: 0) - CardData.getUnixEpochTime()
+
+            if ( leftTime > 0 ) {
+                ch.sendMessage("Trading couldn't be done\n\nReason : <@${m}>'s trading cooldown hasn't ended yet. Please wait for amount of time below, and confirm again\n\nCooldown left : ${CardData.convertMillisecondsToText(leftTime)}")
+
+                cooldownGoing = true
+
+                break
+            }
+        }
+
+        return !cooldownGoing
     }
 
     fun trade(ch: MessageChannel, guild: Long) {
@@ -158,7 +175,20 @@ class TradingSession(val postID: Long, val member: Array<Long>) {
         //Validate inventory
         thisInventory.cards.values.removeAll { it <= 0 }
         thatInventory.cards.values.removeAll { it <= 0 }
+    }
 
+    fun close(ch: MessageChannel) {
+        if (ch is ThreadChannel) {
+            ch.manager.setLocked(true).queue()
+        }
 
+        CardData.sessions.remove(this)
+
+        CardData.tradeCooldown[member[0].toString()] = CardData.getUnixEpochTime() + CardData.tradeCooldownTerm
+        CardData.tradeCooldown[member[1].toString()] = CardData.getUnixEpochTime() + CardData.tradeCooldownTerm
+
+        CardBot.saveCardData()
+
+        TransactionLogger.logTrade(this, TransactionLogger.TradeStatus.TRADED)
     }
 }

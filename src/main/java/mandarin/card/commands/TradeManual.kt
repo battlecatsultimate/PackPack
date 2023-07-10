@@ -13,48 +13,44 @@ import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.events.message.GenericMessageEvent
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 
-class Trade : Command(LangID.EN, true) {
+class TradeManual : Command(LangID.EN, true) {
     override fun doSomething(event: GenericMessageEvent) {
         val ch = getChannel(event) ?: return
         val g = getGuild(event) ?: return
         val m = getMember(event) ?: return
 
-        if ((CardData.tradeCooldown[m.id] ?: 0) - CardData.getUnixEpochTime() > 0) {
-            replyToMessageSafely(ch, "You can't trade with others because of cooldown\nCooldown left : ${CardData.convertMillisecondsToText((CardData.tradeCooldown[m.id] ?: 0) - CardData.getUnixEpochTime())}", getMessage(event)) { a -> a }
+        if (!CardData.isDealer(m) && m.id != StaticStore.MANDARIN_SMELL) {
+            return
+        }
+
+        val contents = getContent(event)?.split(" ") ?: return
+
+        if (contents.size < 3) {
+            replyToMessageSafely(ch, "Not enough data! When you call this command, you have to provide two users" +
+                    " who will participate in trading\n\nUser must be provided via either mention of their ID\n\nFor " +
+                    "example, if user called `A` and user called `B`, then you have to call command like `${CardBot.globalPrefix}" +
+                    "trade @A @B`", getMessage(event)) { a -> a }
 
             return
         }
 
-        val contents = getContent(event).split(" ")
+        val members = getTwoUsers(contents, g)
 
-        if (contents.size < 2) {
-            replyToMessageSafely(ch, "Please specify the member whom you will want to trade with", getMessage(event)) { a -> a }
-
-            return
-        }
-
-        val targetMember = findMember(contents, g)
-
-        if (targetMember == null) {
-            replyToMessageSafely(ch, "Bot failed to find member from the command", getMessage(event)) { a -> a }
+        if (members.size < 2) {
+            replyToMessageSafely(ch, "Bot failed to find two members from the command. Please check if you have offered proper" +
+                    " user data to the bot", getMessage(event)) { a -> a }
 
             return
         }
 
-        if (targetMember.user.isBot) {
-            replyToMessageSafely(ch, "You can't trade with bot!", getMessage(event)) { a -> a }
+        if (members[0].id == members[1].id) {
+            replyToMessageSafely(ch, "You provided same two members!", getMessage(event)) { a -> a }
 
             return
         }
 
-        if (targetMember.id == m.id) {
-            replyToMessageSafely(ch, "You can't trade with yourself!", getMessage(event)) { a -> a }
-
-            return
-        }
-
-        if ((CardData.tradeCooldown[targetMember.id] ?: 0) - CardData.getUnixEpochTime() > 0) {
-            replyToMessageSafely(ch, "Provided member can't trade with others due to cooldown\nCooldown left : ${CardData.convertMillisecondsToText((CardData.tradeCooldown[targetMember.id] ?: 0) - CardData.getUnixEpochTime())}", getMessage(event)) { a -> a }
+        if (members.any { member -> member.user.isBot }) {
+            replyToMessageSafely(ch, "You can't trade with bots!", getMessage(event)) { a -> a }
 
             return
         }
@@ -63,7 +59,7 @@ class Trade : Command(LangID.EN, true) {
 
         val postData = MessageCreateData.fromContent("## Welcome to trading session #${CardData.sessionNumber}\n" +
                 "\n" +
-                "${m.asMention} ${targetMember.asMention}\n" +
+                "${members[0].asMention} ${members[1].asMention}\n" +
                 "\n" +
                 "This post has been created to focus on trading between both of you. You can suggest or discuss about cards or cf that will be traded\n" +
                 "\n" +
@@ -90,7 +86,7 @@ class Trade : Command(LangID.EN, true) {
 
         CardData.sessionNumber++
 
-        val session = TradingSession(post.threadChannel.idLong, arrayOf(m.idLong, targetMember.idLong))
+        val session = TradingSession(post.threadChannel.idLong, members.map { me -> me.idLong }.toTypedArray())
 
         CardData.sessions.add(session)
 
@@ -99,22 +95,32 @@ class Trade : Command(LangID.EN, true) {
         TransactionLogger.logTradeStart(session, m)
     }
 
-    private fun findMember(contents: List<String>, g: Guild) : Member? {
-        for (content in contents) {
-            val id = if (StaticStore.isNumeric(content))
-                content
-            else if (content.matches(Regex("<@\\d+>"))) {
-                content.replace("<@", "").replace(">", "")
-            } else {
-                continue
+    private fun getTwoUsers(contents: List<String>, g: Guild) : List<Member> {
+        val result = ArrayList<Member>()
+
+        for (segment in contents) {
+            if (StaticStore.isNumeric(segment)) {
+                val member = validateMember(g, segment) ?: continue
+
+                result.add(member)
+            } else if (segment.startsWith("<@")) {
+                val member = validateMember(g, segment.replace("<@", "").replace(">", "")) ?: continue
+
+                result.add(member)
             }
 
-            try {
-                return g.retrieveMember(UserSnowflake.fromId(id)).complete()
-            } catch (_: Exception) {
-            }
+            if (result.size == 2)
+                return result
         }
 
-        return null
+        return result
+    }
+
+    private fun validateMember(g: Guild, id: String) : Member? {
+        return try {
+            g.retrieveMember(UserSnowflake.fromId(id)).complete()
+        } catch (_: Exception) {
+            null
+        }
     }
 }

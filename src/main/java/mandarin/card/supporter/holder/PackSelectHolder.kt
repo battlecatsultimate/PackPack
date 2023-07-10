@@ -53,33 +53,10 @@ class PackSelectHolder(author: Message, channelID: String, message: Message, pri
                     1
 
                 if (CardData.cooldown.containsKey(authorMessage.author.id) && (CardData.cooldown[authorMessage.author.id]?.get(index) ?: -1) - CardData.getUnixEpochTime() > 0) {
-                    var leftTime = (CardData.cooldown[authorMessage.author.id]?.get(index) ?: -1) - CardData.getUnixEpochTime()
-
-                    val day = leftTime / (24 * 60 * 60 * 1000)
-
-                    leftTime -= day * 24 * 60 * 60 * 1000
-
-                    val hour = leftTime / (60 * 60 * 1000)
-
-                    leftTime -= hour * 60 * 60 * 1000
-
-                    val minute = leftTime / (60 * 1000)
-
-                    leftTime -= minute * 60 * 1000
-
-                    val second = leftTime / 1000
-
-                    leftTime -= second * 1000
-
-                    val secondTime = second + leftTime / 1000.0
-
-                    val timeText = (if (day == 0L) "" else if (day == 1L) "$day day " else "$day days ") +
-                            (if (hour == 0L) "" else if (hour == 1L) "$hour hour " else "$hour hours ") +
-                            (if (minute == 0L) "" else if (minute == 1L) "$minute minute " else "$minute minutes ") +
-                            (if (secondTime == 0.0) "" else if (secondTime <= 1.0) "$secondTime second " else "$secondTime seconds ")
+                    val leftTime = (CardData.cooldown[authorMessage.author.id]?.get(index) ?: -1) - CardData.getUnixEpochTime()
 
                     event.deferEdit()
-                        .setContent("You can't roll this pack because your cooldown didn't end yet. You have to wait for $timeText")
+                        .setContent("You can't roll this pack because your cooldown didn't end yet. You have to wait for ${CardData.convertMillisecondsToText(leftTime)}")
                         .setComponents()
                         .setAllowedMentions(ArrayList())
                         .mentionRepliedUser(false)
@@ -244,7 +221,7 @@ class PackSelectHolder(author: Message, channelID: String, message: Message, pri
                     result.add(CardData.ultraRare.random())
                 }
 
-                val nextTime = CardData.getUnixEpochTime() + CardData.cooldownTerm
+                val nextTime = CardData.getUnixEpochTime() + CardData.cardCooldown
 
                 if (CardData.cooldown.containsKey(authorMessage.author.id)) {
                     val cooldown = CardData.cooldown[authorMessage.author.id]
@@ -275,7 +252,7 @@ class PackSelectHolder(author: Message, channelID: String, message: Message, pri
                     result.add(CardData.appendLR(CardData.legendRare).random())
                 }
 
-                val nextTime = CardData.getUnixEpochTime() + CardData.cooldownTerm
+                val nextTime = CardData.getUnixEpochTime() + CardData.cardCooldown
 
                 if (CardData.cooldown.containsKey(authorMessage.author.id)) {
                     val cooldown = CardData.cooldown[authorMessage.author.id]
