@@ -57,7 +57,7 @@ class RollManual : Command(LangID.EN, true) {
 
             val result = rollCards(pack)
 
-            val inventory = Inventory.getInventory(m.id)
+            val inventory = Inventory.getInventory(targetMember.id)
 
             inventory.addCards(result)
 
