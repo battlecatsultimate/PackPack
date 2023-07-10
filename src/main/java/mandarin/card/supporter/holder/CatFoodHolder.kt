@@ -26,8 +26,8 @@ class CatFoodHolder(author: Message, channelID: String, message:Message, private
         if (StaticStore.isNumeric(value)) {
             val catFood = value.toInt()
 
-            if (catFood > 2000000) {
-                event.reply("You can't suggest cat foods more than 2M!").setEphemeral(true).queue()
+            if (catFood > 500000) {
+                event.reply("You can't suggest cat foods more than 500k! Please contact moderator for such large transaction").setEphemeral(true).queue()
 
                 return
             }
@@ -81,8 +81,8 @@ class CatFoodHolder(author: Message, channelID: String, message:Message, private
 
                 val catFood = (filtered.toDouble() * multiplier).toInt()
 
-                if (catFood > 2000000) {
-                    event.reply("You can't suggest cat foods more than 2M!").setEphemeral(true).queue()
+                if (catFood > 500000) {
+                    event.reply("You can't suggest cat foods more than 500k! Please contact moderator for such large transaction").setEphemeral(true).queue()
 
                     return
                 }
