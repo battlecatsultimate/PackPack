@@ -145,7 +145,7 @@ object CardData {
 
     val cooldown = HashMap<String, LongArray>()
 
-    const val cardCooldown = 4 * 60 * 1000 // 72 hours in milliseconds
+    const val cardCooldown = 3 * 24 * 60 * 60 * 1000 // 72 hours in milliseconds
 
     /*
     -------------------------------------------------------
@@ -228,8 +228,8 @@ object CardData {
      */
 
     enum class Pack(val cost: Int) {
-        LARGE(0),
-        SMALL(0),
+        LARGE(10000),
+        SMALL(5000),
         NONE(-1);
 
         fun getPackName() : String {
