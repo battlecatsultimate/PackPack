@@ -4,6 +4,8 @@ import com.google.api.client.util.DateTime
 import com.google.gson.JsonParser
 import mandarin.packpack.supporter.StaticStore
 import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import org.apache.http.client.methods.CloseableHttpResponse
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.CloseableHttpClient
@@ -219,7 +221,7 @@ object CardData {
 
     const val tradeTrialCooldownTerm = 1 * 60 * 60 * 1000 // 1 hour in milliseconds
 
-    val allowedChannel = ServerData.getArray("allowedChannel")
+    private val allowedChannel = ServerData.getArray("allowedChannel")
 
     /*
     -------------------------------------------------------
@@ -389,5 +391,13 @@ object CardData {
                 (if (hour == 0L) "" else if (hour == 1L) "$hour hour " else "$hour hours ") +
                 (if (minute == 0L) "" else if (minute == 1L) "$minute minute " else "$minute minutes ") +
                 (if (secondTime == 0.0) "" else if (secondTime <= 1.0) "$secondTime second " else "$secondTime seconds ")
+    }
+
+    fun isAllowed(ch: MessageChannel) : Boolean {
+        return if (ch is ThreadChannel) {
+            ch.parentChannel.id in allowedChannel
+        } else {
+            ch.id in allowedChannel
+        }
     }
 }

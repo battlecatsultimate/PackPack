@@ -75,8 +75,9 @@ object CardBot : ListenerAdapter() {
             return
 
         val m = event.member ?: return
+        val ch = event.channel
 
-        if (m.id != StaticStore.MANDARIN_SMELL && m.id != "782509095562772512" && !CardData.isDealer(m))
+        if (m.id == StaticStore.MANDARIN_SMELL || CardData.isDealer(m) || CardData.isAllowed(ch))
             return
 
         val segments = event.message.contentRaw.lowercase().split(" ")
