@@ -164,8 +164,6 @@ object CardBot : ListenerAdapter() {
 
         val tiers = cardFolder.listFiles() ?: return
 
-        var id = 0
-
         for(t in tiers) {
             val cards = t.listFiles() ?: continue
 
@@ -182,7 +180,7 @@ object CardBot : ListenerAdapter() {
 
                 val nameData = card.name.replace(".png", "").split(Regex("-"), 2)
 
-                CardData.cards.add(Card(id++, nameData[0].toInt(), tier, nameData[1], card))
+                CardData.cards.add(Card(nameData[0].toInt(), tier, nameData[1], card))
             }
         }
 

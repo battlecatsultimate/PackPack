@@ -45,7 +45,7 @@ class SuggestInventoryHolder(
         for (card in inventory.cards.keys) {
             val amount = inventory.cards[card] ?: 1
 
-            if (amount - suggestion.cards.filter { c -> c.id == card.id }.size == 0) {
+            if (amount - suggestion.cards.filter { c -> c.unitID == card.unitID }.size == 0) {
                 cards.remove(card)
             }
         }
@@ -169,7 +169,7 @@ class SuggestInventoryHolder(
                 tier = if (value == "all") {
                     CardData.Tier.NONE
                 } else {
-                    CardData.Tier.values()[value.replace("tier", "").toInt()]
+                    CardData.Tier.entries[value.replace("tier", "").toInt()]
                 }
 
                 banner[0] = -1
@@ -267,7 +267,7 @@ class SuggestInventoryHolder(
         for (card in inventory.cards.keys) {
             val amount = inventory.cards[card] ?: 1
 
-            if (amount - backup.cards.filter { c -> c.id == card.id }.size == 0) {
+            if (amount - backup.cards.filter { c -> c.unitID == card.unitID }.size == 0) {
                 cards.remove(card)
             }
         }
@@ -355,7 +355,7 @@ class SuggestInventoryHolder(
         if (cards.isEmpty()) {
             cardCategoryElements.add(SelectOption.of("a", "-1"))
         } else {
-            for(i in 0 until min(dataSize, SearchHolder.PAGE_CHUNK)) {
+            for(i in page * SearchHolder.PAGE_CHUNK until min(dataSize, (page + 1) * SearchHolder.PAGE_CHUNK)) {
                 cardCategoryElements.add(SelectOption.of(cards[i].simpleCardInfo(), i.toString()))
             }
         }
@@ -435,7 +435,7 @@ class SuggestInventoryHolder(
             for (i in page * SearchHolder.PAGE_CHUNK until min((page + 1) * SearchHolder.PAGE_CHUNK, cards.size)) {
                 builder.append("${i + 1}. ${cards[i].cardInfo()}")
 
-                val amount = (inventory.cards[cards[i]] ?: 1) - backup.cards.filter { c -> c.id == cards[i].id }.size
+                val amount = (inventory.cards[cards[i]] ?: 1) - backup.cards.filter { c -> c.unitID == cards[i].unitID }.size
 
                 if (amount >= 2) {
                     builder.append(" x$amount\n")

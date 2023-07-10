@@ -124,7 +124,7 @@ class FilterProcessHolder : ComponentHolder {
                     cardGroups.forEach { g -> totalCard.addAll(g.toSet()) }
 
                     for (card in totalCard.toSet()) {
-                        inventory.cards[card] = (inventory.cards[card] ?: 0) - cardGroups.maxOf { g -> g.filter { c -> c.id == card.id }.size }
+                        inventory.cards[card] = (inventory.cards[card] ?: 0) - cardGroups.maxOf { g -> g.filter { c -> c.unitID == card.unitID }.size }
 
                         if (inventory.cards[card]!! < 0) {
                             StaticStore.logger.uploadLog("W/FilterProcessHolder::onEvent - Bot found card with negative amount : ${card.cardInfo()}")
@@ -190,7 +190,7 @@ class FilterProcessHolder : ComponentHolder {
                 tier = if (value == "all") {
                     CardData.Tier.NONE
                 } else {
-                    CardData.Tier.values()[value.replace("tier", "").toInt()]
+                    CardData.Tier.entries[value.replace("tier", "").toInt()]
                 }
 
                 banner[0] = -1
@@ -300,7 +300,7 @@ class FilterProcessHolder : ComponentHolder {
         cards.removeIf { c ->
             val amount = inventory.cards[c] ?: 1
 
-            amount - cardGroups.maxOf { g -> g.filter { card -> card.id == c.id }.size } <= 0
+            amount - cardGroups.maxOf { g -> g.filter { card -> card.unitID == c.unitID }.size } <= 0
         }
 
         cards.removeIf { c -> !filters[currentIndex].filter(c) }
@@ -458,7 +458,7 @@ class FilterProcessHolder : ComponentHolder {
                     .append(". ")
                     .append(cards[i].cardInfo())
 
-                val amount = (inventory.cards[cards[i]] ?: 1) - cardGroups.maxOf { g -> g.filter { card -> card.id == cards[i].id }.size }
+                val amount = (inventory.cards[cards[i]] ?: 1) - cardGroups.maxOf { g -> g.filter { card -> card.unitID == cards[i].unitID }.size }
 
                 if (amount > 1) {
                     builder.append(" x$amount")

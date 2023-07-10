@@ -1,12 +1,15 @@
 package mandarin.card.supporter.holder
 
+import common.util.Data
 import mandarin.card.supporter.Card
 import mandarin.card.supporter.CardComparator
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.packpack.supporter.EmojiStore
+import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.SearchHolder
+import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
@@ -17,6 +20,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction
+import net.dv8tion.jda.api.utils.FileUpload
 import kotlin.math.min
 
 class CardInventoryHolder(author: Message, channelID: String, private val message: Message, private val inventory: Inventory, private val member: Member) : ComponentHolder(author, channelID, message.id) {
@@ -107,7 +111,7 @@ class CardInventoryHolder(author: Message, channelID: String, private val messag
                 tier = if (value == "all") {
                     CardData.Tier.NONE
                 } else {
-                    CardData.Tier.values()[value.replace("tier", "").toInt()]
+                    CardData.Tier.entries[value.replace("tier", "").toInt()]
                 }
 
                 banner[0] = -1
@@ -118,6 +122,42 @@ class CardInventoryHolder(author: Message, channelID: String, private val messag
                 filterCards()
 
                 applyResult(event)
+            }
+            "card" -> {
+                if (event !is StringSelectInteractionEvent)
+                    return
+
+                if (event.values.isEmpty())
+                    return
+
+                val index = event.values[0].toInt()
+
+                val card = cards[index]
+
+                event.deferEdit()
+                    .setContent("`${card.cardInfo()}` Selected")
+                    .setComponents()
+                    .setAllowedMentions(ArrayList())
+                    .mentionRepliedUser(false)
+                    .queue()
+
+                val embedBuilder = EmbedBuilder()
+
+                embedBuilder.setTitle("Card No.${Data.trio(card.unitID)}")
+
+                embedBuilder.setColor(StaticStore.grade[card.tier.ordinal])
+
+                embedBuilder.addField("Name", card.name, true)
+                embedBuilder.addField("Tier", card.getTier(), true)
+                embedBuilder.addField("Amount", (inventory.cards[card] ?: 1).toString(), false)
+
+                embedBuilder.setImage("attachment://card.png")
+
+                event.messageChannel.sendMessageEmbeds(embedBuilder.build())
+                    .setFiles(FileUpload.fromData(card.cardImage, "card.png"))
+                    .setMessageReference(message)
+                    .mentionRepliedUser(false)
+                    .queue()
             }
         }
     }
@@ -207,7 +247,30 @@ class CardInventoryHolder(author: Message, channelID: String, private val messag
 
         rows.add(ActionRow.of(bannerCategory.build()))
 
-        val dataSize = inventory.cards.size
+        val dataSize = cards.size
+
+        val cardCategoryElements = ArrayList<SelectOption>()
+
+        if (cards.isEmpty()) {
+            cardCategoryElements.add(SelectOption.of("a", "-1"))
+        } else {
+            for(i in page * SearchHolder.PAGE_CHUNK until min(dataSize, (page + 1) * SearchHolder.PAGE_CHUNK)) {
+                cardCategoryElements.add(SelectOption.of(cards[i].simpleCardInfo(), i.toString()))
+            }
+        }
+
+        val cardCategory = StringSelectMenu.create("card")
+            .addOptions(cardCategoryElements)
+            .setPlaceholder(
+                if (cards.isEmpty())
+                    "No Cards To Select"
+                else
+                    "Select Card To See"
+            )
+            .setDisabled(cards.isEmpty())
+            .build()
+
+        rows.add(ActionRow.of(cardCategory))
 
         var totPage = dataSize / SearchHolder.PAGE_CHUNK
 

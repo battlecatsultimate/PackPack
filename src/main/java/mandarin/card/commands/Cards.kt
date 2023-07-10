@@ -72,6 +72,31 @@ class Cards : Command(LangID.EN, true) {
 
             val dataSize = inventory.cards.size
 
+            val cards = inventory.cards.keys.sortedWith(CardComparator())
+
+            val cardCategoryElements = ArrayList<SelectOption>()
+
+            if (cards.isEmpty()) {
+                cardCategoryElements.add(SelectOption.of("a", "-1"))
+            } else {
+                for(i in 0 until min(dataSize, SearchHolder.PAGE_CHUNK)) {
+                    cardCategoryElements.add(SelectOption.of(cards[i].simpleCardInfo(), i.toString()))
+                }
+            }
+
+            val cardCategory = StringSelectMenu.create("card")
+                .addOptions(cardCategoryElements)
+                .setPlaceholder(
+                    if (cards.isEmpty())
+                        "No Cards To Select"
+                    else
+                        "Select Card To See"
+                )
+                .setDisabled(cards.isEmpty())
+                .build()
+
+            rows.add(ActionRow.of(cardCategory))
+
             var totPage = dataSize / SearchHolder.PAGE_CHUNK
 
             if (dataSize % SearchHolder.PAGE_CHUNK != 0)

@@ -236,7 +236,7 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
         }
 
         if (!isAdd) {
-            cards.removeIf { c -> (inventory.cards[c] ?: 1) - selectedCards.filter { card -> c.id == card.id }.size <= 0 }
+            cards.removeIf { c -> (inventory.cards[c] ?: 1) - selectedCards.filter { card -> c.unitID == card.unitID }.size <= 0 }
         }
 
         cards.sortWith(CardComparator())
@@ -416,7 +416,7 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
                 checker.append("- ")
                     .append(card.cardInfo())
 
-                val amount = selectedCards.filter { c -> c.id == card.id }.size
+                val amount = selectedCards.filter { c -> c.unitID == card.unitID }.size
 
                 if (amount >= 2) {
                     checker.append(" x$amount")
@@ -441,7 +441,7 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
                 val amount = if (isAdd)
                     1
                 else
-                    (inventory.cards[cards[i]] ?: 1) - selectedCards.filter { c -> c.id == cards[i].id }.size
+                    (inventory.cards[cards[i]] ?: 1) - selectedCards.filter { c -> c.unitID == cards[i].unitID }.size
 
                 if (amount >= 2) {
                     builder.append(" x$amount\n")

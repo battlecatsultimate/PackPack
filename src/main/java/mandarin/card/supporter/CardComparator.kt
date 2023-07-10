@@ -9,7 +9,7 @@ class CardComparator : Comparator<Card> {
         o2 ?: return 1
 
         return if (o1.tier == o2.tier) {
-            o1.id.compareTo(o2.id)
+            o1.unitID.compareTo(o2.unitID)
         } else {
             o1.tier.ordinal.compareTo(o2.tier.ordinal)
         }

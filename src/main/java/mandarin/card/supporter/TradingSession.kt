@@ -100,7 +100,7 @@ class TradingSession(val postID: Long, val member: Array<Long>) {
             }
 
             val amount = thisInventory.cards[card] ?: 1
-            val required = suggestion[0].cards.filter { c -> c.id == card.id }.size
+            val required = suggestion[0].cards.filter { c -> c.unitID == card.unitID }.size
 
             if (amount - required < 0) {
                 ch.sendMessage("Trading couldn't be done\n\nReason : <@${member[0]}>'s inventory doesn't have enough card to trade\nCard : ${card.cardInfo()}\nRequired amount : $required")
@@ -121,7 +121,7 @@ class TradingSession(val postID: Long, val member: Array<Long>) {
             }
 
             val amount = thatInventory.cards[card] ?: 1
-            val required = suggestion[1].cards.filter { c -> c.id == card.id }.size
+            val required = suggestion[1].cards.filter { c -> c.unitID == card.unitID }.size
 
             if (amount - required < 0) {
                 ch.sendMessage("Trading couldn't be done\n\nReason : <@${member[1]}>'s inventory doesn't have enough card to trade\nCard : ${card.cardInfo()}\nRequired amount : $required")

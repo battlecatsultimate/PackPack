@@ -34,7 +34,7 @@ class Suggest(private val session: TradingSession) : Command(LangID.EN, true) {
         for (card in inventory.cards.keys) {
             val amount = inventory.cards[card] ?: 1
 
-            if (amount - session.suggestion[index].cards.filter { c -> c.id == card.id }.size == 0) {
+            if (amount - session.suggestion[index].cards.filter { c -> c.unitID == card.unitID }.size == 0) {
                 cards.remove(card)
             }
         }
@@ -148,7 +148,7 @@ class Suggest(private val session: TradingSession) : Command(LangID.EN, true) {
             for (i in 0 until min(SearchHolder.PAGE_CHUNK, cards.size)) {
                 builder.append("${i + 1}. ${cards[i].cardInfo()}")
 
-                val amount = (inventory.cards[cards[i]] ?: 1) - session.suggestion[index].cards.filter { c -> c.id == cards[i].id }.size
+                val amount = (inventory.cards[cards[i]] ?: 1) - session.suggestion[index].cards.filter { c -> c.unitID == cards[i].unitID }.size
 
                 if (amount >= 2) {
                     builder.append(" x$amount\n")

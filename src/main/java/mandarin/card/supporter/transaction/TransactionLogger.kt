@@ -215,7 +215,7 @@ object TransactionLogger {
             checker.append("- ")
                 .append(card.cardInfo())
 
-            val amount = cards.filter { c -> card.id == c.id }.size
+            val amount = cards.filter { c -> card.unitID == c.unitID }.size
 
             if (amount > 2) {
                 checker.append(" x")
@@ -237,7 +237,7 @@ object TransactionLogger {
             for (card in cards.toSet()) {
                 var line = "- ${card.cardInfo()}"
 
-                val amount = cards.filter { c -> card.id == c.id }.size
+                val amount = cards.filter { c -> card.unitID == c.unitID }.size
 
                 if (amount > 2) {
                     line += " x$amount"
