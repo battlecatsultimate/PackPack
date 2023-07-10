@@ -339,20 +339,20 @@ object CardData {
             val element = JsonParser.parseString(builder.toString())
 
             if (!element.isJsonObject) {
-                return System.currentTimeMillis()
+                return Instant.now(Clock.systemUTC()).toEpochMilli()
             }
 
             val obj = element.asJsonObject
 
             if (!obj.has("datetime")) {
-                return System.currentTimeMillis()
+                return Instant.now(Clock.systemUTC()).toEpochMilli()
             }
 
             val dateTime = DateTime(obj.get("datetime").asString)
 
             return dateTime.value
         } catch (_: Exception) {
-            return System.currentTimeMillis()
+            return Instant.now(Clock.systemUTC()).toEpochMilli()
         }
     }
 }
