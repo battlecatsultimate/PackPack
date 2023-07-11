@@ -1,6 +1,7 @@
 package mandarin.card.commands
 
 import mandarin.card.CardBot
+import mandarin.card.supporter.CardData
 import mandarin.card.supporter.TradingSession
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.StaticStore
@@ -65,6 +66,8 @@ class Confirm(private val session: TradingSession) : Command(LangID.EN, true) {
                     .setAllowedMentions(ArrayList())
                     .setComponents()
                     .queue()
+
+                CardBot.saveCardData()
             }
         }, LangID.EN))
     }
