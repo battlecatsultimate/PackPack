@@ -284,7 +284,13 @@ object CardBot : ListenerAdapter() {
                 val o = it.asJsonObject
 
                 if (o.has("key") && o.has("val")) {
-                    CardData.tradeCooldown[o.get("key").asString] = o.get("val").asLong
+                    var value = o.get("val").asLong
+
+                    if (value - CardData.getUnixEpochTime() > CardData.tradeCatFoodCooldownTerm) {
+                        value = value - 1 * 24 * 60 * 60 * 1000 + CardData.tradeCatFoodCooldownTerm
+                    }
+
+                    CardData.tradeCooldown[o.get("key").asString] = value
                 }
             }
         }
