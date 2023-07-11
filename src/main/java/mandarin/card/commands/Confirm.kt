@@ -1,7 +1,6 @@
 package mandarin.card.commands
 
 import mandarin.card.CardBot
-import mandarin.card.supporter.CardData
 import mandarin.card.supporter.TradingSession
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.StaticStore
