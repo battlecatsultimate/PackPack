@@ -184,8 +184,21 @@ class TradingSession(val postID: Long, val member: Array<Long>) {
 
         CardData.sessions.remove(this)
 
-        CardData.tradeCooldown[member[0].toString()] = CardData.getUnixEpochTime() + CardData.tradeCooldownTerm
-        CardData.tradeCooldown[member[1].toString()] = CardData.getUnixEpochTime() + CardData.tradeCooldownTerm
+        var nextTime = if (suggestion[0].catFood > 0) {
+            CardData.tradeCatFoodCooldownTerm
+        } else {
+            CardData.tradeCooldownTerm
+        }
+
+        CardData.tradeCooldown[member[0].toString()] = CardData.getUnixEpochTime() + nextTime
+
+        nextTime = if (suggestion[1].catFood > 0) {
+            CardData.tradeCatFoodCooldownTerm
+        } else {
+            CardData.tradeCooldownTerm
+        }
+
+        CardData.tradeCooldown[member[1].toString()] = CardData.getUnixEpochTime() + nextTime
 
         CardBot.saveCardData()
 
