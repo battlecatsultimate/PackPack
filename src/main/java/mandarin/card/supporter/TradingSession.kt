@@ -138,7 +138,7 @@ class TradingSession(val postID: Long, val member: Array<Long>) {
             val leftTime = (CardData.tradeCooldown[m.toString()] ?: 0) - CardData.getUnixEpochTime()
 
             if ( leftTime > 0 ) {
-                ch.sendMessage("Trading couldn't be done\n\nReason : <@${m}>'s trading cooldown hasn't ended yet. Please wait for amount of time below, and confirm again\n\nCooldown left : ${CardData.convertMillisecondsToText(leftTime)}")
+                ch.sendMessage("Trading couldn't be done\n\nReason : <@${m}>'s trading cooldown hasn't ended yet. Please wait for amount of time below, and confirm again\n\nCooldown left : ${CardData.convertMillisecondsToText(leftTime)}").queue()
 
                 cooldownGoing = true
 
