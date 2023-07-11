@@ -47,19 +47,19 @@ class ModifyCategoryHolder(author: Message, channelID: String, private val messa
 
                         StaticStore.putHolder(authorMessage.author.id, ModifyModeSelectHolder(authorMessage, channelID, message, event.values[0] == "card", inventory, targetMember))
                     }
-                    "close" -> {
-                        event.deferEdit()
-                            .setContent("Modify closed")
-                            .setComponents()
-                            .mentionRepliedUser(false)
-                            .setAllowedMentions(ArrayList())
-                            .queue()
-
-                        expired = true
-
-                        expire(authorMessage.author.id)
-                    }
                 }
+            }
+            "close" -> {
+                event.deferEdit()
+                    .setContent("Modify closed")
+                    .setComponents()
+                    .mentionRepliedUser(false)
+                    .setAllowedMentions(ArrayList())
+                    .queue()
+
+                expired = true
+
+                expire(authorMessage.author.id)
             }
         }
     }
