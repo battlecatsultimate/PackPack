@@ -230,6 +230,12 @@ class SuggestInventoryHolder(
                     .setAllowedMentions(ArrayList())
                     .queue()
 
+                page = 0
+
+                filterCards()
+
+                applyResult()
+
                 event.deferReply().setContent("Successfully cleared suggestion!").setEphemeral(true).queue()
             }
             "cancel" -> {
