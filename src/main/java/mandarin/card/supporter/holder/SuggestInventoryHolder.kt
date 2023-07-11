@@ -188,7 +188,7 @@ class SuggestInventoryHolder(
                 if (event.values.size < 1)
                     return
 
-                val selectedID = event.values[0].toInt() + page * SearchHolder.PAGE_CHUNK
+                val selectedID = event.values[0].toInt()
 
                 backup.cards.add(cards[selectedID])
 
