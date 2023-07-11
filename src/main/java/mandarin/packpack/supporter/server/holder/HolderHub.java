@@ -57,8 +57,8 @@ public class HolderHub {
         } catch (Exception exception) {
             String message = "E/HolderHub::handleEvent - Failed to handle the event\n\n";
 
-            message += "MessageHolder : " + (messageHolder == null ? "None" : messageHolder.getClass().getName());
-            message += "ComponentHolder : " + (componentHolder == null ? "None" : componentHolder.getClass().getName());
+            message += "MessageHolder : " + (messageHolder == null ? "None" : messageHolder.getClass().getName()) + "\n";
+            message += "ComponentHolder : " + (componentHolder == null ? "None" : componentHolder.getClass().getName()) + "\n";
             message += "ModalHolder : " + (modalHolder == null ? "None" : modalHolder.getClass().getName());
 
             StaticStore.logger.uploadErrorLog(exception, message);
