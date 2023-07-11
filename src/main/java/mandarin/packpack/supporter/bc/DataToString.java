@@ -2105,6 +2105,10 @@ public class DataToString extends Data {
             result.add(LangID.getStringByID("data_hiddenclear", lang));
         }
 
+        if(info.cantUseGoldCPU) {
+            result.add(LangID.getStringByID("data_nocpu", lang));
+        }
+
         for(int i = 0; i < result.size(); i++) {
             result.set(i, result.get(i));
         }

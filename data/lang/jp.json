@@ -305,6 +305,7 @@
   "data_numberplay" : "Number of plays can be done : _",
   "data_waittime" : "You have to wait _NNN_ _TTT_ to play each stage in this map",
   "data_hiddenclear" : "This map will be hidden when you fully clear all stages",
+  "data_nocpu" : "Can't use gold CPU in this stage (Stage skip not possible)",
   "data_exstage" : "EX Stage (Chance|Map - Stage)",
   "data_immune" : "無効",
   "data_comma" : "、",

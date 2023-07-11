@@ -306,6 +306,7 @@
   "data_numberplay" : "_번 스테이지 플레이 가능",
   "data_waittime" : "각 스테이지 플레이 이후 _NNN_ _TTT_ 대기 필요",
   "data_hiddenclear" : "모든 스테이지 클리어 시 맵 숨겨짐",
+  "data_nocpu" : "이 스테이지에서 황금 냥퓨터 사용 불가 (스테이지 스킵 불가)",
   "data_exstage" : "EX 스테이지 (확률|맵 - 스테이지)",
   "data_immune" : " 무효",
   "data_comma" : ", ",

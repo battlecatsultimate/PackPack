@@ -306,6 +306,7 @@
   "data_numberplay" : "Number of plays can be done : _",
   "data_waittime" : "Stages in this map have a _NNN_ _TTT_ cooldown after a successful attempt",
   "data_hiddenclear" : "This map will be hidden when you fully clear all stages",
+  "data_nocpu" : "Can't use gold CPU in this stage (Stage skip not possible)",
   "data_exstage" : "EX Stage (Chance|Map - Stage)",
   "data_immune" : "Immune to ",
   "data_comma" : ", ",
