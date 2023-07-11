@@ -32,13 +32,21 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 object CardBot : ListenerAdapter() {
-    const val globalPrefix = "cd."
+    var globalPrefix = "cd."
+    private var test = false
 
     private var ready = false
 
     @JvmStatic
     fun main(args: Array<String>) {
         initialize()
+
+        args.forEachIndexed { index, arg ->
+            if (arg == "--test" && index < args.size - 1 && args[index + 1] == "true") {
+                test = true
+                globalPrefix = "ct."
+            }
+        }
 
         TatsuHandler.API = args[1]
 
@@ -55,7 +63,7 @@ object CardBot : ListenerAdapter() {
         )
 
         builder.disableCache(CacheFlag.VOICE_STATE)
-        builder.setActivity(Activity.playing("A"))
+        builder.setActivity(Activity.playing(if (test) "B" else "A"))
         builder.addEventListeners(CardBot)
 
         val client = builder.build()
