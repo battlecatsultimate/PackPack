@@ -147,7 +147,8 @@ object CardData {
 
     val cooldown = HashMap<String, LongArray>()
 
-    const val cardCooldown = 3 * 24 * 60 * 60 * 1000 // 72 hours in milliseconds
+    const val largePackCooldown = 3 * 24 * 60 * 60 * 1000 // 72 hours in milliseconds
+    const val smallPackCooldown = 2 * 24 * 60 * 60 * 1000 // 48 hours in milliseconds
 
     /*
     -------------------------------------------------------

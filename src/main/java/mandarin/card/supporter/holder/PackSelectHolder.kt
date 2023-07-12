@@ -221,7 +221,7 @@ class PackSelectHolder(author: Message, channelID: String, message: Message, pri
                     result.add(CardData.ultraRare.random())
                 }
 
-                val nextTime = CardData.getUnixEpochTime() + CardData.cardCooldown
+                val nextTime = CardData.getUnixEpochTime() + CardData.smallPackCooldown
 
                 if (CardData.cooldown.containsKey(authorMessage.author.id)) {
                     val cooldown = CardData.cooldown[authorMessage.author.id]
@@ -252,7 +252,7 @@ class PackSelectHolder(author: Message, channelID: String, message: Message, pri
                     result.add(CardData.appendLR(CardData.legendRare).random())
                 }
 
-                val nextTime = CardData.getUnixEpochTime() + CardData.cardCooldown
+                val nextTime = CardData.getUnixEpochTime() + CardData.largePackCooldown
 
                 if (CardData.cooldown.containsKey(authorMessage.author.id)) {
                     val cooldown = CardData.cooldown[authorMessage.author.id]
