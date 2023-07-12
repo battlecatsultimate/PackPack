@@ -8,6 +8,7 @@ import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.SearchHolder
 import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.interactions.components.ActionRow
@@ -128,6 +129,15 @@ class SuggestInventoryHolder(
                     event.messageChannel.sendMessage("<@${session.member[0]}>, <@${session.member[1]}>, now both users can confirm each other's trade suggestions").queue()
 
                     session.confirmNotified = true
+
+                    val g = event.guild ?: return
+
+                    if (
+                        session.suggestion.any { s -> s.catFood >= 200000 || s.cards.any { c -> c.tier == CardData.Tier.ULTRA || c.tier == CardData.Tier.LEGEND } } &&
+                        !session.member.map { id -> g.retrieveMember(UserSnowflake.fromId(id)).complete() }.any { m -> CardData.isDealer(m) }
+                        ) {
+                        event.messageChannel.sendMessage("Pinging <@&${ServerData.get("dealer")}> because this trade contains above 200k cf or above tier 3 cards").queue()
+                    }
                 }
 
                 CardBot.saveCardData()
