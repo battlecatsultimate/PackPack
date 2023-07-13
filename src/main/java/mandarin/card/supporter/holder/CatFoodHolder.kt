@@ -96,7 +96,7 @@ class CatFoodHolder(author: Message, channelID: String, message:Message, private
                 val tax = (suggestion.catFood * CardData.TAX).toInt()
                 val actualCf = suggestion.catFood - tax
 
-                event.reply("Successfully suggested said amount of cat food, please check above. Actual amount of cf you will get is $actualCf, tax being $tax").setEphemeral(true).queue()
+                event.reply("Successfully suggested said amount of cat food, please check above. Actual amount of cf other trader will get is $actualCf, tax being $tax").setEphemeral(true).queue()
 
                 suggestMessage
                     .editMessage(suggestion.suggestionInfo(member))
