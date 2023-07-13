@@ -129,6 +129,22 @@ class Trade : Command(LangID.EN, true) {
             return
         }
 
+        if (Inventory.getInventory(targetMember.id).cards.isEmpty()) {
+            if (TatsuHandler.canInteract(1, false)) {
+                val cf = TatsuHandler.getPoints(g.idLong, targetMember.idLong, false)
+
+                if (cf < 1000) {
+                    replyToMessageSafely(ch, "It seems you can't trade with that member because they don't meet requirements; Having cards or more than 1k cf", getMessage(event)) { a -> a }
+
+                    return
+                }
+            } else {
+                replyToMessageSafely(ch, "It seems you can't trade with that member because they don't meet requirements; Having cards or more than 1k cf", getMessage(event)) { a -> a }
+
+                return
+            }
+        }
+
         val forum = g.getForumChannelById(CardData.tradingPlace) ?: return
 
         val postData = MessageCreateData.fromContent("## Welcome to trading session #${CardData.sessionNumber}\n" +
