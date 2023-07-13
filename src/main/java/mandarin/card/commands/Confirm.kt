@@ -22,6 +22,12 @@ class Confirm(private val session: TradingSession) : Command(LangID.EN, true) {
             return
         }
 
+        if (session.needApproval(g) && !session.approved) {
+            replyToMessageSafely(ch, "Please wait for manager or mod to approve this session!", getMessage(event)) { a -> a }
+
+            return
+        }
+
         val index = session.member.indexOf(m.idLong)
 
         if (index == -1)

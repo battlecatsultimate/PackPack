@@ -5,6 +5,8 @@ import com.google.gson.JsonObject
 import mandarin.card.CardBot
 import mandarin.card.supporter.transaction.TatsuHandler
 import mandarin.card.supporter.transaction.TransactionLogger
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 
@@ -40,6 +42,10 @@ class TradingSession(val postID: Long, val member: Array<Long>) {
                 session.confirmNotified = obj.get("confirmNotified").asBoolean
             }
 
+            if (obj.has("approved")) {
+                session.approved = obj.get("approved").asBoolean
+            }
+
             return session
         }
 
@@ -52,6 +58,7 @@ class TradingSession(val postID: Long, val member: Array<Long>) {
     val suggestion = Array(2) {
         Suggestion()
     }
+    var approved = false
 
     var confirmNotified = false
 
@@ -82,6 +89,8 @@ class TradingSession(val postID: Long, val member: Array<Long>) {
         obj.add("suggestions", suggestions)
 
         obj.addProperty("confirmNotified", confirmNotified)
+
+        obj.addProperty("approved", approved)
 
         return obj
     }
@@ -179,7 +188,7 @@ class TradingSession(val postID: Long, val member: Array<Long>) {
 
     fun close(ch: MessageChannel) {
         if (ch is ThreadChannel) {
-            ch.manager.setLocked(true).queue()
+            ch.manager.setLocked(true).setArchived(true).queue()
         }
 
         CardData.sessions.remove(this)
@@ -203,5 +212,10 @@ class TradingSession(val postID: Long, val member: Array<Long>) {
         CardBot.saveCardData()
 
         TransactionLogger.logTrade(this, TransactionLogger.TradeStatus.TRADED)
+    }
+
+    fun needApproval(g: Guild) : Boolean {
+        return suggestion.any { s -> s.catFood >= 200000 || s.cards.any { c -> c.tier == CardData.Tier.ULTRA || c.tier == CardData.Tier.LEGEND } } &&
+                !member.map { id -> g.retrieveMember(UserSnowflake.fromId(id)).complete() }.any { m -> CardData.isManager(m) }
     }
 }

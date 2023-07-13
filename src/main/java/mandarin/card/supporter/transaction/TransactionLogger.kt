@@ -349,4 +349,24 @@ object TransactionLogger {
             .setAllowedMentions(ArrayList())
             .queue()
     }
+
+    fun logApproval(session: TradingSession, manager: Member) {
+        if (!this::modChannel.isInitialized)
+            return
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("Session Approved")
+
+        builder.setColor(StaticStore.rainbow.random())
+
+        builder.setDescription("Manager or Moderator ${manager.asMention} approved session")
+
+        builder.addField("Session", "<#${session.postID}> [${session.postID}]", false)
+        builder.addField("Manager", "${manager.asMention} [${manager.id}]", false)
+
+        modChannel.sendMessageEmbeds(builder.build())
+            .setAllowedMentions(ArrayList())
+            .queue()
+    }
 }

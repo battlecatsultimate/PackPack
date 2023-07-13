@@ -118,6 +118,8 @@ class SuggestInventoryHolder(
                 session.agreed[0] = false
                 session.agreed[1] = false
 
+                session.approved = false
+
                 Command.replyToMessageSafely(event.messageChannel, contents, suggestionMessage) { a -> a }
 
                 event.messageChannel.sendMessage("<@${session.member[opposite]}>, please check suggestion above").queue()
@@ -134,9 +136,9 @@ class SuggestInventoryHolder(
 
                     if (
                         session.suggestion.any { s -> s.catFood >= 200000 || s.cards.any { c -> c.tier == CardData.Tier.ULTRA || c.tier == CardData.Tier.LEGEND } } &&
-                        !session.member.map { id -> g.retrieveMember(UserSnowflake.fromId(id)).complete() }.any { m -> CardData.isDealer(m) }
+                        !session.member.map { id -> g.retrieveMember(UserSnowflake.fromId(id)).complete() }.any { m -> CardData.isManager(m) }
                         ) {
-                        event.messageChannel.sendMessage("Pinging <@&${ServerData.get("dealer")}> because this trade contains above 200k cf or above tier 3 cards").queue()
+                        event.messageChannel.sendMessage("Pinging <@&${ServerData.get("dealer")}> for approval because this trade contains above 200k cf or above tier 3 cards").queue()
                     }
                 }
 

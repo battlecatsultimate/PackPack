@@ -20,7 +20,7 @@ class RollManual : Command(LangID.EN, true) {
         val m = getMember(event) ?: return
         val g = getGuild(event) ?: return
 
-        if (m.id != StaticStore.MANDARIN_SMELL && !CardData.isDealer(m))
+        if (m.id != StaticStore.MANDARIN_SMELL && !CardData.isManager(m))
             return
 
         val contents = getContent(event)?.split(" ") ?: return

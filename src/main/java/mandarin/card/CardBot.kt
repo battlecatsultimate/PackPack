@@ -85,7 +85,7 @@ object CardBot : ListenerAdapter() {
         val m = event.member ?: return
         val ch = event.channel
 
-        if (m.id != StaticStore.MANDARIN_SMELL && !CardData.isDealer(m) && !CardData.isAllowed(ch))
+        if (m.id != StaticStore.MANDARIN_SMELL && !CardData.isManager(m) && !CardData.isAllowed(ch))
             return
 
         val segments = event.message.contentRaw.lowercase().split(" ")
@@ -115,6 +115,7 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}t3" -> Check(CardData.Tier.ULTRA).execute(event)
             "${globalPrefix}checkt4",
             "${globalPrefix}t4" -> Check(CardData.Tier.LEGEND).execute(event)
+            "${globalPrefix}approve" -> Approve().execute(event)
         }
 
         val session = findSession(event.channel.idLong) ?: return

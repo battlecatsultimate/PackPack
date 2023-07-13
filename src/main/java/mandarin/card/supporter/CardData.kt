@@ -291,7 +291,7 @@ object CardData {
         return roleList.contains(ServerData.get("modRole")) || roleList.contains(ServerData.get("headerMod"))
     }
 
-    fun isDealer(member: Member) : Boolean {
+    fun isManager(member: Member) : Boolean {
         val roleList = member.roles.map { r -> r.id }
 
         return roleList.contains(ServerData.get("dealer")) || roleList.contains(ServerData.get("modRole")) || roleList.contains(ServerData.get("headerMod"))
