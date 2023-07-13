@@ -55,7 +55,7 @@ class TradeManual : Command(LangID.EN, true) {
             return
         }
 
-        val forum = g.getForumChannelById(CardData.tradingPlace) ?: return
+        val forum = g.getForumChannelById(if (CardBot.test) CardData.testTradingPlace else CardData.tradingPlace) ?: return
 
         val postData = MessageCreateData.fromContent("## Welcome to trading session #${CardData.sessionNumber}\n" +
                 "\n" +

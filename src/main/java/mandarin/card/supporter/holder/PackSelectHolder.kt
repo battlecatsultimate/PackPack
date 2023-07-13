@@ -48,9 +48,9 @@ class PackSelectHolder(author: Message, channelID: String, message: Message, pri
                 }
 
                 val index = if (pack == CardData.Pack.SMALL)
-                    0
+                    CardData.SMALL
                 else
-                    1
+                    CardData.LARGE
 
                 if (CardData.cooldown.containsKey(authorMessage.author.id) && (CardData.cooldown[authorMessage.author.id]?.get(index) ?: -1) - CardData.getUnixEpochTime() > 0) {
                     val leftTime = (CardData.cooldown[authorMessage.author.id]?.get(index) ?: -1) - CardData.getUnixEpochTime()
@@ -80,7 +80,15 @@ class PackSelectHolder(author: Message, channelID: String, message: Message, pri
 
                 val currentCatFood = TatsuHandler.getPoints(guild.idLong, authorMessage.author.idLong, false)
 
-                if (currentCatFood - pack.cost < 0) {
+                val cooldown = CardData.cooldown[authorMessage.author.id]
+
+                val packCost = if (index == CardData.SMALL && (cooldown == null || cooldown[CardData.SMALL] == -1L)) {
+                    0
+                } else {
+                    pack.cost
+                }
+
+                if (currentCatFood - packCost < 0) {
                     event.deferEdit()
                         .setContent("You can't buy this pack because you have $currentCatFood cat foods, and pack's cost is ${pack.cost} cat foods")
                         .mentionRepliedUser(false)
@@ -90,7 +98,7 @@ class PackSelectHolder(author: Message, channelID: String, message: Message, pri
                         .queue()
 
                     return
-                } else if (currentCatFood - TradingSession.accumulateSuggestedCatFood(authorMessage.author.idLong) - pack.cost < 0) {
+                } else if (currentCatFood - TradingSession.accumulateSuggestedCatFood(authorMessage.author.idLong) - packCost < 0) {
                     event.deferEdit()
                         .setContent("It seems you suggested cat foods in other trading sessions, so you can use your cat foods up to ${currentCatFood - TradingSession.accumulateSuggestedCatFood(authorMessage.author.idLong)} cat foods")
                         .setComponents()
@@ -109,11 +117,11 @@ class PackSelectHolder(author: Message, channelID: String, message: Message, pri
                         .mentionRepliedUser(false)
                         .queue()
 
-                    if (pack.cost > 0) {
-                        TatsuHandler.modifyPoints(guild.idLong, authorMessage.author.idLong, pack.cost, TatsuHandler.Action.REMOVE, true)
+                    if (packCost > 0) {
+                        TatsuHandler.modifyPoints(guild.idLong, authorMessage.author.idLong, packCost, TatsuHandler.Action.REMOVE, true)
                     }
 
-                    val result = rollCards(pack)
+                    val result = rollCards(pack, packCost)
 
                     val inventory = Inventory.getInventory(authorMessage.author.id)
 
@@ -162,11 +170,11 @@ class PackSelectHolder(author: Message, channelID: String, message: Message, pri
                         .queue()
 
                     TransactionGroup.queue(TransactionQueue(1) {
-                        if (pack.cost > 0) {
-                            TatsuHandler.modifyPoints(guild.idLong, authorMessage.author.idLong, pack.cost, TatsuHandler.Action.REMOVE, true)
+                        if (packCost > 0) {
+                            TatsuHandler.modifyPoints(guild.idLong, authorMessage.author.idLong, packCost, TatsuHandler.Action.REMOVE, true)
                         }
 
-                        val result = rollCards(pack)
+                        val result = rollCards(pack, packCost)
 
                         val inventory = Inventory.getInventory(authorMessage.author.id)
 
@@ -204,7 +212,7 @@ class PackSelectHolder(author: Message, channelID: String, message: Message, pri
         }
     }
 
-    private fun rollCards(pack: CardData.Pack) : List<Card> {
+    private fun rollCards(pack: CardData.Pack, cost: Int) : List<Card> {
         val result = ArrayList<Card>()
 
         when(pack) {
@@ -221,18 +229,32 @@ class PackSelectHolder(author: Message, channelID: String, message: Message, pri
                     result.add(CardData.ultraRare.random())
                 }
 
-                val nextTime = CardData.getUnixEpochTime() + CardData.smallPackCooldown
+                if (cost != 0) {
+                    val nextTime = CardData.getUnixEpochTime() + CardData.smallPackCooldown
 
-                if (CardData.cooldown.containsKey(authorMessage.author.id)) {
-                    val cooldown = CardData.cooldown[authorMessage.author.id]
+                    if (CardData.cooldown.containsKey(authorMessage.author.id)) {
+                        val cooldown = CardData.cooldown[authorMessage.author.id]
 
-                    if (cooldown == null) {
-                        CardData.cooldown[authorMessage.author.id] = longArrayOf(nextTime, -1)
+                        if (cooldown == null) {
+                            CardData.cooldown[authorMessage.author.id] = longArrayOf(nextTime, -1)
+                        } else {
+                            cooldown[CardData.SMALL] = nextTime
+                        }
                     } else {
-                        cooldown[0] = nextTime
+                        CardData.cooldown[authorMessage.author.id] = longArrayOf(nextTime, -1)
                     }
                 } else {
-                    CardData.cooldown[authorMessage.author.id] = longArrayOf(nextTime, -1)
+                    if (CardData.cooldown.containsKey(authorMessage.author.id)) {
+                        val cooldown = CardData.cooldown[authorMessage.author.id]
+
+                        if (cooldown == null) {
+                            CardData.cooldown[authorMessage.author.id] = longArrayOf(0, -1)
+                        } else {
+                            cooldown[CardData.SMALL] = 0
+                        }
+                    } else {
+                        CardData.cooldown[authorMessage.author.id] = longArrayOf(0, -1)
+                    }
                 }
             }
             CardData.Pack.LARGE -> {
@@ -252,18 +274,32 @@ class PackSelectHolder(author: Message, channelID: String, message: Message, pri
                     result.add(CardData.appendLR(CardData.legendRare).random())
                 }
 
-                val nextTime = CardData.getUnixEpochTime() + CardData.largePackCooldown
+                if (cost != 0) {
+                    val nextTime = CardData.getUnixEpochTime() + CardData.largePackCooldown
 
-                if (CardData.cooldown.containsKey(authorMessage.author.id)) {
-                    val cooldown = CardData.cooldown[authorMessage.author.id]
+                    if (CardData.cooldown.containsKey(authorMessage.author.id)) {
+                        val cooldown = CardData.cooldown[authorMessage.author.id]
 
-                    if (cooldown == null) {
-                        CardData.cooldown[authorMessage.author.id] = longArrayOf(-1, nextTime)
+                        if (cooldown == null) {
+                            CardData.cooldown[authorMessage.author.id] = longArrayOf(-1, nextTime)
+                        } else {
+                            cooldown[CardData.LARGE] = nextTime
+                        }
                     } else {
-                        cooldown[1] = nextTime
+                        CardData.cooldown[authorMessage.author.id] = longArrayOf(-1, nextTime)
                     }
                 } else {
-                    CardData.cooldown[authorMessage.author.id] = longArrayOf(-1, nextTime)
+                    if (CardData.cooldown.containsKey(authorMessage.author.id)) {
+                        val cooldown = CardData.cooldown[authorMessage.author.id]
+
+                        if (cooldown == null) {
+                            CardData.cooldown[authorMessage.author.id] = longArrayOf(-1, 0)
+                        } else {
+                            cooldown[CardData.LARGE] = 0
+                        }
+                    } else {
+                        CardData.cooldown[authorMessage.author.id] = longArrayOf(-1, 0)
+                    }
                 }
             }
             else -> {

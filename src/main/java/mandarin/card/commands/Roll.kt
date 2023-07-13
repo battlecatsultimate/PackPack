@@ -33,21 +33,27 @@ class Roll : Command(LangID.EN, true) {
 
         val packOptions = ArrayList<SelectOption>()
 
-        val largeDesc = if ((CardData.cooldown[member.id]?.get(1) ?: 0) - CardData.getUnixEpochTime() > 0) {
-            "Cooldown Left : ${CardData.convertMillisecondsToText((CardData.cooldown[member.id]?.get(1) ?: 0) - CardData.getUnixEpochTime())}"
+        val largeDesc = if ((CardData.cooldown[member.id]?.get(CardData.LARGE) ?: 0) - CardData.getUnixEpochTime() > 0) {
+            "Cooldown Left : ${CardData.convertMillisecondsToText((CardData.cooldown[member.id]?.get(CardData.LARGE) ?: 0) - CardData.getUnixEpochTime())}"
         } else {
             "10k Cat Foods : 8 Common + 1 Uncommon + 1 Uncommon/Ultra Rare/Legend Rare"
         }
 
         packOptions.add(SelectOption.of("Large Card Pack", "large").withDescription(largeDesc))
 
-        val smallDesc = if ((CardData.cooldown[member.id]?.get(0) ?: 0) - CardData.getUnixEpochTime() > 0) {
-            "Cooldown Left : ${CardData.convertMillisecondsToText((CardData.cooldown[member.id]?.get(0) ?: 0) - CardData.getUnixEpochTime())}"
+        val smallDesc = if ((CardData.cooldown[member.id]?.get(CardData.SMALL) ?: 0) - CardData.getUnixEpochTime() > 0) {
+            "Cooldown Left : ${CardData.convertMillisecondsToText((CardData.cooldown[member.id]?.get(CardData.SMALL) ?: 0) - CardData.getUnixEpochTime())}"
         } else {
             "5k Cat Foods : 4 Common + 1 Uncommon/Ultra Rare"
         }
 
-        packOptions.add(SelectOption.of("Small Card Pack", "small").withDescription(smallDesc))
+        val cooldown = CardData.cooldown[member.id]
+
+        if (cooldown == null || cooldown[CardData.SMALL] == -1L) {
+            packOptions.add(SelectOption.of("Small Card Pack [FREE]", "small").withDescription(smallDesc))
+        } else {
+            packOptions.add(SelectOption.of("Small Card Pack", "small").withDescription(smallDesc))
+        }
 
         val packs = StringSelectMenu.create("pack")
             .addOptions(packOptions)

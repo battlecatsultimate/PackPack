@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit
 
 object CardBot : ListenerAdapter() {
     var globalPrefix = "cd."
-    private var test = false
+    var test = false
 
     private var ready = false
 

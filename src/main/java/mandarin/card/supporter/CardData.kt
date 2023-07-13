@@ -204,6 +204,7 @@ object CardData {
     }
 
     val tradingPlace = ServerData.get("tradingPlace")
+    val testTradingPlace = ServerData.get("testTradingPlace")
     val transactionLog = ServerData.get("transactionLog")
     val tradingLog = ServerData.get("tradingLog")
     val modLog = ServerData.get("modLog")
@@ -244,6 +245,9 @@ object CardData {
             }
         }
     }
+
+    const val SMALL = 0
+    const val LARGE = 1
 
     /*
     -------------------------------------------------------
