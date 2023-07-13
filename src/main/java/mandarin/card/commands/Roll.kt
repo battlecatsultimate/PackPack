@@ -36,24 +36,26 @@ class Roll : Command(LangID.EN, true) {
         val largeDesc = if ((CardData.cooldown[member.id]?.get(CardData.LARGE) ?: 0) - CardData.getUnixEpochTime() > 0) {
             "Cooldown Left : ${CardData.convertMillisecondsToText((CardData.cooldown[member.id]?.get(CardData.LARGE) ?: 0) - CardData.getUnixEpochTime())}"
         } else {
-            "10k Cat Foods : 8 Common + 1 Uncommon + 1 Uncommon/Ultra Rare/Legend Rare"
+            "8 Common + 1 Common/Uncommon + 1 Uncommon/Ultra Rare"
         }
 
-        packOptions.add(SelectOption.of("Large Card Pack", "large").withDescription(largeDesc))
+        packOptions.add(SelectOption.of("Large Card Pack [20k cf]", "large").withDescription(largeDesc))
 
         val smallDesc = if ((CardData.cooldown[member.id]?.get(CardData.SMALL) ?: 0) - CardData.getUnixEpochTime() > 0) {
             "Cooldown Left : ${CardData.convertMillisecondsToText((CardData.cooldown[member.id]?.get(CardData.SMALL) ?: 0) - CardData.getUnixEpochTime())}"
         } else {
-            "5k Cat Foods : 4 Common + 1 Uncommon/Ultra Rare"
+            "4 Common + 1 Common/Uncommon"
         }
 
-        val cooldown = CardData.cooldown[member.id]
+        packOptions.add(SelectOption.of("Small Card Pack [10k cf]", "small").withDescription(smallDesc))
 
-        if (cooldown == null || cooldown[CardData.SMALL] == -1L) {
-            packOptions.add(SelectOption.of("Small Card Pack [FREE]", "small").withDescription(smallDesc))
+        val premiumDesc = if ((CardData.cooldown[member.id]?.get(CardData.PREMIUM) ?: 0) - CardData.getUnixEpochTime() > 0) {
+            "Cooldown Left : ${CardData.convertMillisecondsToText((CardData.cooldown[member.id]?.get(CardData.PREMIUM) ?: 0) - CardData.getUnixEpochTime())}"
         } else {
-            packOptions.add(SelectOption.of("Small Card Pack", "small").withDescription(smallDesc))
+            "5 Common/Ultra Rare/Legend Rare"
         }
+
+        packOptions.add(SelectOption.of("Premium Card Pack [5 Tier 2 Cards]", "premium").withDescription(premiumDesc))
 
         val packs = StringSelectMenu.create("pack")
             .addOptions(packOptions)

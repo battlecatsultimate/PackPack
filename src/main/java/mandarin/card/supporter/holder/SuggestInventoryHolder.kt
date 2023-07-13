@@ -212,9 +212,11 @@ class SuggestInventoryHolder(
 
                 event.deferReply().setContent("Suggested : ${cards[selectedID].simpleCardInfo()}").setEphemeral(true).queue()
 
-                page = 0
-
                 filterCards()
+
+                if (cards.size < page * SearchHolder.PAGE_CHUNK) {
+                    page--
+                }
 
                 applyResult()
             }

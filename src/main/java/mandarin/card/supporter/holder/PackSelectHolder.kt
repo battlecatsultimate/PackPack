@@ -1,22 +1,26 @@
 package mandarin.card.supporter.holder
 
-import mandarin.card.supporter.Card
-import mandarin.card.supporter.CardData
-import mandarin.card.supporter.Inventory
-import mandarin.card.supporter.TradingSession
+import mandarin.card.supporter.*
 import mandarin.card.supporter.transaction.TatsuHandler
 import mandarin.card.supporter.transaction.TransactionGroup
 import mandarin.card.supporter.transaction.TransactionLogger
 import mandarin.card.supporter.transaction.TransactionQueue
-import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
+import mandarin.packpack.supporter.server.holder.component.SearchHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
+import net.dv8tion.jda.api.interactions.components.ActionRow
+import net.dv8tion.jda.api.interactions.components.LayoutComponent
+import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.interactions.components.selections.SelectOption
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.utils.FileUpload
+import kotlin.math.min
 import kotlin.random.Random
 
 class PackSelectHolder(author: Message, channelID: String, message: Message, private val noImage: Boolean) : ComponentHolder(author, channelID, message.id) {
@@ -44,13 +48,15 @@ class PackSelectHolder(author: Message, channelID: String, message: Message, pri
                 val pack = when(event.values[0]) {
                     "large" -> CardData.Pack.LARGE
                     "small" -> CardData.Pack.SMALL
+                    "premium" -> CardData.Pack.PREMIUM
                     else -> CardData.Pack.NONE
                 }
 
-                val index = if (pack == CardData.Pack.SMALL)
-                    CardData.SMALL
-                else
-                    CardData.LARGE
+                val index = when (pack) {
+                    CardData.Pack.SMALL -> CardData.SMALL
+                    CardData.Pack.LARGE -> CardData.LARGE
+                    else -> CardData.PREMIUM
+                }
 
                 if (CardData.cooldown.containsKey(authorMessage.author.id) && (CardData.cooldown[authorMessage.author.id]?.get(index) ?: -1) - CardData.getUnixEpochTime() > 0) {
                     val leftTime = (CardData.cooldown[authorMessage.author.id]?.get(index) ?: -1) - CardData.getUnixEpochTime()
@@ -65,154 +71,267 @@ class PackSelectHolder(author: Message, channelID: String, message: Message, pri
                     return
                 }
 
-                if (!TatsuHandler.canInteract(1, false)) {
-                    event.deferEdit()
-                        .setContent("Sorry, bot is cleaning up queued cat food transactions, please try again later. Expected waiting time is approximately ${TransactionGroup.groupQueue.size + 1} minute(s)")
-                        .setComponents()
-                        .setAllowedMentions(ArrayList())
-                        .mentionRepliedUser(false)
-                        .queue()
-
-                    return
-                }
-
                 val guild = event.guild ?: return
 
-                val currentCatFood = TatsuHandler.getPoints(guild.idLong, authorMessage.author.idLong, false)
+                when (pack) {
+                    CardData.Pack.SMALL,
+                    CardData.Pack.LARGE -> {
+                        if (!TatsuHandler.canInteract(1, false)) {
+                            event.deferEdit()
+                                .setContent("Sorry, bot is cleaning up queued cat food transactions, please try again later. Expected waiting time is approximately ${TransactionGroup.groupQueue.size + 1} minute(s)")
+                                .setComponents()
+                                .setAllowedMentions(ArrayList())
+                                .mentionRepliedUser(false)
+                                .queue()
 
-                val cooldown = CardData.cooldown[authorMessage.author.id]
+                            return
+                        }
 
-                val packCost = if (index == CardData.SMALL && (cooldown == null || cooldown[CardData.SMALL] == -1L)) {
-                    0
-                } else {
-                    pack.cost
-                }
+                        val currentCatFood = TatsuHandler.getPoints(guild.idLong, authorMessage.author.idLong, false)
 
-                if (currentCatFood - packCost < 0) {
-                    event.deferEdit()
-                        .setContent("You can't buy this pack because you have $currentCatFood cat foods, and pack's cost is ${pack.cost} cat foods")
-                        .mentionRepliedUser(false)
-                        .setComponents()
-                        .setAllowedMentions(ArrayList())
-                        .mentionRepliedUser(false)
-                        .queue()
+                        if (currentCatFood - pack.cost < 0) {
+                            event.deferEdit()
+                                .setContent("You can't buy this pack because you have $currentCatFood cat foods, and pack's cost is ${pack.cost} cat foods")
+                                .mentionRepliedUser(false)
+                                .setComponents()
+                                .setAllowedMentions(ArrayList())
+                                .mentionRepliedUser(false)
+                                .queue()
 
-                    return
-                } else if (currentCatFood - TradingSession.accumulateSuggestedCatFood(authorMessage.author.idLong) - packCost < 0) {
-                    event.deferEdit()
-                        .setContent("It seems you suggested cat foods in other trading sessions, so you can use your cat foods up to ${currentCatFood - TradingSession.accumulateSuggestedCatFood(authorMessage.author.idLong)} cat foods")
-                        .setComponents()
-                        .setAllowedMentions(ArrayList())
-                        .mentionRepliedUser(false)
-                        .queue()
+                            return
+                        } else if (currentCatFood - TradingSession.accumulateSuggestedCatFood(authorMessage.author.idLong) - pack.cost < 0) {
+                            event.deferEdit()
+                                .setContent("It seems you suggested cat foods in other trading sessions, so you can use your cat foods up to ${currentCatFood - TradingSession.accumulateSuggestedCatFood(authorMessage.author.idLong)} cat foods")
+                                .setComponents()
+                                .setAllowedMentions(ArrayList())
+                                .mentionRepliedUser(false)
+                                .queue()
 
-                    return
-                }
+                            return
+                        }
 
-                if (TatsuHandler.canInteract(1, false)) {
-                    event.deferEdit()
-                        .setContent("\uD83C\uDFB2 Rolling...!")
-                        .setComponents()
-                        .setAllowedMentions(ArrayList())
-                        .mentionRepliedUser(false)
-                        .queue()
+                        if (TatsuHandler.canInteract(1, false)) {
+                            event.deferEdit()
+                                .setContent("\uD83C\uDFB2 Rolling...!")
+                                .setComponents()
+                                .setAllowedMentions(ArrayList())
+                                .mentionRepliedUser(false)
+                                .queue()
 
-                    if (packCost > 0) {
-                        TatsuHandler.modifyPoints(guild.idLong, authorMessage.author.idLong, packCost, TatsuHandler.Action.REMOVE, true)
+                            if (pack.cost > 0) {
+                                TatsuHandler.modifyPoints(guild.idLong, authorMessage.author.idLong, pack.cost, TatsuHandler.Action.REMOVE, true)
+                            }
+
+                            val result = rollCards(pack)
+
+                            val inventory = Inventory.getInventory(authorMessage.author.id)
+
+                            try {
+                                val builder = StringBuilder("### ${pack.getPackName()} Result [${result.size} cards in total]\n\n")
+
+                                for (card in result) {
+                                    builder.append("- ")
+
+                                    if (card.tier == CardData.Tier.ULTRA) {
+                                        builder.append(Emoji.fromUnicode("✨").formatted).append(" ")
+                                    } else if (card.tier == CardData.Tier.LEGEND) {
+                                        builder.append(EmojiStore.ABILITY["LEGEND"]?.formatted).append(" ")
+                                    }
+
+                                    builder.append(card.cardInfo())
+
+                                    if (!inventory.cards.containsKey(card)) {
+                                        builder.append(" {**NEW**}")
+                                    }
+
+                                    if (card.tier == CardData.Tier.ULTRA) {
+                                        builder.append(" ").append(Emoji.fromUnicode("✨").formatted)
+                                    } else if (card.tier == CardData.Tier.LEGEND) {
+                                        builder.append(" ").append(EmojiStore.ABILITY["LEGEND"]?.formatted)
+                                    }
+
+                                    builder.append("\n")
+                                }
+
+                                if (noImage) {
+                                    event.messageChannel
+                                        .sendMessage(builder.toString())
+                                        .setMessageReference(authorMessage)
+                                        .queue()
+                                } else {
+                                    event.messageChannel
+                                        .sendMessage(builder.toString())
+                                        .setMessageReference(authorMessage)
+                                        .addFiles(result.filter { c -> !inventory.cards.containsKey(c) }.map { c -> FileUpload.fromData(c.cardImage, "${c.name}.png") })
+                                        .queue()
+                                }
+                            } catch (e: Exception) {
+                                StaticStore.logger.uploadErrorLog(e, "Failed to upload card roll message")
+                            }
+
+                            inventory.addCards(result)
+
+                            val member = event.member ?: return
+
+                            TransactionLogger.logRoll(result, pack, member, false)
+                        } else {
+                            event.deferEdit()
+                                .setContent("Your roll got queued. Please wait, and it will mention you when roll is done")
+                                .queue()
+
+                            TransactionGroup.queue(TransactionQueue(1) {
+                                if (pack.cost > 0) {
+                                    TatsuHandler.modifyPoints(guild.idLong, authorMessage.author.idLong, pack.cost, TatsuHandler.Action.REMOVE, true)
+                                }
+
+                                val result = rollCards(pack)
+
+                                val inventory = Inventory.getInventory(authorMessage.author.id)
+
+                                try {
+                                    val builder = StringBuilder("### ${pack.getPackName()} Result [${result.size} cards in total]\n\n")
+
+                                    for (card in result) {
+                                        builder.append("- ")
+
+                                        if (card.tier == CardData.Tier.ULTRA) {
+                                            builder.append(Emoji.fromUnicode("✨").formatted).append(" ")
+                                        } else if (card.tier == CardData.Tier.LEGEND) {
+                                            builder.append(EmojiStore.ABILITY["LEGEND"]?.formatted).append(" ")
+                                        }
+
+                                        builder.append(card.cardInfo())
+
+                                        if (!inventory.cards.containsKey(card)) {
+                                            builder.append(" {**NEW**}")
+                                        }
+
+                                        if (card.tier == CardData.Tier.ULTRA) {
+                                            builder.append(" ").append(Emoji.fromUnicode("✨").formatted)
+                                        } else if (card.tier == CardData.Tier.LEGEND) {
+                                            builder.append(" ").append(EmojiStore.ABILITY["LEGEND"]?.formatted)
+                                        }
+
+                                        builder.append("\n")
+                                    }
+
+                                    if (noImage) {
+                                        event.messageChannel
+                                            .sendMessage(builder.toString())
+                                            .setMessageReference(authorMessage)
+                                            .queue()
+                                    } else {
+                                        event.messageChannel
+                                            .sendMessage(builder.toString())
+                                            .setMessageReference(authorMessage)
+                                            .addFiles(result.filter { c -> !inventory.cards.containsKey(c) }.map { c -> FileUpload.fromData(c.cardImage, "${c.name}.png") })
+                                            .queue()
+                                    }
+                                } catch (e: Exception) {
+                                    StaticStore.logger.uploadErrorLog(e, "Failed to upload card roll message")
+                                }
+
+                                inventory.addCards(result)
+
+                                val member = event.member ?: return@TransactionQueue
+
+                                TransactionLogger.logRoll(result, pack, member, false)
+                            })
+                        }
                     }
-
-                    val result = rollCards(pack, packCost)
-
-                    val inventory = Inventory.getInventory(authorMessage.author.id)
-
-                    try {
-                        val builder = StringBuilder("### ${pack.getPackName()} Result [${result.size} cards in total]\n\n")
-
-                        for (card in result) {
-                            builder.append("- ")
-
-                            if (card.tier == CardData.Tier.ULTRA) {
-                                builder.append(Emoji.fromUnicode("✨").formatted).append(" ")
-                            } else if (card.tier == CardData.Tier.LEGEND) {
-                                builder.append(EmojiStore.ABILITY["LEGEND"]?.formatted).append(" ")
-                            }
-
-                            builder.append(card.cardInfo())
-
-                            if (!inventory.cards.containsKey(card)) {
-                                builder.append(" {**NEW**}")
-                            }
-
-                            if (card.tier == CardData.Tier.ULTRA) {
-                                builder.append(" ").append(Emoji.fromUnicode("✨").formatted)
-                            } else if (card.tier == CardData.Tier.LEGEND) {
-                                builder.append(" ").append(EmojiStore.ABILITY["LEGEND"]?.formatted)
-                            }
-
-                            builder.append("\n")
-                        }
-
-                        Command.replyToMessageSafely(event.messageChannel, builder.toString(), authorMessage) { a ->
-                            return@replyToMessageSafely a.addFiles(result.filter { c -> !inventory.cards.containsKey(c) }.map { c -> FileUpload.fromData(c.cardImage, "${c.name}.png") })
-                        }
-                    } catch (e: Exception) {
-                        StaticStore.logger.uploadErrorLog(e, "Failed to upload card roll message")
-                    }
-
-                    inventory.addCards(result)
-
-                    val member = event.member ?: return
-
-                    TransactionLogger.logRoll(result, pack, member, false)
-                } else {
-                    event.deferEdit()
-                        .setContent("Your roll got queued. Please wait, and it will mention you when roll is done")
-                        .queue()
-
-                    TransactionGroup.queue(TransactionQueue(1) {
-                        if (packCost > 0) {
-                            TatsuHandler.modifyPoints(guild.idLong, authorMessage.author.idLong, packCost, TatsuHandler.Action.REMOVE, true)
-                        }
-
-                        val result = rollCards(pack, packCost)
-
+                    else -> {
                         val inventory = Inventory.getInventory(authorMessage.author.id)
+                        val cards = inventory.cards.keys.filter { c -> c.tier == CardData.Tier.UNCOMMON }.sortedWith(
+                            CardComparator()
+                        )
 
-                        try {
-                            val builder = StringBuilder("### ${pack.getPackName()} Result [${result.size} cards in total]\n\n")
+                        if (cards.sumOf { inventory.cards[it] ?: 0 } < 5) {
+                            event.deferEdit()
+                                .setContent("It seems you can't afford this pack because you don't have 5 tier 2 [uncommon] cards")
+                                .setComponents()
+                                .setAllowedMentions(ArrayList())
+                                .mentionRepliedUser(false)
+                                .queue()
 
-                            for (card in result) {
-                                builder.append("- ").append(card.cardInfo()).append("\n")
-                            }
-
-                            if (noImage) {
-                                event.messageChannel
-                                    .sendMessage(builder.toString())
-                                    .setMessageReference(authorMessage)
-                                    .queue()
-                            } else {
-                                event.messageChannel
-                                    .sendMessage(builder.toString())
-                                    .setMessageReference(authorMessage)
-                                    .addFiles(result.filter { c -> !inventory.cards.containsKey(c) }.map { c -> FileUpload.fromData(c.cardImage, "${c.name}.png") })
-                                    .queue()
-                            }
-                        } catch (e: Exception) {
-                            StaticStore.logger.uploadErrorLog(e, "Failed to upload card roll message")
+                            return
                         }
 
-                        inventory.addCards(result)
+                        event.deferEdit()
+                            .setContent(getPremiumText(cards, inventory))
+                            .setComponents(assignComponents(cards))
+                            .mentionRepliedUser(false)
+                            .setAllowedMentions(ArrayList())
+                            .queue()
 
-                        val member = event.member ?: return@TransactionQueue
+                        expired = true
+                        expire(authorMessage.author.id)
 
-                        TransactionLogger.logRoll(result, pack, member, false)
-                    })
+                        StaticStore.putHolder(authorMessage.author.id, CardSelectHolder(authorMessage, channelID, messageID) { _, e ->
+                            e.deferEdit()
+                                .setContent("\uD83C\uDFB2 Rolling...!")
+                                .setComponents()
+                                .setAllowedMentions(ArrayList())
+                                .mentionRepliedUser(false)
+                                .queue()
+
+                            val result = rollCards(pack)
+
+                            try {
+                                val builder = StringBuilder("### ${pack.getPackName()} Result [${result.size} cards in total]\n\n")
+
+                                for (card in result) {
+                                    builder.append("- ")
+
+                                    if (card.tier == CardData.Tier.ULTRA) {
+                                        builder.append(Emoji.fromUnicode("✨").formatted).append(" ")
+                                    } else if (card.tier == CardData.Tier.LEGEND) {
+                                        builder.append(EmojiStore.ABILITY["LEGEND"]?.formatted).append(" ")
+                                    }
+
+                                    builder.append(card.cardInfo())
+
+                                    if (!inventory.cards.containsKey(card)) {
+                                        builder.append(" {**NEW**}")
+                                    }
+
+                                    if (card.tier == CardData.Tier.ULTRA) {
+                                        builder.append(" ").append(Emoji.fromUnicode("✨").formatted)
+                                    } else if (card.tier == CardData.Tier.LEGEND) {
+                                        builder.append(" ").append(EmojiStore.ABILITY["LEGEND"]?.formatted)
+                                    }
+
+                                    builder.append("\n")
+                                }
+
+                                if (noImage) {
+                                    e.messageChannel
+                                        .sendMessage(builder.toString())
+                                        .setMessageReference(authorMessage)
+                                        .queue()
+                                } else {
+                                    e.messageChannel
+                                        .sendMessage(builder.toString())
+                                        .setMessageReference(authorMessage)
+                                        .addFiles(result.filter { c -> !inventory.cards.containsKey(c) }.map { c -> FileUpload.fromData(c.cardImage, "${c.name}.png") })
+                                        .queue()
+                                }
+                            } catch (e: Exception) {
+                                StaticStore.logger.uploadErrorLog(e, "Failed to upload card roll message")
+                            }
+
+                            inventory.addCards(result)
+
+                            val member = e.member ?: return@CardSelectHolder
+
+                            TransactionLogger.logRoll(result, pack, member, false)
+                        })
+                    }
                 }
             }
         }
     }
 
-    private fun rollCards(pack: CardData.Pack, cost: Int) : List<Card> {
+    private fun rollCards(pack: CardData.Pack) : List<Card> {
         val result = ArrayList<Card>()
 
         when(pack) {
@@ -223,38 +342,24 @@ class PackSelectHolder(author: Message, channelID: String, message: Message, pri
 
                 val chance = Random.nextDouble()
 
-                if (chance <= 0.95) {
-                    result.add(CardData.appendUncommon(CardData.uncommon).random())
+                if (chance <= 0.7) {
+                    result.add(CardData.appendUncommon(CardData.common).random())
                 } else {
-                    result.add(CardData.ultraRare.random())
+                    result.add(CardData.uncommon.random())
                 }
 
-                if (cost != 0) {
-                    val nextTime = CardData.getUnixEpochTime() + CardData.smallPackCooldown
+                val nextTime = CardData.getUnixEpochTime() + CardData.smallLargePackCooldown
 
-                    if (CardData.cooldown.containsKey(authorMessage.author.id)) {
-                        val cooldown = CardData.cooldown[authorMessage.author.id]
+                if (CardData.cooldown.containsKey(authorMessage.author.id)) {
+                    val cooldown = CardData.cooldown[authorMessage.author.id]
 
-                        if (cooldown == null) {
-                            CardData.cooldown[authorMessage.author.id] = longArrayOf(nextTime, -1)
-                        } else {
-                            cooldown[CardData.SMALL] = nextTime
-                        }
+                    if (cooldown == null) {
+                        CardData.cooldown[authorMessage.author.id] = longArrayOf(nextTime, -1, -1)
                     } else {
-                        CardData.cooldown[authorMessage.author.id] = longArrayOf(nextTime, -1)
+                        cooldown[CardData.SMALL] = nextTime
                     }
                 } else {
-                    if (CardData.cooldown.containsKey(authorMessage.author.id)) {
-                        val cooldown = CardData.cooldown[authorMessage.author.id]
-
-                        if (cooldown == null) {
-                            CardData.cooldown[authorMessage.author.id] = longArrayOf(0, -1)
-                        } else {
-                            cooldown[CardData.SMALL] = 0
-                        }
-                    } else {
-                        CardData.cooldown[authorMessage.author.id] = longArrayOf(0, -1)
-                    }
+                    CardData.cooldown[authorMessage.author.id] = longArrayOf(nextTime, -1, -1)
                 }
             }
             CardData.Pack.LARGE -> {
@@ -262,44 +367,61 @@ class PackSelectHolder(author: Message, channelID: String, message: Message, pri
                     result.add(CardData.common.random())
                 }
 
-                result.add(CardData.appendUncommon(CardData.uncommon).random())
+                var chance = Random.nextDouble()
 
-                val chance = Random.nextDouble()
-
-                if (chance <= 0.9) {
-                    result.add(CardData.appendUncommon(CardData.uncommon).random())
-                } else if (chance <= 0.99) {
-                    result.add(CardData.ultraRare.random())
+                if (chance <= 0.5) {
+                    result.add(CardData.common.random())
                 } else {
-                    result.add(CardData.appendLR(CardData.legendRare).random())
+                    result.add(CardData.appendUncommon(CardData.uncommon).random())
                 }
 
-                if (cost != 0) {
-                    val nextTime = CardData.getUnixEpochTime() + CardData.largePackCooldown
+                chance = Random.nextDouble()
 
-                    if (CardData.cooldown.containsKey(authorMessage.author.id)) {
-                        val cooldown = CardData.cooldown[authorMessage.author.id]
+                if (chance <= 0.99) {
+                    result.add(CardData.appendUncommon(CardData.uncommon).random())
+                } else {
+                    result.add(CardData.ultraRare.random())
+                }
 
-                        if (cooldown == null) {
-                            CardData.cooldown[authorMessage.author.id] = longArrayOf(-1, nextTime)
-                        } else {
-                            cooldown[CardData.LARGE] = nextTime
-                        }
+                val nextTime = CardData.getUnixEpochTime() + CardData.smallLargePackCooldown
+
+                if (CardData.cooldown.containsKey(authorMessage.author.id)) {
+                    val cooldown = CardData.cooldown[authorMessage.author.id]
+
+                    if (cooldown == null) {
+                        CardData.cooldown[authorMessage.author.id] = longArrayOf(-1, nextTime, -1)
                     } else {
-                        CardData.cooldown[authorMessage.author.id] = longArrayOf(-1, nextTime)
+                        cooldown[CardData.LARGE] = nextTime
                     }
                 } else {
-                    if (CardData.cooldown.containsKey(authorMessage.author.id)) {
-                        val cooldown = CardData.cooldown[authorMessage.author.id]
+                    CardData.cooldown[authorMessage.author.id] = longArrayOf(-1, nextTime, -1)
+                }
+            }
+            CardData.Pack.PREMIUM -> {
+                repeat(5) {
+                    val chance = Random.nextDouble()
 
-                        if (cooldown == null) {
-                            CardData.cooldown[authorMessage.author.id] = longArrayOf(-1, 0)
-                        } else {
-                            cooldown[CardData.LARGE] = 0
-                        }
+                    if (chance <= 0.93) {
+                        result.add(CardData.common.random())
+                    } else if (chance <= 0.99) {
+                        result.add(CardData.ultraRare.random())
                     } else {
-                        CardData.cooldown[authorMessage.author.id] = longArrayOf(-1, 0)
+                        result.add(CardData.appendLR(CardData.legendRare).random())
                     }
+                }
+
+                val nextTime = CardData.getUnixEpochTime() + CardData.premiumPackCooldown
+
+                if (CardData.cooldown.containsKey(authorMessage.author.id)) {
+                    val cooldown = CardData.cooldown[authorMessage.author.id]
+
+                    if (cooldown == null) {
+                        CardData.cooldown[authorMessage.author.id] = longArrayOf(-1, -1, nextTime)
+                    } else {
+                        cooldown[CardData.PREMIUM] = nextTime
+                    }
+                } else {
+                    CardData.cooldown[authorMessage.author.id] = longArrayOf(-1, -1, nextTime)
                 }
             }
             else -> {
@@ -308,5 +430,104 @@ class PackSelectHolder(author: Message, channelID: String, message: Message, pri
         }
 
         return result
+    }
+
+    private fun assignComponents(cards: List<Card>) : List<LayoutComponent> {
+        val rows = ArrayList<ActionRow>()
+
+        val bannerCategoryElements = ArrayList<SelectOption>()
+
+        bannerCategoryElements.add(SelectOption.of("All", "all"))
+
+        CardData.bannerCategoryText[CardData.Tier.UNCOMMON.ordinal].forEachIndexed { i, a ->
+            bannerCategoryElements.add(SelectOption.of(a, "category-${CardData.Tier.UNCOMMON.ordinal}-$i"))
+        }
+
+        val bannerCategory = StringSelectMenu.create("category")
+            .addOptions(bannerCategoryElements)
+            .setPlaceholder("Filter Cards by Banners")
+
+        rows.add(ActionRow.of(bannerCategory.build()))
+
+        val dataSize = cards.size
+
+        val cardCategoryElements = ArrayList<SelectOption>()
+
+        if (cards.isEmpty()) {
+            cardCategoryElements.add(SelectOption.of("a", "-1"))
+        } else {
+            for(i in 0 until min(dataSize, SearchHolder.PAGE_CHUNK)) {
+                cardCategoryElements.add(SelectOption.of(cards[i].simpleCardInfo(), i.toString()))
+            }
+        }
+
+        val cardCategory = StringSelectMenu.create("card")
+            .addOptions(cardCategoryElements)
+            .setPlaceholder(
+                if (cards.isEmpty())
+                    "No Cards To Select"
+                else
+                    "Select Card"
+            )
+            .setDisabled(cards.isEmpty())
+            .build()
+
+        rows.add(ActionRow.of(cardCategory))
+
+        var totPage = dataSize / SearchHolder.PAGE_CHUNK
+
+        if (dataSize % SearchHolder.PAGE_CHUNK != 0)
+            totPage++
+
+        if (dataSize > SearchHolder.PAGE_CHUNK) {
+            val buttons = ArrayList<Button>()
+
+            if(totPage > 10) {
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).asDisabled())
+            }
+
+            buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", "Previous Pages", EmojiStore.PREVIOUS).asDisabled())
+
+            buttons.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT))
+
+            if(totPage > 10) {
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT))
+            }
+
+            rows.add(ActionRow.of(buttons))
+        }
+
+        val confirmButtons = ArrayList<Button>()
+
+        confirmButtons.add(Button.primary("select", "Select").asDisabled())
+        confirmButtons.add(Button.danger("cancel", "Cancel"))
+
+        rows.add(ActionRow.of(confirmButtons))
+
+        return rows
+    }
+
+    private fun getPremiumText(cards: List<Card>, inventory: Inventory) : String {
+        val builder = StringBuilder("Select 5 Tier 2 [Uncommon] cards\n\n### Selected Cards\n\n- No Cards Selected\n\n```md\n")
+
+        if (cards.isNotEmpty()) {
+            for (i in 0 until min(SearchHolder.PAGE_CHUNK, cards.size)) {
+                builder.append("${i + 1}. ${cards[i].cardInfo()}")
+
+                val amount = inventory.cards[cards[i]] ?: 1
+
+                if (amount >= 2) {
+                    builder.append(" x$amount\n")
+                } else {
+                    builder.append("\n")
+                }
+            }
+        } else {
+            builder.append("No Cards Found")
+        }
+
+        builder.append("```")
+
+        return builder.toString()
     }
 }

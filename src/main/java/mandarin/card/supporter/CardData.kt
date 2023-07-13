@@ -147,8 +147,8 @@ object CardData {
 
     val cooldown = HashMap<String, LongArray>()
 
-    const val largePackCooldown = 3 * 24 * 60 * 60 * 1000 // 72 hours in milliseconds
-    const val smallPackCooldown = 2 * 24 * 60 * 60 * 1000 // 48 hours in milliseconds
+    const val smallLargePackCooldown = 3 * 24 * 60 * 60 * 1000 // 72 hours in milliseconds
+    const val premiumPackCooldown = 2 * 24 * 60 * 60 * 1000 // 48 hours in milliseconds
 
     /*
     -------------------------------------------------------
@@ -236,14 +236,16 @@ object CardData {
      */
 
     enum class Pack(val cost: Int) {
-        LARGE(10000),
-        SMALL(5000),
+        LARGE(20000),
+        SMALL(10000),
+        PREMIUM(-1),
         NONE(-1);
 
         fun getPackName() : String {
             return when(this) {
                 LARGE -> "Large Card Pack"
                 SMALL -> "Small Card Pack"
+                PREMIUM -> "Premium Card Pack"
                 else -> "Unknown Pack $this"
             }
         }
@@ -251,6 +253,7 @@ object CardData {
 
     const val SMALL = 0
     const val LARGE = 1
+    const val PREMIUM = 2
 
     /*
     -------------------------------------------------------

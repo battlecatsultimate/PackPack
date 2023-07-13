@@ -2,6 +2,7 @@ package mandarin.card.supporter
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import mandarin.packpack.supporter.StaticStore
 
 class Inventory {
     var cards = HashMap<Card, Int>()
@@ -17,6 +18,26 @@ class Inventory {
                 cards[card] = 1
             }
         }
+    }
+
+    fun removeCards(c: List<Card>) {
+        for (card in c) {
+            if (cards.containsKey(card)) {
+                val numberOfCards = cards[card]
+
+                if (numberOfCards == null) {
+                    StaticStore.logger.uploadLog("W/Inventory::removeCards - Tried to remove card that doesn't exist")
+
+                    continue
+                }
+
+                cards[card] = numberOfCards - 1
+            } else {
+                StaticStore.logger.uploadLog("W/Inventory::removeCards - Tried to remove card that doesn't exist")
+            }
+        }
+
+        cards.entries.removeIf { e -> e.value <= 0 }
     }
 
     fun toJson(): JsonObject {

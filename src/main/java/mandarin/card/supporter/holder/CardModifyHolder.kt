@@ -107,6 +107,10 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
 
                 filterCards()
 
+                if (cards.size < page * SearchHolder.PAGE_CHUNK) {
+                    page--
+                }
+
                 applyResult(event)
             }
             "prev" -> {

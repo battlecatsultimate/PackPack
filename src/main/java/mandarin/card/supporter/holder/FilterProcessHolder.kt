@@ -246,6 +246,10 @@ class FilterProcessHolder : ComponentHolder {
 
                 filterCards()
 
+                if (cards.size < page * SearchHolder.PAGE_CHUNK) {
+                    page--
+                }
+
                 applyResult()
             }
             "cancel" -> {

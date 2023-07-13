@@ -275,7 +275,13 @@ object CardBot : ListenerAdapter() {
                 if (o.has("key") && o.has("val")) {
                     val value = o.getAsJsonArray("val")
 
-                    CardData.cooldown[o.get("key").asString] = longArrayOf(value[0].asLong, value[1].asLong)
+                    val arr = longArrayOf(-1, -1, -1)
+
+                    value.forEachIndexed { i, v ->
+                        arr[i] = v.asLong
+                    }
+
+                    CardData.cooldown[o.get("key").asString] = arr
                 }
             }
         }
@@ -358,6 +364,7 @@ object CardBot : ListenerAdapter() {
 
                 value.add(cd[0])
                 value.add(cd[1])
+                value.add(cd[2])
 
                 o.add("val", value)
 

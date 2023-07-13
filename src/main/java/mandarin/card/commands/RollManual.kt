@@ -28,7 +28,7 @@ class RollManual : Command(LangID.EN, true) {
         if (contents.size < 3) {
             replyToMessageSafely(ch, "Not enough data! When you call this command, you have to provide user and " +
                     "which pack to be rolled. Format will be `${CardBot.globalPrefix}roll [User] [Pack]`\n\nUser can be provided via either " +
-                    "ID or mention. For pack, call `-l` for large pack, and `-s` for small pack\n\nFor example, if you want" +
+                    "ID or mention. For pack, call `-l` for large pack, `-s` for small pack, and `-p` for premium pack\n\nFor example, if you want" +
                     "to roll large pack for user A, then you have to call `p!roll @A -l`", getMessage(event)) { a -> a }
 
             return
@@ -94,6 +94,7 @@ class RollManual : Command(LangID.EN, true) {
             when(segment) {
                 "-s" -> return CardData.Pack.SMALL
                 "-l" -> return CardData.Pack.LARGE
+                "-p" -> return CardData.Pack.PREMIUM
             }
         }
 

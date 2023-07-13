@@ -59,7 +59,7 @@ class Suggestion {
             val tax = (catFood * CardData.TAX).toInt()
             val actualCf = catFood - tax
 
-            builder.append("- ${EmojiStore.ABILITY["CF"]?.formatted} $actualCf [After 10% tax, ${EmojiStore.ABILITY["CF"]?.formatted} $tax]")
+            builder.append("- ${EmojiStore.ABILITY["CF"]?.formatted} $actualCf [Considering 10% tax, ${EmojiStore.ABILITY["CF"]?.formatted} $tax]")
         }
 
         return builder.toString()
@@ -85,7 +85,10 @@ class Suggestion {
         if (catFood == 0) {
             builder.append("- No Cat Foods")
         } else {
-            builder.append("- ${EmojiStore.ABILITY["CF"]?.formatted} $catFood")
+            val tax = (catFood * CardData.TAX).toInt()
+            val actualCf = catFood - tax
+
+            builder.append("- ${EmojiStore.ABILITY["CF"]?.formatted} $actualCf [Considering 10% tax, ${EmojiStore.ABILITY["CF"]?.formatted} $tax]")
         }
 
         return builder.toString()
