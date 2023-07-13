@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder
 
+import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Suggestion
 import mandarin.card.supporter.TradingSession
 import mandarin.card.supporter.transaction.TatsuHandler
@@ -60,7 +61,10 @@ class CatFoodHolder(author: Message, channelID: String, message:Message, private
 
             suggestion.catFood = value.toInt()
 
-            event.reply("Successfully suggested said amount of cat food, please check above").setEphemeral(true).queue()
+            val tax = (suggestion.catFood * CardData.TAX).toInt()
+            val actualCf = suggestion.catFood - tax
+
+            event.reply("Successfully suggested said amount of cat food, please check above. Actual amount of cf you will get is $actualCf, tax being $tax").setEphemeral(true).queue()
 
             suggestMessage
                 .editMessage(suggestion.suggestionInfo(member))
@@ -89,7 +93,10 @@ class CatFoodHolder(author: Message, channelID: String, message:Message, private
 
                 suggestion.catFood = catFood
 
-                event.reply("Successfully suggested said amount of cat food, please check above").setEphemeral(true).queue()
+                val tax = (suggestion.catFood * CardData.TAX).toInt()
+                val actualCf = suggestion.catFood - tax
+
+                event.reply("Successfully suggested said amount of cat food, please check above. Actual amount of cf you will get is $actualCf, tax being $tax").setEphemeral(true).queue()
 
                 suggestMessage
                     .editMessage(suggestion.suggestionInfo(member))

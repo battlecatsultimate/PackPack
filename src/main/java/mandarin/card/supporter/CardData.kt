@@ -203,6 +203,8 @@ object CardData {
         }
     }
 
+    val bankAccount = ServerData.get("bankAccount")
+
     val tradingPlace = ServerData.get("tradingPlace")
     val testTradingPlace = ServerData.get("testTradingPlace")
     val transactionLog = ServerData.get("transactionLog")
@@ -210,6 +212,7 @@ object CardData {
     val modLog = ServerData.get("modLog")
 
     const val MAX_CARDS = 10
+    const val TAX = 0.1
 
     var sessionNumber = 1L
 

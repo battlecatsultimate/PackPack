@@ -3,6 +3,7 @@ package mandarin.card.supporter.transaction
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import mandarin.card.CardBot
+import mandarin.card.supporter.CardData
 import mandarin.packpack.supporter.EmojiStore
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import org.apache.http.client.HttpResponseException
@@ -56,7 +57,8 @@ object TatsuHandler {
             throw IllegalStateException("API key isn't prepared yet")
         }
 
-        var leftAmount = amount
+        var tax = (amount * CardData.TAX).toInt()
+        var leftAmount = amount - tax
 
         var cost = 2
 
@@ -65,12 +67,21 @@ object TatsuHandler {
             cost += 2
         }
 
+        cost++
+
+        while(tax > 100000) {
+            tax -= 100000
+            cost++
+        }
+
         if (!canInteract(cost, false)) {
             TransactionGroup.queue(TransactionQueue(cost) {
-                leftAmount = amount
+                tax = (amount * CardData.TAX).toInt()
+                leftAmount = amount - tax
 
                 var removal = true
                 var add = true
+                var t = true
 
                 while(leftAmount > 0) {
                     val possibleAmount = min(100000, leftAmount)
@@ -81,7 +92,15 @@ object TatsuHandler {
                     leftAmount -= possibleAmount
                 }
 
-                TransactionLogger.logPointsTransfer(member1, member2, removal, add)
+                while(tax > 0) {
+                    val possibleAmount = min(100000, tax)
+
+                    t = t && modifyPoints(guild, CardData.bankAccount.toLong(), possibleAmount, Action.ADD, true)
+
+                    tax -= possibleAmount
+                }
+
+                TransactionLogger.logPointsTransfer(member1, member2, removal, add, t, amount)
 
                 if (removal && add) {
                     channel?.sendMessage("Successfully transferred ${EmojiStore.ABILITY["CF"]?.formatted} $amount from <@${member1}> to <@${member2}>")
@@ -92,10 +111,12 @@ object TatsuHandler {
                 }
             })
         } else {
-            leftAmount = amount
+            tax = (amount * CardData.TAX).toInt()
+            leftAmount = amount - tax
 
             var removal = true
             var add = true
+            var t = true
 
             while(leftAmount > 0) {
                 val possibleAmount = min(100000, leftAmount)
@@ -106,10 +127,21 @@ object TatsuHandler {
                 leftAmount -= possibleAmount
             }
 
-            TransactionLogger.logPointsTransfer(member1, member2, removal, add)
+            while(tax > 0) {
+                val possibleAmount = min(100000, tax)
+
+                t = t && modifyPoints(guild, CardData.bankAccount.toLong(), possibleAmount, Action.ADD, false)
+
+                tax -= possibleAmount
+            }
+
+            TransactionLogger.logPointsTransfer(member1, member2, removal, add, t, amount)
+
+            tax = (amount * CardData.TAX).toInt()
+            leftAmount = amount - tax
 
             if (removal && add) {
-                channel?.sendMessage("Successfully transferred ${EmojiStore.ABILITY["CF"]?.formatted} $amount from <@${member1}> to <@${member2}>")
+                channel?.sendMessage("Successfully transferred ${EmojiStore.ABILITY["CF"]?.formatted} $leftAmount from <@${member1}> to <@${member2}>")
                     ?.setAllowedMentions(ArrayList())
                     ?.queue()
             } else {

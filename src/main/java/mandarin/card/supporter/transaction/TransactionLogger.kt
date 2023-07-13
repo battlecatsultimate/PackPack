@@ -101,7 +101,7 @@ object TransactionLogger {
             .queue()
     }
 
-    fun logPointsTransfer(member1: Long, member2: Long, removal: Boolean, add: Boolean) {
+    fun logPointsTransfer(member1: Long, member2: Long, removal: Boolean, add: Boolean, tax: Boolean, amount: Int) {
         if (!this::logChannel.isInitialized)
             return
 
@@ -120,6 +120,9 @@ object TransactionLogger {
         builder.addField("Status", if (removal && add) "Success" else "Failed", false)
         builder.addField("Removing", if (removal) "Done" else "Failed", true)
         builder.addField("Adding", if (add) "Done" else "Failed", true)
+        builder.addField("Taxing", if (tax) "Done" else "Failed", true)
+
+        builder.addField("Amount", "$amount [10% Tax]", false)
 
         logChannel.sendMessageEmbeds(builder.build())
             .setAllowedMentions(ArrayList())
