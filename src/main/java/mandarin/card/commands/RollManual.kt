@@ -6,9 +6,11 @@ import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.transaction.TransactionLogger
 import mandarin.packpack.commands.Command
+import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
 import net.dv8tion.jda.api.entities.UserSnowflake
+import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.message.GenericMessageEvent
 import net.dv8tion.jda.api.utils.FileUpload
 import kotlin.random.Random
@@ -59,17 +61,43 @@ class RollManual : Command(LangID.EN, true) {
 
             val inventory = Inventory.getInventory(targetMember.id)
 
+            try {
+                val builder = StringBuilder("### ${pack.getPackName()} Result [${result.size} cards in total]\n\n")
+
+                for (card in result) {
+                    builder.append("- ")
+
+                    if (card.tier == CardData.Tier.ULTRA) {
+                        builder.append(Emoji.fromUnicode("✨").formatted).append(" ")
+                    } else if (card.tier == CardData.Tier.LEGEND) {
+                        builder.append(EmojiStore.ABILITY["LEGEND"]?.formatted).append(" ")
+                    }
+
+                    builder.append(card.cardInfo())
+
+                    if (!inventory.cards.containsKey(card)) {
+                        builder.append(" {**NEW**}")
+                    }
+
+                    if (card.tier == CardData.Tier.ULTRA) {
+                        builder.append(" ").append(Emoji.fromUnicode("✨").formatted)
+                    } else if (card.tier == CardData.Tier.LEGEND) {
+                        builder.append(" ").append(EmojiStore.ABILITY["LEGEND"]?.formatted)
+                    }
+
+                    builder.append("\n")
+                }
+
+                ch.sendMessage(builder.toString())
+                    .setMessageReference(getMessage(event))
+                    .mentionRepliedUser(false)
+                    .addFiles(result.filter { c -> !inventory.cards.containsKey(c) }.map { c -> FileUpload.fromData(c.cardImage, "${c.name}.png") })
+                    .queue()
+            } catch (_: Exception) {
+
+            }
+
             inventory.addCards(result)
-
-            val builder = StringBuilder("### ${pack.getPackName()} Result [${result.size} cards in total]\n\n")
-
-            for (card in result) {
-                builder.append("- ").append(card.cardInfo()).append("\n")
-            }
-
-            replyToMessageSafely(ch, builder.toString(), getMessage(event)) { a ->
-                return@replyToMessageSafely a.addFiles(result.map { c -> FileUpload.fromData(c.cardImage, "${c.name}.png") })
-            }
 
             TransactionLogger.logRoll(result, pack, targetMember, true)
         } catch (_: Exception) {
@@ -112,10 +140,10 @@ class RollManual : Command(LangID.EN, true) {
 
                 val chance = Random.nextDouble()
 
-                if (chance <= 0.95) {
-                    result.add(CardData.appendUncommon(CardData.uncommon).random())
+                if (chance <= 0.7) {
+                    result.add(CardData.appendUncommon(CardData.common).random())
                 } else {
-                    result.add(CardData.ultraRare.random())
+                    result.add(CardData.uncommon.random())
                 }
             }
             CardData.Pack.LARGE -> {
@@ -123,16 +151,33 @@ class RollManual : Command(LangID.EN, true) {
                     result.add(CardData.common.random())
                 }
 
-                result.add(CardData.appendUncommon(CardData.uncommon).random())
+                var chance = Random.nextDouble()
 
-                val chance = Random.nextDouble()
-
-                if (chance <= 0.9) {
-                    result.add(CardData.appendUncommon(CardData.uncommon).random())
-                } else if (chance <= 0.99) {
-                    result.add(CardData.ultraRare.random())
+                if (chance <= 0.5) {
+                    result.add(CardData.common.random())
                 } else {
-                    result.add(CardData.appendLR(CardData.legendRare).random())
+                    result.add(CardData.appendUncommon(CardData.uncommon).random())
+                }
+
+                chance = Random.nextDouble()
+
+                if (chance <= 0.99) {
+                    result.add(CardData.appendUncommon(CardData.uncommon).random())
+                } else {
+                    result.add(CardData.ultraRare.random())
+                }
+            }
+            CardData.Pack.PREMIUM -> {
+                repeat(5) {
+                    val chance = Random.nextDouble()
+
+                    if (chance <= 0.93) {
+                        result.add(CardData.common.random())
+                    } else if (chance <= 0.99) {
+                        result.add(CardData.ultraRare.random())
+                    } else {
+                        result.add(CardData.appendLR(CardData.legendRare).random())
+                    }
                 }
             }
             else -> {

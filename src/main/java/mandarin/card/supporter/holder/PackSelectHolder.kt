@@ -219,11 +219,13 @@ class PackSelectHolder(author: Message, channelID: String, message: Message, pri
                                         event.messageChannel
                                             .sendMessage(builder.toString())
                                             .setMessageReference(authorMessage)
+                                            .mentionRepliedUser(false)
                                             .queue()
                                     } else {
                                         event.messageChannel
                                             .sendMessage(builder.toString())
                                             .setMessageReference(authorMessage)
+                                            .mentionRepliedUser(false)
                                             .addFiles(result.filter { c -> !inventory.cards.containsKey(c) }.map { c -> FileUpload.fromData(c.cardImage, "${c.name}.png") })
                                             .queue()
                                     }
@@ -307,11 +309,13 @@ class PackSelectHolder(author: Message, channelID: String, message: Message, pri
                                     e.messageChannel
                                         .sendMessage(builder.toString())
                                         .setMessageReference(authorMessage)
+                                        .mentionRepliedUser(false)
                                         .queue()
                                 } else {
                                     e.messageChannel
                                         .sendMessage(builder.toString())
                                         .setMessageReference(authorMessage)
+                                        .mentionRepliedUser(false)
                                         .addFiles(result.filter { c -> !inventory.cards.containsKey(c) }.map { c -> FileUpload.fromData(c.cardImage, "${c.name}.png") })
                                         .queue()
                                 }
