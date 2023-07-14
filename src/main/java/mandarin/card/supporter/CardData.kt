@@ -236,8 +236,8 @@ object CardData {
      */
 
     enum class Pack(val cost: Int) {
-        LARGE(20000),
-        SMALL(10000),
+        LARGE(10000),
+        SMALL(5000),
         PREMIUM(-1),
         NONE(-1);
 
