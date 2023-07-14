@@ -2,8 +2,6 @@ package mandarin.card.supporter.filter
 
 import common.pack.UserProfile
 import common.util.Data
-import common.util.Data.Proc.IMU
-import common.util.Data.Proc.IMUAD
 import common.util.Data.Proc.WAVEI
 import mandarin.card.supporter.Card
 import java.util.function.Function
