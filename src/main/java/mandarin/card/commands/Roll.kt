@@ -39,7 +39,7 @@ class Roll : Command(LangID.EN, true) {
             "8 Common + 1 Common/Uncommon + 1 Uncommon/Ultra Rare"
         }
 
-        packOptions.add(SelectOption.of("Large Card Pack [20k cf]", "large").withDescription(largeDesc))
+        packOptions.add(SelectOption.of("Large Card Pack [10k cf]", "large").withDescription(largeDesc))
 
         val smallDesc = if ((CardData.cooldown[member.id]?.get(CardData.SMALL) ?: 0) - CardData.getUnixEpochTime() > 0) {
             "Cooldown Left : ${CardData.convertMillisecondsToText((CardData.cooldown[member.id]?.get(CardData.SMALL) ?: 0) - CardData.getUnixEpochTime())}"
@@ -47,7 +47,7 @@ class Roll : Command(LangID.EN, true) {
             "4 Common + 1 Common/Uncommon"
         }
 
-        packOptions.add(SelectOption.of("Small Card Pack [10k cf]", "small").withDescription(smallDesc))
+        packOptions.add(SelectOption.of("Small Card Pack [5k cf]", "small").withDescription(smallDesc))
 
         val premiumDesc = if ((CardData.cooldown[member.id]?.get(CardData.PREMIUM) ?: 0) - CardData.getUnixEpochTime() > 0) {
             "Cooldown Left : ${CardData.convertMillisecondsToText((CardData.cooldown[member.id]?.get(CardData.PREMIUM) ?: 0) - CardData.getUnixEpochTime())}"

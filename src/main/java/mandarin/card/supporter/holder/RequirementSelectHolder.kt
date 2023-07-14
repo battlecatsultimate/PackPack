@@ -204,7 +204,7 @@ class RequirementSelectHolder(author: Message, channelID: String, private val me
             result.add(ActionRow.of(buttons))
         }
 
-        result.add(ActionRow.of(Button.success("confirm", "Confirm").asDisabled(), Button.danger("close", "Cancel")))
+        result.add(ActionRow.of(Button.success("confirm", "Confirm").asDisabled(), Button.danger("cancel", "Cancel")))
 
         return result
     }

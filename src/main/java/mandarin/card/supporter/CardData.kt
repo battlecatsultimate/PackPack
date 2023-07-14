@@ -159,10 +159,11 @@ object CardData {
     enum class Role(val id: String, val key: String, val title: String) {
         NONE("", "", ""),
         DOGE(ServerData.get("doge"), "DOGE", "Doge"),
-        SIRSEAL(ServerData.get("sirSeal"), "SIRSEAL", "Sir Seal"),
-        ASSASSIN(ServerData.get("assassin"), "ASSASSIN", "Assassin Bear"),
-        ANGELIC(ServerData.get("angelic"), "ANGELIC", "Angelic Gory"),
-        MOOTH(ServerData.get("mooth"), "MOOTH", "Mooth"),
+        TWOCAN(ServerData.get("twocan"), "TWOCAN", "Twocan"),
+        AHIRUJO(ServerData.get("ahirujo"), "AHIRUJO", "Casaurian Ahirujo"),
+        BAKOO(ServerData.get("bakoo"), "BAKOO", "Bakoo"),
+        YOUCAN(ServerData.get("youcan"), "YOUCAN", "Youcan"),
+        GOBBLE(ServerData.get("gobble"), "GOBBLE", "Gobble"),
         SMH(ServerData.get("smh"), "SMH", "Super Metal Hippoe"),
         SCISSOR(ServerData.get("scissor"), "SCISSOR", "Crustaceous Scissorex"),
         LILDOGE(ServerData.get("lilDoge"), "LILDOGE", "Li'l Doge"),
@@ -181,10 +182,11 @@ object CardData {
         fun getProduct() : Product {
             return when(this) {
                 DOGE -> Product.doge
-                SIRSEAL -> Product.sirSeal
-                ASSASSIN -> Product.assassin
-                ANGELIC -> Product.angelic
-                MOOTH -> Product.mooth
+                TWOCAN -> Product.twocan
+                AHIRUJO -> Product.ahirujo
+                BAKOO -> Product.bakoo
+                YOUCAN -> Product.youcan
+                GOBBLE -> Product.gobble
                 SMH -> Product.smh
                 SCISSOR -> Product.scissor
                 LILDOGE -> Product.lilDoge

@@ -46,7 +46,7 @@ class BuyHolder(author: Message, channelID: String, private val message: Message
 
                 val value = event.values[0]
 
-                val selectedRole = CardData.Role.values().find { r -> r.key == value } ?: return
+                val selectedRole = CardData.Role.entries.find { r -> r.key == value } ?: return
 
                 expired = true
 

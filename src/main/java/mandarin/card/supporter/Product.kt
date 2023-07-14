@@ -2,6 +2,9 @@ package mandarin.card.supporter
 
 import common.pack.UserProfile
 import common.util.Data
+import common.util.Data.Proc.IMU
+import common.util.Data.Proc.IMUAD
+import common.util.Data.Proc.WAVEI
 import common.util.unit.Trait
 import mandarin.card.supporter.filter.*
 
@@ -9,59 +12,81 @@ class Product(val requiredFilter: Int, vararg filters: Filter) {
     companion object {
         val doge = Product(1, AnyFilter(5, "Any 5 Units"))
 
-        val sirSeal = Product(1, TraitFilter(getTrait(Data.TRAIT_RED), 3, "3 Anti-Red Units"))
+        val twocan = Product(2,
+                TraitFilter(getTrait(Data.TRAIT_RED), 3, "3 Anti-Red Units"),
+                TraitFilter(getTrait(Data.TRAIT_BLACK), 3, "3 Anti-Black Units"),
+                CustomFilter.withAntiWave(1, "1 Anti-Wave Unit"),
+                ProcFilter("WAVE", 1, "1 Unit with Wave")
+        )
 
-        val assassin = Product(1, TraitFilter(getTrait(Data.TRAIT_BLACK), 3, "3 Anti-Black Units"))
+        val ahirujo = Product(2,
+                TraitFilter(getTrait(Data.TRAIT_RED), 5, "5 Anti-Red Units"),
+                CustomFilter.withOmni(2, "2 Omni Strike Units"),
+                ProcFilter("SATK", 1, "1 Unit with Savage Blow"),
+                ProcFilter("BSTHUNT", 1, "1 Unit with Behemoth Slayer")
+        )
 
-        val angelic = Product(1, TraitFilter(getTrait(Data.TRAIT_ANGEL), 3, "3 Anti-Angel Units"))
+        val bakoo = Product(2,
+                TraitFilter(getTrait(Data.TRAIT_BLACK), 5, "3 Anti-Black Units"),
+                ProcFilter("STOP", 3, "3 Units with Freeze"),
+                ProcFilter("IMUSTOP", 3, "3 Units with Immunity to Freeze"),
+                CustomFilter.withLD(1, "1 LD Unit")
+        )
 
-        val mooth = Product(1, TraitFilter(getTrait(Data.TRAIT_FLOAT), 3, "3 Anti-Float Units"))
+        val youcan = Product(2,
+                TraitFilter(getTrait(Data.TRAIT_ANGEL), 3, "3 Anti-Angel Units"),
+                TraitFilter(getTrait(Data.TRAIT_ALIEN), 3, "3 Anti-Alien Units"),
+                ProcFilter("BREAK", 2, "2 Units with Barrier Breaker"),
+                CustomFilter.withAntiWave(1, "1 Anti-Wave Unit"),
+                ProcFilter("WAVE", 1, "1 Unit with Wave")
+        )
 
-        val smh = Product(1,
+        val gobble = Product(2,
+                TraitFilter(getTrait(Data.TRAIT_FLOAT), 3, "3 Anti-Float Units"),
+                CustomFilter.withOmni(1, "1 Omni Strike Unit"),
+                ProcFilter("IMUPOIATK", 1, "1 Unit with Immunity to Toxin")
+        )
+
+        val smh = Product(2,
             TraitFilter(getTrait(Data.TRAIT_METAL), 3, "3 Anti-Metal Units"),
-            ProcFilter("CRIT", 3, "3 Units with Critical"),
-            ProcFilter("KB", 3, "3 Units with KB"),
-            ProcFilter("IMUKB", 3, "3 Units with Immunity to KB")
+            ProcFilter("CRIT", 1, "1 Unit with Critical"),
+            ProcFilter("KB", 1, "1 Unit with KB"),
+            ProcFilter("IMUKB", 1, "1 Unit with Immunity to KB")
         )
 
         val scissor = Product(2,
             TraitFilter(getTrait(Data.TRAIT_ALIEN), 5, "5 Anti-Alien Units"),
-            ProcFilter("SLOW", 5, "5 Units with Slow"),
-            ProcFilter("IMUSLOW", 5, "5 Units with Immunity to Slow"),
-            CustomFilter(3, "3 LD Units") { c ->
-                val u = UserProfile.getBCData().units[c.unitID]
-
-                return@CustomFilter u.forms.any { f -> f.du.isLD }
-            },
+            ProcFilter("SLOW", 3, "3 Units with Slow"),
+            ProcFilter("IMUSLOW", 3, "3 Units with Immunity to Slow"),
+            CustomFilter.withLD(1, "1 LD Unit"),
             ProcFilter("BSTHUNT", 1, "1 Unit with Behemoth Slayer")
         )
 
         val lilDoge = Product(2,
             ProcFilter("IMUATK", 2, "2 Units with Invincibility"),
             TraitFilter(getTrait(Data.TRAIT_WHITE), 2, "2 Anti-White Units"),
-            CustomFilter(2, "2 Units with Single Target") { c ->
-                val u = UserProfile.getBCData().units[c.unitID]
-
-                if (c.unitID in BannerFilter.Banner.TheNekolugaFamily.getBannerData()) {
-                    u.forms.any { f -> f.fid != 0 && !f.du.isRange }
-                } else {
-                    u.forms.any { f -> !f.du.isRange }
-                }
-            }
+            CustomFilter.withRangeNoLuga(2, "2 Units with Single Target")
         )
 
         val daboo = Product(2,
             TraitFilter(getTrait(Data.TRAIT_ZOMBIE), 5, "5 Anti-Zombie Units"),
             AbilityFilter(Data.AB_ZKILL, 5, "5 Units with Zombie Killer"),
-            ProcFilter("SLOW", 5, "5 Units with Slow"),
-            CustomFilter(5, "5 Unis with Immunity to Slow/Freeze/KB/Weaken/Wave") { c ->
+            ProcFilter("SLOW", 3, "3 Units with Slow"),
+            CustomFilter(3, "3 Unis with Immunity to Slow/Freeze/KB/Weaken/Wave") { c ->
                 val u = UserProfile.getBCData().units[c.unitID]
 
                 arrayOf("IMUSLOW", "IMUSTOP", "IMUKB", "IMUWEAK", "IMUWAVE").any {
-                    u.forms.any { f -> f.du.proc.get(it).exists() }
+                    u.forms.any { f ->
+                        when (val proc = f.du.proc.get(it)) {
+                            is IMU -> proc.mult == 100
+                            is IMUAD -> proc.mult == 100
+                            is WAVEI -> proc.mult == 100
+                            else -> false
+                        }
+                    }
                 }
             },
-            CustomFilter(1, "1 Omni Strike Unit") { c -> UserProfile.getBCData().units[c.unitID].forms.any { f -> f.du.isOmni } }
+            CustomFilter.withOmni(2, "2 Omni Strike Units")
         )
 
         val akuCyclone = Product(2,
@@ -72,29 +97,28 @@ class Product(val requiredFilter: Int, vararg filters: Filter) {
         val relicBun = Product(2,
             TraitFilter(getTrait(Data.TRAIT_RELIC), 5, "5 Anti-Relic Units"),
             ProcFilter("IMUCURSE", 5, "5 Units with Immunity to Curse"),
-            CustomFilter(3, "3 Omni Strike Units") { c -> UserProfile.getBCData().units[c.unitID].forms.any { f -> f.du.isOmni } },
+            CustomFilter.withOmni(3, "3 Omni Strike Units"),
             ProcFilter("CURSE", 1, "1 Unit with Curse")
         )
 
         val wildDoge = Product(2,
             TraitFilter(getTrait(Data.TRAIT_WHITE), 2, "2 Anti-Traitless Units"),
             ProcFilter("LETHAL", 2, "2 Units with Survive"),
-            ProcFilter("VOLC", 2, "2 Units with Surge"),
-            ProcFilter("IMUVOLC", 2, "2 Units with Immunity to Surge"),
             ProcFilter("BSTHUNT", 1, "1 Unit with Behemoth Slayer")
         )
 
         val exiel = Product(3,
-            ProcFilter("IMUWARP", 7, "7 Units with Immunity to Warp"),
-            ProcFilter("WEAK", 7, "7 Units with Weaken"),
+            ProcFilter("IMUWARP", 5, "5 Units with Immunity to Warp"),
+            ProcFilter("WEAK", 5, "5 Units with Weaken"),
             ProcFilter("IMUWEAK", 5, "5 Units with Immunity to Weaken"),
-            TraitFilter(getTrait(Data.TRAIT_ANGEL), 9, "9 Anti-Angel Units"),
+            TraitFilter(getTrait(Data.TRAIT_ANGEL), 7, "7 Anti-Angel Units"),
+            CustomFilter.withOmni(3, "3 Omni Strike Units"),
             AbilityFilter(Data.AB_CKILL, 3, "3 Units with Colossus Slayer")
         )
 
         val omens = Product(3,
-            ProcFilter("STOP", 7, "7 Units with Freeze"),
-            ProcFilter("IMUSTOP", 7, "7 Units with Immunity to Freeze"),
+            ProcFilter("STOP", 5, "5 Units with Freeze"),
+            ProcFilter("IMUSTOP", 5, "5 Units with Immunity to Freeze"),
             TraitFilter(getTrait(Data.TRAIT_DEMON), 7, "7 Anti-Aku Units"),
             ProcFilter("IMUVOLC", 5, "5 Units with Immunity to Surge"),
             ProcFilter("VOLC", 3, "3 Units with Surge"),
@@ -104,16 +128,16 @@ class Product(val requiredFilter: Int, vararg filters: Filter) {
         val luza = Product(3,
             TraitFilter(getTrait(Data.TRAIT_RELIC), 9, "9 Anti-Relic Units"),
             ProcFilter("IMUCURSE", 9, "9 Units with Immunity to Curse"),
-            CustomFilter(5, "5 Omni Strike Units") { c -> UserProfile.getBCData().units[c.unitID].forms.any { f -> f.du.isOmni } },
+            CustomFilter.withOmni(5, "5 Omni Strike Units"),
             ProcFilter("STRONG", 5, "5 Units with Strengthen"),
             AbilityFilter(Data.AB_CKILL, 5, "5 Units with Colossus Slayer"),
             ProcFilter("CURSE", 3, "3 Units with Curse")
         )
 
         val hermitCat = Product(2,
-            ProcFilter("WAVE", 11, "11 Units with Wave"),
-            CustomFilter(11, "11 Units with Wave Blocker/Immunity to Wave") { c -> UserProfile.getBCData().units[c.unitID].forms.any { f -> f.du.abi and Data.AB_WAVES > 0 || f.du.proc.get("IMUWAVE").exists() } },
-            TraitFilter(getTrait(Data.TRAIT_WHITE), 11, "11 Anti-Traitless Units")
+            ProcFilter("WAVE", 7, "7 Units with Wave"),
+            CustomFilter.withAntiWave(7, "7 Anti-Wave Units"),
+            TraitFilter(getTrait(Data.TRAIT_WHITE), 7, "7 Anti-Traitless Units")
         )
 
         val seasonal = Product(1,
