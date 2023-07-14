@@ -73,7 +73,7 @@ class Activate : Command(LangID.EN, true) {
     private fun getText() : String {
         val builder = StringBuilder("Select banners to activate/deactivate\n\n")
 
-        val activators = Activator.values()
+        val activators = Activator.entries.toTypedArray()
 
         for (i in 0 until min(3, activators.size)) {
             builder.append("**")
