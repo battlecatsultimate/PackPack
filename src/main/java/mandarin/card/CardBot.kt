@@ -169,6 +169,14 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}t4" -> Check(CardData.Tier.LEGEND).execute(event)
             "${globalPrefix}approve" -> Approve().execute(event)
             "${globalPrefix}notice" -> Notice().execute(event)
+            "${globalPrefix}poolt1",
+            "${globalPrefix}p1" -> Pool(CardData.Tier.COMMON).execute(event)
+            "${globalPrefix}poolt2",
+            "${globalPrefix}p2" -> Pool(CardData.Tier.UNCOMMON).execute(event)
+            "${globalPrefix}poolt3",
+            "${globalPrefix}p3" -> Pool(CardData.Tier.ULTRA).execute(event)
+            "${globalPrefix}poolt4",
+            "${globalPrefix}p4" -> Pool(CardData.Tier.LEGEND).execute(event)
         }
 
         val session = findSession(event.channel.idLong) ?: return

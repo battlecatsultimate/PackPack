@@ -30,9 +30,9 @@ class Activate : Command(LangID.EN, true) {
     private fun getComponents() : List<LayoutComponent> {
         val rows = ArrayList<ActionRow>()
 
-        val activators = Activator.values()
+        val activators = Activator.entries.toTypedArray()
 
-        val dataSize = Activator.values().size
+        val dataSize = Activator.entries.size
 
         for (i in 0 until min(dataSize, 3)) {
             rows.add(ActionRow.of(Button.secondary(i.toString(), activators[i].title).withEmoji(if (activators[i] in CardData.activatedBanners) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF)))
