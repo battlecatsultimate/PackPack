@@ -39,6 +39,8 @@ object CardBot : ListenerAdapter() {
     private var ready = false
     private var notifier = 0
 
+    private var logout = false
+
     @JvmStatic
     fun main(args: Array<String>) {
         initialize()
@@ -177,6 +179,7 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}p3" -> Pool(CardData.Tier.ULTRA).execute(event)
             "${globalPrefix}poolt4",
             "${globalPrefix}p4" -> Pool(CardData.Tier.LEGEND).execute(event)
+            "${globalPrefix}salvage" -> Salvage().execute(event)
         }
 
         val session = findSession(event.channel.idLong) ?: return

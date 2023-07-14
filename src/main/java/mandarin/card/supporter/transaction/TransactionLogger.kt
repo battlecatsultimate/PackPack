@@ -372,4 +372,24 @@ object TransactionLogger {
             .setAllowedMentions(ArrayList())
             .queue()
     }
+
+    fun logSalvage(member: Long, cardAmount: Int) {
+        if (!this::logChannel.isInitialized)
+            return
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("Cards Salvaged")
+
+        builder.setColor(StaticStore.rainbow.random())
+
+        builder.setDescription("Member <@$member> salvaged T1 cards")
+
+        builder.addField("Number of Cards", "$cardAmount", false)
+        builder.addField("Received CF", "${cardAmount * 300}", false)
+
+        logChannel.sendMessageEmbeds(builder.build())
+                .setAllowedMentions(ArrayList())
+                .queue()
+    }
 }
