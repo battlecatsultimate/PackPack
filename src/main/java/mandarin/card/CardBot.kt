@@ -30,12 +30,14 @@ import java.io.FileWriter
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.collections.ArrayList
 
 object CardBot : ListenerAdapter() {
     var globalPrefix = "cd."
     var test = false
 
     private var ready = false
+    private var notifier = 0
 
     @JvmStatic
     fun main(args: Array<String>) {
@@ -73,6 +75,56 @@ object CardBot : ListenerAdapter() {
 
         StaticStore.saver.schedule(object : TimerTask() {
             override fun run() {
+                if (notifier == 2) {
+                    notifier = 0
+
+                    val removeQueue = ArrayList<String>()
+
+                    CardData.notifierGroup.forEach { n ->
+                        client.retrieveUserById(n).queue { u ->
+                            val packList = StringBuilder()
+
+                            val cooldown = CardData.cooldown[u.id] ?: return@queue
+
+                            cooldown.forEachIndexed { i, c ->
+                                val currentTime = CardData.getUnixEpochTime()
+
+                                if (c > 0 && c - currentTime <= 0) {
+                                    val packName = when (i) {
+                                        CardData.LARGE -> "Large Pack"
+                                        CardData.SMALL -> "Small Pack"
+                                        CardData.PREMIUM -> "Premium Pack"
+                                        else -> ""
+                                    }
+
+                                    packList.append("- ")
+                                            .append(packName)
+                                            .append("\n")
+                                }
+                            }
+
+                            if (packList.isNotBlank()) {
+                                u.openPrivateChannel().queue({ private ->
+                                    private.sendMessage("You can roll pack below!\n\n$packList").queue {
+                                        for (i in cooldown.indices) {
+                                            if (cooldown[i] > 0)
+                                                cooldown[i] = 0
+                                        }
+                                    }
+                                }, { _ ->
+                                    removeQueue.add(n)
+                                })
+                            }
+                        }
+                    }
+
+                    if (removeQueue.isNotEmpty()) {
+                        CardData.notifierGroup.removeAll(removeQueue.toSet())
+                    }
+                } else {
+                    notifier++
+                }
+
                 saveCardData()
             }
         }, 0, TimeUnit.MINUTES.toMillis(1))
@@ -116,6 +168,7 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}checkt4",
             "${globalPrefix}t4" -> Check(CardData.Tier.LEGEND).execute(event)
             "${globalPrefix}approve" -> Approve().execute(event)
+            "${globalPrefix}notice" -> Notice().execute(event)
         }
 
         val session = findSession(event.channel.idLong) ?: return
@@ -268,6 +321,14 @@ object CardBot : ListenerAdapter() {
             )
         }
 
+        if (obj.has("notifierGroup")) {
+            val arr = obj.getAsJsonArray("notifierGroup")
+
+            arr.forEach { e ->
+                CardData.notifierGroup.add(e.asString)
+            }
+        }
+
         if (obj.has("cooldown")) {
             obj.getAsJsonArray("cooldown").forEach {
                 val o = it.asJsonObject
@@ -407,6 +468,14 @@ object CardBot : ListenerAdapter() {
         }
 
         obj.add("tradeCooldown", tradeTrialCooldown)
+
+        val notifierGroup = JsonArray()
+
+        CardData.notifierGroup.forEach { id ->
+            notifierGroup.add(id)
+        }
+
+        obj.add("notifierGroup", notifierGroup)
 
         try {
             val folder = File("./data/")

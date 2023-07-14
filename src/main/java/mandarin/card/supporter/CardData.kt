@@ -231,6 +231,8 @@ object CardData {
 
     private val allowedChannel = ServerData.getArray("allowedChannel")
 
+    val notifierGroup = ArrayList<String>()
+
     /*
     -------------------------------------------------------
     |                        Packs                        |
