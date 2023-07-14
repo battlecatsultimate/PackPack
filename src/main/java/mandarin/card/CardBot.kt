@@ -39,7 +39,7 @@ object CardBot : ListenerAdapter() {
     private var ready = false
     private var notifier = 0
 
-    private var logout = false
+    var locked = false
 
     @JvmStatic
     fun main(args: Array<String>) {
@@ -142,6 +142,9 @@ object CardBot : ListenerAdapter() {
         if (m.id != StaticStore.MANDARIN_SMELL && !CardData.isManager(m) && !CardData.isAllowed(ch))
             return
 
+        if (locked && m.id != StaticStore.MANDARIN_SMELL && !CardData.isMod(m))
+            return
+
         val segments = event.message.contentRaw.lowercase().split(" ")
 
         val firstSegment = if (segments.isEmpty())
@@ -180,6 +183,8 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}poolt4",
             "${globalPrefix}p4" -> Pool(CardData.Tier.LEGEND).execute(event)
             "${globalPrefix}salvage" -> Salvage().execute(event)
+            "${globalPrefix}lock" -> Lock().execute(event)
+            "${globalPrefix}unlock" -> Unlock().execute(event)
         }
 
         val session = findSession(event.channel.idLong) ?: return
@@ -289,6 +294,10 @@ object CardBot : ListenerAdapter() {
 
         val obj = element.asJsonObject
 
+        if (obj.has("locked")) {
+            locked = obj.get("locked").asBoolean
+        }
+
         if (obj.has("inventory")) {
             val arr = obj.getAsJsonArray("inventory")
 
@@ -388,6 +397,9 @@ object CardBot : ListenerAdapter() {
     @Synchronized
     fun saveCardData() {
         val obj = JsonObject()
+
+        obj.addProperty("locked", locked)
+
         val inventory = JsonArray()
 
         for (key in CardData.inventories.keys) {
