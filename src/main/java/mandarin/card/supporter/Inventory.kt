@@ -82,7 +82,13 @@ class Inventory {
                 val roleArray = obj.getAsJsonArray("roles")
 
                 for (r in roleArray) {
-                    inventory.vanityRoles.add(CardData.Role.valueOf(r.asString))
+                    when (r.asString) {
+                        "ASSASSIN" -> inventory.vanityRoles.add(CardData.Role.BAKOO)
+                        "ANGELIC" -> inventory.vanityRoles.add(CardData.Role.YOUCAN)
+                        "SIRSEAL" -> inventory.vanityRoles.add(CardData.Role.AHIRUJO)
+                        "MOOTH" -> inventory.vanityRoles.add(CardData.Role.GOBBLE)
+                        else -> inventory.vanityRoles.add(CardData.Role.valueOf(r.asString))
+                    }
                 }
             }
 
