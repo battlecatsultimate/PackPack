@@ -88,9 +88,9 @@ object CardBot : ListenerAdapter() {
 
                             val cooldown = CardData.cooldown[u.id] ?: return@queue
 
-                            cooldown.forEachIndexed { i, c ->
-                                val currentTime = CardData.getUnixEpochTime()
+                            val currentTime = CardData.getUnixEpochTime()
 
+                            cooldown.forEachIndexed { i, c ->
                                 if (c > 0 && c - currentTime <= 0) {
                                     val packName = when (i) {
                                         CardData.LARGE -> "Large Pack"
@@ -109,7 +109,7 @@ object CardBot : ListenerAdapter() {
                                 u.openPrivateChannel().queue({ private ->
                                     private.sendMessage("You can roll pack below!\n\n$packList").queue {
                                         for (i in cooldown.indices) {
-                                            if (cooldown[i] > 0)
+                                            if (cooldown[i] > 0 && cooldown[i] - currentTime <= 0)
                                                 cooldown[i] = 0
                                         }
                                     }
