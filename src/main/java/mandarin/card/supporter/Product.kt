@@ -113,7 +113,7 @@ class Product(val requiredFilter: Int, vararg filters: Filter) {
             ProcFilter("IMUWEAK", 5, "5 Units with Immunity to Weaken"),
             TraitFilter(getTrait(Data.TRAIT_ANGEL), 7, "7 Anti-Angel Units"),
             CustomFilter.withOmni(3, "3 Omni Strike Units"),
-            AbilityFilter(Data.AB_CKILL, 3, "3 Units with Colossus Slayer")
+            AbilityFilter(Data.AB_BAKILL, 3, "3 Units with Colossus Slayer")
         )
 
         val omens = Product(3,
@@ -122,7 +122,7 @@ class Product(val requiredFilter: Int, vararg filters: Filter) {
             TraitFilter(getTrait(Data.TRAIT_DEMON), 7, "7 Anti-Aku Units"),
             ProcFilter("IMUVOLC", 5, "5 Units with Immunity to Surge"),
             ProcFilter("VOLC", 3, "3 Units with Surge"),
-            AbilityFilter(Data.AB_CKILL, 3, "3 Units with Colossus Slayer")
+            AbilityFilter(Data.AB_BAKILL, 3, "3 Units with Colossus Slayer")
         )
 
         val luza = Product(3,
@@ -130,7 +130,7 @@ class Product(val requiredFilter: Int, vararg filters: Filter) {
             ProcFilter("IMUCURSE", 9, "9 Units with Immunity to Curse"),
             CustomFilter.withOmni(5, "5 Omni Strike Units"),
             ProcFilter("STRONG", 5, "5 Units with Strengthen"),
-            AbilityFilter(Data.AB_CKILL, 5, "5 Units with Colossus Slayer"),
+            AbilityFilter(Data.AB_BAKILL, 5, "5 Units with Colossus Slayer"),
             ProcFilter("CURSE", 3, "3 Units with Curse")
         )
 
