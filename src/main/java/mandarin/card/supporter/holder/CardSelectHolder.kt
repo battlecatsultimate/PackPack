@@ -95,7 +95,7 @@ class CardSelectHolder(author: Message, channelID: String, messageID: String, pr
 
                 filterCards()
 
-                if (cards.size < page * SearchHolder.PAGE_CHUNK) {
+                if (cards.size <= page * SearchHolder.PAGE_CHUNK && page > 0) {
                     page--
                 }
 
@@ -116,7 +116,7 @@ class CardSelectHolder(author: Message, channelID: String, messageID: String, pr
 
                 filterCards()
 
-                if (cards.size < page * SearchHolder.PAGE_CHUNK) {
+                if (cards.size <= page * SearchHolder.PAGE_CHUNK && page > 0) {
                     page--
                 }
 

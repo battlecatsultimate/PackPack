@@ -214,7 +214,7 @@ class SuggestInventoryHolder(
 
                 filterCards()
 
-                if (cards.size < page * SearchHolder.PAGE_CHUNK) {
+                if (cards.size <= page * SearchHolder.PAGE_CHUNK && page > 0) {
                     page--
                 }
 
