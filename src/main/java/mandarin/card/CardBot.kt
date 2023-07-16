@@ -139,6 +139,9 @@ object CardBot : ListenerAdapter() {
         val m = event.member ?: return
         val ch = event.channel
 
+        if (CardData.isBanned(m))
+            return
+
         if (m.id != StaticStore.MANDARIN_SMELL && !CardData.isManager(m) && !CardData.isAllowed(ch))
             return
 
@@ -199,12 +202,18 @@ object CardBot : ListenerAdapter() {
     override fun onGenericInteractionCreate(event: GenericInteractionCreateEvent) {
         super.onGenericInteractionCreate(event)
 
-        val u = event.user
+        val m = event.member ?: return
+
+        if (CardData.isBanned(m))
+            return
+
+        if (locked && !CardData.isMod(m))
+            return
 
         when(event) {
             is ModalInteractionEvent,
             is GenericComponentInteractionCreateEvent-> {
-                StaticStore.getHolderHub(u.id)?.handleEvent(event)
+                StaticStore.getHolderHub(m.id)?.handleEvent(event)
             }
         }
     }
