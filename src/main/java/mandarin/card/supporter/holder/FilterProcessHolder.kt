@@ -130,7 +130,7 @@ class FilterProcessHolder : ComponentHolder {
                             StaticStore.logger.uploadLog("W/FilterProcessHolder::onEvent - Bot found card with negative amount : ${card.cardInfo()}")
 
                             inventory.cards.remove(card)
-                        } else {
+                        } else if (inventory.cards[card]!! == 0) {
                             inventory.cards.remove(card)
                         }
                     }
