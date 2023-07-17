@@ -22,7 +22,7 @@ class Buy : Command(LangID.EN, true) {
         val author = getMessage(event) ?: return
 
         val inventory = Inventory.getInventory(m.id)
-        val possibleRoles = CardData.Role.values().filter { r -> r != CardData.Role.NONE && r !in inventory.vanityRoles }.toList()
+        val possibleRoles = CardData.Role.entries.filter { r -> r != CardData.Role.NONE && r !in inventory.vanityRoles }.toList()
 
         val msg = getRepliedMessageSafely(ch, "Please select a list that you want to get", author) {
             a -> a.setComponents(registerComponents(possibleRoles, inventory))
@@ -42,7 +42,7 @@ class Buy : Command(LangID.EN, true) {
 
                 (0..1).any { i -> CardData.permanents[i].any { b -> cards.containsAll(CardData.bannerData[i][b].toList()) && cards.contains(CardData.regularLegend[i * 9 + b]) } }
             } else {
-                role.getProduct().possibleFilters.filter { f -> inventory.cards.keys.filter { c -> f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 0 } > f.amount }.size >= role.getProduct().requiredFilter
+                role.getProduct().possibleFilters.filter { f -> inventory.cards.keys.filter { c -> f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 0 } >= f.amount }.size >= role.getProduct().requiredFilter
             }
 
             options.add(SelectOption.of(role.title, role.key).withEmoji(EmojiStore.ABILITY[role.key]).withDescription(if (affordable) "Affordable" else "Cannot Afford"))
@@ -55,11 +55,11 @@ class Buy : Command(LangID.EN, true) {
 
         val restOptions = ArrayList<SelectOption>()
 
-        var affordable = Product.customEmoji.possibleFilters.filter { f -> inventory.cards.keys.filter { c -> f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 0 } > f.amount }.size >= Product.customEmoji.requiredFilter
+        var affordable = Product.customEmoji.possibleFilters.filter { f -> inventory.cards.keys.filter { c -> f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 0 } >= f.amount }.size >= Product.customEmoji.requiredFilter
 
         restOptions.add(SelectOption.of("Custom Emoji", "emoji").withDescription(if (affordable) "Affordable" else "Cannot Afford"))
 
-        affordable = Product.customRole.possibleFilters.filter { f -> inventory.cards.keys.filter { c -> f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 0 } > f.amount }.size >= Product.customRole.requiredFilter
+        affordable = Product.customRole.possibleFilters.filter { f -> inventory.cards.keys.filter { c -> f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 0 } >= f.amount }.size >= Product.customRole.requiredFilter
 
         restOptions.add(SelectOption.of("Custom Role", "role").withDescription(if (affordable) "Affordable" else "Cannot Afford"))
 
