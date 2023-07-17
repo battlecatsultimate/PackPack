@@ -3,6 +3,7 @@ package mandarin.card.supporter
 import com.google.api.client.util.DateTime
 import com.google.gson.JsonParser
 import mandarin.packpack.supporter.StaticStore
+import mandarin.packpack.supporter.bc.DataToString
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
@@ -13,8 +14,13 @@ import org.apache.http.impl.client.HttpClientBuilder
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.URI
+import java.text.DecimalFormat
+import java.text.NumberFormat
 import java.time.Clock
 import java.time.Instant
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 object CardData {
     /*
@@ -235,6 +241,15 @@ object CardData {
 
     val notifierGroup = ArrayList<String>()
 
+    val df = {
+        val nf = NumberFormat.getInstance(Locale.US)
+
+        val decimal = nf as DecimalFormat
+        decimal.applyPattern("#.###")
+
+        decimal
+    }.invoke()
+
     /*
     -------------------------------------------------------
     |                        Packs                        |
@@ -414,7 +429,7 @@ object CardData {
         return (if (day == 0L) "" else if (day == 1L) "$day day " else "$day days ") +
                 (if (hour == 0L) "" else if (hour == 1L) "$hour hour " else "$hour hours ") +
                 (if (minute == 0L) "" else if (minute == 1L) "$minute minute " else "$minute minutes ") +
-                (if (secondTime == 0.0) "" else if (secondTime <= 1.0) "$secondTime second " else "$secondTime seconds ")
+                (if (secondTime == 0.0) "" else if (secondTime <= 1.0) "${df.format(secondTime)} second " else "${df.format(secondTime)} seconds ")
     }
 
     fun isAllowed(ch: MessageChannel) : Boolean {
