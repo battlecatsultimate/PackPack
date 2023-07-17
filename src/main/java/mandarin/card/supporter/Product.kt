@@ -134,7 +134,7 @@ class Product(val requiredFilter: Int, vararg filters: Filter) {
             ProcFilter("CURSE", 3, "3 Units with Curse")
         )
 
-        val hermitCat = Product(2,
+        val hermitCat = Product(3,
             ProcFilter("WAVE", 7, "7 Units with Wave"),
             CustomFilter.withAntiWave(7, "7 Anti-Wave Units"),
             TraitFilter(getTrait(Data.TRAIT_WHITE), 7, "7 Anti-Traitless Units")
