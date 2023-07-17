@@ -27,7 +27,7 @@ class Product(val requiredFilter: Int, vararg filters: Filter) {
         )
 
         val bakoo = Product(2,
-                TraitFilter(getTrait(Data.TRAIT_BLACK), 5, "3 Anti-Black Units"),
+                TraitFilter(getTrait(Data.TRAIT_BLACK), 5, "5 Anti-Black Units"),
                 ProcFilter("STOP", 3, "3 Units with Freeze"),
                 ProcFilter("IMUSTOP", 3, "3 Units with Immunity to Freeze"),
                 CustomFilter.withLD(1, "1 LD Unit")
