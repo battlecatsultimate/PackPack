@@ -238,14 +238,12 @@ object CardData {
 
     val notifierGroup = ArrayList<String>()
 
-    val df = {
+    val df = run {
         val nf = NumberFormat.getInstance(Locale.US)
-
         val decimal = nf as DecimalFormat
         decimal.applyPattern("#.###")
-
         decimal
-    }.invoke()
+    }
 
     /*
     -------------------------------------------------------

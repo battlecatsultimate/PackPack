@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder
 
+import mandarin.card.CardBot
 import mandarin.card.supporter.Card
 import mandarin.card.supporter.CardComparator
 import mandarin.card.supporter.CardData
@@ -12,6 +13,7 @@ import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.SearchHolder
 import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.interactions.components.ActionRow
@@ -20,7 +22,9 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.utils.FileUpload
 import kotlin.math.min
+import kotlin.random.Random
 
 class CardSalvageHolder(author: Message, channelID: String, private val message: Message) : ComponentHolder(author, channelID, message.id) {
     private val inventory = Inventory.getInventory(author.author.id)
@@ -118,6 +122,87 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
                                 .queue()
                     })
                 }
+
+                CardBot.saveCardData()
+
+                expired = true
+                expire(authorMessage.author.id)
+            }
+            "craft" -> {
+                val g = event.guild ?: return
+
+                inventory.removeCards(selectedCard)
+
+                val chance = Random.nextDouble()
+
+                if (chance <= 0.7) {
+                    val cf = selectedCard.size * 300
+
+                    val cost = cf / 100000 + 1
+
+                    if (TatsuHandler.canInteract(cost, false)) {
+                        var c = cf
+
+                        while (c > 0) {
+                            val possible = min(c, 100000)
+
+                            TatsuHandler.modifyPoints(g.idLong, authorMessage.author.idLong, possible, TatsuHandler.Action.ADD, true)
+
+                            c -= possible
+                        }
+
+                        TransactionLogger.logSalvage(authorMessage.author.idLong, selectedCard.size)
+
+                        event.deferEdit()
+                                .setContent("Failed to craft tier 2 card..., so you received ${EmojiStore.ABILITY["CF"]?.formatted} ${selectedCard.size * 300}")
+                                .setComponents()
+                                .mentionRepliedUser(false)
+                                .setAllowedMentions(ArrayList())
+                                .queue()
+                    } else {
+                        TransactionGroup.queue(TransactionQueue(cost) {
+                            event.deferEdit()
+                                    .setContent("Failed to create tier 2 card..., ${EmojiStore.ABILITY["CF"]?.formatted} ${selectedCard.size * 300} will be received around ${TransactionGroup.groupQueue.size + 1} minute(s) later. Once job is done, bot will mention you")
+                                    .setComponents()
+                                    .mentionRepliedUser(false)
+                                    .setAllowedMentions(ArrayList())
+                                    .queue()
+
+                            var c = cf
+
+                            while (c > 0) {
+                                val possible = min(c, 100000)
+
+                                TatsuHandler.modifyPoints(g.idLong, authorMessage.author.idLong, possible, TatsuHandler.Action.ADD, true)
+
+                                c -= possible
+                            }
+
+                            TransactionLogger.logSalvage(authorMessage.author.idLong, selectedCard.size)
+
+                            event.messageChannel
+                                    .sendMessage("You received ${EmojiStore.ABILITY["CF"]?.formatted} ${selectedCard.size * 300}")
+                                    .setMessageReference(authorMessage)
+                                    .mentionRepliedUser(false)
+                                    .setAllowedMentions(ArrayList())
+                                    .queue()
+                        })
+                    }
+                } else {
+                    val card = CardData.appendUncommon(CardData.uncommon).random()
+
+                    inventory.addCards(listOf(card))
+
+                    event.deferEdit()
+                            .setContent("Successfully crafted tier 2 cards, and you obtained card below!\n\n${card.cardInfo()}")
+                            .setFiles(FileUpload.fromData(card.cardImage, "card.png"))
+                            .setComponents()
+                            .setAllowedMentions(ArrayList())
+                            .mentionRepliedUser(false)
+                            .queue()
+                }
+
+                CardBot.saveCardData()
 
                 expired = true
                 expire(authorMessage.author.id)
@@ -335,7 +420,8 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
 
         val confirmButtons = ArrayList<Button>()
 
-        confirmButtons.add(Button.primary("salvage", "Salvage").withDisabled(selectedCard.size < 10))
+        confirmButtons.add(Button.success("craft", "Craft T2 Card").withDisabled(selectedCard.size != 10).withEmoji(Emoji.fromUnicode("\uD83D\uDEE0\uFE0F")))
+        confirmButtons.add(Button.primary("salvage", "Salvage").withDisabled(selectedCard.size < 10).withEmoji(Emoji.fromUnicode("\uD83E\uDE84")))
         confirmButtons.add(Button.secondary("all", "Add All").withDisabled(selectedCard.size == inventory.cards.keys.filter { c -> c.tier == CardData.Tier.COMMON }.sumOf { c -> inventory.cards[c] ?: 0 }))
         confirmButtons.add(Button.danger("reset", "Reset").withDisabled(selectedCard.isEmpty()))
         confirmButtons.add(Button.danger("cancel", "Cancel"))
