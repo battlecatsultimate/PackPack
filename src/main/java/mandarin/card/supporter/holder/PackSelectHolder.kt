@@ -407,7 +407,7 @@ class PackSelectHolder(author: Message, channelID: String, message: Message, pri
 
                     if (chance <= 0.93) {
                         result.add(CardData.common.random())
-                    } else if (chance <= 0.99) {
+                    } else if (chance <= 0.995) {
                         result.add(CardData.ultraRare.random())
                     } else {
                         result.add(CardData.appendLR(CardData.legendRare).random())

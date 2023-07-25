@@ -210,7 +210,7 @@ object CardData {
 
     val bankAccount = ServerData.get("bankAccount")
 
-    val banned = ServerData.get("banned")
+    private val banned = ServerData.get("banned")
 
     val tradingPlace = ServerData.get("tradingPlace")
     val testTradingPlace = ServerData.get("testTradingPlace")
@@ -326,7 +326,7 @@ object CardData {
     }
 
     fun appendUncommon(banner: List<Card>) : List<Card> {
-        val result = ArrayList<Card>(banner)
+        val result = ArrayList(banner)
 
         activatedBanners.forEach { b ->
             result.addAll(bannerData[b.tier.ordinal][b.banner].mapNotNull { i -> cards.find { c -> c.unitID == i && c.tier == b.tier } })
@@ -336,7 +336,7 @@ object CardData {
     }
 
     fun appendLR(banner: List<Card>) : List<Card> {
-        val result = ArrayList<Card>(banner)
+        val result = ArrayList(banner)
 
         if (Activator.Bikkuriman in activatedBanners) {
             result.addAll(bannerData[Tier.LEGEND.ordinal][0].mapNotNull { i -> cards.find { c -> c.unitID == i && c.tier == Tier.LEGEND } })
