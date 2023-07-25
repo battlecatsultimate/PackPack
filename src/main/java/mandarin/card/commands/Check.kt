@@ -31,6 +31,10 @@ class Check(private val tier: CardData.Tier) : Command(LangID.EN, true) {
             val inventory = Inventory.getInventory(member.id)
 
             inventory.cards.keys.any { c -> c.tier == tier }
+        }.sortedByDescending {
+            val inventory = Inventory.getInventory(it.id)
+
+            inventory.cards.keys.filter { c -> c.tier == tier }.sumOf { c -> inventory.cards[c] ?: 0 }
         }
 
         if (members.isNotEmpty()) {
@@ -51,12 +55,16 @@ class Check(private val tier: CardData.Tier) : Command(LangID.EN, true) {
             builder.append("Below list is members who have T${tier.ordinal + 1} cards\n\n")
 
             for (i in 0 until min(members.size, SearchHolder.PAGE_CHUNK)) {
+                val inventory = Inventory.getInventory(members[i].id)
+
                 builder.append(i + 1)
                     .append(". ")
                     .append(members[i].asMention)
                     .append(" [")
                     .append(members[i].id)
-                    .append("]\n")
+                    .append("] x")
+                    .append(inventory.cards.keys.filter { c -> c.tier == tier }.sumOf { c -> inventory.cards[c] ?: 0 })
+                    .append("\n")
             }
         } else {
             builder.append("There are no members who have T${tier.ordinal + 1} cards yet")

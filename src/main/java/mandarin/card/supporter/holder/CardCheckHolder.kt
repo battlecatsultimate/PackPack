@@ -1,6 +1,7 @@
 package mandarin.card.supporter.holder
 
 import mandarin.card.supporter.CardData
+import mandarin.card.supporter.Inventory
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.SearchHolder
@@ -77,12 +78,16 @@ class CardCheckHolder(author: Message, channelID: String, message: Message, priv
             builder.append("Below list is members who have T${tier.ordinal + 1} cards\n\n")
 
             for (i in page * SearchHolder.PAGE_CHUNK until min(members.size, (page + 1) * SearchHolder.PAGE_CHUNK)) {
+                val inventory = Inventory.getInventory(members[i].id)
+
                 builder.append(i + 1)
                     .append(". ")
                     .append(members[i].asMention)
                     .append(" [")
                     .append(members[i].id)
-                    .append("]\n")
+                    .append("] x")
+                    .append(inventory.cards.keys.filter { c -> c.tier == tier }.sumOf { c -> inventory.cards[c] ?: 0 })
+                    .append("\n")
             }
         } else {
             builder.append("There are no members who have T${tier.ordinal + 1} cards yet")
