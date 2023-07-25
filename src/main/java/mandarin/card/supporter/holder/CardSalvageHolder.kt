@@ -85,7 +85,7 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
                         c -= possible
                     }
 
-                    TransactionLogger.logSalvage(authorMessage.author.idLong, selectedCard.size)
+                    TransactionLogger.logSalvage(authorMessage.author.idLong, selectedCard.size, selectedCard)
 
                     event.deferEdit()
                             .setContent("Salvaged ${selectedCard.size} cards, and you received ${EmojiStore.ABILITY["CF"]?.formatted} ${selectedCard.size * 300}!")
@@ -112,7 +112,7 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
                             c -= possible
                         }
 
-                        TransactionLogger.logSalvage(authorMessage.author.idLong, selectedCard.size)
+                        TransactionLogger.logSalvage(authorMessage.author.idLong, selectedCard.size, selectedCard)
 
                         event.messageChannel
                                 .sendMessage("Salvaged ${selectedCard.size} cards, and you received ${EmojiStore.ABILITY["CF"]?.formatted} ${selectedCard.size * 300}!")
@@ -151,7 +151,7 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
                             c -= possible
                         }
 
-                        TransactionLogger.logSalvage(authorMessage.author.idLong, selectedCard.size)
+                        TransactionLogger.logCraft(authorMessage.author.idLong, selectedCard.size, null, selectedCard)
 
                         event.deferEdit()
                                 .setContent("Failed to craft tier 2 card..., so you received ${EmojiStore.ABILITY["CF"]?.formatted} ${selectedCard.size * 300}")
@@ -178,7 +178,7 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
                                 c -= possible
                             }
 
-                            TransactionLogger.logSalvage(authorMessage.author.idLong, selectedCard.size)
+                            TransactionLogger.logCraft(authorMessage.author.idLong, selectedCard.size, null, selectedCard)
 
                             event.messageChannel
                                     .sendMessage("You received ${EmojiStore.ABILITY["CF"]?.formatted} ${selectedCard.size * 300}")
@@ -190,6 +190,8 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
                     }
                 } else {
                     val card = CardData.appendUncommon(CardData.uncommon).random()
+
+                    TransactionLogger.logCraft(authorMessage.author.idLong, selectedCard.size, card, selectedCard)
 
                     inventory.addCards(listOf(card))
 

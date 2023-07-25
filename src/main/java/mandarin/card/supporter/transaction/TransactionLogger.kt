@@ -373,7 +373,7 @@ object TransactionLogger {
             .queue()
     }
 
-    fun logSalvage(member: Long, cardAmount: Int) {
+    fun logSalvage(member: Long, cardAmount: Int, cards: List<Card>) {
         if (!this::logChannel.isInitialized)
             return
 
@@ -385,11 +385,142 @@ object TransactionLogger {
 
         builder.setDescription("Member <@$member> salvaged T1 cards")
 
-        builder.addField("Number of Cards", "$cardAmount", false)
-        builder.addField("Received CF", "${cardAmount * 300}", false)
+        builder.addField("Number of Cards", "$cardAmount", true)
+        builder.addField("Received CF", "${cardAmount * 300}", true)
+
+        val checker = StringBuilder()
+
+        for (card in cards.toSet()) {
+            checker.append("- ")
+                .append(card.cardInfo())
+
+            val amount = cards.filter { c -> card.unitID == c.unitID }.size
+
+            if (amount > 2) {
+                checker.append(" x")
+                    .append(amount)
+            }
+
+            checker.append("\n")
+        }
+
+        if (checker.length >= MessageEmbed.VALUE_MAX_LENGTH) {
+            builder.addField("Cards", "Check cards messages below", false)
+
+            modChannel.sendMessageEmbeds(builder.build())
+                .setAllowedMentions(ArrayList())
+                .queue()
+
+            checker.clear()
+
+            for (card in cards.toSet()) {
+                var line = "- ${card.cardInfo()}"
+
+                val amount = cards.filter { c -> card.unitID == c.unitID }.size
+
+                if (amount > 2) {
+                    line += " x$amount"
+                }
+
+                if (checker.length + line.length > 1900) {
+                    modChannel.sendMessage(checker.toString()).queue()
+
+                    checker.clear()
+                }
+
+                checker.append(line)
+                    .append("\n")
+            }
+
+            modChannel.sendMessage(checker.toString()).queue()
+        } else {
+            builder.addField("Cards", checker.toString(), false)
+
+            modChannel.sendMessageEmbeds(builder.build())
+                .setAllowedMentions(ArrayList())
+                .queue()
+        }
 
         logChannel.sendMessageEmbeds(builder.build())
                 .setAllowedMentions(ArrayList())
                 .queue()
+    }
+
+    fun logCraft(member: Long, cardAmount: Int, craftedCard: Card?, cards: List<Card>) {
+        if (!this::logChannel.isInitialized)
+            return
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("Tried to Craft")
+
+        builder.setColor(StaticStore.rainbow.random())
+
+        builder.setDescription("Member <@$member> tried to craft T2 cards")
+
+        if (craftedCard != null) {
+            builder.addField("Successful?", "Yes", true)
+            builder.addField("Received Card", craftedCard.cardInfo(), true)
+        } else {
+            builder.addField("Successful?", "No", true)
+            builder.addField("Received CF", "${cardAmount * 300}", true)
+        }
+
+        val checker = StringBuilder()
+
+        for (card in cards.toSet()) {
+            checker.append("- ")
+                .append(card.cardInfo())
+
+            val amount = cards.filter { c -> card.unitID == c.unitID }.size
+
+            if (amount > 2) {
+                checker.append(" x")
+                    .append(amount)
+            }
+
+            checker.append("\n")
+        }
+
+        if (checker.length >= MessageEmbed.VALUE_MAX_LENGTH) {
+            builder.addField("Cards", "Check cards messages below", false)
+
+            modChannel.sendMessageEmbeds(builder.build())
+                .setAllowedMentions(ArrayList())
+                .queue()
+
+            checker.clear()
+
+            for (card in cards.toSet()) {
+                var line = "- ${card.cardInfo()}"
+
+                val amount = cards.filter { c -> card.unitID == c.unitID }.size
+
+                if (amount > 2) {
+                    line += " x$amount"
+                }
+
+                if (checker.length + line.length > 1900) {
+                    modChannel.sendMessage(checker.toString()).queue()
+
+                    checker.clear()
+                }
+
+                checker.append(line)
+                    .append("\n")
+            }
+
+            modChannel.sendMessage(checker.toString()).queue()
+        } else {
+            builder.addField("Cards", checker.toString(), false)
+
+            modChannel.sendMessageEmbeds(builder.build())
+                .setAllowedMentions(ArrayList())
+                .queue()
+        }
+
+        logChannel.sendMessageEmbeds(builder.build())
+            .setAllowedMentions(ArrayList())
+            .queue()
     }
 }
