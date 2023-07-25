@@ -18,9 +18,34 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
+import java.util.function.Consumer
 import kotlin.math.min
 
-class RequirementSelectHolder(author: Message, channelID: String, private val message: Message, private val product: Product, private val inventory: Inventory, private val role: CardData.Role) : ComponentHolder(author, channelID, message.id) {
+class RequirementSelectHolder : ComponentHolder {
+    private val message: Message
+    private val product: Product
+    private val inventory: Inventory
+    private val role: CardData.Role
+    private val reward: Consumer<GenericComponentInteractionCreateEvent>
+
+    constructor(author: Message, channelID: String, message: Message, product: Product, inventory: Inventory, role: CardData.Role) : super(author, channelID, message.id) {
+        this.message = message
+        this.product = product
+        this.inventory = inventory
+        this.role = role
+
+        reward = Consumer {  }
+    }
+
+    constructor(author: Message, channelID: String, message: Message, product: Product, inventory: Inventory, reward: Consumer<GenericComponentInteractionCreateEvent>) : super(author, channelID, message.id) {
+        this.message = message
+        this.product = product
+        this.inventory = inventory
+        this.reward = reward
+
+        role = CardData.Role.NONE
+    }
+
     private val filters = ArrayList<Filter>()
 
     override fun clean() {
@@ -73,7 +98,11 @@ class RequirementSelectHolder(author: Message, channelID: String, private val me
 
                 expire(authorMessage.author.id)
 
-                StaticStore.putHolder(authorMessage.author.id, FilterProcessHolder(authorMessage, channelID, message, product, filters, inventory, role))
+                if (role != CardData.Role.NONE) {
+                    StaticStore.putHolder(authorMessage.author.id, FilterProcessHolder(authorMessage, channelID, message, product, filters, inventory, role))
+                } else {
+                    StaticStore.putHolder(authorMessage.author.id, FilterProcessHolder(authorMessage, channelID, message, product, filters, inventory, reward))
+                }
             }
             "cancel" -> {
                 expired = true

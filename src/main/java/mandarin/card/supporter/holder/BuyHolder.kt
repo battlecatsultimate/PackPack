@@ -194,7 +194,11 @@ class BuyHolder(author: Message, channelID: String, private val message: Message
 
                 expire(authorMessage.author.id)
 
-                StaticStore.putHolder(authorMessage.author.id, FilterProcessHolder(authorMessage, channelID, message, product, product.possibleFilters.toList(), inventory, reward))
+                if (product.requiredFilter != product.possibleFilters.size) {
+                    StaticStore.putHolder(authorMessage.author.id, RequirementSelectHolder(authorMessage, channelID, message, product, inventory, reward))
+                } else {
+                    StaticStore.putHolder(authorMessage.author.id, FilterProcessHolder(authorMessage, channelID, message, product, product.possibleFilters.toList(), inventory, reward))
+                }
             }
             "cancel" -> {
                 expired = true
