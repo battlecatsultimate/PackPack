@@ -188,6 +188,7 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}salvage" -> Salvage().execute(event)
             "${globalPrefix}lock" -> Lock().execute(event)
             "${globalPrefix}unlock" -> Unlock().execute(event)
+            "${globalPrefix}craft" -> Craft().execute(event)
         }
 
         val session = findSession(event.channel.idLong) ?: return

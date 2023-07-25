@@ -26,7 +26,7 @@ import net.dv8tion.jda.api.utils.FileUpload
 import kotlin.math.min
 import kotlin.random.Random
 
-class CardSalvageHolder(author: Message, channelID: String, private val message: Message) : ComponentHolder(author, channelID, message.id) {
+class CardSalvageHolder(author: Message, channelID: String, private val message: Message, private val salvageMode: Boolean) : ComponentHolder(author, channelID, message.id) {
     private val inventory = Inventory.getInventory(author.author.id)
     private val cards = ArrayList<Card>(inventory.cards.keys.filter { c -> c.tier == CardData.Tier.COMMON }.sortedWith(CardComparator()))
 
@@ -371,10 +371,12 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
                 .setPlaceholder(
                         if (cards.isEmpty())
                             "No Cards To Select"
+                        else if (!salvageMode && selectedCard.size == 10)
+                            "Selected all 10 cards"
                         else
                             "Select Card"
                 )
-                .setDisabled(cards.isEmpty())
+                .setDisabled(cards.isEmpty() || (!salvageMode && selectedCard.size == 10))
                 .build()
 
         rows.add(ActionRow.of(cardCategory))
@@ -420,8 +422,11 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
 
         val confirmButtons = ArrayList<Button>()
 
-        confirmButtons.add(Button.success("craft", "Craft T2 Card").withDisabled(selectedCard.size != 10).withEmoji(Emoji.fromUnicode("\uD83D\uDEE0\uFE0F")))
-        confirmButtons.add(Button.primary("salvage", "Salvage").withDisabled(selectedCard.size < 10).withEmoji(Emoji.fromUnicode("\uD83E\uDE84")))
+        if (salvageMode)
+            confirmButtons.add(Button.primary("salvage", "Salvage").withDisabled(selectedCard.size < 10).withEmoji(Emoji.fromUnicode("\uD83E\uDE84")))
+        else
+            confirmButtons.add(Button.success("craft", "Craft T2 Card").withDisabled(selectedCard.size != 10).withEmoji(Emoji.fromUnicode("\uD83D\uDEE0\uFE0F")))
+
         confirmButtons.add(Button.secondary("all", "Add All").withDisabled(selectedCard.size == inventory.cards.keys.filter { c -> c.tier == CardData.Tier.COMMON }.sumOf { c -> inventory.cards[c] ?: 0 }))
         confirmButtons.add(Button.danger("reset", "Reset").withDisabled(selectedCard.isEmpty()))
         confirmButtons.add(Button.danger("cancel", "Cancel"))
@@ -432,7 +437,12 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
     }
 
     private fun getText() : String {
-        val builder = StringBuilder("Select 10 or more Tier 1 [Common] cards\n\n### Selected Cards\n\n")
+        val builder = StringBuilder(
+            if (salvageMode)
+                "Select 10 or more Tier 1 [Common] cards\n\n### Selected Cards\n\n"
+            else
+                "Select 10 Tier 1 [Common] cards to craft\n\n### Selected Cards\n\n"
+        )
 
         if (selectedCard.isNotEmpty()) {
             val checker = StringBuilder()

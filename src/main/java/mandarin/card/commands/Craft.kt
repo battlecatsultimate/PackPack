@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import kotlin.math.min
 
-class Salvage : Command(LangID.EN, true) {
+class Craft : Command(LangID.EN, true) {
     override fun doSomething(event: GenericMessageEvent?) {
         val ch = getChannel(event) ?: return
         val m = getMember(event) ?: return
@@ -30,14 +30,14 @@ class Salvage : Command(LangID.EN, true) {
         val cards = inventory.cards.keys.filter { c -> c.tier == CardData.Tier.COMMON }.sortedWith(CardComparator())
 
         if (cards.sumOf { inventory.cards[it] ?: 1 } < 10) {
-            replyToMessageSafely(ch, "You have to have at least 10 Tier 1 [Common] cards to salvage them!", getMessage(event)) { a -> a }
+            replyToMessageSafely(ch, "You have to have at least 10 Tier 1 [Common] cards to craft Tier 2 [Uncommon] cards!!", getMessage(event)) { a -> a }
 
             return
         }
 
         val message = getRepliedMessageSafely(ch, getPremiumText(cards, inventory), getMessage(event)) { a -> a.setComponents(assignComponents(cards)) }
 
-        StaticStore.putHolder(m.id, CardSalvageHolder(getMessage(event), ch.id, message, true))
+        StaticStore.putHolder(m.id, CardSalvageHolder(getMessage(event), ch.id, message, false))
     }
 
     private fun assignComponents(cards: List<Card>) : List<LayoutComponent> {
@@ -52,8 +52,8 @@ class Salvage : Command(LangID.EN, true) {
         }
 
         val bannerCategory = StringSelectMenu.create("category")
-                .addOptions(bannerCategoryElements)
-                .setPlaceholder("Filter Cards by Banners")
+            .addOptions(bannerCategoryElements)
+            .setPlaceholder("Filter Cards by Banners")
 
         rows.add(ActionRow.of(bannerCategory.build()))
 
@@ -70,15 +70,15 @@ class Salvage : Command(LangID.EN, true) {
         }
 
         val cardCategory = StringSelectMenu.create("card")
-                .addOptions(cardCategoryElements)
-                .setPlaceholder(
-                        if (cards.isEmpty())
-                            "No Cards To Select"
-                        else
-                            "Select Card"
-                )
-                .setDisabled(cards.isEmpty())
-                .build()
+            .addOptions(cardCategoryElements)
+            .setPlaceholder(
+                if (cards.isEmpty())
+                    "No Cards To Select"
+                else
+                    "Select Card"
+            )
+            .setDisabled(cards.isEmpty())
+            .build()
 
         rows.add(ActionRow.of(cardCategory))
 
@@ -107,7 +107,7 @@ class Salvage : Command(LangID.EN, true) {
 
         val confirmButtons = ArrayList<Button>()
 
-        confirmButtons.add(Button.primary("salvage", "Salvage").asDisabled().withEmoji(Emoji.fromUnicode("\uD83E\uDE84")))
+        confirmButtons.add(Button.success("craft", "Craft T2 Card").asDisabled().withEmoji(Emoji.fromUnicode("\uD83D\uDEE0\uFE0F")))
         confirmButtons.add(Button.secondary("all", "Add All"))
         confirmButtons.add(Button.danger("reset", "Reset").asDisabled())
         confirmButtons.add(Button.danger("cancel", "Cancel"))
@@ -118,7 +118,7 @@ class Salvage : Command(LangID.EN, true) {
     }
 
     private fun getPremiumText(cards: List<Card>, inventory: Inventory) : String {
-        val builder = StringBuilder("Select 10 or more Tier 1 [Common] cards to salvage\n\n### Selected Cards\n\n- No Cards Selected\n\n```md\n")
+        val builder = StringBuilder("Select 10 Tier 1 [Common] cards to craft\n\n### Selected Cards\n\n- No Cards Selected\n\n```md\n")
 
         if (cards.isNotEmpty()) {
             for (i in 0 until min(SearchHolder.PAGE_CHUNK, cards.size)) {
