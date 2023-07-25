@@ -218,7 +218,7 @@ object CardData {
     val tradingLog = ServerData.get("tradingLog")
     val modLog = ServerData.get("modLog")
 
-    const val MAX_CARDS = 10
+    const val MAX_CARDS = 20
     const val TAX = 0.1
 
     var sessionNumber = 1L
