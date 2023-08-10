@@ -11,7 +11,7 @@ class Unlock : Command(LangID.EN, true) {
     override fun doSomething(event: GenericMessageEvent?) {
         val m = getMember(event) ?: return
 
-        if (m.id != StaticStore.MANDARIN_SMELL && !CardData.isMod(m))
+        if (m.id != StaticStore.MANDARIN_SMELL && !CardData.isManager(m))
             return
 
         val ch = getChannel(event) ?: return

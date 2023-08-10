@@ -22,7 +22,7 @@ class Check(private val tier: CardData.Tier) : Command(LangID.EN, true) {
         val g = getGuild(event) ?: return
         val m = getMember(event) ?: return
 
-        if (m.id != StaticStore.MANDARIN_SMELL && !CardData.isMod(m))
+        if (m.id != StaticStore.MANDARIN_SMELL && !CardData.isManager(m))
             return
 
         val ids = CardData.inventories.keys

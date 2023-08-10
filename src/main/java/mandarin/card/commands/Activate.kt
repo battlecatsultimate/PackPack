@@ -19,7 +19,7 @@ class Activate : Command(LangID.EN, true) {
         val ch = getChannel(event) ?: return
         val m = getMember(event) ?: return
 
-        if (m.id != StaticStore.MANDARIN_SMELL && !CardData.isMod(m))
+        if (m.id != StaticStore.MANDARIN_SMELL && !CardData.isManager(m))
             return
 
         val msg = getRepliedMessageSafely(ch, getText(), getMessage(event)) { a -> a.setComponents(getComponents()) }

@@ -29,7 +29,7 @@ class Cards : Command(LangID.EN, true) {
 
         val member = findMember(getContent(event).split(" "), g) ?: m
 
-        if (m.id != member.id && !CardData.isMod(m) && m.id != StaticStore.MANDARIN_SMELL) {
+        if (m.id != member.id && !CardData.isManager(m) && m.id != StaticStore.MANDARIN_SMELL) {
             replyToMessageSafely(ch, "You don't have permission to watch other user's inventory", getMessage(event)) { a -> a }
 
             return

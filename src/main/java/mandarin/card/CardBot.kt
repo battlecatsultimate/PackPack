@@ -145,7 +145,7 @@ object CardBot : ListenerAdapter() {
         if (m.id != StaticStore.MANDARIN_SMELL && !CardData.isManager(m) && !CardData.isAllowed(ch))
             return
 
-        if (locked && m.id != StaticStore.MANDARIN_SMELL && !CardData.isMod(m))
+        if (locked && m.id != StaticStore.MANDARIN_SMELL && !CardData.isManager(m))
             return
 
         val segments = event.message.contentRaw.lowercase().split(" ")
@@ -208,7 +208,7 @@ object CardBot : ListenerAdapter() {
         if (CardData.isBanned(m))
             return
 
-        if (locked && !CardData.isMod(m))
+        if (locked && !CardData.isManager(m))
             return
 
         when(event) {
