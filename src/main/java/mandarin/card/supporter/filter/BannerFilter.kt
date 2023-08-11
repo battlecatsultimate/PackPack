@@ -41,10 +41,10 @@ class BannerFilter(private val banner: Banner, amount: Int, name: String) : Filt
                 card.unitID in CardData.busters
             }
             Banner.Collaboration -> {
-                (9..21).any { card.unitID in CardData.bannerData[CardData.Tier.UNCOMMON.ordinal][it] }
+                card.unitID in CardData.bannerData[CardData.Tier.UNCOMMON.ordinal][3]
             }
             Banner.Seasonal -> {
-                (2..8).any { card.unitID in CardData.bannerData[CardData.Tier.UNCOMMON.ordinal][it] }
+                card.unitID in CardData.bannerData[CardData.Tier.UNCOMMON.ordinal][2]
             }
             else -> {
                 card.unitID in banner.getBannerData()
