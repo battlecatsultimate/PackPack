@@ -108,7 +108,6 @@ class Craft : Command(LangID.EN, true) {
         val confirmButtons = ArrayList<Button>()
 
         confirmButtons.add(Button.success("craft", "Craft T2 Card").asDisabled().withEmoji(Emoji.fromUnicode("\uD83D\uDEE0\uFE0F")))
-        confirmButtons.add(Button.secondary("all", "Add All"))
         confirmButtons.add(Button.danger("reset", "Reset").asDisabled())
         confirmButtons.add(Button.danger("cancel", "Cancel"))
 

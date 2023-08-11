@@ -429,7 +429,9 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
         else
             confirmButtons.add(Button.success("craft", "Craft T2 Card").withDisabled(selectedCard.size != 10).withEmoji(Emoji.fromUnicode("\uD83D\uDEE0\uFE0F")))
 
-        confirmButtons.add(Button.secondary("all", "Add All").withDisabled(selectedCard.size == inventory.cards.keys.filter { c -> c.tier == CardData.Tier.COMMON }.sumOf { c -> inventory.cards[c] ?: 0 }))
+        if (salvageMode)
+            confirmButtons.add(Button.secondary("all", "Add All").withDisabled(selectedCard.size == inventory.cards.keys.filter { c -> c.tier == CardData.Tier.COMMON }.sumOf { c -> inventory.cards[c] ?: 0 }))
+
         confirmButtons.add(Button.danger("reset", "Reset").withDisabled(selectedCard.isEmpty()))
         confirmButtons.add(Button.danger("cancel", "Cancel"))
 
