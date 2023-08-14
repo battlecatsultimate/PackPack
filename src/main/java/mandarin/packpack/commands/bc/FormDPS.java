@@ -163,12 +163,8 @@ public class FormDPS extends TimedConstraintCommand {
     private String filterCommand(String msg) {
         String[] content = msg.split(" ");
 
-        boolean isSec = false;
         boolean isLevel = false;
         boolean isTalent = false;
-        boolean isExtra = false;
-        boolean isCompact = false;
-        boolean isTrueForm = false;
         boolean isTreasure = false;
 
         StringBuilder command = new StringBuilder();
@@ -177,25 +173,9 @@ public class FormDPS extends TimedConstraintCommand {
             boolean written = false;
 
             switch (content[i]) {
-                case "-s" -> {
-                    if (!isSec)
-                        isSec = true;
-                    else {
-                        command.append(content[i]);
-                        written = true;
-                    }
-                }
                 case "-t" -> {
                     if (!isTalent)
                         isTalent = true;
-                    else {
-                        command.append(content[i]);
-                        written = true;
-                    }
-                }
-                case "-e", "-extra" -> {
-                    if (!isExtra)
-                        isExtra = true;
                     else {
                         command.append(content[i]);
                         written = true;
@@ -213,22 +193,6 @@ public class FormDPS extends TimedConstraintCommand {
 
                         isLevel = true;
                     } else {
-                        command.append(content[i]);
-                        written = true;
-                    }
-                }
-                case "-c", "-compact" -> {
-                    if (!isCompact)
-                        isCompact = true;
-                    else {
-                        command.append(content[i]);
-                        written = true;
-                    }
-                }
-                case "-tf", "-trueform" -> {
-                    if (!isTrueForm)
-                        isTrueForm = true;
-                    else {
                         command.append(content[i]);
                         written = true;
                     }
