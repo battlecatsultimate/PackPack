@@ -607,6 +607,7 @@ public class AllEventAdapter extends ListenerAdapter {
             case "treasure", "tr" -> new Treasure(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
             case "boosterpin", "bp" -> new BoosterPin(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
             case "switcheventgrabber", "seg" -> new SwitchEventGrabber(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "formdps", "catdps", "unitdps", "fdps", "cdps", "udps", "fd", "cd", "ud" -> new FormDPS(ConstraintCommand.ROLE.MEMBER, lang, idh, c, 10000).execute(event);
         }
     }
 

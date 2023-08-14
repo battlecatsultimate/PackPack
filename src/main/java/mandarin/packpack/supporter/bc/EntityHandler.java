@@ -2,6 +2,7 @@ package mandarin.packpack.supporter.bc;
 
 import com.google.gson.JsonObject;
 import common.CommonStatic;
+import common.battle.data.MaskAtk;
 import common.battle.data.MaskUnit;
 import common.battle.data.PCoin;
 import common.pack.PackData;
@@ -26,6 +27,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.awt.FG2D;
 import mandarin.packpack.supporter.awt.FIBI;
 import mandarin.packpack.supporter.bc.cell.*;
+import mandarin.packpack.supporter.calculation.Equation;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
@@ -52,6 +54,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
@@ -3337,6 +3340,576 @@ public class EntityHandler {
 
         if (icon != null)
             Command.sendMessageWithFile(ch, "", e.build(), icon, "combo.png", reference);
+    }
+
+    public static void showFormDPS(MessageChannel ch, Message authorMessage, Form f, TreasureHolder treasureSetting, Level lv, ConfigHolder config, boolean talent, boolean treasure, int lang) throws Exception {
+        int level = lv.getLv();
+        int levelp = lv.getPlusLv();
+
+        if(level <= 0) {
+            if(f.unit.rarity == 0)
+                level = 110;
+            else {
+                if(config == null)
+                    level = 30;
+                else
+                    level = config.defLevel;
+            }
+        }
+
+        if(level > f.unit.max) {
+            levelp = level - f.unit.max;
+            level = f.unit.max;
+
+            if(levelp > f.unit.maxp)
+                levelp = f.unit.maxp;
+
+            if(levelp < 0)
+                levelp = 0;
+        }
+
+        lv.setLevel(level);
+        lv.setPlusLevel(levelp);
+
+        int[] t;
+
+        if(talent && f.du.getPCoin() != null) {
+            t = f.du.getPCoin().max.clone();
+        } else
+            t = null;
+
+        if(t != null) {
+            t = handleTalent(f, lv, t);
+
+            lv.setTalents(t);
+        }
+
+        List<BigDecimal> nodes = new ArrayList<>();
+
+        if (f.du == null)
+            return;
+
+        MaskUnit du;
+
+        if (talent && f.du.getPCoin() != null) {
+            du = f.du.getPCoin().improve(lv.getTalents());
+        } else {
+            du = f.du;
+        }
+
+        if (!du.isLD() && !du.isOmni()) {
+            nodes.add(new BigDecimal("-320"));
+            nodes.add(BigDecimal.valueOf(du.getRange()));
+        } else {
+            if (DataToString.allRangeSame(du)) {
+                MaskAtk attack = du.getAtkModel(0);
+
+                int shortPoint = attack.getShortPoint();
+                int width = attack.getLongPoint() - attack.getShortPoint();
+
+                nodes.add(BigDecimal.valueOf(Math.min(shortPoint, shortPoint + width)));
+                nodes.add(BigDecimal.valueOf(Math.max(shortPoint, shortPoint + width)));
+            } else {
+                for (int i = 0; i < du.getAtkCount(); i++) {
+                    MaskAtk attack = du.getAtkModel(i);
+
+                    int shortPoint = attack.getShortPoint();
+                    int width = attack.getLongPoint() - attack.getShortPoint();
+
+                    nodes.add(BigDecimal.valueOf(Math.min(shortPoint, shortPoint + width)));
+                    nodes.add(BigDecimal.valueOf(Math.max(shortPoint, shortPoint + width)));
+                }
+            }
+        }
+
+        MaskAtk representativeAttack = du.getRepAtk();
+
+        common.util.Data.Proc.VOLC surgeAbility = representativeAttack.getProc().VOLC;
+        common.util.Data.Proc.MINIVOLC miniSurgeAbility = representativeAttack.getProc().MINIVOLC;
+
+        boolean surge = surgeAbility.exists() || miniSurgeAbility.exists();
+
+        BigDecimal shortSurgeDistance = BigDecimal.ZERO;
+        BigDecimal longSurgeDistance = BigDecimal.ZERO;
+        BigDecimal surgeLevel = BigDecimal.ZERO;
+        BigDecimal surgeChance = BigDecimal.ZERO;
+        BigDecimal surgeMultiplier = BigDecimal.ZERO;
+
+        if (surge) {
+            if (surgeAbility.exists()) {
+                shortSurgeDistance = BigDecimal.valueOf(surgeAbility.dis_0);
+                longSurgeDistance = BigDecimal.valueOf(surgeAbility.dis_1);
+                surgeLevel = BigDecimal.valueOf(surgeAbility.time).divide(BigDecimal.valueOf(Data.VOLC_ITV), Equation.context);
+                surgeChance = BigDecimal.valueOf(surgeAbility.prob).divide(new BigDecimal("100"), Equation.context);
+                surgeMultiplier = BigDecimal.ONE;
+            } else {
+                shortSurgeDistance = BigDecimal.valueOf(miniSurgeAbility.dis_0);
+                longSurgeDistance = BigDecimal.valueOf(miniSurgeAbility.dis_1);
+                surgeLevel = BigDecimal.valueOf(miniSurgeAbility.time).divide(new BigDecimal("20"), Equation.context);
+                surgeChance = BigDecimal.valueOf(miniSurgeAbility.prob).divide(new BigDecimal("100"), Equation.context);
+                surgeMultiplier = BigDecimal.valueOf(miniSurgeAbility.mult).divide(new BigDecimal("100"), Equation.context);
+            }
+        }
+
+        BigDecimal chance = BigDecimal.ZERO;
+
+        if (surge) {
+            BigDecimal minimumDistance = shortSurgeDistance.min(longSurgeDistance);
+            BigDecimal maximumDistance = shortSurgeDistance.max(longSurgeDistance);
+
+            nodes.add(minimumDistance.subtract(BigDecimal.valueOf(Data.W_VOLC_INNER)));
+            nodes.add(maximumDistance.add(BigDecimal.valueOf(Data.W_VOLC_PIERCE)));
+
+            BigDecimal minimumPierce = minimumDistance.add(BigDecimal.valueOf(Data.W_VOLC_PIERCE));
+            BigDecimal maximumInner = maximumDistance.subtract(BigDecimal.valueOf(Data.W_VOLC_INNER));
+
+            nodes.add(minimumPierce);
+            nodes.add(maximumInner);
+
+            if (minimumPierce.subtract(maximumInner).compareTo(BigDecimal.ZERO) > 0) {
+                chance = BigDecimal.ONE;
+            } else {
+                chance = BigDecimal.valueOf(Data.W_VOLC_INNER + Data.W_VOLC_PIERCE)
+                        .divide(maximumDistance.subtract(minimumDistance), Equation.context);
+            }
+        }
+
+        nodes = new ArrayList<>(new HashSet<>(nodes));
+
+        BigDecimal minimumValue = new BigDecimal("-320");
+        BigDecimal maximumValue = new BigDecimal("-320");
+
+        for (int i = 0; i < nodes.size(); i++) {
+            minimumValue = minimumValue.min(nodes.get(i));
+            maximumValue = maximumValue.max(nodes.get(i));
+        }
+
+        nodes.add(minimumValue.subtract(new BigDecimal("100")));
+        nodes.add(maximumValue.add(new BigDecimal("100")));
+
+        nodes.sort(BigDecimal::compareTo);
+
+        List<BigDecimal[]> coordinates = new ArrayList<>();
+        List<BigDecimal[]> withTreasure = new ArrayList<>();
+
+        final BigDecimal multiplier = chance
+                .multiply(surgeChance)
+                .multiply(surgeLevel)
+                .multiply(surgeMultiplier);
+
+        for (int i = 0; i < nodes.size(); i++) {
+            BigDecimal range = nodes.get(i);
+
+            List<Integer> possibleAttack = getAttackIndex(range, du);
+
+            BigDecimal y1 = BigDecimal.ZERO;
+            BigDecimal y2 = BigDecimal.ZERO;
+            BigDecimal y3 = BigDecimal.ZERO;
+
+            if (surge && inSurgeArea(range, shortSurgeDistance, longSurgeDistance)) {
+                BigDecimal surgeDamage = getTotalSurgeAttack(du, f.unit.lv, lv, treasureSetting, talent, false);
+
+                if (inSurgeIntersectionArea(range, shortSurgeDistance, longSurgeDistance)) {
+                    y1 = y1.add(multiplier.multiply(surgeDamage));
+                    y2 = y2.add(multiplier.multiply(surgeDamage));
+                    y3 = y3.add(multiplier.multiply(surgeDamage));
+                } else {
+                    BigDecimal minimumSurgeDistance = shortSurgeDistance.min(longSurgeDistance);
+                    BigDecimal maximumSurgeDistance = shortSurgeDistance.max(longSurgeDistance);
+
+                    BigDecimal minimumSurgeRange = minimumSurgeDistance.subtract(BigDecimal.valueOf(Data.W_VOLC_INNER));
+                    BigDecimal maximumSurgeRange = maximumSurgeDistance.add(BigDecimal.valueOf(Data.W_VOLC_PIERCE));
+
+                    BigDecimal minimumPierce = minimumSurgeDistance.add(BigDecimal.valueOf(Data.W_VOLC_PIERCE));
+                    BigDecimal maximumInner = maximumSurgeDistance.subtract(BigDecimal.valueOf(Data.W_VOLC_INNER));
+
+                    BigDecimal value = BigDecimal.ZERO;
+
+                    if (range.compareTo(minimumPierce.min(maximumInner)) <= 0 && range.compareTo(minimumSurgeRange) >= 0) {
+                        value = multiplier.multiply(surgeDamage).divide(minimumPierce.min(maximumInner).subtract(minimumSurgeRange), Equation.context).multiply(range.subtract(minimumSurgeRange));
+                    } else if (range.compareTo(minimumPierce.max(maximumInner)) >= 0 && range.compareTo(maximumSurgeRange) <= 0) {
+                        value = multiplier.multiply(surgeDamage).divide(minimumPierce.max(maximumInner).subtract(maximumSurgeRange), Equation.context).multiply(range.subtract(maximumSurgeRange));
+                    }
+
+                    y1 = y1.add(value);
+                    y2 = y2.add(value);
+                    y3 = y3.add(value);
+                }
+            }
+
+            boolean startRange = false;
+            boolean endRange = false;
+
+            for (int j = 0; j < possibleAttack.size(); j++) {
+                int rawIndex = possibleAttack.get(j);
+
+                if (rawIndex >= 1000) {
+                    startRange = true;
+                } else if (rawIndex <= -1000) {
+                    endRange = true;
+                }
+            }
+
+            if (startRange && endRange) {
+                for (int j = 0; j < possibleAttack.size(); j++) {
+                    int rawIndex = possibleAttack.get(j);
+
+                    int index;
+
+                    if (rawIndex >= 1000)
+                        index = rawIndex - 1000;
+                    else if (rawIndex <= -1000)
+                        index = -rawIndex - 1000;
+                    else
+                        index = rawIndex;
+
+                    BigDecimal damage = getAttack(index, du, f.unit.lv, lv, treasureSetting, talent, false);
+
+                    if (rawIndex >= 1000) {
+                        y1 = y1.add(damage);
+                        y3 = y3.add(damage);
+                    } else if (rawIndex <= -1000) {
+                        y2 = y2.add(damage);
+                        y3 = y3.add(damage);
+                    } else {
+                        y1 = y1.add(damage);
+                        y2 = y2.add(damage);
+                        y3 = y3.add(damage);
+                    }
+                }
+
+                coordinates.add(new BigDecimal[] { range, y1 });
+                coordinates.add(new BigDecimal[] { range, y3 });
+                coordinates.add(new BigDecimal[] { range, y3 });
+                coordinates.add(new BigDecimal[] { range, y2 });
+            } else {
+                for (int j = 0; j < possibleAttack.size(); j++) {
+                    int rawIndex = possibleAttack.get(j);
+
+                    int index;
+
+                    if (rawIndex >= 1000)
+                        index = rawIndex - 1000;
+                    else if (rawIndex <= -1000)
+                        index = -rawIndex - 1000;
+                    else
+                        index = rawIndex;
+
+                    BigDecimal damage = getAttack(index, du, f.unit.lv, lv, treasureSetting, talent, false);
+
+                    if (rawIndex >= 1000)
+                        y2 = y2.add(damage);
+                    else if (rawIndex <= -1000)
+                        y1 = y1.add(damage);
+                    else {
+                        y1 = y1.add(damage);
+                        y2 = y2.add(damage);
+                    }
+                }
+
+                coordinates.add(new BigDecimal[] { range, y1 });
+
+                if (y1.compareTo(y2) != 0) {
+                    coordinates.add(new BigDecimal[] { range, y2 });
+                }
+            }
+        }
+
+        if (treasure) {
+            for (int i = 0; i < nodes.size(); i++) {
+                BigDecimal range = nodes.get(i);
+
+                List<Integer> possibleAttack = getAttackIndex(range, du);
+
+                BigDecimal y1 = BigDecimal.ZERO;
+                BigDecimal y2 = BigDecimal.ZERO;
+
+                if (surge && inSurgeArea(range, shortSurgeDistance, longSurgeDistance)) {
+                    BigDecimal surgeDamage = getTotalSurgeAttack(du, f.unit.lv, lv, treasureSetting, talent, true);
+
+                    if (inSurgeIntersectionArea(range, shortSurgeDistance, longSurgeDistance)) {
+                        y1 = y1.add(multiplier.multiply(surgeDamage));
+                        y2 = y2.add(multiplier.multiply(surgeDamage));
+                    } else {
+                        BigDecimal minimumSurgeDistance = shortSurgeDistance.min(longSurgeDistance);
+                        BigDecimal maximumSurgeDistance = shortSurgeDistance.max(longSurgeDistance);
+
+                        BigDecimal minimumSurgeRange = minimumSurgeDistance.subtract(BigDecimal.valueOf(Data.W_VOLC_INNER));
+                        BigDecimal maximumSurgeRange = maximumSurgeDistance.add(BigDecimal.valueOf(Data.W_VOLC_PIERCE));
+
+                        BigDecimal minimumPierce = minimumSurgeDistance.add(BigDecimal.valueOf(Data.W_VOLC_PIERCE));
+                        BigDecimal maximumInner = maximumSurgeDistance.subtract(BigDecimal.valueOf(Data.W_VOLC_INNER));
+
+                        BigDecimal value = BigDecimal.ZERO;
+
+                        if (range.compareTo(minimumPierce.min(maximumInner)) <= 0 && range.compareTo(minimumSurgeRange) >= 0) {
+                            value = multiplier.multiply(surgeDamage).divide(minimumPierce.min(maximumInner).subtract(minimumSurgeRange), Equation.context).multiply(range.subtract(minimumSurgeRange));
+                        } else if (range.compareTo(minimumPierce.max(maximumInner)) >= 0 && range.compareTo(maximumSurgeRange) <= 0) {
+                            value = multiplier.multiply(surgeDamage).divide(minimumPierce.max(maximumInner).subtract(maximumSurgeRange), Equation.context).multiply(range.subtract(maximumSurgeRange));
+                        }
+
+                        y1 = y1.add(value);
+                        y2 = y2.add(value);
+                    }
+                }
+
+                for (int j = 0; j < possibleAttack.size(); j++) {
+                    int rawIndex = possibleAttack.get(j);
+
+                    int index;
+
+                    if (rawIndex >= 1000)
+                        index = rawIndex - 1000;
+                    else if (rawIndex <= -1000)
+                        index = -rawIndex - 1000;
+                    else
+                        index = rawIndex;
+
+                    BigDecimal damage = getAttack(index, du, f.unit.lv, lv, treasureSetting, talent, true);
+
+                    if (rawIndex >= 1000)
+                        y2 = y2.add(damage);
+                    else if (rawIndex <= -1000)
+                        y1 = y1.add(damage);
+                    else {
+                        y1 = y1.add(damage);
+                        y2 = y2.add(damage);
+                    }
+                }
+
+                withTreasure.add(new BigDecimal[] { range, y1 });
+
+                if (y1.compareTo(y2) != 0) {
+                    withTreasure.add(new BigDecimal[] { range, y2 });
+                }
+            }
+        }
+
+        for (int i = 0; i < coordinates.size(); i++) {
+            coordinates.get(i)[1] = coordinates.get(i)[1].divide(BigDecimal.valueOf(du.getItv()).divide(new BigDecimal("30"), Equation.context), Equation.context);
+        }
+
+        if (treasure) {
+            for (int i = 0; i < withTreasure.size(); i++) {
+                withTreasure.get(i)[1] = withTreasure.get(i)[1].divide(BigDecimal.valueOf(du.getItv()).divide(new BigDecimal("30"), Equation.context), Equation.context);
+            }
+        }
+
+        BigDecimal maximumDamage = BigDecimal.ZERO;
+        BigDecimal minimumX = new BigDecimal("-320");
+        BigDecimal maximumX = new BigDecimal("-320");
+
+        for (int i = 0; i < coordinates.size(); i++) {
+            maximumDamage = maximumDamage.max(coordinates.get(i)[1]);
+
+            minimumX = minimumX.min(coordinates.get(i)[0]);
+            maximumX = maximumX.max(coordinates.get(i)[0]);
+        }
+
+        if (treasure) {
+            for (int i = 0; i < withTreasure.size(); i++) {
+                maximumDamage = maximumDamage.max(withTreasure.get(i)[1]);
+
+                minimumX = minimumX.min(withTreasure.get(i)[0]);
+                maximumX = maximumX.max(withTreasure.get(i)[0]);
+            }
+        }
+
+        File result;
+
+        if (treasure && !allCoordinatesSame(coordinates, withTreasure)) {
+            result = ImageDrawing.plotDPSGraph(coordinates.toArray(new BigDecimal[0][0]), withTreasure.toArray(new BigDecimal[0][0]), new BigDecimal[] { minimumX, maximumX }, new BigDecimal[] { BigDecimal.ZERO, maximumDamage.multiply(new BigDecimal("1.1")) }, 0);
+        } else {
+            result = ImageDrawing.plotDPSGraph(coordinates.toArray(new BigDecimal[0][0]), null, new BigDecimal[] { minimumX, maximumX }, new BigDecimal[] { BigDecimal.ZERO, maximumDamage.multiply(new BigDecimal("1.1")) }, 0);
+        }
+
+        if (result == null) {
+            Command.replyToMessageSafely(ch, LangID.getStringByID("fdps_fail", lang), authorMessage, a -> a);
+        } else {
+            EmbedBuilder spec = new EmbedBuilder();
+
+            String name = MultiLangCont.get(f, lang);
+
+            if(name == null || name.isBlank())
+                name = Data.trio(f.unit.id.id) + "-" + Data.trio(f.fid);
+
+            String desc;
+
+            if (treasureSetting.differentFromGlobal()) {
+                desc = LangID.getStringByID("data_customtrea", lang) + "\n\n";
+            } else {
+                desc = "";
+            }
+
+            if (talent && f.du.getPCoin() != null) {
+                desc += LangID.getStringByID("data_customtalent", lang) + "\n\n";
+            }
+
+            if (treasure) {
+                desc += String.format(LangID.getStringByID("fdps_line", lang), EmojiStore.GREENLINE.getFormatted(), EmojiStore.REDDASHEDLINE.getFormatted());
+            }
+
+            int c;
+
+            if(f.fid == 0)
+                c = StaticStore.rainbow[4];
+            else if(f.fid == 1)
+                c = StaticStore.rainbow[3];
+            else
+                c = StaticStore.rainbow[2];
+
+            spec.setTitle(String.format(LangID.getStringByID("fdps_title", lang), name));
+
+            if (!desc.isBlank()) {
+                spec.setDescription(desc);
+            }
+
+            spec.setColor(c);
+
+            spec.setImage("attachment://graph.png");
+
+            Command.replyToMessageSafely(ch, "", authorMessage, a -> a.setEmbeds(spec.build())
+                    .addFiles(FileUpload.fromData(result, "graph.png")), m -> {
+                if(result.exists() && !result.delete()) {
+                    StaticStore.logger.uploadLog("Failed to delete file : "+result.getAbsolutePath());
+                }
+            });
+        }
+    }
+
+    private static boolean inSurgeArea(BigDecimal range, BigDecimal shortSurgeDistance, BigDecimal longSurgeDistance) {
+        BigDecimal minimumDistance = shortSurgeDistance.min(longSurgeDistance).subtract(BigDecimal.valueOf(Data.W_VOLC_INNER));
+        BigDecimal maximumDistance = shortSurgeDistance.max(longSurgeDistance).add(BigDecimal.valueOf(Data.W_VOLC_PIERCE));
+
+        return minimumDistance.compareTo(range) <= 0 && range.compareTo(maximumDistance) <= 0;
+    }
+
+    private static boolean inSurgeIntersectionArea(BigDecimal range, BigDecimal shortSurgeDistance, BigDecimal longSurgeDistance) {
+        BigDecimal minimumDistance = shortSurgeDistance.min(longSurgeDistance);
+        BigDecimal maximumDistance = shortSurgeDistance.max(longSurgeDistance);
+
+        BigDecimal minimumPierce = minimumDistance.add(BigDecimal.valueOf(Data.W_VOLC_PIERCE));
+        BigDecimal maximumInner = maximumDistance.subtract(BigDecimal.valueOf(Data.W_VOLC_INNER));
+
+        return maximumInner.min(minimumPierce).compareTo(range) <= 0 && range.compareTo(maximumInner.max(minimumPierce)) <= 0;
+    }
+
+    private static List<Integer> getAttackIndex(BigDecimal range, MaskUnit du) {
+        List<Integer> result = new ArrayList<>();
+
+        if (!du.isOmni() && !du.isLD()) {
+            if (new BigDecimal("-320").compareTo(range) <= 0 && range.compareTo(BigDecimal.valueOf(du.getRange())) <= 0) {
+                result.add(0);
+            }
+        } else {
+            if (DataToString.allRangeSame(du)) {
+                MaskAtk attack = du.getAtkModel(0);
+
+                BigDecimal shortPoint = BigDecimal.valueOf(attack.getShortPoint());
+                BigDecimal width = BigDecimal.valueOf(attack.getLongPoint() - attack.getShortPoint());
+
+                BigDecimal minimumDistance = shortPoint.min(shortPoint.add(width));
+                BigDecimal maximumDistance = shortPoint.max(shortPoint.add(width));
+
+                if (minimumDistance.compareTo(range) <= 0 && range.compareTo(maximumDistance) <= 0) {
+                    for (int i = 0; i < du.getAtkCount(); i++) {
+                        if (range.compareTo(minimumDistance) == 0) {
+                            result.add(1000 + i);
+                        } else if (range.compareTo(maximumDistance) == 0) {
+                            result.add(-1000 - i);
+                        } else {
+                            result.add(i);
+                        }
+                    }
+                }
+            } else {
+                for (int i = 0; i < du.getAtkCount(); i++) {
+                    MaskAtk attack = du.getAtkModel(i);
+
+                    BigDecimal shortPoint = BigDecimal.valueOf(attack.getShortPoint());
+                    BigDecimal width = BigDecimal.valueOf(attack.getLongPoint() - attack.getShortPoint());
+
+                    BigDecimal minimumDistance = shortPoint.min(shortPoint.add(width));
+                    BigDecimal maximumDistance = shortPoint.max(shortPoint.add(width));
+
+                    if (minimumDistance.compareTo(range) <= 0 && range.compareTo(maximumDistance) <= 0) {
+                        if (range.compareTo(minimumDistance) == 0) {
+                            result.add(1000 + i);
+                        } else if (range.compareTo(maximumDistance) == 0) {
+                            result.add(-1000 - i);
+                        } else {
+                            result.add(i);
+                        }
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private static BigDecimal getTotalSurgeAttack(MaskUnit data, UnitLevel levelCurve, Level lv, TreasureHolder t, boolean talent, boolean treasure) {
+        BigDecimal result = BigDecimal.ZERO;
+
+        for (int i = 0; i < data.getAtkCount(); i++) {
+            boolean abilityApplied = data.rawAtkData()[i][2] == 1;
+
+            if (abilityApplied) {
+                result = result.add(getAttack(i, data, levelCurve, lv, t, talent, treasure));
+            }
+        }
+
+        return result;
+    }
+
+    private static BigDecimal getAttack(int index, MaskUnit data, UnitLevel levelCurve, Level lv, TreasureHolder t, boolean talent, boolean treasure) {
+        MaskAtk attack = data.getAtkModel(index);
+
+        int result;
+
+        if(data.getPCoin() != null && talent) {
+            result = (int) ((int) (Math.round(attack.getAtk() * levelCurve.getMult(lv.getLv() + lv.getPlusLv())) * t.getAtkMultiplier()) * data.getPCoin().getAtkMultiplication(lv.getTalents()));
+        } else {
+            result = (int) (Math.round(attack.getAtk() * levelCurve.getMult(lv.getLv() + lv.getPlusLv())) * t.getAtkMultiplier());
+        }
+
+        if(treasure) {
+            List<Trait> traits = data.getTraits();
+
+            if((data.getAbi() & Data.AB_GOOD) > 0) {
+                result = (int) (result * t.getStrongAttackMultiplier(traits));
+            }
+
+            if((data.getAbi() & Data.AB_MASSIVE) > 0) {
+                result = (int) (result * t.getMassiveAttackMultiplier(traits));
+            }
+
+            if((data.getAbi() & Data.AB_MASSIVES) > 0) {
+                result = (int) (result * t.getInsaneMassiveAttackMultiplier(traits));
+            }
+        }
+
+        return BigDecimal.valueOf(result);
+    }
+
+    private static boolean allCoordinatesSame(List<BigDecimal[]> normal, List<BigDecimal[]> withTreasure) {
+        if (normal.size() != withTreasure.size())
+            return false;
+
+        for (int i = 0; i < normal.size(); i++) {
+            BigDecimal[] normalCoordinate = normal.get(i);
+            BigDecimal[] withTreasureCoordinate = withTreasure.get(i);
+
+            if (normalCoordinate.length != withTreasureCoordinate.length)
+                return false;
+
+            for (int j = 0; j < normalCoordinate.length; j++) {
+                if (normalCoordinate[j].compareTo(withTreasureCoordinate[j]) != 0)
+                    return false;
+            }
+        }
+
+        return true;
     }
 
     public static void generateStatImage(MessageChannel ch, List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilData, List<FlagCellData> traitData, CustomMaskUnit[] units, String[] name, File container, File itemContainer, int lv, boolean isFrame, int[] egg, int[][] trueForm, boolean trueFormMode, int uid, int lang) throws Exception {

@@ -1,4 +1,4 @@
-package mandarin.packpack.supporter.server.holder.component;
+package mandarin.packpack.supporter.server.holder.component.search;
 
 import common.system.files.VFile;
 import mandarin.packpack.commands.Command;

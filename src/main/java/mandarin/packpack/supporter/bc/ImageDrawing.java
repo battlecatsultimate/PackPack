@@ -31,11 +31,13 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.lzw.AnimatedGifEncoder;
 import net.dv8tion.jda.api.entities.Message;
 import org.apache.commons.lang3.SystemUtils;
+import org.jetbrains.annotations.Nullable;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
+import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -152,6 +154,7 @@ public class ImageDrawing {
     private static Font levelFont;
     private static Font fruitFont;
     private static Font plotFont;
+    private static Font axisFont;
 
     private static final int statPanelMargin = 120;
     private static final int bgMargin = 80;
@@ -211,6 +214,9 @@ public class ImageDrawing {
     private static final float plotStroke = 3f;
     private static final double angleLimit = 89.9995;
 
+    private static final int axisTitleGap = 40;
+    private static final int plotGraphOffset = 100;
+
     private static final int CHANCE_WIDTH = 0;
     private static final int REWARD_WIDTH = 1;
     private static final int AMOUNT_WIDTH = 2;
@@ -241,6 +247,7 @@ public class ImageDrawing {
             levelFont = Font.createFont(Font.TRUETYPE_FONT, medium).deriveFont(96f);
             fruitFont = Font.createFont(Font.TRUETYPE_FONT, medium).deriveFont(120f);
             plotFont = Font.createFont(Font.TRUETYPE_FONT, medium).deriveFont(28f);
+            axisFont = Font.createFont(Font.TRUETYPE_FONT, medium).deriveFont(36f);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -2545,8 +2552,8 @@ public class ImageDrawing {
         BigDecimal centerX = xRange[0].add(xWidth.divide(BigDecimal.valueOf(2), Equation.context));
         BigDecimal centerY = yRange[0].add(yWidth.divide(BigDecimal.valueOf(2), Equation.context));
 
-        int xLine = convertCoordinateToPixel(BigDecimal.ZERO, xWidth, centerX, true);
-        int yLine = convertCoordinateToPixel(BigDecimal.ZERO, yWidth, centerY, false);
+        int xLine = convertCoordinateToPixel(plotWidthHeight, BigDecimal.ZERO, xWidth, centerX, true);
+        int yLine = convertCoordinateToPixel(plotWidthHeight, BigDecimal.ZERO, yWidth, centerY, false);
 
         g.setColor(238, 238, 238, 255);
         g.setStroke(axisStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
@@ -2579,7 +2586,7 @@ public class ImageDrawing {
 
         while(xPosition.compareTo(xRange[1]) <= 0) {
             if(xPosition.compareTo(BigDecimal.ZERO) != 0) {
-                int xPos = convertCoordinateToPixel(xPosition, xWidth, centerX, true);
+                int xPos = convertCoordinateToPixel(plotWidthHeight, xPosition, xWidth, centerX, true);
 
                 g.setColor(238, 238, 238, 255);
                 g.setStroke(indicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
@@ -2625,7 +2632,7 @@ public class ImageDrawing {
 
         while(yPosition.compareTo(yRange[1]) <= 0) {
             if(yPosition.compareTo(BigDecimal.ZERO) != 0) {
-                int yPos = convertCoordinateToPixel(yPosition, yWidth, centerY, false);
+                int yPos = convertCoordinateToPixel(plotWidthHeight, yPosition, yWidth, centerY, false);
 
                 g.setColor(238, 238, 238, 255);
                 g.setStroke(indicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
@@ -2677,11 +2684,11 @@ public class ImageDrawing {
             if(coordinates[i][1] == null || coordinates[i + 1][1] == null || coordinates[i][0] == null || coordinates[i + 1][0] == null)
                 continue;
 
-            int x0 = convertCoordinateToPixel(coordinates[i][0], xWidth, centerX, true);
-            int x1 = convertCoordinateToPixel(coordinates[i + 1][0], xWidth, centerX, true);
+            int x0 = convertCoordinateToPixel(plotWidthHeight, coordinates[i][0], xWidth, centerX, true);
+            int x1 = convertCoordinateToPixel(plotWidthHeight, coordinates[i + 1][0], xWidth, centerX, true);
 
-            int y0 = convertCoordinateToPixel(coordinates[i][1], yWidth, centerY, false);
-            int y1 = convertCoordinateToPixel(coordinates[i + 1][1], yWidth, centerY, false);
+            int y0 = convertCoordinateToPixel(plotWidthHeight, coordinates[i][1], yWidth, centerY, false);
+            int y1 = convertCoordinateToPixel(plotWidthHeight, coordinates[i + 1][1], yWidth, centerY, false);
 
             double angle = Math.abs(Math.toDegrees(Math.atan2(coordinates[i + 1][1].subtract(coordinates[i][1]).doubleValue(), coordinates[i + 1][0].subtract(coordinates[i][0]).doubleValue())));
             int v = (int) angle / 90;
@@ -2746,8 +2753,8 @@ public class ImageDrawing {
         BigDecimal centerX = xRange[0].add(xWidth.divide(BigDecimal.valueOf(2), Equation.context));
         BigDecimal centerY = yRange[0].add(yWidth.divide(BigDecimal.valueOf(2), Equation.context));
 
-        int xLine = convertCoordinateToPixel(BigDecimal.ZERO, xWidth, centerX, true);
-        int yLine = convertCoordinateToPixel(BigDecimal.ZERO, yWidth, centerY, false);
+        int xLine = convertCoordinateToPixel(plotWidthHeight, BigDecimal.ZERO, xWidth, centerX, true);
+        int yLine = convertCoordinateToPixel(plotWidthHeight, BigDecimal.ZERO, yWidth, centerY, false);
 
         g.setColor(238, 238, 238, 255);
         g.setStroke(axisStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
@@ -2780,7 +2787,7 @@ public class ImageDrawing {
 
         while(xPosition.compareTo(xRange[1]) <= 0) {
             if(xPosition.compareTo(BigDecimal.ZERO) != 0) {
-                int xPos = convertCoordinateToPixel(xPosition, xWidth, centerX, true);
+                int xPos = convertCoordinateToPixel(plotWidthHeight, xPosition, xWidth, centerX, true);
 
                 g.setColor(238, 238, 238, 255);
                 g.setStroke(indicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
@@ -2826,7 +2833,7 @@ public class ImageDrawing {
 
         while(yPosition.compareTo(yRange[1]) <= 0) {
             if(yPosition.compareTo(BigDecimal.ZERO) != 0) {
-                int yPos = convertCoordinateToPixel(yPosition, yWidth, centerY, false);
+                int yPos = convertCoordinateToPixel(plotWidthHeight, yPosition, yWidth, centerY, false);
 
                 g.setColor(238, 238, 238, 255);
                 g.setStroke(indicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
@@ -2878,11 +2885,11 @@ public class ImageDrawing {
             if(coordinates[i][1] == null || coordinates[i + 1][1] == null || coordinates[i][0] == null || coordinates[i + 1][0] == null)
                 continue;
 
-            int x0 = convertCoordinateToPixel(coordinates[i][0], xWidth, centerX, true);
-            int x1 = convertCoordinateToPixel(coordinates[i + 1][0], xWidth, centerX, true);
+            int x0 = convertCoordinateToPixel(plotWidthHeight, coordinates[i][0], xWidth, centerX, true);
+            int x1 = convertCoordinateToPixel(plotWidthHeight, coordinates[i + 1][0], xWidth, centerX, true);
 
-            int y0 = convertCoordinateToPixel(coordinates[i][1], yWidth, centerY, false);
-            int y1 = convertCoordinateToPixel(coordinates[i + 1][1], yWidth, centerY, false);
+            int y0 = convertCoordinateToPixel(plotWidthHeight, coordinates[i][1], yWidth, centerY, false);
+            int y1 = convertCoordinateToPixel(plotWidthHeight, coordinates[i + 1][1], yWidth, centerY, false);
 
             double angle = Math.abs(Math.toDegrees(Math.atan2(coordinates[i + 1][1].subtract(coordinates[i][1]).doubleValue(), coordinates[i + 1][0].subtract(coordinates[i][0]).doubleValue())));
             int v = (int) angle / 90;
@@ -3635,14 +3642,214 @@ public class ImageDrawing {
         return new Object[] {image, text};
     }
 
-    private static int convertCoordinateToPixel(BigDecimal coordinate, BigDecimal range, BigDecimal center, boolean x) {
+    public static File plotDPSGraph(BigDecimal[][] coordinates, @Nullable BigDecimal[][] withTreasure, BigDecimal[] xRange, BigDecimal[] yRange, int lang) throws Exception {
+        File temp = new File("./temp");
+
+        if(!temp.exists() && !temp.mkdirs())
+            return null;
+
+        File image = StaticStore.generateTempFile(temp, "plot", ".png", false);
+
+        if(image == null)
+            return null;
+
+        BigDecimal xWidth = xRange[1].subtract(xRange[0]);
+        BigDecimal yWidth = yRange[1].subtract(yRange[0]);
+
+        BigDecimal centerX = xRange[0].add(xWidth.divide(BigDecimal.valueOf(2), Equation.context));
+        BigDecimal centerY = yRange[0].add(yWidth.divide(BigDecimal.valueOf(2), Equation.context));
+
+        BigDecimal xSegment = xWidth.divide(BigDecimal.TEN, Equation.context);
+
+        int xScale = (int) - (Math.round(Math.log10(xSegment.doubleValue())) + 0.5 - 0.5 * Math.signum(xSegment.doubleValue()));
+
+        if (xScale >= 0) {
+            xSegment = xSegment.round(new MathContext(1, RoundingMode.HALF_EVEN));
+        } else {
+            xSegment = xSegment.divide(BigDecimal.TEN.pow(-xScale), Equation.context).round(new MathContext(1, RoundingMode.HALF_EVEN)).multiply(BigDecimal.TEN.pow(-xScale));
+        }
+
+        BigDecimal ySegment = yWidth.divide(BigDecimal.TEN, Equation.context);
+
+        int yScale = (int) - (Math.round(Math.log10(ySegment.doubleValue())) + 0.5 - 0.5 * Math.signum(ySegment.doubleValue()));
+
+        if (yScale >= 0) {
+            ySegment = ySegment.round(new MathContext(1, RoundingMode.HALF_EVEN));
+        } else {
+            ySegment = ySegment.divide(BigDecimal.TEN.pow(-yScale), Equation.context).round(new MathContext(1, RoundingMode.HALF_EVEN)).multiply(BigDecimal.TEN.pow(-yScale));
+        }
+
+        Canvas cv = new Canvas();
+
+        FontMetrics pfm = cv.getFontMetrics(plotFont);
+        FontMetrics tfm = cv.getFontMetrics(axisFont);
+
+        BigDecimal xPosition = xRange[0].divideToIntegralValue(xSegment).multiply(xSegment);
+        BigDecimal yPosition = yRange[0].divideToIntegralValue(ySegment).multiply(ySegment);
+
+        int dpsWidth = axisFont.createGlyphVector(tfm.getFontRenderContext(), LangID.getStringByID("data_dps", lang)).getPixelBounds(null, 0, 0).height;
+        int rangeHeight = axisFont.createGlyphVector(tfm.getFontRenderContext(), LangID.getStringByID("data_range", lang)).getPixelBounds(null, 0, 0).height;
+
+        int xAxisNumberHeight = 0;
+        int yAxisNumberWidth = 0;
+
+        while(xPosition.compareTo(xRange[1]) <= 0) {
+            Rectangle boundary = plotFont.createGlyphVector(pfm.getFontRenderContext(), Equation.simpleNumber(xPosition)).getPixelBounds(null, 0, 0);
+
+            xAxisNumberHeight = Math.max(xAxisNumberHeight, boundary.height);
+
+            xPosition = xPosition.add(xSegment);
+        }
+
+        while(yPosition.compareTo(yRange[1]) <= 0) {
+            Rectangle boundary = plotFont.createGlyphVector(pfm.getFontRenderContext(), Equation.simpleNumber(yPosition)).getPixelBounds(null, 0, 0);
+
+            yAxisNumberWidth = Math.max(yAxisNumberWidth, boundary.width);
+
+            yPosition = yPosition.add(xSegment);
+        }
+
+        int finalWidth = (int) Math.round(axisTitleGap * 2 + dpsWidth + yAxisNumberWidth + indicatorGap + plotWidthHeight * indicatorRatio * 0.5 + plotWidthHeight * 1.5 + plotGraphOffset);
+        int finalHeight = (int) Math.round(plotGraphOffset + plotWidthHeight + plotWidthHeight * indicatorRatio * 0.5 + indicatorGap + xAxisNumberHeight + axisTitleGap * 2 + rangeHeight);
+
+        BufferedImage result = new BufferedImage(finalWidth, finalHeight, BufferedImage.TYPE_INT_ARGB);
+        FG2D g = new FG2D(result.getGraphics());
+
+        int offsetX = (int) Math.round(axisTitleGap * 2 + dpsWidth + yAxisNumberWidth + indicatorGap + plotWidthHeight * indicatorRatio * 0.5);
+        int offsetY = plotGraphOffset;
+
+        g.setRenderingHint(3, 2);
+        g.enableAntialiasing();
+
+        g.setColor(51, 53, 60, 255);
+        g.fillRect(0, 0, finalWidth, finalHeight);
+
+        g.setColor(238, 238, 238, 255);
+        g.setStroke(axisStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+        g.drawRect(offsetX, offsetY, (int) Math.round(plotWidthHeight * 1.5), plotWidthHeight);
+
+        xPosition = xRange[0].divideToIntegralValue(xSegment).multiply(xSegment);
+        yPosition = yRange[0].divideToIntegralValue(ySegment).multiply(ySegment);
+
+        while(xPosition.compareTo(xRange[1]) <= 0) {
+            int xPos = convertCoordinateToPixel((int) Math.round(plotWidthHeight * 1.5), xPosition, xWidth, centerX, true);
+
+            g.setColor(238, 238, 238, 255);
+            g.setStroke(indicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+            g.drawLine(offsetX + xPos, offsetY + plotWidthHeight, offsetX + xPos, (int) Math.round(offsetY + plotWidthHeight + plotWidthHeight * indicatorRatio / 2.0));
+
+            g.setColor(238, 238, 238, 64);
+            g.setStroke(subIndicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+            g.drawLine(offsetX + xPos, offsetY, offsetX + xPos, offsetY + plotWidthHeight);
+            g.setFont(plotFont);
+            g.setColor(238, 238, 238, 255);
+
+            g.drawHorizontalCenteredText(Equation.simpleNumber(xPosition), offsetX + xPos, (int) Math.round(offsetY + plotWidthHeight + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap));
+
+            xPosition = xPosition.add(xSegment);
+        }
+
+        while(yPosition.compareTo(yRange[1]) <= 0) {
+            int yPos = convertCoordinateToPixel(plotWidthHeight, yPosition, yWidth, centerY, false);
+
+            g.setColor(238, 238, 238, 255);
+            g.setStroke(indicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+            g.drawLine(offsetX, offsetY + yPos, (int) Math.round(offsetX - plotWidthHeight * indicatorRatio / 2.0), offsetY + yPos);
+
+            g.setColor(238, 238, 238, 64);
+            g.setStroke(subIndicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+            g.drawLine(offsetX, offsetY + yPos, (int) Math.round(offsetX + plotWidthHeight * 1.5), offsetY + yPos);
+
+            g.setFont(plotFont);
+            g.setColor(238, 238, 238, 255);
+
+            g.drawVerticalLowerCenteredText(Equation.simpleNumber(yPosition), (int) Math.round(offsetX - plotWidthHeight * indicatorRatio / 2.0 - indicatorGap), offsetY + yPos);
+
+            yPosition = yPosition.add(ySegment);
+        }
+
+        g.setColor(118, 224, 85, 255);
+        g.setStroke(plotStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+        GeneralPath path = new GeneralPath();
+
+        for(int i = 0; i < coordinates.length - 1; i++) {
+            if(coordinates[i][1] == null || coordinates[i + 1][1] == null || coordinates[i][0] == null || coordinates[i + 1][0] == null)
+                continue;
+
+            if (i == 0) {
+                int x0 = convertCoordinateToPixel((int) Math.round(plotWidthHeight * 1.5), coordinates[i][0], xWidth, centerX, true);
+                int y0 = convertCoordinateToPixel(plotWidthHeight, coordinates[i][1], yWidth, centerY, false);
+
+                path.moveTo(offsetX + x0, offsetY + y0);
+            }
+
+            int x1 = convertCoordinateToPixel((int) Math.round(plotWidthHeight * 1.5), coordinates[i + 1][0], xWidth, centerX, true);
+            int y1 = convertCoordinateToPixel(plotWidthHeight, coordinates[i + 1][1], yWidth, centerY, false);
+
+            path.lineTo(offsetX + x1, offsetY + y1);
+        }
+
+        g.drawPath(path);
+
+        if (withTreasure != null) {
+            Stroke dashed = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
+
+            g.setColor(235, 64, 52, 255);
+            g.setStroke(dashed);
+
+            path = new GeneralPath();
+
+            for(int i = 0; i < withTreasure.length - 1; i++) {
+                if(withTreasure[i][1] == null || withTreasure[i + 1][1] == null || withTreasure[i][0] == null || withTreasure[i + 1][0] == null)
+                    continue;
+
+                if (i == 0) {
+                    int x0 = convertCoordinateToPixel((int) Math.round(plotWidthHeight * 1.5), withTreasure[i][0], xWidth, centerX, true);
+                    int y0 = convertCoordinateToPixel(plotWidthHeight, withTreasure[i][1], yWidth, centerY, false);
+
+                    path.moveTo(offsetX + x0, offsetY + y0);
+                }
+
+                int x1 = convertCoordinateToPixel((int) Math.round(plotWidthHeight * 1.5), withTreasure[i + 1][0], xWidth, centerX, true);
+                int y1 = convertCoordinateToPixel(plotWidthHeight, withTreasure[i + 1][1], yWidth, centerY, false);
+
+                path.lineTo(offsetX + x1, offsetY + y1);
+            }
+
+            g.drawPath(path);
+        }
+
+        g.setFont(axisFont);
+        g.setColor(238, 238, 238, 255);
+
+        g.drawHorizontalCenteredText(LangID.getStringByID("data_range", lang), (int) Math.round(offsetX + plotWidthHeight * 1.5 / 2.0), (int) Math.round(plotGraphOffset + plotWidthHeight + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap + xAxisNumberHeight + axisTitleGap));
+
+        g.translate(axisTitleGap, plotGraphOffset + plotWidthHeight / 2.0);
+        g.rotate(-Math.PI / 2.0);
+
+        Rectangle2D rect = axisFont.createGlyphVector(tfm.getFontRenderContext(), LangID.getStringByID("data_dps", lang)).getPixelBounds(null, 0, 0);
+
+        g.drawText(LangID.getStringByID("data_dps", lang), (int) Math.round(- rect.getX() - rect.getWidth() / 2.0), (int) Math.round(-rect.getY()));
+
+        ImageIO.write(result, "PNG", image);
+
+        return image;
+    }
+
+    private static int convertCoordinateToPixel(int length, BigDecimal coordinate, BigDecimal range, BigDecimal center, boolean x) {
         if(range.compareTo(BigDecimal.ZERO) == 0)
             return -1;
 
         if(x) {
-            return coordinate.subtract(center).add(range.divide(BigDecimal.valueOf(2), Equation.context)).divide(range, Equation.context).multiply(BigDecimal.valueOf(plotWidthHeight)).round(new MathContext(0, RoundingMode.HALF_EVEN)).intValue();
+            return coordinate.subtract(center).add(range.divide(BigDecimal.valueOf(2), Equation.context)).divide(range, Equation.context).multiply(BigDecimal.valueOf(length)).round(new MathContext(0, RoundingMode.HALF_EVEN)).intValue();
         } else {
-            return range.divide(BigDecimal.valueOf(2), Equation.context).subtract(coordinate.subtract(center)).divide(range, Equation.context).multiply(BigDecimal.valueOf(plotWidthHeight)).round(new MathContext(0, RoundingMode.HALF_EVEN)).intValue();
+            return range.divide(BigDecimal.valueOf(2), Equation.context).subtract(coordinate.subtract(center)).divide(range, Equation.context).multiply(BigDecimal.valueOf(length)).round(new MathContext(0, RoundingMode.HALF_EVEN)).intValue();
         }
     }
 

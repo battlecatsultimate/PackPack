@@ -1,4 +1,4 @@
-package mandarin.packpack.supporter.server.holder.component;
+package mandarin.packpack.supporter.server.holder.component.search;
 
 import mandarin.packpack.supporter.lang.LangID;
 import net.dv8tion.jda.api.entities.Message;

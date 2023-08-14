@@ -1,4 +1,4 @@
-package mandarin.packpack.supporter.server.holder.component;
+package mandarin.packpack.supporter.server.holder.component.search;
 
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;

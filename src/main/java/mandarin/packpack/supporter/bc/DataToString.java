@@ -551,7 +551,7 @@ public class DataToString extends Data {
         }
     }
 
-    private static boolean allRangeSame(MaskEntity du) {
+    public static boolean allRangeSame(MaskEntity du) {
         ArrayList<Integer> near = new ArrayList<>();
         ArrayList<Integer> far = new ArrayList<>();
 

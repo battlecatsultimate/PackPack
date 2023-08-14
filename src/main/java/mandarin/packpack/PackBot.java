@@ -33,6 +33,7 @@ import java.util.regex.Pattern;
 /**
  * Usage : java -jar JARNAME DISCORD_BOT_TOKEN IMGUR_API_ACCESS_TOKEN
  */
+@SuppressWarnings("ForLoopReplaceableByForEach")
 public class PackBot {
     public static int save = 0;
     public static int event = 0;

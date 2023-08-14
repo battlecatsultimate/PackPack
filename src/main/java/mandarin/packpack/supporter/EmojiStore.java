@@ -47,6 +47,8 @@ public class EmojiStore {
         DOGE = StaticStore.getEmoteWitNameAndID(jda, "Doge", 1105766783077584936L, false, true);
         SHIBALIEN = StaticStore.getEmoteWitNameAndID(jda, "Shibalien", 1105766785002774610L, false, true);
         SHIBALIENELITE = StaticStore.getEmoteWitNameAndID(jda, "Shibalien_Elite", 1105766780439380048L, false, true);
+        GREENLINE = StaticStore.getEmoteWitNameAndID(jda, "Green_Line", 1140575224526536795L, false, true);
+        REDDASHEDLINE = StaticStore.getEmoteWitNameAndID(jda, "Red_Dashed_Line", 1140575742082691172L, false, true);
 
         File iconData = new File("./data/abilityIcons.txt");
 
@@ -119,6 +121,8 @@ public class EmojiStore {
     public static Emoji DOGE;
     public static Emoji SHIBALIEN;
     public static Emoji SHIBALIENELITE;
+    public static Emoji GREENLINE;
+    public static Emoji REDDASHEDLINE;
 
     public static Map<String, Emoji> ABILITY = new HashMap<>();
     public static MultiLangCont<String, Emoji> TRAIT = new MultiLangCont<>();

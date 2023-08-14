@@ -13,7 +13,7 @@ import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.AliasHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import mandarin.packpack.supporter.server.holder.component.SearchHolder;
+import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import mandarin.packpack.supporter.server.holder.message.alias.AliasEnemyMessageHolder;
 import mandarin.packpack.supporter.server.holder.message.alias.AliasFormMessageHolder;
 import mandarin.packpack.supporter.server.holder.message.alias.AliasStageMessageHolder;

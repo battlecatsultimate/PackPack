@@ -5,7 +5,7 @@ import mandarin.packpack.supporter.Pauser;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.SpamPrevent;
-import mandarin.packpack.supporter.server.holder.component.SearchHolder;
+import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 @SuppressWarnings("unused")
@@ -111,6 +112,25 @@ public abstract class Command {
             }
         } else {
             action.setMessageReference(reference).mentionRepliedUser(false).queue();
+        }
+    }
+
+    public static void replyToMessageSafely(MessageChannel ch, String content, Message reference, Function<MessageCreateAction, MessageCreateAction> function, Consumer<Message> onSuccess) {
+        MessageCreateAction action = ch.sendMessage(content)
+                .setAllowedMentions(new ArrayList<>());
+
+        action = function.apply(action);
+
+        if(ch instanceof GuildMessageChannel) {
+            Guild g = ((GuildMessageChannel) ch).getGuild();
+
+            if(g.getSelfMember().hasPermission((GuildChannel) ch, Permission.MESSAGE_HISTORY)) {
+                action.setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess);
+            } else {
+                action.queue(onSuccess);
+            }
+        } else {
+            action.setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess);
         }
     }
 

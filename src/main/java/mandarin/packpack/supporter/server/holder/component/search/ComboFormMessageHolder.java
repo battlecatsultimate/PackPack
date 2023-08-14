@@ -1,4 +1,4 @@
-package mandarin.packpack.supporter.server.holder.component;
+package mandarin.packpack.supporter.server.holder.component.search;
 
 import common.util.Data;
 import common.util.lang.MultiLangCont;

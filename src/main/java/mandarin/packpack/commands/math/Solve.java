@@ -9,7 +9,7 @@ import mandarin.packpack.supporter.calculation.Formula;
 import mandarin.packpack.supporter.calculation.NumericalResult;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import mandarin.packpack.supporter.server.holder.component.SolutionHolder;
+import mandarin.packpack.supporter.server.holder.component.search.SolutionHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;

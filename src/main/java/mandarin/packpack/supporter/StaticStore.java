@@ -76,6 +76,8 @@ public class StaticStore {
     public static final String COMMAND_SOLVE_ID = "solve";
     public static final String COMMAND_INTEGRATE_ID = "integrate";
     public static final String COMMAND_RTHETA_ID = "rtheta";
+    public static final String COMMAND_FORMDPS_ID = "fdps";
+    public static final String COMMAND_ENEMYDPS_ID = "edps";
 
     public static String englishVersion = "110000";
     public static String taiwaneseVersion = "110000";

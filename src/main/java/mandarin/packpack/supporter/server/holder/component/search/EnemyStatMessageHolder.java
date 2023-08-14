@@ -1,26 +1,37 @@
-package mandarin.packpack.supporter.server.holder.component;
+package mandarin.packpack.supporter.server.holder.component.search;
 
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Enemy;
 import mandarin.packpack.supporter.bc.EntityHandler;
+import mandarin.packpack.supporter.server.data.TreasureHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EnemySpriteMessageHolder extends SearchHolder {
+public class EnemyStatMessageHolder extends SearchHolder {
     private final ArrayList<Enemy> enemy;
 
-    private final int mode;
+    private final boolean isFrame;
+    private final boolean isExtra;
+    private final boolean isCompact;
+    private final int[] magnification;
+    private final TreasureHolder treasure;
 
-    public EnemySpriteMessageHolder(ArrayList<Enemy> enemy, Message author, Message msg, String channelID, int mode, int lang) {
+    public EnemyStatMessageHolder(ArrayList<Enemy> enemy, @Nonnull Message author, @Nonnull Message msg, String channelID, int[] magnification, boolean isFrame, boolean isExtra, boolean isCompact, TreasureHolder treasure, int lang) {
         super(author, msg, channelID, lang);
 
         this.enemy = enemy;
-        this.mode = mode;
+
+        this.magnification = magnification;
+        this.isFrame = isFrame;
+        this.isExtra = isExtra;
+        this.isCompact = isCompact;
+        this.treasure = treasure;
 
         registerAutoFinish(this, msg, lang, FIVE_MIN);
     }
@@ -52,15 +63,13 @@ public class EnemySpriteMessageHolder extends SearchHolder {
 
         int id = parseDataToInt(event);
 
-        try {
-            Enemy e = enemy.get(id);
+        msg.delete().queue();
 
-            EntityHandler.getEnemySprite(e, ch, getAuthorMessage(), mode, lang);
+        try {
+            EntityHandler.showEnemyEmb(enemy.get(id), ch, getAuthorMessage(), isFrame, isExtra, isCompact, magnification, treasure, lang);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        msg.delete().queue();
     }
 
     @Override

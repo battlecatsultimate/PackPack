@@ -110,6 +110,10 @@ public class FG2D implements FakeGraphics {
 		exportProgress();
 	}
 
+	public void drawPath(Path2D path) {
+		g.draw(path);
+	}
+
 	@Override
 	public void drawOval(int i, int j, int k, int l) {
 		g.drawOval(i, j, k, l);
@@ -262,6 +266,10 @@ public class FG2D implements FakeGraphics {
 
 	public void setStroke(float f) {
 		g.setStroke(new BasicStroke(f,BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER));
+	}
+
+	public void setStroke(Stroke stroke) {
+		g.setStroke(stroke);
 	}
 
 	public void setStroke(float f, int mode, int joinMode) {

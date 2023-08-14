@@ -51,6 +51,7 @@
   "search_next10" : "Next 10 Pages",
   "search_list" : "Select list to pick data",
   "data_customtrea" : "This embed applies customized treasure data",
+  "data_customtalent" : "This embed applies talents",
   "data_id" : "ID",
   "data_hp" : "Health",
   "data_hb" : "Knockbacks",
@@ -1619,5 +1620,8 @@
   "boostpin_id" : "Please specify the message via either ID of it, link to the message, or reply to the message that will be pinned/unpinned",
   "boostpin_nomsg" : "Bot couldn't find such message in this channel",
   "boostpin_pin" : "Successfully pinned the message : %s",
-  "boostpin_unpin" : "Successfully unpinned the message : %s"
+  "boostpin_unpin" : "Successfully unpinned the message : %s",
+  "fdps_title" : "%s's DPS Graph",
+  "fdps_fail" : "Failed to generate DPS graph of this unit...",
+  "fdps_line" : "%s : Normal DPS\n%s : Considering Treasure"
 }

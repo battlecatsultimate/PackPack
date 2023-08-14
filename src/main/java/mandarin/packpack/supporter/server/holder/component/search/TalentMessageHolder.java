@@ -1,28 +1,30 @@
-package mandarin.packpack.supporter.server.holder.component;
+package mandarin.packpack.supporter.server.holder.component.search;
 
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Form;
+import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
+import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FormSpriteMessageHolder extends SearchHolder {
-    private final ArrayList<Form> form;
+public class TalentMessageHolder extends SearchHolder {
+    private final List<Form> form;
 
-    private final int mode;
+    private final boolean isFrame;
 
-    public FormSpriteMessageHolder(ArrayList<Form> form, Message author, Message msg, String channelID, int mode, int lang) {
+    public TalentMessageHolder(@NotNull Message msg, @NotNull Message author, @NotNull String channelID, List<Form> form, boolean isFrame, int lang) {
         super(author, msg, channelID, lang);
 
         this.form = form;
-        this.mode = mode;
-
-        registerAutoFinish(this, msg, lang, FIVE_MIN);
+        this.isFrame = isFrame;
     }
 
     @Override
@@ -39,6 +41,7 @@ public class FormSpriteMessageHolder extends SearchHolder {
 
             if(MultiLangCont.get(f, lang) != null)
                 fname += MultiLangCont.get(f, lang);
+
             data.add(fname);
         }
 
@@ -51,15 +54,29 @@ public class FormSpriteMessageHolder extends SearchHolder {
 
         int id = parseDataToInt(event);
 
+        msg.delete().queue();
+
         try {
             Form f = form.get(id);
 
-            EntityHandler.getFormSprite(f, ch, getAuthorMessage(), mode, lang);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            if(f.unit.forms.length < 3) {
+                createMessageWithNoPings(ch, LangID.getStringByID("talentinfo_notf", lang));
 
-        msg.delete().queue();
+                return;
+            }
+
+            Form trueForm = f.unit.forms[2];
+
+            if(trueForm.du == null || trueForm.du.getPCoin() == null) {
+                createMessageWithNoPings(ch, LangID.getStringByID("talentinfo_notal", lang));
+
+                return;
+            }
+
+            EntityHandler.showTalentEmbed(ch, getAuthorMessage(), trueForm, isFrame, lang);
+        } catch (Exception e) {
+            StaticStore.logger.uploadErrorLog(e, "E/TalentMessageHolder::onSelected - Failed to perform showing talent embed");
+        }
     }
 
     @Override
