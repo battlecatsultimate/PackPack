@@ -47,6 +47,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -692,9 +693,19 @@ public class AllEventAdapter extends ListenerAdapter {
 
                     MessageChannel ch = author.getChannel();
 
+                    long f = Runtime.getRuntime().freeMemory();
+                    long t = Runtime.getRuntime().totalMemory();
+                    long m = Runtime.getRuntime().maxMemory();
+
+                    double per = 100.0 * (t - f) / m;
+
                     message += "\n\nCommand : " + author.getContentRaw() + "\n\n" +
                             "Member  : " + u.getName() + " (" + u.getId() + ")\n\n" +
-                            "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+                            "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")\n\n" +
+                            "Number of Threads\n" +
+                            "- In Group : " + Thread.activeCount() + "\n" +
+                            "- In All : " + ManagementFactory.getThreadMXBean().getThreadCount() + "\n" +
+                            "Memory Used : " + (t - f >> 20) + " MB / " + (m >> 20) + " MB, " + (int) per + "%";
 
                     if(ch instanceof GuildChannel) {
                         Guild g = author.getGuild();
