@@ -702,9 +702,9 @@ public class AllEventAdapter extends ListenerAdapter {
                     message += "\n\nCommand : " + author.getContentRaw() + "\n\n" +
                             "Member  : " + u.getName() + " (" + u.getId() + ")\n\n" +
                             "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")\n\n" +
-                            "Number of Threads\n" +
+                            "Number of Threads\n\n" +
                             "- In Group : " + Thread.activeCount() + "\n" +
-                            "- In All : " + ManagementFactory.getThreadMXBean().getThreadCount() + "\n" +
+                            "- In All : " + ManagementFactory.getThreadMXBean().getThreadCount() + "\n\n" +
                             "Memory Used : " + (t - f >> 20) + " MB / " + (m >> 20) + " MB, " + (int) per + "%";
 
                     if(ch instanceof GuildChannel) {
