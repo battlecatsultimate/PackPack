@@ -3625,7 +3625,7 @@ public class EntityHandler {
                     BigDecimal waveAttack = getTotalSurgeWaveAttack(du, f.unit.lv, lv, treasureSetting, talent, false)
                             .multiply(waveTotalMultiplier);
 
-                    List<Integer> possibleWave = getWaveIndex(range, waveLevel);
+                    List<Integer> possibleWave = getWaveIndex(range, waveLevel, BigDecimal.valueOf(Data.W_U_WID), BigDecimal.valueOf(Data.W_U_INI));
 
                     for (int j = 0; j < possibleWave.size(); j++) {
                         int rawIndex = possibleWave.get(j);
@@ -3677,7 +3677,7 @@ public class EntityHandler {
                     BigDecimal waveAttack = getTotalSurgeWaveAttack(du, f.unit.lv, lv, treasureSetting, talent, false)
                             .multiply(waveTotalMultiplier);
 
-                    List<Integer> possibleWave = getWaveIndex(range, waveLevel);
+                    List<Integer> possibleWave = getWaveIndex(range, waveLevel, BigDecimal.valueOf(Data.W_U_WID), BigDecimal.valueOf(Data.W_U_INI));
 
                     for (int j = 0; j < possibleWave.size(); j++) {
                         int rawIndex = possibleWave.get(j);
@@ -3786,7 +3786,7 @@ public class EntityHandler {
                         BigDecimal waveAttack = getTotalSurgeWaveAttack(du, f.unit.lv, lv, treasureSetting, talent, true)
                                 .multiply(waveTotalMultiplier);
 
-                        List<Integer> possibleWave = getWaveIndex(range, waveLevel);
+                        List<Integer> possibleWave = getWaveIndex(range, waveLevel, BigDecimal.valueOf(Data.W_U_WID), BigDecimal.valueOf(Data.W_U_INI));
 
                         for (int j = 0; j < possibleWave.size(); j++) {
                             int rawIndex = possibleWave.get(j);
@@ -3838,7 +3838,7 @@ public class EntityHandler {
                         BigDecimal waveAttack = getTotalSurgeWaveAttack(du, f.unit.lv, lv, treasureSetting, talent, true)
                                 .multiply(waveTotalMultiplier);
 
-                        List<Integer> possibleWave = getWaveIndex(range, waveLevel);
+                        List<Integer> possibleWave = getWaveIndex(range, waveLevel, BigDecimal.valueOf(Data.W_U_WID), BigDecimal.valueOf(Data.W_U_INI));
 
                         for (int j = 0; j < possibleWave.size(); j++) {
                             int rawIndex = possibleWave.get(j);
@@ -4101,8 +4101,8 @@ public class EntityHandler {
             BigDecimal position = BigDecimal.ZERO;
 
             //Initial Position
-            BigDecimal width = BigDecimal.valueOf(Data.W_U_WID);
-            BigDecimal offset = BigDecimal.valueOf(Data.W_U_INI);
+            BigDecimal width = BigDecimal.valueOf(Data.W_E_WID);
+            BigDecimal offset = BigDecimal.valueOf(Data.W_E_INI);
 
             position = position.add(offset).add(width.divide(new BigDecimal("2"), Equation.context));
 
@@ -4110,7 +4110,7 @@ public class EntityHandler {
 
             while (wv.compareTo(BigDecimal.ZERO) != 0) {
                 nodes.add(position);
-                nodes.add(position.add(BigDecimal.valueOf(Data.W_U_WID)));
+                nodes.add(position.add(BigDecimal.valueOf(Data.W_E_WID)));
 
                 wv = wv.subtract(BigDecimal.ONE);
                 position = position.add(BigDecimal.valueOf(Data.W_PROG));
@@ -4226,7 +4226,7 @@ public class EntityHandler {
                     BigDecimal waveAttack = getTotalSurgeWaveAttack(du, adjustedMagnification)
                             .multiply(waveTotalMultiplier);
 
-                    List<Integer> possibleWave = getWaveIndex(range, waveLevel);
+                    List<Integer> possibleWave = getWaveIndex(range, waveLevel, BigDecimal.valueOf(Data.W_E_WID), BigDecimal.valueOf(Data.W_E_INI));
 
                     for (int j = 0; j < possibleWave.size(); j++) {
                         int rawIndex = possibleWave.get(j);
@@ -4278,7 +4278,7 @@ public class EntityHandler {
                     BigDecimal waveAttack = getTotalSurgeWaveAttack(du, adjustedMagnification)
                             .multiply(waveTotalMultiplier);
 
-                    List<Integer> possibleWave = getWaveIndex(range, waveLevel);
+                    List<Integer> possibleWave = getWaveIndex(range, waveLevel, BigDecimal.valueOf(Data.W_E_WID), BigDecimal.valueOf(Data.W_E_INI));
 
                     for (int j = 0; j < possibleWave.size(); j++) {
                         int rawIndex = possibleWave.get(j);
@@ -4448,21 +4448,18 @@ public class EntityHandler {
         return result;
     }
 
-    private static List<Integer> getWaveIndex(BigDecimal range, BigDecimal waveLevel) {
+    private static List<Integer> getWaveIndex(BigDecimal range, BigDecimal waveLevel, BigDecimal width, BigDecimal offset) {
         List<Integer> result = new ArrayList<>();
 
         BigDecimal position = BigDecimal.ZERO;
 
         //Initial Position
-        BigDecimal width = BigDecimal.valueOf(Data.W_U_WID);
-        BigDecimal offset = BigDecimal.valueOf(Data.W_U_INI);
-
         position = position.add(offset).add(width.divide(new BigDecimal("2"), Equation.context));
 
         BigDecimal wv = waveLevel;
 
         while (wv.compareTo(BigDecimal.ZERO) != 0) {
-            final int smaller = range.compareTo(position.add(BigDecimal.valueOf(Data.W_U_WID)));
+            final int smaller = range.compareTo(position.add(width));
 
             if (position.compareTo(range) <= 0 && smaller <= 0) {
                 if (position.compareTo(range) == 0) {
