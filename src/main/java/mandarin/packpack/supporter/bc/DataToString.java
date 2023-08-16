@@ -625,14 +625,21 @@ public class DataToString extends Data {
             } else {
                 return normal + "\n<" + withTreasure + ">";
             }
-        }
+        } else {
+            normal = getTotalAtk(lv, du, talent, lvs, false, t);
 
-        if(du.rawAtkData().length > 1)
-            return getTotalAtk(lv, du, talent, lvs, false, t) + " " + getAtks(lv, du, talent, lvs, false, t) +
-                    (treasure ? "\n<" + getTotalAtk(lv, du, talent, lvs, true, t) + " " + getAtks(lv, du, talent, lvs, true, t) + ">" : "");
-        else
-            return getTotalAtk(lv, du, talent, lvs, false, t) +
-                    (treasure ? " <" + getTotalAtk(lv, du, talent, lvs, true, t) + ">" : "");
+            if(treasure) {
+                withTreasure = getTotalAtk(lv, du, talent, lvs, true, t);
+            } else {
+                withTreasure = "";
+            }
+
+            if (withTreasure.isBlank() || normal.equals(withTreasure)) {
+                return normal;
+            } else {
+                return normal + " <" + withTreasure + ">";
+            }
+        }
     }
 
     public static String getAtk(MaskEnemy e, int magnification) {
@@ -2238,19 +2245,13 @@ public class DataToString extends Data {
         String normal;
         String withTreasure;
 
-        if(du.rawAtkData().length > 1) {
+        if (du.rawAtkData().length > 1) {
             normal = getTotalAtk(lv, du, talent, lvs, false, t) + " " + getCompactAtks(du, talent, lv, lvs, false, t) + " [" + getDPS(f, lv, talent, lvs, false, t) + "]";
 
             if(treasure) {
                 withTreasure = getTotalAtk(lv, du, talent, lvs, true, t) + " " + getCompactAtks(du, talent, lv, lvs, true, t) + " [" + getDPS(f, lv, talent, lvs, true, t) + "]";
             } else {
                 withTreasure = "";
-            }
-
-            if (withTreasure.isBlank() || normal.equals(withTreasure)) {
-                return normal + "\n<" + withTreasure + ">";
-            } else {
-                return normal;
             }
         } else {
             normal = getTotalAtk(lv, du, talent, lvs, false, t) + " [" + getDPS(f, lv, talent, lvs, false, t) + "]";
@@ -2260,12 +2261,12 @@ public class DataToString extends Data {
             } else {
                 withTreasure = "";
             }
+        }
 
-            if(withTreasure.isBlank() || normal.equals(withTreasure)) {
-                return normal;
-            } else {
-                return normal + "\n<" + withTreasure + ">";
-            }
+        if (withTreasure.isBlank() || normal.equals(withTreasure)) {
+            return normal;
+        } else {
+            return normal + "\n<" + withTreasure + ">";
         }
     }
 
