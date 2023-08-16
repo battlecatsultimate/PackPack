@@ -19,8 +19,8 @@ public class StageImageGenerator implements  ImageGenerator {
     private static final String[] texts = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p",
             "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L",
             "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "0", "1", "2", "3", "4", "5", "6", "7",
-            "8", "9", ".", "'", "-", ":", "!", "&", "?", "=", "(", ")", "+", "#", "/", "\u266a", "\u2192", "\u00e9", "\"", ","};
-    public static final String[] specials = {"-", ":", "!", "&", "?", "=", "(", ")", "+", "#", "/", "\u266a", "\u2192", "\u00e9"};
+            "8", "9", ".", "'", "-", ":", "!", "&", "?", "=", "(", ")", "+", "#", "/", "♪", "→", "é", "\"", ","};
+    public static final String[] specials = {"-", ":", "!", "&", "?", "=", "(", ")", "+", "#", "/", "♪", "→", "é"};
 
     private static final int space = 30;
 

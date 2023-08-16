@@ -377,7 +377,7 @@ public class FG2D implements FakeGraphics {
 		if(h % 2 == 1)
 			h--;
 
-		ProcessBuilder builder = new ProcessBuilder(SystemUtils.IS_OS_WINDOWS ? "data/ffmpeg/bin/ffmpeg" : "ffmpeg", "-r", "" + frame, "-f", "image2", "-s", w+"x"+h,
+		ProcessBuilder builder = new ProcessBuilder(SystemUtils.IS_OS_WINDOWS ? "data/ffmpeg/bin/ffmpeg" : "ffmpeg", "-r", String.valueOf(frame), "-f", "image2", "-s", w+"x"+h,
 				"-i", "temp/"+progress.getName()+"/p_%d.png", "-vcodec", "libx264", "-crf", "25", "-pix_fmt", "yuv420p", "-y", "temp/"+progress.getName()+"/"+result.getName());
 
 		builder.redirectErrorStream(true);

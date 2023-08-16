@@ -422,21 +422,13 @@ public class FontStageImageGenerator implements ImageGenerator{
 
         while(!path.isDone()) {
             switch (path.currentSegment(d)) {
-                case PathIterator.SEG_MOVETO:
-                    path2D.moveTo(d[0] + offset[0], d[1] + offset[1]);
-                    break;
-                case PathIterator.SEG_LINETO:
-                    path2D.lineTo(d[0] + offset[0], d[1] + offset[1]);
-                    break;
-                case PathIterator.SEG_QUADTO:
-                    path2D.quadTo(d[0] + offset[0], d[1] + offset[1], d[2] + offset[0], d[3] + offset[1]);
-                    break;
-                case PathIterator.SEG_CUBICTO:
-                    path2D.curveTo(d[0] + offset[0], d[1] + offset[1], d[2] + offset[0], d[3] + offset[1], d[4] + offset[0], d[5] + offset[1]);
-                    break;
-                case PathIterator.SEG_CLOSE:
-                    path2D.closePath();
-                    break;
+                case PathIterator.SEG_MOVETO -> path2D.moveTo(d[0] + offset[0], d[1] + offset[1]);
+                case PathIterator.SEG_LINETO -> path2D.lineTo(d[0] + offset[0], d[1] + offset[1]);
+                case PathIterator.SEG_QUADTO ->
+                        path2D.quadTo(d[0] + offset[0], d[1] + offset[1], d[2] + offset[0], d[3] + offset[1]);
+                case PathIterator.SEG_CUBICTO ->
+                        path2D.curveTo(d[0] + offset[0], d[1] + offset[1], d[2] + offset[0], d[3] + offset[1], d[4] + offset[0], d[5] + offset[1]);
+                case PathIterator.SEG_CLOSE -> path2D.closePath();
             }
 
             if(!path.isDone())
