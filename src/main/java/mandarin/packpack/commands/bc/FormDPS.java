@@ -309,7 +309,7 @@ public class FormDPS extends TimedConstraintCommand {
 
         for(int i = 0; i < sb.length(); i++) {
             if(sb.charAt(i) == ',') {
-                if(!commaStart && commaAdd <= 5) {
+                if(!commaStart && commaAdd <= 8) {
                     commaStart = true;
                     commaAdd++;
                     fin.append(sb.charAt(i));
