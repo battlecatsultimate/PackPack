@@ -12,7 +12,6 @@ import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.component.search.EnemyDPSHolder;
-import mandarin.packpack.supporter.server.holder.component.search.EnemyStatMessageHolder;
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
@@ -25,15 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EnemyDPS extends TimedConstraintCommand {
-    private final ConfigHolder config;
 
-    public EnemyDPS(ConstraintCommand.ROLE role, int lang, @Nullable IDHolder idHolder, ConfigHolder config, long time) {
+    public EnemyDPS(ConstraintCommand.ROLE role, int lang, @Nullable IDHolder idHolder, long time) {
         super(role, lang, idHolder, time, StaticStore.COMMAND_FORMDPS_ID, false);
-
-        if(config == null)
-            this.config = holder == null ? StaticStore.defaultConfig : holder.config;
-        else
-            this.config = config;
     }
 
     @Override
