@@ -1195,6 +1195,7 @@
   "button_talent" : "본능 정보",
   "button_yes": "네",
   "button_no" : "아니요",
+  "button_dps" : "DPS 그래프",
   "confirm_expired" : "확인 시간 초과",
   "setup_select" : "역할을 선택해 주세요",
   "setup_confirm" : "이미 이 서버에 역할 ID 가 따로 지정된 것 같습니다, 역할 ID 를 재지정하시겠습니까?",

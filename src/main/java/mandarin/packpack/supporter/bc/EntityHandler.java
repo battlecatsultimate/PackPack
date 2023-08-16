@@ -30,6 +30,7 @@ import mandarin.packpack.supporter.calculation.Equation;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
+import mandarin.packpack.supporter.server.holder.component.EnemyButtonHolder;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
@@ -598,6 +599,8 @@ public class EntityHandler {
                 if(talent && f.du.getPCoin() != null) {
                     components.add(Button.secondary("talent", LangID.getStringByID("button_talent", lang)).withEmoji(EmojiStore.NP));
                 }
+
+                components.add(Button.secondary("dps", LangID.getStringByID("button_dps", lang)).withEmoji(Emoji.fromUnicode("\uD83D\uDCC8")));
             }
 
             if(StaticStore.availableUDP.contains(f.unit.id.id)) {
@@ -849,10 +852,21 @@ public class EntityHandler {
 
         spec.setFooter(LangID.getStringByID("enemyst_source", lang));
 
-        if(img != null)
-            Command.sendMessageWithFile(ch, "", spec.build(), img, "icon.png", reference);
-        else
-            Command.replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(spec.build()));
+        Message msg = Command.getRepliedMessageSafely(ch, "", reference, a -> {
+            a = a.setEmbeds(spec.build());
+
+            if (img != null) {
+                a = a.addFiles(FileUpload.fromData(img, "icon.png"));
+            }
+
+            return a.addComponents(ActionRow.of(Button.secondary("dps", LangID.getStringByID("button_dps", lang)).withEmoji(Emoji.fromUnicode("\uD83D\uDCC8"))));
+        }, m -> {
+            if (img != null && img.exists() && !img.delete()) {
+                StaticStore.logger.uploadLog("Failed to delete file : " + img.getAbsolutePath());
+            }
+        });
+
+        StaticStore.putHolder(reference.getAuthor().getId(), new EnemyButtonHolder(e, reference, msg, holder, mag, compact, lang, ch.getId()));
 
         e.anim.unload();
     }
@@ -1111,6 +1125,8 @@ public class EntityHandler {
                 }
             }
         }
+
+        g.dispose();
 
         ImageIO.write(image, "PNG", img);
 
@@ -1998,6 +2014,8 @@ public class EntityHandler {
                 g.drawVerticalCenteredText(isBoss.get(i), px, py);
             }
         }
+
+        g.dispose();
 
         ImageIO.write(image, "PNG", img);
 
@@ -5082,6 +5100,8 @@ public class EntityHandler {
             f.anim.unload();
         }
 
+        g.dispose();
+
         ImageIO.write(img, "PNG", image);
 
         return image;
@@ -5282,6 +5302,8 @@ public class EntityHandler {
 
                 x += crownOn.getWidth() + 10;
             }
+
+            g.dispose();
 
             return result;
         } catch (Exception e) {

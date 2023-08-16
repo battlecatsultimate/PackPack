@@ -394,4 +394,8 @@ public class FG2D implements FakeGraphics {
 
 		pro.waitFor();
 	}
+
+	public void dispose() {
+		g.dispose();
+	}
 }

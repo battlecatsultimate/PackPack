@@ -115,6 +115,8 @@ public class FontStageImageGenerator implements ImageGenerator{
             if(f == null)
                 return null;
 
+            g.dispose();
+
             try {
                 ImageIO.write(img, "PNG", f);
 
@@ -199,6 +201,8 @@ public class FontStageImageGenerator implements ImageGenerator{
                 pad += generateLetterWidth(str, frc) + 4;
             }
 
+            g.dispose();
+
             return img;
         } else {
             return null;
@@ -236,6 +240,9 @@ public class FontStageImageGenerator implements ImageGenerator{
 
             g.drawImage(FIBI.build(scaled), 128 - (scaled.getWidth() * ratio / 2), 32 - 55.0/2, scaled.getWidth() * ratio, scaled.getHeight());
 
+            g.dispose();
+            sg.dispose();
+
             File f = StaticStore.generateTempFile(new File("./temp/"), "Result", ".png", false);
 
             if(f == null)
@@ -267,6 +274,9 @@ public class FontStageImageGenerator implements ImageGenerator{
                 ratio = 1.0;
 
             g.drawImage(FIBI.build(scaled), 3, 2, scaled.getWidth() * ratio, scaled.getHeight());
+
+            g.dispose();
+            sg.dispose();
 
             File f = new File("./temp/Result.png");
 

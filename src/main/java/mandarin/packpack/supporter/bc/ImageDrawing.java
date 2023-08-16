@@ -353,6 +353,8 @@ public class ImageDrawing {
             g.gradRectAlpha(0, 0, w, h, 0, 0, bg.overlayAlpha, bg.overlay[1], 0, h, bg.overlayAlpha, bg.overlay[0]);
         }
 
+        g.dispose();
+
         ImageIO.write(img, "PNG", image);
 
         return image;
@@ -497,6 +499,8 @@ public class ImageDrawing {
                 g.gradRectAlpha(0, 0, w, h, 0, 0, bg.overlayAlpha, bg.overlay[1], 0, h, bg.overlayAlpha, bg.overlay[0]);
             }
 
+            g.dispose();
+
             File img = new File("./temp/"+folderName+"/", quad(i)+".png");
 
             if(!img.exists() && !img.createNewFile()) {
@@ -637,6 +641,8 @@ public class ImageDrawing {
                 rg.fillRect(-rect.x + (int) centers.get(i).x - 2, -rect.y + (int) centers.get(i).y -2, 4, 4);
             }
         }
+
+        rg.dispose();
 
         File temp = new File("./temp");
         File file = StaticStore.generateTempFile(temp, "result", ".png", false);
@@ -852,6 +858,8 @@ public class ImageDrawing {
             } else {
                 anim.draw(g, pos, siz * ratio);
             }
+
+            g.dispose();
 
             File img = new File("./temp/"+folderName+"/", quad(i)+".png");
 
@@ -1102,6 +1110,8 @@ public class ImageDrawing {
                 anim.draw(g, pos, siz * ratio * 0.5);
             }
 
+            g.dispose();
+
             encoder.addFrame(image);
         }
 
@@ -1341,6 +1351,8 @@ public class ImageDrawing {
                                 return null;
                             }
 
+                            g.dispose();
+
                             ImageIO.write(image, "PNG", img);
 
                             progress++;
@@ -1381,6 +1393,8 @@ public class ImageDrawing {
                         g.fillRect(0, 0, rect.width, rect.height);
 
                         anim.draw(g, pos, siz * ratio);
+
+                        g.dispose();
 
                         File img = new File("./temp/"+folderName+"/", quad(progress)+".png");
 
@@ -1601,6 +1615,8 @@ public class ImageDrawing {
                     y += cellMargin;
             }
 
+            g.dispose();
+
             images.get(j)[0] = img;
         }
 
@@ -1666,6 +1682,8 @@ public class ImageDrawing {
             rg.drawImage(trueFormImage, bx + bgMargin, bgMargin * 4 + titleH + imgH + statPanelMargin * 2 + fruitGap);
         }
 
+        rg.dispose();
+
         BufferedImage scaledDown = new BufferedImage(result.getWidth() / 2, result.getHeight() / 2, BufferedImage.TYPE_INT_ARGB);
 
         FG2D sdg = new FG2D(scaledDown.getGraphics());
@@ -1674,6 +1692,8 @@ public class ImageDrawing {
         sdg.enableAntialiasing();
 
         sdg.drawImage(result, 0, 0, scaledDown.getWidth(), scaledDown.getHeight());
+
+        sdg.dispose();
 
         File f = new File("./temp/");
 
@@ -1789,6 +1809,8 @@ public class ImageDrawing {
                 y += cellMargin;
         }
 
+        g.dispose();
+
         imgs[0] = img;
 
         int titleW = imgs[1].getWidth();
@@ -1816,6 +1838,8 @@ public class ImageDrawing {
         rg.drawImage(imgs[1], bgMargin, bgMargin * 2);
         rg.drawImage(imgs[0], bgMargin + statPanelMargin, bgMargin * 4 + titleH + statPanelMargin);
 
+        rg.dispose();
+
         BufferedImage scaledDown = new BufferedImage(result.getWidth() / 2, result.getHeight() / 2, BufferedImage.TYPE_INT_ARGB);
 
         FG2D sdg = new FG2D(scaledDown.getGraphics());
@@ -1824,6 +1848,8 @@ public class ImageDrawing {
         sdg.enableAntialiasing();
 
         sdg.drawImage(result, 0, 0, scaledDown.getWidth(), scaledDown.getHeight());
+
+        sdg.dispose();
 
         File f = new File("./temp/");
 
@@ -2087,6 +2113,8 @@ public class ImageDrawing {
         }
 
         drawEnemySchemeTable(g, bgMargin * 4 + titleHeight  + panelH + bgMargin, st, map, stw, desiredStageGap, isRanking, isFrame, lv, lang);
+
+        g.dispose();
 
         File f = new File("./temp/");
 
@@ -2396,6 +2424,8 @@ public class ImageDrawing {
         g.setColor(191, 191, 191, 255);
         g.drawText(totalCostText, (int) Math.round(totalWidth - bgMargin - totalCostWidth - totalRect.getX()), (int) Math.round(totalHeight - bgMargin - totalCostHeight - totalRect.getY()));
 
+        g.dispose();
+
         ImageIO.write(result, "PNG", image);
 
         return image;
@@ -2508,6 +2538,8 @@ public class ImageDrawing {
         g.setFont(contentFont);
         g.setColor(238, 238, 238, 255);
         g.drawText(combo.description, (int) Math.round(x - descRect.getX()), (int) Math.round(y - descRect.getY()));
+
+        g.dispose();
 
         ImageIO.write(result, "PNG", image);
 
@@ -2709,6 +2741,8 @@ public class ImageDrawing {
                 Equation.formatNumber(centerY.subtract(yWidth.divide(BigDecimal.valueOf(2), Equation.context))),
                 Equation.formatNumber(centerY.add(yWidth.divide(BigDecimal.valueOf(2), Equation.context)))
         );
+
+        g.dispose();
 
         ImageIO.write(result, "PNG", image);
 
@@ -2912,6 +2946,8 @@ public class ImageDrawing {
                 Equation.formatNumber(centerY.subtract(yWidth.divide(BigDecimal.valueOf(2), Equation.context))),
                 Equation.formatNumber(centerY.add(yWidth.divide(BigDecimal.valueOf(2), Equation.context)))
         );
+
+        g.dispose();
 
         ImageIO.write(result, "PNG", image);
 
@@ -3183,6 +3219,8 @@ public class ImageDrawing {
                 }
             }
         }
+
+        g.dispose();
 
         ImageIO.write(result, "PNG", image);
 
@@ -3625,6 +3663,8 @@ public class ImageDrawing {
             }
         }
 
+        g.dispose();
+
         ImageIO.write(result, "PNG", image);
 
         String text = String.format(
@@ -3837,6 +3877,8 @@ public class ImageDrawing {
 
         g.drawText(LangID.getStringByID("data_dps", lang), (int) Math.round(- rect.getX() - rect.getWidth() / 2.0), (int) Math.round(-rect.getY()));
 
+        g.dispose();
+
         ImageIO.write(result, "PNG", image);
 
         return image;
@@ -3929,6 +3971,8 @@ public class ImageDrawing {
 
         g.drawImage(ic, 0, 0, icw, h - lRect.getHeight() - levelMargin);
 
+        g.dispose();
+
         return result;
     }
 
@@ -3976,6 +4020,8 @@ public class ImageDrawing {
         g.setStroke(enemyIconStroke);
 
         g.roundRect(enemyIconStroke / 2, enemyIconStroke / 2, icw - enemyIconStroke, h - enemyIconStroke, cornerRadius, cornerRadius);
+
+        g.dispose();
 
         return result;
     }
@@ -4047,6 +4093,8 @@ public class ImageDrawing {
 
             x += panelWidth + panelPadding;
         }
+
+        g.dispose();
 
         return img;
     }

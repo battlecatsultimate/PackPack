@@ -226,6 +226,8 @@ public class StageImageGenerator implements  ImageGenerator {
                 index++;
             }
 
+            g.dispose();
+
             return img;
         }
 
@@ -308,6 +310,8 @@ public class StageImageGenerator implements  ImageGenerator {
                 index++;
             }
 
+            g.dispose();
+
             File f = StaticStore.generateTempFile(new File("./temp/"), "Result", ".png", false);
 
             if(f == null) {
@@ -360,6 +364,9 @@ public class StageImageGenerator implements  ImageGenerator {
 
             g.drawImage(FIBI.build(scaled), 128 - (scaled.getWidth() * ratio / 2), 32 - 45.0/2, scaled.getWidth() * ratio, scaled.getHeight());
 
+            g.dispose();
+            sg.dispose();
+
             File f = new File("./temp/Result.png");
 
             try {
@@ -396,6 +403,9 @@ public class StageImageGenerator implements  ImageGenerator {
                 ratio = 1.0;
 
             g.drawImage(FIBI.build(scaled), 3, 10, scaled.getWidth() * ratio, scaled.getHeight());
+
+            g.dispose();
+            sg.dispose();
 
             File f = StaticStore.generateTempFile(new File("./temp/"), "Result", ".png", false);
 

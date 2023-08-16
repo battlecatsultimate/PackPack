@@ -153,6 +153,37 @@ public abstract class Command {
         }
     }
 
+    public static Message getRepliedMessageSafely(MessageChannel ch, String content, Message reference, Function<MessageCreateAction, MessageCreateAction> function, Consumer<Message> onSuccess) {
+        MessageCreateAction action = ch.sendMessage(content)
+                .setAllowedMentions(new ArrayList<>());
+
+        action = function.apply(action);
+
+        if(ch instanceof GuildMessageChannel) {
+            Guild g = ((GuildMessageChannel) ch).getGuild();
+
+            if(g.getSelfMember().hasPermission((GuildChannel) ch, Permission.MESSAGE_HISTORY)) {
+                Message result = action.setMessageReference(reference).mentionRepliedUser(false).complete();
+
+                onSuccess.accept(result);
+
+                return result;
+            } else {
+                Message result = action.complete();
+
+                onSuccess.accept(result);
+
+                return result;
+            }
+        } else {
+            Message result = action.setMessageReference(reference).mentionRepliedUser(false).complete();
+
+            onSuccess.accept(result);
+
+            return result;
+        }
+    }
+
     public static void sendMessageWithFile(MessageChannel ch, String content, File f, Message reference) {
         MessageCreateAction action = ch.sendMessage(content)
                 .addFiles(FileUpload.fromData(f))

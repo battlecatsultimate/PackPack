@@ -1,10 +1,8 @@
 package mandarin.packpack.supporter.server.holder.component;
 
-import common.util.unit.Form;
-import common.util.unit.Level;
+import common.util.unit.Enemy;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
-import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -18,35 +16,25 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class FormButtonHolder extends ComponentHolder {
+public class EnemyButtonHolder extends ComponentHolder {
     private final Message embed;
-    private final ConfigHolder config;
     private final int lang;
-    private final Form f;
+    private final Enemy e;
 
-    private final boolean isFrame;
-    private final boolean talent;
-    private final boolean extra;
+    private final int[] magnification;
     private final boolean compact;
-    private final Level lv;
-    private final boolean treasure;
     private final TreasureHolder t;
 
-    public FormButtonHolder(Form f, @Nonnull Message author,@Nonnull Message msg, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, boolean compact, boolean treasure, TreasureHolder t, Level lv, int lang, @Nonnull String channelID) {
+    public EnemyButtonHolder(Enemy e, @Nonnull Message author, @Nonnull Message msg, TreasureHolder t, int[] magnification, boolean compact, int lang, @Nonnull String channelID) {
         super(author, channelID, msg.getId());
 
         this.embed = msg;
-        this.config = config;
         this.lang = lang;
-        this.f = f;
+        this.e = e;
 
-        this.isFrame = isFrame;
-        this.talent = talent;
-        this.extra = extra;
-        this.compact = compact;
-        this.treasure = treasure;
+        this.magnification = magnification;
         this.t = t;
-        this.lv = lv;
+        this.compact = compact;
 
         Timer autoFinish = new Timer();
 
@@ -58,7 +46,7 @@ public class FormButtonHolder extends ComponentHolder {
 
                 expired = true;
 
-                StaticStore.removeHolder(author.getAuthor().getId(), FormButtonHolder.this);
+                StaticStore.removeHolder(author.getAuthor().getId(), EnemyButtonHolder.this);
 
                 expire(userID);
             }
@@ -71,46 +59,11 @@ public class FormButtonHolder extends ComponentHolder {
 
         MessageChannel ch = event.getMessageChannel();
 
-        if(event.getComponentId().equals("talent")) {
-            if(f.du.getPCoin() == null)
-                return;
-
+        if (event.getComponentId().equals("dps")) {
             try {
-                EntityHandler.showTalentEmbed(ch, getAuthorMessage(), f, isFrame, lang);
-            } catch (Exception e) {
-                StaticStore.logger.uploadErrorLog(e, "E/FormButtonHolder::handleEvent - Failed to show talent embed on button click");
-            }
-        } else if (event.getComponentId().equals("dps")) {
-            try {
-                EntityHandler.showFormDPS(ch, getAuthorMessage(), f, t, lv, config, talent, treasure, lang);
+                EntityHandler.showEnemyDPS(ch, getAuthorMessage(), e, t, magnification[1], lang);
             } catch (Exception e) {
                 StaticStore.logger.uploadErrorLog(e, "E/FormButtonHolder::handleEvent - Failed to show DPS graph on buttone click");
-            }
-        } else {
-            int diff = switch (event.getComponentId()) {
-                case "first" -> -2;
-                case "pre" -> -1;
-                case "next" -> 1;
-                case "final" -> 2;
-                default -> 0;
-            };
-
-            if(diff == 0) {
-                return;
-            }
-
-            if(f.fid + diff < 0)
-                return;
-
-            if(f.unit == null)
-                return;
-
-            Form newForm = f.unit.forms[f.fid + diff];
-
-            try {
-                EntityHandler.showUnitEmb(newForm, ch, getAuthorMessage(), config, isFrame, talent, extra, false, false, lv, treasure, t, lang, false, compact);
-            } catch (Exception e) {
-                StaticStore.logger.uploadErrorLog(e, "E/FormButtonHolder::handleEvent - Failed to show unit embed on button click");
             }
         }
     }

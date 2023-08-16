@@ -1193,6 +1193,7 @@
   "button_talent" : "Talent Info",
   "button_yes": "Yes",
   "button_no" : "No",
+  "button_dps" : "DPS Graph",
   "confirm_expired" : "タイムアウトしました。",
   "setup_select" : "ロールの選択",
   "setup_confirm" : "このサーバーではすでにロールとIDが設定されているようです。データを上書きしてもよろしいですか？",
