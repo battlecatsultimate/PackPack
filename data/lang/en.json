@@ -952,6 +952,14 @@
   "help_boosterpin_use" : "`p!boosterpin [Message]`",
   "help_boosterpin_desc" : "If moderator allowed boosters to pin/unpin messages, they can make bot pin/unpin messages for them even though boosters don't have message manage permission. Message must be specified via either message ID, message link, or reply. `bp` is also valid command",
   "help_boosterpin_exam" : "`p!bp 12367890123456`\n`p!bp https://cdn.discord.com/....`",
+  "help_formdps_use" : "`p!formdps [Unit Name]`",
+  "help_formdps_desc" : "Show DPS graph of specified unit depending on range. `catdps`, `unitdps`, `fdps`, `cdps`, `udps`, `fd`, `cd`, `ud` are also valid command",
+  "help_formdps_argu" : "- `-t`\nDisplay info with talents applied if this form has\n- `-lv` or `-lvl`\nCustomize this form's level and talent levels. With order of `level, talent 1 level, talent 2 level, ..., talent 8 level`\n- `-tf` or `-trueform`\nDirectly find true form even though specified name is for other forms\n- `-tr` or `-treasure`\nShow stat values with considering treasure altogether",
+  "help_formdps_exam" : "`p!fs Fabled Adventure Girl Kanna -lv 50`",
+  "help_enemydps_use" : "`p!enemydps [Enemy Name]`",
+  "help_enemydps_desc" : "Show DPS graph of specified enemy depending on range. `edps`, `ed` are also valid command",
+  "help_enemydps_argu" : "- `-m`\nSet attack magnification of this enemy",
+  "help_enemydps_exam" : "`p!ed Kappy Jr. -m 200`",
   "prefix_space" : "Prefix can't be white spaces!",
   "prefix_set" : "Prefix setting complete! Your personal prefix is now : %s",
   "prefix_setnone" : "Your prefix has been updated!",
@@ -1623,5 +1631,9 @@
   "boostpin_unpin" : "Successfully unpinned the message : %s",
   "fdps_title" : "%s's DPS Graph",
   "fdps_fail" : "Failed to generate DPS graph of this unit...",
-  "fdps_line" : "%s : Normal DPS\n%s : Considering Treasure"
+  "fdps_line" : "%s : Normal DPS\n%s : Considering Treasure",
+  "fdps_descnoplv" : "Level : %d",
+  "fdps_desc" : "Level : %d + %d",
+  "fdps_talent" : "Talent : [%s]",
+  "edps_mag" : "Magnification : %d%%"
 }

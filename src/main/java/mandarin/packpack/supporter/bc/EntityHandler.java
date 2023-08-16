@@ -47,6 +47,8 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.api.utils.FileUpload;
+import org.apache.commons.lang3.ArrayUtils;
+import org.jcodec.common.StringUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -3528,8 +3530,6 @@ public class EntityHandler {
 
         nodes.sort(BigDecimal::compareTo);
 
-        System.out.println(nodes);
-
         List<BigDecimal[]> coordinates = new ArrayList<>();
         List<BigDecimal[]> withTreasure = new ArrayList<>();
 
@@ -3678,8 +3678,6 @@ public class EntityHandler {
                             .multiply(waveTotalMultiplier);
 
                     List<Integer> possibleWave = getWaveIndex(range, waveLevel);
-
-                    System.out.println(possibleWave);
 
                     for (int j = 0; j < possibleWave.size(); j++) {
                         int rawIndex = possibleWave.get(j);
@@ -3917,18 +3915,26 @@ public class EntityHandler {
 
             String desc;
 
-            if (treasureSetting.differentFromGlobal()) {
-                desc = LangID.getStringByID("data_customtrea", lang) + "\n\n";
+            if (lv.getPlusLv() == 0) {
+                desc = String.format(LangID.getStringByID("fdps_descnoplv", lang), lv.getLv());
             } else {
-                desc = "";
+                desc = String.format(LangID.getStringByID("fdps_desc", lang), lv.getLv(), lv.getPlusLv());
             }
 
             if (talent && f.du.getPCoin() != null) {
-                desc += LangID.getStringByID("data_customtalent", lang) + "\n\n";
+                desc += "\n" + String.format(LangID.getStringByID("fdps_talent", lang), StringUtils.joinS(ArrayUtils.toObject(lv.getTalents()), ", "));
+            }
+
+            if (treasureSetting.differentFromGlobal()) {
+                desc = "\n\n" + LangID.getStringByID("data_customtrea", lang);
+            }
+
+            if (talent && f.du.getPCoin() != null) {
+                desc += "\n\n" + LangID.getStringByID("data_customtalent", lang);
             }
 
             if (treasure && !identical) {
-                desc += String.format(LangID.getStringByID("fdps_line", lang), EmojiStore.GREENLINE.getFormatted(), EmojiStore.REDDASHEDLINE.getFormatted());
+                desc += "\n\n" + String.format(LangID.getStringByID("fdps_line", lang), EmojiStore.GREENLINE.getFormatted(), EmojiStore.REDDASHEDLINE.getFormatted());
             }
 
             int c;
@@ -3949,11 +3955,29 @@ public class EntityHandler {
             spec.setColor(c);
 
             spec.setImage("attachment://graph.png");
+            spec.setThumbnail("attachment://icon.png");
 
-            Command.replyToMessageSafely(ch, "", authorMessage, a -> a.setEmbeds(spec.build())
-                    .addFiles(FileUpload.fromData(result, "graph.png")), m -> {
+            if (talent && f.du.getPCoin() != null) {
+                spec.setFooter(DataToString.getTalent(f.du, lv, lang));
+            }
+
+            File icon = generateIcon(f);
+
+            Command.replyToMessageSafely(ch, "", authorMessage, a -> {
+                a = a.setEmbeds(spec.build())
+                        .addFiles(FileUpload.fromData(result, "graph.png"));
+
+                if (icon != null)
+                    a = a.addFiles(FileUpload.fromData(icon, "icon.png"));
+
+                return a;
+            }, m -> {
                 if(result.exists() && !result.delete()) {
                     StaticStore.logger.uploadLog("Failed to delete file : "+result.getAbsolutePath());
+                }
+
+                if (icon != null && icon.exists() && !icon.delete()) {
+                    StaticStore.logger.uploadLog("Failed to delete file : " + icon.getAbsolutePath());
                 }
             });
         }
@@ -4108,8 +4132,6 @@ public class EntityHandler {
 
         nodes.sort(BigDecimal::compareTo);
 
-        System.out.println(nodes);
-
         List<BigDecimal[]> coordinates = new ArrayList<>();
 
         BigDecimal surgeTotalMultiplier = chance
@@ -4129,7 +4151,7 @@ public class EntityHandler {
             BigDecimal y3 = BigDecimal.ZERO;
 
             if (surge && inSurgeArea(range, shortSurgeDistance, longSurgeDistance)) {
-                BigDecimal surgeDamage = getTotalSurgeWaveAttack(du, adjustedMagnification, treasureSetting);
+                BigDecimal surgeDamage = getTotalSurgeWaveAttack(du, adjustedMagnification);
 
                 if (inSurgeIntersectionArea(range, shortSurgeDistance, longSurgeDistance)) {
                     y1 = y1.add(surgeTotalMultiplier.multiply(surgeDamage));
@@ -4201,7 +4223,7 @@ public class EntityHandler {
                 }
 
                 if (wave) {
-                    BigDecimal waveAttack = getTotalSurgeWaveAttack(du, adjustedMagnification, treasureSetting)
+                    BigDecimal waveAttack = getTotalSurgeWaveAttack(du, adjustedMagnification)
                             .multiply(waveTotalMultiplier);
 
                     List<Integer> possibleWave = getWaveIndex(range, waveLevel);
@@ -4253,7 +4275,7 @@ public class EntityHandler {
                 }
 
                 if (wave) {
-                    BigDecimal waveAttack = getTotalSurgeWaveAttack(du, adjustedMagnification, treasureSetting)
+                    BigDecimal waveAttack = getTotalSurgeWaveAttack(du, adjustedMagnification)
                             .multiply(waveTotalMultiplier);
 
                     List<Integer> possibleWave = getWaveIndex(range, waveLevel);
@@ -4307,12 +4329,10 @@ public class EntityHandler {
             if(name == null || name.isBlank())
                 name = Data.trio(e.id.id);
 
-            String desc;
+            String desc = String.format(LangID.getStringByID("edps_mag", lang), adjustedMagnification);
 
             if (treasureSetting.differentFromGlobal()) {
-                desc = LangID.getStringByID("data_customtrea", lang) + "\n\n";
-            } else {
-                desc = "";
+                desc += "\n\n" + LangID.getStringByID("data_customtrea", lang);
             }
 
             spec.setTitle(String.format(LangID.getStringByID("fdps_title", lang), name));
@@ -4324,11 +4344,26 @@ public class EntityHandler {
             spec.setColor(StaticStore.rainbow[0]);
 
             spec.setImage("attachment://graph.png");
+            spec.setThumbnail("attachment://icon.png");
 
-            Command.replyToMessageSafely(ch, "", authorMessage, a -> a.setEmbeds(spec.build())
-                    .addFiles(FileUpload.fromData(result, "graph.png")), m -> {
+            File icon = generateIcon(e);
+
+            Command.replyToMessageSafely(ch, "", authorMessage, a -> {
+                a = a.setEmbeds(spec.build())
+                        .addFiles(FileUpload.fromData(result, "graph.png"));
+
+                if (icon != null) {
+                    a = a.addFiles(FileUpload.fromData(icon, "icon.png"));
+                }
+
+                return a;
+            }, m -> {
                 if(result.exists() && !result.delete()) {
                     StaticStore.logger.uploadLog("Failed to delete file : "+result.getAbsolutePath());
+                }
+
+                if (icon != null && icon.exists() && !icon.delete()) {
+                    StaticStore.logger.uploadLog("Failed to delete file : " + icon.getAbsolutePath());
                 }
             });
         }
@@ -4460,7 +4495,7 @@ public class EntityHandler {
         return result;
     }
 
-    private static BigDecimal getTotalSurgeWaveAttack(MaskEnemy data, int magnification, TreasureHolder t) {
+    private static BigDecimal getTotalSurgeWaveAttack(MaskEnemy data, int magnification) {
         BigDecimal result = BigDecimal.ZERO;
 
         for (int i = 0; i < data.getAtkCount(); i++) {
