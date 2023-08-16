@@ -29,7 +29,7 @@ import java.util.Queue;
 
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class Initializer {
-    private static final String[] folder = {"bot/", "jp/", "kr/", "zh/", "fr/", "it/", "es/", "de/", "th/"};
+    private static final String[] folder = {"bot/", "jp/", "kr/", "bot-zh/", "fr/", "it/", "es/", "de/", "th/"};
     private static final int[] loc = {0, 3, 2, 1, 6, 9, 8, 5, 10};
     private static final String[] file = {"EnemyName.txt", "StageName.txt", "UnitName.txt", "UnitExplanation.txt", "EnemyExplanation.txt", "CatFruitExplanation.txt", "RewardName.txt", "ComboName.txt", "MedalName.txt", "MedalExplanation.txt", "GachaName.txt", "MissionName.txt"};
 
@@ -157,12 +157,11 @@ public class Initializer {
 
         for(int n = 0; n < folder.length; n++) {
             String fo = folder[n];
-            String f;
-
-            if(fo.equals("bot/"))
-                f = "en";
-            else
-                f = fo.substring(0, fo.length()-1);
+            String f = switch(fo) {
+                case "bot/" -> "en";
+                case "bot-zh/" -> "zh";
+                default -> fo.substring(0, fo.length() - 1);
+            };
 
             for(String fi : file) {
                 File g = new File("./data/assets/lang/"+fo+fi);
