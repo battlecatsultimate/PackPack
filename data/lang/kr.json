@@ -51,6 +51,7 @@
   "search_next10" : "다음 10 페이지",
   "search_list" : "리스트에서 데이터를 선택해주세요",
   "data_customtrea" : "해당 임베드는 커스텀 보물 설정을 적용합니다",
+  "data_customtalent" : "해당 임베드는 본능을 적용합니다",
   "data_id" : "ID",
   "data_hp" : "체력",
   "data_hb" : "히트백",
