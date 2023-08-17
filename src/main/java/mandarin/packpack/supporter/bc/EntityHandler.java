@@ -3525,8 +3525,8 @@ public class EntityHandler {
             BigDecimal wv = waveLevel;
 
             while (wv.compareTo(BigDecimal.ZERO) != 0) {
-                nodes.add(position);
-                nodes.add(position.add(BigDecimal.valueOf(Data.W_U_WID)));
+                nodes.add(position.subtract(BigDecimal.valueOf(Data.W_U_WID).divide(new BigDecimal("2"), Equation.context)));
+                nodes.add(position.add(BigDecimal.valueOf(Data.W_U_WID).divide(new BigDecimal("2"), Equation.context)));
 
                 wv = wv.subtract(BigDecimal.ONE);
                 position = position.add(BigDecimal.valueOf(Data.W_PROG));
@@ -3645,13 +3645,11 @@ public class EntityHandler {
 
                     List<Integer> possibleWave = getWaveIndex(range, waveLevel, BigDecimal.valueOf(Data.W_U_WID), BigDecimal.valueOf(Data.W_U_INI));
 
-                    for (int j = 0; j < possibleWave.size(); j++) {
-                        int rawIndex = possibleWave.get(j);
-
-                        if (rawIndex >= 1000) {
+                    if (possibleWave.size() == 1) {
+                        if (possibleWave.get(0) == 1000) {
                             y1 = y1.add(waveAttack);
                             y3 = y3.add(waveAttack);
-                        } else if (rawIndex <= -1000) {
+                        } else if (possibleWave.get(0) == -1000) {
                             y2 = y2.add(waveAttack);
                             y3 = y3.add(waveAttack);
                         } else {
@@ -3659,6 +3657,10 @@ public class EntityHandler {
                             y2 = y2.add(waveAttack);
                             y3 = y3.add(waveAttack);
                         }
+                    } else if (!possibleWave.isEmpty()) {
+                        y1 = y1.add(waveAttack);
+                        y2 = y2.add(waveAttack);
+                        y3 = y3.add(waveAttack);
                     }
                 }
 
@@ -3697,17 +3699,18 @@ public class EntityHandler {
 
                     List<Integer> possibleWave = getWaveIndex(range, waveLevel, BigDecimal.valueOf(Data.W_U_WID), BigDecimal.valueOf(Data.W_U_INI));
 
-                    for (int j = 0; j < possibleWave.size(); j++) {
-                        int rawIndex = possibleWave.get(j);
-
-                        if (rawIndex >= 1000)
+                    if (possibleWave.size() == 1) {
+                        if (possibleWave.get(0) == 1000) {
                             y2 = y2.add(waveAttack);
-                        else if (rawIndex <= -1000)
+                        } else if (possibleWave.get(0) == -1000) {
                             y1 = y1.add(waveAttack);
-                        else {
+                        } else {
                             y1 = y1.add(waveAttack);
                             y2 = y2.add(waveAttack);
                         }
+                    } else if (!possibleWave.isEmpty()) {
+                        y1 = y1.add(waveAttack);
+                        y2 = y2.add(waveAttack);
                     }
                 }
 
@@ -3806,13 +3809,11 @@ public class EntityHandler {
 
                         List<Integer> possibleWave = getWaveIndex(range, waveLevel, BigDecimal.valueOf(Data.W_U_WID), BigDecimal.valueOf(Data.W_U_INI));
 
-                        for (int j = 0; j < possibleWave.size(); j++) {
-                            int rawIndex = possibleWave.get(j);
-
-                            if (rawIndex >= 1000) {
+                        if (possibleWave.size() == 1) {
+                            if (possibleWave.get(0) == 1000) {
                                 y1 = y1.add(waveAttack);
                                 y3 = y3.add(waveAttack);
-                            } else if (rawIndex <= -1000) {
+                            } else if (possibleWave.get(0) == -1000) {
                                 y2 = y2.add(waveAttack);
                                 y3 = y3.add(waveAttack);
                             } else {
@@ -3820,6 +3821,10 @@ public class EntityHandler {
                                 y2 = y2.add(waveAttack);
                                 y3 = y3.add(waveAttack);
                             }
+                        } else if (!possibleWave.isEmpty()) {
+                            y1 = y1.add(waveAttack);
+                            y2 = y2.add(waveAttack);
+                            y3 = y3.add(waveAttack);
                         }
                     }
 
@@ -3858,17 +3863,18 @@ public class EntityHandler {
 
                         List<Integer> possibleWave = getWaveIndex(range, waveLevel, BigDecimal.valueOf(Data.W_U_WID), BigDecimal.valueOf(Data.W_U_INI));
 
-                        for (int j = 0; j < possibleWave.size(); j++) {
-                            int rawIndex = possibleWave.get(j);
-
-                            if (rawIndex >= 1000)
+                        if (possibleWave.size() == 1) {
+                            if (possibleWave.get(0) == 1000) {
                                 y2 = y2.add(waveAttack);
-                            else if (rawIndex <= -1000)
+                            } else if (possibleWave.get(0) == -1000) {
                                 y1 = y1.add(waveAttack);
-                            else {
+                            } else {
                                 y1 = y1.add(waveAttack);
                                 y2 = y2.add(waveAttack);
                             }
+                        } else if (!possibleWave.isEmpty()) {
+                            y1 = y1.add(waveAttack);
+                            y2 = y2.add(waveAttack);
                         }
                     }
 
@@ -4127,8 +4133,8 @@ public class EntityHandler {
             BigDecimal wv = waveLevel;
 
             while (wv.compareTo(BigDecimal.ZERO) != 0) {
-                nodes.add(position);
-                nodes.add(position.add(BigDecimal.valueOf(Data.W_E_WID)));
+                nodes.add(position.subtract(BigDecimal.valueOf(Data.W_E_WID).divide(new BigDecimal("2"), Equation.context)));
+                nodes.add(position.add(BigDecimal.valueOf(Data.W_E_WID).divide(new BigDecimal("2"), Equation.context)));
 
                 wv = wv.subtract(BigDecimal.ONE);
                 position = position.add(BigDecimal.valueOf(Data.W_PROG));
@@ -4246,13 +4252,11 @@ public class EntityHandler {
 
                     List<Integer> possibleWave = getWaveIndex(range, waveLevel, BigDecimal.valueOf(Data.W_E_WID), BigDecimal.valueOf(Data.W_E_INI));
 
-                    for (int j = 0; j < possibleWave.size(); j++) {
-                        int rawIndex = possibleWave.get(j);
-
-                        if (rawIndex >= 1000) {
+                    if (possibleWave.size() == 1) {
+                        if (possibleWave.get(0) == 1000) {
                             y1 = y1.add(waveAttack);
                             y3 = y3.add(waveAttack);
-                        } else if (rawIndex <= -1000) {
+                        } else if (possibleWave.get(0) == -1000) {
                             y2 = y2.add(waveAttack);
                             y3 = y3.add(waveAttack);
                         } else {
@@ -4260,6 +4264,10 @@ public class EntityHandler {
                             y2 = y2.add(waveAttack);
                             y3 = y3.add(waveAttack);
                         }
+                    } else if (!possibleWave.isEmpty()) {
+                        y1 = y1.add(waveAttack);
+                        y2 = y2.add(waveAttack);
+                        y3 = y3.add(waveAttack);
                     }
                 }
 
@@ -4298,17 +4306,18 @@ public class EntityHandler {
 
                     List<Integer> possibleWave = getWaveIndex(range, waveLevel, BigDecimal.valueOf(Data.W_E_WID), BigDecimal.valueOf(Data.W_E_INI));
 
-                    for (int j = 0; j < possibleWave.size(); j++) {
-                        int rawIndex = possibleWave.get(j);
-
-                        if (rawIndex >= 1000)
+                    if (possibleWave.size() == 1) {
+                        if (possibleWave.get(0) == 1000) {
                             y2 = y2.add(waveAttack);
-                        else if (rawIndex <= -1000)
+                        } else if (possibleWave.get(0) == -1000) {
                             y1 = y1.add(waveAttack);
-                        else {
+                        } else {
                             y1 = y1.add(waveAttack);
                             y2 = y2.add(waveAttack);
                         }
+                    } else if (!possibleWave.isEmpty()) {
+                        y1 = y1.add(waveAttack);
+                        y2 = y2.add(waveAttack);
                     }
                 }
 
@@ -4477,10 +4486,11 @@ public class EntityHandler {
         BigDecimal wv = waveLevel;
 
         while (wv.compareTo(BigDecimal.ZERO) != 0) {
-            final int smaller = range.compareTo(position.add(width));
+            int smaller = range.compareTo(position.add(width.divide(new BigDecimal("2"), Equation.context)));
+            int bigger = position.subtract(width.divide(new BigDecimal("2"), Equation.context)).compareTo(range);
 
-            if (position.compareTo(range) <= 0 && smaller <= 0) {
-                if (position.compareTo(range) == 0) {
+            if (bigger <= 0 && smaller <= 0) {
+                if (bigger == 0) {
                     result.add(1000);
                 } else if (smaller == 0) {
                     result.add(-1000);
