@@ -34,30 +34,23 @@ public abstract class TimedConstraintCommand extends Command {
         super(lang, requireGuild);
 
         switch (role) {
-            case MOD:
-                if(idHolder != null) {
+            case MOD -> {
+                if (idHolder != null) {
                     constRole = idHolder.MOD;
                 } else {
                     constRole = null;
                 }
-
-                break;
-            case MEMBER:
-                if(idHolder != null) {
+            }
+            case MEMBER -> {
+                if (idHolder != null) {
                     constRole = idHolder.MEMBER;
                 } else {
                     constRole = null;
                 }
-
-                break;
-            case MANDARIN:
-                constRole = "MANDARIN";
-                break;
-            case TRUSTED:
-                constRole = "TRUSTED";
-                break;
-            default:
-                throw new IllegalStateException("Invalid ROLE enum : "+role);
+            }
+            case MANDARIN -> constRole = "MANDARIN";
+            case TRUSTED -> constRole = "TRUSTED";
+            default -> throw new IllegalStateException("Invalid ROLE enum : " + role);
         }
 
         this.time = time;
@@ -127,13 +120,11 @@ public abstract class TimedConstraintCommand extends Command {
             hasRole = isMod || role.contains(constRole) || u.getId().equals(StaticStore.MANDARIN_SMELL);
         }
 
-        if(ch instanceof GuildMessageChannel) {
+        if(ch instanceof GuildMessageChannel tc) {
             Guild g = getGuild(event);
 
             if(g == null)
                 return;
-
-            GuildMessageChannel tc = ((GuildMessageChannel) ch);
 
             if(!tc.canTalk()) {
                 String serverName = g.getName();
