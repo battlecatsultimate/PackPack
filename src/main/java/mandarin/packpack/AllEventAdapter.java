@@ -693,19 +693,9 @@ public class AllEventAdapter extends ListenerAdapter {
 
                     MessageChannel ch = author.getChannel();
 
-                    long f = Runtime.getRuntime().freeMemory();
-                    long t = Runtime.getRuntime().totalMemory();
-                    long m = Runtime.getRuntime().maxMemory();
-
-                    double per = 100.0 * (t - f) / m;
-
                     message += "\n\nCommand : " + author.getContentRaw() + "\n\n" +
                             "Member  : " + u.getName() + " (" + u.getId() + ")\n\n" +
-                            "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")\n\n" +
-                            "Number of Threads\n\n" +
-                            "- In Group : " + Thread.activeCount() + "\n" +
-                            "- In All : " + ManagementFactory.getThreadMXBean().getThreadCount() + "\n\n" +
-                            "Memory Used : " + (t - f >> 20) + " MB / " + (m >> 20) + " MB, " + (int) per + "%";
+                            "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
 
                     if(ch instanceof GuildChannel) {
                         Guild g = author.getGuild();

@@ -35,6 +35,7 @@ import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import javax.annotation.Nonnull;
 import java.awt.*;
 import java.io.*;
+import java.lang.management.ManagementFactory;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -1236,10 +1237,19 @@ public class StaticStore {
     public static void updateStatus() {
         if(PackBot.statusMessage != null) {
             try {
+                long f = Runtime.getRuntime().freeMemory();
+                long t = Runtime.getRuntime().totalMemory();
+                long m = Runtime.getRuntime().maxMemory();
+
+                double per = 100.0 * (t - f) / m;
+
                 PackBot.statusMessage.editMessage(LangID.getStringByID("stat_info", LangID.EN)
                         .replace("_SSS_", String.valueOf(StaticStore.idHolder.size()))
                         .replace("_CCC_", String.valueOf(StaticStore.executed))
-                        .replace("_MMM_", String.valueOf(StaticStore.spamData.size()))).queue(null, e -> {
+                        .replace("_MMM_", String.valueOf(StaticStore.spamData.size())) + "\n\nNumber of Threads\n\n" +
+                        "- In Group : " + Thread.activeCount() + "\n" +
+                        "- In All : " + ManagementFactory.getThreadMXBean().getThreadCount() + "\n\n" +
+                        "Memory Used : " + (t - f >> 20) + " MB / " + (m >> 20) + " MB, " + (int) per + "%").queue(null, e -> {
                 });
             } catch (Exception ignored) { }
         }
