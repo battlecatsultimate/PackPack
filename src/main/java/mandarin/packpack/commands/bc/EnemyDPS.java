@@ -25,7 +25,7 @@ import java.util.List;
 public class EnemyDPS extends TimedConstraintCommand {
 
     public EnemyDPS(ConstraintCommand.ROLE role, int lang, @Nullable IDHolder idHolder, long time) {
-        super(role, lang, idHolder, time, StaticStore.COMMAND_FORMDPS_ID, false);
+        super(role, lang, idHolder, time, StaticStore.COMMAND_ENEMYDPS_ID, false);
     }
 
     @Override
