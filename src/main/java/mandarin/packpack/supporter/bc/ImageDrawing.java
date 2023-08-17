@@ -3709,6 +3709,10 @@ public class ImageDrawing {
             xSegment = xSegment.divide(BigDecimal.TEN.pow(-xScale), Equation.context).round(new MathContext(1, RoundingMode.HALF_EVEN)).multiply(BigDecimal.TEN.pow(-xScale));
         }
 
+        if (xSegment.compareTo(BigDecimal.ZERO) == 0) {
+            xSegment = BigDecimal.ONE;
+        }
+
         BigDecimal ySegment = yWidth.divide(BigDecimal.TEN, Equation.context);
 
         int yScale = (int) - (Math.round(Math.log10(ySegment.doubleValue())) + 0.5 - 0.5 * Math.signum(ySegment.doubleValue()));
@@ -3717,6 +3721,10 @@ public class ImageDrawing {
             ySegment = ySegment.round(new MathContext(1, RoundingMode.HALF_EVEN));
         } else {
             ySegment = ySegment.divide(BigDecimal.TEN.pow(-yScale), Equation.context).round(new MathContext(1, RoundingMode.HALF_EVEN)).multiply(BigDecimal.TEN.pow(-yScale));
+        }
+
+        if (ySegment.compareTo(BigDecimal.ZERO) == 0) {
+            ySegment = BigDecimal.ONE;
         }
 
         Canvas cv = new Canvas();
@@ -3746,7 +3754,7 @@ public class ImageDrawing {
 
             yAxisNumberWidth = Math.max(yAxisNumberWidth, boundary.width);
 
-            yPosition = yPosition.add(xSegment);
+            yPosition = yPosition.add(ySegment);
         }
 
         int finalWidth = (int) Math.round(axisTitleGap * 2 + dpsWidth + yAxisNumberWidth + indicatorGap + plotWidthHeight * indicatorRatio * 0.5 + plotWidthHeight * 1.5 + plotGraphOffset);
