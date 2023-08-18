@@ -64,6 +64,22 @@ class Inventory {
         return obj
     }
 
+    fun validForLegendCollector() : Boolean {
+        val cardsTotal = cards.keys.map { card -> card.unitID }
+
+        for (i in 0..1) {
+            if (CardData.permanents[i].map { index -> CardData.bannerData[i][index] }.any { idSet -> idSet.any { id -> id !in cardsTotal } })
+                return false
+        }
+
+        val uberFest = cardsTotal.any { id -> id in CardData.bannerData[2][0] }
+        val epicFest = cardsTotal.any { id -> id in CardData.bannerData[2][1] }
+        val busters = cardsTotal.any { id -> id == 435 || id == 484 || id in CardData.bannerData[2][2] }
+        val legends = cards.keys.any { card -> card.tier == CardData.Tier.LEGEND }
+
+        return uberFest && epicFest && busters && legends
+    }
+
     companion object {
         fun readInventory(obj: JsonObject): Inventory {
             val inventory = Inventory()

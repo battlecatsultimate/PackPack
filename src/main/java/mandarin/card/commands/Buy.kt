@@ -38,9 +38,7 @@ class Buy : Command(LangID.EN, true) {
 
         for (role in roles) {
             val affordable = if (role == CardData.Role.LEGEND) {
-                val cards = inventory.cards.keys.map { c -> c.unitID }
-
-                (0..1).any { i -> CardData.permanents[i].any { b -> cards.containsAll(CardData.bannerData[i][b].toList()) && cards.contains(CardData.regularLegend[i * 9 + b]) } }
+                inventory.validForLegendCollector()
             } else {
                 role.getProduct().possibleFilters.filter { f -> inventory.cards.keys.filter { c -> f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 0 } >= f.amount }.size >= role.getProduct().requiredFilter
             }

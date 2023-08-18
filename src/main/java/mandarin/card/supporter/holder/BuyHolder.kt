@@ -53,11 +53,7 @@ class BuyHolder(author: Message, channelID: String, private val message: Message
                 expire(authorMessage.author.id)
 
                 if (selectedRole == CardData.Role.LEGEND) {
-                    val cards = inventory.cards.keys.map { c -> c.unitID }
-
-                    val possible = (0..1).any { i -> CardData.permanents[i].any { b -> cards.containsAll(CardData.bannerData[i][b].toList()) && cards.contains(CardData.regularLegend[i * 9 + b]) } }
-
-                    if (possible) {
+                    if (inventory.validForLegendCollector()) {
                         inventory.vanityRoles.add(CardData.Role.LEGEND)
 
                         event.deferEdit()

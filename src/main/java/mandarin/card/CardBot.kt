@@ -13,6 +13,7 @@ import mandarin.card.supporter.transaction.TransactionLogger
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.Initializer
 import mandarin.packpack.supporter.PackContext
+import mandarin.packpack.supporter.RecordableThread
 import mandarin.packpack.supporter.StaticStore
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.entities.Activity
@@ -38,6 +39,7 @@ object CardBot : ListenerAdapter() {
 
     private var ready = false
     private var notifier = 0
+    private var collectorMonitor = 0
 
     var locked = false
 
@@ -123,8 +125,33 @@ object CardBot : ListenerAdapter() {
                     if (removeQueue.isNotEmpty()) {
                         CardData.notifierGroup.removeAll(removeQueue.toSet())
                     }
+
+                    RecordableThread.handleExpiration()
                 } else {
                     notifier++
+                }
+
+                if (collectorMonitor == 0) {
+                    collectorMonitor = 0
+
+                    CardData.inventories.keys.forEach { userID ->
+                        val inventory = Inventory.getInventory(userID)
+
+                        if (!inventory.validForLegendCollector() && inventory.vanityRoles.contains(CardData.Role.LEGEND)) {
+                            inventory.vanityRoles.remove(CardData.Role.LEGEND)
+
+                            client.retrieveUserById(userID).queue { u ->
+                                u.openPrivateChannel().queue({ privateChannel ->
+                                    privateChannel.sendMessage("Your Legendary Collector role has been removed from your inventory. There are 2 possible reasons for this decision\n\n" +
+                                            "1. You spent your card on trading, crafting, etc. so you don't meet condition of legendary collector now\n" +
+                                            "2. New cards have been added, so you have to collect those cards to retrieve role back\n\n" +
+                                            "This is automated system. Please contact card managers if this seems to be incorrect automation").queue(null) { _ -> }
+                                }, { _ -> })
+                            }
+                        }
+                    }
+                } else {
+                    collectorMonitor++
                 }
 
                 saveCardData()
@@ -189,6 +216,11 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}lock" -> Lock().execute(event)
             "${globalPrefix}unlock" -> Unlock().execute(event)
             "${globalPrefix}craft" -> Craft().execute(event)
+            "${globalPrefix}hack" -> {
+                if (test) {
+                    Hack().execute(event)
+                }
+            }
         }
 
         val session = findSession(event.channel.idLong) ?: return
@@ -244,7 +276,7 @@ object CardBot : ListenerAdapter() {
         Initializer.checkAssetDownload()
     }
 
-    fun readCardData() {
+    private fun readCardData() {
         val cardFolder = File("./data/cards")
 
         if (!cardFolder.exists())
