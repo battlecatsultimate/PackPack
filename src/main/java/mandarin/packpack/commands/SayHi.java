@@ -48,9 +48,7 @@ public class SayHi extends Command {
                     Message msg = getRepliedMessageSafely(ch, LangID.getStringByID("hi_" + index, lang), getMessage(event), a -> a);
 
                     if (msg != null) {
-                        StaticStore.executorHandler.postDelayed(5000, () -> {
-                            msg.editMessage(LangID.getStringByID("hi_0_0", lang)).mentionRepliedUser(false).queue();
-                        });
+                        StaticStore.executorHandler.postDelayed(5000, () -> msg.editMessage(LangID.getStringByID("hi_0_0", lang)).mentionRepliedUser(false).queue());
                     }
                 }
                 case 2 -> {
