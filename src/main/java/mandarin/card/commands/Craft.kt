@@ -35,12 +35,12 @@ class Craft : Command(LangID.EN, true) {
             return
         }
 
-        val message = getRepliedMessageSafely(ch, getPremiumText(cards, inventory), getMessage(event)) { a -> a.setComponents(assignComponents(cards)) }
+        val message = getRepliedMessageSafely(ch, getPremiumText(cards, inventory), getMessage(event)) { a -> a.setComponents(assignComponents(cards, inventory)) }
 
         StaticStore.putHolder(m.id, CardSalvageHolder(getMessage(event), ch.id, message, false))
     }
 
-    private fun assignComponents(cards: List<Card>) : List<LayoutComponent> {
+    private fun assignComponents(cards: List<Card>, inventory: Inventory) : List<LayoutComponent> {
         val rows = ArrayList<ActionRow>()
 
         val bannerCategoryElements = ArrayList<SelectOption>()
@@ -108,6 +108,7 @@ class Craft : Command(LangID.EN, true) {
         val confirmButtons = ArrayList<Button>()
 
         confirmButtons.add(Button.success("craft", "Craft T2 Card").asDisabled().withEmoji(Emoji.fromUnicode("\uD83D\uDEE0\uFE0F")))
+        confirmButtons.add(Button.secondary("dupe", "Use Duplicated").withDisabled(!inventory.cards.keys.any { c -> (inventory.cards[c] ?: 0) > 1 }))
         confirmButtons.add(Button.danger("reset", "Reset").asDisabled())
         confirmButtons.add(Button.danger("cancel", "Cancel"))
 

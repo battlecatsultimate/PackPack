@@ -288,6 +288,34 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
 
                 applyResult()
             }
+            "dupe" -> {
+                val duplicatedCards = inventory.cards.keys.filter { c -> (inventory.cards[c] ?: 0) - selectedCard.filter { card -> card.unitID == c.unitID }.size > 1 }.sortedWith { c, c2 ->
+                    val thatOne = (inventory.cards[c] ?: 0) - selectedCard.filter { card -> card.unitID == c.unitID }.size
+                    val thisOne = (inventory.cards[c2] ?: 0) - selectedCard.filter { card -> card.unitID == c2.unitID }.size
+
+                    thisOne.compareTo(thatOne)
+                }
+
+                for (c in duplicatedCards) {
+                    if (selectedCard.size == 10)
+                        break
+
+                    repeat(min(10 - selectedCard.size, (inventory.cards[c] ?: 0) - selectedCard.filter { card -> card.unitID == c.unitID }.size - 1)) {
+                        selectedCard.add(c)
+                    }
+                }
+
+                event.deferReply()
+                    .setContent("Successfully added all of your duplicated cards as much as possible!")
+                    .setEphemeral(true)
+                    .queue()
+
+                filterCards()
+
+                page = 0
+
+                applyResult()
+            }
             "reset" -> {
                 selectedCard.clear()
 
@@ -431,6 +459,8 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
 
         if (salvageMode)
             confirmButtons.add(Button.secondary("all", "Add All").withDisabled(selectedCard.size == inventory.cards.keys.filter { c -> c.tier == CardData.Tier.COMMON }.sumOf { c -> inventory.cards[c] ?: 0 }))
+        else
+            confirmButtons.add(Button.secondary("dupe", "Use Duplicated").withDisabled(!inventory.cards.keys.any { c -> (inventory.cards[c] ?: 0) - selectedCard.filter { card -> card.unitID == c.unitID }.size > 1 } || selectedCard.size == 10))
 
         confirmButtons.add(Button.danger("reset", "Reset").withDisabled(selectedCard.isEmpty()))
         confirmButtons.add(Button.danger("cancel", "Cancel"))
