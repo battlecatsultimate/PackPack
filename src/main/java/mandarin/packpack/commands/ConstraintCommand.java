@@ -171,9 +171,7 @@ public abstract class ConstraintCommand extends Command {
             StaticStore.executed++;
 
             try {
-                RecordableThread t = new RecordableThread(() -> {
-                    doSomething(event);
-                }, e -> {
+                RecordableThread t = new RecordableThread(() -> doSomething(event), e -> {
                     String data = "Command : " + getContent(event) + "\n\n" +
                             "Member  : " + u.getName() + " (" + u.getId() + ")\n\n" +
                             "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";

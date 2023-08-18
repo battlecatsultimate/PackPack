@@ -381,11 +381,7 @@ public abstract class Command {
         }
 
         try {
-            RecordableThread t = new RecordableThread(() -> {
-                Thread.sleep(120000);
-
-                doSomething(event);
-            }, e -> {
+            RecordableThread t = new RecordableThread(() -> doSomething(event), e -> {
                 String data = "Command : " + getContent(event) + "\n\n" +
                         "User  : " + u.getName() + " (" + u.getId() + ")\n\n" +
                         "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
