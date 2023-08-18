@@ -10,7 +10,6 @@ import com.google.gson.JsonParser;
 import common.io.WebFileIO;
 import common.io.assets.UpdateCheck;
 import common.util.lang.MultiLangCont;
-import mandarin.card.supporter.Handler;
 import mandarin.packpack.PackBot;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.event.EventFileGrabber;
