@@ -12,7 +12,7 @@ import mandarin.packpack.commands.bc.Castle;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
@@ -20,9 +20,6 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
 
 public class StageReactionSlashMessageHolder extends MessageHolder {
     private final IDHolder holder;
@@ -40,23 +37,18 @@ public class StageReactionSlashMessageHolder extends MessageHolder {
 
         this.m = m;
 
-        Timer autoFinish = new Timer();
+        StaticStore.executorHandler.postDelayed(FIVE_MIN, () -> {
+            if(expired)
+                return;
 
-        autoFinish.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if(expired)
-                    return;
+            expired = true;
 
-                expired = true;
+            StaticStore.removeHolder(memberID, StageReactionSlashMessageHolder.this);
 
-                StaticStore.removeHolder(memberID, StageReactionSlashMessageHolder.this);
-
-                if(!(m.getChannel() instanceof GuildChannel) || m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
-                    m.clearReactions().queue();
-                }
+            if(!(m.getChannel() instanceof GuildChannel) || m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
+                m.clearReactions().queue();
             }
-        }, TimeUnit.MINUTES.toMillis(5));
+        });
     }
 
     @Override

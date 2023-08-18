@@ -133,18 +133,7 @@ public abstract class FileAnalyzerHolder extends MessageHolder {
                 RecordableThread t = new RecordableThread(() -> {
                     perform(resultFiles);
 
-                    Timer timer = new Timer();
-
-                    TimerTask task = new TimerTask() {
-                        @Override
-                        public void run() {
-                            releaseFiles();
-
-                            timer.cancel();
-                        }
-                    };
-
-                    timer.schedule(task, 1000);
+                    StaticStore.executorHandler.postDelayed(1000, this::releaseFiles);
                 }, e -> StaticStore.logger.uploadErrorLog(e, "E/FileAnalyzerHolder::checkAttachments - Error happened while trying to perform file analyzing"));
 
                 t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime());

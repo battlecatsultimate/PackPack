@@ -10,8 +10,6 @@ import org.jcodec.api.NotSupportedException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 public abstract class Holder {
@@ -24,85 +22,65 @@ public abstract class Holder {
     protected static final long FIVE_MIN = TimeUnit.MINUTES.toMillis(5);
 
     public static void registerAutoFinish(Holder holder, Message msg, int lang, long millis) {
-        Timer autoFinish = new Timer();
+        StaticStore.executorHandler.postDelayed(millis, () -> {
+            if(holder.expired)
+                return;
 
-        autoFinish.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if(holder.expired)
-                    return;
+            holder.expire(holder.userID);
+            holder.expired = true;
 
-                holder.expire(holder.userID);
-                holder.expired = true;
-
-                msg.editMessage(LangID.getStringByID("formst_expire", lang))
-                        .setComponents()
-                        .queue();
-            }
-        }, millis);
+            msg.editMessage(LangID.getStringByID("formst_expire", lang))
+                    .setComponents()
+                    .queue();
+        });
     }
 
     public static void registerAutoFinish(Holder holder, Message msg, int lang, long millis, @Nullable Runnable run) {
-        Timer autoFinish = new Timer();
+        StaticStore.executorHandler.postDelayed(millis, () -> {
+        if(holder.expired)
+            return;
 
-        autoFinish.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if(holder.expired)
-                    return;
+        holder.expire(holder.userID);
+        holder.expired = true;
 
-                holder.expire(holder.userID);
-                holder.expired = true;
+        msg.editMessage(LangID.getStringByID("formst_expire", lang))
+                .setComponents()
+                .queue();
 
-                msg.editMessage(LangID.getStringByID("formst_expire", lang))
-                        .setComponents()
-                        .queue();
-
-                if(run != null)
-                    run.run();
-            }
-        }, millis);
+        if(run != null)
+            run.run();
+        });
     }
 
     public static void registerAutoFinish(Holder holder, Message msg, int lang, String langID, long millis) {
-        Timer autoFinish = new Timer();
+        StaticStore.executorHandler.postDelayed(millis, () -> {
+            if(holder.expired)
+                return;
 
-        autoFinish.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if(holder.expired)
-                    return;
+            holder.expire(holder.userID);
+            holder.expired = true;
 
-                holder.expire(holder.userID);
-                holder.expired = true;
-
-                msg.editMessage(LangID.getStringByID(langID, lang))
-                        .setComponents()
-                        .queue();
-            }
-        }, millis);
+            msg.editMessage(LangID.getStringByID(langID, lang))
+                    .setComponents()
+                    .queue();
+        });
     }
 
     public static void registerAutoFinish(Holder holder, Message msg, int lang, String langID, long millis, @Nullable Runnable run) {
-        Timer autoFinish = new Timer();
+        StaticStore.executorHandler.postDelayed(millis, () -> {
+            if (holder.expired)
+                return;
 
-        autoFinish.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if (holder.expired)
-                    return;
+            holder.expire(holder.userID);
+            holder.expired = true;
 
-                holder.expire(holder.userID);
-                holder.expired = true;
+            msg.editMessage(LangID.getStringByID(langID, lang))
+                    .setComponents()
+                    .queue();
 
-                msg.editMessage(LangID.getStringByID(langID, lang))
-                        .setComponents()
-                        .queue();
-
-                if (run != null)
-                    run.run();
-            }
-        }, millis);
+            if (run != null)
+                run.run();
+        });
     }
 
     public final long time = System.currentTimeMillis();

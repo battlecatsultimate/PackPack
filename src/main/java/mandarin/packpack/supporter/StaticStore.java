@@ -10,6 +10,7 @@ import com.google.gson.JsonParser;
 import common.io.WebFileIO;
 import common.io.assets.UpdateCheck;
 import common.util.lang.MultiLangCont;
+import mandarin.card.supporter.Handler;
 import mandarin.packpack.PackBot;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.event.EventFileGrabber;
@@ -130,6 +131,7 @@ public class StaticStore {
     public static final Map<String, Map<String, Long>> timeLimit = new HashMap<>();
 
     public static Timer saver = null;
+    public static final Handler executorHandler = new Handler();
 
     private static final Map<String, HolderHub> holders = new HashMap<>();
     private static final List<String> queuedFileNames = new ArrayList<>();

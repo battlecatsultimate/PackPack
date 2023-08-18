@@ -121,15 +121,11 @@ public class FormAnimMessageHolder extends SearchHolder {
 
                             StaticStore.canDo.put("gif", new TimeBoolean(false, time));
 
-                            Timer timer = new Timer();
+                            StaticStore.executorHandler.postDelayed(time, () -> {
+                                System.out.println("Remove Process : gif");
 
-                            timer.schedule(new TimerTask() {
-                                @Override
-                                public void run() {
-                                    System.out.println("Remove Process : gif");
-                                    StaticStore.canDo.put("gif", new TimeBoolean(true));
-                                }
-                            }, time);
+                                StaticStore.canDo.put("gif", new TimeBoolean(true));
+                            });
                         }
                     }, e -> StaticStore.logger.uploadErrorLog(e, "E/FormAnimMessageHolder::onSelected - Failed to generate animation"));
 

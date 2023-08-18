@@ -121,29 +121,20 @@ public class TasteApk {
 
         zip.close();
 
-        Timer timer = new Timer();
+        StaticStore.executorHandler.postDelayed(5000, () -> {
+            System.gc();
 
-        TimerTask task = new TimerTask() {
-            @Override
-            public void run() {
-                System.gc();
+            File temp = new File(workspace, "temp");
 
-                File temp = new File(workspace, "temp");
+            StaticStore.deleteFile(temp, true);
 
-                StaticStore.deleteFile(temp, true);
-
-                for(String asset : assets) {
-                    StaticStore.deleteFile(new File(workspace, asset+".list"), true);
-                    StaticStore.deleteFile(new File(workspace, asset+".pack"), true);
-                }
-
-                StaticStore.deleteFile(apk, true);
-
-                timer.cancel();
+            for(String asset : assets) {
+                StaticStore.deleteFile(new File(workspace, asset+".list"), true);
+                StaticStore.deleteFile(new File(workspace, asset+".pack"), true);
             }
-        };
 
-        timer.schedule(task, 5000);
+            StaticStore.deleteFile(apk, true);
+        });
 
         return result.toString();
     }

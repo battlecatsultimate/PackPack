@@ -21,8 +21,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public abstract class GlobalTimedConstraintCommand extends Command {
     static String ABORT = "ABORT";
@@ -202,15 +200,11 @@ public abstract class GlobalTimedConstraintCommand extends Command {
                             doSomething(event);
 
                             if(timerStart && time != 0) {
-                                Timer timer = new Timer();
+                                StaticStore.executorHandler.postDelayed(time, () -> {
+                                    System.out.println("Remove Process : "+id+" | "+time);
 
-                                timer.schedule(new TimerTask() {
-                                    @Override
-                                    public void run() {
-                                        System.out.println("Remove Process : "+id+" | "+time);
-                                        StaticStore.canDo.put(id, new TimeBoolean(true));
-                                    }
-                                }, time);
+                                    StaticStore.canDo.put(id, new TimeBoolean(true));
+                                });
                             } else {
                                 StaticStore.canDo.put(id, new TimeBoolean(true));
                             }

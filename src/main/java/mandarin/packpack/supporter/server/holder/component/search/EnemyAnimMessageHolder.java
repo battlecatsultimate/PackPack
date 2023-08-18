@@ -120,15 +120,10 @@ public class EnemyAnimMessageHolder extends SearchHolder {
 
                                 StaticStore.canDo.put("gif", new TimeBoolean(false, time));
 
-                                Timer timer = new Timer();
-
-                                timer.schedule(new TimerTask() {
-                                    @Override
-                                    public void run() {
-                                        System.out.println("Remove Process : gif");
-                                        StaticStore.canDo.put("gif", new TimeBoolean(true));
-                                    }
-                                }, time);
+                                StaticStore.executorHandler.postDelayed(time, () -> {
+                                    System.out.println("Remove Process : gif");
+                                    StaticStore.canDo.put("gif", new TimeBoolean(true));
+                                });
                             }
                         } catch (Exception exception) {
                             exception.printStackTrace();

@@ -6,17 +6,14 @@ import common.util.unit.Form;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.AliasHolder;
-import mandarin.packpack.supporter.server.holder.message.MessageHolder;
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
+import mandarin.packpack.supporter.server.holder.message.MessageHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
 
 public class AliasFormMessageHolder extends MessageHolder {
     private final ArrayList<Form> form;
@@ -43,21 +40,16 @@ public class AliasFormMessageHolder extends MessageHolder {
 
         this.lang = lang;
 
-        Timer autoFinish = new Timer();
+        StaticStore.executorHandler.postDelayed(FIVE_MIN, () -> {
+            if(expired)
+                return;
 
-        autoFinish.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if(expired)
-                    return;
+            expired = true;
 
-                expired = true;
+            StaticStore.removeHolder(author.getAuthor().getId(), AliasFormMessageHolder.this);
 
-                StaticStore.removeHolder(author.getAuthor().getId(), AliasFormMessageHolder.this);
-
-                msg.editMessage(LangID.getStringByID("formst_expire", lang)).queue();
-            }
-        }, TimeUnit.MINUTES.toMillis(5));
+            msg.editMessage(LangID.getStringByID("formst_expire", lang)).queue();
+        });
     }
 
     @Override

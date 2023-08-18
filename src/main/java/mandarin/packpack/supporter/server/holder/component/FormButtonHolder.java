@@ -15,8 +15,6 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class FormButtonHolder extends ComponentHolder {
     private final Message embed;
@@ -48,21 +46,16 @@ public class FormButtonHolder extends ComponentHolder {
         this.t = t;
         this.lv = lv;
 
-        Timer autoFinish = new Timer();
+        StaticStore.executorHandler.postDelayed(FIVE_MIN, () -> {
+            if(expired)
+                return;
 
-        autoFinish.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if(expired)
-                    return;
+            expired = true;
 
-                expired = true;
+            StaticStore.removeHolder(author.getAuthor().getId(), FormButtonHolder.this);
 
-                StaticStore.removeHolder(author.getAuthor().getId(), FormButtonHolder.this);
-
-                expire(userID);
-            }
-        }, FIVE_MIN);
+            expire(userID);
+        });
     }
 
     @Override

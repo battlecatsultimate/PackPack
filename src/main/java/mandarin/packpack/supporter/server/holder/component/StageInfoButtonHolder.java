@@ -16,9 +16,6 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
 
 public class StageInfoButtonHolder extends ComponentHolder {
     private final Message embed;
@@ -32,21 +29,16 @@ public class StageInfoButtonHolder extends ComponentHolder {
         embed = msg;
         this.compact = compact;
 
-        Timer autoFinish = new Timer();
+        StaticStore.executorHandler.postDelayed(FIVE_MIN, () -> {
+            if(expired)
+                return;
 
-        autoFinish.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if(expired)
-                    return;
+            expired = true;
 
-                expired = true;
+            StaticStore.removeHolder(author.getAuthor().getId(), StageInfoButtonHolder.this);
 
-                StaticStore.removeHolder(author.getAuthor().getId(), StageInfoButtonHolder.this);
-
-                expire(userID);
-            }
-        }, TimeUnit.MINUTES.toMillis(5));
+            expire(userID);
+        });
     }
 
     @Override

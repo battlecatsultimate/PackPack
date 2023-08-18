@@ -10,9 +10,6 @@ import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 public class SayHi extends Command {
     public SayHi(int lang) {
         super(lang, false);
@@ -51,50 +48,33 @@ public class SayHi extends Command {
                     Message msg = getRepliedMessageSafely(ch, LangID.getStringByID("hi_" + index, lang), getMessage(event), a -> a);
 
                     if (msg != null) {
-                        Timer changer = new Timer();
-
-                        changer.schedule(new TimerTask() {
-                            @Override
-                            public void run() {
-                                msg.editMessage(LangID.getStringByID("hi_0_0", lang)).mentionRepliedUser(false).queue();
-                            }
-                        }, 5000);
+                        StaticStore.executorHandler.postDelayed(5000, () -> {
+                            msg.editMessage(LangID.getStringByID("hi_0_0", lang)).mentionRepliedUser(false).queue();
+                        });
                     }
                 }
                 case 2 -> {
                     Message message = getRepliedMessageSafely(ch, LangID.getStringByID("hi_" + index, lang), getMessage(event), a -> a);
 
                     if (message != null) {
-                        Timer changer = new Timer();
+                        StaticStore.executorHandler.postDelayed(5000, () -> {
+                            int luck = StaticStore.random.nextInt(3);
 
-                        changer.schedule(new TimerTask() {
-                            @Override
-                            public void run() {
-                                int luck = StaticStore.random.nextInt(3);
-
-                                message.editMessage(
-                                        LangID.getStringByID("hi_2", lang) + "\n\n" +
-                                                LangID.getStringByID("hi_2_" + luck, lang)
-                                ).mentionRepliedUser(false).queue();
-                            }
-                        }, 5000);
+                            message.editMessage(
+                                    LangID.getStringByID("hi_2", lang) + "\n\n" +
+                                            LangID.getStringByID("hi_2_" + luck, lang)
+                            ).mentionRepliedUser(false).queue();
+                        });
                     }
                 }
                 case 8 -> {
                     Message ms = getRepliedMessageSafely(ch, LangID.getStringByID("hi_" + index, lang), getMessage(event), a -> a);
 
                     if (ms != null) {
-                        Timer changer = new Timer();
-
-                        changer.schedule(new TimerTask() {
-                            @Override
-                            public void run() {
-                                ms.editMessage(
-                                        LangID.getStringByID("hi_8", lang) + "\n\n" +
-                                                LangID.getStringByID("hi_8_0", lang)
-                                ).mentionRepliedUser(false).queue();
-                            }
-                        }, 5000);
+                        StaticStore.executorHandler.postDelayed(5000, () -> ms.editMessage(
+                                LangID.getStringByID("hi_8", lang) + "\n\n" +
+                                        LangID.getStringByID("hi_8_0", lang)
+                        ).mentionRepliedUser(false).queue());
                     }
                 }
                 default ->

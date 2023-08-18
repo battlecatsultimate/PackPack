@@ -21,8 +21,6 @@ import javax.annotation.Nonnull;
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -256,12 +254,7 @@ public class AnimMessageHolder extends MessageHolder {
                     EntityHandler.generateAnim(ch, mixer, g == null ? 0 : g.getBoostTier().getKey(), lang, debug, -1, raw, transparent, i);
                 }
 
-                new Timer().schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        StaticStore.deleteFile(container, true);
-                    }
-                }, 1000);
+                StaticStore.executorHandler.postDelayed(1000, () -> StaticStore.deleteFile(container, true));
             }, e -> StaticStore.logger.uploadErrorLog(e, "E/AnimMessageHolder::constructor - Failed to generate animation"));
 
             t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime());
@@ -484,12 +477,7 @@ public class AnimMessageHolder extends MessageHolder {
                             EntityHandler.generateAnim(ch, mixer, g == null ? 0 : g.getBoostTier().getKey(), lang, debug, -1, raw, transparent, i);
                         }
 
-                        new Timer().schedule(new TimerTask() {
-                            @Override
-                            public void run() {
-                                StaticStore.deleteFile(container, true);
-                            }
-                        }, 1000);
+                        StaticStore.executorHandler.postDelayed(1000, () -> StaticStore.deleteFile(container, true));
                     }, e -> StaticStore.logger.uploadErrorLog(e, "E/AnimMessageHolder::onReceivedEvent - Failed to generate animation"));
 
                     t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime());

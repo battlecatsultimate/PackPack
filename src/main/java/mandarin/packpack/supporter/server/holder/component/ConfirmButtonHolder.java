@@ -5,9 +5,6 @@ import mandarin.packpack.supporter.lang.LangID;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 public class ConfirmButtonHolder extends ComponentHolder {
     private final Runnable action;
     private final int lang;
@@ -22,21 +19,16 @@ public class ConfirmButtonHolder extends ComponentHolder {
 
         this.msg = msg;
 
-        Timer autoFinish = new Timer();
+        StaticStore.executorHandler.postDelayed(FIVE_MIN, () -> {
+            if(expired)
+                return;
 
-        autoFinish.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if(expired)
-                    return;
+            expired = true;
 
-                expired = true;
+            StaticStore.removeHolder(author.getAuthor().getId(), ConfirmButtonHolder.this);
 
-                StaticStore.removeHolder(author.getAuthor().getId(), ConfirmButtonHolder.this);
-
-                expire(userID);
-            }
-        }, FIVE_MIN);
+            expire(userID);
+        });
     }
 
     @Override

@@ -4,7 +4,7 @@ import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
@@ -14,8 +14,6 @@ import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class SetupModButtonHolder extends ComponentHolder {
     private final Message msg;
@@ -37,21 +35,16 @@ public class SetupModButtonHolder extends ComponentHolder {
 
         this.holder = holder;
 
-        Timer autoFinish = new Timer();
+        StaticStore.executorHandler.postDelayed(FIVE_MIN, () -> {
+            if(expired)
+                return;
 
-        autoFinish.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if(expired)
-                    return;
+            expired = true;
 
-                expired = true;
+            StaticStore.removeHolder(author.getAuthor().getId(), SetupModButtonHolder.this);
 
-                StaticStore.removeHolder(author.getAuthor().getId(), SetupModButtonHolder.this);
-
-                expire(userID);
-            }
-        }, FIVE_MIN);
+            expire(userID);
+        });
     }
 
     @Override

@@ -320,24 +320,15 @@ public class EntityHandler {
                 }
             }
 
-            Timer timer = new Timer();
-
-            TimerTask task = new TimerTask() {
-                @Override
-                public void run() {
-                    if(img != null && img.exists() && !img.delete()) {
-                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                    }
-
-                    if(cf != null && cf.exists() && !cf.delete()) {
-                        StaticStore.logger.uploadLog("Failed to delete file : "+cf.getAbsolutePath());
-                    }
-
-                    timer.cancel();
+            StaticStore.executorHandler.postDelayed(5000, () -> {
+                if(img != null && img.exists() && !img.delete()) {
+                    StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
                 }
-            };
 
-            timer.schedule(task, 5000);
+                if(cf != null && cf.exists() && !cf.delete()) {
+                    StaticStore.logger.uploadLog("Failed to delete file : "+cf.getAbsolutePath());
+                }
+            });
 
             return msg;
         }
@@ -614,24 +605,15 @@ public class EntityHandler {
             return action;
         });
 
-        Timer timer = new Timer();
-
-        TimerTask task = new TimerTask() {
-            @Override
-            public void run() {
-                if(img != null && img.exists() && !img.delete()) {
-                    StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                }
-
-                if(cf != null && cf.exists() && !cf.delete()) {
-                    StaticStore.logger.uploadLog("Failed to delete file : "+cf.getAbsolutePath());
-                }
-
-                timer.cancel();
+        StaticStore.executorHandler.postDelayed(5000, () -> {
+            if(img != null && img.exists() && !img.delete()) {
+                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
             }
-        };
 
-        timer.schedule(task, 5000);
+            if(cf != null && cf.exists() && !cf.delete()) {
+                StaticStore.logger.uploadLog("Failed to delete file : "+cf.getAbsolutePath());
+            }
+        });
 
         f.anim.unload();
 
@@ -1343,20 +1325,11 @@ public class EntityHandler {
             return action;
         });
 
-        Timer timer = new Timer();
-
-        TimerTask task = new TimerTask() {
-            @Override
-            public void run() {
-                if(img != null && img.exists() && !img.delete()) {
-                    StaticStore.logger.uploadLog("Can't delete file : "+img.getAbsolutePath());
-                }
-
-                timer.cancel();
+        StaticStore.executorHandler.postDelayed(5000, () -> {
+            if(img != null && img.exists() && !img.delete()) {
+                StaticStore.logger.uploadLog("Can't delete file : "+img.getAbsolutePath());
             }
-        };
-
-        timer.schedule(task, 5000);
+        });
 
         return msg;
     }
@@ -1550,20 +1523,11 @@ public class EntityHandler {
                 }
             }
 
-            Timer timer = new Timer();
-
-            TimerTask task = new TimerTask() {
-                @Override
-                public void run() {
-                    if(img != null && img.exists() && !img.delete()) {
-                        StaticStore.logger.uploadLog("Can't delete file : "+img.getAbsolutePath());
-                    }
-
-                    timer.cancel();
+            StaticStore.executorHandler.postDelayed(5000, () -> {
+                if(img != null && img.exists() && !img.delete()) {
+                    StaticStore.logger.uploadLog("Can't delete file : "+img.getAbsolutePath());
                 }
-            };
-
-            timer.schedule(task, 5000);
+            });
         }
 
         return msg;

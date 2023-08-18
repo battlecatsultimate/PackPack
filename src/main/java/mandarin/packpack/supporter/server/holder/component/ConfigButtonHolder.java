@@ -29,8 +29,6 @@ import net.dv8tion.jda.api.interactions.modals.Modal;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class ConfigButtonHolder extends ComponentHolder {
     private static final int TOTAL_CONFIG = 7;
@@ -61,21 +59,16 @@ public class ConfigButtonHolder extends ComponentHolder {
         
         this.forServer = forServer;
 
-        Timer autoFinish = new Timer();
+        StaticStore.executorHandler.postDelayed(FIVE_MIN, () -> {
+            if(expired)
+                return;
 
-        autoFinish.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if(expired)
-                    return;
+            expired = true;
 
-                expired = true;
+            StaticStore.removeHolder(author.getAuthor().getId(), ConfigButtonHolder.this);
 
-                StaticStore.removeHolder(author.getAuthor().getId(), ConfigButtonHolder.this);
-
-                expire(userID);
-            }
-        }, FIVE_MIN);
+            expire(userID);
+        });
     }
 
     @Override

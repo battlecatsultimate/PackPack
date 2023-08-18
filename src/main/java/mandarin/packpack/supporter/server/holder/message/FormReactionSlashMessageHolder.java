@@ -14,10 +14,6 @@ import net.dv8tion.jda.api.entities.emoji.CustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
-
 public class FormReactionSlashMessageHolder extends MessageHolder {
     private final Form f;
     private final ConfigHolder config;
@@ -48,23 +44,18 @@ public class FormReactionSlashMessageHolder extends MessageHolder {
 
         this.m = m;
 
-        Timer autoFinish = new Timer();
+        StaticStore.executorHandler.postDelayed(FIVE_MIN, () -> {
+            if(expired)
+                return;
 
-        autoFinish.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if(expired)
-                    return;
+            expired = true;
 
-                expired = true;
+            StaticStore.removeHolder(memberID, FormReactionSlashMessageHolder.this);
 
-                StaticStore.removeHolder(memberID, FormReactionSlashMessageHolder.this);
-
-                if(!(m.getChannel() instanceof GuildChannel) || m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
-                    m.clearReactions().queue();
-                }
+            if(!(m.getChannel() instanceof GuildChannel) || m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_MANAGE)) {
+                m.clearReactions().queue();
             }
-        }, TimeUnit.MINUTES.toMillis(5));
+        });
     }
 
     @Override

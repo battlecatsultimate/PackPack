@@ -5,9 +5,6 @@ import mandarin.packpack.supporter.lang.LangID;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 public class CultButtonHolder extends ComponentHolder {
     private final Message msg;
 
@@ -20,24 +17,19 @@ public class CultButtonHolder extends ComponentHolder {
 
         this.lang = lang;
 
-        Timer autoFinish = new Timer();
+        StaticStore.executorHandler.postDelayed(10000, () -> {
+            if(expired)
+                return;
 
-        autoFinish.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if(expired)
-                    return;
+            expired = true;
 
-                expired = true;
+            msg.editMessage(LangID.getStringByID("hi_sp_0_2", lang))
+                    .setComponents()
+                    .mentionRepliedUser(false)
+                    .queue();
 
-                msg.editMessage(LangID.getStringByID("hi_sp_0_2", lang))
-                        .setComponents()
-                        .mentionRepliedUser(false)
-                        .queue();
-
-                StaticStore.removeHolder(memberID, CultButtonHolder.this);
-            }
-        }, 10000);
+            StaticStore.removeHolder(memberID, CultButtonHolder.this);
+        });
     }
 
     @Override
