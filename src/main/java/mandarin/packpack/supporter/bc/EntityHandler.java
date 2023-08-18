@@ -3917,6 +3917,10 @@ public class EntityHandler {
             }
         }
 
+        if (maximumDamage.compareTo(BigDecimal.ZERO) == 0) {
+            maximumDamage = BigDecimal.TEN;
+        }
+
         File result;
 
         boolean identical = allCoordinatesSame(coordinates, withTreasure);
@@ -4342,6 +4346,10 @@ public class EntityHandler {
 
             minimumX = minimumX.min(coordinates.get(i)[0]);
             maximumX = maximumX.max(coordinates.get(i)[0]);
+        }
+
+        if (maximumDamage.compareTo(BigDecimal.ZERO) == 0) {
+            maximumDamage = BigDecimal.TEN;
         }
 
         File result = ImageDrawing.plotDPSGraph(coordinates.toArray(new BigDecimal[0][0]), null, new BigDecimal[] { minimumX, maximumX }, new BigDecimal[] { BigDecimal.ZERO, maximumDamage.multiply(new BigDecimal("1.1")) }, lang);
