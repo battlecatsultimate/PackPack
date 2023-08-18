@@ -4,6 +4,7 @@ import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Form;
 import mandarin.packpack.commands.bc.FormGif;
+import mandarin.packpack.supporter.RecordableThread;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityHandler;
@@ -93,48 +94,47 @@ public class FormAnimMessageHolder extends SearchHolder {
                 TimeBoolean timeBoolean = StaticStore.canDo.get("gif");
 
                 if(timeBoolean == null || StaticStore.canDo.get("gif").canDo) {
-                    new Thread(() -> {
-                        try {
-                            Guild g;
+                    RecordableThread t = new RecordableThread(() -> {
+                        Guild g;
 
-                            if(ch instanceof GuildChannel) {
-                                g = event.getGuild();
-                            } else {
-                                g = null;
-                            }
-
-                            boolean result = EntityHandler.generateFormAnim(f, ch, getAuthorMessage(), g == null ? 0 : g.getBoostTier().getKey(), mode, debug, frame, lang, raw, gifMode);
-
-                            if(!StaticStore.conflictedAnimation.isEmpty()) {
-                                StaticStore.logger.uploadLog("Warning - Bot generated animation while this animation is already cached\n\nCommand : " + command);
-                                StaticStore.conflictedAnimation.clear();
-                            }
-
-                            User u = event.getUser();
-
-                            if(raw && result) {
-                                StaticStore.logger.uploadLog("Generated mp4 by user " + u.getName() + " for unit ID " + Data.trio(f.unit.id.id) + " with mode of " + mode);
-                            }
-
-                            if(result) {
-                                long time = raw ? TimeUnit.MINUTES.toMillis(1) : TimeUnit.SECONDS.toMillis(30);
-
-                                StaticStore.canDo.put("gif", new TimeBoolean(false, time));
-
-                                Timer timer = new Timer();
-
-                                timer.schedule(new TimerTask() {
-                                    @Override
-                                    public void run() {
-                                        System.out.println("Remove Process : gif");
-                                        StaticStore.canDo.put("gif", new TimeBoolean(true));
-                                    }
-                                }, time);
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                        if(ch instanceof GuildChannel) {
+                            g = event.getGuild();
+                        } else {
+                            g = null;
                         }
-                    }).start();
+
+                        boolean result = EntityHandler.generateFormAnim(f, ch, getAuthorMessage(), g == null ? 0 : g.getBoostTier().getKey(), mode, debug, frame, lang, raw, gifMode);
+
+                        if(!StaticStore.conflictedAnimation.isEmpty()) {
+                            StaticStore.logger.uploadLog("Warning - Bot generated animation while this animation is already cached\n\nCommand : " + command);
+                            StaticStore.conflictedAnimation.clear();
+                        }
+
+                        User u = event.getUser();
+
+                        if(raw && result) {
+                            StaticStore.logger.uploadLog("Generated mp4 by user " + u.getName() + " for unit ID " + Data.trio(f.unit.id.id) + " with mode of " + mode);
+                        }
+
+                        if(result) {
+                            long time = raw ? TimeUnit.MINUTES.toMillis(1) : TimeUnit.SECONDS.toMillis(30);
+
+                            StaticStore.canDo.put("gif", new TimeBoolean(false, time));
+
+                            Timer timer = new Timer();
+
+                            timer.schedule(new TimerTask() {
+                                @Override
+                                public void run() {
+                                    System.out.println("Remove Process : gif");
+                                    StaticStore.canDo.put("gif", new TimeBoolean(true));
+                                }
+                            }, time);
+                        }
+                    }, e -> StaticStore.logger.uploadErrorLog(e, "E/FormAnimMessageHolder::onSelected - Failed to generate animation"));
+
+                    t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime());
+                    t.start();
                 } else {
                     ch.sendMessage(LangID.getStringByID("single_wait", lang).replace("_", DataToString.df.format((timeBoolean.totalTime - (System.currentTimeMillis() - StaticStore.canDo.get("gif").time)) / 1000.0))).queue();
                 }

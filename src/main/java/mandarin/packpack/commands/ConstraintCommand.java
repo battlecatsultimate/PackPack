@@ -1,5 +1,6 @@
 package mandarin.packpack.commands;
 
+import mandarin.packpack.supporter.RecordableThread;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.SpamPrevent;
@@ -34,29 +35,23 @@ public abstract class ConstraintCommand extends Command {
         super(lang, requireGuild);
 
         switch (role) {
-            case MOD:
-                if(id != null) {
+            case MOD -> {
+                if (id != null) {
                     constRole = id.MOD;
                 } else {
                     constRole = null;
                 }
-                break;
-            case MEMBER:
-                if(id != null) {
+            }
+            case MEMBER -> {
+                if (id != null) {
                     constRole = id.MEMBER;
                 } else {
                     constRole = null;
                 }
-
-                break;
-            case MANDARIN:
-                constRole = "MANDARIN";
-                break;
-            case TRUSTED:
-                constRole = "TRUSTED";
-                break;
-            default:
-                throw new IllegalStateException("Invalid ROLE enum : "+role);
+            }
+            case MANDARIN -> constRole = "MANDARIN";
+            case TRUSTED -> constRole = "TRUSTED";
+            default -> throw new IllegalStateException("Invalid ROLE enum : " + role);
         }
 
         this.holder = id;
@@ -127,13 +122,11 @@ public abstract class ConstraintCommand extends Command {
             }
         }
 
-        if(ch instanceof GuildMessageChannel) {
+        if(ch instanceof GuildMessageChannel tc) {
             Guild g = getGuild(event);
 
             if(g == null)
                 return;
-
-            GuildMessageChannel tc = ((GuildMessageChannel) ch);
 
             if(!tc.canTalk()) {
                 String serverName = g.getName();
@@ -178,29 +171,30 @@ public abstract class ConstraintCommand extends Command {
             StaticStore.executed++;
 
             try {
-                new Thread(() -> {
-                    try {
-                        doSomething(event);
-                    } catch (Exception e) {
-                        String data = "Command : " + getContent(event) + "\n\n" +
-                                "Member  : " + u.getName() + " (" + u.getId() + ")\n\n" +
-                                "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+                RecordableThread t = new RecordableThread(() -> {
+                    doSomething(event);
+                }, e -> {
+                    String data = "Command : " + getContent(event) + "\n\n" +
+                            "Member  : " + u.getName() + " (" + u.getId() + ")\n\n" +
+                            "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
 
-                        Guild g = getGuild(event);
+                    Guild g = getGuild(event);
 
-                        if(g != null) {
-                            data += "\n\nGuild : " + g.getName() + " (" + g.getId() + ")";
-                        }
-
-                        StaticStore.logger.uploadErrorLog(e, "Failed to perform constraint command : "+this.getClass()+"\n\n" + data);
-
-                        if(e instanceof ErrorResponseException) {
-                            onFail(event, SERVER_ERROR);
-                        } else {
-                            onFail(event, DEFAULT_ERROR);
-                        }
+                    if(g != null) {
+                        data += "\n\nGuild : " + g.getName() + " (" + g.getId() + ")";
                     }
-                }).start();
+
+                    StaticStore.logger.uploadErrorLog(e, "Failed to perform constraint command : "+this.getClass()+"\n\n" + data);
+
+                    if(e instanceof ErrorResponseException) {
+                        onFail(event, SERVER_ERROR);
+                    } else {
+                        onFail(event, DEFAULT_ERROR);
+                    }
+                });
+
+                t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime());
+                t.start();
             } catch (Exception e) {
                 String data = "Command : " + getContent(event) + "\n\n" +
                         "Member  : " + u.getName() + " (" + u.getId() + ")\n\n" +

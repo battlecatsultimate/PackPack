@@ -1,5 +1,6 @@
 package mandarin.packpack.commands;
 
+import mandarin.packpack.supporter.RecordableThread;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.lang.LangID;
@@ -41,30 +42,23 @@ public abstract class GlobalTimedConstraintCommand extends Command {
         super(lang, requireGuild);
 
         switch (role) {
-            case MOD:
-                if(id != null) {
+            case MOD -> {
+                if (id != null) {
                     constRole = id.MOD;
                 } else {
                     constRole = null;
                 }
-
-                break;
-            case MEMBER:
-                if(id != null) {
+            }
+            case MEMBER -> {
+                if (id != null) {
                     constRole = id.MEMBER;
                 } else {
                     constRole = null;
                 }
-
-                break;
-            case MANDARIN:
-                constRole = "MANDARIN";
-                break;
-            case TRUSTED:
-                constRole = "TRUSTED";
-                break;
-            default:
-                throw new IllegalStateException("Invalid ROLE enum : "+role);
+            }
+            case MANDARIN -> constRole = "MANDARIN";
+            case TRUSTED -> constRole = "TRUSTED";
+            default -> throw new IllegalStateException("Invalid ROLE enum : " + role);
         }
 
         this.mainID = mainID;
@@ -139,13 +133,11 @@ public abstract class GlobalTimedConstraintCommand extends Command {
             hasRole = isMod || role.contains(constRole) || u.getId().equals(StaticStore.MANDARIN_SMELL);
         }
 
-        if(ch instanceof GuildMessageChannel) {
+        if(ch instanceof GuildMessageChannel tc) {
             Guild g = getGuild(event);
 
             if(g == null)
                 return;
-
-            GuildMessageChannel tc = ((GuildMessageChannel) ch);
 
             if(!tc.canTalk()) {
                 String serverName = g.getName();
@@ -206,45 +198,46 @@ public abstract class GlobalTimedConstraintCommand extends Command {
 
                         StaticStore.executed++;
 
-                        new Thread(() -> {
-                            try {
-                                doSomething(event);
+                        RecordableThread t = new RecordableThread(() -> {
+                            doSomething(event);
 
-                                if(timerStart && time != 0) {
-                                    Timer timer = new Timer();
+                            if(timerStart && time != 0) {
+                                Timer timer = new Timer();
 
-                                    timer.schedule(new TimerTask() {
-                                        @Override
-                                        public void run() {
-                                            System.out.println("Remove Process : "+id+" | "+time);
-                                            StaticStore.canDo.put(id, new TimeBoolean(true));
-                                        }
-                                    }, time);
-                                } else {
-                                    StaticStore.canDo.put(id, new TimeBoolean(true));
-                                }
-                            } catch (Exception e) {
-                                String data = "Command : " + getContent(event) + "\n\n" +
-                                        "Member  : " + u.getName() + " (" + u.getId() + ")\n\n" +
-                                        "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
-
-                                Guild g = getGuild(event);
-
-                                if(g != null) {
-                                    data += "\n\nGuild : " + g.getName() + " (" + g.getId() + ")";
-                                }
-
-                                StaticStore.logger.uploadErrorLog(e, "Failed to perform global timed constraint command : "+this.getClass()+"\n\n" + data);
-
-                                if(e instanceof ErrorResponseException) {
-                                    onFail(event, SERVER_ERROR);
-                                } else {
-                                    onFail(event, DEFAULT_ERROR);
-                                }
-
+                                timer.schedule(new TimerTask() {
+                                    @Override
+                                    public void run() {
+                                        System.out.println("Remove Process : "+id+" | "+time);
+                                        StaticStore.canDo.put(id, new TimeBoolean(true));
+                                    }
+                                }, time);
+                            } else {
                                 StaticStore.canDo.put(id, new TimeBoolean(true));
                             }
-                        }).start();
+                        }, e -> {
+                            String data = "Command : " + getContent(event) + "\n\n" +
+                                    "Member  : " + u.getName() + " (" + u.getId() + ")\n\n" +
+                                    "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+
+                            Guild g = getGuild(event);
+
+                            if(g != null) {
+                                data += "\n\nGuild : " + g.getName() + " (" + g.getId() + ")";
+                            }
+
+                            StaticStore.logger.uploadErrorLog(e, "Failed to perform global timed constraint command : "+this.getClass()+"\n\n" + data);
+
+                            if(e instanceof ErrorResponseException) {
+                                onFail(event, SERVER_ERROR);
+                            } else {
+                                onFail(event, DEFAULT_ERROR);
+                            }
+
+                            StaticStore.canDo.put(id, new TimeBoolean(true));
+                        });
+
+                        t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime());
+                        t.start();
                     } else {
                         onAbort(event);
                     }

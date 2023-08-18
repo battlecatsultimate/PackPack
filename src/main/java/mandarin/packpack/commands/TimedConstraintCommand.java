@@ -1,5 +1,6 @@
 package mandarin.packpack.commands;
 
+import mandarin.packpack.supporter.RecordableThread;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.lang.LangID;
@@ -167,41 +168,42 @@ public abstract class TimedConstraintCommand extends Command {
             }
         } else {
             try {
-                new Thread(() -> {
-                    try {
-                        doSomething(event);
+                RecordableThread t = new RecordableThread(() -> {
+                    doSomething(event);
 
-                        if(startTimer && !memberID.isBlank()) {
-                            if(!StaticStore.timeLimit.containsKey(memberID)) {
-                                Map<String, Long> memberLimit = new HashMap<>();
+                    if(startTimer && !memberID.isBlank()) {
+                        if(!StaticStore.timeLimit.containsKey(memberID)) {
+                            Map<String, Long> memberLimit = new HashMap<>();
 
-                                memberLimit.put(id, System.currentTimeMillis());
+                            memberLimit.put(id, System.currentTimeMillis());
 
-                                StaticStore.timeLimit.put(memberID, memberLimit);
-                            } else {
-                                StaticStore.timeLimit.get(memberID).put(id, System.currentTimeMillis());
-                            }
-                        }
-                    } catch (Exception e) {
-                        String data = "Command : " + getContent(event) + "\n\n" +
-                                "Member  : " + u.getId() + " (" + u.getId() + ")\n\n" +
-                                "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
-
-                        Guild g = getGuild(event);
-
-                        if(g != null) {
-                            data += "\n\nGuild : " + g.getName() + " (" + g.getId() + ")";
-                        }
-
-                        StaticStore.logger.uploadErrorLog(e, "Failed to perform timed constraint command : "+this.getClass()+"\n\n" + data);
-
-                        if(e instanceof ErrorResponseException) {
-                            onFail(event, SERVER_ERROR);
+                            StaticStore.timeLimit.put(memberID, memberLimit);
                         } else {
-                            onFail(event, DEFAULT_ERROR);
+                            StaticStore.timeLimit.get(memberID).put(id, System.currentTimeMillis());
                         }
                     }
-                }).start();
+                }, e -> {
+                    String data = "Command : " + getContent(event) + "\n\n" +
+                            "Member  : " + u.getId() + " (" + u.getId() + ")\n\n" +
+                            "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+
+                    Guild g = getGuild(event);
+
+                    if(g != null) {
+                        data += "\n\nGuild : " + g.getName() + " (" + g.getId() + ")";
+                    }
+
+                    StaticStore.logger.uploadErrorLog(e, "Failed to perform timed constraint command : "+this.getClass()+"\n\n" + data);
+
+                    if(e instanceof ErrorResponseException) {
+                        onFail(event, SERVER_ERROR);
+                    } else {
+                        onFail(event, DEFAULT_ERROR);
+                    }
+                });
+
+                t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime());
+                t.start();
             } catch (Exception e) {
                 String data = "Command : " + getContent(event) + "\n\n" +
                         "Member  : " + u.getId() + " (" + u.getId() + ")\n\n" +

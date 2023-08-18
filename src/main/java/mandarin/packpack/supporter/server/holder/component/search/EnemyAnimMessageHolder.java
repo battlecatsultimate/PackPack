@@ -93,7 +93,6 @@ public class EnemyAnimMessageHolder extends SearchHolder {
 
                 if (timeBoolean == null || timeBoolean.canDo) {
                     new Thread(() -> {
-
                         try {
                             Guild g;
 

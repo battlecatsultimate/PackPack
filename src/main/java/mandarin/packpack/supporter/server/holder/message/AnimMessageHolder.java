@@ -5,6 +5,7 @@ import common.system.files.VFile;
 import common.util.anim.ImgCut;
 import common.util.anim.MaAnim;
 import common.util.anim.MaModel;
+import mandarin.packpack.supporter.RecordableThread;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.AnimMixer;
 import mandarin.packpack.supporter.bc.DataToString;
@@ -242,7 +243,7 @@ public class AnimMessageHolder extends MessageHolder {
         }
 
         if(pngDone && cutDone && modelDone && animAllDone()) {
-            new Thread(() -> {
+            RecordableThread t = new RecordableThread(() -> {
                 Guild g;
 
                 if(ch instanceof GuildChannel) {
@@ -251,21 +252,20 @@ public class AnimMessageHolder extends MessageHolder {
                     g = null;
                 }
 
-                try {
-                    for(int i = 0; i < mixer.anim.length; i++) {
-                        EntityHandler.generateAnim(ch, mixer, g == null ? 0 : g.getBoostTier().getKey(), lang, debug, -1, raw, transparent, i);
-                    }
-
-                    new Timer().schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            StaticStore.deleteFile(container, true);
-                        }
-                    }, 1000);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                for(int i = 0; i < mixer.anim.length; i++) {
+                    EntityHandler.generateAnim(ch, mixer, g == null ? 0 : g.getBoostTier().getKey(), lang, debug, -1, raw, transparent, i);
                 }
-            }).start();
+
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        StaticStore.deleteFile(container, true);
+                    }
+                }, 1000);
+            }, e -> StaticStore.logger.uploadErrorLog(e, "E/AnimMessageHolder::constructor - Failed to generate animation"));
+
+            t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime());
+            t.start();
         } else {
             StaticStore.putHolder(author.getAuthor().getId(), this);
 
@@ -471,7 +471,7 @@ public class AnimMessageHolder extends MessageHolder {
                 m.delete().queue();
 
                 if(pngDone && cutDone && modelDone && animAllDone()) {
-                    new Thread(() -> {
+                    RecordableThread t = new RecordableThread(() -> {
                         Guild g;
 
                         if(ch instanceof GuildChannel) {
@@ -480,21 +480,20 @@ public class AnimMessageHolder extends MessageHolder {
                             g = null;
                         }
 
-                        try {
-                            for(int i = 0; i < maanim.size(); i++) {
-                                EntityHandler.generateAnim(ch, mixer, g == null ? 0 : g.getBoostTier().getKey(), lang, debug, -1, raw, transparent, i);
-                            }
-
-                            new Timer().schedule(new TimerTask() {
-                                @Override
-                                public void run() {
-                                    StaticStore.deleteFile(container, true);
-                                }
-                            }, 1000);
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                        for(int i = 0; i < maanim.size(); i++) {
+                            EntityHandler.generateAnim(ch, mixer, g == null ? 0 : g.getBoostTier().getKey(), lang, debug, -1, raw, transparent, i);
                         }
-                    }).start();
+
+                        new Timer().schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                StaticStore.deleteFile(container, true);
+                            }
+                        }, 1000);
+                    }, e -> StaticStore.logger.uploadErrorLog(e, "E/AnimMessageHolder::onReceivedEvent - Failed to generate animation"));
+
+                    t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime());
+                    t.start();
 
                     return STATUS.FINISH;
                 }

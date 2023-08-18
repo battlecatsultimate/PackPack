@@ -1,6 +1,7 @@
 package mandarin.packpack.supporter.server.holder.message;
 
 import common.io.assets.UpdateCheck;
+import mandarin.packpack.supporter.RecordableThread;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.AnimMixer;
 import mandarin.packpack.supporter.lang.LangID;
@@ -129,26 +130,25 @@ public abstract class FileAnalyzerHolder extends MessageHolder {
             edit();
 
             if(allDownloaded()) {
-                new Thread(() -> {
-                    try {
-                        perform(resultFiles);
-                    } catch (Exception e) {
-                        StaticStore.logger.uploadErrorLog(e, "E/FileAnalyzerHolder::checkAttachments - Error happened while trying to perform file analyzing");
-                    } finally {
-                        Timer timer = new Timer();
+                RecordableThread t = new RecordableThread(() -> {
+                    perform(resultFiles);
 
-                        TimerTask task = new TimerTask() {
-                            @Override
-                            public void run() {
-                                releaseFiles();
+                    Timer timer = new Timer();
 
-                                timer.cancel();
-                            }
-                        };
+                    TimerTask task = new TimerTask() {
+                        @Override
+                        public void run() {
+                            releaseFiles();
 
-                        timer.schedule(task, 1000);
-                    }
-                }).start();
+                            timer.cancel();
+                        }
+                    };
+
+                    timer.schedule(task, 1000);
+                }, e -> StaticStore.logger.uploadErrorLog(e, "E/FileAnalyzerHolder::checkAttachments - Error happened while trying to perform file analyzing"));
+
+                t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime());
+                t.start();
 
                 return true;
             }

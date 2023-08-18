@@ -5,6 +5,7 @@ import common.system.files.VFile;
 import common.util.anim.ImgCut;
 import common.util.anim.MaAnim;
 import common.util.anim.MaModel;
+import mandarin.packpack.supporter.RecordableThread;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.AnimMixer;
 import mandarin.packpack.supporter.bc.DataToString;
@@ -96,7 +97,7 @@ public class BCAnimMessageHolder extends MessageHolder {
         }
 
         if(pngDone && cutDone && modelDone && animAllDone()) {
-            new Thread(() -> {
+            RecordableThread t = new RecordableThread(() -> {
                 Guild g;
 
                 if(ch instanceof GuildChannel) {
@@ -105,31 +106,27 @@ public class BCAnimMessageHolder extends MessageHolder {
                     g = null;
                 }
 
-                try {
-                    boolean result = EntityHandler.generateBCAnim(ch, g == null ? 0 : g.getBoostTier().getKey(), mixer, lang);
+                boolean result = EntityHandler.generateBCAnim(ch, g == null ? 0 : g.getBoostTier().getKey(), mixer, lang);
 
-                    new Timer().schedule(new TimerTask() {
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        StaticStore.deleteFile(container, true);
+                    }
+                }, 1000);
+
+                if(result) {
+                    StaticStore.canDo.put("gif", new TimeBoolean(false, TimeUnit.MINUTES.toMillis(1)));
+
+                    Timer timer = new Timer();
+
+                    timer.schedule(new TimerTask() {
                         @Override
                         public void run() {
-                            StaticStore.deleteFile(container, true);
+                            System.out.println("Remove Process : gif");
+                            StaticStore.canDo.put("gif", new TimeBoolean(true));
                         }
-                    }, 1000);
-
-                    if(result) {
-                        StaticStore.canDo.put("gif", new TimeBoolean(false, TimeUnit.MINUTES.toMillis(1)));
-
-                        Timer timer = new Timer();
-
-                        timer.schedule(new TimerTask() {
-                            @Override
-                            public void run() {
-                                System.out.println("Remove Process : gif");
-                                StaticStore.canDo.put("gif", new TimeBoolean(true));
-                            }
-                        }, TimeUnit.MINUTES.toMillis(1));
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    }, TimeUnit.MINUTES.toMillis(1));
                 }
 
                 new Timer().schedule(new TimerTask() {
@@ -138,7 +135,10 @@ public class BCAnimMessageHolder extends MessageHolder {
                         StaticStore.deleteFile(container, true);
                     }
                 }, 1000);
-            }).start();
+            }, e -> StaticStore.logger.uploadErrorLog(e, "E/BCAnimMessageHolder::constructor - Failed to generate animation"));
+
+            t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime());
+            t.start();
         } else {
             StaticStore.putHolder(author.getAuthor().getId(), this);
 
@@ -185,7 +185,7 @@ public class BCAnimMessageHolder extends MessageHolder {
                 m.delete().queue();
 
                 if(pngDone && cutDone && modelDone && animAllDone()) {
-                    new Thread(() -> {
+                    RecordableThread t = new RecordableThread(() -> {
                         Guild g;
 
                         if(ch instanceof GuildChannel) {
@@ -194,33 +194,32 @@ public class BCAnimMessageHolder extends MessageHolder {
                             g = null;
                         }
 
-                        try {
-                            boolean result = EntityHandler.generateBCAnim(ch, g == null ? 0 : g.getBoostTier().getKey(), mixer, lang);
+                        boolean result = EntityHandler.generateBCAnim(ch, g == null ? 0 : g.getBoostTier().getKey(), mixer, lang);
 
-                            new Timer().schedule(new TimerTask() {
+                        new Timer().schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                StaticStore.deleteFile(container, true);
+                            }
+                        }, 1000);
+
+                        if(result) {
+                            StaticStore.canDo.put("gif", new TimeBoolean(false, TimeUnit.MINUTES.toMillis(1)));
+
+                            Timer timer = new Timer();
+
+                            timer.schedule(new TimerTask() {
                                 @Override
                                 public void run() {
-                                    StaticStore.deleteFile(container, true);
+                                    System.out.println("Remove Process : gif");
+                                    StaticStore.canDo.put("gif", new TimeBoolean(true));
                                 }
-                            }, 1000);
-
-                            if(result) {
-                                StaticStore.canDo.put("gif", new TimeBoolean(false, TimeUnit.MINUTES.toMillis(1)));
-
-                                Timer timer = new Timer();
-
-                                timer.schedule(new TimerTask() {
-                                    @Override
-                                    public void run() {
-                                        System.out.println("Remove Process : gif");
-                                        StaticStore.canDo.put("gif", new TimeBoolean(true));
-                                    }
-                                }, TimeUnit.MINUTES.toMillis(1));
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                            }, TimeUnit.MINUTES.toMillis(1));
                         }
-                    }).start();
+                    }, e -> StaticStore.logger.uploadErrorLog(e, "E/BCAnimMessageHolder::onReceivedEvent - Failed to generate animation"));
+
+                    t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime());
+                    t.start();
 
                     return STATUS.FINISH;
                 }

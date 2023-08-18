@@ -2,6 +2,7 @@ package mandarin.packpack.commands;
 
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.Pauser;
+import mandarin.packpack.supporter.RecordableThread;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.SpamPrevent;
@@ -380,29 +381,32 @@ public abstract class Command {
         }
 
         try {
-            new Thread(() -> {
-                try {
-                    doSomething(event);
-                } catch (Exception e) {
-                    String data = "Command : " + getContent(event) + "\n\n" +
-                            "User  : " + u.getName() + " (" + u.getId() + ")\n\n" +
-                            "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+            RecordableThread t = new RecordableThread(() -> {
+                Thread.sleep(120000);
 
-                    Guild g = getGuild(event);
+                doSomething(event);
+            }, e -> {
+                String data = "Command : " + getContent(event) + "\n\n" +
+                        "User  : " + u.getName() + " (" + u.getId() + ")\n\n" +
+                        "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
 
-                    if(g != null) {
-                        data += "\n\nGuild : " + g.getName() + " (" + g.getId() + ")";
-                    }
+                Guild g = getGuild(event);
 
-                    StaticStore.logger.uploadErrorLog(e, "Failed to perform command : "+this.getClass()+"\n\n" + data);
-
-                    if(e instanceof ErrorResponseException) {
-                        onFail(event, SERVER_ERROR);
-                    } else {
-                        onFail(event, DEFAULT_ERROR);
-                    }
+                if(g != null) {
+                    data += "\n\nGuild : " + g.getName() + " (" + g.getId() + ")";
                 }
-            }).start();
+
+                StaticStore.logger.uploadErrorLog(e, "Failed to perform command : "+this.getClass()+"\n\n" + data);
+
+                if(e instanceof ErrorResponseException) {
+                    onFail(event, SERVER_ERROR);
+                } else {
+                    onFail(event, DEFAULT_ERROR);
+                }
+            });
+
+            t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime());
+            t.start();
         } catch (Exception e) {
             String data = "Command : " + getContent(event) + "\n\n" +
                     "Member  : " + u.getName() + " (" + u.getId() + ")\n\n" +

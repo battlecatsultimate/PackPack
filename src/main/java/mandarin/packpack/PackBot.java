@@ -3,6 +3,7 @@ package mandarin.packpack;
 import common.CommonStatic;
 import mandarin.packpack.supporter.Initializer;
 import mandarin.packpack.supporter.PackContext;
+import mandarin.packpack.supporter.RecordableThread;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.event.EventFactor;
@@ -171,6 +172,8 @@ public class PackBot {
                     if(spam.count > 0)
                         spam.count--;
                 }
+
+                RecordableThread.handleExpiration();
             }
         }, 0, TimeUnit.MINUTES.toMillis(1));
     }
