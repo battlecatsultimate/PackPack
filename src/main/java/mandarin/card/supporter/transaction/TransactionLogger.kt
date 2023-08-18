@@ -523,4 +523,24 @@ object TransactionLogger {
             .setAllowedMentions(ArrayList())
             .queue()
     }
+
+    fun logMassRoll(manager: Member, people: Int, pack: CardData.Pack) {
+        if (!this::logChannel.isInitialized)
+            return
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("Card Mass Rolled")
+
+        builder.setColor(StaticStore.rainbow.random())
+
+        builder.setDescription("Successfully rolled card pack manually by moderator, and result is below")
+
+        builder.addField(MessageEmbed.Field("Pack", pack.getPackName(), false))
+        builder.addField(MessageEmbed.Field("Number of People", people.toString(), false))
+
+        builder.setAuthor(manager.user.effectiveName, null, manager.user.effectiveAvatarUrl)
+
+        logChannel.sendMessageEmbeds(builder.build()).queue()
+    }
 }

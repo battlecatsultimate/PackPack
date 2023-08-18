@@ -9,6 +9,7 @@ import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
+import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.message.GenericMessageEvent
@@ -36,9 +37,9 @@ class RollManual : Command(LangID.EN, true) {
             return
         }
 
-        val userID = getUserID(contents)
+        val users = getUserID(getContent(event), g)
 
-        if (userID.isBlank() || !StaticStore.isNumeric(userID)) {
+        if (users.isEmpty()) {
             replyToMessageSafely(ch, "Bot failed to find user ID from command. User must be provided via either mention of user ID", getMessage(event)) { a -> a }
 
             return
@@ -53,68 +54,105 @@ class RollManual : Command(LangID.EN, true) {
         }
 
         try {
-            val targetMember = g.retrieveMember(UserSnowflake.fromId(userID)).complete()
+            if (users.size == 1) {
+                val targetMember = g.retrieveMember(UserSnowflake.fromId(users[0])).complete()
 
-            replyToMessageSafely(ch, "\uD83C\uDFB2 Rolling...!", getMessage(event)) { a -> a }
+                replyToMessageSafely(ch, "\uD83C\uDFB2 Rolling...!", getMessage(event)) { a -> a }
 
-            val result = rollCards(pack)
+                val result = rollCards(pack)
 
-            val inventory = Inventory.getInventory(targetMember.id)
+                val inventory = Inventory.getInventory(targetMember.id)
 
-            try {
-                val builder = StringBuilder("### ${pack.getPackName()} Result [${result.size} cards in total]\n\n")
+                try {
+                    val builder = StringBuilder("### ${pack.getPackName()} Result [${result.size} cards in total]\n\n")
 
-                for (card in result) {
-                    builder.append("- ")
+                    for (card in result) {
+                        builder.append("- ")
 
-                    if (card.tier == CardData.Tier.ULTRA) {
-                        builder.append(Emoji.fromUnicode("✨").formatted).append(" ")
-                    } else if (card.tier == CardData.Tier.LEGEND) {
-                        builder.append(EmojiStore.ABILITY["LEGEND"]?.formatted).append(" ")
+                        if (card.tier == CardData.Tier.ULTRA) {
+                            builder.append(Emoji.fromUnicode("✨").formatted).append(" ")
+                        } else if (card.tier == CardData.Tier.LEGEND) {
+                            builder.append(EmojiStore.ABILITY["LEGEND"]?.formatted).append(" ")
+                        }
+
+                        builder.append(card.cardInfo())
+
+                        if (!inventory.cards.containsKey(card)) {
+                            builder.append(" {**NEW**}")
+                        }
+
+                        if (card.tier == CardData.Tier.ULTRA) {
+                            builder.append(" ").append(Emoji.fromUnicode("✨").formatted)
+                        } else if (card.tier == CardData.Tier.LEGEND) {
+                            builder.append(" ").append(EmojiStore.ABILITY["LEGEND"]?.formatted)
+                        }
+
+                        builder.append("\n")
                     }
 
-                    builder.append(card.cardInfo())
+                    ch.sendMessage(builder.toString())
+                        .setMessageReference(getMessage(event))
+                        .mentionRepliedUser(false)
+                        .addFiles(result.filter { c -> !inventory.cards.containsKey(c) }.map { c -> FileUpload.fromData(c.cardImage, "${c.name}.png") })
+                        .queue()
+                } catch (_: Exception) {
 
-                    if (!inventory.cards.containsKey(card)) {
-                        builder.append(" {**NEW**}")
-                    }
-
-                    if (card.tier == CardData.Tier.ULTRA) {
-                        builder.append(" ").append(Emoji.fromUnicode("✨").formatted)
-                    } else if (card.tier == CardData.Tier.LEGEND) {
-                        builder.append(" ").append(EmojiStore.ABILITY["LEGEND"]?.formatted)
-                    }
-
-                    builder.append("\n")
                 }
 
-                ch.sendMessage(builder.toString())
-                    .setMessageReference(getMessage(event))
-                    .mentionRepliedUser(false)
-                    .addFiles(result.filter { c -> !inventory.cards.containsKey(c) }.map { c -> FileUpload.fromData(c.cardImage, "${c.name}.png") })
-                    .queue()
-            } catch (_: Exception) {
+                inventory.addCards(result)
 
+                TransactionLogger.logRoll(result, pack, targetMember, true)
+            } else {
+                users.forEach {
+                    val targetMember = g.retrieveMember(UserSnowflake.fromId(it)).complete()
+
+                    val result = rollCards(pack)
+
+                    val inventory = Inventory.getInventory(targetMember.id)
+
+                    inventory.addCards(result)
+
+                    TransactionLogger.logRoll(result, pack, targetMember, true)
+                }
+
+                replyToMessageSafely(ch, "Rolled ${pack.getPackName()} for ${users.size} people successfully", getMessage(event)) { a -> a }
+
+                TransactionLogger.logMassRoll(m, users.size, pack)
             }
-
-            inventory.addCards(result)
-
-            TransactionLogger.logRoll(result, pack, targetMember, true)
         } catch (_: Exception) {
             replyToMessageSafely(ch, "Bot failed to find provided user in this server", getMessage(event)) { a -> a }
         }
     }
 
-    private fun getUserID(contents: List<String>) : String {
-        for(segment in contents) {
+    private fun getUserID(contents: String, g: Guild) : List<String> {
+        val result = ArrayList<String>()
+
+        val segments = contents.split(Regex(" "), 2)
+
+        if (segments.size < 2)
+            return result
+
+        val filtered = segments[1].replace(Regex("-[slp]"), "").replace(" ", "").split(Regex(","))
+
+        for(segment in filtered) {
             if (StaticStore.isNumeric(segment)) {
-                return segment
+                result.add(segment)
             } else if (segment.startsWith("<@")) {
-                return segment.replace("<@", "").replace(">", "")
+                result.add(segment.replace("<@", "").replace(">", ""))
             }
         }
 
-        return ""
+        result.removeIf { id ->
+            try {
+                g.retrieveMember(UserSnowflake.fromId(id)).complete()
+
+                false
+            } catch (e: Exception) {
+                true
+            }
+        }
+
+        return result
     }
 
     private fun findPack(contents: List<String>) : CardData.Pack {
