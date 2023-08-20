@@ -289,7 +289,10 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
                 applyResult()
             }
             "dupe" -> {
-                val duplicatedCards = inventory.cards.keys.filter { c -> (inventory.cards[c] ?: 0) - selectedCard.filter { card -> card.unitID == c.unitID }.size > 1 }.sortedWith { c, c2 ->
+                val duplicatedCards = inventory.cards.keys
+                    .filter { c -> c.tier == CardData.Tier.COMMON }
+                    .filter { c -> (inventory.cards[c] ?: 0) - selectedCard.filter { card -> card.unitID == c.unitID }.size > 1 }
+                    .sortedWith { c, c2 ->
                     val thatOne = (inventory.cards[c] ?: 0) - selectedCard.filter { card -> card.unitID == c.unitID }.size
                     val thisOne = (inventory.cards[c2] ?: 0) - selectedCard.filter { card -> card.unitID == c2.unitID }.size
 
@@ -460,7 +463,7 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
         if (salvageMode)
             confirmButtons.add(Button.secondary("all", "Add All").withDisabled(selectedCard.size == inventory.cards.keys.filter { c -> c.tier == CardData.Tier.COMMON }.sumOf { c -> inventory.cards[c] ?: 0 }))
         else
-            confirmButtons.add(Button.secondary("dupe", "Use Duplicated").withDisabled(!inventory.cards.keys.any { c -> (inventory.cards[c] ?: 0) - selectedCard.filter { card -> card.unitID == c.unitID }.size > 1 } || selectedCard.size == 10))
+            confirmButtons.add(Button.secondary("dupe", "Use Duplicated").withDisabled(!inventory.cards.keys.filter { c -> c.tier == CardData.Tier.COMMON }.any { c -> (inventory.cards[c] ?: 0) - selectedCard.filter { card -> card.unitID == c.unitID }.size > 1 } || selectedCard.size == 10))
 
         confirmButtons.add(Button.danger("reset", "Reset").withDisabled(selectedCard.isEmpty()))
         confirmButtons.add(Button.danger("cancel", "Cancel"))
