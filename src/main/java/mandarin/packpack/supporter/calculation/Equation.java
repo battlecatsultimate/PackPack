@@ -82,6 +82,35 @@ public class Equation {
         }
     }
 
+    public static String simpleNumber(BigDecimal value, int allowance) {
+        if(value.abs().compareTo(BigDecimal.ZERO) == 0)
+            return "0";
+
+        if (value.abs().compareTo(BigDecimal.TEN.pow(allowance)) > 0) {
+            int m = 0;
+
+            while(value.abs().compareTo(BigDecimal.TEN) > 0) {
+                value = value.divide(BigDecimal.TEN, context);
+
+                m++;
+            }
+
+            return simple.format(value) + "E+" + m;
+        } else if(value.abs().compareTo(BigDecimal.TEN.pow(-2, Equation.context)) < 0) {
+            int m = 0;
+
+            while(value.abs().compareTo(BigDecimal.ONE) < 0) {
+                value = value.multiply(BigDecimal.TEN);
+
+                m++;
+            }
+
+            return simple.format(value) + "E-" + m;
+        } else {
+            return simple.format(value);
+        }
+    }
+
     public static BigDecimal calculate(String equation, String parent, boolean formula, int lang) {
         if(equation.equals(parent)) {
             error.add(String.format(LangID.getStringByID("calc_notnum", lang), equation));

@@ -3742,7 +3742,7 @@ public class ImageDrawing {
         int yAxisNumberWidth = 0;
 
         while(xPosition.compareTo(xRange[1]) <= 0) {
-            Rectangle boundary = plotFont.createGlyphVector(pfm.getFontRenderContext(), Equation.simpleNumber(xPosition)).getPixelBounds(null, 0, 0);
+            Rectangle boundary = plotFont.createGlyphVector(pfm.getFontRenderContext(), Equation.simpleNumber(xPosition, 7)).getPixelBounds(null, 0, 0);
 
             xAxisNumberHeight = Math.max(xAxisNumberHeight, boundary.height);
 
@@ -3750,7 +3750,7 @@ public class ImageDrawing {
         }
 
         while(yPosition.compareTo(yRange[1]) <= 0) {
-            Rectangle boundary = plotFont.createGlyphVector(pfm.getFontRenderContext(), Equation.simpleNumber(yPosition)).getPixelBounds(null, 0, 0);
+            Rectangle boundary = plotFont.createGlyphVector(pfm.getFontRenderContext(), Equation.simpleNumber(yPosition, 7)).getPixelBounds(null, 0, 0);
 
             yAxisNumberWidth = Math.max(yAxisNumberWidth, boundary.width);
 
@@ -3795,7 +3795,7 @@ public class ImageDrawing {
             g.setFont(plotFont);
             g.setColor(238, 238, 238, 255);
 
-            g.drawHorizontalCenteredText(Equation.simpleNumber(xPosition), offsetX + xPos, (int) Math.round(offsetY + plotWidthHeight + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap));
+            g.drawHorizontalCenteredText(Equation.simpleNumber(xPosition, 7), offsetX + xPos, (int) Math.round(offsetY + plotWidthHeight + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap));
 
             xPosition = xPosition.add(xSegment);
         }
@@ -3816,7 +3816,7 @@ public class ImageDrawing {
             g.setFont(plotFont);
             g.setColor(238, 238, 238, 255);
 
-            g.drawVerticalLowerCenteredText(Equation.simpleNumber(yPosition), (int) Math.round(offsetX - plotWidthHeight * indicatorRatio / 2.0 - indicatorGap), offsetY + yPos);
+            g.drawVerticalLowerCenteredText(Equation.simpleNumber(yPosition, 7), (int) Math.round(offsetX - plotWidthHeight * indicatorRatio / 2.0 - indicatorGap), offsetY + yPos);
 
             yPosition = yPosition.add(ySegment);
         }
