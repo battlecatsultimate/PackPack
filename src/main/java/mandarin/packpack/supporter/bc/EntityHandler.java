@@ -50,6 +50,7 @@ import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import net.dv8tion.jda.api.utils.FileUpload;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jcodec.common.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -336,7 +337,7 @@ public class EntityHandler {
         return null;
     }
 
-    public static Message showUnitEmb(Form f, MessageChannel ch, Message reference, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, boolean isTrueForm, boolean trueFormPossible, Level lv, boolean treasure, TreasureHolder holder, int lang, boolean addEmoji, boolean compact) throws Exception {
+    public static Message showUnitEmb(Form f, MessageChannel ch, @Nullable Message reference, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, boolean isTrueForm, boolean trueFormPossible, Level lv, boolean treasure, TreasureHolder holder, int lang, boolean addEmoji, boolean compact) throws Exception {
         int level = lv.getLv();
         int levelp = lv.getPlusLv();
 
