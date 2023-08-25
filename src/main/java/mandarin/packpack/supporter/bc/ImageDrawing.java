@@ -556,10 +556,10 @@ public class ImageDrawing {
         ArrayList<P> centers = new ArrayList<>();
 
         for(int i = 0; i < anim.getOrder().length; i++) {
-            if(anim.anim().parts(anim.getOrder()[i].getVal(2)) == null || anim.getOrder()[i].getVal(1) == -1)
+            if(anim.anim().parts((int) anim.getOrder()[i].getVal(2)) == null || anim.getOrder()[i].getVal(1) == -1)
                 continue;
 
-            FakeImage fi = anim.anim().parts(anim.getOrder()[i].getVal(2));
+            FakeImage fi = anim.anim().parts((int) anim.getOrder()[i].getVal(2));
 
             if(fi.getHeight() == 1 && fi.getWidth() == 1)
                 continue;
@@ -704,10 +704,10 @@ public class ImageDrawing {
             ArrayList<P> centers = new ArrayList<>();
 
             for(int j = 0; j < anim.getOrder().length; j++) {
-                if(anim.anim().parts(anim.getOrder()[j].getVal(2)) == null || anim.getOrder()[j].getVal(1) == -1)
+                if(anim.anim().parts((int) anim.getOrder()[j].getVal(2)) == null || anim.getOrder()[j].getVal(1) == -1)
                     continue;
 
-                FakeImage fi = anim.anim().parts(anim.getOrder()[j].getVal(2));
+                FakeImage fi = anim.anim().parts((int) anim.getOrder()[j].getVal(2));
 
                 if(fi.getWidth() == 1 && fi.getHeight() == 1)
                     continue;
@@ -954,10 +954,10 @@ public class ImageDrawing {
             ArrayList<P> centers = new ArrayList<>();
 
             for(int j = 0; j < anim.getOrder().length; j++) {
-                if(anim.anim().parts(anim.getOrder()[j].getVal(2)) == null || anim.getOrder()[j].getVal(1) == -1)
+                if(anim.anim().parts((int) anim.getOrder()[j].getVal(2)) == null || anim.getOrder()[j].getVal(1) == -1)
                     continue;
 
-                FakeImage fi = anim.anim().parts(anim.getOrder()[j].getVal(2));
+                FakeImage fi = anim.anim().parts((int) anim.getOrder()[j].getVal(2));
 
                 if(fi.getWidth() == 1 && fi.getHeight() == 1)
                     continue;
@@ -1173,10 +1173,10 @@ public class ImageDrawing {
                     anim.setTime(j);
 
                     for(int k = 0; k < anim.getOrder().length; k++) {
-                        if(anim.anim().parts(anim.getOrder()[k].getVal(2)) == null || anim.getOrder()[k].getVal(1) == -1)
+                        if(anim.anim().parts((int) anim.getOrder()[k].getVal(2)) == null || anim.getOrder()[k].getVal(1) == -1)
                             continue;
 
-                        FakeImage fi = anim.anim().parts(anim.getOrder()[k].getVal(2));
+                        FakeImage fi = anim.anim().parts((int) anim.getOrder()[k].getVal(2));
 
                         if(fi.getWidth() == 1 && fi.getHeight() == 1)
                             continue;
