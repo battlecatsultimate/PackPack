@@ -122,7 +122,11 @@ object TransactionLogger {
         builder.addField("Adding", if (add) "Done" else "Failed", true)
         builder.addField("Taxing", if (tax) "Done" else "Failed", true)
 
-        builder.addField("Amount", "$amount [10% Tax]", false)
+        if (CardData.TAX == 0.0) {
+            builder.addField("Amount", "$amount", false)
+        } else {
+            builder.addField("Amount", "$amount [${(CardData.TAX * 100).toInt()}% Tax]", false)
+        }
 
         logChannel.sendMessageEmbeds(builder.build())
             .setAllowedMentions(ArrayList())

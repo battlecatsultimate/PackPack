@@ -219,7 +219,7 @@ object CardData {
     val modLog = ServerData.get("modLog")
 
     const val MAX_CARDS = 20
-    const val TAX = 0.1
+    const val TAX = 0.0
 
     var sessionNumber = 1L
 
