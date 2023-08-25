@@ -25,7 +25,7 @@ class CatFoodHolder(author: Message, channelID: String, message:Message, private
         val member = authorMessage.member ?: return
 
         if (StaticStore.isNumeric(value)) {
-            val catFood = value.toInt()
+            val catFood = value.toDouble().toInt()
 
             if (catFood > 500000) {
                 event.reply("You can't suggest cat foods more than 500k! Please contact moderator for such large transaction").setEphemeral(true).queue()
