@@ -3608,10 +3608,10 @@ public class EntityHandler {
                     BigDecimal damage = getAttack(index, du, f.unit.lv, lv, treasureSetting, talent, false).multiply(damageTotalMultiplier);
 
                     if (rawIndex >= 1000) {
-                        y1 = y1.add(damage);
+                        y2 = y2.add(damage);
                         y3 = y3.add(damage);
                     } else if (rawIndex <= -1000) {
-                        y2 = y2.add(damage);
+                        y1 = y1.add(damage);
                         y3 = y3.add(damage);
                     } else {
                         y1 = y1.add(damage);
@@ -3629,10 +3629,10 @@ public class EntityHandler {
 
                     if (possibleWave.size() == 1) {
                         if (possibleWave.get(0) == 1000) {
-                            y1 = y1.add(waveAttack);
+                            y2 = y2.add(waveAttack);
                             y3 = y3.add(waveAttack);
                         } else if (possibleWave.get(0) == -1000) {
-                            y2 = y2.add(waveAttack);
+                            y1 = y1.add(waveAttack);
                             y3 = y3.add(waveAttack);
                         } else {
                             y1 = y1.add(waveAttack);
@@ -3776,10 +3776,10 @@ public class EntityHandler {
                         BigDecimal damage = getAttack(index, du, f.unit.lv, lv, treasureSetting, talent, true).multiply(damageTotalMultiplier);
 
                         if (rawIndex >= 1000) {
-                            y1 = y1.add(damage);
+                            y2 = y2.add(damage);
                             y3 = y3.add(damage);
                         } else if (rawIndex <= -1000) {
-                            y2 = y2.add(damage);
+                            y1 = y1.add(damage);
                             y3 = y3.add(damage);
                         } else {
                             y1 = y1.add(damage);
@@ -3797,10 +3797,10 @@ public class EntityHandler {
 
                         if (possibleWave.size() == 1) {
                             if (possibleWave.get(0) == 1000) {
-                                y1 = y1.add(waveAttack);
+                                y2 = y2.add(waveAttack);
                                 y3 = y3.add(waveAttack);
                             } else if (possibleWave.get(0) == -1000) {
-                                y2 = y2.add(waveAttack);
+                                y1 = y1.add(waveAttack);
                                 y3 = y3.add(waveAttack);
                             } else {
                                 y1 = y1.add(waveAttack);
@@ -4241,10 +4241,10 @@ public class EntityHandler {
                     BigDecimal damage = getAttack(index, de, adjustedMagnification).multiply(damageTotalMultiplier);
 
                     if (rawIndex >= 1000) {
-                        y1 = y1.add(damage);
+                        y2 = y2.add(damage);
                         y3 = y3.add(damage);
                     } else if (rawIndex <= -1000) {
-                        y2 = y2.add(damage);
+                        y1 = y1.add(damage);
                         y3 = y3.add(damage);
                     } else {
                         y1 = y1.add(damage);
@@ -4262,10 +4262,10 @@ public class EntityHandler {
 
                     if (possibleWave.size() == 1) {
                         if (possibleWave.get(0) == 1000) {
-                            y1 = y1.add(waveAttack);
+                            y2 = y2.add(waveAttack);
                             y3 = y3.add(waveAttack);
                         } else if (possibleWave.get(0) == -1000) {
-                            y2 = y2.add(waveAttack);
+                            y1 = y1.add(waveAttack);
                             y3 = y3.add(waveAttack);
                         } else {
                             y1 = y1.add(waveAttack);
