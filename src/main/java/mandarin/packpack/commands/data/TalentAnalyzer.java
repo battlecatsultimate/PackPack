@@ -26,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("SameParameterValue")
 public class TalentAnalyzer extends ConstraintCommand {
     private static final List<String> allParameters = List.of(
             "-s", "-second", "-uid", "-u", "-n", "-name", "-en", "-jp", "-tw", "-kr"

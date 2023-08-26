@@ -710,6 +710,7 @@ public class StaticStore {
 
             if(obj.has("executed")) {
                 executed = obj.get("executed").getAsLong();
+                previousExecuted = executed;
             }
 
             if(obj.has("prefix")) {

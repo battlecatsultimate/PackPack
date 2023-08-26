@@ -177,7 +177,9 @@ public class PackBot {
                 RecordableThread.handleExpiration();
 
                 if (StaticStore.previousExecuted < StaticStore.executed) {
-                    Logger.addLog("Executed commands " + (StaticStore.previousExecuted - StaticStore.executed) + "time(s)");
+                    Logger.addLog("Executed commands " + (StaticStore.executed - StaticStore.previousExecuted) + " time(s)");
+
+                    StaticStore.previousExecuted = StaticStore.executed;
                 }
 
                 if (log == 60) {

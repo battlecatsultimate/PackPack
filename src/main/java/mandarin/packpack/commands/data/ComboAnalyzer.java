@@ -504,31 +504,23 @@ public class ComboAnalyzer extends ConstraintCommand {
     }
 
     private String getRawLocale(String locale) {
-        switch (locale) {
-            case "en":
-                return "en";
-            case "jp":
-                return "ja";
-            case "kr":
-                return "ko";
-            case "zh":
-                return "tw";
-            default:
-                throw new IllegalStateException("E/ComboAnalyzer::getRawLocale - Unknown locale provided : " + locale);
-        }
+        return switch (locale) {
+            case "en" -> "en";
+            case "jp" -> "ja";
+            case "kr" -> "ko";
+            case "zh" -> "tw";
+            default ->
+                    throw new IllegalStateException("E/ComboAnalyzer::getRawLocale - Unknown locale provided : " + locale);
+        };
     }
 
     private static String getUnitCode(int ind) {
-        switch (ind) {
-            case 0:
-                return "f";
-            case 1:
-                return "c";
-            case 2:
-                return "s";
-            default:
-                return ""+ind;
-        }
+        return switch (ind) {
+            case 0 -> "f";
+            case 1 -> "c";
+            case 2 -> "s";
+            default -> String.valueOf(ind);
+        };
     }
 
     private static String getSeparator(String locale) {

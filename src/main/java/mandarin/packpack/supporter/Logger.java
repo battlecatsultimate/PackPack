@@ -8,10 +8,7 @@ import net.dv8tion.jda.api.utils.FileUpload;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -32,27 +29,32 @@ public class Logger {
     public final static List<String> logMessages = new ArrayList<>();
 
     public static void writeLog() {
+        if (logMessages.isEmpty())
+            return;
+
+        File logFile = new File("./data/log.txt");
+
         try {
-            if (logMessages.isEmpty())
-                return;
-
-            File logFile = new File("./data/log.txt");
-
             if (!logFile.exists() && !logFile.createNewFile())
                 return;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-            PrintWriter writer = new PrintWriter(new FileWriter(logFile, StandardCharsets.UTF_8));
+        try (FileWriter fileWriter = new FileWriter(logFile, StandardCharsets.UTF_8, true)) {
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            PrintWriter writer = new PrintWriter(bufferedWriter);
 
             for (int i = 0; i < logMessages.size(); i++) {
                 writer.println(logMessages.get(i));
             }
 
             writer.close();
-
-            logMessages.clear();
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
+
+        logMessages.clear();
     }
 
     @Nullable
@@ -61,6 +63,7 @@ public class Logger {
     public Logger() {
         client = null;
 
+        logMessages.add("");
         logMessages.add(separatorHalf + " BOT STARTED " + getTimeStamp() + " " + separatorHalf);
         logMessages.add("");
     }
@@ -88,9 +91,11 @@ public class Logger {
     public void uploadErrorLog(Throwable e, String message, File... files) {
         e.printStackTrace();
 
+        logMessages.add(separatorHalf + " EXCEPTION HAPPENED " + separatorHalf);
         logMessages.add(getTimeStamp() + " - " + message);
         logMessages.add("");
         logMessages.add(ExceptionUtils.getStackTrace(e));
+        logMessages.add(separatorHalf + "====================" + separatorHalf);
 
         GuildMessageChannel ch = getLoggingChannel();
 
