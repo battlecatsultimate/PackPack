@@ -42,3 +42,4 @@ hs_err_pid*
 /data/cardSave.json
 /data/serverData.json
 /.idea/
+/data/log.txt
