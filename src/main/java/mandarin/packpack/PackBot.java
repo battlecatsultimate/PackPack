@@ -1,10 +1,7 @@
 package mandarin.packpack;
 
 import common.CommonStatic;
-import mandarin.packpack.supporter.Initializer;
-import mandarin.packpack.supporter.PackContext;
-import mandarin.packpack.supporter.RecordableThread;
-import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.*;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.event.EventFactor;
 import mandarin.packpack.supporter.event.EventFileGrabber;
@@ -41,6 +38,8 @@ public class PackBot {
     public static int pfp = 0;
     public static int udp = 0;
     public static int status = 0;
+    public static int log = 0;
+
     public static boolean develop = false;
 
     public static final String normal = "p!help for command info!";
@@ -49,6 +48,8 @@ public class PackBot {
     public static Message statusMessage = null;
 
     public static void main(String[] args) throws LoginException {
+        Runtime.getRuntime().addShutdownHook(new Thread(Logger::writeLog));
+
         initialize(args);
 
         final String TOKEN = args[0];
@@ -174,6 +175,18 @@ public class PackBot {
                 }
 
                 RecordableThread.handleExpiration();
+
+                if (StaticStore.previousExecuted < StaticStore.executed) {
+                    Logger.addLog("Executed commands " + (StaticStore.previousExecuted - StaticStore.executed) + "time(s)");
+                }
+
+                if (log == 60) {
+                    log = 0;
+
+                    Logger.writeLog();
+                } else {
+                    log++;
+                }
             }
         }, 0, TimeUnit.MINUTES.toMillis(1));
     }

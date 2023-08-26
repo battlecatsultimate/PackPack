@@ -335,6 +335,8 @@ public class ComboAnalyzer extends ConstraintCommand {
                         name = Data.trio(uid) + " - " + Data.trio(form);
 
                     names.add(name);
+
+                    f.anim.unload();
                 }
             }
         }

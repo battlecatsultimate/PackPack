@@ -357,6 +357,8 @@ public class ImageDrawing {
 
         ImageIO.write(img, "PNG", image);
 
+        bg.unload();
+
         return image;
     }
 
@@ -541,6 +543,8 @@ public class ImageDrawing {
         pro.waitFor();
 
         StaticStore.deleteFile(folder, true);
+
+        bg.unload();
 
         return mp4;
     }

@@ -36,8 +36,7 @@ import java.util.*;
 public class DataToString extends Data {
     public static final DecimalFormat df;
     public static final Map<Integer, int[]> talentLevel = new HashMap<>();
-    public static FakeImage[] img015 = null;
-    public static final Map<Integer, Integer> resistantIcon = new HashMap<>();
+    public static final Map<Integer, FakeImage> resistantIcon = new HashMap<>();
 
     private static final Map<Integer, String> talentText = new HashMap<>();
     private static final Map<Integer, String> talentIcon = new HashMap<>();
@@ -148,17 +147,17 @@ public class DataToString extends Data {
         ImgCut ic015 = ImgCut.newIns("./org/page/img015.imgcut");
         VImg img015r = new VImg("./org/page/img015.png");
 
-        img015 = ic015.cut(img015r.getImg());
+        FakeImage[] img015 = ic015.cut(img015r.getImg());
 
-        resistantIcon.put(P_IMUWEAK, 43);
-        resistantIcon.put(P_IMUSTOP, 45);
-        resistantIcon.put(P_IMUSLOW, 47);
-        resistantIcon.put(P_IMUKB, 49);
-        resistantIcon.put(P_IMUWAVE, 51);
-        resistantIcon.put(P_IMUWARP, 53);
-        resistantIcon.put(P_IMUCURSE, 109);
-        resistantIcon.put(P_IMUPOIATK, 235);
-        resistantIcon.put(P_IMUVOLC, 241);
+        resistantIcon.put(P_IMUWEAK, img015[43]);
+        resistantIcon.put(P_IMUSTOP, img015[45]);
+        resistantIcon.put(P_IMUSLOW, img015[47]);
+        resistantIcon.put(P_IMUKB, img015[49]);
+        resistantIcon.put(P_IMUWAVE, img015[51]);
+        resistantIcon.put(P_IMUWARP, img015[53]);
+        resistantIcon.put(P_IMUCURSE, img015[109]);
+        resistantIcon.put(P_IMUPOIATK, img015[235]);
+        resistantIcon.put(P_IMUVOLC, img015[241]);
     }
 
     private static void addTalentData(int id, String name, String icon) {

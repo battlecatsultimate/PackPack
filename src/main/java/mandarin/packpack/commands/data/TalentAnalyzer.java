@@ -371,26 +371,31 @@ public class TalentAnalyzer extends ConstraintCommand {
             int[] type = Data.PC_CORRES[abilityID];
 
             switch (type[0]) {
-                case 0:
+                case 0 -> {
                     return (BufferedImage) CommonStatic.getBCAssets().icon[1][type[1]].getImg().bimg();
-                case 1:
+                }
+                case 1 -> {
                     return (BufferedImage) CommonStatic.getBCAssets().icon[0][(int) (Math.log(type[1]) / Math.log(2))].getImg().bimg();
-                case 2:
+                }
+                case 2 -> {
                     return (BufferedImage) CommonStatic.getBCAssets().icon[4][type[1]].getImg().bimg();
-                case 3:
-                    if(immunity) {
+                }
+                case 3 -> {
+                    if (immunity) {
                         return (BufferedImage) CommonStatic.getBCAssets().icon[1][type[1]].getImg().bimg();
                     } else {
-                        if(DataToString.resistantIcon.containsKey(type[1])) {
-                            return (BufferedImage) DataToString.img015[DataToString.resistantIcon.get(type[1])].bimg();
+                        if (DataToString.resistantIcon.containsKey(type[1])) {
+                            return (BufferedImage) DataToString.resistantIcon.get(type[1]).bimg();
                         } else {
                             return null;
                         }
                     }
-                case 4:
+                }
+                case 4 -> {
                     return (BufferedImage) CommonStatic.getBCAssets().icon[3][type[1]].getImg().bimg();
-                default:
-                    throw new IllegalStateException("E/TalentAnalyzer::grabTalentIcon - Invalid talent type ID : " + type[0]);
+                }
+                default ->
+                        throw new IllegalStateException("E/TalentAnalyzer::grabTalentIcon - Invalid talent type ID : " + type[0]);
             }
         }
     }

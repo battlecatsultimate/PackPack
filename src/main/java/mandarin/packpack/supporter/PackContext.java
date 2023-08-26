@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.util.function.Consumer;
 
 public class PackContext implements Context {
+    private static final String[] ANIMFL = { ".imgcut", ".mamodel", ".maanim" };
 
     @Override
     public boolean confirmDelete() {
@@ -78,16 +79,19 @@ public class PackContext implements Context {
     public void noticeErr(Exception e, ErrType t, String str) {
         printErr(t, str);
 
-        if(StaticStore.logger != null) {
-            StaticStore.logger.uploadErrorLog(e, t.name()+" - "+str);
-        }
+        StaticStore.logger.uploadErrorLog(e, t.name() + " - " + str);
 
         e.printStackTrace(t == ErrType.INFO ? System.out : System.err);
     }
 
     @Override
     public boolean preload(PackLoader.ZipDesc.FileDesc desc) {
-        return Admin.preload(desc);
+        if (toString().endsWith("png"))
+            return false;
+        for (String str : ANIMFL)
+            if (desc.path.endsWith(str))
+                return false;
+        return true;
     }
 
     @Override

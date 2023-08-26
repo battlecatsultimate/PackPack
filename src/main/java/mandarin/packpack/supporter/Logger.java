@@ -11,7 +11,12 @@ import org.jetbrains.annotations.Nullable;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class Logger {
     private static final String[] errorMessages = {
@@ -21,12 +26,43 @@ public class Logger {
             "Help me",
             "Bruh"
     };
+    private static final String separatorHalf = "==========";
+    private static final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd-hh:mm:ss");
+
+    public final static List<String> logMessages = new ArrayList<>();
+
+    public static void writeLog() {
+        try {
+            if (logMessages.isEmpty())
+                return;
+
+            File logFile = new File("./data/log.txt");
+
+            if (!logFile.exists() && !logFile.createNewFile())
+                return;
+
+            PrintWriter writer = new PrintWriter(new FileWriter(logFile, StandardCharsets.UTF_8));
+
+            for (int i = 0; i < logMessages.size(); i++) {
+                writer.println(logMessages.get(i));
+            }
+
+            writer.close();
+
+            logMessages.clear();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     @Nullable
     private JDA client;
 
     public Logger() {
         client = null;
+
+        logMessages.add(separatorHalf + " BOT STARTED " + getTimeStamp() + " " + separatorHalf);
+        logMessages.add("");
     }
 
     public void assignClient(JDA client) {
@@ -34,7 +70,6 @@ public class Logger {
     }
 
     @Nullable
-
     private GuildMessageChannel getLoggingChannel() {
         if (client == null)
             return null;
@@ -52,6 +87,10 @@ public class Logger {
 
     public void uploadErrorLog(Throwable e, String message, File... files) {
         e.printStackTrace();
+
+        logMessages.add(getTimeStamp() + " - " + message);
+        logMessages.add("");
+        logMessages.add(ExceptionUtils.getStackTrace(e));
 
         GuildMessageChannel ch = getLoggingChannel();
 
@@ -110,6 +149,8 @@ public class Logger {
     }
 
     public void uploadLog(String content) {
+        logMessages.add(getTimeStamp() + " - " + content);
+
         System.out.println(content);
 
         GuildMessageChannel ch = getLoggingChannel();
@@ -129,6 +170,10 @@ public class Logger {
             return;
 
         ch.sendMessage(content).queue();
+    }
+
+    public static void addLog(String content) {
+        logMessages.add(getTimeStamp() + " - " + content);
     }
 
     private void createMessageWithNoPings(GuildMessageChannel ch, String content) {
@@ -158,5 +203,11 @@ public class Logger {
             if(run != null)
                 run.run();
         });
+    }
+
+    private static String getTimeStamp() {
+        Date currentTime = new Date(System.currentTimeMillis());
+
+        return "[" + format.format(currentTime) + "]";
     }
 }

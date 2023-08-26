@@ -56,6 +56,7 @@ public class StaticStore {
     public static boolean initialized = false;
 
     public static long executed = 0;
+    public static long previousExecuted = 0;
 
     public static String globalPrefix = "p!";
 
