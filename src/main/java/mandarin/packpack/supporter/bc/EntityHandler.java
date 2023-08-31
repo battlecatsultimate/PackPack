@@ -3529,8 +3529,7 @@ public class EntityHandler {
         Data.Proc.PM critical = du.getProc().CRIT;
 
         if (savageBlow.exists()) {
-            damageTotalMultiplier = damageTotalMultiplier.multiply(BigDecimal.ONE.add(BigDecimal.valueOf(savageBlow.mult).divide(new BigDecimal("100"), Equation.context)))
-                    .multiply(BigDecimal.valueOf(savageBlow.prob).divide(new BigDecimal("100"), Equation.context));
+            damageTotalMultiplier = damageTotalMultiplier.multiply(BigDecimal.ONE.add(BigDecimal.valueOf(savageBlow.mult).divide(new BigDecimal("100"), Equation.context).multiply(BigDecimal.valueOf(savageBlow.prob).divide(new BigDecimal("100"), Equation.context))));
         }
 
         if (critical.exists()) {
@@ -4162,8 +4161,7 @@ public class EntityHandler {
         Data.Proc.PM critical = de.getProc().CRIT;
 
         if (savageBlow.exists()) {
-            damageTotalMultiplier = damageTotalMultiplier.multiply(BigDecimal.ONE.add(BigDecimal.valueOf(savageBlow.mult).divide(new BigDecimal("100"), Equation.context)))
-                    .multiply(BigDecimal.valueOf(savageBlow.prob).divide(new BigDecimal("100"), Equation.context));
+            damageTotalMultiplier = damageTotalMultiplier.multiply(BigDecimal.ONE.add(BigDecimal.valueOf(savageBlow.mult).divide(new BigDecimal("100"), Equation.context).multiply(BigDecimal.valueOf(savageBlow.prob).divide(new BigDecimal("100"), Equation.context))));
         }
 
         if (critical.exists()) {
