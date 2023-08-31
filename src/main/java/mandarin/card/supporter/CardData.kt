@@ -227,8 +227,8 @@ object CardData {
 
     val tradeCooldown = HashMap<String, Long>()
 
-    const val tradeCooldownTerm = 1 * 60 * 60 * 1000 // 1 hour in milliseconds
-    const val tradeCatFoodCooldownTerm = 2 * 60 * 60 * 1000 // 2 hours in milliseconds
+    const val tradeCooldownTerm = 5 * 60 * 1000 // 5 minutes in milliseconds
+    const val tradeCatFoodCooldownTerm = 5 * 60 * 1000 // 5 minutes in milliseconds
 
     val tradeTrialCooldown = HashMap<String, Long>()
 
