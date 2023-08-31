@@ -224,7 +224,7 @@ object TransactionLogger {
 
             val amount = cards.filter { c -> card.unitID == c.unitID }.size
 
-            if (amount > 2) {
+            if (amount >= 2) {
                 checker.append(" x")
                     .append(amount)
             }
@@ -246,7 +246,7 @@ object TransactionLogger {
 
                 val amount = cards.filter { c -> card.unitID == c.unitID }.size
 
-                if (amount > 2) {
+                if (amount >= 2) {
                     line += " x$amount"
                 }
 
@@ -400,7 +400,7 @@ object TransactionLogger {
 
             val amount = cards.filter { c -> card.unitID == c.unitID }.size
 
-            if (amount > 2) {
+            if (amount >= 2) {
                 checker.append(" x")
                     .append(amount)
             }
@@ -422,7 +422,7 @@ object TransactionLogger {
 
                 val amount = cards.filter { c -> card.unitID == c.unitID }.size
 
-                if (amount > 2) {
+                if (amount >= 2) {
                     line += " x$amount"
                 }
 
@@ -478,7 +478,7 @@ object TransactionLogger {
 
             val amount = cards.filter { c -> card.unitID == c.unitID }.size
 
-            if (amount > 2) {
+            if (amount >= 2) {
                 checker.append(" x")
                     .append(amount)
             }
@@ -500,7 +500,7 @@ object TransactionLogger {
 
                 val amount = cards.filter { c -> card.unitID == c.unitID }.size
 
-                if (amount > 2) {
+                if (amount >= 2) {
                     line += " x$amount"
                 }
 
