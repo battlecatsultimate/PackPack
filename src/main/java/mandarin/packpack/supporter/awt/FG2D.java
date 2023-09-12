@@ -173,10 +173,6 @@ public class FG2D implements FakeGraphics {
 		g.scale(hf, vf);
 	}
 
-	public void scaleDouble(float sx, float sy) {
-		g.scale(sx, sy);
-	}
-
 	@Override
 	public void setColor(int c) {
 		if (c == RED)

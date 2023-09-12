@@ -225,14 +225,14 @@ public class RawPointGetter {
     public int[][] getRect() {
         int[][] rect = new int[4][2];
 
-        rect[0][0] = (int) Math.round(leftUp.x);
-        rect[0][1] = (int) Math.round(leftUp.y);
-        rect[1][0] = (int) Math.round(rightUp.x);
-        rect[1][1] = (int) Math.round(rightUp.y);
-        rect[2][0] = (int) Math.round(rightDown.x);
-        rect[2][1] = (int) Math.round(rightDown.y);
-        rect[3][0] = (int) Math.round(leftDown.x);
-        rect[3][1] = (int) Math.round(leftDown.y);
+        rect[0][0] = Math.round(leftUp.x);
+        rect[0][1] = Math.round(leftUp.y);
+        rect[1][0] = Math.round(rightUp.x);
+        rect[1][1] = Math.round(rightUp.y);
+        rect[2][0] = Math.round(rightDown.x);
+        rect[2][1] = Math.round(rightDown.y);
+        rect[3][0] = Math.round(leftDown.x);
+        rect[3][1] = Math.round(leftDown.y);
 
         return rect;
     }
