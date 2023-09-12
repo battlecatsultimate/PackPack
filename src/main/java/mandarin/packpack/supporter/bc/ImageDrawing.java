@@ -54,7 +54,7 @@ import java.util.List;
 public class ImageDrawing {
     private static final int bgAnimTime = 450;
     private static final int bgAnimHeight = 720;
-    private static final double bgAnimRatio = bgAnimHeight * 0.8 / 2 / 512.0;
+    private static final float bgAnimRatio = bgAnimHeight * 0.8f / 2 / 512f;
     private static final int[] preferredBGAnimWidth = {
             5000, //star
             5000, //rain
@@ -182,12 +182,12 @@ public class ImageDrawing {
     private static final float innerTableLineStroke = 3f;
 
     private static final int fruitGap = 60;
-    private static final double fruitRatio = 0.125;
-    private static final double fruitTextGapRatio = 0.025;
-    private static final double fruitUpperGapRatio = 0.025;
-    private static final double fruitDownerGapRatio = 0.05;
-    private static final double enemyIconRatio = 1.25; // w/h
-    private static final double enemyInnerIconRatio = 0.95;
+    private static final float fruitRatio = 0.125f;
+    private static final float fruitTextGapRatio = 0.025f;
+    private static final float fruitUpperGapRatio = 0.025f;
+    private static final float fruitDownerGapRatio = 0.05f;
+    private static final float enemyIconRatio = 1.25f; // w/h
+    private static final float enemyInnerIconRatio = 0.95f;
 
     private static final int talentIconGap = 60;
     private static final int talentNameGap = 80;
@@ -201,7 +201,7 @@ public class ImageDrawing {
     private static final int comboTypeGap = 40;
     private static final int comboTypeInnerGap = 15;
     private static final int comboTypeRadius = 30;
-    private static final double comboIconScaleFactor = 2.5;
+    private static final float comboIconScaleFactor = 2.5f;
     private static final int comboIconTableRadius = 75;
     private static final int comboIconGap = 60;
     private static final int comboIconLeftRightGap = 80;
@@ -212,11 +212,11 @@ public class ImageDrawing {
     private static final int plotWidthHeight = 1024;
     private static final float axisStroke = 1.5f;
     private static final float indicatorStroke = 2f;
-    private static final double indicatorRatio = 0.025;
+    private static final float indicatorRatio = 0.025f;
     private static final float subIndicatorStroke = 1f;
     private static final int indicatorGap = 10;
     private static final float plotStroke = 3f;
-    private static final double angleLimit = 89.9995;
+    private static final float angleLimit = 89.9995f;
 
     private static final int axisTitleGap = 40;
     private static final int plotGraphOffset = 100;
@@ -281,9 +281,9 @@ public class ImageDrawing {
         g.setRenderingHint(3, 2);
         g.enableAntialiasing();
 
-        double groundRatio = 0.1;
+        float groundRatio = 0.1f;
 
-        double ratio = h * (1.0 - groundRatio * 2) / 2.0 / 512.0;
+        float ratio = h * (1f - groundRatio * 2) / 2f / 512f;
 
         int groundHeight = (int) (groundRatio * h);
 
@@ -332,8 +332,6 @@ public class ImageDrawing {
             } else {
                 effect = CommonStatic.getBCAssets().bgEffects.get(bg.effect);
             }
-
-            System.out.println(bg.effect);
 
             int len = (int) ((w / ratio - 400) / CommonStatic.BattleConst.ratio);
             int bgHeight = (int) (h / ratio);
@@ -402,7 +400,7 @@ public class ImageDrawing {
         if(w % 2 == 1)
             w -= 1;
 
-        double groundRatio = 0.1;
+        float groundRatio = 0.1f;
 
         int groundHeight = (int) (groundRatio * h);
 
@@ -553,7 +551,7 @@ public class ImageDrawing {
         return mp4;
     }
 
-    public static File drawAnimImage(EAnimD<?> anim, int frame, double siz, boolean transparent, boolean debug) throws Exception {
+    public static File drawAnimImage(EAnimD<?> anim, int frame, float siz, boolean transparent, boolean debug) throws Exception {
         CommonStatic.getConfig().ref = false;
 
         anim.setTime(frame);
@@ -665,7 +663,7 @@ public class ImageDrawing {
         return file;
     }
 
-    public static File drawAnimMp4(EAnimD<?> anim, Message msg, double siz, boolean debug, int limit, int lang) throws Exception {
+    public static File drawAnimMp4(EAnimD<?> anim, Message msg, float siz, boolean debug, int limit, int lang) throws Exception {
         File temp = new File("./temp");
 
         if(!temp.exists()) {
@@ -754,7 +752,7 @@ public class ImageDrawing {
             centerFrames.add(centers);
         }
 
-        double ratio;
+        float ratio;
 
         String cont = LangID.getStringByID("gif_anbox", lang)+ "\n"
                 + LangID.getStringByID("gif_result", lang).replace("_WWW_", String.valueOf(rect.width))
@@ -764,10 +762,10 @@ public class ImageDrawing {
         msg.editMessage(cont).queue();
 
         if(rect.width * rect.height > 1500 * 1500) {
-            ratio = 1.0;
+            ratio = 1f;
 
             while(rect.width * rect.height > 1500 * 1500) {
-                ratio *= 0.5;
+                ratio *= 0.5f;
 
                 rect.width = (int) (0.5 * rect.width);
                 rect.height = (int) (0.5 * rect.height);
@@ -775,7 +773,7 @@ public class ImageDrawing {
                 rect.y = (int) (0.5 * rect.y);
             }
         } else {
-            ratio = 1.0;
+            ratio = 1f;
         }
 
         String finCont = cont+"\n\n";
@@ -923,7 +921,7 @@ public class ImageDrawing {
         return gif;
     }
 
-    public static File drawAnimGif(EAnimD<?> anim, Message msg, double siz, boolean debug, boolean transparent, int limit, int lang) throws Exception {
+    public static File drawAnimGif(EAnimD<?> anim, Message msg, float siz, boolean debug, boolean transparent, int limit, int lang) throws Exception {
         File temp = new File("./temp");
 
         if(!temp.exists()) {
@@ -972,7 +970,7 @@ public class ImageDrawing {
 
                 RawPointGetter getter = new RawPointGetter(fi.getWidth(), fi.getHeight());
 
-                getter.apply(anim.getOrder()[j], siz * 0.5, false);
+                getter.apply(anim.getOrder()[j], siz * 0f, false);
 
                 int[][] result = getter.getRect();
 
@@ -1006,14 +1004,14 @@ public class ImageDrawing {
 
         int minSize = 300;
 
-        double ratio;
+        float ratio;
 
         long surface = (long) rect.width * rect.height;
 
         if(surface > minSize * minSize) {
-            ratio = (surface - (surface - 300 * 300) * 1.0 * Math.min(300, frame) / 300.0) / surface;
+            ratio = (surface - (surface - 300 * 300) * 1f * Math.min(300, frame) / 300f) / surface;
         } else {
-            ratio = 1.0;
+            ratio = 1f;
         }
 
         String cont = LangID.getStringByID("gif_anbox", lang)+ "\n"
@@ -1115,7 +1113,7 @@ public class ImageDrawing {
             } else {
                 anim.setTime(i);
 
-                anim.draw(g, pos, siz * ratio * 0.5);
+                anim.draw(g, pos, siz * ratio * 0.5f);
             }
 
             g.dispose();
@@ -1141,7 +1139,7 @@ public class ImageDrawing {
         return gif;
     }
 
-    public static File drawBCAnim(AnimMixer mixer, Message msg, double siz, int lang) throws Exception {
+    public static File drawBCAnim(AnimMixer mixer, Message msg, float siz, int lang) throws Exception {
         File temp = new File("./temp");
 
         if(!temp.exists()) {
@@ -1219,7 +1217,7 @@ public class ImageDrawing {
             }
         }
 
-        double ratio;
+        float ratio;
 
         String cont = LangID.getStringByID("gif_anbox", lang) + "\n"
                 + LangID.getStringByID("gif_result", lang).replace("_WWW_", String.valueOf(rect.width))
@@ -1229,10 +1227,10 @@ public class ImageDrawing {
         msg.editMessage(cont).queue();
 
         if(rect.width * rect.height > 1500 * 1500) {
-            ratio = 1.0;
+            ratio = 1f;
 
             while(rect.width * rect.height > 1500 * 1500) {
-                ratio *= 0.5;
+                ratio *= 0.5f;
 
                 rect.width = (int) (0.5 * rect.width);
                 rect.height = (int) (0.5 * rect.height);
@@ -1240,12 +1238,12 @@ public class ImageDrawing {
                 rect.y = (int) (0.5 * rect.y);
             }
         } else {
-            ratio = 1.0;
+            ratio = 1f;
         }
 
         String finCont = cont +"\n\n";
 
-        if(ratio == 1.0) {
+        if(ratio == 1f) {
             finCont += LangID.getStringByID("gif_cango", lang)+"\n\n";
         } else {
             finCont += LangID.getStringByID("gif_adjust", lang).replace("_", DataToString.df.format(ratio * 100.0))+"\n\n";
@@ -2464,7 +2462,7 @@ public class ImageDrawing {
         int titleHeight = (int) Math.round(titleRect.getHeight() + comboTitleGap + typeBoxHeight);
         int titleWidth = (int) Math.round(Math.max(titleRect.getWidth(), typeBoxWidth));
 
-        int maxIconTableWidth = (int) Math.round(comboIconLeftRightGap * 2 + combo.icons.get(0).getWidth() * comboIconScaleFactor);
+        int maxIconTableWidth = Math.round(comboIconLeftRightGap * 2 + combo.icons.get(0).getWidth() * comboIconScaleFactor);
         int maxUnitNameHeight = 0;
 
         for(int i = 0; i < combo.icons.size(); i++) {
@@ -2474,7 +2472,7 @@ public class ImageDrawing {
             maxIconTableWidth = (int) Math.round(Math.max(maxIconTableWidth, comboIconLeftRightGap * 2 + unitNameRect.getWidth()));
         }
 
-        int maxIconTableHeight = (int) Math.round(comboIconUpDownGap * 2 + combo.icons.get(0).getHeight() * comboIconScaleFactor + comboIconNameGap + maxUnitNameHeight);
+        int maxIconTableHeight = Math.round(comboIconUpDownGap * 2 + combo.icons.get(0).getHeight() * comboIconScaleFactor + comboIconNameGap + maxUnitNameHeight);
 
         Rectangle2D descRect = contentFont.createGlyphVector(cfm.getFontRenderContext(), combo.description).getPixelBounds(null, 0, 0);
 
@@ -2532,7 +2530,7 @@ public class ImageDrawing {
             g.setColor(51, 53, 60, 255);
             g.fillRoundRect(x, y, maxIconTableWidth, maxIconTableHeight, comboIconTableRadius, comboIconTableRadius);
 
-            g.drawImage(combo.icons.get(i), Math.round(x + (maxIconTableWidth - combo.icons.get(i).getWidth() * comboIconScaleFactor) / 2.0), y + comboIconUpDownGap, (int) Math.round(combo.icons.get(i).getWidth() * comboIconScaleFactor), (int) Math.round(combo.icons.get(i).getHeight() * comboIconScaleFactor));
+            g.drawImage(combo.icons.get(i), Math.round(x + (maxIconTableWidth - combo.icons.get(i).getWidth() * comboIconScaleFactor) / 2.0), y + comboIconUpDownGap, Math.round(combo.icons.get(i).getWidth() * comboIconScaleFactor), Math.round(combo.icons.get(i).getHeight() * comboIconScaleFactor));
 
             g.setColor(191, 191, 191, 255);
             g.drawText(combo.names.get(i), (int) Math.round(x + (maxIconTableWidth - unitNameRect.getWidth()) / 2.0 - unitNameRect.getX()), (int) Math.round(y + comboIconUpDownGap + combo.icons.get(i).getHeight() * comboIconScaleFactor + comboIconNameGap - unitNameRect.getY()));
@@ -3886,8 +3884,8 @@ public class ImageDrawing {
 
         g.drawHorizontalCenteredText(LangID.getStringByID("data_range", lang), (int) Math.round(offsetX + plotWidthHeight * 1.5 / 2.0), (int) Math.round(plotGraphOffset + plotWidthHeight + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap + xAxisNumberHeight + axisTitleGap));
 
-        g.translate(axisTitleGap, plotGraphOffset + plotWidthHeight / 2.0);
-        g.rotate(-Math.PI / 2.0);
+        g.translate(axisTitleGap, plotGraphOffset + plotWidthHeight / 2f);
+        g.rotate((float) (-Math.PI / 2.0));
 
         Rectangle2D rect = axisFont.createGlyphVector(tfm.getFontRenderContext(), LangID.getStringByID("data_dps", lang)).getPixelBounds(null, 0, 0);
 
@@ -3985,7 +3983,7 @@ public class ImageDrawing {
 
         g.drawText(type, (int) (icw + nameMargin + typeLeftRightMargin - tRect.getX()), (int) (nRect.getHeight() + nameMargin + typeUpDownMargin - tRect.getY()));
 
-        g.drawImage(ic, 0, 0, icw, h - lRect.getHeight() - levelMargin);
+        g.drawImage(ic, 0, 0, icw, (float) (h - lRect.getHeight() - levelMargin));
 
         g.dispose();
 
@@ -4030,7 +4028,7 @@ public class ImageDrawing {
 
         int size = (int) Math.min(h * enemyInnerIconRatio, h - enemyIconStroke * 2);
 
-        g.drawImage(ic, (icw - h + enemyIconStroke) / 2.0, enemyIconStroke / 2.0, size, size);
+        g.drawImage(ic, (icw - h + enemyIconStroke) / 2f, enemyIconStroke / 2f, size, size);
 
         g.setColor(191, 191, 191);
         g.setStroke(enemyIconStroke);
@@ -4070,7 +4068,7 @@ public class ImageDrawing {
 
         int textHeight = glyph.getPixelBounds(null, 0, 0).height;
 
-        double h = textHeight + targetWidth * (fruitRatio + fruitTextGapRatio + fruitUpperGapRatio + fruitDownerGapRatio);
+        float h = textHeight + targetWidth * (fruitRatio + fruitTextGapRatio + fruitUpperGapRatio + fruitDownerGapRatio);
 
         BufferedImage img = new BufferedImage(targetWidth, (int) h, BufferedImage.TYPE_INT_ARGB);
 
@@ -4079,14 +4077,14 @@ public class ImageDrawing {
         g.setRenderingHint(3, 1);
         g.enableAntialiasing();
 
-        double panelPadding = targetWidth * (1.0 - fruitRatio * data.length) / (5.0 * data.length - 1);
-        double padding = panelPadding * 2;
+        float panelPadding = targetWidth * (1f - fruitRatio * data.length) / (5f * data.length - 1);
+        float padding = panelPadding * 2;
 
-        double panelWidth = padding * 2 + fruitRatio * targetWidth;
+        float panelWidth = padding * 2 + fruitRatio * targetWidth;
 
         g.setFont(fruitFont);
 
-        double x = 0;
+        float x = 0;
 
         for(int i = 0; i < data.length; i++) {
             g.setColor(64, 68, 75, 255);
@@ -4465,7 +4463,7 @@ public class ImageDrawing {
 
                             g.setColor(65, 69, 76);
 
-                            g.fillOval(x1 + desiredGap, rewardY + (innerTableCellMargin - rewardIconSize) / 2, rewardIconSize, rewardIconSize);
+                            g.fillOval(x1 + desiredGap, rewardY + (float) ((innerTableCellMargin - rewardIconSize) / 2), rewardIconSize, rewardIconSize);
 
                             BufferedImage icon;
 
@@ -4476,7 +4474,7 @@ public class ImageDrawing {
                             }
 
                             if (icon != null) {
-                                g.drawImage(icon, x1 + desiredGap, rewardY + (innerTableCellMargin - rewardIconSize) / 2.0, rewardIconSize, rewardIconSize);
+                                g.drawImage(icon, x1 + desiredGap, rewardY + (innerTableCellMargin - rewardIconSize) / 2f, rewardIconSize, rewardIconSize);
                             }
 
                             g.setColor(191, 191, 191, 64);
@@ -4544,7 +4542,7 @@ public class ImageDrawing {
 
         g.setColor(65, 69, 76);
 
-        g.fillRect(bgMargin, y + innerTableCellMargin, w, cornerRadius / 2);
+        g.fillRect(bgMargin, y + innerTableCellMargin, w, (float) (cornerRadius / 2));
 
         String[] headerText = {
                 LangID.getStringByID("data_enemy", lang),
@@ -4711,12 +4709,12 @@ public class ImageDrawing {
                 if(j == ENEMY) {
                     g.setColor(51, 53, 60);
 
-                    g.fillOval(bgMargin + desiredGap, y1 + (innerTableCellMargin - rewardIconSize) / 2, rewardIconSize, rewardIconSize);
+                    g.fillOval(bgMargin + desiredGap, y1 + (float) ((innerTableCellMargin - rewardIconSize) / 2), rewardIconSize, rewardIconSize);
 
                     BufferedImage icon = getEnemyIcon(line.enemy.id, map);
 
                     if(icon != null) {
-                        g.drawImage(icon, bgMargin + desiredGap + 30, y1 + (innerTableCellMargin - rewardIconSize) / 2.0 + 30, 100, 100);
+                        g.drawImage(icon, bgMargin + desiredGap + 30, y1 + (innerTableCellMargin - rewardIconSize) / 2f + 30, 100, 100);
                     }
 
                     g.setColor(239, 239, 239);

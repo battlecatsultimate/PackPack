@@ -84,7 +84,7 @@ public class EnemyImage extends TimedConstraintCommand {
 
                 EAnimD<?> anim = enemies.get(0).getEAnim(ImageDrawing.getAnimType(mode, enemies.get(0).anim.anims.length));
 
-                File img = ImageDrawing.drawAnimImage(anim, frame, 1.0, (param & PARAM_TRANSPARENT) > 0, (param & PARAM_DEBUG) > 0);
+                File img = ImageDrawing.drawAnimImage(anim, frame, 1f, (param & PARAM_TRANSPARENT) > 0, (param & PARAM_DEBUG) > 0);
 
                 enemies.get(0).anim.unload();
 

@@ -223,7 +223,7 @@ public class FontStageImageGenerator implements ImageGenerator{
         g.enableAntialiasing();
 
         if(!isStage) {
-            double ratio = 55.0 / img.getHeight();
+            float ratio = 55f / img.getHeight();
 
             BufferedImage scaled = new BufferedImage((int) (img.getWidth() * ratio), 55, BufferedImage.TYPE_INT_ARGB);
             FG2D sg = new FG2D(scaled.getGraphics());
@@ -234,11 +234,11 @@ public class FontStageImageGenerator implements ImageGenerator{
             sg.drawImage(FIBI.build(img), 0, 0, scaled.getWidth(), scaled.getHeight());
 
             if(scaled.getWidth() > 253)
-                ratio = 253.0 / scaled.getWidth();
+                ratio = 253f / scaled.getWidth();
             else
-                ratio = 1.0;
+                ratio = 1f;
 
-            g.drawImage(FIBI.build(scaled), 128 - (scaled.getWidth() * ratio / 2), 32 - 55.0/2, scaled.getWidth() * ratio, scaled.getHeight());
+            g.drawImage(FIBI.build(scaled), 128 - (scaled.getWidth() * ratio / 2), 32 - 55f/2, scaled.getWidth() * ratio, scaled.getHeight());
 
             g.dispose();
             sg.dispose();
@@ -258,7 +258,7 @@ public class FontStageImageGenerator implements ImageGenerator{
 
             return f;
         } else {
-            double ratio = 42.0 / img.getHeight();
+            float ratio = 42f / img.getHeight();
 
             BufferedImage scaled = new BufferedImage((int) (img.getWidth() * ratio), 42, BufferedImage.TYPE_INT_ARGB);
             FG2D sg = new FG2D(scaled.getGraphics());
@@ -269,9 +269,9 @@ public class FontStageImageGenerator implements ImageGenerator{
             sg.drawImage(FIBI.build(img), 0, 0, scaled.getWidth(), scaled.getHeight());
 
             if(scaled.getWidth() > 228)
-                ratio = 228.0 / scaled.getWidth();
+                ratio = 228f / scaled.getWidth();
             else
-                ratio = 1.0;
+                ratio = 1f;
 
             g.drawImage(FIBI.build(scaled), 3, 2, scaled.getWidth() * ratio, scaled.getHeight());
 

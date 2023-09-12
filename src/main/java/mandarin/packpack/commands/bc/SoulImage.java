@@ -49,7 +49,7 @@ public class SoulImage extends TimedConstraintCommand {
         int soulLen = UserProfile.getBCData().souls.size();
 
         if(id >= soulLen) {
-            replyToMessageSafely(ch, LangID.getStringByID("soul_range", lang).replace("_", (soulLen - 1) + ""), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("soul_range", lang).replace("_", String.valueOf(soulLen - 1)), getMessage(event), a -> a);
 
             disableTimer();
 
@@ -83,14 +83,14 @@ public class SoulImage extends TimedConstraintCommand {
 
         EAnimD<?> anim = s.anim.getEAnim(AnimU.UType.SOUL);
 
-        File img = ImageDrawing.drawAnimImage(anim, frame, 1.0, (param & PARAM_TRANSPARENT) > 0, (param & PARAM_DEBUG) > 0);
+        File img = ImageDrawing.drawAnimImage(anim, frame, 1f, (param & PARAM_TRANSPARENT) > 0, (param & PARAM_DEBUG) > 0);
 
         s.anim.unload();
 
         if(img != null) {
             sendMessageWithFile(
                     ch,
-                    LangID.getStringByID("soulimg_result", lang).replace("_", Data.trio(s.getID().id)).replace("-", frame + ""),
+                    LangID.getStringByID("soulimg_result", lang).replace("_", Data.trio(s.getID().id)).replace("-", String.valueOf(frame)),
                     img,
                     getMessage(event)
             );
@@ -126,29 +126,27 @@ public class SoulImage extends TimedConstraintCommand {
             label:
             for(int i = 0; i < pureMessage.length; i++) {
                 switch (pureMessage[i]) {
-                    case "-t":
-                        if((result & PARAM_TRANSPARENT) == 0) {
+                    case "-t" -> {
+                        if ((result & PARAM_TRANSPARENT) == 0) {
                             result |= PARAM_TRANSPARENT;
                         } else {
                             break label;
                         }
-                        break;
-                    case "-d":
-                    case "-debug":
-                        if((result & PARAM_DEBUG) == 0) {
+                    }
+                    case "-d", "-debug" -> {
+                        if ((result & PARAM_DEBUG) == 0) {
                             result |= PARAM_DEBUG;
                         } else {
                             break label;
                         }
-                        break;
-                    case "-f":
-                    case "-fr":
-                        if(i < pureMessage.length - 1 && StaticStore.isNumeric(pureMessage[i+1])) {
+                    }
+                    case "-f", "-fr" -> {
+                        if (i < pureMessage.length - 1 && StaticStore.isNumeric(pureMessage[i + 1])) {
                             i++;
                         } else {
                             break label;
                         }
-                        break;
+                    }
                 }
             }
         }

@@ -64,7 +64,9 @@ public class FIBI implements FakeImage {
 
 	@Override
 	public void unload() {
-		bimg.flush();
+		if (bimg != null) {
+			bimg.flush();
+		}
 	}
 
 	@Override

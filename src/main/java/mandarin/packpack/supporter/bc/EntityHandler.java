@@ -1932,7 +1932,7 @@ public class EntityHandler {
 
                 FakeImage fi = FIBI.build(edi);
 
-                g.drawImage(fi, xGap / 2.0, ySeg * (i + 1) + yGap / 2.0);
+                g.drawImage(fi, xGap / 2f, ySeg * (i + 1) + yGap / 2f);
             } else
                 continue;
 
@@ -1995,7 +1995,7 @@ public class EntityHandler {
 
         EAnimD<?> anim = f.anim.getEAnim(ImageDrawing.getAnimType(mode, f.anim.anims.length));
 
-        File img = ImageDrawing.drawAnimImage(anim, frame, 1.0, transparent, debug);
+        File img = ImageDrawing.drawAnimImage(anim, frame, 1f, transparent, debug);
 
         f.anim.unload();
 
@@ -2020,7 +2020,7 @@ public class EntityHandler {
 
         EAnimD<?> anim = en.anim.getEAnim(ImageDrawing.getAnimType(mode, en.anim.anims.length));
 
-        File img = ImageDrawing.drawAnimImage(anim, frame, 1.0, transparent, debug);
+        File img = ImageDrawing.drawAnimImage(anim, frame, 1f, transparent, debug);
 
         en.anim.unload();
 
@@ -2110,9 +2110,9 @@ public class EntityHandler {
         File img;
 
         if(raw) {
-            img = ImageDrawing.drawAnimMp4(anim, msg, 1.0, debug, limit, lang);
+            img = ImageDrawing.drawAnimMp4(anim, msg, 1f, debug, limit, lang);
         } else {
-            img = ImageDrawing.drawAnimGif(anim, msg, 1.0, debug, false, limit, lang);
+            img = ImageDrawing.drawAnimGif(anim, msg, 1f, debug, false, limit, lang);
         }
 
         f.anim.unload();
@@ -2359,9 +2359,9 @@ public class EntityHandler {
             max = 8 * 1024 * 1024;
 
         if(raw) {
-            img = ImageDrawing.drawAnimMp4(anim, msg, 1.0, debug, limit, lang);
+            img = ImageDrawing.drawAnimMp4(anim, msg, 1f, debug, limit, lang);
         } else {
-            img = ImageDrawing.drawAnimGif(anim, msg, 1.0, debug, false, limit, lang);
+            img = ImageDrawing.drawAnimGif(anim, msg, 1f, debug, false, limit, lang);
         }
 
         en.anim.unload();
@@ -2578,9 +2578,9 @@ public class EntityHandler {
         File img;
 
         if(raw) {
-            img = ImageDrawing.drawAnimMp4(anim, msg, 1.0, debug, limit, lang);
+            img = ImageDrawing.drawAnimMp4(anim, msg, 1f, debug, limit, lang);
         } else {
-            img = ImageDrawing.drawAnimGif(anim, msg, 1.0, debug, transparent, lang, limit);
+            img = ImageDrawing.drawAnimGif(anim, msg, 1f, debug, transparent, lang, limit);
         }
 
         long end = System.currentTimeMillis();
@@ -2729,7 +2729,7 @@ public class EntityHandler {
 
         long start = System.currentTimeMillis();
 
-        File img = ImageDrawing.drawBCAnim(mixer, msg, 1.0, lang);
+        File img = ImageDrawing.drawBCAnim(mixer, msg, 1f, lang);
 
         long end = System.currentTimeMillis();
 
@@ -2908,9 +2908,9 @@ public class EntityHandler {
             max = 8 * 1024 * 1024;
 
         if(raw) {
-            img = ImageDrawing.drawAnimMp4(anim, msg, 1.0, debug, limit, lang);
+            img = ImageDrawing.drawAnimMp4(anim, msg, 1f, debug, limit, lang);
         } else {
-            img = ImageDrawing.drawAnimGif(anim, msg, 1.0, debug, false, limit, lang);
+            img = ImageDrawing.drawAnimGif(anim, msg, 1f, debug, false, limit, lang);
         }
 
         s.anim.unload();

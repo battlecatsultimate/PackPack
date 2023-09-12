@@ -347,7 +347,7 @@ public class StageImageGenerator implements  ImageGenerator {
         g.enableAntialiasing();
 
         if(!isStage) {
-            double ratio = 45.0 / img.getHeight();
+            float ratio = 45f / img.getHeight();
 
             BufferedImage scaled = new BufferedImage((int) (img.getWidth() * ratio), 45, BufferedImage.TYPE_INT_ARGB);
             FG2D sg = new FG2D(scaled.getGraphics());
@@ -358,11 +358,11 @@ public class StageImageGenerator implements  ImageGenerator {
             sg.drawImage(FIBI.build(img), 0, 0, scaled.getWidth(), scaled.getHeight());
 
             if(scaled.getWidth() > 248)
-                ratio = 248.0 / scaled.getWidth();
+                ratio = 248f / scaled.getWidth();
             else
-                ratio = 1.0;
+                ratio = 1f;
 
-            g.drawImage(FIBI.build(scaled), 128 - (scaled.getWidth() * ratio / 2), 32 - 45.0/2, scaled.getWidth() * ratio, scaled.getHeight());
+            g.drawImage(FIBI.build(scaled), 128 - (scaled.getWidth() * ratio / 2), 32 - 45f/2, scaled.getWidth() * ratio, scaled.getHeight());
 
             g.dispose();
             sg.dispose();
@@ -387,7 +387,7 @@ public class StageImageGenerator implements  ImageGenerator {
 
             return f;
         } else {
-            double ratio = 29.0 / img.getHeight();
+            float ratio = 29f / img.getHeight();
 
             BufferedImage scaled = new BufferedImage((int) (img.getWidth() * ratio), 29, BufferedImage.TYPE_INT_ARGB);
             FG2D sg = new FG2D(scaled.getGraphics());
@@ -398,9 +398,9 @@ public class StageImageGenerator implements  ImageGenerator {
             sg.drawImage(FIBI.build(img), 0, 0, scaled.getWidth(), scaled.getHeight());
 
             if(scaled.getWidth() > 228)
-                ratio = 228.0 / scaled.getWidth();
+                ratio = 228f / scaled.getWidth();
             else
-                ratio = 1.0;
+                ratio = 1f;
 
             g.drawImage(FIBI.build(scaled), 3, 10, scaled.getWidth() * ratio, scaled.getHeight());
 

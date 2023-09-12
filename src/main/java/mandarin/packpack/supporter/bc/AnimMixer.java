@@ -12,6 +12,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AnimMixer implements Source.AnimLoader {
     public static boolean validPng(File image) throws Exception {
@@ -181,5 +183,15 @@ public class AnimMixer implements Source.AnimLoader {
     @Override
     public VImg getUni() {
         return null;
+    }
+
+    @Override
+    public boolean validate(AnimU.ImageKeeper.AnimationType type) {
+        return true;
+    }
+
+    @Override
+    public List<String> collectInvalidAnimation(AnimU.ImageKeeper.AnimationType type) {
+        return new ArrayList<>();
     }
 }

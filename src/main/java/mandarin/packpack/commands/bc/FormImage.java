@@ -83,7 +83,7 @@ public class FormImage extends TimedConstraintCommand {
 
                 EAnimD<?> anim = forms.get(0).anim.getEAnim(ImageDrawing.getAnimType(mode, forms.get(0).anim.anims.length));
 
-                File img = ImageDrawing.drawAnimImage(anim, frame, 1.0, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0));
+                File img = ImageDrawing.drawAnimImage(anim, frame, 1f, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0));
 
                 forms.get(0).anim.unload();
 

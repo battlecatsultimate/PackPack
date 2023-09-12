@@ -7,9 +7,9 @@ import common.util.anim.MaModel;
 
 public class RawPointGetter {
     P rightUp, rightDown, leftUp, leftDown, center;
-    double rawSizX = 1.0, rawSizY = 1.0, rawAngle;
+    float rawSizX = 1f, rawSizY = 1f, rawAngle;
 
-    double flipX = 1.0, flipY = 1.0;
+    float flipX = 1f, flipY = 1f;
 
     final double w, h;
 
@@ -18,44 +18,44 @@ public class RawPointGetter {
         this.h = h;
 
         rightDown = new P(w, h);
-        rightUp = new P(w, 0.0);
-        leftUp = new P(0.0, 0.0);
-        leftDown = new P(0.0, h);
-        center = new P(0.0, 0.0);
+        rightUp = new P(w, 0f);
+        leftUp = new P(0f, 0f);
+        leftDown = new P(0f, h);
+        center = new P(0f, 0f);
     }
 
-    public void translate(double x, double y) {
+    public void translate(float x, float y) {
         rightUp = translatePoint(flipX * flipY * rawAngle, x, rightUp);
-        rightUp = translatePoint(flipX * flipY * rawAngle + Math.PI / 2, y, rightUp);
+        rightUp = translatePoint((float) (flipX * flipY * rawAngle + Math.PI / 2), y, rightUp);
 
         rightDown = translatePoint(flipX * flipY * rawAngle, x, rightDown);
-        rightDown = translatePoint(flipX * flipY * rawAngle + Math.PI / 2, y, rightDown);
+        rightDown = translatePoint((float) (flipX * flipY * rawAngle + Math.PI / 2), y, rightDown);
 
         leftUp = translatePoint(flipX * flipY * rawAngle, x, leftUp);
-        leftUp = translatePoint(flipX * flipY * rawAngle + Math.PI / 2, y, leftUp);
+        leftUp = translatePoint((float) (flipX * flipY * rawAngle + Math.PI / 2), y, leftUp);
 
         leftDown = translatePoint(flipX * flipY * rawAngle, x, leftDown);
-        leftDown = translatePoint(flipX * flipY * rawAngle + Math.PI / 2, y, leftDown);
+        leftDown = translatePoint((float) (flipX * flipY * rawAngle + Math.PI / 2), y, leftDown);
 
         center = translatePoint(flipX * flipY * rawAngle, x, center);
-        center = translatePoint(flipX * flipY * rawAngle + Math.PI / 2, y, center);
+        center = translatePoint((float) (flipX * flipY * rawAngle + Math.PI / 2), y, center);
     }
 
-    public void translatePivot(double x, double y) {
+    public void translatePivot(float x, float y) {
         rightUp = translatePoint(flipX * flipY * rawAngle, -x, rightUp);
-        rightUp = translatePoint(flipX * flipY * rawAngle + Math.PI / 2, -y, rightUp);
+        rightUp = translatePoint((float) (flipX * flipY * rawAngle + Math.PI / 2), -y, rightUp);
 
         rightDown = translatePoint(flipX * flipY * rawAngle, -x, rightDown);
-        rightDown = translatePoint(flipX * flipY * rawAngle + Math.PI / 2, -y, rightDown);
+        rightDown = translatePoint((float) (flipX * flipY * rawAngle + Math.PI / 2), -y, rightDown);
 
         leftUp = translatePoint(flipX * flipY * rawAngle, -x, leftUp);
-        leftUp = translatePoint(flipX * flipY * rawAngle + Math.PI / 2, -y, leftUp);
+        leftUp = translatePoint((float) (flipX * flipY * rawAngle + Math.PI / 2), -y, leftUp);
 
         leftDown = translatePoint(flipX * flipY * rawAngle, -x, leftDown);
-        leftDown = translatePoint(flipX * flipY * rawAngle + Math.PI / 2, -y, leftDown);
+        leftDown = translatePoint((float) (flipX * flipY * rawAngle + Math.PI / 2), -y, leftDown);
     }
 
-    public void size(double sizX, double sizY) {
+    public void size(float sizX, float sizY) {
         if(sizX < 0)
             flipX *= -1;
 
@@ -78,7 +78,7 @@ public class RawPointGetter {
         leftDown = scalePoint(rawSizX, rawSizY, leftDown);
     }
 
-    public void wholeScale(double size) {
+    public void wholeScale(float size) {
         rightUp.times(size);
         rightDown.times(size);
         leftUp.times(size);
@@ -86,7 +86,7 @@ public class RawPointGetter {
         center.times(size);
     }
 
-    public void rotate(double angle) {
+    public void rotate(float angle) {
         rawAngle += angle;
 
         rightUp = rotatePoint(angle, rightUp);
@@ -95,17 +95,17 @@ public class RawPointGetter {
         leftDown = rotatePoint(angle, leftDown);
     }
 
-    public P rotatePoint(double angle, P point) {
-        P res = new P(0.0, 0.0);
+    public P rotatePoint(float angle, P point) {
+        P res = new P(0f, 0f);
 
-        res.x = center.x + (Math.cos(angle) * (point.x - center.x)) - (Math.sin(angle) * (point.y - center.y));
-        res.y = center.y + (Math.cos(angle) * (point.y - center.y)) + (Math.sin(angle) * (point.x - center.x));
+        res.x = (float) (center.x + (Math.cos(angle) * (point.x - center.x)) - (Math.sin(angle) * (point.y - center.y)));
+        res.y = (float) (center.y + (Math.cos(angle) * (point.y - center.y)) + (Math.sin(angle) * (point.x - center.x)));
 
         return res;
     }
 
-    public P scalePoint(double sizX, double sizY, P point) {
-        double oldAngle = rawAngle;
+    public P scalePoint(float sizX, float sizY, P point) {
+        float oldAngle = rawAngle;
 
         P res = rotatePoint(-oldAngle, point);
 
@@ -117,17 +117,17 @@ public class RawPointGetter {
         return res;
     }
 
-    public P translatePoint(double angle, double d, P point) {
-        P p = new P(0.0, 0.0);
+    public P translatePoint(float angle, float d, P point) {
+        P p = new P(0f, 0f);
 
-        p.x = point.x + (flipX * d * Math.cos(angle) * rawSizX);
-        p.y = point.y + (flipY * d * Math.sin(angle) * rawSizY);
+        p.x = (float) (point.x + (flipX * d * Math.cos(angle) * rawSizX));
+        p.y = (float) (point.y + (flipY * d * Math.sin(angle) * rawSizY));
 
         return p;
     }
 
     public P getSize(EPart p) {
-        double mi = 1.0 / p.getModel().ints[0];
+        float mi = 1f / p.getModel().ints[0];
 
         if(p.getFa() == null) {
             return new P(p.getVal(9), p.getVal(10)).times(p.getVal(8) * mi * mi);
@@ -145,7 +145,7 @@ public class RawPointGetter {
                     return P.newP(Math.signum(model.parts[p.getInd()][8]), Math.signum(model.parts[p.getInd()][9]));
                 }
             } else {
-                double mi = 1.0 / model.ints[0];
+                float mi = 1f / model.ints[0];
 
                 if(model.confs[0][0] == -1) {
                     return P.newP(model.parts[0][8] * mi, model.parts[0][9] * mi);
@@ -158,11 +158,11 @@ public class RawPointGetter {
                 }
             }
         } else {
-            return P.newP(1.0, 1.0);
+            return P.newP(1f, 1f);
         }
     }
 
-    public void apply(EPart p, double size, boolean parent) {
+    public void apply(EPart p, float size, boolean parent) {
         if(p.opa() <  CommonStatic.getConfig().deadOpa * 0.01 + 1e-5) {
             rightUp = new P(0, 0);
             rightDown = new P(0, 0);
@@ -173,10 +173,10 @@ public class RawPointGetter {
             return;
         }
 
-        P siz = new P(1.0, 1.0);
+        P siz = new P(1f, 1f);
 
         if(p.getFa() != null) {
-            apply(p.getFa(), 1.0, true);
+            apply(p.getFa(), 1f, true);
             siz = getSize(p.getFa());
         }
 
@@ -206,7 +206,7 @@ public class RawPointGetter {
         }
 
         if(p.getVal(11) != 0) {
-            rotate(flipX * flipY * Math.PI * 2 * p.getVal(11) / p.getModel().ints[1]);
+            rotate((float) (flipX * flipY * Math.PI * 2 * p.getVal(11) / p.getModel().ints[1]));
         }
 
         if(!parent) {
