@@ -211,6 +211,10 @@ object CardData {
     val bankAccount = ServerData.get("bankAccount")
 
     private val banned = ServerData.get("banned")
+    private val dealer = ServerData.get("dealer")
+    private val mod = ServerData.get("modRole")
+    private val headerMod = ServerData.get("headerMod")
+    private val organizer = ServerData.get("organizer")
 
     val tradingPlace = ServerData.get("tradingPlace")
     val testTradingPlace = ServerData.get("testTradingPlace")
@@ -310,13 +314,19 @@ object CardData {
     fun isManager(member: Member) : Boolean {
         val roleList = member.roles.map { r -> r.id }
 
-        return roleList.contains(ServerData.get("dealer")) || roleList.contains(ServerData.get("modRole")) || roleList.contains(ServerData.get("headerMod"))
+        return dealer in roleList || mod in roleList || headerMod in roleList
     }
 
     fun isBanned(member: Member) : Boolean {
         val roleList = member.roles.map { r -> r.id }
 
         return banned in roleList
+    }
+
+    fun isOrganizer(member: Member) : Boolean {
+        val roleList = member.roles.map { r -> r.id }
+
+        return organizer in roleList
     }
 
     fun appendUncommon(banner: List<Card>) : List<Card> {
