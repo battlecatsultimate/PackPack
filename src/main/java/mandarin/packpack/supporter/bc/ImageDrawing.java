@@ -970,7 +970,7 @@ public class ImageDrawing {
 
                 RawPointGetter getter = new RawPointGetter(fi.getWidth(), fi.getHeight());
 
-                getter.apply(anim.getOrder()[j], siz * 0f, false);
+                getter.apply(anim.getOrder()[j], siz * 0.5f, false);
 
                 int[][] result = getter.getRect();
 
