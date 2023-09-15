@@ -41,7 +41,7 @@ object CardBot : ListenerAdapter() {
     private var ready = false
     private var notifier = 0
     private var collectorMonitor = 0
-    private var backup = 0
+    private var backup = 360
 
     var locked = false
 
@@ -156,7 +156,7 @@ object CardBot : ListenerAdapter() {
                     collectorMonitor++
                 }
 
-                if (backup == 360) {
+                if (!test && backup == 360) {
                     backup = 0
 
                     client.retrieveUserById(StaticStore.MANDARIN_SMELL)
@@ -241,6 +241,7 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}lock" -> Lock().execute(event)
             "${globalPrefix}unlock" -> Unlock().execute(event)
             "${globalPrefix}craft" -> Craft().execute(event)
+            "${globalPrefix}savedata" -> SaveData().execute(event)
             "${globalPrefix}hack" -> {
                 if (test) {
                     Hack().execute(event)
