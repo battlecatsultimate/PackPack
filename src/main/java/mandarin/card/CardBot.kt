@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.requests.GatewayIntent
+import net.dv8tion.jda.api.utils.FileUpload
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import java.io.File
 import java.io.FileWriter
@@ -40,6 +41,7 @@ object CardBot : ListenerAdapter() {
     private var ready = false
     private var notifier = 0
     private var collectorMonitor = 0
+    private var backup = 0
 
     var locked = false
 
@@ -131,7 +133,7 @@ object CardBot : ListenerAdapter() {
                     notifier++
                 }
 
-                if (collectorMonitor == 0) {
+                if (collectorMonitor == 30) {
                     collectorMonitor = 0
 
                     CardData.inventories.keys.forEach { userID ->
@@ -152,6 +154,29 @@ object CardBot : ListenerAdapter() {
                     }
                 } else {
                     collectorMonitor++
+                }
+
+                if (backup == 360) {
+                    backup = 0
+
+                    client.retrieveUserById(StaticStore.MANDARIN_SMELL)
+                        .queue {user ->
+                            user.openPrivateChannel().queue { pv ->
+                                pv.sendMessage("Sending backup")
+                                    .addFiles(FileUpload.fromData(File("./data/cardSave.json")))
+                                    .queue()
+                            }
+                        }
+
+                    client.retrieveUserById(ServerData.get("gid")).queue { user ->
+                        user.openPrivateChannel().queue {pv ->
+                            pv.sendMessage("Sending backup")
+                                .addFiles(FileUpload.fromData(File("./data/cardSave.json")))
+                                .queue()
+                        }
+                    }
+                } else {
+                    backup++
                 }
 
                 saveCardData()

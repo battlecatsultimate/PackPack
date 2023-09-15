@@ -11,14 +11,12 @@ import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Icon;
-import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import javax.security.auth.login.LoginException;
@@ -39,6 +37,7 @@ public class PackBot {
     public static int udp = 0;
     public static int status = 0;
     public static int log = 0;
+    public static int backup = 0;
 
     public static boolean develop = false;
 
@@ -80,6 +79,14 @@ public class PackBot {
                     save = 1;
                 } else {
                     save++;
+                }
+
+                if(backup % 360 == 0) {
+                    System.out.println("Backup save file");
+
+                    client.retrieveUserById(StaticStore.MANDARIN_SMELL).queue(user -> user.openPrivateChannel().queue(pv -> pv.sendMessage("Sending backup")
+                            .addFiles(FileUpload.fromData(new File("./data/serverinfo.json")))
+                            .queue()));
                 }
 
                 if(udp % 30 == 0) {
