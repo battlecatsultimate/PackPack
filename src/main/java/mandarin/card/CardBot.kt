@@ -247,6 +247,11 @@ object CardBot : ListenerAdapter() {
                     Hack().execute(event)
                 }
             }
+            "${globalPrefix}test" -> {
+                if (test) {
+                    Test().execute(event)
+                }
+            }
         }
 
         val session = findSession(event.channel.idLong) ?: return
