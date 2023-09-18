@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.session.ReadyEvent
+import net.dv8tion.jda.api.exceptions.ContextException
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.utils.FileUpload
@@ -111,12 +112,16 @@ object CardBot : ListenerAdapter() {
 
                             if (packList.isNotBlank()) {
                                 u.openPrivateChannel().queue({ private ->
-                                    private.sendMessage("You can roll pack below!\n\n$packList").queue {
+                                    private.sendMessage("You can roll pack below!\n\n$packList").queue({
                                         for (i in cooldown.indices) {
                                             if (cooldown[i] > 0 && cooldown[i] - currentTime <= 0)
                                                 cooldown[i] = 0
                                         }
-                                    }
+                                    }, { e ->
+                                        if (e is ContextException) {
+                                            removeQueue.add(n)
+                                        }
+                                    })
                                 }, { _ ->
                                     removeQueue.add(n)
                                 })
