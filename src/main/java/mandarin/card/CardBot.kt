@@ -45,6 +45,7 @@ object CardBot : ListenerAdapter() {
     private var backup = 360
 
     var locked = false
+    var rollLocked = false
 
     @JvmStatic
     fun main(args: Array<String>) {
@@ -252,11 +253,6 @@ object CardBot : ListenerAdapter() {
                     Hack().execute(event)
                 }
             }
-            "${globalPrefix}test" -> {
-                if (test) {
-                    Test().execute(event)
-                }
-            }
         }
 
         val session = findSession(event.channel.idLong) ?: return
@@ -376,6 +372,10 @@ object CardBot : ListenerAdapter() {
             locked = obj.get("locked").asBoolean
         }
 
+        if (obj.has("rollLocked")) {
+            rollLocked = obj.get("rollLocked").asBoolean
+        }
+
         if (obj.has("inventory")) {
             val arr = obj.getAsJsonArray("inventory")
 
@@ -477,6 +477,7 @@ object CardBot : ListenerAdapter() {
         val obj = JsonObject()
 
         obj.addProperty("locked", locked)
+        obj.addProperty("rollLocked", rollLocked)
 
         val inventory = JsonArray()
 

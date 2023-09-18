@@ -1,5 +1,6 @@
 package mandarin.card.commands
 
+import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.Product
@@ -20,6 +21,10 @@ class Buy : Command(LangID.EN, true) {
         val ch = getChannel(event) ?: return
         val m = getMember(event) ?: return
         val author = getMessage(event) ?: return
+
+        if (CardBot.rollLocked && !CardData.isManager(m) && m.id != StaticStore.MANDARIN_SMELL) {
+            return
+        }
 
         val inventory = Inventory.getInventory(m.id)
         val possibleRoles = CardData.Role.entries.filter { r -> r != CardData.Role.NONE && r !in inventory.vanityRoles }.toList()

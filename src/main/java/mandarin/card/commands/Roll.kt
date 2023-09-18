@@ -1,5 +1,6 @@
 package mandarin.card.commands
 
+import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.holder.PackSelectHolder
 import mandarin.packpack.commands.Command
@@ -16,6 +17,10 @@ class Roll : Command(LangID.EN, true) {
     override fun doSomething(event: GenericMessageEvent?) {
         val ch = getChannel(event) ?: return
         val m = getMember(event) ?: return
+
+        if (CardBot.rollLocked && !CardData.isManager(m) && m.id != StaticStore.MANDARIN_SMELL) {
+            return
+        }
 
         val msg = getRepliedMessageSafely(ch, "Please select the pack that you want to roll", getMessage(event)) { a ->
             a.setComponents(registerComponents(m))

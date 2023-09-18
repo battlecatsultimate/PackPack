@@ -16,6 +16,18 @@ class Lock : Command(LangID.EN, true) {
 
         val ch = getChannel(event) ?: return
 
+        if ("-roll" in getContent(event).split(" ")) {
+            if (!CardBot.rollLocked) {
+                CardBot.rollLocked = true
+
+                replyToMessageSafely(ch, "Roll command is locked from users", getMessage(event)) { a -> a }
+            } else {
+                replyToMessageSafely(ch, "Roll command is already locked. If you want to unlock the bot, you have to call `${CardBot.globalPrefix}unlock -roll`", getMessage(event)) { a -> a }
+            }
+
+            return
+        }
+
         if (CardBot.locked) {
             replyToMessageSafely(ch, "Bot is already locked. If you want to unlock the bot, you have to call `${CardBot.globalPrefix}unlock`", getMessage(event)) { a -> a }
         } else {

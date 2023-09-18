@@ -1,5 +1,6 @@
 package mandarin.card.commands
 
+import mandarin.card.CardBot
 import mandarin.card.supporter.Card
 import mandarin.card.supporter.CardComparator
 import mandarin.card.supporter.CardData
@@ -24,6 +25,10 @@ class Salvage : Command(LangID.EN, true) {
     override fun doSomething(event: GenericMessageEvent?) {
         val ch = getChannel(event) ?: return
         val m = getMember(event) ?: return
+
+        if (CardBot.rollLocked && !CardData.isManager(m) && m.id != StaticStore.MANDARIN_SMELL) {
+            return
+        }
 
         val inventory = Inventory.getInventory(m.id)
 

@@ -21,6 +21,10 @@ class Trade : Command(LangID.EN, true) {
         val g = getGuild(event) ?: return
         val m = getMember(event) ?: return
 
+        if (CardBot.rollLocked && !CardData.isManager(m) && m.id != StaticStore.MANDARIN_SMELL) {
+            return
+        }
+
         val leftTime = (CardData.tradeCooldown[m.id] ?: 0) - CardData.getUnixEpochTime()
 
         if (leftTime > 0) {
