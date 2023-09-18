@@ -416,7 +416,7 @@ class Restoration(val message: Message) {
                 val receivedCard = embed.fields.find { field -> field.name == "Received Card" }
 
                 if (receivedCard == null) {
-                    log("W/ Failed to get Received Card field from embed while type is $type")
+                    log("W/ Failed to get Received Cards field from embed while type is $type")
 
                     return result
                 }
