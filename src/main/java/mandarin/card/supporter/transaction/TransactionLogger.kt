@@ -31,9 +31,9 @@ object TransactionLogger {
         builder.setColor(StaticStore.rainbow.random())
 
         if (manual) {
-            builder.setDescription("Successfully rolled card pack manually by moderator, and result is below")
+            builder.setDescription("User ${member.asMention} successfully got card pack manually by moderator, and result is below")
         } else {
-            builder.setDescription("Successfully rolled card pack, and result is below")
+            builder.setDescription("User ${member.asMention} successfully rolled card pack, and result is below")
         }
 
         builder.addField(MessageEmbed.Field("Pack", pack.getPackName(), false))
@@ -522,10 +522,6 @@ object TransactionLogger {
                 .setAllowedMentions(ArrayList())
                 .queue()
         }
-
-        logChannel.sendMessageEmbeds(builder.build())
-            .setAllowedMentions(ArrayList())
-            .queue()
     }
 
     fun logMassRoll(manager: Member, people: Int, pack: CardData.Pack) {

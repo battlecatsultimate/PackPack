@@ -332,7 +332,17 @@ object CardData {
     fun appendUncommon(banner: List<Card>) : List<Card> {
         val result = ArrayList(banner)
 
-        activatedBanners.forEach { b ->
+        activatedBanners.filter { b -> b.tier == Tier.UNCOMMON }.forEach { b ->
+            result.addAll(bannerData[b.tier.ordinal][b.banner].mapNotNull { i -> cards.find { c -> c.unitID == i && c.tier == b.tier } })
+        }
+
+        return result
+    }
+
+    fun appendUltra(banner: List<Card>) : List<Card> {
+        val result = ArrayList(banner)
+
+        activatedBanners.filter { b -> b.tier == Tier.ULTRA }.forEach { b ->
             result.addAll(bannerData[b.tier.ordinal][b.banner].mapNotNull { i -> cards.find { c -> c.unitID == i && c.tier == b.tier } })
         }
 

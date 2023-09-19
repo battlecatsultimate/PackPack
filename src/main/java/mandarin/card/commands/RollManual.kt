@@ -179,9 +179,9 @@ class RollManual : Command(LangID.EN, true) {
                 val chance = Random.nextDouble()
 
                 if (chance <= 0.7) {
-                    result.add(CardData.appendUncommon(CardData.common).random())
+                    result.add(CardData.common.random())
                 } else {
-                    result.add(CardData.uncommon.random())
+                    result.add(CardData.appendUncommon(CardData.uncommon).random())
                 }
             }
             CardData.Pack.LARGE -> {
@@ -202,7 +202,7 @@ class RollManual : Command(LangID.EN, true) {
                 if (chance <= 0.99) {
                     result.add(CardData.appendUncommon(CardData.uncommon).random())
                 } else {
-                    result.add(CardData.ultraRare.random())
+                    result.add(CardData.appendUltra(CardData.ultraRare).random())
                 }
             }
             CardData.Pack.PREMIUM -> {
@@ -212,7 +212,7 @@ class RollManual : Command(LangID.EN, true) {
                     if (chance <= 0.93) {
                         result.add(CardData.common.random())
                     } else if (chance <= 0.995) {
-                        result.add(CardData.ultraRare.random())
+                        result.add(CardData.appendUltra(CardData.ultraRare).random())
                     } else {
                         result.add(CardData.appendLR(CardData.legendRare).random())
                     }

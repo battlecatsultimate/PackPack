@@ -347,9 +347,9 @@ class PackSelectHolder(author: Message, channelID: String, message: Message, pri
                 val chance = Random.nextDouble()
 
                 if (chance <= 0.7) {
-                    result.add(CardData.appendUncommon(CardData.common).random())
+                    result.add(CardData.common.random())
                 } else {
-                    result.add(CardData.uncommon.random())
+                    result.add(CardData.appendUncommon(CardData.uncommon).random())
                 }
 
                 val nextTime = CardData.getUnixEpochTime() + CardData.smallLargePackCooldown
@@ -384,7 +384,7 @@ class PackSelectHolder(author: Message, channelID: String, message: Message, pri
                 if (chance <= 0.99) {
                     result.add(CardData.appendUncommon(CardData.uncommon).random())
                 } else {
-                    result.add(CardData.ultraRare.random())
+                    result.add(CardData.appendUltra(CardData.ultraRare).random())
                 }
 
                 val nextTime = CardData.getUnixEpochTime() + CardData.smallLargePackCooldown
@@ -408,7 +408,7 @@ class PackSelectHolder(author: Message, channelID: String, message: Message, pri
                     if (chance <= 0.93) {
                         result.add(CardData.common.random())
                     } else if (chance <= 0.995) {
-                        result.add(CardData.ultraRare.random())
+                        result.add(CardData.appendUltra(CardData.ultraRare).random())
                     } else {
                         result.add(CardData.appendLR(CardData.legendRare).random())
                     }
