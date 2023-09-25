@@ -87,6 +87,10 @@ public class PackBot {
                     client.retrieveUserById(StaticStore.MANDARIN_SMELL).queue(user -> user.openPrivateChannel().queue(pv -> pv.sendMessage("Sending backup")
                             .addFiles(FileUpload.fromData(new File("./data/serverinfo.json")))
                             .queue()));
+
+                    backup = 1;
+                } else {
+                    backup++;
                 }
 
                 if(udp % 30 == 0) {
