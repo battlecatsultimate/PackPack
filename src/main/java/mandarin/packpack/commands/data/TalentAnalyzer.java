@@ -148,7 +148,7 @@ public class TalentAnalyzer extends ConstraintCommand {
     private boolean validateFile(File workspace, int uid, boolean isFrame) throws Exception {
         BufferedImage unitIcon;
 
-        if(uid >= UserProfile.getBCData().units.size()) {
+        if(uid >= UserProfile.getBCData().units.size() || UserProfile.getBCData().units.get(uid).forms.length < 3) {
             File imageLocal = new File(workspace, "UnitLocal");
 
             if(!imageLocal.exists())
@@ -212,7 +212,7 @@ public class TalentAnalyzer extends ConstraintCommand {
         if(!talentExist)
             return false;
 
-        if(uid >= UserProfile.getBCData().units.size()) {
+        if(uid >= UserProfile.getBCData().units.size() || UserProfile.getBCData().units.get(uid).forms.length < 3) {
             generateCustomMaskUnit(workspace, uid);
 
             if(unit == null)
