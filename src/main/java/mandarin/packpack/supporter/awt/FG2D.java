@@ -206,10 +206,6 @@ public class FG2D implements FakeGraphics {
 		exportProgress();
 	}
 
-	public void changeFontSize(float pt) {
-		g.setFont(g.getFont().deriveFont(pt));
-	}
-
 	public void setFont(Font font) {
 		g.setFont(font);
 	}

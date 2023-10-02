@@ -2817,11 +2817,15 @@ public class DataToString extends Data {
             modification[i] = StaticStore.safeParseInt(data[2 + 14 * index + 2 * (i + 1)]);
         }
 
-        if(type == P_VOLC) {
+        if(type == P_VOLC || type == P_MINIVOLC) {
             item.set(0, modification[0]);
             item.set(1, modification[2] / 4);
             item.set(2, (modification[2] + modification[3]) / 4);
             item.set(3, modification[1] * 20);
+
+            if (type == P_MINIVOLC) {
+                item.set(4, 20);
+            }
         } else {
             for(int i = 0; i < 4; i++)
                 if(modification[i] > 0)

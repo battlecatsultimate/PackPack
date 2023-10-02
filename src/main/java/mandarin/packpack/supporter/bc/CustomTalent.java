@@ -5,6 +5,7 @@ import common.battle.data.PCoin;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class CustomTalent extends PCoin {
@@ -15,6 +16,7 @@ public class CustomTalent extends PCoin {
 
     public CustomTalent(String[] data, MaskUnit du, int unitID, BufferedImage icon) {
         super(data, du);
+
         this.unitID = unitID;
         this.icon = icon;
     }
