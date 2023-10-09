@@ -221,7 +221,7 @@ class SuggestInventoryHolder(
                 applyResult()
             }
             "cf" -> {
-                val input = TextInput.create("cf", "Cat Food [10% Tax Included]", TextInputStyle.SHORT)
+                val input = TextInput.create("cf", "Cat Food", TextInputStyle.SHORT)
                     .setPlaceholder("Decide amount of cat foods that will be traded")
                     .setRequired(true)
                     .build()
