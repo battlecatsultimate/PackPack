@@ -1,4 +1,4 @@
-package mandarin.card.supporter.transaction
+package mandarin.card.supporter.log
 
 import mandarin.card.supporter.Activator
 import mandarin.card.supporter.Card
@@ -49,6 +49,12 @@ object TransactionLogger {
         builder.setAuthor(member.user.effectiveName, null, member.user.effectiveAvatarUrl)
 
         logChannel.sendMessageEmbeds(builder.build()).queue()
+
+        if (!manual) {
+            LogSession.session.logRoll(member, pack, cards)
+        } else {
+            LogSession.session.logManualRoll(cards)
+        }
     }
 
     fun logTrade(session: TradingSession, status: TradeStatus) {
@@ -74,6 +80,8 @@ object TransactionLogger {
 
         if (status == TradeStatus.TRADED) {
             tradeChannel.sendMessageEmbeds(builder.build()).queue()
+
+            LogSession.session.logTrade(session)
         } else {
             logChannel.sendMessageEmbeds(builder.build()).queue()
         }
@@ -268,6 +276,12 @@ object TransactionLogger {
                 .setAllowedMentions(ArrayList())
                 .queue()
         }
+
+        if (isAdd) {
+            LogSession.session.logModifyAdd(cards)
+        } else {
+            LogSession.session.logModifyRemove(cards)
+        }
     }
 
     fun logRolesModify(roles: List<CardData.Role>, mod: Member, targetMember: Member, isAdd: Boolean, isMassRemove: Boolean) {
@@ -390,7 +404,7 @@ object TransactionLogger {
         builder.setDescription("Member <@$member> salvaged T1 cards")
 
         builder.addField("Number of Cards", "$cardAmount", true)
-        builder.addField("Received CF", "${cardAmount * 300}", true)
+        builder.addField("Received CF", "${cardAmount * CardData.Tier.COMMON.cost}", true)
 
         val checker = StringBuilder()
 
@@ -448,6 +462,8 @@ object TransactionLogger {
         logChannel.sendMessageEmbeds(builder.build())
                 .setAllowedMentions(ArrayList())
                 .queue()
+
+        LogSession.session.logSalvage(member, cards, cardAmount  * CardData.Tier.COMMON.cost.toLong())
     }
 
     fun logCraft(member: Long, cardAmount: Int, craftedCard: Card?, cards: List<Card>) {
@@ -467,7 +483,7 @@ object TransactionLogger {
             builder.addField("Received Card", craftedCard.cardInfo(), true)
         } else {
             builder.addField("Successful?", "No", true)
-            builder.addField("Received CF", "${cardAmount * 300}", true)
+            builder.addField("Received CF", "${cardAmount * CardData.Tier.COMMON.cost}", true)
         }
 
         val checker = StringBuilder()
@@ -521,6 +537,12 @@ object TransactionLogger {
             modChannel.sendMessageEmbeds(builder.build())
                 .setAllowedMentions(ArrayList())
                 .queue()
+        }
+
+        if (craftedCard == null) {
+            LogSession.session.logCraftFail(member, cards, cardAmount * CardData.Tier.COMMON.cost.toLong())
+        } else {
+            LogSession.session.logCraftSuccess(cards, craftedCard)
         }
     }
 

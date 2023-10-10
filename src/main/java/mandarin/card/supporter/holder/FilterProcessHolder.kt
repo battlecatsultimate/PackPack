@@ -3,7 +3,8 @@ package mandarin.card.supporter.holder
 import mandarin.card.CardBot
 import mandarin.card.supporter.*
 import mandarin.card.supporter.filter.Filter
-import mandarin.card.supporter.transaction.TransactionLogger
+import mandarin.card.supporter.log.LogSession
+import mandarin.card.supporter.log.TransactionLogger
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
@@ -123,10 +124,18 @@ class FilterProcessHolder : ComponentHolder {
 
                     cardGroups.forEach { g -> totalCard.addAll(g.toSet()) }
 
-                    for (card in totalCard.toSet()) {
-                        inventory.cards[card] = (inventory.cards[card] ?: 0) - cardGroups.maxOf { g -> g.filter { c -> c.unitID == card.unitID }.size }
+                    val spentCard = ArrayList<Card>()
 
-                        if (inventory.cards[card]!! < 0) {
+                    for (card in totalCard.toSet()) {
+                        val number = cardGroups.maxOf { g -> g.filter { c -> c.unitID == card.unitID }.size }
+
+                        repeat(number) {
+                            spentCard.add(card)
+                        }
+
+                        inventory.cards[card] = (inventory.cards[card] ?: 0) - number
+
+                                if (inventory.cards[card]!! < 0) {
                             StaticStore.logger.uploadLog("W/FilterProcessHolder::onEvent - Bot found card with negative amount : ${card.cardInfo()}")
 
                             inventory.cards.remove(card)
@@ -149,6 +158,8 @@ class FilterProcessHolder : ComponentHolder {
                     } else {
                         reward.accept(event)
                     }
+
+                    LogSession.session.logBuy(spentCard)
 
                     expired = true
 

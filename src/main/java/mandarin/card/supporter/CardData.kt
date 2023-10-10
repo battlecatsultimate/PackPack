@@ -281,12 +281,12 @@ object CardData {
     -------------------------------------------------------
      */
 
-    enum class Tier {
-        COMMON,
-        UNCOMMON,
-        ULTRA,
-        LEGEND,
-        NONE
+    enum class Tier(val cost: Int) {
+        COMMON(300),
+        UNCOMMON(0),
+        ULTRA(100000),
+        LEGEND(450000),
+        NONE(0)
     }
 
     val common = ArrayList<Card>()

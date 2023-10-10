@@ -4,7 +4,7 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import mandarin.card.CardBot
 import mandarin.card.supporter.transaction.TatsuHandler
-import mandarin.card.supporter.transaction.TransactionLogger
+import mandarin.card.supporter.log.TransactionLogger
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
