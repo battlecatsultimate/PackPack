@@ -272,6 +272,8 @@ class LogSession {
         }
 
         tier2Cards.add(card)
+
+        generatedCards[card] = (generatedCards[card] ?: 0) + 1
     }
 
     fun logManualRoll(cards: List<Card>) {
@@ -288,7 +290,7 @@ class LogSession {
 
     fun logModifyRemove(cards: List<Card>) {
         cards.forEach {
-            generatedCards[it] = (generatedCards[it] ?: 0) + 1
+            removedCards[it] = (removedCards[it] ?: 0) + 1
         }
     }
 
