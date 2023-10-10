@@ -34,13 +34,22 @@ class LogSession {
 
             val logFolder = File("./data/cardLog")
 
-            if (!logFolder.exists())
+            if (!logFolder.exists() && !logFolder.mkdirs())
                 return
 
-            val logFiles = logFolder.listFiles() ?: return
+            val logFiles = logFolder.listFiles()
 
-            if (logFiles.isEmpty())
+            if (logFiles == null) {
+                session.saveSessionAsFile()
+
                 return
+            }
+
+            if (logFiles.isEmpty()) {
+                session.saveSessionAsFile()
+
+                return
+            }
 
             var selectedTime = 0L
             var selectedFile = File("./")
@@ -77,9 +86,15 @@ class LogSession {
             if (currentMonth > lastMonth || currentDay > lastDay) {
                 session.saveSessionAsFile()
 
+                val previousSession = session
+
                 session = LogSession()
+
+                StaticStore.logger.uploadLog("I/LogSession::syncSession\n\nArchived session for ${format.format(previousSession.createdTime)}\nStarting new session for ${format.format(session.createdTime)}")
             } else if (session.createdTime != selectedTime) {
                 session = fromFile(selectedFile)
+
+                StaticStore.logger.uploadLog("I/LogSession::syncSession\n\nBringing on-going session for ${format.format(session.createdTime)}")
             }
 
             session.saveSessionAsFile()
@@ -173,12 +188,18 @@ class LogSession {
                 val array = obj.getAsJsonArray("generatedCards")
 
                 array.forEach { e ->
-                    val id = e.asInt
+                    val o = e.asJsonObject
 
-                    val card = CardData.cards.find { c -> c.unitID == id }
+                    if (o.has("key") && o.has("val")) {
+                        val id = o.get("key").asInt
 
-                    if (card != null) {
-                        session.generatedCards.add(card)
+                        val card = CardData.cards.find { c -> c.unitID == id }
+
+                        val amount = o.get("val").asLong
+
+                        if (amount > 0 && card != null) {
+                            session.generatedCards[card] = amount
+                        }
                     }
                 }
             }
@@ -187,12 +208,18 @@ class LogSession {
                 val array = obj.getAsJsonArray("removedCards")
 
                 array.forEach { e ->
-                    val id = e.asInt
+                    val o = e.asJsonObject
 
-                    val card = CardData.cards.find { c -> c.unitID == id }
+                    if (o.has("key") && o.has("val")) {
+                        val id = o.get("key").asInt
 
-                    if (card != null) {
-                        session.removedCards.add(card)
+                        val card = CardData.cards.find { c -> c.unitID == id }
+
+                        val amount = o.get("val").asLong
+
+                        if (amount > 0 && card != null) {
+                            session.removedCards[card] = amount
+                        }
                     }
                 }
             }
@@ -212,8 +239,8 @@ class LogSession {
 
     private var craftFailures = 0L
 
-    private val generatedCards = ArrayList<Card>()
-    private val removedCards = ArrayList<Card>()
+    private val generatedCards = HashMap<Card, Long>()
+    private val removedCards = HashMap<Card, Long>()
 
     constructor() {
         createdTime = CardData.getUnixEpochTime()
@@ -224,11 +251,15 @@ class LogSession {
     }
 
     fun logBuy(usedCards: List<Card>) {
-        removedCards.addAll(usedCards)
+        usedCards.forEach {
+            removedCards[it] = (removedCards[it] ?: 0) + 1
+        }
     }
 
     fun logCraftFail(m: Long, usedCards: List<Card>, cf: Long) {
-        removedCards.addAll(usedCards)
+        usedCards.forEach {
+            removedCards[it] = (removedCards[it] ?: 0) + 1
+        }
 
         craftFailures++
 
@@ -236,24 +267,32 @@ class LogSession {
     }
 
     fun logCraftSuccess(usedCards: List<Card>, card: Card) {
-        removedCards.addAll(usedCards)
+        usedCards.forEach {
+            removedCards[it] = (removedCards[it] ?: 0) + 1
+        }
 
         tier2Cards.add(card)
     }
 
-    fun logManualRoll(result: List<Card>) {
-        generatedCards.addAll(result)
+    fun logManualRoll(cards: List<Card>) {
+        cards.forEach {
+            generatedCards[it] = (generatedCards[it] ?: 0) + 1
+        }
     }
 
     fun logModifyAdd(cards: List<Card>) {
-        generatedCards.addAll(cards)
+        cards.forEach {
+            generatedCards[it] = (generatedCards[it] ?: 0) + 1
+        }
     }
 
     fun logModifyRemove(cards: List<Card>) {
-        removedCards.addAll(cards)
+        cards.forEach {
+            generatedCards[it] = (generatedCards[it] ?: 0) + 1
+        }
     }
 
-    fun logRoll(m: Member, pack: CardData.Pack, result: List<Card>) {
+    fun logRoll(m: Member, pack: CardData.Pack, cards: List<Card>) {
         val cf = if (pack == CardData.Pack.PREMIUM)
             0
         else
@@ -262,13 +301,17 @@ class LogSession {
         if (cf != 0)
             catFoodPack[m.idLong] = (catFoodPack[m.idLong] ?: 0) + cf
 
-        generatedCards.addAll(result)
+        cards.forEach {
+            generatedCards[it] = (generatedCards[it] ?: 0) + 1
+        }
     }
 
-    fun logSalvage(m: Long, cards: List<Card>, cf: Long) {
+    fun logSalvage(m: Long, usedCards: List<Card>, cf: Long) {
         catFoodCraft[m] = (catFoodCraft[m] ?: 0) + cf
 
-        removedCards.addAll(cards)
+        usedCards.forEach {
+            removedCards[it] = (removedCards[it] ?: 0) + 1
+        }
     }
 
     fun logTrade(session: TradingSession) {
@@ -292,7 +335,7 @@ class LogSession {
 
         val name = format.format(createdTime)
 
-        val targetFile = File("$name.txt")
+        val targetFile = File(folder, "$name.txt")
 
         if (!targetFile.exists() && !targetFile.createNewFile()) {
             StaticStore.logger.uploadLog("W/LogSession::generateLogFile - Failed to create log file : ${targetFile.absolutePath}")
@@ -372,13 +415,27 @@ class LogSession {
 
         val generatedArray = JsonArray()
 
-        generatedCards.forEach { c -> generatedArray.add(c.unitID) }
+        generatedCards.forEach { (card, amount) ->
+            val o = JsonObject()
+
+            o.addProperty("key", card.unitID)
+            o.addProperty("val", amount)
+
+            generatedArray.add(o)
+        }
 
         obj.add("generatedCards", generatedArray)
 
         val removedArray = JsonArray()
 
-        removedCards.forEach { c -> removedArray.add(c.unitID) }
+        removedCards.forEach { (card, amount) ->
+            val o = JsonObject()
+
+            o.addProperty("key", card.unitID)
+            o.addProperty("val", amount)
+
+            removedArray.add(o)
+        }
 
         obj.add("removedCards", removedArray)
 

@@ -140,7 +140,7 @@ object CardBot : ListenerAdapter() {
                     notifier++
                 }
 
-                if (collectorMonitor == 30) {
+                if (collectorMonitor == 30 && !test) {
                     collectorMonitor = 0
 
                     CardData.inventories.keys.forEach { userID ->

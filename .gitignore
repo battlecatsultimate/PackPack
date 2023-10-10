@@ -44,3 +44,4 @@ hs_err_pid*
 /.idea/
 /data/log.txt
 /restoreLog.txt
+/data/cardLog/
