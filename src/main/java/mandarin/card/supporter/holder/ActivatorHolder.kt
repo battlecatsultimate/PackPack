@@ -16,7 +16,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import kotlin.math.min
 
 class ActivatorHolder(author: Message, channelID: String, message: Message) : ComponentHolder(author, channelID, message.id) {
-    private val activators = Activator.values()
+    private val activators = Activator.entries.toTypedArray()
 
     private var page = 0
 
@@ -98,9 +98,9 @@ class ActivatorHolder(author: Message, channelID: String, message: Message) : Co
     private fun getComponents() : List<LayoutComponent> {
         val rows = ArrayList<ActionRow>()
 
-        val activators = Activator.values()
+        val activators = Activator.entries.toTypedArray()
 
-        val dataSize = Activator.values().size
+        val dataSize = Activator.entries.size
 
         for (i in page * 3 until min(dataSize, 3 * (page + 1))) {
             rows.add(ActionRow.of(Button.secondary(i.toString(), activators[i].title).withEmoji(if (activators[i] in CardData.activatedBanners) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF)))
@@ -157,7 +157,7 @@ class ActivatorHolder(author: Message, channelID: String, message: Message) : Co
     private fun getText() : String {
         val builder = StringBuilder("Select banners to activate/deactivate\n\n")
 
-        val activators = Activator.values()
+        val activators = Activator.entries.toTypedArray()
 
         for (i in page * 3 until min((page + 1) * 3, activators.size)) {
             builder.append("**")

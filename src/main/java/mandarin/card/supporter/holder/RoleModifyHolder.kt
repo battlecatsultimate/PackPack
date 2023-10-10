@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 class RoleModifyHolder(author: Message, channelID: String, private val message: Message, private val isAdd: Boolean, private val inventory: Inventory, private val targetMember: Member) : ComponentHolder(author, channelID, message.id) {
     private val roles = ArrayList<CardData.Role>(
         if (isAdd) {
-            CardData.Role.values().filter { r -> r !in inventory.vanityRoles }
+            CardData.Role.entries.filter { r -> r !in inventory.vanityRoles }
         } else {
             inventory.vanityRoles
         }
@@ -146,7 +146,7 @@ class RoleModifyHolder(author: Message, channelID: String, private val message: 
 
         roles.addAll(
             if (isAdd) {
-                CardData.Role.values().filter { r -> r !in inventory.vanityRoles && r != CardData.Role.NONE }.filter { r -> r !in selectedRoles }
+                CardData.Role.entries.filter { r -> r !in inventory.vanityRoles && r != CardData.Role.NONE }.filter { r -> r !in selectedRoles }
             } else {
                 inventory.vanityRoles.filter { r -> r !in selectedRoles }
             }
