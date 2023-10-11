@@ -249,6 +249,7 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}lock" -> Lock().execute(event)
             "${globalPrefix}unlock" -> Unlock().execute(event)
             "${globalPrefix}craft" -> Craft().execute(event)
+            "${globalPrefix}report" -> Report().execute(event)
             "${globalPrefix}savedata" -> SaveData().execute(event)
             "${globalPrefix}hack" -> {
                 if (test) {

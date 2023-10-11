@@ -19,15 +19,25 @@ import java.io.IOException
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 import kotlin.math.abs
+import kotlin.math.min
 
 class LogSession {
     companion object {
+        val globalFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S")
+
         private val format = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss.S")
+
         var session = LogSession()
             private set
+
+        init {
+            globalFormat.timeZone = TimeZone.getTimeZone("UTC")
+            format.timeZone = TimeZone.getTimeZone("UTC")
+        }
 
         fun syncSession() {
             val currentTime = CardData.getUnixEpochTime()
@@ -72,6 +82,7 @@ class LogSession {
             val lastDate = Date(selectedTime)
 
             val calendar = Calendar.getInstance()
+            calendar.timeZone = TimeZone.getTimeZone("UTC")
 
             calendar.time = currentDate
 
@@ -100,7 +111,31 @@ class LogSession {
             session.saveSessionAsFile()
         }
 
-        fun fromFile(file: File) : LogSession {
+        fun gatherPreviousSessions(from: Long, amount: Int) : ArrayList<LogSession> {
+            val result = ArrayList<LogSession>()
+
+            session.saveSessionAsFile()
+
+            val folder = File("./data/cardLog")
+
+            if (!folder.exists())
+                return result
+
+            val logLists = folder.listFiles() ?: return result
+
+            val logFiles = logLists.filter { l -> l.lastModified() <= from }.toTypedArray()
+
+            logFiles.sortBy { l -> l.lastModified() }
+            logFiles.reverse()
+
+            for (i in 0 until min(logFiles.size, amount)) {
+                result.add(fromFile(logFiles[i]))
+            }
+
+            return result
+        }
+
+        private fun fromFile(file: File) : LogSession {
             val reader = BufferedReader(InputStreamReader(FileInputStream(file), StandardCharsets.UTF_8))
 
             val element: JsonElement? = JsonParser.parseReader(reader)
@@ -228,19 +263,19 @@ class LogSession {
         }
     }
 
-    private val createdTime: Long
+    val createdTime: Long
 
-    private val tier2Cards = ArrayList<Card>()
+    val tier2Cards = ArrayList<Card>()
 
-    private val catFoodPack = HashMap<Long, Long>()
-    private val catFoodCraft = HashMap<Long, Long>()
-    private val catFoodTrade = HashMap<Long, Long>()
-    private var catFoodTradeSum = 0L
+    val catFoodPack = HashMap<Long, Long>()
+    val catFoodCraft = HashMap<Long, Long>()
+    val catFoodTrade = HashMap<Long, Long>()
+    var catFoodTradeSum = 0L
 
-    private var craftFailures = 0L
+    var craftFailures = 0L
 
-    private val generatedCards = HashMap<Card, Long>()
-    private val removedCards = HashMap<Card, Long>()
+    val generatedCards = HashMap<Card, Long>()
+    val removedCards = HashMap<Card, Long>()
 
     constructor() {
         createdTime = CardData.getUnixEpochTime()
