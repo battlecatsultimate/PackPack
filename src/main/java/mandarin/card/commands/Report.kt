@@ -27,7 +27,9 @@ class Report : Command(LangID.EN, true) {
 
         val time = CardData.getUnixEpochTime()
 
-        val sessions = LogSession.gatherPreviousSessions(time, getSessionNumber(getContent(event)))
+        val sessionNumber = getSessionNumber(getContent(event))
+
+        val sessions = LogSession.gatherPreviousSessions(time, sessionNumber)
 
         val members = HashSet<Long>()
 
@@ -47,7 +49,7 @@ class Report : Command(LangID.EN, true) {
 
         val totalCatFoodFlow = sessions.sumOf { session -> session.catFoodTradeSum }
 
-        if (getContent(event).contains("-f") || getContent(event).contains("-lf")) {
+        if (getContent(event).contains("-f") || getContent(event).contains("-lf") || sessionNumber <= 0) {
             val mergedCatFoodPack = HashMap<Long, Long>()
             val mergedCatFoodCraft = HashMap<Long, Long>()
             val mergedCatFoodTrade = HashMap<Long, Long>()
