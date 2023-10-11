@@ -102,7 +102,7 @@ class Report : Command(LangID.EN, true) {
                     reporter.append("\n" +
                             "Out of these people :\n" +
                             "\n" +
-                            "$consumedCatFoodPack ${EmojiStore.ABILITY["CF"]?.formatted} have been consumed for generating pack\n" +
+                            "$consumedCatFoodPack CF have been consumed for generating pack\n" +
                             "\n")
 
                     if (mergedCatFoodPack.isNotEmpty()) {
@@ -123,7 +123,7 @@ class Report : Command(LangID.EN, true) {
                     }
 
                     reporter.append(
-                        "$gainedCatFoodCraft ${EmojiStore.ABILITY["CF"]?.formatted} have been given out for compensation from crafting\n" +
+                        "$gainedCatFoodCraft CF have been given out for compensation from crafting\n" +
                                 "\n"
                     )
 
@@ -209,7 +209,7 @@ class Report : Command(LangID.EN, true) {
                     }
 
                     reporter.append(
-                        "$totalCatFoodFlow ${EmojiStore.ABILITY["CF"]?.formatted} have been transferred among users via trading\n" +
+                        "$totalCatFoodFlow CF have been transferred among users via trading\n" +
                             "\n"
                     )
 
