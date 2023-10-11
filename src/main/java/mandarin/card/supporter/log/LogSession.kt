@@ -128,7 +128,7 @@ class LogSession {
             logFiles.sortBy { l -> l.lastModified() }
             logFiles.reverse()
 
-            for (i in 0 until min(logFiles.size, amount)) {
+            for (i in 0 until min(logFiles.size, if (amount <= 0) logFiles.size else amount)) {
                 result.add(fromFile(logFiles[i]))
             }
 

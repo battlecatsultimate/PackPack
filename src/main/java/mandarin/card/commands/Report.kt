@@ -14,6 +14,7 @@ import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
 import java.nio.charset.StandardCharsets
+import kotlin.math.max
 
 class Report : Command(LangID.EN, true) {
     override fun doSomething(event: GenericMessageEvent) {
@@ -26,7 +27,7 @@ class Report : Command(LangID.EN, true) {
 
         val time = CardData.getUnixEpochTime()
 
-        val sessions = LogSession.gatherPreviousSessions(time, 30)
+        val sessions = LogSession.gatherPreviousSessions(time, getSessionNumber(getContent(event)))
 
         val members = HashSet<Long>()
 
@@ -46,7 +47,7 @@ class Report : Command(LangID.EN, true) {
 
         val totalCatFoodFlow = sessions.sumOf { session -> session.catFoodTradeSum }
 
-        if (getContent(event).contains("-f")) {
+        if (getContent(event).contains("-f") || getContent(event).contains("-lf")) {
             val mergedCatFoodPack = HashMap<Long, Long>()
             val mergedCatFoodCraft = HashMap<Long, Long>()
             val mergedCatFoodTrade = HashMap<Long, Long>()
@@ -274,5 +275,19 @@ class Report : Command(LangID.EN, true) {
 
             replyToMessageSafely(ch, content, getMessage(event)) { a -> a }
         }
+    }
+
+    private fun getSessionNumber(content: String) : Int {
+        val contents = content.split(" ")
+
+        contents.forEachIndexed { index, s ->
+            if (s == "-n" && index < contents.size - 1 && StaticStore.isNumeric(contents[index + 1])) {
+                return max(1, StaticStore.safeParseInt(contents[index + 1]))
+            } else if (s == "-lf") {
+                return -1
+            }
+        }
+
+        return 30
     }
 }
