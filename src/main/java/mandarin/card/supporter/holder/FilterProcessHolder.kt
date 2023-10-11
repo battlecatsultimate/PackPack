@@ -159,7 +159,7 @@ class FilterProcessHolder : ComponentHolder {
                         reward.accept(event)
                     }
 
-                    LogSession.session.logBuy(spentCard)
+                    LogSession.session.logBuy(authorMessage.author.idLong, spentCard)
 
                     expired = true
 

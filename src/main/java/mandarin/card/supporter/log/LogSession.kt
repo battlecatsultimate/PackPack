@@ -10,7 +10,6 @@ import mandarin.card.supporter.Card
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.TradingSession
 import mandarin.packpack.supporter.StaticStore
-import net.dv8tion.jda.api.entities.Member
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileInputStream
@@ -22,6 +21,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+import kotlin.collections.HashSet
 import kotlin.math.abs
 import kotlin.math.min
 
@@ -153,6 +153,12 @@ class LogSession {
 
             val session = LogSession(obj.get("createdTime").asLong)
 
+            if (obj.has("activeMembers")) {
+                val array = obj.getAsJsonArray("activeMembers")
+
+                session.activeMembers.addAll(array.map { e -> e.asLong })
+            }
+
             if (obj.has("tier2Cards")) {
                 val array = obj.getAsJsonArray("tier2Cards")
 
@@ -265,6 +271,8 @@ class LogSession {
 
     val createdTime: Long
 
+    val activeMembers = HashSet<Long>()
+
     val tier2Cards = ArrayList<Card>()
 
     val catFoodPack = HashMap<Long, Long>()
@@ -285,23 +293,27 @@ class LogSession {
         createdTime = time
     }
 
-    fun logBuy(usedCards: List<Card>) {
+    fun logBuy(member: Long, usedCards: List<Card>) {
         usedCards.forEach {
             removedCards[it] = (removedCards[it] ?: 0) + 1
         }
+
+        activeMembers.add(member)
     }
 
-    fun logCraftFail(m: Long, usedCards: List<Card>, cf: Long) {
+    fun logCraftFail(member: Long, usedCards: List<Card>, cf: Long) {
         usedCards.forEach {
             removedCards[it] = (removedCards[it] ?: 0) + 1
         }
 
         craftFailures++
 
-        catFoodCraft[m] = (catFoodCraft[m] ?: 0) + cf
+        catFoodCraft[member] = (catFoodCraft[member] ?: 0) + cf
+
+        activeMembers.add(member)
     }
 
-    fun logCraftSuccess(usedCards: List<Card>, card: Card) {
+    fun logCraftSuccess(member: Long, usedCards: List<Card>, card: Card) {
         usedCards.forEach {
             removedCards[it] = (removedCards[it] ?: 0) + 1
         }
@@ -309,46 +321,58 @@ class LogSession {
         tier2Cards.add(card)
 
         generatedCards[card] = (generatedCards[card] ?: 0) + 1
+
+        activeMembers.add(member)
     }
 
-    fun logManualRoll(cards: List<Card>) {
+    fun logManualRoll(member: Long, cards: List<Card>) {
         cards.forEach {
             generatedCards[it] = (generatedCards[it] ?: 0) + 1
         }
+
+        activeMembers.add(member)
     }
 
-    fun logModifyAdd(cards: List<Card>) {
+    fun logModifyAdd(member: Long, cards: List<Card>) {
         cards.forEach {
             generatedCards[it] = (generatedCards[it] ?: 0) + 1
         }
+
+        activeMembers.add(member)
     }
 
-    fun logModifyRemove(cards: List<Card>) {
+    fun logModifyRemove(member: Long, cards: List<Card>) {
         cards.forEach {
             removedCards[it] = (removedCards[it] ?: 0) + 1
         }
+
+        activeMembers.add(member)
     }
 
-    fun logRoll(m: Member, pack: CardData.Pack, cards: List<Card>) {
+    fun logRoll(member: Long, pack: CardData.Pack, cards: List<Card>) {
         val cf = if (pack == CardData.Pack.PREMIUM)
             0
         else
             pack.cost
 
         if (cf != 0)
-            catFoodPack[m.idLong] = (catFoodPack[m.idLong] ?: 0) + cf
+            catFoodPack[member] = (catFoodPack[member] ?: 0) + cf
 
         cards.forEach {
             generatedCards[it] = (generatedCards[it] ?: 0) + 1
         }
+
+        activeMembers.add(member)
     }
 
-    fun logSalvage(m: Long, usedCards: List<Card>, cf: Long) {
-        catFoodCraft[m] = (catFoodCraft[m] ?: 0) + cf
+    fun logSalvage(member: Long, usedCards: List<Card>, cf: Long) {
+        catFoodCraft[member] = (catFoodCraft[member] ?: 0) + cf
 
         usedCards.forEach {
             removedCards[it] = (removedCards[it] ?: 0) + 1
         }
+
+        activeMembers.add(member)
     }
 
     fun logTrade(session: TradingSession) {
@@ -359,6 +383,8 @@ class LogSession {
         catFoodTrade[session.member[1]] = (catFoodTrade[session.member[1]] ?: 0) - session.suggestion[1].catFood
 
         catFoodTradeSum += abs(session.suggestion[0].catFood - session.suggestion[1].catFood).toLong()
+
+        activeMembers.addAll(session.member)
     }
 
     fun saveSessionAsFile() {
@@ -400,6 +426,14 @@ class LogSession {
         val obj = JsonObject()
 
         obj.addProperty("createdTime", createdTime)
+
+        val memberArray = JsonArray()
+
+        activeMembers.forEach { id ->
+            memberArray.add(id)
+        }
+
+        obj.add("activeMembers", memberArray)
 
         val t2Array = JsonArray()
 

@@ -31,9 +31,7 @@ class Report : Command(LangID.EN, true) {
         val members = HashSet<Long>()
 
         sessions.forEach { session ->
-            members.addAll(session.catFoodPack.keys)
-            members.addAll(session.catFoodCraft.keys)
-            members.addAll(session.catFoodTrade.keys)
+            members.addAll(session.activeMembers)
         }
 
         val consumedCatFoodPack = sessions.sumOf { session -> session.catFoodPack.values.sum() }

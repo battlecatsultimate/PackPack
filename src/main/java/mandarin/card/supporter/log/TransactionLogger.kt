@@ -51,9 +51,9 @@ object TransactionLogger {
         logChannel.sendMessageEmbeds(builder.build()).queue()
 
         if (!manual) {
-            LogSession.session.logRoll(member, pack, cards)
+            LogSession.session.logRoll(member.idLong, pack, cards)
         } else {
-            LogSession.session.logManualRoll(cards)
+            LogSession.session.logManualRoll(member.idLong, cards)
         }
     }
 
@@ -278,9 +278,9 @@ object TransactionLogger {
         }
 
         if (isAdd) {
-            LogSession.session.logModifyAdd(cards)
+            LogSession.session.logModifyAdd(targetMember.idLong, cards)
         } else {
-            LogSession.session.logModifyRemove(cards)
+            LogSession.session.logModifyRemove(targetMember.idLong, cards)
         }
     }
 
@@ -542,7 +542,7 @@ object TransactionLogger {
         if (craftedCard == null) {
             LogSession.session.logCraftFail(member, cards, cardAmount * CardData.Tier.COMMON.cost.toLong())
         } else {
-            LogSession.session.logCraftSuccess(cards, craftedCard)
+            LogSession.session.logCraftSuccess(member, cards, craftedCard)
         }
     }
 
