@@ -47,6 +47,7 @@ object CardBot : ListenerAdapter() {
 
     var locked = false
     var rollLocked = false
+    var forceReplace = false
 
     @JvmStatic
     fun main(args: Array<String>) {
@@ -84,7 +85,7 @@ object CardBot : ListenerAdapter() {
 
         StaticStore.saver.schedule(object : TimerTask() {
             override fun run() {
-                if (notifier == 2) {
+                if (notifier == 2 && !test) {
                     notifier = 0
 
                     val removeQueue = ArrayList<String>()
@@ -186,7 +187,10 @@ object CardBot : ListenerAdapter() {
                     backup++
                 }
 
-                saveCardData()
+                if (!forceReplace) {
+                    saveCardData()
+                }
+
                 LogSession.syncSession()
             }
         }, 0, TimeUnit.MINUTES.toMillis(1))
@@ -251,6 +255,7 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}craft" -> Craft().execute(event)
             "${globalPrefix}report" -> Report().execute(event)
             "${globalPrefix}savedata" -> SaveData().execute(event)
+            "${globalPrefix}replacesave" -> ReplaceSave().execute(event)
             "${globalPrefix}hack" -> {
                 if (test) {
                     Hack().execute(event)

@@ -49,7 +49,7 @@ class Report : Command(LangID.EN, true) {
 
         val totalCatFoodFlow = sessions.sumOf { session -> session.catFoodTradeSum }
 
-        if (getContent(event).contains("-f") || getContent(event).contains("-lf") || sessionNumber <= 0) {
+        if (getContent(event).contains("-f")) {
             val mergedCatFoodPack = HashMap<Long, Long>()
             val mergedCatFoodCraft = HashMap<Long, Long>()
             val mergedCatFoodTrade = HashMap<Long, Long>()
