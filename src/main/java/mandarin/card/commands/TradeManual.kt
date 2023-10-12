@@ -19,7 +19,7 @@ class TradeManual : Command(LangID.EN, true) {
         val g = getGuild(event) ?: return
         val m = getMember(event) ?: return
 
-        if (!CardData.isManager(m) && m.id != StaticStore.MANDARIN_SMELL) {
+        if (!CardData.hasAllPermission(m) && m.id != StaticStore.MANDARIN_SMELL) {
             return
         }
 

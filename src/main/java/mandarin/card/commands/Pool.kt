@@ -11,7 +11,7 @@ class Pool(private val tier: CardData.Tier) : Command(LangID.EN, true) {
         val ch = getChannel(event) ?: return
         val m = getMember(event) ?: return
 
-        if (m.id != StaticStore.MANDARIN_SMELL && !CardData.isManager(m))
+        if (m.id != StaticStore.MANDARIN_SMELL && !CardData.hasAllPermission(m))
             return
 
         val pool = when(tier) {

@@ -22,7 +22,7 @@ class Buy : Command(LangID.EN, true) {
         val m = getMember(event) ?: return
         val author = getMessage(event) ?: return
 
-        if (CardBot.rollLocked && !CardData.isManager(m) && m.id != StaticStore.MANDARIN_SMELL) {
+        if (CardBot.rollLocked && !CardData.hasAllPermission(m) && m.id != StaticStore.MANDARIN_SMELL) {
             return
         }
 

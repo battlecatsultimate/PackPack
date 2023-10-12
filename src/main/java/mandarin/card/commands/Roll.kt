@@ -18,7 +18,7 @@ class Roll : Command(LangID.EN, true) {
         val ch = getChannel(event) ?: return
         val m = getMember(event) ?: return
 
-        if (CardBot.rollLocked && !CardData.isManager(m) && m.id != StaticStore.MANDARIN_SMELL) {
+        if (CardBot.rollLocked && !CardData.hasAllPermission(m) && m.id != StaticStore.MANDARIN_SMELL) {
             return
         }
 

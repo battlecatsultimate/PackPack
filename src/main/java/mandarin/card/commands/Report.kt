@@ -21,7 +21,7 @@ class Report : Command(LangID.EN, true) {
         val m = getMember(event) ?: return
         val ch = getChannel(event) ?: return
 
-        if (!CardData.isManager(m) && m.id != StaticStore.MANDARIN_SMELL) {
+        if (!CardData.hasAllPermission(m) && m.id != StaticStore.MANDARIN_SMELL) {
             return
         }
 

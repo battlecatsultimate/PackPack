@@ -320,6 +320,12 @@ object CardData {
     fun isManager(member: Member) : Boolean {
         val roleList = member.roles.map { r -> r.id }
 
+        return dealer in roleList
+    }
+
+    fun hasAllPermission(member: Member) : Boolean {
+        val roleList = member.roles.map { r -> r.id }
+
         return dealer in roleList || mod in roleList || headerMod in roleList
     }
 

@@ -216,6 +216,6 @@ class TradingSession(val postID: Long, val member: Array<Long>) {
 
     fun needApproval(g: Guild) : Boolean {
         return suggestion.any { s -> s.catFood >= 200000 || s.cards.any { c -> c.tier == CardData.Tier.ULTRA || c.tier == CardData.Tier.LEGEND } } &&
-                !member.map { id -> g.retrieveMember(UserSnowflake.fromId(id)).complete() }.any { m -> CardData.isManager(m) }
+                !member.map { id -> g.retrieveMember(UserSnowflake.fromId(id)).complete() }.any { m -> CardData.hasAllPermission(m) }
     }
 }

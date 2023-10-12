@@ -136,7 +136,7 @@ class SuggestInventoryHolder(
 
                     if (
                         session.suggestion.any { s -> s.catFood >= 200000 || s.cards.any { c -> c.tier == CardData.Tier.ULTRA || c.tier == CardData.Tier.LEGEND } } &&
-                        !session.member.map { id -> g.retrieveMember(UserSnowflake.fromId(id)).complete() }.any { m -> CardData.isManager(m) }
+                        !session.member.map { id -> g.retrieveMember(UserSnowflake.fromId(id)).complete() }.any { m -> CardData.hasAllPermission(m) }
                         ) {
                         event.messageChannel.sendMessage("Pinging <@&${ServerData.get("dealer")}> for approval because this trade contains above 200k cf or above tier 3 cards").queue()
                     }
