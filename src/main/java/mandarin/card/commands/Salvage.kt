@@ -34,7 +34,7 @@ class Salvage : Command(LangID.EN, true) {
 
         list.addOptions(
             SelectOption.of("Tier 1 [Common]", "t1").withDescription("${CardData.Tier.COMMON.cost} CF per card (minimum 10)"),
-            SelectOption.of("Tier 3 [Ultra Rare (Exclusives)]", "t3").withDescription("${CardData.Tier.ULTRA.cost} CF per card (up to 1)")
+            SelectOption.of("Tier 3 [Ultra Rare (Exclusives)]", "t3").withDescription("${CardData.Tier.ULTRA.cost} CF per card (1 card per call)")
         )
 
         result.add(ActionRow.of(list.build()))
