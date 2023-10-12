@@ -141,7 +141,7 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
                 val chance = Random.nextDouble()
 
                 if (chance <= 0.7) {
-                    val cf = selectedCard.size * 300
+                    val cf = selectedCard.size * CardData.Tier.COMMON.cost
 
                     val cost = cf / 100000 + 1
 
@@ -159,7 +159,7 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
                         TransactionLogger.logCraft(authorMessage.author.idLong, selectedCard.size, null, selectedCard)
 
                         event.deferEdit()
-                                .setContent("Failed to craft tier 2 card..., so you received ${EmojiStore.ABILITY["CF"]?.formatted} ${selectedCard.size * 300}")
+                                .setContent("Failed to craft tier 2 card..., so you received ${EmojiStore.ABILITY["CF"]?.formatted} $cf")
                                 .setComponents()
                                 .mentionRepliedUser(false)
                                 .setAllowedMentions(ArrayList())
@@ -167,7 +167,7 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
                     } else {
                         TransactionGroup.queue(TransactionQueue(cost) {
                             event.deferEdit()
-                                    .setContent("Failed to create tier 2 card..., ${EmojiStore.ABILITY["CF"]?.formatted} ${selectedCard.size * 300} will be received around ${TransactionGroup.groupQueue.size + 1} minute(s) later. Once job is done, bot will mention you")
+                                    .setContent("Failed to create tier 2 card..., ${EmojiStore.ABILITY["CF"]?.formatted} $cf will be received around ${TransactionGroup.groupQueue.size + 1} minute(s) later. Once job is done, bot will mention you")
                                     .setComponents()
                                     .mentionRepliedUser(false)
                                     .setAllowedMentions(ArrayList())
@@ -186,7 +186,7 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
                             TransactionLogger.logCraft(authorMessage.author.idLong, selectedCard.size, null, selectedCard)
 
                             event.messageChannel
-                                    .sendMessage("You received ${EmojiStore.ABILITY["CF"]?.formatted} ${selectedCard.size * 300}")
+                                    .sendMessage("You received ${EmojiStore.ABILITY["CF"]?.formatted} $cf")
                                     .setMessageReference(authorMessage)
                                     .mentionRepliedUser(false)
                                     .setAllowedMentions(ArrayList())
