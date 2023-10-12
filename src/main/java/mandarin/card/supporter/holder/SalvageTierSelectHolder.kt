@@ -1,18 +1,17 @@
-package mandarin.card.commands
+package mandarin.card.supporter.holder
 
-import mandarin.card.CardBot
 import mandarin.card.supporter.Card
 import mandarin.card.supporter.CardComparator
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
-import mandarin.card.supporter.holder.CardSalvageHolder
-import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
-import mandarin.packpack.supporter.lang.LangID
+import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
+import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.emoji.Emoji
-import net.dv8tion.jda.api.events.message.GenericMessageEvent
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -21,31 +20,75 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import kotlin.math.min
 
-class Craft : Command(LangID.EN, true) {
-    override fun doSomething(event: GenericMessageEvent?) {
-        val ch = getChannel(event) ?: return
-        val m = getMember(event) ?: return
+class SalvageTierSelectHolder(author: Message, channelID: String, private val message: Message) : ComponentHolder(author, channelID, message.id) {
+    override fun clean() {
 
-        if (CardBot.rollLocked && !CardData.isManager(m) && m.id != StaticStore.MANDARIN_SMELL) {
-            return
-        }
-
-        val inventory = Inventory.getInventory(m.id)
-
-        val cards = inventory.cards.keys.filter { c -> c.tier == CardData.Tier.COMMON }.sortedWith(CardComparator())
-
-        if (cards.sumOf { inventory.cards[it] ?: 1 } < 10) {
-            replyToMessageSafely(ch, "You have to have at least 10 Tier 1 [Common] cards to craft Tier 2 [Uncommon] cards!!", getMessage(event)) { a -> a }
-
-            return
-        }
-
-        val message = getRepliedMessageSafely(ch, getPremiumText(cards, inventory), getMessage(event)) { a -> a.setComponents(assignComponents(cards, inventory)) }
-
-        StaticStore.putHolder(m.id, CardSalvageHolder(getMessage(event), ch.id, message, CardData.SalvageMode.CRAFT))
     }
 
-    private fun assignComponents(cards: List<Card>, inventory: Inventory) : List<LayoutComponent> {
+    override fun onExpire(id: String) {
+
+    }
+
+    override fun onEvent(event: GenericComponentInteractionCreateEvent) {
+        if (event.componentId == "tier") {
+            if (event !is StringSelectInteractionEvent)
+                return
+
+            if (event.values.isEmpty())
+                return
+
+            val mode = if (event.values[0] == "t1")
+                CardData.SalvageMode.T1
+            else
+                CardData.SalvageMode.T3
+
+            val inventory = Inventory.getInventory(authorMessage.author.id)
+
+            val tier = if (mode == CardData.SalvageMode.T1)
+                CardData.Tier.COMMON
+            else
+                CardData.Tier.ULTRA
+
+            val cards = inventory.cards.keys.filter { c -> c.tier == tier }.sortedWith(CardComparator())
+
+            if (mode == CardData.SalvageMode.T1 && cards.sumOf { inventory.cards[it] ?: 1 } < 10) {
+                event.deferEdit()
+                    .setContent("You have to have at least 10 Tier 1 [Common] cards to salvage them!")
+                    .setComponents()
+                    .setAllowedMentions(ArrayList())
+                    .mentionRepliedUser(false)
+                    .queue()
+
+                return
+            }
+
+            if (mode == CardData.SalvageMode.T3 && cards.isEmpty()) {
+                event.deferEdit()
+                    .setContent("You have to have at least 1 Tier 3 [Ultra Rare (Exclusives)] cards to salvage them!")
+                    .setComponents()
+                    .setAllowedMentions(ArrayList())
+                    .mentionRepliedUser(false)
+                    .queue()
+
+                return
+            }
+
+            event.deferEdit()
+                .setContent(getText(cards, inventory, mode))
+                .setComponents(assignComponents(cards, mode))
+                .setAllowedMentions(ArrayList())
+                .mentionRepliedUser(false)
+                .queue()
+
+            expired = true
+
+            expire(authorMessage.author.id)
+
+            StaticStore.putHolder(authorMessage.author.id, CardSalvageHolder(authorMessage, channelID, message, mode))
+        }
+    }
+
+    private fun assignComponents(cards: List<Card>, salvageMode: CardData.SalvageMode) : List<LayoutComponent> {
         val rows = ArrayList<ActionRow>()
 
         val bannerCategoryElements = ArrayList<SelectOption>()
@@ -112,8 +155,12 @@ class Craft : Command(LangID.EN, true) {
 
         val confirmButtons = ArrayList<Button>()
 
-        confirmButtons.add(Button.success("craft", "Craft T2 Card").asDisabled().withEmoji(Emoji.fromUnicode("\uD83D\uDEE0\uFE0F")))
-        confirmButtons.add(Button.secondary("dupe", "Use Duplicated").withDisabled(!inventory.cards.keys.any { c -> (inventory.cards[c] ?: 0) > 1 }))
+        confirmButtons.add(Button.primary("salvage", "Salvage").asDisabled().withEmoji(Emoji.fromUnicode("\uD83E\uDE84")))
+
+        if (salvageMode == CardData.SalvageMode.T1) {
+            confirmButtons.add(Button.secondary("all", "Add All"))
+        }
+
         confirmButtons.add(Button.danger("reset", "Reset").asDisabled())
         confirmButtons.add(Button.danger("cancel", "Cancel"))
 
@@ -122,8 +169,13 @@ class Craft : Command(LangID.EN, true) {
         return rows
     }
 
-    private fun getPremiumText(cards: List<Card>, inventory: Inventory) : String {
-        val builder = StringBuilder("Select 10 Tier 1 [Common] cards to craft\n\n### Selected Cards\n\n- No Cards Selected\n\n```md\n")
+    private fun getText(cards: List<Card>, inventory: Inventory, salvageMode: CardData.SalvageMode) : String {
+        val tier = if (salvageMode == CardData.SalvageMode.T3)
+            "Tier 3 [Ultra Rare (Exclusives)]"
+        else
+            "Tier 1 [Common]"
+
+        val builder = StringBuilder("Select 10 or more $tier cards to salvage\n\n### Selected Cards\n\n- No Cards Selected\n\n```md\n")
 
         if (cards.isNotEmpty()) {
             for (i in 0 until min(SearchHolder.PAGE_CHUNK, cards.size)) {

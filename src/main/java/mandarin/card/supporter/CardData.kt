@@ -26,6 +26,12 @@ object CardData {
     -------------------------------------------------------
      */
 
+    enum class SalvageMode {
+        T1,
+        T3,
+        CRAFT
+    }
+
     val cards = ArrayList<Card>()
 
     val permanents = arrayOf(
