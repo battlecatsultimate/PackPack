@@ -170,12 +170,13 @@ class SalvageTierSelectHolder(author: Message, channelID: String, private val me
     }
 
     private fun getText(cards: List<Card>, inventory: Inventory, salvageMode: CardData.SalvageMode) : String {
-        val tier = if (salvageMode == CardData.SalvageMode.T3)
-            "Tier 3 [Ultra Rare (Exclusives)]"
-        else
-            "Tier 1 [Common]"
-
-        val builder = StringBuilder("Select 10 or more $tier cards to salvage\n\n### Selected Cards\n\n- No Cards Selected\n\n```md\n")
+        val builder = StringBuilder(
+            when (salvageMode) {
+                CardData.SalvageMode.T1 -> "Select 10 or more Tier 1 [Common] cards\n\n### Selected Cards\n\n"
+                CardData.SalvageMode.CRAFT -> "Select 10 Tier 1 [Common] cards to craft\n\n### Selected Cards\n\n"
+                else -> "Select 1 Tier 3 [Ultra Rare (Exclusives)] card\n\n### Selected card\n\n"
+            }
+        ).append("```md\n")
 
         if (cards.isNotEmpty()) {
             for (i in 0 until min(SearchHolder.PAGE_CHUNK, cards.size)) {

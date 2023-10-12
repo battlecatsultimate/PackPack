@@ -8,6 +8,7 @@ import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
 import net.dv8tion.jda.api.events.message.GenericMessageEvent
 import net.dv8tion.jda.api.interactions.components.ActionRow
+import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 
 class Salvage : Command(LangID.EN, true) {
@@ -31,8 +32,10 @@ class Salvage : Command(LangID.EN, true) {
 
         list.placeholder = "Select tier"
 
-        list.addOption("Tier 1 [Common]", "t1")
-        list.addOption("Tier 3 [Ultra Rare (Exclusives)]", "t3")
+        list.addOptions(
+            SelectOption.of("Tier 1 [Common]", "t1").withDescription("${CardData.Tier.COMMON.cost} CF per card (minimum 10)"),
+            SelectOption.of("Tier 3 [Ultra Rare (Exclusives)]", "t3").withDescription("${CardData.Tier.ULTRA.cost} CF per card (up to 1)")
+        )
 
         result.add(ActionRow.of(list.build()))
 
