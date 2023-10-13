@@ -87,7 +87,7 @@ public class FormReactionSlashMessageHolder extends MessageHolder {
                 Form newForm = f.unit.forms[f.fid - 2];
 
                 try {
-                    EntityHandler.showUnitEmb(newForm, ch, null, config, isFrame, talent, extra, false, false, lv, treasure, t, lang, false, false);
+                    EntityHandler.showUnitEmb(newForm, ch, null, config, isFrame, talent, extra, false, false, lv, treasure, t, lang, false, false, msg -> { });
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -104,7 +104,7 @@ public class FormReactionSlashMessageHolder extends MessageHolder {
                 Form newForm = f.unit.forms[f.fid - 1];
 
                 try {
-                    EntityHandler.showUnitEmb(newForm, ch, null, config, isFrame, talent, extra, false, false, lv, treasure, t, lang, false, false);
+                    EntityHandler.showUnitEmb(newForm, ch, null, config, isFrame, talent, extra, false, false, lv, treasure, t, lang, false, false, msg -> { });
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -121,7 +121,7 @@ public class FormReactionSlashMessageHolder extends MessageHolder {
                 Form newForm = f.unit.forms[f.fid + 1];
 
                 try {
-                    EntityHandler.showUnitEmb(newForm, ch, null, config, isFrame, talent, extra, false, false, lv, treasure, t, lang, false, false);
+                    EntityHandler.showUnitEmb(newForm, ch, null, config, isFrame, talent, extra, false, false, lv, treasure, t, lang, false, false, msg -> { });
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -138,7 +138,7 @@ public class FormReactionSlashMessageHolder extends MessageHolder {
                 Form newForm = f.unit.forms[f.fid + 2];
 
                 try {
-                    EntityHandler.showUnitEmb(newForm, ch, null, config, isFrame, talent, extra, false, false, lv, treasure, t, lang, false, false);
+                    EntityHandler.showUnitEmb(newForm, ch, null, config, isFrame, talent, extra, false, false, lv, treasure, t, lang, false, false, msg -> { });
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

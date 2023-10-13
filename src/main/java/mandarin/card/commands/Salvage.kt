@@ -6,23 +6,25 @@ import mandarin.card.supporter.holder.SalvageTierSelectHolder
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
-import net.dv8tion.jda.api.events.message.GenericMessageEvent
+import mandarin.packpack.supporter.server.CommandLoader
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 
 class Salvage : Command(LangID.EN, true) {
-    override fun doSomething(event: GenericMessageEvent?) {
-        val ch = getChannel(event) ?: return
-        val m = getMember(event) ?: return
+    override fun doSomething(loader: CommandLoader) {
+        val ch = loader.channel
+        val m = loader.member
 
         if (CardBot.rollLocked && !CardData.hasAllPermission(m) && m.id != StaticStore.MANDARIN_SMELL) {
             return
         }
 
-        val message = getRepliedMessageSafely(ch, "Select tier of the cards that will be salvaged", getMessage(event)) { a -> a.setComponents(assignComponents()) }
-
-        StaticStore.putHolder(m.id, SalvageTierSelectHolder(getMessage(event), ch.id, message))
+        replyToMessageSafely(ch, "Select tier of the cards that will be salvaged", loader.message, { a ->
+            a.setComponents(assignComponents())
+        }, { message ->
+            StaticStore.putHolder(m.id, SalvageTierSelectHolder(loader.message, ch.id, message))
+        })
     }
 
     private fun assignComponents() : List<ActionRow> {

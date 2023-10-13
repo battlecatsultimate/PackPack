@@ -1,12 +1,12 @@
 package mandarin.packpack.commands;
 
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class SendMessage extends ConstraintCommand {
     public SendMessage(ROLE role, int lang, IDHolder id) {
@@ -14,15 +14,12 @@ public class SendMessage extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
-        if(ch == null)
-            return;
+        JDA client = ch.getJDA();
 
-        JDA client = event.getJDA();
-
-        String[] contents = getContent(event).split(" ", 4);
+        String[] contents = loader.getContent().split(" ", 4);
 
         if(contents.length != 4) {
             ch.sendMessage("`p!sm [Guild ID] [Channel ID] [Contents]`").queue();

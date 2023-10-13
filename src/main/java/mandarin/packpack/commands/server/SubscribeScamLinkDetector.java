@@ -3,18 +3,20 @@ package mandarin.packpack.commands.server;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.ScamLinkSubscriptionHolder;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,23 +27,14 @@ public class SubscribeScamLinkDetector extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
-        if(ch == null)
-            return;
+        Guild g = loader.getGuild();
 
-        Guild g = getGuild(event);
+        String[] contents = loader.getContent().split(" ");
 
-        if(g == null) {
-            ch.sendMessage(LangID.getStringByID("subscam_noguild", lang)).queue();
-
-            return;
-        }
-
-        String[] contents = getContent(event).split(" ");
-
-        if(contents.length < 2) {
+        if (contents.length < 2) {
             ch.sendMessage(LangID.getStringByID("subscam_noid", lang)).queue();
 
             return;
@@ -49,19 +42,19 @@ public class SubscribeScamLinkDetector extends ConstraintCommand {
 
         String channel = parseChannel(contents[1]);
 
-        if(!StaticStore.isNumeric(channel)) {
+        if (!StaticStore.isNumeric(channel)) {
             ch.sendMessage(LangID.getStringByID("subscam_invalidch", lang)).queue();
 
             return;
         }
 
-        if(!isValidChannel(g, channel)) {
+        if (!isValidChannel(g, channel)) {
             ch.sendMessage(LangID.getStringByID("subscam_nosuch", lang)).queue();
 
             return;
         }
 
-        System.out.println(getMute(g, getContent(event)));
+        System.out.println(getMute(g, loader.getContent()));
 
         List<SelectOption> options = new ArrayList<>();
 
@@ -79,18 +72,16 @@ public class SubscribeScamLinkDetector extends ConstraintCommand {
         components.add(Button.success("confirm", LangID.getStringByID("button_confirm", lang)));
         components.add(Button.danger("cancel", LangID.getStringByID("button_cancel", lang)));
 
-        Message msg = ch.sendMessage(LangID.getStringByID("subscam_decide", lang))
+        ch.sendMessage(LangID.getStringByID("subscam_decide", lang))
                 .setComponents(
                         ActionRow.of(StringSelectMenu.create("action").addOptions(options).build()),
                         ActionRow.of(StringSelectMenu.create("notice").addOptions(notices).build()),
                         ActionRow.of(components)
-                ).complete();
+                ).queue(msg -> {
+                    Member m = loader.getMember();
 
-        Member m = getMember(event);
-
-        if(m != null) {
-            StaticStore.putHolder(m.getId(), new ScamLinkSubscriptionHolder(getMessage(event), msg, ch.getId(), lang, channel, getMute(g, getContent(event))));
-        }
+                    StaticStore.putHolder(m.getId(), new ScamLinkSubscriptionHolder(loader.getMessage(), msg, ch.getId(), lang, channel, getMute(g, loader.getContent())));
+                });
     }
 
     private String parseChannel(String content) {

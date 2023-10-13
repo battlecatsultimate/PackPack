@@ -4,13 +4,12 @@ import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.component.TreasureButtonHolder;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
@@ -22,20 +21,15 @@ public class Treasure extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
-        User u = getUser(event);
-
-        if(ch == null || u == null)
-            return;
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
+        User u = loader.getUser();
 
         TreasureHolder treasure = StaticStore.treasure.getOrDefault(u.getId(), new TreasureHolder());
 
-        Message result = getRepliedMessageSafely(ch, generateText(treasure), getMessage(event), this::attachUIComponents);
-
-        if(result != null) {
-            StaticStore.putHolder(u.getId(), new TreasureButtonHolder(getMessage(event), result, ch.getId(), treasure, lang));
-        }
+        replyToMessageSafely(ch, generateText(treasure), loader.getMessage(), this::attachUIComponents, result ->
+                StaticStore.putHolder(u.getId(), new TreasureButtonHolder(loader.getMessage(), result, ch.getId(), treasure, lang))
+        );
     }
 
     private String generateText(TreasureHolder treasure) {

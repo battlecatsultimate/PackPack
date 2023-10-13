@@ -4,11 +4,11 @@ import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.TasteApk;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -26,11 +26,8 @@ public class DownloadApk extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
-
-        if(ch == null)
-            return;
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
         if(StaticStore.apkDownloading) {
             ch.sendMessage("APK is downloading, wait for process to be done").queue();
@@ -50,13 +47,7 @@ public class DownloadApk extends ConstraintCommand {
             return;
         }
 
-        Message m = getMessage(event);
-
-        if(m == null) {
-            StaticStore.apkDownloading = false;
-
-            return;
-        }
+        Message m = loader.getMessage();
 
         int loc = getLocale(m.getContentRaw());
 
@@ -300,8 +291,8 @@ public class DownloadApk extends ConstraintCommand {
     }
 
     @Override
-    public void onFail(GenericMessageEvent event, int error) {
-        super.onFail(event, error);
+    public void onFail(CommandLoader loader, int error) {
+        super.onFail(loader, error);
 
         StaticStore.apkDownloading = false;
     }

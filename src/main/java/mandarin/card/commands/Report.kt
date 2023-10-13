@@ -8,8 +8,8 @@ import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
+import mandarin.packpack.supporter.server.CommandLoader
 import net.dv8tion.jda.api.entities.UserSnowflake
-import net.dv8tion.jda.api.events.message.GenericMessageEvent
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
@@ -17,9 +17,9 @@ import java.nio.charset.StandardCharsets
 import kotlin.math.max
 
 class Report : Command(LangID.EN, true) {
-    override fun doSomething(event: GenericMessageEvent) {
-        val m = getMember(event) ?: return
-        val ch = getChannel(event) ?: return
+    override fun doSomething(loader: CommandLoader) {
+        val m = loader.member
+        val ch = loader.channel
 
         if (!CardData.hasAllPermission(m) && m.id != StaticStore.MANDARIN_SMELL) {
             return
@@ -27,7 +27,7 @@ class Report : Command(LangID.EN, true) {
 
         val time = CardData.getUnixEpochTime()
 
-        val sessionNumber = getSessionNumber(getContent(event))
+        val sessionNumber = getSessionNumber(loader.content)
 
         val sessions = LogSession.gatherPreviousSessions(time, sessionNumber)
 
@@ -49,7 +49,7 @@ class Report : Command(LangID.EN, true) {
 
         val totalCatFoodFlow = sessions.sumOf { session -> session.catFoodTradeSum }
 
-        if (getContent(event).contains("-f")) {
+        if (loader.content.contains("-f")) {
             val mergedCatFoodPack = HashMap<Long, Long>()
             val mergedCatFoodCraft = HashMap<Long, Long>()
             val mergedCatFoodTrade = HashMap<Long, Long>()
@@ -96,7 +96,7 @@ class Report : Command(LangID.EN, true) {
                         "\n"
             )
 
-            event.guild.retrieveMembers(members.map { id -> UserSnowflake.fromId(id) })
+            loader.guild.retrieveMembers(members.map { id -> UserSnowflake.fromId(id) })
                 .onSuccess { list ->
                     list.forEach { member ->
                         reporter.append(member.effectiveName).append(" [").append(member.id).append("]\n")
@@ -251,7 +251,7 @@ class Report : Command(LangID.EN, true) {
 
                     writer.close()
 
-                    sendMessageWithFile(ch, "Uploading full report log", file, "report.txt", getMessage(event))
+                    sendMessageWithFile(ch, "Uploading full report log", file, "report.txt", loader.message)
                 }
         } else {
             val content = "Gathered ${sessions.size} log sessions in total before ${LogSession.globalFormat.format(time)}\n" +
@@ -275,7 +275,7 @@ class Report : Command(LangID.EN, true) {
                     "\n" +
                     "============================"
 
-            replyToMessageSafely(ch, content, getMessage(event)) { a -> a }
+            replyToMessageSafely(ch, content, loader.message) { a -> a }
         }
     }
 

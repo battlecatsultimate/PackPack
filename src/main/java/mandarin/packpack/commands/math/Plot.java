@@ -7,9 +7,9 @@ import mandarin.packpack.supporter.bc.ImageDrawing;
 import mandarin.packpack.supporter.calculation.Equation;
 import mandarin.packpack.supporter.calculation.Formula;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -25,29 +25,26 @@ public class Plot extends TimedConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
-        if(ch == null)
-            return;
-
-        String[] contents = getContent(event).split(" ");
+        String[] contents = loader.getContent().split(" ");
 
         if(contents.length < 2) {
-            replyToMessageSafely(ch, LangID.getStringByID("plot_formula", lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("plot_formula", lang), loader.getMessage(), a -> a);
 
             return;
         }
 
-        BigDecimal[] xRange = getXRange(getContent(event));
-        BigDecimal[] yRange = getYRange(getContent(event));
+        BigDecimal[] xRange = getXRange(loader.getContent());
+        BigDecimal[] yRange = getYRange(loader.getContent());
 
-        String f = filterFormula(getContent(event));
+        String f = filterFormula(loader.getContent());
 
         String[] test = f.split("=");
 
         if(test.length > 2) {
-            replyToMessageSafely(ch, LangID.getStringByID("plot_invalid", lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("plot_invalid", lang), loader.getMessage(), a -> a);
 
             return;
         } else if(test.length == 2) {
@@ -57,7 +54,7 @@ public class Plot extends TimedConstraintCommand {
         Formula formula = new Formula(f, 2, lang);
 
         if(!Formula.error.isEmpty()) {
-            replyToMessageSafely(ch, Formula.getErrorMessage(), getMessage(event), a -> a);
+            replyToMessageSafely(ch, Formula.getErrorMessage(), loader.getMessage(), a -> a);
 
             return;
         }
@@ -107,24 +104,24 @@ public class Plot extends TimedConstraintCommand {
                 coordinates[i] = c;
             }
 
-            Object[] plots = ImageDrawing.plotGraph(coordinates, xRange, yRange, keepRatio(getContent(event)), lang);
+            Object[] plots = ImageDrawing.plotGraph(coordinates, xRange, yRange, keepRatio(loader.getContent()), lang);
 
             if(plots == null) {
-                replyToMessageSafely(ch, LangID.getStringByID("plot_fail", lang), getMessage(event), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("plot_fail", lang), loader.getMessage(), a -> a);
             } else {
-                sendMessageWithFile(ch, (String) plots[1], (File) plots[0], "plot.png", getMessage(event));
+                sendMessageWithFile(ch, (String) plots[1], (File) plots[0], "plot.png", loader.getMessage());
             }
         } else {
             if(yRange == null) {
                 yRange = xRange.clone();
             }
 
-            Object[] plots = ImageDrawing.plotXYGraph(formula, xRange, yRange, keepRatio(getContent(event)), lang);
+            Object[] plots = ImageDrawing.plotXYGraph(formula, xRange, yRange, keepRatio(loader.getContent()), lang);
 
             if(plots == null) {
-                replyToMessageSafely(ch, LangID.getStringByID("plot_fail", lang), getMessage(event), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("plot_fail", lang), loader.getMessage(), a -> a);
             } else {
-                sendMessageWithFile(ch, (String) plots[1], (File) plots[0], "plot.png", getMessage(event));
+                sendMessageWithFile(ch, (String) plots[1], (File) plots[0], "plot.png", loader.getMessage());
             }
         }
     }

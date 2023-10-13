@@ -6,8 +6,8 @@ import mandarin.card.supporter.holder.ModifyCategoryHolder
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
+import mandarin.packpack.supporter.server.CommandLoader
 import net.dv8tion.jda.api.entities.UserSnowflake
-import net.dv8tion.jda.api.events.message.GenericMessageEvent
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -15,18 +15,18 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 
 class ModifyInventory : Command(LangID.EN, true) {
-    override fun doSomething(event: GenericMessageEvent?) {
-        val ch = getChannel(event) ?: return
-        val m = getMember(event) ?: return
-        val g = getGuild(event) ?: return
+    override fun doSomething(loader: CommandLoader) {
+        val ch = loader.channel
+        val m = loader.member
+        val g = loader.guild
 
         if (m.id != StaticStore.MANDARIN_SMELL && !CardData.hasAllPermission(m))
             return
 
-        val contents = getContent(event).split(" ")
+        val contents = loader.content.split(" ")
 
         if (contents.size < 2) {
-            replyToMessageSafely(ch, "You have to provide member whose inventory will be managed!", getMessage(event)) { a -> a }
+            replyToMessageSafely(ch, "You have to provide member whose inventory will be managed!", loader.message) { a -> a }
 
             return
         }
@@ -34,27 +34,29 @@ class ModifyInventory : Command(LangID.EN, true) {
         val userID = getUserID(contents)
 
         if (userID.isBlank() || !StaticStore.isNumeric(userID)) {
-            replyToMessageSafely(ch, "Bot failed to find user ID from command. User must be provided via either mention of user ID", getMessage(event)) { a -> a }
+            replyToMessageSafely(ch, "Bot failed to find user ID from command. User must be provided via either mention of user ID", loader.message) { a -> a }
 
             return
         }
 
         try {
-            val targetMember = g.retrieveMember(UserSnowflake.fromId(userID)).complete()
+            g.retrieveMember(UserSnowflake.fromId(userID)).queue() { targetMember ->
+                if (targetMember.user.isBot) {
+                    replyToMessageSafely(ch, "You can't modify inventory of the bot!", loader.message) { a -> a }
 
-            if (targetMember.user.isBot) {
-                replyToMessageSafely(ch, "You can't modify inventory of the bot!", getMessage(event)) { a -> a }
+                    return@queue
+                }
 
-                return
+                val inventory = Inventory.getInventory(targetMember.id)
+
+                replyToMessageSafely(ch, "Please select which thing you want to modify for inventory of ${targetMember.asMention}", loader.message, { a ->
+                    a.setComponents(registerComponents())
+                }, { msg ->
+                    StaticStore.putHolder(m.id, ModifyCategoryHolder(loader.message, ch.id, msg, inventory, targetMember))
+                })
             }
-
-            val inventory = Inventory.getInventory(targetMember.id)
-
-            val msg = getRepliedMessageSafely(ch, "Please select which thing you want to modify for inventory of ${targetMember.asMention}", getMessage(event)) { a -> a.setComponents(registerComponents()) }
-
-            StaticStore.putHolder(m.id, ModifyCategoryHolder(getMessage(event), ch.id, msg, inventory, targetMember))
         } catch (_: Exception) {
-            replyToMessageSafely(ch, "Bot failed to find provided user in this server", getMessage(event)) { a -> a }
+            replyToMessageSafely(ch, "Bot failed to find provided user in this server", loader.message) { a -> a }
         }
     }
 

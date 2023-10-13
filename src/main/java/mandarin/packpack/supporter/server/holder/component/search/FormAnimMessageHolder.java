@@ -103,20 +103,18 @@ public class FormAnimMessageHolder extends SearchHolder {
                             g = null;
                         }
 
-                        boolean result = EntityHandler.generateFormAnim(f, ch, getAuthorMessage(), g == null ? 0 : g.getBoostTier().getKey(), mode, debug, frame, lang, raw, gifMode);
+                        EntityHandler.generateFormAnim(f, ch, getAuthorMessage(), g == null ? 0 : g.getBoostTier().getKey(), mode, debug, frame, lang, raw, gifMode, () -> {
+                            if(!StaticStore.conflictedAnimation.isEmpty()) {
+                                StaticStore.logger.uploadLog("Warning - Bot generated animation while this animation is already cached\n\nCommand : " + command);
+                                StaticStore.conflictedAnimation.clear();
+                            }
 
-                        if(!StaticStore.conflictedAnimation.isEmpty()) {
-                            StaticStore.logger.uploadLog("Warning - Bot generated animation while this animation is already cached\n\nCommand : " + command);
-                            StaticStore.conflictedAnimation.clear();
-                        }
+                            User u = event.getUser();
 
-                        User u = event.getUser();
+                            if(raw) {
+                                StaticStore.logger.uploadLog("Generated mp4 by user " + u.getName() + " for unit ID " + Data.trio(f.unit.id.id) + " with mode of " + mode);
+                            }
 
-                        if(raw && result) {
-                            StaticStore.logger.uploadLog("Generated mp4 by user " + u.getName() + " for unit ID " + Data.trio(f.unit.id.id) + " with mode of " + mode);
-                        }
-
-                        if(result) {
                             long time = raw ? TimeUnit.MINUTES.toMillis(1) : TimeUnit.SECONDS.toMillis(30);
 
                             StaticStore.canDo.put("gif", new TimeBoolean(false, time));
@@ -126,7 +124,9 @@ public class FormAnimMessageHolder extends SearchHolder {
 
                                 StaticStore.canDo.put("gif", new TimeBoolean(true));
                             });
-                        }
+                        }, () -> {
+
+                        });
                     }, e -> StaticStore.logger.uploadErrorLog(e, "E/FormAnimMessageHolder::onSelected - Failed to generate animation"));
 
                     t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime());

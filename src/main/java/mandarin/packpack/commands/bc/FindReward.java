@@ -11,18 +11,18 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
+import mandarin.packpack.supporter.server.holder.component.StageInfoButtonHolder;
 import mandarin.packpack.supporter.server.holder.component.search.FindRewardMessageHolder;
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
-import mandarin.packpack.supporter.server.holder.component.StageInfoButtonHolder;
 import mandarin.packpack.supporter.server.holder.component.search.StageInfoMessageHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,36 +48,33 @@ public class FindReward extends TimedConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
-        if(ch == null)
-            return;
+        String rewardName = getRewardName(loader.getContent());
 
-        String rewardName = getRewardName(getContent(event));
-
-        int param = checkParameters(getContent(event));
+        int param = checkParameters(loader.getContent());
 
         boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
         boolean isCompact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
 
-        double chance = getChance(getContent(event));
-        int amount = getAmount(getContent(event));
+        double chance = getChance(loader.getContent());
+        int amount = getAmount(loader.getContent());
 
         if(rewardName.isBlank()) {
-            replyToMessageSafely(ch, LangID.getStringByID("freward_noname", lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("freward_noname", lang), loader.getMessage(), a -> a);
 
             return;
         }
 
         if(chance != -1 && (chance <= 0 || chance > 100)) {
-            replyToMessageSafely(ch, LangID.getStringByID("freward_chance", lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("freward_chance", lang), loader.getMessage(), a -> a);
 
             return;
         }
 
         if(amount != -1 && amount <= 0) {
-            replyToMessageSafely(ch, LangID.getStringByID("freward_amount", lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("freward_amount", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -85,30 +82,26 @@ public class FindReward extends TimedConstraintCommand {
         List<Integer> rewards = EntityFilter.findRewardByName(rewardName, lang);
 
         if(rewards.isEmpty()) {
-            replyToMessageSafely(ch, LangID.getStringByID("freward_norew", lang).replace("_", validateName(rewardName)), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("freward_norew", lang).replace("_", validateName(rewardName)), loader.getMessage(), a -> a);
 
             disableTimer();
         } else if(rewards.size() == 1) {
             List<Stage> stages = EntityFilter.findStageByReward(rewards.get(0), chance, amount);
 
             if(stages.isEmpty()) {
-                replyToMessageSafely(ch, LangID.getStringByID("freward_nosta", lang).replace("_", validateName(rewardName)), getMessage(event), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("freward_nosta", lang).replace("_", validateName(rewardName)), loader.getMessage(), a -> a);
 
                 disableTimer();
             } else if(stages.size() == 1) {
-                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(getMessage(event).getAuthor().getId(), TreasureHolder.global);
+                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getMessage().getAuthor().getId(), TreasureHolder.global);
 
-                Message result = EntityHandler.showStageEmb(stages.get(0), ch, getMessage(event), holder == null || holder.config.useFrame, isExtra, isCompact, 0, treasure, lang);
+                EntityHandler.showStageEmb(stages.get(0), ch, loader.getMessage(), holder == null || holder.config.useFrame, isExtra, isCompact, 0, treasure, lang, result -> {
+                    User u = loader.getUser();
 
-                User u = getUser(event);
+                    Message msg = loader.getMessage();
 
-                if(u != null) {
-                    Message msg = getMessage(event);
-
-                    if(msg != null) {
-                        StaticStore.putHolder(u.getId(), new StageInfoButtonHolder(stages.get(0), msg, result, ch.getId(), isCompact));
-                    }
-                }
+                    StaticStore.putHolder(u.getId(), new StageInfoButtonHolder(stages.get(0), msg, result, ch.getId(), isCompact));
+                });
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("freward_severalst", lang).replace("_", validateName(rewardName)))
                         .append("```md\n")
@@ -131,20 +124,17 @@ public class FindReward extends TimedConstraintCommand {
 
                 sb.append("```");
 
-                Message res = getRepliedMessageSafely(ch, sb.toString(), getMessage(event), a -> registerSearchComponents(a, stages.size(), accumulateStage(stages, false), lang));
+                replyToMessageSafely(ch, sb.toString(), loader.getMessage(), a -> registerSearchComponents(a, stages.size(), accumulateStage(stages, false), lang), res -> {
+                    User u = loader.getUser();
 
-                if(res != null) {
-                    User u = getUser(event);
+                    Message msg = loader.getMessage();
 
-                    if(u != null) {
-                        Message msg = getMessage(event);
+                    TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
 
-                        TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
+                    StaticStore.putHolder(u.getId(), new StageInfoMessageHolder(stages, msg, res, ch.getId(), 0, treasure, config.useFrame, isExtra, isCompact, lang));
+                });
 
-                        if(msg != null)
-                            StaticStore.putHolder(u.getId(), new StageInfoMessageHolder(stages, msg, res, ch.getId(), 0, treasure, config.useFrame, isExtra, isCompact, lang));
-                    }
-                }
+
             }
         } else {
             StringBuilder sb = new StringBuilder(LangID.getStringByID("freward_several", lang).replace("_", validateName(rewardName)))
@@ -168,21 +158,15 @@ public class FindReward extends TimedConstraintCommand {
 
             sb.append("```");
 
-            Message res = registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), rewards.size(), data, lang).complete();
+            registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), rewards.size(), data, lang).queue(res -> {
+                User u = loader.getUser();
 
-            if(res != null) {
-                User u = getUser(event);
+                Message msg = loader.getMessage();
 
-                if(u != null) {
-                    Message msg = getMessage(event);
+                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
 
-                    if(msg != null) {
-                        TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
-
-                        StaticStore.putHolder(u.getId(), new FindRewardMessageHolder(res, msg, ch.getId(), rewards, rewardName, chance, amount, isExtra, isCompact, config.useFrame, treasure, lang));
-                    }
-                }
-            }
+                StaticStore.putHolder(u.getId(), new FindRewardMessageHolder(res, msg, ch.getId(), rewards, rewardName, chance, amount, isExtra, isCompact, config.useFrame, treasure, lang));
+            });
 
             disableTimer();
         }

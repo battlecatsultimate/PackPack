@@ -3,15 +3,14 @@ package mandarin.packpack.commands.bot;
 import common.CommonStatic;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.concrete.NewsChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.util.ArrayList;
 
@@ -21,23 +20,20 @@ public class Publish extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
-        if(ch == null)
-            return;
-
-        String[] contents = getContent(event).split(" ");
+        String[] contents = loader.getContent().split(" ");
 
         if(contents.length < 2) {
-            replyToMessageSafely(ch, "`p!pub [Importance]`\n-i : Important\n-n : Not important", getMessage(event), a -> a);
+            replyToMessageSafely(ch, "`p!pub [Importance]`\n-i : Important\n-n : Not important", loader.getMessage(), a -> a);
 
             return;
         }
 
         boolean important = contents[1].equals("-i");
 
-        JDA client = event.getJDA();
+        JDA client = ch.getJDA();
 
         if(!StaticStore.announcements.containsKey(0)) {
             createMessageWithNoPings(ch, "You have to at least make announcement for English!");
@@ -73,23 +69,23 @@ public class Publish extends ConstraintCommand {
                 }
 
                 if(content != null && ((NewsChannel) c).canTalk()) {
-                    Message m = ((NewsChannel) c)
+                    ((NewsChannel) c)
                             .sendMessage(content)
                             .setAllowedMentions(new ArrayList<>())
-                            .complete();
+                            .queue(m -> {
+                                if(m != null && holder.publish)
+                                    m.crosspost().queue();
 
-                    if(m != null && holder.publish)
-                        m.crosspost().queue();
-
-                    if(!holder.announceMessage.isBlank()) {
-                        if(important) {
-                            ((NewsChannel) c).sendMessage(holder.announceMessage).queue();
-                        } else {
-                            ((NewsChannel) c).sendMessage(holder.announceMessage)
-                                    .setSuppressedNotifications(true)
-                                    .queue();
-                        }
-                    }
+                                if(!holder.announceMessage.isBlank()) {
+                                    if(important) {
+                                        ((NewsChannel) c).sendMessage(holder.announceMessage).queue();
+                                    } else {
+                                        ((NewsChannel) c).sendMessage(holder.announceMessage)
+                                                .setSuppressedNotifications(true)
+                                                .queue();
+                                    }
+                                }
+                            });
                 }
             } else if(c instanceof GuildMessageChannel) {
                 String content = null;

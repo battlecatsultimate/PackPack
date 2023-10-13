@@ -5,15 +5,15 @@ import mandarin.card.supporter.TradingSession
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
+import mandarin.packpack.supporter.server.CommandLoader
 import mandarin.packpack.supporter.server.holder.component.ConfirmButtonHolder
-import net.dv8tion.jda.api.events.message.GenericMessageEvent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 
 class Confirm(private val session: TradingSession) : Command(LangID.EN, true) {
-    override fun doSomething(event: GenericMessageEvent?) {
-        val ch = getChannel(event) ?: return
-        val m = getMember(event) ?: return
-        val g = getGuild(event) ?: return
+    override fun doSomething(loader: CommandLoader) {
+        val ch = loader.channel
+        val m = loader.member
+        val g = loader.guild
 
         if (session.suggestion.any { s -> !s.touched }) {
             ch.sendMessage("Both user must suggest at least anything. Please call `${CardBot.globalPrefix}suggest` to suggest trade. It's fine to suggest nothing, but users must clearly indicate it via this command still")
@@ -22,58 +22,56 @@ class Confirm(private val session: TradingSession) : Command(LangID.EN, true) {
             return
         }
 
-        if (session.needApproval(g) && !session.approved) {
-            replyToMessageSafely(ch, "Please wait for manager or mod to approve this session!", getMessage(event)) { a -> a }
+        session.needApproval(g, {
+            replyToMessageSafely(ch, "Please wait for manager or mod to approve this session!", loader.message) { a -> a }
+        }, {
+            val index = session.member.indexOf(m.idLong)
 
-            return
-        }
+            if (index == -1)
+                return@needApproval
 
-        val index = session.member.indexOf(m.idLong)
+            replyToMessageSafely(ch, "Are you sure you want to confirm this trading? Once trade is done, it cannot be undone", loader.message, { a ->
+                val components = ArrayList<Button>()
 
-        if (index == -1)
-            return
+                components.add(Button.success("confirm", "Confirm"))
+                components.add(Button.danger("cancel", "Cancel"))
 
-        val msg = getRepliedMessageSafely(ch, "Are you sure you want to confirm this trading? Once trade is done, it cannot be undone", getMessage(event)) { a ->
-            val components = ArrayList<Button>()
+                a.setActionRow(components)
+            }, { msg ->
+                StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, msg, ch.id, {
+                    session.agreed[index] = true
 
-            components.add(Button.success("confirm", "Confirm"))
-            components.add(Button.danger("cancel", "Cancel"))
+                    val opposite = (2 - index) / 2
 
-            a.setActionRow(components)
-        }
+                    if (session.agreed[opposite]) {
+                        ch.sendMessage("Both ${m.asMention} and <@${session.member[opposite]}> confirmed their trading")
+                            .mentionRepliedUser(false)
+                            .setAllowedMentions(ArrayList())
+                            .setComponents()
+                            .queue()
 
-        StaticStore.putHolder(m.id, ConfirmButtonHolder(getMessage(event), msg, ch.id, {
-            session.agreed[index] = true
+                        if (!session.validate(ch)) {
+                            ch.sendMessage("It seems trading has been failed. Please check the reason above, and edit each other's suggestion to fix it").queue()
 
-            val opposite = (2 - index) / 2
+                            return@ConfirmButtonHolder
+                        }
 
-            if (session.agreed[opposite]) {
-                ch.sendMessage("Both ${m.asMention} and <@${session.member[opposite]}> confirmed their trading")
-                    .mentionRepliedUser(false)
-                    .setAllowedMentions(ArrayList())
-                    .setComponents()
-                    .queue()
+                        session.trade(ch, g.idLong)
 
-                if (!session.validate(ch)) {
-                    ch.sendMessage("It seems trading has been failed. Please check the reason above, and edit each other's suggestion to fix it").queue()
+                        session.close(ch)
 
-                    return@ConfirmButtonHolder
-                }
+                        ch.sendMessage("Trading has been done, please check each other's inventory to check if trading has been done successfully. If you have suggested cf, please keep in mind that cat food transferring may take time").queue()
+                    } else {
+                        ch.sendMessage("${m.asMention} confirmed their trading, waiting for other's confirmation...")
+                            .mentionRepliedUser(false)
+                            .setAllowedMentions(ArrayList())
+                            .setComponents()
+                            .queue()
 
-                session.trade(ch, g.idLong)
-
-                session.close(ch)
-
-                ch.sendMessage("Trading has been done, please check each other's inventory to check if trading has been done successfully. If you have suggested cf, please keep in mind that cat food transferring may take time").queue()
-            } else {
-                ch.sendMessage("${m.asMention} confirmed their trading, waiting for other's confirmation...")
-                    .mentionRepliedUser(false)
-                    .setAllowedMentions(ArrayList())
-                    .setComponents()
-                    .queue()
-
-                CardBot.saveCardData()
-            }
-        }, LangID.EN))
+                        CardBot.saveCardData()
+                    }
+                }, LangID.EN))
+            })
+        })
     }
 }

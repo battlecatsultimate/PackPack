@@ -2,13 +2,14 @@ package mandarin.packpack.commands;
 
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
+import net.dv8tion.jda.api.requests.RestAction;
 import org.jetbrains.annotations.Nullable;
 
 public class BoosterPin extends ConstraintCommand {
@@ -22,11 +23,11 @@ public class BoosterPin extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
-        Member m = getMember(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
+        Member m = loader.getMember();
 
-        if(ch == null || m == null || holder == null)
+        if(holder == null)
             return;
 
         if(holder.BOOSTER == null) {
@@ -38,7 +39,7 @@ public class BoosterPin extends ConstraintCommand {
         }
 
         if(!holder.boosterPin) {
-            replyToMessageSafely(ch, LangID.getStringByID("boostpin_noperm", lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("boostpin_noperm", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -53,30 +54,38 @@ public class BoosterPin extends ConstraintCommand {
             }
 
             if(!pinAllowed) {
-                replyToMessageSafely(ch, LangID.getStringByID("boostpin_nothere", lang), getMessage(event), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("boostpin_nothere", lang), loader.getMessage(), a -> a);
 
                 return;
             }
         }
 
-        Message msg;
-
-        String[] contents = getContent(event).split(" ");
+        String[] contents = loader.getContent().split(" ");
 
         if(contents.length < 2) {
-            if(getMessage(event).getReferencedMessage() != null) {
-                msg = getMessage(event).getReferencedMessage();
+            if(loader.getMessage().getReferencedMessage() != null) {
+                pinMessage(loader, loader.getMessage().getReferencedMessage());
             } else {
-                replyToMessageSafely(ch, LangID.getStringByID("boostpin_id", lang), getMessage(event), a -> a);
-
-                return;
+                replyToMessageSafely(ch, LangID.getStringByID("boostpin_id", lang), loader.getMessage(), a -> a);
             }
         } else {
-            msg = obtainMessage(contents[1], ch);
+            RestAction<Message> action = obtainMessage(contents[1], ch);
+
+            if (action == null) {
+                pinMessage(loader, null);
+            } else {
+                action.queue(msg -> pinMessage(loader, msg));
+            }
         }
 
+
+    }
+
+    private void pinMessage(CommandLoader loader, Message msg) {
+        MessageChannel ch = loader.getChannel();
+
         if(msg == null) {
-            replyToMessageSafely(ch, LangID.getStringByID("boostpin_nomsg", lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("boostpin_nomsg", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -84,15 +93,15 @@ public class BoosterPin extends ConstraintCommand {
         if(msg.isPinned()) {
             msg.unpin().queue();
 
-            replyToMessageSafely(ch, String.format(LangID.getStringByID("boostpin_unpin", lang), msg.getJumpUrl()), getMessage(event), a -> a);
+            replyToMessageSafely(ch, String.format(LangID.getStringByID("boostpin_unpin", lang), msg.getJumpUrl()), loader.getMessage(), a -> a);
         } else {
             msg.pin().queue();
 
-            replyToMessageSafely(ch, String.format(LangID.getStringByID("boostpin_pin", lang), msg.getJumpUrl()), getMessage(event), a -> a);
+            replyToMessageSafely(ch, String.format(LangID.getStringByID("boostpin_pin", lang), msg.getJumpUrl()), loader.getMessage(), a -> a);
         }
     }
 
-    private Message obtainMessage(String id, MessageChannel ch) {
+    private RestAction<Message> obtainMessage(String id, MessageChannel ch) {
         if(id.startsWith("http")) {
             String[] segments = id.split("/");
 
@@ -101,13 +110,13 @@ public class BoosterPin extends ConstraintCommand {
             }
 
             try {
-                return ch.retrieveMessageById(segments[segments.length - 1]).complete();
+                return ch.retrieveMessageById(segments[segments.length - 1]);
             } catch (Exception ignored) {
                 return null;
             }
         } else if(StaticStore.isNumeric(id)) {
             try {
-                return ch.retrieveMessageById(id).complete();
+                return ch.retrieveMessageById(id);
             } catch (Exception ignored) {
                 return null;
             }

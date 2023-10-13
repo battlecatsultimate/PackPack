@@ -6,31 +6,31 @@ import mandarin.card.supporter.holder.PackSelectHolder
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
+import mandarin.packpack.supporter.server.CommandLoader
 import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.events.message.GenericMessageEvent
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 
 class Roll : Command(LangID.EN, true) {
-    override fun doSomething(event: GenericMessageEvent?) {
-        val ch = getChannel(event) ?: return
-        val m = getMember(event) ?: return
+    override fun doSomething(loader: CommandLoader) {
+        val ch = loader.channel
+        val m = loader.member
 
         if (CardBot.rollLocked && !CardData.hasAllPermission(m) && m.id != StaticStore.MANDARIN_SMELL) {
             return
         }
 
-        val msg = getRepliedMessageSafely(ch, "Please select the pack that you want to roll", getMessage(event)) { a ->
+        replyToMessageSafely(ch, "Please select the pack that you want to roll", loader.message, { a ->
             a.setComponents(registerComponents(m))
-        }
+        }, { msg ->
+            val content = loader.content.split(" ")
 
-        val content = getContent(event).split(" ")
+            val noImage = arrayOf("-s", "-simple", "-n", "-noimage").any { p -> p in content }
 
-        val noImage = arrayOf("-s", "-simple", "-n", "-noimage").any { p -> p in content }
-
-        StaticStore.putHolder(m.id, PackSelectHolder(getMessage(event), ch.id, msg, noImage))
+            StaticStore.putHolder(m.id, PackSelectHolder(loader.message, ch.id, msg, noImage))
+        })
     }
 
     private fun registerComponents(member: Member) : List<LayoutComponent> {

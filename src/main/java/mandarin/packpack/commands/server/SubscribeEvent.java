@@ -3,12 +3,12 @@ package mandarin.packpack.commands.server;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.util.*;
 
@@ -18,25 +18,22 @@ public class SubscribeEvent extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
+    public void doSomething(CommandLoader loader) throws Exception {
         if(holder == null)
             return;
 
-        MessageChannel ch = getChannel(event);
-        Guild g = getGuild(event);
+        MessageChannel ch = loader.getChannel();
+        Guild g = loader.getGuild();
 
-        if(ch == null || g == null)
-            return;
-
-        List<Integer> locales = getLocales(getContent(event).replaceAll("[ ]+,[ ]+|,[ ]+|[ ]+,", ","));
+        List<Integer> locales = getLocales(loader.getContent().replaceAll(" +, +|, +| +,", ","));
 
         if(locales.isEmpty()) {
-            replyToMessageSafely(ch, LangID.getStringByID("subevent_noloc", lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("subevent_noloc", lang), loader.getMessage(), a -> a);
 
             return;
         }
 
-        String channel = getChannelID(getContent(event));
+        String channel = getChannelID(loader.getContent());
 
         StringBuilder result = new StringBuilder();
 
@@ -53,7 +50,7 @@ public class SubscribeEvent extends ConstraintCommand {
 
             StaticStore.idHolder.put(g.getId(), holder);
 
-            replyToMessageSafely(ch, LangID.getStringByID("subevent_set", lang) + result, getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("subevent_set", lang) + result, loader.getMessage(), a -> a);
 
             return;
         } else if(channel == null) {
@@ -70,7 +67,7 @@ public class SubscribeEvent extends ConstraintCommand {
             return;
         }
 
-        holder.eventRaw = isRaw(getContent(event));
+        holder.eventRaw = isRaw(loader.getContent());
 
         for(int i : locales) {
             String previous = holder.eventMap.put(i, channel);
@@ -82,7 +79,7 @@ public class SubscribeEvent extends ConstraintCommand {
             }
         }
 
-        replyToMessageSafely(ch, LangID.getStringByID("subevent_set", lang) + result, getMessage(event), a -> a);
+        replyToMessageSafely(ch, LangID.getStringByID("subevent_set", lang) + result, loader.getMessage(), a -> a);
 
         StaticStore.idHolder.put(g.getId(), holder);
     }
@@ -120,18 +117,10 @@ public class SubscribeEvent extends ConstraintCommand {
 
         for(int i = 0; i < contents.length; i++) {
             switch (contents[i]) {
-                case "-en":
-                    set.add(LangID.EN);
-                    break;
-                case "-tw":
-                    set.add(LangID.ZH);
-                    break;
-                case "-kr":
-                    set.add(LangID.KR);
-                    break;
-                case "-jp":
-                    set.add(LangID.JP);
-                    break;
+                case "-en" -> set.add(LangID.EN);
+                case "-tw" -> set.add(LangID.ZH);
+                case "-kr" -> set.add(LangID.KR);
+                case "-jp" -> set.add(LangID.JP);
             }
         }
 
@@ -159,15 +148,11 @@ public class SubscribeEvent extends ConstraintCommand {
     }
 
     private String getLocaleFrom(int loc) {
-        switch (loc) {
-            case LangID.ZH:
-                return LangID.getStringByID("subevent_zh", lang);
-            case LangID.KR:
-                return LangID.getStringByID("subevent_kr", lang);
-            case LangID.JP:
-                return LangID.getStringByID("subevent_jp", lang);
-            default:
-                return LangID.getStringByID("subevent_en", lang);
-        }
+        return switch (loc) {
+            case LangID.ZH -> LangID.getStringByID("subevent_zh", lang);
+            case LangID.KR -> LangID.getStringByID("subevent_kr", lang);
+            case LangID.JP -> LangID.getStringByID("subevent_jp", lang);
+            default -> LangID.getStringByID("subevent_en", lang);
+        };
     }
 }

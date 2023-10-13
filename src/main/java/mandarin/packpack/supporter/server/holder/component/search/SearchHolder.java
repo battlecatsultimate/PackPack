@@ -97,7 +97,7 @@ public abstract class SearchHolder extends ComponentHolder {
                 .setComponents()
                 .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)
-                .complete();
+                .queue();
     }
 
     protected String getPage() {
@@ -202,6 +202,6 @@ public abstract class SearchHolder extends ComponentHolder {
                 .setComponents(getComponents())
                 .mentionRepliedUser(false)
                 .setAllowedMentions(new ArrayList<>())
-                .complete();
+                .queue();
     }
 }

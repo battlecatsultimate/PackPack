@@ -10,6 +10,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.ImageDrawing;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.search.EnemyAnimMessageHolder;
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
@@ -17,7 +18,6 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -38,13 +38,10 @@ public class EnemyImage extends TimedConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
-        if(ch == null)
-            return;
-
-        String[] list = getContent(event).split(" ");
+        String[] list = loader.getContent().split(" ");
 
         if(list.length >= 2) {
             File temp = new File("./temp");
@@ -58,10 +55,10 @@ public class EnemyImage extends TimedConstraintCommand {
                 }
             }
 
-            String search = filterCommand(getContent(event));
+            String search = filterCommand(loader.getContent());
 
             if(search.isBlank()) {
-                replyToMessageSafely(ch, LangID.getStringByID("eimg_more", lang), getMessage(event), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("eimg_more", lang), loader.getMessage(), a -> a);
 
                 return;
             }
@@ -69,13 +66,13 @@ public class EnemyImage extends TimedConstraintCommand {
             ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(search, lang);
 
             if(enemies.isEmpty()) {
-                replyToMessageSafely(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", getSearchKeyword(getContent(event))), getMessage(event), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", getSearchKeyword(loader.getContent())), loader.getMessage(), a -> a);
 
                 disableTimer();
             } else if(enemies.size() == 1) {
-                int param = checkParameters(getContent(event));
-                int mode = getMode(getContent(event));
-                int frame = getFrame(getContent(event));
+                int param = checkParameters(loader.getContent());
+                int mode = getMode(loader.getContent());
+                int frame = getFrame(loader.getContent());
 
                 enemies.get(0).anim.load();
 
@@ -101,11 +98,11 @@ public class EnemyImage extends TimedConstraintCommand {
                             ch,
                             LangID.getStringByID("eimg_result", lang).replace("_", fName).replace(":::", getModeName(mode, enemies.get(0).anim.anims.length)).replace("=", String.valueOf(frame)),
                             img,
-                            getMessage(event)
+                            loader.getMessage()
                     );
                 }
             } else {
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", getSearchKeyword(getContent(event))));
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", getSearchKeyword(loader.getContent())));
 
                 sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang));
 
@@ -126,22 +123,17 @@ public class EnemyImage extends TimedConstraintCommand {
 
                 sb.append("```");
 
-                Message res = registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), enemies.size(), data, lang).complete();
+                registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), enemies.size(), data, lang).queue(res -> {
+                    int param = checkParameters(loader.getContent());
+                    int mode = getMode(loader.getContent());
+                    int frame = getFrame(loader.getContent());
 
-                int param = checkParameters(getContent(event));
-                int mode = getMode(getContent(event));
-                int frame = getFrame(getContent(event));
+                    User u = loader.getUser();
 
-                if(res != null) {
-                    User u = getUser(event);
+                    Message msg = loader.getMessage();
 
-                    if(u != null) {
-                        Message msg = getMessage(event);
-
-                        if(msg != null)
-                            StaticStore.putHolder(u.getId(), new EnemyAnimMessageHolder(enemies, msg, res, ch.getId(), mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang, false, false, false));
-                    }
-                }
+                    StaticStore.putHolder(u.getId(), new EnemyAnimMessageHolder(enemies, msg, res, ch.getId(), mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang, false, false, false));
+                });
 
                 disableTimer();
             }

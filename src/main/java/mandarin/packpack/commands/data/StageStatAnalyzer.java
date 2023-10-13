@@ -10,11 +10,10 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.CustomStageMap;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -40,7 +39,7 @@ public class StageStatAnalyzer extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
+    public void doSomething(CommandLoader loader) throws Exception {
         File temp = new File("./temp");
 
         if(!temp.exists() && !temp.mkdirs()) {
@@ -48,13 +47,9 @@ public class StageStatAnalyzer extends ConstraintCommand {
             return;
         }
 
-        MessageChannel ch = getChannel(event);
-        Message author = getMessage(event);
+        MessageChannel ch = loader.getChannel();
 
-        if(ch == null || author == null)
-            return;
-
-        String command = getContent(event);
+        String command = loader.getContent();
 
         int mid = getMID(command);
         String code = getCode(command);
@@ -132,7 +127,7 @@ public class StageStatAnalyzer extends ConstraintCommand {
         File characterGroup = new File(dataLocal, "Charagroup.csv");
 
         int len = getStageLength(mapData);
-        List<Integer> indexes = getStageRange(getContent(event));
+        List<Integer> indexes = getStageRange(loader.getContent());
 
         for(int i = 0; i < indexes.size(); i++) {
             if(indexes.get(i) >= len) {
@@ -173,7 +168,7 @@ public class StageStatAnalyzer extends ConstraintCommand {
         } else if(name.length != (indexes.isEmpty() ? len : indexes.size())) {
             int nLen = name.length;
 
-            ch.sendMessage(LangID.getStringByID("stat_name", lang).replace("_RRR_", (indexes.isEmpty() ? len : indexes.size())+"").replace("_PPP_", nLen+"")).queue();
+            ch.sendMessage(LangID.getStringByID("stat_name", lang).replace("_RRR_", String.valueOf(indexes.isEmpty() ? len : indexes.size())).replace("_PPP_", String.valueOf(nLen))).queue();
 
             return;
         }
@@ -363,21 +358,12 @@ public class StageStatAnalyzer extends ConstraintCommand {
         if(!dataLocal.exists() || !imageLocal.exists() || !resLocal.exists())
             return false;
 
-        String loc;
-
-        switch (locale) {
-            case "en":
-                loc = "en";
-                break;
-            case "zh":
-                loc = "tw";
-                break;
-            case "kr":
-                loc = "ko";
-                break;
-            default:
-                loc = "ja";
-        }
+        String loc = switch (locale) {
+            case "en" -> "en";
+            case "zh" -> "tw";
+            case "kr" -> "ko";
+            default -> "ja";
+        };
 
         File mapData = new File(dataLocal, "MapStageData" + code + "_" + Data.trio(mID % 1000) + ".csv");
 

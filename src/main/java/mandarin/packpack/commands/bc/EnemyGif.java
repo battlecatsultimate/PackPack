@@ -8,15 +8,14 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.search.EnemyAnimMessageHolder;
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -50,21 +49,14 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
     }
 
     @Override
-    protected void doThing(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
-
-        if(ch == null)
-            return;
-
-        Guild g = getGuild(event);
-        User u = getUser(event);
-
-        if(u == null)
-            return;
+    protected void doThing(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
+        Guild g = loader.getGuild();
+        User u = loader.getUser();
 
         boolean isTrusted = StaticStore.contributors.contains(u.getId()) || u.getId().equals(StaticStore.MANDARIN_SMELL);
 
-        String[] list = getContent(event).split(" ");
+        String[] list = loader.getContent().split(" ");
 
         if(list.length >= 2) {
             File temp = new File("./temp");
@@ -78,10 +70,10 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
                 }
             }
 
-            String search = filterCommand(getContent(event));
+            String search = filterCommand(loader.getContent());
 
             if(search.isBlank()) {
-                replyToMessageSafely(ch, LangID.getStringByID("eimg_more", lang), getMessage(event), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("eimg_more", lang), loader.getMessage(), a -> a);
 
                 disableTimer();
 
@@ -91,16 +83,16 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
             ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(search, lang);
 
             if(enemies.isEmpty()) {
-                replyToMessageSafely(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", getSearchKeyword(getContent(event))), getMessage(event), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", getSearchKeyword(loader.getContent())), loader.getMessage(), a -> a);
 
                 disableTimer();
             } else if(enemies.size() == 1) {
-                int param = checkParameters(getContent(event));
-                int mode = getMode(getContent(event));
+                int param = checkParameters(loader.getContent());
+                int mode = getMode(loader.getContent());
                 boolean debug = (param & PARAM_DEBUG) > 0;
                 boolean raw = (param & PARAM_RAW) > 0;
                 boolean gif = (param & PARAM_GIF) > 0;
-                int frame = getFrame(getContent(event));
+                int frame = getFrame(loader.getContent());
 
                 Enemy en = enemies.get(0);
 
@@ -114,26 +106,27 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
                     ch.sendMessage(LangID.getStringByID("gif_ignore", lang)).queue();
                 }
 
-                boolean result = EntityHandler.generateEnemyAnim(en, ch, getMessage(event), g == null ? 0 : g.getBoostTier().getKey(), mode, debug, frame, lang, raw && isTrusted, gif);
+                EntityHandler.generateEnemyAnim(en, ch, loader.getMessage(), g.getBoostTier().getKey(), mode, debug, frame, lang, raw && isTrusted, gif, () -> {
+                    if(!StaticStore.conflictedAnimation.isEmpty()) {
+                        StaticStore.logger.uploadLog("Warning - Bot generated animation while this animation is already cached\n\nCommand : " + loader.getContent());
+                        StaticStore.conflictedAnimation.clear();
+                    }
 
-                if(!StaticStore.conflictedAnimation.isEmpty()) {
-                    StaticStore.logger.uploadLog("Warning - Bot generated animation while this animation is already cached\n\nCommand : " + getContent(event));
-                    StaticStore.conflictedAnimation.clear();
-                }
+                    if(raw && isTrusted) {
+                        StaticStore.logger.uploadLog("Generated mp4 by user " + u.getName() + " for enemy ID " + Data.trio(en.id.id) + " with mode of " + mode);
 
-                if(raw && isTrusted && result) {
-                    StaticStore.logger.uploadLog("Generated mp4 by user " + u.getName() + " for enemy ID " + Data.trio(en.id.id) + " with mode of " + mode);
-                }
+                        changeTime(TimeUnit.MINUTES.toMillis(1));
+                    }
+                }, () -> {
+                    if(!StaticStore.conflictedAnimation.isEmpty()) {
+                        StaticStore.logger.uploadLog("Warning - Bot generated animation while this animation is already cached\n\nCommand : " + loader.getContent());
+                        StaticStore.conflictedAnimation.clear();
+                    }
 
-                if(raw && isTrusted) {
-                    changeTime(TimeUnit.MINUTES.toMillis(1));
-                }
-
-                if(!result) {
                     disableTimer();
-                }
+                });
             } else {
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", getSearchKeyword(getContent(event))));
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", getSearchKeyword(loader.getContent())));
 
                 sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang));
 
@@ -154,22 +147,20 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
 
                 sb.append("```");
 
-                Message res = getRepliedMessageSafely(ch, sb.toString(), getMessage(event), a -> registerSearchComponents(a, enemies.size(), data, lang));
+                replyToMessageSafely(ch, sb.toString(), loader.getMessage(), a -> registerSearchComponents(a, enemies.size(), data, lang), res -> {
+                    int param = checkParameters(loader.getContent());
+                    int mode = getMode(loader.getContent());
+                    int frame = getFrame(loader.getContent());
 
-                int param = checkParameters(getContent(event));
-                int mode = getMode(getContent(event));
-                int frame = getFrame(getContent(event));
+                    boolean raw = (param & PARAM_RAW) > 0;
+                    boolean gif = (param & PARAM_GIF) > 0;
 
-                boolean raw = (param & PARAM_RAW) > 0;
-                boolean gif = (param & PARAM_GIF) > 0;
+                    if(raw && !isTrusted) {
+                        ch.sendMessage(LangID.getStringByID("gif_ignore", lang)).queue();
+                    }
 
-                if(raw && !isTrusted) {
-                    ch.sendMessage(LangID.getStringByID("gif_ignore", lang)).queue();
-                }
-
-                if(res != null) {
-                    StaticStore.putHolder(u.getId(), new EnemyAnimMessageHolder(enemies, getMessage(event), res, ch.getId(), mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isTrusted, gif));
-                }
+                    StaticStore.putHolder(u.getId(), new EnemyAnimMessageHolder(enemies, loader.getMessage(), res, ch.getId(), mode, frame, false, ((param & PARAM_DEBUG) > 0), lang, true, raw && isTrusted, gif));
+                });
 
                 disableTimer();
             }
@@ -180,7 +171,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
     }
 
     @Override
-    protected void setOptionalID(GenericMessageEvent event) {
+    protected void setOptionalID(CommandLoader loader) {
         optionalID = "";
     }
 

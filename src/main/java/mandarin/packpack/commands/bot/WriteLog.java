@@ -2,9 +2,9 @@ package mandarin.packpack.commands.bot;
 
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.Logger;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import org.jetbrains.annotations.Nullable;
 
 public class WriteLog extends ConstraintCommand {
@@ -13,14 +13,11 @@ public class WriteLog extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
-
-        if (ch == null)
-            return;
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
         Logger.writeLog();
 
-        replyToMessageSafely(ch, "Successfully wrote log!", getMessage(event), a -> a);
+        replyToMessageSafely(ch, "Successfully wrote log!", loader.getMessage(), a -> a);
     }
 }

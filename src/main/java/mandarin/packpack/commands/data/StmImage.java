@@ -10,11 +10,11 @@ import mandarin.packpack.supporter.ImageGenerator;
 import mandarin.packpack.supporter.StageImageGenerator;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 
 import java.awt.*;
@@ -39,11 +39,11 @@ public class StmImage extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) {
+    public void doSomething(CommandLoader loader) {
         try {
-            MessageChannel ch = getChannel(event);
+            MessageChannel ch = loader.getChannel();
 
-            String [] list = getContent(event).split(" ");
+            String [] list = loader.getContent().split(" ");
 
             if(list.length >= 2) {
                 File temp = new File("./temp");
@@ -57,14 +57,14 @@ public class StmImage extends ConstraintCommand {
                     }
                 }
 
-                int param = checkParameters(getContent(event));
+                int param = checkParameters(loader.getContent());
 
                 ImageGenerator generator;
                 File f;
-                String[] messages = getContent(event).split(" ", startIndex+1);
+                String[] messages = loader.getContent().split(" ", startIndex+1);
 
                 if(messages.length <= startIndex) {
-                    replyToMessageSafely(ch, LangID.getStringByID("stimg_more", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.serverPrefix), getMessage(event), a -> a);
+                    replyToMessageSafely(ch, LangID.getStringByID("stimg_more", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.serverPrefix), loader.getMessage(), a -> a);
 
                     return;
                 }
@@ -100,16 +100,16 @@ public class StmImage extends ConstraintCommand {
                     f = generator.generateImage(message, false);
                 }
 
-                handleLast(message, f, ch, getMessage(event), generator);
+                handleLast(message, f, ch, loader.getMessage(), generator);
             } else {
-                replyToMessageSafely(ch, LangID.getStringByID("stmimg_argu", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.serverPrefix), getMessage(event), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("stmimg_argu", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.serverPrefix), loader.getMessage(), a -> a);
             }
         } catch (Exception e) {
             e.printStackTrace();
             if(e instanceof ErrorResponseException) {
-                onFail(event, SERVER_ERROR);
+                onFail(loader, SERVER_ERROR);
             } else {
-                onFail(event, DEFAULT_ERROR);
+                onFail(loader, DEFAULT_ERROR);
             }
         }
     }
@@ -149,27 +149,27 @@ public class StmImage extends ConstraintCommand {
             label:
             for(String str : pureMessage) {
                 switch (str) {
-                    case "-r":
+                    case "-r" -> {
                         if ((result & PARAM_REAL) == 0) {
                             result |= PARAM_REAL;
                             startIndex++;
                         } else
                             break label;
-                        break;
-                    case "-jp":
+                    }
+                    case "-jp" -> {
                         if ((result & PARAM_JP) == 0) {
                             result |= PARAM_JP;
                             startIndex++;
                         } else
                             break label;
-                        break;
-                    case "-f":
+                    }
+                    case "-f" -> {
                         if ((result & PARAM_FORCE) == 0) {
                             result |= PARAM_FORCE;
                             startIndex++;
                         } else
                             break label;
-                        break;
+                    }
                 }
             }
         }

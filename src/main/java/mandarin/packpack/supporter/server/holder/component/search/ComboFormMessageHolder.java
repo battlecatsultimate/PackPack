@@ -115,22 +115,23 @@ public class ComboFormMessageHolder extends SearchHolder {
 
                 sb.append("```");
 
-                Message res = Command.registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), combos.size(), data, lang).complete();
-                String formName = StaticStore.safeMultiLangGet(form.get(id), lang);
+                Command.registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), combos.size(), data, lang).queue(res -> {
+                    String formName = StaticStore.safeMultiLangGet(form.get(id), lang);
 
-                if(formName == null || formName.isBlank())
-                    formName = form.get(id).names.toString();
+                    if(formName == null || formName.isBlank())
+                        formName = form.get(id).names.toString();
 
-                if(formName.isBlank())
-                    formName = Data.trio(form.get(id).unit.id.id) +" - " + Data.trio(form.get(id).fid);
+                    if(formName.isBlank())
+                        formName = Data.trio(form.get(id).unit.id.id) +" - " + Data.trio(form.get(id).fid);
 
-                msg.editMessage(LangID.getStringByID("combo_selected", lang).replace("_", formName)).mentionRepliedUser(false).setComponents().queue();
+                    msg.editMessage(LangID.getStringByID("combo_selected", lang).replace("_", formName)).mentionRepliedUser(false).setComponents().queue();
 
-                if(res != null) {
-                    User u = event.getUser();
+                    if(res != null) {
+                        User u = event.getUser();
 
-                    StaticStore.putHolder(u.getId(), new ComboMessageHolder(combos, getAuthorMessage(), res, msg, ch.getId(), lang));
-                }
+                        StaticStore.putHolder(u.getId(), new ComboMessageHolder(combos, getAuthorMessage(), res, msg, ch.getId(), lang));
+                    }
+                });
             }
         } catch (Exception e) {
             e.printStackTrace();

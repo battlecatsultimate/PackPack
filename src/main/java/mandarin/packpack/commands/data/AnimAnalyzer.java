@@ -9,6 +9,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.AnimMixer;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.message.AnimMessageHolder;
 import mandarin.packpack.supporter.server.holder.message.BCAnimMessageHolder;
@@ -16,7 +17,6 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import javax.imageio.ImageIO;
 import java.io.File;
@@ -42,14 +42,11 @@ public class AnimAnalyzer extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
-        Guild g = getGuild(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
+        Guild g = loader.getGuild();
 
-        if(ch == null)
-            return;
-
-        int param = checkParam(getContent(event));
+        int param = checkParam(loader.getContent());
 
         boolean debug = (PARAM_DEBUG & param) > 0;
         boolean raw = (PARAM_RAW & param) > 0;
@@ -59,7 +56,7 @@ public class AnimAnalyzer extends ConstraintCommand {
         boolean apk = (PARAM_USEAPK & param) > 0;
 
         if(apk) {
-            String animCode = getAnimCode(getContent(event));
+            String animCode = getAnimCode(loader.getContent());
 
             if(animCode == null) {
                 ch.sendMessage("Please specify file code such as `000_f`, `001_m`, etc.").queue();
@@ -67,7 +64,7 @@ public class AnimAnalyzer extends ConstraintCommand {
                 return;
             }
 
-            String localeCode = switch (getLocale(getContent(event))) {
+            String localeCode = switch (getLocale(loader.getContent())) {
                 case LangID.EN -> "en";
                 case LangID.ZH -> "zh";
                 case LangID.KR -> "kr";
@@ -126,9 +123,9 @@ public class AnimAnalyzer extends ConstraintCommand {
 
             mixer.png = ImageIO.read(new File(workspace, "NumberLocal/"+animCode+".png"));
 
-            EntityHandler.generateBCAnim(ch, g == null ? 0 : g.getBoostTier().getKey(), mixer, lang);
+            EntityHandler.generateBCAnim(ch, g.getBoostTier().getKey(), mixer, lang, () -> { }, () -> { });
         } else {
-            int anim = getAnimNumber(getContent(event));
+            int anim = getAnimNumber(loader.getContent());
 
             if(bc)
                 anim = zombie ? 7 : 4;
@@ -151,33 +148,38 @@ public class AnimAnalyzer extends ConstraintCommand {
                 }
             }
 
-            Message m = ch.sendMessage(message.toString()).complete();
+            int finalAnim = anim;
 
-            File temp = new File("./temp");
+            ch.sendMessage(message.toString()).queue(m -> {
+                File temp = new File("./temp");
 
-            if(!temp.exists()) {
-                boolean res = temp.mkdirs();
+                if(!temp.exists()) {
+                    boolean res = temp.mkdirs();
 
-                if(!res) {
-                    System.out.println("Can't create folder : "+temp.getAbsolutePath());
+                    if(!res) {
+                        System.out.println("Can't create folder : "+temp.getAbsolutePath());
+                        return;
+                    }
+                }
+
+                File container = StaticStore.generateTempFile(temp, "anim", "", true);
+
+                if(container == null) {
                     return;
                 }
-            }
 
-            File container = StaticStore.generateTempFile(temp, "anim", "", true);
+                Message msg = loader.getMessage();
 
-            if(container == null) {
-                return;
-            }
-
-            Message msg = getMessage(event);
-
-            if(msg != null)
-                if(bc) {
-                    new BCAnimMessageHolder(msg, m, lang, ch.getId(), container, ch, zombie);
-                } else {
-                    new AnimMessageHolder(msg, m, lang, ch.getId(), container, debug, ch, raw, transparent, anim);
+                try {
+                    if(bc) {
+                        new BCAnimMessageHolder(msg, m, lang, ch.getId(), container, ch, zombie);
+                    } else {
+                        new AnimMessageHolder(msg, m, lang, ch.getId(), container, debug, ch, raw, transparent, finalAnim);
+                    }
+                } catch (Exception e) {
+                    StaticStore.logger.uploadErrorLog(e, "E/AnimAnalyzer::doSomething - Failed to initialize holder");
                 }
+            });
         }
     }
 

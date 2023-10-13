@@ -2,11 +2,10 @@ package mandarin.packpack.commands.bot;
 
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class ContributorRemove extends ConstraintCommand {
 
@@ -15,35 +14,33 @@ public class ContributorRemove extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
-
-        if(ch == null)
-            return;
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
         JDA client = ch.getJDA();
 
-        String[] contents = getContent(event).split(" ");
+        String[] contents = loader.getContent().split(" ");
 
         if(contents.length < 2) {
             createMessageWithNoPings(ch, "You have to specify member ID or mention of member");
             return;
         }
 
-        if(validUser(contents[1], client)) {
+        validUser(contents[1], client, () -> {
             String id = contents[1].replaceAll("<@!|<@|>", "");
             StaticStore.contributors.remove(id);
             createMessageWithNoPings(ch, "Removed <@!"+id+"> from contributor list");
-        } else {
-            createMessageWithNoPings(ch, "Not a valid user");
-        }
+        }, () -> createMessageWithNoPings(ch, "Not a valid user"));
     }
 
-    private boolean validUser(String id, JDA client) {
+    private void validUser(String id, JDA client, Runnable found, Runnable notFound) {
         id = id.replaceAll("<!@|<@|>", "");
 
-        User u = client.retrieveUserById(id).complete();
-
-        return u != null;
+        client.retrieveUserById(id).queue(u -> {
+            if (u != null)
+                found.run();
+            else
+                notFound.run();
+        }, e -> notFound.run());
     }
 }

@@ -102,20 +102,18 @@ public class EnemyAnimMessageHolder extends SearchHolder {
                                 g = null;
                             }
 
-                            boolean result = EntityHandler.generateEnemyAnim(e, ch, getAuthorMessage(), g == null ? 0 : g.getBoostTier().getKey(), mode, debug, frame, lang, raw, gifMode);
+                            EntityHandler.generateEnemyAnim(e, ch, getAuthorMessage(), g == null ? 0 : g.getBoostTier().getKey(), mode, debug, frame, lang, raw, gifMode, () -> {
+                                if(!StaticStore.conflictedAnimation.isEmpty()) {
+                                    StaticStore.logger.uploadLog("Warning - Bot generated animation while this animation is already cached\n\nCommand : " + command);
+                                    StaticStore.conflictedAnimation.clear();
+                                }
 
-                            if(!StaticStore.conflictedAnimation.isEmpty()) {
-                                StaticStore.logger.uploadLog("Warning - Bot generated animation while this animation is already cached\n\nCommand : " + command);
-                                StaticStore.conflictedAnimation.clear();
-                            }
+                                User u = event.getUser();
 
-                            User u = event.getUser();
+                                if(raw) {
+                                    StaticStore.logger.uploadLog("Generated mp4 by user " + u.getName() + " for enemy ID " + Data.trio(e.id.id) + " with mode of " + mode);
+                                }
 
-                            if(raw && result) {
-                                StaticStore.logger.uploadLog("Generated mp4 by user " + u.getName() + " for enemy ID " + Data.trio(e.id.id) + " with mode of " + mode);
-                            }
-
-                            if (result) {
                                 long time = raw ? TimeUnit.MINUTES.toMillis(1) : TimeUnit.SECONDS.toMillis(30);
 
                                 StaticStore.canDo.put("gif", new TimeBoolean(false, time));
@@ -124,7 +122,16 @@ public class EnemyAnimMessageHolder extends SearchHolder {
                                     System.out.println("Remove Process : gif");
                                     StaticStore.canDo.put("gif", new TimeBoolean(true));
                                 });
-                            }
+                            }, () -> {
+                                if(!StaticStore.conflictedAnimation.isEmpty()) {
+                                    StaticStore.logger.uploadLog("Warning - Bot generated animation while this animation is already cached\n\nCommand : " + command);
+                                    StaticStore.conflictedAnimation.clear();
+                                }
+                            });
+
+
+
+
                         } catch (Exception exception) {
                             exception.printStackTrace();
                         }

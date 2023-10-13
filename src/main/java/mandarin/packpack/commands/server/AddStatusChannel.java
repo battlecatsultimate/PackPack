@@ -3,11 +3,11 @@ package mandarin.packpack.commands.server;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.regex.Matcher;
@@ -19,19 +19,19 @@ public class AddStatusChannel extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
-        Guild g = getGuild(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
+        Guild g = loader.getGuild();
 
-        if(ch == null || g == null || holder == null)
+        if(holder == null)
             return;
 
-        String content = getContent(event);
+        String content = loader.getContent();
 
         String[] contents = content.split(" ");
 
         if(contents.length < 2) {
-            replyToMessageSafely(ch, LangID.getStringByID("statuschan_channel", lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("statuschan_channel", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -46,7 +46,7 @@ public class AddStatusChannel extends ConstraintCommand {
         }
 
         if(builder.length() == 0) {
-            replyToMessageSafely(ch, LangID.getStringByID("statuschan_channel", lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("statuschan_channel", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -85,6 +85,6 @@ public class AddStatusChannel extends ConstraintCommand {
 
         result.append("\n---------- RESULTS ----------");
 
-        replyToMessageSafely(ch, result.toString(), getMessage(event), a -> a);
+        replyToMessageSafely(ch, result.toString(), loader.getMessage(), a -> a);
     }
 }

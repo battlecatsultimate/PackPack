@@ -10,10 +10,10 @@ import mandarin.packpack.commands.TimedConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.ImageDrawing;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.io.File;
 import java.util.Locale;
@@ -32,16 +32,13 @@ public class SoulImage extends TimedConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
-        if(ch == null)
-            return;
-
-        int id = findSoulID(getContent(event));
+        int id = findSoulID(loader.getContent());
 
         if(id == -1) {
-            replyToMessageSafely(ch, LangID.getStringByID("soul_argu", lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("soul_argu", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -49,7 +46,7 @@ public class SoulImage extends TimedConstraintCommand {
         int soulLen = UserProfile.getBCData().souls.size();
 
         if(id >= soulLen) {
-            replyToMessageSafely(ch, LangID.getStringByID("soul_range", lang).replace("_", String.valueOf(soulLen - 1)), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("soul_range", lang).replace("_", String.valueOf(soulLen - 1)), loader.getMessage(), a -> a);
 
             disableTimer();
 
@@ -76,8 +73,8 @@ public class SoulImage extends TimedConstraintCommand {
             return;
         }
 
-        int param = checkParameters(getContent(event));
-        int frame = getFrame(getContent(event));
+        int param = checkParameters(loader.getContent());
+        int frame = getFrame(loader.getContent());
 
         s.anim.load();
 
@@ -92,7 +89,7 @@ public class SoulImage extends TimedConstraintCommand {
                     ch,
                     LangID.getStringByID("soulimg_result", lang).replace("_", Data.trio(s.getID().id)).replace("-", String.valueOf(frame)),
                     img,
-                    getMessage(event)
+                    loader.getMessage()
             );
         } else {
             createMessageWithNoPings(ch, LangID.getStringByID("soulimg_fail", lang));

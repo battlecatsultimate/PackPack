@@ -2,12 +2,12 @@ package mandarin.packpack.commands;
 
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class Locale extends ConstraintCommand {
 
@@ -16,104 +16,72 @@ public class Locale extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) {
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) {
+        MessageChannel ch = loader.getChannel();
 
-        if(ch != null) {
-            String[] list = getContent(event).split(" ");
+        String[] list = loader.getContent().split(" ");
 
-            if(list.length == 2) {
-                if(StaticStore.isNumeric(list[1])) {
-                    int lan = StaticStore.safeParseInt(list[1]) - 1;
+        if(list.length == 2) {
+            if(StaticStore.isNumeric(list[1])) {
+                int lan = StaticStore.safeParseInt(list[1]) - 1;
 
-                    if(lan >= 0 && lan <= StaticStore.langIndex.length - 1) {
-                        int loc = StaticStore.langIndex[lan];
+                if(lan >= 0 && lan <= StaticStore.langIndex.length - 1) {
+                    int loc = StaticStore.langIndex[lan];
 
-                        User u = getUser(event);
-                        
-                        if(u != null) {
-                            ConfigHolder holder;
+                    User u = loader.getUser();
 
-                            if(StaticStore.config.containsKey(u.getId()))
-                                holder = StaticStore.config.get(u.getId());
-                            else
-                                holder = new ConfigHolder();
+                    ConfigHolder holder;
 
-                            holder.lang = loc;
+                    if(StaticStore.config.containsKey(u.getId()))
+                        holder = StaticStore.config.get(u.getId());
+                    else
+                        holder = new ConfigHolder();
 
-                            StaticStore.config.put(u.getId(), holder);
+                    holder.lang = loc;
 
-                            String locale;
+                    StaticStore.config.put(u.getId(), holder);
 
-                            switch (loc) {
-                                case LangID.EN:
-                                    locale = LangID.getStringByID("lang_en", loc);
-                                    break;
-                                case LangID.JP:
-                                    locale = LangID.getStringByID("lang_jp", loc);
-                                    break;
-                                case LangID.KR:
-                                    locale = LangID.getStringByID("lang_kr", loc);
-                                    break;
-                                case LangID.ZH:
-                                    locale = LangID.getStringByID("lang_zh", loc);
-                                    break;
-                                case LangID.FR:
-                                    locale = LangID.getStringByID("lang_fr", loc);
-                                    break;
-                                case LangID.IT:
-                                    locale = LangID.getStringByID("lang_it", loc);
-                                    break;
-                                case LangID.ES:
-                                    locale = LangID.getStringByID("lang_es", loc);
-                                    break;
-                                case LangID.DE:
-                                    locale = LangID.getStringByID("lang_de", loc);
-                                    break;
-                                default:
-                                    locale = LangID.getStringByID("lang_th", loc);
-                                    break;
-                            }
+                    String locale = switch (loc) {
+                        case LangID.EN -> LangID.getStringByID("lang_en", loc);
+                        case LangID.JP -> LangID.getStringByID("lang_jp", loc);
+                        case LangID.KR -> LangID.getStringByID("lang_kr", loc);
+                        case LangID.ZH -> LangID.getStringByID("lang_zh", loc);
+                        case LangID.FR -> LangID.getStringByID("lang_fr", loc);
+                        case LangID.IT -> LangID.getStringByID("lang_it", loc);
+                        case LangID.ES -> LangID.getStringByID("lang_es", loc);
+                        case LangID.DE -> LangID.getStringByID("lang_de", loc);
+                        default -> LangID.getStringByID("lang_th", loc);
+                    };
 
-                            replyToMessageSafely(ch, LangID.getStringByID("locale_set", lan).replace("_", locale), getMessage(event), a -> a);
-                        } else {
-                            replyToMessageSafely(ch, "Can't find member!", getMessage(event), a -> a);
-                        }
-                    } else if(lan == -1) {
-                        User u = getUser(event);
-                        
-                        if(u != null) {
-                            if(StaticStore.config.containsKey(u.getId())) {
-                                ConfigHolder holder = StaticStore.config.get(u.getId());
+                    replyToMessageSafely(ch, LangID.getStringByID("locale_set", lan).replace("_", locale), loader.getMessage(), a -> a);
+                } else if(lan == -1) {
+                    User u = loader.getUser();
 
-                                holder.lang = -1;
+                    if (StaticStore.config.containsKey(u.getId())) {
+                        ConfigHolder holder = StaticStore.config.get(u.getId());
 
-                                StaticStore.config.put(u.getId(), holder);
-                            }
-                        }
+                        holder.lang = -1;
 
-                        Guild g = getGuild(event);
+                        StaticStore.config.put(u.getId(), holder);
+                    }
 
-                        if(g != null) {
-                            IDHolder holder = StaticStore.idHolder.get(g.getId());
+                    Guild g = loader.getGuild();
 
-                            if(holder != null) {
-                                replyToMessageSafely(ch, LangID.getStringByID("locale_auto", holder.config.lang), getMessage(event), a -> a);
-                            } else {
-                                replyToMessageSafely(ch, LangID.getStringByID("locale_auto", lang), getMessage(event), a -> a);
-                            }
-                        } else {
-                            replyToMessageSafely(ch, LangID.getStringByID("locale_auto", lang), getMessage(event), a -> a);
-                        }
+                    IDHolder holder = StaticStore.idHolder.get(g.getId());
+
+                    if(holder != null) {
+                        replyToMessageSafely(ch, LangID.getStringByID("locale_auto", holder.config.lang), loader.getMessage(), a -> a);
                     } else {
-                        replyToMessageSafely(ch, LangID.getStringByID("locale_incorrect", lan), getMessage(event), a -> a);
+                        replyToMessageSafely(ch, LangID.getStringByID("locale_auto", lang), loader.getMessage(), a -> a);
                     }
                 } else {
-                    replyToMessageSafely(ch, LangID.getStringByID("locale_number", lang), getMessage(event), a -> a);
+                    replyToMessageSafely(ch, LangID.getStringByID("locale_incorrect", lan), loader.getMessage(), a -> a);
                 }
             } else {
-                replyToMessageSafely(ch, LangID.getStringByID("locale_argu", lang), getMessage(event), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("locale_number", lang), loader.getMessage(), a -> a);
             }
+        } else {
+            replyToMessageSafely(ch, LangID.getStringByID("locale_argu", lang), loader.getMessage(), a -> a);
         }
     }
 }

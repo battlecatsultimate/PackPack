@@ -3,11 +3,11 @@ package mandarin.packpack.commands.server;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.ConfirmButtonHolder;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,19 +18,13 @@ public class FixRole extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
+    public void doSomething(CommandLoader loader) throws Exception {
         if(holder == null)
             return;
 
-        MessageChannel ch = getChannel(event);
+        MessageChannel ch = loader.getChannel();
 
-        if(ch == null)
-            return;
-
-        Guild g = getGuild(event);
-
-        if(g == null)
-            return;
+        Guild g = loader.getGuild();
 
         if(!StaticStore.needFixing.contains(g.getId())) {
             createMessageWithNoPings(ch, LangID.getStringByID("fixrole_nofixing", lang).replace("_", StaticStore.MANDARIN_SMELL));
@@ -43,7 +37,7 @@ public class FixRole extends ConstraintCommand {
             return;
         }
 
-        String preID = getPreMemberID(getContent(event));
+        String preID = getPreMemberID(loader.getContent());
 
         if(preID == null && holder.ID.containsKey("Pre Member")) {
             preID = holder.ID.get("Pre Member");
@@ -57,7 +51,7 @@ public class FixRole extends ConstraintCommand {
             return;
 
         final String finalPre = preID;
-        String ignore = getIgnore(getContent(event));
+        String ignore = getIgnore(loader.getContent());
 
         String content;
 
@@ -67,17 +61,15 @@ public class FixRole extends ConstraintCommand {
             content = LangID.getStringByID("fixrole_confirmig", lang).replace("_PPP_", finalPre).replace("_MMM_", holder.MEMBER).replace("_III_", ignore);
         }
 
-        Message msg = registerConfirmButtons(ch.sendMessage(content).setAllowedMentions(new ArrayList<>()), lang).complete();
+        registerConfirmButtons(ch.sendMessage(content).setAllowedMentions(new ArrayList<>()), lang).queue(msg -> {
+            if(msg == null)
+                return;
 
-        if(msg == null)
-            return;
+            Member me = loader.getMember();
 
-        Member me = getMember(event);
-
-        if(me != null) {
             List<Member> members = g.loadMembers().get();
 
-            StaticStore.putHolder(me.getId(), new ConfirmButtonHolder(getMessage(event), msg, ch.getId(), () -> {
+            StaticStore.putHolder(me.getId(), new ConfirmButtonHolder(loader.getMessage(), msg, ch.getId(), () -> {
                 Role role = g.getRoleById(finalPre);
 
                 if(role == null)
@@ -100,7 +92,7 @@ public class FixRole extends ConstraintCommand {
                     ch.sendMessage(LangID.getStringByID("fixrole_fixed", lang).replace("_", String.valueOf(fixed))).queue();
                 }
             }, lang));
-        }
+        });
     }
 
     private String getPreMemberID(String content) {

@@ -3,13 +3,16 @@ package mandarin.packpack.commands.server;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.BoosterData;
 import mandarin.packpack.supporter.server.data.BoosterHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import org.apache.commons.lang3.StringUtils;
 
 import java.awt.*;
@@ -27,12 +30,9 @@ public class BoosterRole extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
-        Guild g = getGuild(event);
-
-        if(ch == null || g == null)
-            return;
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
+        Guild g = loader.getGuild();
 
         if(g.getRoles().size() == 250) {
             ch.sendMessage(LangID.getStringByID("boorole_max", lang)).queue();
@@ -47,21 +47,21 @@ public class BoosterRole extends ConstraintCommand {
             return;
         }
 
-        String id = getUserID(getContent(event));
+        String id = getUserID(loader.getContent());
 
         if(id == null) {
             createMessageWithNoPings(ch, LangID.getStringByID("boorole_invalidid", lang));
             return;
         }
 
-        String name = getRoleName(getContent(event));
+        String name = getRoleName(loader.getContent());
 
         if(name == null || name.isBlank()) {
             createMessageWithNoPings(ch, LangID.getStringByID("boorole_norolename", lang));
             return;
         }
 
-        int c = getColor(getContent(event), ch);
+        int c = getColor(loader.getContent(), ch);
 
         if(c == -1)
             return;

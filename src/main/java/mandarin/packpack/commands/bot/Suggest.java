@@ -4,13 +4,13 @@ import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.TimedConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class Suggest extends TimedConstraintCommand {
     public Suggest(ConstraintCommand.ROLE role, int lang, IDHolder id, long time) {
@@ -18,18 +18,12 @@ public class Suggest extends TimedConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
-        if(ch == null)
-            return;
+        JDA client = ch.getJDA();
 
-        JDA client = event.getJDA();
-
-        User u = getUser(event);
-
-        if(u == null)
-            return;
+        User u = loader.getUser();
 
         if(StaticStore.suggestBanned.containsKey(u.getId())) {
             ch.sendMessage(LangID.getStringByID("suggest_banned", lang).replace("_RRR_", StaticStore.suggestBanned.get(u.getId()))).queue();
@@ -39,7 +33,7 @@ public class Suggest extends TimedConstraintCommand {
             return;
         }
 
-        String title = getTitle(getContent(event));
+        String title = getTitle(loader.getContent());
 
         if(title.isBlank()) {
             ch.sendMessage(LangID.getStringByID("suggest_notitle", lang)).queue();
@@ -49,7 +43,7 @@ public class Suggest extends TimedConstraintCommand {
                 title = title.substring(0, 236)+"... (too long)";
             }
 
-            String desc = getDescription(getContent(event));
+            String desc = getDescription(loader.getContent());
 
             User me = client.getUserById(StaticStore.MANDARIN_SMELL);
 
@@ -75,11 +69,9 @@ public class Suggest extends TimedConstraintCommand {
 
                 builder.addField("Channel ID" , ch.getId(), false);
 
-                Guild g = getGuild(event);
+                Guild g = loader.getGuild();
 
-                if(g != null) {
-                    builder.setFooter("From "+g.getName()+" | "+g.getId(), null);
-                }
+                builder.setFooter("From " + g.getName() + " | " + g.getId(), null);
 
                 me.openPrivateChannel().flatMap(pc -> pc.sendMessageEmbeds(builder.build())).queue();
             }

@@ -66,12 +66,10 @@ public class SetupModButtonHolder extends ComponentHolder {
                         .setAllowedMentions(new ArrayList<>())
                         .queue();
             }
-            case "confirm" -> {
-                Message m = Command.getRepliedMessageSafely(ch, LangID.getStringByID("setup_mem", lang), msg, a -> a.setComponents(
-                        ActionRow.of(EntitySelectMenu.create("role", EntitySelectMenu.SelectTarget.ROLE).setPlaceholder(LangID.getStringByID("setup_select", lang)).setRequiredRange(1, 1).build()),
-                        ActionRow.of(Button.success("confirm", LangID.getStringByID("button_confirm", lang)).asDisabled(), Button.danger("cancel", LangID.getStringByID("button_cancel", lang)))
-                ));
-
+            case "confirm" -> Command.replyToMessageSafely(ch, LangID.getStringByID("setup_mem", lang), msg, a -> a.setComponents(
+                    ActionRow.of(EntitySelectMenu.create("role", EntitySelectMenu.SelectTarget.ROLE).setPlaceholder(LangID.getStringByID("setup_select", lang)).setRequiredRange(1, 1).build()),
+                    ActionRow.of(Button.success("confirm", LangID.getStringByID("button_confirm", lang)).asDisabled(), Button.danger("cancel", LangID.getStringByID("button_cancel", lang)))
+            ), m -> {
                 expired = true;
 
                 StaticStore.removeHolder(memberID, this);
@@ -82,7 +80,7 @@ public class SetupModButtonHolder extends ComponentHolder {
                         .setContent(LangID.getStringByID("setup_modsele", lang).replace("_RRR_", roleID))
                         .setComponents()
                         .queue();
-            }
+            });
             case "cancel" -> {
                 expired = true;
 

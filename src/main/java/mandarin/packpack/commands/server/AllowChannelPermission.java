@@ -3,10 +3,10 @@ package mandarin.packpack.commands.server;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,17 +17,14 @@ public class AllowChannelPermission extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
+    public void doSomething(CommandLoader loader) throws Exception {
         if(holder == null)
             return;
 
-        MessageChannel ch = getChannel(event);
-        Guild g = getGuild(event);
+        MessageChannel ch = loader.getChannel();
+        Guild g = loader.getGuild();
 
-        if(ch == null || g == null)
-            return;
-
-        String[] contents = getContent(event).split(" ");
+        String[] contents = loader.getContent().split(" ");
 
         if(contents.length < 3) {
             createMessageWithNoPings(ch, LangID.getStringByID("comban_noid", lang));

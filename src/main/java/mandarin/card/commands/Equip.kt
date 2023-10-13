@@ -6,9 +6,9 @@ import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
+import mandarin.packpack.supporter.server.CommandLoader
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.events.message.GenericMessageEvent
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -16,18 +16,18 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import kotlin.math.min
 
 class Equip : Command(LangID.EN, true) {
-    override fun doSomething(event: GenericMessageEvent?) {
-        val ch = getChannel(event) ?: return
-        val m = getMember(event) ?: return
-        val g = getGuild(event) ?: return
+    override fun doSomething(loader: CommandLoader) {
+        val ch = loader.channel
+        val m = loader.member
+        val g = loader.guild
 
         val inventory = Inventory.getInventory(m.id)
 
-        val msg = getRepliedMessageSafely(ch, getText(g, m, inventory), getMessage(event)) {
-            a -> a.setComponents(getComponents(g, m, inventory))
-        }
-
-        StaticStore.putHolder(m.id, EquipHolder(getMessage(event), ch.id, msg, inventory))
+        replyToMessageSafely(ch, getText(g, m, inventory), loader.message, { a ->
+            a.setComponents(getComponents(g, m, inventory))
+        }, { msg ->
+            StaticStore.putHolder(m.id, EquipHolder(loader.message, ch.id, msg, inventory))
+        })
     }
 
     private fun getText(g: Guild, m: Member, inventory: Inventory) : String {

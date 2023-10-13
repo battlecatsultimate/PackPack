@@ -7,9 +7,9 @@ import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
+import mandarin.packpack.supporter.server.CommandLoader
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.events.message.GenericMessageEvent
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -17,10 +17,10 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import kotlin.math.min
 
 class Check(private val tier: CardData.Tier) : Command(LangID.EN, true) {
-    override fun doSomething(event: GenericMessageEvent?) {
-        val ch = getChannel(event) ?: return
-        val g = getGuild(event) ?: return
-        val m = getMember(event) ?: return
+    override fun doSomething(loader: CommandLoader) {
+        val ch = loader.channel
+        val g = loader.guild
+        val m = loader.member
 
         if (m.id != StaticStore.MANDARIN_SMELL && !CardData.hasAllPermission(m))
             return
@@ -38,13 +38,13 @@ class Check(private val tier: CardData.Tier) : Command(LangID.EN, true) {
         }
 
         if (members.isNotEmpty()) {
-            val msg = getRepliedMessageSafely(ch, getText(members), getMessage(event)) {
-                    a -> a.setComponents(getComponents(members))
-            }
-
-            StaticStore.putHolder(m.id, CardCheckHolder(getMessage(event), ch.id, msg, members, tier))
+            replyToMessageSafely(ch, getText(members), loader.message, { a ->
+                a.setComponents(getComponents(members))
+            }, { msg ->
+                StaticStore.putHolder(m.id, CardCheckHolder(loader.message, ch.id, msg, members, tier))
+            })
         } else {
-            replyToMessageSafely(ch, getText(members), getMessage(event)) { a -> a }
+            replyToMessageSafely(ch, getText(members), loader.message) { a -> a }
         }
     }
 

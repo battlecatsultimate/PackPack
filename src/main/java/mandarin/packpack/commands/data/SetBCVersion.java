@@ -3,9 +3,9 @@ package mandarin.packpack.commands.data;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class SetBCVersion extends ConstraintCommand {
     public SetBCVersion(ROLE role, int lang, IDHolder id) {
@@ -13,13 +13,10 @@ public class SetBCVersion extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
-        if(ch == null)
-            return;
-
-        String[] contents = getContent(event).split(" ");
+        String[] contents = loader.getContent().split(" ");
 
         if(contents.length != 3) {
             String versions = "BCEN : " +
@@ -65,21 +62,22 @@ public class SetBCVersion extends ConstraintCommand {
         String locale;
 
         switch (loc) {
-            case LangID.EN:
+            case LangID.EN -> {
                 locale = "BCEN";
-                StaticStore.englishVersion = "" + ver;
-                break;
-            case LangID.ZH:
+                StaticStore.englishVersion = String.valueOf(ver);
+            }
+            case LangID.ZH -> {
                 locale = "BCTW";
-                StaticStore.taiwaneseVersion = "" + ver;
-                break;
-            case LangID.KR:
+                StaticStore.taiwaneseVersion = String.valueOf(ver);
+            }
+            case LangID.KR -> {
                 locale = "BCKR";
-                StaticStore.koreanVersion = "" + ver;
-                break;
-            default:
+                StaticStore.koreanVersion = String.valueOf(ver);
+            }
+            default -> {
                 locale = "BCJP";
-                StaticStore.japaneseVersion = "" + ver;
+                StaticStore.japaneseVersion = String.valueOf(ver);
+            }
         }
 
         ch.sendMessage("Set "+locale+" version to "+version+"!").queue();

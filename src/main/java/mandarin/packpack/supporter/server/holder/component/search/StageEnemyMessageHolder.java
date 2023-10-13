@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
+import net.dv8tion.jda.api.requests.RestAction;
 
 import java.util.*;
 
@@ -109,9 +110,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
             } else if(stages.size() == 1) {
                 msg.delete().queue();
 
-                Message result = EntityHandler.showStageEmb(stages.get(0), ch, getAuthorMessage(), isFrame, isExtra, isCompact, star, treasure, lang);
-
-                if(result != null) {
+                EntityHandler.showStageEmb(stages.get(0), ch, getAuthorMessage(), isFrame, isExtra, isCompact, star, treasure, lang, result -> {
                     if(StaticStore.timeLimit.containsKey(author.getAuthor().getId())) {
                         StaticStore.timeLimit.get(author.getAuthor().getId()).put(StaticStore.COMMAND_FINDSTAGE_ID, System.currentTimeMillis());
                     } else {
@@ -123,7 +122,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
                     }
 
                     StaticStore.putHolder(author.getAuthor().getId(), new StageInfoButtonHolder(stages.get(0), author, result, channelID, isCompact));
-                }
+                });
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("fstage_several", lang)).append("```md\n");
 
@@ -144,11 +143,9 @@ public class StageEnemyMessageHolder extends SearchHolder {
 
                 sb.append("```");
 
-                Message res = createMonthlyMessage(ch, sb.toString(), accumulateStage(stages, false), stages, stages.size(), monthly);
-
-                if(res != null) {
-                    StaticStore.putHolder(author.getAuthor().getId(), new FindStageMessageHolder(stages, monthly ? accumulateCategory(stages) : null, getAuthorMessage(), res, ch.getId(), star, treasure, isFrame, isExtra, isCompact, lang));
-                }
+                createMonthlyMessage(ch, sb.toString(), accumulateStage(stages, false), stages, stages.size(), monthly).queue(res ->
+                    StaticStore.putHolder(author.getAuthor().getId(), new FindStageMessageHolder(stages, monthly ? accumulateCategory(stages) : null, getAuthorMessage(), res, ch.getId(), star, treasure, isFrame, isExtra, isCompact, lang))
+                );
 
                 msg.delete().queue();
             }
@@ -288,7 +285,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
         return data;
     }
 
-    private Message createMonthlyMessage(MessageChannel ch, String content, List<String> data, List<Stage> stages, int size, boolean monthly) {
+    private RestAction<Message> createMonthlyMessage(MessageChannel ch, String content, List<String> data, List<Stage> stages, int size, boolean monthly) {
         int totPage = size / SearchHolder.PAGE_CHUNK;
 
         if(size % SearchHolder.PAGE_CHUNK != 0)
@@ -351,7 +348,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
 
         rows.add(ActionRow.of(Button.danger("cancel", LangID.getStringByID("button_cancel", lang))));
 
-        return ch.sendMessage(content).setAllowedMentions(new ArrayList<>()).setComponents(rows).complete();
+        return ch.sendMessage(content).setAllowedMentions(new ArrayList<>()).setComponents(rows);
     }
 
     private List<FindStage.MONTHLY> accumulateCategory(List<Stage> stages) {

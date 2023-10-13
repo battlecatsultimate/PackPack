@@ -8,6 +8,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.search.EnemySpriteMessageHolder;
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
@@ -15,7 +16,6 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,21 +33,18 @@ public class EnemySprite extends TimedConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
-        if(ch == null)
-            return;
-
-        String[] contents = getContent(event).split(" ");
+        String[] contents = loader.getContent().split(" ");
 
         if(contents.length == 1) {
-            replyToMessageSafely(ch, LangID.getStringByID("eimg_more", lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("eimg_more", lang), loader.getMessage(), a -> a);
         } else {
-            String search = filterCommand(getContent(event));
+            String search = filterCommand(loader.getContent());
 
             if(search.isBlank()) {
-                replyToMessageSafely(ch, LangID.getStringByID("eimg_more", lang), getMessage(event), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("eimg_more", lang), loader.getMessage(), a -> a);
 
                 return;
             }
@@ -55,15 +52,15 @@ public class EnemySprite extends TimedConstraintCommand {
             ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(search, lang);
 
             if(enemies.isEmpty()) {
-                replyToMessageSafely(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", getSearchKeyword(getContent(event))), getMessage(event), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", getSearchKeyword(loader.getContent())), loader.getMessage(), a -> a);
 
                 disableTimer();
             } else if(enemies.size() == 1) {
-                int param = checkParameter(getContent(event));
+                int param = checkParameter(loader.getContent());
 
-                EntityHandler.getEnemySprite(enemies.get(0), ch, getMessage(event), getModeFromParam(param), lang);
+                EntityHandler.getEnemySprite(enemies.get(0), ch, loader.getMessage(), getModeFromParam(param), lang);
             } else {
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", getSearchKeyword(getContent(event))));
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", getSearchKeyword(loader.getContent())));
 
                 sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang));
 
@@ -84,22 +81,19 @@ public class EnemySprite extends TimedConstraintCommand {
 
                 sb.append("```");
 
-                int param = checkParameter(getContent(event));
+                int param = checkParameter(loader.getContent());
 
                 int mode = getModeFromParam(param);
 
-                Message res = getRepliedMessageSafely(ch, sb.toString(), getMessage(event), a -> registerSearchComponents(a, enemies.size(), data, lang));
+                replyToMessageSafely(ch, sb.toString(), loader.getMessage(), a -> registerSearchComponents(a, enemies.size(), data, lang), res -> {
+                    if(res != null) {
+                        User u = loader.getUser();
 
-                if(res != null) {
-                    User u = getUser(event);
+                        Message msg = loader.getMessage();
 
-                    if(u != null) {
-                        Message msg = getMessage(event);
-
-                        if(msg != null)
-                            StaticStore.putHolder(u.getId(), new EnemySpriteMessageHolder(enemies, msg, res, ch.getId(), mode, lang));
+                        StaticStore.putHolder(u.getId(), new EnemySpriteMessageHolder(enemies, msg, res, ch.getId(), mode, lang));
                     }
-                }
+                });
 
                 disableTimer();
             }

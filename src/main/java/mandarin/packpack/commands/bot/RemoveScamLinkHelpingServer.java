@@ -2,9 +2,9 @@ package mandarin.packpack.commands.bot;
 
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class RemoveScamLinkHelpingServer extends ConstraintCommand {
     public RemoveScamLinkHelpingServer(ROLE role, int lang, IDHolder id) {
@@ -12,13 +12,10 @@ public class RemoveScamLinkHelpingServer extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
-        if(ch == null)
-            return;
-
-        String[] contents = getContent(event).split(" ");
+        String[] contents = loader.getContent().split(" ");
 
         if(contents.length < 2) {
             ch.sendMessage("Usage : p!ashs [Server ID]").queue();

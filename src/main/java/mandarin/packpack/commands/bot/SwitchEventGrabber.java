@@ -5,13 +5,12 @@ import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.event.EventFactor;
 import mandarin.packpack.supporter.event.EventFileGrabber;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.EventGrabberHolder;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
@@ -28,18 +27,15 @@ public class SwitchEventGrabber extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
-        if (ch == null)
-            return;
+        replyToMessageSafely(ch, parseMessage(), loader.getMessage(), this::registerComponent, m -> {
+            User u = loader.getUser();
 
-        Message m = getRepliedMessageSafely(ch, parseMessage(), getMessage(event), this::registerComponent);
-        User u = getUser(event);
+            StaticStore.putHolder(u.getId(), new EventGrabberHolder(loader.getMessage(), ch.getId(), m));
+        });
 
-        if (m != null && u != null) {
-            StaticStore.putHolder(u.getId(), new EventGrabberHolder(getMessage(event), ch.getId(), m));
-        }
     }
 
     private MessageCreateAction registerComponent(MessageCreateAction action) {

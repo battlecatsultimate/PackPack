@@ -7,14 +7,13 @@ import mandarin.packpack.commands.GlobalTimedConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
-import javax.annotation.Nullable;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -36,55 +35,47 @@ public class Soul extends GlobalTimedConstraintCommand {
     }
 
     @Override
-    protected void doThing(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
-        User u = getUser(event);
-        @Nullable
-        Guild g = getGuild(event);
+    protected void doThing(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
+        User u = loader.getUser();
+        Guild g = loader.getGuild();
 
-        if(ch == null || u == null)
-            return;
-
-        int id = findSoulID(getContent(event));
+        int id = findSoulID(loader.getContent());
 
         common.util.pack.Soul s = UserProfile.getBCData().souls.get(id);
 
         if(s == null) {
-            replyToMessageSafely(ch, LangID.getStringByID("soul_nosoul", lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("soul_nosoul", lang), loader.getMessage(), a -> a);
 
             return;
         }
 
         boolean isTrusted = StaticStore.contributors.contains(u.getId()) || u.getId().equals(StaticStore.MANDARIN_SMELL);
 
-        int param = checkParameters(getContent(event));
+        int param = checkParameters(loader.getContent());
         boolean debug = (param & PARAM_DEBUG) > 0;
         boolean raw = (param & PARAM_RAW) > 0;
         boolean gif = (param & PARAM_GIF) > 0;
-        int frame = getFrame(getContent(event));
+        int frame = getFrame(loader.getContent());
 
         if(raw && !isTrusted) {
             ch.sendMessage(LangID.getStringByID("gif_ignore", lang)).queue();
         }
 
-        boolean result = EntityHandler.generateSoulAnim(s, ch, getMessage(event), g == null ? 0 : g.getBoostTier().getKey(), debug, frame, lang, raw && isTrusted, gif);
+        EntityHandler.generateSoulAnim(s, ch, loader.getMessage(), g.getBoostTier().getKey(), debug, frame, lang, raw && isTrusted, gif, () -> {
+            if(raw && isTrusted) {
+                StaticStore.logger.uploadLog("Generated mp4 by user " + u.getName() + " for soul ID " + Data.trio(s.getID().id));
+            }
 
-        if(raw && isTrusted && result) {
-            StaticStore.logger.uploadLog("Generated mp4 by user " + u.getName() + " for soul ID " + Data.trio(s.getID().id));
-        }
-
-        if(raw && isTrusted) {
-            changeTime(TimeUnit.MINUTES.toMillis(1));
-        }
-
-        if(!result) {
-            disableTimer();
-        }
+            if(raw && isTrusted) {
+                changeTime(TimeUnit.MINUTES.toMillis(1));
+            }
+        }, this::disableTimer);
     }
 
     @Override
-    protected void setOptionalID(GenericMessageEvent event) {
-        int id = findSoulID(getContent(event));
+    protected void setOptionalID(CommandLoader loader) {
+        int id = findSoulID(loader.getContent());
 
         if(id == -1) {
             optionalID = NO_ID;
@@ -104,21 +95,15 @@ public class Soul extends GlobalTimedConstraintCommand {
     }
 
     @Override
-    protected void onAbort(GenericMessageEvent event) {
-        MessageChannel ch = getChannel(event);
-
-        if(ch == null)
-            return;
+    protected void onAbort(CommandLoader loader) {
+        MessageChannel ch = loader.getChannel();
 
         switch (optionalID) {
-            case NO_ID:
-                replyToMessageSafely(ch, LangID.getStringByID("soul_argu", lang), getMessage(event), a -> a);
-
-                return;
-            case INVALID_RANGE:
+            case NO_ID -> replyToMessageSafely(ch, LangID.getStringByID("soul_argu", lang), loader.getMessage(), a -> a);
+            case INVALID_RANGE -> {
                 int soulLen = UserProfile.getBCData().souls.size() - 1;
-
-                replyToMessageSafely(ch, LangID.getStringByID("soul_range", lang).replace("_", soulLen + ""), getMessage(event), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("soul_range", lang).replace("_", String.valueOf(soulLen)), loader.getMessage(), a -> a);
+            }
         }
     }
 
@@ -133,38 +118,34 @@ public class Soul extends GlobalTimedConstraintCommand {
             label:
             for(int i = 0; i < pureMessage.length; i++) {
                 switch (pureMessage[i]) {
-                    case "-d":
-                    case "-debug":
-                        if((result & PARAM_DEBUG) == 0) {
+                    case "-d", "-debug" -> {
+                        if ((result & PARAM_DEBUG) == 0) {
                             result |= PARAM_DEBUG;
                         } else {
                             break label;
                         }
-                        break;
-                    case "-r":
-                    case "-raw":
-                        if((result & PARAM_RAW) == 0) {
+                    }
+                    case "-r", "-raw" -> {
+                        if ((result & PARAM_RAW) == 0) {
                             result |= PARAM_RAW;
                         } else {
                             break label;
                         }
-                        break;
-                    case "-f":
-                    case "-fr":
-                        if(i < pureMessage.length - 1 && StaticStore.isNumeric(pureMessage[i+1])) {
+                    }
+                    case "-f", "-fr" -> {
+                        if (i < pureMessage.length - 1 && StaticStore.isNumeric(pureMessage[i + 1])) {
                             i++;
                         } else {
                             break label;
                         }
-                        break;
-                    case "-g":
-                    case "-gif":
-                        if((result & PARAM_GIF) == 0) {
+                    }
+                    case "-g", "-gif" -> {
+                        if ((result & PARAM_GIF) == 0) {
                             result |= PARAM_GIF;
                         } else {
                             break label;
                         }
-                        break;
+                    }
                 }
             }
         }

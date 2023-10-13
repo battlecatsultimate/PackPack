@@ -8,12 +8,11 @@ import mandarin.packpack.supporter.calculation.Equation;
 import mandarin.packpack.supporter.calculation.Formula;
 import mandarin.packpack.supporter.calculation.NumericalResult;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.search.SolutionHolder;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
@@ -33,17 +32,14 @@ public class Solve extends TimedConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
-        User u = getUser(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
+        User u = loader.getUser();
 
-        if(ch == null || u == null)
-            return;
-
-        String[] commands = getContent(event).split(" ", 2);
+        String[] commands = loader.getContent().split(" ", 2);
 
         if(commands.length < 2) {
-            replyToMessageSafely(ch, LangID.getStringByID("plot_formula", lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("plot_formula", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -60,7 +56,7 @@ public class Solve extends TimedConstraintCommand {
             String[] side = formula.split("=");
 
             if(side.length > 2) {
-                replyToMessageSafely(ch, LangID.getStringByID("solve_wrong", lang), getMessage(event), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("solve_wrong", lang), loader.getMessage(), a -> a);
 
                 return;
             }
@@ -71,7 +67,7 @@ public class Solve extends TimedConstraintCommand {
         Formula f = new Formula(formula, 1, lang);
 
         if(!Formula.error.isEmpty()) {
-            replyToMessageSafely(ch, Formula.getErrorMessage(), getMessage(event), a -> a);
+            replyToMessageSafely(ch, Formula.getErrorMessage(), loader.getMessage(), a -> a);
 
             return;
         }
@@ -122,7 +118,7 @@ public class Solve extends TimedConstraintCommand {
         }
 
         if(targetRanges.isEmpty()) {
-            replyToMessageSafely(ch, String.format(LangID.getStringByID("solve_noroot", lang), Equation.formatNumber(range[0]), Equation.formatNumber(range[1])), getMessage(event), a -> a);
+            replyToMessageSafely(ch, String.format(LangID.getStringByID("solve_noroot", lang), Equation.formatNumber(range[0]), Equation.formatNumber(range[1])), loader.getMessage(), a -> a);
 
             return;
         }
@@ -173,7 +169,7 @@ public class Solve extends TimedConstraintCommand {
         }
 
         if(!targetRanges.isEmpty() && success == 0) {
-            replyToMessageSafely(ch, Formula.getErrorMessage(), getMessage(event), a -> a);
+            replyToMessageSafely(ch, Formula.getErrorMessage(), loader.getMessage(), a -> a);
 
             return;
         }
@@ -202,11 +198,11 @@ public class Solve extends TimedConstraintCommand {
 
         sb.append("```");
 
-        Message msg = getRepliedMessageSafely(ch, summary + sb, getMessage(event), a -> a.setComponents(getComponents(solutions)));
-
-        if(solutions.size() > 5) {
-            StaticStore.putHolder(u.getId(), new SolutionHolder(msg, getMessage(event), ch.getId(), summary, targetRanges, solutions, lang));
-        }
+        replyToMessageSafely(ch, summary + sb, loader.getMessage(), a -> a.setComponents(getComponents(solutions)), msg -> {
+            if(solutions.size() > 5) {
+                StaticStore.putHolder(u.getId(), new SolutionHolder(msg, loader.getMessage(), ch.getId(), summary, targetRanges, solutions, lang));
+            }
+        });
     }
 
     private Formula.ROOT findAlgorithm(String command) {

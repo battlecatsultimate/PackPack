@@ -7,7 +7,7 @@ import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
-import net.dv8tion.jda.api.events.message.GenericMessageEvent
+import mandarin.packpack.supporter.server.CommandLoader
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -15,16 +15,18 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import kotlin.math.min
 
 class Activate : Command(LangID.EN, true) {
-    override fun doSomething(event: GenericMessageEvent?) {
-        val ch = getChannel(event) ?: return
-        val m = getMember(event) ?: return
+    override fun doSomething(loader: CommandLoader) {
+        val ch = loader.channel
+        val m = loader.member
 
         if (m.id != StaticStore.MANDARIN_SMELL && !CardData.hasAllPermission(m))
             return
 
-        val msg = getRepliedMessageSafely(ch, getText(), getMessage(event)) { a -> a.setComponents(getComponents()) }
+        replyToMessageSafely(ch, getText(), loader.message, { a -> a.setComponents(getComponents()) }, { msg ->
+            StaticStore.putHolder(m.id, ActivatorHolder(loader.message, ch.id, msg))
+        })
 
-        StaticStore.putHolder(m.id, ActivatorHolder(getMessage(event), ch.id, msg))
+
     }
 
     private fun getComponents() : List<LayoutComponent> {

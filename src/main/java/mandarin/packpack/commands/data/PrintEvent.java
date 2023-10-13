@@ -4,10 +4,10 @@ import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.event.EventFactor;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,23 +19,20 @@ public class PrintEvent extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
+    public void doSomething(CommandLoader loader) throws Exception {
         if(holder == null)
             return;
 
-        MessageChannel ch = getChannel(event);
+        MessageChannel ch = loader.getChannel();
 
-        if(ch == null)
-            return;
+        int loc = getLocale(loader.getContent());
+        int l = followServerLocale(loader.getContent()) ? holder.config.lang : lang;
+        boolean full = isFull(loader.getContent());
+        boolean raw = isRaw(loader.getContent());
 
-        int loc = getLocale(getContent(event));
-        int l = followServerLocale(getContent(event)) ? holder.config.lang : lang;
-        boolean full = isFull(getContent(event));
-        boolean raw = isRaw(getContent(event));
+        Member m = loader.getMember();
 
-        Member m = getMember(event);
-
-        if(full && (m == null || !StaticStore.contributors.contains(m.getId()))) {
+        if(full && !StaticStore.contributors.contains(m.getId())) {
             full = false;
 
             createMessageWithNoPings(ch, LangID.getStringByID("event_ignorefull", lang));
@@ -97,28 +94,17 @@ public class PrintEvent extends ConstraintCommand {
                             builder.append(builder.length() == 0 ? "** **\n" : "");
 
                             switch (type) {
-                                case DAILY:
-                                    builder.append(LangID.getStringByID("printstage_daily", l)).append("\n\n```ansi\n");
-
-                                    break;
-                                case WEEKLY:
-                                    builder.append(LangID.getStringByID("printstage_weekly", l)).append("\n\n```ansi\n");
-
-                                    break;
-                                case MONTHLY:
-                                    builder.append(LangID.getStringByID("printstage_monthly", l)).append("\n\n```ansi\n");
-
-                                    break;
-                                case YEARLY:
-                                    builder.append(LangID.getStringByID("printstage_yearly", l)).append("\n\n```ansi\n");
-
-                                    break;
-                                case MISSION:
-                                    builder.append(LangID.getStringByID("event_mission", l)).append("\n\n```ansi\n");
-
-                                    break;
-                                default:
-                                    builder.append("```ansi\n");
+                                case DAILY ->
+                                        builder.append(LangID.getStringByID("printstage_daily", l)).append("\n\n```ansi\n");
+                                case WEEKLY ->
+                                        builder.append(LangID.getStringByID("printstage_weekly", l)).append("\n\n```ansi\n");
+                                case MONTHLY ->
+                                        builder.append(LangID.getStringByID("printstage_monthly", l)).append("\n\n```ansi\n");
+                                case YEARLY ->
+                                        builder.append(LangID.getStringByID("printstage_yearly", l)).append("\n\n```ansi\n");
+                                case MISSION ->
+                                        builder.append(LangID.getStringByID("event_mission", l)).append("\n\n```ansi\n");
+                                default -> builder.append("```ansi\n");
                             }
                         } else {
                             builder.append("```ansi\n");
@@ -279,14 +265,18 @@ public class PrintEvent extends ConstraintCommand {
 
         for(int i = 0; i < contents.length; i++) {
             switch (contents[i]) {
-                case "-en":
+                case "-en" -> {
                     return LangID.EN;
-                case "-tw":
+                }
+                case "-tw" -> {
                     return LangID.ZH;
-                case "-kr":
+                }
+                case "-kr" -> {
                     return LangID.KR;
-                case "-jp":
+                }
+                case "-jp" -> {
                     return LangID.JP;
+                }
             }
         }
 

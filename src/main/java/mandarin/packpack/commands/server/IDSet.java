@@ -4,14 +4,13 @@ import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.IDManagerHolder;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
@@ -28,17 +27,19 @@ public class IDSet extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
-        User u = getUser(event);
-        Guild g = getGuild(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
+        User u = loader.getUser();
+        Guild g = loader.getGuild();
 
-        if(ch == null || u == null || g == null || holder == null)
+        if(holder == null)
             return;
 
-        Message msg = getRepliedMessageSafely(ch, generateIDData(g), getMessage(event), this::registerComponents);
+        replyToMessageSafely(ch, generateIDData(g), loader.getMessage(), this::registerComponents, msg ->
+                StaticStore.putHolder(u.getId(), new IDManagerHolder(loader.getMessage(), ch.getId(), msg, holder, g))
+        );
 
-        StaticStore.putHolder(u.getId(), new IDManagerHolder(getMessage(event), ch.getId(), msg, holder, g));
+
     }
 
     private String generateIDData(Guild g) {

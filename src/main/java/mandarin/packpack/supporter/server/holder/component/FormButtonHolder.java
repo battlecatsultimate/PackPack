@@ -101,7 +101,7 @@ public class FormButtonHolder extends ComponentHolder {
             Form newForm = f.unit.forms[f.fid + diff];
 
             try {
-                EntityHandler.showUnitEmb(newForm, ch, getAuthorMessage(), config, isFrame, talent, extra, false, false, lv, treasure, t, lang, false, compact);
+                EntityHandler.showUnitEmb(newForm, ch, getAuthorMessage(), config, isFrame, talent, extra, false, false, lv, treasure, t, lang, false, compact, msg -> { });
             } catch (Exception e) {
                 StaticStore.logger.uploadErrorLog(e, "E/FormButtonHolder::handleEvent - Failed to show unit embed on button click");
             }

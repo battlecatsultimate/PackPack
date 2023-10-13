@@ -134,12 +134,9 @@ class SuggestInventoryHolder(
 
                     val g = event.guild ?: return
 
-                    if (
-                        session.suggestion.any { s -> s.catFood >= 200000 || s.cards.any { c -> c.tier == CardData.Tier.ULTRA || c.tier == CardData.Tier.LEGEND } } &&
-                        !session.member.map { id -> g.retrieveMember(UserSnowflake.fromId(id)).complete() }.any { m -> CardData.hasAllPermission(m) }
-                        ) {
+                    session.needApproval(g, {
                         event.messageChannel.sendMessage("Pinging <@&${ServerData.get("dealer")}> for approval because this trade contains above 200k cf or above tier 3 cards").queue()
-                    }
+                    }, { })
                 }
 
                 CardBot.saveCardData()

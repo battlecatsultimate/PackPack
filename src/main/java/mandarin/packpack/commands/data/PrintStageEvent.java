@@ -4,10 +4,10 @@ import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.event.EventFactor;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,43 +19,38 @@ public class PrintStageEvent extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
-        if(ch == null)
-            return;
-
-        boolean now = isNow(getContent(event));
+        boolean now = isNow(loader.getContent());
         int t = 0;
 
         if(now) {
-            User u = getUser(event);
+            User u = loader.getUser();
 
-            if(u != null) {
-                t = StaticStore.timeZones.getOrDefault(u.getId(), 0);
+            t = StaticStore.timeZones.getOrDefault(u.getId(), 0);
 
-                String content;
+            String content;
 
-                if(t >= 0)
-                    content = "+" + t;
-                else
-                    content = "" + t;
+            if(t >= 0)
+                content = "+" + t;
+            else
+                content = String.valueOf(t);
 
-                ch.sendMessage(LangID.getStringByID("printevent_time", lang).replace("_", content)).queue();
-            }
+            ch.sendMessage(LangID.getStringByID("printevent_time", lang).replace("_", content)).queue();
         }
 
-        boolean full = isFull(getContent(event));
+        boolean full = isFull(loader.getContent());
 
-        User u = getUser(event);
+        User u = loader.getUser();
 
-        if(full && (u == null || !StaticStore.contributors.contains(u.getId()))) {
+        if(full && !StaticStore.contributors.contains(u.getId())) {
             full = false;
 
             createMessageWithNoPings(ch, LangID.getStringByID("event_ignorefull", lang));
         }
 
-        Map<EventFactor.SCHEDULE, List<String>> stage = StaticStore.event.printStageEvent(getLocale(getContent(event)), lang, full, isRaw(getContent(event)), now, t);
+        Map<EventFactor.SCHEDULE, List<String>> stage = StaticStore.event.printStageEvent(getLocale(loader.getContent()), lang, full, isRaw(loader.getContent()), now, t);
 
         if(stage.isEmpty()) {
             ch.sendMessage(LangID.getStringByID("chevent_noup", lang)).queue();
@@ -88,28 +83,17 @@ public class PrintStageEvent extends ConstraintCommand {
                     builder.append(builder.length() == 0 ? "** **\n" : "");
 
                     switch (type) {
-                        case DAILY:
-                            builder.append(LangID.getStringByID("printstage_daily", lang)).append("\n\n```ansi\n");
-
-                            break;
-                        case WEEKLY:
-                            builder.append(LangID.getStringByID("printstage_weekly", lang)).append("\n\n```ansi\n");
-
-                            break;
-                        case MONTHLY:
-                            builder.append(LangID.getStringByID("printstage_monthly", lang)).append("\n\n```ansi\n");
-
-                            break;
-                        case YEARLY:
-                            builder.append(LangID.getStringByID("printstage_yearly", lang)).append("\n\n```ansi\n");
-
-                            break;
-                        case MISSION:
-                            builder.append(LangID.getStringByID("event_mission", lang)).append("\n\n```ansi\n");
-
-                            break;
-                        default:
-                            builder.append("```ansi\n");
+                        case DAILY ->
+                                builder.append(LangID.getStringByID("printstage_daily", lang)).append("\n\n```ansi\n");
+                        case WEEKLY ->
+                                builder.append(LangID.getStringByID("printstage_weekly", lang)).append("\n\n```ansi\n");
+                        case MONTHLY ->
+                                builder.append(LangID.getStringByID("printstage_monthly", lang)).append("\n\n```ansi\n");
+                        case YEARLY ->
+                                builder.append(LangID.getStringByID("printstage_yearly", lang)).append("\n\n```ansi\n");
+                        case MISSION ->
+                                builder.append(LangID.getStringByID("event_mission", lang)).append("\n\n```ansi\n");
+                        default -> builder.append("```ansi\n");
                     }
                 } else {
                     builder.append("```ansi\n");
@@ -157,14 +141,18 @@ public class PrintStageEvent extends ConstraintCommand {
 
         for(int i = 0; i < contents.length; i++) {
             switch (contents[i]) {
-                case "-en":
+                case "-en" -> {
                     return LangID.EN;
-                case "-tw":
+                }
+                case "-tw" -> {
                     return LangID.ZH;
-                case "-kr":
+                }
+                case "-kr" -> {
                     return LangID.KR;
-                case "-jp":
+                }
+                case "-jp" -> {
                     return LangID.JP;
+                }
             }
         }
 

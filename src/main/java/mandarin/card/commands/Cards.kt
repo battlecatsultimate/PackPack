@@ -8,36 +8,48 @@ import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
+import mandarin.packpack.supporter.server.CommandLoader
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.UserSnowflake
-import net.dv8tion.jda.api.events.message.GenericMessageEvent
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.requests.RestAction
 import kotlin.math.min
 
 class Cards : Command(LangID.EN, true) {
-    override fun doSomething(event: GenericMessageEvent?) {
-        val ch = getChannel(event) ?: return
-        val m = getMember(event) ?: return
-        val author = getMessage(event) ?: return
-        val g = getGuild(event) ?: return
+    override fun doSomething(loader: CommandLoader) {
+        val g = loader.guild
 
-        val member = findMember(getContent(event).split(" "), g) ?: m
+        val memberAction = findMember(loader.content.split(" "), g)
+
+        if (memberAction == null) {
+            performCommand(loader, loader.member)
+        } else {
+            memberAction.queue { member ->
+                performCommand(loader, member)
+            }
+        }
+    }
+
+    private fun performCommand(loader: CommandLoader, member: Member) {
+        val ch = loader.channel
+        val m = loader.member
+        val author = loader.message
 
         if (m.id != member.id && !CardData.hasAllPermission(m) && m.id != StaticStore.MANDARIN_SMELL && !CardData.isOrganizer(m)) {
-            replyToMessageSafely(ch, "You don't have permission to watch other user's inventory", getMessage(event)) { a -> a }
+            replyToMessageSafely(ch, "You don't have permission to watch other user's inventory", loader.message) { a -> a }
 
             return
         }
 
         val inventory = Inventory.getInventory(member.id)
 
-        val msg = getRepliedMessageSafely(ch, getText(member, inventory), author) { a ->
+        replyToMessageSafely(ch, getText(member, inventory), author, { a ->
             val rows = ArrayList<ActionRow>()
 
             val tierCategoryElements = ArrayList<SelectOption>()
@@ -126,10 +138,10 @@ class Cards : Command(LangID.EN, true) {
 
             rows.add(ActionRow.of(confirmButtons))
 
-            return@getRepliedMessageSafely a.setComponents(rows)
-        }
-
-        StaticStore.putHolder(m.id, CardInventoryHolder(author, ch.id, msg, inventory, member))
+            return@replyToMessageSafely a.setComponents(rows)
+        }, { msg ->
+            StaticStore.putHolder(m.id, CardInventoryHolder(author, ch.id, msg, inventory, member))
+        })
     }
 
     private fun getText(member: Member, inventory: Inventory) : String {
@@ -160,17 +172,17 @@ class Cards : Command(LangID.EN, true) {
         return builder.toString()
     }
 
-    private fun findMember(contents: List<String>, g: Guild) : Member? {
+    private fun findMember(contents: List<String>, g: Guild) : RestAction<Member>? {
         for (content in contents) {
             if (StaticStore.isNumeric(content)) {
                 try {
-                    return g.retrieveMember(UserSnowflake.fromId(content)).complete()
+                    return g.retrieveMember(UserSnowflake.fromId(content))
                 } catch (_: Exception) {
 
                 }
             } else if (content.matches(Regex("<@\\d+>"))) {
                 try {
-                    return g.retrieveMember(UserSnowflake.fromId(content.replace("<@", "").replace(">", ""))).complete()
+                    return g.retrieveMember(UserSnowflake.fromId(content.replace("<@", "").replace(">", "")))
                 } catch (_: Exception) {
 
                 }

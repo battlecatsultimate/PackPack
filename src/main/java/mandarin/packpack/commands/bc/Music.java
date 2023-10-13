@@ -6,12 +6,12 @@ import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.commands.GlobalTimedConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.utils.FileUpload;
 
@@ -94,9 +94,9 @@ public class Music extends GlobalTimedConstraintCommand {
     }
 
     @Override
-    protected void setOptionalID(GenericMessageEvent event) {
+    protected void setOptionalID(CommandLoader loader) {
         if(ms == null) {
-            String[] command = getContent(event).split(" ");
+            String[] command = loader.getContent().split(" ");
 
             if(command.length == 2) {
                 if (StaticStore.isNumeric(command[1])) {
@@ -129,7 +129,7 @@ public class Music extends GlobalTimedConstraintCommand {
     }
 
     @Override
-    protected void doThing(GenericMessageEvent event) throws Exception {
+    protected void doThing(CommandLoader loader) throws Exception {
         if(ms != null && ms.id != null) {
             File file = new File("./temp/", Data.trio(ms.id.id)+".ogg");
 
@@ -152,12 +152,9 @@ public class Music extends GlobalTimedConstraintCommand {
             ins.close();
             fos.close();
 
-            MessageChannel ch = getChannel(event);
+            MessageChannel ch = loader.getChannel();
 
-            if(ch != null) {
-                sendMessageWithFile(ch, LangID.getStringByID("music_upload", lang).replace("_", optionalID), file, optionalID + ".ogg", getMessage(event));
-            }
-
+            sendMessageWithFile(ch, LangID.getStringByID("music_upload", lang).replace("_", optionalID), file, optionalID + ".ogg", loader.getMessage());
         } else if(ms == null) {
             int id = StaticStore.safeParseInt(optionalID);
 
@@ -184,30 +181,21 @@ public class Music extends GlobalTimedConstraintCommand {
             ins.close();
             fos.close();
 
-            MessageChannel ch = getChannel(event);
+            MessageChannel ch = loader.getChannel();
 
-            if(ch != null) {
-                sendMessageWithFile(ch, LangID.getStringByID("music_upload", lang).replace("_", optionalID), file, optionalID + ".ogg", getMessage(event));
-            }
+            sendMessageWithFile(ch, LangID.getStringByID("music_upload", lang).replace("_", optionalID), file, optionalID + ".ogg", loader.getMessage());
         }
     }
 
     @Override
-    protected void onAbort(GenericMessageEvent event) {
-        MessageChannel ch = getChannel(event);
+    protected void onAbort(CommandLoader loader) {
+        MessageChannel ch = loader.getChannel();
 
-        if(ch != null) {
-            switch (optionalID) {
-                case NOT_NUMBER:
-                    ch.sendMessage(LangID.getStringByID("music_number", lang)).queue();
-                    break;
-                case OUT_RANGE:
+        switch (optionalID) {
+            case NOT_NUMBER -> ch.sendMessage(LangID.getStringByID("music_number", lang)).queue();
+            case OUT_RANGE ->
                     ch.sendMessage(LangID.getStringByID("music_outrange", lang).replace("_", String.valueOf(UserProfile.getBCData().musics.getList().size() - 1))).queue();
-                    break;
-                case ARGUMENT:
-                    ch.sendMessage(LangID.getStringByID("music_argu", lang)).queue();
-                    break;
-            }
+            case ARGUMENT -> ch.sendMessage(LangID.getStringByID("music_argu", lang)).queue();
         }
     }
 }

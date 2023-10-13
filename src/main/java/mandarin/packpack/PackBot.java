@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
@@ -44,7 +45,7 @@ public class PackBot {
     public static final String normal = "p!help for command info!";
     public static final String dev = "p!help, being developed, bot may not respond";
 
-    public static Message statusMessage = null;
+    public static RestAction<Message> statusMessage = null;
 
     public static void main(String[] args) throws LoginException {
         Runtime.getRuntime().addShutdownHook(new Thread(Logger::writeLog));

@@ -9,10 +9,10 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.ImageDrawing;
 import mandarin.packpack.supporter.calculation.Equation;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -26,22 +26,19 @@ public class Test extends GlobalTimedConstraintCommand {
     }
 
     @Override
-    protected void doThing(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
+    protected void doThing(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
-        if (ch == null)
-            return;
-
-        String[] contents = getContent(event).split(" ");
+        String[] contents = loader.getContent().split(" ");
 
         if (contents.length < 2) {
-            replyToMessageSafely(ch, "`p!test [Unit ID]`", getMessage(event), a -> a);
+            replyToMessageSafely(ch, "`p!test [Unit ID]`", loader.getMessage(), a -> a);
 
             return;
         }
 
         if (!StaticStore.isNumeric(contents[1])) {
-            replyToMessageSafely(ch, "ID must be numeric", getMessage(event), a -> a);
+            replyToMessageSafely(ch, "ID must be numeric", loader.getMessage(), a -> a);
 
             return;
         }
@@ -239,7 +236,7 @@ public class Test extends GlobalTimedConstraintCommand {
     }
 
     @Override
-    protected void setOptionalID(GenericMessageEvent event) {
+    protected void setOptionalID(CommandLoader loader) {
         optionalID = "";
     }
 

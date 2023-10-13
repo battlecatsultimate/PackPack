@@ -5,15 +5,15 @@ import mandarin.card.supporter.ServerData
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
-import net.dv8tion.jda.api.events.message.GenericMessageEvent
+import mandarin.packpack.supporter.server.CommandLoader
 import java.io.File
 import kotlin.system.exitProcess
 
 class ReplaceSave : Command(LangID.EN, true) {
-    override fun doSomething(event: GenericMessageEvent) {
-        val m = getMember(event) ?: return
-        val ch = getChannel(event) ?: return
-        val msg = getMessage(event)
+    override fun doSomething(loader: CommandLoader) {
+        val m = loader.member
+        val ch = loader.channel
+        val msg = loader.message
 
         if (m.id != StaticStore.MANDARIN_SMELL && m.id != ServerData.get("gid")) {
             return
@@ -47,7 +47,7 @@ class ReplaceSave : Command(LangID.EN, true) {
             downloader.run { _ -> }
 
             if (realFile.exists() && !realFile.delete()) {
-                replyToMessageSafely(ch, "Failed to delete save file before replacing...", getMessage(event)) { a -> a }
+                replyToMessageSafely(ch, "Failed to delete save file before replacing...", loader.message) { a -> a }
 
                 CardBot.forceReplace = false
 
@@ -55,15 +55,15 @@ class ReplaceSave : Command(LangID.EN, true) {
             }
 
             if (tempFile.exists() && !tempFile.renameTo(realFile)) {
-                replyToMessageSafely(ch, "Failed to move downloaded save file to destination place...", getMessage(event)) { a -> a }
+                replyToMessageSafely(ch, "Failed to move downloaded save file to destination place...", loader.message) { a -> a }
 
                 CardBot.forceReplace = false
 
                 return
             }
 
-            replyToMessageSafely(ch, "Successfully replaced save file. Bot will be turned off", getMessage(event), { a -> a }, {
-                event.jda.shutdown()
+            replyToMessageSafely(ch, "Successfully replaced save file. Bot will be turned off", loader.message, { a -> a }, {
+                ch.jda.shutdown()
                 StaticStore.saver.cancel()
 
                 exitProcess(0)
@@ -73,7 +73,7 @@ class ReplaceSave : Command(LangID.EN, true) {
 
             CardBot.forceReplace = false
 
-            replyToMessageSafely(ch, "Failed to replace save file...", getMessage(event)) { a -> a }
+            replyToMessageSafely(ch, "Failed to replace save file...", loader.message) { a -> a }
         }
     }
 }

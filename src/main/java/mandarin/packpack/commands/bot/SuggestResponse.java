@@ -3,14 +3,17 @@ package mandarin.packpack.commands.bot;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class SuggestResponse extends ConstraintCommand {
 
@@ -19,15 +22,12 @@ public class SuggestResponse extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
-        if(ch == null)
-            return;
+        JDA client = ch.getJDA();
 
-        JDA client = event.getJDA();
-
-        String[] contents = getContent(event).split(" ", 6);
+        String[] contents = loader.getContent().split(" ", 6);
 
         if(contents.length < 6) {
             ch.sendMessage("Invalid Format : `p!suggestresponse [Guild ID] [Channel ID] [Member ID] [Suggestion ID] Contents`").queue();
@@ -50,35 +50,37 @@ public class SuggestResponse extends ConstraintCommand {
             if(me == null)
                 return;
 
-            Message emb = me.openPrivateChannel().complete().getHistory().getMessageById(contents[4]);
+            me.openPrivateChannel().queue(pv -> {
+                Message emb = pv.getHistory().getMessageById(contents[4]);
 
-            if(emb == null || emb.getEmbeds().isEmpty())
-                return;
+                if(emb == null || emb.getEmbeds().isEmpty())
+                    return;
 
-            MessageEmbed embed = emb.getEmbeds().get(0);
+                MessageEmbed embed = emb.getEmbeds().get(0);
 
-            EmbedBuilder builder = new EmbedBuilder()
-                    .setTitle(LangID.getStringByID("response_title", lang))
-                    .setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)]);
+                EmbedBuilder builder = new EmbedBuilder()
+                        .setTitle(LangID.getStringByID("response_title", lang))
+                        .setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)]);
 
-            MessageEmbed.AuthorInfo info = embed.getAuthor();
+                MessageEmbed.AuthorInfo info = embed.getAuthor();
 
-            if(info == null || info.getName() == null)
-                return;
+                if(info == null || info.getName() == null)
+                    return;
 
-            builder.addField(info.getName(), contents[5], false);
+                builder.addField(info.getName(), contents[5], false);
 
-            User user = client.getUserById(contents[3]);
+                User user = client.getUserById(contents[3]);
 
-            if(user != null) {
-                builder.setFooter(LangID.getStringByID("response_suggestedby", lang).replace("_UUU_", user.getEffectiveName()), user.getAvatarUrl());
+                if(user != null) {
+                    builder.setFooter(LangID.getStringByID("response_suggestedby", lang).replace("_UUU_", user.getEffectiveName()), user.getAvatarUrl());
 
-                user.openPrivateChannel()
-                        .flatMap(pc -> pc.sendMessageEmbeds(builder.build()))
-                        .queue();
-            }
+                    user.openPrivateChannel()
+                            .flatMap(pc -> pc.sendMessageEmbeds(builder.build()))
+                            .queue();
+                }
 
-            ((GuildMessageChannel) c).sendMessageEmbeds(builder.build()).queue();
+                ((GuildMessageChannel) c).sendMessageEmbeds(builder.build()).queue();
+            });
         }
     }
 }

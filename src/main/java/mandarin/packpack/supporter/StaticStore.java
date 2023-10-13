@@ -1247,13 +1247,17 @@ public class StaticStore {
 
                 double per = 100.0 * (t - f) / m;
 
-                PackBot.statusMessage.editMessage(LangID.getStringByID("stat_info", LangID.EN)
-                        .replace("_SSS_", String.valueOf(StaticStore.idHolder.size()))
-                        .replace("_CCC_", String.valueOf(StaticStore.executed))
-                        .replace("_MMM_", String.valueOf(StaticStore.spamData.size())) + "\n\nNumber of Threads\n\n" +
-                        "- In Group : " + Thread.activeCount() + "\n" +
-                        "- In All : " + ManagementFactory.getThreadMXBean().getThreadCount() + "\n\n" +
-                        "Memory Used : " + (t - f >> 20) + " MB / " + (m >> 20) + " MB, " + (int) per + "%").queue(null, e -> {
+                PackBot.statusMessage.queue(msg -> {
+                    if (msg.getJDA().getSelfUser().getId().equals(msg.getAuthor().getId())) {
+                        msg.editMessage(LangID.getStringByID("stat_info", LangID.EN)
+                                .replace("_SSS_", String.valueOf(StaticStore.idHolder.size()))
+                                .replace("_CCC_", String.valueOf(StaticStore.executed))
+                                .replace("_MMM_", String.valueOf(StaticStore.spamData.size())) + "\n\nNumber of Threads\n\n" +
+                                "- In Group : " + Thread.activeCount() + "\n" +
+                                "- In All : " + ManagementFactory.getThreadMXBean().getThreadCount() + "\n\n" +
+                                "Memory Used : " + (t - f >> 20) + " MB / " + (m >> 20) + " MB, " + (int) per + "%").queue(null, e -> {
+                        });
+                    }
                 });
             } catch (Exception ignored) { }
         }

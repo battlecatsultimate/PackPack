@@ -6,6 +6,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.search.MedalMessageHolder;
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
@@ -13,7 +14,6 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,23 +29,20 @@ public class Medal extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
-        if(ch == null)
-            return;
-
-        String[] contents = getContent(event).split(" ");
+        String[] contents = loader.getContent().split(" ");
 
         if(contents.length >= 2) {
-            String[] realContents = getContent(event).split(" ", 2);
+            String[] realContents = loader.getContent().split(" ", 2);
 
             ArrayList<Integer> id = EntityFilter.findMedalByName(realContents[1], lang);
 
             if(id.isEmpty()) {
                 createMessageWithNoPings(ch, LangID.getStringByID("medal_nomed", lang).replace("_", getSearchKeyword(realContents[1])));
             } else if(id.size() == 1) {
-                EntityHandler.showMedalEmbed(id.get(0), ch, getMessage(event), lang);
+                EntityHandler.showMedalEmbed(id.get(0), ch, loader.getMessage(), lang);
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", getSearchKeyword(realContents[1])));
 
@@ -68,18 +65,13 @@ public class Medal extends ConstraintCommand {
 
                 sb.append("```");
 
-                Message res = getRepliedMessageSafely(ch, sb.toString(), getMessage(event), a -> registerSearchComponents(a, id.size(), data, lang));
+                replyToMessageSafely(ch, sb.toString(), loader.getMessage(), a -> registerSearchComponents(a, id.size(), data, lang), res -> {
+                    User u = loader.getUser();
 
-                if(res != null) {
-                    User u = getUser(event);
+                    Message msg = loader.getMessage();
 
-                    if(u != null) {
-                        Message msg = getMessage(event);
-
-                        if(msg != null)
-                            StaticStore.putHolder(u.getId(), new MedalMessageHolder(id, msg, res, lang, ch.getId()));
-                    }
-                }
+                    StaticStore.putHolder(u.getId(), new MedalMessageHolder(id, msg, res, lang, ch.getId()));
+                });
             }
         } else {
             ch.sendMessage(LangID.getStringByID("medal_more", lang)).queue();

@@ -41,7 +41,6 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
-import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
@@ -63,6 +62,7 @@ import java.text.NumberFormat;
 import java.util.List;
 import java.util.Queue;
 import java.util.*;
+import java.util.function.Consumer;
 
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class EntityHandler {
@@ -84,7 +84,7 @@ public class EntityHandler {
         }
     }
 
-    public static Message performUnitEmb(Form f, GenericCommandInteractionEvent event, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, Level lv, boolean treasure, TreasureHolder holder, int lang) throws Exception {
+    public static void performUnitEmb(Form f, GenericCommandInteractionEvent event, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, Level lv, boolean treasure, TreasureHolder holder, int lang, Consumer<Message> onSuccess) throws Exception {
         ReplyCallbackAction action = event.deferReply();
 
         int level = lv.getLv();
@@ -289,55 +289,55 @@ public class EntityHandler {
         if(cf != null)
             action = action.addFiles(FileUpload.fromData(cf, "cf.png"));
 
-        InteractionHook hook = action.complete();
+        action.queue(hook -> {
+            if (hook == null)
+                return;
 
-        if(hook != null) {
-            Message msg = hook.retrieveOriginal().complete();
-            MessageChannel ch = msg.getChannel();
+            hook.retrieveOriginal().queue(msg -> {
+                MessageChannel ch = msg.getChannel();
 
-            Guild g;
+                Guild g;
 
-            if(ch instanceof GuildChannel) {
-                g = msg.getGuild();
-            } else {
-                g = null;
-            }
-
-            if(!(ch instanceof GuildChannel) || g.getSelfMember().hasPermission((GuildChannel) ch, Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_MANAGE)) {
-                if(canFirstForm(f)) {
-                    msg.addReaction(EmojiStore.TWO_PREVIOUS).queue();
+                if(ch instanceof GuildChannel) {
+                    g = msg.getGuild();
+                } else {
+                    g = null;
                 }
 
-                if(canPreviousForm(f)) {
-                    msg.addReaction(EmojiStore.PREVIOUS).queue();
+                if(!(ch instanceof GuildChannel) || g.getSelfMember().hasPermission((GuildChannel) ch, Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_MANAGE)) {
+                    if(canFirstForm(f)) {
+                        msg.addReaction(EmojiStore.TWO_PREVIOUS).queue();
+                    }
+
+                    if(canPreviousForm(f)) {
+                        msg.addReaction(EmojiStore.PREVIOUS).queue();
+                    }
+
+                    if(canNextForm(f)) {
+                        msg.addReaction(EmojiStore.NEXT).queue();
+                    }
+
+                    if(canFinalForm(f)) {
+                        msg.addReaction(EmojiStore.TWO_NEXT).queue();
+                    }
                 }
 
-                if(canNextForm(f)) {
-                    msg.addReaction(EmojiStore.NEXT).queue();
-                }
+                StaticStore.executorHandler.postDelayed(5000, () -> {
+                    if(img != null && img.exists() && !img.delete()) {
+                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                    }
 
-                if(canFinalForm(f)) {
-                    msg.addReaction(EmojiStore.TWO_NEXT).queue();
-                }
-            }
+                    if(cf != null && cf.exists() && !cf.delete()) {
+                        StaticStore.logger.uploadLog("Failed to delete file : "+cf.getAbsolutePath());
+                    }
+                });
 
-            StaticStore.executorHandler.postDelayed(5000, () -> {
-                if(img != null && img.exists() && !img.delete()) {
-                    StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                }
-
-                if(cf != null && cf.exists() && !cf.delete()) {
-                    StaticStore.logger.uploadLog("Failed to delete file : "+cf.getAbsolutePath());
-                }
+                onSuccess.accept(msg);
             });
-
-            return msg;
-        }
-
-        return null;
+        });
     }
 
-    public static Message showUnitEmb(Form f, MessageChannel ch, @Nullable Message reference, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, boolean isTrueForm, boolean trueFormPossible, Level lv, boolean treasure, TreasureHolder holder, int lang, boolean addEmoji, boolean compact) throws Exception {
+    public static void showUnitEmb(Form f, MessageChannel ch, @Nullable Message reference, ConfigHolder config, boolean isFrame, boolean talent, boolean extra, boolean isTrueForm, boolean trueFormPossible, Level lv, boolean treasure, TreasureHolder holder, int lang, boolean addEmoji, boolean compact, Consumer<Message> onSuccess) throws Exception {
         int level = lv.getLv();
         int levelp = lv.getPlusLv();
 
@@ -560,7 +560,7 @@ public class EntityHandler {
         if(t != null && talentExists(t))
             spec.setFooter(DataToString.getTalent(f.du, lv, lang));
 
-        Message msg = Command.getRepliedMessageSafely(ch, "", reference, a -> {
+        Command.replyToMessageSafely(ch, "", reference, a -> {
             MessageCreateAction action = a.setEmbeds(spec.build());
 
             if(img != null)
@@ -604,21 +604,21 @@ public class EntityHandler {
             }
 
             return action;
+        }, msg -> {
+            StaticStore.executorHandler.postDelayed(5000, () -> {
+                if(img != null && img.exists() && !img.delete()) {
+                    StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                }
+
+                if(cf != null && cf.exists() && !cf.delete()) {
+                    StaticStore.logger.uploadLog("Failed to delete file : "+cf.getAbsolutePath());
+                }
+            });
+
+            f.anim.unload();
+
+            onSuccess.accept(msg);
         });
-
-        StaticStore.executorHandler.postDelayed(5000, () -> {
-            if(img != null && img.exists() && !img.delete()) {
-                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-            }
-
-            if(cf != null && cf.exists() && !cf.delete()) {
-                StaticStore.logger.uploadLog("Failed to delete file : "+cf.getAbsolutePath());
-            }
-        });
-
-        f.anim.unload();
-
-        return msg;
     }
 
     public static void showTalentEmbed(MessageChannel ch, Message reference, Form unit, boolean isFrame, int lang) throws Exception {
@@ -721,9 +721,10 @@ public class EntityHandler {
 
         int c = StaticStore.rainbow[0];
 
-        int[] mag = new int[2];
+        int[] mag;
 
         if(magnification.length == 1) {
+            mag = new int[2];
             if(magnification[0] <= 0) {
                 mag[0] = mag[1] = 100;
             } else {
@@ -737,6 +738,8 @@ public class EntityHandler {
 
             if(mag[1] < 0)
                 mag[1] = 0;
+        } else {
+            mag = new int[2];
         }
 
         if (e.de.getTraits().contains(TreasureHolder.fullTraits.get(Data.TRAIT_ALIEN))) {
@@ -835,7 +838,7 @@ public class EntityHandler {
 
         spec.setFooter(LangID.getStringByID("enemyst_source", lang));
 
-        Message msg = Command.getRepliedMessageSafely(ch, "", reference, a -> {
+        Command.replyToMessageSafely(ch, "", reference, a -> {
             a = a.setEmbeds(spec.build());
 
             if (img != null) {
@@ -843,15 +846,15 @@ public class EntityHandler {
             }
 
             return a.addComponents(ActionRow.of(Button.secondary("dps", LangID.getStringByID("button_dps", lang)).withEmoji(Emoji.fromUnicode("\uD83D\uDCC8"))));
-        }, m -> {
+        }, msg -> {
             if (img != null && img.exists() && !img.delete()) {
                 StaticStore.logger.uploadLog("Failed to delete file : " + img.getAbsolutePath());
             }
+
+            StaticStore.putHolder(reference.getAuthor().getId(), new EnemyButtonHolder(e, reference, msg, holder, mag, compact, lang, ch.getId()));
+
+            e.anim.unload();
         });
-
-        StaticStore.putHolder(reference.getAuthor().getId(), new EnemyButtonHolder(e, reference, msg, holder, mag, compact, lang, ch.getId()));
-
-        e.anim.unload();
     }
 
     public static void performEnemyEmb(Enemy e, GenericCommandInteractionEvent event, boolean isFrame, boolean extra, int[] magnification, TreasureHolder holder, int lang) throws Exception {
@@ -1116,7 +1119,7 @@ public class EntityHandler {
         return img;
     }
 
-    public static Message showStageEmb(Stage st, MessageChannel ch, Message reference, boolean isFrame, boolean isExtra, boolean isCompact, int level, TreasureHolder holder, int lang) throws Exception {
+    public static void showStageEmb(Stage st, MessageChannel ch, Message reference, boolean isFrame, boolean isExtra, boolean isCompact, int level, TreasureHolder holder, int lang, Consumer<Message> onSuccess) throws Exception {
         StageMap stm = st.getCont();
 
         int sta;
@@ -1155,7 +1158,9 @@ public class EntityHandler {
         String name = "";
 
         if(stm == null) {
-            return ch.sendMessageEmbeds(spec.build()).complete();
+            ch.sendMessageEmbeds(spec.build()).queue();
+
+            return;
         }
 
         MapColc mc = stm.getCont();
@@ -1302,7 +1307,7 @@ public class EntityHandler {
             spec.setImage("attachment://scheme.png");
         }
 
-        Message msg = Command.getRepliedMessageSafely(ch, "", reference, a -> {
+        Command.replyToMessageSafely(ch, "", reference, a -> {
             MessageCreateAction action = a.setEmbeds(spec.build());
 
             if(img != null)
@@ -1324,18 +1329,18 @@ public class EntityHandler {
             action = action.setComponents(ActionRow.of(buttons));
 
             return action;
-        });
+        }, msg -> {
+            StaticStore.executorHandler.postDelayed(5000, () -> {
+                if(img != null && img.exists() && !img.delete()) {
+                    StaticStore.logger.uploadLog("Can't delete file : "+img.getAbsolutePath());
+                }
+            });
 
-        StaticStore.executorHandler.postDelayed(5000, () -> {
-            if(img != null && img.exists() && !img.delete()) {
-                StaticStore.logger.uploadLog("Can't delete file : "+img.getAbsolutePath());
-            }
+            onSuccess.accept(msg);
         });
-
-        return msg;
     }
 
-    public static Message performStageEmb(Stage st, GenericCommandInteractionEvent event, boolean isFrame, boolean isExtra, int level, int lang, TreasureHolder holder) throws Exception {
+    public static void performStageEmb(Stage st, GenericCommandInteractionEvent event, boolean isFrame, boolean isExtra, int level, int lang, TreasureHolder holder, Consumer<Message> onSuccess) throws Exception {
         StageMap stm = st.getCont();
 
         int sta;
@@ -1374,7 +1379,7 @@ public class EntityHandler {
         String name = "";
 
         if(stm == null)
-            return null;
+            return;
 
         MapColc mc = stm.getCont();
 
@@ -1496,42 +1501,43 @@ public class EntityHandler {
         if(img != null)
             action = action.addFiles(FileUpload.fromData(img, "scheme.png"));
 
-        InteractionHook hook = action.complete();
+        action.queue(hook ->
+            hook.retrieveOriginal().queue(msg -> {
+                if (msg == null)
+                    return;
 
-        Message msg = hook.retrieveOriginal().complete();
+                MessageChannel ch = msg.getChannel();
 
-        if(msg != null) {
-            MessageChannel ch = msg.getChannel();
+                Guild g;
 
-            Guild g;
-
-            if(ch instanceof GuildChannel) {
-                g = msg.getGuild();
-            } else {
-                g = null;
-            }
-
-            if(!(ch instanceof GuildChannel) || g.getSelfMember().hasPermission((GuildChannel) ch, Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_MANAGE)) {
-                msg.addReaction(EmojiStore.CASTLE).queue();
-                msg.addReaction(EmojiStore.BACKGROUND).queue();
-
-                if(st.mus0 != null) {
-                    msg.addReaction(EmojiStore.MUSIC).queue();
+                if(ch instanceof GuildChannel) {
+                    g = msg.getGuild();
+                } else {
+                    g = null;
                 }
 
-                if(hasTwoMusic(st)) {
-                    msg.addReaction(EmojiStore.MUSIC_BOSS).queue();
-                }
-            }
+                if(!(ch instanceof GuildChannel) || g.getSelfMember().hasPermission((GuildChannel) ch, Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_MANAGE)) {
+                    msg.addReaction(EmojiStore.CASTLE).queue();
+                    msg.addReaction(EmojiStore.BACKGROUND).queue();
 
-            StaticStore.executorHandler.postDelayed(5000, () -> {
-                if(img != null && img.exists() && !img.delete()) {
-                    StaticStore.logger.uploadLog("Can't delete file : "+img.getAbsolutePath());
-                }
-            });
-        }
+                    if(st.mus0 != null) {
+                        msg.addReaction(EmojiStore.MUSIC).queue();
+                    }
 
-        return msg;
+                    if(hasTwoMusic(st)) {
+                        msg.addReaction(EmojiStore.MUSIC_BOSS).queue();
+                    }
+                }
+
+                StaticStore.executorHandler.postDelayed(5000, () -> {
+                    if(img != null && img.exists() && !img.delete()) {
+                        StaticStore.logger.uploadLog("Can't delete file : "+img.getAbsolutePath());
+                    }
+                });
+
+                onSuccess.accept(msg);
+            })
+        );
     }
 
     private static File generateScheme(Stage st, boolean isFrame, int lang, int star, TreasureHolder holder) throws Exception {
@@ -2066,9 +2072,12 @@ public class EntityHandler {
         }
     }
 
-    public static boolean generateFormAnim(Form f, MessageChannel ch, Message reference, int booster, int mode, boolean debug, int limit, int lang, boolean raw, boolean gif) throws Exception {
-        if(f.unit == null || f.unit.id == null)
-            return false;
+    public static void generateFormAnim(Form f, MessageChannel ch, Message reference, int booster, int mode, boolean debug, int limit, int lang, boolean raw, boolean gif, Runnable onSuccess, Runnable onFail) {
+        if(f.unit == null || f.unit.id == null) {
+            onFail.run();
+
+            return;
+        }
 
         f.anim.load();
 
@@ -2082,7 +2091,10 @@ public class EntityHandler {
 
             if(link != null) {
                 Command.replyToMessageSafely(ch, LangID.getStringByID("gif_cache", lang).replace("_", link), reference, a -> a);
-                return false;
+
+                onFail.run();
+
+                return;
             }
         }
 
@@ -2098,219 +2110,253 @@ public class EntityHandler {
 
         CommonStatic.getConfig().ref = false;
 
-        Message msg = ch.sendMessage(LangID.getStringByID("gif_anbox", lang)).complete();
+        int finalMode = mode;
 
-        if(msg == null)
-            return false;
+        ch.sendMessage(LangID.getStringByID("gif_anbox", lang)).queue(msg -> {
+            try {
+                if(msg == null) {
+                    onFail.run();
 
-        long start = System.currentTimeMillis();
-
-        EAnimD<?> anim = f.getEAnim(getAnimType(mode, f.anim.anims.length));
-
-        File img;
-
-        if(raw) {
-            img = ImageDrawing.drawAnimMp4(anim, msg, 1f, debug, limit, lang);
-        } else {
-            img = ImageDrawing.drawAnimGif(anim, msg, 1f, debug, false, limit, lang);
-        }
-
-        f.anim.unload();
-
-        long end = System.currentTimeMillis();
-
-        String time = DataToString.df.format((end - start)/1000.0);
-
-        long max;
-
-        if(debug || limit > 0)
-            max = getBoosterFileLimit(booster) * 1024L * 1024;
-        else
-            max = 8 * 1024 * 1024;
-
-        if(img == null) {
-            ch.sendMessage(LangID.getStringByID("gif_faile", lang)).queue();
-
-            return false;
-        } else if(img.length() >= max) {
-            if(img.length() < (raw ? 200 * 1024 * 1024 : 10 * 1024 * 1024)) {
-                Message m = Command.getRepliedMessageSafely(ch, LangID.getStringByID("gif_filesize", lang), reference, a -> a);
-
-                if(m == null) {
-                    ch.sendMessage(LangID.getStringByID("gif_failcommand", lang)).queue(message -> {
-                        if(img.exists() && !img.delete()) {
-                            StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                        }
-                    }, e -> {
-                        StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
-
-                        if(img.exists() && !img.delete()) {
-                            StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                        }
-                    });
-
-                    return false;
+                    return;
                 }
 
-                String link = StaticStore.imgur.uploadFile(img);
+                long start = System.currentTimeMillis();
 
-                if(link == null) {
-                    m.editMessage(LangID.getStringByID("gif_failimgur", lang))
-                            .setAllowedMentions(new ArrayList<>())
-                            .queue(message -> {
-                                if(img.exists() && !img.delete()) {
-                                    StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                }
-                            }, e -> {
-                                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
+                EAnimD<?> anim = f.getEAnim(getAnimType(finalMode, f.anim.anims.length));
 
-                                if(img.exists() && !img.delete()) {
-                                    StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                }
-                            });
+                File img;
+
+                if(raw) {
+                    img = ImageDrawing.drawAnimMp4(anim, msg, 1f, debug, limit, lang);
                 } else {
-                    if(!debug && limit <= 0) {
-                        String id = generateID(f, mode);
-
-                        StaticStore.imgur.put(id, link, raw);
-                    }
-
-                    long finalEnd = System.currentTimeMillis();
-
-                    m.editMessage(LangID.getStringByID("gif_uploadimgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link)
-                            .setAllowedMentions(new ArrayList<>())
-                            .queue(message -> {
-                                if(img.exists() && !img.delete()) {
-                                    StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                }
-                            }, e -> {
-                                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
-
-                                if(img.exists() && !img.delete()) {
-                                    StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                }
-                            });
-
-                    GuildChannel chan = client.getGuildChannelById(StaticStore.UNITARCHIVE);
-
-                    if(chan instanceof GuildMessageChannel) {
-                        ((GuildMessageChannel) chan).sendMessage(generateID(f, mode)+"\n\n"+link).queue();
-                    }
-                }
-            } else if(img.length() < 200 * 1024 * 1024) {
-                Message m = Command.getRepliedMessageSafely(ch, LangID.getStringByID("gif_filesizecatbox", lang), reference, a -> a);
-
-                if(m == null) {
-                    ch.sendMessage(LangID.getStringByID("gif_failcommand", lang)).queue(message -> {
-                        if(img.exists() && !img.delete()) {
-                            StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                        }
-                    }, e -> {
-                        StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
-
-                        if(img.exists() && !img.delete()) {
-                            StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                        }
-                    });
-
-                    return false;
+                    img = ImageDrawing.drawAnimGif(anim, msg, 1f, debug, false, limit, lang);
                 }
 
-                String link = StaticStore.imgur.uploadCatbox(img);
+                f.anim.unload();
 
-                if(link == null) {
-                    m.editMessage(LangID.getStringByID("gif_failcatbox", lang))
-                            .setAllowedMentions(new ArrayList<>())
-                            .queue(message -> {
-                                if(img.exists() && !img.delete()) {
-                                    StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                }
-                            }, e -> {
-                                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
+                long end = System.currentTimeMillis();
 
-                                if(img.exists() && !img.delete()) {
-                                    StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                }
-                            });
-                } else {
-                    if(!debug && limit <= 0) {
-                        String id = generateID(f, mode);
+                String time = DataToString.df.format((end - start)/1000.0);
 
-                        StaticStore.imgur.put(id, link, raw);
-                    }
+                long max;
 
-                    long finalEnd = System.currentTimeMillis();
+                if(debug || limit > 0)
+                    max = getBoosterFileLimit(booster) * 1024L * 1024;
+                else
+                    max = 8 * 1024 * 1024;
 
-                    m.editMessage(String.format(LangID.getStringByID("gif_uploadcatbox", lang), getFileSize(img), (end-start) / 1000.0, (finalEnd-start) / 1000.0)+"\n"+link)
-                            .setAllowedMentions(new ArrayList<>())
-                            .queue(message -> {
-                                if(img.exists() && !img.delete()) {
-                                    StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                }
-                            }, e -> {
-                                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
+                if (img == null) {
+                    ch.sendMessage(LangID.getStringByID("gif_faile", lang)).queue();
 
-                                if(img.exists() && !img.delete()) {
-                                    StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                }
-                            });
-
-                    GuildChannel chan = client.getGuildChannelById(StaticStore.UNITARCHIVE);
-
-                    if(chan instanceof GuildMessageChannel) {
-                        ((GuildMessageChannel) chan).sendMessage(generateID(f, mode)+"\n\n"+link).queue();
-                    }
-                }
-            } else {
-                ch.sendMessage(LangID.getStringByID("gif_toobig", lang)).queue();
-            }
-
-            return true;
-        } else if(img.length() < max) {
-            final int fMode = mode;
-
-            if(debug || limit > 0) {
-                Command.sendMessageWithFile(ch, LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)), img, raw ? "result.mp4" : "result.gif", reference);
-            } else {
-                GuildChannel chan = client.getGuildChannelById(StaticStore.UNITARCHIVE);
-
-                if(chan instanceof GuildMessageChannel) {
-                    String siz = getFileSize(img);
-
-                    ((GuildMessageChannel) chan).sendMessage(generateID(f, fMode))
-                            .addFiles(FileUpload.fromData(img, raw ? "result.mp4" : "result.gif"))
-                            .queue(m -> {
-                                if(img.exists() && !img.delete()) {
-                                    StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                }
-
-                                for(int i = 0; i < m.getAttachments().size(); i++) {
-                                    Message.Attachment at = m.getAttachments().get(i);
-
-                                    if(at.getFileName().startsWith("result.")) {
-                                        Command.replyToMessageSafely(ch, LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", siz)+"\n\n"+at.getUrl(), reference, a -> a);
-                                        break;
+                    onFail.run();
+                } else if (img.length() >= max) {
+                    if(img.length() < (raw ? 200 * 1024 * 1024 : 10 * 1024 * 1024)) {
+                        Command.replyToMessageSafely(ch, LangID.getStringByID("gif_filesize", lang), reference, a -> a, m -> {
+                            if(m == null) {
+                                ch.sendMessage(LangID.getStringByID("gif_failcommand", lang)).queue(message -> {
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
                                     }
+                                }, e -> {
+                                    StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
+
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                    }
+                                });
+
+                                onFail.run();
+
+                                return;
+                            }
+
+                            String link;
+
+                            try {
+                                link = StaticStore.imgur.uploadFile(img);
+                            } catch (Exception e) {
+                                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to upload file to website");
+
+                                return;
+                            }
+
+                            if(link == null) {
+                                m.editMessage(LangID.getStringByID("gif_failimgur", lang))
+                                        .setAllowedMentions(new ArrayList<>())
+                                        .queue(message -> {
+                                            if(img.exists() && !img.delete()) {
+                                                StaticStore.logger.uploadLog("Failed to delete file : " + img.getAbsolutePath());
+                                            }
+                                        }, e -> {
+                                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
+
+                                            if(img.exists() && !img.delete()) {
+                                                StaticStore.logger.uploadLog("Failed to delete file : " + img.getAbsolutePath());
+                                            }
+                                        });
+                            } else {
+                                if(!debug && limit <= 0) {
+                                    String id = generateID(f, finalMode);
+
+                                    StaticStore.imgur.put(id, link, raw);
                                 }
 
-                                cacheImage(f, fMode, m);
-                            }, e -> {
-                                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
+                                long finalEnd = System.currentTimeMillis();
 
-                                if(img.exists() && !img.delete()) {
-                                    StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                m.editMessage(LangID.getStringByID("gif_uploadimgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link)
+                                        .setAllowedMentions(new ArrayList<>())
+                                        .queue(message -> {
+                                            if(img.exists() && !img.delete()) {
+                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                            }
+                                        }, e -> {
+                                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
+
+                                            if(img.exists() && !img.delete()) {
+                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                            }
+                                        });
+
+                                GuildChannel chan = client.getGuildChannelById(StaticStore.UNITARCHIVE);
+
+                                if(chan instanceof GuildMessageChannel) {
+                                    ((GuildMessageChannel) chan).sendMessage(generateID(f, finalMode)+"\n\n"+link).queue();
                                 }
-                            });
+                            }
+
+                            onSuccess.run();
+                        });
+                    } else if(img.length() < 200 * 1024 * 1024) {
+                        Command.replyToMessageSafely(ch, LangID.getStringByID("gif_filesizecatbox", lang), reference, a -> a, m -> {
+                            if(m == null) {
+                                ch.sendMessage(LangID.getStringByID("gif_failcommand", lang)).queue(message -> {
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                    }
+                                }, e -> {
+                                    StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
+
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                    }
+                                });
+
+                                onFail.run();
+
+                                return;
+                            }
+
+                            String link;
+
+                            try {
+                                link = StaticStore.imgur.uploadCatbox(img);
+                            } catch (Exception e) {
+                                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to upload file to catbox");
+
+                                return;
+                            }
+
+                            if(link == null) {
+                                m.editMessage(LangID.getStringByID("gif_failcatbox", lang))
+                                        .setAllowedMentions(new ArrayList<>())
+                                        .queue(message -> {
+                                            if(img.exists() && !img.delete()) {
+                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                            }
+                                        }, e -> {
+                                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
+
+                                            if(img.exists() && !img.delete()) {
+                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                            }
+                                        });
+                            } else {
+                                if(!debug && limit <= 0) {
+                                    String id = generateID(f, finalMode);
+
+                                    StaticStore.imgur.put(id, link, raw);
+                                }
+
+                                long finalEnd = System.currentTimeMillis();
+
+                                m.editMessage(String.format(LangID.getStringByID("gif_uploadcatbox", lang), getFileSize(img), (end-start) / 1000.0, (finalEnd-start) / 1000.0)+"\n"+link)
+                                        .setAllowedMentions(new ArrayList<>())
+                                        .queue(message -> {
+                                            if(img.exists() && !img.delete()) {
+                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                            }
+                                        }, e -> {
+                                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
+
+                                            if(img.exists() && !img.delete()) {
+                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                            }
+                                        });
+
+                                GuildChannel chan = client.getGuildChannelById(StaticStore.UNITARCHIVE);
+
+                                if(chan instanceof GuildMessageChannel) {
+                                    ((GuildMessageChannel) chan).sendMessage(generateID(f, finalMode)+"\n\n"+link).queue();
+                                }
+                            }
+
+                            onSuccess.run();
+                        });
+                    } else {
+                        ch.sendMessage(LangID.getStringByID("gif_toobig", lang)).queue();
+
+                        onSuccess.run();
+                    }
+                } else if(img.length() < max) {
+                    if(debug || limit > 0) {
+                        Command.sendMessageWithFile(ch, LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)), img, raw ? "result.mp4" : "result.gif", reference);
+                    } else {
+                        GuildChannel chan = client.getGuildChannelById(StaticStore.UNITARCHIVE);
+
+                        if(chan instanceof GuildMessageChannel) {
+                            String siz = getFileSize(img);
+
+                            ((GuildMessageChannel) chan).sendMessage(generateID(f, finalMode))
+                                    .addFiles(FileUpload.fromData(img, raw ? "result.mp4" : "result.gif"))
+                                    .queue(m -> {
+                                        if(img.exists() && !img.delete()) {
+                                            StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                        }
+
+                                        for(int i = 0; i < m.getAttachments().size(); i++) {
+                                            Message.Attachment at = m.getAttachments().get(i);
+
+                                            if(at.getFileName().startsWith("result.")) {
+                                                Command.replyToMessageSafely(ch, LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", siz)+"\n\n"+at.getUrl(), reference, a -> a);
+                                                break;
+                                            }
+                                        }
+
+                                        cacheImage(f, finalMode, m);
+                                    }, e -> {
+                                        StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
+
+                                        if(img.exists() && !img.delete()) {
+                                            StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                        }
+                                    });
+                        }
+                    }
+
+                    onSuccess.run();
                 }
+            } catch (Exception e) {
+                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to generate form animation");
             }
-        }
-
-        return true;
+        });
     }
 
-    public static boolean generateEnemyAnim(Enemy en, MessageChannel ch, Message reference, int booster, int mode, boolean debug, int limit, int lang, boolean raw, boolean gif) throws Exception {
-        if(en.id == null)
-            return false;
+    public static void generateEnemyAnim(Enemy en, MessageChannel ch, Message reference, int booster, int mode, boolean debug, int limit, int lang, boolean raw, boolean gif, Runnable onSuccess, Runnable onFail) {
+        if(en.id == null) {
+            onFail.run();
+
+            return;
+        }
 
         en.anim.load();
 
@@ -2324,7 +2370,10 @@ public class EntityHandler {
 
             if(link != null) {
                 Command.replyToMessageSafely(ch, LangID.getStringByID("gif_cache", lang).replace("_", link), reference, a -> a);
-                return false;
+
+                onFail.run();
+
+                return;
             }
         }
 
@@ -2341,215 +2390,246 @@ public class EntityHandler {
         }
 
         CommonStatic.getConfig().ref = false;
+        int finalMode = mode;
 
-        Message msg = ch.sendMessage(LangID.getStringByID("gif_anbox", lang)).complete();
+        ch.sendMessage(LangID.getStringByID("gif_anbox", lang)).queue(msg -> {
+            try {
+                if(msg == null) {
+                    onFail.run();
 
-        if(msg == null)
-            return false;
-
-        long start = System.currentTimeMillis();
-
-        File img;
-
-        long max;
-
-        if(debug || limit > 0)
-            max = getBoosterFileLimit(booster) * 1024L * 1024;
-        else
-            max = 8 * 1024 * 1024;
-
-        if(raw) {
-            img = ImageDrawing.drawAnimMp4(anim, msg, 1f, debug, limit, lang);
-        } else {
-            img = ImageDrawing.drawAnimGif(anim, msg, 1f, debug, false, limit, lang);
-        }
-
-        en.anim.unload();
-
-        long end = System.currentTimeMillis();
-
-        String time = DataToString.df.format((end - start)/1000.0);
-
-        if(img == null) {
-            Command.replyToMessageSafely(ch, LangID.getStringByID("gif_faile", lang), reference, a -> a);
-
-            return false;
-        } else if(img.length() >= max) {
-            if(img.length() < (raw ? 200 * 1024 * 1024 : 10 * 1024 * 1024)) {
-                Message m = Command.getRepliedMessageSafely(ch, LangID.getStringByID("gif_filesize", lang), reference, a -> a);
-
-                if(m == null) {
-                    ch.sendMessage(LangID.getStringByID("gif_failcommand", lang)).queue(message -> {
-                        if(img.exists() && !img.delete()) {
-                            StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                        }
-                    }, e -> {
-                        StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
-
-                        if(img.exists() && !img.delete()) {
-                            StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                        }
-                    });
-
-                    return false;
+                    return;
                 }
 
-                String link = StaticStore.imgur.uploadFile(img);
+                long start = System.currentTimeMillis();
 
-                if(link == null) {
-                    m.editMessage(LangID.getStringByID("gif_failimgur", lang))
-                            .setAllowedMentions(new ArrayList<>())
-                            .queue(message -> {
-                                if(img.exists() && !img.delete()) {
-                                    StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                }
-                            }, e -> {
-                                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
+                File img;
 
-                                if(img.exists() && !img.delete()) {
-                                    StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                }
-                            });
+                long max;
+
+                if(debug || limit > 0)
+                    max = getBoosterFileLimit(booster) * 1024L * 1024;
+                else
+                    max = 8 * 1024 * 1024;
+
+                if(raw) {
+                    img = ImageDrawing.drawAnimMp4(anim, msg, 1f, debug, limit, lang);
                 } else {
-                    if(!debug && limit <= 0) {
-                        String id = generateID(en, mode);
-
-                        StaticStore.imgur.put(id, link, raw);
-                    }
-
-                    long finalEnd = System.currentTimeMillis();
-
-                    m.editMessage(LangID.getStringByID("gif_uploadimgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link)
-                            .setAllowedMentions(new ArrayList<>())
-                            .queue(message -> {
-                                if(img.exists() && !img.delete()) {
-                                    StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                }
-                            }, e -> {
-                                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
-
-                                if(img.exists() && !img.delete()) {
-                                    StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                }
-                            });
-
-                    GuildChannel chan = client.getGuildChannelById(StaticStore.ENEMYARCHIVE);
-
-                    if(chan instanceof GuildMessageChannel) {
-                        ((GuildMessageChannel) chan).sendMessage(generateID(en, mode)+"\n\n"+link).queue();
-                    }
-                }
-            } else if(img.length() < 200 * 1024 * 1024) {
-                Message m = Command.getRepliedMessageSafely(ch, LangID.getStringByID("gif_filesizecatbox", lang), reference, a -> a);
-
-                if(m == null) {
-                    ch.sendMessage(LangID.getStringByID("gif_failcommand", lang)).queue(message -> {
-                        if(img.exists() && !img.delete()) {
-                            StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                        }
-                    }, e -> {
-                        StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
-
-                        if(img.exists() && !img.delete()) {
-                            StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                        }
-                    });
-
-                    return false;
+                    img = ImageDrawing.drawAnimGif(anim, msg, 1f, debug, false, limit, lang);
                 }
 
-                String link = StaticStore.imgur.uploadCatbox(img);
+                en.anim.unload();
 
-                if(link == null) {
-                    m.editMessage(LangID.getStringByID("gif_failcatbox", lang))
-                            .setAllowedMentions(new ArrayList<>())
-                            .queue(message -> {
-                                if(img.exists() && !img.delete()) {
-                                    StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                }
-                            }, e -> {
-                                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
+                long end = System.currentTimeMillis();
 
-                                if(img.exists() && !img.delete()) {
-                                    StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                }
-                            });
-                } else {
-                    if(!debug && limit <= 0) {
-                        String id = generateID(en, mode);
+                String time = DataToString.df.format((end - start)/1000.0);
 
-                        StaticStore.imgur.put(id, link, raw);
-                    }
+                if(img == null) {
+                    Command.replyToMessageSafely(ch, LangID.getStringByID("gif_faile", lang), reference, a -> a);
 
-                    long finalEnd = System.currentTimeMillis();
-
-                    m.editMessage(String.format(LangID.getStringByID("gif_uploadcatbox", lang), getFileSize(img), (end-start) / 1000.0, (finalEnd-start) / 1000.0)+"\n"+link)
-                            .setAllowedMentions(new ArrayList<>())
-                            .queue(message -> {
-                                if(img.exists() && !img.delete()) {
-                                    StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                }
-                            }, e -> {
-                                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
-
-                                if(img.exists() && !img.delete()) {
-                                    StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                }
-                            });
-
-                    GuildChannel chan = client.getGuildChannelById(StaticStore.ENEMYARCHIVE);
-
-                    if(chan instanceof GuildMessageChannel) {
-                        ((GuildMessageChannel) chan).sendMessage(generateID(en, mode)+"\n\n"+link).queue();
-                    }
-                }
-            } else {
-                ch.sendMessage(LangID.getStringByID("gif_toobig", lang)).queue();
-            }
-
-            return true;
-        } else if(img.length() < max) {
-            final int fMode = mode;
-
-            if(debug || limit > 0) {
-                Command.sendMessageWithFile(ch, LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)), img, raw ? "result.mp4" : "result.gif", reference);
-            } else {
-                GuildChannel chan = client.getGuildChannelById(StaticStore.ENEMYARCHIVE);
-
-                if(chan instanceof GuildMessageChannel) {
-                    String siz = getFileSize(img);
-
-                    ((GuildMessageChannel) chan).sendMessage(generateID(en, fMode))
-                            .addFiles(FileUpload.fromData(img, raw ? "result.mp4" : "result.gif"))
-                            .queue(m -> {
-                                if(img.exists() && !img.delete()) {
-                                    StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                }
-
-                                for(int i = 0; i < m.getAttachments().size(); i++) {
-                                    Message.Attachment at = m.getAttachments().get(i);
-
-                                    if(at.getFileName().startsWith("result.")) {
-                                        Command.replyToMessageSafely(ch, LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", siz)+"\n\n"+at.getUrl(), reference, a -> a);
+                    onFail.run();
+                } else if(img.length() >= max) {
+                    if(img.length() < (raw ? 200 * 1024 * 1024 : 10 * 1024 * 1024)) {
+                        Command.replyToMessageSafely(ch, LangID.getStringByID("gif_filesize", lang), reference, a -> a, m -> {
+                            if(m == null) {
+                                ch.sendMessage(LangID.getStringByID("gif_failcommand", lang)).queue(message -> {
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
                                     }
+                                }, e -> {
+                                    StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
+
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                    }
+                                });
+
+                                onFail.run();
+
+                                return;
+                            }
+
+                            String link;
+
+                            try {
+                                link = StaticStore.imgur.uploadFile(img);
+                            } catch (Exception e) {
+                                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to upload to file to imgur");
+
+                                return;
+                            }
+
+                            if(link == null) {
+                                m.editMessage(LangID.getStringByID("gif_failimgur", lang))
+                                        .setAllowedMentions(new ArrayList<>())
+                                        .queue(message -> {
+                                            if(img.exists() && !img.delete()) {
+                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                            }
+                                        }, e -> {
+                                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
+
+                                            if(img.exists() && !img.delete()) {
+                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                            }
+                                        });
+                            } else {
+                                if(!debug && limit <= 0) {
+                                    String id = generateID(en, finalMode);
+
+                                    StaticStore.imgur.put(id, link, raw);
                                 }
 
-                                cacheImage(en, fMode, m);
-                            }, e -> {
-                                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateEnemyAnim - Failed to display enemy anim");
+                                long finalEnd = System.currentTimeMillis();
 
-                                if(img.exists() && !img.delete()) {
-                                    StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                m.editMessage(LangID.getStringByID("gif_uploadimgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link)
+                                        .setAllowedMentions(new ArrayList<>())
+                                        .queue(message -> {
+                                            if(img.exists() && !img.delete()) {
+                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                            }
+                                        }, e -> {
+                                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
+
+                                            if(img.exists() && !img.delete()) {
+                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                            }
+                                        });
+
+                                GuildChannel chan = client.getGuildChannelById(StaticStore.ENEMYARCHIVE);
+
+                                if(chan instanceof GuildMessageChannel) {
+                                    ((GuildMessageChannel) chan).sendMessage(generateID(en, finalMode)+"\n\n"+link).queue();
                                 }
-                            });
+                            }
+
+                            onSuccess.run();
+                        });
+                    } else if(img.length() < 200 * 1024 * 1024) {
+                        Command.replyToMessageSafely(ch, LangID.getStringByID("gif_filesizecatbox", lang), reference, a -> a, m -> {
+                            if(m == null) {
+                                ch.sendMessage(LangID.getStringByID("gif_failcommand", lang)).queue(message -> {
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                    }
+                                }, e -> {
+                                    StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
+
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                    }
+                                });
+
+                                onFail.run();
+
+                                return;
+                            }
+
+                            String link;
+
+                            try {
+                                link = StaticStore.imgur.uploadCatbox(img);
+                            } catch (Exception e) {
+                                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateEnemyAnim - Failed to upload animation to cat box");
+
+                                return;
+                            }
+
+                            if(link == null) {
+                                m.editMessage(LangID.getStringByID("gif_failcatbox", lang))
+                                        .setAllowedMentions(new ArrayList<>())
+                                        .queue(message -> {
+                                            if(img.exists() && !img.delete()) {
+                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                            }
+                                        }, e -> {
+                                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
+
+                                            if(img.exists() && !img.delete()) {
+                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                            }
+                                        });
+                            } else {
+                                if(!debug && limit <= 0) {
+                                    String id = generateID(en, finalMode);
+
+                                    StaticStore.imgur.put(id, link, raw);
+                                }
+
+                                long finalEnd = System.currentTimeMillis();
+
+                                m.editMessage(String.format(LangID.getStringByID("gif_uploadcatbox", lang), getFileSize(img), (end-start) / 1000.0, (finalEnd-start) / 1000.0)+"\n"+link)
+                                        .setAllowedMentions(new ArrayList<>())
+                                        .queue(message -> {
+                                            if(img.exists() && !img.delete()) {
+                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                            }
+                                        }, e -> {
+                                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
+
+                                            if(img.exists() && !img.delete()) {
+                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                            }
+                                        });
+
+                                GuildChannel chan = client.getGuildChannelById(StaticStore.ENEMYARCHIVE);
+
+                                if(chan instanceof GuildMessageChannel) {
+                                    ((GuildMessageChannel) chan).sendMessage(generateID(en, finalMode)+"\n\n"+link).queue();
+                                }
+                            }
+
+                            onSuccess.run();
+                        });
+                    } else {
+                        ch.sendMessage(LangID.getStringByID("gif_toobig", lang)).queue();
+                        onSuccess.run();
+                    }
+                } else if(img.length() < max) {
+                    if(debug || limit > 0) {
+                        Command.sendMessageWithFile(ch, LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)), img, raw ? "result.mp4" : "result.gif", reference);
+
+                        onSuccess.run();
+                    } else {
+                        GuildChannel chan = client.getGuildChannelById(StaticStore.ENEMYARCHIVE);
+
+                        if(chan instanceof GuildMessageChannel) {
+                            String siz = getFileSize(img);
+
+                            ((GuildMessageChannel) chan).sendMessage(generateID(en, finalMode))
+                                    .addFiles(FileUpload.fromData(img, raw ? "result.mp4" : "result.gif"))
+                                    .queue(m -> {
+                                        if(img.exists() && !img.delete()) {
+                                            StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                        }
+
+                                        for(int i = 0; i < m.getAttachments().size(); i++) {
+                                            Message.Attachment at = m.getAttachments().get(i);
+
+                                            if(at.getFileName().startsWith("result.")) {
+                                                Command.replyToMessageSafely(ch, LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", siz)+"\n\n"+at.getUrl(), reference, a -> a);
+                                            }
+                                        }
+
+                                        cacheImage(en, finalMode, m);
+
+                                        onSuccess.run();
+                                    }, e -> {
+                                        StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateEnemyAnim - Failed to display enemy anim");
+
+                                        if(img.exists() && !img.delete()) {
+                                            StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                        }
+                                    });
+                        }
+                    }
                 }
+            } catch (Exception e) {
+                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateEnemyAnim - Failed to generate enemy animation");
             }
-        }
-
-        return true;
+        });
     }
 
-    public static void generateAnim(MessageChannel ch, AnimMixer mixer, int booster, int lang, boolean debug, int limit, boolean raw, boolean transparent, int index) throws Exception {
+    public static void generateAnim(MessageChannel ch, AnimMixer mixer, int booster, int lang, boolean debug, int limit, boolean raw, boolean transparent, int index) {
         boolean mix = mixer.mix();
 
         if(!mix) {
@@ -2568,199 +2648,274 @@ public class EntityHandler {
 
         CommonStatic.getConfig().ref = false;
 
-        Message msg = ch.sendMessage(LangID.getStringByID("gif_anbox", lang)).complete();
-
-        if(msg == null)
-            return;
-
-        long start = System.currentTimeMillis();
-
-        File img;
-
-        if(raw) {
-            img = ImageDrawing.drawAnimMp4(anim, msg, 1f, debug, limit, lang);
-        } else {
-            img = ImageDrawing.drawAnimGif(anim, msg, 1f, debug, transparent, lang, limit);
-        }
-
-        long end = System.currentTimeMillis();
-
-        String time = DataToString.df.format((end - start)/1000.0);
-
-        if(img == null) {
-            ch.sendMessage(LangID.getStringByID("gif_faile", lang)).queue();
-        } else if(img.length() >= (long) getBoosterFileLimit(booster) * 1024 * 1024) {
-            if(img.length() < (raw ? 200 * 1024 * 1024 : 10 * 1024 * 1024)) {
-                Message m = ch.sendMessage(LangID.getStringByID("gif_filesize", lang)).complete();
-
-                if(m == null) {
-                    ch.sendMessage(LangID.getStringByID("gif_failcommand", lang)).queue(message -> {
-                        if(img.exists() && !img.delete()) {
-                            StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                        }
-                    }, e -> {
-                        StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
-
-                        if(img.exists() && !img.delete()) {
-                            StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                        }
-                    });
-
+        ch.sendMessage(LangID.getStringByID("gif_anbox", lang)).queue(msg -> {
+            try {
+                if(msg == null)
                     return;
-                }
 
-                String link = StaticStore.imgur.uploadFile(img);
+                long start = System.currentTimeMillis();
 
-                if(link == null) {
-                    m.editMessage(LangID.getStringByID("gif_failimgur", lang))
-                            .setAllowedMentions(new ArrayList<>())
-                            .queue(message -> {
-                                if(img.exists() && !img.delete()) {
-                                    StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                }
-                            }, e -> {
-                                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
+                File img;
 
-                                if(img.exists() && !img.delete()) {
-                                    StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                }
-                            });
+                if(raw) {
+                    img = ImageDrawing.drawAnimMp4(anim, msg, 1f, debug, limit, lang);
                 } else {
-                    long finalEnd = System.currentTimeMillis();
+                    img = ImageDrawing.drawAnimGif(anim, msg, 1f, debug, transparent, lang, limit);
+                }
 
-                    m.editMessage(LangID.getStringByID("gif_uploadimgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link)
-                            .setAllowedMentions(new ArrayList<>())
+                long end = System.currentTimeMillis();
+
+                String time = DataToString.df.format((end - start)/1000.0);
+
+                if(img == null) {
+                    ch.sendMessage(LangID.getStringByID("gif_faile", lang)).queue();
+                } else if(img.length() >= (long) getBoosterFileLimit(booster) * 1024 * 1024) {
+                    if(img.length() < (raw ? 200 * 1024 * 1024 : 10 * 1024 * 1024)) {
+                        ch.sendMessage(LangID.getStringByID("gif_filesize", lang)).queue(m -> {
+                            if(m == null) {
+                                ch.sendMessage(LangID.getStringByID("gif_failcommand", lang)).queue(message -> {
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                    }
+                                }, e -> {
+                                    StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
+
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                    }
+                                });
+
+                                return;
+                            }
+
+                            String link;
+
+                            try {
+                                link = StaticStore.imgur.uploadFile(img);
+                            } catch (Exception e) {
+                                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateAnim - Failed to upload animation file to imgur");
+
+                                return;
+                            }
+
+                            if(link == null) {
+                                m.editMessage(LangID.getStringByID("gif_failimgur", lang))
+                                        .setAllowedMentions(new ArrayList<>())
+                                        .queue(message -> {
+                                            if(img.exists() && !img.delete()) {
+                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                            }
+                                        }, e -> {
+                                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
+
+                                            if(img.exists() && !img.delete()) {
+                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                            }
+                                        });
+                            } else {
+                                long finalEnd = System.currentTimeMillis();
+
+                                m.editMessage(LangID.getStringByID("gif_uploadimgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link)
+                                        .setAllowedMentions(new ArrayList<>())
+                                        .queue(message -> {
+                                            if(img.exists() && !img.delete()) {
+                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                            }
+                                        }, e -> {
+                                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
+
+                                            if(img.exists() && !img.delete()) {
+                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                            }
+                                        });
+                            }
+                        });
+                    } else if(img.length() < 200 * 1024 * 1024) {
+                        ch.sendMessage(LangID.getStringByID("gif_filesizecatbox", lang)).queue(m -> {
+                            if(m == null) {
+                                ch.sendMessage(LangID.getStringByID("gif_failcommand", lang)).queue(message -> {
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                    }
+                                }, e -> {
+                                    StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
+
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                    }
+                                });
+
+                                return;
+                            }
+
+                            String link;
+
+                            try {
+                                link = StaticStore.imgur.uploadCatbox(img);
+                            } catch (Exception e) {
+                                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateAnim - Failed to upload animation file to cat box");
+
+                                return;
+                            }
+
+                            if(link == null) {
+                                m.editMessage(LangID.getStringByID("gif_failcatbox", lang))
+                                        .setAllowedMentions(new ArrayList<>())
+                                        .queue(message -> {
+                                            if(img.exists() && !img.delete()) {
+                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                            }
+                                        }, e -> {
+                                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
+
+                                            if(img.exists() && !img.delete()) {
+                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                            }
+                                        });
+                            } else {
+                                long finalEnd = System.currentTimeMillis();
+
+                                m.editMessage(LangID.getStringByID("gif_uploadcatbox", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link)
+                                        .setAllowedMentions(new ArrayList<>())
+                                        .queue(message -> {
+                                            if(img.exists() && !img.delete()) {
+                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                            }
+                                        }, e -> {
+                                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
+
+                                            if(img.exists() && !img.delete()) {
+                                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                            }
+                                        });
+                            }
+                        });
+                    }
+                } else if(img.length() < (long) getBoosterFileLimit(booster) * 1024 * 1024) {
+                    ch.sendMessage(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)))
+                            .addFiles(FileUpload.fromData(img, raw ? "result.mp4" : "result.gif"))
                             .queue(message -> {
                                 if(img.exists() && !img.delete()) {
-                                    StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                    StaticStore.logger.uploadLog("W/EntityHandlerAnim | Can't delete file : "+img.getAbsolutePath());
                                 }
                             }, e -> {
-                                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
+                                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateAnim - Failed to generate mixed anim");
 
                                 if(img.exists() && !img.delete()) {
-                                    StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                    StaticStore.logger.uploadLog("W/EntityHandlerAnim | Can't delete file : "+img.getAbsolutePath());
                                 }
                             });
                 }
-            } else if(img.length() < 200 * 1024 * 1024) {
-                Message m = ch.sendMessage(LangID.getStringByID("gif_filesizecatbox", lang)).complete();
-
-                if(m == null) {
-                    ch.sendMessage(LangID.getStringByID("gif_failcommand", lang)).queue(message -> {
-                        if(img.exists() && !img.delete()) {
-                            StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                        }
-                    }, e -> {
-                        StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
-
-                        if(img.exists() && !img.delete()) {
-                            StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                        }
-                    });
-
-                    return;
-                }
-
-                String link = StaticStore.imgur.uploadCatbox(img);
-
-                if(link == null) {
-                    m.editMessage(LangID.getStringByID("gif_failcatbox", lang))
-                            .setAllowedMentions(new ArrayList<>())
-                            .queue(message -> {
-                                if(img.exists() && !img.delete()) {
-                                    StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                }
-                            }, e -> {
-                                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
-
-                                if(img.exists() && !img.delete()) {
-                                    StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                }
-                            });
-                } else {
-                    long finalEnd = System.currentTimeMillis();
-
-                    m.editMessage(LangID.getStringByID("gif_uploadcatbox", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link)
-                            .setAllowedMentions(new ArrayList<>())
-                            .queue(message -> {
-                                if(img.exists() && !img.delete()) {
-                                    StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                }
-                            }, e -> {
-                                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateFormAnim - Failed to display form anim");
-
-                                if(img.exists() && !img.delete()) {
-                                    StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                }
-                            });
-                }
+            } catch (Exception e) {
+                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateAnim - Failed to generate animation");
             }
-        } else if(img.length() < (long) getBoosterFileLimit(booster) * 1024 * 1024) {
-            ch.sendMessage(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)))
-                    .addFiles(FileUpload.fromData(img, raw ? "result.mp4" : "result.gif"))
-                    .queue(message -> {
-                        if(img.exists() && !img.delete()) {
-                            StaticStore.logger.uploadLog("W/EntityHandlerAnim | Can't delete file : "+img.getAbsolutePath());
-                        }
-                    }, e -> {
-                        StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateAnim - Failed to generate mixed anim");
-
-                        if(img.exists() && !img.delete()) {
-                            StaticStore.logger.uploadLog("W/EntityHandlerAnim | Can't delete file : "+img.getAbsolutePath());
-                        }
-                    });
-        }
+        });
     }
 
-    public static boolean generateBCAnim(MessageChannel ch, int booster, AnimMixer mixer, int lang) throws Exception {
+    public static void generateBCAnim(MessageChannel ch, int booster, AnimMixer mixer, int lang, Runnable onFail, Runnable onSuccess) {
         boolean mix = mixer.mix();
 
         if(!mix) {
             ch.sendMessage("Failed to mix Anim").queue();
-            return false;
+
+            onFail.run();
+
+            return;
         }
 
         CommonStatic.getConfig().ref = false;
 
-        Message msg = ch.sendMessage(LangID.getStringByID("gif_anbox", lang)).complete();
+        ch.sendMessage(LangID.getStringByID("gif_anbox", lang)).queue(msg -> {
+            if(msg == null) {
+                onFail.run();
 
-        if(msg == null)
-            return false;
+                return;
+            }
 
-        long start = System.currentTimeMillis();
+            long start = System.currentTimeMillis();
 
-        File img = ImageDrawing.drawBCAnim(mixer, msg, 1f, lang);
+            File img;
 
-        long end = System.currentTimeMillis();
+            try {
+                img = ImageDrawing.drawBCAnim(mixer, msg, 1f, lang);
+            } catch (Exception e) {
+                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBCAnim - Failed to generate BC animation");
 
-        String time = DataToString.df.format((end - start) / 1000.0);
+                return;
+            }
 
-        if(img == null) {
-            ch.sendMessage(LangID.getStringByID("gif_faile", lang)).queue();
-        } else if(img.length() >= (long) getBoosterFileLimit(booster) * 1024 * 1024 && img.length() < 200 * 1024 * 1024) {
-            Message m = ch.sendMessage(LangID.getStringByID("gif_filesize", lang)).complete();
+            long end = System.currentTimeMillis();
 
-            if(m == null) {
-                ch.sendMessage(LangID.getStringByID("gif_failcommand", lang))
-                        .queue(message -> {
-                    if(img.exists() && !img.delete()) {
-                        StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
+            String time = DataToString.df.format((end - start) / 1000.0);
+
+            if(img == null) {
+                ch.sendMessage(LangID.getStringByID("gif_faile", lang)).queue();
+            } else if(img.length() >= (long) getBoosterFileLimit(booster) * 1024 * 1024 && img.length() < 200 * 1024 * 1024) {
+                ch.sendMessage(LangID.getStringByID("gif_filesize", lang)).queue(m -> {
+                    if(m == null) {
+                        ch.sendMessage(LangID.getStringByID("gif_failcommand", lang))
+                                .queue(message -> {
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
+                                    }
+                                }, e -> {
+                                    StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBCAnim - Failed to generate BC anim");
+
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
+                                    }
+                                });
+
+                        onSuccess.run();
+
+                        return;
                     }
-                }, e -> {
-                    StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBCAnim - Failed to generate BC anim");
 
-                    if(img.exists() && !img.delete()) {
-                        StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
+                    String link;
+
+                    try {
+                        link = StaticStore.imgur.uploadFile(img);
+                    } catch (Exception e) {
+                        StaticStore.logger.uploadErrorLog(e, "EntityHandler::generateAnim - Failed to upload aimation to imgur");
+
+                        return;
                     }
+
+                    if(link == null) {
+                        m.editMessage(LangID.getStringByID("gif_failimgur", lang))
+                                .queue(message -> {
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
+                                    }
+                                }, e -> {
+                                    StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBCAnim - Failed to generate BC anim");
+
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
+                                    }
+                                });
+                    } else {
+                        long finalEnd = System.currentTimeMillis();
+
+                        m.editMessage(LangID.getStringByID("gif_uploadimgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link)
+                                .queue(message -> {
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
+                                    }
+                                }, e -> {
+                                    StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBCAnim - Failed to generate BC anim");
+
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
+                                    }
+                                });
+                    }
+
+                    onSuccess.run();
                 });
-
-                return true;
-            }
-
-            String link = StaticStore.imgur.uploadFile(img);
-
-            if(link == null) {
-                m.editMessage(LangID.getStringByID("gif_failimgur", lang))
+            } else if(img.length() < (long) getBoosterFileLimit(booster) * 1024 * 1024) {
+                ch.sendMessage(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)))
+                        .addFiles(FileUpload.fromData(img, "result.mp4"))
                         .queue(message -> {
                             if(img.exists() && !img.delete()) {
                                 StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
@@ -2772,97 +2927,78 @@ public class EntityHandler {
                                 StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
                             }
                         });
+
+                onSuccess.run();
+            }
+        });
+    }
+
+    public static void generateBGAnim(MessageChannel ch, Message reference, Background bg, int lang) {
+        ch.sendMessage(LangID.getStringByID("bg_prepare", lang)).queue(message -> {
+            if(message == null)
+                return;
+
+            JDA client = ch.getJDA();
+
+            long start = System.currentTimeMillis();
+
+            File result;
+
+            try {
+                result = ImageDrawing.drawBGAnimEffect(bg, message, lang);
+            } catch (Exception e) {
+                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBGAnim - Failed to generate bg animation");
+
+                return;
+            }
+
+            long end = System.currentTimeMillis();
+
+            if(result == null) {
+                Command.replyToMessageSafely(ch, LangID.getStringByID("bg_fail", lang), reference, a -> a);
+            } else if(result.length() >= 8 * 1024 * 1024) {
+                Command.replyToMessageSafely(ch, LangID.getStringByID("bg_toobig", lang).replace("_SSS_", getFileSize(result)), reference, a -> a);
             } else {
-                long finalEnd = System.currentTimeMillis();
+                GuildChannel chan = client.getGuildChannelById(StaticStore.MISCARCHIVE);
 
-                m.editMessage(LangID.getStringByID("gif_uploadimgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link)
-                        .queue(message -> {
-                            if(img.exists() && !img.delete()) {
-                                StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
-                            }
-                        }, e -> {
-                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBCAnim - Failed to generate BC anim");
+                if(chan instanceof MessageChannel) {
+                    String siz = getFileSize(result);
 
-                            if(img.exists() && !img.delete()) {
-                                StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
-                            }
-                        });
-            }
-        } else if(img.length() < (long) getBoosterFileLimit(booster) * 1024 * 1024) {
-            ch.sendMessage(LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)))
-                    .addFiles(FileUpload.fromData(img, "result.mp4"))
-                    .queue(message -> {
-                        if(img.exists() && !img.delete()) {
-                            StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
-                        }
-                    }, e -> {
-                        StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBCAnim - Failed to generate BC anim");
-
-                        if(img.exists() && !img.delete()) {
-                            StaticStore.logger.uploadLog("W/EntityHandlerBCAnim | Can't delete file : "+img.getAbsolutePath());
-                        }
-                    });
-        }
-
-        return true;
-    }
-
-    public static boolean generateBGAnim(MessageChannel ch, Message reference, Background bg, int lang) throws Exception {
-        Message message = ch.sendMessage(LangID.getStringByID("bg_prepare", lang)).complete();
-
-        if(message == null)
-            return false;
-
-        JDA client = ch.getJDA();
-
-        long start = System.currentTimeMillis();
-
-        File result = ImageDrawing.drawBGAnimEffect(bg, message, lang);
-
-        long end = System.currentTimeMillis();
-
-        if(result == null) {
-            Command.replyToMessageSafely(ch, LangID.getStringByID("bg_fail", lang), reference, a -> a);
-        } else if(result.length() >= 8 * 1024 * 1024) {
-            Command.replyToMessageSafely(ch, LangID.getStringByID("bg_toobig", lang).replace("_SSS_", getFileSize(result)), reference, a -> a);
-        } else {
-            GuildChannel chan = client.getGuildChannelById(StaticStore.MISCARCHIVE);
-
-            if(chan instanceof MessageChannel) {
-                String siz = getFileSize(result);
-
-                ((MessageChannel) chan).sendMessage("BG - "+Data.trio(bg.id.id))
-                        .addFiles(FileUpload.fromData(result, "result.mp4"))
-                        .queue(m -> {
-                            if(result.exists() && !result.delete()) {
-                                StaticStore.logger.uploadLog("W/EntityHandlerBGAnim | Can't delete file : "+result.getAbsolutePath());
-                            }
-
-                            for(int i = 0; i < m.getAttachments().size(); i++) {
-                                Message.Attachment at = m.getAttachments().get(i);
-
-                                if(at.getFileName().startsWith("result.")) {
-                                    Command.replyToMessageSafely(ch, LangID.getStringByID("bg_animres", lang).replace("_SSS_", siz).replace("_TTT_", DataToString.df.format((end - start) / 1000.0))+"\n\n"+at.getUrl(), reference, a -> a);
-
-                                    StaticStore.imgur.put("BG - "+Data.trio(bg.id.id), at.getUrl(), true);
+                    ((MessageChannel) chan).sendMessage("BG - "+Data.trio(bg.id.id))
+                            .addFiles(FileUpload.fromData(result, "result.mp4"))
+                            .queue(m -> {
+                                if(result.exists() && !result.delete()) {
+                                    StaticStore.logger.uploadLog("W/EntityHandlerBGAnim | Can't delete file : "+result.getAbsolutePath());
                                 }
-                            }
-                        }, e -> {
-                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBGAnim - Failed to generate BG anim");
 
-                            if(result.exists() && !result.delete()) {
-                                StaticStore.logger.uploadLog("W/EntityHandlerBGAnim | Can't delete file : "+result.getAbsolutePath());
-                            }
-                        });
+                                for(int i = 0; i < m.getAttachments().size(); i++) {
+                                    Message.Attachment at = m.getAttachments().get(i);
+
+                                    if(at.getFileName().startsWith("result.")) {
+                                        Command.replyToMessageSafely(ch, LangID.getStringByID("bg_animres", lang).replace("_SSS_", siz).replace("_TTT_", DataToString.df.format((end - start) / 1000.0))+"\n\n"+at.getUrl(), reference, a -> a);
+
+                                        StaticStore.imgur.put("BG - "+Data.trio(bg.id.id), at.getUrl(), true);
+                                    }
+                                }
+                            }, e -> {
+                                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBGAnim - Failed to generate BG anim");
+
+                                if(result.exists() && !result.delete()) {
+                                    StaticStore.logger.uploadLog("W/EntityHandlerBGAnim | Can't delete file : "+result.getAbsolutePath());
+                                }
+                            });
+                }
             }
-        }
-
-        return true;
+        });
     }
 
-    public static boolean generateSoulAnim(Soul s, MessageChannel ch, Message reference, int booster, boolean debug, int limit, int lang, boolean raw, boolean gif) throws Exception {
-        if(s.getID() == null)
-            return false;
+    public static void generateSoulAnim(Soul s, MessageChannel ch, Message reference, int booster, boolean debug, int limit, int lang, boolean raw, boolean gif, Runnable onSuccess, Runnable onFail) {
+        if(s.getID() == null) {
+            onFail.run();
+
+            return;
+        }
+
         else if(!debug && limit <= 0) {
             String id = "SOUL - " + Data.trio(s.getID().id);
 
@@ -2871,7 +3007,9 @@ public class EntityHandler {
             if(link != null) {
                 ch.sendMessage(LangID.getStringByID("gif_cache", lang).replace("_", link)).queue();
 
-                return false;
+                onFail.run();
+
+                return;
             }
         }
 
@@ -2891,81 +3029,50 @@ public class EntityHandler {
 
         CommonStatic.getConfig().ref = false;
 
-        Message msg = ch.sendMessage(LangID.getStringByID("gif_anbox", lang)).complete();
+        ch.sendMessage(LangID.getStringByID("gif_anbox", lang)).queue(msg -> {
+            if(msg == null) {
+                onFail.run();
 
-        if(msg == null)
-            return false;
-
-        long start = System.currentTimeMillis();
-
-        File img;
-
-        long max;
-
-        if(debug || limit > 0)
-            max = getBoosterFileLimit(booster) * 1024L * 1024L;
-        else
-            max = 8 * 1024 * 1024;
-
-        if(raw) {
-            img = ImageDrawing.drawAnimMp4(anim, msg, 1f, debug, limit, lang);
-        } else {
-            img = ImageDrawing.drawAnimGif(anim, msg, 1f, debug, false, limit, lang);
-        }
-
-        s.anim.unload();
-
-        long end = System.currentTimeMillis();
-
-        String time = DataToString.df.format((end - start) / 1000.0);
-
-        if(img == null) {
-            ch.sendMessage(LangID.getStringByID("gif_faile", lang)).queue();
-
-            return false;
-        } else if(img.length() >= max && img.length() < (raw ? 200 * 1024 * 1024 : 10 * 1024 * 1024)) {
-            Message m = Command.getRepliedMessageSafely(ch, LangID.getStringByID("gif_filesize", lang), reference, a -> a);
-
-            if(m == null) {
-                ch.sendMessage(LangID.getStringByID("gif_failcommand", lang)).queue(message -> {
-                    if(img.exists() && !img.delete()) {
-                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                    }
-                }, e -> {
-                    StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateSoulAnim - Failed to display enemy anim");
-
-                    if(img.exists() && !img.delete()) {
-                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                    }
-                });
-                return false;
+                return;
             }
 
-            String link = StaticStore.imgur.uploadFile(img);
+            long start = System.currentTimeMillis();
 
-            if(link == null) {
-                m.editMessage(LangID.getStringByID("gif_failimgur", lang)).queue(message -> {
-                    if(img.exists() && !img.delete()) {
-                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                    }
-                }, e -> {
-                    StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateSoulAnim - Failed to display enemy anim");
+            File img;
 
-                    if(img.exists() && !img.delete()) {
-                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                    }
-                });
-            } else {
-                if(!debug && limit <= 0) {
-                    String id = "SOUL - " + Data.trio(s.getID().id);
+            long max;
 
-                    StaticStore.imgur.put(id, link, raw);
+            if(debug || limit > 0)
+                max = getBoosterFileLimit(booster) * 1024L * 1024L;
+            else
+                max = 8 * 1024 * 1024;
+
+            try {
+                if(raw) {
+                    img = ImageDrawing.drawAnimMp4(anim, msg, 1f, debug, limit, lang);
+                } else {
+                    img = ImageDrawing.drawAnimGif(anim, msg, 1f, debug, false, limit, lang);
                 }
+            } catch (Exception e) {
+                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateSoulAnim - Failed to generate soul animaiton");
 
-                long finalEnd = System.currentTimeMillis();
+                return;
+            }
 
-                m.editMessage(LangID.getStringByID("gif_uploadimgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link)
-                        .queue(message -> {
+            s.anim.unload();
+
+            long end = System.currentTimeMillis();
+
+            String time = DataToString.df.format((end - start) / 1000.0);
+
+            if(img == null) {
+                ch.sendMessage(LangID.getStringByID("gif_faile", lang)).queue();
+
+                onFail.run();
+            } else if(img.length() >= max && img.length() < (raw ? 200 * 1024 * 1024 : 10 * 1024 * 1024)) {
+                Command.replyToMessageSafely(ch, LangID.getStringByID("gif_filesize", lang), reference, a -> a, m -> {
+                    if(m == null) {
+                        ch.sendMessage(LangID.getStringByID("gif_failcommand", lang)).queue(message -> {
                             if(img.exists() && !img.delete()) {
                                 StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
                             }
@@ -2977,51 +3084,100 @@ public class EntityHandler {
                             }
                         });
 
-                GuildChannel chan = client.getGuildChannelById(StaticStore.MISCARCHIVE);
+                        onFail.run();
 
-                if(chan instanceof GuildMessageChannel) {
-                    ((GuildMessageChannel) chan).sendMessage("SOUL - " + Data.trio(s.getID().id) + "\n\n"+link).queue();
-                }
-            }
+                        return;
+                    }
 
-            return true;
-        } else if(img.length() < max) {
-            if(debug || limit > 0) {
-                Command.sendMessageWithFile(ch, LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)), img, raw ? "result.mp4" : "result.gif", reference);
-            } else {
-                GuildChannel chan = client.getGuildChannelById(StaticStore.MISCARCHIVE);
+                    String link;
 
-                if(chan instanceof GuildMessageChannel) {
-                    String siz = getFileSize(img);
+                    try {
+                        link = StaticStore.imgur.uploadFile(img);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
 
-                    ((GuildMessageChannel) chan).sendMessage("SOUL - " + Data.trio(s.getID().id))
-                            .addFiles(FileUpload.fromData(img, raw ? "result.mp4" : "result.gif"))
-                            .queue(m -> {
-                                if(img.exists() && !img.delete()) {
-                                    StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                }
+                    if(link == null) {
+                        m.editMessage(LangID.getStringByID("gif_failimgur", lang)).queue(message -> {
+                            if(img.exists() && !img.delete()) {
+                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                            }
+                        }, e -> {
+                            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateSoulAnim - Failed to display enemy anim");
 
-                                for(int i = 0; i < m.getAttachments().size(); i++) {
-                                    Message.Attachment at = m.getAttachments().get(i);
+                            if(img.exists() && !img.delete()) {
+                                StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                            }
+                        });
+                    } else {
+                        if(!debug && limit <= 0) {
+                            String id = "SOUL - " + Data.trio(s.getID().id);
 
-                                    if(at.getFileName().startsWith("result.")) {
-                                        Command.replyToMessageSafely(ch, LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", siz)+"\n\n"+at.getUrl(), reference, a -> a);
+                            StaticStore.imgur.put(id, link, raw);
+                        }
 
-                                        StaticStore.imgur.put("SOUL - " + Data.trio(s.getID().id), at.getUrl(), raw);
+                        long finalEnd = System.currentTimeMillis();
+
+                        m.editMessage(LangID.getStringByID("gif_uploadimgur", lang).replace("_FFF_", getFileSize(img)).replace("_TTT_", DataToString.df.format((end-start) / 1000.0)).replace("_ttt_", DataToString.df.format((finalEnd-start) / 1000.0))+"\n"+link)
+                                .queue(message -> {
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
                                     }
-                                }
-                            }, e -> {
-                                StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateEnemyAnim - Failed to display enemy anim");
+                                }, e -> {
+                                    StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateSoulAnim - Failed to display enemy anim");
 
-                                if(img.exists() && !img.delete()) {
-                                    StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
-                                }
-                            });
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                    }
+                                });
+
+                        GuildChannel chan = client.getGuildChannelById(StaticStore.MISCARCHIVE);
+
+                        if(chan instanceof GuildMessageChannel) {
+                            ((GuildMessageChannel) chan).sendMessage("SOUL - " + Data.trio(s.getID().id) + "\n\n"+link).queue();
+                        }
+                    }
+
+                    onSuccess.run();
+                });
+            } else if(img.length() < max) {
+                if(debug || limit > 0) {
+                    Command.sendMessageWithFile(ch, LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", getFileSize(img)), img, raw ? "result.mp4" : "result.gif", reference);
+                } else {
+                    GuildChannel chan = client.getGuildChannelById(StaticStore.MISCARCHIVE);
+
+                    if(chan instanceof GuildMessageChannel) {
+                        String siz = getFileSize(img);
+
+                        ((GuildMessageChannel) chan).sendMessage("SOUL - " + Data.trio(s.getID().id))
+                                .addFiles(FileUpload.fromData(img, raw ? "result.mp4" : "result.gif"))
+                                .queue(m -> {
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                    }
+
+                                    for(int i = 0; i < m.getAttachments().size(); i++) {
+                                        Message.Attachment at = m.getAttachments().get(i);
+
+                                        if(at.getFileName().startsWith("result.")) {
+                                            Command.replyToMessageSafely(ch, LangID.getStringByID("gif_done", lang).replace("_TTT_", time).replace("_FFF_", siz)+"\n\n"+at.getUrl(), reference, a -> a);
+
+                                            StaticStore.imgur.put("SOUL - " + Data.trio(s.getID().id), at.getUrl(), raw);
+                                        }
+                                    }
+                                }, e -> {
+                                    StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateEnemyAnim - Failed to display enemy anim");
+
+                                    if(img.exists() && !img.delete()) {
+                                        StaticStore.logger.uploadLog("Failed to delete file : "+img.getAbsolutePath());
+                                    }
+                                });
+                    }
                 }
-            }
-        }
 
-        return true;
+                onSuccess.run();
+            }
+        });
     }
 
     private static String getFileSize(File f) {
@@ -4657,7 +4813,7 @@ public class EntityHandler {
         }
     }
 
-    public static void generateStageStatImage(MessageChannel ch, CustomStageMap map, int lv, boolean isFrame, int lang, String[] name, String code) throws Exception {
+    public static void generateStageStatImage(MessageChannel ch, CustomStageMap map, int lv, boolean isFrame, int lang, String[] name, String code) {
         List<List<CellDrawer>> cellGroups = new ArrayList<>();
 
         if(map.customIndex.isEmpty()) {
@@ -4675,37 +4831,53 @@ public class EntityHandler {
         long start = System.currentTimeMillis();
 
         if(map.customIndex.isEmpty()) {
-            Message msg = Command.getRepliedMessageSafely(ch, String.format(LangID.getStringByID("stanalyzer_analyze", lang), 0, map.list.size()), null, a -> a);
+            Command.replyToMessageSafely(ch, String.format(LangID.getStringByID("stanalyzer_analyze", lang), 0, map.list.size()), null, a -> a, msg -> {
+                for(int i = 0; i < map.list.size(); i++) {
+                    File result;
 
-            for(int i = 0; i < map.list.size(); i++) {
-                File result = ImageDrawing.drawStageStatImage(map, cellGroups.get(i), isFrame, lv, name[i], code + " - " + Data.trio(map.mapID % 1000) + " - " + Data.trio(i), i, lang);
+                    try {
+                        result = ImageDrawing.drawStageStatImage(map, cellGroups.get(i), isFrame, lv, name[i], code + " - " + Data.trio(map.mapID % 1000) + " - " + Data.trio(i), i, lang);
+                    } catch (Exception e) {
+                        StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateStageStatImage - Failed to generate stage stat image");
 
-                if(result != null) {
-                    results.add(result);
+                        continue;
+                    }
+
+                    if(result != null) {
+                        results.add(result);
+                    }
+
+                    if(System.currentTimeMillis() - start > 1000) {
+                        msg.editMessage(String.format(LangID.getStringByID("stanalyzer_analyze", lang), i + 1, map.list.size())).queue();
+                    }
                 }
 
-                if(System.currentTimeMillis() - start > 1000) {
-                    msg.editMessage(String.format(LangID.getStringByID("stanalyzer_analyze", lang), i + 1, map.list.size())).queue();
-                }
-            }
-
-            msg.editMessage(String.format(LangID.getStringByID("stanalyzer_analyze", lang), map.list.size(), map.list.size())).queue();
+                msg.editMessage(String.format(LangID.getStringByID("stanalyzer_analyze", lang), map.list.size(), map.list.size())).queue();
+            });
         } else {
-            Message msg = Command.getRepliedMessageSafely(ch, String.format(LangID.getStringByID("stanalyzer_analyze", lang), 0, map.customIndex.size()), null, a -> a);
+            Command.replyToMessageSafely(ch, String.format(LangID.getStringByID("stanalyzer_analyze", lang), 0, map.customIndex.size()), null, a -> a, msg -> {
+                for(int i = 0; i < map.customIndex.size(); i++) {
+                    File result;
 
-            for(int i = 0; i < map.customIndex.size(); i++) {
-                File result = ImageDrawing.drawStageStatImage(map, cellGroups.get(i), isFrame, lv, name[i], code + " - " + Data.trio(map.mapID % 1000) + " - " + Data.trio(map.customIndex.get(i)), map.customIndex.get(i), lang);
+                    try {
+                        result = ImageDrawing.drawStageStatImage(map, cellGroups.get(i), isFrame, lv, name[i], code + " - " + Data.trio(map.mapID % 1000) + " - " + Data.trio(map.customIndex.get(i)), map.customIndex.get(i), lang);
+                    } catch (Exception e) {
+                        StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateStageStatImage - Failed to generate stage stat image");
 
-                if(result != null) {
-                    results.add(result);
+                        continue;
+                    }
+
+                    if(result != null) {
+                        results.add(result);
+                    }
+
+                    if(System.currentTimeMillis() - start > 1000) {
+                        msg.editMessage(String.format(LangID.getStringByID("stanalyzer_analyze", lang), i + 1, map.customIndex.size())).queue();
+                    }
                 }
 
-                if(System.currentTimeMillis() - start > 1000) {
-                    msg.editMessage(String.format(LangID.getStringByID("stanalyzer_analyze", lang), i + 1, map.customIndex.size())).queue();
-                }
-            }
-
-            msg.editMessage(String.format(LangID.getStringByID("stanalyzer_analyze", lang), map.customIndex.size(), map.customIndex.size())).queue();
+                msg.editMessage(String.format(LangID.getStringByID("stanalyzer_analyze", lang), map.customIndex.size(), map.customIndex.size())).queue();
+            });
         }
 
         int i = 0;

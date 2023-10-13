@@ -3,12 +3,12 @@ package mandarin.packpack.commands.server;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.ConfirmButtonHolder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.util.ArrayList;
 
@@ -18,17 +18,14 @@ public class CommandBan extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
+    public void doSomething(CommandLoader loader) throws Exception {
         if(holder == null)
             return;
 
-        MessageChannel ch = getChannel(event);
-        Guild g = getGuild(event);
+        MessageChannel ch = loader.getChannel();
+        Guild g = loader.getGuild();
 
-        if(ch == null || g == null)
-            return;
-
-        String[] contents = getContent(event).split(" ");
+        String[] contents = loader.getContent().split(" ");
 
         if(contents.length < 2) {
             createMessageWithNoPings(ch, LangID.getStringByID("comban_noid", lang));
@@ -57,13 +54,7 @@ public class CommandBan extends ConstraintCommand {
                 return;
             }
 
-            Member me = getMember(event);
-
-            if(me == null) {
-                createMessageWithNoPings(ch, LangID.getStringByID("comban_fail", lang));
-
-                return;
-            }
+            Member me = loader.getMember();
 
             if(me.getId().equals(m.getId())) {
                 createMessageWithNoPings(ch, LangID.getStringByID("comban_noself", lang));
@@ -75,7 +66,7 @@ public class CommandBan extends ConstraintCommand {
                     ch.sendMessage(LangID.getStringByID("comban_confirm", lang).replace("_", m.getId()))
                             .setAllowedMentions(new ArrayList<>())
                     , lang
-            ).queue(msg -> StaticStore.putHolder(me.getId(), new ConfirmButtonHolder(getMessage(event), msg, ch.getId(), () -> {
+            ).queue(msg -> StaticStore.putHolder(me.getId(), new ConfirmButtonHolder(loader.getMessage(), msg, ch.getId(), () -> {
                 holder.banned.add(m.getId());
 
                 createMessageWithNoPings(ch, LangID.getStringByID("comban_success", lang).replace("_", m.getId()));

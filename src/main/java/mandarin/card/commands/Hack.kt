@@ -4,12 +4,12 @@ import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.lang.LangID
-import net.dv8tion.jda.api.events.message.GenericMessageEvent
+import mandarin.packpack.supporter.server.CommandLoader
 
 class Hack : Command(LangID.EN, true) {
-    override fun doSomething(event: GenericMessageEvent?) {
-        val ch = getChannel(event) ?: return
-        val m = getMember(event) ?: return
+    override fun doSomething(loader: CommandLoader) {
+        val ch = loader.channel
+        val m = loader.member
 
         val inventory = Inventory.getInventory(m.id)
 

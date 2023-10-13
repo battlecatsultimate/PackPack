@@ -2,13 +2,13 @@ package mandarin.packpack.commands;
 
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 
 import javax.annotation.Nullable;
 
@@ -28,16 +28,16 @@ public class Help extends Command {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) {
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) {
+        MessageChannel ch = loader.getChannel();
 
         if(ch == null)
             return;
 
-        String[] messages = getContent(event).split(" ");
+        String[] messages = loader.getContent().split(" ");
 
         if(messages.length >= 2) {
-            createEmbedOfSpecificCommand(messages[1], ch, getMessage(event));
+            createEmbedOfSpecificCommand(messages[1], ch, loader.getMessage());
         } else {
             EmbedBuilder builder = new EmbedBuilder();
 
@@ -51,7 +51,7 @@ public class Help extends Command {
                     .addField(LangID.getStringByID("help_data", lang), "```animanalyzer, announcement, checkeventupdate, comboanalyzer, downloadapk, enemystatanalyzer, eventdataarchive, printevent, printgachaevent, printitemevent, printstageevent, stageimage, stagestatanalyzer, statanalyzer, stagemapimage, talentanalyzer, trueformanalyzer```", false)
                     .addField(LangID.getStringByID("help_packpack", lang), "```alias, aliasadd, aliasremove, memory, registerscamlink, statistic, suggest, unregisterscamlink```", false);
 
-            replyToMessageSafely(ch, "", getMessage(event), a -> a.setEmbeds(builder.build()));
+            replyToMessageSafely(ch, "", loader.getMessage(), a -> a.setEmbeds(builder.build()));
         }
     }
 

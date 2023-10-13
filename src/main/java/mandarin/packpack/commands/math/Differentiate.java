@@ -4,9 +4,9 @@ import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.calculation.Equation;
 import mandarin.packpack.supporter.calculation.Formula;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
@@ -19,16 +19,13 @@ public class Differentiate extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
-        if(ch == null)
-            return;
-
-        String[] contents = getContent(event).split(" ", 2);
+        String[] contents = loader.getContent().split(" ", 2);
 
         if(contents.length < 2) {
-            replyToMessageSafely(ch, LangID.getStringByID("diff_noforval", lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("diff_noforval", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -38,7 +35,7 @@ public class Differentiate extends ConstraintCommand {
         String v = findValue(command);
 
         if(v == null || v.isBlank()) {
-            replyToMessageSafely(ch, LangID.getStringByID("diff_novalue", lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("diff_novalue", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -46,7 +43,7 @@ public class Differentiate extends ConstraintCommand {
         BigDecimal value = Equation.calculate(v, null, false, lang);
 
         if(!Equation.error.isEmpty()) {
-            replyToMessageSafely(ch, Equation.getErrorMessage(LangID.getStringByID("diff_valuefail", lang)), getMessage(event), a -> a);
+            replyToMessageSafely(ch, Equation.getErrorMessage(LangID.getStringByID("diff_valuefail", lang)), loader.getMessage(), a -> a);
 
             return;
         }
@@ -62,13 +59,13 @@ public class Differentiate extends ConstraintCommand {
         }
 
         if(!Equation.error.isEmpty()) {
-            replyToMessageSafely(ch, Equation.getErrorMessage(LangID.getStringByID("diff_stepfail", lang)), getMessage(event), a -> a);
+            replyToMessageSafely(ch, Equation.getErrorMessage(LangID.getStringByID("diff_stepfail", lang)), loader.getMessage(), a -> a);
 
             return;
         }
 
         if(step.compareTo(BigDecimal.ZERO) == 0) {
-            replyToMessageSafely(ch, LangID.getStringByID("diff_stepzero", lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("diff_stepzero", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -76,7 +73,7 @@ public class Differentiate extends ConstraintCommand {
         String f = filterFormula(command).trim();
 
         if(f.isBlank()) {
-            replyToMessageSafely(ch, LangID.getStringByID("diff_noformula", lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("diff_noformula", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -84,7 +81,7 @@ public class Differentiate extends ConstraintCommand {
         Formula formula = new Formula(f, 1, lang);
 
         if(!Formula.error.isEmpty()) {
-            replyToMessageSafely(ch, Formula.getErrorMessage(), getMessage(event), a -> a);
+            replyToMessageSafely(ch, Formula.getErrorMessage(), loader.getMessage(), a -> a);
 
             return;
         }
@@ -92,7 +89,7 @@ public class Differentiate extends ConstraintCommand {
         formula.substitute(value);
 
         if(formula.element.isCritical()) {
-            replyToMessageSafely(ch, Equation.getErrorMessage(LangID.getStringByID("diff_cant", lang)), getMessage(event), a -> a);
+            replyToMessageSafely(ch, Equation.getErrorMessage(LangID.getStringByID("diff_cant", lang)), loader.getMessage(), a -> a);
 
             return;
         }
@@ -100,12 +97,12 @@ public class Differentiate extends ConstraintCommand {
         BigDecimal result = formula.differentiate(value, step, getSnap(command), lang);
 
         if(!Formula.error.isEmpty()) {
-            replyToMessageSafely(ch, Formula.getErrorMessage(), getMessage(event), a -> a);
+            replyToMessageSafely(ch, Formula.getErrorMessage(), loader.getMessage(), a -> a);
 
             return;
         }
 
-        replyToMessageSafely(ch, String.format(LangID.getStringByID("diff_success", lang), Equation.formatNumber(value), Equation.formatNumber(result), getAlgorithmName(getSnap(command)), Equation.formatNumber(step)), getMessage(event), a -> a);
+        replyToMessageSafely(ch, String.format(LangID.getStringByID("diff_success", lang), Equation.formatNumber(value), Equation.formatNumber(result), getAlgorithmName(getSnap(command)), Equation.formatNumber(step)), loader.getMessage(), a -> a);
     }
 
     private String findValue(String command) {

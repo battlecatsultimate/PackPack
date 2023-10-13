@@ -5,26 +5,28 @@ import mandarin.card.supporter.log.LogSession
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
+import mandarin.packpack.supporter.server.CommandLoader
 import net.dv8tion.jda.api.entities.Message.MentionType
-import net.dv8tion.jda.api.events.message.GenericMessageEvent
 
 class Save : Command(LangID.EN, false) {
-    override fun doSomething(event: GenericMessageEvent?) {
-        val m = getMember(event) ?: return
-        val ch = getChannel(event) ?: return
+    override fun doSomething(loader: CommandLoader) {
+        val m = loader.member
+        val ch = loader.channel
 
         if (m.id != StaticStore.MANDARIN_SMELL) {
             return
         }
 
-        val message = getRepliedMessageSafely(ch, "Saving...", getMessage(event)) { a -> a }
+        replyToMessageSafely(ch, "Saving...", loader.message, { a -> a }, { message ->
+            CardBot.saveCardData()
+            LogSession.session.saveSessionAsFile()
 
-        CardBot.saveCardData()
-        LogSession.session.saveSessionAsFile()
+            message.editMessage("Done!")
+                .setAllowedMentions(ArrayList<MentionType>())
+                .mentionRepliedUser(false)
+                .queue()
+        })
 
-        message.editMessage("Done!")
-            .setAllowedMentions(ArrayList<MentionType>())
-            .mentionRepliedUser(false)
-            .queue()
+
     }
 }

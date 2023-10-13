@@ -15,19 +15,19 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
+import mandarin.packpack.supporter.server.holder.component.StageInfoButtonHolder;
 import mandarin.packpack.supporter.server.holder.component.search.FindStageMessageHolder;
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import mandarin.packpack.supporter.server.holder.component.search.StageEnemyMessageHolder;
-import mandarin.packpack.supporter.server.holder.component.StageInfoButtonHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
@@ -37,6 +37,7 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Consumer;
 
 public class FindStage extends TimedConstraintCommand {
     public enum MONTHLY {
@@ -77,13 +78,10 @@ public class FindStage extends TimedConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
-        if(ch == null)
-            return;
-
-        String[] segments = getContent(event).split(" ");
+        String[] segments = loader.getContent().split(" ");
 
         StringBuilder removeMistake = new StringBuilder();
 
@@ -116,19 +114,19 @@ public class FindStage extends TimedConstraintCommand {
         boolean monthly = (param & PARAM_MONTHLY) > 0;
 
         if(enemyName.isBlank() && music < 0 && castle < 0 && background < 0 && !hasBoss) {
-            replyToMessageSafely(ch, LangID.getStringByID("fstage_noparam", lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("fstage_noparam", lang), loader.getMessage(), a -> a);
 
             return;
         }
 
         if(background >= 0 && UserProfile.getBCData().bgs.get(background) == null) {
-            replyToMessageSafely(ch, LangID.getStringByID("fstage_bg", lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("fstage_bg", lang), loader.getMessage(), a -> a);
 
             return;
         }
 
         if(music >= 0 && UserProfile.getBCData().musics.get(music) == null) {
-            replyToMessageSafely(ch, LangID.getStringByID("fstage_music", lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("fstage_music", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -136,7 +134,7 @@ public class FindStage extends TimedConstraintCommand {
         ArrayList<CastleList> castleLists = new ArrayList<>(CastleList.defset());
 
         if(castle >= 0 && castle >= castleLists.get(0).size()) {
-            replyToMessageSafely(ch, LangID.getStringByID("fstage_castle", lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("fstage_castle", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -148,7 +146,7 @@ public class FindStage extends TimedConstraintCommand {
         String[] names = enemyName.split("/");
 
         if(names.length > 5) {
-            replyToMessageSafely(ch, LangID.getStringByID("fstage_toomany", lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("fstage_toomany", lang), loader.getMessage(), a -> a);
             disableTimer();
 
             return;
@@ -157,7 +155,7 @@ public class FindStage extends TimedConstraintCommand {
         if(!enemyName.isBlank()) {
             for(int i = 0; i < names.length; i++) {
                 if(names[i].trim().isBlank()) {
-                    replyToMessageSafely(ch, LangID.getStringByID("fstage_noname", lang), getMessage(event), a -> a);
+                    replyToMessageSafely(ch, LangID.getStringByID("fstage_noname", lang), loader.getMessage(), a -> a);
                     disableTimer();
 
                     return;
@@ -166,7 +164,7 @@ public class FindStage extends TimedConstraintCommand {
                 ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(names[i].trim(), lang);
 
                 if(enemies.isEmpty()) {
-                    replyToMessageSafely(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", names[i].trim()), getMessage(event), a -> a);
+                    replyToMessageSafely(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", names[i].trim()), loader.getMessage(), a -> a);
                     disableTimer();
 
                     return;
@@ -190,23 +188,19 @@ public class FindStage extends TimedConstraintCommand {
             ArrayList<Stage> stages = EntityFilter.findStage(filterEnemy, music, background, castle, hasBoss, orOperate, monthly);
 
             if(stages.isEmpty()) {
-                replyToMessageSafely(ch, LangID.getStringByID("fstage_nost", lang), getMessage(event), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("fstage_nost", lang), loader.getMessage(), a -> a);
 
                 disableTimer();
             } else if(stages.size() == 1) {
-                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(getMessage(event).getAuthor().getId(), TreasureHolder.global);
+                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getMessage().getAuthor().getId(), TreasureHolder.global);
 
-                Message result = EntityHandler.showStageEmb(stages.get(0), ch, getMessage(event), isFrame, isExtra, isCompact, star, treasure, lang);
+                EntityHandler.showStageEmb(stages.get(0), ch, loader.getMessage(), isFrame, isExtra, isCompact, star, treasure, lang, result -> {
+                    User u = loader.getUser();
 
-                User u = getUser(event);
+                    Message msg = loader.getMessage();
 
-                if(u != null) {
-                    Message msg = getMessage(event);
-
-                    if(msg != null) {
-                        StaticStore.putHolder(u.getId(), new StageInfoButtonHolder(stages.get(0), msg, result, ch.getId(), isCompact));
-                    }
-                }
+                    StaticStore.putHolder(u.getId(), new StageInfoButtonHolder(stages.get(0), msg, result, ch.getId(), isCompact));
+                });
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("fstage_several", lang)).append("```md\n");
 
@@ -227,22 +221,15 @@ public class FindStage extends TimedConstraintCommand {
 
                 sb.append("```");
 
-                Message res = createMonthlyMessage(ch, getMessage(event), sb.toString(), accumulateStage(stages, false), stages, stages.size(), monthly);
+                createMonthlyMessage(ch, loader.getMessage(), sb.toString(), accumulateStage(stages, false), stages, stages.size(), monthly, res -> {
+                    User u = loader.getUser();
 
-                if(res != null) {
-                    User u = getUser(event);
+                    TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
 
-                    if(u != null) {
-                        Message msg = getMessage(event);
+                    StaticStore.putHolder(u.getId(), new FindStageMessageHolder(stages, monthly ? accumulateCategory(stages) : null, loader.getMessage(), res, ch.getId(), star, treasure, isFrame, isExtra, isCompact, lang));
+                });
 
-                        TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
-
-                        if(msg != null) {
-                            StaticStore.putHolder(u.getId(), new FindStageMessageHolder(stages, monthly ? accumulateCategory(stages) : null, getMessage(event), res, ch.getId(), star, treasure, isFrame, isExtra, isCompact, lang));
-                        }
-                        disableTimer();
-                    }
-                }
+                disableTimer();
             }
         } else {
             StringBuilder sb = new StringBuilder();
@@ -272,20 +259,15 @@ public class FindStage extends TimedConstraintCommand {
 
             sb.append("```");
 
-            Message res = registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), enemies.size(), data, lang).complete();
+            registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), enemies.size(), data, lang).queue(res -> {
+                User u = loader.getUser();
 
-            if(res != null) {
-                User u = getUser(event);
+                Message msg = loader.getMessage();
 
-                if(u != null) {
-                    Message msg = getMessage(event);
+                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
 
-                    TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
-
-                    if(msg != null)
-                        StaticStore.putHolder(u.getId(), new StageEnemyMessageHolder(enemySequences, filterEnemy, enemyList, msg, res, ch.getId(), isFrame, isExtra, isCompact, orOperate, hasBoss, monthly, star, treasure, background, castle, music, lang));
-                }
-            }
+                StaticStore.putHolder(u.getId(), new StageEnemyMessageHolder(enemySequences, filterEnemy, enemyList, msg, res, ch.getId(), isFrame, isExtra, isCompact, orOperate, hasBoss, monthly, star, treasure, background, castle, music, lang));
+            });
         }
     }
 
@@ -568,7 +550,7 @@ public class FindStage extends TimedConstraintCommand {
         return data;
     }
 
-    private Message createMonthlyMessage(MessageChannel ch, Message reference, String content, List<String> data, List<Stage> stages, int size, boolean monthly) {
+    private void createMonthlyMessage(MessageChannel ch, Message reference, String content, List<String> data, List<Stage> stages, int size, boolean monthly, Consumer<Message> onSuccess) {
         int totPage = size / SearchHolder.PAGE_CHUNK;
 
         if(size % SearchHolder.PAGE_CHUNK != 0)
@@ -631,7 +613,7 @@ public class FindStage extends TimedConstraintCommand {
 
         rows.add(ActionRow.of(Button.danger("cancel", LangID.getStringByID("button_cancel", lang))));
 
-        return getRepliedMessageSafely(ch, content, reference, a -> a.setComponents(rows));
+        replyToMessageSafely(ch, content, reference, a -> a.setComponents(rows), onSuccess);
     }
 
     private List<MONTHLY> accumulateCategory(List<Stage> stages) {

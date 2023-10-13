@@ -89,9 +89,7 @@ public class FindRewardMessageHolder extends SearchHolder {
             if(stages.isEmpty()) {
                 ch.sendMessage(LangID.getStringByID("freward_nosta", lang).replace("_", validateName(keyword))).queue();
             } else if(stages.size() == 1) {
-                Message result = EntityHandler.showStageEmb(stages.get(0), ch, getAuthorMessage(), isFrame, isExtra, isCompact, 0, treasure, lang);
-
-                if(result != null) {
+                EntityHandler.showStageEmb(stages.get(0), ch, getAuthorMessage(), isFrame, isExtra, isCompact, 0, treasure, lang, result -> {
                     if(StaticStore.timeLimit.containsKey(author.getAuthor().getId())) {
                         StaticStore.timeLimit.get(author.getAuthor().getId()).put(StaticStore.COMMAND_FINDSTAGE_ID, System.currentTimeMillis());
                     } else {
@@ -103,7 +101,7 @@ public class FindRewardMessageHolder extends SearchHolder {
                     }
 
                     StaticStore.putHolder(author.getAuthor().getId(), new StageInfoButtonHolder(stages.get(0), author, result, channelID, isCompact));
-                }
+                });
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("freward_several", lang).replace("_", validateName(keyword))).append("```md\n");
 
@@ -124,11 +122,13 @@ public class FindRewardMessageHolder extends SearchHolder {
 
                 sb.append("```");
 
-                Message res = Command.registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), stages.size(), accumulateStage(stages, false), lang).complete();
+                Command.registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), stages.size(), accumulateStage(stages, false), lang).queue(res -> {
+                    if(res != null) {
+                        StaticStore.putHolder(author.getAuthor().getId(), new StageInfoMessageHolder(stages, author, res, ch.getId(), 0, treasure, isFrame, isExtra, isCompact, lang));
+                    }
+                });
 
-                if(res != null) {
-                    StaticStore.putHolder(author.getAuthor().getId(), new StageInfoMessageHolder(stages, author, res, ch.getId(), 0, treasure, isFrame, isExtra, isCompact, lang));
-                }
+
             }
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/FindRewardMessageHolder::onSelected - Failed to perform interaction");

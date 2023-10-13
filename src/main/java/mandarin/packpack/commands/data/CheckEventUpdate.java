@@ -5,10 +5,9 @@ import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.event.EventFactor;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class CheckEventUpdate extends ConstraintCommand {
     public CheckEventUpdate(ROLE role, int lang, IDHolder id) {
@@ -16,25 +15,26 @@ public class CheckEventUpdate extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
-        if(ch == null)
-            return;
+        ch.sendMessage(LangID.getStringByID("chevent_check", lang)).queue( msg -> {
+            try {
+                boolean[][] result = StaticStore.event.checkUpdates();
 
-        Message msg = ch.sendMessage(LangID.getStringByID("chevent_check", lang)).complete();
+                String res = parseResult(result);
 
-        boolean[][] result = StaticStore.event.checkUpdates();
+                if(res.isBlank()) {
+                    msg.editMessage(LangID.getStringByID("chevent_noup", lang)).queue();
+                } else {
+                    msg.editMessage(LangID.getStringByID("chevent_done", lang) + "\n\n" + res).queue();
 
-        String res = parseResult(result);
-
-        if(res.isBlank()) {
-            msg.editMessage(LangID.getStringByID("chevent_noup", lang)).queue();
-        } else {
-            msg.editMessage(LangID.getStringByID("chevent_done", lang) + "\n\n" + res).queue();
-
-            PackBot.notifyEvent(event.getJDA(), result);
-        }
+                    PackBot.notifyEvent(ch.getJDA(), result);
+                }
+            } catch (Exception e) {
+                StaticStore.logger.uploadErrorLog(e, "E/CheckEventUpdate::doSomething - Failed to check event data");
+            }
+        });
     }
 
     private String parseResult(boolean[][] result) {
@@ -58,26 +58,19 @@ public class CheckEventUpdate extends ConstraintCommand {
     }
 
     private String getLocale(int loc) {
-        switch (loc) {
-            case EventFactor.EN:
-                return "en";
-            case EventFactor.ZH:
-                return "tw";
-            case EventFactor.KR:
-                return "kr";
-            default:
-                return "jp";
-        }
+        return switch (loc) {
+            case EventFactor.EN -> "en";
+            case EventFactor.ZH -> "tw";
+            case EventFactor.KR -> "kr";
+            default -> "jp";
+        };
     }
 
     private String getFile(int f) {
-        switch (f) {
-            case EventFactor.GATYA:
-                return "gatya";
-            case EventFactor.ITEM:
-                return "item";
-            default:
-                return "sale";
-        }
+        return switch (f) {
+            case EventFactor.GATYA -> "gatya";
+            case EventFactor.ITEM -> "item";
+            default -> "sale";
+        };
     }
 }

@@ -81,15 +81,13 @@ public class FormStatMessageHolder extends SearchHolder {
         try {
             Form f = form.get(id);
 
-            Message result = EntityHandler.showUnitEmb(f, ch, getAuthorMessage(), config, isFrame, talent, extra, isTrueForm, f.fid == 2, lv, treasure, t, lang, true, compact);
-
-            if(result != null) {
+            EntityHandler.showUnitEmb(f, ch, getAuthorMessage(), config, isFrame, talent, extra, isTrueForm, f.fid == 2, lv, treasure, t, lang, true, compact, result -> {
                 User u = event.getUser();
 
                 StaticStore.removeHolder(u.getId(), FormStatMessageHolder.this);
 
                 StaticStore.putHolder(u.getId(), new FormButtonHolder(form.get(id), getAuthorMessage(), result, config, isFrame, talent, extra, compact, treasure, t, lv, lang, channelID));
-            }
+            });
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/FormStatMessageHolder::onSelected - Failed to perform showing unit embed");
         }

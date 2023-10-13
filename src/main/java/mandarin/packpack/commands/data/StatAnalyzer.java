@@ -11,12 +11,12 @@ import mandarin.packpack.supporter.bc.cell.AbilityData;
 import mandarin.packpack.supporter.bc.cell.CellData;
 import mandarin.packpack.supporter.bc.cell.FlagCellData;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.message.StatAnalyzerMessageHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.BufferedReader;
@@ -45,7 +45,7 @@ public class StatAnalyzer extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
+    public void doSomething(CommandLoader loader) throws Exception {
         File temp = new File("./temp");
 
         if(!temp.exists() && !temp.mkdirs()) {
@@ -59,13 +59,10 @@ public class StatAnalyzer extends ConstraintCommand {
             return;
         }
 
-        MessageChannel ch = getChannel(event);
-        Message author = getMessage(event);
+        MessageChannel ch = loader.getChannel();
+        Message author = loader.getMessage();
 
-        if(ch == null || author == null)
-            return;
-
-        String command = getContent(event);
+        String command = loader.getContent();
 
         int uid = getUID(command);
 
@@ -228,12 +225,14 @@ public class StatAnalyzer extends ConstraintCommand {
                 }
             }
 
-            Message msg = ch.sendMessage(sb.toString()).complete();
+            String[] finalName = name;
 
-            if(msg == null)
-                return;
+            ch.sendMessage(sb.toString()).queue(msg -> {
+                if(msg == null)
+                    return;
 
-            new StatAnalyzerMessageHolder(msg, author, uid, len, isSecond, cellData, procData, abilData, traitData, ch.getId(), container, level, name, lang, requiredFiles);
+                new StatAnalyzerMessageHolder(msg, author, uid, len, isSecond, cellData, procData, abilData, traitData, ch.getId(), container, level, finalName, lang, requiredFiles);
+            });
         }
     }
 

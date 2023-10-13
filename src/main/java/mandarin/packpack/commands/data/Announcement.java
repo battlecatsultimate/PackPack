@@ -4,10 +4,10 @@ import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.event.EventFactor;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class Announcement extends ConstraintCommand {
     private static final int PARAM_EN = 2;
@@ -20,57 +20,56 @@ public class Announcement extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
-        if(ch == null)
-            return;
-
-        int param = checkParameter(getContent(event));
+        int param = checkParameter(loader.getContent());
 
         String loc;
         String ver;
 
         switch (param) {
-            case PARAM_EN:
+            case PARAM_EN -> {
                 loc = "en";
                 ver = StaticStore.englishVersion;
-                break;
-            case PARAM_JP:
+            }
+            case PARAM_JP -> {
                 loc = "ja";
                 ver = StaticStore.japaneseVersion;
-                break;
-            case PARAM_KR:
+            }
+            case PARAM_KR -> {
                 loc = "ko";
                 ver = StaticStore.koreanVersion;
-                break;
-            case PARAM_TW:
+            }
+            case PARAM_TW -> {
                 loc = "tw";
                 ver = StaticStore.taiwaneseVersion;
-                break;
-            default:
+            }
+            default -> {
                 switch (lang) {
-                    case 1:
+                    case 1 -> {
                         loc = "tw";
                         ver = StaticStore.taiwaneseVersion;
-                        break;
-                    case 2:
+                    }
+                    case 2 -> {
                         loc = "ko";
                         ver = StaticStore.koreanVersion;
-                        break;
-                    case 3:
+                    }
+                    case 3 -> {
                         loc = "ja";
                         ver = StaticStore.japaneseVersion;
-                        break;
-                    default:
+                    }
+                    default -> {
                         loc = "en";
                         ver = StaticStore.englishVersion;
+                    }
                 }
+            }
         }
 
-        Message msg = getMessage(event);
+        Message msg = loader.getMessage();
 
-        String time = msg != null ? Long.toString(msg.getTimeCreated().toEpochSecond()) : "0";
+        String time = Long.toString(msg.getTimeCreated().toEpochSecond());
 
         String url = EventFactor.ANNOUNCEURL.replace("LL", loc).replace("VVVVVV", ver).replace("DDDDDDDDD", time);
 
@@ -82,14 +81,18 @@ public class Announcement extends ConstraintCommand {
 
         for (String content : contents) {
             switch (content) {
-                case "-en":
+                case "-en" -> {
                     return PARAM_EN;
-                case "-jp":
+                }
+                case "-jp" -> {
                     return PARAM_JP;
-                case "-kr":
+                }
+                case "-kr" -> {
                     return PARAM_KR;
-                case "-tw":
+                }
+                case "-tw" -> {
                     return PARAM_TW;
+                }
             }
         }
 

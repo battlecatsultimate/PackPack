@@ -8,6 +8,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.component.search.EnemyDPSHolder;
@@ -16,7 +17,6 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -36,11 +36,11 @@ public class EnemyDPS extends TimedConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
-        String[] list = getContent(event).split(" ", 2);
-        String[] segments = getContent(event).split(" ");
+        String[] list = loader.getContent().split(" ", 2);
+        String[] segments = loader.getContent().split(" ");
 
         StringBuilder removeMistake = new StringBuilder();
 
@@ -58,20 +58,20 @@ public class EnemyDPS extends TimedConstraintCommand {
         String command = removeMistake.toString();
 
         if(list.length == 1 || filterCommand(command).isBlank()) {
-            replyToMessageSafely(ch, LangID.getStringByID("formst_noname", lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("formst_noname", lang), loader.getMessage(), a -> a);
         } else {
             ArrayList<Enemy> enemies = EntityFilter.findEnemyWithName(filterCommand(command), lang);
 
             if(enemies.size() == 1) {
                 int magnification = handleMagnification(command);
 
-                Message m = getMessage(event);
+                Message m = loader.getMessage();
 
                 TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(m.getAuthor().getId(), TreasureHolder.global);
 
-                EntityHandler.showEnemyDPS(ch, getMessage(event), enemies.get(0), treasure, magnification, lang);
+                EntityHandler.showEnemyDPS(ch, loader.getMessage(), enemies.get(0), treasure, magnification, lang);
             } else if(enemies.size() == 0) {
-                replyToMessageSafely(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", getSearchKeyword(command)), getMessage(event), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", getSearchKeyword(command)), loader.getMessage(), a -> a);
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", getSearchKeyword(command)));
 
@@ -94,22 +94,19 @@ public class EnemyDPS extends TimedConstraintCommand {
 
                 sb.append("```");
 
-                Message res = getRepliedMessageSafely(ch, sb.toString(), getMessage(event), a -> registerSearchComponents(a, enemies.size(), data, lang));
+                replyToMessageSafely(ch, sb.toString(), loader.getMessage(), a -> registerSearchComponents(a, enemies.size(), data, lang), res -> {
+                    int magnification = handleMagnification(command);
 
-                int magnification = handleMagnification(command);
+                    if(res != null) {
+                        User u = loader.getUser();
 
-                if(res != null) {
-                    User u = getUser(event);
-
-                    if(u != null) {
-                        Message msg = getMessage(event);
+                        Message msg = loader.getMessage();
 
                         TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
 
-                        if(msg != null)
-                            StaticStore.putHolder(u.getId(), new EnemyDPSHolder(enemies, msg, res, ch.getId(), treasure, magnification, lang));
+                        StaticStore.putHolder(u.getId(), new EnemyDPSHolder(enemies, msg, res, ch.getId(), treasure, magnification, lang));
                     }
-                }
+                });
             }
         }
     }

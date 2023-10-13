@@ -3,6 +3,7 @@ package mandarin.packpack.commands.data;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.search.EventDataArchiveHolder;
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
@@ -10,7 +11,6 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.io.File;
 import java.util.*;
@@ -26,14 +26,11 @@ public class EventDataArchive extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
-        if(ch == null)
-            return;
-
-        int locale = getLocale(getContent(event));
-        String fileName = getFileName(getContent(event));
+        int locale = getLocale(loader.getContent());
+        String fileName = getFileName(loader.getContent());
 
         String l = switch (locale) {
             case LangID.ZH -> "zh";
@@ -90,19 +87,13 @@ public class EventDataArchive extends ConstraintCommand {
 
         sb.append("```");
 
-        Message res = registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), files.size(), data, lang).complete();
+        registerSearchComponents(ch.sendMessage(sb.toString()).setAllowedMentions(new ArrayList<>()), files.size(), data, lang).queue(res -> {
+            User u = loader.getUser();
 
-        if(res != null) {
-            User u = getUser(event);
+            Message msg = loader.getMessage();
 
-            if(u != null) {
-                Message msg = getMessage(event);
-
-                if(msg != null) {
-                    StaticStore.putHolder(u.getId(), new EventDataArchiveHolder(res, msg, ch.getId(), files, fileName, lang));
-                }
-            }
-        }
+            StaticStore.putHolder(u.getId(), new EventDataArchiveHolder(res, msg, ch.getId(), files, fileName, lang));
+        });
     }
 
     public int getLocale(String content) {

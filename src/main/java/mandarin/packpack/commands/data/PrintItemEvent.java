@@ -3,10 +3,10 @@ package mandarin.packpack.commands.data;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,42 +17,38 @@ public class PrintItemEvent extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
-        if(ch == null)
-            return;
-
-        boolean now = isNow(getContent(event));
+        boolean now = isNow(loader.getContent());
          int t = 0;
 
         if(now) {
-            User u = getUser(event);
+            User u = loader.getUser();
 
-            if(u != null) {
-                t = StaticStore.timeZones.getOrDefault(u.getId(), 0);
+            t = StaticStore.timeZones.getOrDefault(u.getId(), 0);
 
-                String content;
+            String content;
 
-                if(t >= 0)
-                    content = "+" + t;
-                else
-                    content = "" + t;
+            if(t >= 0)
+                content = "+" + t;
+            else
+                content = String.valueOf(t);
 
-                ch.sendMessage(LangID.getStringByID("printevent_time", lang).replace("_", content)).queue();
-            }
+            ch.sendMessage(LangID.getStringByID("printevent_time", lang).replace("_", content)).queue();
         }
 
-        boolean full = isFull(getContent(event));
+        boolean full = isFull(loader.getContent());
 
-        User u = getUser(event);
+        User u = loader.getUser();
 
-        if(full && (u == null || !StaticStore.contributors.contains(u.getId()))) {
+        if(full && !StaticStore.contributors.contains(u.getId())) {
             full = false;
 
             createMessageWithNoPings(ch, LangID.getStringByID("event_ignorefull", lang));
         }
-        List<String> result = StaticStore.event.printItemEvent(getLocale(getContent(event)), lang, full, isRaw(getContent(event)), now, t);
+
+        List<String> result = StaticStore.event.printItemEvent(getLocale(loader.getContent()), lang, full, isRaw(loader.getContent()), now, t);
 
         if(result.isEmpty()) {
             ch.sendMessage(LangID.getStringByID("chevent_noup", lang)).queue();
@@ -111,14 +107,18 @@ public class PrintItemEvent extends ConstraintCommand {
 
         for(int i = 0; i < contents.length; i++) {
             switch (contents[i]) {
-                case "-en":
+                case "-en" -> {
                     return LangID.EN;
-                case "-tw":
+                }
+                case "-tw" -> {
                     return LangID.ZH;
-                case "-kr":
+                }
+                case "-kr" -> {
                     return LangID.KR;
-                case "-jp":
+                }
+                case "-jp" -> {
                     return LangID.JP;
+                }
             }
         }
 

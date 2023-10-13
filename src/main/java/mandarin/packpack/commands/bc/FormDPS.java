@@ -9,6 +9,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
@@ -18,7 +19,6 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -47,14 +47,11 @@ public class FormDPS extends TimedConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
-        if (ch == null)
-            return;
-
-        String[] list = getContent(event).split(" ",2);
-        String[] segments = getContent(event).split(" ");
+        String[] list = loader.getContent().split(" ",2);
+        String[] segments = loader.getContent().split(" ");
 
         StringBuilder removeMistake = new StringBuilder();
 
@@ -78,18 +75,18 @@ public class FormDPS extends TimedConstraintCommand {
         boolean isTreasure = (param & PARAM_TREASURE) > 0 || config.treasure;
 
         if(list.length == 1 || filterCommand(command).isBlank()) {
-            replyToMessageSafely(ch, LangID.getStringByID("formst_noname", lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("formst_noname", lang), loader.getMessage(), a -> a);
         } else {
             ArrayList<Form> forms = EntityFilter.findUnitWithName(filterCommand(command), false, lang);
 
             if (forms.size() == 1) {
                 Form f = forms.get(0);
 
-                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(getMessage(event).getAuthor().getId(), TreasureHolder.global);
+                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getMessage().getAuthor().getId(), TreasureHolder.global);
 
-                EntityHandler.showFormDPS(ch, getMessage(event), f, treasure, lv, config, talent, isTreasure, lang);
+                EntityHandler.showFormDPS(ch, loader.getMessage(), f, treasure, lv, config, talent, isTreasure, lang);
             } else if (forms.isEmpty()) {
-                replyToMessageSafely(ch, LangID.getStringByID("formst_nounit", lang).replace("_", getSearchKeyword(getContent(event))), getMessage(event), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("formst_nounit", lang).replace("_", getSearchKeyword(loader.getContent())), loader.getMessage(), a -> a);
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", getSearchKeyword(command)));
 
@@ -112,20 +109,15 @@ public class FormDPS extends TimedConstraintCommand {
 
                 sb.append("```");
 
-                Message res = getRepliedMessageSafely(ch, sb.toString(), getMessage(event), a -> registerSearchComponents(a, forms.size(), data, lang));
+                replyToMessageSafely(ch, sb.toString(), loader.getMessage(), a -> registerSearchComponents(a, forms.size(), data, lang), res -> {
+                    User u = loader.getUser();
 
-                if(res != null) {
-                    User u = getUser(event);
+                    Message msg = loader.getMessage();
 
-                    if(u != null) {
-                        Message msg = getMessage(event);
+                    TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
 
-                        TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
-
-                        if(msg != null)
-                            StaticStore.putHolder(u.getId(), new FormDPSHolder(forms, msg, config, res, ch.getId(), param, lv, treasure, lang));
-                    }
-                }
+                    StaticStore.putHolder(u.getId(), new FormDPSHolder(forms, msg, config, res, ch.getId(), param, lv, treasure, lang));
+                });
             }
         }
     }

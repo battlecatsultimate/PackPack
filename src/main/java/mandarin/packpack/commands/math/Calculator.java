@@ -3,9 +3,9 @@ package mandarin.packpack.commands.math;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.calculation.Equation;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -17,16 +17,13 @@ public class Calculator extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
-        if(ch == null)
-            return;
-
-        String[] equation = getContent(event).split(" ", 2);
+        String[] equation = loader.getContent().split(" ", 2);
 
         if(equation.length < 2) {
-            replyToMessageSafely(ch, LangID.getStringByID("calc_eq", lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("calc_eq", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -42,9 +39,9 @@ public class Calculator extends ConstraintCommand {
                 value = Equation.formatNumber(result);
             }
 
-            replyToMessageSafely(ch, String.format(LangID.getStringByID("calc_result", lang), value), getMessage(event), a -> a);
+            replyToMessageSafely(ch, String.format(LangID.getStringByID("calc_result", lang), value), loader.getMessage(), a -> a);
         } else {
-            replyToMessageSafely(ch, Equation.getErrorMessage(), getMessage(event), a -> a);
+            replyToMessageSafely(ch, Equation.getErrorMessage(), loader.getMessage(), a -> a);
         }
     }
 }

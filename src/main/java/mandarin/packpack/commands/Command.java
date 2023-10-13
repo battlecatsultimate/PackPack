@@ -5,6 +5,7 @@ import mandarin.packpack.supporter.Pauser;
 import mandarin.packpack.supporter.RecordableThread;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import net.dv8tion.jda.api.Permission;
@@ -25,10 +26,7 @@ import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.utils.FileUpload;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -132,56 +130,6 @@ public abstract class Command {
             }
         } else {
             action.setMessageReference(reference).mentionRepliedUser(false).queue(onSuccess);
-        }
-    }
-
-    public static Message getRepliedMessageSafely(MessageChannel ch, String content, Message reference, Function<MessageCreateAction, MessageCreateAction> function) {
-        MessageCreateAction action = ch.sendMessage(content)
-                .setAllowedMentions(new ArrayList<>());
-
-        action = function.apply(action);
-
-        if(ch instanceof GuildMessageChannel) {
-            Guild g = ((GuildMessageChannel) ch).getGuild();
-
-            if(g.getSelfMember().hasPermission((GuildChannel) ch, Permission.MESSAGE_HISTORY)) {
-                return action.setMessageReference(reference).mentionRepliedUser(false).complete();
-            } else {
-                return action.complete();
-            }
-        } else {
-            return action.setMessageReference(reference).mentionRepliedUser(false).complete();
-        }
-    }
-
-    public static Message getRepliedMessageSafely(MessageChannel ch, String content, Message reference, Function<MessageCreateAction, MessageCreateAction> function, Consumer<Message> onSuccess) {
-        MessageCreateAction action = ch.sendMessage(content)
-                .setAllowedMentions(new ArrayList<>());
-
-        action = function.apply(action);
-
-        if(ch instanceof GuildMessageChannel) {
-            Guild g = ((GuildMessageChannel) ch).getGuild();
-
-            if(g.getSelfMember().hasPermission((GuildChannel) ch, Permission.MESSAGE_HISTORY)) {
-                Message result = action.setMessageReference(reference).mentionRepliedUser(false).complete();
-
-                onSuccess.accept(result);
-
-                return result;
-            } else {
-                Message result = action.complete();
-
-                onSuccess.accept(result);
-
-                return result;
-            }
-        } else {
-            Message result = action.setMessageReference(reference).mentionRepliedUser(false).complete();
-
-            onSuccess.accept(result);
-
-            return result;
         }
     }
 
@@ -301,142 +249,132 @@ public abstract class Command {
     }
 
     public void execute(GenericMessageEvent event) {
-        try {
-            prepare();
-        } catch (Exception e) {
-            StaticStore.logger.uploadErrorLog(e, "E/Command::execute - Failed to prepare command : "+this.getClass().getName());
-
-            return;
-        }
-
-        MessageChannel ch = getChannel(event);
-
-        if(ch == null)
-            return;
-
-        AtomicReference<Boolean> prevented = new AtomicReference<>(false);
-
-        Message msg = getMessage(event);
-
-        if(msg == null)
-            return;
-
-        if(requireGuild && !(ch instanceof GuildChannel)) {
-            replyToMessageSafely(ch, LangID.getStringByID("require_server", lang), msg, a -> a);
-
-            return;
-        }
-
-        User u = msg.getAuthor();
-
-        SpamPrevent spam;
-
-        if(StaticStore.spamData.containsKey(u.getId())) {
-            spam = StaticStore.spamData.get(u.getId());
-
-            prevented.set(spam.isPrevented(ch, lang, u.getId()));
-        } else {
-            spam = new SpamPrevent();
-
-            StaticStore.spamData.put(u.getId(), spam);
-        }
-
-        if (prevented.get())
-            return;
-
-        StaticStore.executed++;
-
-        boolean canTry = false;
-
-        if(ch instanceof GuildMessageChannel tc) {
-            Guild g = getGuild(event);
-
-            if(g == null)
-                return;
-
-            if(!tc.canTalk()) {
-                String serverName = g.getName();
-                String channelName = ch.getName();
-
-                String content;
-
-                content = LangID.getStringByID("no_permch", lang).replace("_SSS_", serverName).replace("_CCC_", channelName);
-
-                u.openPrivateChannel()
-                        .flatMap(pc -> pc.sendMessage(content))
-                        .queue();
+        new CommandLoader().load(event, loader -> {
+            try {
+                prepare();
+            } catch (Exception e) {
+                StaticStore.logger.uploadErrorLog(e, "E/Command::execute - Failed to prepare command : "+this.getClass().getName());
 
                 return;
             }
 
-            List<Permission> missingPermission = getMissingPermissions((GuildChannel) ch, g.getSelfMember());
+            MessageChannel ch = loader.getChannel();
 
-            if(!missingPermission.isEmpty()) {
-                u.openPrivateChannel()
-                        .flatMap(pc -> pc.sendMessage(LangID.getStringByID("missing_permission", lang).replace("_PPP_", parsePermissionAsList(missingPermission)).replace("_SSS_", g.getName()).replace("_CCC_", ch.getName())))
-                        .queue();
+            AtomicReference<Boolean> prevented = new AtomicReference<>(false);
+
+            Message msg = loader.getMessage();
+
+            if(requireGuild && !(ch instanceof GuildChannel)) {
+                replyToMessageSafely(ch, LangID.getStringByID("require_server", lang), msg, a -> a);
 
                 return;
             }
-        }
 
-        try {
-            RecordableThread t = new RecordableThread(() -> doSomething(event), e -> {
-                String data = "Command : " + getContent(event) + "\n\n" +
-                        "User  : " + u.getName() + " (" + u.getId() + ")\n\n" +
+            User u = msg.getAuthor();
+
+            SpamPrevent spam;
+
+            if(StaticStore.spamData.containsKey(u.getId())) {
+                spam = StaticStore.spamData.get(u.getId());
+
+                prevented.set(spam.isPrevented(ch, lang, u.getId()));
+            } else {
+                spam = new SpamPrevent();
+
+                StaticStore.spamData.put(u.getId(), spam);
+            }
+
+            if (prevented.get())
+                return;
+
+            StaticStore.executed++;
+
+            boolean canTry = false;
+
+            if(ch instanceof GuildMessageChannel tc) {
+                Guild g = loader.getGuild();
+
+                if(!tc.canTalk()) {
+                    String serverName = g.getName();
+                    String channelName = ch.getName();
+
+                    String content;
+
+                    content = LangID.getStringByID("no_permch", lang).replace("_SSS_", serverName).replace("_CCC_", channelName);
+
+                    u.openPrivateChannel()
+                            .flatMap(pc -> pc.sendMessage(content))
+                            .queue();
+
+                    return;
+                }
+
+                List<Permission> missingPermission = getMissingPermissions((GuildChannel) ch, g.getSelfMember());
+
+                if(!missingPermission.isEmpty()) {
+                    u.openPrivateChannel()
+                            .flatMap(pc -> pc.sendMessage(LangID.getStringByID("missing_permission", lang).replace("_PPP_", parsePermissionAsList(missingPermission)).replace("_SSS_", g.getName()).replace("_CCC_", ch.getName())))
+                            .queue();
+
+                    return;
+                }
+            }
+
+            try {
+                RecordableThread t = new RecordableThread(() -> doSomething(loader), e -> {
+                    String data = "Command : " + loader.getContent() + "\n\n" +
+                            "User  : " + u.getName() + " (" + u.getId() + ")\n\n" +
+                            "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
+
+                    if (ch instanceof GuildChannel) {
+                        Guild g = loader.getGuild();
+
+                        data += "\n\nGuild : " + g.getName() + " (" + g.getId() + ")";
+                    }
+
+                    StaticStore.logger.uploadErrorLog(e, "Failed to perform command : "+this.getClass()+"\n\n" + data);
+
+                    if(e instanceof ErrorResponseException) {
+                        onFail(loader, SERVER_ERROR);
+                    } else {
+                        onFail(loader, DEFAULT_ERROR);
+                    }
+                });
+
+                t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime());
+                t.start();
+            } catch (Exception e) {
+                String data = "Command : " + loader.getContent() + "\n\n" +
+                        "Member  : " + u.getName() + " (" + u.getId() + ")\n\n" +
                         "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
 
-                Guild g = getGuild(event);
+                if (ch instanceof GuildChannel) {
+                    Guild g = loader.getGuild();
 
-                if(g != null) {
                     data += "\n\nGuild : " + g.getName() + " (" + g.getId() + ")";
                 }
 
                 StaticStore.logger.uploadErrorLog(e, "Failed to perform command : "+this.getClass()+"\n\n" + data);
 
                 if(e instanceof ErrorResponseException) {
-                    onFail(event, SERVER_ERROR);
+                    onFail(loader, SERVER_ERROR);
                 } else {
-                    onFail(event, DEFAULT_ERROR);
+                    onFail(loader, DEFAULT_ERROR);
                 }
-            });
-
-            t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime());
-            t.start();
-        } catch (Exception e) {
-            String data = "Command : " + getContent(event) + "\n\n" +
-                    "Member  : " + u.getName() + " (" + u.getId() + ")\n\n" +
-                    "Channel : " + ch.getName() + "(" + ch.getId() + "|" + ch.getType().name() + ")";
-
-            Guild g = getGuild(event);
-
-            if(g != null) {
-                data += "\n\nGuild : " + g.getName() + " (" + g.getId() + ")";
             }
-
-            StaticStore.logger.uploadErrorLog(e, "Failed to perform command : "+this.getClass()+"\n\n" + data);
-
-            if(e instanceof ErrorResponseException) {
-                onFail(event, SERVER_ERROR);
-            } else {
-                onFail(event, DEFAULT_ERROR);
-            }
-        }
+        });
     }
 
     public void prepare() throws Exception {
 
     }
 
-    public abstract void doSomething(GenericMessageEvent event) throws Exception;
+    public abstract void doSomething(CommandLoader loader) throws Exception;
 
-    public void onFail(GenericMessageEvent event, int error) {
+    public void onFail(CommandLoader loader, int error) {
         StaticStore.executed--;
 
-        MessageChannel ch = getChannel(event);
-
-        if(ch == null)
-            return;
+        MessageChannel ch = loader.getChannel();
 
         if(error == DEFAULT_ERROR) {
             ch.sendMessage(StaticStore.ERROR_MSG).queue();
@@ -445,84 +383,9 @@ public abstract class Command {
         }
     }
 
-    public void onSuccess(GenericMessageEvent event) {}
+    public void onSuccess(CommandLoader loader) {}
 
-    public void onCancel(GenericMessageEvent event) {}
-
-    public MessageChannel getChannel(GenericMessageEvent event) {
-        return event.getChannel();
-    }
-
-    public Message getMessage(GenericMessageEvent event) {
-        try {
-            Method m = event.getClass().getMethod("getMessage");
-
-            Object obj = m.invoke(event);
-
-            if(obj instanceof Message)
-                return (Message) obj;
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            try {
-                MessageChannel ch = event.getChannel();
-
-                Method m = event.getClass().getMethod("getMessageId");
-
-                Object obj = m.invoke(event);
-
-                if(obj instanceof String && ch instanceof GuildChannel) {
-                    Guild g = ((GuildChannel) ch).getGuild();
-
-                    if (g.getSelfMember().hasPermission(Permission.MESSAGE_HISTORY)) {
-                        return ch.retrieveMessageById((String) obj).complete();
-                    }
-                }
-            } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException invocationTargetException) {
-                StaticStore.logger.uploadErrorLog(e, "Failed to get Message from this class : "+event.getClass().getName());
-            }
-        }
-
-        return null;
-    }
-
-    public String getContent(GenericMessageEvent event) {
-        Message msg = getMessage(event);
-
-        return msg == null ? null : msg.getContentRaw();
-    }
-
-    @Nullable
-    public Member getMember(GenericMessageEvent event) {
-        if(!(event.getChannel() instanceof GuildChannel))
-            return null;
-
-        try {
-            Method m = event.getClass().getMethod("getMember");
-
-            Object obj = m.invoke(event);
-
-            if(obj instanceof Member)
-                return (Member) obj;
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            StaticStore.logger.uploadErrorLog(e, "Failed to get Member from this class : "+event.getClass().getName());
-        }
-
-        return null;
-    }
-
-    @Nullable
-    public User getUser(GenericMessageEvent event) {
-        Message msg = getMessage(event);
-
-        return msg == null ? null : msg.getAuthor();
-    }
-
-    @Nullable
-    public Guild getGuild(GenericMessageEvent event) {
-        if(!(event.getChannel() instanceof GuildChannel))
-            return null;
-
-        return event.getGuild();
-    }
+    public void onCancel(CommandLoader loader) {}
 
     public void createMessageWithNoPings(MessageChannel ch, String content) {
         ch.sendMessage(content)
@@ -530,10 +393,10 @@ public abstract class Command {
                 .queue();
     }
 
-    public Message getMessageWithNoPings(MessageChannel ch, String content) {
-        return ch.sendMessage(content)
+    public void createMessageWithNoPings(MessageChannel ch, String content, Consumer<Message> onSuccess) {
+        ch.sendMessage(content)
                 .setAllowedMentions(new ArrayList<>())
-                .complete();
+                .queue(onSuccess);
     }
 
     public void registerRequiredPermission(@Nonnull Permission... permissions) {

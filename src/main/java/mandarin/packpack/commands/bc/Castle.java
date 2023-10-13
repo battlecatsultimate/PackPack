@@ -7,12 +7,12 @@ import common.util.stage.CastleList;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.utils.FileUpload;
 
@@ -49,21 +49,12 @@ public class Castle extends ConstraintCommand {
         }
 
         if(cs != null) {
-            int code;
-
-            switch (cs.getCont().getSID()) {
-                case "000001":
-                    code = 1;
-                    break;
-                case "000002":
-                    code = 2;
-                    break;
-                case "000003":
-                    code = 3;
-                    break;
-                default:
-                    code = 0;
-            }
+            int code = switch (cs.getCont().getSID()) {
+                case "000001" -> 1;
+                case "000002" -> 2;
+                case "000003" -> 3;
+                default -> 0;
+            };
 
             BufferedImage castle;
 
@@ -94,7 +85,7 @@ public class Castle extends ConstraintCommand {
 
             event.deferReply()
                     .setAllowedMentions(new ArrayList<>())
-                    .setContent(LangID.getStringByID("castle_result", lang).replace("_CCC_", castleCode).replace("_III_", Data.trio(cs.id.id)).replace("_BBB_", cs.boss_spawn+""))
+                    .setContent(LangID.getStringByID("castle_result", lang).replace("_CCC_", castleCode).replace("_III_", Data.trio(cs.id.id)).replace("_BBB_", String.valueOf(cs.boss_spawn)))
                     .addFiles(FileUpload.fromData(img, "result.png"))
                     .queue(m -> {
                         if(img.exists() && !img.delete()) {
@@ -111,14 +102,11 @@ public class Castle extends ConstraintCommand {
     }
 
     private static String getLocale(int lang) {
-        switch (lang) {
-            case LangID.KR:
-                return "ko";
-            case LangID.ZH:
-                return "tw";
-            default:
-                return "en";
-        }
+        return switch (lang) {
+            case LangID.KR -> "ko";
+            case LangID.ZH -> "tw";
+            default -> "en";
+        };
     }
 
     private static final int PARAM_RC = 2;
@@ -146,11 +134,8 @@ public class Castle extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
-
-        if(ch == null)
-            return;
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
         File temp = new File("./temp");
 
@@ -170,21 +155,12 @@ public class Castle extends ConstraintCommand {
         }
 
         if(cs != null) {
-            int code;
-
-            switch (cs.getCont().getSID()) {
-                case "000001":
-                    code = 1;
-                    break;
-                case "000002":
-                    code = 2;
-                    break;
-                case "000003":
-                    code = 3;
-                    break;
-                default:
-                    code = 0;
-            }
+            int code = switch (cs.getCont().getSID()) {
+                case "000001" -> 1;
+                case "000002" -> 2;
+                case "000003" -> 3;
+                default -> 0;
+            };
 
             BufferedImage castle;
 
@@ -216,17 +192,17 @@ public class Castle extends ConstraintCommand {
             else
                 castleCode = "SC";
 
-            sendMessageWithFile(ch, LangID.getStringByID("castle_result", lang).replace("_CCC_", castleCode).replace("_III_", Data.trio(finalId)).replace("_BBB_", cs.boss_spawn+""), img, "result.png", getMessage(event));
+            sendMessageWithFile(ch, LangID.getStringByID("castle_result", lang).replace("_CCC_", castleCode).replace("_III_", Data.trio(finalId)).replace("_BBB_", String.valueOf(cs.boss_spawn)), img, "result.png", loader.getMessage());
         } else {
-            String[] list = getContent(event).split(" ");
+            String[] list = loader.getContent().split(" ");
 
             if(list.length >= 2) {
-                int param = checkParameters(getContent(event));
+                int param = checkParameters(loader.getContent());
 
-                String[] messages = getContent(event).split(" ", startIndex+1);
+                String[] messages = loader.getContent().split(" ", startIndex+1);
 
                 if(messages.length <= startIndex) {
-                    replyToMessageSafely(ch, LangID.getStringByID("castle_more", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.serverPrefix), getMessage(event), a -> a);
+                    replyToMessageSafely(ch, LangID.getStringByID("castle_more", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.serverPrefix), loader.getMessage(), a -> a);
 
                     return;
                 }
@@ -238,7 +214,7 @@ public class Castle extends ConstraintCommand {
                 if(StaticStore.isNumeric(msg)) {
                     id = StaticStore.safeParseInt(msg);
                 } else {
-                    replyToMessageSafely(ch, LangID.getStringByID("castle_number", lang), getMessage(event), a -> a);
+                    replyToMessageSafely(ch, LangID.getStringByID("castle_number", lang), loader.getMessage(), a -> a);
 
                     return;
                 }
@@ -297,9 +273,9 @@ public class Castle extends ConstraintCommand {
                 else
                     castleCode = "SC";
 
-                sendMessageWithFile(ch, LangID.getStringByID("castle_result", lang).replace("_CCC_", castleCode).replace("_III_", Data.trio(id)).replace("_BBB_", image.boss_spawn+""), img, "result.png", getMessage(event));
+                sendMessageWithFile(ch, LangID.getStringByID("castle_result", lang).replace("_CCC_", castleCode).replace("_III_", Data.trio(id)).replace("_BBB_", String.valueOf(image.boss_spawn)), img, "result.png", loader.getMessage());
             } else {
-                replyToMessageSafely(ch, LangID.getStringByID("castle_argu", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.serverPrefix), getMessage(event), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("castle_argu", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.serverPrefix), loader.getMessage(), a -> a);
             }
         }
     }

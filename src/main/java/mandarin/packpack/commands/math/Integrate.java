@@ -6,9 +6,9 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.calculation.Equation;
 import mandarin.packpack.supporter.calculation.Formula;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.math.BigDecimal;
@@ -21,16 +21,13 @@ public class Integrate extends TimedConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
-        if(ch == null)
-            return;
-
-        String[] contents = getContent(event).split(" ", 2);
+        String[] contents = loader.getContent().split(" ", 2);
 
         if(contents.length < 2) {
-            replyToMessageSafely(ch, LangID.getStringByID("int_forran", lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("int_forran", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -40,7 +37,7 @@ public class Integrate extends TimedConstraintCommand {
         String f = filterFormula(command).trim();
 
         if(f.isBlank()) {
-            replyToMessageSafely(ch, LangID.getStringByID("diff_noformula", lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("diff_noformula", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -48,7 +45,7 @@ public class Integrate extends TimedConstraintCommand {
         Formula formula = new Formula(f, 1, lang);
 
         if(!Formula.error.isEmpty()) {
-            replyToMessageSafely(ch, Formula.getErrorMessage(), getMessage(event), a -> a);
+            replyToMessageSafely(ch, Formula.getErrorMessage(), loader.getMessage(), a -> a);
 
             return;
         }
@@ -56,13 +53,13 @@ public class Integrate extends TimedConstraintCommand {
         String[] r = findRange(command);
 
         if(r == null) {
-            replyToMessageSafely(ch, LangID.getStringByID("int_norange", lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("int_norange", lang), loader.getMessage(), a -> a);
 
             return;
         }
 
         if(r.length > 2) {
-            replyToMessageSafely(ch, LangID.getStringByID("int_toorange", lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("int_toorange", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -72,7 +69,7 @@ public class Integrate extends TimedConstraintCommand {
         range[0] = Equation.calculate(r[0], null, false, lang);
 
         if(!Equation.error.isEmpty()) {
-            replyToMessageSafely(ch, Equation.getErrorMessage(LangID.getStringByID("int_rangefail", lang)), getMessage(event), a -> a);
+            replyToMessageSafely(ch, Equation.getErrorMessage(LangID.getStringByID("int_rangefail", lang)), loader.getMessage(), a -> a);
 
             return;
         }
@@ -80,7 +77,7 @@ public class Integrate extends TimedConstraintCommand {
         range[1] = Equation.calculate(r[1], null, false, lang);
 
         if(!Equation.error.isEmpty()) {
-            replyToMessageSafely(ch, Equation.getErrorMessage(LangID.getStringByID("int_rangefail", lang)), getMessage(event), a -> a);
+            replyToMessageSafely(ch, Equation.getErrorMessage(LangID.getStringByID("int_rangefail", lang)), loader.getMessage(), a -> a);
 
             return;
         }
@@ -95,7 +92,7 @@ public class Integrate extends TimedConstraintCommand {
             BigDecimal trial = Equation.calculate(s, null, false, lang);
 
             if(!Equation.error.isEmpty()) {
-                replyToMessageSafely(ch, Equation.getErrorMessage(LangID.getStringByID("int_sectionfail", lang)), getMessage(event), a -> a);
+                replyToMessageSafely(ch, Equation.getErrorMessage(LangID.getStringByID("int_sectionfail", lang)), loader.getMessage(), a -> a);
 
                 return;
             }
@@ -104,7 +101,7 @@ public class Integrate extends TimedConstraintCommand {
         }
 
         if(section <= 0) {
-            replyToMessageSafely(ch, LangID.getStringByID("int_sectionzero", lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("int_sectionzero", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -114,9 +111,9 @@ public class Integrate extends TimedConstraintCommand {
         BigDecimal result = formula.integrate(range[0], range[1], section, algorithm, lang);
 
         if(!Formula.error.isEmpty()) {
-            replyToMessageSafely(ch, Equation.getErrorMessage(Formula.getErrorMessage()), getMessage(event), a -> a);
+            replyToMessageSafely(ch, Equation.getErrorMessage(Formula.getErrorMessage()), loader.getMessage(), a -> a);
         } else {
-            replyToMessageSafely(ch, String.format(LangID.getStringByID("int_success", lang), Equation.formatNumber(result), Equation.formatNumber(range[0]), Equation.formatNumber(range[1]), section, getAlgorithmName(algorithm)), getMessage(event), a -> a);
+            replyToMessageSafely(ch, String.format(LangID.getStringByID("int_success", lang), Equation.formatNumber(result), Equation.formatNumber(range[0]), Equation.formatNumber(range[1]), section, getAlgorithmName(algorithm)), loader.getMessage(), a -> a);
         }
     }
 
@@ -157,18 +154,18 @@ public class Integrate extends TimedConstraintCommand {
 
         for(int i = 0; i < contents.length; i++) {
             switch (contents[i]) {
-                case "-t":
-                case "-trapezoidal":
+                case "-t", "-trapezoidal" -> {
                     return Formula.INTEGRATION.TRAPEZOIDAL;
-                case "-si":
-                case "-simpson":
+                }
+                case "-si", "-simpson" -> {
                     return Formula.INTEGRATION.SIMPSON;
-                case "-s38":
-                case "-simpson38":
+                }
+                case "-s38", "-simpson38" -> {
                     return Formula.INTEGRATION.SIMPSON38;
-                case "-b":
-                case "-boole":
+                }
+                case "-b", "-boole" -> {
                     return Formula.INTEGRATION.BOOLE;
+                }
             }
         }
 
@@ -176,19 +173,12 @@ public class Integrate extends TimedConstraintCommand {
     }
 
     private String getAlgorithmName(Formula.INTEGRATION algorithm) {
-        switch (algorithm) {
-            case TRAPEZOIDAL:
-                return LangID.getStringByID("calc_trapezoidal", lang);
-            case SIMPSON:
-                return LangID.getStringByID("calc_simpson", lang);
-            case SIMPSON38:
-                return LangID.getStringByID("calc_simpson38", lang);
-            case BOOLE:
-                return LangID.getStringByID("calc_boole", lang);
-            case SMART:
-                return LangID.getStringByID("calc_newtoncotes", lang);
-            default:
-                throw new IllegalStateException("Invalid algorithm : " + algorithm);
-        }
+        return switch (algorithm) {
+            case TRAPEZOIDAL -> LangID.getStringByID("calc_trapezoidal", lang);
+            case SIMPSON -> LangID.getStringByID("calc_simpson", lang);
+            case SIMPSON38 -> LangID.getStringByID("calc_simpson38", lang);
+            case BOOLE -> LangID.getStringByID("calc_boole", lang);
+            case SMART -> LangID.getStringByID("calc_newtoncotes", lang);
+        };
     }
 }

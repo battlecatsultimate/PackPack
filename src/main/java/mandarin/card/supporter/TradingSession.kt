@@ -3,8 +3,8 @@ package mandarin.card.supporter
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import mandarin.card.CardBot
-import mandarin.card.supporter.transaction.TatsuHandler
 import mandarin.card.supporter.log.TransactionLogger
+import mandarin.card.supporter.transaction.TatsuHandler
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
@@ -214,8 +214,15 @@ class TradingSession(val postID: Long, val member: Array<Long>) {
         TransactionLogger.logTrade(this, TransactionLogger.TradeStatus.TRADED)
     }
 
-    fun needApproval(g: Guild) : Boolean {
-        return suggestion.any { s -> s.catFood >= 200000 || s.cards.any { c -> c.tier == CardData.Tier.ULTRA || c.tier == CardData.Tier.LEGEND } } &&
-                !member.map { id -> g.retrieveMember(UserSnowflake.fromId(id)).complete() }.any { m -> CardData.hasAllPermission(m) }
+    fun needApproval(g: Guild, whenNeed: Runnable, otherwise: Runnable) {
+        g.retrieveMembers(member.map { id -> UserSnowflake.fromId(id) }).onSuccess { members ->
+            if (suggestion.any { s -> s.catFood >= 200000 || s.cards.any { c -> c.tier == CardData.Tier.ULTRA || c.tier == CardData.Tier.LEGEND } } &&
+                members.any { m -> CardData.hasAllPermission(m) } &&
+                !approved) {
+                whenNeed.run()
+            } else {
+                otherwise.run()
+            }
+        }
     }
 }

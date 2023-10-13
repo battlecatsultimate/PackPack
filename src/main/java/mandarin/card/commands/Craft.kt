@@ -10,9 +10,9 @@ import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
+import mandarin.packpack.supporter.server.CommandLoader
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.emoji.Emoji
-import net.dv8tion.jda.api.events.message.GenericMessageEvent
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -22,9 +22,9 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import kotlin.math.min
 
 class Craft : Command(LangID.EN, true) {
-    override fun doSomething(event: GenericMessageEvent?) {
-        val ch = getChannel(event) ?: return
-        val m = getMember(event) ?: return
+    override fun doSomething(loader: CommandLoader) {
+        val ch = loader.channel
+        val m = loader.member
 
         if (CardBot.rollLocked && !CardData.hasAllPermission(m) && m.id != StaticStore.MANDARIN_SMELL) {
             return
@@ -35,14 +35,16 @@ class Craft : Command(LangID.EN, true) {
         val cards = inventory.cards.keys.filter { c -> c.tier == CardData.Tier.COMMON }.sortedWith(CardComparator())
 
         if (cards.sumOf { inventory.cards[it] ?: 1 } < 10) {
-            replyToMessageSafely(ch, "You have to have at least 10 Tier 1 [Common] cards to craft Tier 2 [Uncommon] cards!!", getMessage(event)) { a -> a }
+            replyToMessageSafely(ch, "You have to have at least 10 Tier 1 [Common] cards to craft Tier 2 [Uncommon] cards!!", loader.message) { a -> a }
 
             return
         }
 
-        val message = getRepliedMessageSafely(ch, getPremiumText(cards, inventory), getMessage(event)) { a -> a.setComponents(assignComponents(cards, inventory)) }
-
-        StaticStore.putHolder(m.id, CardSalvageHolder(getMessage(event), ch.id, message, CardData.SalvageMode.CRAFT))
+        replyToMessageSafely(ch, getPremiumText(cards, inventory), loader.message, { a ->
+            a.setComponents(assignComponents(cards, inventory))
+        }, { message ->
+            StaticStore.putHolder(m.id, CardSalvageHolder(loader.message, ch.id, message, CardData.SalvageMode.CRAFT))
+        })
     }
 
     private fun assignComponents(cards: List<Card>, inventory: Inventory) : List<LayoutComponent> {

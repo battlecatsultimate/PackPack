@@ -11,11 +11,12 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import mandarin.packpack.supporter.server.holder.component.StageInfoButtonHolder;
+import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import mandarin.packpack.supporter.server.holder.component.search.StageInfoMessageHolder;
 import mandarin.packpack.supporter.server.holder.message.StageReactionSlashMessageHolder;
 import mandarin.packpack.supporter.server.slash.SlashOption;
@@ -25,7 +26,6 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
@@ -114,14 +114,16 @@ public class StageInfo extends TimedConstraintCommand {
             try {
                 TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
 
-                Message m = EntityHandler.performStageEmb(st, event, frame, extra, star, lang, treasure);
+                int finalLang = lang;
 
-                if(m != null && (!(m.getChannel() instanceof GuildChannel) || m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_MANAGE))) {
-                    StaticStore.putHolder(
-                            u.getId(),
-                            new StageReactionSlashMessageHolder(m, st, m.getChannel().getId(), u.getId(), holder, lang)
-                    );
-                }
+                EntityHandler.performStageEmb(st, event, frame, extra, star, lang, treasure, m -> {
+                    if(m != null && (!(m.getChannel() instanceof GuildChannel) || m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_MANAGE))) {
+                        StaticStore.putHolder(
+                                u.getId(),
+                                new StageReactionSlashMessageHolder(m, st, m.getChannel().getId(), u.getId(), holder, finalLang)
+                        );
+                    }
+                });
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -145,13 +147,10 @@ public class StageInfo extends TimedConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
-        if(ch == null)
-            return;
-
-        String[] segments = getContent(event).split(" ");
+        String[] segments = loader.getContent().split(" ");
 
         StringBuilder removeMistake = new StringBuilder();
 
@@ -172,7 +171,7 @@ public class StageInfo extends TimedConstraintCommand {
         String[] names = filterStageNames(command);
 
         if(list.length == 1 || allNull(names)) {
-            replyToMessageSafely(ch, LangID.getStringByID("stinfo_noname", lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("stinfo_noname", lang), loader.getMessage(), a -> a);
 
             disableTimer();
         } else {
@@ -187,7 +186,7 @@ public class StageInfo extends TimedConstraintCommand {
             }
 
             if(stages.isEmpty()) {
-                replyToMessageSafely(ch, LangID.getStringByID("stinfo_nores", lang).replace("_", generateSearchName(names)), getMessage(event), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("stinfo_nores", lang).replace("_", generateSearchName(names)), loader.getMessage(), a -> a);
 
                 disableTimer();
             } else if(stages.size() == 1) {
@@ -197,18 +196,17 @@ public class StageInfo extends TimedConstraintCommand {
                 boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
                 boolean isCompact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
 
-                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(getMessage(event).getAuthor().getId(), TreasureHolder.global);
+                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getMessage().getAuthor().getId(), TreasureHolder.global);
 
-                Message result = EntityHandler.showStageEmb(stages.get(0), ch, getMessage(event), isFrame, isExtra, isCompact, star, treasure, lang);
+                ArrayList<Stage> finalStages = stages;
 
-                User u = getUser(event);
+                EntityHandler.showStageEmb(stages.get(0), ch, loader.getMessage(), isFrame, isExtra, isCompact, star, treasure, lang, result -> {
+                    User u = loader.getUser();
 
-                if(u != null) {
-                    Message author = getMessage(event);
+                    Message author = loader.getMessage();
 
-                    if(author != null)
-                        StaticStore.putHolder(u.getId(), new StageInfoButtonHolder(stages.get(0), author, result, ch.getId(), isCompact));
-                }
+                    StaticStore.putHolder(u.getId(), new StageInfoButtonHolder(finalStages.get(0), author, result, ch.getId(), isCompact));
+                });
             } else {
                 int param = checkParameters(command);
                 int star = getLevel(command);
@@ -239,20 +237,15 @@ public class StageInfo extends TimedConstraintCommand {
 
                 ArrayList<Stage> finalStages = stages;
 
-                Message res = getRepliedMessageSafely(ch, sb.toString(), getMessage(event), a -> registerSearchComponents(a, finalStages.size(), accumulateData(finalStages, false), lang));
+                replyToMessageSafely(ch, sb.toString(), loader.getMessage(), a -> registerSearchComponents(a, finalStages.size(), accumulateData(finalStages, false), lang), res -> {
+                    User u = loader.getUser();
 
-                if(res != null) {
-                    User u = getUser(event);
+                    Message msg = loader.getMessage();
 
-                    if(u != null) {
-                        Message msg = getMessage(event);
+                    TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
 
-                        TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
-
-                        if(msg != null)
-                            StaticStore.putHolder(u.getId(), new StageInfoMessageHolder(stages, msg, res, ch.getId(), star, treasure, isFrame, isExtra, isCompact, lang));
-                    }
-                }
+                    StaticStore.putHolder(u.getId(), new StageInfoMessageHolder(finalStages, msg, res, ch.getId(), star, treasure, isFrame, isExtra, isCompact, lang));
+                });
 
                 disableTimer();
             }

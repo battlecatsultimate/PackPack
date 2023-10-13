@@ -2,15 +2,18 @@ package mandarin.packpack.commands.bot;
 
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AnalyzeServer extends ConstraintCommand {
     public AnalyzeServer(ROLE role, int lang, IDHolder id) {
@@ -18,13 +21,10 @@ public class AnalyzeServer extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
-        if(ch == null)
-            return;
-
-        JDA client = event.getJDA();
+        JDA client = ch.getJDA();
 
         StringBuilder builder = new StringBuilder("----- SERVER ANALYSIS -----\n\n");
 
@@ -61,40 +61,40 @@ public class AnalyzeServer extends ConstraintCommand {
                             .append(")\n")
                             .append("Owner : ");
 
-                    Member owner = g.retrieveOwner().complete();
+                    AtomicBoolean running = new AtomicBoolean(true);
 
-                    if(owner == null) {
-                        builder.append("Unknown\n\n");
+                    g.retrieveOwner().queue(owner -> {
+                        if(owner == null) {
+                            builder.append("Unknown\n\n");
+                        } else {
+                            User user = owner.getUser();
 
-                        i++;
+                            builder.append(user.getEffectiveName())
+                                    .append(" (")
+                                    .append(user.getId())
+                                    .append(")")
+                                    .append("\n");
+                        }
 
-                        continue;
+                        running.set(false);
+                    }, e -> running.set(false));
+
+                    while(true) {
+                        if (!running.get())
+                            break;
                     }
-
-                    User user = owner.getUser();
-
-                    builder.append(user.getEffectiveName())
-                            .append(" (")
-                            .append(user.getId())
-                            .append(")")
-                            .append("\n");
 
                     Role role = g.getRoleById(idHolder.MOD);
 
                     if(role == null) {
                         builder.append("\nisProperlySet? : Unknown\n\n");
-
-                        i++;
-
-                        continue;
+                    } else {
+                        builder.append("isProperlySet? : ")
+                                .append(!role.getName().equals("PackPackMod"))
+                                .append("\nisFully Set? :")
+                                .append(!role.getName().equals("PackPackMod") && idHolder.MEMBER != null)
+                                .append("\n\n");
                     }
-
-                    builder.append("isProperlySet? : ")
-                            .append(!role.getName().equals("PackPackMod"))
-                            .append("\nisFully Set? :")
-                            .append(!role.getName().equals("PackPackMod") && idHolder.MEMBER != null)
-                            .append("\n\n");
-
 
                     i++;
                 }
@@ -108,7 +108,7 @@ public class AnalyzeServer extends ConstraintCommand {
             return;
         }
 
-        File analysis =StaticStore.generateTempFile(f, "analysis", "", true);
+        File analysis = StaticStore.generateTempFile(f, "analysis", "", true);
 
         if(analysis == null) {
             return;

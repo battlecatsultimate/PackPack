@@ -11,10 +11,10 @@ import mandarin.packpack.supporter.bc.CustomCombo;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.ImageDrawing;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.utils.FileUpload;
 
@@ -24,7 +24,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class ComboAnalyzer extends ConstraintCommand {
     public ComboAnalyzer(ROLE role, int lang, IDHolder id) {
@@ -39,7 +41,7 @@ public class ComboAnalyzer extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
+    public void doSomething(CommandLoader loader) throws Exception {
         File temp = new File("./temp");
 
         if(!temp.exists() && !temp.mkdirs()) {
@@ -48,12 +50,9 @@ public class ComboAnalyzer extends ConstraintCommand {
             return;
         }
 
-        MessageChannel ch = getChannel(event);
+        MessageChannel ch = loader.getChannel();
 
-        if(ch == null)
-            return;
-
-        String command = getContent(event);
+        String command = loader.getContent();
 
         int cid = getComboID(command);
         String localeCode = getLocale(command);
@@ -68,9 +67,9 @@ public class ComboAnalyzer extends ConstraintCommand {
 
         if(!validateFiles(workspace, cid, localeCode) || combos.isEmpty()) {
             if(cid >= 0) {
-                replyToMessageSafely(ch, LangID.getStringByID("comanalyzer_nosuch", lang), getMessage(event), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("comanalyzer_nosuch", lang), loader.getMessage(), a -> a);
             } else {
-                replyToMessageSafely(ch, LangID.getStringByID("comanalyzer_notfound", lang), getMessage(event), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("comanalyzer_notfound", lang), loader.getMessage(), a -> a);
             }
 
             return;
@@ -107,10 +106,14 @@ public class ComboAnalyzer extends ConstraintCommand {
                 i++;
             }
 
-            action.complete();
-        }
+            int finalIndex = i;
 
-        StaticStore.deleteFile(folder, true);
+            action.queue(msg -> {
+                if (finalIndex >= images.size()) {
+                    StaticStore.deleteFile(folder, true);
+                }
+            });
+        }
     }
 
     private int getComboID(String content) {

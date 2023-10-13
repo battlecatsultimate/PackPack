@@ -8,12 +8,12 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.bc.ImageDrawing;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.utils.FileUpload;
 
@@ -73,28 +73,25 @@ public class Background extends TimedConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
-
-        if(ch == null)
-            return;
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
         if(bg != null) {
             File img = ImageDrawing.drawBGImage(bg, 960, 520, false);
 
             if(img != null) {
-                sendMessageWithFile(ch, LangID.getStringByID("bg_result", lang).replace("_", Data.trio(bg.id.id)).replace("WWW", 960+"").replace("HHH", 520+""), img, "bg.png", getMessage(event));
+                sendMessageWithFile(ch, LangID.getStringByID("bg_result", lang).replace("_", Data.trio(bg.id.id)).replace("WWW", 960+"").replace("HHH", 520+""), img, "bg.png", loader.getMessage());
             }
         } else {
-            String[] msg = getContent(event).split(" ");
+            String[] msg = loader.getContent().split(" ");
 
             if(msg.length == 1) {
-                replyToMessageSafely(ch, LangID.getStringByID("bg_more", lang), getMessage(event), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("bg_more", lang), loader.getMessage(), a -> a);
             } else {
-                int id = getID(getContent(event));
+                int id = getID(loader.getContent());
 
                 if(id == -1) {
-                    replyToMessageSafely(ch, LangID.getStringByID("bg_more", lang), getMessage(event), a -> a);
+                    replyToMessageSafely(ch, LangID.getStringByID("bg_more", lang), loader.getMessage(), a -> a);
 
                     return;
                 }
@@ -104,31 +101,26 @@ public class Background extends TimedConstraintCommand {
                 if(bg == null) {
                     int[] size = getBGSize();
 
-                    replyToMessageSafely(ch, LangID.getStringByID("bg_invalid", lang).replace("_", size[0]+"").replace("-", size[1] + ""), getMessage(event), a -> a);
+                    replyToMessageSafely(ch, LangID.getStringByID("bg_invalid", lang).replace("_", String.valueOf(size[0])).replace("-", String.valueOf(size[1])), loader.getMessage(), a -> a);
                     return;
                 }
 
-                User u = getUser(event);
+                User u = loader.getUser();
 
-                if(u == null)
-                    return;
-
-                int w = Math.max(1, getWidth(getContent(event)));
-                int h = Math.max(1, getHeight(getContent(event)));
-                boolean eff = drawEffect(getContent(event));
-                boolean anim = generateAnim(getContent(event));
+                int w = Math.max(1, getWidth(loader.getContent()));
+                int h = Math.max(1, getHeight(loader.getContent()));
+                boolean eff = drawEffect(loader.getContent());
+                boolean anim = generateAnim(loader.getContent());
                 boolean isTrusted = StaticStore.contributors.contains(u.getId());
 
                 String cache = StaticStore.imgur.get("BG - "+Data.trio(bg.id.id), false, true);
 
                 if(anim && bg.effect != -1 && cache == null && isTrusted) {
-                    if(!EntityHandler.generateBGAnim(ch, getMessage(event), bg, lang)) {
-                        StaticStore.logger.uploadLog("W/Background | Failed to generate bg effect animation");
-                    }
+                    EntityHandler.generateBGAnim(ch, loader.getMessage(), bg, lang);
                 } else {
                     if(anim && bg.effect != -1) {
                         if(cache != null) {
-                            replyToMessageSafely(ch, LangID.getStringByID("gif_cache", lang).replace("_", cache), getMessage(event), a -> a);
+                            replyToMessageSafely(ch, LangID.getStringByID("gif_cache", lang).replace("_", cache), loader.getMessage(), a -> a);
 
                             return;
                         } else {
@@ -142,7 +134,7 @@ public class Background extends TimedConstraintCommand {
                     File img = ImageDrawing.drawBGImage(bg, w, h, eff);
 
                     if(img != null) {
-                        sendMessageWithFile(ch, LangID.getStringByID("bg_result", lang).replace("_", Data.trio(bg.id.id)).replace("WWW", w +"").replace("HHH", h+""), img, "bg.png", getMessage(event));
+                        sendMessageWithFile(ch, LangID.getStringByID("bg_result", lang).replace("_", Data.trio(bg.id.id)).replace("WWW", String.valueOf(w)).replace("HHH", String.valueOf(h)), img, "bg.png", loader.getMessage());
                     }
                 }
             }

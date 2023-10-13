@@ -2,9 +2,9 @@ package mandarin.packpack.commands.server;
 
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class ServerPrefix extends ConstraintCommand {
     public ServerPrefix(ROLE role, int lang, IDHolder holder) {
@@ -12,13 +12,13 @@ public class ServerPrefix extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) {
+    public void doSomething(CommandLoader loader) {
         if(holder == null)
             return;
 
-        MessageChannel ch = getChannel(event);
+        MessageChannel ch = loader.getChannel();
 
-        String[] list = getContent(event).split(" ");
+        String[] list = loader.getContent().split(" ");
 
         if(list.length == 2) {
             if(list[1] == null || list[1].isBlank()) {

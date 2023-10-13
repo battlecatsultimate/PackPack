@@ -3,12 +3,15 @@ package mandarin.packpack.commands.server;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.BoosterData;
 import mandarin.packpack.supporter.server.data.BoosterHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class BoosterRoleRemove extends ConstraintCommand {
     public BoosterRoleRemove(ROLE role, int lang, IDHolder id) {
@@ -16,14 +19,11 @@ public class BoosterRoleRemove extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        Guild g = getGuild(event);
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        Guild g = loader.getGuild();
+        MessageChannel ch = loader.getChannel();
 
-        if(ch == null || g == null)
-            return;
-
-        String id = getID(getContent(event));
+        String id = getID(loader.getContent());
 
         if(id == null) {
             createMessageWithNoPings(ch, LangID.getStringByID("boorolerem_nomem", lang));
@@ -47,7 +47,7 @@ public class BoosterRoleRemove extends ConstraintCommand {
                         Role role = g.getRoleById(r);
 
                         if(role != null) {
-                            boolean leave = leaveRole(getContent(event));
+                            boolean leave = leaveRole(loader.getContent());
 
                             if(leave) {
                                 g.removeRoleFromMember(UserSnowflake.fromId(m.getId()), role).queue();

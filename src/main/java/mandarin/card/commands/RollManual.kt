@@ -9,38 +9,39 @@ import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
+import mandarin.packpack.supporter.server.CommandLoader
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.entities.emoji.Emoji
-import net.dv8tion.jda.api.events.message.GenericMessageEvent
 import net.dv8tion.jda.api.utils.FileUpload
 import kotlin.random.Random
 
 class RollManual : Command(LangID.EN, true) {
     @Throws(Exception::class)
-    override fun doSomething(event: GenericMessageEvent) {
-        val ch = getChannel(event) ?: return
-        val m = getMember(event) ?: return
-        val g = getGuild(event) ?: return
+    override fun doSomething(loader: CommandLoader) {
+        val ch = loader.channel
+        val m = loader.member
+        val g = loader.guild
 
         if (m.id != StaticStore.MANDARIN_SMELL && !CardData.hasAllPermission(m))
             return
 
-        val contents = getContent(event)?.split(" ") ?: return
+        val contents = loader.content.split(" ")
 
         if (contents.size < 3) {
             replyToMessageSafely(ch, "Not enough data! When you call this command, you have to provide user and " +
                     "which pack to be rolled. Format will be `${CardBot.globalPrefix}roll [User] [Pack]`\n\nUser can be provided via either " +
                     "ID or mention. For pack, call `-l` for large pack, `-s` for small pack, and `-p` for premium pack\n\nFor example, if you want" +
-                    "to roll large pack for user A, then you have to call `p!roll @A -l`", getMessage(event)) { a -> a }
+                    "to roll large pack for user A, then you have to call `p!roll @A -l`", loader.message
+            ) { a -> a }
 
             return
         }
 
-        val users = getUserID(getContent(event), g)
+        val users = getUserID(loader.content, g)
 
         if (users.isEmpty()) {
-            replyToMessageSafely(ch, "Bot failed to find user ID from command. User must be provided via either mention of user ID", getMessage(event)) { a -> a }
+            replyToMessageSafely(ch, "Bot failed to find user ID from command. User must be provided via either mention of user ID", loader.message) { a -> a }
 
             return
         }
@@ -48,79 +49,79 @@ class RollManual : Command(LangID.EN, true) {
         val pack = findPack(contents)
 
         if (pack == CardData.Pack.NONE) {
-            replyToMessageSafely(ch, "Please specify which pack will be rolled. Pass `-l` for large pack, an pass `-s` for small pack", getMessage(event)) { a -> a }
+            replyToMessageSafely(ch, "Please specify which pack will be rolled. Pass `-l` for large pack, an pass `-s` for small pack", loader.message) { a -> a }
 
             return
         }
 
         try {
             if (users.size == 1) {
-                val targetMember = g.retrieveMember(UserSnowflake.fromId(users[0])).complete()
-
-                replyToMessageSafely(ch, "\uD83C\uDFB2 Rolling...!", getMessage(event)) { a -> a }
-
-                val result = rollCards(pack)
-
-                val inventory = Inventory.getInventory(targetMember.id)
-
-                try {
-                    val builder = StringBuilder("### ${pack.getPackName()} Result [${result.size} cards in total]\n\n")
-
-                    for (card in result) {
-                        builder.append("- ")
-
-                        if (card.tier == CardData.Tier.ULTRA) {
-                            builder.append(Emoji.fromUnicode("✨").formatted).append(" ")
-                        } else if (card.tier == CardData.Tier.LEGEND) {
-                            builder.append(EmojiStore.ABILITY["LEGEND"]?.formatted).append(" ")
-                        }
-
-                        builder.append(card.cardInfo())
-
-                        if (!inventory.cards.containsKey(card)) {
-                            builder.append(" {**NEW**}")
-                        }
-
-                        if (card.tier == CardData.Tier.ULTRA) {
-                            builder.append(" ").append(Emoji.fromUnicode("✨").formatted)
-                        } else if (card.tier == CardData.Tier.LEGEND) {
-                            builder.append(" ").append(EmojiStore.ABILITY["LEGEND"]?.formatted)
-                        }
-
-                        builder.append("\n")
-                    }
-
-                    ch.sendMessage(builder.toString())
-                        .setMessageReference(getMessage(event))
-                        .mentionRepliedUser(false)
-                        .addFiles(result.filter { c -> !inventory.cards.containsKey(c) }.map { c -> FileUpload.fromData(c.cardImage, "${c.name}.png") })
-                        .queue()
-                } catch (_: Exception) {
-
-                }
-
-                inventory.addCards(result)
-
-                TransactionLogger.logRoll(result, pack, targetMember, true)
-            } else {
-                users.forEach {
-                    val targetMember = g.retrieveMember(UserSnowflake.fromId(it)).complete()
+                g.retrieveMember(UserSnowflake.fromId(users[0])).queue { targetMember ->
+                    replyToMessageSafely(ch, "\uD83C\uDFB2 Rolling...!", loader.message) { a -> a }
 
                     val result = rollCards(pack)
 
                     val inventory = Inventory.getInventory(targetMember.id)
 
+                    try {
+                        val builder = StringBuilder("### ${pack.getPackName()} Result [${result.size} cards in total]\n\n")
+
+                        for (card in result) {
+                            builder.append("- ")
+
+                            if (card.tier == CardData.Tier.ULTRA) {
+                                builder.append(Emoji.fromUnicode("✨").formatted).append(" ")
+                            } else if (card.tier == CardData.Tier.LEGEND) {
+                                builder.append(EmojiStore.ABILITY["LEGEND"]?.formatted).append(" ")
+                            }
+
+                            builder.append(card.cardInfo())
+
+                            if (!inventory.cards.containsKey(card)) {
+                                builder.append(" {**NEW**}")
+                            }
+
+                            if (card.tier == CardData.Tier.ULTRA) {
+                                builder.append(" ").append(Emoji.fromUnicode("✨").formatted)
+                            } else if (card.tier == CardData.Tier.LEGEND) {
+                                builder.append(" ").append(EmojiStore.ABILITY["LEGEND"]?.formatted)
+                            }
+
+                            builder.append("\n")
+                        }
+
+                        ch.sendMessage(builder.toString())
+                            .setMessageReference(loader.message)
+                            .mentionRepliedUser(false)
+                            .addFiles(result.filter { c -> !inventory.cards.containsKey(c) }.map { c -> FileUpload.fromData(c.cardImage, "${c.name}.png") })
+                            .queue()
+                    } catch (_: Exception) {
+
+                    }
+
                     inventory.addCards(result)
 
                     TransactionLogger.logRoll(result, pack, targetMember, true)
                 }
+            } else {
+                users.forEach {
+                    g.retrieveMember(UserSnowflake.fromId(it)).queue { targetMember ->
+                        val result = rollCards(pack)
 
-                replyToMessageSafely(ch, "Rolled ${pack.getPackName()} for ${users.size} people successfully", getMessage(event)) { a -> a }
+                        val inventory = Inventory.getInventory(targetMember.id)
+
+                        inventory.addCards(result)
+
+                        TransactionLogger.logRoll(result, pack, targetMember, true)
+                    }
+                }
+
+                replyToMessageSafely(ch, "Rolled ${pack.getPackName()} for ${users.size} people successfully", loader.message) { a -> a }
 
                 TransactionLogger.logMassRoll(m, users.size, pack)
             }
         } catch (_: Exception) {
-            replyToMessageSafely(ch, "Bot failed to find provided user in this server", getMessage(event)) { a -> a }
+            replyToMessageSafely(ch, "Bot failed to find provided user in this server", loader.message) { a -> a }
         }
     }
 
@@ -143,13 +144,23 @@ class RollManual : Command(LangID.EN, true) {
         }
 
         result.removeIf { id ->
-            try {
-                g.retrieveMember(UserSnowflake.fromId(id)).complete()
+            var running = true
+            var needRemoval = false
 
-                false
-            } catch (e: Exception) {
-                true
+            g.retrieveMember(UserSnowflake.fromId(id)).queue({ _ ->
+                running = false
+                needRemoval = false
+            }, { _ ->
+                running = false
+                needRemoval = true
+            })
+
+            while(true) {
+                if (!running)
+                    break
             }
+
+            needRemoval
         }
 
         return result

@@ -3,6 +3,7 @@ package mandarin.packpack.commands;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.ConfigButtonHolder;
@@ -10,7 +11,6 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
@@ -34,11 +34,8 @@ public class Config extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
-
-        if(ch == null)
-            return;
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
         String locale = switch (config.lang) {
             case LangID.EN -> LangID.getStringByID("lang_en", lang);
@@ -99,21 +96,18 @@ public class Config extends ConstraintCommand {
         pages.add(Button.secondary("prev", LangID.getStringByID("search_prev", lang)).withEmoji(EmojiStore.PREVIOUS).asDisabled());
         pages.add(Button.secondary("next", LangID.getStringByID("search_next", lang)).withEmoji(EmojiStore.NEXT));
 
-        Message msg = getRepliedMessageSafely(ch, message, getMessage(event), a -> a.setComponents(
+        replyToMessageSafely(ch, message, loader.getMessage(), a -> a.setComponents(
                 ActionRow.of(Button.secondary("defLevels", String.format(LangID.getStringByID("config_setlevel", lang), config.defLevel)).withEmoji(Emoji.fromUnicode("⚙"))),
                 ActionRow.of(extra),
                 ActionRow.of(StringSelectMenu.create("language").addOptions(languages).build()),
                 ActionRow.of(pages),
                 ActionRow.of(components)
-        ));
+        ), msg -> {
+            Message author = loader.getMessage();
 
-        Message author = getMessage(event);
+            User u = author.getAuthor();
 
-        if(author == null)
-            return;
-
-        User u = author.getAuthor();
-
-        StaticStore.putHolder(u.getId(), new ConfigButtonHolder(author, msg, config, holder, ch.getId(), forServer));
+            StaticStore.putHolder(u.getId(), new ConfigButtonHolder(author, msg, config, holder, ch.getId(), forServer));
+        });
     }
 }

@@ -8,13 +8,14 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.component.FormButtonHolder;
-import mandarin.packpack.supporter.server.holder.message.FormReactionSlashMessageHolder;
 import mandarin.packpack.supporter.server.holder.component.search.FormStatMessageHolder;
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
+import mandarin.packpack.supporter.server.holder.message.FormReactionSlashMessageHolder;
 import mandarin.packpack.supporter.server.slash.SlashOption;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
@@ -23,7 +24,6 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
@@ -99,14 +99,14 @@ public class FormStat extends ConstraintCommand {
 
             TreasureHolder t = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
 
-            Message m = EntityHandler.performUnitEmb(f, event, config, frame, talent, extra, lv, treasure, t, finalLang);
-
-            if(m != null && (!(m.getChannel() instanceof GuildChannel) || m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_MANAGE))) {
-                StaticStore.putHolder(
-                        u.getId(),
-                        new FormReactionSlashMessageHolder(m, f, u.getId(), m.getChannel().getId(), config, frame && config.useFrame, talent, extra || config.extra, lv, treasure, t, finalLang)
-                );
-            }
+            EntityHandler.performUnitEmb(f, event, config, frame, talent, extra, lv, treasure, t, finalLang, m -> {
+                if(m != null && (!(m.getChannel() instanceof GuildChannel) || m.getGuild().getSelfMember().hasPermission(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_MANAGE))) {
+                    StaticStore.putHolder(
+                            u.getId(),
+                            new FormReactionSlashMessageHolder(m, f, u.getId(), m.getChannel().getId(), config, frame && config.useFrame, talent, extra || config.extra, lv, treasure, t, finalLang)
+                    );
+                }
+            });
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/FormStat::performInteraction - Failed to show unit embed");
         }
@@ -177,11 +177,11 @@ public class FormStat extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
-        String[] list = getContent(event).split(" ",2);
-        String[] segments = getContent(event).split(" ");
+        String[] list = loader.getContent().split(" ",2);
+        String[] segments = loader.getContent().split(" ");
 
         StringBuilder removeMistake = new StringBuilder();
 
@@ -209,30 +209,24 @@ public class FormStat extends ConstraintCommand {
         boolean isTreasure = (param & PARAM_TREASURE) > 0 || config.treasure;
 
         if(list.length == 1 || filterCommand(command).isBlank()) {
-            replyToMessageSafely(ch, LangID.getStringByID("formst_noname", lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("formst_noname", lang), loader.getMessage(), a -> a);
         } else {
             ArrayList<Form> forms = EntityFilter.findUnitWithName(filterCommand(command), isTrueForm, lang);
 
             if (forms.size() == 1) {
                 Form f = forms.get(0);
 
-                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(getMessage(event).getAuthor().getId(), TreasureHolder.global);
+                TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getMessage().getAuthor().getId(), TreasureHolder.global);
 
-                Message result = EntityHandler.showUnitEmb(f, ch, getMessage(event), config, isFrame, talent, extra, isTrueForm, f.fid == 2, lv, isTreasure, treasure, lang, true, compact);
+                EntityHandler.showUnitEmb(f, ch, loader.getMessage(), config, isFrame, talent, extra, isTrueForm, f.fid == 2, lv, isTreasure, treasure, lang, true, compact, result -> {
+                    User u = loader.getUser();
 
-                if(result != null) {
-                    User u = getUser(event);
+                    Message author = loader.getMessage();
 
-                    if (u != null) {
-                        Message author = getMessage(event);
-
-                        if(author != null) {
-                            StaticStore.putHolder(u.getId(), new FormButtonHolder(forms.get(0), author, result, config, isFrame, talent, extra, compact, isTreasure, treasure, lv, lang, ch.getId()));
-                        }
-                    }
-                }
+                    StaticStore.putHolder(u.getId(), new FormButtonHolder(forms.get(0), author, result, config, isFrame, talent, extra, compact, isTreasure, treasure, lv, lang, ch.getId()));
+                });
             } else if (forms.isEmpty()) {
-                replyToMessageSafely(ch, LangID.getStringByID("formst_nounit", lang).replace("_", getSearchKeyword(getContent(event))), getMessage(event), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("formst_nounit", lang).replace("_", getSearchKeyword(loader.getContent())), loader.getMessage(), a -> a);
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", getSearchKeyword(command)));
 
@@ -255,21 +249,15 @@ public class FormStat extends ConstraintCommand {
 
                 sb.append("```");
 
-                Message res = getRepliedMessageSafely(ch, sb.toString(), getMessage(event), a -> registerSearchComponents(a, forms.size(), data, lang));
+                replyToMessageSafely(ch, sb.toString(), loader.getMessage(), a -> registerSearchComponents(a, forms.size(), data, lang), res -> {
+                    User u = loader.getUser();
 
-                if(res != null) {
-                    User u = getUser(event);
+                    Message msg = loader.getMessage();
 
-                    if(u != null) {
-                        Message msg = getMessage(event);
+                    TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
 
-                        TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(u.getId(), TreasureHolder.global);
-
-                        if(msg != null)
-                            StaticStore.putHolder(u.getId(), new FormStatMessageHolder(forms, msg, config, holder, res, ch.getId(), param, lv, treasure, lang));
-                    }
-                }
-
+                    StaticStore.putHolder(u.getId(), new FormStatMessageHolder(forms, msg, config, holder, res, ch.getId(), param, lv, treasure, lang));
+                });
             }
         }
     }

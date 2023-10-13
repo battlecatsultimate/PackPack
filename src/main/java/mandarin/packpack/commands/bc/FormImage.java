@@ -10,6 +10,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.ImageDrawing;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.search.FormAnimMessageHolder;
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
@@ -17,7 +18,6 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -38,13 +38,10 @@ public class FormImage extends TimedConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
-        if(ch == null)
-            return;
-
-        String[] list = getContent(event).split(" ");
+        String[] list = loader.getContent().split(" ");
 
         if(list.length >= 2) {
             File temp = new File("./temp");
@@ -58,10 +55,10 @@ public class FormImage extends TimedConstraintCommand {
                 }
             }
 
-            String search = filterCommand(getContent(event));
+            String search = filterCommand(loader.getContent());
 
             if(search.isBlank()) {
-                replyToMessageSafely(ch, LangID.getStringByID("fimg_more", lang), getMessage(event), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("fimg_more", lang), loader.getMessage(), a -> a);
                 disableTimer();
                 return;
             }
@@ -69,12 +66,12 @@ public class FormImage extends TimedConstraintCommand {
             ArrayList<Form> forms = EntityFilter.findUnitWithName(search, false, lang);
 
             if(forms.isEmpty()) {
-                replyToMessageSafely(ch, LangID.getStringByID("formst_nounit", lang).replace("_", getSearchKeyword(getContent(event))), getMessage(event), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("formst_nounit", lang).replace("_", getSearchKeyword(loader.getContent())), loader.getMessage(), a -> a);
                 disableTimer();
             } else if(forms.size() == 1) {
-                int param = checkParameters(getContent(event));
-                int mode = getMode(getContent(event));
-                int frame = getFrame(getContent(event));
+                int param = checkParameters(loader.getContent());
+                int mode = getMode(loader.getContent());
+                int frame = getFrame(loader.getContent());
 
                 forms.get(0).anim.load();
 
@@ -96,10 +93,10 @@ public class FormImage extends TimedConstraintCommand {
                     if(fName.isBlank())
                         fName = LangID.getStringByID("data_unit", lang)+" "+ Data.trio(forms.get(0).uid.id)+" "+Data.trio(forms.get(0).fid);
 
-                    sendMessageWithFile(ch, LangID.getStringByID("fimg_result", lang).replace("_", fName).replace(":::", getModeName(mode, forms.get(0).anim.anims.length)).replace("=", String.valueOf(frame)), img, "result.png", getMessage(event));
+                    sendMessageWithFile(ch, LangID.getStringByID("fimg_result", lang).replace("_", fName).replace(":::", getModeName(mode, forms.get(0).anim.anims.length)).replace("=", String.valueOf(frame)), img, "result.png", loader.getMessage());
                 }
             } else {
-                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", getSearchKeyword(getContent(event))));
+                StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", getSearchKeyword(loader.getContent())));
 
                 sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang));
 
@@ -120,22 +117,17 @@ public class FormImage extends TimedConstraintCommand {
 
                 sb.append("```");
 
-                Message res = getRepliedMessageSafely(ch, sb.toString(), getMessage(event), a -> registerSearchComponents(a, forms.size(), data, lang));
+                replyToMessageSafely(ch, sb.toString(), loader.getMessage(), a -> registerSearchComponents(a, forms.size(), data, lang), res -> {
+                    int param = checkParameters(loader.getContent());
+                    int mode = getMode(loader.getContent());
+                    int frame = getFrame(loader.getContent());
 
-                int param = checkParameters(getContent(event));
-                int mode = getMode(getContent(event));
-                int frame = getFrame(getContent(event));
+                    User u = loader.getUser();
 
-                if(res != null) {
-                    User u = getUser(event);
+                    Message msg = loader.getMessage();
 
-                    if(u != null) {
-                        Message msg = getMessage(event);
-
-                        if(msg != null)
-                            StaticStore.putHolder(u.getId(), new FormAnimMessageHolder(forms, msg, res, ch.getId(), mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang, false, false, false));
-                    }
-                }
+                    StaticStore.putHolder(u.getId(), new FormAnimMessageHolder(forms, msg, res, ch.getId(), mode, frame, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0), lang, false, false, false));
+                });
 
                 disableTimer();
             }

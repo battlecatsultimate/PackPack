@@ -9,7 +9,7 @@ import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
-import net.dv8tion.jda.api.events.message.GenericMessageEvent
+import mandarin.packpack.supporter.server.CommandLoader
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -17,10 +17,10 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 
 class Buy : Command(LangID.EN, true) {
-    override fun doSomething(event: GenericMessageEvent?) {
-        val ch = getChannel(event) ?: return
-        val m = getMember(event) ?: return
-        val author = getMessage(event) ?: return
+    override fun doSomething(loader: CommandLoader) {
+        val ch = loader.channel
+        val m = loader.member
+        val author = loader.message
 
         if (CardBot.rollLocked && !CardData.hasAllPermission(m) && m.id != StaticStore.MANDARIN_SMELL) {
             return
@@ -29,11 +29,11 @@ class Buy : Command(LangID.EN, true) {
         val inventory = Inventory.getInventory(m.id)
         val possibleRoles = CardData.Role.entries.filter { r -> r != CardData.Role.NONE && r !in inventory.vanityRoles }.toList()
 
-        val msg = getRepliedMessageSafely(ch, "Please select a list that you want to get", author) {
+        replyToMessageSafely(ch, "Please select a list that you want to get", author, {
             a -> a.setComponents(registerComponents(possibleRoles, inventory))
-        }
-
-        StaticStore.putHolder(m.id, BuyHolder(author, ch.id, msg))
+        }, { msg ->
+            StaticStore.putHolder(m.id, BuyHolder(author, ch.id, msg))
+        })
     }
 
     private fun registerComponents(roles: List<CardData.Role>, inventory: Inventory) : List<LayoutComponent> {

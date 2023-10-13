@@ -5,15 +5,14 @@ import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.search.AssetBrowserHolder;
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,11 +29,8 @@ public class AssetBrowser extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
-
-        if(ch == null)
-            return;
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
         VFile vf = VFile.get("./org");
 
@@ -66,13 +62,11 @@ public class AssetBrowser extends ConstraintCommand {
 
         builder.append("```");
 
-        Message res = registerSearchComponents(ch.sendMessage(builder.toString()).setAllowedMentions(new ArrayList<>()), data.size(), accumulateData(vf, true), lang).complete();
+        registerSearchComponents(ch.sendMessage(builder.toString()).setAllowedMentions(new ArrayList<>()), data.size(), accumulateData(vf, true), lang).queue(res -> {
+            User u = loader.getUser();
 
-        User u = getUser(event);
-
-        if(u != null) {
-            StaticStore.putHolder(u.getId(), new AssetBrowserHolder(getMessage(event), res, ch.getId(), vf, lang));
-        }
+            StaticStore.putHolder(u.getId(), new AssetBrowserHolder(loader.getMessage(), res, ch.getId(), vf, lang));
+        });
     }
 
     public List<String> accumulateData(VFile file, boolean onData) {

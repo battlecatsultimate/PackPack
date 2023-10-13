@@ -11,6 +11,7 @@ import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.AliasHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
@@ -20,7 +21,6 @@ import mandarin.packpack.supporter.server.holder.message.alias.AliasStageMessage
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.util.ArrayList;
 
@@ -31,18 +31,12 @@ public class Alias extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
-        if(ch == null)
-            return;
+        User u = loader.getUser();
 
-        User u = getUser(event);
-
-        if(u == null)
-            return;
-
-        AliasHolder.TYPE type = getType(getContent(event));
+        AliasHolder.TYPE type = getType(loader.getContent());
 
         if(type == AliasHolder.TYPE.UNSPECIFIED) {
             ch.sendMessage(LangID.getStringByID("alias_specify", lang)).queue();
@@ -51,7 +45,7 @@ public class Alias extends ConstraintCommand {
 
         switch (type) {
             case FORM -> {
-                String unitName = getName(getContent(event));
+                String unitName = getName(loader.getContent());
 
                 if (unitName.isBlank()) {
                     createMessageWithNoPings(ch, LangID.getStringByID("alias_formnoname", lang));
@@ -139,18 +133,15 @@ public class Alias extends ConstraintCommand {
                     sb.append(LangID.getStringByID("formst_can", lang));
                     sb.append("```");
 
-                    Message res = getMessageWithNoPings(ch, sb.toString());
+                    createMessageWithNoPings(ch, sb.toString(), res -> {
+                        Message msg = loader.getMessage();
 
-                    if (res != null) {
-                        Message msg = getMessage(event);
-
-                        if (msg != null)
-                            StaticStore.putHolder(u.getId(), new AliasFormMessageHolder(forms, msg, res, ch.getId(), AliasHolder.MODE.GET, lang, null));
-                    }
+                        StaticStore.putHolder(u.getId(), new AliasFormMessageHolder(forms, msg, res, ch.getId(), AliasHolder.MODE.GET, lang, null));
+                    });
                 }
             }
             case ENEMY -> {
-                String enemyName = getName(getContent(event));
+                String enemyName = getName(loader.getContent());
 
                 if (enemyName.isBlank()) {
                     createMessageWithNoPings(ch, LangID.getStringByID("alias_enemnoname", lang));
@@ -238,22 +229,22 @@ public class Alias extends ConstraintCommand {
                     sb.append(LangID.getStringByID("formst_can", lang));
                     sb.append("```");
 
-                    Message res = getMessageWithNoPings(ch, sb.toString());
+                    createMessageWithNoPings(ch, sb.toString(), res -> {
+                        Message msg = loader.getMessage();
 
-                    if (res != null) {
-                        Message msg = getMessage(event);
-
-                        if (msg != null)
-                            StaticStore.putHolder(u.getId(), new AliasEnemyMessageHolder(enemies, msg, res, ch.getId(), AliasHolder.MODE.GET, lang, null));
-                    }
+                        StaticStore.putHolder(u.getId(), new AliasEnemyMessageHolder(enemies, msg, res, ch.getId(), AliasHolder.MODE.GET, lang, null));
+                    });
                 }
             }
             case STAGE -> {
-                String[] names = generateStageNameSeries(getContent(event));
+                String[] names = generateStageNameSeries(loader.getContent());
+
                 if (names[0] == null && names[1] == null && names[2] == null) {
                     createMessageWithNoPings(ch, LangID.getStringByID("alias_stnoname", lang));
+
                     return;
                 }
+
                 ArrayList<Stage> stages = EntityFilter.findStageWithName(names, lang);
                 if (stages.isEmpty() && names[0] == null && names[1] == null) {
                     stages = EntityFilter.findStageWithMapName(names[2]);
@@ -262,6 +253,7 @@ public class Alias extends ConstraintCommand {
                         ch.sendMessage(LangID.getStringByID("stinfo_smart", lang)).queue();
                     }
                 }
+
                 if (stages.isEmpty()) {
                     createMessageWithNoPings(ch, LangID.getStringByID("stinfo_nores", lang).replace("_", generateSearchName(names)));
                 } else if (stages.size() == 1) {
@@ -279,6 +271,7 @@ public class Alias extends ConstraintCommand {
                         createMessageWithNoPings(ch, LangID.getStringByID("alias_noalias", lang).replace("_", stName));
                     } else {
                         StringBuilder result = new StringBuilder(LangID.getStringByID("alias_stalias", lang).replace("_SSS_", stName).replace("_NNN_", String.valueOf(alias.size())));
+
                         result.append("\n\n");
 
                         for (int i = 0; i < alias.size(); i++) {
@@ -384,14 +377,13 @@ public class Alias extends ConstraintCommand {
                     sb.append(LangID.getStringByID("formst_can", lang));
                     sb.append("```");
 
-                    Message res = getMessageWithNoPings(ch, sb.toString());
+                    ArrayList<Stage> finalStages = stages;
 
-                    if (res != null) {
-                        Message msg = getMessage(event);
+                    createMessageWithNoPings(ch, sb.toString(), res -> {
+                        Message msg = loader.getMessage();
 
-                        if (msg != null)
-                            StaticStore.putHolder(u.getId(), new AliasStageMessageHolder(stages, msg, res, ch.getId(), AliasHolder.MODE.GET, lang, null));
-                    }
+                        StaticStore.putHolder(u.getId(), new AliasStageMessageHolder(finalStages, msg, res, ch.getId(), AliasHolder.MODE.GET, lang, null));
+                    });
                 }
             }
         }

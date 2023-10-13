@@ -7,9 +7,9 @@ import mandarin.packpack.supporter.bc.ImageDrawing;
 import mandarin.packpack.supporter.calculation.Equation;
 import mandarin.packpack.supporter.calculation.Formula;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -25,18 +25,15 @@ public class TPlot extends TimedConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
-        if(ch == null)
-            return;
-
-        String command = getContent(event);
+        String command = loader.getContent();
 
         String xt = getXt(command);
 
         if(xt == null) {
-            replyToMessageSafely(ch, LangID.getStringByID("tplot_noxt", lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("tplot_noxt", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -44,7 +41,7 @@ public class TPlot extends TimedConstraintCommand {
         Formula fx = new Formula(xt, 1, lang);
 
         if(!Formula.error.isEmpty()) {
-            replyToMessageSafely(ch, Formula.getErrorMessage(), getMessage(event), a -> a);
+            replyToMessageSafely(ch, Formula.getErrorMessage(), loader.getMessage(), a -> a);
 
             return;
         }
@@ -52,7 +49,7 @@ public class TPlot extends TimedConstraintCommand {
         String yt = getYt(command);
 
         if(yt == null) {
-            replyToMessageSafely(ch, LangID.getStringByID("tplot_noyt", lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("tplot_noyt", lang), loader.getMessage(), a -> a);
 
             return;
         }
@@ -60,7 +57,7 @@ public class TPlot extends TimedConstraintCommand {
         Formula fy = new Formula(yt, 1, lang);
 
         if(!Formula.error.isEmpty()) {
-            replyToMessageSafely(ch, Formula.getErrorMessage(), getMessage(event), a -> a);
+            replyToMessageSafely(ch, Formula.getErrorMessage(), loader.getMessage(), a -> a);
 
             return;
         }
@@ -129,12 +126,12 @@ public class TPlot extends TimedConstraintCommand {
             coordinates[t] = c;
         }
 
-        Object[] plots = ImageDrawing.plotTGraph(coordinates, xRange, yRange, tRange, keepRatio(getContent(event)), lang);
+        Object[] plots = ImageDrawing.plotTGraph(coordinates, xRange, yRange, tRange, keepRatio(loader.getContent()), lang);
 
         if(plots == null) {
-            replyToMessageSafely(ch, LangID.getStringByID("plot_fail", lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("plot_fail", lang), loader.getMessage(), a -> a);
         } else {
-            sendMessageWithFile(ch, (String) plots[1], (File) plots[0], "plot.png", getMessage(event));
+            sendMessageWithFile(ch, (String) plots[1], (File) plots[0], "plot.png", loader.getMessage());
         }
     }
 

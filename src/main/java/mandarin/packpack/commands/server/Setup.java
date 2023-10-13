@@ -3,12 +3,15 @@ package mandarin.packpack.commands.server;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.ConfirmButtonHolder;
 import mandarin.packpack.supporter.server.holder.component.SetupModButtonHolder;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
@@ -25,13 +28,9 @@ public class Setup extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        Guild g = getGuild(event);
-        MessageChannel ch = getChannel(event);
-
-        if(g == null || ch == null) {
-            return;
-        }
+    public void doSomething(CommandLoader loader) throws Exception {
+        Guild g = loader.getGuild();
+        MessageChannel ch = loader.getChannel();
 
         if(alreadySet(g)) {
             List<ActionComponent> components = new ArrayList<>();
@@ -39,25 +38,19 @@ public class Setup extends ConstraintCommand {
             components.add(Button.success("confirm", LangID.getStringByID("button_confirm", lang)));
             components.add(Button.danger("cancel", LangID.getStringByID("button_cancel", lang)));
 
-            Message m = ch.sendMessage(LangID.getStringByID("setup_confirm", lang))
+            ch.sendMessage(LangID.getStringByID("setup_confirm", lang))
                     .setComponents(ActionRow.of(components))
-                    .complete();
+                    .queue(m -> {
+                        if(m == null)
+                            return;
 
-            if(m == null)
-                return;
+                        Message author = loader.getMessage();
+                        Member member = loader.getMember();
 
-            Message author = getMessage(event);
-            Member member = getMember(event);
-
-            if(author == null || member == null)
-                return;
-
-            StaticStore.putHolder(member.getId(), new ConfirmButtonHolder(author, m, ch.getId(), () -> initializeSetup(ch, author), lang));
+                        StaticStore.putHolder(member.getId(), new ConfirmButtonHolder(author, m, ch.getId(), () -> initializeSetup(ch, author), lang));
+                    });
         } else {
-            Message author = getMessage(event);
-
-            if(author == null)
-                return;
+            Message author = loader.getMessage();
 
             initializeSetup(ch, author);
         }
@@ -71,12 +64,12 @@ public class Setup extends ConstraintCommand {
                 ActionRow.of(Button.success("confirm", LangID.getStringByID("button_confirm", lang)).asDisabled(), Button.danger("cancel", LangID.getStringByID("button_cancel", lang)))
         ).setAllowedMentions(new ArrayList<>());
 
-        Message m = action.complete();
+        action.queue(m -> {
+            if(m == null)
+                return;
 
-        if(m == null)
-            return;
-
-        StaticStore.putHolder(author.getAuthor().getId(), new SetupModButtonHolder(author, m, ch.getId(), holder, lang));
+            StaticStore.putHolder(author.getAuthor().getId(), new SetupModButtonHolder(author, m, ch.getId(), holder, lang));
+        });
     }
 
     private boolean alreadySet(Guild g) {

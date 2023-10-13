@@ -3,9 +3,9 @@ package mandarin.packpack.commands.bot;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import org.jetbrains.annotations.Nullable;
 
 public class GrabLanguage extends ConstraintCommand {
@@ -14,16 +14,13 @@ public class GrabLanguage extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
-        if (ch == null)
-            return;
-
-        String[] contents = getContent(event).split(" ", 4);
+        String[] contents = loader.getContent().split(" ", 4);
 
         if(contents.length < 3) {
-            replyToMessageSafely(ch, "Format : `p!gl [Locale Number] [ID]`", getMessage(event), a -> a);
+            replyToMessageSafely(ch, "Format : `p!gl [Locale Number] [ID]`", loader.getMessage(), a -> a);
 
             return;
         }
@@ -36,12 +33,12 @@ public class GrabLanguage extends ConstraintCommand {
 
         if(contents.length > 3) {
             try {
-                replyToMessageSafely(ch, String.format(LangID.getStringByID(contents[2], l), (Object[]) contents[3].split("\\\\")), getMessage(event), a -> a);
+                replyToMessageSafely(ch, String.format(LangID.getStringByID(contents[2], l), (Object[]) contents[3].split("\\\\")), loader.getMessage(), a -> a);
             } catch (Exception e) {
-                replyToMessageSafely(ch, LangID.getStringByID(contents[2], l), getMessage(event), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID(contents[2], l), loader.getMessage(), a -> a);
             }
         } else {
-            replyToMessageSafely(ch, LangID.getStringByID(contents[2], l), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID(contents[2], l), loader.getMessage(), a -> a);
         }
     }
 }

@@ -44,6 +44,7 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.role.RoleDeleteEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.requests.RestAction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -845,7 +846,7 @@ public class AllEventAdapter extends ListenerAdapter {
                 GuildChannel ch = g.getGuildChannelById("1100615571424419910");
 
                 if(ch instanceof MessageChannel) {
-                    PackBot.statusMessage = ((MessageChannel) ch).retrieveMessageById("1100615782272090213").complete();
+                    PackBot.statusMessage = ((MessageChannel) ch).retrieveMessageById("1100615782272090213");
                 }
             }
         } catch (Exception ignore) { }
@@ -873,79 +874,79 @@ public class AllEventAdapter extends ListenerAdapter {
     private static void handleInitialModRole(Guild g, IDHolder id, AtomicReference<Boolean> warned) {
         String modID = StaticStore.getRoleIDByName("PackPackMod", g);
 
-        Member inviter = findInviter(g);
+        findInviter(g).queue(inviter -> {
+            if(modID == null) {
+                if (g.getSelfMember().hasPermission(Permission.MANAGE_ROLES)) {
+                    if(g.getRoles().size() == 250) {
+                        if(!warned.get()) {
+                            if(inviter != null) {
+                                inviter.getUser().openPrivateChannel()
+                                        .flatMap(pc -> pc.sendMessage(LangID.getStringByID("maxrole", id.config.lang).replace("_", g.getName())))
+                                        .queue();
 
-        if(modID == null) {
-            if (g.getSelfMember().hasPermission(Permission.MANAGE_ROLES)) {
-                if(g.getRoles().size() == 250) {
+                                warned.set(true);
+                            }
+                        }
+
+                        return;
+                    }
+
+                    g.createRole()
+                            .setName("PackPackMod")
+                            .queue(r -> {
+                                id.MOD = r.getId();
+
+                                if(inviter != null) {
+                                    inviter.getUser().openPrivateChannel()
+                                            .flatMap(pc -> {
+                                                String message = LangID.getStringByID("first_join", id.config.lang)
+                                                        .replace("_SSS_", g.getName());
+
+                                                return pc.sendMessage(message);
+                                            }).queue();
+                                }
+                            }, e -> StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::handleInitialModRole - Error happened while trying to create role"));
+                } else {
                     if(!warned.get()) {
                         if(inviter != null) {
                             inviter.getUser().openPrivateChannel()
-                                    .flatMap(pc -> pc.sendMessage(LangID.getStringByID("maxrole", id.config.lang).replace("_", g.getName())))
+                                    .flatMap(pc -> pc.sendMessage(LangID.getStringByID("needroleperm", id.config.lang).replace("_", g.getName())))
                                     .queue();
-
-                            warned.set(true);
                         }
-                    }
 
-                    return;
+                        warned.set(true);
+                    }
                 }
 
-                g.createRole()
-                        .setName("PackPackMod")
-                        .queue(r -> {
-                            id.MOD = r.getId();
-
-                            if(inviter != null) {
-                                inviter.getUser().openPrivateChannel()
-                                        .flatMap(pc -> {
-                                            String message = LangID.getStringByID("first_join", id.config.lang)
-                                                    .replace("_SSS_", g.getName());
-
-                                            return pc.sendMessage(message);
-                                        }).queue();
-                            }
-                        }, e -> StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::handleInitialModRole - Error happened while trying to create role"));
             } else {
-                if(!warned.get()) {
-                    if(inviter != null) {
-                        inviter.getUser().openPrivateChannel()
-                                .flatMap(pc -> pc.sendMessage(LangID.getStringByID("needroleperm", id.config.lang).replace("_", g.getName())))
-                                .queue();
-                    }
+                id.MOD = modID;
 
-                    warned.set(true);
+                if(inviter != null) {
+                    inviter.getUser().openPrivateChannel()
+                            .flatMap(pc -> {
+                                String message = LangID.getStringByID("first_join", id.config.lang)
+                                        .replace("_SSS_", g.getName());
+
+                                return pc.sendMessage(message);
+                            }).queue();
                 }
             }
-
-        } else {
-            id.MOD = modID;
-
-            if(inviter != null) {
-                inviter.getUser().openPrivateChannel()
-                        .flatMap(pc -> {
-                            String message = LangID.getStringByID("first_join", id.config.lang)
-                                    .replace("_SSS_", g.getName());
-
-                            return pc.sendMessage(message);
-                        }).queue();
-            }
-        }
+        });
     }
 
     private static void reassignTempModRole(Guild g, IDHolder holder, AtomicReference<Boolean> warned) {
         if (g.getSelfMember().hasPermission(Permission.MANAGE_ROLES)) {
             if(g.getRoles().size() == 250) {
                 if(!warned.get()) {
-                    Member inviter = findInviter(g);
+                    findInviter(g).queue(inviter -> {
+                        if(inviter != null) {
+                            inviter.getUser().openPrivateChannel()
+                                    .flatMap(pc -> pc.sendMessage(LangID.getStringByID("maxrole", holder.config.lang).replace("_", g.getName())))
+                                    .queue(null, e -> { });
 
-                    if(inviter != null) {
-                        inviter.getUser().openPrivateChannel()
-                                .flatMap(pc -> pc.sendMessage(LangID.getStringByID("maxrole", holder.config.lang).replace("_", g.getName())))
-                                .queue(null, e -> { });
-
-                        warned.set(true);
-                    }
+                            warned.set(true);
+                        }
+                    });
                 }
 
                 return;
@@ -956,15 +957,15 @@ public class AllEventAdapter extends ListenerAdapter {
                     .queue(r -> holder.MOD = r.getId(), e -> StaticStore.logger.uploadErrorLog(e, "E/AllEventAdapter::reassignTempModRole - Error happened while trying to create role"));
         } else {
             if(!warned.get()) {
-                Member inviter = findInviter(g);
+                findInviter(g).queue(inviter -> {
+                    if(inviter != null) {
+                        inviter.getUser().openPrivateChannel()
+                                .flatMap(pc -> pc.sendMessage(LangID.getStringByID("needroleperm", holder.config.lang).replace("_", g.getName())))
+                                .queue();
 
-                if(inviter != null) {
-                    inviter.getUser().openPrivateChannel()
-                            .flatMap(pc -> pc.sendMessage(LangID.getStringByID("needroleperm", holder.config.lang).replace("_", g.getName())))
-                            .queue();
-
-                    warned.set(true);
-                }
+                        warned.set(true);
+                    }
+                });
             }
         }
     }
@@ -1006,17 +1007,15 @@ public class AllEventAdapter extends ListenerAdapter {
         }
     }
 
-    private static Member findInviter(Guild g) {
+    private static RestAction<Member> findInviter(Guild g) {
         if (g.getSelfMember().hasPermission(Permission.VIEW_AUDIT_LOGS)) {
             for(AuditLogEntry entry : g.retrieveAuditLogs()) {
                 if(entry.getType() == ActionType.BOT_ADD) {
-                    return g.retrieveMemberById(entry.getUserId()).complete();
+                    return g.retrieveMemberById(entry.getUserId());
                 }
             }
-
-            return null;
-        } else {
-            return g.getOwner();
         }
+
+        return g.retrieveOwner();
     }
 }

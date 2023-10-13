@@ -104,11 +104,7 @@ public class BCAnimMessageHolder extends MessageHolder {
                     g = null;
                 }
 
-                boolean result = EntityHandler.generateBCAnim(ch, g == null ? 0 : g.getBoostTier().getKey(), mixer, lang);
-
-                StaticStore.executorHandler.postDelayed(1000, () -> StaticStore.deleteFile(container, true));
-
-                if(result) {
+                EntityHandler.generateBCAnim(ch, g == null ? 0 : g.getBoostTier().getKey(), mixer, lang, () -> {
                     StaticStore.canDo.put("gif", new TimeBoolean(false, TimeUnit.MINUTES.toMillis(1)));
 
                     StaticStore.executorHandler.postDelayed(60000, () -> {
@@ -116,7 +112,11 @@ public class BCAnimMessageHolder extends MessageHolder {
 
                         StaticStore.canDo.put("gif", new TimeBoolean(true));
                     });
-                }
+
+                    StaticStore.executorHandler.postDelayed(1000, () -> StaticStore.deleteFile(container, true));
+                }, () ->
+                    StaticStore.executorHandler.postDelayed(1000, () -> StaticStore.deleteFile(container, true))
+                );
 
                 StaticStore.executorHandler.postDelayed(1000, () -> StaticStore.deleteFile(container, true));
             }, e -> StaticStore.logger.uploadErrorLog(e, "E/BCAnimMessageHolder::constructor - Failed to generate animation"));
@@ -178,11 +178,7 @@ public class BCAnimMessageHolder extends MessageHolder {
                             g = null;
                         }
 
-                        boolean result = EntityHandler.generateBCAnim(ch, g == null ? 0 : g.getBoostTier().getKey(), mixer, lang);
-
-                        StaticStore.executorHandler.postDelayed(1000, () -> StaticStore.deleteFile(container, true));
-
-                        if(result) {
+                        EntityHandler.generateBCAnim(ch, g == null ? 0 : g.getBoostTier().getKey(), mixer, lang, () -> {
                             StaticStore.canDo.put("gif", new TimeBoolean(false, TimeUnit.MINUTES.toMillis(1)));
 
                             StaticStore.executorHandler.postDelayed(60000, () -> {
@@ -190,7 +186,11 @@ public class BCAnimMessageHolder extends MessageHolder {
 
                                 StaticStore.canDo.put("gif", new TimeBoolean(true));
                             });
-                        }
+
+                            StaticStore.executorHandler.postDelayed(1000, () -> StaticStore.deleteFile(container, true));
+                        }, () -> {
+                            StaticStore.executorHandler.postDelayed(1000, () -> StaticStore.deleteFile(container, true));
+                        });
                     }, e -> StaticStore.logger.uploadErrorLog(e, "E/BCAnimMessageHolder::onReceivedEvent - Failed to generate animation"));
 
                     t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime());

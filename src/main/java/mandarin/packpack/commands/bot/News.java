@@ -3,9 +3,9 @@ package mandarin.packpack.commands.bot;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class News extends ConstraintCommand {
     public News(ROLE role, int lang, IDHolder id) {
@@ -13,13 +13,10 @@ public class News extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
-        if(ch == null)
-            return;
-
-        String content = getContent(event);
+        String content = loader.getContent();
 
         String[] contents = content.split(" ", 3);
 
@@ -41,34 +38,16 @@ public class News extends ConstraintCommand {
 
                 StaticStore.announcements.put(StaticStore.langIndex[loc], contents[2]);
 
-                String locale;
-
-                switch (StaticStore.langIndex[loc]) {
-                    case LangID.EN:
-                        locale = LangID.getStringByID("lang_en", loc);
-                        break;
-                    case LangID.JP:
-                        locale = LangID.getStringByID("lang_jp", loc);
-                        break;
-                    case LangID.KR:
-                        locale = LangID.getStringByID("lang_kr", loc);
-                        break;
-                    case LangID.ZH:
-                        locale = LangID.getStringByID("lang_zh", loc);
-                        break;
-                    case LangID.FR:
-                        locale = LangID.getStringByID("lang_fr", loc);
-                        break;
-                    case LangID.IT:
-                        locale = LangID.getStringByID("lang_it", loc);
-                        break;
-                    case LangID.ES:
-                        locale = LangID.getStringByID("lang_es", loc);
-                        break;
-                    default:
-                        locale = LangID.getStringByID("lang_de", loc);
-                        break;
-                }
+                String locale = switch (StaticStore.langIndex[loc]) {
+                    case LangID.EN -> LangID.getStringByID("lang_en", loc);
+                    case LangID.JP -> LangID.getStringByID("lang_jp", loc);
+                    case LangID.KR -> LangID.getStringByID("lang_kr", loc);
+                    case LangID.ZH -> LangID.getStringByID("lang_zh", loc);
+                    case LangID.FR -> LangID.getStringByID("lang_fr", loc);
+                    case LangID.IT -> LangID.getStringByID("lang_it", loc);
+                    case LangID.ES -> LangID.getStringByID("lang_es", loc);
+                    default -> LangID.getStringByID("lang_de", loc);
+                };
 
                 createMessageWithNoPings(ch, "Announcement added for "+locale);
             } else {

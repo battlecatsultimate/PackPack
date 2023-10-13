@@ -11,6 +11,7 @@ import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.bc.EntityFilter;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.search.ComboFormMessageHolder;
 import mandarin.packpack.supporter.server.holder.component.search.ComboMessageHolder;
@@ -19,7 +20,6 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,20 +36,20 @@ public class CatCombo extends TimedConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
-        String name = getUnitName(getContent(event));
-        String cName = getComboName(getContent(event));
+        String name = getUnitName(loader.getContent());
+        String cName = getComboName(loader.getContent());
 
         if(name == null || name.isBlank()) {
             ArrayList<Combo> combos = EntityFilter.filterComboWithUnit(null, cName);
 
             if(combos.isEmpty()) {
                 disableTimer();
-                replyToMessageSafely(ch, LangID.getStringByID("combo_noname", lang).replace("_", validateKeyword(getSearchKeywords(name, cName, lang))), getMessage(event), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("combo_noname", lang).replace("_", validateKeyword(getSearchKeywords(name, cName, lang))), loader.getMessage(), a -> a);
             } else if(combos.size() == 1) {
-                EntityHandler.showComboEmbed(ch, getMessage(event), combos.get(0), lang);
+                EntityHandler.showComboEmbed(ch, loader.getMessage(), combos.get(0), lang);
             } else {
                 disableTimer();
 
@@ -72,35 +72,31 @@ public class CatCombo extends TimedConstraintCommand {
 
                 sb.append("```");
 
-                Message res = getRepliedMessageSafely(ch, sb.toString(), getMessage(event), a -> registerSearchComponents(a, combos.size(), data, lang));
+                replyToMessageSafely(ch, sb.toString(), loader.getMessage(), a -> registerSearchComponents(a, combos.size(), data, lang), res -> {
+                    if(res != null) {
+                        User u = loader.getUser();
 
-                if(res != null) {
-                    User u = getUser(event);
+                        Message msg = loader.getMessage();
 
-                    if(u != null) {
-                        Message msg = getMessage(event);
-
-                        if(msg != null) {
-                            StaticStore.putHolder(u.getId(), new ComboMessageHolder(combos, msg, res, null, ch.getId(), lang));
-                        }
+                        StaticStore.putHolder(u.getId(), new ComboMessageHolder(combos, msg, res, null, ch.getId(), lang));
                     }
-                }
+                });
             }
         } else {
             ArrayList<Form> forms = EntityFilter.findUnitWithName(name, false, lang);
 
             if(forms.isEmpty()) {
                 disableTimer();
-                replyToMessageSafely(ch, LangID.getStringByID("combo_noname", lang).replace("_", validateKeyword(getSearchKeywords(name, cName, lang))), getMessage(event), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("combo_noname", lang).replace("_", validateKeyword(getSearchKeywords(name, cName, lang))), loader.getMessage(), a -> a);
             } else if(forms.size() == 1) {
                 ArrayList<Combo> combos = EntityFilter.filterComboWithUnit(forms.get(0), cName);
 
                 if(combos.isEmpty()) {
                     disableTimer();
 
-                    replyToMessageSafely(ch, LangID.getStringByID("combo_noname", lang).replace("_", validateKeyword(getSearchKeywords(name, cName, lang))), getMessage(event), a -> a);
+                    replyToMessageSafely(ch, LangID.getStringByID("combo_noname", lang).replace("_", validateKeyword(getSearchKeywords(name, cName, lang))), loader.getMessage(), a -> a);
                 } else if(combos.size() == 1) {
-                    EntityHandler.showComboEmbed(ch, getMessage(event), combos.get(0), lang);
+                    EntityHandler.showComboEmbed(ch, loader.getMessage(), combos.get(0), lang);
                 } else {
                     disableTimer();
 
@@ -123,19 +119,15 @@ public class CatCombo extends TimedConstraintCommand {
 
                     sb.append("```");
 
-                    Message res = getRepliedMessageSafely(ch, sb.toString(), getMessage(event), a -> registerSearchComponents(a, combos.size(), data, lang));
+                    replyToMessageSafely(ch, sb.toString(), loader.getMessage(), a -> registerSearchComponents(a, combos.size(), data, lang), res -> {
+                        if(res != null) {
+                            User u = loader.getUser();
 
-                    if(res != null) {
-                        User u = getUser(event);
+                            Message msg = loader.getMessage();
 
-                        if(u != null) {
-                            Message msg = getMessage(event);
-
-                            if(msg != null) {
-                                StaticStore.putHolder(u.getId(), new ComboMessageHolder(combos, msg, res, null, ch.getId(), lang));
-                            }
+                            StaticStore.putHolder(u.getId(), new ComboMessageHolder(combos, msg, res, null, ch.getId(), lang));
                         }
-                    }
+                    });
                 }
             } else {
                 StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang));
@@ -157,19 +149,15 @@ public class CatCombo extends TimedConstraintCommand {
 
                 sb.append("```");
 
-                Message res = getRepliedMessageSafely(ch, sb.toString(), getMessage(event), a -> registerSearchComponents(a, forms.size(), data, lang));
+                replyToMessageSafely(ch, sb.toString(), loader.getMessage(), a -> registerSearchComponents(a, forms.size(), data, lang), res -> {
+                    if(res != null) {
+                        User u = loader.getUser();
 
-                if(res != null) {
-                    User u = getUser(event);
+                        Message msg = loader.getMessage();
 
-                    if(u != null) {
-                        Message msg = getMessage(event);
-
-                        if(msg != null) {
-                            StaticStore.putHolder(u.getId(), new ComboFormMessageHolder(forms, msg, res, ch.getId(), lang, cName, name));
-                        }
+                        StaticStore.putHolder(u.getId(), new ComboFormMessageHolder(forms, msg, res, ch.getId(), lang, cName, name));
                     }
-                }
+                });
             }
         }
     }

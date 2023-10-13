@@ -3,10 +3,10 @@ package mandarin.packpack.commands;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import org.jetbrains.annotations.Nullable;
 
 public class Donate extends ConstraintCommand {
@@ -15,11 +15,8 @@ public class Donate extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        MessageChannel ch = getChannel(event);
-
-        if(ch == null)
-            return;
+    public void doSomething(CommandLoader loader) throws Exception {
+        MessageChannel ch = loader.getChannel();
 
         EmbedBuilder builder = new EmbedBuilder();
 
@@ -30,6 +27,6 @@ public class Donate extends ConstraintCommand {
         builder.addField(EmojiStore.PAYPAL.getFormatted() + " " + LangID.getStringByID("donate_paypal", lang), "[" + LangID.getStringByID("donate_link", lang) + "](" + StaticStore.PAYPAL + ")", false);
         builder.addField(EmojiStore.CASHAPP.getFormatted() + " " + LangID.getStringByID("donate_cashapp", lang), "[" + LangID.getStringByID("donate_link", lang) + "](" + StaticStore.CASHAPP + ")", false);
 
-        replyToMessageSafely(ch, "", getMessage(event), a -> a.setEmbeds(builder.build()));
+        replyToMessageSafely(ch, "", loader.getMessage(), a -> a.setEmbeds(builder.build()));
     }
 }

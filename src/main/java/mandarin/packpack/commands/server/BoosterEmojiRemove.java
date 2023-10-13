@@ -3,6 +3,7 @@ package mandarin.packpack.commands.server;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.BoosterData;
 import mandarin.packpack.supporter.server.data.BoosterHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
@@ -10,7 +11,6 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 public class BoosterEmojiRemove extends ConstraintCommand {
     public BoosterEmojiRemove(ROLE role, int lang, IDHolder id) {
@@ -18,14 +18,11 @@ public class BoosterEmojiRemove extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
-        Guild g = getGuild(event);
-        MessageChannel ch = getChannel(event);
+    public void doSomething(CommandLoader loader) throws Exception {
+        Guild g = loader.getGuild();
+        MessageChannel ch = loader.getChannel();
 
-        if(ch == null || g == null)
-            return;
-
-        String id = getID(getContent(event));
+        String id = getID(loader.getContent());
 
         if(id == null) {
             createMessageWithNoPings(ch, LangID.getStringByID("boorolerem_nomem", lang));
@@ -46,7 +43,7 @@ public class BoosterEmojiRemove extends ConstraintCommand {
                     } else {
                         String emoji = data.getEmoji();
 
-                        boolean leave = leaveEmoji(getContent(event));
+                        boolean leave = leaveEmoji(loader.getContent());
 
                         if(!leave) {
                             RichCustomEmoji e = g.getEmojiById(emoji);

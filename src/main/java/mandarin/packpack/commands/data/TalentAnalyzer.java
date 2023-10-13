@@ -12,10 +12,10 @@ import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.*;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -45,7 +45,7 @@ public class TalentAnalyzer extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(GenericMessageEvent event) throws Exception {
+    public void doSomething(CommandLoader loader) throws Exception {
         File temp = new File("./temp");
 
         if(!temp.exists() && !temp.mkdirs()) {
@@ -53,12 +53,9 @@ public class TalentAnalyzer extends ConstraintCommand {
             return;
         }
 
-        MessageChannel ch = getChannel(event);
+        MessageChannel ch = loader.getChannel();
 
-        if(ch == null)
-            return;
-
-        String command = getContent(event);
+        String command = loader.getContent();
 
         int uid = getUnitID(command);
 
@@ -105,9 +102,9 @@ public class TalentAnalyzer extends ConstraintCommand {
         File talentImage = ImageDrawing.drawTalentImage(name, type, talent, lang);
 
         if(talentImage == null) {
-            replyToMessageSafely(ch, LangID.getStringByID("talanalyzer_fail", lang), getMessage(event), a -> a);
+            replyToMessageSafely(ch, LangID.getStringByID("talanalyzer_fail", lang), loader.getMessage(), a -> a);
         } else {
-            sendMessageWithFile(ch, LangID.getStringByID("talanalyzer_success", lang), talentImage, getMessage(event));
+            sendMessageWithFile(ch, LangID.getStringByID("talanalyzer_success", lang), talentImage, loader.getMessage());
         }
     }
 
