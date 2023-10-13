@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class ScamLinkHandler {
@@ -157,11 +158,24 @@ public class ScamLinkHandler {
             try {
                 AtomicReference<Boolean> banned = new AtomicReference<>(false);
 
-                g.retrieveBanList().forEach(b -> {
-                    if(b.getUser().getId().equals(m.getId())) {
-                        banned.set(true);
+                AtomicBoolean running = new AtomicBoolean(true);
+
+                g.retrieveBanList().onSuccess(list -> {
+                    for (int i = 0; i < list.size(); i++) {
+                        Guild.Ban b = list.get(i);
+
+                        if(b.getUser().getId().equals(m.getId())) {
+                            banned.set(true);
+                        }
                     }
-                });
+
+                    running.set(false);
+                }).queue();
+
+                while(true) {
+                    if (!running.get())
+                        break;
+                }
 
                 if(banned.get())
                     return;
@@ -236,15 +250,9 @@ public class ScamLinkHandler {
         }
 
         switch (action) {
-            case MUTE:
-                obj.addProperty("action", "mute");
-                break;
-            case KICK:
-                obj.addProperty("action", "kick");
-                break;
-            case BAN:
-                obj.addProperty("action", "ban");
-                break;
+            case MUTE -> obj.addProperty("action", "mute");
+            case KICK -> obj.addProperty("action", "kick");
+            case BAN -> obj.addProperty("action", "ban");
         }
 
         return obj;
