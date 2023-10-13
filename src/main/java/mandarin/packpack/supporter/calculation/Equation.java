@@ -15,8 +15,7 @@ import java.util.Locale;
 
 public class Equation {
     public static List<String> error = new ArrayList<>();
-    public static final DecimalFormat df = new DecimalFormat("#.########");
-    public static final DecimalFormat simple = new DecimalFormat("#.####");
+
     public static MathContext context = new MathContext(256, RoundingMode.HALF_EVEN);
 
     private static final String[] suffix = { "k", "m", "b", "t" };
@@ -27,6 +26,8 @@ public class Equation {
     public static String formatNumber(BigDecimal value) {
         if(value.abs().compareTo(BigDecimal.ZERO) == 0)
             return "0";
+
+        DecimalFormat df = new DecimalFormat("#.########");
 
         if (value.abs().compareTo(BigDecimal.TEN.pow(5)) > 0) {
             int m = 0;
@@ -57,6 +58,8 @@ public class Equation {
         if(value.abs().compareTo(BigDecimal.ZERO) == 0)
             return "0";
 
+        DecimalFormat simple = new DecimalFormat("#.####");
+
         if (value.abs().compareTo(BigDecimal.TEN.pow(5)) > 0) {
             int m = 0;
 
@@ -85,6 +88,8 @@ public class Equation {
     public static String simpleNumber(BigDecimal value, int allowance) {
         if(value.abs().compareTo(BigDecimal.ZERO) == 0)
             return "0";
+
+        DecimalFormat simple = new DecimalFormat("#.####");
 
         if (value.abs().compareTo(BigDecimal.TEN.pow(allowance)) > 0) {
             int m = 0;

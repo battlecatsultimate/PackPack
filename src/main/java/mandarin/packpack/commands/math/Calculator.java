@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 
 public class Calculator extends ConstraintCommand {
 
@@ -33,7 +34,9 @@ public class Calculator extends ConstraintCommand {
         BigDecimal result = Equation.calculate(equation[1].replace(" ", ""), null, false, lang);
 
         if(Equation.error.isEmpty()) {
-            String value = Equation.df.format(result);
+            DecimalFormat df = new DecimalFormat("#.########");
+
+            String value = df.format(result);
 
             if(value.length() > 1500) {
                 value = Equation.formatNumber(result);
