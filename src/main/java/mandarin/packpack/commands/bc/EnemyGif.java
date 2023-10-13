@@ -49,7 +49,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
     }
 
     @Override
-    protected void doThing(CommandLoader loader) throws Exception {
+    protected void doThing(CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
         Guild g = loader.getGuild();
         User u = loader.getUser();

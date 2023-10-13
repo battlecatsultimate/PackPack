@@ -31,9 +31,6 @@ public class Help extends Command {
     public void doSomething(CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
 
-        if(ch == null)
-            return;
-
         String[] messages = loader.getContent().split(" ");
 
         if(messages.length >= 2) {

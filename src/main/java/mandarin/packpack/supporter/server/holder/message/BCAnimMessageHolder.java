@@ -188,9 +188,7 @@ public class BCAnimMessageHolder extends MessageHolder {
                             });
 
                             StaticStore.executorHandler.postDelayed(1000, () -> StaticStore.deleteFile(container, true));
-                        }, () -> {
-                            StaticStore.executorHandler.postDelayed(1000, () -> StaticStore.deleteFile(container, true));
-                        });
+                        }, () -> StaticStore.executorHandler.postDelayed(1000, () -> StaticStore.deleteFile(container, true)));
                     }, e -> StaticStore.logger.uploadErrorLog(e, "E/BCAnimMessageHolder::onReceivedEvent - Failed to generate animation"));
 
                     t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime());

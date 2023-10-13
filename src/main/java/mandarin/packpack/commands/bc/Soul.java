@@ -35,7 +35,7 @@ public class Soul extends GlobalTimedConstraintCommand {
     }
 
     @Override
-    protected void doThing(CommandLoader loader) throws Exception {
+    protected void doThing(CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
         User u = loader.getUser();
         Guild g = loader.getGuild();
