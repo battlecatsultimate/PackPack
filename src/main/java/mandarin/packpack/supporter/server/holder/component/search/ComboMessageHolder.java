@@ -29,6 +29,11 @@ public class ComboMessageHolder extends SearchHolder {
         this.fMsg = fMsg;
 
         registerAutoFinish(this, msg, lang, TimeUnit.MINUTES.toMillis(5), () -> {
+            if (expired)
+                return;
+
+            expired = true;
+
             if(fMsg != null)
                 fMsg.delete().queue();
         });
