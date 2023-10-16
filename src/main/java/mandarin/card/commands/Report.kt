@@ -9,19 +9,23 @@ import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.CommandLoader
+import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.UserSnowflake
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
 import java.nio.charset.StandardCharsets
+import java.util.SortedMap
+import java.util.TreeMap
 import kotlin.math.max
+import kotlin.math.min
 
 class Report : Command(LangID.EN, true) {
     override fun doSomething(loader: CommandLoader) {
         val m = loader.member
         val ch = loader.channel
 
-        if (!CardData.hasAllPermission(m) && m.id != StaticStore.MANDARIN_SMELL) {
+        if (!CardData.isManager(m) && m.id != StaticStore.MANDARIN_SMELL) {
             return
         }
 
@@ -50,40 +54,67 @@ class Report : Command(LangID.EN, true) {
         val totalCatFoodFlow = sessions.sumOf { session -> session.catFoodTradeSum }
 
         if (loader.content.contains("-f")) {
-            val mergedCatFoodPack = HashMap<Long, Long>()
-            val mergedCatFoodCraft = HashMap<Long, Long>()
-            val mergedCatFoodTrade = HashMap<Long, Long>()
+            val mergedCatFoodPackTemp = HashMap<Long, Long>()
+            val mergedCatFoodCraftTemp = HashMap<Long, Long>()
+            val mergedCatFoodTradeTemp = HashMap<Long, Long>()
 
-            val mergedTier2Cards = HashMap<Card, Long>()
+            val mergedTier2CardsTemp = HashMap<Card, Long>()
 
-            val mergedGeneratedCards = HashMap<Card, Long>()
-            val mergedRemovedCards = HashMap<Card, Long>()
+            val mergedGeneratedCardsTemp = HashMap<Card, Long>()
+            val mergedRemovedCardsTemp = HashMap<Card, Long>()
 
             sessions.forEach { session ->
                 session.catFoodPack.forEach { (id, amount) ->
-                    mergedCatFoodPack[id] = (mergedCatFoodPack[id] ?: 0) + amount
+                    mergedCatFoodPackTemp[id] = (mergedCatFoodPackTemp[id] ?: 0) + amount
                 }
 
                 session.catFoodCraft.forEach { (id, amount) ->
-                    mergedCatFoodCraft[id] = (mergedCatFoodCraft[id] ?: 0) + amount
+                    mergedCatFoodCraftTemp[id] = (mergedCatFoodCraftTemp[id] ?: 0) + amount
                 }
 
                 session.catFoodTrade.forEach { (id, amount) ->
-                    mergedCatFoodTrade[id] = (mergedCatFoodTrade[id] ?: 0) + amount
+                    mergedCatFoodTradeTemp[id] = (mergedCatFoodTradeTemp[id] ?: 0) + amount
                 }
 
                 session.tier2Cards.forEach { card ->
-                    mergedTier2Cards[card] = (mergedTier2Cards[card] ?: 0) + 1
+                    mergedTier2CardsTemp[card] = (mergedTier2CardsTemp[card] ?: 0) + 1
                 }
 
                 session.generatedCards.forEach { (card, amount) ->
-                    mergedGeneratedCards[card] = (mergedGeneratedCards[card] ?: 0) + amount
+                    mergedGeneratedCardsTemp[card] = (mergedGeneratedCardsTemp[card] ?: 0) + amount
                 }
 
                 session.removedCards.forEach { (card, amount) ->
-                    mergedRemovedCards[card] = (mergedRemovedCards[card] ?: 0) + amount
+                    mergedRemovedCardsTemp[card] = (mergedRemovedCardsTemp[card] ?: 0) + amount
                 }
             }
+
+            val mergedCatFoodPack = mergedCatFoodPackTemp.entries.sortedBy { entry -> entry.value }.reversed()
+            val mergedCatFoodCraft = mergedCatFoodCraftTemp.entries.sortedBy { entry -> entry.value }.reversed()
+            val mergedCatFoodTrade = mergedCatFoodTradeTemp.entries.sortedBy { entry -> entry.value }.reversed()
+
+            val comparator = CardComparator()
+
+            val mapComparator = Comparator<Map.Entry<Card, Long>> { o1, o2 ->
+                if (o1 == null && o2 == null)
+                    return@Comparator 0
+
+                if (o1 == null)
+                    return@Comparator 1
+
+                if (o2 == null)
+                    return@Comparator -1
+
+                return@Comparator if (o1.value != o2.value)
+                    -o1.value.compareTo(o2.value)
+                else
+                    -comparator.compare(o1.key, o2.key)
+            }
+
+            val mergedTier2Cards = mergedTier2CardsTemp.entries.sortedWith(mapComparator)
+
+            val mergedGeneratedCards = mergedGeneratedCardsTemp.entries.sortedWith(mapComparator)
+            val mergedRemovedCards = mergedRemovedCardsTemp.entries.sortedWith(mapComparator)
 
             val reporter = StringBuilder(
                 "Gathered ${sessions.size} log sessions in total before ${LogSession.globalFormat.format(time)}\n" +
@@ -96,163 +127,189 @@ class Report : Command(LangID.EN, true) {
                         "\n"
             )
 
-            loader.guild.retrieveMembers(members.map { id -> UserSnowflake.fromId(id) })
-                .onSuccess { list ->
-                    list.forEach { member ->
-                        reporter.append(member.effectiveName).append(" [").append(member.id).append("]\n")
-                    }
+            val memberIds = members.map { id -> UserSnowflake.fromId(id) }
 
-                    reporter.append("\n" +
-                            "Out of these people :\n" +
-                            "\n" +
-                            "$consumedCatFoodPack CF have been consumed for generating pack\n" +
-                            "\n")
+            var requestSize = memberIds.size / 100
 
-                    if (mergedCatFoodPack.isNotEmpty()) {
-                        reporter.append("Detailed information about consumed cat food for rolling the pack\n" +
-                                "\n")
+            if (memberIds.size % 100 != 0)
+                requestSize++
 
-                        mergedCatFoodPack.forEach { (id, amount) ->
-                            val member = list.find { member -> member.idLong == id }
+            val running = BooleanArray(requestSize) { true }
 
-                            if (member != null) {
-                                reporter.append(member.effectiveName).append(" [").append(member.id).append("] : ").append(amount).append("\n")
-                            } else {
-                                reporter.append("UNKNOWN USER [").append(id).append("] : ").append(amount).append("\n")
-                            }
-                        }
+            val memberSet = ArrayList<Member>()
 
-                        reporter.append("\n")
-                    }
+            for (i in 0 until requestSize) {
+                loader.guild.retrieveMembers(memberIds.subList(100 * i, min(memberIds.size, 100 * (i + 1)))).onSuccess {
+                    memberSet.addAll(it)
 
-                    reporter.append(
-                        "$gainedCatFoodCraft CF have been given out for compensation from crafting\n" +
-                                "\n"
-                    )
-
-                    if (mergedCatFoodCraft.isNotEmpty()) {
-                        reporter.append("Detailed information about gained cat food for crafting\n" +
-                                "\n"
-                        )
-
-                        mergedCatFoodCraft.forEach { (id, amount) ->
-                            val member = list.find { member -> member.idLong == id }
-
-                            if (member != null) {
-                                reporter.append(member.effectiveName).append(" [").append(member.id).append("] : ").append(amount).append("\n")
-                            } else {
-                                reporter.append("UNKNOWN USER [").append(id).append("] : ").append(amount).append("\n")
-                            }
-                        }
-
-                        reporter.append("\n")
-                    }
-
-                    reporter.append(
-                        "$totalTier2Cards T2 cards have been generated from crafting\n" +
-                                "Users failed to craft T2 cards $totalCraftFailures times\n" +
-                                "\n"
-                    )
-
-                    if (mergedTier2Cards.isNotEmpty()) {
-                        reporter.append("Detailed information about crafted T2 cards\n" +
-                                "\n")
-
-                        mergedTier2Cards.forEach { (card, amount) ->
-                            reporter.append(card.simpleCardInfo())
-
-                            if (amount > 1)
-                                reporter.append(" x").append(amount)
-
-                            reporter.append("\n")
-                        }
-
-                        reporter.append("\n")
-                    }
-
-                    reporter.append("$totalGeneratedCards cards have been generated, and added into economy\n")
-
-                    if (mergedGeneratedCards.isNotEmpty()) {
-                        reporter.append("\n" +
-                                "Detailed information about generated cards\n" +
-                                "\n"
-                        )
-
-                        mergedGeneratedCards.toSortedMap(CardComparator()).forEach { (card, amount) ->
-                            reporter.append(card.simpleCardInfo())
-
-                            if (amount > 1)
-                                reporter.append(" x").append(amount)
-
-                            reporter.append("\n")
-                        }
-
-                        reporter.append("\n")
-                    }
-
-                    reporter.append("$totalRemovedCards cards have been removed from economy\n" +
-                            "\n")
-
-                    if (mergedRemovedCards.isNotEmpty()) {
-                        reporter.append(
-                            "Detailed information about removed cards\n" +
-                                    "\n"
-                        )
-
-                        mergedRemovedCards.toSortedMap(CardComparator()).forEach { (card, amount) ->
-                            reporter.append(card.simpleCardInfo())
-
-                            if (amount > 1)
-                                reporter.append(" x").append(amount)
-
-                            reporter.append("\n")
-                        }
-
-                        reporter.append("\n")
-                    }
-
-                    reporter.append(
-                        "$totalCatFoodFlow CF have been transferred among users via trading\n" +
-                            "\n"
-                    )
-
-                    if (mergedCatFoodTrade.isNotEmpty()) {
-                        reporter.append("Detailed information about gained/lost cat food from trading\n" +
-                                "\n")
-
-                        mergedCatFoodTrade.forEach { (id, amount) ->
-                            val member = list.find { member -> member.idLong == id }
-
-                            if (member != null) {
-                                reporter.append(member.effectiveName).append(" [").append(member.id).append("] : ").append(amount).append("\n")
-                            } else {
-                                reporter.append("UNKNOWN USER [").append(id).append("] : ").append(amount).append("\n")
-                            }
-                        }
-
-                        reporter.append("\n")
-                    }
-
-                    reporter.append("============================")
-
-                    val folder = File("./temp")
-
-                    if (!folder.exists() && !folder.mkdirs()) {
-                        StaticStore.logger.uploadLog("W/Report::doSomething - Failed to generate folder : ${folder.absolutePath}")
-
-                        return@onSuccess
-                    }
-
-                    val file = StaticStore.generateTempFile(folder, "log", ".txt", false)
-
-                    val writer = BufferedWriter(FileWriter(file, StandardCharsets.UTF_8))
-
-                    writer.write(reporter.toString())
-
-                    writer.close()
-
-                    sendMessageWithFile(ch, "Uploading full report log", file, "report.txt", loader.message)
+                    running[i] = false
                 }
+            }
+
+            while(true) {
+                if (!running.any { it }) {
+                    break
+                }
+            }
+
+            memberSet.sortBy { it.effectiveName }
+
+            val memberList = memberSet.toSet()
+
+            memberList.forEach { member ->
+                reporter.append(member.effectiveName).append(" [").append(member.id).append("]\n")
+            }
+
+            reporter.append("\n" +
+                    "Out of these people :\n" +
+                    "\n" +
+                    "$consumedCatFoodPack CF have been consumed for generating pack\n" +
+                    "\n")
+
+            if (mergedCatFoodPack.isNotEmpty()) {
+                reporter.append("Detailed information about consumed cat food for rolling the pack\n" +
+                        "\n")
+
+                mergedCatFoodPack.forEach { (id, amount) ->
+                    val member = memberList.find { member -> member.idLong == id }
+
+                    if (member != null) {
+                        reporter.append(member.effectiveName).append(" [").append(member.id).append("] : ").append(amount).append("\n")
+                    } else {
+                        reporter.append("UNKNOWN USER [").append(id).append("] : ").append(amount).append("\n")
+                    }
+                }
+
+                reporter.append("\n")
+            }
+
+            reporter.append(
+                "$gainedCatFoodCraft CF have been given out for compensation from crafting\n" +
+                        "\n"
+            )
+
+            if (mergedCatFoodCraft.isNotEmpty()) {
+                reporter.append("Detailed information about gained cat food for crafting\n" +
+                        "\n"
+                )
+
+                mergedCatFoodCraft.forEach { (id, amount) ->
+                    val member = memberList.find { member -> member.idLong == id }
+
+                    if (member != null) {
+                        reporter.append(member.effectiveName).append(" [").append(member.id).append("] : ").append(amount).append("\n")
+                    } else {
+                        reporter.append("UNKNOWN USER [").append(id).append("] : ").append(amount).append("\n")
+                    }
+                }
+
+                reporter.append("\n")
+            }
+
+            reporter.append(
+                "$totalTier2Cards T2 cards have been generated from crafting\n" +
+                        "Users failed to craft T2 cards $totalCraftFailures times\n" +
+                        "\n"
+            )
+
+            if (mergedTier2Cards.isNotEmpty()) {
+                reporter.append("Detailed information about crafted T2 cards\n" +
+                        "\n")
+
+                mergedTier2Cards.forEach { (card, amount) ->
+                    reporter.append(card.simpleCardInfo())
+
+                    if (amount > 1)
+                        reporter.append(" x").append(amount)
+
+                    reporter.append("\n")
+                }
+
+                reporter.append("\n")
+            }
+
+            reporter.append("$totalGeneratedCards cards have been generated, and added into economy\n")
+
+            if (mergedGeneratedCards.isNotEmpty()) {
+                reporter.append("\n" +
+                        "Detailed information about generated cards\n" +
+                        "\n"
+                )
+
+                mergedGeneratedCards.forEach { (card, amount) ->
+                    reporter.append(card.simpleCardInfo())
+
+                    if (amount > 1)
+                        reporter.append(" x").append(amount)
+
+                    reporter.append("\n")
+                }
+
+                reporter.append("\n")
+            }
+
+            reporter.append("$totalRemovedCards cards have been removed from economy\n" +
+                    "\n")
+
+            if (mergedRemovedCards.isNotEmpty()) {
+                reporter.append(
+                    "Detailed information about removed cards\n" +
+                            "\n"
+                )
+
+                mergedRemovedCards.forEach { (card, amount) ->
+                    reporter.append(card.simpleCardInfo())
+
+                    if (amount > 1)
+                        reporter.append(" x").append(amount)
+
+                    reporter.append("\n")
+                }
+
+                reporter.append("\n")
+            }
+
+            reporter.append(
+                "$totalCatFoodFlow CF have been transferred among users via trading\n" +
+                        "\n"
+            )
+
+            if (mergedCatFoodTrade.isNotEmpty()) {
+                reporter.append("Detailed information about gained/lost cat food from trading\n" +
+                        "\n")
+
+                mergedCatFoodTrade.forEach { (id, amount) ->
+                    val member = memberList.find { member -> member.idLong == id }
+
+                    if (member != null) {
+                        reporter.append(member.effectiveName).append(" [").append(member.id).append("] : ").append(amount).append("\n")
+                    } else {
+                        reporter.append("UNKNOWN USER [").append(id).append("] : ").append(amount).append("\n")
+                    }
+                }
+
+                reporter.append("\n")
+            }
+
+            reporter.append("============================")
+
+            val folder = File("./temp")
+
+            if (!folder.exists() && !folder.mkdirs()) {
+                StaticStore.logger.uploadLog("W/Report::doSomething - Failed to generate folder : ${folder.absolutePath}")
+
+                return
+            }
+
+            val file = StaticStore.generateTempFile(folder, "log", ".txt", false)
+
+            val writer = BufferedWriter(FileWriter(file, StandardCharsets.UTF_8))
+
+            writer.write(reporter.toString())
+
+            writer.close()
+
+            sendMessageWithFile(ch, "Uploading full report log", file, "report.txt", loader.message)
         } else {
             val content = "Gathered ${sessions.size} log sessions in total before ${LogSession.globalFormat.format(time)}\n" +
                     "\n" +
