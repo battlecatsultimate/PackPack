@@ -138,7 +138,7 @@ public class EventFileGrabber {
         if (accountCode == null)
             return null;
 
-        if (jwtToken == null || System.currentTimeMillis() - tokenCreatedAt > 24 * 60 * 60 * 1000) { // 24h
+        if (jwtToken == null || System.currentTimeMillis() - tokenCreatedAt > 12 * 60 * 60 * 1000) { // 12h
             jwtToken = generateJWTToken();
 
             if(jwtToken != null) {
