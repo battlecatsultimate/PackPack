@@ -18,10 +18,7 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.AliasHolder;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 public class EntityFilter {
     private static  final int[] storyChapterMonthly = {
@@ -49,24 +46,49 @@ public class EntityFilter {
                 boolean cleared = false;
 
                 for(int i = 0; i < StaticStore.langIndex.length; i++) {
-                    StringBuilder fname = new StringBuilder(Data.trio(u.id.id)+"-"+Data.trio(f.fid)+" "+Data.trio(u.id.id)+" - "+Data.trio(f.fid) + " "
-                    +u.id.id+"-"+f.fid+" "+Data.trio(u.id.id)+"-"+f.fid+" ");
-                    fname.append(Data.trio(u.id.id)).append(Data.trio(f.fid)).append(" ");
+                    String[] idFormats = {
+                            Data.trio(u.id.id) + "-" + Data.trio(f.fid),
+                            Data.trio(u.id.id) + " - " + Data.trio(f.fid),
+                            u.id.id + "-" + f.fid,
+                            u.id.id + " - " + f.fid,
+                            Data.trio(u.id.id) + "-" + f.fid,
+                            Data.trio(u.id.id) + " - " + f.fid,
+                            u.id.id + "-" + Data.trio(f.fid),
+                            u.id.id + " - " + Data.trio(f.fid)
+                    };
+
+                    for (int j = 0; j < idFormats.length; j++) {
+                        if (idFormats[j].toLowerCase(Locale.ENGLISH).equals(name.toLowerCase(Locale.ENGLISH))) {
+                            res.clear();
+
+                            res.add(f);
+
+                            return res;
+                        } else if (idFormats[j].toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
+                            added = true;
+                        }
+                    }
+
+                    //Special case
+                    if (name.toLowerCase(Locale.ENGLISH).equals(Data.trio(u.id.id) + Data.trio(f.fid))) {
+                        res.clear();
+
+                        res.add(f);
+
+                        return res;
+                    }
 
                     String formName = null;
 
                     if(MultiLangCont.get(f, lang) != null) {
-                        fname.append(StaticStore.safeMultiLangGet(f, StaticStore.langIndex[i]));
-
                         formName = StaticStore.safeMultiLangGet(f, StaticStore.langIndex[i]);
                     }
 
-                    if(!f.names.toString().isBlank()) {
-                        fname.append(" ").append(f.names.toString());
-                    }
+                    if (formName == null || formName.isBlank()) {
+                        formName = f.names.toString();
 
-                    if(fname.toString().toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
-                        added = true;
+                        if (formName.isBlank())
+                            formName = null;
                     }
 
                     if(formName != null && formName.replaceAll("-", " ").toLowerCase(Locale.ENGLISH).contains(name.toLowerCase(Locale.ENGLISH))) {
