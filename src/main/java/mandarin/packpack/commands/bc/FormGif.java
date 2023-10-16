@@ -13,9 +13,9 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.search.FormAnimMessageHolder;
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 
 import java.io.File;
@@ -57,7 +57,6 @@ public class FormGif extends GlobalTimedConstraintCommand {
         if(ch == null)
             return;
 
-        Guild g = loader.getGuild();
         User u = loader.getUser();
 
         if(u == null)
@@ -113,7 +112,13 @@ public class FormGif extends GlobalTimedConstraintCommand {
                     ch.sendMessage(LangID.getStringByID("gif_ignore", lang)).queue();
                 }
 
-                EntityHandler.generateFormAnim(f, ch, loader.getMessage(), (g == null ? 0 : g.getBoostTier().getKey()), mode, debug, frame, lang, raw && isTrusted, gif, () -> {
+                int boostLevel = 0;
+
+                if (ch instanceof GuildChannel) {
+                    boostLevel = loader.getGuild().getBoostTier().getKey();
+                }
+
+                EntityHandler.generateFormAnim(f, ch, loader.getMessage(), boostLevel, mode, debug, frame, lang, raw && isTrusted, gif, () -> {
                     if(!StaticStore.conflictedAnimation.isEmpty()) {
                         StaticStore.logger.uploadLog("Warning - Bot generated animation while this animation is already cached\n\nCommand : " + loader.getContent());
                         StaticStore.conflictedAnimation.clear();

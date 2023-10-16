@@ -7,6 +7,7 @@ import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 
 public class Locale extends ConstraintCommand {
@@ -65,12 +66,16 @@ public class Locale extends ConstraintCommand {
                         StaticStore.config.put(u.getId(), holder);
                     }
 
-                    Guild g = loader.getGuild();
+                    if (ch instanceof GuildChannel) {
+                        Guild g = loader.getGuild();
 
-                    IDHolder holder = StaticStore.idHolder.get(g.getId());
+                        IDHolder holder = StaticStore.idHolder.get(g.getId());
 
-                    if(holder != null) {
-                        replyToMessageSafely(ch, LangID.getStringByID("locale_auto", holder.config.lang), loader.getMessage(), a -> a);
+                        if(holder != null) {
+                            replyToMessageSafely(ch, LangID.getStringByID("locale_auto", holder.config.lang), loader.getMessage(), a -> a);
+                        } else {
+                            replyToMessageSafely(ch, LangID.getStringByID("locale_auto", lang), loader.getMessage(), a -> a);
+                        }
                     } else {
                         replyToMessageSafely(ch, LangID.getStringByID("locale_auto", lang), loader.getMessage(), a -> a);
                     }

@@ -10,8 +10,8 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 
 import java.util.Locale;
@@ -38,7 +38,6 @@ public class Soul extends GlobalTimedConstraintCommand {
     protected void doThing(CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
         User u = loader.getUser();
-        Guild g = loader.getGuild();
 
         int id = findSoulID(loader.getContent());
 
@@ -62,7 +61,13 @@ public class Soul extends GlobalTimedConstraintCommand {
             ch.sendMessage(LangID.getStringByID("gif_ignore", lang)).queue();
         }
 
-        EntityHandler.generateSoulAnim(s, ch, loader.getMessage(), g.getBoostTier().getKey(), debug, frame, lang, raw && isTrusted, gif, () -> {
+        int boostLevel = 0;
+
+        if (ch instanceof GuildChannel) {
+            boostLevel = loader.getGuild().getBoostTier().getKey();
+        }
+
+        EntityHandler.generateSoulAnim(s, ch, loader.getMessage(), boostLevel, debug, frame, lang, raw && isTrusted, gif, () -> {
             if(raw && isTrusted) {
                 StaticStore.logger.uploadLog("Generated mp4 by user " + u.getName() + " for soul ID " + Data.trio(s.getID().id));
             }

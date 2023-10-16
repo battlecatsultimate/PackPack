@@ -14,8 +14,8 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.message.AnimMessageHolder;
 import mandarin.packpack.supporter.server.holder.message.BCAnimMessageHolder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 
 import javax.imageio.ImageIO;
@@ -44,7 +44,6 @@ public class AnimAnalyzer extends ConstraintCommand {
     @Override
     public void doSomething(CommandLoader loader) throws Exception {
         MessageChannel ch = loader.getChannel();
-        Guild g = loader.getGuild();
 
         int param = checkParam(loader.getContent());
 
@@ -123,7 +122,13 @@ public class AnimAnalyzer extends ConstraintCommand {
 
             mixer.png = ImageIO.read(new File(workspace, "NumberLocal/"+animCode+".png"));
 
-            EntityHandler.generateBCAnim(ch, g.getBoostTier().getKey(), mixer, lang, () -> { }, () -> { });
+            int boostLevel = 0;
+
+            if (ch instanceof GuildChannel) {
+                boostLevel = loader.getGuild().getBoostTier().getKey();
+            }
+
+            EntityHandler.generateBCAnim(ch, boostLevel, mixer, lang, () -> { }, () -> { });
         } else {
             int anim = getAnimNumber(loader.getContent());
 
