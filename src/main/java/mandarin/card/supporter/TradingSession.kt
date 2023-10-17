@@ -216,9 +216,7 @@ class TradingSession(val postID: Long, val member: Array<Long>) {
 
     fun needApproval(g: Guild, whenNeed: Runnable, otherwise: Runnable) {
         g.retrieveMembers(member.map { id -> UserSnowflake.fromId(id) }).onSuccess { members ->
-            if (suggestion.any { s -> s.catFood >= 200000 || s.cards.any { c -> c.tier == CardData.Tier.ULTRA || c.tier == CardData.Tier.LEGEND } } &&
-                members.any { m -> CardData.hasAllPermission(m) } &&
-                !approved) {
+            if (suggestion.any { s -> s.catFood >= 200000 || s.cards.any { c -> c.tier == CardData.Tier.ULTRA || c.tier == CardData.Tier.LEGEND } } && !members.any { m -> CardData.hasAllPermission(m) } && !approved) {
                 whenNeed.run()
             } else {
                 otherwise.run()
