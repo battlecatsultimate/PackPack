@@ -19,7 +19,7 @@ class Cancel(private val session: TradingSession) : Command(LangID.EN, true) {
 
         val index = session.member.indexOf(m.idLong)
 
-        if (index == -1)
+        if (index == -1 && !CardData.isManager(m))
             return
 
         replyToMessageSafely(ch, "Are you sure you want to cancel this trading? Once trade is done, it cannot be undone", loader.message, { a ->
@@ -34,7 +34,11 @@ class Cancel(private val session: TradingSession) : Command(LangID.EN, true) {
                 CardData.sessions.remove(session)
                 CardBot.saveCardData()
 
-                TransactionLogger.logTrade(session, TransactionLogger.TradeStatus.CANCELED)
+                if (index == -1) {
+                    TransactionLogger.logTradeCancel(session, m.idLong)
+                } else {
+                    TransactionLogger.logTrade(session, TransactionLogger.TradeStatus.CANCELED)
+                }
 
                 ch.sendMessage("Trading has been canceled, session is closed now").queue()
 

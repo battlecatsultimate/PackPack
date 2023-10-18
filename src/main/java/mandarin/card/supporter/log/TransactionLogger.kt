@@ -87,6 +87,30 @@ object TransactionLogger {
         }
     }
 
+    fun logTradeCancel(session: TradingSession, member: Long) {
+        if (!this::logChannel.isInitialized || !this::tradeChannel.isInitialized)
+            return
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("Trade Session Closed")
+
+        builder.setColor(StaticStore.rainbow.random())
+
+        builder.setDescription("Trading session has been closed by manager <@${member}>")
+
+        builder.addField("Trader 1", "<@${session.member[0]}> [${session.member[0]}]", true)
+        builder.addField("Trader 2", "<@${session.member[1]}> [${session.member[1]}]", true)
+        builder.addField("Trader 1's Suggestion", session.suggestion[0].suggestionInfoCompacted(), false)
+        builder.addField("Trader 2's Suggestion", session.suggestion[1].suggestionInfoCompacted(), false)
+
+        builder.addField("Trading Result", "Canceled", false)
+
+        builder.addField("Post", "<#${session.postID}> [${session.postID}]", false)
+
+        logChannel.sendMessageEmbeds(builder.build()).queue()
+    }
+
     fun logTradeStart(session: TradingSession, opener: Member) {
         if (!this::logChannel.isInitialized)
             return
