@@ -125,7 +125,7 @@ object CardData {
         //Tier 3
         arrayOf(
             //Epicfest Exclusives
-            arrayOf(333, 378, 441, 543, 609, 657),
+            arrayOf(333, 378, 441, 543, 609, 657, 705),
             //Uberfest Exclusives
             arrayOf(269, 318, 380, 529, 585, 641, 690),
             //Other Exclusives
