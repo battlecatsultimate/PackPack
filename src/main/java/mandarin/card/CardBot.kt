@@ -313,7 +313,7 @@ object CardBot : ListenerAdapter() {
 
         readCardData()
 
-        Initializer.checkAssetDownload()
+        Initializer.checkAssetDownload(false)
     }
 
     private fun readCardData() {
