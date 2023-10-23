@@ -9,6 +9,8 @@ This project uses [Animated Gif Encoder](https://github.com/battlecatsultimate/P
 
 This project uses [FFMPEG](https://ffmpeg.org/) to generate mp4 from `The Battle Cats` units and enemies
 
+This project uses [LWJGL](https://www.lwjgl.org/) to render images and videos
+
 ---
 ## Running the Bot
 
