@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.utils.FileUpload
+import java.util.concurrent.CountDownLatch
 import kotlin.random.Random
 
 class RollManual : Command(LangID.EN, true) {
@@ -144,21 +145,18 @@ class RollManual : Command(LangID.EN, true) {
         }
 
         result.removeIf { id ->
-            var running = true
+            val waiter = CountDownLatch(1)
             var needRemoval = false
 
             g.retrieveMember(UserSnowflake.fromId(id)).queue({ _ ->
-                running = false
+                waiter.countDown()
                 needRemoval = false
             }, { _ ->
-                running = false
+                waiter.countDown()
                 needRemoval = true
             })
 
-            while(true) {
-                if (!running)
-                    break
-            }
+            waiter.await()
 
             needRemoval
         }
