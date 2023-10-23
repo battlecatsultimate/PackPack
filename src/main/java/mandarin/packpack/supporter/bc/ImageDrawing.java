@@ -2339,7 +2339,7 @@ public class ImageDrawing {
             maxTitleWidth = Math.round(Math.max(maxTitleWidth, titleRect[2]));
 
             for(int j = 0; j < data.description.length; j++) {
-                float[] descRect = nameFont.measureDimension(data.description[j]);
+                float[] descRect = contentFont.measureDimension(data.description[j]);
 
                 maxDescLineHeight = Math.round(Math.max(maxDescLineHeight, descRect[3]));
                 maxDescLineWidth = Math.round(Math.max(maxDescLineWidth, descRect[2]));
@@ -2367,10 +2367,10 @@ public class ImageDrawing {
 
                 cost.append("] => ").append(costSummary);
 
-                float[] costTitleRect = contentFont.measureDimension(costTitle);
-                float[] costRect = nameFont.measureDimension(cost.toString());
+                float costTitleWidth = contentFont.textWidth(costTitle);
+                float costWidth = nameFont.textWidth(cost.toString());
 
-                maxCostWidth = Math.round(Math.max(maxCostWidth, Math.max(costTitleRect[2], talentCostTableGap * 2 + costRect[2])));
+                maxCostWidth = Math.round(Math.max(maxCostWidth, Math.max(costTitleWidth, talentCostTableGap * 2 + costWidth)));
             }
         }
 
@@ -2380,7 +2380,7 @@ public class ImageDrawing {
         float[] totalRect = nameFont.measureDimension(totalCostText);
 
         int totalCostWidth = Math.round(totalRect[2]);
-        int totalCostHeight = Math.round(totalRect[2]);
+        int totalCostHeight = Math.round(totalRect[3]);
 
         int panelWidth = statPanelMargin * 2 + Math.max(maxCostWidth, Math.max(maxDescLineWidth, talentIconDimension * 2 + talentNameGap + maxTitleWidth));
         int panelHeight = statPanelMargin * 2;
@@ -2447,6 +2447,7 @@ public class ImageDrawing {
         CountDownLatch waiter = new CountDownLatch(1);
 
         int finalMaxDescLineHeight = maxDescLineHeight;
+
         StaticStore.renderManager.createRenderer(totalWidth, totalHeight, temp, connector -> {
             connector.queue(g -> {
                 g.setColor(51, 53, 60, 255);
@@ -2498,7 +2499,7 @@ public class ImageDrawing {
                     if(data.hasDescription()) {
                         y += talentIconGap;
 
-                        g.setFontModel(nameFont);
+                        g.setFontModel(contentFont);
                         g.setColor(191, 191, 191, 255);
 
                         for(int j = 0; j < data.description.length; j++) {
