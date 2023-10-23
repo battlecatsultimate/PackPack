@@ -2,8 +2,6 @@ package mandarin.packpack.supporter.lwjgl.opengl
 
 import org.lwjgl.opengl.GL33
 import java.io.BufferedReader
-import java.io.File
-import java.io.FileReader
 import java.io.InputStreamReader
 
 class ShaderScript private constructor(private val shaderID: Int, val uniformField: Array<out String>) {

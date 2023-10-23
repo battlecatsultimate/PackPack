@@ -4,9 +4,7 @@ import common.battle.data.MaskUnit;
 import common.battle.data.PCoin;
 import common.system.fake.FakeImage;
 
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class CustomTalent extends PCoin {

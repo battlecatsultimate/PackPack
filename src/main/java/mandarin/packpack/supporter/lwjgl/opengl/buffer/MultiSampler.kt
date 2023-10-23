@@ -2,7 +2,6 @@ package mandarin.packpack.supporter.lwjgl.opengl.buffer
 
 import mandarin.packpack.supporter.Logger
 import mandarin.packpack.supporter.lwjgl.opengl.RenderSession
-import org.apache.commons.logging.Log
 import org.lwjgl.opengl.GL33
 
 class MultiSampler private constructor(val fboID: Int, val width: Int, val height: Int) {

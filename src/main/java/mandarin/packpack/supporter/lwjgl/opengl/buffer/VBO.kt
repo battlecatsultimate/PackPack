@@ -1,7 +1,6 @@
 package mandarin.packpack.supporter.lwjgl.opengl.buffer
 
 import mandarin.packpack.supporter.Logger
-import mandarin.packpack.supporter.StaticStore
 import org.lwjgl.opengl.GL33
 
 class VBO private constructor(val vboID: Int, type: Type) {

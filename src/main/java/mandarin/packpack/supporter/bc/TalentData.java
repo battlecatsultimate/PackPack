@@ -2,7 +2,6 @@ package mandarin.packpack.supporter.bc;
 
 import common.system.fake.FakeImage;
 
-import java.awt.image.BufferedImage;
 import java.util.List;
 
 public class TalentData {
