@@ -2629,14 +2629,12 @@ public class ImageDrawing {
         maxIconTableWidth = (int) Math.round(Math.max(maxIconTableWidth, (descRect[2] - comboIconGap * (combo.icons.size() - 1)) / (1.0 * combo.icons.size())));
 
         int panelHeight = Math.round(statPanelMargin * 2 + maxIconTableHeight + comboContentGap + descRect[3]);
-        int panelWidth = 0;
+        int panelWidth = Math.round(statPanelMargin * 2 + Math.max(maxIconTableWidth * combo.icons.size() + comboIconGap * (combo.icons.size() - 1), descRect[2]));
 
         if(titleWidth > panelWidth) {
             panelWidth = titleWidth + bgMargin * 2 + statPanelMargin;
 
             maxIconTableWidth = (int) Math.round((panelWidth - statPanelMargin * 2 - comboIconGap * (combo.icons.size() - 1)) / (1.0 * combo.icons.size()));
-        } else {
-            panelWidth = Math.round(statPanelMargin * 2 + Math.max(maxIconTableWidth * combo.icons.size() + comboIconGap * (combo.icons.size() - 1), descRect[2]));
         }
 
         int totalHeight = bgMargin * 5 + titleHeight + panelHeight;

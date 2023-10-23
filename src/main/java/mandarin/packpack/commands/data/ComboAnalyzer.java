@@ -326,7 +326,7 @@ public class ComboAnalyzer extends ConstraintCommand {
 
                     f.anim.load();
 
-                    FakeImage icon = f.anim.getUni().getImg();
+                    FakeImage icon = f.anim.getUni().getImg().cloneImage();
 
                     if(icon == null)
                         return null;
