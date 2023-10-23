@@ -27,7 +27,7 @@ class GLImageBuilder : ImageBuilder<SpriteSheet>() {
             val image = AtomicReference<GLImage>(null)
 
             StaticStore.renderManager.queueGL {
-                image.set(GLImage(SpriteSheet.build(f), false))
+                image.set(GLImage(SpriteSheet.build(f)))
 
                 waiter.countDown()
             }
@@ -36,7 +36,7 @@ class GLImageBuilder : ImageBuilder<SpriteSheet>() {
 
             image.get()
         } else {
-            GLImage(SpriteSheet.build(f), false)
+            GLImage(SpriteSheet.build(f))
         }
     }
 
@@ -51,7 +51,7 @@ class GLImageBuilder : ImageBuilder<SpriteSheet>() {
             val image = AtomicReference<GLImage>(null)
 
             StaticStore.renderManager.queueGL {
-                image.set(GLImage(SpriteSheet.build(sup.get()), true))
+                image.set(GLImage(SpriteSheet.build(sup.get())))
 
                 waiter.countDown()
             }
@@ -60,12 +60,12 @@ class GLImageBuilder : ImageBuilder<SpriteSheet>() {
 
             image.get()
         } else {
-            GLImage(SpriteSheet.build(sup.get()), true)
+            GLImage(SpriteSheet.build(sup.get()))
         }
     }
 
     override fun build(o: SpriteSheet): FakeImage {
-        return GLImage(o, false)
+        return GLImage(o)
     }
 
     override fun build(w: Int, h: Int): FakeImage {

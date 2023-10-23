@@ -7,7 +7,6 @@ import mandarin.packpack.supporter.lwjgl.opengl.model.SpriteSheet
 import mandarin.packpack.supporter.lwjgl.opengl.model.TextureMesh
 import org.lwjgl.opengl.GL33
 import java.awt.Color
-import java.lang.UnsupportedOperationException
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicReference
 
@@ -16,21 +15,28 @@ class GLImage : FakeImage {
         private val sharedRGBA = IntArray(4)
     }
 
-    private val sprite: SpriteSheet
-    private val textureMesh: TextureMesh
+    private val cloneReferences = ArrayList<GLImage>()
 
-    private val fromBC: Boolean
+    private var sprite: SpriteSheet
+    private var textureMesh: TextureMesh
+    private var reference: GLImage?
 
-    constructor(spriteSheet: SpriteSheet, fromBC: Boolean) {
+    constructor(spriteSheet: SpriteSheet) {
         sprite = spriteSheet
         textureMesh = sprite.wholePart
-        this.fromBC = fromBC
+        reference = null
     }
 
-    constructor(spriteSheet: SpriteSheet, child: TextureMesh, fromBC: Boolean) {
+    constructor(spriteSheet: SpriteSheet, child: TextureMesh) {
         sprite = spriteSheet
         textureMesh = child
-        this.fromBC = fromBC
+        reference = null
+    }
+
+    private constructor(spriteSheet: SpriteSheet, child: TextureMesh, cloned: GLImage?) {
+        sprite = spriteSheet
+        textureMesh = child
+        this.reference = cloned
     }
 
     override fun bimg(): Any {
@@ -88,7 +94,7 @@ class GLImage : FakeImage {
             val image = AtomicReference<GLImage>(null)
 
             StaticStore.renderManager.queueGL {
-                image.set(GLImage(sprite, sprite.generatePart(i.toFloat(), j.toFloat(), k.toFloat(), l.toFloat()), fromBC))
+                image.set(GLImage(sprite, sprite.generatePart(i.toFloat(), j.toFloat(), k.toFloat(), l.toFloat())))
 
                 waiter.countDown()
             }
@@ -97,7 +103,7 @@ class GLImage : FakeImage {
 
             image.get()
         } else {
-            GLImage(sprite, sprite.generatePart(i.toFloat(), j.toFloat(), k.toFloat(), l.toFloat()), fromBC)
+            GLImage(sprite, sprite.generatePart(i.toFloat(), j.toFloat(), k.toFloat(), l.toFloat()))
         }
 
     }
@@ -130,10 +136,19 @@ class GLImage : FakeImage {
     }
 
     override fun unload() {
+        if (reference != null)
+            return
+
         if (!Thread.currentThread().equals(StaticStore.renderManager.renderThread)) {
             val waiter = CountDownLatch(1)
 
             StaticStore.renderManager.queueGL {
+                if (cloneReferences.isNotEmpty()) {
+                    cloneReferences.forEach { ref ->
+                        ref.changeReferenceTo(hardClone())
+                    }
+                }
+
                 sprite.release()
 
                 waiter.countDown()
@@ -141,12 +156,66 @@ class GLImage : FakeImage {
 
             waiter.await()
         } else {
+            if (cloneReferences.isNotEmpty()) {
+                cloneReferences.forEach { ref ->
+                    ref.changeReferenceTo(hardClone())
+                }
+            }
+
             sprite.release()
         }
     }
 
     override fun cloneImage(): FakeImage {
-        return GLImage(sprite, textureMesh, fromBC)
+        val img = if (reference != null)
+            GLImage(sprite, textureMesh, reference)
+        else
+            GLImage(sprite, textureMesh, this)
+
+        if (reference != null)
+            reference?.cloneReferences?.add(img)
+        else
+            cloneReferences.add(img)
+
+        return img
+    }
+
+    private fun hardClone() : GLImage {
+        val waiter = if (!Thread.currentThread().equals(StaticStore.renderManager.renderThread)) {
+            CountDownLatch(1)
+        } else {
+            null
+        }
+
+        return if (waiter != null) {
+            val img = AtomicReference<GLImage>(null)
+
+            StaticStore.renderManager.queueGL {
+                if (textureMesh === sprite.wholePart) {
+                    img.set(GLImage(sprite.clone()))
+                } else {
+                    img.set(GLImage(sprite.clone()).getSubimage(textureMesh.offsetX.toInt(), textureMesh.offsetY.toInt(), textureMesh.width.toInt(), textureMesh.height.toInt()) as GLImage)
+                }
+
+                waiter.countDown()
+            }
+
+            waiter.await()
+
+            img.get()
+        } else {
+            if (textureMesh === sprite.wholePart) {
+                GLImage(sprite.clone())
+            } else {
+                GLImage(sprite.clone()).getSubimage(textureMesh.offsetX.toInt(), textureMesh.offsetY.toInt(), textureMesh.width.toInt(), textureMesh.height.toInt()) as GLImage
+            }
+        }
+    }
+
+    private fun changeReferenceTo(other: GLImage) {
+        sprite = other.sprite
+        textureMesh = other.textureMesh
+        reference = null
     }
 
     override fun getGraphics(): FakeGraphics {
@@ -158,7 +227,7 @@ class GLImage : FakeImage {
 
         val buffer = IntArray(textureMesh.width.toInt() * textureMesh.height.toInt() * 4)
 
-        GL33.glReadPixels(textureMesh.offsetX.toInt(), textureMesh.offsetY.toInt(), textureMesh.width.toInt(), textureMesh.height.toInt(), GL33.GL_RGBA, GL33.GL_UNSIGNED_INT, buffer)
+        GL33.glGetTexImage(GL33.GL_TEXTURE_2D, 0, GL33.GL_RGBA, GL33.GL_UNSIGNED_INT, buffer)
 
         return buffer
     }

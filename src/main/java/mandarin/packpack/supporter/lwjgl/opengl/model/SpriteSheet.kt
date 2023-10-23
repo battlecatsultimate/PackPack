@@ -60,7 +60,9 @@ class SpriteSheet private constructor(private val parentTexture: Texture) : Mode
 
     fun generatePart(x: Float, y: Float, w: Float, h: Float) : TextureMesh {
         if (released) {
-            throw IllegalStateException("This sprite sheet is already released!")
+            throw IllegalStateException("This sprite sheet is already released!\n" +
+                    "Texture ID : ${parentTexture.textureID}\n" +
+                    "VBO ID : ${vertexVBO.vboID}")
         }
 
         val xRatio = x / width
@@ -91,7 +93,7 @@ class SpriteSheet private constructor(private val parentTexture: Texture) : Mode
 
     fun drawMesh(mesh: TextureMesh) {
         if (released) {
-            throw IllegalStateException("This sprite sheet is already released!")
+            throw IllegalStateException("This sprite sheet is already released!\nTexture ID : ${parentTexture.textureID}\nVBO ID : ${vertexVBO.vboID}")
         }
 
         bind()
@@ -115,6 +117,16 @@ class SpriteSheet private constructor(private val parentTexture: Texture) : Mode
         VAO.vao.setVertexAttributeArray(VAO.Attribute.UV, true)
 
         GL33.glDrawArrays(GL33.GL_TRIANGLES, 0, INDEX_SIZE)
+    }
+
+    fun clone(): SpriteSheet {
+        bind()
+
+        val buffer = IntArray(parentTexture.width.toInt() * parentTexture.height.toInt() * 4)
+
+        GL33.glGetTexImage(GL33.GL_TEXTURE_2D, 0, GL33.GL_RGBA, GL33.GL_UNSIGNED_INT, buffer)
+
+        return SpriteSheet(Texture.build(buffer, parentTexture.width.toInt(), parentTexture.height.toInt()))
     }
 
     override fun doBind() {

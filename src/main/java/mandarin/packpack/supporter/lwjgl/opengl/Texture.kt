@@ -9,6 +9,7 @@ import java.io.File
 import java.io.IOException
 import java.io.InputStream
 import java.nio.ByteBuffer
+import java.nio.IntBuffer
 import javax.imageio.ImageIO
 
 class Texture private constructor(val textureID: Int, val width: Float, val height: Float) {
@@ -128,6 +129,27 @@ class Texture private constructor(val textureID: Int, val width: Float, val heig
             GL33.glGenerateMipmap(GL33.GL_TEXTURE_2D)
 
             val texture = Texture(id, bitmap.width().toFloat(), bitmap.rows().toFloat())
+
+            registeredTexture.add(texture)
+
+            return texture
+        }
+
+        fun build(buffer: IntArray, width: Int, height: Int) : Texture {
+            val id = GL33.glGenTextures()
+            Logger.addLog("Generating texture from Texture with stream : $id")
+
+            GL33.glBindTexture(GL33.GL_TEXTURE_2D, id)
+
+            GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_WRAP_S, GL33.GL_CLAMP_TO_BORDER)
+            GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_WRAP_T, GL33.GL_CLAMP_TO_BORDER)
+
+            GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_MIN_FILTER, GL33.GL_LINEAR)
+            GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_MAG_FILTER, GL33.GL_LINEAR)
+
+            GL33.glTexImage2D(GL33.GL_TEXTURE_2D, 0, GL33.GL_RGBA, width, height, 0, GL33.GL_RGBA, GL33.GL_UNSIGNED_INT, buffer)
+
+            val texture = Texture(id, width.toFloat(), height.toFloat())
 
             registeredTexture.add(texture)
 

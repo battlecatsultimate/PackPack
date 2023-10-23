@@ -169,7 +169,7 @@ public class TalentAnalyzer extends ConstraintCommand {
 
             u.forms[2].anim.load();
 
-            unitIcon = u.forms[2].anim.getUni().getImg();
+            unitIcon = u.forms[2].anim.getUni().getImg().cloneImage();
 
             u.forms[2].anim.unload();
         }
@@ -231,7 +231,7 @@ public class TalentAnalyzer extends ConstraintCommand {
                 List<Trait> traits = Trait.convertType(traitID);
 
                 if(traits.size() == 1) {
-                    talent.traitIcon = CommonStatic.getBCAssets().icon[3][traits.get(0).id.id].getImg();
+                    talent.traitIcon = CommonStatic.getBCAssets().icon[3][traits.get(0).id.id].getImg().cloneImage();
                 }
             }
         }
@@ -370,23 +370,23 @@ public class TalentAnalyzer extends ConstraintCommand {
 
             switch (type[0]) {
                 case 0 -> {
-                    return CommonStatic.getBCAssets().icon[1][type[1]].getImg();
+                    return CommonStatic.getBCAssets().icon[1][type[1]].getImg().cloneImage();
                 }
                 case 1 -> {
-                    return CommonStatic.getBCAssets().icon[0][(int) (Math.log(type[1]) / Math.log(2))].getImg();
+                    return CommonStatic.getBCAssets().icon[0][(int) (Math.log(type[1]) / Math.log(2))].getImg().cloneImage();
                 }
                 case 2 -> {
-                    return CommonStatic.getBCAssets().icon[4][type[1]].getImg();
+                    return CommonStatic.getBCAssets().icon[4][type[1]].getImg().cloneImage();
                 }
                 case 3 -> {
                     if (immunity) {
-                        return CommonStatic.getBCAssets().icon[1][type[1]].getImg();
+                        return CommonStatic.getBCAssets().icon[1][type[1]].getImg().cloneImage();
                     } else {
-                        return DataToString.resistantIcon.getOrDefault(type[1], null);
+                        return DataToString.resistantIcon.getOrDefault(type[1], null).cloneImage();
                     }
                 }
                 case 4 -> {
-                    return CommonStatic.getBCAssets().icon[3][type[1]].getImg();
+                    return CommonStatic.getBCAssets().icon[3][type[1]].getImg().cloneImage();
                 }
                 default ->
                         throw new IllegalStateException("E/TalentAnalyzer::grabTalentIcon - Invalid talent type ID : " + type[0]);
