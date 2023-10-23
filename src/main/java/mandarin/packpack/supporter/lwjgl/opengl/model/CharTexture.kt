@@ -1,6 +1,7 @@
-package mandarin.packpack.supporter.opengl.model
+package mandarin.packpack.supporter.lwjgl.opengl.model
 
-import mandarin.packpack.supporter.opengl.Texture
+import mandarin.packpack.supporter.Logger
+import mandarin.packpack.supporter.lwjgl.opengl.Texture
 
 class CharTexture(
     val texture: Texture,
@@ -13,6 +14,8 @@ class CharTexture(
 ) {
 
     fun release() {
+        Logger.addLog("Releasing CharTexture")
+
         texture.release()
     }
 }

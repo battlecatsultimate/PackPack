@@ -2,52 +2,70 @@ package mandarin.packpack.supporter.lwjgl
 
 import common.system.fake.FakeImage
 import common.system.fake.ImageBuilder
-import mandarin.packpack.supporter.Pauser
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.awt.FIBI
-import mandarin.packpack.supporter.opengl.model.SpriteSheet
+import mandarin.packpack.supporter.lwjgl.opengl.model.SpriteSheet
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
+import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicReference
 import java.util.function.Supplier
 import javax.imageio.ImageIO
 
 class GLImageBuilder : ImageBuilder<SpriteSheet>() {
     override fun build(f: File): FakeImage {
-        val image = AtomicReference<GLImage>(null)
-        val pauser = Pauser()
-
-        StaticStore.renderManager.queueGL {
-            image.set(GLImage(SpriteSheet.build(f)))
-
-            pauser.resume()
+        val waiter = if (!Thread.currentThread().equals(StaticStore.renderManager.renderThread)) {
+            CountDownLatch(1)
+        } else {
+            null
         }
 
-        pauser.pause()
+        return if (waiter != null) {
+            val image = AtomicReference<GLImage>(null)
 
-        return image.get()
+            StaticStore.renderManager.queueGL {
+                image.set(GLImage(SpriteSheet.build(f), false))
+
+                waiter.countDown()
+            }
+
+            waiter.await()
+
+            image.get()
+        } else {
+            GLImage(SpriteSheet.build(f), false)
+        }
     }
 
     override fun build(sup: Supplier<InputStream>): FakeImage {
-        val image = AtomicReference<GLImage>(null)
-        val pauser = Pauser()
-
-        StaticStore.renderManager.queueGL {
-            image.set(GLImage(SpriteSheet.build(sup.get())))
-
-            pauser.resume()
+        val waiter = if (!Thread.currentThread().equals(StaticStore.renderManager.renderThread)) {
+            CountDownLatch(1)
+        } else {
+            null
         }
 
-        pauser.pause()
+        return if (waiter != null) {
+            val image = AtomicReference<GLImage>(null)
 
-        return image.get()
+            StaticStore.renderManager.queueGL {
+                image.set(GLImage(SpriteSheet.build(sup.get()), true))
+
+                waiter.countDown()
+            }
+
+            waiter.await()
+
+            image.get()
+        } else {
+            GLImage(SpriteSheet.build(sup.get()), true)
+        }
     }
 
     override fun build(o: SpriteSheet): FakeImage {
-        return GLImage(o)
+        return GLImage(o, false)
     }
 
     override fun build(w: Int, h: Int): FakeImage {

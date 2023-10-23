@@ -1,20 +1,22 @@
-package mandarin.packpack.supporter.opengl.renderer
+package mandarin.packpack.supporter.lwjgl.opengl.renderer
 
 import mandarin.packpack.supporter.StaticStore
-import mandarin.packpack.supporter.opengl.RenderSessionManager
+import mandarin.packpack.supporter.lwjgl.opengl.RenderSessionManager
 import org.lwjgl.glfw.GLFW
 import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
 
 class Renderer {
+    val renderThread: Thread
+
     lateinit var renderSessionManager: RenderSessionManager
 
     private val attachQueue = ArrayList<AttachQueue>()
     private val customQueue = Collections.synchronizedList(ArrayList<Runnable>())
 
     init {
-        Thread {
+        renderThread = Thread {
             renderSessionManager = RenderSessionManager()
 
             while(true) {
@@ -56,7 +58,9 @@ class Renderer {
                     done
                 }
             }
-        }.start()
+        }.also {
+            it.start()
+        }
     }
 
     fun createRenderer(width: Int, height: Int, folder: File, onAttach: (RenderSessionConnector) -> Unit, onExport: (Int) -> File, onFinished: () -> Unit) {

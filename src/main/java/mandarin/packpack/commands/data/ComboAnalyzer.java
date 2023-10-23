@@ -1,6 +1,8 @@
 package mandarin.packpack.commands.data;
 
 import common.pack.UserProfile;
+import common.system.fake.FakeImage;
+import common.system.fake.ImageBuilder;
 import common.util.Data;
 import common.util.unit.Combo;
 import common.util.unit.Form;
@@ -18,8 +20,6 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.utils.FileUpload;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -87,6 +87,10 @@ public class ComboAnalyzer extends ConstraintCommand {
 
         for(int i = 0; i < combos.size(); i++) {
             File image = ImageDrawing.drawComboImage(folder, combos.get(i));
+
+            for (int j = 0; j < combos.get(i).icons.size(); j++) {
+                combos.get(i).icons.get(j).unload();
+            }
 
             if(image != null)
                 images.add(image);
@@ -283,7 +287,7 @@ public class ComboAnalyzer extends ConstraintCommand {
 
         formNumber /= 2;
 
-        List<BufferedImage> icons = new ArrayList<>();
+        List<FakeImage> icons = new ArrayList<>();
         List<String> names = new ArrayList<>();
 
         for(int i = 0; i < formNumber; i++) {
@@ -302,7 +306,7 @@ public class ComboAnalyzer extends ConstraintCommand {
                 if(!icon.exists())
                     return null;
 
-                icons.add(ImageIO.read(icon).getSubimage(9, 21, 110, 85));
+                icons.add(ImageBuilder.builder.build(icon).getSubimage(9, 21, 110, 85));
 
                 names.add(grabUnitNameFromFile(resLocal, uid, form, locale));
             } else {
@@ -314,7 +318,7 @@ public class ComboAnalyzer extends ConstraintCommand {
                     if(!icon.exists())
                         return null;
 
-                    icons.add(ImageIO.read(icon).getSubimage(9, 21, 110, 85));
+                    icons.add(ImageBuilder.builder.build(icon).getSubimage(9, 21, 110, 85));
 
                     names.add(grabUnitNameFromFile(resLocal, uid, form, locale));
                 } else {
@@ -322,7 +326,7 @@ public class ComboAnalyzer extends ConstraintCommand {
 
                     f.anim.load();
 
-                    BufferedImage icon = (BufferedImage) f.anim.getUni().getImg().bimg();
+                    FakeImage icon = f.anim.getUni().getImg();
 
                     if(icon == null)
                         return null;

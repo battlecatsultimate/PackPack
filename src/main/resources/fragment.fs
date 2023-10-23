@@ -3,11 +3,20 @@
 out vec4 FragColor;
 
 in vec2 uvMap;
+in vec2 vertexPos;
+flat in vec2 startPos;
 
 uniform int state;
 uniform bool opposite;
 
-uniform float height;
+uniform vec2 screenSize;
+
+uniform bool dashMode;
+uniform bool fillMode;
+
+uniform uint pattern;
+uniform float factor;
+
 uniform float alpha;
 
 uniform vec2 step1;
@@ -34,8 +43,8 @@ void main()
         }
         else
         {
-            vec2 filteredStep1 = vec2(step1.x, height - step1.y);
-            vec2 filteredStep2 = vec2(step2.x, height - step2.y);
+            vec2 filteredStep1 = vec2(step1.x, screenSize.y - step1.y);
+            vec2 filteredStep2 = vec2(step2.x, screenSize.y - step2.y);
 
             vec2 direction = filteredStep2 - filteredStep1;
             vec2 targetDirection = gl_FragCoord.xy - filteredStep1;
@@ -54,14 +63,27 @@ void main()
     }
     else
     {
+        if (dashMode && !fillMode)
+        {
+            vec2 dir = (vertexPos.xy - startPos.xy) * screenSize / 2.0;
+            float dist = length(dir);
+
+            uint bit = uint(round(dist / factor)) & 15U;
+
+            if ((pattern & (1U << bit)) == 0U)
+            {
+                discard;
+            }
+        }
+
         if (color1 == color2)
         {
             FragColor = color1 * alpha;
         }
         else
         {
-            vec2 filteredStep1 = vec2(step1.x, height - step1.y);
-            vec2 filteredStep2 = vec2(step2.x, height - step2.y);
+            vec2 filteredStep1 = vec2(step1.x, screenSize.y - step1.y);
+            vec2 filteredStep2 = vec2(step2.x, screenSize.y - step2.y);
 
             vec2 direction = filteredStep2 - filteredStep1;
             vec2 targetDirection = gl_FragCoord.xy - filteredStep1;

@@ -1,29 +1,24 @@
 package mandarin.packpack.supporter.bc.cell;
 
-import mandarin.packpack.supporter.awt.FG2D;
+import common.system.fake.FakeImage;
+import mandarin.packpack.supporter.lwjgl.GLGraphics;
+import mandarin.packpack.supporter.lwjgl.opengl.model.FontModel;
 
 import javax.annotation.Nonnull;
-import java.awt.*;
-import java.awt.font.FontRenderContext;
-import java.awt.font.GlyphVector;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
 import java.util.Arrays;
 
 public class NormalCellDrawer implements CellDrawer {
     private final String[] names;
     private final String[] contents;
-    private final BufferedImage[] icons;
+    private final FakeImage[] icons;
     private final boolean[] fitToText;
 
-    public int h = -1;
-    public int ch = -1;
-    public int ih = -1;
-    public int w = -1;
-    public int uw = -1;
-    public int offset = -1;
-    public final int[][] xTextOffset;
-    public final int[][] yTextOffset;
+    public float h = -1;
+    public float ch = -1;
+    public float ih = -1;
+    public float w = -1;
+    public float uw = -1;
+    public float offset = -1;
 
     public NormalCellDrawer(@Nonnull String[] names, @Nonnull String[] contents) {
         if(names.length != contents.length) {
@@ -42,11 +37,9 @@ public class NormalCellDrawer implements CellDrawer {
         this.contents = contents;
         this.icons = null;
         this.fitToText = null;
-        this.yTextOffset = new int[names.length][2];
-        this.xTextOffset = new int[names.length][2];
     }
 
-    public NormalCellDrawer(@Nonnull String[] names, @Nonnull String[] contents, @Nonnull BufferedImage[] icons, @Nonnull boolean[] fitToText) {
+    public NormalCellDrawer(@Nonnull String[] names, @Nonnull String[] contents, @Nonnull FakeImage[] icons, @Nonnull boolean[] fitToText) {
         if(names.length != contents.length || names.length != icons.length || names.length != fitToText.length) {
             throw new IllegalStateException("Name and content must be synchronized!\n\nName : "+ Arrays.toString(names)+"\nContents : "+Arrays.toString(contents));
         } else if(names.length == 0) {
@@ -63,21 +56,19 @@ public class NormalCellDrawer implements CellDrawer {
         this.contents = contents;
         this.icons = icons;
         this.fitToText = fitToText;
-        this.yTextOffset = new int[names.length][2];
-        this.xTextOffset = new int[names.length][2];
     }
 
     @Override
-    public void initialize(Font nameFont, Font contentFont, FontMetrics nfm, FontMetrics cfm, int targetWidth) {
-        getHeightAndOffset(nameFont, contentFont, nfm.getFontRenderContext(), cfm.getFontRenderContext());
-        getWidth(nfm, cfm);
+    public void initialize(FontModel nameFont, FontModel contentFont, int targetWidth) {
+        getHeightAndOffset(nameFont, contentFont);
+        getWidth(nameFont, contentFont);
     }
 
-    private void getWidth(FontMetrics bigFont, FontMetrics smallFont) {
-        int uw = 0;
+    private void getWidth(FontModel nameFont, FontModel contentFont) {
+        float uw = 0;
 
         for(int i = 0; i < names.length; i++) {
-            int cw = smallFont.stringWidth(contents[i]);
+            float cw = contentFont.textWidth(contents[i]);
 
             if(icons != null && icons[i] != null) {
                 if(fitToText[i]) {
@@ -89,7 +80,7 @@ public class NormalCellDrawer implements CellDrawer {
                 }
             }
 
-            uw = Math.max(uw, Math.max(bigFont.stringWidth(names[i]), cw));
+            uw = Math.max(uw, Math.max(nameFont.textWidth(names[i]), cw));
         }
 
         this.uw = uw;
@@ -107,27 +98,18 @@ public class NormalCellDrawer implements CellDrawer {
         this.w = w;
     }
 
-    private void getHeightAndOffset(Font nameFont, Font contentFont, FontRenderContext nfrc, FontRenderContext cfrc) {
-        int rh = 0;
-        int off = 0;
-        int rih = 0;
-        int rch = 0;
+    private void getHeightAndOffset(FontModel nameFont, FontModel contentFont) {
+        float rh = 0;
+        float off = 0;
+        float rih = 0;
+        float rch = 0;
 
         for(int i = 0; i < names.length; i++) {
-            GlyphVector ngv = nameFont.createGlyphVector(nfrc, names[i]);
-            GlyphVector cgv = contentFont.createGlyphVector(cfrc, contents[i]);
+            float[] nRect = nameFont.measureDimension(names[i]);
+            float[] cRect = contentFont.measureDimension(contents[i]);
 
-            Rectangle2D nRect = ngv.getPixelBounds(null, 0, 0);
-            Rectangle2D cRect = cgv.getPixelBounds(null, 0, 0);
-
-            yTextOffset[i][0] = (int) Math.round(nRect.getY());
-            yTextOffset[i][1] = (int) Math.round(cRect.getY());
-
-            xTextOffset[i][0] = (int) Math.round(nRect.getX());
-            xTextOffset[i][1] = (int) Math.round(cRect.getX());
-
-            rh = (int) Math.max(Math.round(nRect.getHeight()+textMargin+cRect.getHeight()), rh);
-            rch = (int) Math.max(Math.round(cRect.getHeight()), rch);
+            rh = Math.max(Math.round(nRect[3] + textMargin + cRect[3]), rh);
+            rch = Math.max(Math.round(cRect[3]), rch);
 
             if(icons != null && icons[i] != null) {
                 rih = Math.max(fitToText[i] ? rch : icons[i].getHeight(), ih);
@@ -135,7 +117,7 @@ public class NormalCellDrawer implements CellDrawer {
                 rih = Math.max(rch, ih);
             }
 
-            off = (int) Math.max(Math.round(nRect.getHeight()+textMargin), off);
+            off = Math.max(Math.round(nRect[3] + textMargin), off);
         }
 
         h = rh;
@@ -145,20 +127,21 @@ public class NormalCellDrawer implements CellDrawer {
     }
 
     @Override
-    public void draw(FG2D g, int x, int y, int uw, int offset, int h , Font nameFont, Font contentFont) {
+    public void draw(GLGraphics g, int x, int y, int uw, int offset, int h , FontModel nameFont, FontModel contentFont) {
         g.setColor(191, 191, 191, 255);
-        g.setFont(nameFont);
+        g.setFontModel(nameFont);
 
-        int rx = x;
+        float rx = x;
 
         for(int i = 0; i < names.length; i++) {
-            g.drawText(names[i], rx - xTextOffset[i][0], y -yTextOffset[i][0]);
+            g.drawText(names[i], rx, y, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
+
             rx += uw + lineOffset * 2;
         }
 
         rx = x + uw;
 
-        g.setStroke(lineStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+        g.setStroke(lineStroke, GLGraphics.LineEndMode.ROUND);
 
         for(int i = 0; i < contents.length - 1; i++) {
             g.drawLine(rx + lineOffset, y + lineMargin, rx + lineOffset, y + Math.max(h, ih) - lineMargin);
@@ -169,12 +152,12 @@ public class NormalCellDrawer implements CellDrawer {
         rx = x;
 
         g.setColor(238, 238, 238, 255);
-        g.setFont(contentFont);
+        g.setFontModel(contentFont);
 
         for(int i = 0; i < contents.length; i++) {
             if(icons != null && icons[i] != null) {
-                int icw;
-                int ich;
+                float icw;
+                float ich;
 
                 if(fitToText[i]) {
                     ich = ch;
@@ -189,9 +172,9 @@ public class NormalCellDrawer implements CellDrawer {
 
                 g.drawImage(icons[i], rx, y + offset, icw, ich);
 
-                g.drawText(contents[i], rx + icw + iconMargin - xTextOffset[i][1], y + offset + (ih - ch) / 2 - yTextOffset[i][1]);
+                g.drawText(contents[i], rx + icw + iconMargin, y + offset + (ih - ch) / 2, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
             } else {
-                g.drawText(contents[i], rx - xTextOffset[i][1], y + offset - yTextOffset[i][1]);
+                g.drawText(contents[i], rx, y + offset, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
             }
 
             rx += uw + lineOffset * 2;

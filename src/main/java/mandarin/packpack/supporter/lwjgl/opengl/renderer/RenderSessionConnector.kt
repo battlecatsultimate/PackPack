@@ -1,7 +1,7 @@
-package mandarin.packpack.supporter.opengl.renderer
+package mandarin.packpack.supporter.lwjgl.opengl.renderer
 
 import mandarin.packpack.supporter.lwjgl.GLGraphics
-import mandarin.packpack.supporter.opengl.RenderSession
+import mandarin.packpack.supporter.lwjgl.opengl.RenderSession
 
 class RenderSessionConnector(private val renderSession: RenderSession) {
     fun queue(onRender: (GLGraphics) -> Unit) {

@@ -7,6 +7,7 @@ import common.battle.data.*;
 import common.pack.PackData;
 import common.pack.UserProfile;
 import common.system.fake.FakeImage;
+import common.system.fake.ImageBuilder;
 import common.system.files.VFile;
 import common.util.Data;
 import common.util.anim.AnimU;
@@ -23,11 +24,11 @@ import common.util.unit.*;
 import mandarin.packpack.commands.Command;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
-import mandarin.packpack.supporter.awt.FG2D;
-import mandarin.packpack.supporter.awt.FIBI;
 import mandarin.packpack.supporter.bc.cell.*;
 import mandarin.packpack.supporter.calculation.Equation;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.lwjgl.GLGraphics;
+import mandarin.packpack.supporter.lwjgl.opengl.model.FontModel;
 import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.component.EnemyButtonHolder;
@@ -51,34 +52,42 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.jcodec.common.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Queue;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class EntityHandler {
     private static final DecimalFormat df;
-    private static Font font;
+    private static FontModel font;
 
     static {
         NumberFormat nf = NumberFormat.getInstance(Locale.US);
 
         df = (DecimalFormat) nf;
         df.applyPattern("#.##");
+    }
 
+    public static void initialize() {
         File fon = new File("./data/ForceFont.otf");
 
         try {
-            font = Font.createFont(Font.TRUETYPE_FONT, fon).deriveFont(24f);
+            CountDownLatch waiter = new CountDownLatch(1);
+
+            StaticStore.renderManager.queueGL(() -> {
+                font = new FontModel(24f, fon, FontModel.Type.FILL, 0f);
+
+                waiter.countDown();
+            });
+
+            waiter.await();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -976,7 +985,7 @@ public class EntityHandler {
         e.anim.unload();
     }
 
-    private static File generateIcon(Enemy e) throws IOException {
+    private static File generateIcon(Enemy e) throws Exception {
         File temp = new File("./temp");
 
         if(!temp.exists()) {
@@ -993,19 +1002,35 @@ public class EntityHandler {
         if(img == null)
             return null;
 
-        Object image;
+        FakeImage image;
 
         if(e.anim.getEdi() != null && e.anim.getEdi().getImg() != null)
-            image = e.anim.getEdi().getImg().bimg();
+            image = e.anim.getEdi().getImg();
         else
             return null;
 
-        ImageIO.write((BufferedImage) image, "PNG", img);
+        CountDownLatch waiter = new CountDownLatch(1);
+
+        StaticStore.renderManager.createRenderer(image.getWidth(), image.getHeight(), temp, connector -> {
+            connector.queue(g -> {
+                g.drawImage(image, 0f, 0f);
+
+                return null;
+            });
+
+            return null;
+        }, progress -> img, () -> {
+            waiter.countDown();
+
+            return null;
+        });
+
+        waiter.await();
 
         return img;
     }
 
-    private static File generateIcon(Form f) throws IOException {
+    private static File generateIcon(Form f) throws Exception {
         File temp = new File("./temp");
 
         if(!temp.exists()) {
@@ -1023,21 +1048,37 @@ public class EntityHandler {
             return null;
         }
 
-        Object image;
+        FakeImage image;
 
         if(f.anim.getUni() != null)
-            image = f.anim.getUni().getImg().bimg();
+            image = f.anim.getUni().getImg();
         else if(f.anim.getEdi() != null)
-            image = f.anim.getEdi().getImg().bimg();
+            image = f.anim.getEdi().getImg();
         else
             return null;
-
-        ImageIO.write((BufferedImage) image, "PNG", img);
+        
+        CountDownLatch waiter = new CountDownLatch(1);
+        
+        StaticStore.renderManager.createRenderer(image.getWidth(), image.getHeight(), temp, connector -> {
+            connector.queue(g -> {
+                g.drawImage(image, 0f, 0f);
+                
+                return null;
+            });
+            
+            return null;
+        }, progress -> img, () -> {
+            waiter.countDown();
+            
+            return null;
+        });
+        
+        waiter.await();
 
         return img;
     }
 
-    private static File generateCatfruit(Form f) throws IOException {
+    private static File generateCatfruit(Form f) throws Exception {
         if(f.unit == null)
             return null;
 
@@ -1061,60 +1102,64 @@ public class EntityHandler {
             return null;
         }
 
-        BufferedImage image = new BufferedImage(600, 150, BufferedImage.TYPE_INT_ARGB);
-        FG2D g = new FG2D(image.getGraphics());
+        CountDownLatch waiter = new CountDownLatch(1);
 
-        g.setFont(font);
+        StaticStore.renderManager.createRenderer(600, 150, tmp, connector -> {
+            connector.queue(g -> {
+                g.setFontModel(font);
 
-        g.setRenderingHint(3, 1);
-        g.enableAntialiasing();
+                g.setStroke(2f, GLGraphics.LineEndMode.VERTICAL);
+                g.setColor(47, 49, 54, 255);
 
-        g.setStroke(2f);
-        g.setColor(47, 49, 54, 255);
+                g.fillRect(0, 0, 600, 150);
 
-        g.fillRect(0, 0, 600, 150);
+                g.setColor(238, 238, 238, 128);
 
-        g.setColor(238, 238, 238, 128);
+                g.drawRect(0, 0, 600, 150);
 
-        g.drawRect(0, 0, 600, 150);
-
-        for(int i = 1; i < 6; i++) {
-            g.drawLine(100 * i, 0, 100* i , 150);
-        }
-
-        g.drawLine(0, 100, 600, 100);
-
-        g.setColor(238, 238, 238, 255);
-
-        for(int i = 0; i < 6; i++) {
-            if(i == 0) {
-                VFile vf = VFile.get("./org/page/catfruit/xp.png");
-
-                if(vf != null) {
-                    BufferedImage icon = (BufferedImage) vf.getData().getImg().bimg();
-                    FakeImage fi = FIBI.build(icon);
-
-                    g.drawImage(fi, 510, 10, 80, 80);
-                    g.drawCenteredText(String.valueOf(f.unit.info.xp), 550, 125);
+                for(int i = 1; i < 6; i++) {
+                    g.drawLine(100 * i, 0, 100* i , 150);
                 }
-            } else {
-                if(f.unit.info.evo[i - 1][0] != 0) {
-                    VFile vf = VFile.get("./org/page/catfruit/gatyaitemD_"+f.unit.info.evo[i - 1][0]+"_f.png");
 
-                    if(vf != null) {
-                        BufferedImage icon = (BufferedImage) vf.getData().getImg().bimg();
-                        FakeImage fi = FIBI.build(icon);
+                g.drawLine(0, 100, 600, 100);
 
-                        g.drawImage(fi, 100 * (i-1)+5, 10, 80, 80);
-                        g.drawCenteredText(String.valueOf(f.unit.info.evo[i - 1][1]), 100 * (i-1) + 50, 125);
+                g.setColor(238, 238, 238, 255);
+
+                for(int i = 0; i < 6; i++) {
+                    if(i == 0) {
+                        VFile vf = VFile.get("./org/page/catfruit/xp.png");
+
+                        if(vf != null) {
+                            FakeImage icon = vf.getData().getImg();
+
+                            g.drawImage(icon, 510, 10, 80, 80);
+                            g.drawText(String.valueOf(f.unit.info.xp), 550, 125, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+                        }
+                    } else {
+                        if(f.unit.info.evo[i - 1][0] != 0) {
+                            VFile vf = VFile.get("./org/page/catfruit/gatyaitemD_"+f.unit.info.evo[i - 1][0]+"_f.png");
+
+                            if(vf != null) {
+                                FakeImage icon = vf.getData().getImg();
+
+                                g.drawImage(icon, 100 * (i-1)+5, 10, 80, 80);
+                                g.drawText(String.valueOf(f.unit.info.evo[i - 1][1]), 100 * (i-1) + 50, 125, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+                            }
+                        }
                     }
                 }
-            }
-        }
 
-        g.dispose();
+                return null;
+            });
 
-        ImageIO.write(image, "PNG", img);
+            return null;
+        }, progress -> img, () -> {
+            waiter.countDown();
+
+            return null;
+        });
+
+        waiter.await();
 
         return img;
     }
@@ -1558,9 +1603,6 @@ public class EntityHandler {
             return null;
         }
 
-        Canvas cv = new Canvas();
-        FontMetrics fm = cv.getFontMetrics(font);
-
         boolean needBoss = false;
         boolean needRespect = false;
         boolean needCount = false;
@@ -1742,37 +1784,37 @@ public class EntityHandler {
             }
         }
 
-        double eMax = fm.stringWidth(LangID.getStringByID("data_enemy", lang));
-        double nMax = fm.stringWidth(LangID.getStringByID("data_number", lang));
-        double mMax = fm.stringWidth(LangID.getStringByID("data_magnif", lang));
-        double iMax = fm.stringWidth(LangID.getStringByID("data_isboss", lang));
-        double bMax = fm.stringWidth(LangID.getStringByID(st.trail ? "data_basedealt" : "data_basehealth", lang));
-        double sMax = fm.stringWidth(LangID.getStringByID("data_startres", lang));
-        double lMax = fm.stringWidth(LangID.getStringByID("data_layer", lang));
-        double rMax = fm.stringWidth(LangID.getStringByID("data_respect", lang));
-        double kMax = fm.stringWidth(LangID.getStringByID("data_killcount", lang));
+        double eMax = font.textWidth(LangID.getStringByID("data_enemy", lang));
+        double nMax = font.textWidth(LangID.getStringByID("data_number", lang));
+        double mMax = font.textWidth(LangID.getStringByID("data_magnif", lang));
+        double iMax = font.textWidth(LangID.getStringByID("data_isboss", lang));
+        double bMax = font.textWidth(LangID.getStringByID(st.trail ? "data_basedealt" : "data_basehealth", lang));
+        double sMax = font.textWidth(LangID.getStringByID("data_startres", lang));
+        double lMax = font.textWidth(LangID.getStringByID("data_layer", lang));
+        double rMax = font.textWidth(LangID.getStringByID("data_respect", lang));
+        double kMax = font.textWidth(LangID.getStringByID("data_killcount", lang));
 
         for(int i = 0; i < enemies.size(); i++) {
-            eMax = Math.max(eMax, fm.stringWidth(enemies.get(i)));
+            eMax = Math.max(eMax, font.textWidth(enemies.get(i)));
 
-            nMax = Math.max(nMax, fm.stringWidth(numbers.get(i)));
+            nMax = Math.max(nMax, font.textWidth(numbers.get(i)));
 
-            mMax = Math.max(mMax, fm.stringWidth(magnifs.get(i)));
+            mMax = Math.max(mMax, font.textWidth(magnifs.get(i)));
 
-            bMax = Math.max(bMax, fm.stringWidth(baseHealth.get(i)));
+            bMax = Math.max(bMax, font.textWidth(baseHealth.get(i)));
 
-            sMax = Math.max(sMax, fm.stringWidth(startRespawn.get(i)));
+            sMax = Math.max(sMax, font.textWidth(startRespawn.get(i)));
 
-            lMax = Math.max(lMax, fm.stringWidth(layers.get(i)));
+            lMax = Math.max(lMax, font.textWidth(layers.get(i)));
 
             if(needBoss)
-                iMax = Math.max(iMax, fm.stringWidth(isBoss.get(i)));
+                iMax = Math.max(iMax, font.textWidth(isBoss.get(i)));
 
             if(needRespect)
-                rMax = Math.max(rMax, fm.stringWidth(respects.get(i)));
+                rMax = Math.max(rMax, font.textWidth(respects.get(i)));
 
             if(needCount)
-                kMax = Math.max(kMax, fm.stringWidth(killCounts.get(i)));
+                kMax = Math.max(kMax, font.textWidth(killCounts.get(i)));
         }
 
         int xGap = 16;
@@ -1788,7 +1830,7 @@ public class EntityHandler {
         kMax += xGap;
         iMax += xGap;
 
-        int ySeg = Math.max(fm.getHeight() + yGap, 32 + yGap);
+        int ySeg = Math.round(Math.max(font.getMaxHeight() + yGap, 32 + yGap));
 
         int w = (int) (eMax + nMax + mMax + bMax + sMax + lMax);
 
@@ -1803,192 +1845,212 @@ public class EntityHandler {
 
         int h = ySeg * (enemies.size() + 1);
 
-        BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-        FG2D g = new FG2D(image.getGraphics());
+        CountDownLatch waiter = new CountDownLatch(1);
 
-        g.setRenderingHint(3, 1);
-        g.enableAntialiasing();
+        double finalEMax = eMax;
+        double finalNMax = nMax;
+        double finalBMax = bMax;
+        double finalMMax = mMax;
+        double finalSMax = sMax;
+        double finalLMax = lMax;
+        double finalRMax = rMax;
+        double finalKMax = kMax;
+        double finalIMax = iMax;
 
-        g.setFont(font);
+        boolean finalNeedRespect = needRespect;
+        boolean finalNeedCount = needCount;
+        boolean finalNeedBoss = needBoss;
 
-        g.setColor(47, 49, 54, 255);
-        g.fillRect(0, 0, w, h);
+        int finalW = w;
 
-        g.setColor(54, 57, 63, 255);
-        g.fillRect(0, 0, w, ySeg);
+        StaticStore.renderManager.createRenderer(w, h, temp, connector -> {
+            connector.queue(g -> {
+                g.setFontModel(font);
 
-        g.setColor(32, 34, 37, 255);
-        g.setStroke(4f);
+                g.setColor(47, 49, 54, 255);
+                g.fillRect(0, 0, finalW, h);
 
-        g.drawRect(0, 0, w, h);
+                g.setColor(54, 57, 63, 255);
+                g.fillRect(0, 0, finalW, ySeg);
 
-        g.setStroke(2f);
+                g.setColor(32, 34, 37, 255);
+                g.setStroke(4f, GLGraphics.LineEndMode.VERTICAL);
 
-        for(int i = 1; i < enemies.size() + 1; i++) {
-            g.drawLine(0, ySeg * i, w, ySeg * i);
-        }
+                g.drawRect(0, 0, finalW, h);
 
-        int x = (int) eMax;
+                g.setStroke(2f, GLGraphics.LineEndMode.VERTICAL);
 
-        g.drawLine(x, 0, x, h);
-
-        x += (int) nMax;
-
-        g.drawLine(x, 0, x, h);
-
-        x += (int) bMax;
-
-        g.drawLine(x, 0, x, h);
-
-        x += (int) mMax;
-
-        g.drawLine(x, 0, x, h);
-
-        x += (int) sMax;
-
-        g.drawLine(x, 0, x, h);
-
-        x += (int) lMax;
-
-        g.drawLine(x, 0, x, h);
-
-        if(needRespect) {
-            x += (int) rMax;
-
-            g.drawLine(x, 0, x, h);
-        }
-
-        if(needCount) {
-            x += (int) kMax;
-
-            g.drawLine(x, 0, x, h);
-        }
-
-        if(needBoss) {
-            x += (int) iMax;
-
-            g.drawLine(x, 0, x, h);
-        }
-
-        g.setColor(238, 238, 238, 255);
-
-        int initX = (int) (eMax / 2);
-
-        g.drawCenteredText(LangID.getStringByID("data_enemy", lang), initX, ySeg / 2);
-
-        initX += (int) (eMax / 2 + nMax / 2);
-
-        g.drawCenteredText(LangID.getStringByID("data_number", lang), initX, ySeg / 2);
-
-        initX += (int) (nMax / 2 + bMax / 2);
-
-        g.drawCenteredText(LangID.getStringByID(st.trail ? "data_basedealt" : "data_basehealth", lang), initX, ySeg / 2);
-
-        initX += (int) (bMax / 2 + mMax / 2);
-
-        g.drawCenteredText(LangID.getStringByID("data_magnif", lang), initX, ySeg / 2);
-
-        initX += (int) (mMax / 2 + sMax / 2);
-
-        g.drawCenteredText(LangID.getStringByID("data_startres", lang), initX, ySeg / 2);
-
-        initX += (int) (sMax / 2 + lMax / 2);
-
-        g.drawCenteredText(LangID.getStringByID("data_layer", lang), initX, ySeg / 2);
-
-        initX += (int) (lMax / 2);
-
-        if(needRespect) {
-            initX += (int) (rMax / 2);
-
-            g.drawCenteredText(LangID.getStringByID("data_respect", lang), initX, ySeg / 2);
-
-            initX += (int) (rMax / 2);
-        }
-
-        if(needCount) {
-            initX += (int) (kMax / 2);
-
-            g.drawCenteredText(LangID.getStringByID("data_killcount", lang), initX, ySeg / 2);
-
-            initX += (int) (kMax / 2);
-        }
-
-        if(needBoss) {
-            initX += (int) (iMax / 2);
-
-            g.drawCenteredText(LangID.getStringByID("data_isboss", lang), initX, ySeg / 2);
-        }
-
-        for(int i = 0; i < enemies.size(); i++) {
-            AbEnemy e = st.data.datas[st.data.datas.length - 1 - i].enemy.get();
-
-            if(e != null) {
-                BufferedImage edi;
-
-                if(e instanceof Enemy) {
-                    if(((Enemy) e).anim.getEdi() != null) {
-                        edi = (BufferedImage) ((Enemy) e).anim.getEdi().getImg().bimg();
-                    } else {
-                        edi = (BufferedImage) CommonStatic.getBCAssets().ico[0][0].getImg().bimg();
-                    }
-                } else {
-                    edi = (BufferedImage) CommonStatic.getBCAssets().ico[0][0].getImg().bimg();
+                for(int i = 1; i < enemies.size() + 1; i++) {
+                    g.drawLine(0, ySeg * i, finalW, ySeg * i);
                 }
 
-                FakeImage fi = FIBI.build(edi);
+                int x = (int) finalEMax;
 
-                g.drawImage(fi, xGap / 2f, ySeg * (i + 1) + yGap / 2f);
-            } else
-                continue;
+                g.drawLine(x, 0, x, h);
 
-            int px = 93 + xGap / 2;
-            int py = ySeg * (i + 2) - ySeg / 2;
+                x += (int) finalNMax;
 
-            g.drawVerticalCenteredText(enemies.get(i), px, py);
+                g.drawLine(x, 0, x, h);
 
-            px = (int) eMax + xGap / 2;
+                x += (int) finalBMax;
 
-            g.drawVerticalCenteredText(numbers.get(i), px, py);
+                g.drawLine(x, 0, x, h);
 
-            px += (int) nMax;
+                x += (int) finalMMax;
 
-            g.drawVerticalCenteredText(baseHealth.get(i), px, py);
+                g.drawLine(x, 0, x, h);
 
-            px += (int) bMax;
+                x += (int) finalSMax;
 
-            g.drawVerticalCenteredText(magnifs.get(i), px, py);
+                g.drawLine(x, 0, x, h);
 
-            px += (int) mMax;
+                x += (int) finalLMax;
 
-            g.drawVerticalCenteredText(startRespawn.get(i), px, py);
+                g.drawLine(x, 0, x, h);
 
-            px += (int) sMax;
+                if(finalNeedRespect) {
+                    x += (int) finalRMax;
 
-            g.drawVerticalCenteredText(layers.get(i), px, py);
+                    g.drawLine(x, 0, x, h);
+                }
 
-            px += (int) lMax;
+                if(finalNeedCount) {
+                    x += (int) finalKMax;
 
-            if(needRespect) {
-                g.drawVerticalCenteredText(respects.get(i), px, py);
+                    g.drawLine(x, 0, x, h);
+                }
 
-                px += (int) rMax;
-            }
+                if(finalNeedBoss) {
+                    x += (int) finalIMax;
 
-            if(needCount) {
-                g.drawVerticalCenteredText(killCounts.get(i), px, py);
+                    g.drawLine(x, 0, x, h);
+                }
 
-                px += (int) kMax;
-            }
+                g.setColor(238, 238, 238, 255);
 
-            if(needBoss) {
-                g.drawVerticalCenteredText(isBoss.get(i), px, py);
-            }
-        }
+                int initX = (int) (finalEMax / 2);
 
-        g.dispose();
+                g.drawText(LangID.getStringByID("data_enemy", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
 
-        ImageIO.write(image, "PNG", img);
+                initX += (int) (finalEMax / 2 + finalNMax / 2);
+
+                g.drawText(LangID.getStringByID("data_number", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+
+                initX += (int) (finalNMax / 2 + finalBMax / 2);
+
+                g.drawText(LangID.getStringByID(st.trail ? "data_basedealt" : "data_basehealth", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+
+                initX += (int) (finalBMax / 2 + finalMMax / 2);
+
+                g.drawText(LangID.getStringByID("data_magnif", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+
+                initX += (int) (finalMMax / 2 + finalSMax / 2);
+
+                g.drawText(LangID.getStringByID("data_startres", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+
+                initX += (int) (finalSMax / 2 + finalLMax / 2);
+
+                g.drawText(LangID.getStringByID("data_layer", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+
+                initX += (int) (finalLMax / 2);
+
+                if(finalNeedRespect) {
+                    initX += (int) (finalRMax / 2);
+
+                    g.drawText(LangID.getStringByID("data_respect", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+
+                    initX += (int) (finalRMax / 2);
+                }
+
+                if(finalNeedCount) {
+                    initX += (int) (finalKMax / 2);
+
+                    g.drawText(LangID.getStringByID("data_killcount", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+
+                    initX += (int) (finalKMax / 2);
+                }
+
+                if(finalNeedBoss) {
+                    initX += (int) (finalIMax / 2);
+
+                    g.drawText(LangID.getStringByID("data_isboss", lang), initX, ySeg / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+                }
+
+                for(int i = 0; i < enemies.size(); i++) {
+                    AbEnemy e = st.data.datas[st.data.datas.length - 1 - i].enemy.get();
+
+                    if(e != null) {
+                        FakeImage edi;
+
+                        if(e instanceof Enemy) {
+                            if(((Enemy) e).anim.getEdi() != null) {
+                                edi = ((Enemy) e).anim.getEdi().getImg();
+                            } else {
+                                edi = CommonStatic.getBCAssets().ico[0][0].getImg();
+                            }
+                        } else {
+                            edi = CommonStatic.getBCAssets().ico[0][0].getImg();
+                        }
+
+                        g.drawImage(edi, xGap / 2f, ySeg * (i + 1) + yGap / 2f);
+                    } else
+                        continue;
+
+                    int px = 93 + xGap / 2;
+                    int py = ySeg * (i + 2) - ySeg / 2;
+
+                    g.drawText(enemies.get(i), px, py, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
+
+                    px = (int) finalEMax + xGap / 2;
+
+                    g.drawText(numbers.get(i), px, py, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
+
+                    px += (int) finalNMax;
+
+                    g.drawText(baseHealth.get(i), px, py, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
+
+                    px += (int) finalBMax;
+
+                    g.drawText(magnifs.get(i), px, py, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
+
+                    px += (int) finalMMax;
+
+                    g.drawText(startRespawn.get(i), px, py, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
+
+                    px += (int) finalSMax;
+
+                    g.drawText(layers.get(i), px, py, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
+
+                    px += (int) finalLMax;
+
+                    if(finalNeedRespect) {
+                        g.drawText(respects.get(i), px, py, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
+
+                        px += (int) finalRMax;
+                    }
+
+                    if(finalNeedCount) {
+                        g.drawText(killCounts.get(i), px, py, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
+
+                        px += (int) finalKMax;
+                    }
+
+                    if(finalNeedBoss) {
+                        g.drawText(isBoss.get(i), px, py, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
+                    }
+                }
+
+                return null;
+            });
+
+            return null;
+        }, progress -> img, () -> {
+            waiter.countDown();
+
+            return null;
+        });
+
+        waiter.await();
 
         return img;
     }
@@ -3285,9 +3347,25 @@ public class EntityHandler {
             return;
         }
 
-        BufferedImage result = (BufferedImage) img.bimg();
+        FakeImage result = img;
 
-        ImageIO.write(result, "PNG", image);
+        CountDownLatch waiter = new CountDownLatch(1);
+
+        StaticStore.renderManager.createRenderer(result.getWidth(), result.getHeight(), temp, connector -> {
+            connector.queue(g -> {
+                g.drawImage(result, 0f, 0f);
+
+                return null;
+            });
+
+            return null;
+        }, progress -> image, () -> {
+            waiter.countDown();
+
+            return null;
+        });
+
+        waiter.await();
 
         String fName = StaticStore.safeMultiLangGet(f, lang);
 
@@ -3337,9 +3415,23 @@ public class EntityHandler {
             return;
         }
 
-        BufferedImage result = (BufferedImage) img.bimg();
+        CountDownLatch waiter = new CountDownLatch(1);
 
-        ImageIO.write(result, "PNG", image);
+        StaticStore.renderManager.createRenderer(img.getWidth(), img.getHeight(), temp, connector -> {
+            connector.queue(g -> {
+                g.drawImage(img, 0f, 0f);
+
+                return null;
+            });
+
+            return null;
+        }, progress -> image, () -> {
+            waiter.countDown();
+
+            return null;
+        });
+
+        waiter.await();
 
         String fName = StaticStore.safeMultiLangGet(e, lang);
 
@@ -3382,9 +3474,23 @@ public class EntityHandler {
             return;
         }
 
-        BufferedImage result = (BufferedImage) img.bimg();
+        CountDownLatch waiter = new CountDownLatch(1);
 
-        ImageIO.write(result, "PNG", image);
+        StaticStore.renderManager.createRenderer(img.getWidth(), img.getHeight(), temp, connector -> {
+            connector.queue(g -> {
+                g.drawImage(img, 0f, 0f);
+
+                return null;
+            });
+
+            return null;
+        }, progress -> image, () -> {
+            waiter.countDown();
+
+            return null;
+        });
+
+        waiter.await();
 
         Command.sendMessageWithFile(
                 ch,
@@ -3425,9 +3531,25 @@ public class EntityHandler {
         if(vf == null)
             Command.replyToMessageSafely(ch, LangID.getStringByID("medal_nopng", lang), reference, a -> a);
         else {
-            BufferedImage img = (BufferedImage) vf.getData().getImg().bimg();
+            FakeImage img = vf.getData().getImg();
 
-            ImageIO.write(img, "PNG", image);
+            CountDownLatch waiter = new CountDownLatch(1);
+
+            StaticStore.renderManager.createRenderer(img.getWidth(), img.getHeight(), temp, connector -> {
+                connector.queue(g -> {
+                    g.drawImage(img, 0f, 0f);
+
+                    return null;
+                });
+
+                return null;
+            }, progress -> image, () -> {
+                waiter.countDown();
+
+                return null;
+            });
+
+            waiter.await();
 
             EmbedBuilder e = new EmbedBuilder();
 
@@ -4853,6 +4975,8 @@ public class EntityHandler {
                 }
 
                 msg.editMessage(String.format(LangID.getStringByID("stanalyzer_analyze", lang), map.list.size(), map.list.size())).queue();
+
+                sendMultipleFiles(ch, results);
             });
         } else {
             Command.replyToMessageSafely(ch, String.format(LangID.getStringByID("stanalyzer_analyze", lang), 0, map.customIndex.size()), null, a -> a, msg -> {
@@ -4877,9 +5001,13 @@ public class EntityHandler {
                 }
 
                 msg.editMessage(String.format(LangID.getStringByID("stanalyzer_analyze", lang), map.customIndex.size(), map.customIndex.size())).queue();
+
+                sendMultipleFiles(ch, results);
             });
         }
+    }
 
+    private static void sendMultipleFiles(MessageChannel ch, List<File> results) {
         int i = 0;
 
         Queue<File> done = new ArrayDeque<>();
@@ -5199,7 +5327,7 @@ public class EntityHandler {
         cells.add(new NormalCellDrawer(
                 new String[] {LangID.getStringByID("data_energy", lang), LangID.getStringByID("data_base", lang), LangID.getStringByID("data_xp", lang), LangID.getStringByID("data_level", lang)},
                 new String[] {DataToString.getEnergy(st, lang), DataToString.getBaseHealth(st), DataToString.getXP(st, TreasureHolder.global), DataToString.getLevelMagnification(map)},
-                new BufferedImage[] {null, null, null, drawLevelImage(map.stars.length, lv)},
+                new FakeImage[] {null, null, null, drawLevelImage(map.stars.length, lv)},
                 new boolean[] {false, false ,false, true}
         ));
 
@@ -5256,46 +5384,52 @@ public class EntityHandler {
             return null;
         }
 
-        BufferedImage img = new BufferedImage(600, 95, BufferedImage.TYPE_INT_ARGB);
-        FG2D g = new FG2D(img.getGraphics());
+        CountDownLatch waiter = new CountDownLatch(1);
 
-        g.setRenderingHint(3, 2);
-        g.enableAntialiasing();
+        StaticStore.renderManager.createRenderer(600, 95, temp, connector -> {
+            connector.queue(g -> {
+                g.setColor(47, 49, 54, 255);
+                g.fillRect(0, 0, 650, 105);
 
-        g.setColor(47, 49, 54, 255);
-        g.fillRect(0, 0, 650, 105);
+                g.setStroke(2f, GLGraphics.LineEndMode.VERTICAL);
+                g.setColor(230, 230, 230, 255);
+                g.drawRect(0, 0, 600, 95);
 
-        g.setStroke(2f);
-        g.setColor(230, 230, 230, 255);
-        g.drawRect(0, 0, 600, 95);
+                for(int i = 1; i < 5; i++) {
+                    g.drawLine(120 * i, 0, 120 * i, 95);
+                }
 
-        for(int i = 1; i < 5; i++) {
-            g.drawLine(120 * i, 0, 120 * i, 95);
-        }
+                for(int i = 0; i < 5; i++) {
+                    if(i >= c.forms.length || c.forms[i] == null)
+                        continue;
 
-        for(int i = 0; i < 5; i++) {
-            if(i >= c.forms.length || c.forms[i] == null)
-                continue;
+                    Unit u = c.forms[i].unit;
 
-            Unit u = c.forms[i].unit;
+                    if(u == null)
+                        continue;
 
-            if(u == null)
-                continue;
+                    Form f = c.forms[i];
 
-            Form f = c.forms[i];
+                    f.anim.load();
 
-            f.anim.load();
+                    FakeImage icon = f.anim.getUni().getImg();
 
-            FakeImage icon = f.anim.getUni().getImg();
+                    g.drawImage(icon, 120 * i + 5, 5);
 
-            g.drawImage(icon, 120 * i + 5, 5);
+                    f.anim.unload();
+                }
 
-            f.anim.unload();
-        }
+                return null;
+            });
 
-        g.dispose();
+            return null;
+        }, progress -> image, () -> {
+            waiter.countDown();
 
-        ImageIO.write(img, "PNG", image);
+            return null;
+        });
+
+        waiter.await();
 
         return image;
     }
@@ -5475,30 +5609,51 @@ public class EntityHandler {
         return result;
     }
 
-    private static BufferedImage drawLevelImage(int max, int lv) {
+    private static FakeImage drawLevelImage(int max, int lv) {
+        File temp = new File("./temp");
+
+        if (!temp.exists() && !temp.mkdirs()) {
+            StaticStore.logger.uploadLog("W/EntityHandler::drawLevelImage - Failed to create folder : " + temp.getAbsolutePath());
+        }
+
+        File image = StaticStore.generateTempFile(temp, "level", ".png", false);
+
+        if (image != null && !image.exists())
+            return null;
+
         try {
-            BufferedImage crownOn = ImageIO.read(new File("./data/bot/icons/crownOn.png"));
-            BufferedImage crownOff = ImageIO.read(new File("./data/bot/icons/crownOff.png"));
+            FakeImage crownOn = ImageBuilder.builder.build(new File("./data/bot/icons/crownOn.png"));
+            FakeImage crownOff = ImageBuilder.builder.build(new File("./data/bot/icons/crownOff.png"));
 
-            BufferedImage result = new BufferedImage(crownOn.getWidth() * max + 10 * (max - 1), crownOn.getHeight(), BufferedImage.TYPE_INT_ARGB);
+            CountDownLatch waiter = new CountDownLatch(1);
 
-            FG2D g = new FG2D(result.getGraphics());
+            StaticStore.renderManager.createRenderer(crownOn.getWidth() * max + 10 * (max - 1), crownOn.getHeight(), temp, connector -> {
+                connector.queue(g -> {
+                    int x = 0;
 
-            int x = 0;
+                    for(int i = 0; i < max; i++) {
+                        if(i > lv) {
+                            g.drawImage(crownOff, x, 0);
+                        } else {
+                            g.drawImage(crownOn, x, 0);
+                        }
 
-            for(int i = 0; i < max; i++) {
-                if(i > lv) {
-                    g.drawImage(crownOff, x, 0);
-                } else {
-                    g.drawImage(crownOn, x, 0);
-                }
+                        x += crownOn.getWidth() + 10;
+                    }
 
-                x += crownOn.getWidth() + 10;
-            }
+                    return null;
+                });
 
-            g.dispose();
+                return null;
+            }, progress -> image, () -> {
+                waiter.countDown();
 
-            return result;
+                return null;
+            });
+
+            waiter.await();
+
+            return ImageBuilder.builder.build(image);
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::drawLevelImage - Failed to generate level image");
         }

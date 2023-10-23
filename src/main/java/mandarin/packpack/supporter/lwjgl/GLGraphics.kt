@@ -3,12 +3,15 @@ package mandarin.packpack.supporter.lwjgl
 import common.system.fake.FakeGraphics
 import common.system.fake.FakeImage
 import common.system.fake.FakeTransform
-import mandarin.packpack.supporter.opengl.Program
-import mandarin.packpack.supporter.opengl.RenderSession
-import mandarin.packpack.supporter.opengl.model.FontModel
-import mandarin.packpack.supporter.opengl.model.MeshModel
-import mandarin.packpack.supporter.opengl.model.TextureMesh
+import mandarin.packpack.supporter.lwjgl.opengl.Program
+import mandarin.packpack.supporter.lwjgl.opengl.RenderSession
+import mandarin.packpack.supporter.lwjgl.opengl.model.FontModel
+import mandarin.packpack.supporter.lwjgl.opengl.model.MeshModel
+import mandarin.packpack.supporter.lwjgl.opengl.model.TextureMesh
 import org.lwjgl.opengl.GL33
+import kotlin.math.atan
+import kotlin.math.cos
+import kotlin.math.sin
 
 class GLGraphics(private val renderSession: RenderSession, private val program: Program) : FakeGraphics {
     enum class State {
@@ -27,11 +30,39 @@ class GLGraphics(private val renderSession: RenderSession, private val program: 
         OVERRIDE
     }
 
+    enum class HorizontalSnap {
+        LEFT,
+        MIDDLE,
+        RIGHT
+    }
+
+    enum class VerticalSnap {
+        TOP,
+        MIDDLE,
+        BOTTOM
+    }
+
+    enum class LineType {
+        PLAIN,
+        DASH
+    }
+
+    enum class LineEndMode {
+        ROUND,
+        VERTICAL
+    }
+
     companion object {
         private val basicShape = MeshModel()
     }
 
     var fontModel: FontModel? = null
+        set(value) {
+            field = value
+
+            if (value != null)
+                usedFontModel.add(value)
+        }
 
     private val transformation2D = Transformation2D()
     private val projection = Transformation2D()
@@ -42,9 +73,41 @@ class GLGraphics(private val renderSession: RenderSession, private val program: 
     private val firstColor = floatArrayOf(1f, 1f, 1f, 1f)
     private val secondColor = floatArrayOf(1f, 1f, 1f, 1f)
 
+    private var stroke = 1f
+    private var endMode = LineEndMode.VERTICAL
+
+    private val usedTexture = HashSet<GLImage>()
+    private val usedFontModel = HashSet<FontModel>()
+
+    private var fillMode = true
+        set(value) {
+            if (value == field)
+                return
+
+            field = value
+
+            program.setBoolean("fillMode", value)
+        }
+
     var state = State.MESH
         set(value) {
             program.setInt("state", value.ordinal)
+
+            if (value != State.MESH) {
+                if (blend == Blend.SOURCE) {
+                    GL33.glBlendEquation(GL33.GL_FUNC_ADD)
+                    GL33.glBlendFunc(GL33.GL_ONE, GL33.GL_ONE_MINUS_SRC_ALPHA)
+                }
+
+                program.setBoolean("dashMode", false)
+            } else {
+                if (blend == Blend.SOURCE) {
+                    GL33.glBlendEquation(GL33.GL_FUNC_ADD)
+                    GL33.glBlendFunc(GL33.GL_SRC_ALPHA, GL33.GL_ONE_MINUS_SRC_ALPHA)
+                }
+
+                program.setBoolean("dashMode", dashMode == LineType.DASH)
+            }
 
             field = value
         }
@@ -79,6 +142,13 @@ class GLGraphics(private val renderSession: RenderSession, private val program: 
             }
 
             field = value
+        }
+
+    private var dashMode = LineType.PLAIN
+        set(value) {
+            field = value
+
+            program.setBoolean("dashMode", value == LineType.DASH)
         }
 
     init {
@@ -116,6 +186,8 @@ class GLGraphics(private val renderSession: RenderSession, private val program: 
         Transformation2D.giveBack(save)
 
         applyMatrix()
+
+        usedTexture.add(bimg)
     }
 
     override fun drawImage(bimg: FakeImage, x: Float, y: Float, w: Float, h: Float) {
@@ -143,18 +215,32 @@ class GLGraphics(private val renderSession: RenderSession, private val program: 
 
         transformation2D.restore(save)
         Transformation2D.giveBack(save)
+
+        usedTexture.add(bimg)
     }
 
-    fun drawText(text: String, x: Float, y: Float) {
+    fun drawText(text: String, x: Float, y: Float, xSnap: HorizontalSnap, ySnap: VerticalSnap) {
         val font = fontModel ?: return
 
         val save = transformation2D.save()
 
         state = State.TEXT
 
-        font.loadText(text)
+        val dimension = font.measureDimension(text)
 
-        translate(x, y)
+        val offsetX = when(xSnap) {
+            HorizontalSnap.RIGHT -> -dimension[0]
+            HorizontalSnap.MIDDLE -> - (dimension[0] + dimension[2] / 2f)
+            HorizontalSnap.LEFT -> -(dimension[0] + dimension[2])
+        }
+
+        val offsetY = when(ySnap) {
+            VerticalSnap.TOP -> -dimension[1]
+            VerticalSnap.MIDDLE -> -(dimension[1] + dimension[3] / 2f)
+            VerticalSnap.BOTTOM -> -(dimension[1] + dimension[3])
+        }
+
+        translate(x + offsetX, y + offsetY)
 
         applyMatrix()
 
@@ -164,44 +250,75 @@ class GLGraphics(private val renderSession: RenderSession, private val program: 
         Transformation2D.giveBack(save)
     }
 
-    fun drawImage(texture: TextureMesh, x: Float, y: Float, w: Float, h: Float) {
-        val wr = w / texture.width
-        val hr = h / texture.height
-
-        val save = transformation2D.save()
-
-        translate(x, y)
-        scale(wr, hr)
-
-        applyMatrix()
-
-        state = State.TEXTURE
-
-        texture.draw()
-
-        transformation2D.restore(save)
-        Transformation2D.giveBack(save)
-    }
-
     override fun drawLine(x1: Float, y1: Float, x2: Float, y2: Float) {
+        if (x1 == x2 && y1 == y2)
+            return
+
         applyMatrix()
 
-        state = State.MESH
+        if (stroke == 1f) {
+            state = State.MESH
+            fillMode = false
 
-        basicShape.bind()
+            basicShape.bind()
 
-        basicShape.drawLine(x1, y1, x2, y2)
+            basicShape.drawLine(x1, y1, x2, y2)
+        } else {
+            if (x1 == x2) {
+                if (endMode == LineEndMode.VERTICAL) {
+                    drawLineRect(x1 - stroke / 2f, y1, stroke, y2 - y1)
+                } else {
+                    drawLineRect(x1 - stroke / 2f, y1, stroke, y2 - y1)
+
+                    lineOval(x1 - stroke / 2f, y1 - stroke / 2f, stroke / 2f, stroke / 2f)
+                    lineOval(x2 - stroke / 2f, y2 - stroke / 2f, stroke / 2f, stroke / 2f)
+                }
+            } else if (y1 == y2) {
+                if (endMode == LineEndMode.VERTICAL) {
+                    drawLineRect(x1, y1 - stroke / 2f, x2 - x1, stroke)
+                } else {
+                    drawLineRect(x1, y1 - stroke / 2f, x2 - x1, stroke)
+
+                    lineOval(x1 - stroke / 2f, y1 - stroke / 2f, stroke / 2f, stroke / 2f)
+                    lineOval(x2 - stroke / 2f, y2 - stroke / 2f, stroke / 2f, stroke / 2f)
+                }
+            } else {
+                val slope = (y2 - y1) / (x2 - x1)
+
+                val angle = atan(slope)
+
+                val save = transformation2D.save()
+
+                translate(x1, y1)
+                rotate(angle)
+
+                applyMatrix()
+
+                if (endMode == LineEndMode.VERTICAL) {
+                    fillRect(0f, -stroke / 2f, x2 - x1, stroke)
+                } else {
+                    fillRect(0f, -stroke / 2f, x2 - x1, stroke)
+
+                    lineOval(-stroke / 2f, -stroke / 2f, stroke / 2f, stroke / 2f)
+                    lineOval((x2 - x1) -stroke / 2f, (y2 - y1) - stroke / 2f, stroke / 2f, stroke / 2f)
+                }
+
+                transformation2D.restore(save)
+                Transformation2D.giveBack(save)
+            }
+        }
     }
 
     override fun drawOval(x: Float, y: Float, rx: Float, ry: Float) {
         val save = transformation2D.save()
 
-        translate(x, y)
+        translate(x + rx, y + ry)
         scale(rx, ry)
 
         applyMatrix()
 
         state = State.MESH
+        fillMode = false
 
         basicShape.bind()
 
@@ -220,6 +337,7 @@ class GLGraphics(private val renderSession: RenderSession, private val program: 
         applyMatrix()
 
         state = State.MESH
+        fillMode = false
 
         basicShape.bind()
 
@@ -232,12 +350,13 @@ class GLGraphics(private val renderSession: RenderSession, private val program: 
     override fun fillOval(x: Float, y: Float, rx: Float, ry: Float) {
         val save = transformation2D.save()
 
-        translate(x, y)
+        translate(x + rx, y + ry)
         scale(rx, ry)
 
         applyMatrix()
 
         state = State.MESH
+        fillMode = true
 
         basicShape.bind()
 
@@ -245,6 +364,86 @@ class GLGraphics(private val renderSession: RenderSession, private val program: 
 
         transformation2D.restore(save)
         Transformation2D.giveBack(save)
+    }
+
+    private fun lineOval(x: Float, y: Float, rx: Float, ry: Float) {
+        val save = transformation2D.save()
+
+        translate(x + rx, y + ry)
+        scale(rx, ry)
+
+        applyMatrix()
+
+        state = State.MESH
+        fillMode = false
+
+        basicShape.bind()
+
+        basicShape.fillCircle()
+
+        transformation2D.restore(save)
+        Transformation2D.giveBack(save)
+    }
+
+    fun roundRect(x: Float, y: Float, w: Float, h: Float, dx: Float, dy: Float) {
+        val rx = dx / 2f
+        val ry = dy / 2f
+
+        applyMatrix()
+
+        val currentEndMode = endMode
+        endMode = LineEndMode.ROUND
+
+        for (i in 0 until 4) {
+            val offsetX = when(i) {
+                0 -> x + w - rx
+                1 -> x + rx
+                2 -> x + rx
+                3 -> x + w - rx
+                else -> 0f
+            }
+
+            val offsetY = when(i) {
+                0 -> y + ry
+                1 -> y + ry
+                2 -> y + h - ry
+                3 -> y + h - ry
+                else -> 0f
+            }
+
+            when(i) {
+                0 -> drawLine(x + rx, y, x + w - rx, y)
+                1 -> drawLine(x, y + rx, x, y + h - rx)
+                2 -> drawLine(x + rx, y + h, x + w - rx, y + h)
+                3 -> drawLine(x + w, y + rx, x + w, y + h - rx)
+            }
+
+            for (j in 0 until 100) {
+
+                val angle = Math.PI / 200 * j + Math.PI / 2 * i
+                val nextAngle = Math.PI / 200 * (j + 1) + Math.PI / 2 * i
+
+                drawLine(
+                    offsetX + (rx * cos(angle).toFloat()),
+                    offsetY - (ry * sin(angle)).toFloat(),
+                    offsetX + (rx * cos(nextAngle).toFloat()),
+                    offsetY - (ry * sin(nextAngle)).toFloat()
+                )
+            }
+        }
+
+        endMode = currentEndMode
+    }
+
+    fun drawVertices(coordinates: ArrayList<Float>) {
+        applyMatrix()
+
+        state = State.MESH
+        fillMode = false
+
+        for (i in 0 until coordinates.size / 2 - 1) {
+            drawLine(coordinates[i * 2], coordinates[i * 2 + 1], coordinates[i * 2 + 2], coordinates[i * 2 + 3])
+        }
     }
 
     override fun fillRect(x: Float, y: Float, w: Float, h: Float) {
@@ -256,6 +455,7 @@ class GLGraphics(private val renderSession: RenderSession, private val program: 
         applyMatrix()
 
         state = State.MESH
+        fillMode = true
 
         basicShape.bind()
 
@@ -265,8 +465,147 @@ class GLGraphics(private val renderSession: RenderSession, private val program: 
         Transformation2D.giveBack(save)
     }
 
-    override fun getTransform(): FakeTransform {
-        return transformation2D.save()
+    private fun drawLineRect(x: Float, y: Float, w: Float, h: Float) {
+        val save = transformation2D.save()
+
+        translate(x, y)
+        scale(w, h)
+
+        applyMatrix()
+
+        state = State.MESH
+        fillMode = false
+
+        basicShape.bind()
+
+        basicShape.fillSquare()
+
+        transformation2D.restore(save)
+        Transformation2D.giveBack(save)
+    }
+
+    fun fillRoundRect(x: Float, y: Float, w: Float, h: Float, dx: Float, dy: Float) {
+        val rx = dx / 2f
+        val ry = dy / 2f
+
+        applyMatrix()
+
+        val vertices = ArrayList<Float>()
+
+        vertices.add(x + rx)
+        vertices.add(y + ry)
+
+        repeat(2) {
+            vertices.add(x + w - rx)
+            vertices.add(y + ry)
+
+            vertices.add(x + rx)
+            vertices.add(y + h - ry)
+        }
+
+        vertices.add(x + w - rx)
+        vertices.add(y + h - ry)
+
+        for (i in 0 until 4) {
+            val offsetX = when(i) {
+                0 -> x + w - rx
+                1 -> x + rx
+                2 -> x + rx
+                3 -> x + w - rx
+                else -> 0f
+            }
+
+            val offsetY = when(i) {
+                0 -> y + ry
+                1 -> y + ry
+                2 -> y + h - ry
+                3 -> y + h - ry
+                else -> 0f
+            }
+
+            when(i) {
+                0 -> {
+                    vertices.add(offsetX)
+                    vertices.add(offsetY)
+
+                    repeat(2) {
+                        vertices.add(offsetX + rx)
+                        vertices.add(offsetY)
+
+                        vertices.add(offsetX)
+                        vertices.add(offsetY + h - 2 * ry)
+                    }
+
+                    vertices.add(offsetX + rx)
+                    vertices.add(offsetY + h - 2 * ry)
+                }
+                1 -> {
+                    vertices.add(offsetX)
+                    vertices.add(offsetY - ry)
+
+                    repeat(2) {
+                        vertices.add(offsetX + w - 2 * rx)
+                        vertices.add(offsetY - ry)
+
+                        vertices.add(offsetX)
+                        vertices.add(offsetY)
+                    }
+
+                    vertices.add(offsetX + w - 2 * rx)
+                    vertices.add(offsetY)
+                }
+                2 -> {
+                    vertices.add(offsetX - rx)
+                    vertices.add(offsetY - h + 2 * ry)
+
+                    repeat(2) {
+                        vertices.add(offsetX)
+                        vertices.add(offsetY - h + 2 * ry)
+
+                        vertices.add(offsetX - rx)
+                        vertices.add(offsetY)
+                    }
+
+                    vertices.add(offsetX)
+                    vertices.add(offsetY)
+                }
+                3 -> {
+                    vertices.add(offsetX - w + 2 * rx)
+                    vertices.add(offsetY)
+
+                    repeat(2) {
+                        vertices.add(offsetX)
+                        vertices.add(offsetY)
+
+                        vertices.add(offsetX - w + 2 * rx)
+                        vertices.add(offsetY + ry)
+                    }
+
+                    vertices.add(offsetX)
+                    vertices.add(offsetY + ry)
+                }
+            }
+
+            for (j in 0..100) {
+
+                val angle = Math.PI / 200 * j + Math.PI / 2 * i
+                val nextAngle = Math.PI / 200 * (j + 1) + Math.PI / 2 * i
+
+                vertices.add(offsetX + (rx * cos(angle).toFloat()))
+                vertices.add(offsetY - (ry * sin(angle)).toFloat())
+                vertices.add(offsetX + (rx * cos(nextAngle).toFloat()))
+                vertices.add(offsetY - (ry * sin(nextAngle)).toFloat())
+                vertices.add(offsetX)
+                vertices.add(offsetY)
+            }
+        }
+
+        state = State.MESH
+        fillMode = false
+
+        basicShape.bind()
+
+        basicShape.drawFill(basicShape.customMesh(vertices.toFloatArray(), 2))
     }
 
     override fun gradRect(x: Float, y: Float, w: Float, h: Float, x1: Float, y1: Float, c1: IntArray, x2: Float, y2: Float, c2: IntArray) {
@@ -278,23 +617,6 @@ class GLGraphics(private val renderSession: RenderSession, private val program: 
         setGradient(x1, y1, c1[0].toFloat(), c1[1].toFloat(), c1[2].toFloat(), y1, y2, c2[0].toFloat(), c2[1].toFloat(), c2[2].toFloat())
         fillRect(x, y, w, h)
     }
-
-    override fun setColor(c: Int) {
-        when(c) {
-            FakeGraphics.RED -> setColor(255f, 0f, 0f)
-            FakeGraphics.YELLOW -> setColor(255f, 255f, 0f)
-            FakeGraphics.BLACK -> setColor(0f, 0f, 0f)
-            FakeGraphics.MAGENTA -> setColor(255f, 0f, 255f)
-            FakeGraphics.BLUE -> setColor(0f, 0f, 255f)
-            FakeGraphics.CYAN -> setColor(0f, 255f, 255f)
-            FakeGraphics.WHITE -> setColor(255f, 255f, 255f)
-        }
-    }
-
-    override fun setColor(r: Int, g: Int, b: Int) {
-        setColor(r.toFloat(), g.toFloat(), b.toFloat())
-    }
-
     override fun setComposite(mode: Int, p0: Int, p1: Int) {
         when(mode) {
             FakeGraphics.DEF -> {
@@ -321,10 +643,24 @@ class GLGraphics(private val renderSession: RenderSession, private val program: 
 
     }
 
-    override fun setTransform(at: FakeTransform) {
-        if (at is Transformation2D) {
-            transformation2D.restore(at)
+    // ==================================================
+    // |                     Color                      |
+    // ==================================================
+
+    override fun setColor(c: Int) {
+        when(c) {
+            FakeGraphics.RED -> setColor(255f, 0f, 0f)
+            FakeGraphics.YELLOW -> setColor(255f, 255f, 0f)
+            FakeGraphics.BLACK -> setColor(0f, 0f, 0f)
+            FakeGraphics.MAGENTA -> setColor(255f, 0f, 255f)
+            FakeGraphics.BLUE -> setColor(0f, 0f, 255f)
+            FakeGraphics.CYAN -> setColor(0f, 255f, 255f)
+            FakeGraphics.WHITE -> setColor(255f, 255f, 255f)
         }
+    }
+
+    override fun setColor(r: Int, g: Int, b: Int) {
+        setColor(r.toFloat(), g.toFloat(), b.toFloat())
     }
 
     fun setColor(r: Float, g: Float, b: Float) {
@@ -391,6 +727,34 @@ class GLGraphics(private val renderSession: RenderSession, private val program: 
         program.setVector4("color2", secondColor)
     }
 
+    fun setStroke(width: Float, endMode: LineEndMode) {
+        stroke = width
+        this.endMode = endMode
+    }
+
+    fun setStrokeType(type: LineType, factor: Float, pattern: Int) {
+        dashMode = type
+
+        if (dashMode == LineType.DASH) {
+            program.setFloat("factor", factor)
+            program.setUnsignedInt("pattern", pattern)
+        }
+    }
+
+    // ==================================================
+    // |                 Transformation                 |
+    // ==================================================
+
+    override fun getTransform(): FakeTransform {
+        return transformation2D.save()
+    }
+
+    override fun setTransform(at: FakeTransform) {
+        if (at is Transformation2D) {
+            transformation2D.restore(at)
+        }
+    }
+
     override fun translate(x: Float, y: Float) {
         transformation2D.translate(x, y)
     }
@@ -422,5 +786,10 @@ class GLGraphics(private val renderSession: RenderSession, private val program: 
 
     fun applyMatrix() {
         transformation2D.connectWithProgram(program, false)
+    }
+
+    fun clearUpTexture() {
+        usedTexture.forEach { mesh -> mesh.unload() }
+        usedFontModel.forEach { font -> font.flush() }
     }
 }

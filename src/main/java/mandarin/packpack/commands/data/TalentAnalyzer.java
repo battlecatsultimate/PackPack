@@ -3,6 +3,8 @@ package mandarin.packpack.commands.data;
 import common.CommonStatic;
 import common.battle.data.MaskUnit;
 import common.pack.UserProfile;
+import common.system.fake.FakeImage;
+import common.system.fake.ImageBuilder;
 import common.system.files.VFile;
 import common.util.Data;
 import common.util.anim.MaAnim;
@@ -17,8 +19,6 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -143,7 +143,7 @@ public class TalentAnalyzer extends ConstraintCommand {
     }
 
     private boolean validateFile(File workspace, int uid, boolean isFrame) throws Exception {
-        BufferedImage unitIcon;
+        FakeImage unitIcon;
 
         if(uid >= UserProfile.getBCData().units.size() || UserProfile.getBCData().units.get(uid).forms.length < 3) {
             File imageLocal = new File(workspace, "UnitLocal");
@@ -156,7 +156,7 @@ public class TalentAnalyzer extends ConstraintCommand {
             if(!icon.exists())
                 return false;
 
-            unitIcon = ImageIO.read(icon).getSubimage(9, 21, 110, 85);
+            unitIcon = ImageBuilder.builder.build(icon).getSubimage(9, 21, 110, 85);
         } else {
             Unit u = UserProfile.getBCData().units.get(uid);
 
@@ -169,7 +169,7 @@ public class TalentAnalyzer extends ConstraintCommand {
 
             u.forms[2].anim.load();
 
-            unitIcon = (BufferedImage) u.forms[2].anim.getUni().getImg().bimg();
+            unitIcon = u.forms[2].anim.getUni().getImg();
 
             u.forms[2].anim.unload();
         }
@@ -231,7 +231,7 @@ public class TalentAnalyzer extends ConstraintCommand {
                 List<Trait> traits = Trait.convertType(traitID);
 
                 if(traits.size() == 1) {
-                    talent.traitIcon = (BufferedImage) CommonStatic.getBCAssets().icon[3][traits.get(0).id.id].getImg().bimg();
+                    talent.traitIcon = CommonStatic.getBCAssets().icon[3][traits.get(0).id.id].getImg();
                 }
             }
         }
@@ -356,7 +356,7 @@ public class TalentAnalyzer extends ConstraintCommand {
         return true;
     }
 
-    private BufferedImage grabTalentIcon(int abilityID, boolean immunity) throws Exception {
+    private FakeImage grabTalentIcon(int abilityID, boolean immunity) throws Exception {
         if(abilityID >= Data.PC_CORRES.length || Data.PC_CORRES[abilityID][0] == -1) {
             File dummyIcon = new File("./data/bot/icons/unknownAbility.png");
 
@@ -364,33 +364,29 @@ public class TalentAnalyzer extends ConstraintCommand {
                 throw new IllegalStateException("E/TalentAnalyzer::grabTalentIcon - Dummy ability icon not found");
             }
 
-            return ImageIO.read(dummyIcon);
+            return ImageBuilder.builder.build(dummyIcon);
         } else {
             int[] type = Data.PC_CORRES[abilityID];
 
             switch (type[0]) {
                 case 0 -> {
-                    return (BufferedImage) CommonStatic.getBCAssets().icon[1][type[1]].getImg().bimg();
+                    return CommonStatic.getBCAssets().icon[1][type[1]].getImg();
                 }
                 case 1 -> {
-                    return (BufferedImage) CommonStatic.getBCAssets().icon[0][(int) (Math.log(type[1]) / Math.log(2))].getImg().bimg();
+                    return CommonStatic.getBCAssets().icon[0][(int) (Math.log(type[1]) / Math.log(2))].getImg();
                 }
                 case 2 -> {
-                    return (BufferedImage) CommonStatic.getBCAssets().icon[4][type[1]].getImg().bimg();
+                    return CommonStatic.getBCAssets().icon[4][type[1]].getImg();
                 }
                 case 3 -> {
                     if (immunity) {
-                        return (BufferedImage) CommonStatic.getBCAssets().icon[1][type[1]].getImg().bimg();
+                        return CommonStatic.getBCAssets().icon[1][type[1]].getImg();
                     } else {
-                        if (DataToString.resistantIcon.containsKey(type[1])) {
-                            return (BufferedImage) DataToString.resistantIcon.get(type[1]).bimg();
-                        } else {
-                            return null;
-                        }
+                        return DataToString.resistantIcon.getOrDefault(type[1], null);
                     }
                 }
                 case 4 -> {
-                    return (BufferedImage) CommonStatic.getBCAssets().icon[3][type[1]].getImg().bimg();
+                    return CommonStatic.getBCAssets().icon[3][type[1]].getImg();
                 }
                 default ->
                         throw new IllegalStateException("E/TalentAnalyzer::grabTalentIcon - Invalid talent type ID : " + type[0]);

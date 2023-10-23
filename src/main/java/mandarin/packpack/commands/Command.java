@@ -1,7 +1,6 @@
 package mandarin.packpack.commands;
 
 import mandarin.packpack.supporter.EmojiStore;
-import mandarin.packpack.supporter.Pauser;
 import mandarin.packpack.supporter.RecordableThread;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
@@ -237,7 +236,7 @@ public abstract class Command {
 
     public final int DEFAULT_ERROR = -1;
     public final int SERVER_ERROR = -2;
-    public Pauser pause = new Pauser();
+
     public final int lang;
     public final boolean requireGuild;
 

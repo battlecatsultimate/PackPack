@@ -1,17 +1,16 @@
 package mandarin.packpack.supporter.bc.cell;
 
-import mandarin.packpack.supporter.awt.FG2D;
-
-import java.awt.*;
+import mandarin.packpack.supporter.lwjgl.GLGraphics;
+import mandarin.packpack.supporter.lwjgl.opengl.model.FontModel;
 
 public interface CellDrawer {
-    int lineOffset = 144;
-    float lineStroke = 6f;
-    int lineMargin = 16;
-    int textMargin = 48;
-    int iconMargin = 48;
+    int lineOffset = 72;
+    float lineStroke = 3f;
+    int lineMargin = 8;
+    int textMargin = 24;
+    int iconMargin = 24;
 
-    void initialize(Font nameFont, Font contentFont, FontMetrics nfm, FontMetrics cfm, int targetWidth);
+    void initialize(FontModel nameFont, FontModel contentFont, int targetWidth);
 
-    void draw(FG2D g, int x, int y, int uw, int offset, int h, Font nameFont, Font contentFont);
+    void draw(GLGraphics g, int x, int y, int uw, int offset, int h, FontModel nameFont, FontModel contentFont);
 }

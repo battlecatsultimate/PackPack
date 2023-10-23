@@ -611,7 +611,7 @@ public class AllEventAdapter extends ListenerAdapter {
             case "formdps", "catdps", "unitdps", "fdps", "cdps", "udps", "fd", "cd", "ud" -> new FormDPS(ConstraintCommand.ROLE.MEMBER, lang, idh, c, 10000).execute(event);
             case "enemydps", "edps", "ed" -> new EnemyDPS(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000).execute(event);
             case "dumpheap", "dump", "heap", "dh" -> new DumpHeap(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
-            case "writelog", "wr" -> new WriteLog(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "writelog", "wl" -> new WriteLog(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
         }
     }
 

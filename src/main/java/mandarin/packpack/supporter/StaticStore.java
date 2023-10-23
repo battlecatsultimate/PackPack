@@ -15,6 +15,7 @@ import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.event.EventFileGrabber;
 import mandarin.packpack.supporter.event.EventHolder;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.lwjgl.opengl.renderer.Renderer;
 import mandarin.packpack.supporter.server.FixedScheduleHandler;
 import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.TimeBoolean;
@@ -132,6 +133,7 @@ public class StaticStore {
     public static final Map<String, Map<String, Long>> timeLimit = new HashMap<>();
 
     public static Timer saver = null;
+    public static Renderer renderManager = null;
     public static final FixedScheduleHandler executorHandler = new FixedScheduleHandler(5);
 
     private static final Map<String, HolderHub> holders = new HashMap<>();

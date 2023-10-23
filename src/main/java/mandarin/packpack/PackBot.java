@@ -207,7 +207,7 @@ public class PackBot {
 
     public static void initialize(String... arg) {
         if(!StaticStore.initialized) {
-            CommonStatic.ctx = new PackContext();
+            CommonStatic.ctx = new LwjglContext();
             CommonStatic.getConfig().ref = false;
 
             StaticStore.readServerInfo();
@@ -218,7 +218,7 @@ public class PackBot {
 
             LangID.initialize();
 
-            Initializer.checkAssetDownload();
+            Initializer.checkAssetDownload(true);
 
             StaticStore.postReadServerInfo();
 

@@ -18,7 +18,6 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import javax.annotation.Nonnull;
-import javax.imageio.ImageIO;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
@@ -93,7 +92,7 @@ public class AnimMessageHolder extends MessageHolder {
                                 png.set("PNG : SUCCESS");
                                 pngDone = true;
 
-                                mixer.png = ImageIO.read(res);
+                                mixer.buildPng(res);
                             } else {
                                 png.set("PNG : INVALID");
                             }
@@ -255,7 +254,13 @@ public class AnimMessageHolder extends MessageHolder {
                 }
 
                 StaticStore.executorHandler.postDelayed(1000, () -> StaticStore.deleteFile(container, true));
-            }, e -> StaticStore.logger.uploadErrorLog(e, "E/AnimMessageHolder::constructor - Failed to generate animation"));
+
+                mixer.release();
+            }, e -> {
+                StaticStore.logger.uploadErrorLog(e, "E/AnimMessageHolder::constructor - Failed to generate animation");
+
+                mixer.release();
+            });
 
             t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime());
             t.start();
@@ -315,7 +320,7 @@ public class AnimMessageHolder extends MessageHolder {
                                     png.set("PNG : SUCCESS");
                                     pngDone = true;
 
-                                    mixer.png = ImageIO.read(res);
+                                    mixer.buildPng(res);
                                 } else {
                                     png.set("PNG : INVALID");
                                 }
@@ -478,7 +483,13 @@ public class AnimMessageHolder extends MessageHolder {
                         }
 
                         StaticStore.executorHandler.postDelayed(1000, () -> StaticStore.deleteFile(container, true));
-                    }, e -> StaticStore.logger.uploadErrorLog(e, "E/AnimMessageHolder::onReceivedEvent - Failed to generate animation"));
+
+                        mixer.release();
+                    }, e -> {
+                        StaticStore.logger.uploadErrorLog(e, "E/AnimMessageHolder::onReceivedEvent - Failed to generate animation");
+
+                        mixer.release();
+                    });
 
                     t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime());
                     t.start();

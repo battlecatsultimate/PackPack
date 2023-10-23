@@ -1,11 +1,12 @@
-package mandarin.packpack.supporter.opengl
+package mandarin.packpack.supporter.lwjgl.opengl
 
+import mandarin.packpack.supporter.Logger
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lwjgl.GLGraphics
-import mandarin.packpack.supporter.opengl.buffer.MultiSampler
-import mandarin.packpack.supporter.opengl.buffer.PostProcessor
-import mandarin.packpack.supporter.opengl.buffer.VAO
-import mandarin.packpack.supporter.opengl.model.SpriteSheet
+import mandarin.packpack.supporter.lwjgl.opengl.buffer.MultiSampler
+import mandarin.packpack.supporter.lwjgl.opengl.buffer.PostProcessor
+import mandarin.packpack.supporter.lwjgl.opengl.buffer.VAO
+import mandarin.packpack.supporter.lwjgl.opengl.model.SpriteSheet
 import okhttp3.internal.and
 import org.lwjgl.glfw.Callbacks
 import org.lwjgl.glfw.GLFW
@@ -114,7 +115,7 @@ class RenderSession {
 
         program.use()
 
-        program.setFloat("height", height.toFloat())
+        program.setVector2("screenSize", floatArrayOf(width.toFloat(), height.toFloat()))
 
         graphics = GLGraphics(this, program)
 
@@ -139,6 +140,7 @@ class RenderSession {
         GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, if (resizable) GLFW.GLFW_TRUE else GLFW.GLFW_FALSE)
 
         windowID = GLFW.glfwCreateWindow(width, height, title, MemoryUtil.NULL, parent.windowID)
+        Logger.addLog("Generating new GLFW window : $windowID")
 
         if (windowID == MemoryUtil.NULL) {
             throw RuntimeException("Failed to create the GLFW Window")
@@ -169,7 +171,7 @@ class RenderSession {
 
         program.use()
 
-        program.setFloat("height", height.toFloat())
+        program.setVector2("screenSize", floatArrayOf(postProcessor.width.toFloat(), postProcessor.height.toFloat()))
 
         graphics = GLGraphics(this, program)
 
@@ -209,7 +211,7 @@ class RenderSession {
 
         multiSampler.bind()
 
-        GL33.glClearColor(0.2f, 0f, 0f, 1f)
+        GL33.glClearColor(0f, 0f, 0f, 0f)
         GL33.glClear(GL33.GL_COLOR_BUFFER_BIT or GL33.GL_DEPTH_BUFFER_BIT)
 
         graphics.reset()
@@ -238,8 +240,6 @@ class RenderSession {
     }
 
     private fun export() {
-        println("Q?")
-
         if (!this::targetFolder.isInitialized)
             return
 
@@ -287,12 +287,16 @@ class RenderSession {
 
         if (done) {
             onFinish?.invoke()
+
+            graphics.clearUpTexture()
         }
 
         return done
     }
 
     fun release() {
+        Logger.addLog("Releasing Window : $windowID")
+
         removeEvents()
 
         Callbacks.glfwFreeCallbacks(windowID)

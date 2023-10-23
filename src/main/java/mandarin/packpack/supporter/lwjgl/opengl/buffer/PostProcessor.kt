@@ -1,12 +1,13 @@
-package mandarin.packpack.supporter.opengl.buffer
+package mandarin.packpack.supporter.lwjgl.opengl.buffer
 
-import mandarin.packpack.supporter.opengl.RenderSession
-import mandarin.packpack.supporter.opengl.Texture
-import mandarin.packpack.supporter.opengl.model.SpriteSheet
+import mandarin.packpack.supporter.Logger
+import mandarin.packpack.supporter.lwjgl.opengl.RenderSession
+import mandarin.packpack.supporter.lwjgl.opengl.Texture
+import mandarin.packpack.supporter.lwjgl.opengl.model.SpriteSheet
 import org.lwjgl.opengl.GL33
 import java.nio.ByteBuffer
 
-class PostProcessor private constructor(val fboID: Int, val width: Int, val height: Int) {
+class PostProcessor private constructor(private val fboID: Int, val width: Int, val height: Int) {
     var bound = false
         private set
 
@@ -16,13 +17,19 @@ class PostProcessor private constructor(val fboID: Int, val width: Int, val heig
 
     companion object {
         fun build(window: RenderSession) : PostProcessor {
+            Logger.addLog("Generating PostProcessor")
+
             val fboID = GL33.glGenFramebuffers()
+            Logger.addLog("Generating FBO from PostProcessor : $fboID")
 
             return PostProcessor(fboID, window.width, window.height)
         }
     }
 
     init {
+        Logger.addLog("Generating FBO texture from PostProcessor : $fboTextureID")
+        Logger.addLog("Generating VBO from PostProcessor : ${vbo.vboID}")
+
         GL33.glBindFramebuffer(GL33.GL_FRAMEBUFFER, fboID)
         GL33.glBindTexture(GL33.GL_TEXTURE_2D, fboTextureID)
 
@@ -64,7 +71,9 @@ class PostProcessor private constructor(val fboID: Int, val width: Int, val heig
         Texture.findBoundTexture()?.bound = false
 
         VAO.vao.pointerVBO(vbo, VAO.Attribute.VERTEX, VAO.ValueType.FLOAT, SpriteSheet.DIMENSION, stride = SpriteSheet.VERTEX_SIZE)
-        VAO.vao.pointerVBO(vbo, VAO.Attribute.UV, VAO.ValueType.FLOAT, SpriteSheet.DIMENSION, stride = SpriteSheet.VERTEX_SIZE, offsetPointer = SpriteSheet.DIMENSION.toLong() * Float.SIZE_BYTES)
+        VAO.vao.pointerVBO(vbo,
+            VAO.Attribute.UV,
+            VAO.ValueType.FLOAT, SpriteSheet.DIMENSION, stride = SpriteSheet.VERTEX_SIZE, offsetPointer = SpriteSheet.DIMENSION.toLong() * Float.SIZE_BYTES)
 
         VAO.vao.setVertexAttributeArray(VAO.Attribute.VERTEX, true)
         VAO.vao.setVertexAttributeArray(VAO.Attribute.UV, true)
@@ -78,7 +87,12 @@ class PostProcessor private constructor(val fboID: Int, val width: Int, val heig
     }
 
     fun release() {
+        Logger.addLog("Releasing PostProcessor")
+
+        Logger.addLog("Releasing FBO Texture : $fboTextureID")
         GL33.glDeleteTextures(fboTextureID)
+
+        Logger.addLog("Releasing FBO : $fboID")
         GL33.glDeleteFramebuffers(fboID)
 
         vbo.release()

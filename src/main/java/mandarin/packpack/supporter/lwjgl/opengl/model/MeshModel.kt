@@ -1,7 +1,8 @@
-package mandarin.packpack.supporter.opengl.model
+package mandarin.packpack.supporter.lwjgl.opengl.model
 
-import mandarin.packpack.supporter.opengl.buffer.VAO
-import mandarin.packpack.supporter.opengl.buffer.VBO
+import mandarin.packpack.supporter.Logger
+import mandarin.packpack.supporter.lwjgl.opengl.buffer.VAO
+import mandarin.packpack.supporter.lwjgl.opengl.buffer.VBO
 import org.checkerframework.common.value.qual.IntRange
 import org.lwjgl.opengl.GL33
 import kotlin.math.cos
@@ -18,6 +19,7 @@ class MeshModel : Model() {
         private const val CIRCLE_NODE = 100
 
         private const val LINE_VERTEX_OFFSET = 410L * 2L * Float.SIZE_BYTES
+        private const val CUSTOM_VERTEX_OFFSET = 412L * 2L * Float.SIZE_BYTES
         private const val VERTEX_SIZE_LIMIT = (410L + 1000L) * 2L * Float.SIZE_BYTES
         private const val INDEX_SIZE_LIMIT = (410L + 1000L) * Int.SIZE_BYTES
     }
@@ -28,6 +30,8 @@ class MeshModel : Model() {
     private val meshes = ArrayList<PolygonMesh>()
 
     init {
+        Logger.addLog("Generating MeshModel")
+
         vertexBufferVBO.bind()
         vertexBufferVBO.renewBuffer(VERTEX_SIZE_LIMIT, VBO.Method.DYNAMIC, VBO.Purpose.DRAW)
 
@@ -87,7 +91,7 @@ class MeshModel : Model() {
         )
     }
 
-    fun generateMesh(vertices: FloatArray, dimension: @IntRange(from = 1, to = 4) Int) : PolygonMesh {
+    private fun generateMesh(vertices: FloatArray, dimension: @IntRange(from = 1, to = 4) Int) : PolygonMesh {
         if (vertices.size % dimension != 0) {
             throw IllegalStateException("Vertex data must be synced with dimension!\nVertex data : ${vertices.size / dimension}\nDimension : ${dimension}D")
         }
@@ -109,6 +113,20 @@ class MeshModel : Model() {
         meshes.add(mesh)
 
         return mesh
+    }
+
+    fun customMesh(vertices: FloatArray, dimension: @IntRange(from = 1, to = 4) Int) : PolygonMesh {
+        if (vertices.size % dimension != 0) {
+            throw IllegalStateException("Vertex data must be synced with dimension!\nVertex data : ${vertices.size / dimension}\nDimension : ${dimension}D")
+        }
+
+        vertexBufferVBO.bind()
+
+        vertexBufferVBO.injectBuffer(vertices, CUSTOM_VERTEX_OFFSET)
+
+        val indexSize = vertices.size / dimension
+
+        return PolygonMesh(CUSTOM_VERTEX_OFFSET, vertices.size * Float.SIZE_BYTES, indexSize, dimension, this)
     }
 
     fun drawFill(mesh: PolygonMesh) {
@@ -182,7 +200,7 @@ class MeshModel : Model() {
     }
 
     private fun injectLineBuffer(x1: Float, y1: Float, x2: Float, y2: Float) : Boolean {
-        if (lineBuffer[0] == x1 && lineBuffer[2] == y1 && lineBuffer[3] == x2 && lineBuffer[4] == y2)
+        if (lineBuffer[0] == x1 && lineBuffer[1] == y1 && lineBuffer[2] == x2 && lineBuffer[3] == y2)
             return false
 
         lineBuffer[0] = x1

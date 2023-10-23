@@ -178,7 +178,20 @@ public class Logger {
     }
 
     public static void addLog(String content) {
-        logMessages.add(getTimeStamp() + " - " + content);
+        String[] segments = content.split("\n");
+
+        for (int i = 0; i < segments.length; i++) {
+            String line;
+
+            if (i == 0) {
+                line = getTimeStamp() + " - " + content;
+            } else {
+                line = " ".repeat(24) + content;
+            }
+
+            logMessages.add(line);
+            System.out.println(line);
+        }
     }
 
     private void createMessageWithNoPings(GuildMessageChannel ch, String content) {

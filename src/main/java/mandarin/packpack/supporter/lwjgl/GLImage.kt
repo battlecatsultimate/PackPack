@@ -2,13 +2,13 @@ package mandarin.packpack.supporter.lwjgl
 
 import common.system.fake.FakeGraphics
 import common.system.fake.FakeImage
-import mandarin.packpack.supporter.Pauser
 import mandarin.packpack.supporter.StaticStore
-import mandarin.packpack.supporter.opengl.model.SpriteSheet
-import mandarin.packpack.supporter.opengl.model.TextureMesh
+import mandarin.packpack.supporter.lwjgl.opengl.model.SpriteSheet
+import mandarin.packpack.supporter.lwjgl.opengl.model.TextureMesh
 import org.lwjgl.opengl.GL33
 import java.awt.Color
 import java.lang.UnsupportedOperationException
+import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicReference
 
 class GLImage : FakeImage {
@@ -19,14 +19,18 @@ class GLImage : FakeImage {
     private val sprite: SpriteSheet
     private val textureMesh: TextureMesh
 
-    constructor(spriteSheet: SpriteSheet) {
+    private val fromBC: Boolean
+
+    constructor(spriteSheet: SpriteSheet, fromBC: Boolean) {
         sprite = spriteSheet
         textureMesh = sprite.wholePart
+        this.fromBC = fromBC
     }
 
-    constructor(spriteSheet: SpriteSheet, child: TextureMesh) {
+    constructor(spriteSheet: SpriteSheet, child: TextureMesh, fromBC: Boolean) {
         sprite = spriteSheet
         textureMesh = child
+        this.fromBC = fromBC
     }
 
     override fun bimg(): Any {
@@ -38,37 +42,64 @@ class GLImage : FakeImage {
     }
 
     override fun getRGB(i: Int, j: Int): Int {
-        val rgb = AtomicReference<Int>(null)
-        val pauser = Pauser()
 
-        StaticStore.renderManager.queueGL {
+
+        val waiter = if (!Thread.currentThread().equals(StaticStore.renderManager.renderThread)) {
+            CountDownLatch(1)
+        } else {
+            null
+        }
+
+        return if (waiter != null) {
+            val rgb = AtomicReference<Int>(null)
+
+            StaticStore.renderManager.queueGL {
+                sprite.bind()
+
+                GL33.glReadPixels(i, j, 1, 1, GL33.GL_FLOAT, GL33.GL_UNSIGNED_INT, sharedRGBA)
+
+                rgb.set(Color(sharedRGBA[0], sharedRGBA[1], sharedRGBA[2]).rgb)
+
+                waiter.countDown()
+            }
+
+            waiter.await()
+
+            rgb.get()
+        } else {
             sprite.bind()
 
             GL33.glReadPixels(i, j, 1, 1, GL33.GL_FLOAT, GL33.GL_UNSIGNED_INT, sharedRGBA)
 
-            rgb.set(Color(sharedRGBA[0], sharedRGBA[1], sharedRGBA[2]).rgb)
-
-            pauser.resume()
+            Color(sharedRGBA[0], sharedRGBA[1], sharedRGBA[2]).rgb
         }
 
-        pauser.pause()
 
-        return rgb.get()
     }
 
     override fun getSubimage(i: Int, j: Int, k: Int, l: Int): FakeImage {
-        val image = AtomicReference<GLImage>(null)
-        val pauser = Pauser()
-
-        StaticStore.renderManager.queueGL {
-            image.set(GLImage(sprite, sprite.generatePart(i.toFloat(), j.toFloat(), k.toFloat(), l.toFloat())))
-
-            pauser.resume()
+        val waiter = if (!Thread.currentThread().equals(StaticStore.renderManager.renderThread)) {
+            CountDownLatch(1)
+        } else {
+            null
         }
 
-        pauser.pause()
+        return if (waiter != null) {
+            val image = AtomicReference<GLImage>(null)
 
-        return image.get()
+            StaticStore.renderManager.queueGL {
+                image.set(GLImage(sprite, sprite.generatePart(i.toFloat(), j.toFloat(), k.toFloat(), l.toFloat()), fromBC))
+
+                waiter.countDown()
+            }
+
+            waiter.await()
+
+            image.get()
+        } else {
+            GLImage(sprite, sprite.generatePart(i.toFloat(), j.toFloat(), k.toFloat(), l.toFloat()), fromBC)
+        }
+
     }
 
     override fun getWidth(): Int {
@@ -80,7 +111,7 @@ class GLImage : FakeImage {
     }
 
     override fun isValid(): Boolean {
-        return true
+        return !sprite.released
     }
 
     override fun setRGB(i: Int, j: Int, p: Int) {
@@ -99,11 +130,23 @@ class GLImage : FakeImage {
     }
 
     override fun unload() {
+        if (!Thread.currentThread().equals(StaticStore.renderManager.renderThread)) {
+            val waiter = CountDownLatch(1)
 
+            StaticStore.renderManager.queueGL {
+                sprite.release()
+
+                waiter.countDown()
+            }
+
+            waiter.await()
+        } else {
+            sprite.release()
+        }
     }
 
     override fun cloneImage(): FakeImage {
-        return GLImage(sprite, textureMesh)
+        return GLImage(sprite, textureMesh, fromBC)
     }
 
     override fun getGraphics(): FakeGraphics {

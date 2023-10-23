@@ -1,4 +1,4 @@
-package mandarin.packpack.supporter.opengl.renderer
+package mandarin.packpack.supporter.lwjgl.opengl.renderer
 
 import java.io.File
 

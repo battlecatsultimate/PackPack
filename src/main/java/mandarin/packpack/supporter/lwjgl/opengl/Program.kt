@@ -1,4 +1,4 @@
-package mandarin.packpack.supporter.opengl
+package mandarin.packpack.supporter.lwjgl.opengl
 
 import org.lwjgl.opengl.GL33
 
@@ -40,16 +40,22 @@ class Program {
 
     fun setInt(fieldName: String, value: Int) {
         if (!uniformFields.contains(fieldName)) {
-            throw IllegalStateException("There's no field name called (Boolean) $fieldName in this program [$programID]!")
-        }
-
-        if (!uniformFields.contains(fieldName)) {
             throw IllegalStateException("There's no field name called (Int) $fieldName in this program [$programID]!")
         }
 
         val pointer = getPointerAddress(programID, fieldName, "Int")
 
         GL33.glUniform1i(pointer, value)
+    }
+
+    fun setUnsignedInt(fieldName: String, value: Int) {
+        if (!uniformFields.contains(fieldName)) {
+            throw IllegalStateException("There's no field name called (U_Int) $fieldName in this program [$programID]!")
+        }
+
+        val pointer = getPointerAddress(programID, fieldName, "U_Int")
+
+        GL33.glUniform1ui(pointer, value)
     }
 
     fun setFloat(fieldName: String, value: Float) {
@@ -168,6 +174,34 @@ class Program {
         val array = FloatArray(1)
 
         GL33.glGetUniformfv(programID, pointer, array)
+
+        return array[0]
+    }
+
+    fun getBoolean(fieldName: String) : Boolean {
+        if (!uniformFields.contains(fieldName)) {
+            throw IllegalStateException("There's no field name called (Boolean) $fieldName in this program [$programID]!")
+        }
+
+        val pointer = getPointerAddress(programID, fieldName, "Float")
+
+        val array = IntArray(1)
+
+        GL33.glGetUniformiv(programID, pointer, array)
+
+        return array[0] == 1
+    }
+
+    fun getInt(fieldName: String) : Int {
+        if (!uniformFields.contains(fieldName)) {
+            throw IllegalStateException("There's no field name called (Boolean) $fieldName in this program [$programID]!")
+        }
+
+        val pointer = getPointerAddress(programID, fieldName, "Float")
+
+        val array = IntArray(1)
+
+        GL33.glGetUniformiv(programID, pointer, array)
 
         return array[0]
     }

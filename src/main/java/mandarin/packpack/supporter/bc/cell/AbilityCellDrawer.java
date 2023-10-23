@@ -1,94 +1,85 @@
 package mandarin.packpack.supporter.bc.cell;
 
-import mandarin.packpack.supporter.awt.FG2D;
+import mandarin.packpack.supporter.lwjgl.GLGraphics;
+import mandarin.packpack.supporter.lwjgl.opengl.model.FontModel;
 import org.jetbrains.annotations.NotNull;
 
-import java.awt.*;
-import java.awt.font.FontRenderContext;
-import java.awt.font.GlyphVector;
-import java.awt.geom.Rectangle2D;
-
 public class AbilityCellDrawer implements CellDrawer {
-    private static final int abilityMargin = 54;
-    private static final int lineSpace = 12;
-    private static final int fixer = 15;
+    private static final int abilityMargin = 27;
+    private static final int lineSpace = 6;
+    private static final float fixer = 7.5f;
 
     private final String name;
     private final String[] contents;
 
-    public int h = -1;
-    public int w = -1;
-    public int offset = -1;
-    public int uh = -1;
+    public float h = -1;
+    public float w = -1;
+    public float offset = -1;
+    public float uh = -1;
 
-    public int xNameOffset = -1;
-    public int yNameOffset = -1;
-
-    public int spaceDotMargin = 0;
-
-    public final int[] xTextOffset;
-    public final int[] yTextOffset;
+    public float spaceDotMargin = 0;
 
     public AbilityCellDrawer(@NotNull String name, @NotNull String[] contents) {
         this.name = name;
         this.contents = contents;
-
-        this.yTextOffset = new int[contents.length];
-        this.xTextOffset = new int[contents.length];
     }
 
     @Override
-    public void initialize(Font nameFont, Font contentFont, FontMetrics nfm, FontMetrics cfm, int targetWidth) {
-        getWidth(cfm, targetWidth);
-        getHeightAndOffset(nameFont, contentFont, nfm.getFontRenderContext(), cfm.getFontRenderContext());
+    public void initialize(FontModel nameFont, FontModel contentFont, int targetWidth) {
+        if(spaceDotMargin == 0) {
+            spaceDotMargin = contentFont.trueWidth(" · ");
+        }
+
+        getWidth(contentFont, targetWidth);
+        getHeightAndOffset(nameFont, contentFont);
     }
 
-    private void getWidth(FontMetrics contentFont, int targetWidth) {
+    private void getWidth(FontModel contentFont, int targetWidth) {
         for(int i = 0; i < contents.length; i++) {
             String[] data = contents[i].split(" ");
 
-            int stackWidth = 0;
+            float preWidth = spaceDotMargin;
 
             StringBuilder realContent = new StringBuilder();
+            StringBuilder sentence = new StringBuilder();
+
             boolean reachedBoundary = false;
 
             for(int j = 0; j < data.length; j++) {
                 String realSegment = j < data.length - 1 ? data[j] + " " : data[j];
 
-                int sw = contentFont.stringWidth(realSegment);
+                float sw = preWidth + contentFont.textWidth(sentence + realSegment);
 
-                if(stackWidth + sw > targetWidth) {
-                    if(spaceDotMargin == 0) {
-                        spaceDotMargin = contentFont.stringWidth(" · ");
-                    }
+                if (sw > targetWidth) {
+                    realContent.append(sentence).append("\n");
 
-                    stackWidth = contentFont.stringWidth( realSegment);
-
-                    realContent.append("\n").append(realSegment);
+                    preWidth = 0f;
+                    sentence = new StringBuilder();
 
                     reachedBoundary = true;
-                } else {
-                    stackWidth += sw;
-
-                    realContent.append(realSegment);
                 }
+
+                sentence.append(realSegment);
             }
 
-            if(reachedBoundary)
-                contents[i] = realContent.toString();
+            if (!sentence.isEmpty()) {
+                realContent.append(sentence);
+            }
 
-            w = Math.max(w, reachedBoundary ? targetWidth : contentFont.stringWidth(contents[i]));
+            if(reachedBoundary) {
+                contents[i] = realContent.toString();
+            }
+
+            w = Math.max(w, reachedBoundary ? targetWidth : contentFont.textWidth(contents[i]));
         }
     }
 
-    private void getHeightAndOffset(Font nameFont, Font contentFont, FontRenderContext nfrc, FontRenderContext cfrc) {
+    private void getHeightAndOffset(FontModel nameFont, FontModel contentFont) {
         int rh = 0;
 
-        GlyphVector ngv = nameFont.createGlyphVector(nfrc, name);
+        float[] nRect = nameFont.measureDimension(name);
 
-        Rectangle2D nRect = ngv.getPixelBounds(null, 0, 0);
-
-        rh += (int) Math.round(nRect.getHeight()+textMargin);
+        rh += Math.round(nRect[3] + textMargin);
 
         offset = rh;
 
@@ -96,16 +87,9 @@ public class AbilityCellDrawer implements CellDrawer {
             String[] segment = contents[i].split("\n");
 
             for(int j = 0; j < segment.length; j++) {
-                GlyphVector cgv = contentFont.createGlyphVector(cfrc, segment[j]);
+                float[] cRect = contentFont.measureDimension(segment[j]);
 
-                Rectangle2D cRect = cgv.getPixelBounds(null, 0, 0);
-
-                if(j == 0) {
-                    yTextOffset[i] = (int) Math.round(cRect.getY());
-                    xTextOffset[i] = (int) Math.round(cRect.getX());
-                }
-
-                uh = (int) Math.max(uh, cRect.getHeight());
+                uh = (int) Math.max(uh, cRect[3]);
             }
         }
 
@@ -122,25 +106,25 @@ public class AbilityCellDrawer implements CellDrawer {
     }
 
     @Override
-    public void draw(FG2D g, int x, int y, int uw, int offset, int h, Font nameFont, Font contentFont) {
+    public void draw(GLGraphics g, int x, int y, int uw, int offset, int h, FontModel nameFont, FontModel contentFont) {
         g.setColor(191, 191, 191, 255);
-        g.setFont(nameFont);
+        g.setFontModel(nameFont);
 
-        g.drawText(name, x - xNameOffset, y - yNameOffset);
+        g.drawText(name, x, y, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
 
         int ry = y;
 
         g.setColor(238, 238, 238, 255);
-        g.setFont(contentFont);
+        g.setFontModel(contentFont);
 
         for(int i = 0; i < contents.length; i++) {
             String[] segment = contents[i].split("\n");
 
             for(int j = 0; j < segment.length; j++) {
                 if(j == 0) {
-                    g.drawText(segment[j], x - xTextOffset[i], ry + offset - yTextOffset[i]);
+                    g.drawText(segment[j], x, ry + offset, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
                 } else {
-                    g.drawText(segment[j], x + spaceDotMargin - xTextOffset[i], ry + offset - yTextOffset[i]);
+                    g.drawText(segment[j], x + spaceDotMargin, ry + offset, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
                 }
 
                 ry += uh;

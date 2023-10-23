@@ -1,8 +1,9 @@
-package mandarin.packpack.supporter.opengl.model
+package mandarin.packpack.supporter.lwjgl.opengl.model
 
-import mandarin.packpack.supporter.opengl.Texture
-import mandarin.packpack.supporter.opengl.buffer.VAO
-import mandarin.packpack.supporter.opengl.buffer.VBO
+import mandarin.packpack.supporter.Logger
+import mandarin.packpack.supporter.lwjgl.opengl.Texture
+import mandarin.packpack.supporter.lwjgl.opengl.buffer.VAO
+import mandarin.packpack.supporter.lwjgl.opengl.buffer.VBO
 import org.lwjgl.opengl.GL33
 import java.io.File
 import java.io.InputStream
@@ -14,10 +15,14 @@ class SpriteSheet private constructor(private val parentTexture: Texture) : Mode
         const val DIMENSION = 2
 
         fun build(file: File) : SpriteSheet {
+            Logger.addLog("Generating SpriteSheet from file : ${file.absolutePath}")
+
             return SpriteSheet(Texture.build(file))
         }
 
         fun build(stream: InputStream) : SpriteSheet {
+            Logger.addLog("Generating SpriteSheet from stream")
+
             return SpriteSheet(Texture.build(stream))
         }
     }
@@ -29,6 +34,8 @@ class SpriteSheet private constructor(private val parentTexture: Texture) : Mode
 
     val wholePart: TextureMesh
     private val segments = ArrayList<TextureMesh>()
+
+    internal var released = false
 
     // VERTEX ORDER
     // 1 --- 4
@@ -52,6 +59,10 @@ class SpriteSheet private constructor(private val parentTexture: Texture) : Mode
     }
 
     fun generatePart(x: Float, y: Float, w: Float, h: Float) : TextureMesh {
+        if (released) {
+            throw IllegalStateException("This sprite sheet is already released!")
+        }
+
         val xRatio = x / width
         val yRatio = y / height
         val wRatio = w / width
@@ -79,6 +90,10 @@ class SpriteSheet private constructor(private val parentTexture: Texture) : Mode
     }
 
     fun drawMesh(mesh: TextureMesh) {
+        if (released) {
+            throw IllegalStateException("This sprite sheet is already released!")
+        }
+
         bind()
 
         if (!vertexVBO.bound) {
@@ -106,5 +121,17 @@ class SpriteSheet private constructor(private val parentTexture: Texture) : Mode
         vertexVBO.bind()
 
         parentTexture.bind()
+    }
+
+    fun release() {
+        if (released)
+            return
+
+        Logger.addLog("Releasing SpriteSheet")
+
+        vertexVBO.release()
+        parentTexture.release()
+
+        released = true
     }
 }

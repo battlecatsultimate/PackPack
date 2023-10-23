@@ -18,7 +18,6 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 
-import javax.imageio.ImageIO;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -120,7 +119,7 @@ public class AnimAnalyzer extends ConstraintCommand {
                 mixer.anim[i] = MaAnim.newIns(maanim.getData());
             }
 
-            mixer.png = ImageIO.read(new File(workspace, "NumberLocal/"+animCode+".png"));
+            mixer.buildPng(new File(workspace, "NumberLocal/"+animCode+".png"));
 
             int boostLevel = 0;
 
@@ -129,6 +128,8 @@ public class AnimAnalyzer extends ConstraintCommand {
             }
 
             EntityHandler.generateBCAnim(ch, boostLevel, mixer, lang, () -> { }, () -> { });
+
+            mixer.release();
         } else {
             int anim = getAnimNumber(loader.getContent());
 

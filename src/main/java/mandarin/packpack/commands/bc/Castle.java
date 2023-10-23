@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bc;
 
+import common.system.fake.FakeImage;
 import common.system.files.VFile;
 import common.util.Data;
 import common.util.stage.CastleImg;
@@ -16,11 +17,10 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.utils.FileUpload;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 public class Castle extends ConstraintCommand {
     public static void performButton(ButtonInteractionEvent event, CastleImg cs) throws Exception {
@@ -56,21 +56,37 @@ public class Castle extends ConstraintCommand {
                 default -> 0;
             };
 
-            BufferedImage castle;
+            FakeImage castle;
 
             if (code == 1 && lang != LangID.JP) {
                 VFile vf = VFile.get("./org/img/ec/ec" + Data.trio(cs.id.id) + "_" + getLocale(lang) + ".png");
 
                 if (vf != null) {
-                    castle = (BufferedImage) vf.getData().getImg().bimg();
+                    castle = vf.getData().getImg();
                 } else {
-                    castle = (BufferedImage) cs.img.getImg().bimg();
+                    castle = cs.img.getImg();
                 }
             } else {
-                castle = (BufferedImage) cs.img.getImg().bimg();
+                castle = cs.img.getImg();
             }
 
-            ImageIO.write(castle, "PNG", img);
+            CountDownLatch waiter = new CountDownLatch(1);
+
+            StaticStore.renderManager.createRenderer(castle.getWidth(), castle.getHeight(), temp, connector -> {
+                connector.queue(g -> {
+                    g.drawImage(castle, 0f, 0f);
+
+                    return null;
+                });
+
+                return null;
+            }, progress -> img, () -> {
+                waiter.countDown();
+
+                return null;
+            });
+
+            waiter.await();
 
             String castleCode;
 
@@ -162,22 +178,37 @@ public class Castle extends ConstraintCommand {
                 default -> 0;
             };
 
-            BufferedImage castle;
+            FakeImage castle;
 
             if(code == 1 && lang != LangID.JP) {
-                System.out.println(cs.id.id);
                 VFile vf = VFile.get("./org/img/ec/ec"+Data.trio(cs.id.id)+"_"+getLocale(lang)+".png");
 
                 if(vf != null) {
-                    castle = (BufferedImage) vf.getData().getImg().bimg();
+                    castle = vf.getData().getImg();
                 } else {
-                    castle = (BufferedImage) cs.img.getImg().bimg();
+                    castle = cs.img.getImg();
                 }
             } else {
-                castle = (BufferedImage) cs.img.getImg().bimg();
+                castle = cs.img.getImg();
             }
 
-            ImageIO.write(castle, "PNG", img);
+            CountDownLatch waiter = new CountDownLatch(1);
+
+            StaticStore.renderManager.createRenderer(castle.getWidth(), castle.getHeight(), temp, connector -> {
+                connector.queue(g -> {
+                    g.drawImage(castle, 0f, 0f);
+
+                    return null;
+                });
+
+                return null;
+            }, progress -> img, () -> {
+                waiter.countDown();
+
+                return null;
+            });
+
+            waiter.await();
 
             int finalId = cs.id.id;
 
@@ -246,21 +277,37 @@ public class Castle extends ConstraintCommand {
 
                 CastleImg image = imgs.get(id);
 
-                BufferedImage castle;
+                FakeImage castle;
 
                 if(code == 1 && lang != LangID.JP) {
                     VFile vf = VFile.get("./org/img/ec/ec"+Data.trio(image.id.id)+"_"+getLocale(lang)+".png");
 
                     if(vf != null) {
-                        castle = (BufferedImage) vf.getData().getImg().bimg();
+                        castle = vf.getData().getImg();
                     } else {
-                        castle = (BufferedImage) image.img.getImg().bimg();
+                        castle = image.img.getImg();
                     }
                 } else {
-                    castle = (BufferedImage) image.img.getImg().bimg();
+                    castle = image.img.getImg();
                 }
 
-                ImageIO.write(castle, "PNG", img);
+                CountDownLatch waiter = new CountDownLatch(1);
+
+                StaticStore.renderManager.createRenderer(castle.getWidth(), castle.getHeight(), temp, connector -> {
+                    connector.queue(g -> {
+                        g.drawImage(castle, 0f, 0f);
+
+                        return null;
+                    });
+
+                    return null;
+                }, progress -> img, () -> {
+                    waiter.countDown();
+
+                    return null;
+                });
+
+                waiter.await();
 
                 String castleCode;
 

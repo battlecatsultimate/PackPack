@@ -1,4 +1,4 @@
-package mandarin.packpack.supporter.opengl
+package mandarin.packpack.supporter.lwjgl.opengl
 
 import org.lwjgl.opengl.GL33
 import java.io.BufferedReader

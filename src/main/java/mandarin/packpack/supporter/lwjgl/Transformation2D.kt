@@ -1,7 +1,7 @@
 package mandarin.packpack.supporter.lwjgl
 
 import common.system.fake.FakeTransform
-import mandarin.packpack.supporter.opengl.Program
+import mandarin.packpack.supporter.lwjgl.opengl.Program
 import kotlin.math.cos
 import kotlin.math.sin
 

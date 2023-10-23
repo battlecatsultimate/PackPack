@@ -1,6 +1,7 @@
-package mandarin.packpack.supporter.opengl.buffer
+package mandarin.packpack.supporter.lwjgl.opengl.buffer
 
-import mandarin.packpack.supporter.opengl.RenderSession
+import mandarin.packpack.supporter.Logger
+import mandarin.packpack.supporter.lwjgl.opengl.RenderSession
 import org.checkerframework.common.value.qual.IntRange
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.opengl.GL33
@@ -52,6 +53,7 @@ class VAO private constructor(private val vaoID: Int) {
         fun releaseVAO(window: RenderSession) {
             val vao = vaoMap[window.windowID] ?: return
 
+            Logger.addLog("Releasing VAO : ${vao.vaoID} from Window ID : ${window.windowID}")
             GL33.glDeleteVertexArrays(vao.vaoID)
 
             vaoMap.remove(window.windowID)
@@ -59,6 +61,10 @@ class VAO private constructor(private val vaoID: Int) {
     }
 
     private val enabled = booleanArrayOf(false, false, false)
+
+    init {
+        Logger.addLog("Generating VAO : $vaoID")
+    }
 
     fun pointerVBO(vbo: VBO, attribute: Attribute, type: ValueType, size: @IntRange(from = 1, to = 4) Int, stride: Int = 0, offsetPointer: Long = 0L) {
         if (!vbo.bound) {

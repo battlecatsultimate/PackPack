@@ -19,7 +19,6 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import javax.annotation.Nonnull;
-import javax.imageio.ImageIO;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
@@ -114,9 +113,13 @@ public class BCAnimMessageHolder extends MessageHolder {
                     });
 
                     StaticStore.executorHandler.postDelayed(1000, () -> StaticStore.deleteFile(container, true));
-                }, () ->
-                    StaticStore.executorHandler.postDelayed(1000, () -> StaticStore.deleteFile(container, true))
-                );
+
+                    mixer.release();
+                }, () -> {
+                    StaticStore.executorHandler.postDelayed(1000, () -> StaticStore.deleteFile(container, true));
+
+                    mixer.release();
+                });
 
                 StaticStore.executorHandler.postDelayed(1000, () -> StaticStore.deleteFile(container, true));
             }, e -> StaticStore.logger.uploadErrorLog(e, "E/BCAnimMessageHolder::constructor - Failed to generate animation"));
@@ -188,7 +191,13 @@ public class BCAnimMessageHolder extends MessageHolder {
                             });
 
                             StaticStore.executorHandler.postDelayed(1000, () -> StaticStore.deleteFile(container, true));
-                        }, () -> StaticStore.executorHandler.postDelayed(1000, () -> StaticStore.deleteFile(container, true)));
+
+                            mixer.release();
+                        }, () -> {
+                            StaticStore.executorHandler.postDelayed(1000, () -> StaticStore.deleteFile(container, true));
+
+                            mixer.release();
+                        });
                     }, e -> StaticStore.logger.uploadErrorLog(e, "E/BCAnimMessageHolder::onReceivedEvent - Failed to generate animation"));
 
                     t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime());
@@ -200,6 +209,8 @@ public class BCAnimMessageHolder extends MessageHolder {
                 msg.editMessage(LangID.getStringByID("animanalyze_cancel", lang)).queue();
 
                 StaticStore.deleteFile(container, true);
+
+                mixer.release();
 
                 return STATUS.FINISH;
             }
@@ -328,7 +339,7 @@ public class BCAnimMessageHolder extends MessageHolder {
                     switch (fileType) {
                         case PNG -> {
                             pngDone = true;
-                            mixer.png = ImageIO.read(res);
+                            mixer.buildPng(res);
                         }
                         case IMGCUT -> {
                             cutDone = true;

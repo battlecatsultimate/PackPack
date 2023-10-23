@@ -1,5 +1,6 @@
-package mandarin.packpack.supporter.opengl
+package mandarin.packpack.supporter.lwjgl.opengl
 
+import mandarin.packpack.supporter.Logger
 import okhttp3.internal.and
 import org.lwjgl.opengl.GL33
 import org.lwjgl.stb.STBImage
@@ -37,6 +38,7 @@ class Texture private constructor(val textureID: Int, val width: Float, val heig
             }
 
             val id = GL33.glGenTextures()
+            Logger.addLog("Generating texture from Texture with file : $id")
 
             GL33.glBindTexture(GL33.GL_TEXTURE_2D, id)
 
@@ -88,6 +90,7 @@ class Texture private constructor(val textureID: Int, val width: Float, val heig
             buffer.flip()
 
             val id = GL33.glGenTextures()
+            Logger.addLog("Generating texture from Texture with stream : $id")
 
             GL33.glBindTexture(GL33.GL_TEXTURE_2D, id)
 
@@ -110,6 +113,7 @@ class Texture private constructor(val textureID: Int, val width: Float, val heig
             GL33.glPixelStorei(GL33.GL_UNPACK_ALIGNMENT, 1)
 
             val id = GL33.glGenTextures()
+            Logger.addLog("Generating texture from Texture with FT_Bitmap : $id")
 
             GL33.glBindTexture(GL33.GL_TEXTURE_2D, id)
 
@@ -149,6 +153,8 @@ class Texture private constructor(val textureID: Int, val width: Float, val heig
     }
 
     fun release() {
+        Logger.addLog("Releasing Texture : $textureID")
+
         GL33.glDeleteTextures(textureID)
 
         registeredTexture.remove(this)

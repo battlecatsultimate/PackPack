@@ -7,6 +7,7 @@ import common.system.P;
 import common.system.fake.FakeGraphics;
 import common.system.fake.FakeImage;
 import common.system.fake.FakeTransform;
+import common.system.fake.ImageBuilder;
 import common.system.files.VFile;
 import common.util.Data;
 import common.util.anim.AnimU;
@@ -21,34 +22,29 @@ import common.util.unit.AbEnemy;
 import common.util.unit.Enemy;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.awt.FG2D;
-import mandarin.packpack.supporter.awt.FIBI;
 import mandarin.packpack.supporter.bc.cell.AbilityCellDrawer;
 import mandarin.packpack.supporter.bc.cell.CellDrawer;
 import mandarin.packpack.supporter.bc.cell.NormalCellDrawer;
 import mandarin.packpack.supporter.calculation.Equation;
 import mandarin.packpack.supporter.calculation.Formula;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.lwjgl.GLGraphics;
+import mandarin.packpack.supporter.lwjgl.opengl.model.FontModel;
 import mandarin.packpack.supporter.lzw.AnimatedGifEncoder;
 import net.dv8tion.jda.api.entities.Message;
 import org.apache.commons.lang3.SystemUtils;
 import org.jetbrains.annotations.Nullable;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.font.FontRenderContext;
-import java.awt.font.GlyphVector;
-import java.awt.geom.GeneralPath;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
 
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class ImageDrawing {
@@ -157,37 +153,37 @@ public class ImageDrawing {
             5400 //1050
     };
 
-    private static Font titleFont;
-    private static Font typeFont;
-    private static Font nameFont;
-    private static Font contentFont;
-    private static Font levelFont;
-    private static Font fruitFont;
-    private static Font plotFont;
-    private static Font axisFont;
+    private static FontModel titleFont;
+    private static FontModel typeFont;
+    private static FontModel nameFont;
+    private static FontModel contentFont;
+    private static FontModel levelFont;
+    private static FontModel fruitFont;
+    private static FontModel plotFont;
+    private static FontModel axisFont;
 
-    private static final int statPanelMargin = 120;
-    private static final int bgMargin = 80;
-    private static final int nameMargin = 80;
-    private static final int cornerRadius = 150;
-    private static final int typeUpDownMargin = 28;
-    private static final int typeLeftRightMargin = 66;
-    private static final int levelMargin = 36;
-    private static final int cellMargin = 110;
-    private static final int enemyIconStroke = 15;
-    private static final int enemyIconGap = 40;
-    private static final int innerTableCornerRadius = 75;
-    private static final int innerTableTextMargin = 100;
-    private static final int innerTableCellMargin = 200;
-    private static final int headerSeparatorHeight = 135;
-    private static final int rewardIconSize = 160;
-    private static final int lineSpace = 12;
-    private static final int typeCornerRadius = 36;
+    private static final int statPanelMargin = 60;
+    private static final int bgMargin = 40;
+    private static final int nameMargin = 40;
+    private static final int cornerRadius = 75;
+    private static final int typeUpDownMargin = 15;
+    private static final int typeLeftRightMargin = 32;
+    private static final int levelMargin = 18;
+    private static final int cellMargin = 55;
+    private static final float enemyIconStroke = 7.5f;
+    private static final int enemyIconGap = 20;
+    private static final float innerTableCornerRadius = 32.5f;
+    private static final int innerTableTextMargin = 50;
+    private static final int innerTableCellMargin = 100;
+    private static final float headerSeparatorHeight = 62.5f;
+    private static final int rewardIconSize = 80;
+    private static final int lineSpace = 6;
+    private static final int typeCornerRadius = 18;
 
-    private static final float headerStroke = 4f;
-    private static final float innerTableLineStroke = 3f;
+    private static final float headerStroke = 2f;
+    private static final float innerTableLineStroke = 1.5f;
 
-    private static final int fruitGap = 60;
+    private static final int fruitGap = 30;
     private static final float fruitRatio = 0.125f;
     private static final float fruitTextGapRatio = 0.025f;
     private static final float fruitUpperGapRatio = 0.025f;
@@ -195,37 +191,37 @@ public class ImageDrawing {
     private static final float enemyIconRatio = 1.25f; // w/h
     private static final float enemyInnerIconRatio = 0.95f;
 
-    private static final int talentIconGap = 60;
-    private static final int talentNameGap = 80;
-    private static final int talentCostTableGap = 48;
-    private static final int talentCostGap = 120;
-    private static final int talentTableGap = 40;
-    private static final int talentGap = 120;
-    private static final int totalCostGap = 120;
+    private static final int talentIconGap = 30;
+    private static final int talentNameGap = 40;
+    private static final int talentCostTableGap = 24;
+    private static final int talentCostGap = 60;
+    private static final int talentTableGap = 20;
+    private static final int talentGap = 60;
+    private static final int totalCostGap = 60;
 
-    private static final int comboTitleGap = 90;
-    private static final int comboTypeGap = 40;
-    private static final int comboTypeInnerGap = 15;
-    private static final int comboTypeRadius = 30;
+    private static final int comboTitleGap = 45;
+    private static final int comboTypeGap = 20;
+    private static final float comboTypeInnerGap = 7.5f;
+    private static final int comboTypeRadius = 15;
     private static final float comboIconScaleFactor = 2.5f;
-    private static final int comboIconTableRadius = 75;
-    private static final int comboIconGap = 60;
-    private static final int comboIconLeftRightGap = 80;
-    private static final int comboIconUpDownGap = 60;
-    private static final int comboIconNameGap = 80;
-    private static final int comboContentGap = 120;
+    private static final float comboIconTableRadius = 37.5f;
+    private static final int comboIconGap = 30;
+    private static final int comboIconLeftRightGap = 40;
+    private static final int comboIconUpDownGap = 30;
+    private static final int comboIconNameGap = 40;
+    private static final int comboContentGap = 60;
 
-    private static final int plotWidthHeight = 1024;
-    private static final float axisStroke = 1.5f;
-    private static final float indicatorStroke = 2f;
+    private static final int plotWidthHeight = 512;
+    private static final float axisStroke = 0.75f;
+    private static final float indicatorStroke = 1f;
     private static final float indicatorRatio = 0.025f;
-    private static final float subIndicatorStroke = 1f;
-    private static final int indicatorGap = 10;
-    private static final float plotStroke = 3f;
+    private static final float subIndicatorStroke = 0.5f;
+    private static final int indicatorGap = 5;
+    private static final float plotStroke = 2f;
     private static final float angleLimit = 89.9995f;
 
-    private static final int axisTitleGap = 40;
-    private static final int plotGraphOffset = 100;
+    private static final int axisTitleGap = 20;
+    private static final int plotGraphOffset = 50;
 
     private static final int CHANCE_WIDTH = 0;
     private static final int REWARD_WIDTH = 1;
@@ -245,22 +241,24 @@ public class ImageDrawing {
     private static final int STAGE_WIDTH = 9;
     private static final int STAGE_HEIGHT = 10;
 
-    static {
+    public static void initialize() {
         File regular = new File("./data/NotoRegular.otf");
         File medium = new File("./data/NotoMedium.otf");
 
-        try {
-            titleFont = Font.createFont(Font.TRUETYPE_FONT, medium).deriveFont(144f);
-            typeFont = Font.createFont(Font.TRUETYPE_FONT, regular).deriveFont(96f);
-            nameFont = Font.createFont(Font.TRUETYPE_FONT, medium).deriveFont(63f);
-            contentFont = Font.createFont(Font.TRUETYPE_FONT, regular).deriveFont(84f);
-            levelFont = Font.createFont(Font.TRUETYPE_FONT, medium).deriveFont(96f);
-            fruitFont = Font.createFont(Font.TRUETYPE_FONT, medium).deriveFont(120f);
-            plotFont = Font.createFont(Font.TRUETYPE_FONT, medium).deriveFont(28f);
-            axisFont = Font.createFont(Font.TRUETYPE_FONT, medium).deriveFont(36f);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        StaticStore.renderManager.queueGL(() -> {
+            try {
+                titleFont = new FontModel(72f, medium, FontModel.Type.FILL, 0f);
+                typeFont = new FontModel(48f, regular, FontModel.Type.FILL, 0f);
+                nameFont = new FontModel(32f, medium, FontModel.Type.FILL, 0f);
+                contentFont = new FontModel(42f, regular, FontModel.Type.FILL, 0f);
+                levelFont = new FontModel(48f, medium, FontModel.Type.FILL, 0f);
+                fruitFont = new FontModel(60f, medium, FontModel.Type.FILL, 0f);
+                plotFont = new FontModel(14f, medium, FontModel.Type.FILL, 0f);
+                axisFont = new FontModel(18f, medium, FontModel.Type.FILL, 0f);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     public static File drawBGImage(Background bg, int w, int h, boolean eff) throws Exception {
@@ -281,91 +279,98 @@ public class ImageDrawing {
             return null;
         }
 
-        BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-        FG2D g = new FG2D(img.getGraphics());
+        CountDownLatch waiter = new CountDownLatch(1);
 
-        g.setRenderingHint(3, 2);
-        g.enableAntialiasing();
+        StaticStore.renderManager.createRenderer(w, h, temp, connector -> {
+            connector.queue(g -> {
+                float groundRatio = 0.1f;
 
-        float groundRatio = 0.1f;
+                float ratio = h * (1f - groundRatio * 2) / 2f / 512f;
 
-        float ratio = h * (1f - groundRatio * 2) / 2f / 512f;
+                int groundHeight = (int) (groundRatio * h);
 
-        int groundHeight = (int) (groundRatio * h);
+                bg.load();
 
-        bg.load();
+                g.gradRect(0, h - groundHeight, w, groundHeight, 0, h - groundHeight, bg.cs[2], 0, h, bg.cs[3]);
 
-        g.gradRect(0, h - groundHeight, w, groundHeight, 0, h - groundHeight, bg.cs[2], 0, h, bg.cs[3]);
+                int pos = (int) ((-bg.parts[Background.BG].getWidth()+200) * ratio);
 
-        int pos = (int) ((-bg.parts[Background.BG].getWidth()+200) * ratio);
+                int y = h - groundHeight;
 
-        int y = h - groundHeight;
+                int lowHeight = (int) (bg.parts[Background.BG].getHeight() * ratio);
+                int lowWidth = (int) (bg.parts[Background.BG].getWidth() * ratio);
 
-        int lowHeight = (int) (bg.parts[Background.BG].getHeight() * ratio);
-        int lowWidth = (int) (bg.parts[Background.BG].getWidth() * ratio);
+                while(pos < w) {
+                    g.drawImage(bg.parts[Background.BG], pos, y - lowHeight, lowWidth, lowHeight);
 
-        while(pos < w) {
-            g.drawImage(bg.parts[Background.BG], pos, y - lowHeight, lowWidth, lowHeight);
+                    pos += Math.max(1, (int) (bg.parts[0].getWidth() * ratio));
+                }
 
-            pos += Math.max(1, (int) (bg.parts[0].getWidth() * ratio));
-        }
+                if(bg.top) {
+                    int topHeight = (int) (bg.parts[Background.TOP].getHeight() * ratio);
+                    int topWidth = (int) (bg.parts[Background.TOP].getWidth() * ratio);
 
-        if(bg.top) {
-            int topHeight = (int) (bg.parts[Background.TOP].getHeight() * ratio);
-            int topWidth = (int) (bg.parts[Background.TOP].getWidth() * ratio);
+                    pos = (int) ((-bg.parts[Background.BG].getWidth() + 200) * ratio);
+                    y = h - groundHeight - lowHeight;
 
-            pos = (int) ((-bg.parts[Background.BG].getWidth() + 200) * ratio);
-            y = h - groundHeight - lowHeight;
+                    while(pos < w) {
+                        g.drawImage(bg.parts[Background.TOP], pos, y - topHeight, topWidth, topHeight);
 
-            while(pos < w) {
-                g.drawImage(bg.parts[Background.TOP], pos, y - topHeight, topWidth, topHeight);
+                        pos += Math.max(1, (int) (bg.parts[0].getWidth() * ratio));
+                    }
 
-                pos += Math.max(1, (int) (bg.parts[0].getWidth() * ratio));
-            }
+                    if(y - topHeight > 0) {
+                        g.gradRect(0, 0, w, h - groundHeight - lowHeight - topHeight, 0, 0, bg.cs[0], 0, h - groundHeight - lowHeight - topHeight, bg.cs[1]);
+                    }
+                } else {
+                    g.gradRect(0, 0, w, h - groundHeight - lowHeight, 0, 0, bg.cs[0], 0, h - groundHeight - lowHeight, bg.cs[1]);
+                }
 
-            if(y - topHeight > 0) {
-                g.gradRect(0, 0, w, h - groundHeight - lowHeight - topHeight, 0, 0, bg.cs[0], 0, h - groundHeight - lowHeight - topHeight, bg.cs[1]);
-            }
-        } else {
-            g.gradRect(0, 0, w, h - groundHeight - lowHeight, 0, 0, bg.cs[0], 0, h - groundHeight - lowHeight, bg.cs[1]);
-        }
+                if(eff && bg.effect != -1) {
+                    BackgroundEffect effect;
 
-        if(eff && bg.effect != -1) {
-            BackgroundEffect effect;
+                    if(bg.effect < 0) {
+                        effect = BackgroundEffect.mixture.get(-bg.effect);
+                    } else {
+                        effect = CommonStatic.getBCAssets().bgEffects.get(bg.effect);
+                    }
 
-            if(bg.effect < 0) {
-                effect = BackgroundEffect.mixture.get(-bg.effect);
-            } else {
-                effect = CommonStatic.getBCAssets().bgEffects.get(bg.effect);
-            }
+                    int len = (int) ((w / ratio - 400) / CommonStatic.BattleConst.ratio);
+                    int bgHeight = (int) (h / ratio);
+                    int midH = (int) (h * groundRatio / ratio);
 
-            int len = (int) ((w / ratio - 400) / CommonStatic.BattleConst.ratio);
-            int bgHeight = (int) (h / ratio);
-            int midH = (int) (h * groundRatio / ratio);
+                    effect.initialize(len, bgHeight, midH, bg);
 
-            effect.initialize(len, bgHeight, midH, bg);
+                    for(int i = 0; i < 30; i++) {
+                        effect.update(len, bgHeight, midH);
+                    }
 
-            for(int i = 0; i < 30; i++) {
-                effect.update(len, bgHeight, midH);
-            }
+                    P base = P.newP((int) (h * 0.0025), (int) (BackgroundEffect.BGHeight * 3 * ratio - h * 0.905));
 
-            P base = P.newP((int) (h * 0.0025), (int) (BackgroundEffect.BGHeight * 3 * ratio - h * 0.905));
+                    effect.preDraw(g, base, ratio, midH);
+                    effect.postDraw(g, base, ratio, midH);
 
-            effect.preDraw(g, base, ratio, midH);
-            effect.postDraw(g, base, ratio, midH);
+                    P.delete(base);
+                }
 
-            P.delete(base);
-        }
+                if(eff && bg.overlay != null) {
+                    g.gradRectAlpha(0, 0, w, h, 0, 0, bg.overlayAlpha, bg.overlay[1], 0, h, bg.overlayAlpha, bg.overlay[0]);
+                }
 
-        if(eff && bg.overlay != null) {
-            g.gradRectAlpha(0, 0, w, h, 0, 0, bg.overlayAlpha, bg.overlay[1], 0, h, bg.overlayAlpha, bg.overlay[0]);
-        }
+                return null;
+            });
 
-        g.dispose();
+            return null;
+        }, progress -> image, () -> {
+            System.out.println("Finished");
+            bg.unload();
 
-        ImageIO.write(img, "PNG", image);
+            waiter.countDown();
 
-        bg.unload();
+            return null;
+        });
+
+        waiter.await();
 
         return image;
     }
@@ -433,131 +438,144 @@ public class ImageDrawing {
 
         msg.editMessage(cont).queue();
 
-        long start = System.currentTimeMillis();
-        long current = System.currentTimeMillis();
         final int finalW = w;
+        CountDownLatch pause = new CountDownLatch(1);
 
-        for(int i = 0; i < bgAnimTime; i++) {
-            if(System.currentTimeMillis() - current >= 1500) {
-                String prog = DataToString.df.format(i * 100.0 / bgAnimTime);
-                String eta = getETA(start, System.currentTimeMillis(), i, bgAnimTime);
-                String ind = String.valueOf(i);
+        AtomicReference<Long> start = new AtomicReference<>(System.currentTimeMillis());
+        AtomicReference<Long> current = new AtomicReference<>(System.currentTimeMillis());
+
+        StaticStore.renderManager.createRenderer(w, h, temp, connector -> {
+            bg.load();
+
+            for(int i = 0; i < bgAnimTime; i++) {
+                final int finalI = i;
+
+                connector.queue(g -> {
+                    if(System.currentTimeMillis() - current.get() >= 1500) {
+                        String prog = DataToString.df.format(finalI * 100.0 / bgAnimTime);
+                        String eta = getETA(start.get(), System.currentTimeMillis(), finalI, bgAnimTime);
+                        String ind = String.valueOf(finalI);
+                        String content = LangID.getStringByID("bg_dimen", lang).replace("_WWW_", String.valueOf(finalW)).replace("_HHH_", bgAnimHeight+"") +"\n\n"+
+                                LangID.getStringByID("bg_prog", lang)
+                                        .replace("_PPP_", " ".repeat(Math.max(0, 3 - ind.length()))+ind)
+                                        .replace("_LLL_", bgAnimTime+"")
+                                        .replace("_BBB_", getProgressBar(finalI, bgAnimTime))
+                                        .replace("_VVV_", " ".repeat(Math.max(0, 6 - prog.length()))+prog)
+                                        .replace("_SSS_", " ".repeat(Math.max(0, 6 - eta.length()))+eta);
+
+                        msg.editMessage(content).queue();
+
+                        current.set(System.currentTimeMillis());
+                    }
+
+                    g.gradRect(0, h - groundHeight, finalW, groundHeight, 0, h - groundHeight, bg.cs[2], 0, h, bg.cs[3]);
+
+                    int pos = (int) ((-bg.parts[Background.BG].getWidth()+200) * bgAnimRatio);
+
+                    int y = h - groundHeight;
+
+                    int lowHeight = (int) (bg.parts[Background.BG].getHeight() * bgAnimRatio);
+                    int lowWidth = (int) (bg.parts[Background.BG].getWidth() * bgAnimRatio);
+
+                    while(pos < finalW) {
+                        g.drawImage(bg.parts[Background.BG], pos, y - lowHeight, lowWidth, lowHeight);
+
+                        pos += Math.max(1, (int) (bg.parts[0].getWidth() * bgAnimRatio));
+                    }
+
+                    if(bg.top) {
+                        int topHeight = (int) (bg.parts[Background.TOP].getHeight() * bgAnimRatio);
+                        int topWidth = (int) (bg.parts[Background.TOP].getWidth() * bgAnimRatio);
+
+                        pos = (int) ((-bg.parts[Background.BG].getWidth() + 200) * bgAnimRatio);
+                        y = h - groundHeight - lowHeight;
+
+                        while(pos < finalW) {
+                            g.drawImage(bg.parts[Background.TOP], pos, y - topHeight, topWidth, topHeight);
+
+                            pos += Math.max(1, (int) (bg.parts[0].getWidth() * bgAnimRatio));
+                        }
+
+                        if(y - topHeight > 0) {
+                            g.gradRect(0, 0, finalW, h - groundHeight - lowHeight - topHeight, 0, 0, bg.cs[0], 0, h - groundHeight - lowHeight - topHeight, bg.cs[1]);
+                        }
+                    } else {
+                        g.gradRect(0, 0, finalW, h - groundHeight - lowHeight, 0, 0, bg.cs[0], 0, h - groundHeight - lowHeight, bg.cs[1]);
+                    }
+
+                    P base = P.newP((int) (h * 0.0025), (int) (BackgroundEffect.BGHeight * 3 * bgAnimRatio - h * 0.905));
+
+                    eff.preDraw(g, base, bgAnimRatio, midH);
+                    eff.postDraw(g, base, bgAnimRatio, midH);
+
+                    P.delete(base);
+
+                    if(bg.overlay != null) {
+                        g.gradRectAlpha(0, 0, finalW, h, 0, 0, bg.overlayAlpha, bg.overlay[1], 0, h, bg.overlayAlpha, bg.overlay[0]);
+                    }
+
+                    eff.update(len, bgHeight, midH);
+
+                    return null;
+                });
+            }
+
+            return null;
+        }, progress -> new File("./temp/"+folderName+"/", quad(progress)+".png"), () -> {
+            try {
                 String content = LangID.getStringByID("bg_dimen", lang).replace("_WWW_", String.valueOf(finalW)).replace("_HHH_", bgAnimHeight+"") +"\n\n"+
                         LangID.getStringByID("bg_prog", lang)
-                                .replace("_PPP_", " ".repeat(Math.max(0, 3 - ind.length()))+ind)
-                                .replace("_LLL_", bgAnimTime+"")
-                                .replace("_BBB_", getProgressBar(i, bgAnimTime))
-                                .replace("_VVV_", " ".repeat(Math.max(0, 6 - prog.length()))+prog)
-                                .replace("_SSS_", " ".repeat(Math.max(0, 6 - eta.length()))+eta);
+                                .replace("_PPP_", bgAnimTime + "")
+                                .replace("_LLL_", bgAnimTime + "")
+                                .replace("_BBB_", getProgressBar(bgAnimTime, bgAnimTime))
+                                .replace("_VVV_", "100.00")
+                                .replace("_SSS_", "     0") + "\n"+
+                        LangID.getStringByID("bg_upload", lang);
 
                 msg.editMessage(content).queue();
 
-                current = System.currentTimeMillis();
-            }
+                ProcessBuilder builder = new ProcessBuilder(SystemUtils.IS_OS_WINDOWS ? "data/ffmpeg/bin/ffmpeg" : "ffmpeg", "-r", "30", "-f", "image2", "-s", finalW+"x"+h,
+                        "-i", "temp/"+folderName+"/%04d.png", "-vcodec", "libx264", "-crf", "25", "-pix_fmt", "yuv420p", "-y", "temp/"+mp4.getName());
+                builder.redirectErrorStream(true);
 
-            BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-            FG2D g = new FG2D(image.getGraphics());
+                Process pro = builder.start();
 
-            g.setRenderingHint(3, 2);
-            g.enableAntialiasing();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(pro.getInputStream()));
 
-            bg.load();
+                String line;
 
-            g.gradRect(0, h - groundHeight, w, groundHeight, 0, h - groundHeight, bg.cs[2], 0, h, bg.cs[3]);
-
-            int pos = (int) ((-bg.parts[Background.BG].getWidth()+200) * bgAnimRatio);
-
-            int y = h - groundHeight;
-
-            int lowHeight = (int) (bg.parts[Background.BG].getHeight() * bgAnimRatio);
-            int lowWidth = (int) (bg.parts[Background.BG].getWidth() * bgAnimRatio);
-
-            while(pos < w) {
-                g.drawImage(bg.parts[Background.BG], pos, y - lowHeight, lowWidth, lowHeight);
-
-                pos += Math.max(1, (int) (bg.parts[0].getWidth() * bgAnimRatio));
-            }
-
-            if(bg.top) {
-                int topHeight = (int) (bg.parts[Background.TOP].getHeight() * bgAnimRatio);
-                int topWidth = (int) (bg.parts[Background.TOP].getWidth() * bgAnimRatio);
-
-                pos = (int) ((-bg.parts[Background.BG].getWidth() + 200) * bgAnimRatio);
-                y = h - groundHeight - lowHeight;
-
-                while(pos < w) {
-                    g.drawImage(bg.parts[Background.TOP], pos, y - topHeight, topWidth, topHeight);
-
-                    pos += Math.max(1, (int) (bg.parts[0].getWidth() * bgAnimRatio));
+                while((line = reader.readLine()) != null) {
+                    System.out.println(line);
                 }
 
-                if(y - topHeight > 0) {
-                    g.gradRect(0, 0, w, h - groundHeight - lowHeight - topHeight, 0, 0, bg.cs[0], 0, h - groundHeight - lowHeight - topHeight, bg.cs[1]);
-                }
-            } else {
-                g.gradRect(0, 0, w, h - groundHeight - lowHeight, 0, 0, bg.cs[0], 0, h - groundHeight - lowHeight, bg.cs[1]);
+                pro.waitFor();
+
+                StaticStore.deleteFile(folder, true);
+
+                bg.unload();
+            } catch (Exception e) {
+                StaticStore.logger.uploadErrorLog(e, "E/ImageDrawing::drawBGAnimEffect - Failed to generate BG effect animation");
             }
 
-            P base = P.newP((int) (h * 0.0025), (int) (BackgroundEffect.BGHeight * 3 * bgAnimRatio - h * 0.905));
+            pause.countDown();
 
-            eff.preDraw(g, base, bgAnimRatio, midH);
-            eff.postDraw(g, base, bgAnimRatio, midH);
+            return null;
+        });
 
-            P.delete(base);
-
-            if(bg.overlay != null) {
-                g.gradRectAlpha(0, 0, w, h, 0, 0, bg.overlayAlpha, bg.overlay[1], 0, h, bg.overlayAlpha, bg.overlay[0]);
-            }
-
-            g.dispose();
-
-            File img = new File("./temp/"+folderName+"/", quad(i)+".png");
-
-            if(!img.exists() && !img.createNewFile()) {
-                StaticStore.logger.uploadLog("Can't create file : "+img.getAbsolutePath());
-                return null;
-            }
-
-            ImageIO.write(image, "PNG", img);
-
-            eff.update(len, bgHeight, midH);
-        }
-
-        String content = LangID.getStringByID("bg_dimen", lang).replace("_WWW_", String.valueOf(finalW)).replace("_HHH_", bgAnimHeight+"") +"\n\n"+
-                LangID.getStringByID("bg_prog", lang)
-                        .replace("_PPP_", bgAnimTime + "")
-                        .replace("_LLL_", bgAnimTime + "")
-                        .replace("_BBB_", getProgressBar(bgAnimTime, bgAnimTime))
-                        .replace("_VVV_", "100.00")
-                        .replace("_SSS_", "     0") + "\n"+
-                LangID.getStringByID("bg_upload", lang);
-
-        msg.editMessage(content).queue();
-
-        ProcessBuilder builder = new ProcessBuilder(SystemUtils.IS_OS_WINDOWS ? "data/ffmpeg/bin/ffmpeg" : "ffmpeg", "-r", "30", "-f", "image2", "-s", w+"x"+h,
-                "-i", "temp/"+folderName+"/%04d.png", "-vcodec", "libx264", "-crf", "25", "-pix_fmt", "yuv420p", "-y", "temp/"+mp4.getName());
-        builder.redirectErrorStream(true);
-
-        Process pro = builder.start();
-
-        BufferedReader reader = new BufferedReader(new InputStreamReader(pro.getInputStream()));
-
-        String line;
-
-        while((line = reader.readLine()) != null) {
-            System.out.println(line);
-        }
-
-        pro.waitFor();
-
-        StaticStore.deleteFile(folder, true);
-
-        bg.unload();
+        pause.await();
 
         return mp4;
     }
 
     public static File drawAnimImage(EAnimD<?> anim, int frame, float siz, boolean transparent, boolean debug) throws Exception {
+        File temp = new File("./temp");
+
+        File file = StaticStore.generateTempFile(temp, "result", ".png", false);
+
+        if(file == null) {
+            return null;
+        }
+
         CommonStatic.getConfig().ref = false;
 
         anim.setTime(frame);
@@ -602,8 +620,8 @@ public class ImageDrawing {
                 rect.height += oldY - rect.y;
             }
 
-            rect.width = Math.max(Math.abs(maxAmong(result[0][0], result[1][0], result[2][0], result[3][0]) - rect.x), rect.width);
-            rect.height = Math.max(Math.abs(maxAmong(result[0][1], result[1][1], result[2][1], result[3][1]) - rect.y), rect.height);
+            rect.width = Math.round(Math.max(Math.abs(maxAmong(result[0][0], result[1][0], result[2][0], result[3][0]) - rect.x), rect.width));
+            rect.height = Math.round(Math.max(Math.abs(maxAmong(result[0][1], result[1][1], result[2][1], result[3][1]) - rect.y), rect.height));
         }
 
         if(rect.width == 0)
@@ -618,53 +636,51 @@ public class ImageDrawing {
         if(rect.height % 2 == 1)
             rect.height++;
 
-        BufferedImage result = new BufferedImage(rect.width, rect.height, BufferedImage.TYPE_INT_ARGB);
-        FG2D rg = new FG2D(result.getGraphics());
+        CountDownLatch waiter = new CountDownLatch(1);
 
-        rg.setRenderingHint(3, 1);
-        rg.enableAntialiasing();
+        StaticStore.renderManager.createRenderer(rect.width, rect.height, temp, connector -> {
+            connector.queue(rg -> {
+                if(!transparent) {
+                    rg.setColor(54,57,63,255);
+                    rg.fillRect(0, 0, rect.width, rect.height);
+                }
 
-        if(!transparent) {
-            rg.setColor(54,57,63,255);
-            rg.fillRect(0, 0, rect.width, rect.height);
-        }
+                FakeTransform t = rg.getTransform();
 
-        FakeTransform t = rg.getTransform();
+                anim.draw(rg, new P(-rect.x, -rect.y), siz);
 
-        anim.draw(rg, new P(-rect.x, -rect.y), siz);
+                rg.setTransform(t);
 
-        rg.setTransform(t);
+                rg.setStroke(1.5f, GLGraphics.LineEndMode.VERTICAL);
 
-        rg.setStroke(1.5f);
+                if(debug) {
+                    for(int i = 0; i < rects.size(); i++) {
+                        int[][] res = rects.get(i);
 
-        if(debug) {
-            for(int i = 0; i < rects.size(); i++) {
-                int[][] res = rects.get(i);
+                        rg.setColor(FakeGraphics.RED);
 
-                rg.setColor(FakeGraphics.RED);
+                        rg.drawLine(-rect.x + res[0][0], -rect.y + res[0][1], -rect.x + res[1][0], -rect.y + res[1][1]);
+                        rg.drawLine(-rect.x + res[1][0], -rect.y + res[1][1], -rect.x + res[2][0], -rect.y + res[2][1]);
+                        rg.drawLine(-rect.x + res[2][0], -rect.y + res[2][1], -rect.x + res[3][0], -rect.y + res[3][1]);
+                        rg.drawLine(-rect.x + res[3][0], -rect.y + res[3][1], -rect.x + res[0][0], -rect.y + res[0][1]);
 
-                rg.drawLine(-rect.x + res[0][0], -rect.y + res[0][1], -rect.x + res[1][0], -rect.y + res[1][1]);
-                rg.drawLine(-rect.x + res[1][0], -rect.y + res[1][1], -rect.x + res[2][0], -rect.y + res[2][1]);
-                rg.drawLine(-rect.x + res[2][0], -rect.y + res[2][1], -rect.x + res[3][0], -rect.y + res[3][1]);
-                rg.drawLine(-rect.x + res[3][0], -rect.y + res[3][1], -rect.x + res[0][0], -rect.y + res[0][1]);
+                        rg.setColor(0, 255, 0, 255);
 
-                rg.setColor(0, 255, 0, 255);
+                        rg.fillRect(-rect.x + (int) centers.get(i).x - 2, -rect.y + (int) centers.get(i).y -2, 4, 4);
+                    }
+                }
 
-                rg.fillRect(-rect.x + (int) centers.get(i).x - 2, -rect.y + (int) centers.get(i).y -2, 4, 4);
-            }
-        }
+                return null;
+            });
 
-        rg.dispose();
-
-        File temp = new File("./temp");
-        File file = StaticStore.generateTempFile(temp, "result", ".png", false);
-
-        if(file == null) {
             return null;
-        }
+        }, progress -> file, () -> {
+            waiter.countDown();
 
-        ImageIO.write(result, "PNG", file);
+            return null;
+        });
 
+        waiter.await();
 
         return file;
     }
@@ -750,8 +766,8 @@ public class ImageDrawing {
                     rect.height += oldY - rect.y;
                 }
 
-                rect.width = Math.max(Math.abs(maxAmong(result[0][0], result[1][0], result[2][0], result[3][0]) - rect.x), rect.width);
-                rect.height = Math.max(Math.abs(maxAmong(result[0][1], result[1][1], result[2][1], result[3][1]) - rect.y), rect.height);
+                rect.width = Math.round(Math.max(Math.abs(maxAmong(result[0][0], result[1][0], result[2][0], result[3][0]) - rect.x), rect.width));
+                rect.height = Math.round(Math.max(Math.abs(maxAmong(result[0][1], result[1][1], result[2][1], result[3][1]) - rect.y), rect.height));
             }
 
             rectFrames.add(rects);
@@ -766,6 +782,27 @@ public class ImageDrawing {
                 .replace("_YYY_", String.valueOf(rect.x));
 
         msg.editMessage(cont).queue();
+
+
+        if (rect.width * rect.height > 500 * 500) {
+            if (rect.width * 2 < rect.height) {
+                int originalHeight = rect.height;
+
+                rect.height = (int) Math.round(rect.width * 1.5);
+
+                int diff = originalHeight - rect.height;
+
+                rect.y += diff;
+            } else if (rect.height * 2 < rect.width) {
+                int originalWidth = rect.width;
+
+                rect.width = (int) Math.round(rect.height * 1.5);
+
+                int diff = originalWidth - rect.width;
+
+                rect.x += diff;
+            }
+        }
 
         if(rect.width * rect.height > 1500 * 1500) {
             ratio = 1f;
@@ -782,12 +819,12 @@ public class ImageDrawing {
             ratio = 1f;
         }
 
-        String finCont = cont+"\n\n";
+        String baseContent = cont+"\n\n";
 
         if(ratio == 1.0) {
-            finCont += LangID.getStringByID("gif_cango", lang)+"\n\n";
+            baseContent += LangID.getStringByID("gif_cango", lang)+"\n\n";
         } else {
-            finCont += LangID.getStringByID("gif_adjust", lang).replace("_", DataToString.df.format(ratio * 100.0))+"\n\n";
+            baseContent += LangID.getStringByID("gif_adjust", lang).replace("_", DataToString.df.format(ratio * 100.0))+"\n\n";
         }
 
         if(rect.height % 2 == 1) {
@@ -806,123 +843,126 @@ public class ImageDrawing {
         if(rect.height == 0)
             rect.height = 2;
 
-        finCont += LangID.getStringByID("gif_final", lang).replace("_WWW_", String.valueOf(rect.width))
+        baseContent += LangID.getStringByID("gif_final", lang).replace("_WWW_", String.valueOf(rect.width))
                 .replace("_HHH_", String.valueOf(rect.height)).replace("_XXX_", String.valueOf(rect.x))
                 .replace("_YYY_", String.valueOf(rect.x))+"\n";
 
-        msg.editMessage(finCont).queue();
+        msg.editMessage(baseContent).queue();
 
         P pos = new P(-rect.x, -rect.y);
 
-        long start = System.currentTimeMillis();
-        long current = System.currentTimeMillis();
+        int finalFrame = frame;
+        String finalBaseContent = baseContent;
+        float finalRatio = ratio;
 
-        for(int i = 0; i < frame; i++) {
-            if(System.currentTimeMillis() - current >= 1500) {
-                String content = finCont +"\n\n";
+        CountDownLatch waiter = new CountDownLatch(1);
 
-                String prog = DataToString.df.format(i * 100.0 / frame);
-                String eta = getETA(start, System.currentTimeMillis(), i, frame);
-                String ind = String.valueOf(i);
-                String len = String.valueOf(frame);
+        StaticStore.renderManager.createRenderer(rect.width, rect.height, temp, connector -> {
+            AtomicReference<Long> start = new AtomicReference<>(System.currentTimeMillis());
+            AtomicReference<Long> current = new AtomicReference<>(System.currentTimeMillis());
 
-                content += LangID.getStringByID("bg_prog", lang)
-                        .replace("_PPP_", " ".repeat(Math.max(0, len.length() - ind.length()))+ind)
-                        .replace("_LLL_", len)
-                        .replace("_BBB_", getProgressBar(i, frame))
-                        .replace("_VVV_", " ".repeat(Math.max(0, 6 - prog.length()))+prog)
-                        .replace("_SSS_", " ".repeat(Math.max(0, 6 - eta.length()))+eta);
+            for(int i = 0; i < finalFrame; i++) {
+                final int finalI = i;
+
+                connector.queue(g -> {
+                    if(System.currentTimeMillis() - current.get() >= 1500) {
+                        String content = finalBaseContent +"\n\n";
+
+                        String prog = DataToString.df.format(finalI * 100.0 / finalFrame);
+                        String eta = getETA(start.get(), System.currentTimeMillis(), finalI, finalFrame);
+                        String ind = String.valueOf(finalI);
+                        String len = String.valueOf(finalFrame);
+
+                        content += LangID.getStringByID("bg_prog", lang)
+                                .replace("_PPP_", " ".repeat(Math.max(0, len.length() - ind.length()))+ind)
+                                .replace("_LLL_", len)
+                                .replace("_BBB_", getProgressBar(finalI, finalFrame))
+                                .replace("_VVV_", " ".repeat(Math.max(0, 6 - prog.length()))+prog)
+                                .replace("_SSS_", " ".repeat(Math.max(0, 6 - eta.length()))+eta);
+
+                        msg.editMessage(content).queue();
+
+                        current.set(System.currentTimeMillis());
+                    }
+
+                    anim.setTime(finalI);
+
+                    g.setStroke(1.5f, GLGraphics.LineEndMode.VERTICAL);
+
+                    g.setColor(54,57,63,255);
+                    g.fillRect(0, 0, rect.width, rect.height);
+
+                    if(debug) {
+                        for(int j = 0; j < rectFrames.get(finalI).size(); j++) {
+                            int[][] r = rectFrames.get(finalI).get(j);
+                            P c = centerFrames.get(finalI).get(j);
+
+                            g.setColor(FakeGraphics.RED);
+
+                            g.drawLine(-rect.x + (int) (finalRatio * r[0][0]), -rect.y + (int) (finalRatio * r[0][1]), -rect.x + (int) (finalRatio * r[1][0]), -rect.y + (int) (finalRatio * r[1][1]));
+                            g.drawLine(-rect.x + (int) (finalRatio * r[1][0]), -rect.y + (int) (finalRatio * r[1][1]), -rect.x + (int) (finalRatio * r[2][0]), -rect.y + (int) (finalRatio * r[2][1]));
+                            g.drawLine(-rect.x + (int) (finalRatio * r[2][0]), -rect.y + (int) (finalRatio * r[2][1]), -rect.x + (int) (finalRatio * r[3][0]), -rect.y + (int) (finalRatio * r[3][1]));
+                            g.drawLine(-rect.x + (int) (finalRatio * r[3][0]), -rect.y + (int) (finalRatio * r[3][1]), -rect.x + (int) (finalRatio * r[0][0]), -rect.y + (int) (finalRatio * r[0][1]));
+
+                            g.setColor(0, 255, 0, 255);
+
+                            g.fillRect(-rect.x + (int) (c.x * finalRatio) - 2, -rect.y + (int) (c.y * finalRatio) -2, 4, 4);
+                        }
+                    } else {
+                        anim.draw(g, pos, siz * finalRatio);
+                    }
+
+                    return null;
+                });
+            }
+
+            return null;
+        }, progress -> new File("./temp/"+folderName+"/", quad(progress)+".png"), () -> {
+            try {
+                String content = finalBaseContent + "\n\n" + LangID.getStringByID("gif_makepng", lang).replace("_", "100")
+                        +"\n\n"+ LangID.getStringByID("gif_converting", lang);
 
                 msg.editMessage(content).queue();
 
-                current = System.currentTimeMillis();
-            }
+                ProcessBuilder builder = new ProcessBuilder(SystemUtils.IS_OS_WINDOWS ? "data/ffmpeg/bin/ffmpeg" : "ffmpeg", "-r", "30", "-f", "image2", "-s", rect.width+"x"+rect.height,
+                        "-i", "temp/"+folderName+"/%04d.png", "-vcodec", "libx264", "-crf", "25", "-pix_fmt", "yuv420p", "-y", "temp/"+gif.getName());
+                builder.redirectErrorStream(true);
 
-            anim.setTime(i);
+                Process pro = builder.start();
 
-            BufferedImage image = new BufferedImage(rect.width, rect.height, BufferedImage.TYPE_INT_ARGB);
-            FG2D g = new FG2D(image.getGraphics());
+                BufferedReader reader = new BufferedReader(new InputStreamReader(pro.getInputStream()));
 
-            g.setRenderingHint(3, 2);
-            g.enableAntialiasing();
+                String line;
 
-            g.setStroke(1.5f);
-
-            g.setColor(54,57,63,255);
-            g.fillRect(0, 0, rect.width, rect.height);
-
-            if(debug) {
-                for(int j = 0; j < rectFrames.get(i).size(); j++) {
-                    int[][] r = rectFrames.get(i).get(j);
-                    P c = centerFrames.get(i).get(j);
-
-                    g.setColor(FakeGraphics.RED);
-
-                    g.drawLine(-rect.x + (int) (ratio * r[0][0]), -rect.y + (int) (ratio * r[0][1]), -rect.x + (int) (ratio * r[1][0]), -rect.y + (int) (ratio * r[1][1]));
-                    g.drawLine(-rect.x + (int) (ratio * r[1][0]), -rect.y + (int) (ratio * r[1][1]), -rect.x + (int) (ratio * r[2][0]), -rect.y + (int) (ratio * r[2][1]));
-                    g.drawLine(-rect.x + (int) (ratio * r[2][0]), -rect.y + (int) (ratio * r[2][1]), -rect.x + (int) (ratio * r[3][0]), -rect.y + (int) (ratio * r[3][1]));
-                    g.drawLine(-rect.x + (int) (ratio * r[3][0]), -rect.y + (int) (ratio * r[3][1]), -rect.x + (int) (ratio * r[0][0]), -rect.y + (int) (ratio * r[0][1]));
-
-                    g.setColor(0, 255, 0, 255);
-
-                    g.fillRect(-rect.x + (int) (c.x * ratio) - 2, -rect.y + (int) (c.y * ratio) -2, 4, 4);
+                while((line = reader.readLine()) != null) {
+                    System.out.println(line);
                 }
-            } else {
-                anim.draw(g, pos, siz * ratio);
+
+                pro.waitFor();
+
+                StaticStore.deleteFile(folder, true);
+
+                content = finalBaseContent + "\n\n" +
+                        LangID.getStringByID("gif_makepng", lang).replace("_", "100") + "\n\n" +
+                        LangID.getStringByID("bg_prog", lang)
+                                .replace("_PPP_", String.valueOf(finalFrame))
+                                .replace("_LLL_", String.valueOf(finalFrame))
+                                .replace("_BBB_", getProgressBar(finalFrame, finalFrame))
+                                .replace("_VVV_", "100.00")
+                                .replace("_SSS_", "     0") + "\n" +
+                        LangID.getStringByID("gif_uploadmp4", lang);
+
+                msg.editMessage(content).queue();
+            } catch (Exception e) {
+                StaticStore.logger.uploadErrorLog(e, "E/ImageDrawing::drawAnimMp4 - Failed to generate mp4 file");
             }
 
-            g.dispose();
+            waiter.countDown();
 
-            File img = new File("./temp/"+folderName+"/", quad(i)+".png");
+            return null;
+        });
 
-            if(!img.exists()) {
-                boolean res = img.createNewFile();
-
-                if(!res) {
-                    System.out.println("Can't create new file : "+img.getAbsolutePath());
-                    return null;
-                }
-            } else {
-                return null;
-            }
-
-            ImageIO.write(image, "PNG", img);
-        }
-
-        String content = finCont + "\n\n" + LangID.getStringByID("gif_makepng", lang).replace("_", "100")
-                +"\n\n"+ LangID.getStringByID("gif_converting", lang);
-
-        msg.editMessage(content).queue();
-
-        ProcessBuilder builder = new ProcessBuilder(SystemUtils.IS_OS_WINDOWS ? "data/ffmpeg/bin/ffmpeg" : "ffmpeg", "-r", "30", "-f", "image2", "-s", rect.width+"x"+rect.height,
-                "-i", "temp/"+folderName+"/%04d.png", "-vcodec", "libx264", "-crf", "25", "-pix_fmt", "yuv420p", "-y", "temp/"+gif.getName());
-        builder.redirectErrorStream(true);
-
-        Process pro = builder.start();
-
-        BufferedReader reader = new BufferedReader(new InputStreamReader(pro.getInputStream()));
-
-        String line;
-
-        while((line = reader.readLine()) != null) {
-            System.out.println(line);
-        }
-
-        pro.waitFor();
-
-        StaticStore.deleteFile(folder, true);
-
-        content = finCont + "\n\n" +
-                LangID.getStringByID("gif_makepng", lang).replace("_", "100") + "\n\n" +
-                LangID.getStringByID("bg_prog", lang)
-                        .replace("_PPP_", String.valueOf(frame))
-                        .replace("_LLL_", String.valueOf(frame))
-                        .replace("_BBB_", getProgressBar(frame, frame))
-                        .replace("_VVV_", "100.00")
-                        .replace("_SSS_", "     0") + "\n" +
-                LangID.getStringByID("gif_uploadmp4", lang);
-
-        msg.editMessage(content).queue();
+        waiter.await();
 
         return gif;
     }
@@ -1000,8 +1040,8 @@ public class ImageDrawing {
                     rect.height += oldY - rect.y;
                 }
 
-                rect.width = Math.max(Math.abs(maxAmong(result[0][0], result[1][0], result[2][0], result[3][0]) - rect.x), rect.width);
-                rect.height = Math.max(Math.abs(maxAmong(result[0][1], result[1][1], result[2][1], result[3][1]) - rect.y), rect.height);
+                rect.width = Math.round(Math.max(Math.abs(maxAmong(result[0][0], result[1][0], result[2][0], result[3][0]) - rect.x), rect.width));
+                rect.height = Math.round(Math.max(Math.abs(maxAmong(result[0][1], result[1][1], result[2][1], result[3][1]) - rect.y), rect.height));
             }
 
             rectFrames.add(rects);
@@ -1216,8 +1256,8 @@ public class ImageDrawing {
                             rect.height += oldY - rect.y;
                         }
 
-                        rect.width = Math.max(Math.abs(maxAmong(result[0][0], result[1][0], result[2][0], result[3][0]) - rect.x), rect.width);
-                        rect.height = Math.max(Math.abs(maxAmong(result[0][1], result[1][1], result[2][1], result[3][1]) - rect.y), rect.height);
+                        rect.width = Math.round(Math.max(Math.abs(maxAmong(result[0][0], result[1][0], result[2][0], result[3][0]) - rect.x), rect.width));
+                        rect.height = Math.round(Math.max(Math.abs(maxAmong(result[0][1], result[1][1], result[2][1], result[3][1]) - rect.y), rect.height));
                     }
                 }
             }
@@ -1231,6 +1271,26 @@ public class ImageDrawing {
                 .replace("_YYY_", String.valueOf(rect.y));
 
         msg.editMessage(cont).queue();
+
+        if (rect.width * rect.height > 500 * 500) {
+            if (rect.width * 2 < rect.height) {
+                int originalHeight = rect.height;
+
+                rect.height = (int) Math.round(rect.width * 1.5);
+
+                int diff = originalHeight - rect.height;
+
+                rect.y += diff;
+            } else if (rect.height * 2 < rect.width) {
+                int originalWidth = rect.width;
+
+                rect.width = (int) Math.round(rect.height * 1.5);
+
+                int diff = originalWidth - rect.width;
+
+                rect.x += diff;
+            }
+        }
 
         if(rect.width * rect.height > 1500 * 1500) {
             ratio = 1f;
@@ -1247,12 +1307,12 @@ public class ImageDrawing {
             ratio = 1f;
         }
 
-        String finCont = cont +"\n\n";
+        String content = cont +"\n\n";
 
         if(ratio == 1f) {
-            finCont += LangID.getStringByID("gif_cango", lang)+"\n\n";
+            content += LangID.getStringByID("gif_cango", lang)+"\n\n";
         } else {
-            finCont += LangID.getStringByID("gif_adjust", lang).replace("_", DataToString.df.format(ratio * 100.0))+"\n\n";
+            content += LangID.getStringByID("gif_adjust", lang).replace("_", DataToString.df.format(ratio * 100.0))+"\n\n";
         }
 
         if(rect.height % 2 == 1) {
@@ -1271,18 +1331,15 @@ public class ImageDrawing {
         if(rect.height == 0)
             rect.height = 2;
 
-        finCont += LangID.getStringByID("gif_final", lang).replace("_WWW_", String.valueOf(rect.width))
+        content += LangID.getStringByID("gif_final", lang).replace("_WWW_", String.valueOf(rect.width))
                 .replace("_HHH_", String.valueOf(rect.height)).replace("_XXX_", String.valueOf(rect.x))
                 .replace("_YYY_", String.valueOf(rect.x))+"\n";
 
-        msg.editMessage(finCont).queue();
+        msg.editMessage(content).queue();
 
         P pos = new P(-rect.x, -rect.y);
 
-        long current = System.currentTimeMillis();
-
         int totalFrame = 0;
-        int progress = 0;
 
         for(int i = 0; i < mixer.anim.length; i++) {
             EAnimD<?> anim = mixer.getAnim(i);
@@ -1299,189 +1356,182 @@ public class ImageDrawing {
 
         long start = System.currentTimeMillis();
 
-        for(int i = 0; i < mixer.anim.length; i++) {
-            //60 ~ 150, 60 ~ 150, 60 ~, 60, one cycle, 60, one cycle
+        int finalTotalFrame = totalFrame;
+        String finalContent = content;
+        float finalRatio = ratio;
 
-            EAnimD<?> anim = mixer.getAnim(i);
+        CountDownLatch waiter = new CountDownLatch(1);
 
-            if(anim != null) {
-                int frame = switch (i) {
-                    case 0, 1 -> Math.max(60, Math.min(150, anim.len()));
-                    case 2 -> Math.max(60, anim.len());
-                    case 3, 5 -> 60;
-                    case 4, 6 -> anim.len();
-                    default -> 0;
-                };
+        StaticStore.renderManager.createRenderer(rect.width, rect.height, folder, connector -> {
+            AtomicReference<Long> current = new AtomicReference<>(System.currentTimeMillis());
+            AtomicReference<Integer> progress = new AtomicReference<>(0);
 
-                if(i == 2) {
-                    int stackFrame = 0;
+            for(int i = 0; i < mixer.anim.length; i++) {
+                //60 ~ 150, 60 ~ 150, 60 ~, 60, one cycle, 60, one cycle
 
-                    while(stackFrame < 60) {
-                        for(int j = 0; j < frame; j++) {
-                            if(System.currentTimeMillis() - current >= 1500) {
-                                String content = finCont +"\n\n";
+                EAnimD<?> anim = mixer.getAnim(i);
 
-                                String prog = DataToString.df.format(progress * 100.0 / totalFrame);
-                                String eta = getETA(start, System.currentTimeMillis(), progress, totalFrame);
+                if(anim != null) {
+                    int frame = switch (i) {
+                        case 0, 1 -> Math.max(60, Math.min(150, anim.len()));
+                        case 2 -> Math.max(60, anim.len());
+                        case 3, 5 -> 60;
+                        case 4, 6 -> anim.len();
+                        default -> 0;
+                    };
 
-                                content += LangID.getStringByID("gif_makepng", lang) +
-                                        LangID.getStringByID("bg_prog", lang)
-                                                .replace("_PPP_", String.valueOf(progress))
-                                                .replace("_LLL_", String.valueOf(totalFrame))
-                                                .replace("_BBB_", getProgressBar(progress, totalFrame))
-                                                .replace("_VVV_", " ".repeat(Math.max(0, 6 - prog.length())) + prog)
-                                                .replace("_SSS_", " ".repeat(Math.max(0, 6 - eta.length())) + eta);
+                    if(i == 2) {
+                        int stackFrame = 0;
 
-                                msg.editMessage(content).queue();
+                        while(stackFrame < 60) {
+                            for(int j = 0; j < frame; j++) {
+                                final int finalJ = j;
 
-                                current = System.currentTimeMillis();
-                            }
+                                connector.queue(g -> {
+                                    if(System.currentTimeMillis() - current.get() >= 1500) {
+                                        String editContent = finalContent +"\n\n";
 
-                            anim.setTime(j);
+                                        String prog = DataToString.df.format(progress.get() * 100.0 / finalTotalFrame);
+                                        String eta = getETA(start, System.currentTimeMillis(), progress.get(), finalTotalFrame);
 
-                            BufferedImage image = new BufferedImage(rect.width, rect.height, BufferedImage.TYPE_INT_ARGB);
-                            FG2D g = new FG2D(image.getGraphics());
+                                        editContent += LangID.getStringByID("gif_makepng", lang) +
+                                                LangID.getStringByID("bg_prog", lang)
+                                                        .replace("_PPP_", String.valueOf(progress.get()))
+                                                        .replace("_LLL_", String.valueOf(finalTotalFrame))
+                                                        .replace("_BBB_", getProgressBar(progress.get(), finalTotalFrame))
+                                                        .replace("_VVV_", " ".repeat(Math.max(0, 6 - prog.length())) + prog)
+                                                        .replace("_SSS_", " ".repeat(Math.max(0, 6 - eta.length())) + eta);
 
-                            g.setRenderingHint(3, 2);
-                            g.enableAntialiasing();
+                                        msg.editMessage(editContent).queue();
 
-                            g.setColor(54,57,63,255);
-                            g.fillRect(0, 0, rect.width, rect.height);
+                                        current.set(System.currentTimeMillis());
+                                    }
 
-                            anim.draw(g, pos, siz * ratio);
+                                    anim.setTime(finalJ);
 
-                            File img = new File("./temp/"+folderName+"/", quad(progress)+".png");
+                                    g.setColor(54,57,63,255);
+                                    g.fillRect(0, 0, rect.width, rect.height);
 
-                            if(!img.exists()) {
-                                boolean res = img.createNewFile();
+                                    anim.draw(g, pos, siz * finalRatio);
 
-                                if(!res) {
-                                    System.out.println("Can't create new file : "+img.getAbsolutePath());
+                                    progress.set(progress.get() + 1);
+
                                     return null;
+                                });
+                            }
+
+                            stackFrame += frame;
+                        }
+                    } else {
+                        for(int j = 0; j < frame - 1; j++) {
+                            final int finalJ = j;
+
+                            connector.queue(g -> {
+                                if(System.currentTimeMillis() - current.get() >= 1500) {
+                                    String editContent = finalContent +"\n\n";
+
+                                    String prog = DataToString.df.format(progress.get() * 100.0 / finalTotalFrame);
+                                    String eta = getETA(start, System.currentTimeMillis(), progress.get(), finalTotalFrame);
+
+                                    editContent += LangID.getStringByID("gif_makepng", lang) +
+                                            LangID.getStringByID("bg_prog", lang)
+                                                    .replace("_PPP_", String.valueOf(progress.get()))
+                                                    .replace("_LLL_", String.valueOf(finalTotalFrame))
+                                                    .replace("_BBB_", getProgressBar(progress.get(), finalTotalFrame))
+                                                    .replace("_VVV_", " ".repeat(Math.max(0, 6 - prog.length())) + prog)
+                                                    .replace("_SSS_", " ".repeat(Math.max(0, 6 - eta.length())) + eta);
+
+                                    msg.editMessage(editContent).queue();
+
+                                    current.set(System.currentTimeMillis());
                                 }
-                            } else {
+
+                                anim.setTime(finalJ);
+
+                                g.setColor(54,57,63,255);
+                                g.fillRect(0, 0, rect.width, rect.height);
+
+                                anim.draw(g, pos, siz * finalRatio);
+
+                                progress.set(progress.get() + 1);
+
                                 return null;
-                            }
-
-                            g.dispose();
-
-                            ImageIO.write(image, "PNG", img);
-
-                            progress++;
+                            });
                         }
-
-                        stackFrame += frame;
-                    }
-                } else {
-                    for(int j = 0; j < frame - 1; j++) {
-                        if(System.currentTimeMillis() - current >= 1500) {
-                            String content = finCont +"\n\n";
-
-                            String prog = DataToString.df.format(progress * 100.0 / totalFrame);
-                            String eta = getETA(start, System.currentTimeMillis(), progress, totalFrame);
-
-                            content += LangID.getStringByID("gif_makepng", lang) +
-                                    LangID.getStringByID("bg_prog", lang)
-                                            .replace("_PPP_", String.valueOf(progress))
-                                            .replace("_LLL_", String.valueOf(totalFrame))
-                                            .replace("_BBB_", getProgressBar(progress, totalFrame))
-                                            .replace("_VVV_", " ".repeat(Math.max(0, 6 - prog.length())) + prog)
-                                            .replace("_SSS_", " ".repeat(Math.max(0, 6 - eta.length())) + eta);
-
-                            msg.editMessage(content).queue();
-
-                            current = System.currentTimeMillis();
-                        }
-
-                        anim.setTime(j);
-
-                        BufferedImage image = new BufferedImage(rect.width, rect.height, BufferedImage.TYPE_INT_ARGB);
-                        FG2D g = new FG2D(image.getGraphics());
-
-                        g.setRenderingHint(3, 2);
-                        g.enableAntialiasing();
-
-                        g.setColor(54,57,63,255);
-                        g.fillRect(0, 0, rect.width, rect.height);
-
-                        anim.draw(g, pos, siz * ratio);
-
-                        g.dispose();
-
-                        File img = new File("./temp/"+folderName+"/", quad(progress)+".png");
-
-                        if(!img.exists()) {
-                            boolean res = img.createNewFile();
-
-                            if(!res) {
-                                System.out.println("Can't create new file : "+img.getAbsolutePath());
-                                return null;
-                            }
-                        } else {
-                            return null;
-                        }
-
-                        ImageIO.write(image, "PNG", img);
-
-                        progress++;
                     }
                 }
-
-
             }
-        }
 
-        String content = finCont + "\n\n" +
-                LangID.getStringByID("gif_makepng", lang) +
-                LangID.getStringByID("bg_prog", lang)
-                        .replace("_PPP_", String.valueOf(totalFrame))
-                        .replace("_LLL_", String.valueOf(totalFrame))
-                        .replace("_BBB_", getProgressBar(totalFrame, totalFrame))
-                        .replace("_VVV_", "100.00")
-                        .replace("_SSS_", "     0") + "\n" +
-                LangID.getStringByID("gif_converting", lang);
+            return null;
+        }, progress -> new File(folder, quad(progress)), () -> {
+            try {
+                String editContent = finalContent + "\n\n" +
+                        LangID.getStringByID("gif_makepng", lang) +
+                        LangID.getStringByID("bg_prog", lang)
+                                .replace("_PPP_", String.valueOf(finalTotalFrame))
+                                .replace("_LLL_", String.valueOf(finalTotalFrame))
+                                .replace("_BBB_", getProgressBar(finalTotalFrame, finalTotalFrame))
+                                .replace("_VVV_", "100.00")
+                                .replace("_SSS_", "     0") + "\n" +
+                        LangID.getStringByID("gif_converting", lang);
 
-        msg.editMessage(content).queue();
+                msg.editMessage(editContent).queue();
 
-        ProcessBuilder builder = new ProcessBuilder(SystemUtils.IS_OS_WINDOWS ? "data/ffmpeg/bin/ffmpeg" : "ffmpeg", "-r", "30", "-f", "image2", "-s", rect.width+"x"+rect.height,
-                "-i", "temp/"+folderName+"/%04d.png", "-vcodec", "libx264", "-crf", "25", "-pix_fmt", "yuv420p", "-y", "temp/"+gif.getName());
-        builder.redirectErrorStream(true);
+                ProcessBuilder builder = new ProcessBuilder(SystemUtils.IS_OS_WINDOWS ? "data/ffmpeg/bin/ffmpeg" : "ffmpeg", "-r", "30", "-f", "image2", "-s", rect.width+"x"+rect.height,
+                        "-i", "temp/"+folderName+"/%04d.png", "-vcodec", "libx264", "-crf", "25", "-pix_fmt", "yuv420p", "-y", "temp/"+gif.getName());
+                builder.redirectErrorStream(true);
 
-        Process pro = builder.start();
+                Process pro = builder.start();
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(pro.getInputStream()));
+                BufferedReader reader = new BufferedReader(new InputStreamReader(pro.getInputStream()));
 
-        String line;
+                String line;
 
-        while((line = reader.readLine()) != null) {
-            System.out.println(line);
-        }
+                while((line = reader.readLine()) != null) {
+                    System.out.println(line);
+                }
 
-        pro.waitFor();
+                pro.waitFor();
 
-        StaticStore.deleteFile(folder, true);
+                StaticStore.deleteFile(folder, true);
 
-        content = finCont + "\n\n" +
-                LangID.getStringByID("gif_makepng", lang) +
-                LangID.getStringByID("bg_prog", lang)
-                        .replace("_PPP_", String.valueOf(totalFrame))
-                        .replace("_LLL_", String.valueOf(totalFrame))
-                        .replace("_BBB_", getProgressBar(totalFrame, totalFrame))
-                        .replace("_VVV_", "100.00")
-                        .replace("_SSS_", "     0") + "\n" +
-                LangID.getStringByID("gif_converting", lang) + "\n\n" +
-                LangID.getStringByID("gif_uploadmp4", lang);
+                editContent = finalContent + "\n\n" +
+                        LangID.getStringByID("gif_makepng", lang) +
+                        LangID.getStringByID("bg_prog", lang)
+                                .replace("_PPP_", String.valueOf(finalTotalFrame))
+                                .replace("_LLL_", String.valueOf(finalTotalFrame))
+                                .replace("_BBB_", getProgressBar(finalTotalFrame, finalTotalFrame))
+                                .replace("_VVV_", "100.00")
+                                .replace("_SSS_", "     0") + "\n" +
+                        LangID.getStringByID("gif_converting", lang) + "\n\n" +
+                        LangID.getStringByID("gif_uploadmp4", lang);
 
-        msg.editMessage(content).queue();
+                msg.editMessage(editContent).queue();
+            } catch (Exception e) {
+                StaticStore.logger.uploadErrorLog(e, "E/ImageDrawing::drawBCAnim - Failed to export animation as mp4");
+            }
+
+            waiter.countDown();
+
+            return null;
+        });
+
+        waiter.await();
 
         return gif;
     }
 
     public static File drawStatImage(CustomMaskUnit[] units, List<List<CellDrawer>> cellGroup, int lv, String[] name, String type, File container, File itemContainer, boolean trueFormMode, int uID, int[] egg, int[][] trueForm) throws Exception {
-        Canvas cv = new Canvas();
+        File f = new File("./temp/");
 
-        FontMetrics nfm = cv.getFontMetrics(nameFont);
-        FontMetrics cfm = cv.getFontMetrics(contentFont);
+        if(!f.exists() && !f.mkdirs())
+            return null;
+
+        File image = StaticStore.generateTempFile(f, "result", ".png", false);
+
+        if(image == null) {
+            return null;
+        }
 
         int uh = 0;
         int uw = 0;
@@ -1498,13 +1548,13 @@ public class ImageDrawing {
                 if(group.get(j) instanceof AbilityCellDrawer)
                     continue;
 
-                group.get(j).initialize(nameFont, contentFont, nfm, cfm, 0);
+                group.get(j).initialize(nameFont, contentFont, 0);
 
                 if(group.get(j) instanceof NormalCellDrawer)
-                    offset = Math.max(((NormalCellDrawer) group.get(j)).offset, offset);
+                    offset = Math.round(Math.max(((NormalCellDrawer) group.get(j)).offset, offset));
 
-                int tempH = Math.max(((NormalCellDrawer) group.get(j)).h, ((NormalCellDrawer) group.get(j)).ih);
-                int tempUw = ((NormalCellDrawer) group.get(j)).uw;
+                int tempH = Math.round(Math.max(((NormalCellDrawer) group.get(j)).h, ((NormalCellDrawer) group.get(j)).ih));
+                int tempUw = Math.round(((NormalCellDrawer) group.get(j)).uw);
 
                 if(((NormalCellDrawer) group.get(j)).isSingleData()) {
                     uh = Math.max(tempH, uh);
@@ -1522,12 +1572,12 @@ public class ImageDrawing {
         for(int i = 0; i < cellGroup.size(); i++) {
             List<CellDrawer> group = cellGroup.get(i);
 
-            group.get(group.size() - 1).initialize(nameFont, contentFont, nfm, cfm, (int) Math.round((uw * 3 + CellDrawer.lineOffset * 4) * 1.5));
+            group.get(group.size() - 1).initialize(nameFont, contentFont, (int) Math.round((uw * 3 + CellDrawer.lineOffset * 4) * 1.5));
 
-            offset = Math.max(((AbilityCellDrawer) group.get(group.size() - 1)).offset, offset);
+            offset = Math.round(Math.max(((AbilityCellDrawer) group.get(group.size() - 1)).offset, offset));
 
-            int tempH = ((AbilityCellDrawer) group.get(group.size() - 1)).h;
-            int tempUw = ((AbilityCellDrawer) group.get(group.size() - 1)).w;
+            int tempH = Math.round(((AbilityCellDrawer) group.get(group.size() - 1)).h);
+            int tempUw = Math.round(((AbilityCellDrawer) group.get(group.size() - 1)).w);
 
             ah = Math.max(tempH, ah);
             aw = Math.max(tempUw, aw);
@@ -1537,50 +1587,27 @@ public class ImageDrawing {
             uw = (aw - CellDrawer.lineOffset * 4) / 3;
         }
 
-        List<BufferedImage[]> images = new ArrayList<>();
+        int titleW = 0;
+        int titleH = 0;
 
         if(trueFormMode) {
-            BufferedImage[] imgs = new BufferedImage[2];
+            int[] titleDimension = measureUnitTitleImage(name[0], type, lv);
 
-            FontMetrics bf = cv.getFontMetrics(titleFont);
-            FontMetrics sf = cv.getFontMetrics(typeFont);
-            FontMetrics lf = cv.getFontMetrics(levelFont);
+            titleW = Math.max(titleW, titleDimension[0]);
+            titleH = Math.max(titleH, titleDimension[1]);
 
-            File icon = new File(container, "uni"+Data.trio(uID)+"_s00.png");
-
-            BufferedImage title = getUnitTitleImage(icon, name[0], type, lv, bf, sf, lf);
-
-            imgs[1] = title;
-
-            images.add(imgs);
-
-            if(uw * 3 + CellDrawer.lineOffset * 4 + statPanelMargin * 2 < title.getWidth()) {
-                uw = (title.getWidth() - statPanelMargin * 2 - CellDrawer.lineOffset * 4) / 3;
+            if(uw * 3 + CellDrawer.lineOffset * 4 + statPanelMargin * 2 < titleDimension[0]) {
+                uw = (titleDimension[0] - statPanelMargin * 2 - CellDrawer.lineOffset * 4) / 3;
             }
         } else {
             for(int i = 0; i < units.length; i++) {
-                BufferedImage[] imgs = new BufferedImage[2];
+                int[] titleDimension = measureUnitTitleImage(name[i], type, lv);
 
-                FontMetrics bf = cv.getFontMetrics(titleFont);
-                FontMetrics sf = cv.getFontMetrics(typeFont);
-                FontMetrics lf = cv.getFontMetrics(levelFont);
+                titleW = Math.max(titleW, titleDimension[0]);
+                titleH = Math.max(titleH, titleDimension[1]);
 
-                File icon;
-
-                if(egg != null && i < egg.length && egg[i] != -1) {
-                    icon = new File(container, "uni"+Data.trio(egg[i])+"_m"+Data.duo(i)+".png");
-                } else {
-                    icon = new File(container, "uni"+Data.trio(uID)+"_"+getUnitCode(i)+"00.png");
-                }
-
-                BufferedImage title = getUnitTitleImage(icon, name[i], type, lv, bf, sf, lf);
-
-                imgs[1] = title;
-
-                images.add(imgs);
-
-                if(uw * 3 + CellDrawer.lineOffset * 4 + statPanelMargin * 2 < title.getWidth()) {
-                    uw = (title.getWidth() - statPanelMargin * 2 - CellDrawer.lineOffset * 4) / 3;
+                if(uw * 3 + CellDrawer.lineOffset * 4 + statPanelMargin * 2 < titleDimension[0]) {
+                    uw = (titleDimension[0] - statPanelMargin * 2 - CellDrawer.lineOffset * 4) / 3;
                 }
             }
         }
@@ -1606,107 +1633,194 @@ public class ImageDrawing {
             h = Math.max(th, h);
         }
 
-        for(int j = 0; j < units.length; j++) {
-            List<CellDrawer> group = cellGroup.get(j);
-
-            BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-            FG2D g = new FG2D(img.getGraphics());
-
-            g.setRenderingHint(3, 1);
-            g.enableAntialiasing();
-
-            int x = 0;
-            int y = 0;
-
-            for(int i = 0; i < group.size(); i++) {
-                group.get(i).draw(g, x, y, uw, offset, uh, nameFont, contentFont);
-
-                y += uh + cellMargin;
-
-                if(i == group.size() - 2)
-                    y += cellMargin;
-            }
-
-            g.dispose();
-
-            images.get(j)[0] = img;
-        }
-
-        int titleW = 0;
-        int imgW = 0;
-
-        int titleH = 0;
-        int imgH = 0;
-
-        for(int i = 0; i < images.size(); i++) {
-            titleW = Math.max(titleW, images.get(i)[1].getWidth());
-            titleH = Math.max(titleH, images.get(i)[1].getHeight());
-
-            imgW = Math.max(imgW, images.get(i)[0].getWidth());
-            imgH = Math.max(imgH, images.get(i)[0].getHeight());
-        }
-
-        int finW = Math.max(titleW, imgW + statPanelMargin * 2) + bgMargin * 2;
-        int finH = bgMargin * 5 + titleH + statPanelMargin * 2 + imgH;
-        int fruitH = 0;
+        int totalWidth = Math.max(titleW, w + statPanelMargin * 2) + bgMargin * 2;
+        int totalHeight = bgMargin * 5 + titleH + statPanelMargin * 2 + h;
+        int fruitH;
 
         if(trueForm != null && (trueFormMode || units.length >= 3)) {
-            GlyphVector glyph = fruitFont.createGlyphVector(cv.getFontMetrics(fruitFont).getFontRenderContext(), "1234567890Mk");
+            float textHeight = fruitFont.measureDimension("1234567890Mk")[3];
 
-            int textHeight = glyph.getPixelBounds(null, 0, 0).height;
+            fruitH = (int) (textHeight + (totalWidth - 2 * bgMargin) * (fruitRatio + fruitTextGapRatio + fruitUpperGapRatio + fruitDownerGapRatio) + fruitGap);
 
-            fruitH = (int) (textHeight + (finW - 2 * bgMargin) * (fruitRatio + fruitTextGapRatio + fruitUpperGapRatio + fruitDownerGapRatio) + fruitGap);
-
-            finH += fruitH;
+            totalHeight += fruitH;
+        } else {
+            fruitH = 0;
         }
 
-        BufferedImage result = new BufferedImage(finW * units.length, finH, BufferedImage.TYPE_INT_ARGB);
-        FG2D rg = new FG2D(result.getGraphics());
+        CountDownLatch waiter = new CountDownLatch(1);
 
-        int bx = 0;
+        int finalTotalHeight = totalHeight;
+        int finalTitleH = titleH;
+        int finalH = h;
+        int finalUw = uw;
+        int finalUh = uh;
+        int finalOffset = offset;
 
-        rg.setColor(50, 53, 59);
-        rg.fillRect(0, 0, finW * units.length, finH);
+        StaticStore.renderManager.createRenderer(totalWidth * units.length, totalHeight, f, connector -> {
+            connector.queue(g -> {
+                int bx = 0;
 
-        rg.setColor(24, 25, 28);
-        rg.fillRoundRect(0, -cornerRadius, finW * units.length, cornerRadius + bgMargin * 8 + titleH, cornerRadius, cornerRadius);
+                g.setColor(50, 53, 59);
+                g.fillRect(0, 0, totalWidth * units.length, finalTotalHeight);
 
-        for(int i = 0; i < units.length; i++) {
-            rg.setColor(64, 68, 75);
+                g.setColor(24, 25, 28);
+                g.fillRoundRect(0, -cornerRadius, totalWidth * units.length, cornerRadius + bgMargin * 8 + finalTitleH, cornerRadius, cornerRadius);
 
-            if(!trueFormMode && units.length >= 3 && trueForm != null && i != 2) {
-                rg.fillRoundRect(bx + bgMargin, bgMargin * 4 + titleH, imgW + statPanelMargin * 2, imgH + statPanelMargin * 2 + fruitH, cornerRadius, cornerRadius);
-            } else {
-                rg.fillRoundRect(bx + bgMargin, bgMargin * 4 + titleH, imgW + statPanelMargin * 2, imgH + statPanelMargin * 2, cornerRadius, cornerRadius);
-            }
+                g.setColor(50, 53, 59);
+                g.fillRoundRect(0, 0, 50, 50, 0.5f, 0.5f);
 
-            rg.drawImage(images.get(i)[1], bx + bgMargin, bgMargin * 2);
-            rg.drawImage(images.get(i)[0], bx + bgMargin + statPanelMargin, bgMargin * 4 + titleH + statPanelMargin);
+                for(int i = 0; i < units.length; i++) {
+                    g.setColor(64, 68, 75);
 
-            bx += finW;
-        }
+                    if(!trueFormMode && units.length >= 3 && trueForm != null && i != 2) {
+                        g.fillRoundRect(bx + bgMargin, bgMargin * 4 + finalTitleH, w + statPanelMargin * 2, finalH + statPanelMargin * 2 + fruitH, cornerRadius, cornerRadius);
+                    } else {
+                        g.fillRoundRect(bx + bgMargin, bgMargin * 4 + finalTitleH, w + statPanelMargin * 2, finalH + statPanelMargin * 2, cornerRadius, cornerRadius);
+                    }
 
-        if((units.length >= 3 || trueFormMode) && trueForm != null) {
-            BufferedImage trueFormImage = generateEvolveImage(itemContainer, trueForm, finW - bgMargin * 2, cfm);
+                    int baseX = bx + bgMargin;
+                    int baseY = bgMargin * 2;
 
-            bx -= finW;
+                    g.translate(baseX, baseY);
 
-            rg.drawImage(trueFormImage, bx + bgMargin, bgMargin * 4 + titleH + imgH + statPanelMargin * 2 + fruitGap);
-        }
+                    File icon;
 
-        rg.dispose();
+                    if (trueFormMode) {
+                        icon = new File(container, "uni"+Data.trio(uID)+"_s00.png");
+                    } else {
+                        if (egg != null && i < egg.length && egg[i] != -1) {
+                            icon = new File(container, "uni" + Data.trio(egg[i]) + "_m" + Data.duo(i) + ".png");
+                        } else {
+                            icon = new File(container, "uni" + Data.trio(uID) + "_" + getUnitCode(i) + "00.png");
+                        }
+                    }
 
-        BufferedImage scaledDown = new BufferedImage(result.getWidth() / 2, result.getHeight() / 2, BufferedImage.TYPE_INT_ARGB);
+                    FakeImage ic;
 
-        FG2D sdg = new FG2D(scaledDown.getGraphics());
+                    try {
+                        ic = ImageBuilder.builder.build(icon).getSubimage(9, 21, 110, 85);
+                    } catch (IOException e) {
+                        StaticStore.logger.uploadErrorLog(e, "E/ImageDrawing::drawStatImage - Failed to read icon image");
 
-        sdg.setRenderingHint(3, 1);
-        sdg.enableAntialiasing();
+                        return null;
+                    }
 
-        sdg.drawImage(result, 0, 0, scaledDown.getWidth(), scaledDown.getHeight());
+                    float[] titleDimension = titleFont.measureDimension(name[i]);
+                    float[] typeDimension = typeFont.measureDimension(type);
+                    float[] levelDimension = levelFont.measureDimension("Lv. "+lv);
 
-        sdg.dispose();
+                    int titleHeight = Math.round(titleDimension[3] + nameMargin + typeDimension[3] + typeUpDownMargin * 2 + levelMargin + levelDimension[3]);
+                    int iconWidth = (int) ((titleHeight - levelDimension[3] - levelMargin) * 1.0 * 110 / 85);
 
+                    g.setColor(238, 238, 238, 255);
+                    g.setFontModel(titleFont);
+
+                    g.drawText(name[i], iconWidth + nameMargin, 0, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
+
+                    g.setFontModel(levelFont);
+
+                    g.drawText("Lv. " + lv, iconWidth / 2f, (int) (titleHeight - levelDimension[3]), GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.TOP);
+
+                    g.setColor(88, 101, 242, 255);
+
+                    g.fillRoundRect(iconWidth + nameMargin, (int) (titleDimension[3] + nameMargin), (int) (typeLeftRightMargin * 2 + typeDimension[2]), (int) (typeUpDownMargin * 2 + typeDimension[3]), typeCornerRadius, typeCornerRadius);
+
+                    g.setColor(238, 238, 238, 255);
+                    g.setFontModel(typeFont);
+
+                    g.drawText(type, iconWidth + nameMargin + typeLeftRightMargin, (int) (titleDimension[3] + nameMargin + typeUpDownMargin), GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
+
+                    g.drawImage(ic, 0, 0, iconWidth, titleHeight - levelDimension[3] - levelMargin);
+
+                    g.translate(-baseX, -baseY);
+
+                    baseX = bx + bgMargin + statPanelMargin;
+                    baseY = bgMargin * 4 + finalTitleH + statPanelMargin;
+
+                    g.translate(baseX, baseY);
+
+                    List<CellDrawer> group = cellGroup.get(i);
+
+                    int x = 0;
+                    int y = 0;
+
+                    for(int k = 0; k < group.size(); k++) {
+                        group.get(k).draw(g, x, y, finalUw, finalOffset, finalUh, nameFont, contentFont);
+
+                        y += finalUh + cellMargin;
+
+                        if(k == group.size() - 2)
+                            y += cellMargin;
+                    }
+
+                    g.translate(-baseX, -baseY);
+
+                    bx += totalWidth;
+                }
+
+                if((units.length >= 3 || trueFormMode) && trueForm != null) {
+                    bx -= totalWidth;
+
+                    float baseX = bx + bgMargin;
+                    float baseY = bgMargin * 4 + finalTitleH + finalH + statPanelMargin * 2 + fruitGap;
+
+                    g.translate(baseX, baseY);
+
+                    int targetWidth = totalWidth - bgMargin * 2;
+                    float textHeight = contentFont.measureDimension("1234567890Mk")[3];
+
+                    float evolveHeight = textHeight + targetWidth * (fruitRatio + fruitTextGapRatio + fruitUpperGapRatio + fruitDownerGapRatio);
+
+                    float panelPadding = targetWidth * (1f - fruitRatio * trueForm.length) / (5f * trueForm.length - 1);
+                    float padding = panelPadding * 2;
+
+                    float panelWidth = padding * 2 + fruitRatio * targetWidth;
+
+                    g.setFontModel(fruitFont);
+
+                    float x = 0;
+
+                    for(int i = 0; i < trueForm.length; i++) {
+                        g.setColor(64, 68, 75, 255);
+
+                        g.fillRoundRect((int) x, 0, (int) panelWidth, (int) evolveHeight, cornerRadius, cornerRadius);
+
+                        try {
+                            FakeImage icon = getFruitImage(itemContainer, trueForm[i][0]);
+
+                            if (icon != null) {
+                                g.drawImage(icon, x + padding, targetWidth * fruitUpperGapRatio, targetWidth * fruitRatio, targetWidth * fruitRatio);
+                            }
+                        } catch (Exception e) {
+                            StaticStore.logger.uploadErrorLog(e, "E/ImageDrawing::generateEvolveImage - Failed to generate fruit image : "+trueForm[i][0]);
+                        }
+
+                        g.setColor(238, 238, 238, 255);
+
+                        g.drawText(convertValue(trueForm[i][1]), (int) (x + panelWidth / 2), (int) Math.round(targetWidth * (fruitUpperGapRatio + fruitRatio + fruitTextGapRatio) + textHeight / 2.0), GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+
+                        x += panelWidth + panelPadding;
+                    }
+
+                    g.translate(-baseX, -baseY);
+                }
+
+                return null;
+            });
+
+            return null;
+        }, progress -> image, () -> {
+            waiter.countDown();
+
+            return null;
+        });
+
+        waiter.await();
+
+        return image;
+    }
+
+    public static File drawEnemyStatImage(List<CellDrawer> cellGroup, String mag, String name, File container, int eID) throws Exception {
         File f = new File("./temp/");
 
         if(!f.exists() && !f.mkdirs())
@@ -1717,17 +1831,6 @@ public class ImageDrawing {
         if(image == null) {
             return null;
         }
-
-        ImageIO.write(scaledDown, "PNG", image);
-
-        return image;
-    }
-
-    public static File drawEnemyStatImage(List<CellDrawer> cellGroup, String mag, String name, File container, int eID) throws Exception {
-        Canvas cv = new Canvas();
-
-        FontMetrics nfm = cv.getFontMetrics(nameFont);
-        FontMetrics cfm = cv.getFontMetrics(contentFont);
 
         int uh = 0;
         int uw = 0;
@@ -1741,13 +1844,13 @@ public class ImageDrawing {
             if(cellGroup.get(i) instanceof AbilityCellDrawer)
                 continue;
 
-            cellGroup.get(i).initialize(nameFont, contentFont, nfm, cfm, 0);
+            cellGroup.get(i).initialize(nameFont, contentFont, 0);
 
             if(cellGroup.get(i) instanceof NormalCellDrawer)
-                offset = Math.max(((NormalCellDrawer) cellGroup.get(i)).offset, offset);
+                offset = Math.round(Math.max(((NormalCellDrawer) cellGroup.get(i)).offset, offset));
 
-            int tempH = Math.max(((NormalCellDrawer) cellGroup.get(i)).h, ((NormalCellDrawer) cellGroup.get(i)).ih);
-            int tempUw = ((NormalCellDrawer) cellGroup.get(i)).uw;
+            int tempH = Math.round(Math.max(((NormalCellDrawer) cellGroup.get(i)).h, ((NormalCellDrawer) cellGroup.get(i)).ih));
+            int tempUw = Math.round(((NormalCellDrawer) cellGroup.get(i)).uw);
 
             if(((NormalCellDrawer) cellGroup.get(i)).isSingleData()) {
                 uh = Math.max(tempH, uh);
@@ -1761,12 +1864,12 @@ public class ImageDrawing {
             }
         }
 
-        cellGroup.get(cellGroup.size() - 1).initialize(nameFont, contentFont, nfm, cfm, (int) Math.round((uw * 3 + CellDrawer.lineOffset * 4) * 1.5));
+        cellGroup.get(cellGroup.size() - 1).initialize(nameFont, contentFont, (int) Math.round((uw * 3 + CellDrawer.lineOffset * 4) * 1.5));
 
-        offset = Math.max(((AbilityCellDrawer) cellGroup.get(cellGroup.size() - 1)).offset, offset);
+        offset = Math.round(Math.max(((AbilityCellDrawer) cellGroup.get(cellGroup.size() - 1)).offset, offset));
 
-        int tempH = ((AbilityCellDrawer) cellGroup.get(cellGroup.size() - 1)).h;
-        int tempUw = ((AbilityCellDrawer) cellGroup.get(cellGroup.size() - 1)).w;
+        int tempH = Math.round(((AbilityCellDrawer) cellGroup.get(cellGroup.size() - 1)).h);
+        int tempUw = Math.round(((AbilityCellDrawer) cellGroup.get(cellGroup.size() - 1)).w);
 
         ah = Math.max(tempH, ah);
         aw = Math.max(tempUw, aw);
@@ -1775,19 +1878,12 @@ public class ImageDrawing {
             uw = (aw - CellDrawer.lineOffset * 4) / 3;
         }
 
-        BufferedImage[] imgs = new BufferedImage[2];
-
-        FontMetrics bf = cv.getFontMetrics(titleFont);
-        FontMetrics lf = cv.getFontMetrics(levelFont);
-
         File icon = new File(container, "enemy_icon_"+Data.trio(eID)+".png");
 
-        BufferedImage title = getEnemyTitleImage(icon, name, mag, bf, lf);
+        float[] titleDimension = measureEnemyTitle(name, mag);
 
-        imgs[1] = title;
-
-        if(uw * 3 + CellDrawer.lineOffset * 4 + statPanelMargin * 2 < title.getWidth()) {
-            uw = (title.getWidth() - statPanelMargin * 2 - CellDrawer.lineOffset * 4) / 3;
+        if(uw * 3 + CellDrawer.lineOffset * 4 + statPanelMargin * 2 < titleDimension[0]) {
+            uw = Math.round((titleDimension[0] - statPanelMargin * 2 - CellDrawer.lineOffset * 4) / 3);
         }
 
         int h = 0;
@@ -1803,66 +1899,99 @@ public class ImageDrawing {
             }
         }
 
-        BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-        FG2D g = new FG2D(img.getGraphics());
+        int finW = Math.round(Math.max(titleDimension[0], w + statPanelMargin * 2) + bgMargin * 2);
+        int finH = Math.round(bgMargin * 5 + titleDimension[1] + statPanelMargin * 2 + h);
 
-        g.setRenderingHint(3, 1);
-        g.enableAntialiasing();
+        CountDownLatch waiter = new CountDownLatch(1);
 
-        int x = 0;
-        int y = 0;
+        int finalUw = uw;
+        int finalOffset = offset;
+        int finalUh = uh;
+        int finalH = h;
 
-        for(int i = 0; i < cellGroup.size(); i++) {
-            cellGroup.get(i).draw(g, x, y, uw, offset, uh, nameFont, contentFont);
+        StaticStore.renderManager.createRenderer(finW, finH, f, connector -> {
+            connector.queue(g -> {
+                g.setColor(50, 53, 59);
+                g.fillRect(0, 0, finW, finH);
 
-            y += uh + cellMargin;
+                g.setColor(24, 25, 28);
+                g.fillRoundRect(0, -cornerRadius, finW, cornerRadius + bgMargin * 8 + titleDimension[1], cornerRadius, cornerRadius);
 
-            if(i == cellGroup.size() - 2)
-                y += cellMargin;
-        }
+                g.setColor(64, 68, 75);
 
-        g.dispose();
+                g.fillRoundRect(bgMargin, bgMargin * 4 + titleDimension[1], w + statPanelMargin * 2, finalH + statPanelMargin * 2, cornerRadius, cornerRadius);
 
-        imgs[0] = img;
+                g.translate(bgMargin, bgMargin * 2);
 
-        int titleW = imgs[1].getWidth();
-        int imgW = imgs[0].getWidth();
+                FakeImage ic;
 
-        int titleH = imgs[1].getHeight();
-        int imgH = imgs[0].getHeight();
+                try {
+                    ic = ImageBuilder.builder.build(icon);
 
-        int finW = Math.max(titleW, imgW + statPanelMargin * 2) + bgMargin * 2;
-        int finH = bgMargin * 5 + titleH + statPanelMargin * 2 + imgH;
+                } catch (Exception e) {
+                    StaticStore.logger.uploadErrorLog(e, "E/ImageDrawing::drawEnemyStatImage - Failed to get icon : " + icon.getAbsolutePath());
 
-        BufferedImage result = new BufferedImage(finW, finH, BufferedImage.TYPE_INT_ARGB);
-        FG2D rg = new FG2D(result.getGraphics());
+                    return null;
+                }
 
-        rg.setColor(50, 53, 59);
-        rg.fillRect(0, 0, finW, finH);
+                float[] nRect = titleFont.measureDimension(name);
 
-        rg.setColor(24, 25, 28);
-        rg.fillRoundRect(0, -cornerRadius, finW, cornerRadius + bgMargin * 8 + titleH, cornerRadius, cornerRadius);
+                int icw = (int) (titleDimension[1] * enemyIconRatio);
 
-        rg.setColor(64, 68, 75);
+                g.setColor(238, 238, 238, 255);
+                g.setFontModel(titleFont);
 
-        rg.fillRoundRect(bgMargin, bgMargin * 4 + titleH, imgW + statPanelMargin * 2, imgH + statPanelMargin * 2, cornerRadius, cornerRadius);
+                g.drawText(name, icw + nameMargin, enemyIconGap, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
 
-        rg.drawImage(imgs[1], bgMargin, bgMargin * 2);
-        rg.drawImage(imgs[0], bgMargin + statPanelMargin, bgMargin * 4 + titleH + statPanelMargin);
+                g.setFontModel(levelFont);
 
-        rg.dispose();
+                if(CommonStatic.parseIntN(mag) != 100) {
+                    g.drawText(mag, icw + nameMargin, (int) (nRect[2] + nameMargin + enemyIconGap), GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
+                }
 
-        BufferedImage scaledDown = new BufferedImage(result.getWidth() / 2, result.getHeight() / 2, BufferedImage.TYPE_INT_ARGB);
+                g.setColor(54, 57, 63);
 
-        FG2D sdg = new FG2D(scaledDown.getGraphics());
+                g.fillRoundRect(enemyIconStroke / 2f, enemyIconStroke / 2f, icw - enemyIconStroke, titleDimension[1] - enemyIconStroke, cornerRadius, cornerRadius);
 
-        sdg.setRenderingHint(3, 1);
-        sdg.enableAntialiasing();
+                int size = (int) Math.min(titleDimension[1] * enemyInnerIconRatio, titleDimension[1] - enemyIconStroke * 2);
 
-        sdg.drawImage(result, 0, 0, scaledDown.getWidth(), scaledDown.getHeight());
+                g.drawImage(ic, (icw - titleDimension[1] + enemyIconStroke) / 2f, enemyIconStroke / 2f, size, size);
 
-        sdg.dispose();
+                g.setColor(191, 191, 191);
+                g.setStroke(enemyIconStroke, GLGraphics.LineEndMode.ROUND);
 
+                g.roundRect(enemyIconStroke / 2f, enemyIconStroke / 2f, icw - enemyIconStroke, titleDimension[1] - enemyIconStroke, cornerRadius, cornerRadius);
+
+                g.translate(bgMargin + statPanelMargin - bgMargin, bgMargin * 4 + titleDimension[1] + statPanelMargin - bgMargin * 2);
+
+                int x = 0;
+                int y = 0;
+
+                for(int i = 0; i < cellGroup.size(); i++) {
+                    cellGroup.get(i).draw(g, x, y, finalUw, finalOffset, finalUh, nameFont, contentFont);
+
+                    y += finalUh + cellMargin;
+
+                    if(i == cellGroup.size() - 2)
+                        y += cellMargin;
+                }
+
+                return null;
+            });
+
+            return null;
+        }, progress -> image, () -> {
+            waiter.countDown();
+
+            return null;
+        });
+
+        waiter.await();
+
+        return image;
+    }
+
+    public static File drawStageStatImage(CustomStageMap map, List<CellDrawer> group, boolean isFrame, int lv, String name, String code, int index, int lang) throws Exception {
         File f = new File("./temp/");
 
         if(!f.exists() && !f.mkdirs())
@@ -1874,20 +2003,9 @@ public class ImageDrawing {
             return null;
         }
 
-        ImageIO.write(scaledDown, "PNG", image);
-
-        return image;
-    }
-
-    public static File drawStageStatImage(CustomStageMap map, List<CellDrawer> group, boolean isFrame, int lv, String name, String code, int index, int lang) throws Exception {
         Stage st = map.list.get(index);
+
         boolean isRanking = code.replaceAll(" - \\d+ - \\d+", "").equals("R") || code.replaceAll(" - \\d+ - \\d+", "").equals("T");
-
-        Canvas cv = new Canvas();
-
-        FontMetrics nfm = cv.getFontMetrics(nameFont);
-        FontMetrics cfm = cv.getFontMetrics(contentFont);
-        FontMetrics tfm = cv.getFontMetrics(titleFont);
 
         int uh = 0;
         int uw = 0;
@@ -1896,13 +2014,13 @@ public class ImageDrawing {
         int offset = 0;
 
         for(int i = 0; i < group.size() - 2; i++) {
-            group.get(i).initialize(nameFont, contentFont, nfm, cfm, 0);
+            group.get(i).initialize(nameFont, contentFont, 0);
 
             if(group.get(i) instanceof NormalCellDrawer)
-                offset = Math.max(((NormalCellDrawer) group.get(i)).offset, offset);
+                offset = Math.round(Math.max(((NormalCellDrawer) group.get(i)).offset, offset));
 
-            int tempH = Math.max(((NormalCellDrawer) group.get(i)).h, ((NormalCellDrawer) group.get(i)).ih);
-            int tempUw = ((NormalCellDrawer) group.get(i)).uw;
+            int tempH = Math.round(Math.max(((NormalCellDrawer) group.get(i)).h, ((NormalCellDrawer) group.get(i)).ih));
+            int tempUw = Math.round(((NormalCellDrawer) group.get(i)).uw);
 
             if(((NormalCellDrawer) group.get(i)).isSingleData()) {
                 uh = Math.max(tempH, uh);
@@ -1915,47 +2033,44 @@ public class ImageDrawing {
                 uw = Math.max(tempUw, uw);
             }
 
-            ch = Math.max(((NormalCellDrawer) group.get(i)).ch, ch);
+            ch = Math.round(Math.max(((NormalCellDrawer) group.get(i)).ch, ch));
         }
 
-        group.get(group.size() - 2).initialize(nameFont, contentFont, nfm, cfm, (int) ((uw * 4 + CellDrawer.lineOffset * 6) * 1.5));
+        group.get(group.size() - 2).initialize(nameFont, contentFont, (int) ((uw * 4 + CellDrawer.lineOffset * 6) * 1.5));
 
-        offset = Math.max(((AbilityCellDrawer) group.get(group.size() - 2)).offset, offset);
+        offset = Math.round(Math.max(((AbilityCellDrawer) group.get(group.size() - 2)).offset, offset));
 
-        int ah = ((AbilityCellDrawer) group.get(group.size() - 2)).h;
-        int aw = ((AbilityCellDrawer) group.get(group.size() - 2)).w;
+        int ah = Math.round(((AbilityCellDrawer) group.get(group.size() - 2)).h);
+        int aw = Math.round(((AbilityCellDrawer) group.get(group.size() - 2)).w);
 
         if(aw > uw * 4 + CellDrawer.lineOffset * 6) {
             uw = (aw - CellDrawer.lineOffset * 6) / 4;
         }
 
-        group.get(group.size() - 1).initialize(nameFont, contentFont, nfm, cfm, (int) ((uw * 4 + CellDrawer.lineOffset * 6) * 1.5));
+        group.get(group.size() - 1).initialize(nameFont, contentFont, (int) ((uw * 4 + CellDrawer.lineOffset * 6) * 1.5));
 
-        offset = Math.max(((AbilityCellDrawer) group.get(group.size() - 1)).offset, offset);
+        offset = Math.round(Math.max(((AbilityCellDrawer) group.get(group.size() - 1)).offset, offset));
 
-        int mh = ((AbilityCellDrawer) group.get(group.size() - 1)).h;
-        int mw = ((AbilityCellDrawer) group.get(group.size() - 1)).w;
+        int mh = Math.round(((AbilityCellDrawer) group.get(group.size() - 1)).h);
+        int mw = Math.round(((AbilityCellDrawer) group.get(group.size() - 1)).w);
 
         if(mw > uw * 4 + CellDrawer.lineOffset * 6) {
             uw = (mw - CellDrawer.lineOffset * 6) / 4;
         }
 
-        FontRenderContext bfrc = tfm.getFontRenderContext();
-        FontRenderContext lfrc = cfm.getFontRenderContext();
+        float[] nRect = titleFont.measureDimension(name);
+        float[] lRect = contentFont.measureDimension(code);
 
-        Rectangle2D nRect = titleFont.createGlyphVector(bfrc, name).getPixelBounds(null, 0, 0);
-        Rectangle2D lRect = contentFont.createGlyphVector(lfrc, code).getPixelBounds(null, 0, 0);
-
-        int titleHeight = (int) Math.round(nRect.getHeight() + nameMargin + lRect.getHeight());
-        int titleWidth = (int) Math.max(nRect.getWidth(), lRect.getWidth()) + bgMargin;
+        int titleHeight = Math.round(nRect[3] + nameMargin + lRect[3]);
+        int titleWidth = (int) Math.max(nRect[2], lRect[2]) + bgMargin;
 
         if(titleWidth > uw * 4 + CellDrawer.lineOffset * 6) {
             uw = (titleWidth - CellDrawer.lineOffset * 6) / 4;
         }
 
-        int[] stw = measureEnemySchemeWidth(st, map, cfm, isRanking, isFrame, lv, lang);
-        int[] dw = measureDropTableWidth(st, map, cfm, lang, true);
-        int[] sw = measureDropTableWidth(st, map, cfm, lang, false);
+        float[] stw = measureEnemySchemeWidth(st, map, isRanking, isFrame, lv, lang);
+        float[] dw = measureDropTableWidth(st, map, lang, true);
+        float[] sw = measureDropTableWidth(st, map, lang, false);
 
         if(dw != null && sw == null) {
             sw = dw;
@@ -1965,22 +2080,26 @@ public class ImageDrawing {
             dw = sw;
         }
 
-        int desiredStageGap = innerTableTextMargin;
-        int desiredRewardGap = innerTableTextMargin;
-        int desiredScoreGap = innerTableTextMargin;
+        int desiredStageGap;
+        int desiredRewardGap;
+        int desiredScoreGap;
 
         if(dw != null) {
-            int tw = maxAmong(dw[TOTAL_WIDTH] * 2 + CellDrawer.lineOffset * 2, sw[TOTAL_WIDTH] * 2 + CellDrawer.lineOffset * 2, stw[STAGE_WIDTH] - statPanelMargin * 2);
+            int tw = Math.round(maxAmong(dw[TOTAL_WIDTH] * 2 + CellDrawer.lineOffset * 2, sw[TOTAL_WIDTH] * 2 + CellDrawer.lineOffset * 2, stw[STAGE_WIDTH] - statPanelMargin * 2));
 
             if(tw > uw * 4 + CellDrawer.lineOffset * 6) {
                 uw = (int) Math.round((tw - CellDrawer.lineOffset * 6) / 4.0);
 
                 if(tw > dw[TOTAL_WIDTH] * 2 + CellDrawer.lineOffset * 2) {
                     desiredRewardGap = (int) Math.round((tw - 2 * (dw[CHANCE_WIDTH] + dw[REWARD_WIDTH] + dw[AMOUNT_WIDTH] + rewardIconSize + CellDrawer.lineOffset)) / 14.0);
+                } else {
+                    desiredRewardGap = innerTableTextMargin;
                 }
 
                 if(tw > sw[TOTAL_WIDTH] * 2 + CellDrawer.lineOffset * 2) {
                     desiredScoreGap = (int) Math.round((tw - 2 * (sw[CHANCE_WIDTH] + sw[REWARD_WIDTH] + sw[AMOUNT_WIDTH] + rewardIconSize + CellDrawer.lineOffset)) / 14.0);
+                } else {
+                    desiredScoreGap = innerTableTextMargin;
                 }
 
                 if(tw > stw[STAGE_WIDTH] - statPanelMargin * 2) {
@@ -1991,6 +2110,8 @@ public class ImageDrawing {
                     }
 
                     desiredStageGap = (int) Math.round((tempTotalWidth - rewardIconSize) / 19.0);
+                } else {
+                    desiredStageGap = innerTableTextMargin;
                 }
             } else {
                 desiredRewardGap = (int) Math.round((uw * 2 + CellDrawer.lineOffset * 2 - dw[CHANCE_WIDTH] - dw[REWARD_WIDTH] - dw[AMOUNT_WIDTH] - rewardIconSize) / 7.0);
@@ -2005,7 +2126,11 @@ public class ImageDrawing {
                 desiredStageGap = (int) Math.round((tempTotalWidth - rewardIconSize) / 19.0);
             }
         } else {
+            desiredScoreGap = innerTableTextMargin;
+            desiredRewardGap = innerTableTextMargin;
+
             if(stw[STAGE_WIDTH] > uw * 4 + CellDrawer.lineOffset * 6 + statPanelMargin * 2) {
+                desiredStageGap = innerTableTextMargin;
                 uw = (int) Math.round((stw[STAGE_WIDTH] - CellDrawer.lineOffset * 6 - statPanelMargin * 2) / 4.0);
             } else {
                 int tempTotalWidth = uw * 4 + CellDrawer.lineOffset * 6 + statPanelMargin * 2;
@@ -2035,7 +2160,7 @@ public class ImageDrawing {
         }
 
         int finW = infoWidth + statPanelMargin * 2 + bgMargin * 2;
-        int finH = bgMargin * 6 + titleHeight + statPanelMargin * 2 + infoHeight + cellMargin * 2 + uh - CellDrawer.textMargin - ch;
+        int totalHeight = bgMargin * 6 + titleHeight + statPanelMargin * 2 + infoHeight + cellMargin * 2 + uh - CellDrawer.textMargin - ch;
         int panelH = statPanelMargin * 2 + infoHeight + cellMargin * 2 + uh - CellDrawer.textMargin - ch;
 
         List<String[]> rewardData = DataToString.getRewards(st, map, lang);
@@ -2047,99 +2172,125 @@ public class ImageDrawing {
             if(rewardData != null) {
                 assert dw != null;
 
-                tableH = Math.max(dw[TOTAL_HEIGHT], tableH);
+                tableH = Math.round(Math.max(dw[TOTAL_HEIGHT], tableH));
             }
 
             if(scoreData != null) {
                 assert sw != null;
-                tableH = Math.max(sw[TOTAL_HEIGHT], tableH);
+                tableH = Math.round(Math.max(sw[TOTAL_HEIGHT], tableH));
             }
 
-            finH += tableH;
+            totalHeight += tableH;
             panelH += tableH;
         } else {
-            finH += ch;
+            totalHeight += ch;
             panelH += ch;
         }
 
-        finH += schemeHeight;
+        totalHeight += schemeHeight;
 
-        BufferedImage result = new BufferedImage(finW, finH, BufferedImage.TYPE_INT_ARGB);
+        CountDownLatch waiter = new CountDownLatch(1);
 
-        FG2D g = new FG2D(result.getGraphics());
+        int finalTotalHeight = totalHeight;
+        int finalPanelH = panelH;
+        
+        int finalUw = uw;
+        int finalUh = uh;
+        
+        int finalOffset = offset;
+        int finalInfoHeight = infoHeight;
+        int finalCh = ch;
+        
+        float[] finalDw = dw;
+        float[] finalSw = sw;
+        
+        StaticStore.renderManager.createRenderer(finW, totalHeight, f, connector -> {
+            connector.queue(g -> {
+                g.setColor(50, 53, 59);
 
-        g.setColor(50, 53, 59);
+                g.fillRect(0, 0, finW, finalTotalHeight);
 
-        g.fillRect(0, 0, finW, finH);
+                g.setColor(24, 25, 28);
 
-        g.setColor(24, 25, 28);
+                g.fillRoundRect(0, -cornerRadius, finW, cornerRadius + bgMargin * 8 + titleHeight, cornerRadius, cornerRadius);
 
-        g.fillRoundRect(0, -cornerRadius, finW, cornerRadius + bgMargin * 8 + titleHeight, cornerRadius, cornerRadius);
+                g.setColor(64, 68, 75);
 
-        g.setColor(64, 68, 75);
+                g.fillRoundRect(bgMargin, bgMargin * 4 + titleHeight, infoWidth + statPanelMargin * 2, finalPanelH, cornerRadius, cornerRadius);
 
-        g.fillRoundRect(bgMargin, bgMargin * 4 + titleHeight, infoWidth + statPanelMargin * 2, panelH, cornerRadius, cornerRadius);
+                drawStageTitleImage(g, name, code);
 
-        drawStageTitleImage(g, name, code, tfm, cfm);
+                int x = bgMargin + statPanelMargin;
+                int y = bgMargin * 4 + titleHeight + statPanelMargin;
 
-        int x = bgMargin + statPanelMargin;
-        int y = bgMargin * 4 + titleHeight + statPanelMargin;
+                for(int i = 0; i < group.size(); i++) {
+                    group.get(i).draw(g, x, y, finalUw, finalOffset, finalUh, nameFont, contentFont);
 
-        for(int i = 0; i < group.size(); i++) {
-            group.get(i).draw(g, x, y, uw, offset, uh, nameFont, contentFont);
+                    if(i < group.size() - 1)
+                        y += finalUh + cellMargin;
+                    else
+                        y += ah + cellMargin;
 
-            if(i < group.size() - 1)
-                y += uh + cellMargin;
-            else
-                y += ah + cellMargin;
+                    if(i == group.size() - 3 || i == group.size() - 2)
+                        y += cellMargin;
+                }
 
-            if(i == group.size() - 3 || i == group.size() - 2)
-                y += cellMargin;
-        }
+                g.setColor(191, 191, 191);
 
-        g.setColor(191, 191, 191);
+                g.setFontModel(nameFont);
 
-        g.setFont(nameFont);
+                g.drawText(LangID.getStringByID("data_rewarddrop", lang), bgMargin + statPanelMargin, bgMargin * 4 + titleHeight + statPanelMargin + finalInfoHeight + cellMargin + finalOffset / 2f, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
+                g.drawText(LangID.getStringByID("data_scoredrop", lang), bgMargin + statPanelMargin + finalUw * 2 + CellDrawer.lineOffset * 4, bgMargin * 4 + titleHeight + statPanelMargin + finalInfoHeight + cellMargin + finalOffset / 2f, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
 
-        g.drawText(LangID.getStringByID("data_rewarddrop", lang), bgMargin + statPanelMargin, bgMargin * 4 + titleHeight + statPanelMargin + infoHeight + cellMargin + offset / 2);
-        g.drawText(LangID.getStringByID("data_scoredrop", lang), bgMargin + statPanelMargin + uw * 2 + CellDrawer.lineOffset * 4, bgMargin * 4 + titleHeight + statPanelMargin + infoHeight + cellMargin + offset / 2);
+                int stack = bgMargin * 4 + titleHeight + statPanelMargin + finalInfoHeight + cellMargin * 2 + finalUh - finalCh - CellDrawer.textMargin;
 
-        int stack = bgMargin * 4 + titleHeight + statPanelMargin + infoHeight + cellMargin * 2 + uh - ch - CellDrawer.textMargin;
+                if(rewardData != null) {
+                    try {
+                        drawRewardTable(g, bgMargin + statPanelMargin, stack, st, map, finalDw, desiredRewardGap, lang, true);
+                    } catch (Exception e) {
+                        StaticStore.logger.uploadErrorLog(e, "E/ImageDrawing::drawStageStatImage - Failed to draw reward table");
 
-        if(rewardData != null) {
-            drawRewardTable(g, bgMargin + statPanelMargin, stack, st, map, dw, desiredRewardGap, lang, true);
-        } else {
-            g.setFont(contentFont);
-            g.setColor(239, 239, 239);
+                        return null;
+                    }
+                } else {
+                    g.setFontModel(contentFont);
+                    g.setColor(239, 239, 239);
 
-            g.drawText(LangID.getStringByID("data_none", lang), bgMargin + statPanelMargin, stack + offset / 2);
-        }
+                    g.drawText(LangID.getStringByID("data_none", lang), bgMargin + statPanelMargin, stack + finalOffset / 2f, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
+                }
 
-        if(scoreData != null) {
-            drawRewardTable(g, bgMargin + statPanelMargin + uw * 2 + CellDrawer.lineOffset * 4, stack, st, map, sw, desiredScoreGap, lang, false);
-        } else {
-            g.setFont(contentFont);
-            g.setColor(239, 239, 239);
+                if(scoreData != null) {
+                    try {
+                        drawRewardTable(g, bgMargin + statPanelMargin + finalUw * 2 + CellDrawer.lineOffset * 4, stack, st, map, finalSw, desiredScoreGap, lang, false);
+                    } catch (Exception e) {
+                        StaticStore.logger.uploadErrorLog(e, "E/ImageDrawing::drawStageStatImage - Failed to draw reward table");
+                        
+                        return null;
+                    }
+                } else {
+                    g.setFontModel(contentFont);
+                    g.setColor(239, 239, 239);
 
-            g.drawText(LangID.getStringByID("data_none", lang), bgMargin + statPanelMargin + uw * 2 + CellDrawer.lineOffset * 4, stack + offset / 2);
-        }
+                    g.drawText(LangID.getStringByID("data_none", lang), bgMargin + statPanelMargin + finalUw * 2 + CellDrawer.lineOffset * 4, stack + finalOffset / 2f, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
+                }
 
-        drawEnemySchemeTable(g, bgMargin * 4 + titleHeight  + panelH + bgMargin, st, map, stw, desiredStageGap, isRanking, isFrame, lv, lang);
+                try {
+                    drawEnemySchemeTable(g, bgMargin * 4 + titleHeight  + finalPanelH + bgMargin, st, map, stw, desiredStageGap, isRanking, isFrame, lv, lang);
+                } catch (Exception e) {
+                    StaticStore.logger.uploadErrorLog(e, "E/ImageDrawing::drawStageStatImage - Failed to draw enemy scheme table");
+                }
 
-        g.dispose();
-
-        File f = new File("./temp/");
-
-        if(!f.exists() && !f.mkdirs())
+                return null;
+            });
+            
             return null;
-
-        File image = StaticStore.generateTempFile(f, "result", ".png", false);
-
-        if(image == null) {
+        }, progress -> image, () -> {
+            waiter.countDown();
+            
             return null;
-        }
-
-        ImageIO.write(result, "PNG", image);
+        });
+        
+        waiter.await();
 
         return image;
     }
@@ -2156,22 +2307,14 @@ public class ImageDrawing {
         if(image == null || !image.exists())
             return null;
 
-        Canvas cv = new Canvas();
+        float[] nameRect = titleFont.measureDimension(name);
+        float[] typeRect = typeFont.measureDimension(type);
 
-        FontMetrics nfm = cv.getFontMetrics(nameFont);
-        FontMetrics tyfm = cv.getFontMetrics(typeFont);
-        FontMetrics cfm = cv.getFontMetrics(contentFont);
-        FontMetrics tfm = cv.getFontMetrics(titleFont);
-        FontMetrics lvm = cv.getFontMetrics(levelFont);
-
-        Rectangle2D nameRect = titleFont.createGlyphVector(tfm.getFontRenderContext(), name).getPixelBounds(null, 0, 0);
-        Rectangle2D typeRect = typeFont.createGlyphVector(tyfm.getFontRenderContext(), type).getPixelBounds(null, 0, 0);
-
-        int titleHeight = (int) Math.round(nameRect.getHeight() + nameMargin + typeRect.getHeight() + typeUpDownMargin * 2);
+        int titleHeight = Math.round(nameRect[3] + nameMargin + typeRect[3] + typeUpDownMargin * 2);
 
         int icw = (int) Math.round(titleHeight * 1.0 / talent.icon.getHeight() * talent.icon.getWidth());
 
-        int titleWidth = icw + nameMargin + (int) Math.round(Math.max(nameRect.getWidth(), typeRect.getWidth() + typeLeftRightMargin * 2));
+        int titleWidth = icw + nameMargin + Math.round(Math.max(nameRect[2], typeRect[2] + typeLeftRightMargin * 2));
 
         int maxDescLineHeight = 0;
         int maxDescLineWidth = 0;
@@ -2190,24 +2333,24 @@ public class ImageDrawing {
                 totalCost += data.cost.get(j);
             }
 
-            Rectangle2D titleRect = levelFont.createGlyphVector(lvm.getFontRenderContext(), data.title).getPixelBounds(null, 0, 0);
+            float[] titleRect = levelFont.measureDimension(data.title);
 
-            maxTitleHeight = (int) Math.round(Math.max(maxTitleHeight, titleRect.getHeight()));
-            maxTitleWidth = (int) Math.round(Math.max(maxTitleWidth, titleRect.getWidth()));
+            maxTitleHeight = Math.round(Math.max(maxTitleHeight, titleRect[3]));
+            maxTitleWidth = Math.round(Math.max(maxTitleWidth, titleRect[2]));
 
             for(int j = 0; j < data.description.length; j++) {
-                Rectangle2D descRect = nameFont.createGlyphVector(nfm.getFontRenderContext(), data.description[j]).getPixelBounds(null, 0, 0);
+                float[] descRect = nameFont.measureDimension(data.description[j]);
 
-                maxDescLineHeight = (int) Math.round(Math.max(maxDescLineHeight, descRect.getHeight()));
-                maxDescLineWidth = (int) Math.round(Math.max(maxDescLineWidth, descRect.getWidth()));
+                maxDescLineHeight = Math.round(Math.max(maxDescLineHeight, descRect[3]));
+                maxDescLineWidth = Math.round(Math.max(maxDescLineWidth, descRect[2]));
             }
 
             if(data.cost.size() == 1) {
                 String cost = String.format(LangID.getStringByID("talanalyzer_singlenp", lang), data.cost.get(0));
 
-                Rectangle2D costRect = contentFont.createGlyphVector(cfm.getFontRenderContext(), cost).getPixelBounds(null, 0, 0);
+                float[] costRect = contentFont.measureDimension(cost);
 
-                maxCostWidth = (int) Math.round(Math.max(maxCostWidth, costRect.getWidth()));
+                maxCostWidth = Math.round(Math.max(maxCostWidth, costRect[2]));
             } else {
                 String costTitle = LangID.getStringByID("talanalyzer_npcost", lang);
                 StringBuilder cost = new StringBuilder("[");
@@ -2224,20 +2367,20 @@ public class ImageDrawing {
 
                 cost.append("] => ").append(costSummary);
 
-                Rectangle2D costTitleRect = contentFont.createGlyphVector(cfm.getFontRenderContext(), costTitle).getPixelBounds(null, 0, 0);
-                Rectangle2D costRect = nameFont.createGlyphVector(nfm.getFontRenderContext(), cost.toString()).getPixelBounds(null, 0, 0);
+                float[] costTitleRect = contentFont.measureDimension(costTitle);
+                float[] costRect = nameFont.measureDimension(cost.toString());
 
-                maxCostWidth = (int) Math.round(Math.max(maxCostWidth, Math.max(costTitleRect.getWidth(), talentCostTableGap * 2 + costRect.getWidth())));
+                maxCostWidth = Math.round(Math.max(maxCostWidth, Math.max(costTitleRect[2], talentCostTableGap * 2 + costRect[2])));
             }
         }
 
         int talentIconDimension = (int) Math.round(maxTitleHeight * 1.5);
 
         String totalCostText = LangID.getStringByID("talentinfo_total", lang).replace("_", String.valueOf(totalCost));
-        Rectangle2D totalRect = nameFont.createGlyphVector(nfm.getFontRenderContext(), totalCostText).getPixelBounds(null, 0, 0);
+        float[] totalRect = nameFont.measureDimension(totalCostText);
 
-        int totalCostWidth = (int) Math.round(totalRect.getWidth());
-        int totalCostHeight = (int) Math.round(totalRect.getHeight());
+        int totalCostWidth = Math.round(totalRect[2]);
+        int totalCostHeight = Math.round(totalRect[2]);
 
         int panelWidth = statPanelMargin * 2 + Math.max(maxCostWidth, Math.max(maxDescLineWidth, talentIconDimension * 2 + talentNameGap + maxTitleWidth));
         int panelHeight = statPanelMargin * 2;
@@ -2264,9 +2407,9 @@ public class ImageDrawing {
             if(data.cost.size() == 1) {
                 String cost = String.format(LangID.getStringByID("talanalyzer_singlenp", lang), data.cost.get(0));
 
-                Rectangle2D costRect = contentFont.createGlyphVector(cfm.getFontRenderContext(), cost).getPixelBounds(null, 0, 0);
+                float[] costRect = contentFont.measureDimension(cost);
 
-                panelHeight += Math.round(costRect.getHeight());
+                panelHeight += Math.round(costRect[3]);
             } else {
                 String costTitle = LangID.getStringByID("talanalyzer_npcost", lang);
                 StringBuilder cost = new StringBuilder("[");
@@ -2283,10 +2426,10 @@ public class ImageDrawing {
 
                 cost.append("] => ").append(costSummary);
 
-                Rectangle2D costTitleRect = contentFont.createGlyphVector(cfm.getFontRenderContext(), costTitle).getPixelBounds(null, 0, 0);
-                Rectangle2D costRect = nameFont.createGlyphVector(nfm.getFontRenderContext(), cost.toString()).getPixelBounds(null, 0, 0);
+                float[] costTitleRect = contentFont.measureDimension(costTitle);
+                float[] costRect = nameFont.measureDimension(cost.toString());
 
-                panelHeight += Math.round(costTitleRect.getHeight()) + talentTableGap + talentCostTableGap * 2 + costRect.getHeight();
+                panelHeight += Math.round(costTitleRect[3]) + talentTableGap + talentCostTableGap * 2 + costRect[3];
             }
 
             if(i < talent.talents.size() - 1)
@@ -2298,147 +2441,154 @@ public class ImageDrawing {
         int totalHeight = bgMargin * 2 + titleHeight + bgMargin * 2 + panelHeight + bgMargin + Math.max(totalCostGap, totalCostHeight);
         int totalWidth = bgMargin * 2 + panelWidth;
 
-        BufferedImage result = new BufferedImage(totalWidth, totalHeight, BufferedImage.TYPE_INT_ARGB);
-        FG2D g = new FG2D(result.getGraphics());
+        int finalPanelWidth = panelWidth;
+        int finalPanelHeight = panelHeight;
+        
+        CountDownLatch waiter = new CountDownLatch(1);
 
-        g.setRenderingHint(3, 1);
-        g.enableAntialiasing();
+        int finalMaxDescLineHeight = maxDescLineHeight;
+        StaticStore.renderManager.createRenderer(totalWidth, totalHeight, temp, connector -> {
+            connector.queue(g -> {
+                g.setColor(51, 53, 60, 255);
+                g.fillRect( 0, 0, totalWidth, totalHeight);
 
-        g.setColor(51, 53, 60, 255);
-        g.fillRect( 0, 0, totalWidth, totalHeight);
+                g.setColor(24, 25, 28, 255);
+                g.fillRoundRect(0, -cornerRadius / 2f, totalWidth, cornerRadius + bgMargin * 8 + titleHeight, cornerRadius, cornerRadius);
 
-        g.setColor(24, 25, 28, 255);
-        g.fillRoundRect(0, -cornerRadius / 2, totalWidth, cornerRadius + bgMargin * 8 + titleHeight, cornerRadius, cornerRadius);
+                g.setColor(64, 68, 75, 255);
+                g.fillRoundRect(bgMargin, bgMargin * 4 + titleHeight, finalPanelWidth, finalPanelHeight, cornerRadius, cornerRadius);
 
-        g.setColor(64, 68, 75, 255);
-        g.fillRoundRect(bgMargin, bgMargin * 4 + titleHeight, panelWidth, panelHeight, cornerRadius, cornerRadius);
+                g.drawImage(talent.icon, bgMargin, bgMargin * 2, icw, titleHeight);
 
-        g.drawImage(talent.icon, bgMargin, bgMargin * 2, icw, titleHeight);
+                g.setFontModel(titleFont);
+                g.setColor(238, 238, 238, 255);
+                g.drawText(name, bgMargin + icw + nameMargin, bgMargin * 2, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
 
-        g.setFont(titleFont);
-        g.setColor(238, 238, 238, 255);
-        g.drawText(name, (int) Math.round(bgMargin + icw + nameMargin - nameRect.getX()), (int) Math.round(bgMargin * 2 - nameRect.getY()));
+                g.setColor(88, 101, 242, 255);
+                g.fillRoundRect(bgMargin + icw + nameMargin, Math.round(bgMargin * 2 + nameRect[3] + nameMargin), Math.round(typeLeftRightMargin * 2 + typeRect[2]), Math.round(typeUpDownMargin * 2 + typeRect[3]), typeCornerRadius, typeCornerRadius);
 
-        g.setColor(88, 101, 242, 255);
-        g.fillRoundRect(bgMargin + icw + nameMargin, (int) Math.round(bgMargin * 2 + nameRect.getHeight() + nameMargin), (int) Math.round(typeLeftRightMargin * 2 + typeRect.getWidth()), (int) Math.round(typeUpDownMargin * 2 + typeRect.getHeight()), typeCornerRadius, typeCornerRadius);
+                g.setFontModel(typeFont);
+                g.setColor(238, 238, 238, 255);
+                g.drawText(type, bgMargin + icw + nameMargin + typeLeftRightMargin, Math.round(bgMargin * 2 + nameRect[3] + nameMargin + typeUpDownMargin), GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
 
-        g.setFont(typeFont);
-        g.setColor(238, 238, 238, 255);
-        g.drawText(type, (int) Math.round(bgMargin + icw + nameMargin + typeLeftRightMargin - typeRect.getX()), (int) Math.round(bgMargin * 2 + nameRect.getHeight() + nameMargin + typeUpDownMargin - typeRect.getY()));
+                int x = bgMargin + statPanelMargin;
+                int y = bgMargin * 2 + titleHeight + bgMargin * 2 + statPanelMargin;
 
-        int x = bgMargin + statPanelMargin;
-        int y = bgMargin * 2 + titleHeight + bgMargin * 2 + statPanelMargin;
+                for(int i = 0; i < talent.talents.size(); i++) {
+                    TalentData data = talent.talents.get(i);
 
-        for(int i = 0; i < talent.talents.size(); i++) {
-            TalentData data = talent.talents.get(i);
+                    int talentTitleOffset = talentIconDimension + talentNameGap;
 
-            int talentTitleOffset = talentIconDimension + talentNameGap;
+                    if(i == 0 && talent.traitIcon != null) {
+                        g.drawImage(talent.traitIcon, x, y, talentIconDimension, talentIconDimension);
+                        g.drawImage(data.icon, x + talentIconDimension + lineSpace, y, talentIconDimension, talentIconDimension);
 
-            if(i == 0 && talent.traitIcon != null) {
-                g.drawImage(talent.traitIcon, x, y, talentIconDimension, talentIconDimension);
-                g.drawImage(data.icon, x + talentIconDimension + lineSpace, y, talentIconDimension, talentIconDimension);
-
-                talentTitleOffset += talentIconDimension + lineSpace;
-            } else {
-                g.drawImage(data.icon, x, y, talentIconDimension, talentIconDimension);
-            }
-
-            g.setFont(levelFont);
-            g.setColor(238, 238, 238, 255);
-
-            Rectangle2D talentNameRect = levelFont.createGlyphVector(lvm.getFontRenderContext(), data.title).getPixelBounds(null, 0, 0);
-
-            g.drawText(data.title, (int) Math.round(x + talentTitleOffset - talentNameRect.getX()), (int) Math.round(y + (talentIconDimension - talentNameRect.getHeight()) / 2.0 - talentNameRect.getY()));
-
-            y += talentIconDimension;
-
-            if(data.hasDescription()) {
-                y += talentIconGap;
-
-                g.setFont(nameFont);
-                g.setColor(191, 191, 191, 255);
-
-                for(int j = 0; j < data.description.length; j++) {
-                    if(!data.description[j].isBlank()) {
-                        Rectangle2D descRect = nameFont.createGlyphVector(nfm.getFontRenderContext(), data.description[j]).getPixelBounds(null, 0, 0);
-
-                        g.drawText(data.description[j], (int) Math.round(x - descRect.getX()), (int) Math.round(y - descRect.getY()));
+                        talentTitleOffset += talentIconDimension + lineSpace;
+                    } else {
+                        g.drawImage(data.icon, x, y, talentIconDimension, talentIconDimension);
                     }
 
-                    y += maxDescLineHeight;
+                    g.setFontModel(levelFont);
+                    g.setColor(238, 238, 238, 255);
 
-                    if(j < data.description.length - 1)
-                        y += lineSpace;
+                    g.drawText(data.title, x + talentTitleOffset, Math.round(y + talentIconDimension / 2f), GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
+
+                    y += talentIconDimension;
+
+                    if(data.hasDescription()) {
+                        y += talentIconGap;
+
+                        g.setFontModel(nameFont);
+                        g.setColor(191, 191, 191, 255);
+
+                        for(int j = 0; j < data.description.length; j++) {
+                            if(!data.description[j].isBlank()) {
+
+                                g.drawText(data.description[j], x, y, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
+                            }
+
+                            y += finalMaxDescLineHeight;
+
+                            if(j < data.description.length - 1)
+                                y += lineSpace;
+                        }
+                    }
+
+                    y += talentCostGap;
+
+                    if(data.cost.size() == 1) {
+                        String cost = String.format(LangID.getStringByID("talanalyzer_singlenp", lang), data.cost.get(0));
+
+                        g.setFontModel(contentFont);
+                        g.setColor(238, 238, 238, 255);
+
+                        float[] costRect = contentFont.measureDimension(cost);
+
+                        g.drawText(cost, x, y, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
+
+                        y += Math.round(costRect[3]);
+                    } else {
+                        String costTitle = LangID.getStringByID("talanalyzer_npcost", lang);
+                        StringBuilder cost = new StringBuilder("[");
+                        int costSummary = 0;
+
+                        for(int j = 0; j < data.cost.size(); j++) {
+                            costSummary += data.cost.get(j);
+
+                            cost.append(data.cost.get(j));
+
+                            if(j < data.cost.size() - 1)
+                                cost.append(", ");
+                        }
+
+                        cost.append("] => ").append(costSummary);
+
+                        float[] costTitleRect = contentFont.measureDimension(costTitle);
+                        float[] costRect = nameFont.measureDimension(cost.toString());
+
+                        g.setFontModel(contentFont);
+                        g.setColor(238, 238, 238, 255);
+                        g.drawText(costTitle, x, y, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
+
+                        y += Math.round(talentTableGap + costTitleRect[3]);
+
+                        g.setColor(51, 54, 60);
+                        g.fillRoundRect(x, y, Math.round(talentCostTableGap * 2 + costRect[2]), Math.round(talentCostTableGap * 2 + costRect[3]), innerTableCornerRadius, innerTableCornerRadius);
+
+                        g.setFontModel(nameFont);
+                        g.setColor(238, 238, 238, 255);
+
+                        g.drawText(cost.toString(), x + talentCostTableGap, y + talentCostTableGap, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
+
+                        y += Math.round(talentCostTableGap * 2 + costRect[3]);
+                    }
+
+                    if(i < talent.talents.size() - 1) {
+                        y += talentGap / 2.0;
+
+                        g.setColor(191, 191, 191, 255);
+                        g.setStroke(CellDrawer.lineStroke, GLGraphics.LineEndMode.ROUND);
+                        g.drawLine(x, y, x + finalPanelWidth - statPanelMargin * 2, y);
+
+                        y += talentGap / 2.0;
+                    }
                 }
-            }
 
-            y += talentCostGap;
-
-            if(data.cost.size() == 1) {
-                String cost = String.format(LangID.getStringByID("talanalyzer_singlenp", lang), data.cost.get(0));
-
-                g.setFont(contentFont);
-                g.setColor(238, 238, 238, 255);
-
-                Rectangle2D costRect = contentFont.createGlyphVector(cfm.getFontRenderContext(), cost).getPixelBounds(null, 0, 0);
-
-                g.drawText(cost, (int) Math.round(x - costRect.getX()), (int) Math.round(y - costRect.getY()));
-
-                y += Math.round(costRect.getHeight());
-            } else {
-                String costTitle = LangID.getStringByID("talanalyzer_npcost", lang);
-                StringBuilder cost = new StringBuilder("[");
-                int costSummary = 0;
-
-                for(int j = 0; j < data.cost.size(); j++) {
-                    costSummary += data.cost.get(j);
-
-                    cost.append(data.cost.get(j));
-
-                    if(j < data.cost.size() - 1)
-                        cost.append(", ");
-                }
-
-                cost.append("] => ").append(costSummary);
-
-                Rectangle2D costTitleRect = contentFont.createGlyphVector(cfm.getFontRenderContext(), costTitle).getPixelBounds(null, 0, 0);
-                Rectangle2D costRect = nameFont.createGlyphVector(nfm.getFontRenderContext(), cost.toString()).getPixelBounds(null, 0, 0);
-
-                g.setFont(contentFont);
-                g.setColor(238, 238, 238, 255);
-                g.drawText(costTitle, (int) Math.round(x - costTitleRect.getX()), (int) Math.round(y - costTitleRect.getY()));
-
-                y += Math.round(talentTableGap + costTitleRect.getHeight());
-
-                g.setColor(51, 54, 60);
-                g.fillRoundRect(x, y, (int) Math.round(talentCostTableGap * 2 + costRect.getWidth()), (int) Math.round(talentCostTableGap * 2 + costRect.getHeight()), innerTableCornerRadius, innerTableCornerRadius);
-
-                g.setFont(nameFont);
-                g.setColor(238, 238, 238, 255);
-
-                g.drawText(cost.toString(), (int) Math.round(x + talentCostTableGap - costRect.getX()), (int) Math.round(y + talentCostTableGap - costRect.getY()));
-
-                y += Math.round(talentCostTableGap * 2 + costRect.getHeight());
-            }
-
-            if(i < talent.talents.size() - 1) {
-                y += talentGap / 2.0;
-
+                g.setFontModel(nameFont);
                 g.setColor(191, 191, 191, 255);
-                g.setStroke(CellDrawer.lineStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-                g.drawLine(x, y, x + panelWidth - statPanelMargin * 2, y);
-
-                y += talentGap / 2.0;
-            }
-        }
-
-        g.setFont(nameFont);
-        g.setColor(191, 191, 191, 255);
-        g.drawText(totalCostText, (int) Math.round(totalWidth - bgMargin - totalCostWidth - totalRect.getX()), (int) Math.round(totalHeight - bgMargin - totalCostHeight - totalRect.getY()));
-
-        g.dispose();
-
-        ImageIO.write(result, "PNG", image);
+                g.drawText(totalCostText, totalWidth - bgMargin - totalCostWidth, totalHeight - bgMargin - totalCostHeight, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
+            
+                return null;
+            });
+            
+            return null;
+        }, progress -> image, () -> {
+            waiter.countDown();
+            
+            return null;
+        });
+        
+        waiter.await();
 
         return image;
     }
@@ -2449,111 +2599,112 @@ public class ImageDrawing {
         if(image == null || !image.exists())
             return null;
 
-        Canvas cv = new Canvas();
+        float[] titleRect = titleFont.measureDimension(combo.title);
+        float[] typeRect = typeFont.measureDimension(combo.type);
+        float[] levelRect = typeFont.measureDimension(combo.level);
 
-        FontMetrics tfm = cv.getFontMetrics(titleFont);
-        FontMetrics tyfm = cv.getFontMetrics(typeFont);
-        FontMetrics nfm = cv.getFontMetrics(nameFont);
-        FontMetrics cfm = cv.getFontMetrics(contentFont);
+        int levelBoxDimension = Math.round(Math.max(levelRect[2], levelRect[3]) + comboTypeInnerGap * 2);
 
-        Rectangle2D titleRect = titleFont.createGlyphVector(tfm.getFontRenderContext(), combo.title).getPixelBounds(null, 0, 0);
-        Rectangle2D typeRect = typeFont.createGlyphVector(tyfm.getFontRenderContext(), combo.type).getPixelBounds(null, 0, 0);
-        Rectangle2D levelRect = typeFont.createGlyphVector(tyfm.getFontRenderContext(), combo.level).getPixelBounds(null, 0, 0);
+        int typeBoxHeight = Math.round(Math.max(typeRect[3], levelBoxDimension));
+        int typeBoxWidth = Math.round(typeRect[2] + comboTypeGap + levelBoxDimension);
 
-        int levelBoxDimension = (int) Math.round(Math.max(levelRect.getWidth(), levelRect.getHeight()) + comboTypeInnerGap * 2);
-
-        int typeBoxHeight = (int) Math.round(Math.max(typeRect.getHeight(), levelBoxDimension));
-        int typeBoxWidth = (int) Math.round(typeRect.getWidth() + comboTypeGap + levelBoxDimension);
-
-        int titleHeight = (int) Math.round(titleRect.getHeight() + comboTitleGap + typeBoxHeight);
-        int titleWidth = (int) Math.round(Math.max(titleRect.getWidth(), typeBoxWidth));
+        int titleHeight = Math.round(titleRect[3] + comboTitleGap + typeBoxHeight);
+        int titleWidth = Math.round(Math.max(titleRect[2], typeBoxWidth));
 
         int maxIconTableWidth = Math.round(comboIconLeftRightGap * 2 + combo.icons.get(0).getWidth() * comboIconScaleFactor);
         int maxUnitNameHeight = 0;
 
         for(int i = 0; i < combo.icons.size(); i++) {
-            Rectangle2D unitNameRect = nameFont.createGlyphVector(nfm.getFontRenderContext(), combo.names.get(i)).getPixelBounds(null, 0, 0);
+            float[] unitNameRect = nameFont.measureDimension(combo.names.get(i));
 
-            maxUnitNameHeight = (int) Math.round(Math.max(maxUnitNameHeight, unitNameRect.getHeight()));
-            maxIconTableWidth = (int) Math.round(Math.max(maxIconTableWidth, comboIconLeftRightGap * 2 + unitNameRect.getWidth()));
+            maxUnitNameHeight = Math.round(Math.max(maxUnitNameHeight, unitNameRect[3]));
+            maxIconTableWidth = Math.round(Math.max(maxIconTableWidth, comboIconLeftRightGap * 2 + unitNameRect[2]));
         }
 
         int maxIconTableHeight = Math.round(comboIconUpDownGap * 2 + combo.icons.get(0).getHeight() * comboIconScaleFactor + comboIconNameGap + maxUnitNameHeight);
 
-        Rectangle2D descRect = contentFont.createGlyphVector(cfm.getFontRenderContext(), combo.description).getPixelBounds(null, 0, 0);
+        float[] descRect = contentFont.measureDimension(combo.description);
 
-        maxIconTableWidth = (int) Math.round(Math.max(maxIconTableWidth, (descRect.getWidth() - comboIconGap * (combo.icons.size() - 1)) / (1.0 * combo.icons.size())));
+        maxIconTableWidth = (int) Math.round(Math.max(maxIconTableWidth, (descRect[2] - comboIconGap * (combo.icons.size() - 1)) / (1.0 * combo.icons.size())));
 
-        int panelHeight = (int) Math.round(statPanelMargin * 2 + maxIconTableHeight + comboContentGap + descRect.getHeight());
-        int panelWidth = (int) Math.round(statPanelMargin * 2 + Math.max(maxIconTableWidth * combo.icons.size() + comboIconGap * (combo.icons.size() - 1), descRect.getWidth()));
+        int panelHeight = Math.round(statPanelMargin * 2 + maxIconTableHeight + comboContentGap + descRect[3]);
+        int panelWidth = 0;
 
         if(titleWidth > panelWidth) {
             panelWidth = titleWidth + bgMargin * 2 + statPanelMargin;
 
             maxIconTableWidth = (int) Math.round((panelWidth - statPanelMargin * 2 - comboIconGap * (combo.icons.size() - 1)) / (1.0 * combo.icons.size()));
+        } else {
+            panelWidth = Math.round(statPanelMargin * 2 + Math.max(maxIconTableWidth * combo.icons.size() + comboIconGap * (combo.icons.size() - 1), descRect[2]));
         }
 
         int totalHeight = bgMargin * 5 + titleHeight + panelHeight;
         int totalWidth = Math.max(bgMargin * 4 + titleWidth, bgMargin * 2 + panelWidth);
 
-        BufferedImage result = new BufferedImage(totalWidth, totalHeight, BufferedImage.TYPE_INT_ARGB);
+        CountDownLatch waiter = new CountDownLatch(1);
 
-        FG2D g = new FG2D(result.getGraphics());
+        int finalMaxIconTableWidth = maxIconTableWidth;
 
-        g.setRenderingHint(3, 1);
-        g.enableAntialiasing();
+        int finalPanelWidth = panelWidth;
+        StaticStore.renderManager.createRenderer(totalWidth, totalHeight, folder, connector -> {
+            connector.queue(g -> {
+                g.setColor(51, 53, 60, 255);
+                g.fillRect( 0, 0, totalWidth, totalHeight);
 
-        g.setColor(51, 53, 60, 255);
-        g.fillRect( 0, 0, totalWidth, totalHeight);
+                g.setColor(24, 25, 28, 255);
+                g.fillRoundRect(0, -cornerRadius / 2f, totalWidth, cornerRadius + bgMargin * 8 + titleHeight, cornerRadius, cornerRadius);
 
-        g.setColor(24, 25, 28, 255);
-        g.fillRoundRect(0, -cornerRadius / 2, totalWidth, cornerRadius + bgMargin * 8 + titleHeight, cornerRadius, cornerRadius);
+                g.setColor(64, 68, 75, 255);
+                g.fillRoundRect(bgMargin, bgMargin * 4 + titleHeight, finalPanelWidth, panelHeight, cornerRadius, cornerRadius);
 
-        g.setColor(64, 68, 75, 255);
-        g.fillRoundRect(bgMargin, bgMargin * 4 + titleHeight, panelWidth, panelHeight, cornerRadius, cornerRadius);
+                g.setFontModel(titleFont);
+                g.setColor(238, 238, 238, 255);
+                g.drawText(combo.title, bgMargin * 2, bgMargin * 2, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
 
-        g.setFont(titleFont);
-        g.setColor(238, 238, 238, 255);
-        g.drawText(combo.title, (int) Math.round(bgMargin * 2 - titleRect.getX()), (int) Math.round(bgMargin * 2 - titleRect.getY()));
+                g.setFontModel(typeFont);
+                g.drawText(combo.type, bgMargin * 2, (int) Math.round(bgMargin * 2 + titleRect[3] + comboTitleGap + (Math.max(typeRect[3], levelBoxDimension)) / 2.0), GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
 
-        g.setFont(typeFont);
-        g.drawText(combo.type, (int) Math.round(bgMargin * 2 - typeRect.getX()), (int) Math.round(bgMargin * 2 + titleRect.getHeight() + comboTitleGap + (Math.max(typeRect.getHeight(), levelBoxDimension) - typeRect.getHeight()) / 2.0 - typeRect.getY()));
+                g.setColor(88, 101, 242, 255);
+                g.fillRoundRect(Math.round(bgMargin * 2 + typeRect[2] + comboTypeGap), (int) Math.round(bgMargin * 2 + titleRect[3] + comboTitleGap + (Math.max(typeRect[3], levelBoxDimension) - levelBoxDimension) / 2.0), levelBoxDimension, levelBoxDimension, comboTypeRadius, comboTypeRadius);
 
-        g.setColor(88, 101, 242, 255);
-        g.fillRoundRect((int) Math.round(bgMargin * 2 + typeRect.getWidth() + comboTypeGap), (int) Math.round(bgMargin * 2 + titleRect.getHeight() + comboTitleGap + (Math.max(typeRect.getHeight(), levelBoxDimension) - levelBoxDimension) / 2.0), levelBoxDimension, levelBoxDimension, comboTypeRadius, comboTypeRadius);
+                g.setColor(238, 238, 238, 255);
+                g.drawText(combo.level, Math.round(bgMargin * 2 + typeRect[2] + comboTypeGap + (Math.max(typeRect[3], levelBoxDimension)) / 2f), Math.round(bgMargin * 2 + titleRect[3] + comboTitleGap + (Math.max(typeRect[3], levelBoxDimension)) / 2f), GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
 
-        g.setColor(238, 238, 238, 255);
-        g.drawText(combo.level, (int) Math.round(bgMargin * 2 + typeRect.getWidth() + comboTypeGap + (Math.max(typeRect.getHeight(), levelBoxDimension) - levelRect.getWidth()) / 2.0 - levelRect.getX()), (int) Math.round(bgMargin * 2 + titleRect.getHeight() + comboTitleGap + (Math.max(typeRect.getHeight(), levelBoxDimension) - levelRect.getHeight()) / 2.0 - levelRect.getY()));
+                int x = bgMargin + statPanelMargin;
+                int y = bgMargin * 4 + titleHeight + statPanelMargin;
 
-        int x = bgMargin + statPanelMargin;
-        int y = bgMargin * 4 + titleHeight + statPanelMargin;
+                g.setFontModel(nameFont);
 
-        g.setFont(nameFont);
+                for(int i = 0; i < combo.icons.size(); i++) {
+                    g.setColor(51, 53, 60, 255);
+                    g.fillRoundRect(x, y, finalMaxIconTableWidth, maxIconTableHeight, comboIconTableRadius, comboIconTableRadius);
 
-        for(int i = 0; i < combo.icons.size(); i++) {
-            Rectangle2D unitNameRect = nameFont.createGlyphVector(nfm.getFontRenderContext(), combo.names.get(i)).getPixelBounds(null, 0, 0);
+                    g.drawImage(combo.icons.get(i), Math.round(x + (finalMaxIconTableWidth - combo.icons.get(i).getWidth() * comboIconScaleFactor) / 2.0), y + comboIconUpDownGap, Math.round(combo.icons.get(i).getWidth() * comboIconScaleFactor), Math.round(combo.icons.get(i).getHeight() * comboIconScaleFactor));
 
-            g.setColor(51, 53, 60, 255);
-            g.fillRoundRect(x, y, maxIconTableWidth, maxIconTableHeight, comboIconTableRadius, comboIconTableRadius);
+                    g.setColor(191, 191, 191, 255);
+                    g.drawText(combo.names.get(i), (int) Math.round(x + (finalMaxIconTableWidth) / 2.0), Math.round(y + comboIconUpDownGap + combo.icons.get(i).getHeight() * comboIconScaleFactor + comboIconNameGap), GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.TOP);
 
-            g.drawImage(combo.icons.get(i), Math.round(x + (maxIconTableWidth - combo.icons.get(i).getWidth() * comboIconScaleFactor) / 2.0), y + comboIconUpDownGap, Math.round(combo.icons.get(i).getWidth() * comboIconScaleFactor), Math.round(combo.icons.get(i).getHeight() * comboIconScaleFactor));
+                    x += finalMaxIconTableWidth + comboIconGap;
+                }
 
-            g.setColor(191, 191, 191, 255);
-            g.drawText(combo.names.get(i), (int) Math.round(x + (maxIconTableWidth - unitNameRect.getWidth()) / 2.0 - unitNameRect.getX()), (int) Math.round(y + comboIconUpDownGap + combo.icons.get(i).getHeight() * comboIconScaleFactor + comboIconNameGap - unitNameRect.getY()));
+                x = bgMargin + statPanelMargin;
+                y += maxIconTableHeight + comboContentGap;
 
-            x += maxIconTableWidth + comboIconGap;
-        }
+                g.setFontModel(contentFont);
+                g.setColor(238, 238, 238, 255);
+                g.drawText(combo.description, x, y, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
 
-        x = bgMargin + statPanelMargin;
-        y += maxIconTableHeight + comboContentGap;
+                return null;
+            });
 
-        g.setFont(contentFont);
-        g.setColor(238, 238, 238, 255);
-        g.drawText(combo.description, (int) Math.round(x - descRect.getX()), (int) Math.round(y - descRect.getY()));
+            return null;
+        }, progress -> image, () -> {
+            waiter.countDown();
 
-        g.dispose();
+            return null;
+        });
 
-        ImageIO.write(result, "PNG", image);
+        waiter.await();
 
         return image;
     }
@@ -2569,196 +2720,209 @@ public class ImageDrawing {
         if(image == null)
             return null;
 
-        BigDecimal xWidth = xRange[1].subtract(xRange[0]);
-        BigDecimal yWidth = yRange[1].subtract(yRange[0]);
+        BigDecimal xw = xRange[1].subtract(xRange[0]);
+        BigDecimal yw = yRange[1].subtract(yRange[0]);
 
-        if(yWidth.divide(xWidth, Equation.context).compareTo(BigDecimal.valueOf(10)) > 0 || yWidth.compareTo(BigDecimal.ZERO) == 0)
+        if(yw.divide(xw, Equation.context).compareTo(BigDecimal.valueOf(10)) > 0 || yw.compareTo(BigDecimal.ZERO) == 0)
             keepRatio = true;
 
-        BufferedImage result = new BufferedImage(plotWidthHeight, plotWidthHeight, BufferedImage.TYPE_INT_ARGB);
-        FG2D g = new FG2D(result.getGraphics());
+        AtomicReference<String> text = new AtomicReference<>(" ");
 
-        g.setRenderingHint(3, 2);
-        g.enableAntialiasing();
+        boolean finalKeepRatio = keepRatio;
 
-        g.setColor(51, 53, 60, 255);
-        g.fillRect(0, 0, plotWidthHeight, plotWidthHeight);
+        CountDownLatch waiter = new CountDownLatch(1);
 
-        if(keepRatio) {
-            BigDecimal center = yRange[0].add(yWidth.divide(BigDecimal.valueOf(2), Equation.context));
+        StaticStore.renderManager.createRenderer(plotWidthHeight, plotWidthHeight, temp, connector -> {
+            connector.queue(g -> {
+                BigDecimal xWidth = xRange[1].subtract(xRange[0]);
+                BigDecimal yWidth = yRange[1].subtract(yRange[0]);
 
-            yRange[0] = center.subtract(xWidth.divide(BigDecimal.valueOf(2), Equation.context));
-            yRange[1] = center.add(xWidth.divide(BigDecimal.valueOf(2), Equation.context));
+                g.setColor(51, 53, 60, 255);
+                g.fillRect(0, 0, plotWidthHeight, plotWidthHeight);
 
-            yWidth = yRange[1].subtract(yRange[0]);
-        }
+                if(finalKeepRatio) {
+                    BigDecimal center = yRange[0].add(yWidth.divide(BigDecimal.valueOf(2), Equation.context));
 
-        BigDecimal centerX = xRange[0].add(xWidth.divide(BigDecimal.valueOf(2), Equation.context));
-        BigDecimal centerY = yRange[0].add(yWidth.divide(BigDecimal.valueOf(2), Equation.context));
+                    yRange[0] = center.subtract(xWidth.divide(BigDecimal.valueOf(2), Equation.context));
+                    yRange[1] = center.add(xWidth.divide(BigDecimal.valueOf(2), Equation.context));
 
-        int xLine = convertCoordinateToPixel(plotWidthHeight, BigDecimal.ZERO, xWidth, centerX, true);
-        int yLine = convertCoordinateToPixel(plotWidthHeight, BigDecimal.ZERO, yWidth, centerY, false);
+                    yWidth = yRange[1].subtract(yRange[0]);
+                }
 
-        g.setColor(238, 238, 238, 255);
-        g.setStroke(axisStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+                BigDecimal centerX = xRange[0].add(xWidth.divide(BigDecimal.valueOf(2), Equation.context));
+                BigDecimal centerY = yRange[0].add(yWidth.divide(BigDecimal.valueOf(2), Equation.context));
 
-        g.drawLine(xLine, 0, xLine, plotWidthHeight);
-        g.drawLine(0, yLine, plotWidthHeight, yLine);
-
-        BigDecimal xSegment = xWidth.divide(BigDecimal.TEN, Equation.context);
-
-        int xScale = (int) - (Math.round(Math.log10(xSegment.doubleValue())) + 0.5 - 0.5 * Math.signum(xSegment.doubleValue()));
-
-        if (xScale >= 0) {
-            xSegment = xSegment.round(new MathContext(1, RoundingMode.HALF_EVEN));
-        } else {
-            xSegment = xSegment.divide(BigDecimal.TEN.pow(-xScale), Equation.context).round(new MathContext(1, RoundingMode.HALF_EVEN)).multiply(BigDecimal.TEN.pow(-xScale));
-        }
-
-        BigDecimal ySegment = yWidth.divide(BigDecimal.TEN, Equation.context);
-
-        int yScale = (int) - (Math.round(Math.log10(ySegment.doubleValue())) + 0.5 - 0.5 * Math.signum(ySegment.doubleValue()));
-
-        if (yScale >= 0) {
-            ySegment = ySegment.round(new MathContext(1, RoundingMode.HALF_EVEN));
-        } else {
-            ySegment = ySegment.divide(BigDecimal.TEN.pow(-yScale), Equation.context).round(new MathContext(1, RoundingMode.HALF_EVEN)).multiply(BigDecimal.TEN.pow(-yScale));
-        }
-
-        BigDecimal xPosition = xRange[0].divideToIntegralValue(xSegment).multiply(xSegment);
-        BigDecimal yPosition = yRange[0].divideToIntegralValue(ySegment).multiply(ySegment);
-
-        while(xPosition.compareTo(xRange[1]) <= 0) {
-            if(xPosition.compareTo(BigDecimal.ZERO) != 0) {
-                int xPos = convertCoordinateToPixel(plotWidthHeight, xPosition, xWidth, centerX, true);
+                int xLine = convertCoordinateToPixel(plotWidthHeight, BigDecimal.ZERO, xWidth, centerX, true);
+                int yLine = convertCoordinateToPixel(plotWidthHeight, BigDecimal.ZERO, yWidth, centerY, false);
 
                 g.setColor(238, 238, 238, 255);
-                g.setStroke(indicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+                g.setStroke(axisStroke, GLGraphics.LineEndMode.VERTICAL);
 
-                g.drawLine(xPos, (int) Math.round(yLine - plotWidthHeight * indicatorRatio / 2.0), xPos, (int) Math.round(yLine + plotWidthHeight * indicatorRatio / 2.0));
+                g.drawLine(xLine, 0, xLine, plotWidthHeight);
+                g.drawLine(0, yLine, plotWidthHeight, yLine);
 
-                g.setColor(238, 238, 238, 64);
-                g.setStroke(subIndicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+                BigDecimal xSegment = xWidth.divide(BigDecimal.TEN, Equation.context);
 
-                g.drawLine(xPos, 0, xPos, plotWidthHeight);
+                int xScale = (int) - (Math.round(Math.log10(xSegment.doubleValue())) + 0.5 - 0.5 * Math.signum(xSegment.doubleValue()));
 
-                long textPosition;
-
-                boolean positive = true;
-
-                if(yLine < - plotWidthHeight * indicatorRatio / 2.0) {
-                    textPosition = indicatorGap;
-                } else if(yLine >= plotWidthHeight * (1 + indicatorRatio / 2.0)) {
-                    positive = false;
-
-                    textPosition = plotWidthHeight - indicatorGap;
+                if (xScale >= 0) {
+                    xSegment = xSegment.round(new MathContext(1, RoundingMode.HALF_EVEN));
                 } else {
-                    textPosition = Math.round(yLine + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap);
+                    xSegment = xSegment.divide(BigDecimal.TEN.pow(-xScale), Equation.context).round(new MathContext(1, RoundingMode.HALF_EVEN)).multiply(BigDecimal.TEN.pow(-xScale));
+                }
 
-                    if(textPosition > plotWidthHeight) {
-                        positive = false;
-                        textPosition = Math.round(yLine - plotWidthHeight * indicatorRatio / 2.0 - indicatorGap);
+                BigDecimal ySegment = yWidth.divide(BigDecimal.TEN, Equation.context);
+
+                int yScale = (int) - (Math.round(Math.log10(ySegment.doubleValue())) + 0.5 - 0.5 * Math.signum(ySegment.doubleValue()));
+
+                if (yScale >= 0) {
+                    ySegment = ySegment.round(new MathContext(1, RoundingMode.HALF_EVEN));
+                } else {
+                    ySegment = ySegment.divide(BigDecimal.TEN.pow(-yScale), Equation.context).round(new MathContext(1, RoundingMode.HALF_EVEN)).multiply(BigDecimal.TEN.pow(-yScale));
+                }
+
+                BigDecimal xPosition = xRange[0].divideToIntegralValue(xSegment).multiply(xSegment);
+                BigDecimal yPosition = yRange[0].divideToIntegralValue(ySegment).multiply(ySegment);
+
+                while(xPosition.compareTo(xRange[1]) <= 0) {
+                    if(xPosition.compareTo(BigDecimal.ZERO) != 0) {
+                        int xPos = convertCoordinateToPixel(plotWidthHeight, xPosition, xWidth, centerX, true);
+
+                        g.setColor(238, 238, 238, 255);
+                        g.setStroke(indicatorStroke, GLGraphics.LineEndMode.ROUND);
+
+                        g.drawLine(xPos, (int) Math.round(yLine - plotWidthHeight * indicatorRatio / 2.0), xPos, (int) Math.round(yLine + plotWidthHeight * indicatorRatio / 2.0));
+
+                        g.setColor(238, 238, 238, 64);
+                        g.setStroke(subIndicatorStroke, GLGraphics.LineEndMode.ROUND);
+
+                        g.drawLine(xPos, 0, xPos, plotWidthHeight);
+
+                        long textPosition;
+
+                        boolean positive = true;
+
+                        if(yLine < - plotWidthHeight * indicatorRatio / 2.0) {
+                            textPosition = indicatorGap;
+                        } else if(yLine >= plotWidthHeight * (1 + indicatorRatio / 2.0)) {
+                            positive = false;
+
+                            textPosition = plotWidthHeight - indicatorGap;
+                        } else {
+                            textPosition = Math.round(yLine + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap);
+
+                            if(textPosition > plotWidthHeight) {
+                                positive = false;
+                                textPosition = Math.round(yLine - plotWidthHeight * indicatorRatio / 2.0 - indicatorGap);
+                            }
+                        }
+
+                        g.setFontModel(plotFont);
+                        g.setColor(238, 238, 238, 255);
+
+                        if(positive) {
+                            g.drawText(Equation.simpleNumber(xPosition), xPos, (int) textPosition, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.TOP);
+                        } else {
+                            g.drawText(Equation.simpleNumber(xPosition), xPos, (int) textPosition, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.BOTTOM);
+                        }
                     }
+
+                    xPosition = xPosition.add(xSegment);
                 }
 
-                g.setFont(plotFont);
-                g.setColor(238, 238, 238, 255);
+                while(yPosition.compareTo(yRange[1]) <= 0) {
+                    if(yPosition.compareTo(BigDecimal.ZERO) != 0) {
+                        int yPos = convertCoordinateToPixel(plotWidthHeight, yPosition, yWidth, centerY, false);
 
-                if(positive) {
-                    g.drawHorizontalCenteredText(Equation.simpleNumber(xPosition), xPos, (int) textPosition);
-                } else {
-                    g.drawHorizontalLowerCenteredText(Equation.simpleNumber(xPosition), xPos, (int) textPosition);
-                }
-            }
+                        g.setColor(238, 238, 238, 255);
+                        g.setStroke(indicatorStroke, GLGraphics.LineEndMode.ROUND);
 
-            xPosition = xPosition.add(xSegment);
-        }
+                        g.drawLine((int) Math.round(xLine - plotWidthHeight * indicatorRatio / 2.0), yPos, (int) Math.round(xLine + plotWidthHeight * indicatorRatio / 2.0), yPos);
 
-        while(yPosition.compareTo(yRange[1]) <= 0) {
-            if(yPosition.compareTo(BigDecimal.ZERO) != 0) {
-                int yPos = convertCoordinateToPixel(plotWidthHeight, yPosition, yWidth, centerY, false);
+                        g.setColor(238, 238, 238, 64);
+                        g.setStroke(subIndicatorStroke, GLGraphics.LineEndMode.ROUND);
 
-                g.setColor(238, 238, 238, 255);
-                g.setStroke(indicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+                        g.drawLine(0, yPos, plotWidthHeight, yPos);
 
-                g.drawLine((int) Math.round(xLine - plotWidthHeight * indicatorRatio / 2.0), yPos, (int) Math.round(xLine + plotWidthHeight * indicatorRatio / 2.0), yPos);
+                        long textPosition;
 
-                g.setColor(238, 238, 238, 64);
-                g.setStroke(subIndicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+                        boolean positive = true;
 
-                g.drawLine(0, yPos, plotWidthHeight, yPos);
+                        if(xLine < - plotWidthHeight * indicatorRatio / 2.0) {
+                            textPosition = indicatorGap;
+                        } else if(xLine >= plotWidthHeight * (1 + indicatorRatio / 2.0)) {
+                            positive = false;
 
-                long textPosition;
+                            textPosition = plotWidthHeight - indicatorGap;
+                        } else {
+                            textPosition = Math.round(xLine + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap);
 
-                boolean positive = true;
+                            if(textPosition > plotWidthHeight) {
+                                positive = false;
 
-                if(xLine < - plotWidthHeight * indicatorRatio / 2.0) {
-                    textPosition = indicatorGap;
-                } else if(xLine >= plotWidthHeight * (1 + indicatorRatio / 2.0)) {
-                    positive = false;
+                                textPosition = Math.round(xLine - plotWidthHeight * indicatorRatio / 2.0 - indicatorGap);
+                            }
+                        }
 
-                    textPosition = plotWidthHeight - indicatorGap;
-                } else {
-                    textPosition = Math.round(xLine + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap);
+                        g.setFontModel(plotFont);
+                        g.setColor(238, 238, 238, 255);
 
-                    if(textPosition > plotWidthHeight) {
-                        positive = false;
-
-                        textPosition = Math.round(xLine - plotWidthHeight * indicatorRatio / 2.0 - indicatorGap);
+                        if(positive) {
+                            g.drawText(Equation.simpleNumber(yPosition), (int) textPosition, yPos, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
+                        } else {
+                            g.drawText(Equation.simpleNumber(yPosition), (int) textPosition, yPos, GLGraphics.HorizontalSnap.LEFT, GLGraphics.VerticalSnap.MIDDLE);
+                        }
                     }
+
+                    yPosition = yPosition.add(ySegment);
                 }
 
-                g.setFont(plotFont);
-                g.setColor(238, 238, 238, 255);
+                g.setColor(118, 224, 85, 255);
+                g.setStroke(plotStroke, GLGraphics.LineEndMode.ROUND);
 
-                if(positive) {
-                    g.drawVerticalCenteredText(Equation.simpleNumber(yPosition), (int) textPosition, yPos);
-                } else {
-                    g.drawVerticalLowerCenteredText(Equation.simpleNumber(yPosition), (int) textPosition, yPos);
+                for(int i = 0; i < coordinates.length - 1; i++) {
+                    if(coordinates[i][1] == null || coordinates[i + 1][1] == null || coordinates[i][0] == null || coordinates[i + 1][0] == null)
+                        continue;
+
+                    int x0 = convertCoordinateToPixel(plotWidthHeight, coordinates[i][0], xWidth, centerX, true);
+                    int x1 = convertCoordinateToPixel(plotWidthHeight, coordinates[i + 1][0], xWidth, centerX, true);
+
+                    int y0 = convertCoordinateToPixel(plotWidthHeight, coordinates[i][1], yWidth, centerY, false);
+                    int y1 = convertCoordinateToPixel(plotWidthHeight, coordinates[i + 1][1], yWidth, centerY, false);
+
+                    double angle = Math.abs(Math.toDegrees(Math.atan2(coordinates[i + 1][1].subtract(coordinates[i][1]).doubleValue(), coordinates[i + 1][0].subtract(coordinates[i][0]).doubleValue())));
+                    int v = (int) angle / 90;
+
+                    angle = angle - 90 * v;
+
+                    if (angle > angleLimit) {
+                        continue;
+                    }
+
+                    g.drawLine(x0, y0, x1, y1);
                 }
-            }
 
-            yPosition = yPosition.add(ySegment);
-        }
+                text.set(String.format(
+                        LangID.getStringByID("plot_success", lang),
+                        Equation.formatNumber(centerX.subtract(xw.divide(BigDecimal.valueOf(2), Equation.context))),
+                        Equation.formatNumber(centerX.add(xw.divide(BigDecimal.valueOf(2), Equation.context))),
+                        Equation.formatNumber(centerY.subtract(yw.divide(BigDecimal.valueOf(2), Equation.context))),
+                        Equation.formatNumber(centerY.add(yw.divide(BigDecimal.valueOf(2), Equation.context)))
+                ));
 
-        g.setColor(118, 224, 85, 255);
-        g.setStroke(plotStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+                return null;
+            });
 
-        for(int i = 0; i < coordinates.length - 1; i++) {
-            if(coordinates[i][1] == null || coordinates[i + 1][1] == null || coordinates[i][0] == null || coordinates[i + 1][0] == null)
-                continue;
+            return null;
+        }, progress -> image, () -> {
+            waiter.countDown();
 
-            int x0 = convertCoordinateToPixel(plotWidthHeight, coordinates[i][0], xWidth, centerX, true);
-            int x1 = convertCoordinateToPixel(plotWidthHeight, coordinates[i + 1][0], xWidth, centerX, true);
+            return null;
+        });
 
-            int y0 = convertCoordinateToPixel(plotWidthHeight, coordinates[i][1], yWidth, centerY, false);
-            int y1 = convertCoordinateToPixel(plotWidthHeight, coordinates[i + 1][1], yWidth, centerY, false);
+        waiter.await();
 
-            double angle = Math.abs(Math.toDegrees(Math.atan2(coordinates[i + 1][1].subtract(coordinates[i][1]).doubleValue(), coordinates[i + 1][0].subtract(coordinates[i][0]).doubleValue())));
-            int v = (int) angle / 90;
-
-            angle = angle - 90 * v;
-
-            if (angle > angleLimit) {
-                continue;
-            }
-
-            g.drawLine(x0, y0, x1, y1);
-        }
-
-        String text = String.format(
-                LangID.getStringByID("plot_success", lang),
-                Equation.formatNumber(centerX.subtract(xWidth.divide(BigDecimal.valueOf(2), Equation.context))),
-                Equation.formatNumber(centerX.add(xWidth.divide(BigDecimal.valueOf(2), Equation.context))),
-                Equation.formatNumber(centerY.subtract(yWidth.divide(BigDecimal.valueOf(2), Equation.context))),
-                Equation.formatNumber(centerY.add(yWidth.divide(BigDecimal.valueOf(2), Equation.context)))
-        );
-
-        g.dispose();
-
-        ImageIO.write(result, "PNG", image);
-
-        return new Object[] {image, text};
+        return new Object[] { image, text.get() };
     }
 
     public static Object[] plotTGraph(BigDecimal[][] coordinates, BigDecimal[] xRange, BigDecimal[] yRange, BigDecimal[] tRange, boolean keepRatio, int lang) throws Exception {
@@ -2772,198 +2936,211 @@ public class ImageDrawing {
         if(image == null)
             return null;
 
-        BigDecimal xWidth = xRange[1].subtract(xRange[0]);
-        BigDecimal yWidth = yRange[1].subtract(yRange[0]);
+        BigDecimal xw = xRange[1].subtract(xRange[0]);
+        BigDecimal yw = yRange[1].subtract(yRange[0]);
 
-        if(yWidth.divide(xWidth, Equation.context).compareTo(BigDecimal.valueOf(10)) > 0 || yWidth.compareTo(BigDecimal.ZERO) == 0)
+        if(yw.divide(xw, Equation.context).compareTo(BigDecimal.valueOf(10)) > 0 || yw.compareTo(BigDecimal.ZERO) == 0)
             keepRatio = true;
 
-        BufferedImage result = new BufferedImage(plotWidthHeight, plotWidthHeight, BufferedImage.TYPE_INT_ARGB);
-        FG2D g = new FG2D(result.getGraphics());
+        AtomicReference<String> text = new AtomicReference<>("");
 
-        g.setRenderingHint(3, 2);
-        g.enableAntialiasing();
+        boolean finalKeepRatio = keepRatio;
 
-        g.setColor(51, 53, 60, 255);
-        g.fillRect(0, 0, plotWidthHeight, plotWidthHeight);
+        CountDownLatch waiter = new CountDownLatch(1);
 
-        if(keepRatio) {
-            BigDecimal center = yRange[0].add(yWidth.divide(BigDecimal.valueOf(2), Equation.context));
+        StaticStore.renderManager.createRenderer(plotWidthHeight, plotWidthHeight, temp, connector -> {
+            connector.queue(g -> {
+                BigDecimal xWidth = xRange[1].subtract(xRange[0]);
+                BigDecimal yWidth = yRange[1].subtract(yRange[0]);
 
-            yRange[0] = center.subtract(xWidth.divide(BigDecimal.valueOf(2), Equation.context));
-            yRange[1] = center.add(xWidth.divide(BigDecimal.valueOf(2), Equation.context));
+                g.setColor(51, 53, 60, 255);
+                g.fillRect(0, 0, plotWidthHeight, plotWidthHeight);
 
-            yWidth = yRange[1].subtract(yRange[0]);
-        }
+                if(finalKeepRatio) {
+                    BigDecimal center = yRange[0].add(yWidth.divide(BigDecimal.valueOf(2), Equation.context));
 
-        BigDecimal centerX = xRange[0].add(xWidth.divide(BigDecimal.valueOf(2), Equation.context));
-        BigDecimal centerY = yRange[0].add(yWidth.divide(BigDecimal.valueOf(2), Equation.context));
+                    yRange[0] = center.subtract(xWidth.divide(BigDecimal.valueOf(2), Equation.context));
+                    yRange[1] = center.add(xWidth.divide(BigDecimal.valueOf(2), Equation.context));
 
-        int xLine = convertCoordinateToPixel(plotWidthHeight, BigDecimal.ZERO, xWidth, centerX, true);
-        int yLine = convertCoordinateToPixel(plotWidthHeight, BigDecimal.ZERO, yWidth, centerY, false);
+                    yWidth = yRange[1].subtract(yRange[0]);
+                }
 
-        g.setColor(238, 238, 238, 255);
-        g.setStroke(axisStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+                BigDecimal centerX = xRange[0].add(xWidth.divide(BigDecimal.valueOf(2), Equation.context));
+                BigDecimal centerY = yRange[0].add(yWidth.divide(BigDecimal.valueOf(2), Equation.context));
 
-        g.drawLine(xLine, 0, xLine, plotWidthHeight);
-        g.drawLine(0, yLine, plotWidthHeight, yLine);
-
-        BigDecimal xSegment = xWidth.divide(BigDecimal.TEN, Equation.context);
-
-        int xScale = (int) - (Math.round(Math.log10(xSegment.doubleValue())) + 0.5 - 0.5 * Math.signum(xSegment.doubleValue()));
-
-        if (xScale >= 0) {
-            xSegment = xSegment.round(new MathContext(1, RoundingMode.HALF_EVEN));
-        } else {
-            xSegment = xSegment.divide(BigDecimal.TEN.pow(-xScale), Equation.context).round(new MathContext(1, RoundingMode.HALF_EVEN)).multiply(BigDecimal.TEN.pow(-xScale));
-        }
-
-        BigDecimal ySegment = yWidth.divide(BigDecimal.TEN, Equation.context);
-
-        int yScale = (int) - (Math.round(Math.log10(ySegment.doubleValue())) + 0.5 - 0.5 * Math.signum(ySegment.doubleValue()));
-
-        if (yScale >= 0) {
-            ySegment = ySegment.round(new MathContext(1, RoundingMode.HALF_EVEN));
-        } else {
-            ySegment = ySegment.divide(BigDecimal.TEN.pow(-yScale), Equation.context).round(new MathContext(1, RoundingMode.HALF_EVEN)).multiply(BigDecimal.TEN.pow(-yScale));
-        }
-
-        BigDecimal xPosition = xRange[0].divideToIntegralValue(xSegment).multiply(xSegment);
-        BigDecimal yPosition = yRange[0].divideToIntegralValue(ySegment).multiply(ySegment);
-
-        while(xPosition.compareTo(xRange[1]) <= 0) {
-            if(xPosition.compareTo(BigDecimal.ZERO) != 0) {
-                int xPos = convertCoordinateToPixel(plotWidthHeight, xPosition, xWidth, centerX, true);
+                int xLine = convertCoordinateToPixel(plotWidthHeight, BigDecimal.ZERO, xWidth, centerX, true);
+                int yLine = convertCoordinateToPixel(plotWidthHeight, BigDecimal.ZERO, yWidth, centerY, false);
 
                 g.setColor(238, 238, 238, 255);
-                g.setStroke(indicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+                g.setStroke(axisStroke, GLGraphics.LineEndMode.VERTICAL);
 
-                g.drawLine(xPos, (int) Math.round(yLine - plotWidthHeight * indicatorRatio / 2.0), xPos, (int) Math.round(yLine + plotWidthHeight * indicatorRatio / 2.0));
+                g.drawLine(xLine, 0, xLine, plotWidthHeight);
+                g.drawLine(0, yLine, plotWidthHeight, yLine);
 
-                g.setColor(238, 238, 238, 64);
-                g.setStroke(subIndicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+                BigDecimal xSegment = xWidth.divide(BigDecimal.TEN, Equation.context);
 
-                g.drawLine(xPos, 0, xPos, plotWidthHeight);
+                int xScale = (int) - (Math.round(Math.log10(xSegment.doubleValue())) + 0.5 - 0.5 * Math.signum(xSegment.doubleValue()));
 
-                long textPosition;
-
-                boolean positive = true;
-
-                if(yLine < - plotWidthHeight * indicatorRatio / 2.0) {
-                    textPosition = indicatorGap;
-                } else if(yLine >= plotWidthHeight * (1 + indicatorRatio / 2.0)) {
-                    positive = false;
-
-                    textPosition = plotWidthHeight - indicatorGap;
+                if (xScale >= 0) {
+                    xSegment = xSegment.round(new MathContext(1, RoundingMode.HALF_EVEN));
                 } else {
-                    textPosition = Math.round(yLine + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap);
+                    xSegment = xSegment.divide(BigDecimal.TEN.pow(-xScale), Equation.context).round(new MathContext(1, RoundingMode.HALF_EVEN)).multiply(BigDecimal.TEN.pow(-xScale));
+                }
 
-                    if(textPosition > plotWidthHeight) {
-                        positive = false;
-                        textPosition = Math.round(yLine - plotWidthHeight * indicatorRatio / 2.0 - indicatorGap);
+                BigDecimal ySegment = yWidth.divide(BigDecimal.TEN, Equation.context);
+
+                int yScale = (int) - (Math.round(Math.log10(ySegment.doubleValue())) + 0.5 - 0.5 * Math.signum(ySegment.doubleValue()));
+
+                if (yScale >= 0) {
+                    ySegment = ySegment.round(new MathContext(1, RoundingMode.HALF_EVEN));
+                } else {
+                    ySegment = ySegment.divide(BigDecimal.TEN.pow(-yScale), Equation.context).round(new MathContext(1, RoundingMode.HALF_EVEN)).multiply(BigDecimal.TEN.pow(-yScale));
+                }
+
+                BigDecimal xPosition = xRange[0].divideToIntegralValue(xSegment).multiply(xSegment);
+                BigDecimal yPosition = yRange[0].divideToIntegralValue(ySegment).multiply(ySegment);
+
+                while(xPosition.compareTo(xRange[1]) <= 0) {
+                    if(xPosition.compareTo(BigDecimal.ZERO) != 0) {
+                        int xPos = convertCoordinateToPixel(plotWidthHeight, xPosition, xWidth, centerX, true);
+
+                        g.setColor(238, 238, 238, 255);
+                        g.setStroke(indicatorStroke, GLGraphics.LineEndMode.ROUND);
+
+                        g.drawLine(xPos, (int) Math.round(yLine - plotWidthHeight * indicatorRatio / 2.0), xPos, (int) Math.round(yLine + plotWidthHeight * indicatorRatio / 2.0));
+
+                        g.setColor(238, 238, 238, 64);
+                        g.setStroke(subIndicatorStroke, GLGraphics.LineEndMode.ROUND);
+
+                        g.drawLine(xPos, 0, xPos, plotWidthHeight);
+
+                        long textPosition;
+
+                        boolean positive = true;
+
+                        if(yLine < - plotWidthHeight * indicatorRatio / 2.0) {
+                            textPosition = indicatorGap;
+                        } else if(yLine >= plotWidthHeight * (1 + indicatorRatio / 2.0)) {
+                            positive = false;
+
+                            textPosition = plotWidthHeight - indicatorGap;
+                        } else {
+                            textPosition = Math.round(yLine + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap);
+
+                            if(textPosition > plotWidthHeight) {
+                                positive = false;
+                                textPosition = Math.round(yLine - plotWidthHeight * indicatorRatio / 2.0 - indicatorGap);
+                            }
+                        }
+
+                        g.setFontModel(plotFont);
+                        g.setColor(238, 238, 238, 255);
+
+                        if(positive) {
+                            g.drawText(Equation.simpleNumber(xPosition), xPos, (int) textPosition, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.TOP);
+                        } else {
+                            g.drawText(Equation.simpleNumber(xPosition), xPos, (int) textPosition, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.BOTTOM);
+                        }
                     }
+
+                    xPosition = xPosition.add(xSegment);
                 }
 
-                g.setFont(plotFont);
-                g.setColor(238, 238, 238, 255);
+                while(yPosition.compareTo(yRange[1]) <= 0) {
+                    if(yPosition.compareTo(BigDecimal.ZERO) != 0) {
+                        int yPos = convertCoordinateToPixel(plotWidthHeight, yPosition, yWidth, centerY, false);
 
-                if(positive) {
-                    g.drawHorizontalCenteredText(Equation.simpleNumber(xPosition), xPos, (int) textPosition);
-                } else {
-                    g.drawHorizontalLowerCenteredText(Equation.simpleNumber(xPosition), xPos, (int) textPosition);
-                }
-            }
+                        g.setColor(238, 238, 238, 255);
+                        g.setStroke(indicatorStroke, GLGraphics.LineEndMode.ROUND);
 
-            xPosition = xPosition.add(xSegment);
-        }
+                        g.drawLine((int) Math.round(xLine - plotWidthHeight * indicatorRatio / 2.0), yPos, (int) Math.round(xLine + plotWidthHeight * indicatorRatio / 2.0), yPos);
 
-        while(yPosition.compareTo(yRange[1]) <= 0) {
-            if(yPosition.compareTo(BigDecimal.ZERO) != 0) {
-                int yPos = convertCoordinateToPixel(plotWidthHeight, yPosition, yWidth, centerY, false);
+                        g.setColor(238, 238, 238, 64);
+                        g.setStroke(subIndicatorStroke, GLGraphics.LineEndMode.ROUND);
 
-                g.setColor(238, 238, 238, 255);
-                g.setStroke(indicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+                        g.drawLine(0, yPos, plotWidthHeight, yPos);
 
-                g.drawLine((int) Math.round(xLine - plotWidthHeight * indicatorRatio / 2.0), yPos, (int) Math.round(xLine + plotWidthHeight * indicatorRatio / 2.0), yPos);
+                        long textPosition;
 
-                g.setColor(238, 238, 238, 64);
-                g.setStroke(subIndicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+                        boolean positive = true;
 
-                g.drawLine(0, yPos, plotWidthHeight, yPos);
+                        if(xLine < - plotWidthHeight * indicatorRatio / 2.0) {
+                            textPosition = indicatorGap;
+                        } else if(xLine >= plotWidthHeight * (1 + indicatorRatio / 2.0)) {
+                            positive = false;
 
-                long textPosition;
+                            textPosition = plotWidthHeight - indicatorGap;
+                        } else {
+                            textPosition = Math.round(xLine + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap);
 
-                boolean positive = true;
+                            if(textPosition > plotWidthHeight) {
+                                positive = false;
 
-                if(xLine < - plotWidthHeight * indicatorRatio / 2.0) {
-                    textPosition = indicatorGap;
-                } else if(xLine >= plotWidthHeight * (1 + indicatorRatio / 2.0)) {
-                    positive = false;
+                                textPosition = Math.round(xLine - plotWidthHeight * indicatorRatio / 2.0 - indicatorGap);
+                            }
+                        }
 
-                    textPosition = plotWidthHeight - indicatorGap;
-                } else {
-                    textPosition = Math.round(xLine + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap);
+                        g.setFontModel(plotFont);
+                        g.setColor(238, 238, 238, 255);
 
-                    if(textPosition > plotWidthHeight) {
-                        positive = false;
-
-                        textPosition = Math.round(xLine - plotWidthHeight * indicatorRatio / 2.0 - indicatorGap);
+                        if(positive) {
+                            g.drawText(Equation.simpleNumber(yPosition), (int) textPosition, yPos, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
+                        } else {
+                            g.drawText(Equation.simpleNumber(yPosition), (int) textPosition, yPos, GLGraphics.HorizontalSnap.LEFT, GLGraphics.VerticalSnap.MIDDLE);
+                        }
                     }
+
+                    yPosition = yPosition.add(ySegment);
                 }
 
-                g.setFont(plotFont);
-                g.setColor(238, 238, 238, 255);
+                g.setColor(118, 224, 85, 255);
+                g.setStroke(plotStroke, GLGraphics.LineEndMode.ROUND);
 
-                if(positive) {
-                    g.drawVerticalCenteredText(Equation.simpleNumber(yPosition), (int) textPosition, yPos);
-                } else {
-                    g.drawVerticalLowerCenteredText(Equation.simpleNumber(yPosition), (int) textPosition, yPos);
+                for(int i = 0; i < coordinates.length - 1; i++) {
+                    if(coordinates[i][1] == null || coordinates[i + 1][1] == null || coordinates[i][0] == null || coordinates[i + 1][0] == null)
+                        continue;
+
+                    int x0 = convertCoordinateToPixel(plotWidthHeight, coordinates[i][0], xWidth, centerX, true);
+                    int x1 = convertCoordinateToPixel(plotWidthHeight, coordinates[i + 1][0], xWidth, centerX, true);
+
+                    int y0 = convertCoordinateToPixel(plotWidthHeight, coordinates[i][1], yWidth, centerY, false);
+                    int y1 = convertCoordinateToPixel(plotWidthHeight, coordinates[i + 1][1], yWidth, centerY, false);
+
+                    double angle = Math.abs(Math.toDegrees(Math.atan2(coordinates[i + 1][1].subtract(coordinates[i][1]).doubleValue(), coordinates[i + 1][0].subtract(coordinates[i][0]).doubleValue())));
+                    int v = (int) angle / 90;
+
+                    angle = angle - 90 * v;
+
+                    if (angle > angleLimit) {
+                        continue;
+                    }
+
+                    g.drawLine(x0, y0, x1, y1);
                 }
-            }
 
-            yPosition = yPosition.add(ySegment);
-        }
+                text.set(String.format(
+                        LangID.getStringByID("tplot_success", lang),
+                        Equation.formatNumber(tRange[0]),
+                        Equation.formatNumber(tRange[1]),
+                        Equation.formatNumber(centerX.subtract(xWidth.divide(BigDecimal.valueOf(2), Equation.context))),
+                        Equation.formatNumber(centerX.add(xWidth.divide(BigDecimal.valueOf(2), Equation.context))),
+                        Equation.formatNumber(centerY.subtract(yWidth.divide(BigDecimal.valueOf(2), Equation.context))),
+                        Equation.formatNumber(centerY.add(yWidth.divide(BigDecimal.valueOf(2), Equation.context)))
+                ));
 
-        g.setColor(118, 224, 85, 255);
-        g.setStroke(plotStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+                return null;
+            });
 
-        for(int i = 0; i < coordinates.length - 1; i++) {
-            if(coordinates[i][1] == null || coordinates[i + 1][1] == null || coordinates[i][0] == null || coordinates[i + 1][0] == null)
-                continue;
+            return null;
+        }, progress -> image, () -> {
+            waiter.countDown();
 
-            int x0 = convertCoordinateToPixel(plotWidthHeight, coordinates[i][0], xWidth, centerX, true);
-            int x1 = convertCoordinateToPixel(plotWidthHeight, coordinates[i + 1][0], xWidth, centerX, true);
+            return null;
+        });
 
-            int y0 = convertCoordinateToPixel(plotWidthHeight, coordinates[i][1], yWidth, centerY, false);
-            int y1 = convertCoordinateToPixel(plotWidthHeight, coordinates[i + 1][1], yWidth, centerY, false);
+        waiter.await();
 
-            double angle = Math.abs(Math.toDegrees(Math.atan2(coordinates[i + 1][1].subtract(coordinates[i][1]).doubleValue(), coordinates[i + 1][0].subtract(coordinates[i][0]).doubleValue())));
-            int v = (int) angle / 90;
-
-            angle = angle - 90 * v;
-
-            if (angle > angleLimit) {
-                continue;
-            }
-
-            g.drawLine(x0, y0, x1, y1);
-        }
-
-        String text = String.format(
-                LangID.getStringByID("tplot_success", lang),
-                Equation.formatNumber(tRange[0]),
-                Equation.formatNumber(tRange[1]),
-                Equation.formatNumber(centerX.subtract(xWidth.divide(BigDecimal.valueOf(2), Equation.context))),
-                Equation.formatNumber(centerX.add(xWidth.divide(BigDecimal.valueOf(2), Equation.context))),
-                Equation.formatNumber(centerY.subtract(yWidth.divide(BigDecimal.valueOf(2), Equation.context))),
-                Equation.formatNumber(centerY.add(yWidth.divide(BigDecimal.valueOf(2), Equation.context)))
-        );
-
-        g.dispose();
-
-        ImageIO.write(result, "PNG", image);
-
-        return new Object[] {image, text};
+        return new Object[] { image, text.get() };
     }
 
     public static Object[] plotXYGraph(Formula formula, BigDecimal[] xRange, BigDecimal[] yRange, boolean keepRatio, int lang) throws Exception {
@@ -2977,274 +3154,287 @@ public class ImageDrawing {
         if(image == null)
             return null;
 
-        double xWidth = xRange[1].doubleValue() - xRange[0].doubleValue();
-        double yWidth = yRange[1].doubleValue() - yRange[0].doubleValue();
+        double xw = xRange[1].doubleValue() - xRange[0].doubleValue();
+        double yw = yRange[1].doubleValue() - yRange[0].doubleValue();
 
-        if(yWidth / xWidth > 10 || yWidth == 0)
+        if(yw / xw > 10 || yw == 0)
             keepRatio = true;
 
-        BufferedImage result = new BufferedImage(plotWidthHeight, plotWidthHeight, BufferedImage.TYPE_INT_ARGB);
-        FG2D g = new FG2D(result.getGraphics());
+        AtomicReference<String> text = new AtomicReference<>("");
 
-        g.setRenderingHint(3, 2);
-        g.enableAntialiasing();
+        CountDownLatch waiter = new CountDownLatch(1);
 
-        g.setColor(51, 53, 60, 255);
-        g.fillRect(0, 0, plotWidthHeight, plotWidthHeight);
+        boolean finalKeepRatio = keepRatio;
 
-        if(keepRatio) {
-            BigDecimal center = yRange[0].add(yRange[1]).divide(BigDecimal.valueOf(2), Equation.context);
+        StaticStore.renderManager.createRenderer(plotWidthHeight, plotWidthHeight, temp, connector -> {
+            connector.queue(g -> {
+                double xWidth = xRange[1].doubleValue() - xRange[0].doubleValue();
+                double yWidth = yRange[1].doubleValue() - yRange[0].doubleValue();
 
-            yRange[0] = center.subtract(xRange[1].subtract(xRange[0]).divide(BigDecimal.valueOf(2), Equation.context));
-            yRange[1] = center.add(xRange[1].subtract(xRange[0]).divide(BigDecimal.valueOf(2), Equation.context));
+                g.setColor(51, 53, 60, 255);
+                g.fillRect(0, 0, plotWidthHeight, plotWidthHeight);
 
-            yWidth = yRange[1].doubleValue() - yRange[0].doubleValue();
-        }
+                if(finalKeepRatio) {
+                    BigDecimal center = yRange[0].add(yRange[1]).divide(BigDecimal.valueOf(2), Equation.context);
 
-        double centerX = xRange[0].doubleValue() + xWidth / 2.0;
-        double centerY = yRange[0].doubleValue() + yWidth / 2.0;
+                    yRange[0] = center.subtract(xRange[1].subtract(xRange[0]).divide(BigDecimal.valueOf(2), Equation.context));
+                    yRange[1] = center.add(xRange[1].subtract(xRange[0]).divide(BigDecimal.valueOf(2), Equation.context));
 
-        int xLine = convertCoordinateToPixel(0, xWidth, centerX, true);
-        int yLine = convertCoordinateToPixel(0, yWidth, centerY, false);
+                    yWidth = yRange[1].doubleValue() - yRange[0].doubleValue();
+                }
 
-        g.setColor(238, 238, 238, 255);
-        g.setStroke(axisStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+                double centerX = xRange[0].doubleValue() + xWidth / 2.0;
+                double centerY = yRange[0].doubleValue() + yWidth / 2.0;
 
-        g.drawLine(xLine, 0, xLine, plotWidthHeight);
-        g.drawLine(0, yLine, plotWidthHeight, yLine);
-
-        BigDecimal xSegment = BigDecimal.valueOf(xWidth).divide(BigDecimal.TEN, Equation.context);
-
-        int xScale = (int) - (Math.round(Math.log10(xSegment.doubleValue())) + 0.5 - 0.5 * Math.signum(xSegment.doubleValue()));
-
-        if (xScale >= 0) {
-            xSegment = xSegment.round(new MathContext(1, RoundingMode.HALF_EVEN));
-        } else {
-            xSegment = xSegment.divide(BigDecimal.TEN.pow(-xScale), Equation.context).round(new MathContext(1, RoundingMode.HALF_EVEN)).multiply(BigDecimal.TEN.pow(-xScale));
-        }
-
-        BigDecimal ySegment = BigDecimal.valueOf(yWidth).divide(BigDecimal.TEN, Equation.context);
-
-        int yScale = (int) - (Math.round(Math.log10(ySegment.doubleValue())) + 0.5 - 0.5 * Math.signum(ySegment.doubleValue()));
-
-        if (yScale >= 0) {
-            ySegment = ySegment.round(new MathContext(1, RoundingMode.HALF_EVEN));
-        } else {
-            ySegment = ySegment.divide(BigDecimal.TEN.pow(-yScale), Equation.context).round(new MathContext(1, RoundingMode.HALF_EVEN)).multiply(BigDecimal.TEN.pow(-yScale));
-        }
-
-        BigDecimal xPosition = xRange[0].divideToIntegralValue(xSegment).multiply(xSegment);
-        BigDecimal yPosition = yRange[0].divideToIntegralValue(ySegment).multiply(ySegment);
-
-        while(xPosition.compareTo(xRange[1]) <= 0) {
-            if(xPosition.compareTo(BigDecimal.ZERO) != 0) {
-                int xPos = convertCoordinateToPixel(xPosition.doubleValue(), xWidth, centerX, true);
+                int xLine = convertCoordinateToPixel(0, xWidth, centerX, true);
+                int yLine = convertCoordinateToPixel(0, yWidth, centerY, false);
 
                 g.setColor(238, 238, 238, 255);
-                g.setStroke(indicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+                g.setStroke(axisStroke, GLGraphics.LineEndMode.VERTICAL);
 
-                g.drawLine(xPos, (int) Math.round(yLine - plotWidthHeight * indicatorRatio / 2.0), xPos, (int) Math.round(yLine + plotWidthHeight * indicatorRatio / 2.0));
+                g.drawLine(xLine, 0, xLine, plotWidthHeight);
+                g.drawLine(0, yLine, plotWidthHeight, yLine);
 
-                g.setColor(238, 238, 238, 64);
-                g.setStroke(subIndicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+                BigDecimal xSegment = BigDecimal.valueOf(xWidth).divide(BigDecimal.TEN, Equation.context);
 
-                g.drawLine(xPos, 0, xPos, plotWidthHeight);
+                int xScale = (int) - (Math.round(Math.log10(xSegment.doubleValue())) + 0.5 - 0.5 * Math.signum(xSegment.doubleValue()));
 
-                long textPosition;
-
-                boolean positive = true;
-
-                if(yLine < - plotWidthHeight * indicatorRatio / 2.0) {
-                    textPosition = indicatorGap;
-                } else if(yLine >= plotWidthHeight * (1 + indicatorRatio / 2.0)) {
-                    positive = false;
-
-                    textPosition = plotWidthHeight - indicatorGap;
+                if (xScale >= 0) {
+                    xSegment = xSegment.round(new MathContext(1, RoundingMode.HALF_EVEN));
                 } else {
-                    textPosition = Math.round(yLine + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap);
+                    xSegment = xSegment.divide(BigDecimal.TEN.pow(-xScale), Equation.context).round(new MathContext(1, RoundingMode.HALF_EVEN)).multiply(BigDecimal.TEN.pow(-xScale));
+                }
 
-                    if(textPosition > plotWidthHeight) {
-                        positive = false;
-                        textPosition = Math.round(yLine - plotWidthHeight * indicatorRatio / 2.0 - indicatorGap);
+                BigDecimal ySegment = BigDecimal.valueOf(yWidth).divide(BigDecimal.TEN, Equation.context);
+
+                int yScale = (int) - (Math.round(Math.log10(ySegment.doubleValue())) + 0.5 - 0.5 * Math.signum(ySegment.doubleValue()));
+
+                if (yScale >= 0) {
+                    ySegment = ySegment.round(new MathContext(1, RoundingMode.HALF_EVEN));
+                } else {
+                    ySegment = ySegment.divide(BigDecimal.TEN.pow(-yScale), Equation.context).round(new MathContext(1, RoundingMode.HALF_EVEN)).multiply(BigDecimal.TEN.pow(-yScale));
+                }
+
+                BigDecimal xPosition = xRange[0].divideToIntegralValue(xSegment).multiply(xSegment);
+                BigDecimal yPosition = yRange[0].divideToIntegralValue(ySegment).multiply(ySegment);
+
+                while(xPosition.compareTo(xRange[1]) <= 0) {
+                    if(xPosition.compareTo(BigDecimal.ZERO) != 0) {
+                        int xPos = convertCoordinateToPixel(xPosition.doubleValue(), xWidth, centerX, true);
+
+                        g.setColor(238, 238, 238, 255);
+                        g.setStroke(indicatorStroke, GLGraphics.LineEndMode.ROUND);
+
+                        g.drawLine(xPos, (int) Math.round(yLine - plotWidthHeight * indicatorRatio / 2.0), xPos, (int) Math.round(yLine + plotWidthHeight * indicatorRatio / 2.0));
+
+                        g.setColor(238, 238, 238, 64);
+                        g.setStroke(subIndicatorStroke, GLGraphics.LineEndMode.ROUND);
+
+                        g.drawLine(xPos, 0, xPos, plotWidthHeight);
+
+                        long textPosition;
+
+                        boolean positive = true;
+
+                        if(yLine < - plotWidthHeight * indicatorRatio / 2.0) {
+                            textPosition = indicatorGap;
+                        } else if(yLine >= plotWidthHeight * (1 + indicatorRatio / 2.0)) {
+                            positive = false;
+
+                            textPosition = plotWidthHeight - indicatorGap;
+                        } else {
+                            textPosition = Math.round(yLine + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap);
+
+                            if(textPosition > plotWidthHeight) {
+                                positive = false;
+                                textPosition = Math.round(yLine - plotWidthHeight * indicatorRatio / 2.0 - indicatorGap);
+                            }
+                        }
+
+                        g.setFontModel(plotFont);
+                        g.setColor(238, 238, 238, 255);
+
+                        if(positive) {
+                            g.drawText(Equation.simpleNumber(xPosition), xPos, (int) textPosition, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.TOP);
+                        } else {
+                            g.drawText(Equation.simpleNumber(xPosition), xPos, (int) textPosition, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.BOTTOM);
+                        }
+                    }
+
+                    xPosition = xPosition.add(xSegment);
+                }
+
+                while(yPosition.compareTo(yRange[1]) <= 0) {
+                    if(yPosition.compareTo(BigDecimal.ZERO) != 0) {
+                        int yPos = convertCoordinateToPixel(yPosition.doubleValue(), yWidth, centerY, false);
+
+                        g.setColor(238, 238, 238, 255);
+                        g.setStroke(indicatorStroke, GLGraphics.LineEndMode.ROUND);
+
+                        g.drawLine((int) Math.round(xLine - plotWidthHeight * indicatorRatio / 2.0), yPos, (int) Math.round(xLine + plotWidthHeight * indicatorRatio / 2.0), yPos);
+
+                        g.setColor(238, 238, 238, 64);
+                        g.setStroke(subIndicatorStroke, GLGraphics.LineEndMode.ROUND);
+
+                        g.drawLine(0, yPos, plotWidthHeight, yPos);
+
+                        long textPosition;
+
+                        boolean positive = true;
+
+                        if(xLine < - plotWidthHeight * indicatorRatio / 2.0) {
+                            textPosition = indicatorGap;
+                        } else if(xLine >= plotWidthHeight * (1 + indicatorRatio / 2.0)) {
+                            positive = false;
+
+                            textPosition = plotWidthHeight - indicatorGap;
+                        } else {
+                            textPosition = Math.round(xLine + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap);
+
+                            if(textPosition > plotWidthHeight) {
+                                positive = false;
+
+                                textPosition = Math.round(xLine - plotWidthHeight * indicatorRatio / 2.0 - indicatorGap);
+                            }
+                        }
+
+                        g.setFontModel(plotFont);
+                        g.setColor(238, 238, 238, 255);
+
+                        if(positive) {
+                            g.drawText(Equation.simpleNumber(yPosition), (int) textPosition, yPos, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
+                        } else {
+                            g.drawText(Equation.simpleNumber(yPosition), (int) textPosition, yPos, GLGraphics.HorizontalSnap.LEFT, GLGraphics.VerticalSnap.MIDDLE);
+                        }
+                    }
+
+                    yPosition = yPosition.add(ySegment);
+                }
+
+                g.setColor(118, 224, 85, 255);
+                g.setStroke(plotStroke, GLGraphics.LineEndMode.ROUND);
+
+                double segment = plotWidthHeight * 1.0 / Formula.numberOfElements;
+
+                for(int x = 0; x < Formula.numberOfElements; x++) {
+                    double xv = convertPixelToCoordinate(x * segment, xWidth, centerX, true);
+
+                    Formula substituted = formula.getInjectedFormula(xv, 0);
+
+                    if(substituted == null)
+                        continue;
+
+                    for(int y = 0; y < Formula.numberOfElements - 1; y++) {
+                        double y0 = convertPixelToCoordinate(y * segment, yWidth, centerY, false);
+                        double y1 = convertPixelToCoordinate((y + 1) * segment, yWidth, centerY, false);
+
+                        double v0 = substituted.substitute(y0);
+
+                        if(formula.element.isCritical()) {
+                            return null;
+                        }
+
+                        if(!Equation.error.isEmpty() || substituted.element.isAborted()) {
+                            Equation.error.clear();
+
+                            continue;
+                        }
+
+                        if(v0 == 0) {
+                            g.fillOval((int) Math.round(x * segment), (int) Math.round(y * segment), 3, 3);
+
+                            continue;
+                        }
+
+                        double v1 = substituted.substitute(y1);
+
+                        if(!Equation.error.isEmpty() || substituted.element.isAborted()) {
+                            Equation.error.clear();
+
+                            y++;
+
+                            continue;
+                        }
+
+                        if(v1 == 0) {
+                            g.fillOval((int) Math.round(x * segment), (int) Math.round((y + 1) * segment), 3, 3);
+
+                            y++;
+                        } else if(v0 * v1 < 0) {
+                            g.fillOval((int) Math.round(x * segment), convertCoordinateToPixel(-v1 * (y1 - y0) / (v1 - v0) + y1, yWidth, centerY, false), 3, 3);
+                        }
                     }
                 }
 
-                g.setFont(plotFont);
-                g.setColor(238, 238, 238, 255);
+                for(int y = 0; y < Formula.numberOfElements; y++) {
+                    double yv = convertPixelToCoordinate(y * segment, yWidth, centerY, false);
 
-                if(positive) {
-                    g.drawHorizontalCenteredText(Equation.simpleNumber(xPosition), xPos, (int) textPosition);
-                } else {
-                    g.drawHorizontalLowerCenteredText(Equation.simpleNumber(xPosition), xPos, (int) textPosition);
-                }
-            }
+                    Formula substituted = formula.getInjectedFormula(yv, 1);
 
-            xPosition = xPosition.add(xSegment);
-        }
+                    if(substituted == null)
+                        continue;
 
-        while(yPosition.compareTo(yRange[1]) <= 0) {
-            if(yPosition.compareTo(BigDecimal.ZERO) != 0) {
-                int yPos = convertCoordinateToPixel(yPosition.doubleValue(), yWidth, centerY, false);
+                    for(int x = 0; x < Formula.numberOfElements - 1; x++) {
+                        double x0 = convertPixelToCoordinate(x * segment, xWidth, centerX, true);
+                        double x1 = convertPixelToCoordinate((x + 1) * segment, xWidth, centerX, true);
 
-                g.setColor(238, 238, 238, 255);
-                g.setStroke(indicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+                        double v0 = substituted.substitute(x0);
 
-                g.drawLine((int) Math.round(xLine - plotWidthHeight * indicatorRatio / 2.0), yPos, (int) Math.round(xLine + plotWidthHeight * indicatorRatio / 2.0), yPos);
+                        if(formula.element.isCritical()) {
+                            return null;
+                        }
 
-                g.setColor(238, 238, 238, 64);
-                g.setStroke(subIndicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+                        if(!Equation.error.isEmpty() || substituted.element.isAborted()) {
+                            Equation.error.clear();
 
-                g.drawLine(0, yPos, plotWidthHeight, yPos);
+                            continue;
+                        }
 
-                long textPosition;
+                        if(v0 == 0) {
+                            g.fillOval((int) Math.round(x * segment), (int) Math.round(y * segment), 3, 3);
+                        }
 
-                boolean positive = true;
+                        double v1 = substituted.substitute(x1);
 
-                if(xLine < - plotWidthHeight * indicatorRatio / 2.0) {
-                    textPosition = indicatorGap;
-                } else if(xLine >= plotWidthHeight * (1 + indicatorRatio / 2.0)) {
-                    positive = false;
+                        if(!Equation.error.isEmpty() || substituted.element.isAborted()) {
+                            Equation.error.clear();
 
-                    textPosition = plotWidthHeight - indicatorGap;
-                } else {
-                    textPosition = Math.round(xLine + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap);
+                            x++;
 
-                    if(textPosition > plotWidthHeight) {
-                        positive = false;
+                            continue;
+                        }
 
-                        textPosition = Math.round(xLine - plotWidthHeight * indicatorRatio / 2.0 - indicatorGap);
+                        if(v1 == 0) {
+                            g.fillOval((int) Math.round((x + 1) * segment), (int) Math.round(y * segment), 3, 3);
+
+                            x++;
+                        } else if(v0 * v1 < 0) {
+                            g.fillOval(convertCoordinateToPixel(-v1 * (x1 - x0) / (v1 - v0) + x1, xWidth, centerX, true), (int) Math.round(y * segment), 3, 3);
+                        }
                     }
                 }
 
-                g.setFont(plotFont);
-                g.setColor(238, 238, 238, 255);
+                text.set(String.format(
+                        LangID.getStringByID("plot_success", lang),
+                        DataToString.df.format(centerX - xWidth / 2.0),
+                        DataToString.df.format(centerX + xWidth / 2.0),
+                        DataToString.df.format(centerY - yWidth / 2.0),
+                        DataToString.df.format(centerY + yWidth / 2.0)
+                ));
 
-                if(positive) {
-                    g.drawVerticalCenteredText(Equation.simpleNumber(yPosition), (int) textPosition, yPos);
-                } else {
-                    g.drawVerticalLowerCenteredText(Equation.simpleNumber(yPosition), (int) textPosition, yPos);
-                }
-            }
+                return null;
+            });
 
-            yPosition = yPosition.add(ySegment);
-        }
+            return null;
+        }, progress -> image, () -> {
+            waiter.countDown();
 
-        g.setColor(118, 224, 85, 255);
-        g.setStroke(plotStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+            return null;
+        });
 
-        double segment = plotWidthHeight * 1.0 / Formula.numberOfElements;
+        waiter.await();
 
-        for(int x = 0; x < Formula.numberOfElements; x++) {
-            double xv = convertPixelToCoordinate(x * segment, xWidth, centerX, true);
-
-            Formula substituted = formula.getInjectedFormula(xv, 0);
-
-            if(substituted == null)
-                continue;
-
-            for(int y = 0; y < Formula.numberOfElements - 1; y++) {
-                double y0 = convertPixelToCoordinate(y * segment, yWidth, centerY, false);
-                double y1 = convertPixelToCoordinate((y + 1) * segment, yWidth, centerY, false);
-
-                double v0 = substituted.substitute(y0);
-
-                if(formula.element.isCritical()) {
-                    return null;
-                }
-
-                if(!Equation.error.isEmpty() || substituted.element.isAborted()) {
-                    Equation.error.clear();
-
-                    continue;
-                }
-
-                if(v0 == 0) {
-                    g.fillOval((int) Math.round(x * segment), (int) Math.round(y * segment), 3, 3);
-
-                    continue;
-                }
-
-                double v1 = substituted.substitute(y1);
-
-                if(!Equation.error.isEmpty() || substituted.element.isAborted()) {
-                    Equation.error.clear();
-
-                    y++;
-
-                    continue;
-                }
-
-                if(v1 == 0) {
-                    g.fillOval((int) Math.round(x * segment), (int) Math.round((y + 1) * segment), 3, 3);
-
-                    y++;
-                } else if(v0 * v1 < 0) {
-                    g.fillOval((int) Math.round(x * segment), convertCoordinateToPixel(-v1 * (y1 - y0) / (v1 - v0) + y1, yWidth, centerY, false), 3, 3);
-                }
-            }
-        }
-
-        for(int y = 0; y < Formula.numberOfElements; y++) {
-            double yv = convertPixelToCoordinate(y * segment, yWidth, centerY, false);
-
-            Formula substituted = formula.getInjectedFormula(yv, 1);
-
-            if(substituted == null)
-                continue;
-
-            for(int x = 0; x < Formula.numberOfElements - 1; x++) {
-                double x0 = convertPixelToCoordinate(x * segment, xWidth, centerX, true);
-                double x1 = convertPixelToCoordinate((x + 1) * segment, xWidth, centerX, true);
-
-                double v0 = substituted.substitute(x0);
-
-                if(formula.element.isCritical()) {
-                    return null;
-                }
-
-                if(!Equation.error.isEmpty() || substituted.element.isAborted()) {
-                    Equation.error.clear();
-
-                    continue;
-                }
-
-                if(v0 == 0) {
-                    g.fillOval((int) Math.round(x * segment), (int) Math.round(y * segment), 3, 3);
-                }
-
-                double v1 = substituted.substitute(x1);
-
-                if(!Equation.error.isEmpty() || substituted.element.isAborted()) {
-                    Equation.error.clear();
-
-                    x++;
-
-                    continue;
-                }
-
-                if(v1 == 0) {
-                    g.fillOval((int) Math.round((x + 1) * segment), (int) Math.round(y * segment), 3, 3);
-
-                    x++;
-                } else if(v0 * v1 < 0) {
-                    g.fillOval(convertCoordinateToPixel(-v1 * (x1 - x0) / (v1 - v0) + x1, xWidth, centerX, true), (int) Math.round(y * segment), 3, 3);
-                }
-            }
-        }
-
-        g.dispose();
-
-        ImageIO.write(result, "PNG", image);
-
-        String text = String.format(
-                LangID.getStringByID("plot_success", lang),
-                DataToString.df.format(centerX - xWidth / 2.0),
-                DataToString.df.format(centerX + xWidth / 2.0),
-                DataToString.df.format(centerY - yWidth / 2.0),
-                DataToString.df.format(centerY + yWidth / 2.0)
-        );
-
-        return new Object[] {image, text};
+        return new Object[] { image, text.get() };
     }
 
     public static Object[] plotRThetaGraph(Formula formula, BigDecimal[] xRange, BigDecimal[] yRange, double[] rRange, double[] tRange, int lang) throws Exception {
@@ -3258,400 +3448,255 @@ public class ImageDrawing {
         if(image == null)
             return null;
 
-        double xWidth = xRange[1].doubleValue() - xRange[0].doubleValue();
-        double yWidth = yRange[1].doubleValue() - yRange[0].doubleValue();
+        double xRangeWidth = xRange[1].doubleValue() - xRange[0].doubleValue();
+        double yRangeWidth = yRange[1].doubleValue() - yRange[0].doubleValue();
 
-        if(yWidth != xWidth) {
+        if(yRangeWidth != xRangeWidth) {
             BigDecimal center = yRange[0].add(yRange[1]).divide(BigDecimal.valueOf(2), Equation.context);
 
             yRange[0] = center.subtract(xRange[1].subtract(xRange[0]).divide(BigDecimal.valueOf(2), Equation.context));
             yRange[1] = center.add(xRange[1].subtract(xRange[0]).divide(BigDecimal.valueOf(2), Equation.context));
-
-            yWidth = yRange[1].doubleValue() - yRange[0].doubleValue();
         }
 
-        BufferedImage result = new BufferedImage(plotWidthHeight, plotWidthHeight, BufferedImage.TYPE_INT_ARGB);
-        FG2D g = new FG2D(result.getGraphics());
+        CountDownLatch waiter = new CountDownLatch(1);
 
-        g.setRenderingHint(3, 2);
-        g.enableAntialiasing();
+        AtomicReference<String> text = new AtomicReference<>("");
 
-        g.setColor(51, 53, 60, 255);
-        g.fillRect(0, 0, plotWidthHeight, plotWidthHeight);
+        StaticStore.renderManager.createRenderer(plotWidthHeight, plotWidthHeight, temp, connector -> {
+            connector.queue(g -> {
+                double xWidth = xRange[1].doubleValue() - xRange[0].doubleValue();
+                double yWidth = yRange[1].doubleValue() - yRange[0].doubleValue();
 
-        double centerX = xRange[0].doubleValue() + xWidth / 2.0;
-        double centerY = yRange[0].doubleValue() + yWidth / 2.0;
+                g.setColor(51, 53, 60, 255);
+                g.fillRect(0, 0, plotWidthHeight, plotWidthHeight);
 
-        int xLine = convertCoordinateToPixel(0, xWidth, centerX, true);
-        int yLine = convertCoordinateToPixel(0, yWidth, centerY, false);
+                double centerX = xRange[0].doubleValue() + xWidth / 2.0;
+                double centerY = yRange[0].doubleValue() + yWidth / 2.0;
 
-        g.setColor(238, 238, 238, 255);
-        g.setStroke(axisStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+                int xLine = convertCoordinateToPixel(0, xWidth, centerX, true);
+                int yLine = convertCoordinateToPixel(0, yWidth, centerY, false);
 
-        g.drawLine(xLine, 0, xLine, plotWidthHeight);
-        g.drawLine(0, yLine, plotWidthHeight, yLine);
+                g.setColor(238, 238, 238, 255);
+                g.setStroke(axisStroke, GLGraphics.LineEndMode.VERTICAL);
 
-        BigDecimal xSegment = BigDecimal.valueOf(xWidth).divide(BigDecimal.TEN, Equation.context);
+                g.drawLine(xLine, 0, xLine, plotWidthHeight);
+                g.drawLine(0, yLine, plotWidthHeight, yLine);
 
-        int xScale = (int) - (Math.round(Math.log10(xSegment.doubleValue())) + 0.5 - 0.5 * Math.signum(xSegment.doubleValue()));
+                BigDecimal xSegment = BigDecimal.valueOf(xWidth).divide(BigDecimal.TEN, Equation.context);
 
-        if (xScale >= 0) {
-            xSegment = xSegment.round(new MathContext(1, RoundingMode.HALF_EVEN));
-        } else {
-            xSegment = xSegment.divide(BigDecimal.TEN.pow(-xScale), Equation.context).round(new MathContext(1, RoundingMode.HALF_EVEN)).multiply(BigDecimal.TEN.pow(-xScale));
-        }
+                int xScale = (int) - (Math.round(Math.log10(xSegment.doubleValue())) + 0.5 - 0.5 * Math.signum(xSegment.doubleValue()));
 
-        BigDecimal ySegment = BigDecimal.valueOf(yWidth).divide(BigDecimal.TEN, Equation.context);
-
-        int yScale = (int) - (Math.round(Math.log10(ySegment.doubleValue())) + 0.5 - 0.5 * Math.signum(ySegment.doubleValue()));
-
-        if (yScale >= 0) {
-            ySegment = ySegment.round(new MathContext(1, RoundingMode.HALF_EVEN));
-        } else {
-            ySegment = ySegment.divide(BigDecimal.TEN.pow(-yScale), Equation.context).round(new MathContext(1, RoundingMode.HALF_EVEN)).multiply(BigDecimal.TEN.pow(-yScale));
-        }
-
-        BigDecimal xPosition = xRange[0].divideToIntegralValue(xSegment).multiply(xSegment);
-        BigDecimal yPosition = yRange[0].divideToIntegralValue(ySegment).multiply(ySegment);
-
-        int zeroX = convertCoordinateToPixel(0, xWidth, centerX, true);
-        int zeroY = convertCoordinateToPixel(0, yWidth, centerY, false);
-
-        BigDecimal xw = xRange[1].max(xRange[0]);
-        BigDecimal yw = yRange[1].max(yRange[0]);
-
-        while(xPosition.compareTo(xw.pow(2).add(yw.pow(2)).sqrt(Equation.context)) <= 0) {
-            if(xPosition.compareTo(BigDecimal.ZERO) != 0) {
-                int xPos = convertCoordinateToPixel(xPosition.doubleValue(), xWidth, centerX, true);
-
-                g.setColor(238, 238, 238, 64);
-                g.setStroke(indicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-
-                g.drawOval(zeroX * 2 - xPos, zeroY + zeroX - xPos, (xPos - zeroX) * 2, (xPos - zeroX) * 2);
-
-                g.setStroke(indicatorStroke / 4f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-
-                for(int i = 1; i < 5; i++) {
-                    int subXPos = convertCoordinateToPixel(xPosition.doubleValue() + xSegment.doubleValue() / 5.0 * i, xWidth, centerX, true);
-
-                    g.drawOval(zeroX * 2 - subXPos, zeroY + zeroX - subXPos, (subXPos - zeroX) * 2, (subXPos - zeroX) * 2);
+                if (xScale >= 0) {
+                    xSegment = xSegment.round(new MathContext(1, RoundingMode.HALF_EVEN));
+                } else {
+                    xSegment = xSegment.divide(BigDecimal.TEN.pow(-xScale), Equation.context).round(new MathContext(1, RoundingMode.HALF_EVEN)).multiply(BigDecimal.TEN.pow(-xScale));
                 }
 
-                if(xPosition.compareTo(xRange[1]) <= 0) {
-                    g.setColor(238, 238, 238, 255);
-                    g.setStroke(indicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+                BigDecimal ySegment = BigDecimal.valueOf(yWidth).divide(BigDecimal.TEN, Equation.context);
 
-                    g.drawLine(xPos, (int) Math.round(yLine - plotWidthHeight * indicatorRatio / 2.0), xPos, (int) Math.round(yLine + plotWidthHeight * indicatorRatio / 2.0));
+                int yScale = (int) - (Math.round(Math.log10(ySegment.doubleValue())) + 0.5 - 0.5 * Math.signum(ySegment.doubleValue()));
 
-                    long textPosition;
+                if (yScale >= 0) {
+                    ySegment = ySegment.round(new MathContext(1, RoundingMode.HALF_EVEN));
+                } else {
+                    ySegment = ySegment.divide(BigDecimal.TEN.pow(-yScale), Equation.context).round(new MathContext(1, RoundingMode.HALF_EVEN)).multiply(BigDecimal.TEN.pow(-yScale));
+                }
 
-                    boolean positive = true;
+                BigDecimal xPosition = xRange[0].divideToIntegralValue(xSegment).multiply(xSegment);
+                BigDecimal yPosition = yRange[0].divideToIntegralValue(ySegment).multiply(ySegment);
 
-                    if(yLine < - plotWidthHeight * indicatorRatio / 2.0) {
-                        textPosition = indicatorGap;
-                    } else if(yLine >= plotWidthHeight * (1 + indicatorRatio / 2.0)) {
-                        positive = false;
+                int zeroX = convertCoordinateToPixel(0, xWidth, centerX, true);
+                int zeroY = convertCoordinateToPixel(0, yWidth, centerY, false);
 
-                        textPosition = plotWidthHeight - indicatorGap;
-                    } else {
-                        textPosition = Math.round(yLine + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap);
+                BigDecimal xw = xRange[1].max(xRange[0]);
+                BigDecimal yw = yRange[1].max(yRange[0]);
 
-                        if(textPosition > plotWidthHeight) {
-                            positive = false;
-                            textPosition = Math.round(yLine - plotWidthHeight * indicatorRatio / 2.0 - indicatorGap);
+                while(xPosition.compareTo(xw.pow(2).add(yw.pow(2)).sqrt(Equation.context)) <= 0) {
+                    if(xPosition.compareTo(BigDecimal.ZERO) != 0) {
+                        int xPos = convertCoordinateToPixel(xPosition.doubleValue(), xWidth, centerX, true);
+
+                        g.setColor(238, 238, 238, 64);
+                        g.setStroke(indicatorStroke, GLGraphics.LineEndMode.ROUND);
+
+                        g.drawOval(zeroX * 2 - xPos, zeroY + zeroX - xPos, (xPos - zeroX) * 2, (xPos - zeroX) * 2);
+
+                        g.setStroke(indicatorStroke / 4f, GLGraphics.LineEndMode.ROUND);
+
+                        for(int i = 1; i < 5; i++) {
+                            int subXPos = convertCoordinateToPixel(xPosition.doubleValue() + xSegment.doubleValue() / 5.0 * i, xWidth, centerX, true);
+
+                            g.drawOval(zeroX * 2 - subXPos, zeroY + zeroX - subXPos, (subXPos - zeroX) * 2, (subXPos - zeroX) * 2);
+                        }
+
+                        if(xPosition.compareTo(xRange[1]) <= 0) {
+                            g.setColor(238, 238, 238, 255);
+                            g.setStroke(indicatorStroke, GLGraphics.LineEndMode.ROUND);
+
+                            g.drawLine(xPos, (int) Math.round(yLine - plotWidthHeight * indicatorRatio / 2.0), xPos, (int) Math.round(yLine + plotWidthHeight * indicatorRatio / 2.0));
+
+                            long textPosition;
+
+                            boolean positive = true;
+
+                            if(yLine < - plotWidthHeight * indicatorRatio / 2.0) {
+                                textPosition = indicatorGap;
+                            } else if(yLine >= plotWidthHeight * (1 + indicatorRatio / 2.0)) {
+                                positive = false;
+
+                                textPosition = plotWidthHeight - indicatorGap;
+                            } else {
+                                textPosition = Math.round(yLine + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap);
+
+                                if(textPosition > plotWidthHeight) {
+                                    positive = false;
+                                    textPosition = Math.round(yLine - plotWidthHeight * indicatorRatio / 2.0 - indicatorGap);
+                                }
+                            }
+
+                            g.setFontModel(plotFont);
+                            g.setColor(238, 238, 238, 255);
+
+                            if(positive) {
+                                g.drawText(Equation.simpleNumber(xPosition), xPos, (int) textPosition, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.TOP);
+                            } else {
+                                g.drawText(Equation.simpleNumber(xPosition), xPos, (int) textPosition, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.BOTTOM);
+                            }
                         }
                     }
 
-                    g.setFont(plotFont);
-                    g.setColor(238, 238, 238, 255);
+                    xPosition = xPosition.add(xSegment);
+                }
 
-                    if(positive) {
-                        g.drawHorizontalCenteredText(Equation.simpleNumber(xPosition), xPos, (int) textPosition);
+                while(yPosition.compareTo(yRange[1]) <= 0) {
+                    if(yPosition.compareTo(BigDecimal.ZERO) != 0) {
+                        int yPos = convertCoordinateToPixel(yPosition.doubleValue(), yWidth, centerY, false);
+
+                        g.setColor(238, 238, 238, 255);
+                        g.setStroke(indicatorStroke, GLGraphics.LineEndMode.ROUND);
+
+                        g.drawLine((int) Math.round(xLine - plotWidthHeight * indicatorRatio / 2.0), yPos, (int) Math.round(xLine + plotWidthHeight * indicatorRatio / 2.0), yPos);
+
+                        long textPosition;
+
+                        boolean positive = true;
+
+                        if(xLine < - plotWidthHeight * indicatorRatio / 2.0) {
+                            textPosition = indicatorGap;
+                        } else if(xLine >= plotWidthHeight * (1 + indicatorRatio / 2.0)) {
+                            positive = false;
+
+                            textPosition = plotWidthHeight - indicatorGap;
+                        } else {
+                            textPosition = Math.round(xLine + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap);
+
+                            if(textPosition > plotWidthHeight) {
+                                positive = false;
+
+                                textPosition = Math.round(xLine - plotWidthHeight * indicatorRatio / 2.0 - indicatorGap);
+                            }
+                        }
+
+                        g.setFontModel(plotFont);
+                        g.setColor(238, 238, 238, 255);
+
+                        if(positive) {
+                            g.drawText(Equation.simpleNumber(yPosition), (int) textPosition, yPos, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
+                        } else {
+                            g.drawText(Equation.simpleNumber(yPosition), (int) textPosition, yPos, GLGraphics.HorizontalSnap.LEFT, GLGraphics.VerticalSnap.MIDDLE);
+                        }
+                    }
+
+                    yPosition = yPosition.add(ySegment);
+                }
+
+                g.setColor(238, 238, 238, 64);
+                g.setStroke(indicatorStroke, GLGraphics.LineEndMode.ROUND);
+
+                for(int i = 1; i < 12; i++) {
+                    if(i == 6)
+                        continue;
+
+                    double slope = Math.tan(Math.PI / 12.0 * i);
+
+                    int yMin = convertCoordinateToPixel(xRange[0].doubleValue() * slope, yWidth, centerY, false);
+                    int yMax = convertCoordinateToPixel(xRange[1].doubleValue() * slope, yWidth, centerY, false);
+
+                    g.drawLine(0, yMin,plotWidthHeight, yMax);
+                }
+
+                g.setColor(118, 224, 85, 255);
+                g.setStroke(plotStroke, GLGraphics.LineEndMode.ROUND);
+
+                int number = 4096;
+
+                double segment = 1.0 / number;
+
+                double rWidth = rRange[1] - rRange[0];
+                double tWidth;
+
+                double totalAngle = tRange[1] - tRange[0];
+
+                double[] square = new double[] {
+                        Math.atan2(yRange[1].doubleValue(), xRange[0].doubleValue()),
+                        Math.atan2(yRange[0].doubleValue(), xRange[0].doubleValue()),
+                        Math.atan2(yRange[0].doubleValue(), xRange[1].doubleValue()),
+                        Math.atan2(yRange[1].doubleValue(), xRange[1].doubleValue())
+                };
+
+                double minAngle = square[0];
+                double maxAngle = square[0];
+
+                for(int i = 1; i < square.length; i++) {
+                    minAngle = Math.min(minAngle, square[i]);
+                    maxAngle = Math.max(maxAngle, square[i]);
+                }
+
+                double angleRange= maxAngle - minAngle;
+
+                if(0 <= zeroX && zeroX <= plotWidthHeight && 0 <= zeroY && zeroY <= plotWidthHeight) {
+                    tWidth = tRange[1] - tRange[0];
+                } else {
+                    double actualAngle = 0;
+                    double summedAngle = 0;
+
+                    while(summedAngle <= totalAngle) {
+                        summedAngle += minAngle;
+
+                        if(summedAngle > totalAngle)
+                            break;
+
+                        if(summedAngle + angleRange > totalAngle) {
+                            actualAngle += totalAngle - summedAngle;
+
+                            break;
+                        } else {
+                            actualAngle += angleRange;
+                            summedAngle += Math.PI;
+                        }
+                    }
+
+                    tWidth = actualAngle;
+                }
+
+                int pi = 0;
+                int back = 0;
+
+                for(int t = 0; t < number + 1; t++) {
+                    double tv;
+
+                    if(tWidth == totalAngle) {
+                        tv = tRange[0] + (t - back) * segment * tWidth;
                     } else {
-                        g.drawHorizontalLowerCenteredText(Equation.simpleNumber(xPosition), xPos, (int) textPosition);
-                    }
-                }
-            }
-
-            xPosition = xPosition.add(xSegment);
-        }
-
-        while(yPosition.compareTo(yRange[1]) <= 0) {
-            if(yPosition.compareTo(BigDecimal.ZERO) != 0) {
-                int yPos = convertCoordinateToPixel(yPosition.doubleValue(), yWidth, centerY, false);
-
-                g.setColor(238, 238, 238, 255);
-                g.setStroke(indicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-
-                g.drawLine((int) Math.round(xLine - plotWidthHeight * indicatorRatio / 2.0), yPos, (int) Math.round(xLine + plotWidthHeight * indicatorRatio / 2.0), yPos);
-
-                long textPosition;
-
-                boolean positive = true;
-
-                if(xLine < - plotWidthHeight * indicatorRatio / 2.0) {
-                    textPosition = indicatorGap;
-                } else if(xLine >= plotWidthHeight * (1 + indicatorRatio / 2.0)) {
-                    positive = false;
-
-                    textPosition = plotWidthHeight - indicatorGap;
-                } else {
-                    textPosition = Math.round(xLine + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap);
-
-                    if(textPosition > plotWidthHeight) {
-                        positive = false;
-
-                        textPosition = Math.round(xLine - plotWidthHeight * indicatorRatio / 2.0 - indicatorGap);
-                    }
-                }
-
-                g.setFont(plotFont);
-                g.setColor(238, 238, 238, 255);
-
-                if(positive) {
-                    g.drawVerticalCenteredText(Equation.simpleNumber(yPosition), (int) textPosition, yPos);
-                } else {
-                    g.drawVerticalLowerCenteredText(Equation.simpleNumber(yPosition), (int) textPosition, yPos);
-                }
-            }
-
-            yPosition = yPosition.add(ySegment);
-        }
-
-        g.setColor(238, 238, 238, 64);
-        g.setStroke(indicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-
-        for(int i = 1; i < 12; i++) {
-            if(i == 6)
-                continue;
-
-            double slope = Math.tan(Math.PI / 12.0 * i);
-
-            int yMin = convertCoordinateToPixel(xRange[0].doubleValue() * slope, yWidth, centerY, false);
-            int yMax = convertCoordinateToPixel(xRange[1].doubleValue() * slope, yWidth, centerY, false);
-
-            g.drawLine(0, yMin,plotWidthHeight, yMax);
-        }
-
-        g.setColor(118, 224, 85, 255);
-        g.setStroke(plotStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-
-        int number = 4096;
-
-        double segment = 1.0 / number;
-
-        double rWidth = rRange[1] - rRange[0];
-        double tWidth;
-
-        double totalAngle = tRange[1] - tRange[0];
-
-        double[] square = new double[] {
-                Math.atan2(yRange[1].doubleValue(), xRange[0].doubleValue()),
-                Math.atan2(yRange[0].doubleValue(), xRange[0].doubleValue()),
-                Math.atan2(yRange[0].doubleValue(), xRange[1].doubleValue()),
-                Math.atan2(yRange[1].doubleValue(), xRange[1].doubleValue())
-        };
-
-        double minAngle = square[0];
-        double maxAngle = square[0];
-
-        for(int i = 1; i < square.length; i++) {
-            minAngle = Math.min(minAngle, square[i]);
-            maxAngle = Math.max(maxAngle, square[i]);
-        }
-
-        double angleRange= maxAngle - minAngle;
-
-        if(0 <= zeroX && zeroX <= plotWidthHeight && 0 <= zeroY && zeroY <= plotWidthHeight) {
-            tWidth = tRange[1] - tRange[0];
-        } else {
-            double actualAngle = 0;
-            double summedAngle = 0;
-
-            while(summedAngle <= totalAngle) {
-                summedAngle += minAngle;
-
-                if(summedAngle > totalAngle)
-                    break;
-
-                if(summedAngle + angleRange > totalAngle) {
-                    actualAngle += totalAngle - summedAngle;
-
-                    break;
-                } else {
-                    actualAngle += angleRange;
-                    summedAngle += Math.PI;
-                }
-            }
-
-            tWidth = actualAngle;
-        }
-
-        int pi = 0;
-        int back = 0;
-
-        for(int t = 0; t < number + 1; t++) {
-            double tv;
-
-            if(tWidth == totalAngle) {
-                tv = tRange[0] + (t - back) * segment * tWidth;
-            } else {
-                tv = Math.PI * pi + minAngle + (t - back) * segment * tWidth;
-            }
-
-            if(tv > tRange[1])
-                break;
-
-            Formula substituted = formula.getInjectedFormula(tv, 1);
-
-            if(substituted == null) {
-                if(tWidth != totalAngle && tv - Math.PI * pi > maxAngle) {
-                    pi++;
-                    back = t;
-                }
-
-                continue;
-            }
-
-            for(int r = 0; r < number; r++) {
-                double r0 = rRange[0] + r * segment * rWidth;
-                double r1 = rRange[0] + (r + 1) * segment * rWidth;
-
-                double v0 = substituted.substitute(r0);
-
-                if(formula.element.isCritical()) {
-                    return null;
-                }
-
-                if(!Equation.error.isEmpty() || substituted.element.isAborted()) {
-                    Equation.error.clear();
-
-                    continue;
-                }
-
-                if(v0 == 0) {
-                    g.fillOval(
-                            convertCoordinateToPixel(r0 * Math.cos(tv), xWidth, centerX, true),
-                            convertCoordinateToPixel(r0 * Math.sin(tv), yWidth, centerY, false),
-                            3, 3
-                    );
-                }
-
-                double v1 = substituted.substitute(r1);
-
-                if(!Equation.error.isEmpty() || substituted.element.isAborted()) {
-                    Equation.error.clear();
-
-                    r++;
-
-                    continue;
-                }
-
-                if(v1 == 0) {
-                    g.fillOval(
-                            convertCoordinateToPixel(r1 * Math.cos(tv), xWidth, centerX, true),
-                            convertCoordinateToPixel(r1 * Math.sin(tv), yWidth, centerY, false),
-                            3, 3
-                    );
-
-                    r++;
-                } else if(v0 * v1 < 0) {
-                    double rp = -v1 * (r1 - r0) / (v1 - v0) + r1;
-
-                    g.fillOval(
-                            convertCoordinateToPixel(rp * Math.cos(tv), xWidth, centerX, true),
-                            convertCoordinateToPixel(rp * Math.sin(tv), yWidth, centerY, false),
-                            3, 3
-                    );
-                }
-            }
-
-            if(tWidth != totalAngle && tv - Math.PI * pi > maxAngle) {
-                pi++;
-                back = t;
-            }
-        }
-
-        for(int r = 0; r < number + 1; r++) {
-            double rv = rRange[0] + r * segment * rWidth;
-
-            Formula substituted = formula.getInjectedFormula(rv, 0);
-
-            if(substituted == null)
-                continue;
-
-            pi = 0;
-            back = 0;
-
-            for(int t = 0; t < number; t++) {
-                double t0;
-                double t1;
-
-                if(tWidth == totalAngle) {
-                    t0 = tRange[0] + (t - back) * segment * tWidth;
-                    t1 = tRange[0] + (t - back + 1) * segment * tWidth;
-                } else {
-                    t0 = Math.PI * pi + minAngle + t * segment * angleRange;
-                    t1 = Math.PI * pi + minAngle + (t + 1) * segment * angleRange;
-                }
-
-                if(t1 > tRange[1])
-                    break;
-
-                double v0 = substituted.substitute(t0);
-
-                if(formula.element.isCritical()) {
-                    return null;
-                }
-
-                if(!Equation.error.isEmpty() || substituted.element.isAborted()) {
-                    if(tWidth != totalAngle && t0 - Math.PI * pi > maxAngle) {
-                        pi++;
-                        back = t;
+                        tv = Math.PI * pi + minAngle + (t - back) * segment * tWidth;
                     }
 
-                    Equation.error.clear();
+                    if(tv > tRange[1])
+                        break;
 
-                    continue;
-                }
+                    Formula substituted = formula.getInjectedFormula(tv, 1);
 
-                if(v0 == 0) {
-                    g.fillOval(
-                            convertCoordinateToPixel(rv * Math.cos(t0), xWidth, centerX, true),
-                            convertCoordinateToPixel(rv * Math.sin(t0), yWidth, centerY, false),
-                            3, 3
-                    );
-                }
-
-                double v1 = substituted.substitute(t1);
-
-                if(!Equation.error.isEmpty() || substituted.element.isAborted()) {
-                    Equation.error.clear();
-
-                    t++;
-
-                    if(tWidth != totalAngle && t0 - Math.PI * pi > maxAngle) {
-                        pi++;
-                        back = t;
-                    }
-
-                    continue;
-                }
-
-                if(v1 == 0) {
-                    g.fillOval(
-                            convertCoordinateToPixel(rv * Math.cos(t1), xWidth, centerX, true),
-                            convertCoordinateToPixel(rv * Math.sin(t1), yWidth, centerY, false),
-                            3, 3
-                    );
-
-                    t++;
-                } else if(v0 * v1 < 0) {
-                    double slope = (v1 - v0) / (t1 - t0);
-                    double angle = Math.toDegrees(Math.atan(Math.abs(slope)));
-
-                    if(angle > 89.99) {
-                        if(tWidth != totalAngle && t0 - Math.PI * pi > maxAngle) {
+                    if(substituted == null) {
+                        if(tWidth != totalAngle && tv - Math.PI * pi > maxAngle) {
                             pi++;
                             back = t;
                         }
@@ -3659,39 +3704,193 @@ public class ImageDrawing {
                         continue;
                     }
 
-                    double tp = -v1 * (t1 - t0) / (v1 - v0) + t1;
+                    for(int r = 0; r < number; r++) {
+                        double r0 = rRange[0] + r * segment * rWidth;
+                        double r1 = rRange[0] + (r + 1) * segment * rWidth;
 
-                    g.fillOval(
-                            convertCoordinateToPixel(rv * Math.cos(tp), xWidth, centerX, true),
-                            convertCoordinateToPixel(rv * Math.sin(tp), yWidth, centerY, false),
-                            3, 3
-                    );
+                        double v0 = substituted.substitute(r0);
+
+                        if(formula.element.isCritical()) {
+                            return null;
+                        }
+
+                        if(!Equation.error.isEmpty() || substituted.element.isAborted()) {
+                            Equation.error.clear();
+
+                            continue;
+                        }
+
+                        if(v0 == 0) {
+                            g.fillOval(
+                                    convertCoordinateToPixel(r0 * Math.cos(tv), xWidth, centerX, true),
+                                    convertCoordinateToPixel(r0 * Math.sin(tv), yWidth, centerY, false),
+                                    3, 3
+                            );
+                        }
+
+                        double v1 = substituted.substitute(r1);
+
+                        if(!Equation.error.isEmpty() || substituted.element.isAborted()) {
+                            Equation.error.clear();
+
+                            r++;
+
+                            continue;
+                        }
+
+                        if(v1 == 0) {
+                            g.fillOval(
+                                    convertCoordinateToPixel(r1 * Math.cos(tv), xWidth, centerX, true),
+                                    convertCoordinateToPixel(r1 * Math.sin(tv), yWidth, centerY, false),
+                                    3, 3
+                            );
+
+                            r++;
+                        } else if(v0 * v1 < 0) {
+                            double rp = -v1 * (r1 - r0) / (v1 - v0) + r1;
+
+                            g.fillOval(
+                                    convertCoordinateToPixel(rp * Math.cos(tv), xWidth, centerX, true),
+                                    convertCoordinateToPixel(rp * Math.sin(tv), yWidth, centerY, false),
+                                    3, 3
+                            );
+                        }
+                    }
+
+                    if(tWidth != totalAngle && tv - Math.PI * pi > maxAngle) {
+                        pi++;
+                        back = t;
+                    }
                 }
 
-                if(tWidth != totalAngle && t0 - Math.PI * pi > maxAngle) {
-                    pi++;
-                    back = t;
+                for(int r = 0; r < number + 1; r++) {
+                    double rv = rRange[0] + r * segment * rWidth;
+
+                    Formula substituted = formula.getInjectedFormula(rv, 0);
+
+                    if(substituted == null)
+                        continue;
+
+                    pi = 0;
+                    back = 0;
+
+                    for(int t = 0; t < number; t++) {
+                        double t0;
+                        double t1;
+
+                        if(tWidth == totalAngle) {
+                            t0 = tRange[0] + (t - back) * segment * tWidth;
+                            t1 = tRange[0] + (t - back + 1) * segment * tWidth;
+                        } else {
+                            t0 = Math.PI * pi + minAngle + t * segment * angleRange;
+                            t1 = Math.PI * pi + minAngle + (t + 1) * segment * angleRange;
+                        }
+
+                        if(t1 > tRange[1])
+                            break;
+
+                        double v0 = substituted.substitute(t0);
+
+                        if(formula.element.isCritical()) {
+                            return null;
+                        }
+
+                        if(!Equation.error.isEmpty() || substituted.element.isAborted()) {
+                            if(tWidth != totalAngle && t0 - Math.PI * pi > maxAngle) {
+                                pi++;
+                                back = t;
+                            }
+
+                            Equation.error.clear();
+
+                            continue;
+                        }
+
+                        if(v0 == 0) {
+                            g.fillOval(
+                                    convertCoordinateToPixel(rv * Math.cos(t0), xWidth, centerX, true),
+                                    convertCoordinateToPixel(rv * Math.sin(t0), yWidth, centerY, false),
+                                    3, 3
+                            );
+                        }
+
+                        double v1 = substituted.substitute(t1);
+
+                        if(!Equation.error.isEmpty() || substituted.element.isAborted()) {
+                            Equation.error.clear();
+
+                            t++;
+
+                            if(tWidth != totalAngle && t0 - Math.PI * pi > maxAngle) {
+                                pi++;
+                                back = t;
+                            }
+
+                            continue;
+                        }
+
+                        if(v1 == 0) {
+                            g.fillOval(
+                                    convertCoordinateToPixel(rv * Math.cos(t1), xWidth, centerX, true),
+                                    convertCoordinateToPixel(rv * Math.sin(t1), yWidth, centerY, false),
+                                    3, 3
+                            );
+
+                            t++;
+                        } else if(v0 * v1 < 0) {
+                            double slope = (v1 - v0) / (t1 - t0);
+                            double angle = Math.toDegrees(Math.atan(Math.abs(slope)));
+
+                            if(angle > 89.99) {
+                                if(tWidth != totalAngle && t0 - Math.PI * pi > maxAngle) {
+                                    pi++;
+                                    back = t;
+                                }
+
+                                continue;
+                            }
+
+                            double tp = -v1 * (t1 - t0) / (v1 - v0) + t1;
+
+                            g.fillOval(
+                                    convertCoordinateToPixel(rv * Math.cos(tp), xWidth, centerX, true),
+                                    convertCoordinateToPixel(rv * Math.sin(tp), yWidth, centerY, false),
+                                    3, 3
+                            );
+                        }
+
+                        if(tWidth != totalAngle && t0 - Math.PI * pi > maxAngle) {
+                            pi++;
+                            back = t;
+                        }
+                    }
                 }
-            }
-        }
 
-        g.dispose();
+                text.set(String.format(
+                        LangID.getStringByID("rplot_success", lang),
+                        DataToString.df.format(tRange[0]),
+                        DataToString.df.format(tRange[1]),
+                        DataToString.df.format(rRange[0]),
+                        DataToString.df.format(rRange[1]),
+                        DataToString.df.format(centerX - xWidth / 2.0),
+                        DataToString.df.format(centerX + xWidth / 2.0),
+                        DataToString.df.format(centerY - yWidth / 2.0),
+                        DataToString.df.format(centerY + yWidth / 2.0)
+                ));
 
-        ImageIO.write(result, "PNG", image);
+                return null;
+            });
 
-        String text = String.format(
-                LangID.getStringByID("rplot_success", lang),
-                DataToString.df.format(tRange[0]),
-                DataToString.df.format(tRange[1]),
-                DataToString.df.format(rRange[0]),
-                DataToString.df.format(rRange[1]),
-                DataToString.df.format(centerX - xWidth / 2.0),
-                DataToString.df.format(centerX + xWidth / 2.0),
-                DataToString.df.format(centerY - yWidth / 2.0),
-                DataToString.df.format(centerY + yWidth / 2.0)
-        );
+            return null;
+        }, progress -> image, () -> {
+            waiter.countDown();
 
-        return new Object[] {image, text};
+            return null;
+        });
+
+        waiter.await();
+
+        return new Object[] { image, text.get() };
     }
 
     public static File plotDPSGraph(BigDecimal[][] coordinates, @Nullable BigDecimal[][] withTreasure, BigDecimal[] xRange, BigDecimal[] yRange, int lang) throws Exception {
@@ -3739,167 +3938,175 @@ public class ImageDrawing {
             ySegment = BigDecimal.ONE;
         }
 
-        Canvas cv = new Canvas();
+        AtomicReference<BigDecimal> xPosition = new AtomicReference<>(xRange[0].divideToIntegralValue(xSegment).multiply(xSegment));
+        AtomicReference<BigDecimal> yPosition = new AtomicReference<>(yRange[0].divideToIntegralValue(ySegment).multiply(ySegment));
 
-        FontMetrics pfm = cv.getFontMetrics(plotFont);
-        FontMetrics tfm = cv.getFontMetrics(axisFont);
-
-        BigDecimal xPosition = xRange[0].divideToIntegralValue(xSegment).multiply(xSegment);
-        BigDecimal yPosition = yRange[0].divideToIntegralValue(ySegment).multiply(ySegment);
-
-        int dpsWidth = axisFont.createGlyphVector(tfm.getFontRenderContext(), LangID.getStringByID("data_dps", lang)).getPixelBounds(null, 0, 0).height;
-        int rangeHeight = axisFont.createGlyphVector(tfm.getFontRenderContext(), LangID.getStringByID("data_range", lang)).getPixelBounds(null, 0, 0).height;
+        int dpsWidth = Math.round(axisFont.measureDimension(LangID.getStringByID("data_dps", lang))[3]);
+        int rangeHeight = Math.round(axisFont.measureDimension(LangID.getStringByID("data_range", lang))[3]);
 
         int xAxisNumberHeight = 0;
         int yAxisNumberWidth = 0;
 
-        while(xPosition.compareTo(xRange[1]) <= 0) {
-            Rectangle boundary = plotFont.createGlyphVector(pfm.getFontRenderContext(), Equation.simpleNumber(xPosition, 7)).getPixelBounds(null, 0, 0);
+        while(xPosition.get().compareTo(xRange[1]) <= 0) {
+            float[] boundary = plotFont.measureDimension(Equation.simpleNumber(xPosition.get(), 7));
 
-            xAxisNumberHeight = Math.max(xAxisNumberHeight, boundary.height);
+            xAxisNumberHeight = Math.round(Math.max(xAxisNumberHeight, boundary[3]));
 
-            xPosition = xPosition.add(xSegment);
+            xPosition.set(xPosition.get().add(xSegment));
         }
 
-        while(yPosition.compareTo(yRange[1]) <= 0) {
-            Rectangle boundary = plotFont.createGlyphVector(pfm.getFontRenderContext(), Equation.simpleNumber(yPosition, 7)).getPixelBounds(null, 0, 0);
+        while(yPosition.get().compareTo(yRange[1]) <= 0) {
+            float[] boundary = plotFont.measureDimension(Equation.simpleNumber(yPosition.get(), 7));
 
-            yAxisNumberWidth = Math.max(yAxisNumberWidth, boundary.width);
+            yAxisNumberWidth = Math.round(Math.max(yAxisNumberWidth, boundary[2]));
 
-            yPosition = yPosition.add(ySegment);
+            yPosition.set(yPosition.get().add(ySegment));
         }
 
         int finalWidth = (int) Math.round(axisTitleGap * 2 + dpsWidth + yAxisNumberWidth + indicatorGap + plotWidthHeight * indicatorRatio * 0.5 + plotWidthHeight * 1.5 + plotGraphOffset);
         int finalHeight = (int) Math.round(plotGraphOffset + plotWidthHeight + plotWidthHeight * indicatorRatio * 0.5 + indicatorGap + xAxisNumberHeight + axisTitleGap * 2 + rangeHeight);
 
-        BufferedImage result = new BufferedImage(finalWidth, finalHeight, BufferedImage.TYPE_INT_ARGB);
-        FG2D g = new FG2D(result.getGraphics());
-
         int offsetX = (int) Math.round(axisTitleGap * 2 + dpsWidth + yAxisNumberWidth + indicatorGap + plotWidthHeight * indicatorRatio * 0.5);
         int offsetY = plotGraphOffset;
 
-        g.setRenderingHint(3, 2);
-        g.enableAntialiasing();
+        CountDownLatch waiter = new CountDownLatch(1);
 
-        g.setColor(51, 53, 60, 255);
-        g.fillRect(0, 0, finalWidth, finalHeight);
+        int finalXAxisNumberHeight = xAxisNumberHeight;
 
-        g.setColor(238, 238, 238, 255);
-        g.setStroke(axisStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+        BigDecimal finalXSegment = xSegment;
+        BigDecimal finalYSegment = ySegment;
 
-        g.drawRect(offsetX, offsetY, (int) Math.round(plotWidthHeight * 1.5), plotWidthHeight);
+        StaticStore.renderManager.createRenderer(finalWidth, finalHeight, temp, connector -> {
+            connector.queue(g -> {
+                g.setColor(51, 53, 60, 255);
+                g.fillRect(0, 0, finalWidth, finalHeight);
 
-        xPosition = xRange[0].divideToIntegralValue(xSegment).multiply(xSegment);
-        yPosition = yRange[0].divideToIntegralValue(ySegment).multiply(ySegment);
+                g.setColor(238, 238, 238, 255);
+                g.setStroke(axisStroke, GLGraphics.LineEndMode.VERTICAL);
 
-        while(xPosition.compareTo(xRange[1]) <= 0) {
-            int xPos = convertCoordinateToPixel((int) Math.round(plotWidthHeight * 1.5), xPosition, xWidth, centerX, true);
+                g.drawRect(offsetX, offsetY, (int) Math.round(plotWidthHeight * 1.5), plotWidthHeight);
 
-            g.setColor(238, 238, 238, 255);
-            g.setStroke(indicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+                xPosition.set(xRange[0].divideToIntegralValue(finalXSegment).multiply(finalXSegment));
+                yPosition.set(yRange[0].divideToIntegralValue(finalYSegment).multiply(finalYSegment));
 
-            g.drawLine(offsetX + xPos, offsetY + plotWidthHeight, offsetX + xPos, (int) Math.round(offsetY + plotWidthHeight + plotWidthHeight * indicatorRatio / 2.0));
+                while(xPosition.get().compareTo(xRange[1]) <= 0) {
+                    int xPos = convertCoordinateToPixel((int) Math.round(plotWidthHeight * 1.5), xPosition.get(), xWidth, centerX, true);
 
-            g.setColor(238, 238, 238, 64);
-            g.setStroke(subIndicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+                    g.setColor(238, 238, 238, 255);
+                    g.setStroke(indicatorStroke, GLGraphics.LineEndMode.ROUND);
 
-            g.drawLine(offsetX + xPos, offsetY, offsetX + xPos, offsetY + plotWidthHeight);
-            g.setFont(plotFont);
-            g.setColor(238, 238, 238, 255);
+                    g.drawLine(offsetX + xPos, offsetY + plotWidthHeight, offsetX + xPos, (int) Math.round(offsetY + plotWidthHeight + plotWidthHeight * indicatorRatio / 2.0));
 
-            g.drawHorizontalCenteredText(Equation.simpleNumber(xPosition, 7), offsetX + xPos, (int) Math.round(offsetY + plotWidthHeight + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap));
+                    g.setColor(238, 238, 238, 64);
+                    g.setStroke(subIndicatorStroke, GLGraphics.LineEndMode.ROUND);
 
-            xPosition = xPosition.add(xSegment);
-        }
+                    g.drawLine(offsetX + xPos, offsetY, offsetX + xPos, offsetY + plotWidthHeight);
+                    g.setFontModel(plotFont);
+                    g.setColor(238, 238, 238, 255);
 
-        while(yPosition.compareTo(yRange[1]) <= 0) {
-            int yPos = convertCoordinateToPixel(plotWidthHeight, yPosition, yWidth, centerY, false);
+                    g.drawText(Equation.simpleNumber(xPosition.get(), 7), offsetX + xPos, (int) Math.round(offsetY + plotWidthHeight + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap), GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.TOP);
 
-            g.setColor(238, 238, 238, 255);
-            g.setStroke(indicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-
-            g.drawLine(offsetX, offsetY + yPos, (int) Math.round(offsetX - plotWidthHeight * indicatorRatio / 2.0), offsetY + yPos);
-
-            g.setColor(238, 238, 238, 64);
-            g.setStroke(subIndicatorStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-
-            g.drawLine(offsetX, offsetY + yPos, (int) Math.round(offsetX + plotWidthHeight * 1.5), offsetY + yPos);
-
-            g.setFont(plotFont);
-            g.setColor(238, 238, 238, 255);
-
-            g.drawVerticalLowerCenteredText(Equation.simpleNumber(yPosition, 7), (int) Math.round(offsetX - plotWidthHeight * indicatorRatio / 2.0 - indicatorGap), offsetY + yPos);
-
-            yPosition = yPosition.add(ySegment);
-        }
-
-        g.setColor(118, 224, 85, 255);
-        g.setStroke(plotStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-
-        GeneralPath path = new GeneralPath();
-
-        for(int i = 0; i < coordinates.length - 1; i++) {
-            if(coordinates[i][1] == null || coordinates[i + 1][1] == null || coordinates[i][0] == null || coordinates[i + 1][0] == null)
-                continue;
-
-            if (i == 0) {
-                int x0 = convertCoordinateToPixel((int) Math.round(plotWidthHeight * 1.5), coordinates[i][0], xWidth, centerX, true);
-                int y0 = convertCoordinateToPixel(plotWidthHeight, coordinates[i][1], yWidth, centerY, false);
-
-                path.moveTo(offsetX + x0, offsetY + y0);
-            }
-
-            int x1 = convertCoordinateToPixel((int) Math.round(plotWidthHeight * 1.5), coordinates[i + 1][0], xWidth, centerX, true);
-            int y1 = convertCoordinateToPixel(plotWidthHeight, coordinates[i + 1][1], yWidth, centerY, false);
-
-            path.lineTo(offsetX + x1, offsetY + y1);
-        }
-
-        g.drawPath(path);
-
-        if (withTreasure != null) {
-            Stroke dashed = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
-
-            g.setColor(235, 64, 52, 255);
-            g.setStroke(dashed);
-
-            path = new GeneralPath();
-
-            for(int i = 0; i < withTreasure.length - 1; i++) {
-                if(withTreasure[i][1] == null || withTreasure[i + 1][1] == null || withTreasure[i][0] == null || withTreasure[i + 1][0] == null)
-                    continue;
-
-                if (i == 0) {
-                    int x0 = convertCoordinateToPixel((int) Math.round(plotWidthHeight * 1.5), withTreasure[i][0], xWidth, centerX, true);
-                    int y0 = convertCoordinateToPixel(plotWidthHeight, withTreasure[i][1], yWidth, centerY, false);
-
-                    path.moveTo(offsetX + x0, offsetY + y0);
+                    xPosition.set(xPosition.get().add(finalXSegment));
                 }
 
-                int x1 = convertCoordinateToPixel((int) Math.round(plotWidthHeight * 1.5), withTreasure[i + 1][0], xWidth, centerX, true);
-                int y1 = convertCoordinateToPixel(plotWidthHeight, withTreasure[i + 1][1], yWidth, centerY, false);
+                while(yPosition.get().compareTo(yRange[1]) <= 0) {
+                    int yPos = convertCoordinateToPixel(plotWidthHeight, yPosition.get(), yWidth, centerY, false);
 
-                path.lineTo(offsetX + x1, offsetY + y1);
-            }
+                    g.setColor(238, 238, 238, 255);
+                    g.setStroke(indicatorStroke, GLGraphics.LineEndMode.ROUND);
 
-            g.drawPath(path);
-        }
+                    g.drawLine(offsetX, offsetY + yPos, (int) Math.round(offsetX - plotWidthHeight * indicatorRatio / 2.0), offsetY + yPos);
 
-        g.setFont(axisFont);
-        g.setColor(238, 238, 238, 255);
+                    g.setColor(238, 238, 238, 64);
+                    g.setStroke(subIndicatorStroke, GLGraphics.LineEndMode.ROUND);
 
-        g.drawHorizontalCenteredText(LangID.getStringByID("data_range", lang), (int) Math.round(offsetX + plotWidthHeight * 1.5 / 2.0), (int) Math.round(plotGraphOffset + plotWidthHeight + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap + xAxisNumberHeight + axisTitleGap));
+                    g.drawLine(offsetX, offsetY + yPos, (int) Math.round(offsetX + plotWidthHeight * 1.5), offsetY + yPos);
 
-        g.translate(axisTitleGap, plotGraphOffset + plotWidthHeight / 2f);
-        g.rotate((float) (-Math.PI / 2.0));
+                    g.setFontModel(plotFont);
+                    g.setColor(238, 238, 238, 255);
 
-        Rectangle2D rect = axisFont.createGlyphVector(tfm.getFontRenderContext(), LangID.getStringByID("data_dps", lang)).getPixelBounds(null, 0, 0);
+                    g.drawText(Equation.simpleNumber(yPosition.get(), 7), (int) Math.round(offsetX - plotWidthHeight * indicatorRatio / 2.0 - indicatorGap), offsetY + yPos, GLGraphics.HorizontalSnap.LEFT, GLGraphics.VerticalSnap.MIDDLE);
 
-        g.drawText(LangID.getStringByID("data_dps", lang), (int) Math.round(- rect.getX() - rect.getWidth() / 2.0), (int) Math.round(-rect.getY()));
+                    yPosition.set(yPosition.get().add(finalYSegment));
+                }
 
-        g.dispose();
+                g.setColor(118, 224, 85, 255);
+                g.setStroke(plotStroke, GLGraphics.LineEndMode.ROUND);
 
-        ImageIO.write(result, "PNG", image);
+                ArrayList<Float> vertices = new ArrayList<>();
+
+                for(int i = 0; i < coordinates.length - 1; i++) {
+                    if(coordinates[i][1] == null || coordinates[i + 1][1] == null || coordinates[i][0] == null || coordinates[i + 1][0] == null)
+                        continue;
+
+                    if (i == 0) {
+                        int x0 = convertCoordinateToPixel((int) Math.round(plotWidthHeight * 1.5), coordinates[i][0], xWidth, centerX, true);
+                        int y0 = convertCoordinateToPixel(plotWidthHeight, coordinates[i][1], yWidth, centerY, false);
+
+                        vertices.add((float) (offsetX + x0));
+                        vertices.add((float) (offsetY + y0));
+                    }
+
+                    int x1 = convertCoordinateToPixel((int) Math.round(plotWidthHeight * 1.5), coordinates[i + 1][0], xWidth, centerX, true);
+                    int y1 = convertCoordinateToPixel(plotWidthHeight, coordinates[i + 1][1], yWidth, centerY, false);
+
+                    vertices.add((float) (offsetX + x1));
+                    vertices.add((float) (offsetY + y1));
+                }
+
+                g.drawVertices(vertices);
+
+                if (withTreasure != null) {
+                    g.setColor(235, 64, 52, 255);
+                    g.setStrokeType(GLGraphics.LineType.DASH, 8, 0xAAAA);
+
+                    vertices = new ArrayList<>();
+
+                    for(int i = 0; i < withTreasure.length - 1; i++) {
+                        if(withTreasure[i][1] == null || withTreasure[i + 1][1] == null || withTreasure[i][0] == null || withTreasure[i + 1][0] == null)
+                            continue;
+
+                        if (i == 0) {
+                            int x0 = convertCoordinateToPixel((int) Math.round(plotWidthHeight * 1.5), withTreasure[i][0], xWidth, centerX, true);
+                            int y0 = convertCoordinateToPixel(plotWidthHeight, withTreasure[i][1], yWidth, centerY, false);
+
+                            vertices.add((float) (offsetX + x0));
+                            vertices.add((float) (offsetY + y0));
+                        }
+
+                        int x1 = convertCoordinateToPixel((int) Math.round(plotWidthHeight * 1.5), withTreasure[i + 1][0], xWidth, centerX, true);
+                        int y1 = convertCoordinateToPixel(plotWidthHeight, withTreasure[i + 1][1], yWidth, centerY, false);
+
+                        vertices.add((float) (offsetX + x1));
+                        vertices.add((float) (offsetY + y1));
+                    }
+
+                    g.drawVertices(vertices);
+                }
+
+                g.setFontModel(axisFont);
+                g.setColor(238, 238, 238, 255);
+
+                g.drawText(LangID.getStringByID("data_range", lang), (int) Math.round(offsetX + plotWidthHeight * 1.5 / 2.0), (int) Math.round(plotGraphOffset + plotWidthHeight + plotWidthHeight * indicatorRatio / 2.0 + indicatorGap + finalXAxisNumberHeight + axisTitleGap), GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.TOP);
+
+                g.translate(axisTitleGap, plotGraphOffset + plotWidthHeight / 2f);
+                g.rotate((float) (-Math.PI / 2.0));
+
+                g.drawText(LangID.getStringByID("data_dps", lang), 0f, 0f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.TOP);
+
+                g.reset();
+
+                return null;
+            });
+
+            return null;
+        }, progress -> image, () -> {
+            waiter.countDown();
+
+            return null;
+        });
+
+        waiter.await();
 
         return image;
     }
@@ -3948,183 +4155,60 @@ public class ImageDrawing {
         };
     }
 
-    private static BufferedImage getUnitTitleImage(File icon, String name, String type, int lv, FontMetrics bfm, FontMetrics sfm, FontMetrics lfm) throws Exception {
-        BufferedImage ic = ImageIO.read(icon).getSubimage(9, 21, 110, 85);
+    private static int[] measureUnitTitleImage(String name, String type, int lv) {
+        int[] dimension = new int[2];
 
-        FontRenderContext bfrc = bfm.getFontRenderContext();
-        FontRenderContext sfrc = sfm.getFontRenderContext();
-        FontRenderContext lfrc = lfm.getFontRenderContext();
+        float[] nameDimension = titleFont.measureDimension(name);
+        float[] typeDimension = typeFont.measureDimension(type);
+        float[] levelDimension = levelFont.measureDimension("Lv. "+lv);
 
-        Rectangle2D nRect = titleFont.createGlyphVector(bfrc, name).getPixelBounds(null, 0, 0);
-        Rectangle2D tRect = typeFont.createGlyphVector(sfrc, type).getPixelBounds(null, 0, 0);
-        Rectangle2D lRect = levelFont.createGlyphVector(lfrc, "Lv. "+lv).getPixelBounds(null, 0, 0);
+        int h = Math.round(nameDimension[3] + nameMargin + typeDimension[3] + typeUpDownMargin * 2 + levelMargin + levelDimension[3]);
 
-        int h = (int) Math.round(nRect.getHeight() + nameMargin + tRect.getHeight() + typeUpDownMargin * 2 + levelMargin + lRect.getHeight());
+        int icw = (int) ((h - levelDimension[3] - levelMargin) * 1.0 * 110 / 85);
 
-        int icw = (int) ((h - lRect.getHeight() - levelMargin) * 1.0 * ic.getWidth() / ic.getHeight());
+        int w = icw + nameMargin + (int) Math.max(nameDimension[2], typeDimension[3] + typeLeftRightMargin * 2);
 
-        int w = icw + nameMargin + (int) Math.max(nRect.getWidth(), tRect.getWidth() + typeLeftRightMargin * 2);
+        dimension[0] = w;
+        dimension[1] = h;
 
-        BufferedImage result = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-        FG2D g = new FG2D(result.getGraphics());
-
-        g.setRenderingHint(3, 1);
-        g.enableAntialiasing();
-
-        g.setColor(238, 238, 238, 255);
-        g.setFont(titleFont);
-
-        g.drawText(name, (int) (icw + nameMargin - nRect.getX()), (int) (-nRect.getY()));
-
-        g.setFont(levelFont);
-
-        g.drawText("Lv. "+lv, (int) ((icw - lRect.getWidth()) / 2 - lRect.getX()), (int) (h - lRect.getHeight() - lRect.getY()));
-
-        g.setColor(88, 101, 242, 255);
-
-        g.fillRoundRect(icw + nameMargin, (int) (nRect.getHeight() + nameMargin), (int) (typeLeftRightMargin * 2 + tRect.getWidth()), (int) (typeUpDownMargin * 2 + tRect.getHeight()), typeCornerRadius, typeCornerRadius);
-
-        g.setColor(238, 238, 238, 255);
-        g.setFont(typeFont);
-
-        g.drawText(type, (int) (icw + nameMargin + typeLeftRightMargin - tRect.getX()), (int) (nRect.getHeight() + nameMargin + typeUpDownMargin - tRect.getY()));
-
-        g.drawImage(ic, 0, 0, icw, (float) (h - lRect.getHeight() - levelMargin));
-
-        g.dispose();
-
-        return result;
+        return dimension;
     }
 
-    private static BufferedImage getEnemyTitleImage(File icon, String name, String mag, FontMetrics bfm, FontMetrics lfm) throws Exception {
-        BufferedImage ic = ImageIO.read(icon);
+    private static float[] measureEnemyTitle(String name, String mag) {
+        float[] nRect = titleFont.measureDimension(name);
+        float[] lRect = levelFont.measureDimension(mag);
 
-        FontRenderContext bfrc = bfm.getFontRenderContext();
-        FontRenderContext lfrc = lfm.getFontRenderContext();
-
-        Rectangle2D nRect = titleFont.createGlyphVector(bfrc, name).getPixelBounds(null, 0, 0);
-        Rectangle2D lRect = levelFont.createGlyphVector(lfrc, mag).getPixelBounds(null, 0, 0);
-
-        int h = (int) Math.round(nRect.getHeight() + nameMargin + lRect.getHeight() + enemyIconGap * 3);
+        int h = Math.round(nRect[3] + nameMargin + lRect[3] + enemyIconGap * 3);
 
         int icw = (int) (h * enemyIconRatio);
 
-        int w = (int) (icw + nameMargin + Math.max(nRect.getWidth(), lRect.getWidth()));
+        int w = (int) (icw + nameMargin + Math.max(nRect[2], lRect[2]));
 
-        BufferedImage result = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-        FG2D g = new FG2D(result.getGraphics());
-
-        g.setRenderingHint(3, 1);
-        g.enableAntialiasing();
-
-        g.setColor(238, 238, 238, 255);
-        g.setFont(titleFont);
-
-        g.drawText(name, (int) (icw + nameMargin - nRect.getX()), (int) (enemyIconGap -nRect.getY()));
-
-        g.setFont(levelFont);
-
-        if(CommonStatic.parseIntN(mag) != 100) {
-            g.drawText(mag, (int) (icw + nameMargin - lRect.getX()), (int) (nRect.getHeight() + nameMargin + enemyIconGap - lRect.getY()));
-        }
-
-        g.setColor(54, 57, 63);
-
-        g.fillRoundRect(enemyIconStroke / 2, enemyIconStroke / 2, icw - enemyIconStroke, h - enemyIconStroke, cornerRadius, cornerRadius);
-
-        int size = (int) Math.min(h * enemyInnerIconRatio, h - enemyIconStroke * 2);
-
-        g.drawImage(ic, (icw - h + enemyIconStroke) / 2f, enemyIconStroke / 2f, size, size);
-
-        g.setColor(191, 191, 191);
-        g.setStroke(enemyIconStroke);
-
-        g.roundRect(enemyIconStroke / 2, enemyIconStroke / 2, icw - enemyIconStroke, h - enemyIconStroke, cornerRadius, cornerRadius);
-
-        g.dispose();
-
-        return result;
+        return new float[] { w, h };
     }
 
-    private static void drawStageTitleImage(FG2D g, String name, String code, FontMetrics bfm, FontMetrics lfm) {
-        FontRenderContext bfrc = bfm.getFontRenderContext();
-        FontRenderContext lfrc = lfm.getFontRenderContext();
-
-        Rectangle2D nRect = titleFont.createGlyphVector(bfrc, name).getPixelBounds(null, 0, 0);
-        Rectangle2D lRect = contentFont.createGlyphVector(lfrc, code).getPixelBounds(null, 0, 0);
-
-        g.setRenderingHint(3, 1);
-        g.enableAntialiasing();
+    private static void drawStageTitleImage(GLGraphics g, String name, String code) {
+        float[] nRect = titleFont.measureDimension(name);
 
         g.setColor(238, 238, 238, 255);
-        g.setFont(titleFont);
+        g.setFontModel(titleFont);
 
-        g.drawText(name, (int) (bgMargin + bgMargin - nRect.getX()), (int) (bgMargin * 2 - nRect.getY()));
+        g.drawText(name, bgMargin + bgMargin, bgMargin * 2, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
 
         if(!code.equals(name)) {
             g.setColor(191, 191, 191);
-            g.setFont(contentFont);
+            g.setFontModel(contentFont);
 
-            g.drawText(code, (int) (bgMargin + bgMargin - lRect.getX()), (int) (bgMargin * 2 + nRect.getHeight() + nameMargin - lRect.getY()));
+            g.drawText(code, bgMargin + bgMargin, (int) (bgMargin * 2 + nRect[2] + nameMargin), GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
         }
     }
 
-    private static BufferedImage generateEvolveImage(File container, int[][] data, int targetWidth, FontMetrics metrics) {
-        GlyphVector glyph = fruitFont.createGlyphVector(metrics.getFontRenderContext(), "1234567890Mk");
-
-        int textHeight = glyph.getPixelBounds(null, 0, 0).height;
-
-        float h = textHeight + targetWidth * (fruitRatio + fruitTextGapRatio + fruitUpperGapRatio + fruitDownerGapRatio);
-
-        BufferedImage img = new BufferedImage(targetWidth, (int) h, BufferedImage.TYPE_INT_ARGB);
-
-        FG2D g = new FG2D(img.getGraphics());
-
-        g.setRenderingHint(3, 1);
-        g.enableAntialiasing();
-
-        float panelPadding = targetWidth * (1f - fruitRatio * data.length) / (5f * data.length - 1);
-        float padding = panelPadding * 2;
-
-        float panelWidth = padding * 2 + fruitRatio * targetWidth;
-
-        g.setFont(fruitFont);
-
-        float x = 0;
-
-        for(int i = 0; i < data.length; i++) {
-            g.setColor(64, 68, 75, 255);
-
-            g.fillRoundRect((int) x, 0, (int) panelWidth, (int) h, cornerRadius, cornerRadius);
-
-            try {
-                BufferedImage icon = getFruitImage(container, data[i][0]);
-
-                FakeImage ic = FIBI.build(icon);
-
-                g.drawImage(ic, x + padding, targetWidth * fruitUpperGapRatio, targetWidth * fruitRatio, targetWidth * fruitRatio);
-            } catch (Exception e) {
-                StaticStore.logger.uploadErrorLog(e, "E/ImageDrawing::generateEvolveImage - Failed to generate fruit image : "+data[i][0]);
-            }
-
-            g.setColor(238, 238, 238, 255);
-
-            g.drawCenteredText(convertValue(data[i][1]), (int) (x + panelWidth / 2), (int) Math.round(targetWidth * (fruitUpperGapRatio + fruitRatio + fruitTextGapRatio) + textHeight / 2.0));
-
-            x += panelWidth + panelPadding;
-        }
-
-        g.dispose();
-
-        return img;
-    }
-
-    private static BufferedImage getFruitImage(File container, int id) throws Exception {
+    private static FakeImage getFruitImage(File container, int id) throws Exception {
         if(id == -1) {
             VFile vf = VFile.get("./org/page/catfruit/xp.png");
 
             if(vf != null) {
-                return (BufferedImage) vf.getData().getImg().bimg();
+                return vf.getData().getImg();
             }
         } else {
             String name = "gatyaitemD_"+id+"_f.png";
@@ -4134,10 +4218,10 @@ public class ImageDrawing {
                 File icon = new File(container, name);
 
                 if(icon.exists()) {
-                    return ImageIO.read(icon);
+                    return ImageBuilder.builder.build(icon);
                 }
             } else {
-                return (BufferedImage) vf.getData().getImg().bimg();
+                return vf.getData().getImg();
             }
         }
 
@@ -4148,11 +4232,10 @@ public class ImageDrawing {
      *
      * @param st Stage
      * @param map Stage map
-     * @param cfm Fonrt metrics to measure text width/height
      * @param lang Language value
      * @return Returns { Width of Chance, Width of Item, Width of Amount, Total Width, Total Height }
      */
-    private static int[] measureDropTableWidth(Stage st, CustomStageMap map, FontMetrics cfm, int lang, boolean reward) {
+    private static float[] measureDropTableWidth(Stage st, CustomStageMap map, int lang, boolean reward) {
         List<String[]> dropData;
 
         if(reward) {
@@ -4164,7 +4247,7 @@ public class ImageDrawing {
         if(dropData == null)
             return null;
 
-        int[] result = new int[5];
+        float[] result = new float[5];
 
         String chance;
 
@@ -4176,11 +4259,9 @@ public class ImageDrawing {
             chance = LangID.getStringByID("data_chance", lang);
         }
 
-        int cw = cfm.stringWidth(chance);
-
-        int rw = cfm.stringWidth(LangID.getStringByID("data_reward", lang));
-
-        int aw = cfm.stringWidth(LangID.getStringByID("data_amount", lang));
+        float cw = contentFont.textWidth(chance);
+        float rw = contentFont.textWidth(LangID.getStringByID("data_reward", lang));
+        float aw = contentFont.textWidth(LangID.getStringByID("data_amount", lang));
 
         for(int i = 0; i < dropData.size(); i++) {
             String[] data = dropData.get(i);
@@ -4188,9 +4269,9 @@ public class ImageDrawing {
             if(data.length != 3)
                 continue;
 
-            cw = Math.max(cw, cfm.stringWidth(data[0]));
-            rw = Math.max(rw, cfm.stringWidth(data[1]));
-            aw = Math.max(aw, cfm.stringWidth(data[2]));
+            cw = Math.max(cw, contentFont.textWidth(data[0]));
+            rw = Math.max(rw, contentFont.textWidth(data[1]));
+            aw = Math.max(aw, contentFont.textWidth(data[2]));
         }
 
         result[CHANCE_WIDTH] = cw;
@@ -4206,22 +4287,21 @@ public class ImageDrawing {
      *
      * @param st Stage
      * @param map Stage map
-     * @param cfm Fonrt metrics to measure text width/height
      * @param lang Language value
      * @return Returns { Width of Enemy, Width of Number, Width of Base, Width of Magnification, Width of Start, Width of Layer, Width of Boss, Total Width, Total Height }
      */
-    private static int[] measureEnemySchemeWidth(Stage st, CustomStageMap map, FontMetrics cfm, boolean isRanking, boolean isFrame, int lv, int lang) {
-        int[] result = new int[11];
-
-        int ew = cfm.stringWidth(LangID.getStringByID("data_enemy", lang));
-        int nw = cfm.stringWidth(LangID.getStringByID("data_number", lang));
-        int bw = cfm.stringWidth(LangID.getStringByID(isRanking ? "data_basedealt" : "data_basehealth", lang));
-        int mw = cfm.stringWidth(LangID.getStringByID("data_manif", lang));
-        int sw = cfm.stringWidth(LangID.getStringByID("data_startres", lang));
-        int lw = cfm.stringWidth(LangID.getStringByID("data_layer", lang));
-        int rw = cfm.stringWidth(LangID.getStringByID("data_respect", lang));
-        int kw = cfm.stringWidth(LangID.getStringByID("data_killcount", lang));
-        int bow = cfm.stringWidth(LangID.getStringByID("data_isboss", lang));
+    private static float[] measureEnemySchemeWidth(Stage st, CustomStageMap map, boolean isRanking, boolean isFrame, int lv, int lang) {
+        float[] result = new float[11];
+        
+        float ew = contentFont.textWidth(LangID.getStringByID("data_enemy", lang));
+        float nw = contentFont.textWidth(LangID.getStringByID("data_number", lang));
+        float bw = contentFont.textWidth(LangID.getStringByID(isRanking ? "data_basedealt" : "data_basehealth", lang));
+        float mw = contentFont.textWidth(LangID.getStringByID("data_manif", lang));
+        float sw = contentFont.textWidth(LangID.getStringByID("data_startres", lang));
+        float lw = contentFont.textWidth(LangID.getStringByID("data_layer", lang));
+        float rw = contentFont.textWidth(LangID.getStringByID("data_respect", lang));
+        float kw = contentFont.textWidth(LangID.getStringByID("data_killcount", lang));
+        float bow = contentFont.textWidth(LangID.getStringByID("data_isboss", lang));
 
         for(int i = st.data.datas.length - 1; i >= 0; i--) {
             SCDef.Line line = st.data.datas[i];
@@ -4252,7 +4332,7 @@ public class ImageDrawing {
                 enemyName = LangID.getStringByID("data_enemy", lang)+" - "+Data.trio(id.id);
             }
 
-            ew = Math.max(ew, cfm.stringWidth(enemyName));
+            ew = Math.max(ew, contentFont.textWidth(enemyName));
 
             String number;
 
@@ -4261,7 +4341,7 @@ public class ImageDrawing {
             else
                 number = String.valueOf(line.number);
 
-            nw = Math.max(nw, cfm.stringWidth(number));
+            nw = Math.max(nw, contentFont.textWidth(number));
 
             String baseHP;
             String suffix = isRanking ? "" : "%";
@@ -4275,9 +4355,9 @@ public class ImageDrawing {
                 baseHP = minHealth + " ~ " + maxHealth + suffix;
             }
 
-            bw = Math.max(bw, cfm.stringWidth(baseHP));
+            bw = Math.max(bw, contentFont.textWidth(baseHP));
 
-            mw = Math.max(mw, cfm.stringWidth(DataToString.getMagnification(new int[] {line.multiple, line.mult_atk}, lv)));
+            mw = Math.max(mw, contentFont.textWidth(DataToString.getMagnification(new int[] {line.multiple, line.mult_atk}, lv)));
 
             String start;
 
@@ -4315,7 +4395,7 @@ public class ImageDrawing {
 
             String startResp = start+" ("+respawn+")";
 
-            sw = Math.max(sw, cfm.stringWidth(startResp));
+            sw = Math.max(sw, contentFont.textWidth(startResp));
 
             String layer;
 
@@ -4328,13 +4408,13 @@ public class ImageDrawing {
                 layer = String.valueOf(line.layer_0);
             }
 
-            lw = Math.max(lw, cfm.stringWidth(layer));
+            lw = Math.max(lw, contentFont.textWidth(layer));
 
             String respect = (line.spawn_0 < 0 || line.spawn_1 < 0) ? LangID.getStringByID("data_true", lang) : "";
 
-            rw = Math.max(rw, cfm.stringWidth(respect));
+            rw = Math.max(rw, contentFont.textWidth(respect));
 
-            kw = Math.max(kw, cfm.stringWidth(String.valueOf(line.kill_count)));
+            kw = Math.max(kw, contentFont.textWidth(String.valueOf(line.kill_count)));
 
             String boss;
 
@@ -4345,7 +4425,7 @@ public class ImageDrawing {
             else
                 boss = LangID.getStringByID("data_bossshake", lang);
 
-            bow = Math.max(bow, cfm.stringWidth(boss));
+            bow = Math.max(bow, contentFont.textWidth(boss));
         }
 
         result[ENEMY] = ew;
@@ -4372,7 +4452,7 @@ public class ImageDrawing {
         return result;
     }
 
-    private static void drawRewardTable(FG2D g, int x, int y, Stage st, CustomStageMap map, int[] dimension, int desiredGap, int lang, boolean reward) throws Exception {
+    private static void drawRewardTable(GLGraphics g, int x, int y, Stage st, CustomStageMap map, float[] dimension, int desiredGap, int lang, boolean reward) throws Exception {
         List<String[]> data;
 
         if(reward)
@@ -4381,13 +4461,10 @@ public class ImageDrawing {
             data = DataToString.getScoreDrops(st, map, lang);
 
         if(data != null) {
-            int w = desiredGap * 7 + dimension[CHANCE_WIDTH] + dimension[REWARD_WIDTH] + dimension[AMOUNT_WIDTH] + rewardIconSize;
-            int h = dimension[TOTAL_HEIGHT];
+            int w = Math.round(desiredGap * 7 + dimension[CHANCE_WIDTH] + dimension[REWARD_WIDTH] + dimension[AMOUNT_WIDTH] + rewardIconSize);
+            int h = Math.round(dimension[TOTAL_HEIGHT]);
 
-            g.setRenderingHint(3, 1);
-            g.enableAntialiasing();
-
-            g.setFont(contentFont);
+            g.setFontModel(contentFont);
 
             g.setColor(51, 53, 60);
 
@@ -4425,9 +4502,9 @@ public class ImageDrawing {
 
                         g.setColor(191, 191, 191);
 
-                        g.drawCenteredText(chance, x1 + (int) tx, y + innerTableCellMargin / 2);
+                        g.drawText(chance, x1 + (int) tx, y + innerTableCellMargin / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
 
-                        g.setStroke(headerStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+                        g.setStroke(headerStroke, GLGraphics.LineEndMode.ROUND);
 
                         int chaneLineY = (int) Math.round((innerTableCellMargin - headerSeparatorHeight) / 2.0);
 
@@ -4438,7 +4515,7 @@ public class ImageDrawing {
                         for (int j = 0; j < data.size(); j++) {
                             g.setColor(239, 239, 239);
 
-                            g.drawCenteredText(data.get(j)[i], x1 + (int) tx, chanceY + innerTableCellMargin / 2);
+                            g.drawText(data.get(j)[i], x1 + (int) tx, chanceY + innerTableCellMargin / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
 
                             g.setColor(191, 191, 191, 64);
 
@@ -4450,9 +4527,9 @@ public class ImageDrawing {
                     case REWARD_WIDTH -> {
                         g.setColor(191, 191, 191);
 
-                        g.drawCenteredText(LangID.getStringByID("data_reward", lang), x1 + (int) tx, y + innerTableCellMargin / 2);
+                        g.drawText(LangID.getStringByID("data_reward", lang), x1 + (int) tx, y + innerTableCellMargin / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
 
-                        g.setStroke(headerStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+                        g.setStroke(headerStroke, GLGraphics.LineEndMode.ROUND);
 
                         int rewardLineY = (int) Math.round((innerTableCellMargin - headerSeparatorHeight) / 2.0);
 
@@ -4465,13 +4542,13 @@ public class ImageDrawing {
                         for (int j = 0; j < data.size(); j++) {
                             g.setColor(239, 239, 239);
 
-                            g.drawCenteredText(data.get(j)[i], x1 + desiredGap + rewardIconSize + rx, rewardY + innerTableCellMargin / 2);
+                            g.drawText(data.get(j)[i], x1 + desiredGap + rewardIconSize + rx, rewardY + innerTableCellMargin / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
 
                             g.setColor(65, 69, 76);
 
-                            g.fillOval(x1 + desiredGap, rewardY + (float) ((innerTableCellMargin - rewardIconSize) / 2), rewardIconSize, rewardIconSize);
+                            g.fillOval(x1 + desiredGap, rewardY + (innerTableCellMargin - rewardIconSize) / 2f, rewardIconSize / 2f, rewardIconSize / 2f);
 
-                            BufferedImage icon;
+                            FakeImage icon;
 
                             if (reward) {
                                 icon = getRewardImage(((DefStageInfo) st.info).drop[j][i], map);
@@ -4492,13 +4569,13 @@ public class ImageDrawing {
                     }
                     case AMOUNT_WIDTH -> {
                         g.setColor(191, 191, 191);
-                        g.drawCenteredText(LangID.getStringByID("data_amount", lang), x1 + (int) tx, y + innerTableCellMargin / 2);
-                        g.setStroke(headerStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+                        g.drawText(LangID.getStringByID("data_amount", lang), x1 + (int) tx, y + innerTableCellMargin / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+                        g.setStroke(headerStroke, GLGraphics.LineEndMode.ROUND);
                         int amountY = y + innerTableCellMargin;
                         for (int j = 0; j < data.size(); j++) {
                             g.setColor(239, 239, 239);
 
-                            g.drawCenteredText(data.get(j)[i], x1 + (int) tx, amountY + innerTableCellMargin / 2);
+                            g.drawText(data.get(j)[i], x1 + (int) tx, amountY + innerTableCellMargin / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
 
                             g.setColor(191, 191, 191, 64);
 
@@ -4512,7 +4589,7 @@ public class ImageDrawing {
 
             g.setColor(191, 191, 191, 64);
 
-            g.setStroke(innerTableLineStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+            g.setStroke(innerTableLineStroke, GLGraphics.LineEndMode.ROUND);
 
             int y1 = y + innerTableCellMargin * 2;
 
@@ -4524,7 +4601,7 @@ public class ImageDrawing {
         }
     }
 
-    private static void drawEnemySchemeTable(FG2D g, int y, Stage st, CustomStageMap map, int[] dimension, int desiredGap, boolean isRanking, boolean isFrame, int lv, int lang) throws Exception {
+    private static void drawEnemySchemeTable(GLGraphics g, int y, Stage st, CustomStageMap map, float[] dimension, int desiredGap, boolean isRanking, boolean isFrame, int lv, int lang) throws Exception {
         int w = desiredGap * 19 + rewardIconSize;
 
         for(int i = ENEMY; i <= BOSS; i++) {
@@ -4533,10 +4610,7 @@ public class ImageDrawing {
 
         int h = innerTableCellMargin * (st.data.datas.length + 1);
 
-        g.setRenderingHint(3, 1);
-        g.enableAntialiasing();
-
-        g.setFont(contentFont);
+        g.setFontModel(contentFont);
 
         g.setColor(65, 69, 76);
 
@@ -4544,11 +4618,11 @@ public class ImageDrawing {
 
         g.setColor(24, 25, 28);
 
-        g.fillRoundRect(bgMargin, y, w, innerTableCellMargin + cornerRadius / 2, cornerRadius, cornerRadius);
+        g.fillRoundRect(bgMargin, y, w, innerTableCellMargin + cornerRadius / 2f, cornerRadius, cornerRadius);
 
         g.setColor(65, 69, 76);
 
-        g.fillRect(bgMargin, y + innerTableCellMargin, w, (float) (cornerRadius / 2));
+        g.fillRect(bgMargin, y + innerTableCellMargin, w, cornerRadius / 2f);
 
         String[] headerText = {
                 LangID.getStringByID("data_enemy", lang),
@@ -4566,7 +4640,7 @@ public class ImageDrawing {
 
         g.setColor(191, 191, 191);
 
-        g.setStroke(headerStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+        g.setStroke(headerStroke, GLGraphics.LineEndMode.ROUND);
 
         for(int i = ENEMY; i <= BOSS; i++) {
             double tx = desiredGap * 2 + dimension[i];
@@ -4578,7 +4652,7 @@ public class ImageDrawing {
 
             int ly = (int) Math.round((innerTableCellMargin - headerSeparatorHeight) / 2.0);
 
-            g.drawCenteredText(headerText[i], (int) Math.round(x1 + tx),  y + innerTableCellMargin / 2);
+            g.drawText(headerText[i], (int) Math.round(x1 + tx),  y + innerTableCellMargin / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
 
             if(i < BOSS)
                 g.drawLine((int) (x1 + tx * 2.0),  y + ly, (int) (x1 + tx * 2.0),  y + innerTableCellMargin - ly);
@@ -4715,21 +4789,21 @@ public class ImageDrawing {
                 if(j == ENEMY) {
                     g.setColor(51, 53, 60);
 
-                    g.fillOval(bgMargin + desiredGap, y1 + (float) ((innerTableCellMargin - rewardIconSize) / 2), rewardIconSize, rewardIconSize);
+                    g.fillOval(bgMargin + desiredGap, y1 + (innerTableCellMargin - rewardIconSize) / 2f, rewardIconSize / 2f, rewardIconSize / 2f);
 
-                    BufferedImage icon = getEnemyIcon(line.enemy.id, map);
+                    FakeImage icon = getEnemyIcon(line.enemy.id, map);
 
                     if(icon != null) {
-                        g.drawImage(icon, bgMargin + desiredGap + 30, y1 + (innerTableCellMargin - rewardIconSize) / 2f + 30, 100, 100);
+                        g.drawImage(icon, bgMargin + desiredGap + 15, y1 + (innerTableCellMargin - rewardIconSize) / 2f + 15, 50, 50);
                     }
 
                     g.setColor(239, 239, 239);
 
-                    g.drawCenteredText(content, bgMargin + desiredGap + rewardIconSize + rx, y1 + innerTableCellMargin / 2);
+                    g.drawText(content, bgMargin + desiredGap + rewardIconSize + rx, y1 + innerTableCellMargin / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
                 } else {
                     g.setColor(239, 239, 239);
 
-                    g.drawCenteredText(content, (int) (x1 + tx), y1 + innerTableCellMargin / 2);
+                    g.drawText(content, (int) (x1 + tx), y1 + innerTableCellMargin / 2f, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
                 }
 
                 g.setColor(191, 191, 191, 64);
@@ -4746,7 +4820,7 @@ public class ImageDrawing {
 
         y1 = y + innerTableCellMargin * 2;
 
-        g.setStroke(innerTableLineStroke, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+        g.setStroke(innerTableLineStroke, GLGraphics.LineEndMode.ROUND);
 
         for(int i = 0; i < st.data.datas.length - 1; i++) {
             g.drawLine(bgMargin + innerTableTextMargin, y1, w - innerTableTextMargin, y1);
@@ -4784,13 +4858,13 @@ public class ImageDrawing {
         }
     }
 
-    private static int maxAmong(int... values) {
+    private static float maxAmong(float... values) {
         if(values.length == 1)
             return values[0];
         else if(values.length == 2) {
             return Math.max(values[0], values[1]);
         } else if(values.length >= 3) {
-            int val = Math.max(values[0], values[1]);
+            float val = Math.max(values[0], values[1]);
 
             for(int i = 2; i < values.length; i++) {
                 val = Math.max(values[i], val);
@@ -4869,12 +4943,12 @@ public class ImageDrawing {
         }
     }
 
-    private static BufferedImage getRewardImage(int id, CustomStageMap map) throws Exception {
+    private static FakeImage getRewardImage(int id, CustomStageMap map) throws Exception {
         if(id < 1000) {
             File icon = map.rewardIcons.get(id);
 
             if(icon != null) {
-                return ImageIO.read(icon);
+                return ImageBuilder.builder.build(icon);
             }
 
             if(id >= 11 && id <= 13)
@@ -4885,7 +4959,7 @@ public class ImageDrawing {
             VFile vf = VFile.get("./org/page/items/"+name);
 
             if(vf != null) {
-                return (BufferedImage) vf.getData().getImg().bimg();
+                return vf.getData().getImg();
             }
         } else if(id < 30000) {
             File icon;
@@ -4896,7 +4970,7 @@ public class ImageDrawing {
                 icon = map.trueFormIcons.get(id);
 
             if(icon != null) {
-                return ImageIO.read(icon);
+                return ImageBuilder.builder.build(icon);
             }
 
             String name = map.rewardToUnitIcon.get(id);
@@ -4915,7 +4989,7 @@ public class ImageDrawing {
                 VFile vf = VFile.get(path);
 
                 if(vf != null) {
-                    return (BufferedImage) vf.getData().getImg().bimg();
+                    return vf.getData().getImg();
                 }
             }
         }
@@ -4923,16 +4997,16 @@ public class ImageDrawing {
         return null;
     }
 
-    private static BufferedImage getEnemyIcon(int eid, CustomStageMap map) throws Exception {
+    private static FakeImage getEnemyIcon(int eid, CustomStageMap map) throws Exception {
         File icon = map.enemyIcons.get(eid);
 
         if(icon != null) {
-            return ImageIO.read(icon);
+            return ImageBuilder.builder.build(icon);
         } else {
             VFile vf = VFile.get("./org/enemy/" + Data.trio(eid) + "/enemy_icon_" + Data.trio(eid) + ".png");
 
             if(vf != null) {
-                return (BufferedImage) vf.getData().getImg().bimg();
+                return vf.getData().getImg();
             }
         }
 

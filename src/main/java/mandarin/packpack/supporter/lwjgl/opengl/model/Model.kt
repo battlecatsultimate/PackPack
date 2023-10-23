@@ -1,4 +1,4 @@
-package mandarin.packpack.supporter.opengl.model
+package mandarin.packpack.supporter.lwjgl.opengl.model
 
 abstract class Model {
     companion object {

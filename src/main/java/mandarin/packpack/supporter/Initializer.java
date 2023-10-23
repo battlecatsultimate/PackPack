@@ -18,7 +18,11 @@ import common.util.unit.Combo;
 import common.util.unit.Enemy;
 import common.util.unit.Unit;
 import mandarin.packpack.supporter.awt.PCIB;
+import mandarin.packpack.supporter.bc.EntityHandler;
+import mandarin.packpack.supporter.bc.ImageDrawing;
 import mandarin.packpack.supporter.event.EventFactor;
+import mandarin.packpack.supporter.lwjgl.GLImageBuilder;
+import mandarin.packpack.supporter.lwjgl.opengl.renderer.Renderer;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
 
 import java.io.File;
@@ -33,7 +37,7 @@ public class Initializer {
     private static final int[] loc = {0, 3, 2, 1, 6, 9, 8, 5, 10};
     private static final String[] file = {"EnemyName.txt", "StageName.txt", "UnitName.txt", "UnitExplanation.txt", "EnemyExplanation.txt", "CatFruitExplanation.txt", "RewardName.txt", "ComboName.txt", "MedalName.txt", "MedalExplanation.txt", "GachaName.txt", "MissionName.txt"};
 
-    public static void checkAssetDownload() {
+    public static void checkAssetDownload(boolean runLWJGL) {
         try {
             UpdateCheck.UpdateJson json = UpdateCheck.checkUpdate();
 
@@ -123,14 +127,24 @@ public class Initializer {
         }
 
         try {
-            define();
+            define(runLWJGL);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private static void define() {
-        ImageBuilder.builder = new PCIB();
+    private static void define(boolean runLWJGL) {
+        if (runLWJGL) {
+            StaticStore.renderManager = new Renderer();
+
+            EntityHandler.initialize();
+            ImageDrawing.initialize();
+
+            ImageBuilder.builder = new GLImageBuilder();
+        } else {
+            ImageBuilder.builder = new PCIB();
+        }
+
         System.out.println("Initializing Profile...");
         CommonStatic.ctx.initProfile();
         System.out.println("Loading Assets...");

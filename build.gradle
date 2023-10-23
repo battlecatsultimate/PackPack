@@ -28,7 +28,7 @@ repositories {
     maven { url 'https://jitpack.io' }
 }
 
-project.ext.lwjglVersion = "3.3.2"
+project.ext.lwjglVersion = "3.3.3"
 
 switch (org.gradle.internal.os.OperatingSystem.current()) {
     case org.gradle.internal.os.OperatingSystem.LINUX:

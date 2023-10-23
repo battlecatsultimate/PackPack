@@ -177,8 +177,6 @@ public abstract class GlobalTimedConstraintCommand extends Command {
                         ch.sendMessage(LangID.getStringByID("single_wait", lang).replace("_", DataToString.df.format((bool.totalTime - (System.currentTimeMillis() - StaticStore.canDo.get(id).time)) / 1000.0))).queue();
                     } else {
                         if(!aborts.contains(optionalID)) {
-                            pause.reset();
-
                             System.out.println("Added process : "+id);
 
                             StaticStore.canDo.put(id, new TimeBoolean(false, time));
@@ -268,8 +266,6 @@ public abstract class GlobalTimedConstraintCommand extends Command {
     @Override
     public void doSomething(CommandLoader loader) throws Exception {
         doThing(loader);
-
-        pause.resume();
     }
 
     protected void disableTimer() {

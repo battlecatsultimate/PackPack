@@ -3,14 +3,10 @@ package mandarin.packpack.supporter.bc;
 import common.pack.Source;
 import common.system.VImg;
 import common.system.fake.FakeImage;
+import common.system.fake.ImageBuilder;
 import common.util.anim.*;
-import mandarin.packpack.supporter.awt.FIBI;
 
-import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +58,7 @@ public class AnimMixer implements Source.AnimLoader {
         return line.contains("[modelanim:animation") || line.contains("[maanim]");
     }
 
-    public BufferedImage png;
+    public FakeImage png;
     public ImgCut imgCut;
     public MaModel model;
     public MaAnim[] anim;
@@ -145,6 +141,10 @@ public class AnimMixer implements Source.AnimLoader {
         return line.contains("[modelanim:model") || line.contains("[mamodel]");
     }
 
+    public void buildPng(File pngFile) throws IOException {
+        png = ImageBuilder.builder.build(pngFile);
+    }
+
     @Override
     public VImg getEdi() {
         return null;
@@ -172,7 +172,7 @@ public class AnimMixer implements Source.AnimLoader {
 
     @Override
     public FakeImage getNum() {
-        return FIBI.build(png);
+        return png;
     }
 
     @Override
@@ -193,5 +193,10 @@ public class AnimMixer implements Source.AnimLoader {
     @Override
     public List<String> collectInvalidAnimation(AnimU.ImageKeeper.AnimationType type) {
         return new ArrayList<>();
+    }
+
+    public void release() {
+        if (png != null)
+            png.unload();
     }
 }

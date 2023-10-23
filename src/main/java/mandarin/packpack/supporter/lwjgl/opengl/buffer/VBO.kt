@@ -1,11 +1,10 @@
-package mandarin.packpack.supporter.opengl.buffer
+package mandarin.packpack.supporter.lwjgl.opengl.buffer
 
-import org.lwjgl.BufferUtils
+import mandarin.packpack.supporter.Logger
+import mandarin.packpack.supporter.StaticStore
 import org.lwjgl.opengl.GL33
-import java.nio.ByteBuffer
-import kotlin.IllegalStateException
 
-class VBO private constructor(private val vboID: Int, type: Type) {
+class VBO private constructor(val vboID: Int, type: Type) {
     enum class Type {
         ELEMENT,
         BUFFER
@@ -269,16 +268,12 @@ class VBO private constructor(private val vboID: Int, type: Type) {
      * @return Size of buffer of this VBO.
      *
      */
-    fun getBufferSize() : Int {
+    private fun getBufferSize() : Int {
         if (!bound) {
             throw IllegalStateException("Tried to get buffer size while VBO hasn't bound")
         }
 
-        val target = intArrayOf(0)
-
-        GL33.glGetBufferParameteriv(glType, GL33.GL_BUFFER_SIZE, target)
-
-        return target[0]
+        return GL33.glGetBufferParameteri(glType, GL33.GL_BUFFER_SIZE)
     }
 
     /**
@@ -300,6 +295,9 @@ class VBO private constructor(private val vboID: Int, type: Type) {
     }
 
     fun release() {
+        Logger.addLog("Releasing VBO : $vboID")
         GL33.glDeleteBuffers(vboID)
+
+        allocatedVBO.remove(this)
     }
 }

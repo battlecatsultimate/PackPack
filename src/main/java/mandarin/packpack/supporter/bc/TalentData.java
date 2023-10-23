@@ -1,5 +1,7 @@
 package mandarin.packpack.supporter.bc;
 
+import common.system.fake.FakeImage;
+
 import java.awt.image.BufferedImage;
 import java.util.List;
 
@@ -7,9 +9,9 @@ public class TalentData {
     public final List<Integer> cost;
     public final String title;
     public final String[] description;
-    public final BufferedImage icon;
+    public final FakeImage icon;
 
-    public TalentData(List<Integer> cost, String title, String description, BufferedImage icon) {
+    public TalentData(List<Integer> cost, String title, String description, FakeImage icon) {
         this.cost = cost;
         this.title = title;
         this.description = description.split("\n");

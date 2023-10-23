@@ -1,15 +1,21 @@
-package mandarin.packpack.supporter.opengl.model
+package mandarin.packpack.supporter.lwjgl.opengl.model
 
+import mandarin.packpack.supporter.Logger
+import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lwjgl.GLGraphics
-import mandarin.packpack.supporter.opengl.Texture
-import mandarin.packpack.supporter.opengl.buffer.VAO
-import mandarin.packpack.supporter.opengl.buffer.VBO
+import mandarin.packpack.supporter.lwjgl.opengl.Texture
+import mandarin.packpack.supporter.lwjgl.opengl.buffer.VAO
+import mandarin.packpack.supporter.lwjgl.opengl.buffer.VBO
 import org.lwjgl.opengl.GL33
 import org.lwjgl.system.MemoryStack
 import org.lwjgl.util.freetype.FT_BitmapGlyph
 import org.lwjgl.util.freetype.FT_Face
 import org.lwjgl.util.freetype.FreeType
 import java.io.File
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.atomic.AtomicReference
+import kotlin.math.max
+import kotlin.math.min
 
 class FontModel(private val size: Float, file: File, type: Type, stroke: Float = 0f) : Model() {
     enum class Type {
@@ -69,7 +75,12 @@ class FontModel(private val size: Float, file: File, type: Type, stroke: Float =
 
     private val face: FT_Face
 
+    var maxHeight = 0f
+        private set
+
     init {
+        Logger.addLog("Generating FontModel from file : ${file.absolutePath}")
+
         initialize()
 
         this.type = type
@@ -263,6 +274,212 @@ class FontModel(private val size: Float, file: File, type: Type, stroke: Float =
         stack.pop()
     }
 
+    fun measureDimension(text: String) : FloatArray {
+        val waiter = if (!Thread.currentThread().equals(StaticStore.renderManager.renderThread)) {
+            CountDownLatch(1)
+        } else {
+            null
+        }
+
+        return if (waiter != null) {
+            val dimension = AtomicReference(FloatArray(4))
+
+            StaticStore.renderManager.queueGL {
+                loadText(text)
+
+                val space = characters[' '] ?: throw IllegalStateException("This font doesn't support space letter, invalid font\n\nPlease load font before drawing")
+
+                var positiveY = 0f
+                var negativeY = 0f
+
+                text.forEachIndexed { index, letter ->
+                    val texture = characters[letter] ?: space
+
+                    maxHeight = max(maxHeight, texture.height)
+
+                    if (index < text.length - 1) {
+                        if (index == 0) {
+                            dimension.get()[0] = texture.bearingX
+                            dimension.get()[2] += texture.advance - texture.bearingX
+                        } else {
+                            dimension.get()[2] += texture.advance
+                        }
+                    } else {
+                        dimension.get()[2] += texture.bearingX + texture.width
+                    }
+
+                    dimension.get()[1] = min(dimension.get()[1], -texture.bearingY)
+
+                    positiveY = max(positiveY, texture.bearingY)
+                    negativeY = max(negativeY, texture.height - texture.bearingY)
+                }
+
+                dimension.get()[3] = positiveY + negativeY
+
+                waiter.countDown()
+            }
+
+            waiter.await()
+
+            dimension.get()
+        } else {
+            val dimension = FloatArray(4)
+
+            loadText(text)
+
+            val space = characters[' '] ?: throw IllegalStateException("This font doesn't support space letter, invalid font\n\nPlease load font before drawing")
+
+            var positiveY = 0f
+            var negativeY = 0f
+
+            text.forEachIndexed { index, letter ->
+                val texture = characters[letter] ?: space
+
+                maxHeight = max(maxHeight, texture.height)
+
+                if (index < text.length - 1) {
+                    if (index == 0) {
+                        dimension[0] = texture.bearingX
+                        dimension[2] += texture.advance - texture.bearingX
+                    } else {
+                        dimension[2] += texture.advance
+                    }
+                } else {
+                    dimension[2] += texture.bearingX + texture.width
+                }
+
+                dimension[1] = min(dimension[1], -texture.bearingY)
+
+                positiveY = max(positiveY, texture.bearingY)
+                negativeY = max(negativeY, texture.height - texture.bearingY)
+            }
+
+            dimension[3] = positiveY + negativeY
+
+            dimension
+        }
+    }
+
+    fun textWidth(text: String) : Float {
+        val waiter = if (!Thread.currentThread().equals(StaticStore.renderManager.renderThread)) {
+            CountDownLatch(1)
+        } else {
+            null
+        }
+
+        return if (waiter != null) {
+            val dimension = AtomicReference(0f)
+
+            StaticStore.renderManager.queueGL {
+                loadText(text)
+
+                val space = characters[' '] ?: throw IllegalStateException("This font doesn't support space letter, invalid font\n\nPlease load font before drawing")
+
+                text.forEachIndexed { index, letter ->
+                    val texture = characters[letter] ?: space
+
+                    maxHeight = max(maxHeight, texture.height)
+
+                    dimension.set(dimension.get() + if (index < text.length - 1) {
+                        if (index == 0) {
+                            texture.advance - texture.bearingX
+                        } else {
+                            texture.advance
+                        }
+                    } else {
+                        texture.bearingX + texture.width
+                    })
+                }
+
+                waiter.countDown()
+            }
+
+            waiter.await()
+
+            dimension.get()
+        } else {
+            loadText(text)
+
+            val space = characters[' '] ?: throw IllegalStateException("This font doesn't support space letter, invalid font\n\nPlease load font before drawing")
+
+            var width = 0f
+
+            text.forEachIndexed { index, letter ->
+                val texture = characters[letter] ?: space
+
+                maxHeight = max(maxHeight, texture.height)
+
+                width += if (index < text.length - 1) {
+                    if (index == 0) {
+                        texture.advance - texture.bearingX
+                    } else {
+                        texture.advance
+                    }
+                } else {
+                    texture.bearingX + texture.width
+                }
+            }
+
+            width
+        }
+    }
+
+    fun trueWidth(text: String) : Float {
+        val waiter = if (!Thread.currentThread().equals(StaticStore.renderManager.renderThread)) {
+            CountDownLatch(1)
+        } else {
+            null
+        }
+
+        return if (waiter != null) {
+            val dimension = AtomicReference(0f)
+
+            StaticStore.renderManager.queueGL {
+                loadText(text)
+
+                val space = characters[' '] ?: throw IllegalStateException("This font doesn't support space letter, invalid font\n\nPlease load font before drawing")
+
+                text.forEachIndexed { index, letter ->
+                    val texture = characters[letter] ?: space
+
+                    maxHeight = max(maxHeight, texture.height)
+
+                    dimension.set(dimension.get() + if (index == 0) {
+                        texture.advance - texture.bearingX
+                    } else {
+                        texture.advance
+                    })
+                }
+
+                waiter.countDown()
+            }
+
+            waiter.await()
+
+            dimension.get()
+        } else {
+            loadText(text)
+
+            val space = characters[' '] ?: throw IllegalStateException("This font doesn't support space letter, invalid font\n\nPlease load font before drawing")
+
+            var width = 0f
+
+            text.forEachIndexed { index, letter ->
+                val texture = characters[letter] ?: space
+
+                maxHeight = max(maxHeight, texture.height)
+
+                width += if (index == 0) {
+                    texture.advance - texture.bearingX
+                } else {
+                    texture.advance
+                }
+            }
+
+            width
+        }
+    }
+
     private fun collectLetters(text: String) : Set<Char> {
         val result = ArrayList<Char>()
 
@@ -277,12 +494,16 @@ class FontModel(private val size: Float, file: File, type: Type, stroke: Float =
     }
 
     fun flush() {
+        Logger.addLog("Flushing FontModel")
+
         characters.forEach { (_, texture) -> texture.release() }
 
         characters.clear()
     }
 
     fun release() {
+        Logger.addLog("Releasing FontModel")
+
         flush()
 
         vertexVBO.release()

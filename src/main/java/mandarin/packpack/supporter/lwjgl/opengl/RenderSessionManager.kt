@@ -1,6 +1,6 @@
-package mandarin.packpack.supporter.opengl
+package mandarin.packpack.supporter.lwjgl.opengl
 
-import mandarin.packpack.supporter.opengl.buffer.VAO
+import mandarin.packpack.supporter.lwjgl.opengl.buffer.VAO
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.opengl.GL33
 
@@ -12,10 +12,13 @@ class RenderSessionManager {
         }
     }
 
-    private val mainRenderSession = RenderSession.build(this,64, 64, false, show = false, title = "") {
+    private val mainRenderSession = RenderSession.build(this, 64, 64, false, show = false, title = "") {
         val program = Program()
 
-        program.addShader(ShaderScript.build("fragment.fs", ShaderScript.Type.FRAGMENT, "state", "step1", "step2", "color1", "color2", "height", "alpha"))
+        program.addShader(
+            ShaderScript.build("fragment.fs", ShaderScript.Type.FRAGMENT,
+            "state", "step1", "step2", "color1", "color2", "screenSize", "alpha", "dashMode", "fillMode", "factor", "pattern", "opposite")
+        )
         program.addShader(ShaderScript.build("vertex.vs", ShaderScript.Type.VERTEX, "state", "projection", "matrix"))
 
         program.initialize()
@@ -26,7 +29,8 @@ class RenderSessionManager {
     val renderSessions = ArrayList<RenderSession>()
 
     fun createRenderSession(width: Int, height: Int, resizable: Boolean, show: Boolean, title: String = "Title") : RenderSession {
-        val renderSession = RenderSession.build(this, width, height, resizable, show, title = title, parent = mainRenderSession)
+        val renderSession =
+            RenderSession.build(this, width, height, resizable, show, title = title, parent = mainRenderSession)
 
         renderSessions.add(renderSession)
 
@@ -38,7 +42,7 @@ class RenderSessionManager {
 
         VAO.switchVAO(renderSession)
 
-        mainRenderSession.program.setFloat("height", renderSession.height.toFloat())
+        mainRenderSession.program.setVector2("screenSize", floatArrayOf(renderSession.width.toFloat(), renderSession.height.toFloat()))
 
         GL33.glViewport(0, 0, renderSession.width, renderSession.height)
 

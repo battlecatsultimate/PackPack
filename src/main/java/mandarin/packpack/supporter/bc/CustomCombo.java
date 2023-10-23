@@ -1,17 +1,19 @@
 package mandarin.packpack.supporter.bc;
 
+import common.system.fake.FakeImage;
+
 import java.awt.image.BufferedImage;
 import java.util.List;
 
 public class CustomCombo {
     public final String title;
     public final String description;
-    public final List<BufferedImage> icons;
+    public final List<FakeImage> icons;
     public final List<String> names;
     public final String type;
     public final String level;
 
-    public CustomCombo(String title, String description, List<BufferedImage> icons, List<String> names, String type, String level) {
+    public CustomCombo(String title, String description, List<FakeImage> icons, List<String> names, String type, String level) {
         this.title = title;
         this.description = description;
         this.icons = icons;
