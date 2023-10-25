@@ -9,7 +9,6 @@ import java.io.File
 import java.io.IOException
 import java.io.InputStream
 import java.nio.ByteBuffer
-import java.nio.IntBuffer
 import javax.imageio.ImageIO
 
 class Texture private constructor(val textureID: Int, val width: Float, val height: Float) {

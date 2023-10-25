@@ -3,6 +3,7 @@ package mandarin.packpack.supporter.lwjgl.opengl.buffer
 import mandarin.packpack.supporter.Logger
 import mandarin.packpack.supporter.lwjgl.opengl.RenderSession
 import org.lwjgl.opengl.GL33
+import kotlin.math.min
 
 class MultiSampler private constructor(val fboID: Int, val width: Int, val height: Int) {
     private val rbo: Int
@@ -27,13 +28,15 @@ class MultiSampler private constructor(val fboID: Int, val width: Int, val heigh
 
         GL33.glBindTexture(GL33.GL_TEXTURE_2D_MULTISAMPLE, fboTextureID)
 
-        GL33.glTexImage2DMultisample(GL33.GL_TEXTURE_2D_MULTISAMPLE, 8, GL33.GL_RGBA, width, height, true)
+        val maxSample = GL33.glGetInteger(GL33.GL_MAX_SAMPLES)
+
+        GL33.glTexImage2DMultisample(GL33.GL_TEXTURE_2D_MULTISAMPLE, min(8, maxSample), GL33.GL_RGBA, width, height, true)
         GL33.glFramebufferTexture2D(GL33.GL_FRAMEBUFFER, GL33.GL_COLOR_ATTACHMENT0, GL33.GL_TEXTURE_2D_MULTISAMPLE, fboTextureID, 0)
 
         rbo = GL33.glGenRenderbuffers()
         Logger.addLog("Generating RBO from MultiSampler $rbo")
 
-        GL33.glRenderbufferStorageMultisample(GL33.GL_RENDERBUFFER, 8, GL33.GL_DEPTH24_STENCIL8, width, height)
+        GL33.glRenderbufferStorageMultisample(GL33.GL_RENDERBUFFER, min(8, maxSample), GL33.GL_DEPTH24_STENCIL8, width, height)
         GL33.glFramebufferRenderbuffer(GL33.GL_FRAMEBUFFER, GL33.GL_DEPTH_STENCIL_ATTACHMENT, GL33.GL_RENDERBUFFER, rbo)
 
         val checkCode = GL33.glCheckFramebufferStatus(GL33.GL_FRAMEBUFFER)
