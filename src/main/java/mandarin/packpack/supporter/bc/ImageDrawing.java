@@ -1463,7 +1463,7 @@ public class ImageDrawing {
             }
 
             return null;
-        }, progress -> new File(folder, quad(progress)), () -> {
+        }, progress -> new File(folder, quad(progress) + ".png"), () -> {
             try {
                 String editContent = finalContent + "\n\n" +
                         LangID.getStringByID("gif_makepng", lang) +
