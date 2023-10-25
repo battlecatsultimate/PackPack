@@ -351,6 +351,8 @@ public class ImageDrawing {
                     effect.postDraw(g, base, ratio, midH);
 
                     P.delete(base);
+
+                    effect.release();
                 }
 
                 if(eff && bg.overlay != null) {
@@ -556,6 +558,8 @@ public class ImageDrawing {
             } catch (Exception e) {
                 StaticStore.logger.uploadErrorLog(e, "E/ImageDrawing::drawBGAnimEffect - Failed to generate BG effect animation");
             }
+
+            eff.release();
 
             pause.countDown();
 
