@@ -128,8 +128,6 @@ public class AnimAnalyzer extends ConstraintCommand {
             }
 
             EntityHandler.generateBCAnim(ch, boostLevel, mixer, lang, () -> { }, () -> { });
-
-            mixer.release();
         } else {
             int anim = getAnimNumber(loader.getContent());
 

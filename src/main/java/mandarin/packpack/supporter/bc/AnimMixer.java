@@ -194,9 +194,4 @@ public class AnimMixer implements Source.AnimLoader {
     public List<String> collectInvalidAnimation(AnimU.ImageKeeper.AnimationType type) {
         return new ArrayList<>();
     }
-
-    public void release() {
-        if (png != null)
-            png.unload();
-    }
 }

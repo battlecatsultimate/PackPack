@@ -254,13 +254,9 @@ public class AnimMessageHolder extends MessageHolder {
                 }
 
                 StaticStore.executorHandler.postDelayed(1000, () -> StaticStore.deleteFile(container, true));
-
-                mixer.release();
-            }, e -> {
-                StaticStore.logger.uploadErrorLog(e, "E/AnimMessageHolder::constructor - Failed to generate animation");
-
-                mixer.release();
-            });
+            }, e ->
+                StaticStore.logger.uploadErrorLog(e, "E/AnimMessageHolder::constructor - Failed to generate animation")
+            );
 
             t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime());
             t.start();
@@ -483,13 +479,9 @@ public class AnimMessageHolder extends MessageHolder {
                         }
 
                         StaticStore.executorHandler.postDelayed(1000, () -> StaticStore.deleteFile(container, true));
-
-                        mixer.release();
-                    }, e -> {
-                        StaticStore.logger.uploadErrorLog(e, "E/AnimMessageHolder::onReceivedEvent - Failed to generate animation");
-
-                        mixer.release();
-                    });
+                    }, e ->
+                        StaticStore.logger.uploadErrorLog(e, "E/AnimMessageHolder::onReceivedEvent - Failed to generate animation")
+                    );
 
                     t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime());
                     t.start();

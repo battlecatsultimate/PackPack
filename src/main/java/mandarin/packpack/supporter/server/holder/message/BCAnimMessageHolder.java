@@ -113,13 +113,9 @@ public class BCAnimMessageHolder extends MessageHolder {
                     });
 
                     StaticStore.executorHandler.postDelayed(1000, () -> StaticStore.deleteFile(container, true));
-
-                    mixer.release();
-                }, () -> {
-                    StaticStore.executorHandler.postDelayed(1000, () -> StaticStore.deleteFile(container, true));
-
-                    mixer.release();
-                });
+                }, () ->
+                    StaticStore.executorHandler.postDelayed(1000, () -> StaticStore.deleteFile(container, true))
+                );
 
                 StaticStore.executorHandler.postDelayed(1000, () -> StaticStore.deleteFile(container, true));
             }, e -> StaticStore.logger.uploadErrorLog(e, "E/BCAnimMessageHolder::constructor - Failed to generate animation"));
@@ -191,13 +187,9 @@ public class BCAnimMessageHolder extends MessageHolder {
                             });
 
                             StaticStore.executorHandler.postDelayed(1000, () -> StaticStore.deleteFile(container, true));
-
-                            mixer.release();
-                        }, () -> {
-                            StaticStore.executorHandler.postDelayed(1000, () -> StaticStore.deleteFile(container, true));
-
-                            mixer.release();
-                        });
+                        }, () ->
+                            StaticStore.executorHandler.postDelayed(1000, () -> StaticStore.deleteFile(container, true))
+                        );
                     }, e -> StaticStore.logger.uploadErrorLog(e, "E/BCAnimMessageHolder::onReceivedEvent - Failed to generate animation"));
 
                     t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime());
@@ -209,8 +201,6 @@ public class BCAnimMessageHolder extends MessageHolder {
                 msg.editMessage(LangID.getStringByID("animanalyze_cancel", lang)).queue();
 
                 StaticStore.deleteFile(container, true);
-
-                mixer.release();
 
                 return STATUS.FINISH;
             }
