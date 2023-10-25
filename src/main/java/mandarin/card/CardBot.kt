@@ -9,14 +9,9 @@ import common.CommonStatic
 import mandarin.card.commands.*
 import mandarin.card.supporter.*
 import mandarin.card.supporter.log.LogSession
-import mandarin.card.supporter.transaction.TatsuHandler
 import mandarin.card.supporter.log.TransactionLogger
-import mandarin.packpack.supporter.EmojiStore
-import mandarin.packpack.supporter.Initializer
-import mandarin.packpack.supporter.PackContext
-import mandarin.packpack.supporter.RecordableThread
-import mandarin.packpack.supporter.StaticStore
-import net.dv8tion.jda.api.JDABuilder
+import mandarin.card.supporter.transaction.TatsuHandler
+import mandarin.packpack.supporter.*
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent
@@ -27,6 +22,7 @@ import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.exceptions.ContextException
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.requests.GatewayIntent
+import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.utils.FileUpload
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import java.io.File
@@ -34,7 +30,6 @@ import java.io.FileWriter
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.collections.ArrayList
 
 object CardBot : ListenerAdapter() {
     var globalPrefix = "cd."
@@ -63,7 +58,7 @@ object CardBot : ListenerAdapter() {
         TatsuHandler.API = args[1]
 
         val token = args[0]
-        val builder = JDABuilder.createDefault(token)
+        val builder = DefaultShardManagerBuilder.createDefault(token)
 
         builder.setEnabledIntents(
             GatewayIntent.GUILD_MEMBERS,
@@ -301,7 +296,12 @@ object CardBot : ListenerAdapter() {
         TransactionLogger.modChannel = event.jda.getGuildChannelById(CardData.modLog) as MessageChannel
 
         StaticStore.loggingChannel = ServerData.get("loggingChannel")
-        StaticStore.logger.assignClient(event.jda)
+
+        val manager = event.jda.shardManager
+
+        if (manager != null) {
+            StaticStore.logger.assignClient(manager)
+        }
 
         ready = true
     }

@@ -8,6 +8,7 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.sharding.ShardManager;
 
 public class CheckEventUpdate extends ConstraintCommand {
     public CheckEventUpdate(ROLE role, int lang, IDHolder id) {
@@ -29,7 +30,11 @@ public class CheckEventUpdate extends ConstraintCommand {
                 } else {
                     msg.editMessage(LangID.getStringByID("chevent_done", lang) + "\n\n" + res).queue();
 
-                    PackBot.notifyEvent(ch.getJDA(), result);
+                    ShardManager manager = ch.getJDA().getShardManager();
+
+                    if (manager != null) {
+                        PackBot.notifyEvent(manager, result);
+                    }
                 }
             } catch (Exception e) {
                 StaticStore.logger.uploadErrorLog(e, "E/CheckEventUpdate::doSomething - Failed to check event data");

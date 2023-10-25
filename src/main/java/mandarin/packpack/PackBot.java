@@ -10,13 +10,17 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Icon;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
+import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
@@ -54,14 +58,14 @@ public class PackBot {
 
         final String TOKEN = args[0];
 
-        JDABuilder builder = JDABuilder.createDefault(TOKEN);
+        DefaultShardManagerBuilder builder = DefaultShardManagerBuilder.createDefault(TOKEN);
 
         builder.setEnabledIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_EMOJIS_AND_STICKERS, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.DIRECT_MESSAGES, GatewayIntent.DIRECT_MESSAGE_REACTIONS, GatewayIntent.MESSAGE_CONTENT, GatewayIntent.SCHEDULED_EVENTS);
         builder.disableCache(CacheFlag.VOICE_STATE);
         builder.setActivity(Activity.playing(develop ? dev : normal));
         builder.addEventListeners(new AllEventAdapter());
 
-        JDA client = builder.build();
+        ShardManager client = builder.build();
 
         StaticStore.logger.assignClient(client);
 
@@ -136,7 +140,11 @@ public class PackBot {
                         File f = new File("./data/bot/", fileName);
 
                         if(f.exists()) {
-                            client.getSelfUser().getManager().setAvatar(Icon.from(f)).queue();
+                            JDA house = client.getShardCache().getElementById(0);
+
+                            if (house != null) {
+                                house.getSelfUser().getManager().setAvatar(Icon.from(f)).queue();
+                            }
                         }
                     } catch (IOException exception) {
                         exception.printStackTrace();
@@ -249,7 +257,7 @@ public class PackBot {
         }
     }
 
-    public static void notifyEvent(JDA client, boolean[][] r) {
+    public static void notifyEvent(ShardManager client, boolean[][] r) {
         List<Guild> guilds = client.getGuilds();
 
         boolean sent = false;
