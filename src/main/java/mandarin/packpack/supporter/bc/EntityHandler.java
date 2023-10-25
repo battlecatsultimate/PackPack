@@ -2036,7 +2036,7 @@ public class EntityHandler {
                     }
 
                     if(finalNeedBoss) {
-                        g.drawText(isBoss.get(i), px, py, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
+                        g.drawText(isBoss.get(i), px, py, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
                     }
                 }
 
