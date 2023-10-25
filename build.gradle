@@ -154,21 +154,6 @@ dependencies {
     runtimeOnly "org.lwjgl:lwjgl-zstd::$lwjglNatives"
 }
 
-jar {
-    from {
-        configurations.runtime.collect {
-            it.isDirectory() ? it : zipTree(it)
-        }
-        configurations.compile.collect {
-            it.isDirectory() ? it : zipTree(it)
-        }
-    }
-    manifest {
-        attributes 'Main-Class': 'mandarin.mandarin.packpack.PackBot'
-    }
-
-    exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
-}
 buildscript {
     ext.kotlin_version = '1.9.0'
     repositories {

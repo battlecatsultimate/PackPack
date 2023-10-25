@@ -1,0 +1,71 @@
+Manifest-Version: 1.0
+Main-Class: mandarin.packpack.PackBot
+Class-Path: ./data/lwjgl/lwjgl-assimp-javadoc.jar ./data/lwjgl/lwjgl-assimp-natives-linux-arm64.jar ./data/lwjgl/lwjgl-a
+ ssimp-natives-linux.jar ./data/lwjgl/lwjgl-assimp-sources.jar ./data/lwjgl/lwjgl-assimp.jar ./data/lwjgl/lwjgl-bgfx-jav
+ adoc.jar ./data/lwjgl/lwjgl-bgfx-natives-linux-arm64.jar ./data/lwjgl/lwjgl-bgfx-natives-linux.jar ./data/lwjgl/lwjgl-b
+ gfx-sources.jar ./data/lwjgl/lwjgl-bgfx.jar ./data/lwjgl/lwjgl-cuda-javadoc.jar ./data/lwjgl/lwjgl-cuda-sources.jar ./d
+ ata/lwjgl/lwjgl-cuda.jar ./data/lwjgl/lwjgl-egl-javadoc.jar ./data/lwjgl/lwjgl-egl-sources.jar ./data/lwjgl/lwjgl-egl.j
+ ar ./data/lwjgl/lwjgl-fmod-javadoc.jar ./data/lwjgl/lwjgl-fmod-sources.jar ./data/lwjgl/lwjgl-fmod.jar ./data/lwjgl/lwj
+ gl-freetype-javadoc.jar ./data/lwjgl/lwjgl-freetype-natives-linux-arm64.jar ./data/lwjgl/lwjgl-freetype-natives-linux.j
+ ar ./data/lwjgl/lwjgl-freetype-sources.jar ./data/lwjgl/lwjgl-freetype.jar ./data/lwjgl/lwjgl-glfw-javadoc.jar ./data/l
+ wjgl/lwjgl-glfw-natives-linux-arm64.jar ./data/lwjgl/lwjgl-glfw-natives-linux.jar ./data/lwjgl/lwjgl-glfw-sources.jar .
+ /data/lwjgl/lwjgl-glfw.jar ./data/lwjgl/lwjgl-harfbuzz-javadoc.jar ./data/lwjgl/lwjgl-harfbuzz-natives-linux-arm64.jar
+ ./data/lwjgl/lwjgl-harfbuzz-natives-linux.jar ./data/lwjgl/lwjgl-harfbuzz-sources.jar ./data/lwjgl/lwjgl-harfbuzz.jar .
+ /data/lwjgl/lwjgl-hwloc-javadoc.jar ./data/lwjgl/lwjgl-hwloc-natives-linux-arm64.jar ./data/lwjgl/lwjgl-hwloc-natives-l
+ inux.jar ./data/lwjgl/lwjgl-hwloc-sources.jar ./data/lwjgl/lwjgl-hwloc.jar ./data/lwjgl/lwjgl-javadoc.jar ./data/lwjgl/
+ lwjgl-jawt-javadoc.jar ./data/lwjgl/lwjgl-jawt-sources.jar ./data/lwjgl/lwjgl-jawt.jar ./data/lwjgl/lwjgl-jemalloc-java
+ doc.jar ./data/lwjgl/lwjgl-jemalloc-natives-linux-arm64.jar ./data/lwjgl/lwjgl-jemalloc-natives-linux.jar ./data/lwjgl/
+ lwjgl-jemalloc-sources.jar ./data/lwjgl/lwjgl-jemalloc.jar ./data/lwjgl/lwjgl-ktx-javadoc.jar ./data/lwjgl/lwjgl-ktx-na
+ tives-linux-arm64.jar ./data/lwjgl/lwjgl-ktx-natives-linux.jar ./data/lwjgl/lwjgl-ktx-sources.jar ./data/lwjgl/lwjgl-kt
+ x.jar ./data/lwjgl/lwjgl-libdivide-javadoc.jar ./data/lwjgl/lwjgl-libdivide-natives-linux-arm64.jar ./data/lwjgl/lwjgl-
+ libdivide-natives-linux.jar ./data/lwjgl/lwjgl-libdivide-sources.jar ./data/lwjgl/lwjgl-libdivide.jar ./data/lwjgl/lwjg
+ l-llvm-javadoc.jar ./data/lwjgl/lwjgl-llvm-natives-linux-arm64.jar ./data/lwjgl/lwjgl-llvm-natives-linux.jar ./data/lwj
+ gl/lwjgl-llvm-sources.jar ./data/lwjgl/lwjgl-llvm.jar ./data/lwjgl/lwjgl-lmdb-javadoc.jar ./data/lwjgl/lwjgl-lmdb-nativ
+ es-linux-arm64.jar ./data/lwjgl/lwjgl-lmdb-natives-linux.jar ./data/lwjgl/lwjgl-lmdb-sources.jar ./data/lwjgl/lwjgl-lmd
+ b.jar ./data/lwjgl/lwjgl-lz4-javadoc.jar ./data/lwjgl/lwjgl-lz4-natives-linux-arm64.jar ./data/lwjgl/lwjgl-lz4-natives-
+ linux.jar ./data/lwjgl/lwjgl-lz4-sources.jar ./data/lwjgl/lwjgl-lz4.jar ./data/lwjgl/lwjgl-meow-javadoc.jar ./data/lwjg
+ l/lwjgl-meow-natives-linux-arm64.jar ./data/lwjgl/lwjgl-meow-natives-linux.jar ./data/lwjgl/lwjgl-meow-sources.jar ./da
+ ta/lwjgl/lwjgl-meow.jar ./data/lwjgl/lwjgl-meshoptimizer-javadoc.jar ./data/lwjgl/lwjgl-meshoptimizer-natives-linux-arm
+ 64.jar ./data/lwjgl/lwjgl-meshoptimizer-natives-linux.jar ./data/lwjgl/lwjgl-meshoptimizer-sources.jar ./data/lwjgl/lwj
+ gl-meshoptimizer.jar ./data/lwjgl/lwjgl-nanovg-javadoc.jar ./data/lwjgl/lwjgl-nanovg-natives-linux-arm64.jar ./data/lwj
+ gl/lwjgl-nanovg-natives-linux.jar ./data/lwjgl/lwjgl-nanovg-sources.jar ./data/lwjgl/lwjgl-nanovg.jar ./data/lwjgl/lwjg
+ l-natives-linux-arm64.jar ./data/lwjgl/lwjgl-natives-linux.jar ./data/lwjgl/lwjgl-nfd-javadoc.jar ./data/lwjgl/lwjgl-nf
+ d-natives-linux-arm64.jar ./data/lwjgl/lwjgl-nfd-natives-linux.jar ./data/lwjgl/lwjgl-nfd-sources.jar ./data/lwjgl/lwjg
+ l-nfd.jar ./data/lwjgl/lwjgl-nuklear-javadoc.jar ./data/lwjgl/lwjgl-nuklear-natives-linux-arm64.jar ./data/lwjgl/lwjgl-
+ nuklear-natives-linux.jar ./data/lwjgl/lwjgl-nuklear-sources.jar ./data/lwjgl/lwjgl-nuklear.jar ./data/lwjgl/lwjgl-odbc
+ -javadoc.jar ./data/lwjgl/lwjgl-odbc-sources.jar ./data/lwjgl/lwjgl-odbc.jar ./data/lwjgl/lwjgl-openal-javadoc.jar ./da
+ ta/lwjgl/lwjgl-openal-natives-linux-arm64.jar ./data/lwjgl/lwjgl-openal-natives-linux.jar ./data/lwjgl/lwjgl-openal-sou
+ rces.jar ./data/lwjgl/lwjgl-openal.jar ./data/lwjgl/lwjgl-opencl-javadoc.jar ./data/lwjgl/lwjgl-opencl-sources.jar ./da
+ ta/lwjgl/lwjgl-opencl.jar ./data/lwjgl/lwjgl-opengl-javadoc.jar ./data/lwjgl/lwjgl-opengl-natives-linux-arm64.jar ./dat
+ a/lwjgl/lwjgl-opengl-natives-linux.jar ./data/lwjgl/lwjgl-opengl-sources.jar ./data/lwjgl/lwjgl-opengl.jar ./data/lwjgl
+ /lwjgl-opengles-javadoc.jar ./data/lwjgl/lwjgl-opengles-natives-linux-arm64.jar ./data/lwjgl/lwjgl-opengles-natives-lin
+ ux.jar ./data/lwjgl/lwjgl-opengles-sources.jar ./data/lwjgl/lwjgl-opengles.jar ./data/lwjgl/lwjgl-openvr-javadoc.jar ./
+ data/lwjgl/lwjgl-openvr-natives-linux.jar ./data/lwjgl/lwjgl-openvr-sources.jar ./data/lwjgl/lwjgl-openvr.jar ./data/lw
+ jgl/lwjgl-openxr-javadoc.jar ./data/lwjgl/lwjgl-openxr-natives-linux-arm64.jar ./data/lwjgl/lwjgl-openxr-natives-linux.
+ jar ./data/lwjgl/lwjgl-openxr-sources.jar ./data/lwjgl/lwjgl-openxr.jar ./data/lwjgl/lwjgl-opus-javadoc.jar ./data/lwjg
+ l/lwjgl-opus-natives-linux-arm64.jar ./data/lwjgl/lwjgl-opus-natives-linux.jar ./data/lwjgl/lwjgl-opus-sources.jar ./da
+ ta/lwjgl/lwjgl-opus.jar ./data/lwjgl/lwjgl-ovr-javadoc.jar ./data/lwjgl/lwjgl-ovr-sources.jar ./data/lwjgl/lwjgl-ovr.ja
+ r ./data/lwjgl/lwjgl-par-javadoc.jar ./data/lwjgl/lwjgl-par-natives-linux-arm64.jar ./data/lwjgl/lwjgl-par-natives-linu
+ x.jar ./data/lwjgl/lwjgl-par-sources.jar ./data/lwjgl/lwjgl-par.jar ./data/lwjgl/lwjgl-remotery-javadoc.jar ./data/lwjg
+ l/lwjgl-remotery-natives-linux-arm64.jar ./data/lwjgl/lwjgl-remotery-natives-linux.jar ./data/lwjgl/lwjgl-remotery-sour
+ ces.jar ./data/lwjgl/lwjgl-remotery.jar ./data/lwjgl/lwjgl-rpmalloc-javadoc.jar ./data/lwjgl/lwjgl-rpmalloc-natives-lin
+ ux-arm64.jar ./data/lwjgl/lwjgl-rpmalloc-natives-linux.jar ./data/lwjgl/lwjgl-rpmalloc-sources.jar ./data/lwjgl/lwjgl-r
+ pmalloc.jar ./data/lwjgl/lwjgl-shaderc-javadoc.jar ./data/lwjgl/lwjgl-shaderc-natives-linux-arm64.jar ./data/lwjgl/lwjg
+ l-shaderc-natives-linux.jar ./data/lwjgl/lwjgl-shaderc-sources.jar ./data/lwjgl/lwjgl-shaderc.jar ./data/lwjgl/lwjgl-so
+ urces.jar ./data/lwjgl/lwjgl-spvc-javadoc.jar ./data/lwjgl/lwjgl-spvc-natives-linux-arm64.jar ./data/lwjgl/lwjgl-spvc-n
+ atives-linux.jar ./data/lwjgl/lwjgl-spvc-sources.jar ./data/lwjgl/lwjgl-spvc.jar ./data/lwjgl/lwjgl-sse-javadoc.jar ./d
+ ata/lwjgl/lwjgl-sse-natives-linux.jar ./data/lwjgl/lwjgl-sse-sources.jar ./data/lwjgl/lwjgl-sse.jar ./data/lwjgl/lwjgl-
+ stb-javadoc.jar ./data/lwjgl/lwjgl-stb-natives-linux-arm64.jar ./data/lwjgl/lwjgl-stb-natives-linux.jar ./data/lwjgl/lw
+ jgl-stb-sources.jar ./data/lwjgl/lwjgl-stb.jar ./data/lwjgl/lwjgl-tinyexr-javadoc.jar ./data/lwjgl/lwjgl-tinyexr-native
+ s-linux-arm64.jar ./data/lwjgl/lwjgl-tinyexr-natives-linux.jar ./data/lwjgl/lwjgl-tinyexr-sources.jar ./data/lwjgl/lwjg
+ l-tinyexr.jar ./data/lwjgl/lwjgl-tinyfd-javadoc.jar ./data/lwjgl/lwjgl-tinyfd-natives-linux-arm64.jar ./data/lwjgl/lwjg
+ l-tinyfd-natives-linux.jar ./data/lwjgl/lwjgl-tinyfd-sources.jar ./data/lwjgl/lwjgl-tinyfd.jar ./data/lwjgl/lwjgl-tootl
+ e-javadoc.jar ./data/lwjgl/lwjgl-tootle-natives-linux.jar ./data/lwjgl/lwjgl-tootle-sources.jar ./data/lwjgl/lwjgl-toot
+ le.jar ./data/lwjgl/lwjgl-vma-javadoc.jar ./data/lwjgl/lwjgl-vma-natives-linux-arm64.jar ./data/lwjgl/lwjgl-vma-natives
+ -linux.jar ./data/lwjgl/lwjgl-vma-sources.jar ./data/lwjgl/lwjgl-vma.jar ./data/lwjgl/lwjgl-vulkan-javadoc.jar ./data/l
+ wjgl/lwjgl-vulkan-sources.jar ./data/lwjgl/lwjgl-vulkan.jar ./data/lwjgl/lwjgl-xxhash-javadoc.jar ./data/lwjgl/lwjgl-xx
+ hash-natives-linux-arm64.jar ./data/lwjgl/lwjgl-xxhash-natives-linux.jar ./data/lwjgl/lwjgl-xxhash-sources.jar ./data/l
+ wjgl/lwjgl-xxhash.jar ./data/lwjgl/lwjgl-yoga-javadoc.jar ./data/lwjgl/lwjgl-yoga-natives-linux-arm64.jar ./data/lwjgl/
+ lwjgl-yoga-natives-linux.jar ./data/lwjgl/lwjgl-yoga-sources.jar ./data/lwjgl/lwjgl-yoga.jar ./data/lwjgl/lwjgl-zstd-ja
+ vadoc.jar ./data/lwjgl/lwjgl-zstd-natives-linux-arm64.jar ./data/lwjgl/lwjgl-zstd-natives-linux.jar ./data/lwjgl/lwjgl-
+ zstd-sources.jar ./data/lwjgl/lwjgl-zstd.jar ./data/lwjgl/lwjgl.jar
