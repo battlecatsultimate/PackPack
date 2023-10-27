@@ -5,12 +5,12 @@ import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.NewsChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.sharding.ShardManager;
 
 import java.util.ArrayList;
 
@@ -33,7 +33,10 @@ public class Publish extends ConstraintCommand {
 
         boolean important = contents[1].equals("-i");
 
-        JDA client = ch.getJDA();
+        ShardManager client = ch.getJDA().getShardManager();
+
+        if (client == null)
+            return;
 
         if(!StaticStore.announcements.containsKey(0)) {
             createMessageWithNoPings(ch, "You have to at least make announcement for English!");

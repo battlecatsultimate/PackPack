@@ -4,9 +4,9 @@ import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.sharding.ShardManager;
 
 public class RegisterFixing extends ConstraintCommand {
     public RegisterFixing(ROLE role, int lang, IDHolder id) {
@@ -31,7 +31,10 @@ public class RegisterFixing extends ConstraintCommand {
             return;
         }
 
-        JDA client = ch.getJDA();
+        ShardManager client = ch.getJDA().getShardManager();
+
+        if (client == null)
+            return;
 
         Guild g = client.getGuildById(contents[1]);
 

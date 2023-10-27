@@ -45,6 +45,7 @@ import net.dv8tion.jda.api.events.role.RoleDeleteEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.sharding.ShardManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -54,6 +55,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class AllEventAdapter extends ListenerAdapter {
+    private static boolean readyDone = false;
+
     @Override
     public void onGuildLeave(@NotNull GuildLeaveEvent event) {
         super.onGuildLeave(event);
@@ -717,158 +720,11 @@ public class AllEventAdapter extends ListenerAdapter {
 
         JDA client = event.getJDA();
 
-        System.out.println("Initializing emojis...");
-
-        EmojiStore.initialize(client);
-
-        System.out.println("Building slash commands...");
-
-        SlashBuilder.build(client);
-
-        System.out.println("Validating roles...");
-
-        List<Guild> l = client.getGuilds();
-
-        for (Guild guild : l) {
-            if (guild != null) {
-                IDHolder id = StaticStore.idHolder.get(guild.getId());
-
-                AtomicReference<Boolean> warned = new AtomicReference<>(false);
-
-                if (id == null) {
-                    final IDHolder idh = new IDHolder();
-
-                    String modID = StaticStore.getRoleIDByName("PackPackMod", guild);
-
-                    if(modID == null) {
-                        reassignTempModRole(guild, idh, warned);
-                    } else {
-                        idh.MOD = modID;
-                    }
-
-                    StaticStore.idHolder.put(guild.getId(), idh);
-                } else {
-                    //Validate Role
-                    String mod = id.MOD;
-
-                    if(mod == null) {
-                        String modID = StaticStore.getRoleIDByName("PackPackMod", guild);
-
-                        if(modID == null) {
-                            reassignTempModRole(guild, id, warned);
-                        } else {
-                            id.MOD = modID;
-                        }
-                    } else {
-                        List<Role> roles = guild.getRoles();
-
-                        boolean found = false;
-
-                        for(Role r : roles) {
-                            if(r.getId().equals(mod)) {
-                                found = true;
-                                break;
-                            }
-                        }
-
-                        if(found)
-                            continue;
-
-                        String modID = StaticStore.getRoleIDByName("PackPackMod", guild);
-
-                        if(modID == null) {
-                            reassignTempModRole(guild, id, warned);
-                        } else {
-                            id.MOD = modID;
-                        }
-                    }
-                }
-            }
-        }
-
-        System.out.println("Filtering out unreachable guilds...");
-
-        List<String> unreachableGuilds = new ArrayList<>();
-
-        for(String key : StaticStore.idHolder.keySet()) {
-            Guild g = client.getGuildById(key);
-
-            if(g == null) {
-                unreachableGuilds.add(key);
-            }
-        }
-
-        for(String key : unreachableGuilds) {
-            StaticStore.idHolder.remove(key);
-        }
-
-        StaticStore.saveServerInfo();
-
-        System.out.println("Sending online status...");
-
-        for(String key : StaticStore.idHolder.keySet()) {
-            try {
-                IDHolder holder = StaticStore.idHolder.get(key);
-
-                if(holder == null || holder.status.isEmpty())
-                    continue;
-
-                Guild g = client.getGuildById(key);
-
-                if(g == null)
-                    continue;
-
-                for(int i = 0; i < holder.status.size(); i++) {
-                    GuildChannel ch = g.getGuildChannelById(holder.status.get(i));
-
-                    if(!(ch instanceof MessageChannel) || !((MessageChannel) ch).canTalk())
-                        continue;
-
-                    if(StaticStore.safeClose) {
-                        ((MessageChannel) ch).sendMessage(String.format(LangID.getStringByID("bot_online", holder.config.lang), client.getSelfUser().getAsMention()))
-                                .setAllowedMentions(new ArrayList<>())
-                                .queue();
-                    } else {
-                        ((MessageChannel) ch).sendMessage(String.format(LangID.getStringByID("bot_issue", holder.config.lang), client.getSelfUser().getAsMention()))
-                                .setAllowedMentions(new ArrayList<>())
-                                .queue();
-                    }
-                }
-            } catch (Exception ignored) {}
-        }
-
-        System.out.println("Initializing status message...");
-
-        try {
-            Guild g = client.getGuildById("964054872649515048");
-
-            if(g != null) {
-                GuildChannel ch = g.getGuildChannelById("1100615571424419910");
-
-                if(ch instanceof MessageChannel) {
-                    PackBot.statusMessage = ((MessageChannel) ch).retrieveMessageById("1100615782272090213");
-                }
-            }
-        } catch (Exception ignore) { }
-
-        System.out.println("Filtering out url format prefixes...");
-
-        for(String key : StaticStore.prefix.keySet()) {
-            String prefix = StaticStore.prefix.get(key);
-
-            if(prefix == null)
-                continue;
-
-            if(prefix.matches("(.+)?http(s)?://(.+)?")) {
-                StaticStore.prefix.remove(key);
-            }
-        }
+        performFirstReady(client);
 
         System.out.println("Sending online notification log...");
 
-        StaticStore.safeClose = false;
-
-        StaticStore.logger.uploadLog("Bot ready to be used!");
+        StaticStore.logger.uploadLog("Bot ready to be used for shard " + client.getShardInfo().getShardString() + "!");
     }
 
     private static void handleInitialModRole(Guild g, IDHolder id, AtomicReference<Boolean> warned) {
@@ -1017,5 +873,166 @@ public class AllEventAdapter extends ListenerAdapter {
         }
 
         return g.retrieveOwner();
+    }
+
+    private static void performFirstReady(JDA client) {
+        if (readyDone)
+            return;
+
+        ShardManager manager = client.getShardManager();
+
+        if (manager == null)
+            return;
+
+        System.out.println("Initializing emojis...");
+
+        EmojiStore.initialize(manager);
+
+        System.out.println("Building slash commands...");
+
+        SlashBuilder.build(client);
+
+        System.out.println("Validating roles...");
+
+        List<Guild> l = manager.getGuilds();
+
+        for (Guild guild : l) {
+            if (guild != null) {
+                IDHolder id = StaticStore.idHolder.get(guild.getId());
+
+                AtomicReference<Boolean> warned = new AtomicReference<>(false);
+
+                if (id == null) {
+                    final IDHolder idh = new IDHolder();
+
+                    String modID = StaticStore.getRoleIDByName("PackPackMod", guild);
+
+                    if(modID == null) {
+                        reassignTempModRole(guild, idh, warned);
+                    } else {
+                        idh.MOD = modID;
+                    }
+
+                    StaticStore.idHolder.put(guild.getId(), idh);
+                } else {
+                    //Validate Role
+                    String mod = id.MOD;
+
+                    if(mod == null) {
+                        String modID = StaticStore.getRoleIDByName("PackPackMod", guild);
+
+                        if(modID == null) {
+                            reassignTempModRole(guild, id, warned);
+                        } else {
+                            id.MOD = modID;
+                        }
+                    } else {
+                        List<Role> roles = guild.getRoles();
+
+                        boolean found = false;
+
+                        for(Role r : roles) {
+                            if(r.getId().equals(mod)) {
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        if(found)
+                            continue;
+
+                        String modID = StaticStore.getRoleIDByName("PackPackMod", guild);
+
+                        if(modID == null) {
+                            reassignTempModRole(guild, id, warned);
+                        } else {
+                            id.MOD = modID;
+                        }
+                    }
+                }
+            }
+        }
+
+        System.out.println("Filtering out unreachable guilds...");
+
+        List<String> unreachableGuilds = new ArrayList<>();
+
+        for(String key : StaticStore.idHolder.keySet()) {
+            Guild g = manager.getGuildById(key);
+
+            if(g == null) {
+                unreachableGuilds.add(key);
+            }
+        }
+
+        for(String key : unreachableGuilds) {
+            StaticStore.idHolder.remove(key);
+        }
+
+        StaticStore.saveServerInfo();
+
+        System.out.println("Sending online status...");
+
+        for(String key : StaticStore.idHolder.keySet()) {
+            try {
+                IDHolder holder = StaticStore.idHolder.get(key);
+
+                if(holder == null || holder.status.isEmpty())
+                    continue;
+
+                Guild g = manager.getGuildById(key);
+
+                if(g == null)
+                    continue;
+
+                for(int i = 0; i < holder.status.size(); i++) {
+                    GuildChannel ch = g.getGuildChannelById(holder.status.get(i));
+
+                    if(!(ch instanceof MessageChannel) || !((MessageChannel) ch).canTalk())
+                        continue;
+
+                    if(StaticStore.safeClose) {
+                        ((MessageChannel) ch).sendMessage(String.format(LangID.getStringByID("bot_online", holder.config.lang), client.getSelfUser().getAsMention()))
+                                .setAllowedMentions(new ArrayList<>())
+                                .queue();
+                    } else {
+                        ((MessageChannel) ch).sendMessage(String.format(LangID.getStringByID("bot_issue", holder.config.lang), client.getSelfUser().getAsMention()))
+                                .setAllowedMentions(new ArrayList<>())
+                                .queue();
+                    }
+                }
+            } catch (Exception ignored) {}
+        }
+
+        System.out.println("Initializing status message...");
+
+        try {
+            Guild g = manager.getGuildById("964054872649515048");
+
+            if(g != null) {
+                GuildChannel ch = g.getGuildChannelById("1100615571424419910");
+
+                if(ch instanceof MessageChannel) {
+                    PackBot.statusMessage = ((MessageChannel) ch).retrieveMessageById("1100615782272090213");
+                }
+            }
+        } catch (Exception ignore) { }
+
+        System.out.println("Filtering out url format prefixes...");
+
+        for(String key : StaticStore.prefix.keySet()) {
+            String prefix = StaticStore.prefix.get(key);
+
+            if(prefix == null)
+                continue;
+
+            if(prefix.matches("(.+)?http(s)?://(.+)?")) {
+                StaticStore.prefix.remove(key);
+            }
+        }
+
+        StaticStore.safeClose = false;
+
+        readyDone = true;
     }
 }

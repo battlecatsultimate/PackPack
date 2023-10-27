@@ -6,7 +6,6 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -14,6 +13,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.sharding.ShardManager;
 
 public class SuggestResponse extends ConstraintCommand {
 
@@ -25,7 +25,10 @@ public class SuggestResponse extends ConstraintCommand {
     public void doSomething(CommandLoader loader) throws Exception {
         MessageChannel ch = loader.getChannel();
 
-        JDA client = ch.getJDA();
+        ShardManager client = ch.getJDA().getShardManager();
+
+        if (client == null)
+            return;
 
         String[] contents = loader.getContent().split(" ", 6);
 

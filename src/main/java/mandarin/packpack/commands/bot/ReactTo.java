@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.EmojiUnion;
+import net.dv8tion.jda.api.sharding.ShardManager;
 import org.jetbrains.annotations.Nullable;
 
 public class ReactTo extends ConstraintCommand {
@@ -37,7 +38,12 @@ public class ReactTo extends ConstraintCommand {
         }
 
         try {
-            Guild g = ch.getJDA().getGuildById(contents[1]);
+            ShardManager client = ch.getJDA().getShardManager();
+
+            if (client == null)
+                return;
+
+            Guild g = client.getGuildById(contents[1]);
 
             if(g == null) {
                 replyToMessageSafely(ch, "No such guild", loader.getMessage(), a -> a);

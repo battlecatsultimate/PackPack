@@ -2,11 +2,11 @@ package mandarin.packpack.commands;
 
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.sharding.ShardManager;
 
 public class SendMessage extends ConstraintCommand {
     public SendMessage(ROLE role, int lang, IDHolder id) {
@@ -17,7 +17,10 @@ public class SendMessage extends ConstraintCommand {
     public void doSomething(CommandLoader loader) throws Exception {
         MessageChannel ch = loader.getChannel();
 
-        JDA client = ch.getJDA();
+        ShardManager client = ch.getJDA().getShardManager();
+
+        if (client == null)
+            return;
 
         String[] contents = loader.getContent().split(" ", 4);
 

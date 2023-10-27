@@ -26,13 +26,13 @@ import mandarin.packpack.supporter.server.holder.HolderHub;
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder;
 import mandarin.packpack.supporter.server.holder.message.MessageHolder;
 import mandarin.packpack.supporter.server.holder.modal.ModalHolder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.sharding.ShardManager;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
@@ -1174,7 +1174,7 @@ public class StaticStore {
     }
 
     @Nonnull
-    public static Emoji getEmoteWitNameAndID(JDA jda, String name, long id, boolean animated, boolean force) {
+    public static Emoji getEmoteWitNameAndID(ShardManager jda, String name, long id, boolean animated, boolean force) {
         List<RichCustomEmoji> emotes = jda.getEmojisByName(name, false);
 
         if (force) {

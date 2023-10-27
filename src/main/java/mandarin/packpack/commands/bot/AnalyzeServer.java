@@ -4,11 +4,11 @@ import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.sharding.ShardManager;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -24,7 +24,10 @@ public class AnalyzeServer extends ConstraintCommand {
     public void doSomething(CommandLoader loader) throws Exception {
         MessageChannel ch = loader.getChannel();
 
-        JDA client = ch.getJDA();
+        ShardManager client = ch.getJDA().getShardManager();
+
+        if (client == null)
+            return;
 
         StringBuilder builder = new StringBuilder("----- SERVER ANALYSIS -----\n\n");
 

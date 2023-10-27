@@ -4,8 +4,8 @@ import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.sharding.ShardManager;
 
 public class ContributorAdd extends ConstraintCommand {
 
@@ -17,7 +17,10 @@ public class ContributorAdd extends ConstraintCommand {
     public void doSomething(CommandLoader loader) throws Exception {
         MessageChannel ch = loader.getChannel();
 
-        JDA client = ch.getJDA();
+        ShardManager client = ch.getJDA().getShardManager();
+
+        if (client == null)
+            return;
 
         String[] contents = loader.getContent().split(" ");
 
@@ -36,7 +39,7 @@ public class ContributorAdd extends ConstraintCommand {
         }, () -> createMessageWithNoPings(ch, "Not a valid user"));
     }
 
-    private void validUser(String id, JDA client, Runnable found, Runnable notFound) {
+    private void validUser(String id, ShardManager client, Runnable found, Runnable notFound) {
         id = id.replaceAll("<@!|<@|>", "");
 
         client.retrieveUserById(id).queue(u -> {

@@ -4,12 +4,12 @@ import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.NewsChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.sharding.ShardManager;
 import org.jetbrains.annotations.Nullable;
 
 public class GetID extends ConstraintCommand {
@@ -35,13 +35,16 @@ public class GetID extends ConstraintCommand {
             return;
         }
 
-        JDA jda = ch.getJDA();
+        ShardManager client = ch.getJDA().getShardManager();
+
+        if (client == null)
+            return;
 
         try {
             switch (contents[1]) {
-                case "-m", "-u" -> jda.retrieveUserById(contents[2]).queue(u -> replyToMessageSafely(ch, "User : " + u.getEffectiveName() + " (" + u.getAsMention() + ")", loader.getMessage(), a -> a));
+                case "-m", "-u" -> client.retrieveUserById(contents[2]).queue(u -> replyToMessageSafely(ch, "User : " + u.getEffectiveName() + " (" + u.getAsMention() + ")", loader.getMessage(), a -> a));
                 case "-c" -> {
-                    GuildChannel c = jda.getGuildChannelById(contents[2]);
+                    GuildChannel c = client.getGuildChannelById(contents[2]);
                     if (c == null)
                         return;
                     String type = switch (c) {
@@ -53,7 +56,7 @@ public class GetID extends ConstraintCommand {
                     replyToMessageSafely(ch, type + " : " + c.getName() + " (" + c.getAsMention() + ")", loader.getMessage(), a -> a);
                 }
                 case "-s" -> {
-                    Guild g = jda.getGuildById(contents[2]);
+                    Guild g = client.getGuildById(contents[2]);
 
                     if (g == null)
                         return;

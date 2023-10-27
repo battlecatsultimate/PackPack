@@ -1,9 +1,9 @@
 package mandarin.packpack.supporter;
 
 import common.util.lang.MultiLangCont;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
+import net.dv8tion.jda.api.sharding.ShardManager;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,7 +14,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public class EmojiStore {
-    public static void initialize(JDA jda) {
+    public static void initialize(ShardManager jda) {
         TWO_PREVIOUS = StaticStore.getEmoteWitNameAndID(jda, "TwoPrevious", 993716493458083900L, false, true);
         PREVIOUS = StaticStore.getEmoteWitNameAndID(jda, "Previous", 993716355817807883L, false, true);
         NEXT = StaticStore.getEmoteWitNameAndID(jda, "Next", 993716605450203146L, false, true);
@@ -127,8 +127,8 @@ public class EmojiStore {
     public static Map<String, Emoji> ABILITY = new HashMap<>();
     public static MultiLangCont<String, Emoji> TRAIT = new MultiLangCont<>();
 
-    private static void putAbility(JDA jda, String key, String name, long id) {
-        Emoji emoji = StaticStore.getEmoteWitNameAndID(jda, name, id, false, true);
+    private static void putAbility(ShardManager manager, String key, String name, long id) {
+        Emoji emoji = StaticStore.getEmoteWitNameAndID(manager, name, id, false, true);
 
         if(emoji instanceof UnicodeEmoji) {
             System.out.println("W/EmojiStore::putAbility - Couldn't get Emoji : " + name + " (" + id + ")");
@@ -139,10 +139,10 @@ public class EmojiStore {
         ABILITY.put(key, emoji);
     }
 
-    private static void putTrait(JDA jda, String key, String name, String loc, long id) {
+    private static void putTrait(ShardManager manager, String key, String name, String loc, long id) {
         String locale = name.replace("LOC", loc.toUpperCase(Locale.ENGLISH));
 
-        Emoji emoji = StaticStore.getEmoteWitNameAndID(jda, locale, id, false, true);
+        Emoji emoji = StaticStore.getEmoteWitNameAndID(manager, locale, id, false, true);
 
         if(emoji instanceof UnicodeEmoji) {
             System.out.println("W/EmojiStore::putAbility - Couldn't get Emoji : " + locale + " (" + id + ")");

@@ -33,7 +33,6 @@ import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
 import mandarin.packpack.supporter.server.holder.component.EnemyButtonHolder;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
@@ -47,6 +46,7 @@ import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
+import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.FileUpload;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jcodec.common.StringUtils;
@@ -2160,7 +2160,10 @@ public class EntityHandler {
             }
         }
 
-        JDA client = ch.getJDA();
+        ShardManager client = ch.getJDA().getShardManager();
+
+        if (client == null)
+            return;
 
         if(limit > 0)  {
             ch.sendMessage(LangID.getStringByID("gif_lengthlim", lang).replace("_", String.valueOf(f.anim.len(getAnimType(mode, f.anim.anims.length)))).replace("-", String.valueOf(limit))).queue();
@@ -2439,7 +2442,10 @@ public class EntityHandler {
             }
         }
 
-        JDA client = ch.getJDA();
+        ShardManager client = ch.getJDA().getShardManager();
+
+        if (client == null)
+            return;
 
         EAnimD<?> anim = en.getEAnim(getAnimType(mode, en.anim.anims.length));
 
@@ -3000,7 +3006,10 @@ public class EntityHandler {
             if(message == null)
                 return;
 
-            JDA client = ch.getJDA();
+            ShardManager client = ch.getJDA().getShardManager();
+
+            if (client == null)
+                return;
 
             long start = System.currentTimeMillis();
 
@@ -3075,7 +3084,10 @@ public class EntityHandler {
             }
         }
 
-        JDA client = ch.getJDA();
+        ShardManager client = ch.getJDA().getShardManager();
+
+        if (client == null)
+            return;
 
         s.anim.load();
 

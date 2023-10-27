@@ -289,7 +289,7 @@ object CardBot : ListenerAdapter() {
     override fun onReady(event: ReadyEvent) {
         super.onReady(event)
 
-        EmojiStore.initialize(event.jda)
+        EmojiStore.initialize(event.jda.shardManager)
 
         TransactionLogger.logChannel = event.jda.getGuildChannelById(CardData.transactionLog) as MessageChannel
         TransactionLogger.tradeChannel = event.jda.getGuildChannelById(CardData.tradingLog) as MessageChannel
