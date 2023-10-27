@@ -89,20 +89,6 @@ class RenderSession {
             throw RuntimeException("Failed to create the GLFW Window")
         }
 
-        val pixelWidth = IntArray(1)
-        val pixelHeight = IntArray(1)
-
-        GLFW.glfwGetWindowSize(windowID, pixelWidth, pixelHeight)
-
-        val videoMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor()) ?:
-        throw RuntimeException("Failed to get resolution of monitor")
-
-        GLFW.glfwSetWindowPos(
-            windowID,
-            (videoMode.width() - pixelWidth[0]) / 2,
-            (videoMode.height() - pixelHeight[0]) / 2
-        )
-
         GLFW.glfwMakeContextCurrent(windowID)
 
         GL.createCapabilities()
@@ -145,20 +131,6 @@ class RenderSession {
         if (windowID == MemoryUtil.NULL) {
             throw RuntimeException("Failed to create the GLFW Window")
         }
-
-        val pixelWidth = IntArray(1)
-        val pixelHeight = IntArray(1)
-
-        GLFW.glfwGetWindowSize(windowID, pixelWidth, pixelHeight)
-
-        val videoMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor()) ?:
-        throw RuntimeException("Failed to get resolution of monitor")
-
-        GLFW.glfwSetWindowPos(
-            windowID,
-            (videoMode.width() - pixelWidth[0]) / 2,
-            (videoMode.height() - pixelHeight[0]) / 2
-        )
 
         GLFW.glfwMakeContextCurrent(windowID)
 
