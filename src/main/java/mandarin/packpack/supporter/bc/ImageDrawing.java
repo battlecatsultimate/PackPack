@@ -21,7 +21,6 @@ import common.util.stage.info.DefStageInfo;
 import common.util.unit.AbEnemy;
 import common.util.unit.Enemy;
 import mandarin.packpack.supporter.StaticStore;
-import mandarin.packpack.supporter.awt.FG2D;
 import mandarin.packpack.supporter.bc.cell.AbilityCellDrawer;
 import mandarin.packpack.supporter.bc.cell.CellDrawer;
 import mandarin.packpack.supporter.bc.cell.NormalCellDrawer;
@@ -36,7 +35,6 @@ import org.apache.commons.lang3.SystemUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -983,6 +981,11 @@ public class ImageDrawing {
             }
         }
 
+        File targetFolder = StaticStore.generateTempFile(temp, "gifSession", "", true);
+
+        if (targetFolder == null)
+            return null;
+
         File gif = StaticStore.generateTempFile(temp, "result", ".gif", false);
 
         if(gif == null) {
@@ -1108,83 +1111,137 @@ public class ImageDrawing {
         P pos = new P(-rect.x, -rect.y);
 
         long start = System.currentTimeMillis();
-        long current = System.currentTimeMillis();
+        final long[] current = {System.currentTimeMillis()};
 
-        for(int i = 0; i < Math.min(frame, 300); i++) {
-            if(System.currentTimeMillis() - current >= 1000) {
-                String content = cont +"\n\n";
+        CountDownLatch waiter = new CountDownLatch(1);
 
-                String prog = DataToString.df.format(i * 100.0 / frame);
-                String eta = getETA(start, System.currentTimeMillis(), i, frame);
-                String ind = String.valueOf(i);
-                String len = String.valueOf(frame);
+        int finalFrame = frame;
+        String finalCont = cont;
 
-                content += LangID.getStringByID("bg_prog", lang)
-                        .replace("_PPP_", " ".repeat(Math.max(0, len.length() - ind.length()))+ind)
-                        .replace("_LLL_", len)
-                        .replace("_BBB_", getProgressBar(i, frame))
-                        .replace("_VVV_", " ".repeat(Math.max(0, 6 - prog.length()))+prog)
-                        .replace("_SSS_", " ".repeat(Math.max(0, 6 - eta.length()))+eta);
+        StaticStore.renderManager.createRenderer(rect.width, rect.height, targetFolder, connector -> {
+            for(int i = 0; i < Math.min(finalFrame, 300); i++) {
+                int finalI = i;
 
-                msg.editMessage(content).queue();
+                connector.queue(g -> {
+                    if(System.currentTimeMillis() - current[0] >= 1000) {
+                        String content = finalCont +"\n\n";
 
-                current = System.currentTimeMillis();
+                        String prog = DataToString.df.format(finalI * 100.0 / finalFrame);
+                        String eta = getETA(start, System.currentTimeMillis(), finalI, finalFrame);
+                        String ind = String.valueOf(finalI);
+                        String len = String.valueOf(finalFrame);
+
+                        content += LangID.getStringByID("bg_prog", lang)
+                                .replace("_PPP_", " ".repeat(Math.max(0, len.length() - ind.length()))+ind)
+                                .replace("_LLL_", len)
+                                .replace("_BBB_", getProgressBar(finalI, finalFrame))
+                                .replace("_VVV_", " ".repeat(Math.max(0, 6 - prog.length()))+prog)
+                                .replace("_SSS_", " ".repeat(Math.max(0, 6 - eta.length()))+eta);
+
+                        msg.editMessage(content).queue();
+
+                        current[0] = System.currentTimeMillis();
+                    }
+
+                    anim.setTime(finalI);
+
+                    g.setStroke(1.5f, GLGraphics.LineEndMode.VERTICAL);
+
+                    g.setColor(54,57,63,255);
+                    g.fillRect(0, 0, rect.width, rect.height);
+
+                    if(debug) {
+                        for(int j = 0; j < rectFrames.get(finalI).size(); j++) {
+                            int[][] r = rectFrames.get(finalI).get(j);
+                            P c = centerFrames.get(finalI).get(j);
+
+                            g.setColor(FakeGraphics.RED);
+
+                            g.drawLine(-rect.x + (int) (r[0][0] * ratio), -rect.y + (int) (r[0][1] * ratio), -rect.x + (int) (r[1][0] * ratio), -rect.y + (int) (r[1][1] * ratio));
+                            g.drawLine(-rect.x + (int) (r[1][0] * ratio), -rect.y + (int) (r[1][1] * ratio), -rect.x + (int) (r[2][0] * ratio), -rect.y + (int) (r[2][1] * ratio));
+                            g.drawLine(-rect.x + (int) (r[2][0] * ratio), -rect.y + (int) (r[2][1] * ratio), -rect.x + (int) (r[3][0] * ratio), -rect.y + (int) (r[3][1] * ratio));
+                            g.drawLine(-rect.x + (int) (r[3][0] * ratio), -rect.y + (int) (r[3][1] * ratio), -rect.x + (int) (r[0][0] * ratio), -rect.y + (int) (r[0][1] * ratio));
+
+                            g.setColor(0, 255, 0, 255);
+
+                            g.fillRect(-rect.x + (int) (ratio * c.x) - 2, -rect.y + (int) (ratio * c.y) -2, 4, 4);
+                        }
+                    } else {
+                        anim.setTime(finalI);
+
+                        anim.draw(g, pos, siz * ratio * 0.5f);
+                    }
+
+                    return null;
+                });
             }
 
-            anim.setTime(i);
+            return null;
+        }, null, () -> {
+            String content = finalCont + "\n\n"+
+                    LangID.getStringByID("bg_prog", lang)
+                            .replace("_PPP_", String.valueOf(finalFrame))
+                            .replace("_LLL_", String.valueOf(finalFrame))
+                            .replace("_BBB_", getProgressBar(finalFrame, finalFrame))
+                            .replace("_VVV_", "100.00")
+                            .replace("_SSS_", "     0") + "\n"+
+                    LangID.getStringByID("gif_uploading", lang);
 
-            BufferedImage image = new BufferedImage(rect.width, rect.height, BufferedImage.TYPE_INT_ARGB);
-            FG2D g = new FG2D(image.getGraphics());
+            msg.editMessage(content).queue();
 
-            g.setRenderingHint(3, 2);
-            g.enableAntialiasing();
+            try {
+                ProcessBuilder builder = new ProcessBuilder(
+                        SystemUtils.IS_OS_WINDOWS ? "data/ffmpeg/bin/ffmpeg" : "ffmpeg", "-i",
+                        "temp/" + targetFolder.getName() + "/%04d.png", "-vf", "palettegen",
+                        "temp/" + targetFolder.getName() + "/palette.png"
+                );
 
-            g.setStroke(1.5f);
+                builder.redirectErrorStream(true);
 
-            g.setColor(54,57,63,255);
-            g.fillRect(0, 0, rect.width, rect.height);
+                Process pro = builder.start();
 
-            if(debug) {
-                for(int j = 0; j < rectFrames.get(i).size(); j++) {
-                    int[][] r = rectFrames.get(i).get(j);
-                    P c = centerFrames.get(i).get(j);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(pro.getInputStream()));
 
-                    g.setColor(FakeGraphics.RED);
+                String line;
 
-                    g.drawLine(-rect.x + (int) (r[0][0] * ratio), -rect.y + (int) (r[0][1] * ratio), -rect.x + (int) (r[1][0] * ratio), -rect.y + (int) (r[1][1] * ratio));
-                    g.drawLine(-rect.x + (int) (r[1][0] * ratio), -rect.y + (int) (r[1][1] * ratio), -rect.x + (int) (r[2][0] * ratio), -rect.y + (int) (r[2][1] * ratio));
-                    g.drawLine(-rect.x + (int) (r[2][0] * ratio), -rect.y + (int) (r[2][1] * ratio), -rect.x + (int) (r[3][0] * ratio), -rect.y + (int) (r[3][1] * ratio));
-                    g.drawLine(-rect.x + (int) (r[3][0] * ratio), -rect.y + (int) (r[3][1] * ratio), -rect.x + (int) (r[0][0] * ratio), -rect.y + (int) (r[0][1] * ratio));
-
-                    g.setColor(0, 255, 0, 255);
-
-                    g.fillRect(-rect.x + (int) (ratio * c.x) - 2, -rect.y + (int) (ratio * c.y) -2, 4, 4);
+                while((line = reader.readLine()) != null) {
+                    System.out.println(line);
                 }
-            } else {
-                anim.setTime(i);
 
-                anim.draw(g, pos, siz * ratio * 0.5f);
+                pro.waitFor();
+                reader.close();
+
+                builder = new ProcessBuilder(
+                        SystemUtils.IS_OS_WINDOWS ? "data/ffmpeg/bin/ffmpeg" : "ffmpeg",
+                        "-r", "30", "-i", "temp/" + targetFolder.getName() + "/%04d.png",
+                        "-i", "temp/" + targetFolder.getName() + "/palette.png", "-lavfi", "paletteuse",
+                        "-y", "temp/" + gif.getName()
+                );
+
+                builder.redirectErrorStream(true);
+
+                pro = builder.start();
+
+                reader = new BufferedReader(new InputStreamReader(pro.getInputStream()));
+
+                while((line = reader.readLine()) != null) {
+                    System.out.println(line);
+                }
+
+                pro.waitFor();
+                reader.close();
+
+                StaticStore.deleteFile(targetFolder, true);
+            } catch (Exception e) {
+                StaticStore.logger.uploadErrorLog(e, "E/ImageDrawing::drawAnimGif - Failed to generate gif file with FFMPEG");
             }
 
-            g.dispose();
+            waiter.countDown();
 
-            encoder.addFrame(image);
-        }
+            return null;
+        });
 
-        encoder.finish();
-
-        fos.close();
-
-        String content = cont + "\n\n"+
-                LangID.getStringByID("bg_prog", lang)
-                        .replace("_PPP_", String.valueOf(frame))
-                        .replace("_LLL_", String.valueOf(frame))
-                        .replace("_BBB_", getProgressBar(frame, frame))
-                        .replace("_VVV_", "100.00")
-                        .replace("_SSS_", "     0") + "\n"+
-                LangID.getStringByID("gif_uploading", lang);
-
-        msg.editMessage(content).queue();
+        waiter.await();
 
         return gif;
     }

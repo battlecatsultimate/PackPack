@@ -63,7 +63,7 @@ class Renderer {
         }
     }
 
-    fun createRenderer(width: Int, height: Int, folder: File, onAttach: (RenderSessionConnector) -> Unit, onExport: (Int) -> File, onFinished: () -> Unit) {
+    fun createRenderer(width: Int, height: Int, folder: File, onAttach: (RenderSessionConnector) -> Unit, onExport: ((Int) -> File)?, onFinished: () -> Unit) {
         attachQueue.add(AttachQueue(width, height, folder, onAttach, onExport, onFinished))
     }
 

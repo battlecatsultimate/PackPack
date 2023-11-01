@@ -7,7 +7,7 @@ class AttachQueue(
     private val height: Int,
     private val folder: File,
     private val onAttach: (RenderSessionConnector) -> Unit,
-    private val onExport: (Int) -> File,
+    private val onExport: ((Int) -> File)?,
     private val onFinish: () -> Unit) {
 
     fun performQueue(renderer: Renderer) {
