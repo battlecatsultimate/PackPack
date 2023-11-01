@@ -2194,7 +2194,7 @@ public class EntityHandler {
                 if(raw) {
                     img = ImageDrawing.drawAnimMp4(anim, msg, 1f, debug, limit, lang);
                 } else {
-                    img = ImageDrawing.drawAnimGif(anim, msg, 1f, debug, false, limit, lang);
+                    img = ImageDrawing.drawAnimGif(anim, msg, 1f, debug, limit, lang);
                 }
 
                 f.anim.unload();
@@ -2482,7 +2482,7 @@ public class EntityHandler {
                 if(raw) {
                     img = ImageDrawing.drawAnimMp4(anim, msg, 1f, debug, limit, lang);
                 } else {
-                    img = ImageDrawing.drawAnimGif(anim, msg, 1f, debug, false, limit, lang);
+                    img = ImageDrawing.drawAnimGif(anim, msg, 1f, debug, limit, lang);
                 }
 
                 en.anim.unload();
@@ -2697,7 +2697,7 @@ public class EntityHandler {
         });
     }
 
-    public static void generateAnim(MessageChannel ch, AnimMixer mixer, int booster, int lang, boolean debug, int limit, boolean raw, boolean transparent, int index) {
+    public static void generateAnim(MessageChannel ch, AnimMixer mixer, int booster, int lang, boolean debug, int limit, boolean raw, int index) {
         boolean mix = mixer.mix();
 
         if(!mix) {
@@ -2728,7 +2728,7 @@ public class EntityHandler {
                 if(raw) {
                     img = ImageDrawing.drawAnimMp4(anim, msg, 1f, debug, limit, lang);
                 } else {
-                    img = ImageDrawing.drawAnimGif(anim, msg, 1f, debug, transparent, lang, limit);
+                    img = ImageDrawing.drawAnimGif(anim, msg, 1f, debug, lang, limit);
                 }
 
                 long end = System.currentTimeMillis();
@@ -3125,7 +3125,7 @@ public class EntityHandler {
                 if(raw) {
                     img = ImageDrawing.drawAnimMp4(anim, msg, 1f, debug, limit, lang);
                 } else {
-                    img = ImageDrawing.drawAnimGif(anim, msg, 1f, debug, false, limit, lang);
+                    img = ImageDrawing.drawAnimGif(anim, msg, 1f, debug, limit, lang);
                 }
             } catch (Exception e) {
                 StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateSoulAnim - Failed to generate soul animaiton");

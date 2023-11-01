@@ -250,7 +250,7 @@ public class AnimMessageHolder extends MessageHolder {
                 }
 
                 for(int i = 0; i < mixer.anim.length; i++) {
-                    EntityHandler.generateAnim(ch, mixer, g == null ? 0 : g.getBoostTier().getKey(), lang, debug, -1, raw, transparent, i);
+                    EntityHandler.generateAnim(ch, mixer, g == null ? 0 : g.getBoostTier().getKey(), lang, debug, -1, raw, i);
                 }
 
                 StaticStore.executorHandler.postDelayed(1000, () -> StaticStore.deleteFile(container, true));
@@ -475,7 +475,7 @@ public class AnimMessageHolder extends MessageHolder {
                         }
 
                         for(int i = 0; i < maanim.size(); i++) {
-                            EntityHandler.generateAnim(ch, mixer, g == null ? 0 : g.getBoostTier().getKey(), lang, debug, -1, raw, transparent, i);
+                            EntityHandler.generateAnim(ch, mixer, g == null ? 0 : g.getBoostTier().getKey(), lang, debug, -1, raw, i);
                         }
 
                         StaticStore.executorHandler.postDelayed(1000, () -> StaticStore.deleteFile(container, true));

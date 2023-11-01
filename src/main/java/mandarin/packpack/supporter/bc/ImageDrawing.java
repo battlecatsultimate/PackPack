@@ -968,7 +968,7 @@ public class ImageDrawing {
         return gif;
     }
 
-    public static File drawAnimGif(EAnimD<?> anim, Message msg, float siz, boolean debug, boolean transparent, int limit, int lang) throws Exception {
+    public static File drawAnimGif(EAnimD<?> anim, Message msg, float siz, boolean debug, int limit, int lang) throws Exception {
         File temp = new File("./temp");
 
         if(!temp.exists()) {
