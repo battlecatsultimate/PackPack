@@ -9,9 +9,7 @@ import mandarin.packpack.supporter.lwjgl.opengl.model.FontModel
 import mandarin.packpack.supporter.lwjgl.opengl.model.MeshModel
 import mandarin.packpack.supporter.lwjgl.opengl.model.TextureMesh
 import org.lwjgl.opengl.GL33
-import kotlin.math.atan
-import kotlin.math.cos
-import kotlin.math.sin
+import kotlin.math.*
 
 class GLGraphics(private val renderSession: RenderSession, private val program: Program) : FakeGraphics {
     enum class State {
@@ -264,48 +262,36 @@ class GLGraphics(private val renderSession: RenderSession, private val program: 
 
             basicShape.drawLine(x1, y1, x2, y2)
         } else {
-            if (x1 == x2) {
-                if (endMode == LineEndMode.VERTICAL) {
-                    drawLineRect(x1 - stroke / 2f, y1, stroke, y2 - y1)
+            val angle = if (x1 == x2) {
+                if (y2 >= y1) {
+                    (Math.PI / 2.0).toFloat()
                 } else {
-                    drawLineRect(x1 - stroke / 2f, y1, stroke, y2 - y1)
-
-                    lineOval(x1 - stroke / 2f, y1 - stroke / 2f, stroke / 2f, stroke / 2f)
-                    lineOval(x2 - stroke / 2f, y2 - stroke / 2f, stroke / 2f, stroke / 2f)
-                }
-            } else if (y1 == y2) {
-                if (endMode == LineEndMode.VERTICAL) {
-                    drawLineRect(x1, y1 - stroke / 2f, x2 - x1, stroke)
-                } else {
-                    drawLineRect(x1, y1 - stroke / 2f, x2 - x1, stroke)
-
-                    lineOval(x1 - stroke / 2f, y1 - stroke / 2f, stroke / 2f, stroke / 2f)
-                    lineOval(x2 - stroke / 2f, y2 - stroke / 2f, stroke / 2f, stroke / 2f)
+                    -(Math.PI / 2.0).toFloat()
                 }
             } else {
-                val slope = (y2 - y1) / (x2 - x1)
-
-                val angle = atan(slope)
-
-                val save = transformation2D.save()
-
-                translate(x1, y1)
-                rotate(angle)
-
-                applyMatrix()
-
-                if (endMode == LineEndMode.VERTICAL) {
-                    fillRect(0f, -stroke / 2f, x2 - x1, stroke)
-                } else {
-                    fillRect(0f, -stroke / 2f, x2 - x1, stroke)
-
-                    lineOval(-stroke / 2f, -stroke / 2f, stroke / 2f, stroke / 2f)
-                    lineOval((x2 - x1) -stroke / 2f, (y2 - y1) - stroke / 2f, stroke / 2f, stroke / 2f)
-                }
-
-                transformation2D.restore(save)
-                Transformation2D.giveBack(save)
+                atan2(y2 - y1, x2 - x1)
             }
+
+            val length = sqrt((x2 - x1).pow(2f) + (y2 - y1).pow(2f))
+
+            val save = transformation2D.save()
+
+            translate(x1, y1)
+            rotate(angle)
+
+            applyMatrix()
+
+            if (endMode == LineEndMode.VERTICAL) {
+                drawLineRect(0f, -stroke / 2f, length, stroke)
+            } else {
+                drawLineRect(0f, -stroke / 2f, length, stroke)
+
+                lineOval(-stroke / 2f, -stroke / 2f, stroke / 2f, stroke / 2f)
+                lineOval(length -stroke / 2f, -stroke / 2f, stroke / 2f, stroke / 2f)
+            }
+
+            transformation2D.restore(save)
+            Transformation2D.giveBack(save)
         }
     }
 
