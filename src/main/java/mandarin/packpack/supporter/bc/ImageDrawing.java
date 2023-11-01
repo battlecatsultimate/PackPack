@@ -29,7 +29,6 @@ import mandarin.packpack.supporter.calculation.Formula;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.lwjgl.GLGraphics;
 import mandarin.packpack.supporter.lwjgl.opengl.model.FontModel;
-import mandarin.packpack.supporter.lzw.AnimatedGifEncoder;
 import net.dv8tion.jda.api.entities.Message;
 import org.apache.commons.lang3.SystemUtils;
 import org.jetbrains.annotations.Nullable;
@@ -1094,19 +1093,6 @@ public class ImageDrawing {
 
         if(rect.height == 0)
             rect.height = 2;
-
-        AnimatedGifEncoder encoder = new AnimatedGifEncoder();
-
-        encoder.setSize(rect.width, rect.height);
-        encoder.setFrameRate(30);
-        encoder.setRepeat(0);
-
-        if(transparent)
-            encoder.setTransparent(new Color(54, 57, 63, 255));
-
-        FileOutputStream fos = new FileOutputStream(gif);
-
-        encoder.start(fos);
 
         P pos = new P(-rect.x, -rect.y);
 

@@ -5,9 +5,7 @@
 
 Information providing bot for game called Battle Cats. Bot is run with BCU code, meaning that programming language used is Java, being run with Discord Java API [JDA](https://github.com/DV8FromTheWorld/JDA)
 
-This project uses [Animated Gif Encoder](https://github.com/battlecatsultimate/PackPack/blob/main/src/main/java/mandarin/packpack/supporter/lzw/AnimatedGifEncoder.java) to generate gif from `The Battle Cats` units and enemies.
-
-This project uses [FFMPEG](https://ffmpeg.org/) to generate mp4 from `The Battle Cats` units and enemies
+This project uses [FFMPEG](https://ffmpeg.org/) to generate mp4/gif from `The Battle Cats` units and enemies
 
 This project uses [LWJGL](https://www.lwjgl.org/) to render images and videos
 
