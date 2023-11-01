@@ -28,8 +28,7 @@ public class AnimAnalyzer extends ConstraintCommand {
     private static final int PARAM_RAW = 4;
     private static final int PARAM_BC = 8;
     private static final int PARAM_ZOMBIE = 16;
-    private static final int PARAM_TRANSPARENT = 32;
-    private static final int PARAM_USEAPK = 64;
+    private static final int PARAM_USEAPK = 32;
 
     public AnimAnalyzer(ROLE role, int lang, IDHolder id) {
         super(role, lang, id, false);
@@ -50,7 +49,6 @@ public class AnimAnalyzer extends ConstraintCommand {
         boolean raw = (PARAM_RAW & param) > 0;
         boolean bc = (PARAM_BC & param) > 0;
         boolean zombie = (PARAM_ZOMBIE & param) > 0;
-        boolean transparent = (PARAM_TRANSPARENT & param) > 0;
         boolean apk = (PARAM_USEAPK & param) > 0;
 
         if(apk) {
@@ -178,7 +176,7 @@ public class AnimAnalyzer extends ConstraintCommand {
                     if(bc) {
                         new BCAnimMessageHolder(msg, m, lang, ch.getId(), container, ch, zombie);
                     } else {
-                        new AnimMessageHolder(msg, m, lang, ch.getId(), container, debug, ch, raw, transparent, finalAnim);
+                        new AnimMessageHolder(msg, m, lang, ch.getId(), container, debug, ch, raw, finalAnim);
                     }
                 } catch (Exception e) {
                     StaticStore.logger.uploadErrorLog(e, "E/AnimAnalyzer::doSomething - Failed to initialize holder");
@@ -222,13 +220,6 @@ public class AnimAnalyzer extends ConstraintCommand {
                     case "-zombie", "-z" -> {
                         if ((result & PARAM_ZOMBIE) == 0) {
                             result |= PARAM_ZOMBIE;
-                        } else {
-                            break label;
-                        }
-                    }
-                    case "-t" -> {
-                        if ((result & PARAM_TRANSPARENT) == 0) {
-                            result |= PARAM_TRANSPARENT;
                         } else {
                             break label;
                         }

@@ -31,7 +31,6 @@ public class AnimMessageHolder extends MessageHolder {
 
     private final boolean debug;
     private final boolean raw;
-    private final boolean transparent;
 
     private boolean pngDone = false;
     private boolean cutDone = false;
@@ -42,7 +41,7 @@ public class AnimMessageHolder extends MessageHolder {
     private final AtomicReference<String> mamodel = new AtomicReference<>("MAMODEL : -");
     private final ArrayList<AtomicReference<String>> maanim = new ArrayList<>();
 
-    public AnimMessageHolder(@Nonnull Message author, @Nonnull Message target, int lang, @Nonnull String channelID, File container, boolean debug, MessageChannel ch, boolean raw, boolean transparent, int len) throws Exception {
+    public AnimMessageHolder(@Nonnull Message author, @Nonnull Message target, int lang, @Nonnull String channelID, File container, boolean debug, MessageChannel ch, boolean raw, int len) throws Exception {
         super(author, channelID, target.getId());
 
         this.msg = target;
@@ -51,7 +50,6 @@ public class AnimMessageHolder extends MessageHolder {
 
         this.debug = debug;
         this.raw = raw;
-        this.transparent = transparent;
 
         mixer = new AnimMixer(len);
 
