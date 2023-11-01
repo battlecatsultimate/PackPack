@@ -12,6 +12,7 @@ import mandarin.card.supporter.log.LogSession
 import mandarin.card.supporter.log.TransactionLogger
 import mandarin.card.supporter.transaction.TatsuHandler
 import mandarin.packpack.supporter.*
+import mandarin.packpack.supporter.server.data.ShardLoader
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent
@@ -289,7 +290,7 @@ object CardBot : ListenerAdapter() {
     override fun onReady(event: ReadyEvent) {
         super.onReady(event)
 
-        EmojiStore.initialize(event.jda.shardManager)
+        EmojiStore.initialize(ShardLoader(event.jda.shardManager))
 
         TransactionLogger.logChannel = event.jda.getGuildChannelById(CardData.transactionLog) as MessageChannel
         TransactionLogger.tradeChannel = event.jda.getGuildChannelById(CardData.tradingLog) as MessageChannel

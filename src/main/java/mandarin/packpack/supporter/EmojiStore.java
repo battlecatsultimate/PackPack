@@ -1,54 +1,54 @@
 package mandarin.packpack.supporter;
 
 import common.util.lang.MultiLangCont;
+import mandarin.packpack.supporter.server.data.ShardLoader;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
-import net.dv8tion.jda.api.sharding.ShardManager;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 public class EmojiStore {
-    public static void initialize(ShardManager jda) {
-        TWO_PREVIOUS = StaticStore.getEmoteWitNameAndID(jda, "TwoPrevious", 993716493458083900L, false, true);
-        PREVIOUS = StaticStore.getEmoteWitNameAndID(jda, "Previous", 993716355817807883L, false, true);
-        NEXT = StaticStore.getEmoteWitNameAndID(jda, "Next", 993716605450203146L, false, true);
-        TWO_NEXT = StaticStore.getEmoteWitNameAndID(jda, "TwoNext", 993716631589113857L, false, true);
-        CASTLE = StaticStore.getEmoteWitNameAndID(jda, "Castle", 993716694436544574L, false, true);
-        BACKGROUND = StaticStore.getEmoteWitNameAndID(jda, "Background", 993716717123555408L, false, true);
-        MUSIC = StaticStore.getEmoteWitNameAndID(jda, "Music", 993716741421158420L, false, true);
-        MUSIC_BOSS = StaticStore.getEmoteWitNameAndID(jda, "MusicBoss", 993716761855787069L, false, true);
-        CROWN_OFF = StaticStore.getEmoteWitNameAndID(jda, "CrownOff", 993716814389444709L, false, true);
-        CROWN_ON = StaticStore.getEmoteWitNameAndID(jda, "CrownOn", 993716790813261884L, false, true);
-        TREASURE_RADAR = StaticStore.getEmoteWitNameAndID(jda, "TreasureRadar", 993716433387261992L, false, true);
-        UDP = StaticStore.getEmoteWitNameAndID(jda, "UDP", 993716659904847912L, false, true);
-        NP = StaticStore.getEmoteWitNameAndID(jda, "NP", 1013168214143946823L, false, true);
-        FILE = StaticStore.getEmoteWitNameAndID(jda, "File", 1021728205540954142L, false, true);
-        FOLDER = StaticStore.getEmoteWitNameAndID(jda, "Folder", 1021730210741227581L, false, true);
-        FOLDERUP = StaticStore.getEmoteWitNameAndID(jda, "FolderUp", 1021728258292731914L, false, true);
-        PNG = StaticStore.getEmoteWitNameAndID(jda, "PNG", 1021728433870487572L, false, true);
-        CSV = StaticStore.getEmoteWitNameAndID(jda, "CSV", 1021728377360633866L, false, true);
-        TSV = StaticStore.getEmoteWitNameAndID(jda, "TSV", 1021728409262493706L, false, true);
-        JSON = StaticStore.getEmoteWitNameAndID(jda, "JSON", 1021728486483836938L, false, true);
-        INI = StaticStore.getEmoteWitNameAndID(jda, "INI", 1021728519195205663L, false, true);
-        IMGCUT = StaticStore.getEmoteWitNameAndID(jda, "Imgcut", 1021728290895056936L, false, true);
-        MAMODEL = StaticStore.getEmoteWitNameAndID(jda, "Mamodel", 1021728318510342184L, false, true);
-        MAANIM = StaticStore.getEmoteWitNameAndID(jda, "Maanim", 1021728344632467517L, false, true);
-        PAYPAL = StaticStore.getEmoteWitNameAndID(jda, "PayPal", 1088764164274663536L, false, true);
-        CASHAPP = StaticStore.getEmoteWitNameAndID(jda, "CashApp", 1088764190505836564L, false, true);
-        SWITCHON = StaticStore.getEmoteWitNameAndID(jda, "SwitchOn", 1105684864985993216L, false, true);
-        SWITCHOFF = StaticStore.getEmoteWitNameAndID(jda, "SwitchOff", 1105684863236976691L, false, true);
-        ORB = StaticStore.getEmoteWitNameAndID(jda, "Orb", 1105772389255614534L, false, true);
-        DOGE = StaticStore.getEmoteWitNameAndID(jda, "Doge", 1105766783077584936L, false, true);
-        SHIBALIEN = StaticStore.getEmoteWitNameAndID(jda, "Shibalien", 1105766785002774610L, false, true);
-        SHIBALIENELITE = StaticStore.getEmoteWitNameAndID(jda, "Shibalien_Elite", 1105766780439380048L, false, true);
-        GREENLINE = StaticStore.getEmoteWitNameAndID(jda, "Green_Line", 1140575224526536795L, false, true);
-        REDDASHEDLINE = StaticStore.getEmoteWitNameAndID(jda, "Red_Dashed_Line", 1140575742082691172L, false, true);
+    public static void initialize(ShardLoader loader) {
+        TWO_PREVIOUS = getEmoteWitNameAndID(loader, "TwoPrevious", 993716493458083900L);
+        PREVIOUS = getEmoteWitNameAndID(loader, "Previous", 993716355817807883L);
+        NEXT = getEmoteWitNameAndID(loader, "Next", 993716605450203146L);
+        TWO_NEXT = getEmoteWitNameAndID(loader, "TwoNext", 993716631589113857L);
+        CASTLE = getEmoteWitNameAndID(loader, "Castle", 993716694436544574L);
+        BACKGROUND = getEmoteWitNameAndID(loader, "Background", 993716717123555408L);
+        MUSIC = getEmoteWitNameAndID(loader, "Music", 993716741421158420L);
+        MUSIC_BOSS = getEmoteWitNameAndID(loader, "MusicBoss", 993716761855787069L);
+        CROWN_OFF = getEmoteWitNameAndID(loader, "CrownOff", 993716814389444709L);
+        CROWN_ON = getEmoteWitNameAndID(loader, "CrownOn", 993716790813261884L);
+        TREASURE_RADAR = getEmoteWitNameAndID(loader, "TreasureRadar", 993716433387261992L);
+        UDP = getEmoteWitNameAndID(loader, "UDP", 993716659904847912L);
+        NP = getEmoteWitNameAndID(loader, "NP", 1013168214143946823L);
+        FILE = getEmoteWitNameAndID(loader, "File", 1021728205540954142L);
+        FOLDER = getEmoteWitNameAndID(loader, "Folder", 1021730210741227581L);
+        FOLDERUP = getEmoteWitNameAndID(loader, "FolderUp", 1021728258292731914L);
+        PNG = getEmoteWitNameAndID(loader, "PNG", 1021728433870487572L);
+        CSV = getEmoteWitNameAndID(loader, "CSV", 1021728377360633866L);
+        TSV = getEmoteWitNameAndID(loader, "TSV", 1021728409262493706L);
+        JSON = getEmoteWitNameAndID(loader, "JSON", 1021728486483836938L);
+        INI = getEmoteWitNameAndID(loader, "INI", 1021728519195205663L);
+        IMGCUT = getEmoteWitNameAndID(loader, "Imgcut", 1021728290895056936L);
+        MAMODEL = getEmoteWitNameAndID(loader, "Mamodel", 1021728318510342184L);
+        MAANIM = getEmoteWitNameAndID(loader, "Maanim", 1021728344632467517L);
+        PAYPAL = getEmoteWitNameAndID(loader, "PayPal", 1088764164274663536L);
+        CASHAPP = getEmoteWitNameAndID(loader, "CashApp", 1088764190505836564L);
+        SWITCHON = getEmoteWitNameAndID(loader, "SwitchOn", 1105684864985993216L);
+        SWITCHOFF = getEmoteWitNameAndID(loader, "SwitchOff", 1105684863236976691L);
+        ORB = getEmoteWitNameAndID(loader, "Orb", 1105772389255614534L);
+        DOGE = getEmoteWitNameAndID(loader, "Doge", 1105766783077584936L);
+        SHIBALIEN = getEmoteWitNameAndID(loader, "Shibalien", 1105766785002774610L);
+        SHIBALIENELITE = getEmoteWitNameAndID(loader, "Shibalien_Elite", 1105766780439380048L);
+        GREENLINE = getEmoteWitNameAndID(loader, "Green_Line", 1140575224526536795L);
+        REDDASHEDLINE = getEmoteWitNameAndID(loader, "Red_Dashed_Line", 1140575742082691172L);
 
         File iconData = new File("./data/abilityIcons.txt");
 
@@ -65,7 +65,7 @@ public class EmojiStore {
                     String[] data = line.split("\t");
 
                     if(data.length <= 3) {
-                        putAbility(jda, data[0], data[1], Long.parseLong(data[2]));
+                        putAbility(loader, data[0], data[1], Long.parseLong(data[2]));
                     } else {
                         if(data[1].contains("LOC")) {
                             for(int i = 2; i < data.length; i++) {
@@ -76,7 +76,7 @@ public class EmojiStore {
 
                                 localeID[0] = localeID[0].toLowerCase(Locale.ENGLISH);
 
-                                putTrait(jda, data[0], data[1], localeID[0], Long.parseLong(localeID[1]));
+                                putTrait(loader, data[0], data[1], localeID[0], Long.parseLong(localeID[1]));
                             }
                         }
                     }
@@ -127,8 +127,8 @@ public class EmojiStore {
     public static Map<String, Emoji> ABILITY = new HashMap<>();
     public static MultiLangCont<String, Emoji> TRAIT = new MultiLangCont<>();
 
-    private static void putAbility(ShardManager manager, String key, String name, long id) {
-        Emoji emoji = StaticStore.getEmoteWitNameAndID(manager, name, id, false, true);
+    private static void putAbility(ShardLoader loader, String key, String name, long id) {
+        Emoji emoji = getEmoteWitNameAndID(loader, name, id);
 
         if(emoji instanceof UnicodeEmoji) {
             System.out.println("W/EmojiStore::putAbility - Couldn't get Emoji : " + name + " (" + id + ")");
@@ -139,10 +139,10 @@ public class EmojiStore {
         ABILITY.put(key, emoji);
     }
 
-    private static void putTrait(ShardManager manager, String key, String name, String loc, long id) {
+    private static void putTrait(ShardLoader loader, String key, String name, String loc, long id) {
         String locale = name.replace("LOC", loc.toUpperCase(Locale.ENGLISH));
 
-        Emoji emoji = StaticStore.getEmoteWitNameAndID(manager, locale, id, false, true);
+        Emoji emoji = getEmoteWitNameAndID(loader, locale, id);
 
         if(emoji instanceof UnicodeEmoji) {
             System.out.println("W/EmojiStore::putAbility - Couldn't get Emoji : " + locale + " (" + id + ")");
@@ -151,5 +151,25 @@ public class EmojiStore {
         }
 
         TRAIT.put(loc.equals("tw") ? "zh" : loc, key, emoji);
+    }
+
+    private static Emoji getEmoteWitNameAndID(ShardLoader loader, String name, long id) {
+        List<RichCustomEmoji> emotes = new ArrayList<>();
+
+        for (Guild g : loader.emojiArchives) {
+            emotes.addAll(g.getEmojisByName(name, false));
+        }
+
+        emotes.addAll(loader.supportServer.getEmojisByName(name, false));
+
+        if(emotes.isEmpty())
+            return Emoji.fromUnicode("❔");
+
+        for(RichCustomEmoji e : emotes) {
+            if(e.getIdLong() == id && !e.isAnimated())
+                return e;
+        }
+
+        return Emoji.fromUnicode("❔");
     }
 }

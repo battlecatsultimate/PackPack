@@ -12,10 +12,7 @@ import mandarin.packpack.supporter.lang.KoreanSeparater;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.ScamLinkHandler;
 import mandarin.packpack.supporter.server.SpamPrevent;
-import mandarin.packpack.supporter.server.data.BoosterData;
-import mandarin.packpack.supporter.server.data.BoosterHolder;
-import mandarin.packpack.supporter.server.data.ConfigHolder;
-import mandarin.packpack.supporter.server.data.IDHolder;
+import mandarin.packpack.supporter.server.data.*;
 import mandarin.packpack.supporter.server.holder.HolderHub;
 import mandarin.packpack.supporter.server.slash.SlashBuilder;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -45,7 +42,6 @@ import net.dv8tion.jda.api.events.role.RoleDeleteEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.sharding.ShardManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -720,7 +716,11 @@ public class AllEventAdapter extends ListenerAdapter {
 
         JDA client = event.getJDA();
 
-        performFirstReady(client);
+        performClientReady(client);
+
+        if (!readyDone) {
+            performShardsReady(new ShardLoader(client.getShardManager()));
+        }
 
         System.out.println("Sending online notification log...");
 
@@ -875,26 +875,17 @@ public class AllEventAdapter extends ListenerAdapter {
         return g.retrieveOwner();
     }
 
-    private static void performFirstReady(JDA client) {
-        if (readyDone)
-            return;
+    /**
+     * Perform on-ready tasks for this JDA shard<br>
+     * <br>
+     * This method must contain only JDA-level tasks
+     *
+     * @param client JDA shard
+     */
+    private static void performClientReady(JDA client) {
+        System.out.println("Validating roles for shard " + client.getShardInfo() + "...");
 
-        ShardManager manager = client.getShardManager();
-
-        if (manager == null)
-            return;
-
-        System.out.println("Initializing emojis...");
-
-        EmojiStore.initialize(manager);
-
-        System.out.println("Building slash commands...");
-
-        SlashBuilder.build(client);
-
-        System.out.println("Validating roles...");
-
-        List<Guild> l = manager.getGuilds();
+        List<Guild> l = client.getGuilds();
 
         for (Guild guild : l) {
             if (guild != null) {
@@ -953,25 +944,7 @@ public class AllEventAdapter extends ListenerAdapter {
             }
         }
 
-        System.out.println("Filtering out unreachable guilds...");
-
-        List<String> unreachableGuilds = new ArrayList<>();
-
-        for(String key : StaticStore.idHolder.keySet()) {
-            Guild g = manager.getGuildById(key);
-
-            if(g == null) {
-                unreachableGuilds.add(key);
-            }
-        }
-
-        for(String key : unreachableGuilds) {
-            StaticStore.idHolder.remove(key);
-        }
-
-        StaticStore.saveServerInfo();
-
-        System.out.println("Sending online status...");
+        System.out.println("Sending online status for shard " + client.getShardInfo() + "...");
 
         for(String key : StaticStore.idHolder.keySet()) {
             try {
@@ -980,7 +953,7 @@ public class AllEventAdapter extends ListenerAdapter {
                 if(holder == null || holder.status.isEmpty())
                     continue;
 
-                Guild g = manager.getGuildById(key);
+                Guild g = client.getGuildById(key);
 
                 if(g == null)
                     continue;
@@ -1003,20 +976,26 @@ public class AllEventAdapter extends ListenerAdapter {
                 }
             } catch (Exception ignored) {}
         }
+    }
 
-        System.out.println("Initializing status message...");
+    /**
+     * Performs global-level tasks<br>
+     * <br>
+     * This method must contain only tasks that don't rely on guilds
+     *
+     * @param loader Loaded content
+     */
+    private static void performShardsReady(ShardLoader loader) {
+        if (!loader.fullyLoaded)
+            return;
 
-        try {
-            Guild g = manager.getGuildById("964054872649515048");
+        System.out.println("Initializing emojis...");
 
-            if(g != null) {
-                GuildChannel ch = g.getGuildChannelById("1100615571424419910");
+        EmojiStore.initialize(loader);
 
-                if(ch instanceof MessageChannel) {
-                    PackBot.statusMessage = ((MessageChannel) ch).retrieveMessageById("1100615782272090213");
-                }
-            }
-        } catch (Exception ignore) { }
+        System.out.println("Building slash commands...");
+
+        SlashBuilder.build(loader.supportServer.getJDA());
 
         System.out.println("Filtering out url format prefixes...");
 
@@ -1030,6 +1009,16 @@ public class AllEventAdapter extends ListenerAdapter {
                 StaticStore.prefix.remove(key);
             }
         }
+
+        System.out.println("Initializing status message...");
+
+        try {
+            GuildChannel ch = loader.supportServer.getGuildChannelById("1100615571424419910");
+
+            if(ch instanceof MessageChannel) {
+                PackBot.statusMessage = ((MessageChannel) ch).retrieveMessageById("1100615782272090213");
+            }
+        } catch (Exception ignore) { }
 
         StaticStore.safeClose = false;
 

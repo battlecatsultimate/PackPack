@@ -177,6 +177,16 @@ public class StaticStore {
     public final static String ENEMYARCHIVE = "964536611276738641";
     public final static String MISCARCHIVE = "964536641526067310";
 
+    public final static String SUPPORT_SERVER = "964054872649515048";
+
+    public static String[] EMOJI_ARCHIVES = {
+            "1010103237958959194",
+            "1010126565545357443",
+            "1012995850739388416",
+            "1096841217528053882",
+            "964054872649515048"
+    };
+
     public static boolean checkingBCU = false;
 
     public static final Random random = new Random();

@@ -36,6 +36,8 @@ import java.util.regex.Pattern;
  */
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class PackBot {
+    public static boolean test = false;
+
     public static int save = 0;
     public static int event = 0;
     public static int pfp = 0;
@@ -54,11 +56,24 @@ public class PackBot {
     public static void main(String[] args) throws LoginException {
         Runtime.getRuntime().addShutdownHook(new Thread(Logger::writeLog));
 
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].equals("--test") && i < args.length - 1) {
+                if (args[i + 1].equals("true")) {
+                    test = true;
+                } else if(args[i + 1].equals("false")) {
+                    test = false;
+                }
+            }
+        }
+
         initialize(args);
 
         final String TOKEN = args[0];
 
         DefaultShardManagerBuilder builder = DefaultShardManagerBuilder.createDefault(TOKEN);
+
+        builder.setShardsTotal(3);
+        builder.setShards(0, 1, 2);
 
         builder.setEnabledIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_EMOJIS_AND_STICKERS, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.DIRECT_MESSAGES, GatewayIntent.DIRECT_MESSAGE_REACTIONS, GatewayIntent.MESSAGE_CONTENT, GatewayIntent.SCHEDULED_EVENTS);
         builder.disableCache(CacheFlag.VOICE_STATE);
@@ -75,7 +90,7 @@ public class PackBot {
             public void run() {
                 Calendar c = Calendar.getInstance();
 
-                if(save % 5 == 0) {
+                if(save % 5 == 0 && !test) {
                     System.out.println("Save Process");
                     StaticStore.saveServerInfo();
 
