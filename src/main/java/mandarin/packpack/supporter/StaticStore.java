@@ -1183,30 +1183,6 @@ public class StaticStore {
         return DataToString.df.format(size)+unit[2];
     }
 
-    @Nonnull
-    public static Emoji getEmoteWitNameAndID(ShardManager jda, String name, long id, boolean animated, boolean force) {
-        List<RichCustomEmoji> emotes = jda.getEmojisByName(name, false);
-
-        if (force) {
-            int trial = 0;
-
-            while(emotes.isEmpty() && trial < 50) {
-                emotes = jda.getEmojisByName(name, false);
-                trial++;
-            }
-        }
-
-        if(emotes.isEmpty())
-            return Emoji.fromUnicode("❔");
-
-        for(RichCustomEmoji e : emotes) {
-            if(e.getIdLong() == id && e.isAnimated() == animated)
-                return e;
-        }
-
-        return Emoji.fromUnicode("❔");
-    }
-
     public static int getHighestRolePosition(Member m) {
         List<Role> roles = m.getRoles();
 

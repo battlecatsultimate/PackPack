@@ -3,14 +3,14 @@ package mandarin.packpack.supporter;
 import java.io.File;
 import java.util.ArrayList;
 
-public interface ImageGenerator {
-    int space = 30;
-    int xGap = 5;
-    int yGap = 2;
+public abstract class ImageGenerator {
+    public static int space = 30;
+    public static int xGap = 5;
+    public static int yGap = 2;
 
-    File generateImage(String message, boolean isStage);
+    public abstract File generateImage(String message, boolean isStage) throws Exception;
 
-    File generateRealImage(String message, boolean isStage);
+    public abstract File generateRealImage(String message, boolean isStage) throws Exception;
 
-    ArrayList<String> getInvalids(String message);
+    public abstract ArrayList<String> getInvalids(String message);
 }

@@ -16,7 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class FontStageImageGenerator implements ImageGenerator{
+public class FontStageImageGenerator extends ImageGenerator{
     private final Font font;
     private final float strokeWidth;
 

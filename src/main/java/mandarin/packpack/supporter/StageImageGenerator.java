@@ -1,18 +1,12 @@
 package mandarin.packpack.supporter;
 
-import common.pack.Context;
 import common.system.fake.FakeImage;
-import mandarin.packpack.supporter.awt.FG2D;
-import mandarin.packpack.supporter.awt.FIBI;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
 
-public class StageImageGenerator implements  ImageGenerator {
+public class StageImageGenerator extends ImageGenerator {
     private static final int[] white = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
             23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50,
             51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 63};
@@ -151,7 +145,16 @@ public class StageImageGenerator implements  ImageGenerator {
         }
     }
 
-    private BufferedImage generateBufferedImage(String message) {
+    @Override
+    public File generateImage(String message, boolean isStage) throws Exception {
+        File temp = new File("./temp/");
+
+        File f = StaticStore.generateTempFile(temp, "Result", ".png", false);
+
+        if(f == null) {
+            return null;
+        }
+
         if(valid(message)) {
             ArrayList<int []> coord = new ArrayList<>();
 
@@ -161,267 +164,224 @@ public class StageImageGenerator implements  ImageGenerator {
 
             int h = hs[0] + hs[1] + 18;
 
-            BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-            Graphics2D gr = (Graphics2D) img.getGraphics();
+            CountDownLatch waiter = new CountDownLatch(1);
 
-            FG2D g = new FG2D(gr);
+            StaticStore.renderManager.createRenderer(w, h, temp, connector -> {
+                connector.queue(g -> {
+                    int pad = 9;
 
-            int pad = 9;
+                    for(int i = 0; i < message.length(); i++) {
+                        String c = Character.toString(message.charAt(i));
 
-            for(int i = 0; i < message.length(); i++) {
-                String c = Character.toString(message.charAt(i));
+                        if(c.isBlank()) {
+                            pad += space;
+                            continue;
+                        }
 
-                if(c.isBlank()) {
-                    pad += space;
-                    continue;
-                }
+                        int ind = indexOf(c);
 
-                int ind = indexOf(c);
+                        if(ind == -1) {
+                            System.out.println("Invalid index! : "+c);
+                            return null;
+                        }
 
-                if(ind == -1) {
-                    System.out.println("Invalid index! : "+c);
+                        ind = white[ind];
+
+                        if(ind+79 >= images.length) {
+                            System.out.println("Too high index! : "+ind+" | "+images.length);
+                            return null;
+                        }
+
+                        FakeImage image = images[ind];
+                        FakeImage shadow = images[ind+79];
+
+                        int[] offset = decideOffset(c, image, pad, h, hs[1] + 9);
+
+                        coord.add(offset);
+
+                        int[] shadowOffset = {offset[0] + image.getWidth()/2 - shadow.getWidth()/2, offset[1] + image.getHeight()/2 - shadow.getHeight()/2};
+
+                        g.drawImage(shadow, shadowOffset[0], shadowOffset[1]);
+
+                        pad += image.getWidth() + 4;
+                    }
+
+                    pad = 9;
+                    int index = 0;
+
+                    for(int i = 0; i < message.length(); i++) {
+                        String c = Character.toString(message.charAt(i));
+
+                        if(c.isBlank()) {
+                            pad += 15;
+                            continue;
+                        }
+
+                        int ind = indexOf(c);
+
+                        ind = white[ind];
+
+                        FakeImage image = images[ind];
+
+                        g.drawImage(image, coord.get(index)[0], coord.get(index)[1]);
+
+                        index++;
+                    }
+
                     return null;
-                }
+                });
 
-                ind = white[ind];
+                return null;
+            }, progress -> f, () -> {
+                waiter.countDown();
 
-                if(ind+79 >= images.length) {
-                    System.out.println("Too high index! : "+ind+" | "+images.length);
-                    return null;
-                }
+                return null;
+            });
 
-                FakeImage image = images[ind];
-                FakeImage shadow = images[ind+79];
+            waiter.await();
 
-                int[] offset = decideOffset(c, image, pad, h, hs[1] + 9);
-
-                coord.add(offset);
-
-                int[] shadowOffset = {offset[0] + image.getWidth()/2 - shadow.getWidth()/2, offset[1] + image.getHeight()/2 - shadow.getHeight()/2};
-
-                g.drawImage(shadow, shadowOffset[0], shadowOffset[1]);
-
-                pad += image.getWidth() + 4;
-            }
-
-            pad = 9;
-            int index = 0;
-
-            for(int i = 0; i < message.length(); i++) {
-                String c = Character.toString(message.charAt(i));
-
-                if(c.isBlank()) {
-                    pad += 15;
-                    continue;
-                }
-
-                int ind = indexOf(c);
-
-                ind = white[ind];
-
-                FakeImage image = images[ind];
-
-                g.drawImage(image, coord.get(index)[0], coord.get(index)[1]);
-
-                index++;
-            }
-
-            g.dispose();
-
-            return img;
+            return f;
         }
 
         return null;
     }
 
     @Override
-    public File generateImage(String message, boolean isStage) {
-        if(valid(message)) {
-            ArrayList<int []> coord = new ArrayList<>();
+    public File generateRealImage(String message, boolean isStage) throws Exception {
+        File temp = new File("./temp");
 
-            int w = generateWidth(message) + 18;
-
-            int[] hs = generateHeight(message);
-
-            int h = hs[0] + hs[1] + 18;
-
-            BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-            Graphics2D gr = (Graphics2D) img.getGraphics();
-
-            FG2D g = new FG2D(gr);
-
-            int pad = 9;
-
-            for(int i = 0; i < message.length(); i++) {
-                String c = Character.toString(message.charAt(i));
-
-                if(c.isBlank()) {
-                    pad += space;
-                    continue;
-                }
-
-                int ind = indexOf(c);
-
-                if(ind == -1) {
-                    System.out.println("Invalid index! : "+c);
-                    return null;
-                }
-
-                ind = white[ind];
-
-                if(ind+79 >= images.length) {
-                    System.out.println("Too high index! : "+ind+" | "+images.length);
-                    return null;
-                }
-
-                FakeImage image = images[ind];
-                FakeImage shadow = images[ind+79];
-
-                int[] offset = decideOffset(c, image, pad, h, hs[1] + 9);
-
-                coord.add(offset);
-
-                int[] shadowOffset = {offset[0] + image.getWidth()/2 - shadow.getWidth()/2, offset[1] + image.getHeight()/2 - shadow.getHeight()/2};
-
-                g.drawImage(shadow, shadowOffset[0], shadowOffset[1]);
-
-                pad += image.getWidth() + 4;
-            }
-
-            pad = 9;
-            int index = 0;
-
-            for(int i = 0; i < message.length(); i++) {
-                String c = Character.toString(message.charAt(i));
-
-                if(c.isBlank()) {
-                    pad += 15;
-                    continue;
-                }
-
-                int ind = indexOf(c);
-
-                ind = white[ind];
-
-                FakeImage image = images[ind];
-
-                g.drawImage(image, coord.get(index)[0], coord.get(index)[1]);
-
-                index++;
-            }
-
-            g.dispose();
-
-            File f = StaticStore.generateTempFile(new File("./temp/"), "Result", ".png", false);
-
-            if(f == null) {
-                return null;
-            }
-
-            try {
-                ImageIO.write(img, "PNG", f);
-
-                return f;
-            } catch (IOException e) {
-                StaticStore.logger.uploadErrorLog(e, "Failed to write png : "+f.getAbsolutePath());
-                e.printStackTrace();
-
-                return null;
-            }
-        }
-
-        return null;
-    }
-
-    @Override
-    public File generateRealImage(String message, boolean isStage) {
-        BufferedImage img = generateBufferedImage(message);
-
-        if(img == null)
+        if (!temp.exists() && !temp.mkdirs())
             return null;
 
-        BufferedImage real = new BufferedImage(256, 64, BufferedImage.TYPE_INT_ARGB);
-        FG2D g = new FG2D(real.getGraphics());
+        File file = StaticStore.generateTempFile(temp, "result", ".png", false);
 
-        g.setRenderingHint(3, 1);
-        g.enableAntialiasing();
+        if (file == null)
+            return null;
 
-        if(!isStage) {
-            float ratio = 45f / img.getHeight();
+        ArrayList<int []> coord = new ArrayList<>();
 
-            BufferedImage scaled = new BufferedImage((int) (img.getWidth() * ratio), 45, BufferedImage.TYPE_INT_ARGB);
-            FG2D sg = new FG2D(scaled.getGraphics());
+        int w = generateWidth(message) + 18;
 
-            sg.setRenderingHint(3, 1);
-            sg.enableAntialiasing();
+        int[] hs = generateHeight(message);
 
-            sg.drawImage(FIBI.build(img), 0, 0, scaled.getWidth(), scaled.getHeight());
+        int h = hs[0] + hs[1] + 18;
 
-            if(scaled.getWidth() > 248)
-                ratio = 248f / scaled.getWidth();
-            else
-                ratio = 1f;
+        CountDownLatch waiter = new CountDownLatch(1);
 
-            g.drawImage(FIBI.build(scaled), 128 - (scaled.getWidth() * ratio / 2), 32 - 45f/2, scaled.getWidth() * ratio, scaled.getHeight());
+        StaticStore.renderManager.createRenderer(256, 64, temp, connector -> {
+            connector.queue(g -> {
+                float targetHeight;
+                float maxWidth;
 
-            g.dispose();
-            sg.dispose();
+                if (!isStage) {
+                    targetHeight = 45f;
+                    maxWidth = 248f;
+                } else {
+                    targetHeight = 29f;
+                    maxWidth = 228f;
+                }
 
-            File f = new File("./temp/Result.png");
+                float yr;
 
-            try {
-                Context.check(f);
-            } catch (IOException e) {
-                StaticStore.logger.uploadErrorLog(e, "Failed to check file : "+f.getAbsolutePath());
-                e.printStackTrace();
+                if (!isStage) {
+                    yr = 45f / h;
+                } else {
+                    yr = 29f / h;
+                }
+
+                float xr = yr;
+
+                if (xr * w > maxWidth) {
+                    xr = maxWidth / w;
+                }
+
+                float offsetX;
+                float offsetY;
+
+                if (!isStage) {
+                    offsetX = 128f - xr * w / 2f;
+                    offsetY = 32f - targetHeight / 2f;
+                } else {
+                    offsetX = 3f;
+                    offsetY = 10f;
+                }
+
+                g.translate(offsetX, offsetY);
+                g.scale(xr, yr);
+
+                int pad = 9;
+
+                for(int i = 0; i < message.length(); i++) {
+                    String c = Character.toString(message.charAt(i));
+
+                    if(c.isBlank()) {
+                        pad += space;
+                        continue;
+                    }
+
+                    int ind = indexOf(c);
+
+                    if(ind == -1) {
+                        System.out.println("Invalid index! : "+c);
+                        return null;
+                    }
+
+                    ind = white[ind];
+
+                    if(ind+79 >= images.length) {
+                        System.out.println("Too high index! : "+ind+" | "+images.length);
+                        return null;
+                    }
+
+                    FakeImage image = images[ind];
+                    FakeImage shadow = images[ind+79];
+
+                    int[] offset = decideOffset(c, image, pad, h, hs[1] + 9);
+
+                    coord.add(offset);
+
+                    int[] shadowOffset = {offset[0] + image.getWidth()/2 - shadow.getWidth()/2, offset[1] + image.getHeight()/2 - shadow.getHeight()/2};
+
+                    g.drawImage(shadow, shadowOffset[0], shadowOffset[1]);
+
+                    pad += image.getWidth() + 4;
+                }
+
+                pad = 9;
+                int index = 0;
+
+                for(int i = 0; i < message.length(); i++) {
+                    String c = Character.toString(message.charAt(i));
+
+                    if(c.isBlank()) {
+                        pad += 15;
+                        continue;
+                    }
+
+                    int ind = indexOf(c);
+
+                    ind = white[ind];
+
+                    FakeImage image = images[ind];
+
+                    g.drawImage(image, coord.get(index)[0], coord.get(index)[1]);
+
+                    index++;
+                }
+
                 return null;
-            }
+            });
 
-            try {
-                ImageIO.write(real, "PNG", f);
-            } catch (IOException e) {
-                StaticStore.logger.uploadErrorLog(e, "Failed to write png file : "+f.getAbsolutePath());
-                e.printStackTrace();
-                return null;
-            }
+            return null;
+        }, progress -> file, () -> {
+            waiter.countDown();
 
-            return f;
-        } else {
-            float ratio = 29f / img.getHeight();
+            return null;
+        });
 
-            BufferedImage scaled = new BufferedImage((int) (img.getWidth() * ratio), 29, BufferedImage.TYPE_INT_ARGB);
-            FG2D sg = new FG2D(scaled.getGraphics());
+        waiter.await();
 
-            sg.setRenderingHint(3, 1);
-            sg.enableAntialiasing();
-
-            sg.drawImage(FIBI.build(img), 0, 0, scaled.getWidth(), scaled.getHeight());
-
-            if(scaled.getWidth() > 228)
-                ratio = 228f / scaled.getWidth();
-            else
-                ratio = 1f;
-
-            g.drawImage(FIBI.build(scaled), 3, 10, scaled.getWidth() * ratio, scaled.getHeight());
-
-            g.dispose();
-            sg.dispose();
-
-            File f = StaticStore.generateTempFile(new File("./temp/"), "Result", ".png", false);
-
-            if(f == null)
-                return null;
-
-            try {
-                ImageIO.write(real, "PNG", f);
-            } catch (IOException e) {
-                StaticStore.logger.uploadErrorLog(e, "Failed to write png file : "+f.getAbsolutePath());
-                e.printStackTrace();
-                return null;
-            }
-
-            return f;
-        }
+        return file;
     }
 
     public boolean contains(int a) {
