@@ -3,6 +3,7 @@ package mandarin.packpack.commands.bot;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.lwjgl.opengl.RenderSessionManager;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.ConfirmButtonHolder;
@@ -101,6 +102,9 @@ public class LogOut extends ConstraintCommand {
                 StaticStore.saveServerInfo();
 
                 client.shutdown();
+
+                StaticStore.renderManager.renderSessionManager.closeAll();
+                RenderSessionManager.Companion.terminate();
 
                 System.exit(0);
             }, lang));
