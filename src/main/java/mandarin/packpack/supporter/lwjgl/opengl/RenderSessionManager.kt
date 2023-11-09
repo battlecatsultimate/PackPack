@@ -17,7 +17,7 @@ class RenderSessionManager {
 
         program.addShader(
             ShaderScript.build("fragment.fs", ShaderScript.Type.FRAGMENT,
-            "state", "step1", "step2", "color1", "color2", "screenSize", "alpha", "dashMode", "fillMode", "factor", "pattern", "opposite")
+            "state", "step1", "step2", "color1", "color2", "screenSize", "alpha", "dashMode", "fillMode", "factor", "pattern", "opposite", "addMode")
         )
         program.addShader(ShaderScript.build("vertex.vs", ShaderScript.Type.VERTEX, "state", "projection", "matrix"))
 

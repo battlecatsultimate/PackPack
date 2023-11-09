@@ -112,6 +112,8 @@ class GLGraphics(private val renderSession: RenderSession, private val program: 
 
     var blend: Blend = Blend.SOURCE
         set(value) {
+            program.setBoolean("addMode", value == Blend.ADD)
+
             when(value) {
                 Blend.SOURCE -> {
                     GL33.glBlendEquation(GL33.GL_FUNC_ADD)

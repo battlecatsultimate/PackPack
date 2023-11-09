@@ -8,6 +8,7 @@ flat in vec2 startPos;
 
 uniform int state;
 uniform bool opposite;
+uniform bool addMode;
 
 uniform vec2 screenSize;
 
@@ -31,7 +32,14 @@ void main()
 {
     if (state == 1)
     {
-        FragColor = texture(textureSampler, uvMap) * alpha;
+        vec4 color = texture(textureSampler, uvMap);
+
+        if (addMode)
+        {
+            color.a = (color.r + color.g + color.b) / 3.0;
+        }
+
+        FragColor = color * alpha;
     }
     else if (state == 2)
     {
