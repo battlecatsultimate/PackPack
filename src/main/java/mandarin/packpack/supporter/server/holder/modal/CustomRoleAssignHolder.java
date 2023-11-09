@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CustomRoleAssignHolder extends ModalHolder {
@@ -68,6 +69,43 @@ public class CustomRoleAssignHolder extends ModalHolder {
                     .queue();
 
             return;
+        }
+
+        if (holder.MOD.equals(r.getId())) {
+            event.reply(LangID.getStringByID("idset_modalready", lang))
+                    .setEphemeral(true)
+                    .queue();
+
+            return;
+        }
+
+        if (holder.MEMBER != null && holder.MEMBER.equals(r.getId())) {
+            event.reply(LangID.getStringByID("idset_memalready", lang))
+                    .setEphemeral(true)
+                    .queue();
+
+            return;
+        }
+
+        if (holder.BOOSTER != null && holder.BOOSTER.equals(r.getId())) {
+            event.reply(LangID.getStringByID("idset_booalready", lang))
+                    .setEphemeral(true)
+                    .setAllowedMentions(new ArrayList<>())
+                    .queue();
+
+            return;
+        }
+
+        for (String key : holder.ID.keySet()) {
+            String id = holder.ID.get(key);
+
+            if (id != null && id.equals(r.getId())) {
+                event.reply(String.format(LangID.getStringByID("idset_idalready", lang), r.getId(), r.getId(), key))
+                        .setEphemeral(true)
+                        .queue();
+
+                return;
+            }
         }
 
         holder.ID.put(name, r.getId());
