@@ -78,12 +78,12 @@ public abstract class Command {
 
             if(elements.length == 2) {
                 if(elements[0].matches("<:[^\\s]+?:\\d+>")) {
-                    options.add(SelectOption.of(elements[1], String.valueOf(i)).withEmoji(Emoji.fromFormatted(elements[0])));
+                    options.add(SelectOption.of(StaticStore.cutOffText(elements[1], 100), String.valueOf(i)).withEmoji(Emoji.fromFormatted(elements[0])));
                 } else {
-                    options.add(SelectOption.of(element, String.valueOf(i)));
+                    options.add(SelectOption.of(StaticStore.cutOffText(element, 100), String.valueOf(i)));
                 }
             } else {
-                options.add(SelectOption.of(element, String.valueOf(i)));
+                options.add(SelectOption.of(StaticStore.cutOffText(element, 100), String.valueOf(i)));
             }
         }
 
