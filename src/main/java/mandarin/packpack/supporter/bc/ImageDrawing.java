@@ -337,6 +337,7 @@ public class ImageDrawing {
                     int midH = (int) (h * groundRatio / ratio);
 
                     effect.initialize(len, bgHeight, midH, bg);
+                    effect.check();
 
                     for(int i = 0; i < 30; i++) {
                         effect.update(len, bgHeight, midH);
