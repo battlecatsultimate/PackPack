@@ -59,7 +59,7 @@ class FontModel(private val size: Float, file: File, type: Type, stroke: Float =
 
             flush()
         }
-    var stroke = 0f
+    private var stroke = 0f
         set(value) {
             if (field == value)
                 return
@@ -162,7 +162,7 @@ class FontModel(private val size: Float, file: File, type: Type, stroke: Float =
         g.transform = t
     }
 
-    fun loadText(text: String) {
+    private fun loadText(text: String) {
         if (!text.any { letter -> !characters.containsKey(letter) })
             return
 
