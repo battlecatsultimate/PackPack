@@ -6,7 +6,8 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.Conflictable;
 import mandarin.packpack.supporter.server.holder.Holder;
-import mandarin.packpack.supporter.server.holder.modal.CustomRoleAssignHolder;
+import mandarin.packpack.supporter.server.holder.component.search.CustomIDManagerHolder;
+import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
@@ -17,18 +18,14 @@ import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
-import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
-import net.dv8tion.jda.api.interactions.components.text.TextInput;
-import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
-import net.dv8tion.jda.api.interactions.modals.Modal;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -173,46 +170,17 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
                             .queue();
                 }
             }
-            case "customAdd" -> {
-                TextInput name = TextInput.create("name", LangID.getStringByID("idset_name", lang), TextInputStyle.SHORT)
-                        .setPlaceholder(LangID.getStringByID("idset_nameplace", lang))
-                        .setRequired(true)
-                        .build();
-
-                TextInput role = TextInput.create("role", LangID.getStringByID("idset_role", lang), TextInputStyle.SHORT)
-                        .setPlaceholder(LangID.getStringByID("idset_roleplace", lang))
-                        .setRequired(true)
-                        .build();
-
-                Modal modal = Modal.create("custom", LangID.getStringByID("idset_customrole", lang))
-                        .addActionRow(name)
-                        .addActionRow(role)
-                        .build();
-
-                event.replyModal(modal).queue();
-
-                StaticStore.putHolder(userID, new CustomRoleAssignHolder(getAuthorMessage(), channelID, messageID, () -> msg.editMessage(generateIDData())
-                        .setComponents(registerComponent())
+            case "customManage" -> {
+                event.deferEdit()
+                        .setContent(getManagerText())
+                        .setComponents(getManagerComponents())
                         .mentionRepliedUser(false)
                         .setAllowedMentions(new ArrayList<>())
-                        .queue(), holder, g));
-            }
-            case "customRemove" -> {
-                if (event instanceof StringSelectInteractionEvent e) {
-                    for (String name : e.getValues()) {
-                        holder.ID.remove(name);
-                    }
+                        .queue();
 
-                    event.deferReply(true)
-                            .setContent(LangID.getStringByID("idset_customremoved", lang))
-                            .queue();
+                expired = true;
 
-                    msg.editMessage(generateIDData())
-                            .setComponents(registerComponent())
-                            .mentionRepliedUser(false)
-                            .setAllowedMentions(new ArrayList<>())
-                            .queue();
-                }
+                StaticStore.putHolder(userID, new CustomIDManagerHolder(getAuthorMessage(), channelID, msg, holder, g));
             }
             case "announce" -> {
                 if (event instanceof EntitySelectInteractionEvent e) {
@@ -368,7 +336,12 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
                     } else {
                         result.append("\n\n");
 
+                        int j = 0;
+
                         for(String name : holder.ID.keySet()) {
+                            if (j == SearchHolder.PAGE_CHUNK)
+                                break;
+
                             String id = holder.ID.get(name);
 
                             if (id == null)
@@ -389,6 +362,8 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
                             }
 
                             result.append("\n");
+
+                            j++;
                         }
                     }
                 }
@@ -460,6 +435,44 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
         return result.toString().replace("\n\n\n\n", "\n\n");
     }
 
+    private String getManagerText() {
+        int lang = holder.config.lang;
+
+        StringBuilder builder = new StringBuilder(LangID.getStringByID("idset_managetitle", lang)).append("\n\n");
+
+        int i = 0;
+
+        for (String key : holder.ID.keySet()) {
+            if (i == SearchHolder.PAGE_CHUNK)
+                break;
+
+            builder.append(i + 1).append(". ").append(key).append(" : ");
+
+            String id = holder.ID.get(key);
+
+            if (id == null) {
+                builder.append("UNKNOWN");
+            } else {
+                builder.append("<@&").append(id).append("> [").append(id).append("]");
+            }
+
+            builder.append("\n");
+
+            i++;
+        }
+
+        if(holder.ID.size() > SearchHolder.PAGE_CHUNK) {
+            int totalPage = holder.ID.size() / SearchHolder.PAGE_CHUNK;
+
+            if(holder.ID.size() % SearchHolder.PAGE_CHUNK != 0)
+                totalPage++;
+
+            builder.append("\n").append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(1)).replace("-", String.valueOf(totalPage)));
+        }
+
+        return builder.toString();
+    }
+
     private List<LayoutComponent> registerComponent() {
         int lang = holder.config.lang;
 
@@ -492,38 +505,9 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
                         )
                 );
                 case 3 -> {
-                    Button b = Button.secondary("customAdd", LangID.getStringByID("idset_customadd", lang)).withEmoji(Emoji.fromUnicode("➕"));
-
-                    if(holder.ID.size() == SelectMenu.OPTIONS_MAX_AMOUNT) {
-                        b = b.asDisabled();
-                    }
+                    Button b = Button.secondary("customManage", LangID.getStringByID("idset_custommanage", lang)).withEmoji(Emoji.fromUnicode("\uD83D\uDCDD"));
 
                     components.add(ActionRow.of(b));
-                }
-                case 4 -> {
-                    if (holder.ID.isEmpty()) {
-                        break;
-                    }
-
-                    List<SelectOption> options = new ArrayList<>();
-
-                    for(String name : holder.ID.keySet()) {
-                        String id = holder.ID.get(name);
-
-                        if(id == null) {
-                            options.add(SelectOption.of(name, name).withDescription(LangID.getStringByID("idset_none", lang)));
-                        } else {
-                            Role r = getRoleSafelyWithID(id);
-
-                            if(r == null) {
-                                options.add(SelectOption.of(name, name).withDescription(String.format(LangID.getStringByID("idset_unknown", lang), id)));
-                            } else {
-                                options.add(SelectOption.of(name, name).withDescription(id));
-                            }
-                        }
-                    }
-
-                    components.add(ActionRow.of(StringSelectMenu.create("customRemove").addOptions(options).setRequiredRange(0, SelectMenu.OPTIONS_MAX_AMOUNT).setPlaceholder(LangID.getStringByID("idset_customremove", lang)).build()));
                 }
                 case 6 -> components.add(
                         ActionRow.of(
@@ -569,6 +553,62 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
         components.add(ActionRow.of(Button.primary("confirm", LangID.getStringByID("button_confirm", lang))));
 
         return components;
+    }
+
+    private List<LayoutComponent> getManagerComponents() {
+        int lang = holder.config.lang;
+
+        List<LayoutComponent> result = new ArrayList<>();
+
+        Button b = Button.secondary("customAdd", LangID.getStringByID("idset_customadd", lang)).withEmoji(Emoji.fromUnicode("➕"));
+
+        result.add(ActionRow.of(b));
+
+        if (!holder.ID.isEmpty()) {
+            List<SelectOption> options = new ArrayList<>();
+
+            for(String name : holder.ID.keySet()) {
+                if (options.size() == SearchHolder.PAGE_CHUNK)
+                    break;
+
+                String id = holder.ID.get(name);
+
+                if(id == null) {
+                    options.add(SelectOption.of(name, name).withDescription(LangID.getStringByID("idset_none", lang)));
+                } else {
+                    Role r = getRoleSafelyWithID(id);
+
+                    if(r == null) {
+                        options.add(SelectOption.of(name, name).withDescription(String.format(LangID.getStringByID("idset_unknown", lang), id)));
+                    } else {
+                        options.add(SelectOption.of(name, name).withDescription(id));
+                    }
+                }
+            }
+
+            result.add(ActionRow.of(StringSelectMenu.create("customRemove").addOptions(options).setRequiredRange(0, 20).setPlaceholder(LangID.getStringByID("idset_customremove", lang)).build()));
+        }
+
+        if (holder.ID.size() > SearchHolder.PAGE_CHUNK) {
+            List<ActionComponent> pages = new ArrayList<>();
+
+            if (holder.ID.size() > SearchHolder.PAGE_CHUNK * 10) {
+                pages.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("search_prev10", lang), EmojiStore.TWO_PREVIOUS).asDisabled());
+            }
+
+            pages.add(Button.secondary("prev", LangID.getStringByID("search_prev", lang)).withEmoji(EmojiStore.PREVIOUS).asDisabled());
+            pages.add(Button.secondary("next", LangID.getStringByID("search_next", lang)).withEmoji(EmojiStore.NEXT));
+
+            if (holder.ID.size() > SearchHolder.PAGE_CHUNK * 10) {
+                pages.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("search_next10", lang), EmojiStore.TWO_NEXT).asDisabled());
+            }
+
+            result.add(ActionRow.of(pages));
+        }
+
+        result.add(ActionRow.of(Button.primary("back", LangID.getStringByID("button_back", lang))));
+
+        return result;
     }
 
     private boolean alreadyBeingUsed(String id) {

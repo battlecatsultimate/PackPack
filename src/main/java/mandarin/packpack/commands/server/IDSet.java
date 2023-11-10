@@ -38,8 +38,6 @@ public class IDSet extends ConstraintCommand {
         replyToMessageSafely(ch, generateIDData(g), loader.getMessage(), this::registerComponents, msg ->
                 StaticStore.putHolder(u.getId(), new IDManagerHolder(loader.getMessage(), ch.getId(), msg, holder, g))
         );
-
-
     }
 
     private String generateIDData(Guild g) {

@@ -1081,19 +1081,19 @@ public class StaticStore {
         HolderHub hub = holders.getOrDefault(id, new HolderHub());
 
         if(holder instanceof MessageHolder messageHolder) {
-            if(hub.messageHolder != null) {
+            if(hub.messageHolder != null && !hub.messageHolder.expired) {
                 hub.messageHolder.expire(id);
             }
 
             hub.messageHolder = messageHolder;
         } else if(holder instanceof ComponentHolder componentHolder) {
-            if(hub.componentHolder != null) {
+            if(hub.componentHolder != null && !hub.componentHolder.expired) {
                 hub.componentHolder.expire(id);
             }
 
             hub.componentHolder = componentHolder;
         } else if(holder instanceof ModalHolder modalHolder) {
-            if(hub.modalHolder != null) {
+            if(hub.modalHolder != null && !hub.modalHolder.expired) {
                 hub.modalHolder.expire(id);
             }
 

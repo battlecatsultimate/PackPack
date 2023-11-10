@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class SearchHolder extends ComponentHolder {
-    public static final int PAGE_CHUNK = 20;
+    public static final int PAGE_CHUNK = 3;
 
     protected final Message msg;
     protected final int lang;
