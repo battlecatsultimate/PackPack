@@ -24,6 +24,7 @@ enum class Activator(val tier: CardData.Tier, val banner: Int, val title: String
     StreetFighters(CardData.Tier.UNCOMMON, 21, "Street Fighters Red/Blue"),
     SuriveMola(CardData.Tier.UNCOMMON, 22, "Survive! Mola Mola!"),
     MetalSlug(CardData.Tier.UNCOMMON, 23, "Metal Slug"),
+    PrincessPunt(CardData.Tier.UNCOMMON, 24, "Princess Punt"),
 
     //Valkyrie
     LilValkyrie(CardData.Tier.ULTRA, 3, "Li'l Valkyrie"),
