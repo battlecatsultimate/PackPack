@@ -51,6 +51,22 @@ public class CustomRoleAssignHolder extends ModalHolder {
             return;
         }
 
+        if (name.length() > 10 && StaticStore.isNumeric(name)) {
+            event.reply(LangID.getStringByID("idset_numformat", lang))
+                    .setEphemeral(true)
+                    .queue();
+
+            return;
+        }
+
+        if (name.length() > 32) {
+            event.reply(LangID.getStringByID("idset_toolong", lang))
+                    .setEphemeral(true)
+                    .queue();
+
+            return;
+        }
+
         String role = getValueFromMap(values, "role");
 
         if (!StaticStore.isNumeric(role)) {

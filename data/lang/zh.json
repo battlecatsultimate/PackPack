@@ -1111,6 +1111,8 @@
   "idset_managetitle" : "Assign or remove custom role to the bot\n\n**List of Custom Role**",
   "idset_custommanage" : "Manage Custom Role",
   "idset_morecustom" : "... and %d custom roles assigned more",
+  "idset_numformat" : "Sorry, but numeric value with over 10 digits is forbidden format!",
+  "idset_toolong" : "Max number of letters for name is up to 32 letters!",
   "clearcache_cleared" : "Cleared all image cache link data",
   "animanalyze_cancel" : "Canceled analyzing custom animation files",
   "animanalyze_expire" : "Analyzing process time expired...",
