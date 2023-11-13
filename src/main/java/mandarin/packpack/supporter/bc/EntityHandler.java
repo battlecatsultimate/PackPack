@@ -3336,8 +3336,10 @@ public class EntityHandler {
                         code = "f";
                     else if (f.fid == 1)
                         code = "c";
-                    else
+                    else if (f.fid == 2)
                         code = "s";
+                    else
+                        code = "u";
 
                     VFile vf = VFile.get("./org/unit/" + Data.trio(f.unit.id.id) + "/" + code + "/udi" + Data.trio(f.unit.id.id) + "_" + code + ".png");
 
@@ -4893,7 +4895,7 @@ public class EntityHandler {
         return true;
     }
 
-    public static void generateStatImage(MessageChannel ch, List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilData, List<FlagCellData> traitData, CustomMaskUnit[] units, String[] name, File container, File itemContainer, int lv, boolean isFrame, int[] egg, int[][] trueForm, boolean trueFormMode, int uid, int lang) throws Exception {
+    public static void generateStatImage(MessageChannel ch, List<CellData> data, List<AbilityData> procData, List<FlagCellData> abilData, List<FlagCellData> traitData, CustomMaskUnit[] units, String[] name, File container, File itemContainer, int lv, boolean isFrame, int[] egg, int[][] trueForm, ImageDrawing.Mode mode, int uid, int lang) throws Exception {
         List<List<CellDrawer>> cellGroup = new ArrayList<>();
 
         for(int i = 0; i < units.length; i++) {
@@ -4902,7 +4904,7 @@ public class EntityHandler {
 
         String type = DataToString.getRarity(units[0].rarity, lang);
 
-        File result = ImageDrawing.drawStatImage(units, cellGroup, lv, name, type, container, itemContainer, trueFormMode, uid, egg, trueForm);
+        File result = ImageDrawing.drawStatImage(units, cellGroup, lv, name, type, container, itemContainer, mode, uid, egg, trueForm);
 
         if(result == null) {
             ch.sendMessage(LangID.getStringByID("stat_fail", lang)).queue();

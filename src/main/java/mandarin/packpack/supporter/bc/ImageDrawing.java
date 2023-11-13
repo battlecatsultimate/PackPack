@@ -45,6 +45,12 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class ImageDrawing {
+    public enum Mode {
+        NORMAL,
+        TRUE_FORM,
+        ZERO_FORM
+    }
+
     private static final int bgAnimTime = 450;
     private static final int bgAnimHeight = 720;
     private static final float bgAnimRatio = bgAnimHeight * 0.8f / 2 / 512f;
@@ -1569,7 +1575,7 @@ public class ImageDrawing {
         return gif;
     }
 
-    public static File drawStatImage(CustomMaskUnit[] units, List<List<CellDrawer>> cellGroup, int lv, String[] name, String type, File container, File itemContainer, boolean trueFormMode, int uID, int[] egg, int[][] trueForm) throws Exception {
+    public static File drawStatImage(CustomMaskUnit[] units, List<List<CellDrawer>> cellGroup, int lv, String[] name, String type, File container, File itemContainer, Mode mode, int uID, int[] egg, int[][] trueForm) throws Exception {
         File f = new File("./temp/");
 
         if(!f.exists() && !f.mkdirs())
@@ -1638,7 +1644,7 @@ public class ImageDrawing {
         int titleW = 0;
         int titleH = 0;
 
-        if(trueFormMode) {
+        if(mode != Mode.NORMAL) {
             int[] titleDimension = measureUnitTitleImage(name[0], type, lv);
 
             titleW = Math.max(titleW, titleDimension[0]);
@@ -1685,7 +1691,7 @@ public class ImageDrawing {
         int totalHeight = bgMargin * 5 + titleH + statPanelMargin * 2 + h;
         int fruitH;
 
-        if(trueForm != null && (trueFormMode || units.length >= 3)) {
+        if(trueForm != null && (mode != Mode.NORMAL || units.length >= 3)) {
             float textHeight = fruitFont.measureDimension("1234567890Mk")[3];
 
             fruitH = (int) (textHeight + (totalWidth - 2 * bgMargin) * (fruitRatio + fruitTextGapRatio + fruitUpperGapRatio + fruitDownerGapRatio) + fruitGap);
@@ -1714,13 +1720,10 @@ public class ImageDrawing {
                 g.setColor(24, 25, 28);
                 g.fillRoundRect(0, -cornerRadius, totalWidth * units.length, cornerRadius + bgMargin * 8 + finalTitleH, cornerRadius, cornerRadius);
 
-                g.setColor(50, 53, 59);
-                g.fillRoundRect(0, 0, 50, 50, 0.5f, 0.5f);
-
                 for(int i = 0; i < units.length; i++) {
                     g.setColor(64, 68, 75);
 
-                    if(!trueFormMode && units.length >= 3 && trueForm != null && i != 2) {
+                    if(mode == Mode.NORMAL && units.length >= 3 && trueForm != null && i != 2) {
                         g.fillRoundRect(bx + bgMargin, bgMargin * 4 + finalTitleH, w + statPanelMargin * 2, finalH + statPanelMargin * 2 + fruitH, cornerRadius, cornerRadius);
                     } else {
                         g.fillRoundRect(bx + bgMargin, bgMargin * 4 + finalTitleH, w + statPanelMargin * 2, finalH + statPanelMargin * 2, cornerRadius, cornerRadius);
@@ -1733,8 +1736,10 @@ public class ImageDrawing {
 
                     File icon;
 
-                    if (trueFormMode) {
+                    if (mode == Mode.TRUE_FORM) {
                         icon = new File(container, "uni"+Data.trio(uID)+"_s00.png");
+                    } else if (mode == Mode.ZERO_FORM) {
+                        icon = new File(container, "uni"+Data.trio(uID)+"_u00.png");
                     } else {
                         if (egg != null && i < egg.length && egg[i] != -1) {
                             icon = new File(container, "uni" + Data.trio(egg[i]) + "_m" + Data.duo(i) + ".png");
@@ -1806,7 +1811,7 @@ public class ImageDrawing {
                     bx += totalWidth;
                 }
 
-                if((units.length >= 3 || trueFormMode) && trueForm != null) {
+                if((units.length >= 3 || mode != Mode.NORMAL) && trueForm != null) {
                     bx -= totalWidth;
 
                     float baseX = bx + bgMargin;
@@ -4198,6 +4203,7 @@ public class ImageDrawing {
             case 0 -> "f";
             case 1 -> "c";
             case 2 -> "s";
+            case 3 -> "u";
             default -> String.valueOf(ind);
         };
     }

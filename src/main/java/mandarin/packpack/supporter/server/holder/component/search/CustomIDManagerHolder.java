@@ -66,12 +66,14 @@ public class CustomIDManagerHolder extends ComponentHolder {
             case "customAdd" -> {
                 TextInput name = TextInput.create("name", LangID.getStringByID("idset_name", lang), TextInputStyle.SHORT)
                         .setPlaceholder(LangID.getStringByID("idset_nameplace", lang))
+                        .setMaxLength(32)
                         .setRequired(true)
                         .build();
 
                 TextInput role = TextInput.create("role", LangID.getStringByID("idset_role", lang), TextInputStyle.SHORT)
                         .setPlaceholder(LangID.getStringByID("idset_roleplace", lang))
                         .setRequired(true)
+                        .setMaxLength(32)
                         .build();
 
                 Modal modal = Modal.create("custom", LangID.getStringByID("idset_customrole", lang))

@@ -6,6 +6,7 @@ import common.util.anim.MaAnim;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.CustomMaskUnit;
 import mandarin.packpack.supporter.bc.EntityHandler;
+import mandarin.packpack.supporter.bc.ImageDrawing;
 import mandarin.packpack.supporter.bc.cell.AbilityData;
 import mandarin.packpack.supporter.bc.cell.CellData;
 import mandarin.packpack.supporter.bc.cell.FlagCellData;
@@ -118,7 +119,7 @@ public class StatAnalyzerMessageHolder extends FileAnalyzerHolder {
 
         statReader.close();
 
-        EntityHandler.generateStatImage(msg.getChannel(), cellData, procData, abilityData, traitData, units, name, container, container, lv, !isSecond, egg, trueForm, false, uID, lang);
+        EntityHandler.generateStatImage(msg.getChannel(), cellData, procData, abilityData, traitData, units, name, container, container, lv, !isSecond, egg, trueForm, ImageDrawing.Mode.NORMAL, uID, lang);
     }
 
     @Override
@@ -250,6 +251,7 @@ public class StatAnalyzerMessageHolder extends FileAnalyzerHolder {
             case 0 -> Data.trio(uID) + "_f02.maanim";
             case 1 -> Data.trio(uID) + "_c02.maanim";
             case 2 -> Data.trio(uID) + "_s02.maanim";
+            case 3 -> Data.trio(uID) + "_u02.maanim";
             default -> Data.trio(uID) + "_" + ind + "02.maanim";
         };
     }
@@ -258,7 +260,8 @@ public class StatAnalyzerMessageHolder extends FileAnalyzerHolder {
         return switch (ind) {
             case 0 -> "f";
             case 1 -> "c";
-            default -> "s";
+            case 2 -> "s";
+            default -> "u";
         };
     }
 }

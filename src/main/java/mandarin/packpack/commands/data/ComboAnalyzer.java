@@ -526,6 +526,7 @@ public class ComboAnalyzer extends ConstraintCommand {
             case 0 -> "f";
             case 1 -> "c";
             case 2 -> "s";
+            case 3 -> "u";
             default -> String.valueOf(ind);
         };
     }

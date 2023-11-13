@@ -7,6 +7,7 @@ import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.CustomMaskUnit;
 import mandarin.packpack.supporter.bc.EntityHandler;
+import mandarin.packpack.supporter.bc.ImageDrawing;
 import mandarin.packpack.supporter.bc.cell.AbilityData;
 import mandarin.packpack.supporter.bc.cell.CellData;
 import mandarin.packpack.supporter.bc.cell.FlagCellData;
@@ -192,7 +193,7 @@ public class TrueFormAnalyzer extends ConstraintCommand {
 
             statReader.close();
 
-            EntityHandler.generateStatImage(ch, cellData, procData, abilData, traitData, data, name, unitLocal, imageLocal, level, !isSecond, null, trueForm, true, uid, lang);
+            EntityHandler.generateStatImage(ch, cellData, procData, abilData, traitData, data, name, unitLocal, imageLocal, level, !isSecond, null, trueForm, ImageDrawing.Mode.TRUE_FORM, uid, lang);
 
         } else {
             List<String> requiredFiles = new ArrayList<>();
@@ -895,18 +896,31 @@ public class TrueFormAnalyzer extends ConstraintCommand {
 
                 if(StaticStore.safeParseInt(data[25]) != 0) {
                     int len = 0;
+                    int offset = 0;
 
-                    while(len != 6 && StaticStore.safeParseInt(data[25 + 2 * len + 2]) != 0) {
+                    int xp = StaticStore.safeParseInt(data[27]);
+
+                    while(len != 6 && StaticStore.safeParseInt(data[27 + 2 * len + 2]) != 0) {
                         len++;
+                    }
+
+                    if (xp != 0) {
+                        len++;
+                        offset = 1;
                     }
 
                     int[][] trueForm = new int[len][2];
 
-                    for(int i = 0; i < len; i++) {
+                    if (xp != 0) {
+                        trueForm[0][0] = -1;
+                        trueForm[0][1] = xp;
+                    }
+
+                    for(int i = offset; i < len; i++) {
                         //Unnecessary calculation is for organizing stuffs
 
-                        trueForm[i][0] = StaticStore.safeParseInt(data[25 + 2 * i + 1]);
-                        trueForm[i][1] = StaticStore.safeParseInt(data[25 + 2 * i + 2]);
+                        trueForm[i][0] = StaticStore.safeParseInt(data[27 + 2 * (i - offset) + 1]);
+                        trueForm[i][1] = StaticStore.safeParseInt(data[27 + 2 * (i - offset) + 2]);
                     }
 
                     return trueForm;
