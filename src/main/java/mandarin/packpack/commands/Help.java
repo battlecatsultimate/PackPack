@@ -101,7 +101,7 @@ public class Help extends Command {
             case "aa", "animanalyzer" ->
                     replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("animanalyzer", true, false, true)));
             case "channelpermission", "channelperm", "chpermission", "chperm", "chp" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("channelpermission", true, true, true)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("channelpermission", false, false, false)));
             case "formsprite", "fsprite", "formsp", "fsp", "catsprite", "csprite", "catsp", "csp", "unitsprite", "usprite", "unitsp", "usp" ->
                     replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("formsprite", true, true, false)));
             case "enemysprite", "esprite", "enemysp", "esp" ->
