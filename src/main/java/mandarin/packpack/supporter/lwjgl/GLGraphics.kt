@@ -101,7 +101,7 @@ class GLGraphics(private val renderSession: RenderSession, private val program: 
             } else {
                 if (blend == Blend.SOURCE) {
                     GL33.glBlendEquation(GL33.GL_FUNC_ADD)
-                    GL33.glBlendFunc(GL33.GL_SRC_ALPHA, GL33.GL_ONE_MINUS_SRC_ALPHA)
+                    GL33.glBlendFuncSeparate(GL33.GL_SRC_ALPHA, GL33.GL_ONE_MINUS_SRC_ALPHA, GL33.GL_ONE, GL33.GL_ONE_MINUS_SRC_ALPHA)
                 }
 
                 program.setBoolean("dashMode", dashMode == LineType.DASH)
@@ -602,7 +602,7 @@ class GLGraphics(private val renderSession: RenderSession, private val program: 
     }
 
     override fun gradRectAlpha(x: Float, y: Float, w: Float, h: Float, x1: Float, y1: Float, a1: Int, c1: IntArray, x2: Float, y2: Float, a2: Int, c2: IntArray) {
-        setGradient(x1, y1, c1[0].toFloat(), c1[1].toFloat(), c1[2].toFloat(), y1, y2, c2[0].toFloat(), c2[1].toFloat(), c2[2].toFloat())
+        setGradient(x1, y1, c1[0].toFloat(), c1[1].toFloat(), c1[2].toFloat(), a1.toFloat(), y1, y2, c2[0].toFloat(), c2[1].toFloat(), c2[2].toFloat(), a2.toFloat())
         fillRect(x, y, w, h)
     }
     override fun setComposite(mode: Int, p0: Int, p1: Int) {
@@ -685,11 +685,11 @@ class GLGraphics(private val renderSession: RenderSession, private val program: 
         program.setVector4("color2", secondColor)
     }
 
-    fun setAlpha(a: Float) {
+    private fun setAlpha(a: Float) {
         program.setFloat("alpha", a / 255f)
     }
 
-    fun setGradient(x1: Float, y1: Float, r1: Float, g1: Float, b1: Float, x2: Float, y2: Float, r2: Float, g2: Float, b2: Float) {
+    private fun setGradient(x1: Float, y1: Float, r1: Float, g1: Float, b1: Float, x2: Float, y2: Float, r2: Float, g2: Float, b2: Float) {
         firstStep[0] = x1
         firstStep[1] = y1
 
@@ -707,6 +707,32 @@ class GLGraphics(private val renderSession: RenderSession, private val program: 
 
         firstColor[3] = 1f
         secondColor[3] = 1f
+
+        program.setVector2("step1", firstStep)
+        program.setVector2("step2", secondStep)
+
+        program.setVector4("color1", firstColor)
+        program.setVector4("color2", secondColor)
+    }
+
+    private fun setGradient(x1: Float, y1: Float, r1: Float, g1: Float, b1: Float, a1: Float, x2: Float, y2: Float, r2: Float, g2: Float, b2: Float, a2: Float) {
+        firstStep[0] = x1
+        firstStep[1] = y1
+
+        secondStep[0] = x2
+        secondStep[1] = y2
+
+        firstColor[0] = r1 / 255f
+        secondColor[0] = r2 / 255f
+
+        firstColor[1] = g1 / 255f
+        secondColor[1] = g2 / 255f
+
+        firstColor[2] = b1 / 255f
+        secondColor[2] = b2 / 255f
+
+        firstColor[3] = a1 / 255f
+        secondColor[3] = a2 / 255f
 
         program.setVector2("step1", firstStep)
         program.setVector2("step2", secondStep)
