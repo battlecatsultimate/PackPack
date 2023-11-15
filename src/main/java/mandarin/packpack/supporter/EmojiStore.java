@@ -15,10 +15,12 @@ import java.util.*;
 
 public class EmojiStore {
     public static void initialize(ShardLoader loader) {
-        TWO_PREVIOUS = getEmoteWitNameAndID(loader, "TwoPrevious", 993716493458083900L);
+        THREE_PREVIOUS = getEmoteWitNameAndID(loader, "ThreePrevious", 993716493458083900L);
+        TWO_PREVIOUS = getEmoteWitNameAndID(loader, "TwoPrevious", 1174180530871337000L);
         PREVIOUS = getEmoteWitNameAndID(loader, "Previous", 993716355817807883L);
         NEXT = getEmoteWitNameAndID(loader, "Next", 993716605450203146L);
-        TWO_NEXT = getEmoteWitNameAndID(loader, "TwoNext", 993716631589113857L);
+        TWO_NEXT = getEmoteWitNameAndID(loader, "TwoNext", 1174180482297114724L);
+        THREE_NEXT = getEmoteWitNameAndID(loader, "ThreeNext", 993716631589113857L);
         CASTLE = getEmoteWitNameAndID(loader, "Castle", 993716694436544574L);
         BACKGROUND = getEmoteWitNameAndID(loader, "Background", 993716717123555408L);
         MUSIC = getEmoteWitNameAndID(loader, "Music", 993716741421158420L);
@@ -89,10 +91,12 @@ public class EmojiStore {
         }
     }
 
+    public static Emoji THREE_PREVIOUS;
     public static Emoji TWO_PREVIOUS;
     public static Emoji PREVIOUS;
     public static Emoji NEXT;
     public static Emoji TWO_NEXT;
+    public static Emoji THREE_NEXT;
     public static Emoji CASTLE;
     public static Emoji BACKGROUND;
     public static Emoji MUSIC;

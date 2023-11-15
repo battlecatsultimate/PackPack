@@ -43,6 +43,7 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
@@ -66,6 +67,9 @@ import java.util.function.Consumer;
 @SuppressWarnings("ForLoopReplaceableByForEach")
 public class EntityHandler {
     private static final DecimalFormat df;
+
+    private static final float catFruitTextGap = 20f;
+
     private static FontModel font;
 
     static {
@@ -135,7 +139,7 @@ public class EntityHandler {
         File cf;
 
         if(extra)
-            cf = generateCatfruit(f);
+            cf = generateCatfruit(f, lang);
         else
             cf = null;
 
@@ -279,7 +283,7 @@ public class EntityHandler {
             if(explanation != null)
                 spec.addField(LangID.getStringByID("data_udesc", lang), explanation, false);
 
-            String catfruit = DataToString.getCatruitEvolve(f, lang);
+            String catfruit = DataToString.getCatFruitEvolve(f, lang);
 
             if(catfruit != null)
                 spec.addField(LangID.getStringByID("data_evolve", lang), catfruit, false);
@@ -387,7 +391,7 @@ public class EntityHandler {
         File cf;
 
         if(extra)
-            cf = generateCatfruit(f);
+            cf = generateCatfruit(f, lang);
         else
             cf = null;
 
@@ -558,7 +562,7 @@ public class EntityHandler {
             if(explanation != null)
                 spec.addField(LangID.getStringByID("data_udesc", lang), explanation, false);
 
-            String catfruit = DataToString.getCatruitEvolve(f, lang);
+            String catfruit = DataToString.getCatFruitEvolve(f, lang);
 
             if(catfruit != null)
                 spec.addField(LangID.getStringByID("data_evolve", lang), catfruit, false);
@@ -578,38 +582,57 @@ public class EntityHandler {
             if(cf != null)
                 action = action.addFiles(FileUpload.fromData(cf, "cf.png"));
 
-            ArrayList<ActionComponent> components = new ArrayList<>();
+            ArrayList<ActionComponent> forms = new ArrayList<>();
+            ArrayList<ActionComponent> misc = new ArrayList<>();
 
             if(addEmoji) {
-                if(canFirstForm(f)) {
-                    components.add(Button.secondary("first", LangID.getStringByID("button_firf", lang)).withEmoji(EmojiStore.TWO_PREVIOUS));
+                if (f.fid - 3 >= 0) {
+                    forms.add(Button.secondary("first", LangID.getStringByID("button_firf", lang)).withEmoji(EmojiStore.THREE_PREVIOUS));
                 }
 
-                if(canPreviousForm(f)) {
-                    components.add(Button.secondary("pre", LangID.getStringByID("button_pref", lang)).withEmoji(EmojiStore.PREVIOUS));
+                if (f.fid - 2 >= 0) {
+                    forms.add(Button.secondary("twoPre", LangID.getStringByID("button_tprf", lang)).withEmoji(EmojiStore.TWO_PREVIOUS));
                 }
 
-                if(canNextForm(f)) {
-                    components.add(Button.secondary("next", LangID.getStringByID("button_nexf", lang)).withEmoji(EmojiStore.NEXT));
+                if (f.fid - 1 >= 0) {
+                    forms.add(Button.secondary("pre", LangID.getStringByID("button_pref", lang)).withEmoji(EmojiStore.PREVIOUS));
                 }
 
-                if(canFinalForm(f)) {
-                    components.add(Button.secondary("final", LangID.getStringByID("button_finf", lang)).withEmoji(EmojiStore.TWO_NEXT));
+                if (f.fid + 1 < f.unit.forms.length) {
+                    forms.add(Button.secondary("next", LangID.getStringByID("button_nexf", lang)).withEmoji(EmojiStore.NEXT));
+                }
+
+                if (f.fid + 2 < f.unit.forms.length) {
+                    forms.add(Button.secondary("twoNext", LangID.getStringByID("button_tnef", lang)).withEmoji(EmojiStore.TWO_NEXT));
+                }
+
+                if (f.fid + 3 < f.unit.forms.length) {
+                    forms.add(Button.secondary("final", LangID.getStringByID("button_finf", lang)).withEmoji(EmojiStore.THREE_NEXT));
                 }
 
                 if(talent && f.du.getPCoin() != null) {
-                    components.add(Button.secondary("talent", LangID.getStringByID("button_talent", lang)).withEmoji(EmojiStore.NP));
+                    misc.add(Button.secondary("talent", LangID.getStringByID("button_talent", lang)).withEmoji(EmojiStore.NP));
                 }
 
-                components.add(Button.secondary("dps", LangID.getStringByID("button_dps", lang)).withEmoji(Emoji.fromUnicode("\uD83D\uDCC8")));
+                misc.add(Button.secondary("dps", LangID.getStringByID("button_dps", lang)).withEmoji(Emoji.fromUnicode("\uD83D\uDCC8")));
             }
 
             if(StaticStore.availableUDP.contains(f.unit.id.id)) {
-                components.add(Button.link("https://thanksfeanor.pythonanywhere.com/UDP/"+Data.trio(f.unit.id.id), "UDP").withEmoji(EmojiStore.UDP));
+                misc.add(Button.link("https://thanksfeanor.pythonanywhere.com/UDP/"+Data.trio(f.unit.id.id), "UDP").withEmoji(EmojiStore.UDP));
             }
 
-            if(!components.isEmpty()) {
-                action = action.setComponents(ActionRow.of(components));
+            ArrayList<LayoutComponent> components = new ArrayList<>();
+
+            if (!forms.isEmpty()) {
+                components.add(ActionRow.of(forms));
+            }
+
+            if (!misc.isEmpty()) {
+                components.add(ActionRow.of(misc));
+            }
+
+            if (!components.isEmpty()) {
+                action.addComponents(components);
             }
 
             return action;
@@ -1078,7 +1101,7 @@ public class EntityHandler {
         return img;
     }
 
-    private static File generateCatfruit(Form f) throws Exception {
+    private static File generateCatfruit(Form f, int lang) throws Exception {
         if(f.unit == null)
             return null;
 
@@ -1104,14 +1127,33 @@ public class EntityHandler {
 
         CountDownLatch waiter = new CountDownLatch(1);
 
-        StaticStore.renderManager.createRenderer(600, 150, tmp, connector -> {
+        float[] trueFormText = font.measureDimension(LangID.getStringByID("data_tf", lang));
+        float[] ultraFormText = font.measureDimension(LangID.getStringByID("data_uf", lang));
+
+        int w = Math.round(Math.max(600f, trueFormText[2]));
+        float th = catFruitTextGap + trueFormText[3] + catFruitTextGap + 150f;
+
+        if (f.unit.info.zeroEvo != null) {
+            th += catFruitTextGap + ultraFormText[3] + catFruitTextGap + 150f;
+        }
+
+        int h = Math.round(th);
+
+        StaticStore.renderManager.createRenderer(w, h, tmp, connector -> {
             connector.queue(g -> {
                 g.setFontModel(font);
 
                 g.setStroke(2f, GLGraphics.LineEndMode.VERTICAL);
                 g.setColor(47, 49, 54, 255);
 
-                g.fillRect(0, 0, 600, 150);
+                g.fillRect(0, 0, w, h);
+
+                g.translate(0f, catFruitTextGap);
+
+                g.setColor(238, 238, 238, 255);
+                g.drawText(LangID.getStringByID("data_tf", lang), 0f, 0f, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
+
+                g.translate(0f, trueFormText[3] + catFruitTextGap);
 
                 g.setColor(238, 238, 238, 128);
 
@@ -1144,6 +1186,51 @@ public class EntityHandler {
 
                                 g.drawImage(icon, 100 * (i-1)+5, 10, 80, 80);
                                 g.drawText(String.valueOf(f.unit.info.evo[i - 1][1]), 100 * (i-1) + 50, 125, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+                            }
+                        }
+                    }
+                }
+
+                if (f.unit.info.zeroEvo != null) {
+                    g.translate(0f, 150 + catFruitTextGap);
+
+                    g.setColor(238, 238, 238, 255);
+                    g.drawText(LangID.getStringByID("data_uf", lang), 0f, 0f, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
+
+                    g.translate(0f, ultraFormText[3] + catFruitTextGap);
+
+                    g.setColor(238, 238, 238, 128);
+
+                    g.drawRect(0, 0, 600, 150);
+
+                    for(int i = 1; i < 6; i++) {
+                        g.drawLine(100 * i, 0, 100* i , 150);
+                    }
+
+                    g.drawLine(0, 100, 600, 100);
+
+                    g.setColor(238, 238, 238, 255);
+
+                    for(int i = 0; i < 6; i++) {
+                        if(i == 0) {
+                            VFile vf = VFile.get("./org/page/catfruit/xp.png");
+
+                            if(vf != null) {
+                                FakeImage icon = vf.getData().getImg();
+
+                                g.drawImage(icon, 510, 10, 80, 80);
+                                g.drawText(String.valueOf(f.unit.info.zeroXp), 550, 125, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+                            }
+                        } else {
+                            if(f.unit.info.zeroEvo[i - 1][0] != 0) {
+                                VFile vf = VFile.get("./org/page/catfruit/gatyaitemD_"+f.unit.info.zeroEvo[i - 1][0]+"_f.png");
+
+                                if(vf != null) {
+                                    FakeImage icon = vf.getData().getImg();
+
+                                    g.drawImage(icon, 100 * (i-1)+5, 10, 80, 80);
+                                    g.drawText(String.valueOf(f.unit.info.zeroEvo[i - 1][1]), 100 * (i-1) + 50, 125, GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+                                }
                             }
                         }
                     }

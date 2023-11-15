@@ -81,7 +81,7 @@ public class FormStatMessageHolder extends SearchHolder {
         try {
             Form f = form.get(id);
 
-            EntityHandler.showUnitEmb(f, ch, getAuthorMessage(), config, isFrame, talent, extra, isTrueForm, f.fid == 2, lv, treasure, t, lang, true, compact, result -> {
+            EntityHandler.showUnitEmb(f, ch, getAuthorMessage(), config, isFrame, talent, extra, isTrueForm, f.fid >= 2, lv, treasure, t, lang, true, compact, result -> {
                 User u = event.getUser();
 
                 StaticStore.removeHolder(u.getId(), FormStatMessageHolder.this);

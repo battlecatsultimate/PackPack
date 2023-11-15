@@ -81,10 +81,12 @@ public class FormButtonHolder extends ComponentHolder {
             }
         } else {
             int diff = switch (event.getComponentId()) {
-                case "first" -> -2;
+                case "first" -> -3;
+                case "twoPre" -> -2;
                 case "pre" -> -1;
                 case "next" -> 1;
-                case "final" -> 2;
+                case "twoNext" -> 2;
+                case "final" -> 3;
                 default -> 0;
             };
 

@@ -1515,40 +1515,37 @@ public class DataToString extends Data {
         }
     }
 
-    public static String getCatruitEvolve(Form f, int lang) {
+    public static String getCatFruitEvolve(Form f, int lang) {
         if (f.unit == null)
             return null;
 
+        StringBuilder result = new StringBuilder();
+
         String cfText = MultiLangCont.getStatic().CFEXP.getCont(f.unit.info, lang);
+        String ufText = MultiLangCont.getStatic().UFEXP.getCont(f.unit.info, lang);
 
-        if (cfText == null)
-            return null;
-
-        String[] cf = cfText.split("\n");
-
-        boolean canGo = false;
-
-        for (String s : cf) {
-            if (s != null && !s.isBlank()) {
-                canGo = true;
-                break;
-            }
+        if (cfText != null && !cfText.strip().isBlank()) {
+            result.append("- **")
+                    .append(LangID.getStringByID("data_tf", lang))
+                    .append("**\n")
+                    .append(cfText);
         }
 
-        if (canGo) {
-            StringBuilder builder = new StringBuilder();
-
-            for (int i = 0; i < cf.length; i++) {
-                builder.append(cf[i]);
-
-                if (i != cf.length - 1)
-                    builder.append("\n");
+        if (ufText != null && !ufText.strip().isBlank()) {
+            if (result.length() != 0) {
+                result.append("\n\n");
             }
 
-            return builder.toString();
-        } else {
-            return null;
+            result.append("- **")
+                    .append(LangID.getStringByID("data_uf", lang))
+                    .append("**\n")
+                    .append(ufText);
         }
+
+        if (result.length() == 0)
+            return null;
+
+        return result.toString();
     }
 
     public static String getRewards(Stage s, int lang) {

@@ -218,7 +218,7 @@ public class FormStat extends ConstraintCommand {
 
                 TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getMessage().getAuthor().getId(), TreasureHolder.global);
 
-                EntityHandler.showUnitEmb(f, ch, loader.getMessage(), config, isFrame, talent, extra, isTrueForm, f.fid == 2, lv, isTreasure, treasure, lang, true, compact, result -> {
+                EntityHandler.showUnitEmb(f, ch, loader.getMessage(), config, isFrame, talent, extra, isTrueForm, f.fid >= 2, lv, isTreasure, treasure, lang, true, compact, result -> {
                     User u = loader.getUser();
 
                     Message author = loader.getMessage();

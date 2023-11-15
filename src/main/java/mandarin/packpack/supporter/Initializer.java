@@ -262,6 +262,12 @@ public class Initializer {
                                 String lines = str[1].replace("<br>", "\n");
 
                                 MultiLangCont.getStatic().CFEXP.put(f, u.info, lines);
+
+                                if (str.length == 3) {
+                                    String ultraLines = str[2].replace("<br>", "\n");
+
+                                    MultiLangCont.getStatic().UFEXP.put(f, u.info, ultraLines);
+                                }
                             }
                         }
                         case "ComboName.txt" -> {
