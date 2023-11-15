@@ -1,11 +1,10 @@
-package mandarin.packpack.supporter.server.holder.component.search;
+package mandarin.packpack.supporter.server.holder.component;
 
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import mandarin.packpack.supporter.server.holder.component.ComponentHolder;
-import mandarin.packpack.supporter.server.holder.component.IDManagerHolder;
+import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import mandarin.packpack.supporter.server.holder.modal.CustomRoleAssignHolder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
