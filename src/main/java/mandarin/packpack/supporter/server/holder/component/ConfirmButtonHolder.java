@@ -39,10 +39,10 @@ public class ConfirmButtonHolder extends ComponentHolder {
 
         switch (event.getComponentId()) {
             case "confirm" -> {
-                event.getMessage().delete().queue();
+                msg.delete().queue();
                 action.run();
             }
-            case "cancel" -> event.getMessage().delete().queue();
+            case "cancel" -> msg.delete().queue();
         }
     }
 

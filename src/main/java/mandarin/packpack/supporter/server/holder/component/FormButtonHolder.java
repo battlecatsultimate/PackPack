@@ -60,7 +60,7 @@ public class FormButtonHolder extends ComponentHolder {
 
     @Override
     public void onEvent(GenericComponentInteractionCreateEvent event) {
-        event.getMessage().delete().queue();
+        embed.delete().queue();
 
         MessageChannel ch = event.getMessageChannel();
 
