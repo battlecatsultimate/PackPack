@@ -30,6 +30,7 @@ public class ItemSchedule extends EventFactor implements Schedule {
 
         minVersion = convertVersion(parse(data[4]));
         maxVersion = convertVersion(parse(data[5]));
+
         if(parse(data[6]) == 0) {
             int sectionNumber = parse(data[7]);
             int index = 8;
@@ -331,7 +332,7 @@ public class ItemSchedule extends EventFactor implements Schedule {
         if(n < 10)
             return "0"+n;
         else
-            return ""+n;
+            return String.valueOf(n);
     }
 
     private String getEoCName(int status) {

@@ -428,7 +428,7 @@ public class EventFactor {
             if (item.equals(id)) {
                 if(itemID >= 800 && itemID < 900) {
                     item = LangID.getStringByID("printitem_sale", lang).replace("_", String.valueOf(itemID));
-                } else if(itemID >= 900 && itemID < 1000) {
+                } else if((itemID >= 900 && itemID < 1000) || (itemID >= 35000 && itemID < 36000)) {
                     item = LangID.getStringByID("printitem_stamp", lang).replace("_", String.valueOf(itemID));
                 } else {
                     item = LangID.getStringByID("printitem_item", lang).replace("_", String.valueOf(itemID));
