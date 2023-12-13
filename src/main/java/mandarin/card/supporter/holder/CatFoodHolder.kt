@@ -31,6 +31,10 @@ class CatFoodHolder(author: Message, channelID: String, message:Message, private
                 event.reply("You can't suggest cat foods more than 500k! Please contact moderator for such large transaction").setEphemeral(true).queue()
 
                 return
+            } else if (catFood <= 0) {
+                event.reply("Cat food must be larger than 0!").setEphemeral(true).queue()
+
+                return
             }
 
             if (!TatsuHandler.canInteract(1, false)) {
