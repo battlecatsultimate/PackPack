@@ -1080,23 +1080,17 @@ public class DataToString extends Data {
 
         PackData pack = UserProfile.getPack(id);
 
-        switch (pack) {
-            case null -> {
-                return id;
-            }
-            case PackData.DefPack ignored -> {
-                return LangID.getStringByID("data_default", lang);
-            }
-            case PackData.UserPack userPack -> {
-                String p = userPack.desc.name;
+        if (pack == null) {
+            return id;
+        } else if (pack instanceof PackData.DefPack) {
+            return LangID.getStringByID("data_default", lang);
+        } else if (pack instanceof PackData.UserPack userPack) {
+            String p = userPack.desc.name;
 
-                if (p == null)
-                    p = id;
+            if (p == null)
+                p = id;
 
-                return p;
-            }
-            default -> {
-            }
+            return p;
         }
 
         return id;

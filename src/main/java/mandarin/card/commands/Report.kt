@@ -46,8 +46,16 @@ class Report : Command(LangID.EN, true) {
         val totalTier2Cards = sessions.sumOf { session -> session.tier2Cards.size }
         val totalCraftFailures = sessions.sumOf { session -> session.craftFailures }
 
-        val totalGeneratedCards = sessions.sumOf { session -> session.generatedCards.size }
-        val totalRemovedCards = sessions.sumOf { session -> session.removedCards.size }
+        val totalGeneratedCards = sessions.sumOf { session -> session.generatedCards.entries.sumOf { (_, map) -> map.entries.sumOf { (_, amount) -> amount } } }
+        val totalRemovedCards = sessions.sumOf { session -> session.removedCards.entries.sumOf { (_, map) -> map.entries.sumOf { (_, amount) -> amount } } }
+        val totalCards = sessions.sumOf { session ->
+            val cardMap = HashMap<Card, Long>()
+
+            session.generatedCards.forEach { (_, map) -> map.forEach { (card, amount) -> cardMap[card] = (cardMap[card] ?: 0) + amount } }
+            session.removedCards.forEach { (_, map) -> map.forEach { (card, amount) -> cardMap[card] = (cardMap[card] ?: 0) - amount } }
+
+            cardMap.entries.sumOf { (_, amount) -> amount }
+        }
 
         val totalCatFoodFlow = sessions.sumOf { session -> session.catFoodTradeSum }
 
@@ -59,7 +67,9 @@ class Report : Command(LangID.EN, true) {
             val mergedTier2CardsTemp = HashMap<Card, Long>()
 
             val mergedGeneratedCardsTemp = HashMap<Card, Long>()
+            val mergedGeneratedCardsUserTemp = HashMap<Long, HashMap<Card, Long>>()
             val mergedRemovedCardsTemp = HashMap<Card, Long>()
+            val mergedRemovedCardsUserTemp = HashMap<Long, HashMap<Card, Long>>()
 
             sessions.forEach { session ->
                 session.catFoodPack.forEach { (id, amount) ->
@@ -78,12 +88,24 @@ class Report : Command(LangID.EN, true) {
                     mergedTier2CardsTemp[card] = (mergedTier2CardsTemp[card] ?: 0) + 1
                 }
 
-                session.generatedCards.forEach { (card, amount) ->
-                    mergedGeneratedCardsTemp[card] = (mergedGeneratedCardsTemp[card] ?: 0) + amount
+                session.generatedCards.forEach { (id, cardMap) ->
+                    val cardMap = mergedGeneratedCardsUserTemp[id] ?: run {
+                        val map = HashMap<Card, Long>()
+
+                        mergedGeneratedCardsUserTemp[id] = map
+
+                        map
+                    }
+
+                    cardMap.forEach { (card, amount) ->
+                        mergedGeneratedCardsTemp[card] = (mergedGeneratedCardsTemp[card] ?: 0) + amount
+                    }
                 }
 
-                session.removedCards.forEach { (card, amount) ->
-                    mergedRemovedCardsTemp[card] = (mergedRemovedCardsTemp[card] ?: 0) + amount
+                session.removedCards.forEach { (_, cardMap) ->
+                    cardMap.forEach { (card, amount) ->
+                        mergedRemovedCardsTemp[card] = (mergedRemovedCardsTemp[card] ?: 0) + amount
+                    }
                 }
             }
 
@@ -325,6 +347,12 @@ class Report : Command(LangID.EN, true) {
                     "\n" +
                     "$totalGeneratedCards cards have been generated, and added into economy\n" +
                     "$totalRemovedCards cards have been removed from economy\n" +
+                    "\n" +
+                    "Summing above 2 data, " +
+                    if (totalCards < 0)
+                        "${-totalCards} cards have been removed from economy\n"
+                    else
+                        "$totalCards cards have been generated, and added into economy\n" +
                     "\n" +
                     "$totalCatFoodFlow ${EmojiStore.ABILITY["CF"]?.formatted} have been transferred among users via trading\n" +
                     "\n" +

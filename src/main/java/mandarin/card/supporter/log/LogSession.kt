@@ -232,15 +232,29 @@ class LogSession {
                     val o = e.asJsonObject
 
                     if (o.has("key") && o.has("val")) {
-                        val id = o.get("key").asInt
+                        val id = o.get("key").asLong
+                        val cards = o.getAsJsonArray("val")
 
-                        val card = CardData.cards.find { c -> c.unitID == id }
+                        val cardMap = HashMap<Card, Long>()
 
-                        val amount = o.get("val").asLong
+                        cards.forEach MapParse@ { data ->
+                            if (!data.isJsonObject)
+                                return@MapParse
 
-                        if (amount > 0 && card != null) {
-                            session.generatedCards[card] = amount
+                            val dataObject = data.asJsonObject
+
+                            if (dataObject.has("key") && dataObject.has("val")) {
+                                val cardId = dataObject.get("key").asInt
+
+                                val card = CardData.cards.find { c -> c.unitID == cardId } ?: return@MapParse
+
+                                val amount = dataObject.get("val").asLong
+
+                                cardMap[card] = amount
+                            }
                         }
+
+                        session.generatedCards[id] = cardMap
                     }
                 }
             }
@@ -252,15 +266,29 @@ class LogSession {
                     val o = e.asJsonObject
 
                     if (o.has("key") && o.has("val")) {
-                        val id = o.get("key").asInt
+                        val id = o.get("key").asLong
+                        val cards = o.getAsJsonArray("val")
 
-                        val card = CardData.cards.find { c -> c.unitID == id }
+                        val cardMap = HashMap<Card, Long>()
 
-                        val amount = o.get("val").asLong
+                        cards.forEach MapParse@ { data ->
+                            if (!data.isJsonObject)
+                                return@MapParse
 
-                        if (amount > 0 && card != null) {
-                            session.removedCards[card] = amount
+                            val dataObject = data.asJsonObject
+
+                            if (dataObject.has("key") && dataObject.has("val")) {
+                                val cardId = dataObject.get("key").asInt
+
+                                val card = CardData.cards.find { c -> c.unitID == cardId } ?: return@MapParse
+
+                                val amount = dataObject.get("val").asLong
+
+                                cardMap[card] = amount
+                            }
                         }
+
+                        session.removedCards[id] = cardMap
                     }
                 }
             }
@@ -282,8 +310,10 @@ class LogSession {
 
     var craftFailures = 0L
 
-    val generatedCards = HashMap<Card, Long>()
-    val removedCards = HashMap<Card, Long>()
+    val generatedCards = HashMap<Long, HashMap<Card, Long>>()
+    val removedCards = HashMap<Long, HashMap<Card, Long>>()
+
+    val tradedCards = HashMap<Long, HashMap<Card, Long>>()
 
     constructor() {
         createdTime = CardData.getUnixEpochTime()
@@ -294,16 +324,28 @@ class LogSession {
     }
 
     fun logBuy(member: Long, usedCards: List<Card>) {
+        val cardMap = generatedCards[member] ?: run {
+            val newMap = HashMap<Card, Long>()
+            generatedCards[member] = newMap
+            newMap
+        }
+
         usedCards.forEach {
-            removedCards[it] = (removedCards[it] ?: 0) + 1
+            cardMap[it] = (cardMap[it] ?: 0) + 1
         }
 
         activeMembers.add(member)
     }
 
     fun logCraftFail(member: Long, usedCards: List<Card>, cf: Long) {
+        val cardMap = removedCards[member] ?: run {
+            val newMap = HashMap<Card, Long>()
+            removedCards[member] = newMap
+            newMap
+        }
+
         usedCards.forEach {
-            removedCards[it] = (removedCards[it] ?: 0) + 1
+            cardMap[it] = (cardMap[it] ?: 0) + 1
         }
 
         craftFailures++
@@ -314,36 +356,66 @@ class LogSession {
     }
 
     fun logCraftSuccess(member: Long, usedCards: List<Card>, card: Card) {
+        val removedCardMap = removedCards[member] ?: run {
+            val newMap = HashMap<Card, Long>()
+            removedCards[member] = newMap
+            newMap
+        }
+
         usedCards.forEach {
-            removedCards[it] = (removedCards[it] ?: 0) + 1
+            removedCardMap[it] = (removedCardMap[it] ?: 0) + 1
         }
 
         tier2Cards.add(card)
 
-        generatedCards[card] = (generatedCards[card] ?: 0) + 1
+        val generatedCardMap = generatedCards[member] ?: run {
+            val newMap = HashMap<Card, Long>()
+            generatedCards[member] = newMap
+            newMap
+        }
+
+        generatedCardMap[card] = (generatedCardMap[card] ?: 0) + 1
 
         activeMembers.add(member)
     }
 
     fun logManualRoll(member: Long, cards: List<Card>) {
+        val cardMap = generatedCards[member] ?: run {
+            val newMap = HashMap<Card, Long>()
+            generatedCards[member] = newMap
+            newMap
+        }
+
         cards.forEach {
-            generatedCards[it] = (generatedCards[it] ?: 0) + 1
+            cardMap[it] = (cardMap[it] ?: 0) + 1
         }
 
         activeMembers.add(member)
     }
 
     fun logModifyAdd(member: Long, cards: List<Card>) {
+        val cardMap = generatedCards[member] ?: run {
+            val newMap = HashMap<Card, Long>()
+            generatedCards[member] = newMap
+            newMap
+        }
+
         cards.forEach {
-            generatedCards[it] = (generatedCards[it] ?: 0) + 1
+            cardMap[it] = (cardMap[it] ?: 0) + 1
         }
 
         activeMembers.add(member)
     }
 
     fun logModifyRemove(member: Long, cards: List<Card>) {
+        val cardMap = removedCards[member] ?: run {
+            val newMap = HashMap<Card, Long>()
+            removedCards[member] = newMap
+            newMap
+        }
+
         cards.forEach {
-            removedCards[it] = (removedCards[it] ?: 0) + 1
+            cardMap[it] = (cardMap[it] ?: 0) + 1
         }
 
         activeMembers.add(member)
@@ -358,8 +430,14 @@ class LogSession {
         if (cf != 0)
             catFoodPack[member] = (catFoodPack[member] ?: 0) + cf
 
+        val cardMap = generatedCards[member] ?: run {
+            val newMap = HashMap<Card, Long>()
+            generatedCards[member] = newMap
+            newMap
+        }
+
         cards.forEach {
-            generatedCards[it] = (generatedCards[it] ?: 0) + 1
+            cardMap[it] = (cardMap[it] ?: 0) + 1
         }
 
         activeMembers.add(member)
@@ -368,8 +446,14 @@ class LogSession {
     fun logSalvage(member: Long, usedCards: List<Card>, cf: Long) {
         catFoodCraft[member] = (catFoodCraft[member] ?: 0) + cf
 
+        val cardMap = removedCards[member] ?: run {
+            val newMap = HashMap<Card, Long>()
+            removedCards[member] = newMap
+            newMap
+        }
+
         usedCards.forEach {
-            removedCards[it] = (removedCards[it] ?: 0) + 1
+            cardMap[it] = (cardMap[it] ?: 0) + 1
         }
 
         activeMembers.add(member)
@@ -385,6 +469,32 @@ class LogSession {
         catFoodTradeSum += abs(session.suggestion[0].catFood - session.suggestion[1].catFood).toLong()
 
         activeMembers.addAll(session.member)
+
+        val firstTraderMap = tradedCards[session.member[0]] ?: run {
+            val newMap = HashMap<Card, Long>()
+
+            tradedCards[session.member[0]] = newMap
+
+            newMap
+        }
+
+        val secondTraderMap = tradedCards[session.member[1]] ?: run {
+            val newMap = HashMap<Card, Long>()
+
+            tradedCards[session.member[1]] = newMap
+
+            newMap
+        }
+
+        session.suggestion[0].cards.forEach { card ->
+            firstTraderMap[card] = (firstTraderMap[card] ?: 0) - 1
+            secondTraderMap[card] = (secondTraderMap[card] ?: 0) + 1
+        }
+
+        session.suggestion[1].cards.forEach { card ->
+            firstTraderMap[card] = (firstTraderMap[card] ?: 0) + 1
+            secondTraderMap[card] = (secondTraderMap[card] ?: 0) - 1
+        }
     }
 
     fun saveSessionAsFile() {
@@ -486,11 +596,23 @@ class LogSession {
 
         val generatedArray = JsonArray()
 
-        generatedCards.forEach { (card, amount) ->
+        generatedCards.forEach { (id, cardMap) ->
             val o = JsonObject()
 
-            o.addProperty("key", card.unitID)
-            o.addProperty("val", amount)
+            o.addProperty("key", id)
+
+            val arr = JsonArray()
+
+            cardMap.forEach { (card, amount) ->
+                val co = JsonObject()
+
+                co.addProperty("key", card.unitID)
+                co.addProperty("val", amount)
+
+                arr.add(co)
+            }
+
+            o.add("val", arr)
 
             generatedArray.add(o)
         }
@@ -499,13 +621,25 @@ class LogSession {
 
         val removedArray = JsonArray()
 
-        removedCards.forEach { (card, amount) ->
+        removedCards.forEach { (id, cardMap) ->
             val o = JsonObject()
 
-            o.addProperty("key", card.unitID)
-            o.addProperty("val", amount)
+            o.addProperty("key", id)
 
-            removedArray.add(o)
+            val arr = JsonArray()
+
+            cardMap.forEach { (card, amount) ->
+                val co = JsonObject()
+
+                co.addProperty("key", card.unitID)
+                co.addProperty("val", amount)
+
+                arr.add(co)
+            }
+
+            o.add("val", arr)
+
+            generatedArray.add(o)
         }
 
         obj.add("removedCards", removedArray)

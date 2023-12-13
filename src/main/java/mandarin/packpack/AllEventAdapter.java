@@ -642,44 +642,38 @@ public class AllEventAdapter extends ListenerAdapter {
         User u = event.getUser();
 
         try {
-            switch (event) {
-                case GenericComponentInteractionCreateEvent c -> {
-                    if (StaticStore.holderContainsKey(u.getId())) {
-                        HolderHub holder = StaticStore.getHolderHub(u.getId());
+            if (event instanceof GenericComponentInteractionCreateEvent c) {
+                if (StaticStore.holderContainsKey(u.getId())) {
+                    HolderHub holder = StaticStore.getHolderHub(u.getId());
 
-                        holder.handleEvent(c);
-                    }
+                    holder.handleEvent(c);
                 }
-                case ModalInteractionEvent m -> {
-                    if (StaticStore.holderContainsKey(u.getId())) {
-                        HolderHub holder = StaticStore.getHolderHub(u.getId());
+            } else if (event instanceof ModalInteractionEvent m) {
+                if (StaticStore.holderContainsKey(u.getId())) {
+                    HolderHub holder = StaticStore.getHolderHub(u.getId());
 
-                        holder.handleEvent(m);
-                    }
+                    holder.handleEvent(m);
                 }
-                case GenericCommandInteractionEvent i -> {
-                    if (StaticStore.spamData.containsKey(u.getId())) {
-                        SpamPrevent spam = StaticStore.spamData.get(u.getId());
+            } else if (event instanceof  GenericCommandInteractionEvent i) {
+                if (StaticStore.spamData.containsKey(u.getId())) {
+                    SpamPrevent spam = StaticStore.spamData.get(u.getId());
 
-                        String result = spam.isPrevented(event);
+                    String result = spam.isPrevented(event);
 
-                        if (result != null) {
-                            if (!result.isBlank()) {
+                    if (result != null) {
+                        if (!result.isBlank()) {
 
-                                i.deferReply().setContent(result).queue();
-                            }
-
-                            return;
+                            i.deferReply().setContent(result).queue();
                         }
-                    }
 
-                    switch (i.getName()) {
-                        case "fs" -> FormStat.performInteraction(i);
-                        case "es" -> EnemyStat.performInteraction(i);
-                        case "si" -> StageInfo.performInteraction(i);
+                        return;
                     }
                 }
-                default -> {
+
+                switch (i.getName()) {
+                    case "fs" -> FormStat.performInteraction(i);
+                    case "es" -> EnemyStat.performInteraction(i);
+                    case "si" -> StageInfo.performInteraction(i);
                 }
             }
         } catch (Exception e) {

@@ -414,23 +414,18 @@ public class EventHolder extends EventFactor {
         for(GroupHandler handler : EventFactor.handlers) {
             for(EventGroup event : handler.getGroups()) {
                 if(event.finished) {
-                    switch (handler) {
-                        case NormalGroupHandler ignored -> {
-                            StageSchedule start = (StageSchedule) event.schedules[0];
+                    if (handler instanceof NormalGroupHandler) {
+                        StageSchedule start = (StageSchedule) event.schedules[0];
 
-                            appendProperly(start, start.beautifyWithCustomName(LangID.getStringByID(event.name, lang), lang), normals, dailys, weeklys, monthlys, yearlys, missions);
-                        }
-                        case SequenceGroupHandler ignored -> {
-                            StageSchedule start = (StageSchedule) event.schedules[0];
-                            StageSchedule end = (StageSchedule) event.schedules[event.schedules.length - 1];
+                        appendProperly(start, start.beautifyWithCustomName(LangID.getStringByID(event.name, lang), lang), normals, dailys, weeklys, monthlys, yearlys, missions);
+                    } else if (handler instanceof SequenceGroupHandler) {
+                        StageSchedule start = (StageSchedule) event.schedules[0];
+                        StageSchedule end = (StageSchedule) event.schedules[event.schedules.length - 1];
 
-                            appendProperly(start, manualSchedulePrint(start.date.dateStart, end.date.dateEnd, LangID.getStringByID(event.name, lang), lang), normals, dailys, weeklys, monthlys, yearlys, missions);
-                        }
-                        case ContainedGroupHandler ignored -> {
-                            StageSchedule primary = (StageSchedule) event.schedules[0];
-                            appendProperly(primary, primary.beautifyWithCustomName(LangID.getStringByID(event.name, lang), lang), normals, dailys, weeklys, monthlys, yearlys, missions);
-                        }
-                        default -> { }
+                        appendProperly(start, manualSchedulePrint(start.date.dateStart, end.date.dateEnd, LangID.getStringByID(event.name, lang), lang), normals, dailys, weeklys, monthlys, yearlys, missions);
+                    } else if (handler instanceof ContainedGroupHandler) {
+                        StageSchedule primary = (StageSchedule) event.schedules[0];
+                        appendProperly(primary, primary.beautifyWithCustomName(LangID.getStringByID(event.name, lang), lang), normals, dailys, weeklys, monthlys, yearlys, missions);
                     }
                 }
             }
@@ -557,8 +552,6 @@ public class EventHolder extends EventFactor {
         if(now)
             filterScheduleByTimeZone(items, time);
 
-        StringBuilder data = new StringBuilder(LangID.getStringByID("event_item", lang)).append("\n\n");
-
         ArrayList<String> normals = new ArrayList<>();
 
         for(int i = 0; i < items.size(); i++) {
@@ -575,14 +568,6 @@ public class EventHolder extends EventFactor {
         if(normals.isEmpty()) {
             return new ArrayList<>();
         }
-
-        data.append("```scss\n");
-
-        for(int i = 0; i < normals.size(); i++) {
-            data.append(normals.get(i)).append("\n");
-        }
-
-        data.append("```");
 
         return normals;
     }

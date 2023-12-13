@@ -47,12 +47,19 @@ public class GetID extends ConstraintCommand {
                     GuildChannel c = client.getGuildChannelById(contents[2]);
                     if (c == null)
                         return;
-                    String type = switch (c) {
-                        case TextChannel ignored2 -> "Text Channel";
-                        case NewsChannel ignored1 -> "News Channel";
-                        case MessageChannel ignored -> "Message Channel";
-                        default -> "Channel";
-                    };
+
+                    String type;
+
+                    if (c instanceof TextChannel) {
+                        type = "Text Channel";
+                    } else if (c instanceof NewsChannel) {
+                        type = "News Channel";
+                    } else if (c instanceof MessageChannel) {
+                        type = "Message Channel";
+                    } else {
+                        type = "Channel";
+                    }
+
                     replyToMessageSafely(ch, type + " : " + c.getName() + " (" + c.getAsMention() + ")", loader.getMessage(), a -> a);
                 }
                 case "-s" -> {
