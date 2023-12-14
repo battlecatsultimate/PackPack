@@ -199,7 +199,7 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
 
                 expire(authorMessage.author.id)
 
-                StaticStore.putHolder(authorMessage.author.id, ModifyModeSelectHolder(authorMessage, channelID, message, true, inventory, targetMember))
+                StaticStore.putHolder(authorMessage.author.id, ModifyModeSelectHolder(authorMessage, channelID, message, CardData.ModifyCategory.CARD, inventory, targetMember))
             }
             "close" -> {
                 event.deferEdit()

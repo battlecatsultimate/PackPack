@@ -77,7 +77,7 @@ public abstract class Command {
             String[] elements = element.split("\\\\\\\\");
 
             if(elements.length == 2) {
-                if(elements[0].matches("<:[^\\s]+?:\\d+>")) {
+                if(elements[0].matches("<:\\S+?:\\d+>")) {
                     options.add(SelectOption.of(StaticStore.cutOffText(elements[1], 100), String.valueOf(i)).withEmoji(Emoji.fromFormatted(elements[0])));
                 } else {
                     options.add(SelectOption.of(StaticStore.cutOffText(element, 100), String.valueOf(i)));
@@ -368,7 +368,7 @@ public abstract class Command {
 
     }
 
-    public abstract void doSomething(CommandLoader loader) throws Exception;
+    public abstract void doSomething(@Nonnull CommandLoader loader) throws Exception;
 
     public void onFail(CommandLoader loader, int error) {
         StaticStore.executed--;

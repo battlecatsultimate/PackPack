@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.io.File;
@@ -39,7 +40,7 @@ public class StmImage extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(CommandLoader loader) {
+    public void doSomething(@NotNull CommandLoader loader) {
         try {
             MessageChannel ch = loader.getChannel();
 

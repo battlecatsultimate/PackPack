@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,7 +29,7 @@ public class ChannelPermission extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(CommandLoader loader) throws Exception {
+    public void doSomething(@NotNull CommandLoader loader) throws Exception {
         if(holder == null)
             return;
 

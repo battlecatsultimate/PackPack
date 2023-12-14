@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.GenericCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -101,7 +102,7 @@ public class EnemyStat extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(CommandLoader loader) throws Exception {
+    public void doSomething(@NotNull CommandLoader loader) throws Exception {
         MessageChannel ch = loader.getChannel();
 
         String[] list = loader.getContent().split(" ", 2);

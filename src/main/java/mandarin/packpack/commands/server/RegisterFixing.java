@@ -7,6 +7,7 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.sharding.ShardManager;
+import org.jetbrains.annotations.NotNull;
 
 public class RegisterFixing extends ConstraintCommand {
     public RegisterFixing(ROLE role, int lang, IDHolder id) {
@@ -14,7 +15,7 @@ public class RegisterFixing extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(CommandLoader loader) throws Exception {
+    public void doSomething(@NotNull CommandLoader loader) throws Exception {
         MessageChannel ch = loader.getChannel();
 
         String[] contents = loader.getContent().split(" ");

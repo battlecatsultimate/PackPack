@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.requests.RestAction;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class BoosterPin extends ConstraintCommand {
@@ -23,7 +24,7 @@ public class BoosterPin extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(CommandLoader loader) throws Exception {
+    public void doSomething(@NotNull CommandLoader loader) throws Exception {
         MessageChannel ch = loader.getChannel();
         Member m = loader.getMember();
 

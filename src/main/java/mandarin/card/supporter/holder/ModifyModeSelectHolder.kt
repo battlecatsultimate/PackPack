@@ -4,12 +4,14 @@ import mandarin.card.supporter.Card
 import mandarin.card.supporter.CardComparator
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
+import mandarin.card.supporter.holder.modal.CatFoodModifyHolder
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.interactions.components.ActionRow
@@ -18,10 +20,13 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.interactions.components.text.TextInput
+import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
+import net.dv8tion.jda.api.interactions.modals.Modal
 import java.lang.IllegalStateException
 import kotlin.math.min
 
-class ModifyModeSelectHolder(author: Message, channelID: String, private val message: Message, private val isCard: Boolean, private val inventory: Inventory, private val targetMember: Member) : ComponentHolder(author, channelID, message.id) {
+class ModifyModeSelectHolder(author: Message, channelID: String, private val message: Message, private val category: CardData.ModifyCategory, private val inventory: Inventory, private val targetMember: Member) : ComponentHolder(author, channelID, message.id) {
     override fun clean() {
 
     }
@@ -51,40 +56,65 @@ class ModifyModeSelectHolder(author: Message, channelID: String, private val mes
                     }
                 }
 
-                if (isCard) {
-                    val cards = if (isAdd)
-                        CardData.cards.sortedWith(CardComparator())
-                    else
-                        inventory.cards.keys.sortedWith(CardComparator())
+                when (category) {
+                    CardData.ModifyCategory.CARD -> {
+                        val cards = if (isAdd)
+                            CardData.cards.sortedWith(CardComparator())
+                        else
+                            inventory.cards.keys.sortedWith(CardComparator())
 
-                    event.deferEdit()
-                        .setContent(getCardText(cards, isAdd))
-                        .setComponents(getCardComponents(cards, isAdd))
-                        .mentionRepliedUser(false)
-                        .setAllowedMentions(ArrayList())
-                        .queue()
+                        event.deferEdit()
+                            .setContent(getCardText(cards, isAdd))
+                            .setComponents(getCardComponents(cards, isAdd))
+                            .mentionRepliedUser(false)
+                            .setAllowedMentions(ArrayList())
+                            .queue()
 
-                    expired = true
-                    expire(authorMessage.author.id)
+                        expired = true
+                        expire(authorMessage.author.id)
 
-                    StaticStore.putHolder(authorMessage.author.id, CardModifyHolder(authorMessage, channelID, message, isAdd, inventory, targetMember))
-                } else {
-                    val roles = if (isAdd)
-                        CardData.Role.entries.filter { r -> r !in inventory.vanityRoles && r != CardData.Role.NONE }
-                    else
-                        inventory.vanityRoles
+                        StaticStore.putHolder(authorMessage.author.id, CardModifyHolder(authorMessage, channelID, message, isAdd, inventory, targetMember))
+                    }
+                    CardData.ModifyCategory.ROLE -> {
+                        val roles = if (isAdd)
+                            CardData.Role.entries.filter { r -> r !in inventory.vanityRoles && r != CardData.Role.NONE }
+                        else
+                            inventory.vanityRoles
 
-                    event.deferEdit()
-                        .setContent(getRoleText(roles, isAdd))
-                        .setComponents(getRoleComponents(roles, isAdd))
-                        .mentionRepliedUser(false)
-                        .setAllowedMentions(ArrayList())
-                        .queue()
+                        event.deferEdit()
+                            .setContent(getRoleText(roles, isAdd))
+                            .setComponents(getRoleComponents(roles, isAdd))
+                            .mentionRepliedUser(false)
+                            .setAllowedMentions(ArrayList())
+                            .queue()
 
-                    expired = true
-                    expire(authorMessage.author.id)
+                        expired = true
+                        expire(authorMessage.author.id)
 
-                    StaticStore.putHolder(authorMessage.author.id, RoleModifyHolder(authorMessage, channelID, message, isAdd, inventory, targetMember))
+                        StaticStore.putHolder(authorMessage.author.id, RoleModifyHolder(authorMessage, channelID, message, isAdd, inventory, targetMember))
+                    }
+                    CardData.ModifyCategory.CF -> {
+                        val input = TextInput.create("amount", "Amount", TextInputStyle.SHORT)
+                            .setPlaceholder("Define amount of cat foods that will be ${if(isAdd) "added" else "removed"} from this user")
+                            .build()
+
+                        val modal = Modal.create("cf", "Modify Cat Food")
+                            .addActionRow(input)
+                            .build()
+
+                        event.replyModal(modal).queue()
+
+                        StaticStore.putHolder(authorMessage.author.id, CatFoodModifyHolder(authorMessage, channelID, message.id, inventory, isAdd, targetMember.id) {
+                            message.editMessage("Do you want to add or remove cat foods?\n\nCurrently this user has ${EmojiStore.ABILITY["CF"]?.formatted} ${inventory.catFoods}")
+                                .setComponents(getModeComponents())
+                                .setAllowedMentions(ArrayList())
+                                .mentionRepliedUser(false)
+                                .queue()
+                        })
+                    }
+                    CardData.ModifyCategory.SHARD -> {
+
+                    }
                 }
             }
             "back" -> {
@@ -326,6 +356,7 @@ class ModifyModeSelectHolder(author: Message, channelID: String, private val mes
 
         modeOptions.add(SelectOption.of("Cards", "card"))
         modeOptions.add(SelectOption.of("Vanity Roles", "role"))
+        modeOptions.add(SelectOption.of("Cat Foods", "cf"))
 
         val modes = StringSelectMenu.create("category")
             .addOptions(modeOptions)
@@ -335,6 +366,29 @@ class ModifyModeSelectHolder(author: Message, channelID: String, private val mes
         rows.add(ActionRow.of(modes))
 
         rows.add(ActionRow.of(Button.danger("close", "Close")))
+
+        return rows
+    }
+
+    private fun getModeComponents() : List<LayoutComponent> {
+        val rows = ArrayList<ActionRow>()
+
+        val modeOptions = ArrayList<SelectOption>()
+
+        modeOptions.add(SelectOption.of("Add", "add").withEmoji(Emoji.fromUnicode("➕")))
+        modeOptions.add(SelectOption.of("Remove", "remove").withEmoji(Emoji.fromUnicode("➖")))
+
+        val modes = StringSelectMenu.create("mode")
+            .addOptions(modeOptions)
+            .setPlaceholder("Please select mode")
+            .build()
+
+        rows.add(ActionRow.of(modes))
+
+        rows.add(ActionRow.of(
+            Button.secondary("back", "Back"),
+            Button.danger("close", "Close")
+        ))
 
         return rows
     }

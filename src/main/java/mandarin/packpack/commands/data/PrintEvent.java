@@ -8,6 +8,7 @@ import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,7 @@ public class PrintEvent extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(CommandLoader loader) throws Exception {
+    public void doSomething(@NotNull CommandLoader loader) throws Exception {
         if(holder == null)
             return;
 

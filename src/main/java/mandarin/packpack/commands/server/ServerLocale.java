@@ -6,6 +6,7 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import org.jetbrains.annotations.NotNull;
 
 public class ServerLocale extends ConstraintCommand {
     public ServerLocale(ROLE role, int lang, IDHolder id) {
@@ -13,7 +14,7 @@ public class ServerLocale extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(CommandLoader loader) throws Exception {
+    public void doSomething(@NotNull CommandLoader loader) throws Exception {
         if(holder == null)
             return;
 

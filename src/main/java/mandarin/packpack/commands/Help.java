@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
@@ -28,7 +29,7 @@ public class Help extends Command {
     }
 
     @Override
-    public void doSomething(CommandLoader loader) {
+    public void doSomething(@NotNull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
 
         String[] messages = loader.getContent().split(" ");

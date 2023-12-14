@@ -5,7 +5,6 @@ import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.TradingSession
 import mandarin.card.supporter.log.TransactionLogger
-import mandarin.card.supporter.transaction.TatsuHandler
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
@@ -43,45 +42,23 @@ class Trade : Command(LangID.EN, true) {
         }
 
         if (Inventory.getInventory(m.id).cards.isEmpty()) {
-            if (TatsuHandler.canInteract(1, false)) {
-                val cf = TatsuHandler.getPoints(g.idLong, m.idLong, false)
+            val cf = Inventory.getInventory(m.id).catFoods
 
-                if (cf < 1000) {
-                    val additional = if (!CardData.tradeTrialCooldown.containsKey(m.id)) {
-                        "If you call this command without meeting said requirements again, you won't be able to use this command for 1 hour, so be careful"
-                    } else {
-                        "You won't be able to use this command for 1 hour, please don't call this command unnecessarily"
-                    }
-
-                    replyToMessageSafely(ch, "It seems you don't have any cards yet, and you also don't have more than 1k cf. To open trading session, you have to have at least 1 card or over 1k cf\n\n$additional", loader.message) { a -> a }
-
-                    if (!CardData.tradeTrialCooldown.containsKey(m.id)) {
-                        CardData.tradeTrialCooldown[m.id] = 0
-                    } else {
-                        CardData.tradeTrialCooldown[m.id] = CardData.getUnixEpochTime() + CardData.tradeTrialCooldownTerm
-
-                        TransactionLogger.logTradeTrialFailure(m.idLong, Inventory.getInventory(m.id).cards.isEmpty(), cf)
-                    }
-
-                    CardBot.saveCardData()
-
-                    return
-                }
-            } else {
+            if (cf < 1000) {
                 val additional = if (!CardData.tradeTrialCooldown.containsKey(m.id)) {
                     "If you call this command without meeting said requirements again, you won't be able to use this command for 1 hour, so be careful"
                 } else {
                     "You won't be able to use this command for 1 hour, please don't call this command unnecessarily"
                 }
 
-                replyToMessageSafely(ch, "It seems you don't have any cards yet, and bot couldn't check your cf due to queue limit. To open trading session, you have to have at least 1 card or over 1k cf\n\n$additional", loader.message) { a -> a }
+                replyToMessageSafely(ch, "It seems you don't have any cards yet, and you also don't have more than 1k cf. To open trading session, you have to have at least 1 card or over 1k cf\n\n$additional", loader.message) { a -> a }
 
                 if (!CardData.tradeTrialCooldown.containsKey(m.id)) {
                     CardData.tradeTrialCooldown[m.id] = 0
                 } else {
                     CardData.tradeTrialCooldown[m.id] = CardData.getUnixEpochTime() + CardData.tradeTrialCooldownTerm
 
-                    TransactionLogger.logTradeTrialFailure(m.idLong, Inventory.getInventory(m.id).cards.isEmpty(), -1)
+                    TransactionLogger.logTradeTrialFailure(m.idLong, Inventory.getInventory(m.id).cards.isEmpty(), cf)
                 }
 
                 CardBot.saveCardData()
@@ -107,6 +84,8 @@ class Trade : Command(LangID.EN, true) {
         }
 
         action.queue { targetMember ->
+            val inventory = Inventory.getInventory(targetMember.id)
+
             if (targetMember.user.isBot) {
                 replyToMessageSafely(ch, "You can't trade with bot!", loader.message) { a -> a }
 
@@ -135,16 +114,10 @@ class Trade : Command(LangID.EN, true) {
                 return@queue
             }
 
-            if (Inventory.getInventory(targetMember.id).cards.isEmpty()) {
-                if (TatsuHandler.canInteract(1, false)) {
-                    val cf = TatsuHandler.getPoints(g.idLong, targetMember.idLong, false)
+            if (inventory.cards.isEmpty()) {
+                val cf = inventory.catFoods
 
-                    if (cf < 1000) {
-                        replyToMessageSafely(ch, "It seems you can't trade with that member because they don't meet requirements; Having cards or more than 1k cf", loader.message) { a -> a }
-
-                        return@queue
-                    }
-                } else {
+                if (cf < 1000) {
                     replyToMessageSafely(ch, "It seems you can't trade with that member because they don't meet requirements; Having cards or more than 1k cf", loader.message) { a -> a }
 
                     return@queue

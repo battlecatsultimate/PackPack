@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class CheckBCU extends Command {
     }
 
     @Override
-    public void doSomething(CommandLoader loader) {
+    public void doSomething(@NotNull CommandLoader loader) {
         if(holder == null)
             return;
 

@@ -79,6 +79,7 @@ class ModifyInventory : Command(LangID.EN, true) {
 
         modeOptions.add(SelectOption.of("Cards", "card"))
         modeOptions.add(SelectOption.of("Vanity Roles", "role"))
+        modeOptions.add(SelectOption.of("Cat Foods", "cf"))
 
         val modes = StringSelectMenu.create("category")
             .addOptions(modeOptions)

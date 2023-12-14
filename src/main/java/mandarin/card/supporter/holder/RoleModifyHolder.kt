@@ -97,7 +97,7 @@ class RoleModifyHolder(author: Message, channelID: String, private val message: 
             }
             "back" -> {
                 event.deferEdit()
-                    .setContent("Do you want to add cards or remove roles?")
+                    .setContent("Do you want to add roles or remove roles?")
                     .setComponents(getPreviousComponents())
                     .mentionRepliedUser(false)
                     .setAllowedMentions(ArrayList())
@@ -107,7 +107,7 @@ class RoleModifyHolder(author: Message, channelID: String, private val message: 
 
                 expire(authorMessage.author.id)
 
-                StaticStore.putHolder(authorMessage.author.id, ModifyModeSelectHolder(authorMessage, channelID, message, false, inventory, targetMember))
+                StaticStore.putHolder(authorMessage.author.id, ModifyModeSelectHolder(authorMessage, channelID, message, CardData.ModifyCategory.ROLE, inventory, targetMember))
             }
             "close" -> {
                 event.deferEdit()

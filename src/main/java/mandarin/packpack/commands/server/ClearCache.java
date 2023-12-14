@@ -8,6 +8,7 @@ import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.ConfirmButtonHolder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import org.jetbrains.annotations.NotNull;
 
 public class ClearCache extends ConstraintCommand {
     public ClearCache(ROLE role, int lang, IDHolder id) {
@@ -15,7 +16,7 @@ public class ClearCache extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(CommandLoader loader) throws Exception {
+    public void doSomething(@NotNull CommandLoader loader) throws Exception {
         MessageChannel ch = loader.getChannel();
 
         registerConfirmButtons(ch.sendMessage("Are you sure you want to clear cache? This cannot be undone"), lang).queue(res -> {

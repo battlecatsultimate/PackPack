@@ -5,10 +5,7 @@ import mandarin.card.supporter.Card
 import mandarin.card.supporter.CardComparator
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
-import mandarin.card.supporter.transaction.TatsuHandler
-import mandarin.card.supporter.transaction.TransactionGroup
 import mandarin.card.supporter.log.TransactionLogger
-import mandarin.card.supporter.transaction.TransactionQueue
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
@@ -67,66 +64,20 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
                 applyResult(event)
             }
             "salvage" -> {
-                val g = event.guild ?: return
-
                 val cf = selectedCard.size * (if (salvageMode == CardData.SalvageMode.T3) CardData.Tier.ULTRA.cost else CardData.Tier.COMMON.cost)
-
-                var cost = cf / 100000
-
-                if (cf % 100000 != 0) {
-                    cost++
-                }
 
                 inventory.removeCards(selectedCard)
 
-                if (TatsuHandler.canInteract(cost, false)) {
-                    var c = cf
+                inventory.catFoods += cf
 
-                    while (c > 0) {
-                        val possible = min(c, 100000)
+                TransactionLogger.logSalvage(authorMessage.author.idLong, selectedCard.size, selectedCard)
 
-                        TatsuHandler.modifyPoints(g.idLong, authorMessage.author.idLong, possible, TatsuHandler.Action.ADD, true)
-
-                        c -= possible
-                    }
-
-                    TransactionLogger.logSalvage(authorMessage.author.idLong, selectedCard.size, selectedCard)
-
-                    event.deferEdit()
-                            .setContent("Salvaged ${selectedCard.size} cards, and you received ${EmojiStore.ABILITY["CF"]?.formatted} $cf!")
-                            .setComponents()
-                            .mentionRepliedUser(false)
-                            .setAllowedMentions(ArrayList())
-                            .queue()
-                } else {
-                    TransactionGroup.queue(TransactionQueue(cost) {
-                        event.deferEdit()
-                                .setContent("You have been queued, job will be done after approximately ${TransactionGroup.groupQueue.size + 1} minute(s). Once job is done, bot will mention you")
-                                .setComponents()
-                                .mentionRepliedUser(false)
-                                .setAllowedMentions(ArrayList())
-                                .queue()
-
-                        var c = cf
-
-                        while (c > 0) {
-                            val possible = min(c, 100000)
-
-                            TatsuHandler.modifyPoints(g.idLong, authorMessage.author.idLong, possible, TatsuHandler.Action.ADD, true)
-
-                            c -= possible
-                        }
-
-                        TransactionLogger.logSalvage(authorMessage.author.idLong, selectedCard.size, selectedCard)
-
-                        event.messageChannel
-                                .sendMessage("Salvaged ${selectedCard.size} cards, and you received ${EmojiStore.ABILITY["CF"]?.formatted} $cf!")
-                                .setMessageReference(authorMessage)
-                                .mentionRepliedUser(false)
-                                .setAllowedMentions(ArrayList())
-                                .queue()
-                    })
-                }
+                event.deferEdit()
+                    .setContent("Salvaged ${selectedCard.size} cards, and you received ${EmojiStore.ABILITY["CF"]?.formatted} $cf!")
+                    .setComponents()
+                    .mentionRepliedUser(false)
+                    .setAllowedMentions(ArrayList())
+                    .queue()
 
                 CardBot.saveCardData()
 
@@ -134,8 +85,6 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
                 expire(authorMessage.author.id)
             }
             "craft" -> {
-                val g = event.guild ?: return
-
                 inventory.removeCards(selectedCard)
 
                 val chance = Random.nextDouble()
@@ -143,56 +92,16 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
                 if (chance <= 0.7) {
                     val cf = selectedCard.size * CardData.Tier.COMMON.cost
 
-                    val cost = cf / 100000 + 1
+                    inventory.catFoods += cf
 
-                    if (TatsuHandler.canInteract(cost, false)) {
-                        var c = cf
+                    TransactionLogger.logCraft(authorMessage.author.idLong, selectedCard.size, null, selectedCard)
 
-                        while (c > 0) {
-                            val possible = min(c, 100000)
-
-                            TatsuHandler.modifyPoints(g.idLong, authorMessage.author.idLong, possible, TatsuHandler.Action.ADD, true)
-
-                            c -= possible
-                        }
-
-                        TransactionLogger.logCraft(authorMessage.author.idLong, selectedCard.size, null, selectedCard)
-
-                        event.deferEdit()
-                                .setContent("Failed to craft tier 2 card..., so you received ${EmojiStore.ABILITY["CF"]?.formatted} $cf")
-                                .setComponents()
-                                .mentionRepliedUser(false)
-                                .setAllowedMentions(ArrayList())
-                                .queue()
-                    } else {
-                        TransactionGroup.queue(TransactionQueue(cost) {
-                            event.deferEdit()
-                                    .setContent("Failed to create tier 2 card..., ${EmojiStore.ABILITY["CF"]?.formatted} $cf will be received around ${TransactionGroup.groupQueue.size + 1} minute(s) later. Once job is done, bot will mention you")
-                                    .setComponents()
-                                    .mentionRepliedUser(false)
-                                    .setAllowedMentions(ArrayList())
-                                    .queue()
-
-                            var c = cf
-
-                            while (c > 0) {
-                                val possible = min(c, 100000)
-
-                                TatsuHandler.modifyPoints(g.idLong, authorMessage.author.idLong, possible, TatsuHandler.Action.ADD, true)
-
-                                c -= possible
-                            }
-
-                            TransactionLogger.logCraft(authorMessage.author.idLong, selectedCard.size, null, selectedCard)
-
-                            event.messageChannel
-                                    .sendMessage("You received ${EmojiStore.ABILITY["CF"]?.formatted} $cf")
-                                    .setMessageReference(authorMessage)
-                                    .mentionRepliedUser(false)
-                                    .setAllowedMentions(ArrayList())
-                                    .queue()
-                        })
-                    }
+                    event.deferEdit()
+                        .setContent("Failed to craft tier 2 card..., so you received ${EmojiStore.ABILITY["CF"]?.formatted} $cf")
+                        .setComponents()
+                        .mentionRepliedUser(false)
+                        .setAllowedMentions(ArrayList())
+                        .queue()
                 } else {
                     val card = CardData.appendUncommon(CardData.uncommon).random()
 

@@ -1,10 +1,7 @@
 package mandarin.card.supporter.holder
 
 import mandarin.card.supporter.*
-import mandarin.card.supporter.transaction.TatsuHandler
-import mandarin.card.supporter.transaction.TransactionGroup
 import mandarin.card.supporter.log.TransactionLogger
-import mandarin.card.supporter.transaction.TransactionQueue
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
@@ -71,23 +68,12 @@ class PackSelectHolder(author: Message, channelID: String, message: Message, pri
                     return
                 }
 
-                val guild = event.guild ?: return
+                val inventory = Inventory.getInventory(authorMessage.author.id)
 
                 when (pack) {
                     CardData.Pack.SMALL,
                     CardData.Pack.LARGE -> {
-                        if (!TatsuHandler.canInteract(1, false)) {
-                            event.deferEdit()
-                                .setContent("Sorry, bot is cleaning up queued cat food transactions, please try again later. Expected waiting time is approximately ${TransactionGroup.groupQueue.size + 1} minute(s)")
-                                .setComponents()
-                                .setAllowedMentions(ArrayList())
-                                .mentionRepliedUser(false)
-                                .queue()
-
-                            return
-                        }
-
-                        val currentCatFood = TatsuHandler.getPoints(guild.idLong, authorMessage.author.idLong, false)
+                        val currentCatFood = inventory.catFoods
 
                         if (currentCatFood - pack.cost < 0) {
                             event.deferEdit()
@@ -110,139 +96,69 @@ class PackSelectHolder(author: Message, channelID: String, message: Message, pri
                             return
                         }
 
-                        if (TatsuHandler.canInteract(1, false)) {
-                            event.deferEdit()
-                                .setContent("\uD83C\uDFB2 Rolling...!")
-                                .setComponents()
-                                .setAllowedMentions(ArrayList())
-                                .mentionRepliedUser(false)
-                                .queue()
+                        event.deferEdit()
+                            .setContent("\uD83C\uDFB2 Rolling...!")
+                            .setComponents()
+                            .setAllowedMentions(ArrayList())
+                            .mentionRepliedUser(false)
+                            .queue()
 
-                            if (pack.cost > 0) {
-                                TatsuHandler.modifyPoints(guild.idLong, authorMessage.author.idLong, pack.cost, TatsuHandler.Action.REMOVE, true)
-                            }
-
-                            val result = rollCards(pack)
-
-                            val inventory = Inventory.getInventory(authorMessage.author.id)
-
-                            try {
-                                val builder = StringBuilder("### ${pack.getPackName()} Result [${result.size} cards in total]\n\n")
-
-                                for (card in result) {
-                                    builder.append("- ")
-
-                                    if (card.tier == CardData.Tier.ULTRA) {
-                                        builder.append(Emoji.fromUnicode("✨").formatted).append(" ")
-                                    } else if (card.tier == CardData.Tier.LEGEND) {
-                                        builder.append(EmojiStore.ABILITY["LEGEND"]?.formatted).append(" ")
-                                    }
-
-                                    builder.append(card.cardInfo())
-
-                                    if (!inventory.cards.containsKey(card)) {
-                                        builder.append(" {**NEW**}")
-                                    }
-
-                                    if (card.tier == CardData.Tier.ULTRA) {
-                                        builder.append(" ").append(Emoji.fromUnicode("✨").formatted)
-                                    } else if (card.tier == CardData.Tier.LEGEND) {
-                                        builder.append(" ").append(EmojiStore.ABILITY["LEGEND"]?.formatted)
-                                    }
-
-                                    builder.append("\n")
-                                }
-
-                                if (noImage) {
-                                    event.messageChannel
-                                        .sendMessage(builder.toString())
-                                        .setMessageReference(authorMessage)
-                                        .queue()
-                                } else {
-                                    event.messageChannel
-                                        .sendMessage(builder.toString())
-                                        .setMessageReference(authorMessage)
-                                        .addFiles(result.filter { c -> !inventory.cards.containsKey(c) }.map { c -> FileUpload.fromData(c.cardImage, "${c.name}.png") })
-                                        .queue()
-                                }
-                            } catch (e: Exception) {
-                                StaticStore.logger.uploadErrorLog(e, "Failed to upload card roll message")
-                            }
-
-                            inventory.addCards(result)
-
-                            val member = event.member ?: return
-
-                            TransactionLogger.logRoll(result, pack, member, false)
-                        } else {
-                            event.deferEdit()
-                                .setContent("Your roll got queued. Please wait, and it will mention you when roll is done")
-                                .queue()
-
-                            TransactionGroup.queue(TransactionQueue(1) {
-                                if (pack.cost > 0) {
-                                    TatsuHandler.modifyPoints(guild.idLong, authorMessage.author.idLong, pack.cost, TatsuHandler.Action.REMOVE, true)
-                                }
-
-                                val result = rollCards(pack)
-
-                                val inventory = Inventory.getInventory(authorMessage.author.id)
-
-                                try {
-                                    val builder = StringBuilder("### ${pack.getPackName()} Result [${result.size} cards in total]\n\n")
-
-                                    for (card in result) {
-                                        builder.append("- ")
-
-                                        if (card.tier == CardData.Tier.ULTRA) {
-                                            builder.append(Emoji.fromUnicode("✨").formatted).append(" ")
-                                        } else if (card.tier == CardData.Tier.LEGEND) {
-                                            builder.append(EmojiStore.ABILITY["LEGEND"]?.formatted).append(" ")
-                                        }
-
-                                        builder.append(card.cardInfo())
-
-                                        if (!inventory.cards.containsKey(card)) {
-                                            builder.append(" {**NEW**}")
-                                        }
-
-                                        if (card.tier == CardData.Tier.ULTRA) {
-                                            builder.append(" ").append(Emoji.fromUnicode("✨").formatted)
-                                        } else if (card.tier == CardData.Tier.LEGEND) {
-                                            builder.append(" ").append(EmojiStore.ABILITY["LEGEND"]?.formatted)
-                                        }
-
-                                        builder.append("\n")
-                                    }
-
-                                    if (noImage) {
-                                        event.messageChannel
-                                            .sendMessage(builder.toString())
-                                            .setMessageReference(authorMessage)
-                                            .mentionRepliedUser(false)
-                                            .queue()
-                                    } else {
-                                        event.messageChannel
-                                            .sendMessage(builder.toString())
-                                            .setMessageReference(authorMessage)
-                                            .mentionRepliedUser(false)
-                                            .addFiles(result.filter { c -> !inventory.cards.containsKey(c) }.map { c -> FileUpload.fromData(c.cardImage, "${c.name}.png") })
-                                            .queue()
-                                    }
-                                } catch (e: Exception) {
-                                    StaticStore.logger.uploadErrorLog(e, "Failed to upload card roll message")
-                                }
-
-                                inventory.addCards(result)
-
-                                val member = event.member ?: return@TransactionQueue
-
-                                TransactionLogger.logRoll(result, pack, member, false)
-                            })
+                        if (pack.cost > 0) {
+                            inventory.catFoods -= pack.cost
                         }
+
+                        val result = rollCards(pack)
+
+                        try {
+                            val builder = StringBuilder("### ${pack.getPackName()} Result [${result.size} cards in total]\n\n")
+
+                            for (card in result) {
+                                builder.append("- ")
+
+                                if (card.tier == CardData.Tier.ULTRA) {
+                                    builder.append(Emoji.fromUnicode("✨").formatted).append(" ")
+                                } else if (card.tier == CardData.Tier.LEGEND) {
+                                    builder.append(EmojiStore.ABILITY["LEGEND"]?.formatted).append(" ")
+                                }
+
+                                builder.append(card.cardInfo())
+
+                                if (!inventory.cards.containsKey(card)) {
+                                    builder.append(" {**NEW**}")
+                                }
+
+                                if (card.tier == CardData.Tier.ULTRA) {
+                                    builder.append(" ").append(Emoji.fromUnicode("✨").formatted)
+                                } else if (card.tier == CardData.Tier.LEGEND) {
+                                    builder.append(" ").append(EmojiStore.ABILITY["LEGEND"]?.formatted)
+                                }
+
+                                builder.append("\n")
+                            }
+
+                            if (noImage) {
+                                event.messageChannel
+                                    .sendMessage(builder.toString())
+                                    .setMessageReference(authorMessage)
+                                    .queue()
+                            } else {
+                                event.messageChannel
+                                    .sendMessage(builder.toString())
+                                    .setMessageReference(authorMessage)
+                                    .addFiles(result.filter { c -> !inventory.cards.containsKey(c) }.map { c -> FileUpload.fromData(c.cardImage, "${c.name}.png") })
+                                    .queue()
+                            }
+                        } catch (e: Exception) {
+                            StaticStore.logger.uploadErrorLog(e, "Failed to upload card roll message")
+                        }
+
+                        inventory.addCards(result)
+
+                        val member = event.member ?: return
+
+                        TransactionLogger.logRoll(result, pack, member, false)
                     }
                     else -> {
-                        val inventory = Inventory.getInventory(authorMessage.author.id)
                         val cards = inventory.cards.keys.filter { c -> c.tier == CardData.Tier.UNCOMMON }.sortedWith(
                             CardComparator()
                         )

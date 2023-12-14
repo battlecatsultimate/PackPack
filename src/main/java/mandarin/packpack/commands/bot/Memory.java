@@ -4,6 +4,7 @@ import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import org.jetbrains.annotations.NotNull;
 
 public class Memory extends ConstraintCommand {
     public Memory(ROLE role, int lang, IDHolder id) {
@@ -11,7 +12,7 @@ public class Memory extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(CommandLoader loader) throws Exception {
+    public void doSomething(@NotNull CommandLoader loader) throws Exception {
         MessageChannel ch = loader.getChannel();
 
         long f = Runtime.getRuntime().freeMemory();

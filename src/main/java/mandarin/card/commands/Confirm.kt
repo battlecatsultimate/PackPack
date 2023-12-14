@@ -56,7 +56,7 @@ class Confirm(private val session: TradingSession) : Command(LangID.EN, true) {
                             return@ConfirmButtonHolder
                         }
 
-                        session.trade(ch, g.idLong)
+                        session.trade()
 
                         session.close(ch)
 

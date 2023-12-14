@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import org.jetbrains.annotations.NotNull;
 
 public class Locale extends ConstraintCommand {
 
@@ -17,7 +18,7 @@ public class Locale extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(CommandLoader loader) {
+    public void doSomething(@NotNull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
 
         String[] list = loader.getContent().split(" ");

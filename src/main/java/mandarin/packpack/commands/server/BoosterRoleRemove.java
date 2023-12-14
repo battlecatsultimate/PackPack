@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.UserSnowflake;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import org.jetbrains.annotations.NotNull;
 
 public class BoosterRoleRemove extends ConstraintCommand {
     public BoosterRoleRemove(ROLE role, int lang, IDHolder id) {
@@ -19,7 +20,7 @@ public class BoosterRoleRemove extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(CommandLoader loader) throws Exception {
+    public void doSomething(@NotNull CommandLoader loader) throws Exception {
         Guild g = loader.getGuild();
         MessageChannel ch = loader.getChannel();
 

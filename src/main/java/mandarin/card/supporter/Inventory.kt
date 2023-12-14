@@ -8,6 +8,9 @@ class Inventory {
     var cards = HashMap<Card, Int>()
     var vanityRoles = ArrayList<CardData.Role>()
 
+    var catFoods = 0L
+    var platinumShard = 0L
+
     fun addCards(c: List<Card>) {
         for (card in c) {
             if (cards.containsKey(card)) {
@@ -61,6 +64,9 @@ class Inventory {
 
         obj.add("roles", roleArray)
 
+        obj.addProperty("catFoods", catFoods)
+        obj.addProperty("platinumShard", platinumShard)
+
         return obj
     }
 
@@ -106,6 +112,14 @@ class Inventory {
                         else -> inventory.vanityRoles.add(CardData.Role.valueOf(r.asString))
                     }
                 }
+            }
+
+            if (obj.has("catFoods")) {
+                inventory.catFoods = obj.get("catFoods").asLong
+            }
+
+            if (obj.has("platinumShard")) {
+                inventory.platinumShard = obj.get("platinumShard").asLong
             }
 
             return inventory

@@ -2,6 +2,7 @@ package mandarin.packpack.supporter.server.holder.component;
 
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.holder.Holder;
+import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
@@ -33,6 +34,15 @@ public abstract class ComponentHolder extends Holder {
         }
 
         return StaticStore.safeParseInt(((StringSelectInteractionEvent) event).getValues().get(0));
+    }
+
+    public int getTotalPage(int size) {
+        int totalPage = size / SearchHolder.PAGE_CHUNK;
+
+        if (size % SearchHolder.PAGE_CHUNK != 0)
+            totalPage++;
+
+        return totalPage;
     }
 
     private boolean canHandleEvent(GenericComponentInteractionCreateEvent event) {

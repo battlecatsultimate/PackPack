@@ -10,7 +10,6 @@ import mandarin.card.commands.*
 import mandarin.card.supporter.*
 import mandarin.card.supporter.log.LogSession
 import mandarin.card.supporter.log.TransactionLogger
-import mandarin.card.supporter.transaction.TatsuHandler
 import mandarin.packpack.supporter.*
 import mandarin.packpack.supporter.server.data.ShardLoader
 import net.dv8tion.jda.api.entities.Activity
@@ -55,8 +54,6 @@ object CardBot : ListenerAdapter() {
                 globalPrefix = "ct."
             }
         }
-
-        TatsuHandler.API = args[1]
 
         val token = args[0]
         val builder = DefaultShardManagerBuilder.createDefault(token)
@@ -199,13 +196,22 @@ object CardBot : ListenerAdapter() {
         val m = event.member ?: return
         val ch = event.channel
 
+        val lastTime = CardData.lastMessageSent[m.id] ?: 0L
+        val currentTime = CardData.getUnixEpochTime()
+
+        if (currentTime - lastTime >= CardData.catFoodCooldown && ch.id !in CardData.excludedCatFoodChannel) {
+            CardData.lastMessageSent[m.id] = currentTime
+
+            val inventory = Inventory.getInventory(m.id)
+
+            inventory.catFoods += if (CardData.minimumCatFoods != CardData.maximumCatFoods) {
+                CardData.minimumCatFoods.rangeTo(CardData.maximumCatFoods).random()
+            } else {
+                CardData.maximumCatFoods
+            }
+        }
+
         if (CardData.isBanned(m))
-            return
-
-        if (m.id != StaticStore.MANDARIN_SMELL && !CardData.hasAllPermission(m) && !CardData.isAllowed(ch))
-            return
-
-        if (locked && m.id != StaticStore.MANDARIN_SMELL && !CardData.hasAllPermission(m))
             return
 
         val segments = event.message.contentRaw.lowercase().split(" ")
@@ -216,10 +222,37 @@ object CardBot : ListenerAdapter() {
             segments[0]
 
         when(firstSegment) {
+            "${globalPrefix}catfood",
+            "${globalPrefix}cf" -> {
+                CatFood().execute(event)
+
+                return
+            }
+            "${globalPrefix}transfercatfood",
+            "${globalPrefix}tcf" -> {
+                TransferCatFood().execute(event)
+
+                return
+            }
+            "${globalPrefix}rank" -> {
+                Rank().execute(event)
+
+                return
+            }
+        }
+
+        if (m.id != StaticStore.MANDARIN_SMELL && !CardData.hasAllPermission(m) && !CardData.isAllowed(ch))
+            return
+
+        if (locked && m.id != StaticStore.MANDARIN_SMELL && !CardData.hasAllPermission(m))
+            return
+
+        when(firstSegment) {
             "${globalPrefix}save" -> Save().execute(event)
             "${globalPrefix}rollmanual",
             "${globalPrefix}rm" -> RollManual().execute(event)
-            "${globalPrefix}trade" -> Trade().execute(event)
+            "${globalPrefix}trade",
+            "${globalPrefix}tr" -> Trade().execute(event)
             "${globalPrefix}trademanual",
             "${globalPrefix}tm" -> TradeManual().execute(event)
             "${globalPrefix}cards" -> Cards().execute(event)
@@ -252,6 +285,16 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}report" -> Report().execute(event)
             "${globalPrefix}savedata" -> SaveData().execute(event)
             "${globalPrefix}replacesave" -> ReplaceSave().execute(event)
+            "${globalPrefix}catfoodrate",
+            "${globalPrefix}cfr" -> CatFoodRate().execute(event)
+            "${globalPrefix}excludechannel",
+            "${globalPrefix}ec" -> ExcludeChannel().execute(event)
+            "${globalPrefix}catfood",
+            "${globalPrefix}cf" -> CatFood().execute(event)
+            "${globalPrefix}transfercatfood",
+            "${globalPrefix}tcf" -> TransferCatFood().execute(event)
+            "${globalPrefix}masscatfood",
+            "${globalPrefix}mcf" -> MassCatFood().execute(event)
             "${globalPrefix}hack" -> {
                 if (test) {
                     Hack().execute(event)
@@ -262,7 +305,8 @@ object CardBot : ListenerAdapter() {
         val session = findSession(event.channel.idLong) ?: return
 
         when(firstSegment) {
-            "${globalPrefix}suggest" -> Suggest(session).execute(event)
+            "${globalPrefix}suggest",
+            "${globalPrefix}su" -> Suggest(session).execute(event)
             "${globalPrefix}confirm" -> Confirm(session).execute(event)
             "${globalPrefix}cancel" -> Cancel(session).execute(event)
         }
@@ -295,6 +339,7 @@ object CardBot : ListenerAdapter() {
         TransactionLogger.logChannel = event.jda.getGuildChannelById(CardData.transactionLog) as MessageChannel
         TransactionLogger.tradeChannel = event.jda.getGuildChannelById(CardData.tradingLog) as MessageChannel
         TransactionLogger.modChannel = event.jda.getGuildChannelById(CardData.modLog) as MessageChannel
+        TransactionLogger.catFoodChannel = event.jda.getGuildChannelById(CardData.catFoodLog) as MessageChannel
 
         StaticStore.loggingChannel = ServerData.get("loggingChannel")
 
@@ -412,14 +457,6 @@ object CardBot : ListenerAdapter() {
             CardData.sessionNumber = obj.get("sessionNumber").asLong
         }
 
-        if (obj.has("leftRequest")) {
-            TatsuHandler.leftRequest = obj.get("leftRequest").asInt
-        }
-
-        if (obj.has("nextRefreshTime")) {
-            TatsuHandler.nextRefreshTime = obj.get("nextRefreshTime").asLong
-        }
-
         if (obj.has("activatedBanners")) {
             CardData.activatedBanners.addAll(
                 obj.getAsJsonArray("activatedBanners").map {
@@ -479,6 +516,38 @@ object CardBot : ListenerAdapter() {
                 }
             }
         }
+
+        if (obj.has("minimumCatFoods")) {
+            CardData.minimumCatFoods = obj.get("minimumCatFoods").asLong
+        }
+
+        if (obj.has("maximumCatFoods")) {
+            CardData.maximumCatFoods = obj.get("maximumCatFoods").asLong
+        }
+
+        if (obj.has("catFoodCooldown")) {
+            CardData.catFoodCooldown = obj.get("catFoodCooldown").asLong
+        }
+
+        if (obj.has("lastMessageSent")) {
+            val arr = obj.getAsJsonArray("lastMessageSent")
+
+            arr.forEach { e ->
+                val o = e.asJsonObject
+
+                if (o.has("key") && o.has("val")) {
+                    CardData.lastMessageSent[o.get("key").asString] = o.get("val").asLong
+                }
+            }
+        }
+
+        if (obj.has("excludedCatFoodChannel")) {
+            val arr = obj.getAsJsonArray("excludedCatFoodChannel")
+
+            arr.forEach { e ->
+                CardData.excludedCatFoodChannel.add(e.asString)
+            }
+        }
     }
 
     @Synchronized
@@ -510,9 +579,6 @@ object CardBot : ListenerAdapter() {
         obj.add("sessions", sessions)
 
         obj.addProperty("sessionNumber", CardData.sessionNumber)
-
-        obj.addProperty("leftRequest", TatsuHandler.leftRequest)
-        obj.addProperty("nextRefreshTime", TatsuHandler.nextRefreshTime)
 
         val activators = JsonArray()
 
@@ -587,6 +653,32 @@ object CardBot : ListenerAdapter() {
         }
 
         obj.add("notifierGroup", notifierGroup)
+
+        obj.addProperty("minimumCatFoods", CardData.minimumCatFoods)
+        obj.addProperty("maximumCatFoods", CardData.maximumCatFoods)
+
+        obj.addProperty("catFoodCooldown", CardData.catFoodCooldown)
+
+        val lastMessageSent = JsonArray()
+
+        CardData.lastMessageSent.forEach { (id, timeStamp) ->
+            val o = JsonObject()
+
+            o.addProperty("key", id)
+            o.addProperty("val", timeStamp)
+
+            lastMessageSent.add(o)
+        }
+
+        obj.add("lastMessageSent", lastMessageSent)
+
+        val excludedCatFoodChannel = JsonArray()
+
+        CardData.excludedCatFoodChannel.forEach { id ->
+            excludedCatFoodChannel.add(id)
+        }
+
+        obj.add("excludedCatFoodChannel", excludedCatFoodChannel)
 
         try {
             val folder = File("./data/")

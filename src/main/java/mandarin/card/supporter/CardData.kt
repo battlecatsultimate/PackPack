@@ -18,6 +18,8 @@ import java.text.NumberFormat
 import java.time.Clock
 import java.time.Instant
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 @Suppress("unused")
 object CardData {
@@ -31,6 +33,13 @@ object CardData {
         T1,
         T3,
         CRAFT
+    }
+
+    enum class ModifyCategory {
+        CARD,
+        ROLE,
+        CF,
+        SHARD
     }
 
     val cards = ArrayList<Card>()
@@ -158,6 +167,12 @@ object CardData {
     val activatedBanners = ArrayList<Activator>()
 
     val cooldown = HashMap<String, LongArray>()
+    val lastMessageSent = HashMap<String, Long>()
+
+    var minimumCatFoods = 20L
+    var maximumCatFoods = 20L
+
+    var catFoodCooldown = 120000L // 120 seconds as default
 
     const val smallLargePackCooldown = 3 * 24 * 60 * 60 * 1000 // 72 hours in milliseconds
     const val premiumPackCooldown = 2 * 24 * 60 * 60 * 1000 // 48 hours in milliseconds
@@ -230,6 +245,7 @@ object CardData {
     val transactionLog = ServerData.get("transactionLog")
     val tradingLog = ServerData.get("tradingLog")
     val modLog = ServerData.get("modLog")
+    val catFoodLog = ServerData.get("catFoodLog")
 
     const val MAX_CARDS = 20
     const val TAX = 0.0
@@ -257,6 +273,8 @@ object CardData {
         decimal.applyPattern("#.###")
         decimal
     }
+
+    val excludedCatFoodChannel = ArrayList<String>()
 
     /*
     -------------------------------------------------------
@@ -329,7 +347,7 @@ object CardData {
     fun hasAllPermission(member: Member) : Boolean {
         val roleList = member.roles.map { r -> r.id }
 
-        return dealer in roleList || mod in roleList || headerMod in roleList
+        return dealer in roleList || mod in roleList || headerMod in roleList || member.id == StaticStore.MANDARIN_SMELL
     }
 
     fun isBanned(member: Member) : Boolean {

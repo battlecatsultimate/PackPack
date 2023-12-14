@@ -4,7 +4,6 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import mandarin.card.CardBot
 import mandarin.card.supporter.log.TransactionLogger
-import mandarin.card.supporter.transaction.TatsuHandler
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
@@ -158,7 +157,7 @@ class TradingSession(val postID: Long, val member: Array<Long>) {
         return !cooldownGoing
     }
 
-    fun trade(ch: MessageChannel, guild: Long) {
+    fun trade() {
         val thisInventory = Inventory.getInventory(member[0].toString())
         val thatInventory = Inventory.getInventory(member[1].toString())
 
@@ -174,11 +173,13 @@ class TradingSession(val postID: Long, val member: Array<Long>) {
 
         //Transfer Cat food
         if (suggestion[0].catFood != 0) {
-            TatsuHandler.transferPoints(ch, guild, member[0], member[1], suggestion[0].catFood)
+            thisInventory.catFoods -= suggestion[0].catFood
+            thatInventory.catFoods += suggestion[0].catFood
         }
 
         if (suggestion[1].catFood != 0) {
-            TatsuHandler.transferPoints(ch, guild, member[1], member[0], suggestion[1].catFood)
+            thisInventory.catFoods += suggestion[1].catFood
+            thatInventory.catFoods -= suggestion[1].catFood
         }
 
         //Validate inventory

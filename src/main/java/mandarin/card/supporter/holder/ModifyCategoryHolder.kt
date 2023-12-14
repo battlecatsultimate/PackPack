@@ -1,6 +1,8 @@
 package mandarin.card.supporter.holder
 
+import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
+import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import net.dv8tion.jda.api.entities.Member
@@ -34,9 +36,23 @@ class ModifyCategoryHolder(author: Message, channelID: String, private val messa
 
                 when(event.values[0]) {
                     "card",
-                    "role" -> {
+                    "role",
+                    "cf" -> {
+                        val target = when (event.values[0]) {
+                            "card" -> "cards"
+                            "role" -> "roles"
+                            "cf" -> "cat foods"
+                            else -> "platinum shards"
+                        }
+
+                        val content = if (event.values[0] == "cf") {
+                            "Do you want to add or remove $target?\n\nCurrently this user has ${EmojiStore.ABILITY["CF"]?.formatted} ${inventory.catFoods}"
+                        } else {
+                            "Do you want to add or remove $target?"
+                        }
+
                         event.deferEdit()
-                            .setContent("Do you want to add cards or remove ${if (event.values[0] == "card") "cards" else "roles"}?")
+                            .setContent(content)
                             .setComponents(getComponents())
                             .mentionRepliedUser(false)
                             .queue()
@@ -45,7 +61,14 @@ class ModifyCategoryHolder(author: Message, channelID: String, private val messa
 
                         expire(authorMessage.author.id)
 
-                        StaticStore.putHolder(authorMessage.author.id, ModifyModeSelectHolder(authorMessage, channelID, message, event.values[0] == "card", inventory, targetMember))
+                        val category = when(event.values[0]) {
+                            "card" -> CardData.ModifyCategory.CARD
+                            "role" -> CardData.ModifyCategory.ROLE
+                            "cf" -> CardData.ModifyCategory.CF
+                            else -> CardData.ModifyCategory.SHARD
+                        }
+
+                        StaticStore.putHolder(authorMessage.author.id, ModifyModeSelectHolder(authorMessage, channelID, message, category, inventory, targetMember))
                     }
                 }
             }

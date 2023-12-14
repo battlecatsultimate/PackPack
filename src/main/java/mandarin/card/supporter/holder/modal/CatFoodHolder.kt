@@ -1,10 +1,9 @@
-package mandarin.card.supporter.holder
+package mandarin.card.supporter.holder.modal
 
 import mandarin.card.supporter.CardData
+import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.Suggestion
 import mandarin.card.supporter.TradingSession
-import mandarin.card.supporter.transaction.TatsuHandler
-import mandarin.card.supporter.transaction.TransactionGroup
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.modal.ModalHolder
 import net.dv8tion.jda.api.entities.Message
@@ -37,17 +36,9 @@ class CatFoodHolder(author: Message, channelID: String, message:Message, private
                 return
             }
 
-            if (!TatsuHandler.canInteract(1, false)) {
-                event.reply("Sorry, bot is cleaning up queued cat food transaction queue, please try again later. Expected waiting time is approximately ${TransactionGroup.groupQueue.size + 1} minute(s)")
-                    .setEphemeral(true)
-                    .queue()
+            val inventory = Inventory.getInventory(authorMessage.author.id)
 
-                return
-            }
-
-            val guild = event.guild ?: return
-
-            val currentCatFood = TatsuHandler.getPoints(guild.idLong, member.idLong, false)
+            val currentCatFood = inventory.catFoods
 
             if (currentCatFood - catFood < 0) {
                 event.reply("The suggested amount of cat food ($catFood) is larger than what you have currently ($currentCatFood)!")

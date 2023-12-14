@@ -4,11 +4,13 @@ import mandarin.card.supporter.Activator
 import mandarin.card.supporter.Card
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.TradingSession
+import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
+import kotlin.math.min
 
 object TransactionLogger {
     enum class TradeStatus {
@@ -19,6 +21,7 @@ object TransactionLogger {
     lateinit var logChannel: MessageChannel
     lateinit var tradeChannel: MessageChannel
     lateinit var modChannel: MessageChannel
+    lateinit var catFoodChannel: MessageChannel
 
     fun logRoll(cards: List<Card>, pack: CardData.Pack, member: Member, manual: Boolean) {
         if (!this::logChannel.isInitialized)
@@ -127,38 +130,6 @@ object TransactionLogger {
         builder.addField(MessageEmbed.Field("Trader 2", "<@${session.member[1]}>", true))
 
         builder.addField(MessageEmbed.Field("Post", "<#${session.postID}> [${session.postID}]", false))
-
-        logChannel.sendMessageEmbeds(builder.build())
-            .setAllowedMentions(ArrayList())
-            .queue()
-    }
-
-    fun logPointsTransfer(member1: Long, member2: Long, removal: Boolean, add: Boolean, tax: Boolean, amount: Int) {
-        if (!this::logChannel.isInitialized)
-            return
-
-        val builder = EmbedBuilder()
-
-        builder.setTitle("Cat Food Transfer")
-
-        builder.setColor(StaticStore.rainbow.random())
-
-        builder.setDescription("Cat food transferring has been done")
-
-        builder.addField("From", "<@$member1> [$member1]", true)
-        builder.addField("->", "** **", true)
-        builder.addField("To", "<@$member2> [$member2]", true)
-
-        builder.addField("Status", if (removal && add) "Success" else "Failed", false)
-        builder.addField("Removing", if (removal) "Done" else "Failed", true)
-        builder.addField("Adding", if (add) "Done" else "Failed", true)
-        builder.addField("Taxing", if (tax) "Done" else "Failed", true)
-
-        if (CardData.TAX == 0.0) {
-            builder.addField("Amount", "$amount", false)
-        } else {
-            builder.addField("Amount", "$amount [${(CardData.TAX * 100).toInt()}% Tax]", false)
-        }
 
         logChannel.sendMessageEmbeds(builder.build())
             .setAllowedMentions(ArrayList())
@@ -375,7 +346,7 @@ object TransactionLogger {
             .queue()
     }
 
-    fun logTradeTrialFailure(m: Long, cardEmpty: Boolean, cf: Int) {
+    fun logTradeTrialFailure(m: Long, cardEmpty: Boolean, cf: Long) {
         if (!this::logChannel.isInitialized)
             return
 
@@ -388,7 +359,7 @@ object TransactionLogger {
         builder.setDescription("User <@$m> tried to open trading session, but failed despite the initial warning")
 
         builder.addField("Card Was Empty?", if (cardEmpty) "True" else "False", false)
-        builder.addField("CF", if (cf == -1) "Unknown (API Limit Reached)" else cf.toString(), false)
+        builder.addField("CF", if (cf == -1L) "Unknown (API Limit Reached)" else cf.toString(), false)
 
         logChannel.sendMessageEmbeds(builder.build())
             .setAllowedMentions(ArrayList())
@@ -588,5 +559,170 @@ object TransactionLogger {
         builder.setAuthor(manager.user.effectiveName, null, manager.user.effectiveAvatarUrl)
 
         logChannel.sendMessageEmbeds(builder.build()).queue()
+    }
+
+    fun logCatFoodRateChange(manager: String, oldRate: LongArray, newRate: LongArray) {
+        if (!this::modChannel.isInitialized)
+            return
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("Cat Food Rate Changed")
+
+        builder.setColor(StaticStore.rainbow.random())
+
+        builder.setDescription("Manager <@$manager> changed cat food rate")
+
+        builder.addField("Old", "Minimum : ${EmojiStore.ABILITY["CF"]?.formatted} ${oldRate[0]}\n\nMaximum : ${EmojiStore.ABILITY["CF"]?.formatted} ${oldRate[1]}", false)
+        builder.addField("New", "Minimum : ${EmojiStore.ABILITY["CF"]?.formatted} ${newRate[0]}\n\nMaximum : ${EmojiStore.ABILITY["CF"]?.formatted} ${newRate[1]}", false)
+
+        modChannel.sendMessageEmbeds(builder.build()).queue()
+    }
+
+    fun logCatFoodCooldownChange(manager: String, oldCooldown: Long, newCooldown: Long) {
+        if (!this::modChannel.isInitialized)
+            return
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("Cat Food Cooldown Changed")
+
+        builder.setColor(StaticStore.rainbow.random())
+
+        builder.setDescription("Manager <@$manager> changed cooldown about cat food that will be given while chatting")
+
+        val oldDesc = if (oldCooldown <= 0L)
+            "Every message"
+        else
+            "Every `${CardData.convertMillisecondsToText(oldCooldown)}`"
+
+        val newDesc = if (newCooldown <= 0L)
+            "Every message"
+        else
+            "Every `${CardData.convertMillisecondsToText(newCooldown)}`"
+
+        builder.addField("Old", oldDesc, false)
+        builder.addField("New", newDesc, false)
+
+        modChannel.sendMessageEmbeds(builder.build()).queue()
+    }
+
+    fun logChannelExcluded(manager: String, channels: List<String>, added: Boolean) {
+        if (!this::modChannel.isInitialized)
+            return
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("Excluded Channel List Updated")
+
+        builder.setColor(StaticStore.rainbow.random())
+
+        builder.setDescription("Manager <@${manager}> ${if (added) "added channels below into" else "removed channels below from"} exclusion list. Exclusion list is channels where bot won't give cf when users chat in there")
+
+        val text = StringBuilder()
+
+        val size = min(25, channels.size)
+
+        for (i in 0 until size) {
+            text.append("<#").append(channels[i]).append(">")
+
+            if (i < size - 1) {
+                text.append("\n")
+            }
+        }
+
+        if (channels.size > 25) {
+            text.append("\n\n...and ${channels.size - 25} channel(s) more")
+        }
+
+        builder.addField("Channels", text.toString(), false)
+
+        modChannel.sendMessageEmbeds(builder.build()).queue()
+    }
+
+    fun logCatFoodModification(manager: String, targetMember: String, amount: Long, added: Boolean, oldAmount: Long, newAmount: Long) {
+        if (!this::catFoodChannel.isInitialized)
+            return
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("Cat Food Modified")
+
+        builder.setColor(StaticStore.rainbow.random())
+
+        builder.setDescription("Manager <@$manager> modified <@$targetMember> user's cat food")
+
+        builder.addField("Manager", "<@$manager> [$manager]", true)
+        builder.addField("Target Member", "<@$targetMember> [$targetMember]", true)
+
+        builder.addField("Added?", if (added) "True" else "False", false)
+
+        builder.addField("Amount", "${EmojiStore.ABILITY["CF"]?.formatted} $amount\n\nFrom : ${EmojiStore.ABILITY["CF"]?.formatted} $oldAmount -> To : ${EmojiStore.ABILITY["CF"]?.formatted} $newAmount", false)
+
+        catFoodChannel.sendMessageEmbeds(builder.build()).queue()
+    }
+
+    fun logCatFoodTransfer(from: String, to: String, amount: Long) {
+        if (!this::catFoodChannel.isInitialized)
+            return
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("Cat Food Transferred")
+
+        builder.setColor(StaticStore.rainbow.random())
+
+        builder.setDescription("User <@$from> transferred cat food to user <@$to>")
+
+        builder.addField("From", "<@$from> [$from]", true)
+        builder.addField("To", "<@$to> [$to]", true)
+
+        builder.addField("Amount", "${EmojiStore.ABILITY["CF"]?.formatted} $amount", false)
+
+        catFoodChannel.sendMessageEmbeds(builder.build()).queue()
+    }
+
+    fun logMassCatFoodModify(manager: String, amount: Long, members: List<Member>) {
+        if (!this::catFoodChannel.isInitialized)
+            return
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("Mass Cat Food Given")
+
+        builder.setColor(StaticStore.rainbow.random())
+
+        val verb = if (amount < 0)
+            "took away"
+        else
+            "gave out"
+
+        val connector = if (amount < 0)
+            "from"
+        else
+            "to"
+
+        builder.setDescription("Manager <@$manager> $verb $connector users")
+
+        builder.addField("Manager", "<@$manager> [$manager]", true)
+        builder.addField("Amount", "${EmojiStore.ABILITY["CF"]?.formatted} $amount", true)
+
+        val list = StringBuilder()
+
+        val size = min(25, members.size)
+
+        for (m in 0 until size) {
+            list.append(members[m].asMention)
+
+            if (m < size - 1)
+                list.append("\n")
+        }
+
+        if (members.size > size)
+            list.append("\n...and ${members.size - size} member(s) more")
+
+        builder.addField("Members", list.toString(), false)
+
+        catFoodChannel.sendMessageEmbeds(builder.build()).queue()
     }
 }
