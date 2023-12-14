@@ -67,7 +67,7 @@ object CardData {
             //Galaxy Gals
             arrayOf(75, 76, 105, 106, 107, 159, 351, 502, 619, 647),
             //Iron Legion
-            arrayOf(304, 305, 306, 355, 417, 594, 632, 674),
+            arrayOf(304, 305, 306, 355, 417, 594, 632, 674, 715),
             //Sengoku Wargods
             arrayOf(71, 72, 73, 124, 125, 158, 338, 496, 618, 649),
             //The Nekoluga Family
