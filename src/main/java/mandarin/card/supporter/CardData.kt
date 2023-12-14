@@ -254,8 +254,6 @@ object CardData {
 
     val sessions = ArrayList<TradingSession>()
 
-    val tradeCooldown = HashMap<String, Long>()
-
     const val tradeCooldownTerm = 5 * 60 * 1000 // 5 minutes in milliseconds
     const val tradeCatFoodCooldownTerm = 5 * 60 * 1000 // 5 minutes in milliseconds
 

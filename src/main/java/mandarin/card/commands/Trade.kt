@@ -25,14 +25,6 @@ class Trade : Command(LangID.EN, true) {
             return
         }
 
-        val leftTime = (CardData.tradeCooldown[m.id] ?: 0) - CardData.getUnixEpochTime()
-
-        if (leftTime > 0) {
-            replyToMessageSafely(ch, "You can't trade with others because of cooldown\nCooldown left : ${CardData.convertMillisecondsToText(leftTime)}", loader.message) { a -> a }
-
-            return
-        }
-
         val leftTrialTime = (CardData.tradeTrialCooldown[m.id] ?: 0) - CardData.getUnixEpochTime()
 
         if (leftTrialTime > 0) {
@@ -94,14 +86,6 @@ class Trade : Command(LangID.EN, true) {
 
             if (targetMember.id == m.id) {
                 replyToMessageSafely(ch, "You can't trade with yourself!", loader.message) { a -> a }
-
-                return@queue
-            }
-
-            val targetLeftTime = (CardData.tradeCooldown[targetMember.id] ?: 0) - CardData.getUnixEpochTime()
-
-            if (targetLeftTime > 0) {
-                replyToMessageSafely(ch, "Provided member can't trade with others due to cooldown\nCooldown left : ${CardData.convertMillisecondsToText(targetLeftTime)}", loader.message) { a -> a }
 
                 return@queue
             }

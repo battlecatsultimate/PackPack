@@ -491,22 +491,6 @@ object CardBot : ListenerAdapter() {
             }
         }
 
-        if (obj.has("tradeCooldown")) {
-            obj.getAsJsonArray("tradeCooldown").forEach {
-                val o = it.asJsonObject
-
-                if (o.has("key") && o.has("val")) {
-                    var value = o.get("val").asLong
-
-                    if (value - CardData.getUnixEpochTime() > CardData.tradeCatFoodCooldownTerm) {
-                        value = value - 1 * 24 * 60 * 60 * 1000 + CardData.tradeCatFoodCooldownTerm
-                    }
-
-                    CardData.tradeCooldown[o.get("key").asString] = value
-                }
-            }
-        }
-
         if (obj.has("tradeTrialCooldown")) {
             obj.getAsJsonArray("tradeTrialCooldown").forEach {
                 val o = it.asJsonObject
@@ -611,23 +595,6 @@ object CardBot : ListenerAdapter() {
         }
 
         obj.add("cooldown", cooldown)
-
-        val tradeCoolDown = JsonArray()
-
-        CardData.tradeCooldown.keys.forEach {
-            val cd = CardData.tradeCooldown[it]
-
-            if (cd != null) {
-                val o = JsonObject()
-
-                o.addProperty("key", it)
-                o.addProperty("val", cd)
-
-                tradeCoolDown.add(o)
-            }
-        }
-
-        obj.add("tradeCooldown", tradeCoolDown)
 
         val tradeTrialCooldown = JsonArray()
 

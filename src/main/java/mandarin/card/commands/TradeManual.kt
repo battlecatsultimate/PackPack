@@ -92,8 +92,6 @@ class TradeManual : Command(LangID.EN, true) {
 
                 CardData.sessions.add(session)
 
-                members.forEach { member -> CardData.tradeCooldown[member.id] = 0 }
-
                 CardBot.saveCardData()
 
                 TransactionLogger.logTradeStart(session, m)

@@ -140,21 +140,7 @@ class TradingSession(val postID: Long, val member: Array<Long>) {
             }
         }
 
-        var cooldownGoing = false
-
-        for (m in member) {
-            val leftTime = (CardData.tradeCooldown[m.toString()] ?: 0) - CardData.getUnixEpochTime()
-
-            if ( leftTime > 0 ) {
-                ch.sendMessage("Trading couldn't be done\n\nReason : <@${m}>'s trading cooldown hasn't ended yet. Please wait for amount of time below, and confirm again\n\nCooldown left : ${CardData.convertMillisecondsToText(leftTime)}").queue()
-
-                cooldownGoing = true
-
-                break
-            }
-        }
-
-        return !cooldownGoing
+        return true
     }
 
     fun trade() {
@@ -193,22 +179,6 @@ class TradingSession(val postID: Long, val member: Array<Long>) {
         }
 
         CardData.sessions.remove(this)
-
-        var nextTime = if (suggestion[0].catFood > 0) {
-            CardData.tradeCatFoodCooldownTerm
-        } else {
-            CardData.tradeCooldownTerm
-        }
-
-        CardData.tradeCooldown[member[0].toString()] = CardData.getUnixEpochTime() + nextTime
-
-        nextTime = if (suggestion[1].catFood > 0) {
-            CardData.tradeCatFoodCooldownTerm
-        } else {
-            CardData.tradeCooldownTerm
-        }
-
-        CardData.tradeCooldown[member[1].toString()] = CardData.getUnixEpochTime() + nextTime
 
         CardBot.saveCardData()
 
