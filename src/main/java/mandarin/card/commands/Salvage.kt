@@ -35,8 +35,11 @@ class Salvage : Command(LangID.EN, true) {
         list.placeholder = "Select tier"
 
         list.addOptions(
-            SelectOption.of("Tier 1 [Common]", "t1").withDescription("${CardData.Tier.COMMON.cost} CF per card (minimum 10)"),
-            SelectOption.of("Tier 3 [Ultra Rare (Exclusives)]", "t3").withDescription("${CardData.Tier.ULTRA.cost} CF per card (1 card per call)")
+            SelectOption.of("Tier 1 [Common]", "t1").withDescription("${CardData.SalvageMode.T1.cost} shard per card"),
+            SelectOption.of("Regular Tier 2 [Uncommon]", "t2").withDescription("${CardData.SalvageMode.T2.cost} shards per card"),
+            SelectOption.of("Seasonal Tier 2 [Uncommon]", "seasonalT2").withDescription("${CardData.SalvageMode.SEASONAL.cost} shards per card"),
+            SelectOption.of("Collaboration Tier 2 [Uncommon]", "collaborationT2").withDescription("${CardData.SalvageMode.COLLAB.cost} shards per card"),
+            SelectOption.of("Tier 3 [Ultra Rare (Exclusives)]", "t3").withDescription("${CardData.SalvageMode.T3.cost} shards per card")
         )
 
         result.add(ActionRow.of(list.build()))

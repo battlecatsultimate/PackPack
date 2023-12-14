@@ -1,5 +1,6 @@
 package mandarin.card.commands
 
+import mandarin.card.CardBot
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.log.TransactionLogger
 import mandarin.packpack.commands.Command
@@ -22,7 +23,7 @@ class TransferCatFood : Command(LangID.EN, true) {
         val contents = loader.content.split(" ")
 
         if (contents.size < 3) {
-            replyToMessageSafely(loader.channel, "You have to provide both user who will receive cat food, and amount of cat food that you want to transfer to!\n\nFormat is `cd.tcf [User] [Amount]`", loader.message) { a -> a }
+            replyToMessageSafely(loader.channel, "You have to provide both user who will receive cat food, and amount of cat food that you want to transfer to!\n\nFormat is `${CardBot.globalPrefix}tcf [User] [Amount]`", loader.message) { a -> a }
 
             return
         }
@@ -86,7 +87,7 @@ class TransferCatFood : Command(LangID.EN, true) {
         }) { _ ->
             replyToMessageSafely(loader.channel, "Failed to get member who will receive cat food... Maybe this user isn't in this server? Or you may have passed data with incorrect order. Proper format is :\n" +
                     "\n" +
-                    "`cd.tcf [User] [Amount]`", loader.message) { a -> a }
+                    "`${CardBot.globalPrefix}tcf [User] [Amount]`", loader.message) { a -> a }
         }
     }
 

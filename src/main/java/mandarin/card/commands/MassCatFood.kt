@@ -1,5 +1,6 @@
 package mandarin.card.commands
 
+import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.log.TransactionLogger
@@ -28,7 +29,7 @@ class MassCatFood : Command(LangID.EN, true) {
         if (contents.size < 3) {
             replyToMessageSafely(loader.channel, "Not enough data! Proper format is : \n" +
                     "\n" +
-                    "`cd.mcf [Amount] [User1], [User2], ...`\n" +
+                    "`${CardBot.globalPrefix}mcf [Amount] [User1], [User2], ...`\n" +
                     "\n" +
                     "If you want to take away cat food from users, use negative values", loader.message) { a -> a }
 

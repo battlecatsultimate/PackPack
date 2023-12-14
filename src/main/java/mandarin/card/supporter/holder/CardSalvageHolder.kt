@@ -5,6 +5,7 @@ import mandarin.card.supporter.Card
 import mandarin.card.supporter.CardComparator
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
+import mandarin.card.supporter.filter.BannerFilter
 import mandarin.card.supporter.log.TransactionLogger
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
@@ -25,7 +26,13 @@ import kotlin.random.Random
 
 class CardSalvageHolder(author: Message, channelID: String, private val message: Message, private val salvageMode: CardData.SalvageMode) : ComponentHolder(author, channelID, message.id) {
     private val inventory = Inventory.getInventory(author.author.id)
-    private val tier = if (salvageMode == CardData.SalvageMode.T3) CardData.Tier.ULTRA else CardData.Tier.COMMON
+    private val tier = when(salvageMode) {
+        CardData.SalvageMode.T1 -> CardData.Tier.COMMON
+        CardData.SalvageMode.T2,
+        CardData.SalvageMode.SEASONAL,
+        CardData.SalvageMode.COLLAB -> CardData.Tier.UNCOMMON
+        CardData.SalvageMode.T3 -> CardData.Tier.ULTRA
+    }
     private val cards = ArrayList<Card>(inventory.cards.keys.filter { c -> c.tier == tier }.sortedWith(CardComparator()))
 
     private val selectedCard = ArrayList<Card>()
@@ -64,16 +71,16 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
                 applyResult(event)
             }
             "salvage" -> {
-                val cf = selectedCard.size * (if (salvageMode == CardData.SalvageMode.T3) CardData.Tier.ULTRA.cost else CardData.Tier.COMMON.cost)
+                val shard = selectedCard.size * salvageMode.cost
 
                 inventory.removeCards(selectedCard)
 
-                inventory.catFoods += cf
+                inventory.platinumShard += shard
 
-                TransactionLogger.logSalvage(authorMessage.author.idLong, selectedCard.size, selectedCard)
+                TransactionLogger.logSalvage(authorMessage.author.idLong, selectedCard.size, salvageMode, selectedCard)
 
                 event.deferEdit()
-                    .setContent("Salvaged ${selectedCard.size} cards, and you received ${EmojiStore.ABILITY["CF"]?.formatted} $cf!")
+                    .setContent("Salvaged ${selectedCard.size} cards, and you received ${EmojiStore.ABILITY["SHARD"]?.formatted} $shard!")
                     .setComponents()
                     .mentionRepliedUser(false)
                     .setAllowedMentions(ArrayList())
@@ -82,6 +89,7 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
                 CardBot.saveCardData()
 
                 expired = true
+
                 expire(authorMessage.author.id)
             }
             "craft" -> {
@@ -90,7 +98,7 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
                 val chance = Random.nextDouble()
 
                 if (chance <= 0.7) {
-                    val cf = selectedCard.size * CardData.Tier.COMMON.cost
+                    val cf = selectedCard.size * CardData.SalvageMode.T1.cost
 
                     inventory.catFoods += cf
 
@@ -184,12 +192,21 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
             "all" -> {
                 selectedCard.clear()
 
-                inventory.cards.keys.filter { c -> c.tier == tier }
-                        .forEach { c ->
-                            repeat(inventory.cards[c] ?: 0) {
-                                selectedCard.add(c)
-                            }
+                inventory.cards.keys.filter { c -> c.tier == tier && c.unitID != 435 && c.unitID != 484 }
+                    .filter { c ->
+                        when (salvageMode) {
+                            CardData.SalvageMode.T2 -> c.unitID in BannerFilter.Banner.TheAlimighties.getBannerData() || c.unitID in BannerFilter.Banner.GirlsAndMonsters.getBannerData()
+                            CardData.SalvageMode.SEASONAL -> c.unitID in BannerFilter.Banner.Seasonal.getBannerData()
+                            CardData.SalvageMode.COLLAB -> c.unitID in BannerFilter.Banner.Collaboration.getBannerData()
+                            else -> true
                         }
+                    }
+                    .filter { c -> (inventory.cards[c] ?: 0) - selectedCard.filter { card -> card.unitID == c.unitID}.size > 0 }
+                    .forEach { c ->
+                        repeat(inventory.cards[c] ?: 0) {
+                            selectedCard.add(c)
+                        }
+                    }
 
                 event.deferReply()
                         .setContent("Successfully added all of your cards! Keep in mind that you can't undo the task once you salvage the cards")
@@ -254,7 +271,18 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
         cards.clear()
 
         if (banner[0] == -1) {
-            cards.addAll(inventory.cards.keys.filter { c -> c.tier == tier }.filter { c -> (inventory.cards[c] ?: 0) - selectedCard.filter { card -> card.unitID == c.unitID}.size > 0 })
+            cards.addAll(
+                inventory.cards.keys.filter { c -> c.tier == tier && c.unitID != 435 && c.unitID != 484 }
+                    .filter { c ->
+                        when (salvageMode) {
+                            CardData.SalvageMode.T2 -> c.unitID in BannerFilter.Banner.TheAlimighties.getBannerData() || c.unitID in BannerFilter.Banner.GirlsAndMonsters.getBannerData()
+                            CardData.SalvageMode.SEASONAL -> c.unitID in BannerFilter.Banner.Seasonal.getBannerData()
+                            CardData.SalvageMode.COLLAB -> c.unitID in BannerFilter.Banner.Collaboration.getBannerData()
+                            else -> true
+                        }
+                    }
+                    .filter { c -> (inventory.cards[c] ?: 0) - selectedCard.filter { card -> card.unitID == c.unitID}.size > 0 }
+            )
         } else {
             cards.addAll(inventory.cards.keys.filter { c -> c.tier == tier && c.unitID in CardData.bannerData[tier.ordinal][banner[1]] }.filter { c -> (inventory.cards[c] ?: 0) - selectedCard.filter { card -> card.unitID == c.unitID}.size > 0 })
         }
@@ -282,24 +310,34 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
     private fun assignComponents() : List<LayoutComponent> {
         val rows = ArrayList<ActionRow>()
 
-        val bannerCategoryElements = ArrayList<SelectOption>()
+        if (salvageMode != CardData.SalvageMode.SEASONAL && salvageMode != CardData.SalvageMode.COLLAB) {
+            val bannerCategoryElements = ArrayList<SelectOption>()
 
-        bannerCategoryElements.add(SelectOption.of("All", "all"))
+            bannerCategoryElements.add(SelectOption.of("All", "all"))
 
-        CardData.bannerCategoryText[tier.ordinal].forEachIndexed { i, a ->
-            bannerCategoryElements.add(SelectOption.of(a, "category-${tier.ordinal}-$i"))
-        }
+            if (tier != CardData.Tier.UNCOMMON) {
+                CardData.bannerCategoryText[tier.ordinal].forEachIndexed { i, a ->
+                    bannerCategoryElements.add(SelectOption.of(a, "category-${tier.ordinal}-$i"))
+                }
+            } else {
+                CardData.bannerCategoryText[tier.ordinal].forEachIndexed { i, a ->
+                    if (i < 2) {
+                        bannerCategoryElements.add(SelectOption.of(a, "category-${tier.ordinal}-$i"))
+                    }
+                }
+            }
 
-        val bannerCategory = StringSelectMenu.create("category")
+            val bannerCategory = StringSelectMenu.create("category")
                 .addOptions(bannerCategoryElements)
                 .setPlaceholder("Filter Cards by Banners")
 
-        val option = bannerCategoryElements.find { e -> e.value == "category-${tier.ordinal}-${banner[1]}" }
+            val option = bannerCategoryElements.find { e -> e.value == "category-${tier.ordinal}-${banner[1]}" }
 
-        if (option != null)
-            bannerCategory.setDefaultOptions(option)
+            if (option != null)
+                bannerCategory.setDefaultOptions(option)
 
-        rows.add(ActionRow.of(bannerCategory.build()))
+            rows.add(ActionRow.of(bannerCategory.build()))
+        }
 
         val dataSize = cards.size
 
@@ -318,10 +356,6 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
                 .setPlaceholder(
                         if (cards.isEmpty())
                             "No Cards To Select"
-                        else if (salvageMode == CardData.SalvageMode.T1 && selectedCard.size == 10)
-                            "Selected all 10 cards"
-                        else if (salvageMode == CardData.SalvageMode.T3 && selectedCard.size == 1)
-                            "Selected 1 card"
                         else
                             "Select Card"
                 )
@@ -371,15 +405,8 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
 
         val confirmButtons = ArrayList<Button>()
 
-        if (salvageMode == CardData.SalvageMode.T1 || salvageMode == CardData.SalvageMode.T3)
-            confirmButtons.add(Button.primary("salvage", "Salvage").withDisabled(selectedCard.size < if(salvageMode == CardData.SalvageMode.T1) 10 else 1).withEmoji(Emoji.fromUnicode("\uD83E\uDE84")))
-        else
-            confirmButtons.add(Button.success("craft", "Craft T2 Card").withDisabled(selectedCard.size != 10).withEmoji(Emoji.fromUnicode("\uD83D\uDEE0\uFE0F")))
-
-        if (salvageMode == CardData.SalvageMode.T1)
-            confirmButtons.add(Button.secondary("all", "Add All").withDisabled(selectedCard.size == inventory.cards.keys.filter { c -> c.tier == tier }.sumOf { c -> inventory.cards[c] ?: 0 }))
-        else if (salvageMode == CardData.SalvageMode.CRAFT)
-            confirmButtons.add(Button.secondary("dupe", "Use Duplicated").withDisabled(!inventory.cards.keys.filter { c -> c.tier == tier }.any { c -> (inventory.cards[c] ?: 0) - selectedCard.filter { card -> card.unitID == c.unitID }.size > 1 } || selectedCard.size == 10))
+        confirmButtons.add(Button.primary("salvage", "Salvage").withDisabled(selectedCard.size < if(salvageMode == CardData.SalvageMode.T1) 10 else 1).withEmoji(Emoji.fromUnicode("\uD83E\uDE84")))
+        confirmButtons.add(Button.secondary("all", "Add All").withDisabled(selectedCard.size == inventory.cards.keys.filter { c -> c.tier == tier }.sumOf { c -> inventory.cards[c] ?: 0 }))
 
         confirmButtons.add(Button.danger("reset", "Reset").withDisabled(selectedCard.isEmpty()))
         confirmButtons.add(Button.danger("cancel", "Cancel"))
@@ -393,7 +420,6 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
         val builder = StringBuilder(
             when (salvageMode) {
                 CardData.SalvageMode.T1 -> "Select 10 or more Tier 1 [Common] cards\n\n### Selected Cards\n\n"
-                CardData.SalvageMode.CRAFT -> "Select 10 Tier 1 [Common] cards to craft\n\n### Selected Cards\n\n"
                 else -> "Select 1 Tier 3 [Ultra Rare (Exclusives)] card\n\n### Selected card\n\n"
             }
         )
@@ -435,6 +461,12 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
         }
 
         builder.append("```")
+
+        if (selectedCard.isNotEmpty()) {
+            builder.append("\n${EmojiStore.ABILITY["SHARD"]?.formatted} ${selectedCard.size * salvageMode.cost} in total")
+        } else {
+            builder.append("\n${EmojiStore.ABILITY["SHARD"]?.formatted} 0 in total")
+        }
 
         return builder.toString()
     }

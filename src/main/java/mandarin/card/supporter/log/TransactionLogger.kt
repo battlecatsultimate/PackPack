@@ -386,7 +386,7 @@ object TransactionLogger {
             .queue()
     }
 
-    fun logSalvage(member: Long, cardAmount: Int, cards: List<Card>) {
+    fun logSalvage(member: Long, cardAmount: Int, salvageMode: CardData.SalvageMode, cards: List<Card>) {
         if (!this::logChannel.isInitialized)
             return
 
@@ -396,10 +396,18 @@ object TransactionLogger {
 
         builder.setColor(StaticStore.rainbow.random())
 
-        builder.setDescription("Member <@$member> salvaged T1 cards")
+        val cardType = when(salvageMode) {
+            CardData.SalvageMode.T1 -> "T1"
+            CardData.SalvageMode.T2 -> "Regular T2"
+            CardData.SalvageMode.SEASONAL -> "Seasonal T2"
+            CardData.SalvageMode.COLLAB -> "Collaboration T2"
+            CardData.SalvageMode.T3 -> "T3"
+        }
+
+        builder.setDescription("Member <@$member> salvaged $cardType cards")
 
         builder.addField("Number of Cards", "$cardAmount", true)
-        builder.addField("Received CF", "${cardAmount * CardData.Tier.COMMON.cost}", true)
+        builder.addField("Received Shards", "${EmojiStore.ABILITY["SHARD"]?.formatted} ${cardAmount * salvageMode.cost}", true)
 
         val checker = StringBuilder()
 
@@ -458,7 +466,7 @@ object TransactionLogger {
                 .setAllowedMentions(ArrayList())
                 .queue()
 
-        LogSession.session.logSalvage(member, cards, cardAmount  * CardData.Tier.COMMON.cost.toLong())
+        LogSession.session.logSalvage(member, cards, cardAmount  * salvageMode.cost.toLong())
     }
 
     fun logCraft(member: Long, cardAmount: Int, craftedCard: Card?, cards: List<Card>) {
@@ -478,7 +486,7 @@ object TransactionLogger {
             builder.addField("Received Card", craftedCard.cardInfo(), true)
         } else {
             builder.addField("Successful?", "No", true)
-            builder.addField("Received CF", "${cardAmount * CardData.Tier.COMMON.cost}", true)
+            builder.addField("Received CF", "${cardAmount * CardData.SalvageMode.T1.cost}", true)
         }
 
         val checker = StringBuilder()
@@ -535,7 +543,7 @@ object TransactionLogger {
         }
 
         if (craftedCard == null) {
-            LogSession.session.logCraftFail(member, cards, cardAmount * CardData.Tier.COMMON.cost.toLong())
+            LogSession.session.logCraftFail(member, cards, cardAmount * CardData.SalvageMode.T1.cost.toLong())
         } else {
             LogSession.session.logCraftSuccess(member, cards, craftedCard)
         }

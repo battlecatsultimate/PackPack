@@ -4,6 +4,7 @@ import mandarin.card.supporter.Card
 import mandarin.card.supporter.CardComparator
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
+import mandarin.card.supporter.filter.BannerFilter
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
@@ -37,34 +38,38 @@ class SalvageTierSelectHolder(author: Message, channelID: String, private val me
             if (event.values.isEmpty())
                 return
 
-            val mode = if (event.values[0] == "t1")
-                CardData.SalvageMode.T1
-            else
-                CardData.SalvageMode.T3
+            val mode = when(event.values[0]) {
+                "t1" -> CardData.SalvageMode.T1
+                "t2" -> CardData.SalvageMode.T2
+                "seasonalT2" -> CardData.SalvageMode.SEASONAL
+                "collaborationT2" -> CardData.SalvageMode.COLLAB
+                else -> CardData.SalvageMode.T3
+            }
 
             val inventory = Inventory.getInventory(authorMessage.author.id)
 
-            val tier = if (mode == CardData.SalvageMode.T1)
-                CardData.Tier.COMMON
-            else
-                CardData.Tier.ULTRA
-
-            val cards = inventory.cards.keys.filter { c -> c.tier == tier }.sortedWith(CardComparator())
-
-            if (mode == CardData.SalvageMode.T1 && cards.sumOf { inventory.cards[it] ?: 1 } < 10) {
-                event.deferEdit()
-                    .setContent("You have to have at least 10 Tier 1 [Common] cards to salvage them!")
-                    .setComponents()
-                    .setAllowedMentions(ArrayList())
-                    .mentionRepliedUser(false)
-                    .queue()
-
-                return
+            val tier = when(mode) {
+                CardData.SalvageMode.T1 -> CardData.Tier.COMMON
+                CardData.SalvageMode.T2,
+                CardData.SalvageMode.SEASONAL,
+                CardData.SalvageMode.COLLAB -> CardData.Tier.UNCOMMON
+                else -> CardData.Tier.ULTRA
             }
 
-            if (mode == CardData.SalvageMode.T3 && cards.isEmpty()) {
+            val cards = inventory.cards.keys.filter { c ->
+                if (tier != CardData.Tier.UNCOMMON)
+                    c.tier == tier
+                else
+                    when (mode) {
+                        CardData.SalvageMode.T2 -> c.tier == CardData.Tier.UNCOMMON && c.unitID !in BannerFilter.Banner.Seasonal.getBannerData() && c.unitID !in BannerFilter.Banner.Collaboration.getBannerData()
+                        CardData.SalvageMode.SEASONAL -> c.tier == CardData.Tier.UNCOMMON && c.unitID in BannerFilter.Banner.Seasonal.getBannerData()
+                        else -> c.tier == CardData.Tier.UNCOMMON && c.unitID in BannerFilter.Banner.Collaboration.getBannerData()
+                    }
+            }.sortedWith(CardComparator())
+
+            if (cards.isEmpty()) {
                 event.deferEdit()
-                    .setContent("You have to have at least 1 Tier 3 [Ultra Rare (Exclusives)] cards to salvage them!")
+                    .setContent("You don't have any cards meets condition of what you've selected!")
                     .setComponents()
                     .setAllowedMentions(ArrayList())
                     .mentionRepliedUser(false)
@@ -75,7 +80,7 @@ class SalvageTierSelectHolder(author: Message, channelID: String, private val me
 
             event.deferEdit()
                 .setContent(getText(cards, inventory, mode))
-                .setComponents(assignComponents(cards, mode))
+                .setComponents(assignComponents(cards, mode, tier))
                 .setAllowedMentions(ArrayList())
                 .mentionRepliedUser(false)
                 .queue()
@@ -88,22 +93,32 @@ class SalvageTierSelectHolder(author: Message, channelID: String, private val me
         }
     }
 
-    private fun assignComponents(cards: List<Card>, salvageMode: CardData.SalvageMode) : List<LayoutComponent> {
+    private fun assignComponents(cards: List<Card>, salvageMode: CardData.SalvageMode, tier: CardData.Tier) : List<LayoutComponent> {
         val rows = ArrayList<ActionRow>()
 
-        val bannerCategoryElements = ArrayList<SelectOption>()
+        if (salvageMode != CardData.SalvageMode.SEASONAL && salvageMode != CardData.SalvageMode.COLLAB) {
+            val bannerCategoryElements = ArrayList<SelectOption>()
 
-        bannerCategoryElements.add(SelectOption.of("All", "all"))
+            bannerCategoryElements.add(SelectOption.of("All", "all"))
 
-        CardData.bannerCategoryText[CardData.Tier.COMMON.ordinal].forEachIndexed { i, a ->
-            bannerCategoryElements.add(SelectOption.of(a, "category-${CardData.Tier.COMMON.ordinal}-$i"))
+            if (tier != CardData.Tier.UNCOMMON) {
+                CardData.bannerCategoryText[tier.ordinal].forEachIndexed { i, a ->
+                    bannerCategoryElements.add(SelectOption.of(a, "category-${tier.ordinal}-$i"))
+                }
+            } else {
+                CardData.bannerCategoryText[tier.ordinal].forEachIndexed { i, a ->
+                    if (i < 2) {
+                        bannerCategoryElements.add(SelectOption.of(a, "category-${tier.ordinal}-$i"))
+                    }
+                }
+            }
+
+            val bannerCategory = StringSelectMenu.create("category")
+                .addOptions(bannerCategoryElements)
+                .setPlaceholder("Filter Cards by Banners")
+
+            rows.add(ActionRow.of(bannerCategory.build()))
         }
-
-        val bannerCategory = StringSelectMenu.create("category")
-            .addOptions(bannerCategoryElements)
-            .setPlaceholder("Filter Cards by Banners")
-
-        rows.add(ActionRow.of(bannerCategory.build()))
 
         val dataSize = cards.size
 
@@ -156,10 +171,7 @@ class SalvageTierSelectHolder(author: Message, channelID: String, private val me
         val confirmButtons = ArrayList<Button>()
 
         confirmButtons.add(Button.primary("salvage", "Salvage").asDisabled().withEmoji(Emoji.fromUnicode("\uD83E\uDE84")))
-
-        if (salvageMode == CardData.SalvageMode.T1) {
-            confirmButtons.add(Button.secondary("all", "Add All"))
-        }
+        confirmButtons.add(Button.secondary("all", "Add All"))
 
         confirmButtons.add(Button.danger("reset", "Reset").asDisabled())
         confirmButtons.add(Button.danger("cancel", "Cancel"))
@@ -172,9 +184,11 @@ class SalvageTierSelectHolder(author: Message, channelID: String, private val me
     private fun getText(cards: List<Card>, inventory: Inventory, salvageMode: CardData.SalvageMode) : String {
         val builder = StringBuilder(
             when (salvageMode) {
-                CardData.SalvageMode.T1 -> "Select 10 or more Tier 1 [Common] cards\n\n### Selected Cards\n\n"
-                CardData.SalvageMode.CRAFT -> "Select 10 Tier 1 [Common] cards to craft\n\n### Selected Cards\n\n"
-                else -> "Select 1 Tier 3 [Ultra Rare (Exclusives)] card\n\n### Selected card\n\n"
+                CardData.SalvageMode.T1 -> "Select Tier 1 [Common] cards\n\n### Selected Cards\n\n"
+                CardData.SalvageMode.T2 -> "Select Regular Tier 2 [Uncommon] cards\n\n### Selected Cards\n\n"
+                CardData.SalvageMode.SEASONAL -> "Select Seasonal Tier 2 [Uncommon] cards\n\n### Selected Cards\n\n"
+                CardData.SalvageMode.COLLAB -> "Select Collaboration Tier 2 [Uncommon] cards\n\n### Selected Cards\n\n"
+                else -> "Select Tier 3 [Ultra Rare (Exclusives)] cards\n\n### Selected card\n\n"
             }
         ).append("```md\n")
 
@@ -195,6 +209,8 @@ class SalvageTierSelectHolder(author: Message, channelID: String, private val me
         }
 
         builder.append("```")
+
+        builder.append("\n${EmojiStore.ABILITY["SHARD"]?.formatted} 0 in total")
 
         return builder.toString()
     }

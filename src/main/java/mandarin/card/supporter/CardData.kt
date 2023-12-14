@@ -29,10 +29,12 @@ object CardData {
     -------------------------------------------------------
      */
 
-    enum class SalvageMode {
-        T1,
-        T3,
-        CRAFT
+    enum class SalvageMode(val cost: Int) {
+        T1(1),
+        T2(20),
+        SEASONAL(25),
+        COLLAB(80),
+        T3(200)
     }
 
     enum class ModifyCategory {
@@ -306,12 +308,12 @@ object CardData {
     -------------------------------------------------------
      */
 
-    enum class Tier(val cost: Int) {
-        COMMON(300),
-        UNCOMMON(0),
-        ULTRA(100000),
-        LEGEND(450000),
-        NONE(0)
+    enum class Tier {
+        COMMON,
+        UNCOMMON,
+        ULTRA,
+        LEGEND,
+        NONE
     }
 
     val common = ArrayList<Card>()

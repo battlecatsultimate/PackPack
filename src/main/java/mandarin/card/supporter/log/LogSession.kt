@@ -225,6 +225,36 @@ class LogSession {
                 session.craftFailures = obj.get("craftFailures").asLong
             }
 
+            if (obj.has("shardTotal")) {
+                val array = obj.getAsJsonArray("shardTotal")
+
+                array.forEach { e ->
+                    val o = e.asJsonObject
+
+                    if (o.has("key") && o.has("val")) {
+                        val id = o.get("key").asLong
+                        val shard = o.get("val").asLong
+
+                        session.shardTotal[id] = shard
+                    }
+                }
+            }
+
+            if (obj.has("shardSalvage")) {
+                val array = obj.getAsJsonArray("shardSalvage")
+
+                array.forEach { e ->
+                    val o = e.asJsonObject
+
+                    if (o.has("key") && o.has("val")) {
+                        val id = o.get("key").asLong
+                        val shard = o.get("val").asLong
+
+                        session.shardSalvage[id] = shard
+                    }
+                }
+            }
+
             if (obj.has("generatedCards")) {
                 val array = obj.getAsJsonArray("generatedCards")
 
@@ -309,6 +339,10 @@ class LogSession {
     var catFoodTradeSum = 0L
 
     var craftFailures = 0L
+
+    val shardTotal = HashMap<Long, Long>()
+    val shardSalvage = HashMap<Long, Long>()
+    val shardCraft = HashMap<Long, Long>()
 
     val generatedCards = HashMap<Long, HashMap<Card, Long>>()
     val removedCards = HashMap<Long, HashMap<Card, Long>>()
@@ -443,8 +477,9 @@ class LogSession {
         activeMembers.add(member)
     }
 
-    fun logSalvage(member: Long, usedCards: List<Card>, cf: Long) {
-        catFoodCraft[member] = (catFoodCraft[member] ?: 0) + cf
+    fun logSalvage(member: Long, usedCards: List<Card>, shard: Long) {
+        shardSalvage[member] = (catFoodCraft[member] ?: 0) + shard
+        shardTotal[member] = (shardTotal[member] ?: 0) + shard
 
         val cardMap = removedCards[member] ?: run {
             val newMap = HashMap<Card, Long>()
@@ -593,6 +628,32 @@ class LogSession {
         obj.addProperty("catFoodTradeSum", catFoodTradeSum)
 
         obj.addProperty("craftFailures", craftFailures)
+
+        val shardTotalArray = JsonArray()
+
+        shardTotal.forEach { (member, shard) ->
+            val o = JsonObject()
+
+            o.addProperty("key", member)
+            o.addProperty("shard", shard)
+
+            shardTotalArray.add(o)
+        }
+
+        obj.add("shardTotal", shardTotalArray)
+
+        val shardSalvageArray = JsonArray()
+
+        shardSalvage.forEach { (member, shard) ->
+            val o = JsonObject()
+
+            o.addProperty("key", member)
+            o.addProperty("shard", shard)
+
+            shardSalvageArray.add(o)
+        }
+
+        obj.add("shardSalvage", shardSalvageArray)
 
         val generatedArray = JsonArray()
 

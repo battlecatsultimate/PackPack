@@ -43,7 +43,7 @@ class Craft : Command(LangID.EN, true) {
         replyToMessageSafely(ch, getPremiumText(cards, inventory), loader.message, { a ->
             a.setComponents(assignComponents(cards, inventory))
         }, { message ->
-            StaticStore.putHolder(m.id, CardSalvageHolder(loader.message, ch.id, message, CardData.SalvageMode.CRAFT))
+            StaticStore.putHolder(m.id, CardSalvageHolder(loader.message, ch.id, message, CardData.SalvageMode.T1))
         })
     }
 

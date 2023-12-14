@@ -20,8 +20,8 @@ class BannerFilter(private val banner: Banner, amount: Int, name: String) : Filt
         EpicfestExclusives(2, 0),
         UberfestExclusives(2, 1),
         OtherExclusives(2, 2),
-        Collaboration(-1, -1),
-        Seasonal(-1, -1),
+        Collaboration(1, 3),
+        Seasonal(1, 2),
         LegendRare(-1, -1),
         BusterExclusives(-1, -1);
 
@@ -39,12 +39,6 @@ class BannerFilter(private val banner: Banner, amount: Int, name: String) : Filt
             }
             Banner.BusterExclusives -> {
                 card.unitID in CardData.busters
-            }
-            Banner.Collaboration -> {
-                card.unitID in CardData.bannerData[CardData.Tier.UNCOMMON.ordinal][3]
-            }
-            Banner.Seasonal -> {
-                card.unitID in CardData.bannerData[CardData.Tier.UNCOMMON.ordinal][2]
             }
             else -> {
                 card.unitID in banner.getBannerData()
