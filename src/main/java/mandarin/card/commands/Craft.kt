@@ -22,9 +22,6 @@ class Craft : Command(LangID.EN, true) {
         val ch = loader.channel
         val m = loader.member
 
-        if (!CardData.hasAllPermission(m) && m.id != StaticStore.MANDARIN_SMELL)
-            return
-
         if (CardBot.rollLocked && !CardData.hasAllPermission(m) && m.id != StaticStore.MANDARIN_SMELL) {
             return
         }
