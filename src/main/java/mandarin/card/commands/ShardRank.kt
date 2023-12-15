@@ -45,7 +45,7 @@ class ShardRank : Command(LangID.EN, true) {
 
         val builder = StringBuilder(
             if (rank != -1) {
-                "Your ranking is #${rank + 1}"
+                "Your ranking is #${rank + 1} among ${memberList.size} people"
             } else {
                 "You aren't listed in ranking list"
             }
