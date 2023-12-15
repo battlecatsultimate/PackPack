@@ -4,6 +4,7 @@ import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.holder.ModifyCategoryHolder
 import mandarin.packpack.commands.Command
+import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.CommandLoader
@@ -40,7 +41,7 @@ class ModifyInventory : Command(LangID.EN, true) {
         }
 
         try {
-            g.retrieveMember(UserSnowflake.fromId(userID)).queue() { targetMember ->
+            g.retrieveMember(UserSnowflake.fromId(userID)).queue { targetMember ->
                 if (targetMember.user.isBot) {
                     replyToMessageSafely(ch, "You can't modify inventory of the bot!", loader.message) { a -> a }
 
@@ -79,7 +80,8 @@ class ModifyInventory : Command(LangID.EN, true) {
 
         modeOptions.add(SelectOption.of("Cards", "card"))
         modeOptions.add(SelectOption.of("Vanity Roles", "role"))
-        modeOptions.add(SelectOption.of("Cat Foods", "cf"))
+        modeOptions.add(SelectOption.of("Cat Foods", "cf").withEmoji(EmojiStore.ABILITY["CF"]))
+        modeOptions.add(SelectOption.of("Platinum Shards", "shard").withEmoji(EmojiStore.ABILITY["SHARD"]))
 
         val modes = StringSelectMenu.create("category")
             .addOptions(modeOptions)

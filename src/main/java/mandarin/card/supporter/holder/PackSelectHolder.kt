@@ -140,12 +140,14 @@ class PackSelectHolder(author: Message, channelID: String, message: Message, pri
                                 event.messageChannel
                                     .sendMessage(builder.toString())
                                     .setMessageReference(authorMessage)
+                                    .mentionRepliedUser(false)
                                     .queue()
                             } else {
                                 event.messageChannel
                                     .sendMessage(builder.toString())
                                     .setMessageReference(authorMessage)
                                     .addFiles(result.filter { c -> !inventory.cards.containsKey(c) }.map { c -> FileUpload.fromData(c.cardImage, "${c.name}.png") })
+                                    .mentionRepliedUser(false)
                                     .queue()
                             }
                         } catch (e: Exception) {

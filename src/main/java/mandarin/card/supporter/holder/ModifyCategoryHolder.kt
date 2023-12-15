@@ -37,7 +37,8 @@ class ModifyCategoryHolder(author: Message, channelID: String, private val messa
                 when(event.values[0]) {
                     "card",
                     "role",
-                    "cf" -> {
+                    "cf",
+                    "shard" -> {
                         val target = when (event.values[0]) {
                             "card" -> "cards"
                             "role" -> "roles"
@@ -47,6 +48,8 @@ class ModifyCategoryHolder(author: Message, channelID: String, private val messa
 
                         val content = if (event.values[0] == "cf") {
                             "Do you want to add or remove $target?\n\nCurrently this user has ${EmojiStore.ABILITY["CF"]?.formatted} ${inventory.catFoods}"
+                        } else if (event.values[0] == "shard") {
+                            "Do you want to add or remove $target?\n\nCurrently this user has ${EmojiStore.ABILITY["SHARD"]?.formatted} ${inventory.platinumShard}"
                         } else {
                             "Do you want to add or remove $target?"
                         }

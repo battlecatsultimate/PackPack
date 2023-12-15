@@ -20,9 +20,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
-import net.dv8tion.jda.api.utils.FileUpload
 import kotlin.math.min
-import kotlin.random.Random
 
 class CardSalvageHolder(author: Message, channelID: String, private val message: Message, private val salvageMode: CardData.SalvageMode) : ComponentHolder(author, channelID, message.id) {
     private val inventory = Inventory.getInventory(author.author.id)
@@ -90,45 +88,6 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
 
                 expired = true
 
-                expire(authorMessage.author.id)
-            }
-            "craft" -> {
-                inventory.removeCards(selectedCard)
-
-                val chance = Random.nextDouble()
-
-                if (chance <= 0.7) {
-                    val cf = selectedCard.size * CardData.SalvageMode.T1.cost
-
-                    inventory.catFoods += cf
-
-                    TransactionLogger.logCraft(authorMessage.author.idLong, selectedCard.size, null, selectedCard)
-
-                    event.deferEdit()
-                        .setContent("Failed to craft tier 2 card..., so you received ${EmojiStore.ABILITY["CF"]?.formatted} $cf")
-                        .setComponents()
-                        .mentionRepliedUser(false)
-                        .setAllowedMentions(ArrayList())
-                        .queue()
-                } else {
-                    val card = CardData.appendUncommon(CardData.uncommon).random()
-
-                    TransactionLogger.logCraft(authorMessage.author.idLong, selectedCard.size, card, selectedCard)
-
-                    inventory.addCards(listOf(card))
-
-                    event.deferEdit()
-                            .setContent("Successfully crafted tier 2 cards, and you obtained card below!\n\n${card.cardInfo()}")
-                            .setFiles(FileUpload.fromData(card.cardImage, "card.png"))
-                            .setComponents()
-                            .setAllowedMentions(ArrayList())
-                            .mentionRepliedUser(false)
-                            .queue()
-                }
-
-                CardBot.saveCardData()
-
-                expired = true
                 expire(authorMessage.author.id)
             }
             "cancel" -> {

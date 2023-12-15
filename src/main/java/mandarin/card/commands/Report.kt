@@ -43,7 +43,6 @@ class Report : Command(LangID.EN, true) {
 
         val gainedCatFoodCraft = sessions.sumOf { session -> session.catFoodCraft.values.sum() }
 
-        val totalTier2Cards = sessions.sumOf { session -> session.tier2Cards.size }
         val totalCraftFailures = sessions.sumOf { session -> session.craftFailures }
 
         val totalGeneratedCards = sessions.sumOf { session -> session.generatedCards.entries.sumOf { (_, map) -> map.entries.sumOf { (_, amount) -> amount } } }
@@ -82,10 +81,6 @@ class Report : Command(LangID.EN, true) {
 
                 session.catFoodTrade.forEach { (id, amount) ->
                     mergedCatFoodTradeTemp[id] = (mergedCatFoodTradeTemp[id] ?: 0) + amount
-                }
-
-                session.tier2Cards.forEach { card ->
-                    mergedTier2CardsTemp[card] = (mergedTier2CardsTemp[card] ?: 0) + 1
                 }
 
                 session.generatedCards.forEach { (id, cardMap) ->
@@ -226,12 +221,6 @@ class Report : Command(LangID.EN, true) {
                 reporter.append("\n")
             }
 
-            reporter.append(
-                "$totalTier2Cards T2 cards have been generated from crafting\n" +
-                        "Users failed to craft T2 cards $totalCraftFailures times\n" +
-                        "\n"
-            )
-
             if (mergedTier2Cards.isNotEmpty()) {
                 reporter.append("Detailed information about crafted T2 cards\n" +
                         "\n")
@@ -342,7 +331,6 @@ class Report : Command(LangID.EN, true) {
                     "$consumedCatFoodPack ${EmojiStore.ABILITY["CF"]?.formatted} have been consumed for generating pack\n" +
                     "\n" +
                     "$gainedCatFoodCraft ${EmojiStore.ABILITY["CF"]?.formatted} have been given out for compensation from crafting\n" +
-                    "$totalTier2Cards T2 cards have been generated from crafting\n" +
                     "Users failed to craft T2 cards $totalCraftFailures times\n" +
                     "\n" +
                     "$totalGeneratedCards cards have been generated, and added into economy\n" +

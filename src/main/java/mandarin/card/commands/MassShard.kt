@@ -18,7 +18,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.utils.concurrent.Task
 import kotlin.math.abs
 
-class MassCatFood : Command(LangID.EN, true) {
+class MassShard : Command(LangID.EN, true) {
     override fun doSomething(loader: CommandLoader) {
         val m = loader.member
 
@@ -30,15 +30,15 @@ class MassCatFood : Command(LangID.EN, true) {
         if (contents.size < 3) {
             replyToMessageSafely(loader.channel, "Not enough data! Proper format is : \n" +
                     "\n" +
-                    "`${CardBot.globalPrefix}mcf [Amount] [User1], [User2], ...`\n" +
+                    "`${CardBot.globalPrefix}ms [Amount] [User1], [User2], ...`\n" +
                     "\n" +
-                    "If you want to take away cat food from users, use negative values", loader.message) { a -> a }
+                    "If you want to take away shards from users, use negative values", loader.message) { a -> a }
 
             return
         }
 
         if (!StaticStore.isNumeric(contents[1])) {
-            replyToMessageSafely(loader.channel, "Amount of cat food must be numeric!", loader.message) { a -> a }
+            replyToMessageSafely(loader.channel, "Amount of shards must be numeric!", loader.message) { a -> a }
 
             return
         }
@@ -46,32 +46,32 @@ class MassCatFood : Command(LangID.EN, true) {
         val amount = contents[1].toDouble().toLong()
 
         if (amount == 0L) {
-            replyToMessageSafely(loader.channel, "Let's not give 0 cat foods to users", loader.message) { a -> a }
+            replyToMessageSafely(loader.channel, "Let's not give 0 shards to users", loader.message) { a -> a }
 
             return
         }
 
         getMembers(contents[2], loader.guild).onSuccess { members ->
             if (members.any { member ->
-                    val inventory = Inventory.getInventory(member.id)
+                val inventory = Inventory.getInventory(member.id)
 
-                    if (amount < 0) {
-                        inventory.platinumShard < abs(amount)
-                    } else {
-                        false
-                    }
-                }) {
-                replyToMessageSafely(loader.channel, "You are taking away more cat foods than what one of these members has!\n" +
+                if (amount < 0) {
+                    inventory.platinumShard < abs(amount)
+                } else {
+                    false
+                }
+            }) {
+                replyToMessageSafely(loader.channel, "You are taking away more shards than what one of these members has!\n" +
                         "\n" +
-                        "The reason of blocking such situation is because bot needs to log how many cat foods user got or lost properly", loader.message) { a -> a }
+                        "The reason of blocking such situation is because bot needs to log how many shards user got or lost properly", loader.message) { a -> a }
 
                 return@onSuccess
             }
 
             val sentence = if (amount < 0) {
-                "take away ${EmojiStore.ABILITY["CF"]?.formatted} ${-amount} from"
+                "take away ${EmojiStore.ABILITY["SHARD"]?.formatted} ${-amount} from"
             } else {
-                "give ${EmojiStore.ABILITY["CF"]?.formatted} ${amount} to"
+                "give ${EmojiStore.ABILITY["SHARD"]?.formatted} $amount to"
             }
 
             replyToMessageSafely(loader.channel, "Are you sure you want to $sentence users?", loader.message, { a ->
@@ -86,12 +86,12 @@ class MassCatFood : Command(LangID.EN, true) {
                     members.forEach { member ->
                         val inventory = Inventory.getInventory(member.id)
 
-                        inventory.catFoods += amount
+                        inventory.platinumShard += amount
                     }
 
-                    replyToMessageSafely(loader.channel, "Successfully gave out/took away ${EmojiStore.ABILITY["CF"]?.formatted} to/from users!", loader.message) { a -> a }
+                    replyToMessageSafely(loader.channel, "Successfully gave out/took away ${EmojiStore.ABILITY["SHARD"]?.formatted} to/from users!", loader.message) { a -> a }
 
-                    TransactionLogger.logMassCatFoodModify(m.id, amount, members)
+                    TransactionLogger.logMassShardModify(m.id, amount, members)
                 }, lang))
             }
         }.onError { _ ->

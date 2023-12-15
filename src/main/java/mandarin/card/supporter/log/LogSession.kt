@@ -159,19 +159,6 @@ class LogSession {
                 session.activeMembers.addAll(array.map { e -> e.asLong })
             }
 
-            if (obj.has("tier2Cards")) {
-                val array = obj.getAsJsonArray("tier2Cards")
-
-                array.forEach { e ->
-                    val id = e.asInt
-
-                    val card = CardData.cards.find { c -> c.unitID == id }
-
-                    if (card != null)
-                        session.tier2Cards.add(card)
-                }
-            }
-
             if (obj.has("catFoodPack")) {
                 val array = obj.getAsJsonArray("catFoodPack")
 
@@ -331,8 +318,6 @@ class LogSession {
 
     val activeMembers = HashSet<Long>()
 
-    val tier2Cards = ArrayList<Card>()
-
     val catFoodPack = HashMap<Long, Long>()
     val catFoodCraft = HashMap<Long, Long>()
     val catFoodTrade = HashMap<Long, Long>()
@@ -389,18 +374,9 @@ class LogSession {
         activeMembers.add(member)
     }
 
-    fun logCraftSuccess(member: Long, usedCards: List<Card>, card: Card) {
-        val removedCardMap = removedCards[member] ?: run {
-            val newMap = HashMap<Card, Long>()
-            removedCards[member] = newMap
-            newMap
-        }
-
-        usedCards.forEach {
-            removedCardMap[it] = (removedCardMap[it] ?: 0) + 1
-        }
-
-        tier2Cards.add(card)
+    fun logCraft(member: Long, usedShards: Long, cards: List<Card>) {
+        shardCraft[member] = (shardCraft[member] ?: 0) + usedShards
+        shardTotal[member] = (shardTotal[member] ?: 0) - usedShards
 
         val generatedCardMap = generatedCards[member] ?: run {
             val newMap = HashMap<Card, Long>()
@@ -408,7 +384,9 @@ class LogSession {
             newMap
         }
 
-        generatedCardMap[card] = (generatedCardMap[card] ?: 0) + 1
+        cards.forEach { card ->
+            generatedCardMap[card] = (generatedCardMap[card] ?: 0) + 1
+        }
 
         activeMembers.add(member)
     }
@@ -532,6 +510,12 @@ class LogSession {
         }
     }
 
+    fun logMassShardModify(members: List<Long>, amount: Long) {
+        members.forEach {
+            shardTotal[it] = (shardTotal[it] ?: 0) + amount
+        }
+    }
+
     fun saveSessionAsFile() {
         val folder = File("./data/cardLog")
 
@@ -579,12 +563,6 @@ class LogSession {
         }
 
         obj.add("activeMembers", memberArray)
-
-        val t2Array = JsonArray()
-
-        tier2Cards.forEach { c -> t2Array.add(c.unitID) }
-
-        obj.add("tier2Cards", t2Array)
 
         val packArray = JsonArray()
 

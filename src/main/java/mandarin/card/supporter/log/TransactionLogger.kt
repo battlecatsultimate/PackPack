@@ -469,7 +469,7 @@ object TransactionLogger {
         LogSession.session.logSalvage(member, cards, cardAmount  * salvageMode.cost.toLong())
     }
 
-    fun logCraft(member: Long, cardAmount: Int, craftedCard: Card?, cards: List<Card>) {
+    fun logCraft(member: Long, cardAmount: Int, craftMode: CardData.CraftMode, craftedCards: List<Card>, shards: Long) {
         if (!this::logChannel.isInitialized)
             return
 
@@ -479,74 +479,53 @@ object TransactionLogger {
 
         builder.setColor(StaticStore.rainbow.random())
 
-        builder.setDescription("Member <@$member> tried to craft T2 cards")
-
-        if (craftedCard != null) {
-            builder.addField("Successful?", "Yes", true)
-            builder.addField("Received Card", craftedCard.cardInfo(), true)
-        } else {
-            builder.addField("Successful?", "No", true)
-            builder.addField("Received CF", "${cardAmount * CardData.SalvageMode.T1.cost}", true)
+        val name = when(craftMode) {
+            CardData.CraftMode.T1 -> "Tier 1 [Common]"
+            CardData.CraftMode.T2 -> "Regular Tier 2 [Uncommon]"
+            CardData.CraftMode.SEASONAL -> "Seasonal Tier 2 [Uncommon]"
+            CardData.CraftMode.COLLAB -> "Collaboration Tier 2 [Uncommon]"
+            CardData.CraftMode.T3 -> "Tier 3 [Ultra Rare (Exclusives)]"
+            CardData.CraftMode.T4 -> "Tier 4 [Legend Rare]"
         }
 
-        val checker = StringBuilder()
+        builder.setDescription("Member <@$member> tried to craft $name cards")
 
-        for (card in cards.toSet()) {
-            checker.append("- ")
-                .append(card.cardInfo())
+        builder.addField("Member", "<@$member> [$member]", true)
+        builder.addField("Shard Spent", "${EmojiStore.ABILITY["SHARD"]?.formatted} $shards", true)
+        builder.addField("Card Crafted", cardAmount.toString(), true)
 
-            val amount = cards.filter { c -> card.unitID == c.unitID }.size
+        val cardList = StringBuilder()
+
+        craftedCards.toSet().forEach { c ->
+            val amount = craftedCards.filter { card -> card.unitID == c.unitID }.size
+
+            cardList.append("- ").append(c.simpleCardInfo())
 
             if (amount >= 2) {
-                checker.append(" x")
+                cardList.append(" x")
                     .append(amount)
             }
 
-            checker.append("\n")
+            cardList.append("\n")
         }
 
-        if (checker.length >= MessageEmbed.VALUE_MAX_LENGTH) {
+        if (cardList.length >= MessageEmbed.VALUE_MAX_LENGTH) {
             builder.addField("Cards", "Check cards messages below", false)
 
             modChannel.sendMessageEmbeds(builder.build())
                 .setAllowedMentions(ArrayList())
                 .queue()
 
-            checker.clear()
-
-            for (card in cards.toSet()) {
-                var line = "- ${card.cardInfo()}"
-
-                val amount = cards.filter { c -> card.unitID == c.unitID }.size
-
-                if (amount >= 2) {
-                    line += " x$amount"
-                }
-
-                if (checker.length + line.length > 1900) {
-                    modChannel.sendMessage(checker.toString()).queue()
-
-                    checker.clear()
-                }
-
-                checker.append(line)
-                    .append("\n")
-            }
-
-            modChannel.sendMessage(checker.toString()).queue()
+            modChannel.sendMessage(cardList.toString()).queue()
         } else {
-            builder.addField("Cards", checker.toString(), false)
+            builder.addField("Cards", cardList.toString(), false)
 
             modChannel.sendMessageEmbeds(builder.build())
                 .setAllowedMentions(ArrayList())
                 .queue()
         }
 
-        if (craftedCard == null) {
-            LogSession.session.logCraftFail(member, cards, cardAmount * CardData.SalvageMode.T1.cost.toLong())
-        } else {
-            LogSession.session.logCraftSuccess(member, cards, craftedCard)
-        }
+        LogSession.session.logCraft(member, shards, craftedCards)
     }
 
     fun logMassRoll(manager: Member, people: Int, pack: CardData.Pack) {
@@ -730,6 +709,74 @@ object TransactionLogger {
             list.append("\n...and ${members.size - size} member(s) more")
 
         builder.addField("Members", list.toString(), false)
+
+        catFoodChannel.sendMessageEmbeds(builder.build()).queue()
+    }
+
+    fun logMassShardModify(manager: String, amount: Long, members: List<Member>) {
+        if (!this::catFoodChannel.isInitialized)
+            return
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("Mass Shard Given")
+
+        builder.setColor(StaticStore.rainbow.random())
+
+        val verb = if (amount < 0)
+            "took away"
+        else
+            "gave out"
+
+        val connector = if (amount < 0)
+            "from"
+        else
+            "to"
+
+        builder.setDescription("Manager <@$manager> $verb $connector users")
+
+        builder.addField("Manager", "<@$manager> [$manager]", true)
+        builder.addField("Amount", "${EmojiStore.ABILITY["SHARD"]?.formatted} $amount", true)
+
+        val list = StringBuilder()
+
+        val size = min(25, members.size)
+
+        for (m in 0 until size) {
+            list.append(members[m].asMention)
+
+            if (m < size - 1)
+                list.append("\n")
+        }
+
+        if (members.size > size)
+            list.append("\n...and ${members.size - size} member(s) more")
+
+        builder.addField("Members", list.toString(), false)
+
+        catFoodChannel.sendMessageEmbeds(builder.build()).queue()
+
+        LogSession.session.logMassShardModify(members.map { m -> m.idLong }, amount)
+    }
+
+    fun logPlatinumShardModification(manager: String, targetMember: String, amount: Long, added: Boolean, oldAmount: Long, newAmount: Long) {
+        if (!this::catFoodChannel.isInitialized)
+            return
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("Platinum Shard Modified")
+
+        builder.setColor(StaticStore.rainbow.random())
+
+        builder.setDescription("Manager <@$manager> modified <@$targetMember> user's platinum shard")
+
+        builder.addField("Manager", "<@$manager> [$manager]", true)
+        builder.addField("Target Member", "<@$targetMember> [$targetMember]", true)
+
+        builder.addField("Added?", if (added) "True" else "False", false)
+
+        builder.addField("Amount", "${EmojiStore.ABILITY["SHARD"]?.formatted} $amount\n\nFrom : ${EmojiStore.ABILITY["SHARD"]?.formatted} $oldAmount -> To : ${EmojiStore.ABILITY["SHARD"]?.formatted} $newAmount", false)
 
         catFoodChannel.sendMessageEmbeds(builder.build()).queue()
     }

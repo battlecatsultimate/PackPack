@@ -5,6 +5,7 @@ import mandarin.card.supporter.CardComparator
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.holder.modal.CatFoodModifyHolder
+import mandarin.card.supporter.holder.modal.PlatinumShardModifyHolder
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
@@ -113,7 +114,23 @@ class ModifyModeSelectHolder(author: Message, channelID: String, private val mes
                         })
                     }
                     CardData.ModifyCategory.SHARD -> {
+                        val input = TextInput.create("amount", "Amount", TextInputStyle.SHORT)
+                            .setPlaceholder("Define amount of platinum shards that will be ${if(isAdd) "added" else "removed"} from this user")
+                            .build()
 
+                        val modal = Modal.create("shard", "Modify Platinum Shard")
+                            .addActionRow(input)
+                            .build()
+
+                        event.replyModal(modal).queue()
+
+                        StaticStore.putHolder(authorMessage.author.id, PlatinumShardModifyHolder(authorMessage, channelID, message.id, inventory, isAdd, targetMember.id) {
+                            message.editMessage("Do you want to add or remove platinum shards?\n\nCurrently this user has ${EmojiStore.ABILITY["SHARD"]?.formatted} ${inventory.platinumShard}")
+                                .setComponents(getModeComponents())
+                                .setAllowedMentions(ArrayList())
+                                .mentionRepliedUser(false)
+                                .queue()
+                        })
                     }
                 }
             }

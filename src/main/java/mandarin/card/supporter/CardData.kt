@@ -37,6 +37,15 @@ object CardData {
         T3(200)
     }
 
+    enum class CraftMode(val cost: Int) {
+        T1(6),
+        T2(25),
+        SEASONAL(50),
+        COLLAB(100),
+        T3(300),
+        T4(1500)
+    }
+
     enum class ModifyCategory {
         CARD,
         ROLE,

@@ -1,30 +1,29 @@
 package mandarin.card.commands
 
 import mandarin.card.CardBot
-import mandarin.card.supporter.Card
 import mandarin.card.supporter.CardComparator
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
-import mandarin.card.supporter.holder.CardSalvageHolder
+import mandarin.card.supporter.filter.BannerFilter
+import mandarin.card.supporter.holder.CardCraftModeHolder
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.CommandLoader
-import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
-import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
-import kotlin.math.min
 
 class Craft : Command(LangID.EN, true) {
     override fun doSomething(loader: CommandLoader) {
         val ch = loader.channel
         val m = loader.member
+
+        if (!CardData.hasAllPermission(m) && m.id != StaticStore.MANDARIN_SMELL)
+            return
 
         if (CardBot.rollLocked && !CardData.hasAllPermission(m) && m.id != StaticStore.MANDARIN_SMELL) {
             return
@@ -40,111 +39,41 @@ class Craft : Command(LangID.EN, true) {
             return
         }
 
-        replyToMessageSafely(ch, getPremiumText(cards, inventory), loader.message, { a ->
-            a.setComponents(assignComponents(cards, inventory))
-        }, { message ->
-            StaticStore.putHolder(m.id, CardSalvageHolder(loader.message, ch.id, message, CardData.SalvageMode.T1))
-        })
+        replyToMessageSafely(ch, "Select tier that you want to craft\n\n" +
+                "You currently have ${EmojiStore.ABILITY["SHARD"]?.formatted} ${inventory.platinumShard}", loader.message, { a ->
+            a.setComponents(assignComponents())
+        }) { message ->
+            StaticStore.putHolder(m.id, CardCraftModeHolder(loader.message, ch.id, message))
+        }
     }
 
-    private fun assignComponents(cards: List<Card>, inventory: Inventory) : List<LayoutComponent> {
+    private fun assignComponents() : List<LayoutComponent> {
         val rows = ArrayList<ActionRow>()
 
-        val bannerCategoryElements = ArrayList<SelectOption>()
+        val options = ArrayList<SelectOption>()
 
-        bannerCategoryElements.add(SelectOption.of("All", "all"))
+        options.add(SelectOption.of("Tier 1 [Common]", "t1").withDescription("${CardData.CraftMode.T1.cost} shards required"))
+        options.add(SelectOption.of("Tier 2 [Uncommon]", "t2").withDescription("${CardData.CraftMode.T2.cost} shards required"))
 
-        CardData.bannerCategoryText[CardData.Tier.COMMON.ordinal].forEachIndexed { i, a ->
-            bannerCategoryElements.add(SelectOption.of(a, "category-${CardData.Tier.COMMON.ordinal}-$i"))
+        val seasonalCards = CardData.cards.filter { c -> c.unitID in BannerFilter.Banner.Seasonal.getBannerData() }.filter { c -> CardData.activatedBanners.any { a -> c.unitID in CardData.bannerData[a.tier.ordinal][a.banner] } }
+
+        if (seasonalCards.isNotEmpty()) {
+            options.add(SelectOption.of("Seasonal Tier 2 [Uncommon]", "seasonal").withDescription("${CardData.CraftMode.SEASONAL.cost} shards required"))
         }
 
-        val bannerCategory = StringSelectMenu.create("category")
-            .addOptions(bannerCategoryElements)
-            .setPlaceholder("Filter Cards by Banners")
+        val collaborationCards = CardData.cards.filter { c -> c.unitID in BannerFilter.Banner.Collaboration.getBannerData() }.filter { c -> CardData.activatedBanners.any { a -> c.unitID in CardData.bannerData[a.tier.ordinal][a.banner] } }
 
-        rows.add(ActionRow.of(bannerCategory.build()))
-
-        val dataSize = cards.size
-
-        val cardCategoryElements = ArrayList<SelectOption>()
-
-        if (cards.isEmpty()) {
-            cardCategoryElements.add(SelectOption.of("a", "-1"))
-        } else {
-            for(i in 0 until min(dataSize, SearchHolder.PAGE_CHUNK)) {
-                cardCategoryElements.add(SelectOption.of(cards[i].simpleCardInfo(), i.toString()))
-            }
+        if (collaborationCards.isNotEmpty()) {
+            options.add(SelectOption.of("Collaboration Tier 2 [Uncommon]", "collab").withDescription("${CardData.CraftMode.COLLAB.cost} shards required"))
         }
 
-        val cardCategory = StringSelectMenu.create("card")
-            .addOptions(cardCategoryElements)
-            .setPlaceholder(
-                if (cards.isEmpty())
-                    "No Cards To Select"
-                else
-                    "Select Card"
-            )
-            .setDisabled(cards.isEmpty())
-            .build()
+        options.add(SelectOption.of("Tier 3 [Ultra Rare (Exclusives)]", "t3").withDescription("${CardData.CraftMode.T3.cost} shards required"))
+        options.add(SelectOption.of("Tier 4 [Legned Rare]", "t4").withDescription("${CardData.CraftMode.T4.cost} shards required"))
 
-        rows.add(ActionRow.of(cardCategory))
+        rows.add(ActionRow.of(StringSelectMenu.create("tier").addOptions(options).build()))
 
-        var totPage = dataSize / SearchHolder.PAGE_CHUNK
-
-        if (dataSize % SearchHolder.PAGE_CHUNK != 0)
-            totPage++
-
-        if (dataSize > SearchHolder.PAGE_CHUNK) {
-            val buttons = ArrayList<Button>()
-
-            if(totPage > 10) {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).asDisabled())
-            }
-
-            buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", "Previous Pages", EmojiStore.PREVIOUS).asDisabled())
-
-            buttons.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT))
-
-            if(totPage > 10) {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT))
-            }
-
-            rows.add(ActionRow.of(buttons))
-        }
-
-        val confirmButtons = ArrayList<Button>()
-
-        confirmButtons.add(Button.success("craft", "Craft T2 Card").asDisabled().withEmoji(Emoji.fromUnicode("\uD83D\uDEE0\uFE0F")))
-        confirmButtons.add(Button.secondary("dupe", "Use Duplicated").withDisabled(!inventory.cards.keys.any { c -> (inventory.cards[c] ?: 0) > 1 }))
-        confirmButtons.add(Button.danger("reset", "Reset").asDisabled())
-        confirmButtons.add(Button.danger("cancel", "Cancel"))
-
-        rows.add(ActionRow.of(confirmButtons))
+        rows.add(ActionRow.of(Button.danger("cancel", "Cancel")))
 
         return rows
-    }
-
-    private fun getPremiumText(cards: List<Card>, inventory: Inventory) : String {
-        val builder = StringBuilder("Select 10 Tier 1 [Common] cards to craft\n\n### Selected Cards\n\n- No Cards Selected\n\n```md\n")
-
-        if (cards.isNotEmpty()) {
-            for (i in 0 until min(SearchHolder.PAGE_CHUNK, cards.size)) {
-                builder.append("${i + 1}. ${cards[i].cardInfo()}")
-
-                val amount = inventory.cards[cards[i]] ?: 1
-
-                if (amount >= 2) {
-                    builder.append(" x$amount\n")
-                } else {
-                    builder.append("\n")
-                }
-            }
-        } else {
-            builder.append("No Cards Found")
-        }
-
-        builder.append("```")
-
-        return builder.toString()
     }
 }
