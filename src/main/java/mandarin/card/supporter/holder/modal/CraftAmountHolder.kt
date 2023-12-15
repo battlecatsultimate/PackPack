@@ -38,9 +38,9 @@ class CraftAmountHolder(author: Message, channelID: String, messageID: String, p
                 .queue()
 
             return
-        } else if (amount > 20) {
+        } else if (amount > 10) {
             event.deferReply()
-                .setContent("Sorry! Max amount of card is up to 20!")
+                .setContent("Sorry! Max amount of card is up to 10!")
                 .setEphemeral(true)
                 .queue()
 
