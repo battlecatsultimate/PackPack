@@ -8,7 +8,10 @@ import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.filter.BannerFilter
 import mandarin.card.supporter.log.TransactionLogger
 import mandarin.packpack.supporter.EmojiStore
+import mandarin.packpack.supporter.StaticStore
+import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
+import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.emoji.Emoji
@@ -71,24 +74,51 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
             "salvage" -> {
                 val shard = selectedCard.size * salvageMode.cost
 
-                inventory.removeCards(selectedCard)
+                val salvage: (GenericComponentInteractionCreateEvent) -> Unit = {
+                    inventory.removeCards(selectedCard)
 
-                inventory.platinumShard += shard
+                    inventory.platinumShard += shard
 
-                TransactionLogger.logSalvage(authorMessage.author.idLong, selectedCard.size, salvageMode, selectedCard)
+                    TransactionLogger.logSalvage(authorMessage.author.idLong, selectedCard.size, salvageMode, selectedCard)
 
-                event.deferEdit()
-                    .setContent("Salvaged ${selectedCard.size} cards, and you received ${EmojiStore.ABILITY["SHARD"]?.formatted} $shard!")
-                    .setComponents()
-                    .mentionRepliedUser(false)
-                    .setAllowedMentions(ArrayList())
-                    .queue()
+                    it.deferEdit()
+                        .setContent("Salvaged ${selectedCard.size} cards, and you received ${EmojiStore.ABILITY["SHARD"]?.formatted} $shard!")
+                        .setComponents()
+                        .mentionRepliedUser(false)
+                        .setAllowedMentions(ArrayList())
+                        .queue()
 
-                CardBot.saveCardData()
+                    CardBot.saveCardData()
 
-                expired = true
+                    expired = true
 
-                expire(authorMessage.author.id)
+                    expire(authorMessage.author.id)
+                }
+
+                if (shard >= 100 || selectedCard.size >= 20) {
+                    event.deferEdit()
+                        .setContent("Are you sure you are fine with salvaging selected cards?\n" +
+                                "\n" +
+                                "**Salvaging means you will lose selected cards from your inventory and gain platinum shards as return. You can't undo the process once you confirm it**")
+                        .setComponents(toConfirmationPopUp())
+                        .setAllowedMentions(ArrayList())
+                        .mentionRepliedUser(false)
+                        .queue()
+
+                    StaticStore.putHolder(authorMessage.author.id, ConfirmPopUpHolder(authorMessage, message, channelID, {
+                        salvage.invoke(it)
+
+                        return@ConfirmPopUpHolder null
+                    }, {
+                        applyResult(it)
+
+                        StaticStore.putHolder(authorMessage.author.id, this)
+
+                        return@ConfirmPopUpHolder null
+                    }, LangID.EN))
+                } else {
+                    salvage.invoke(event)
+                }
             }
             "cancel" -> {
                 expired = true
@@ -149,34 +179,57 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
                 applyResult(event)
             }
             "all" -> {
-                selectedCard.clear()
+                val adder: (GenericComponentInteractionCreateEvent) -> Unit = {
+                    selectedCard.clear()
 
-                inventory.cards.keys.filter { c -> c.tier == tier && c.unitID != 435 && c.unitID != 484 }
-                    .filter { c ->
-                        when (salvageMode) {
-                            CardData.SalvageMode.T2 -> c.unitID in BannerFilter.Banner.TheAlimighties.getBannerData() || c.unitID in BannerFilter.Banner.GirlsAndMonsters.getBannerData()
-                            CardData.SalvageMode.SEASONAL -> c.unitID in BannerFilter.Banner.Seasonal.getBannerData()
-                            CardData.SalvageMode.COLLAB -> c.unitID in BannerFilter.Banner.Collaboration.getBannerData()
-                            else -> true
+                    inventory.cards.keys.filter { c -> c.tier == tier && c.unitID != 435 && c.unitID != 484 }
+                        .filter { c ->
+                            when (salvageMode) {
+                                CardData.SalvageMode.T2 -> c.unitID in BannerFilter.Banner.TheAlimighties.getBannerData() || c.unitID in BannerFilter.Banner.GirlsAndMonsters.getBannerData()
+                                CardData.SalvageMode.SEASONAL -> c.unitID in BannerFilter.Banner.Seasonal.getBannerData()
+                                CardData.SalvageMode.COLLAB -> c.unitID in BannerFilter.Banner.Collaboration.getBannerData()
+                                else -> true
+                            }
                         }
-                    }
-                    .filter { c -> (inventory.cards[c] ?: 0) - selectedCard.filter { card -> card.unitID == c.unitID}.size > 0 }
-                    .forEach { c ->
-                        repeat(inventory.cards[c] ?: 0) {
-                            selectedCard.add(c)
+                        .filter { c -> (inventory.cards[c] ?: 0) - selectedCard.filter { card -> card.unitID == c.unitID}.size > 0 }
+                        .forEach { c ->
+                            repeat(inventory.cards[c] ?: 0) {
+                                selectedCard.add(c)
+                            }
                         }
-                    }
 
-                event.deferReply()
+                    it.deferReply()
                         .setContent("Successfully added all of your cards! Keep in mind that you can't undo the task once you salvage the cards")
                         .setEphemeral(true)
                         .queue()
 
-                filterCards()
+                    filterCards()
 
-                page = 0
+                    page = 0
 
-                applyResult()
+                    applyResult()
+
+                    StaticStore.putHolder(authorMessage.author.id, this)
+                }
+
+                event.deferEdit()
+                    .setContent("Are you sure you want to add all cards?")
+                    .setComponents(toConfirmationPopUp())
+                    .setAllowedMentions(ArrayList())
+                    .mentionRepliedUser(false)
+                    .queue()
+
+                StaticStore.putHolder(authorMessage.author.id, ConfirmPopUpHolder(authorMessage, message, channelID, {
+                    adder.invoke(it)
+
+                    return@ConfirmPopUpHolder null
+                }, {
+                    applyResult(it)
+
+                    StaticStore.putHolder(authorMessage.author.id, this)
+
+                    return@ConfirmPopUpHolder null
+                }, LangID.EN))
             }
             "dupe" -> {
                 val duplicatedCards = inventory.cards.keys
@@ -428,5 +481,9 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
         }
 
         return builder.toString()
+    }
+
+    private fun toConfirmationPopUp() : List<LayoutComponent> {
+        return arrayListOf(ActionRow.of(Button.success("confirm", "Confirm"), Button.danger("cancel", "Cancel")))
     }
 }
