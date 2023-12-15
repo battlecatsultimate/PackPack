@@ -131,7 +131,7 @@ class CardCraftAmountHolder(author: Message, channelID: String, private val mess
                     event.messageChannel
                         .sendMessage(builder.toString())
                         .setMessageReference(authorMessage)
-                        .addFiles(result.filter { c -> !inventory.cards.containsKey(c) }.map { c -> FileUpload.fromData(c.cardImage, "${c.name}.png") })
+                        .addFiles(result.filter { c -> !inventory.cards.containsKey(c) }.toSet().map { c -> FileUpload.fromData(c.cardImage, "${c.name}.png") })
                         .mentionRepliedUser(false)
                         .queue()
 
