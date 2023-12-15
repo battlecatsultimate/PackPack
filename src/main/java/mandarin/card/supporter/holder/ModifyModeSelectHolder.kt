@@ -374,6 +374,7 @@ class ModifyModeSelectHolder(author: Message, channelID: String, private val mes
         modeOptions.add(SelectOption.of("Cards", "card"))
         modeOptions.add(SelectOption.of("Vanity Roles", "role"))
         modeOptions.add(SelectOption.of("Cat Foods", "cf"))
+        modeOptions.add(SelectOption.of("Platinum Shards", "shard"))
 
         val modes = StringSelectMenu.create("category")
             .addOptions(modeOptions)
