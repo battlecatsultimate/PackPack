@@ -17,7 +17,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import kotlin.math.ceil
 import kotlin.math.min
 
-class Rank : Command(LangID.EN, true) {
+class ShardRank : Command(LangID.EN, true) {
     override fun doSomething(loader: CommandLoader) {
         val m = loader.member
 
@@ -26,17 +26,17 @@ class Rank : Command(LangID.EN, true) {
         val users = CardData.inventories.keys.sortedBy { id ->
             val inventory = Inventory.getInventory(id)
 
-            inventory.catFoods
+            inventory.platinumShard
         }.asReversed()
 
-        val catFoods = users.map { id ->
+        val shards = users.map { id ->
             val inventory = Inventory.getInventory(id)
 
-            inventory.catFoods
+            inventory.platinumShard
         }
 
-        replyToMessageSafely(loader.channel, getRankList(users, catFoods, m.id), loader.message, { a -> a.setComponents(getComponents(users)) }) { msg ->
-            StaticStore.putHolder(m.id, RankListHolder(loader.message, loader.channel.id, msg.id, users, catFoods, true))
+        replyToMessageSafely(loader.channel, getRankList(users, shards, m.id), loader.message, { a -> a.setComponents(getComponents(users)) }) { msg ->
+            StaticStore.putHolder(m.id, RankListHolder(loader.message, loader.channel.id, msg.id, users, shards, false))
         }
     }
 
@@ -54,7 +54,7 @@ class Rank : Command(LangID.EN, true) {
         val size = min(SearchHolder.PAGE_CHUNK, memberList.size)
 
         for (m in 0 until size) {
-            builder.append(m + 1).append(". <@").append(memberList[m]).append("> : ").append(EmojiStore.ABILITY["CF"]?.formatted).append(" ").append(catFoods[m])
+            builder.append(m + 1).append(". <@").append(memberList[m]).append("> : ").append(EmojiStore.ABILITY["SHARD"]?.formatted).append(" ").append(catFoods[m])
 
             if (m < size - 1)
                 builder.append("\n")

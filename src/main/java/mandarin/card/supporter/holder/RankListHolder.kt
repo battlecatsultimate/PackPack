@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import kotlin.math.ceil
 import kotlin.math.min
 
-class RankListHolder(author: Message, channelID: String, messageID: String, private val users: List<String>, private val catFoods: List<Long>) : ComponentHolder(author, channelID, messageID) {
+class RankListHolder(author: Message, channelID: String, messageID: String, private val users: List<String>, private val currencies: List<Long>, private val catFood: Boolean) : ComponentHolder(author, channelID, messageID) {
     private var page = 0
 
     override fun clean() {
@@ -83,7 +83,7 @@ class RankListHolder(author: Message, channelID: String, messageID: String, priv
         val size = min((page + 1) * SearchHolder.PAGE_CHUNK, users.size)
 
         for (m in page * SearchHolder.PAGE_CHUNK until size) {
-            builder.append(m + 1).append(". <@").append(users[m]).append("> : ").append(EmojiStore.ABILITY["CF"]?.formatted).append(" ").append(catFoods[m])
+            builder.append(m + 1).append(". <@").append(users[m]).append("> : ").append(EmojiStore.ABILITY[if (catFood) "CF" else "SHARD"]?.formatted).append(" ").append(currencies[m])
 
             if (m < size - 1)
                 builder.append("\n")
