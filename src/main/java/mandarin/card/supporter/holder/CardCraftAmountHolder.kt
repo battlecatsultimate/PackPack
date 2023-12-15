@@ -56,6 +56,40 @@ class CardCraftAmountHolder(author: Message, channelID: String, private val mess
                     .mentionRepliedUser(false)
                     .queue()
             }
+            "add" -> {
+                amount++
+
+                event.deferEdit()
+                    .setContent("You are crafting $amount $name card${if (amount >= 2) "s" else ""}\n" +
+                        "\n" +
+                        "You can change the amount of card that will be crafted as well\n" +
+                        "\n" +
+                        "Required shard : ${EmojiStore.ABILITY["SHARD"]?.formatted} ${craftMode.cost * amount}\n" +
+                        "Currently you have ${EmojiStore.ABILITY["SHARD"]?.formatted} ${inventory.platinumShard}" +
+                        if (amount * craftMode.cost > inventory.platinumShard) "\n\n**You can't craft cards because you don't have enough platinum shards!**" else ""
+                    )
+                    .setComponents(getComponents())
+                    .setAllowedMentions(ArrayList())
+                    .mentionRepliedUser(false)
+                    .queue()
+            }
+            "reduce" -> {
+                amount--
+
+                event.deferEdit()
+                    .setContent("You are crafting $amount $name card${if (amount >= 2) "s" else ""}\n" +
+                            "\n" +
+                            "You can change the amount of card that will be crafted as well\n" +
+                            "\n" +
+                            "Required shard : ${EmojiStore.ABILITY["SHARD"]?.formatted} ${craftMode.cost * amount}\n" +
+                            "Currently you have ${EmojiStore.ABILITY["SHARD"]?.formatted} ${inventory.platinumShard}" +
+                            if (amount * craftMode.cost > inventory.platinumShard) "\n\n**You can't craft cards because you don't have enough platinum shards!**" else ""
+                    )
+                    .setComponents(getComponents())
+                    .setAllowedMentions(ArrayList())
+                    .mentionRepliedUser(false)
+                    .queue()
+            }
             "amount" -> {
                 val input = TextInput.create("amount", "Amount", TextInputStyle.SHORT)
                     .setPlaceholder("Define amount of card that will be crafted")
@@ -149,7 +183,12 @@ class CardCraftAmountHolder(author: Message, channelID: String, private val mess
     private fun getComponents() : List<LayoutComponent> {
         val result = ArrayList<LayoutComponent>()
 
-        result.add(ActionRow.of(Button.secondary("amount", "Change amount of crafted card")))
+        result.add(ActionRow.of(
+            Button.secondary("reduce", "Reduce Amount").withDisabled(amount <= 1).withEmoji(Emoji.fromUnicode("➖")),
+            Button.secondary("amount", "Set Amount"),
+            Button.secondary("add", "Add Amount").withDisabled(amount >= 10).withEmoji(Emoji.fromUnicode("➕"))
+        ))
+
         result.add(
             ActionRow.of(
                 Button.success("craft", "Craft").withEmoji(Emoji.fromUnicode("\uD83E\uDE84")).withDisabled(amount * craftMode.cost > inventory.platinumShard),

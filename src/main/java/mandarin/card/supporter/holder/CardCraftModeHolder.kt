@@ -77,7 +77,12 @@ class CardCraftModeHolder(author: Message, channelID: String, private val messag
     private fun getComponents(craftMode: CardData.CraftMode) : List<LayoutComponent> {
         val result = ArrayList<LayoutComponent>()
 
-        result.add(ActionRow.of(Button.secondary("amount", "Change amount of crafted card")))
+        result.add(ActionRow.of(
+            Button.secondary("reduce", "Reduce Amount").asDisabled().withEmoji(Emoji.fromUnicode("➖")),
+            Button.secondary("amount", "Set Amount"),
+            Button.secondary("add", "Add Amount").withEmoji(Emoji.fromUnicode("➕"))
+        ))
+
         result.add(
             ActionRow.of(
                 Button.success("craft", "Craft").withEmoji(Emoji.fromUnicode("\uD83E\uDE84")).withDisabled(craftMode.cost > inventory.platinumShard),
