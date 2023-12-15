@@ -1,7 +1,6 @@
 package mandarin.card.commands
 
 import mandarin.card.CardBot
-import mandarin.card.supporter.CardComparator
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.filter.BannerFilter
@@ -27,14 +26,6 @@ class Craft : Command(LangID.EN, true) {
         }
 
         val inventory = Inventory.getInventory(m.id)
-
-        val cards = inventory.cards.keys.filter { c -> c.tier == CardData.Tier.COMMON }.sortedWith(CardComparator())
-
-        if (cards.sumOf { inventory.cards[it] ?: 1 } < 10) {
-            replyToMessageSafely(ch, "You have to have at least 10 Tier 1 [Common] cards to craft Tier 2 [Uncommon] cards!!", loader.message) { a -> a }
-
-            return
-        }
 
         replyToMessageSafely(ch, "Select tier that you want to craft\n\n" +
                 "You currently have ${EmojiStore.ABILITY["SHARD"]?.formatted} ${inventory.platinumShard}", loader.message, { a ->

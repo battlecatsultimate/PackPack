@@ -299,6 +299,8 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}ms" -> MassShard().execute(event)
             "${globalPrefix}shardrank",
             "${globalPrefix}sr" -> ShardRank().execute(event)
+            "${globalPrefix}platinumshard",
+            "${globalPrefix}ps" -> PlatinumShard().execute(event)
             "${globalPrefix}hack" -> {
                 if (test) {
                     Hack().execute(event)
