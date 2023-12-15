@@ -17,6 +17,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.system.linux.Stat;
 
 import java.awt.*;
 import java.io.File;
@@ -106,7 +107,8 @@ public class StmImage extends ConstraintCommand {
                 replyToMessageSafely(ch, LangID.getStringByID("stmimg_argu", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.serverPrefix), loader.getMessage(), a -> a);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            StaticStore.logger.uploadErrorLog(e, "Failed to handle stage map image command");
+
             if(e instanceof ErrorResponseException) {
                 onFail(loader, SERVER_ERROR);
             } else {

@@ -71,7 +71,7 @@ public class EnemyDPS extends TimedConstraintCommand {
                 TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(m.getAuthor().getId(), TreasureHolder.global);
 
                 EntityHandler.showEnemyDPS(ch, loader.getMessage(), enemies.get(0), treasure, magnification, lang);
-            } else if(enemies.size() == 0) {
+            } else if(enemies.isEmpty()) {
                 replyToMessageSafely(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", getSearchKeyword(command)), loader.getMessage(), a -> a);
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", getSearchKeyword(command)));

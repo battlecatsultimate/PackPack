@@ -95,7 +95,7 @@ public class StageImage extends ConstraintCommand {
                 replyToMessageSafely(ch, LangID.getStringByID("stimg_argu", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.serverPrefix), loader.getMessage(), a -> a);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            StaticStore.logger.uploadErrorLog(e, "Failed to handle stage image command");
 
             if(e instanceof ErrorResponseException) {
                 onFail(loader, SERVER_ERROR);

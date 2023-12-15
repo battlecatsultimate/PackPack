@@ -235,7 +235,7 @@ public class FindStage extends TimedConstraintCommand {
         } else {
             StringBuilder sb = new StringBuilder();
 
-            if(enemyList.length() != 0) {
+            if(!enemyList.isEmpty()) {
                 sb.append(LangID.getStringByID("fstage_selected", lang).replace("_", enemyList.toString().replaceAll(", $", "")));
             }
 

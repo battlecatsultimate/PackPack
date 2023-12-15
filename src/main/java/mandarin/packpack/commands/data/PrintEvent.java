@@ -92,7 +92,7 @@ public class PrintEvent extends ConstraintCommand {
                         if(!initial) {
                             initial = true;
 
-                            builder.append(builder.length() == 0 ? "** **\n" : "");
+                            builder.append(builder.isEmpty() ? "** **\n" : "");
 
                             switch (type) {
                                 case DAILY ->

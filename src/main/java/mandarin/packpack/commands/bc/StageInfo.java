@@ -126,7 +126,7 @@ public class StageInfo extends TimedConstraintCommand {
                     }
                 });
             } catch (Exception e) {
-                e.printStackTrace();
+                StaticStore.logger.uploadErrorLog(e, "E/StageInfo::performInteraction - Failed to show stage embed");
             }
         }
     }

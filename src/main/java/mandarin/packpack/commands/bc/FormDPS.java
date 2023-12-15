@@ -249,7 +249,7 @@ public class FormDPS extends TimedConstraintCommand {
 
                         Level level = new Level(0);
 
-                        if(lv.size() > 0)
+                        if(!lv.isEmpty())
                             level.setLevel(lv.get(0));
                         else
                             level.setLevel(-1);

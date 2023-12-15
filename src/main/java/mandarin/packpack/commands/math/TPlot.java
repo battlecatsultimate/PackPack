@@ -157,7 +157,7 @@ public class TPlot extends TimedConstraintCommand {
                     }
                 }
 
-                return builder.length() == 0 ? null : builder.toString();
+                return builder.isEmpty() ? null : builder.toString();
             }
         }
 
@@ -185,7 +185,7 @@ public class TPlot extends TimedConstraintCommand {
                     }
                 }
 
-                return builder.length() == 0 ? null : builder.toString();
+                return builder.isEmpty() ? null : builder.toString();
             }
         }
 

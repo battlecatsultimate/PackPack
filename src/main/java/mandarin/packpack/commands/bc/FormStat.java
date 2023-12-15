@@ -125,7 +125,7 @@ public class FormStat extends ConstraintCommand {
 
         Level lv = new Level(0);
 
-        if(levels.size() > 0)
+        if(!levels.isEmpty())
             lv.setLevel(levels.get(0));
         else
             lv.setLevel(-1);
@@ -449,7 +449,7 @@ public class FormStat extends ConstraintCommand {
 
                         Level level = new Level(0);
 
-                        if(lv.size() > 0)
+                        if(!lv.isEmpty())
                             level.setLevel(lv.get(0));
                         else
                             level.setLevel(-1);

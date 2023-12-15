@@ -1017,7 +1017,7 @@ public class DataToString extends Data {
 
         StringBuilder sb = new StringBuilder(LangID.getStringByID("data_talen", lang));
 
-        if(f.getPCoin().trait.size() != 0) {
+        if(!f.getPCoin().trait.isEmpty()) {
             sb.append("[");
 
             String trait = Interpret.getTrait(f.getPCoin().trait, 0, false, lang);
@@ -1280,7 +1280,7 @@ public class DataToString extends Data {
             res.add(LangID.getStringByID("data_maxunitlim", lang)+" : "+l.num);
         }
 
-        if(l.group != null && l.group.set.size() != 0) {
+        if(l.group != null && !l.group.set.isEmpty()) {
             StringBuilder units = new StringBuilder();
 
             ArrayList<Unit> u = new ArrayList<>(l.group.set);
@@ -1352,7 +1352,7 @@ public class DataToString extends Data {
             res.add(LangID.getStringByID("data_maxunitlim", lang)+" : "+l.num);
         }
 
-        if(l.group instanceof CustomCharaGroup && ((CustomCharaGroup) l.group).identifiers.size() != 0) {
+        if(l.group instanceof CustomCharaGroup && !((CustomCharaGroup) l.group).identifiers.isEmpty()) {
             StringBuilder units = new StringBuilder();
 
             List<Identifier<Unit>> u = ((CustomCharaGroup) l.group).identifiers;
@@ -1526,7 +1526,7 @@ public class DataToString extends Data {
         }
 
         if (ufText != null && !ufText.strip().isBlank()) {
-            if (result.length() != 0) {
+            if (!result.isEmpty()) {
                 result.append("\n\n");
             }
 
@@ -1536,7 +1536,7 @@ public class DataToString extends Data {
                     .append(ufText);
         }
 
-        if (result.length() == 0)
+        if (result.isEmpty())
             return null;
 
         return result.toString();

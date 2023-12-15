@@ -356,24 +356,6 @@ class LogSession {
         activeMembers.add(member)
     }
 
-    fun logCraftFail(member: Long, usedCards: List<Card>, cf: Long) {
-        val cardMap = removedCards[member] ?: run {
-            val newMap = HashMap<Card, Long>()
-            removedCards[member] = newMap
-            newMap
-        }
-
-        usedCards.forEach {
-            cardMap[it] = (cardMap[it] ?: 0) + 1
-        }
-
-        craftFailures++
-
-        catFoodCraft[member] = (catFoodCraft[member] ?: 0) + cf
-
-        activeMembers.add(member)
-    }
-
     fun logCraft(member: Long, usedShards: Long, cards: List<Card>) {
         shardCraft[member] = (shardCraft[member] ?: 0) + usedShards
         shardTotal[member] = (shardTotal[member] ?: 0) - usedShards

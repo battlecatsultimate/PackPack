@@ -22,7 +22,7 @@ class CatFoodRate : Command(LangID.EN, true) {
         }
 
         val timeText = if (CardData.catFoodCooldown > 0)
-            "Every `" + CardData.convertMillisecondsToText(CardData.catFoodCooldown.toLong()) + "`"
+            "Every `" + CardData.convertMillisecondsToText(CardData.catFoodCooldown) + "`"
         else
             "Every message"
 

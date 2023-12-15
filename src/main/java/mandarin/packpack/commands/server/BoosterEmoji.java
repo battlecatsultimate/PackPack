@@ -205,7 +205,7 @@ public class BoosterEmoji extends ConstraintCommand {
                             }
                         });
             } catch (Exception e) {
-                e.printStackTrace();
+                StaticStore.logger.uploadErrorLog(e, "E/BoosterEmoji::doSomething - Failed to handle booster emoji command");
             }
         }
     }

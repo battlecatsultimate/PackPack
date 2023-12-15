@@ -46,7 +46,7 @@ public class RemoveStatusChannel extends ConstraintCommand {
             builder.append(matcher.group()).append(",");
         }
 
-        if(builder.length() == 0) {
+        if(builder.isEmpty()) {
             replyToMessageSafely(ch, LangID.getStringByID("statuschan_channel", lang), loader.getMessage(), a -> a);
 
             return;
