@@ -40,7 +40,6 @@ class Craft : Command(LangID.EN, true) {
 
         val options = ArrayList<SelectOption>()
 
-        options.add(SelectOption.of("Tier 1 [Common]", "t1").withDescription("${CardData.CraftMode.T1.cost} shards required"))
         options.add(SelectOption.of("Tier 2 [Uncommon]", "t2").withDescription("${CardData.CraftMode.T2.cost} shards required"))
 
         val seasonalCards = CardData.cards.filter { c -> c.unitID in BannerFilter.Banner.Seasonal.getBannerData() }.filter { c -> CardData.activatedBanners.any { a -> c.unitID in CardData.bannerData[a.tier.ordinal][a.banner] } }

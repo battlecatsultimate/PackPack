@@ -480,7 +480,6 @@ object TransactionLogger {
         builder.setColor(StaticStore.rainbow.random())
 
         val name = when(craftMode) {
-            CardData.CraftMode.T1 -> "Tier 1 [Common]"
             CardData.CraftMode.T2 -> "Regular Tier 2 [Uncommon]"
             CardData.CraftMode.SEASONAL -> "Seasonal Tier 2 [Uncommon]"
             CardData.CraftMode.COLLAB -> "Collaboration Tier 2 [Uncommon]"

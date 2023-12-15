@@ -38,7 +38,6 @@ object CardData {
     }
 
     enum class CraftMode(val cost: Int) {
-        T1(6),
         T2(25),
         SEASONAL(50),
         COLLAB(100),

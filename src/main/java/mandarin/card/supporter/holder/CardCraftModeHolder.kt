@@ -39,7 +39,6 @@ class CardCraftModeHolder(author: Message, channelID: String, private val messag
                     return
 
                 val selectedMode = when(event.values[0]) {
-                    "t1" -> CardData.CraftMode.T1
                     "t2" -> CardData.CraftMode.T2
                     "seasonal" -> CardData.CraftMode.SEASONAL
                     "collab" -> CardData.CraftMode.COLLAB
@@ -48,7 +47,6 @@ class CardCraftModeHolder(author: Message, channelID: String, private val messag
                 }
 
                 val name = when(selectedMode) {
-                    CardData.CraftMode.T1 -> "Tier 1 [Common]"
                     CardData.CraftMode.T2 -> "Regular Tier 2 [Uncommon]"
                     CardData.CraftMode.SEASONAL -> "Seasonal Tier 2 [Uncommon]"
                     CardData.CraftMode.COLLAB -> "Collaboration Tier 2 [Uncommon]"

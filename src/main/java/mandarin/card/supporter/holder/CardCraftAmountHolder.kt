@@ -39,7 +39,6 @@ class CardCraftAmountHolder(author: Message, channelID: String, private val mess
 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         val name = when(craftMode) {
-            CardData.CraftMode.T1 -> "Tier 1 [Common]"
             CardData.CraftMode.T2 -> "Regular Tier 2 [Uncommon]"
             CardData.CraftMode.SEASONAL -> "Seasonal Tier 2 [Uncommon]"
             CardData.CraftMode.COLLAB -> "Collaboration Tier 2 [Uncommon]"
@@ -203,7 +202,6 @@ class CardCraftAmountHolder(author: Message, channelID: String, private val mess
         CardData.activatedBanners
 
         val cards = when(craftMode) {
-            CardData.CraftMode.T1 -> CardData.cards.filter { c -> c.tier == CardData.Tier.COMMON }
             CardData.CraftMode.T2 -> CardData.cards.filter { c -> c.unitID in BannerFilter.Banner.TheAlimighties.getBannerData() || c.unitID in BannerFilter.Banner.GirlsAndMonsters.getBannerData() }
             CardData.CraftMode.SEASONAL -> CardData.cards.filter { c -> c.unitID in BannerFilter.Banner.Seasonal.getBannerData() }.filter { c -> CardData.activatedBanners.any { a -> c.unitID in CardData.bannerData[a.tier.ordinal][a.banner] } }
             CardData.CraftMode.COLLAB -> CardData.cards.filter { c -> c.unitID in BannerFilter.Banner.Collaboration.getBannerData() }.filter { c -> CardData.activatedBanners.any { a -> c.unitID in CardData.bannerData[a.tier.ordinal][a.banner] } }
