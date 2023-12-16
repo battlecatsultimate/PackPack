@@ -22,6 +22,8 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import kotlin.math.min
 
 class SalvageTierSelectHolder(author: Message, channelID: String, private val message: Message) : ComponentHolder(author, channelID, message.id) {
+    val inventory = Inventory.getInventory(author.author.id)
+
     override fun clean() {
 
     }
@@ -171,6 +173,22 @@ class SalvageTierSelectHolder(author: Message, channelID: String, private val me
         val confirmButtons = ArrayList<Button>()
 
         confirmButtons.add(Button.primary("salvage", "Salvage").asDisabled().withEmoji(Emoji.fromUnicode("\uD83E\uDE84")))
+
+        val duplicated = inventory.cards.keys.filter { c -> c.tier == tier && c.unitID != 435 && c.unitID != 484 }
+            .filter { c ->
+                when (salvageMode) {
+                    CardData.SalvageMode.T2 -> c.unitID in BannerFilter.Banner.TheAlimighties.getBannerData() || c.unitID in BannerFilter.Banner.GirlsAndMonsters.getBannerData()
+                    CardData.SalvageMode.SEASONAL -> c.unitID in BannerFilter.Banner.Seasonal.getBannerData()
+                    CardData.SalvageMode.COLLAB -> c.unitID in BannerFilter.Banner.Collaboration.getBannerData()
+                    else -> true
+                }
+            }
+            .filter { c ->
+                (inventory.cards[c] ?: 0 ) > 1
+            }
+
+        confirmButtons.add(Button.secondary("dupe", "Add Duplicated").withDisabled(duplicated.isEmpty()))
+
         confirmButtons.add(Button.secondary("all", "Add All"))
 
         confirmButtons.add(Button.danger("reset", "Reset").asDisabled())

@@ -41,6 +41,10 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
     private var page = 0
     private var banner = intArrayOf(-1, -1)
 
+    init {
+        filterCards()
+    }
+
     override fun clean() {
 
     }
@@ -191,7 +195,6 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
                                 else -> true
                             }
                         }
-                        .filter { c -> (inventory.cards[c] ?: 0) - selectedCard.filter { card -> card.unitID == c.unitID}.size > 0 }
                         .forEach { c ->
                             repeat(inventory.cards[c] ?: 0) {
                                 selectedCard.add(c)
@@ -232,24 +235,29 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
                 }, LangID.EN))
             }
             "dupe" -> {
-                val duplicatedCards = inventory.cards.keys
-                    .filter { c -> c.tier == tier }
-                    .filter { c -> (inventory.cards[c] ?: 0) - selectedCard.filter { card -> card.unitID == c.unitID }.size > 1 }
-                    .sortedWith { c, c2 ->
-                    val thatOne = (inventory.cards[c] ?: 0) - selectedCard.filter { card -> card.unitID == c.unitID }.size
-                    val thisOne = (inventory.cards[c2] ?: 0) - selectedCard.filter { card -> card.unitID == c2.unitID }.size
+                selectedCard.clear()
 
-                    thisOne.compareTo(thatOne)
-                }
-
-                for (c in duplicatedCards) {
-                    if (selectedCard.size == 10)
-                        break
-
-                    repeat(min(10 - selectedCard.size, (inventory.cards[c] ?: 0) - selectedCard.filter { card -> card.unitID == c.unitID }.size - 1)) {
-                        selectedCard.add(c)
+                inventory.cards.keys.filter { c -> c.tier == tier && c.unitID != 435 && c.unitID != 484 }
+                    .filter { c ->
+                        when (salvageMode) {
+                            CardData.SalvageMode.T2 -> c.unitID in BannerFilter.Banner.TheAlimighties.getBannerData() || c.unitID in BannerFilter.Banner.GirlsAndMonsters.getBannerData()
+                            CardData.SalvageMode.SEASONAL -> c.unitID in BannerFilter.Banner.Seasonal.getBannerData()
+                            CardData.SalvageMode.COLLAB -> c.unitID in BannerFilter.Banner.Collaboration.getBannerData()
+                            else -> true
+                        }
                     }
-                }
+                    .filter { c ->
+                        (inventory.cards[c] ?: 0 ) > 1
+                    }
+                    .forEach { c ->
+                        val amount = (inventory.cards[c] ?: 0)
+
+                        if (amount >= 2) {
+                            repeat(amount - 1) {
+                                selectedCard.add(c)
+                            }
+                        }
+                    }
 
                 event.deferReply()
                     .setContent("Successfully added all of your duplicated cards as much as possible!")
@@ -418,6 +426,21 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
         val confirmButtons = ArrayList<Button>()
 
         confirmButtons.add(Button.primary("salvage", "Salvage").withDisabled(selectedCard.size < if(salvageMode == CardData.SalvageMode.T1) 10 else 1).withEmoji(Emoji.fromUnicode("\uD83E\uDE84")))
+
+        val duplicated = inventory.cards.keys.filter { c -> c.tier == tier && c.unitID != 435 && c.unitID != 484 }
+            .filter { c ->
+                when (salvageMode) {
+                    CardData.SalvageMode.T2 -> c.unitID in BannerFilter.Banner.TheAlimighties.getBannerData() || c.unitID in BannerFilter.Banner.GirlsAndMonsters.getBannerData()
+                    CardData.SalvageMode.SEASONAL -> c.unitID in BannerFilter.Banner.Seasonal.getBannerData()
+                    CardData.SalvageMode.COLLAB -> c.unitID in BannerFilter.Banner.Collaboration.getBannerData()
+                    else -> true
+                }
+            }
+            .filter { c ->
+                (inventory.cards[c] ?: 0 ) > 1
+            }
+
+        confirmButtons.add(Button.secondary("dupe", "Add Duplicated").withDisabled(duplicated.isEmpty()))
         confirmButtons.add(Button.secondary("all", "Add All").withDisabled(selectedCard.size == inventory.cards.keys.filter { c -> c.tier == tier }.sumOf { c -> inventory.cards[c] ?: 0 }))
 
         confirmButtons.add(Button.danger("reset", "Reset").withDisabled(selectedCard.isEmpty()))
@@ -431,8 +454,11 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
     private fun getText() : String {
         val builder = StringBuilder(
             when (salvageMode) {
-                CardData.SalvageMode.T1 -> "Select 10 or more Tier 1 [Common] cards\n\n### Selected Cards\n\n"
-                else -> "Select 1 Tier 3 [Ultra Rare (Exclusives)] card\n\n### Selected card\n\n"
+                CardData.SalvageMode.T1 -> "Select Tier 1 [Common] cards\n\n### Selected Cards\n\n"
+                CardData.SalvageMode.T2 -> "Select Regular Tier 2 [Uncommon] cards\n\n### Selected Cards\n\n"
+                CardData.SalvageMode.SEASONAL -> "Select Seasonal Tier 2 [Uncommon] cards\n\n### Selected Cards\n\n"
+                CardData.SalvageMode.COLLAB -> "Select Collaboration Tier 2 [Uncommon] cards\n\n### Selected Cards\n\n"
+                else -> "Select Tier 3 [Ultra Rare (Exclusives)] cards\n\n### Selected card\n\n"
             }
         )
 
