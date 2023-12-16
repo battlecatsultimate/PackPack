@@ -216,6 +216,9 @@ object CardBot : ListenerAdapter() {
 
         val segments = event.message.contentRaw.lowercase().split(" ")
 
+        if (locked && m.id != StaticStore.MANDARIN_SMELL && !CardData.hasAllPermission(m))
+            return
+
         val firstSegment = if (segments.isEmpty())
             ""
         else
@@ -239,12 +242,21 @@ object CardBot : ListenerAdapter() {
 
                 return
             }
+            "${globalPrefix}shardrank",
+            "${globalPrefix}sr" -> {
+                ShardRank().execute(event)
+
+                return
+            }
+            "${globalPrefix}platinumshard",
+            "${globalPrefix}ps" -> {
+                PlatinumShard().execute(event)
+
+                return
+            }
         }
 
         if (m.id != StaticStore.MANDARIN_SMELL && !CardData.hasAllPermission(m) && !CardData.isAllowed(ch))
-            return
-
-        if (locked && m.id != StaticStore.MANDARIN_SMELL && !CardData.hasAllPermission(m))
             return
 
         when(firstSegment) {
@@ -297,10 +309,6 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}mcf" -> MassCatFood().execute(event)
             "${globalPrefix}massshard",
             "${globalPrefix}ms" -> MassShard().execute(event)
-            "${globalPrefix}shardrank",
-            "${globalPrefix}sr" -> ShardRank().execute(event)
-            "${globalPrefix}platinumshard",
-            "${globalPrefix}ps" -> PlatinumShard().execute(event)
             "${globalPrefix}hack" -> {
                 if (test) {
                     Hack().execute(event)
