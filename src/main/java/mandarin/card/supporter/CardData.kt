@@ -32,8 +32,8 @@ object CardData {
     enum class SalvageMode(val cost: Int) {
         T1(1),
         T2(20),
-        SEASONAL(25),
-        COLLAB(80),
+        SEASONAL(40),
+        COLLAB(60),
         T3(200)
     }
 
