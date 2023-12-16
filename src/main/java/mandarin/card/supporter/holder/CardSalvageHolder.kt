@@ -437,7 +437,7 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
                 }
             }
             .filter { c ->
-                (inventory.cards[c] ?: 0 ) > 1
+                (inventory.cards[c] ?: 0 ) - selectedCard.count { card -> card.unitID == c.unitID } > 1
             }
 
         confirmButtons.add(Button.secondary("dupe", "Add Duplicated").withDisabled(duplicated.isEmpty()))
