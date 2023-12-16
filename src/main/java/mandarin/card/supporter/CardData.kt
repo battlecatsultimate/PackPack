@@ -71,7 +71,7 @@ object CardData {
             //Dynamites
             arrayOf(42, 43, 44, 57, 59, 143, 427, 519, 617, 668),
             //Elemental Pixies
-            arrayOf(359, 360, 361, 401, 569, 631, 655),
+            arrayOf(359, 360, 361, 401, 569, 631, 655, 719),
             //Galaxy Gals
             arrayOf(75, 76, 105, 106, 107, 159, 351, 502, 619, 647),
             //Iron Legion
