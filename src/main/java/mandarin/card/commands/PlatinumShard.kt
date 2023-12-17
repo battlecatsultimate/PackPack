@@ -17,7 +17,7 @@ class PlatinumShard : Command(LangID.EN, true) {
         val m = loader.member
         val contents = loader.content.split(" ")
 
-        if (contents.size >= 2 && (CardData.isManager(m) || m.id == StaticStore.MANDARIN_SMELL)) {
+        if (contents.size >= 2) {
             val memberGetter = tryToGetMember(contents[1], loader.guild)
 
             if (memberGetter != null) {
