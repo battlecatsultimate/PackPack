@@ -34,15 +34,15 @@ object CardData {
         T2(20),
         SEASONAL(40),
         COLLAB(60),
-        T3(200)
+        T3(300)
     }
 
     enum class CraftMode(val cost: Int) {
         T2(25),
         SEASONAL(50),
         COLLAB(100),
-        T3(300),
-        T4(1500)
+        T3(400),
+        T4(1800)
     }
 
     enum class ModifyCategory {
