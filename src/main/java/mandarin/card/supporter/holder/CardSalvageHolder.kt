@@ -425,7 +425,7 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
 
         val confirmButtons = ArrayList<Button>()
 
-        confirmButtons.add(Button.primary("salvage", "Salvage").withDisabled(selectedCard.size < if(salvageMode == CardData.SalvageMode.T1) 10 else 1).withEmoji(Emoji.fromUnicode("\uD83E\uDE84")))
+        confirmButtons.add(Button.primary("salvage", "Salvage").withDisabled(selectedCard.isEmpty()).withEmoji(Emoji.fromUnicode("\uD83E\uDE84")))
 
         val duplicated = inventory.cards.keys.filter { c -> c.tier == tier && c.unitID != 435 && c.unitID != 484 }
             .filter { c ->
