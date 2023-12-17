@@ -55,7 +55,7 @@ class Craft : Command(LangID.EN, true) {
         }
 
         options.add(SelectOption.of("Tier 3 [Ultra Rare (Exclusives)]", "t3").withDescription("${CardData.CraftMode.T3.cost} shards required"))
-        options.add(SelectOption.of("Tier 4 [Legned Rare]", "t4").withDescription("${CardData.CraftMode.T4.cost} shards required"))
+        options.add(SelectOption.of("Tier 4 [Legend Rare]", "t4").withDescription("${CardData.CraftMode.T4.cost} shards required"))
 
         rows.add(ActionRow.of(StringSelectMenu.create("tier").addOptions(options).build()))
 
