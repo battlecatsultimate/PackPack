@@ -1518,14 +1518,14 @@ public class DataToString extends Data {
         String cfText = MultiLangCont.getStatic().CFEXP.getCont(f.unit.info, lang);
         String ufText = MultiLangCont.getStatic().UFEXP.getCont(f.unit.info, lang);
 
-        if (cfText != null && !cfText.strip().isBlank()) {
+        if (cfText != null && !cfText.strip().isBlank() && f.unit.info.hasEvolveCost()) {
             result.append("- **")
                     .append(LangID.getStringByID("data_tf", lang))
                     .append("**\n")
                     .append(cfText);
         }
 
-        if (ufText != null && !ufText.strip().isBlank()) {
+        if (ufText != null && !ufText.strip().isBlank() && f.unit.info.hasZeroForm()) {
             if (!result.isEmpty()) {
                 result.append("\n\n");
             }
