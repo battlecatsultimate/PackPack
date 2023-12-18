@@ -92,6 +92,17 @@ class SalvageTierSelectHolder(author: Message, channelID: String, private val me
             expire(authorMessage.author.id)
 
             StaticStore.putHolder(authorMessage.author.id, CardSalvageHolder(authorMessage, channelID, message, mode))
+        } else if (event.componentId == "cancel") {
+            event.deferEdit()
+                .setContent("Canceled salvage")
+                .setComponents()
+                .setAllowedMentions(ArrayList())
+                .mentionRepliedUser(false)
+                .queue()
+
+            expired = true
+
+            expire(authorMessage.author.id)
         }
     }
 
