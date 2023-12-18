@@ -29,7 +29,7 @@ object CardData {
     -------------------------------------------------------
      */
 
-    enum class SalvageMode(val cost: Int) {
+    enum class SalvageMode(var cost: Int) {
         T1(1),
         T2(20),
         SEASONAL(40),
@@ -37,7 +37,7 @@ object CardData {
         T3(300)
     }
 
-    enum class CraftMode(val cost: Int) {
+    enum class CraftMode(var cost: Int) {
         T2(25),
         SEASONAL(50),
         COLLAB(100),

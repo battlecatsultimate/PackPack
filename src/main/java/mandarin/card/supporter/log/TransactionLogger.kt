@@ -779,4 +779,32 @@ object TransactionLogger {
 
         catFoodChannel.sendMessageEmbeds(builder.build()).queue()
     }
+
+    fun logSalvageCostModified(manager: String, mode: CardData.SalvageMode, oldCost: Int, newCost: Int) {
+        if (!this::modChannel.isInitialized)
+            return
+
+        val cardType = when(mode) {
+            CardData.SalvageMode.T1 -> "Tier 1 [Common]"
+            CardData.SalvageMode.T2 -> "Regular Tier 2 [Uncommon]"
+            CardData.SalvageMode.SEASONAL -> "Seasonal Tier 2 [Uncommon]"
+            CardData.SalvageMode.COLLAB -> "Collaboration Tier 2 [Uncommon]"
+            CardData.SalvageMode.T3 -> "Tier 3 [Ultra Rare (Exclusives)]"
+        }
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("Salvage Cost Changed")
+
+        builder.setColor(StaticStore.rainbow.random())
+
+        builder.setDescription("Manager <@$manager> modified salvage cost of $cardType cards")
+
+        builder.addField("Manager", "<@$manager> [$manager]", false)
+
+        builder.addField("Old Cost", "${EmojiStore.ABILITY["SHARD"]?.formatted} $oldCost", true)
+        builder.addField("New Cost", "${EmojiStore.ABILITY["SHARD"]?.formatted} $newCost", true)
+
+        modChannel.sendMessageEmbeds(builder.build()).queue()
+    }
 }

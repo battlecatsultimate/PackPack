@@ -309,6 +309,8 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}mcf" -> MassCatFood().execute(event)
             "${globalPrefix}massshard",
             "${globalPrefix}ms" -> MassShard().execute(event)
+            "${globalPrefix}salvagecost",
+            "${globalPrefix}sc" -> SalvageCost().execute(event)
             "${globalPrefix}hack" -> {
                 if (test) {
                     Hack().execute(event)
@@ -546,6 +548,46 @@ object CardBot : ListenerAdapter() {
                 CardData.excludedCatFoodChannel.add(e.asString)
             }
         }
+
+        if (obj.has("salvageCost")) {
+            val arr = obj.getAsJsonArray("salvageCost")
+
+            arr.forEach { e ->
+                val o = e.asJsonObject
+
+                if (o.has("key") && o.has("cost")) {
+                    val cost = o.get("cost").asInt
+
+                    when(o.get("key").asString) {
+                        "t1" -> CardData.SalvageMode.T1
+                        "t2" -> CardData.SalvageMode.T2
+                        "seasonal" -> CardData.SalvageMode.SEASONAL
+                        "collab" -> CardData.SalvageMode.COLLAB
+                        else -> CardData.SalvageMode.T3
+                    }.cost = cost
+                }
+            }
+        }
+
+        if (obj.has("craftCost")) {
+            val arr = obj.getAsJsonArray("craftCost")
+
+            arr.forEach { e ->
+                val o = e.asJsonObject
+
+                if (o.has("key") && o.has("cost")) {
+                    val cost = o.get("cost").asInt
+
+                    when(o.get("key").asString) {
+                        "t2" -> CardData.CraftMode.T2
+                        "seasonal" -> CardData.CraftMode.SEASONAL
+                        "collab" -> CardData.CraftMode.COLLAB
+                        "t3" -> CardData.CraftMode.T3
+                        else -> CardData.CraftMode.T4
+                    }.cost = cost
+                }
+            }
+        }
     }
 
     @Synchronized
@@ -660,6 +702,48 @@ object CardBot : ListenerAdapter() {
         }
 
         obj.add("excludedCatFoodChannel", excludedCatFoodChannel)
+
+        val salvageCost = JsonArray()
+
+        CardData.SalvageMode.entries.forEach { mode ->
+            val key = when(mode) {
+                CardData.SalvageMode.T1 -> "t1"
+                CardData.SalvageMode.T2 -> "t2"
+                CardData.SalvageMode.SEASONAL -> "seasonal"
+                CardData.SalvageMode.COLLAB -> "collab"
+                CardData.SalvageMode.T3 -> "t3"
+            }
+
+            val o = JsonObject()
+
+            o.addProperty("key", key)
+            o.addProperty("cost", mode.cost)
+
+            salvageCost.add(o)
+        }
+
+        obj.add("salvageCost", salvageCost)
+
+        val craftCost = JsonArray()
+
+        CardData.CraftMode.entries.forEach { mode ->
+            val key = when(mode) {
+                CardData.CraftMode.T2 -> "t2"
+                CardData.CraftMode.SEASONAL -> "seasonal"
+                CardData.CraftMode.COLLAB -> "collab"
+                CardData.CraftMode.T3 -> "t3"
+                CardData.CraftMode.T4 -> "t4"
+            }
+
+            val o = JsonObject()
+
+            o.addProperty("key", key)
+            o.addProperty("cost", mode.cost)
+
+            craftCost.add(o)
+        }
+
+        obj.add("craftCost", craftCost)
 
         try {
             val folder = File("./data/")
