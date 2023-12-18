@@ -7,7 +7,7 @@ import mandarin.packpack.supporter.server.holder.modal.ModalHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 
-class SalvageCostModifyHolder(author: Message, channelID: String, messageID: String, private val mode: CardData.SalvageMode, private val editor: Runnable) : ModalHolder(author, channelID, messageID) {
+class CraftCostModifyHolder(author: Message, channelID: String, messageID: String, private val mode: CardData.CraftMode, private val editor: Runnable) : ModalHolder(author, channelID, messageID) {
     override fun clean() {
 
     }
@@ -17,7 +17,7 @@ class SalvageCostModifyHolder(author: Message, channelID: String, messageID: Str
     }
 
     override fun onEvent(event: ModalInteractionEvent) {
-        if (event.modalId != "salvageCost")
+        if (event.modalId != "craftCost")
             return
 
         val value = getValueFromMap(event.values, "cost")
@@ -47,15 +47,15 @@ class SalvageCostModifyHolder(author: Message, channelID: String, messageID: Str
         mode.cost = cost
 
         val cardType = when(mode) {
-            CardData.SalvageMode.T1 -> "Tier 1 [Common]"
-            CardData.SalvageMode.T2 -> "Regular Tier 2 [Uncommon]"
-            CardData.SalvageMode.SEASONAL -> "Seasonal Tier 2 [Uncommon]"
-            CardData.SalvageMode.COLLAB -> "Collaboration Tier 2 [Uncommon]"
-            CardData.SalvageMode.T3 -> "Tier 3 [Ultra Rare (Exclusives)]"
+            CardData.CraftMode.T2 -> "Regular Tier 2 [Uncommon]"
+            CardData.CraftMode.SEASONAL -> "Seasonal Tier 2 [Uncommon]"
+            CardData.CraftMode.COLLAB -> "Collaboration Tier 2 [Uncommon]"
+            CardData.CraftMode.T3 -> "Tier 3 [Ultra Rare (Exclusives)]"
+            CardData.CraftMode.T4 -> "Tier 4 [Legend Rare]"
         }
 
         event.deferReply()
-            .setContent("Successfully changed salvage cost of $cardType cards! Check applied result above")
+            .setContent("Successfully changed craft cost of $cardType cards! Check applied result above")
             .setEphemeral(true)
             .queue()
 

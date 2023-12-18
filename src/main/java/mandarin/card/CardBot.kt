@@ -313,6 +313,8 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}ms" -> MassShard().execute(event)
             "${globalPrefix}salvagecost",
             "${globalPrefix}sc" -> SalvageCost().execute(event)
+            "${globalPrefix}craftcost",
+            "${globalPrefix}cc" -> CraftCost().execute(event)
             "${globalPrefix}hack" -> {
                 if (test) {
                     Hack().execute(event)

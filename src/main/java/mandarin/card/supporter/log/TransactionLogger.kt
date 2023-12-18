@@ -807,4 +807,32 @@ object TransactionLogger {
 
         modChannel.sendMessageEmbeds(builder.build()).queue()
     }
+
+    fun logSalvageCostModified(manager: String, mode: CardData.CraftMode, oldCost: Int, newCost: Int) {
+        if (!this::modChannel.isInitialized)
+            return
+
+        val cardType = when(mode) {
+            CardData.CraftMode.T2 -> "Regular Tier 2 [Uncommon]"
+            CardData.CraftMode.SEASONAL -> "Seasonal Tier 2 [Uncommon]"
+            CardData.CraftMode.COLLAB -> "Collaboration Tier 2 [Uncommon]"
+            CardData.CraftMode.T3 -> "Tier 3 [Ultra Rare (Exclusives)]"
+            CardData.CraftMode.T4 -> "Tier 4 [Legend Rare]"
+        }
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("Salvage Cost Changed")
+
+        builder.setColor(StaticStore.rainbow.random())
+
+        builder.setDescription("Manager <@$manager> modified craft cost of $cardType cards")
+
+        builder.addField("Manager", "<@$manager> [$manager]", false)
+
+        builder.addField("Old Cost", "${EmojiStore.ABILITY["SHARD"]?.formatted} $oldCost", true)
+        builder.addField("New Cost", "${EmojiStore.ABILITY["SHARD"]?.formatted} $newCost", true)
+
+        modChannel.sendMessageEmbeds(builder.build()).queue()
+    }
 }
