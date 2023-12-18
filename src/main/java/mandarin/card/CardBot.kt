@@ -290,10 +290,12 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}p3" -> Pool(CardData.Tier.ULTRA).execute(event)
             "${globalPrefix}poolt4",
             "${globalPrefix}p4" -> Pool(CardData.Tier.LEGEND).execute(event)
-            "${globalPrefix}salvage" -> Salvage().execute(event)
+            "${globalPrefix}salvage",
+            "${globalPrefix}sv" -> Salvage().execute(event)
             "${globalPrefix}lock" -> Lock().execute(event)
             "${globalPrefix}unlock" -> Unlock().execute(event)
-            "${globalPrefix}craft" -> Craft().execute(event)
+            "${globalPrefix}craft",
+            "${globalPrefix}cr" -> Craft().execute(event)
             "${globalPrefix}report" -> Report().execute(event)
             "${globalPrefix}savedata" -> SaveData().execute(event)
             "${globalPrefix}replacesave" -> ReplaceSave().execute(event)
