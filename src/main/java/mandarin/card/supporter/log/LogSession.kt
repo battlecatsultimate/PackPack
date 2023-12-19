@@ -132,6 +132,10 @@ class LogSession {
                 result.add(fromFile(logFiles[i]))
             }
 
+            if (!result.any { s -> s.createdTime == session.createdTime } && from >= session.createdTime) {
+                result.add(0, session)
+            }
+
             return result
         }
 
@@ -159,158 +163,101 @@ class LogSession {
                 session.activeMembers.addAll(array.map { e -> e.asLong })
             }
 
-            if (obj.has("catFoodPack")) {
-                val array = obj.getAsJsonArray("catFoodPack")
+            loadUserAmount(obj, "catFoodPack", session.catFoodPack)
 
-                array.forEach { e ->
-                    val o = e.asJsonObject
+            loadUserCardMap(obj, "generatedCards", session.generatedCards)
 
-                    if (o.has("key") && o.has("val")) {
-                        val id = o.get("key").asLong
-                        val cf = o.get("val").asLong
+            loadUserCardMap(obj, "removedCardsSalvage", session.removedCardsSalvage)
+            loadUserCardMap(obj, "removedCardsManager", session.removedCardsManager)
 
-                        session.catFoodPack[id] = cf
-                    }
-                }
-            }
+            loadUserCardMap(obj, "removedCards", session.removedCards)
 
-            if (obj.has("catFoodCraft")) {
-                val array = obj.getAsJsonArray("catFoodCraft")
+            loadUserAmount(obj, "shardTotal", session.shardTotal)
 
-                array.forEach { e ->
-                    val o = e.asJsonObject
+            loadUserAmount(obj, "shardSalvageT1", session.shardSalvageT1)
+            loadUserAmount(obj, "shardSalvageT2Regular", session.shardSalvageT2Regular)
+            loadUserAmount(obj, "shardSalvageT2Seasonal", session.shardSalvageT2Seasonal)
+            loadUserAmount(obj, "shardSalvageT2Collaboration", session.shardSalvageT2Collaboration)
+            loadUserAmount(obj, "shardSalvageT3", session.shardSalvageT3)
 
-                    if (o.has("key") && o.has("val")) {
-                        val id = o.get("key").asLong
-                        val cf = o.get("val").asLong
+            loadUserCardMap(obj, "shardSalvageCardT1", session.shardSalvageCardT1)
+            loadUserCardMap(obj, "shardSalvageCardT2Regular", session.shardSalvageCardT2Regular)
+            loadUserCardMap(obj, "shardSalvageCardT2Seasonal", session.shardSalvageCardT2Seasonal)
+            loadUserCardMap(obj, "shardSalvageCardT2Collaboration", session.shardSalvageCardT2Collaboration)
+            loadUserCardMap(obj, "shardSalvageCardT3", session.shardSalvageCardT3)
 
-                        session.catFoodCraft[id] = cf
-                    }
-                }
-            }
+            loadUserAmount(obj, "shardCraftT2Regular", session.shardCraftT2Regular)
+            loadUserAmount(obj, "shardCraftT2Seasonal", session.shardCraftT2Seasonal)
+            loadUserAmount(obj, "shardCraftT2Collaboration", session.shardCraftT2Collaboration)
+            loadUserAmount(obj, "shardCraftT3", session.shardCraftT3)
+            loadUserAmount(obj, "shardCraftT4", session.shardCraftT4)
 
-            if (obj.has("catFoodTrade")) {
-                val array = obj.getAsJsonArray("catFoodTrade")
+            loadUserCardMap(obj, "shardCraftCardT2Regular", session.shardCraftCardT2Regular)
+            loadUserCardMap(obj, "shardCraftCardT2Seasonal", session.shardCraftCardT2Seasonal)
+            loadUserCardMap(obj, "shardCraftCardT2Collaboration", session.shardCraftCardT2Collaboration)
+            loadUserCardMap(obj, "shardCraftCardT3", session.shardCraftCardT3)
+            loadUserCardMap(obj, "shardCraftCardT4", session.shardCraftCardT4)
 
-                array.forEach { e ->
-                    val o = e.asJsonObject
-
-                    if (o.has("key") && o.has("val")) {
-                        val id = o.get("key").asLong
-                        val cf = o.get("val").asLong
-
-                        session.catFoodTrade[id] = cf
-                    }
-                }
-            }
+            loadUserAmount(obj, "catFoodTrade", session.catFoodTrade)
 
             if (obj.has("catFoodTradeSum")) {
                 session.catFoodTradeSum = obj.get("catFoodTradeSum").asLong
             }
 
-            if (obj.has("craftFailures")) {
-                session.craftFailures = obj.get("craftFailures").asLong
+            if (obj.has("tradeDone")) {
+                session.tradeDone = obj.get("tradeDone").asLong
             }
 
-            if (obj.has("shardTotal")) {
-                val array = obj.getAsJsonArray("shardTotal")
-
-                array.forEach { e ->
-                    val o = e.asJsonObject
-
-                    if (o.has("key") && o.has("val")) {
-                        val id = o.get("key").asLong
-                        val shard = o.get("val").asLong
-
-                        session.shardTotal[id] = shard
-                    }
-                }
-            }
-
-            if (obj.has("shardSalvage")) {
-                val array = obj.getAsJsonArray("shardSalvage")
-
-                array.forEach { e ->
-                    val o = e.asJsonObject
-
-                    if (o.has("key") && o.has("val")) {
-                        val id = o.get("key").asLong
-                        val shard = o.get("val").asLong
-
-                        session.shardSalvage[id] = shard
-                    }
-                }
-            }
-
-            if (obj.has("generatedCards")) {
-                val array = obj.getAsJsonArray("generatedCards")
-
-                array.forEach { e ->
-                    val o = e.asJsonObject
-
-                    if (o.has("key") && o.has("val")) {
-                        val id = o.get("key").asLong
-                        val cards = o.getAsJsonArray("val")
-
-                        val cardMap = HashMap<Card, Long>()
-
-                        cards.forEach MapParse@ { data ->
-                            if (!data.isJsonObject)
-                                return@MapParse
-
-                            val dataObject = data.asJsonObject
-
-                            if (dataObject.has("key") && dataObject.has("val")) {
-                                val cardId = dataObject.get("key").asInt
-
-                                val card = CardData.cards.find { c -> c.unitID == cardId } ?: return@MapParse
-
-                                val amount = dataObject.get("val").asLong
-
-                                cardMap[card] = amount
-                            }
-                        }
-
-                        session.generatedCards[id] = cardMap
-                    }
-                }
-            }
-
-            if (obj.has("removedCards")) {
-                val array = obj.getAsJsonArray("removedCards")
-
-                array.forEach { e ->
-                    val o = e.asJsonObject
-
-                    if (o.has("key") && o.has("val")) {
-                        val id = o.get("key").asLong
-                        val cards = o.getAsJsonArray("val")
-
-                        val cardMap = HashMap<Card, Long>()
-
-                        cards.forEach MapParse@ { data ->
-                            if (!data.isJsonObject)
-                                return@MapParse
-
-                            val dataObject = data.asJsonObject
-
-                            if (dataObject.has("key") && dataObject.has("val")) {
-                                val cardId = dataObject.get("key").asInt
-
-                                val card = CardData.cards.find { c -> c.unitID == cardId } ?: return@MapParse
-
-                                val amount = dataObject.get("val").asLong
-
-                                cardMap[card] = amount
-                            }
-                        }
-
-                        session.removedCards[id] = cardMap
-                    }
-                }
-            }
+            loadUserCardMap(obj, "tradedCards", session.tradedCards)
 
             return session
+        }
+
+        private fun loadUserAmount(obj: JsonObject, tag: String, map: HashMap<Long, Long>) {
+            if (!obj.has(tag))
+                return
+
+            obj.getAsJsonArray(tag).forEach { e ->
+                val o = e.asJsonObject
+
+                if (o.has("key") && o.has("val")) {
+                    val id = o.get("key").asLong
+                    val amount = o.get("val").asLong
+
+                    map[id] = amount
+                }
+            }
+        }
+
+        private fun loadUserCardMap(obj: JsonObject, tag: String, map: HashMap<Long, HashMap<Card, Long>>) {
+            if (!obj.has(tag))
+                return
+
+            obj.getAsJsonArray(tag).forEach { e ->
+                val o = e.asJsonObject
+
+                if (o.has("key") && o.has("val")) {
+                    val id = o.get("key").asLong
+
+                    val cards = o.getAsJsonArray("val")
+
+                    val cardMap = HashMap<Card, Long>()
+
+                    cards.forEach { ce ->
+                        val co = ce.asJsonObject
+
+                        if (co.has("key") && co.has("val")) {
+                            val card = CardData.cards.find { c -> c.unitID == co.get("key").asInt }
+
+                            if (card != null) {
+                                cardMap[card] = co.get("val").asLong
+                            }
+                        }
+                    }
+
+                    map[id] = cardMap
+                }
+            }
         }
     }
 
@@ -319,18 +266,43 @@ class LogSession {
     val activeMembers = HashSet<Long>()
 
     val catFoodPack = HashMap<Long, Long>()
-    val catFoodCraft = HashMap<Long, Long>()
-    val catFoodTrade = HashMap<Long, Long>()
-    var catFoodTradeSum = 0L
-
-    var craftFailures = 0L
-
-    val shardTotal = HashMap<Long, Long>()
-    val shardSalvage = HashMap<Long, Long>()
-    val shardCraft = HashMap<Long, Long>()
 
     val generatedCards = HashMap<Long, HashMap<Card, Long>>()
+
+    val removedCardsSalvage = HashMap<Long, HashMap<Card, Long>>()
+    val removedCardsManager = HashMap<Long, HashMap<Card, Long>>()
+
     val removedCards = HashMap<Long, HashMap<Card, Long>>()
+
+    val shardTotal = HashMap<Long, Long>()
+
+    val shardSalvageT1 = HashMap<Long, Long>()
+    val shardSalvageT2Regular = HashMap<Long, Long>()
+    val shardSalvageT2Seasonal = HashMap<Long, Long>()
+    val shardSalvageT2Collaboration = HashMap<Long, Long>()
+    val shardSalvageT3 = HashMap<Long, Long>()
+
+    val shardSalvageCardT1 = HashMap<Long, HashMap<Card, Long>>()
+    val shardSalvageCardT2Regular = HashMap<Long, HashMap<Card, Long>>()
+    val shardSalvageCardT2Seasonal = HashMap<Long, HashMap<Card, Long>>()
+    val shardSalvageCardT2Collaboration = HashMap<Long, HashMap<Card, Long>>()
+    val shardSalvageCardT3 = HashMap<Long, HashMap<Card, Long>>()
+
+    val shardCraftT2Regular = HashMap<Long, Long>()
+    val shardCraftT2Seasonal = HashMap<Long, Long>()
+    val shardCraftT2Collaboration = HashMap<Long, Long>()
+    val shardCraftT3 = HashMap<Long, Long>()
+    val shardCraftT4 = HashMap<Long, Long>()
+
+    val shardCraftCardT2Regular = HashMap<Long, HashMap<Card, Long>>()
+    val shardCraftCardT2Seasonal = HashMap<Long, HashMap<Card, Long>>()
+    val shardCraftCardT2Collaboration = HashMap<Long, HashMap<Card, Long>>()
+    val shardCraftCardT3 = HashMap<Long, HashMap<Card, Long>>()
+    val shardCraftCardT4 = HashMap<Long, HashMap<Card, Long>>()
+
+    val catFoodTrade = HashMap<Long, Long>()
+    var catFoodTradeSum = 0L
+    var tradeDone = 0L
 
     val tradedCards = HashMap<Long, HashMap<Card, Long>>()
 
@@ -357,14 +329,41 @@ class LogSession {
     }
 
     fun logCraft(member: Long, usedShards: Long, cards: List<Card>) {
-        shardCraft[member] = (shardCraft[member] ?: 0) + usedShards
+        val shardMap = when {
+            cards[0].isSeasonalUncommon() -> shardCraftT2Seasonal
+            cards[0].isCollaborationUncommon() -> shardCraftT2Collaboration
+            cards[0].isRegularUncommon() -> shardCraftT2Regular
+            else -> {
+                when(cards[0].tier) {
+                    CardData.Tier.ULTRA -> shardCraftT3
+                    else -> shardCraftT4
+                }
+            }
+        }
+
+        shardMap[member] = (shardMap[member] ?: 0) + usedShards
+
+        cards.forEach { c ->
+            val cardMap = when {
+                c.isSeasonalUncommon() -> shardCraftCardT2Seasonal
+                c.isCollaborationUncommon() -> shardCraftCardT2Collaboration
+                c.isRegularUncommon() -> shardCraftCardT2Regular
+                else -> {
+                    when(c.tier) {
+                        CardData.Tier.ULTRA -> shardCraftCardT3
+                        else -> shardCraftCardT4
+                    }
+                }
+            }
+
+            val map = cardMap.computeIfAbsent(member) { HashMap() }
+
+            map[c] = (map[c] ?: 0) + 1
+        }
+
         shardTotal[member] = (shardTotal[member] ?: 0) - usedShards
 
-        val generatedCardMap = generatedCards[member] ?: run {
-            val newMap = HashMap<Card, Long>()
-            generatedCards[member] = newMap
-            newMap
-        }
+        val generatedCardMap = generatedCards.computeIfAbsent(member) { HashMap() }
 
         cards.forEach { card ->
             generatedCardMap[card] = (generatedCardMap[card] ?: 0) + 1
@@ -374,11 +373,7 @@ class LogSession {
     }
 
     fun logManualRoll(member: Long, cards: List<Card>) {
-        val cardMap = generatedCards[member] ?: run {
-            val newMap = HashMap<Card, Long>()
-            generatedCards[member] = newMap
-            newMap
-        }
+        val cardMap = generatedCards.computeIfAbsent(member) { HashMap() }
 
         cards.forEach {
             cardMap[it] = (cardMap[it] ?: 0) + 1
@@ -388,11 +383,7 @@ class LogSession {
     }
 
     fun logModifyAdd(member: Long, cards: List<Card>) {
-        val cardMap = generatedCards[member] ?: run {
-            val newMap = HashMap<Card, Long>()
-            generatedCards[member] = newMap
-            newMap
-        }
+        val cardMap = generatedCards.computeIfAbsent(member) { HashMap() }
 
         cards.forEach {
             cardMap[it] = (cardMap[it] ?: 0) + 1
@@ -402,14 +393,12 @@ class LogSession {
     }
 
     fun logModifyRemove(member: Long, cards: List<Card>) {
-        val cardMap = removedCards[member] ?: run {
-            val newMap = HashMap<Card, Long>()
-            removedCards[member] = newMap
-            newMap
-        }
+        val cardMap = removedCards.computeIfAbsent(member) { HashMap() }
+        val managerMap = removedCardsManager.computeIfAbsent(member) { HashMap() }
 
         cards.forEach {
             cardMap[it] = (cardMap[it] ?: 0) + 1
+            managerMap[it] = (managerMap[it] ?: 0) + 1
         }
 
         activeMembers.add(member)
@@ -424,11 +413,7 @@ class LogSession {
         if (cf != 0)
             catFoodPack[member] = (catFoodPack[member] ?: 0) + cf
 
-        val cardMap = generatedCards[member] ?: run {
-            val newMap = HashMap<Card, Long>()
-            generatedCards[member] = newMap
-            newMap
-        }
+        val cardMap = generatedCards.computeIfAbsent(member) { HashMap() }
 
         cards.forEach {
             cardMap[it] = (cardMap[it] ?: 0) + 1
@@ -438,17 +423,46 @@ class LogSession {
     }
 
     fun logSalvage(member: Long, usedCards: List<Card>, shard: Long) {
-        shardSalvage[member] = (catFoodCraft[member] ?: 0) + shard
+        val shardMap = when {
+            usedCards[0].isSeasonalUncommon() -> shardSalvageT2Seasonal
+            usedCards[0].isCollaborationUncommon() -> shardSalvageT2Collaboration
+            usedCards[0].isRegularUncommon() -> shardSalvageT2Regular
+            else -> {
+                when(usedCards[0].tier) {
+                    CardData.Tier.COMMON -> shardSalvageT1
+                    else -> shardSalvageT3
+                }
+            }
+        }
+
+        shardMap[member] = (shardMap[member] ?: 0) + shard
+
+        usedCards.forEach { c ->
+            val cardMap = when {
+                c.isSeasonalUncommon() -> shardSalvageCardT2Seasonal
+                c.isCollaborationUncommon() -> shardSalvageCardT2Collaboration
+                c.isRegularUncommon() -> shardSalvageCardT2Regular
+                else -> {
+                    when(c.tier) {
+                        CardData.Tier.COMMON -> shardSalvageCardT1
+                        else -> shardSalvageCardT3
+                    }
+                }
+            }
+
+            val map = cardMap.computeIfAbsent(member) { HashMap() }
+
+            map[c] = (map[c] ?: 0) + 1
+        }
+
         shardTotal[member] = (shardTotal[member] ?: 0) + shard
 
-        val cardMap = removedCards[member] ?: run {
-            val newMap = HashMap<Card, Long>()
-            removedCards[member] = newMap
-            newMap
-        }
+        val cardMap = removedCards.computeIfAbsent(member) { HashMap() }
+        val removedMap = removedCardsSalvage.computeIfAbsent(member) { HashMap() }
 
         usedCards.forEach {
             cardMap[it] = (cardMap[it] ?: 0) + 1
+            removedMap[it] = (removedMap[it] ?: 0) + 1
         }
 
         activeMembers.add(member)
@@ -490,6 +504,8 @@ class LogSession {
             firstTraderMap[card] = (firstTraderMap[card] ?: 0) + 1
             secondTraderMap[card] = (secondTraderMap[card] ?: 0) - 1
         }
+
+        tradeDone++
     }
 
     fun logMassShardModify(members: List<Long>, amount: Long) {
@@ -546,125 +562,87 @@ class LogSession {
 
         obj.add("activeMembers", memberArray)
 
-        val packArray = JsonArray()
+        saveUserAmount(obj, "catFoodPack", catFoodPack)
 
-        catFoodPack.forEach { (member, cf) ->
-            val o = JsonObject()
+        saveUserCardMap(obj, "generatedCards", generatedCards)
 
-            o.addProperty("key", member)
-            o.addProperty("val", cf)
+        saveUserCardMap(obj, "removedCardsSalvage", removedCardsSalvage)
+        saveUserCardMap(obj, "removedCardsManager", removedCardsManager)
 
-            packArray.add(o)
-        }
+        saveUserCardMap(obj, "removedCards", removedCards)
 
-        obj.add("catFoodPack", packArray)
+        saveUserAmount(obj, "shardTotal", shardTotal)
 
-        val craftArray = JsonArray()
+        saveUserAmount(obj, "shardSalvageT1", shardSalvageT1)
+        saveUserAmount(obj, "shardSalvageT2Regular", shardSalvageT2Regular)
+        saveUserAmount(obj, "shardSalvageT2Seasonal", shardSalvageT2Seasonal)
+        saveUserAmount(obj, "shardSalvageT2Collaboration", shardSalvageT2Collaboration)
+        saveUserAmount(obj, "shardSalvageT3", shardSalvageT3)
 
-        catFoodCraft.forEach { (member, cf) ->
-            val o = JsonObject()
+        saveUserCardMap(obj, "shardSalvageCardT1", shardSalvageCardT1)
+        saveUserCardMap(obj, "shardSalvageCardT2Regular", shardSalvageCardT2Regular)
+        saveUserCardMap(obj, "shardSalvageCardT2Seasonal", shardSalvageCardT2Seasonal)
+        saveUserCardMap(obj, "shardSalvageCardT2Collaboration", shardSalvageCardT2Collaboration)
+        saveUserCardMap(obj, "shardSalvageCardT3", shardSalvageCardT3)
 
-            o.addProperty("key", member)
-            o.addProperty("val", cf)
+        saveUserAmount(obj, "shardCraftT2Regular", shardCraftT2Regular)
+        saveUserAmount(obj, "shardCraftT2Seasonal", shardCraftT2Seasonal)
+        saveUserAmount(obj, "shardCraftT2Collaboration", shardCraftT2Collaboration)
+        saveUserAmount(obj, "shardCraftT3", shardCraftT3)
+        saveUserAmount(obj, "shardCraftT4", shardCraftT4)
 
-            craftArray.add(o)
-        }
+        saveUserCardMap(obj, "shardCraftCardT2Regular", shardCraftCardT2Regular)
+        saveUserCardMap(obj, "shardCraftCardT2Seasonal", shardCraftCardT2Seasonal)
+        saveUserCardMap(obj, "shardCraftCardT2Collaboration", shardCraftCardT2Collaboration)
+        saveUserCardMap(obj, "shardCraftCardT3", shardCraftCardT3)
+        saveUserCardMap(obj, "shardCraftCardT4", shardCraftCardT4)
 
-        obj.add("catFoodCraft", craftArray)
-
-        val tradeArray = JsonArray()
-
-        catFoodTrade.forEach { (member, cf) ->
-            val o = JsonObject()
-
-            o.addProperty("key", member)
-            o.addProperty("val", cf)
-
-            tradeArray.add(o)
-        }
-
-        obj.add("catFoodTrade", tradeArray)
-
+        saveUserAmount(obj, "catFoodTrade", catFoodTrade)
         obj.addProperty("catFoodTradeSum", catFoodTradeSum)
-
-        obj.addProperty("craftFailures", craftFailures)
-
-        val shardTotalArray = JsonArray()
-
-        shardTotal.forEach { (member, shard) ->
-            val o = JsonObject()
-
-            o.addProperty("key", member)
-            o.addProperty("shard", shard)
-
-            shardTotalArray.add(o)
-        }
-
-        obj.add("shardTotal", shardTotalArray)
-
-        val shardSalvageArray = JsonArray()
-
-        shardSalvage.forEach { (member, shard) ->
-            val o = JsonObject()
-
-            o.addProperty("key", member)
-            o.addProperty("shard", shard)
-
-            shardSalvageArray.add(o)
-        }
-
-        obj.add("shardSalvage", shardSalvageArray)
-
-        val generatedArray = JsonArray()
-
-        generatedCards.forEach { (id, cardMap) ->
-            val o = JsonObject()
-
-            o.addProperty("key", id)
-
-            val arr = JsonArray()
-
-            cardMap.forEach { (card, amount) ->
-                val co = JsonObject()
-
-                co.addProperty("key", card.unitID)
-                co.addProperty("val", amount)
-
-                arr.add(co)
-            }
-
-            o.add("val", arr)
-
-            generatedArray.add(o)
-        }
-
-        obj.add("generatedCards", generatedArray)
-
-        val removedArray = JsonArray()
-
-        removedCards.forEach { (id, cardMap) ->
-            val o = JsonObject()
-
-            o.addProperty("key", id)
-
-            val arr = JsonArray()
-
-            cardMap.forEach { (card, amount) ->
-                val co = JsonObject()
-
-                co.addProperty("key", card.unitID)
-                co.addProperty("val", amount)
-
-                arr.add(co)
-            }
-
-            o.add("val", arr)
-
-            generatedArray.add(o)
-        }
-
-        obj.add("removedCards", removedArray)
+        obj.addProperty("tradeDone", tradeDone)
 
         return obj
+    }
+
+    private fun saveUserAmount(obj: JsonObject, tag: String, map: Map<Long, Long>) {
+        val arr = JsonArray()
+
+        map.forEach { (id, amount) ->
+            val o = JsonObject()
+
+            o.addProperty("key", id)
+            o.addProperty("val", amount)
+
+            arr.add(o)
+        }
+
+        obj.add(tag, arr)
+    }
+
+    private fun saveUserCardMap(obj: JsonObject, tag: String, map: Map<Long, Map<Card, Long>>) {
+        val arr = JsonArray()
+
+        map.forEach { (id, cardMap) ->
+            val o = JsonObject()
+
+            o.addProperty("key", id)
+
+            val cardArr = JsonArray()
+
+            cardMap.forEach { (card, amount) ->
+                val co = JsonObject()
+
+                co.addProperty("key", card.unitID)
+                co.addProperty("val", amount)
+
+                cardArr.add(co)
+            }
+
+            o.add("val", cardArr)
+
+            arr.add(o)
+        }
+
+        obj.add(tag, arr)
     }
 }

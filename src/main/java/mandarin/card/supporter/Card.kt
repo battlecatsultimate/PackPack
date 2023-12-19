@@ -2,6 +2,7 @@ package mandarin.card.supporter
 
 import common.util.Data
 import mandarin.card.supporter.CardData.Tier
+import mandarin.card.supporter.filter.BannerFilter
 import java.io.File
 
 class Card(val unitID: Int, val tier: Tier, val name: String, val cardImage: File) {
@@ -24,5 +25,17 @@ class Card(val unitID: Int, val tier: Tier, val name: String, val cardImage: Fil
             Tier.LEGEND -> "Legend Rare"
             Tier.NONE -> "Unknown"
         }
+    }
+
+    fun isRegularUncommon() : Boolean {
+        return tier == Tier.UNCOMMON && unitID !in BannerFilter.Banner.Seasonal.getBannerData() && unitID !in BannerFilter.Banner.Collaboration.getBannerData()
+    }
+
+    fun isSeasonalUncommon() : Boolean {
+        return tier == Tier.UNCOMMON && unitID in BannerFilter.Banner.Seasonal.getBannerData()
+    }
+
+    fun isCollaborationUncommon() : Boolean {
+        return tier == Tier.UNCOMMON && unitID in BannerFilter.Banner.Collaboration.getBannerData()
     }
 }
