@@ -469,7 +469,7 @@ class Report : Command(LangID.EN, true) {
 
                 var i = 1
 
-                catFoodPackMap.entries.sortedBy { e -> e.value }.forEach { (id, amount) ->
+                catFoodPackMap.entries.sortedByDescending { e -> e.value }.forEach { (id, amount) ->
                     val member = existingMembers.find { member -> member.idLong == id }
 
                     if (member != null) {
@@ -612,7 +612,7 @@ class Report : Command(LangID.EN, true) {
 
                     i = 1
 
-                    shardMap.entries.sortedBy { e -> e.value }.forEach { (id, amount) ->
+                    shardMap.entries.sortedByDescending { e -> e.value }.forEach { (id, amount) ->
                         val member = existingMembers.find { member -> member.idLong == id }
 
                         if (member != null) {
@@ -668,7 +668,7 @@ class Report : Command(LangID.EN, true) {
 
                 i = 1
 
-                CardData.inventories.entries.filter { e -> e.value.platinumShard > 0 }.sortedBy { e -> e.value.platinumShard }.forEach { (id, inventory) ->
+                CardData.inventories.entries.filter { e -> e.value.platinumShard > 0 }.sortedByDescending { e -> e.value.platinumShard }.forEach { (id, inventory) ->
                     val member = existingMembers.find { member -> member.id == id }
 
                     if (member != null) {
@@ -687,7 +687,7 @@ class Report : Command(LangID.EN, true) {
 
                 i = 1
 
-                CardData.inventories.entries.filter { e -> e.value.catFoods > 0 }.sortedBy { e -> e.value.catFoods }.forEach { (id, inventory) ->
+                CardData.inventories.entries.filter { e -> e.value.catFoods > 0 }.sortedByDescending { e -> e.value.catFoods }.forEach { (id, inventory) ->
                     val member = existingMembers.find { member -> member.id == id }
 
                     if (member != null) {
