@@ -107,6 +107,7 @@ class Report : Command(LangID.EN, true) {
         }
 
         val totalShards = CardData.inventories.map { (_, inventory) -> inventory }.sumOf { inventory -> inventory.platinumShard }
+        val totalCatFoods = CardData.inventories.entries.sumOf { (_, inventory) -> inventory.catFoods }
 
         val totalShardCraftT2Regular = sessions.sumOf { session ->
             session.shardCraftT2Regular.map { (_, amount) -> amount }.sum()
@@ -679,7 +680,24 @@ class Report : Command(LangID.EN, true) {
                     i++
                 }
 
-                reporter.append("\n=================================\n\n")
+                reporter.append("\n=================================\n\nTotal ")
+                    .append(totalCatFoods)
+                    .append(" cf in current inventories\n\n===== CF data for each user =====\n\n")
+
+
+                i = 1
+
+                CardData.inventories.entries.filter { e -> e.value.catFoods > 0 }.sortedBy { e -> e.value.catFoods }.forEach { (id, inventory) ->
+                    val member = existingMembers.find { member -> member.id == id }
+
+                    if (member != null) {
+                        reporter.append(i).append(". ").append(member.effectiveName).append(" [").append(id).append("] : ").append(inventory.catFoods).append("\n")
+                    } else {
+                        reporter.append(i).append(". UNKNOWN [").append(id).append("] : ").append(inventory.platinumShard).append("\n")
+                    }
+
+                    i++
+                }
 
                 for (j in 0 until 5) {
                     val shards = when(j) {
@@ -925,7 +943,8 @@ class Report : Command(LangID.EN, true) {
                     "$totalShardSalvageT2Collaboration ${EmojiStore.ABILITY["SHARD"]?.formatted} have been generated from Collaboration T2, and $totalCardSalvageT2Collaboration cards have been consumed\n" +
                     "$totalShardSalvageT3 ${EmojiStore.ABILITY["SHARD"]?.formatted} have been generated from T3, and $totalCardSalvageT3 cards have been consumed\n" +
                     "\n" +
-                    "Total $totalShards ${EmojiStore.ABILITY["SHARD"]?.formatted} in users' inventories"
+                    "Total $totalShards ${EmojiStore.ABILITY["SHARD"]?.formatted} in users' inventories\n" +
+                    "Total $totalCatFoods ${EmojiStore.ABILITY["CF"]?.formatted} in users' inventories"
 
             val content2 = "$totalCardCraftT2Regular Regular T2 cards have been crafted, and ${EmojiStore.ABILITY["SHARD"]?.formatted} $totalShardCraftT2Regular have been consumed\n" +
                     "$totalCardCraftT2Seasonal Seasonal T2 cards have been crafted, and ${EmojiStore.ABILITY["SHARD"]?.formatted} $totalShardCraftT2Seasonal have been consumed\n" +
