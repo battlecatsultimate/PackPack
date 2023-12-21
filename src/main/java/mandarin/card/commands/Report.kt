@@ -684,7 +684,6 @@ class Report : Command(LangID.EN, true) {
                     .append(totalCatFoods)
                     .append(" cf in current inventories\n\n===== CF data for each user =====\n\n")
 
-
                 i = 1
 
                 CardData.inventories.entries.filter { e -> e.value.catFoods > 0 }.sortedByDescending { e -> e.value.catFoods }.forEach { (id, inventory) ->
