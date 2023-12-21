@@ -139,7 +139,7 @@ public class StatAnalyzerMessageHolder extends FileAnalyzerHolder {
 
             reader.close();
 
-            return count >= 3 && count < 5;
+            return count >= len && count < 5;
         } else if(name.equals("unitlevel.csv")) {
             BufferedReader reader = new BufferedReader(new FileReader(result, StandardCharsets.UTF_8));
 
@@ -177,10 +177,12 @@ public class StatAnalyzerMessageHolder extends FileAnalyzerHolder {
                     else
                         registerMoreFile(Data.trio(uID)+"_"+getUnitCode(0)+"02.maanim");
 
-                    if(secondEgg != -1)
-                        registerMoreFile(Data.trio(secondEgg)+"_m02.maanim");
-                    else
-                        registerMoreFile(Data.trio(uID)+"_"+getUnitCode(1)+"02.maanim");
+                    if (len >= 2) {
+                        if(secondEgg != -1)
+                            registerMoreFile(Data.trio(secondEgg)+"_m02.maanim");
+                        else
+                            registerMoreFile(Data.trio(uID)+"_"+getUnitCode(1)+"02.maanim");
+                    }
 
                     for(int i = 2; i < len; i++) {
                         registerMoreFile(Data.trio(uID)+"_"+getUnitCode(i)+"02.maanim");
@@ -191,10 +193,12 @@ public class StatAnalyzerMessageHolder extends FileAnalyzerHolder {
                     else
                         registerMoreFile("uni"+Data.trio(uID)+"_"+getUnitCode(0)+"00.png");
 
-                    if(secondEgg != -1)
-                        registerMoreFile("uni"+Data.trio(secondEgg)+"_m01.png");
-                    else
-                        registerMoreFile("uni"+Data.trio(uID)+"_"+getUnitCode(1)+"00.png");
+                    if (len >= 2) {
+                        if(secondEgg != -1)
+                            registerMoreFile("uni"+Data.trio(secondEgg)+"_m01.png");
+                        else
+                            registerMoreFile("uni"+Data.trio(uID)+"_"+getUnitCode(1)+"00.png");
+                    }
 
                     for(int i = 2; i < len; i++) {
                         registerMoreFile("uni"+Data.trio(uID)+"_"+getUnitCode(i)+"00.png");
