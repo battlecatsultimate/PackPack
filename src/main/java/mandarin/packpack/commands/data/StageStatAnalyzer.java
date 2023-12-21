@@ -394,6 +394,9 @@ public class StageStatAnalyzer extends ConstraintCommand {
 
                 int[] enemyData = CommonStatic.parseIntsN(line);
 
+                if (enemyData.length == 0)
+                    break;
+
                 if(enemyData[0] - 2 >= UserProfile.getBCData().enemies.size()) {
                     newEnemy = true;
 
