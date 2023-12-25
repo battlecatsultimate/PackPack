@@ -183,7 +183,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
     protected String getPage() {
         StringBuilder sb = new StringBuilder();
 
-        if(enemyList.length() != 0) {
+        if(!enemyList.isEmpty()) {
             sb.append(LangID.getStringByID("fstage_selected", lang).replace("_", enemyList.toString().replaceAll(", $", "")));
         }
 

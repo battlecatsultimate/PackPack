@@ -776,7 +776,7 @@ public class EntityHandler {
 
         if (e.de.getTraits().contains(TreasureHolder.fullTraits.get(Data.TRAIT_ALIEN))) {
             for(int i = 0; i < mag.length; i++)
-                mag[i] *= e.de.getStar() == 0 ? holder.getAlienMultiplier() : holder.getStarredAlienMultiplier();
+                mag[i] = (int) Math.round(mag[i] * (e.de.getStar() == 0 ? holder.getAlienMultiplier() : holder.getStarredAlienMultiplier()));
         }
 
         spec.setColor(c);
@@ -916,7 +916,7 @@ public class EntityHandler {
 
         if (e.de.getTraits().contains(TreasureHolder.fullTraits.get(Data.TRAIT_ALIEN))) {
             for(int i = 0; i < mag.length; i++)
-                mag[i] *= e.de.getStar() == 0 ? holder.getAlienMultiplier() : holder.getStarredAlienMultiplier();
+                mag[i] = (int) Math.round(mag[i] * (e.de.getStar() == 0 ? holder.getAlienMultiplier() : holder.getStarredAlienMultiplier()));
         }
 
         if(holder.differentFromGlobal()) {
@@ -1740,11 +1740,11 @@ public class EntityHandler {
                 enemies.add(eName);
 
                 if(((Enemy) enemy).de.getTraits().contains(UserProfile.getBCData().traits.get(Data.TRAIT_ALIEN)) && ((Enemy) enemy).de.getStar() == 0) {
-                    hp *= holder.getAlienMultiplier();
-                    atk *= holder.getAlienMultiplier();
+                    hp = (int) Math.round(hp * holder.getAlienMultiplier());
+                    atk = (int) Math.round(atk * holder.getAlienMultiplier());
                 } else if(((Enemy) enemy).de.getStar() == 1) {
-                    hp *= holder.getStarredAlienMultiplier();
-                    atk *= holder.getStarredAlienMultiplier();
+                    hp = (int) Math.round(hp * holder.getStarredAlienMultiplier());
+                    atk = (int) Math.round(atk * holder.getStarredAlienMultiplier());
                 }
             } else if(enemy instanceof EneRand) {
                 String name = ((EneRand) enemy).name;
@@ -1919,17 +1919,18 @@ public class EntityHandler {
 
         int ySeg = Math.round(Math.max(font.getMaxHeight() + yGap, 32 + yGap));
 
-        int w = (int) (eMax + nMax + mMax + bMax + sMax + lMax);
+        double dw = eMax + nMax + mMax + bMax + sMax + lMax;
 
         if(needBoss)
-            w += iMax;
+            dw += iMax;
 
         if(needRespect)
-            w += rMax;
+            dw += rMax;
 
         if(needCount)
-            w += kMax;
+            dw += kMax;
 
+        int w = (int) Math.round(dw);
         int h = ySeg * (enemies.size() + 1);
 
         CountDownLatch waiter = new CountDownLatch(1);
@@ -1948,27 +1949,25 @@ public class EntityHandler {
         boolean finalNeedCount = needCount;
         boolean finalNeedBoss = needBoss;
 
-        int finalW = w;
-
         StaticStore.renderManager.createRenderer(w, h, temp, connector -> {
             connector.queue(g -> {
                 g.setFontModel(font);
 
                 g.setColor(47, 49, 54, 255);
-                g.fillRect(0, 0, finalW, h);
+                g.fillRect(0, 0, w, h);
 
                 g.setColor(54, 57, 63, 255);
-                g.fillRect(0, 0, finalW, ySeg);
+                g.fillRect(0, 0, w, ySeg);
 
                 g.setColor(32, 34, 37, 255);
                 g.setStroke(4f, GLGraphics.LineEndMode.VERTICAL);
 
-                g.drawRect(0, 0, finalW, h);
+                g.drawRect(0, 0, w, h);
 
                 g.setStroke(2f, GLGraphics.LineEndMode.VERTICAL);
 
                 for(int i = 1; i < enemies.size() + 1; i++) {
-                    g.drawLine(0, ySeg * i, finalW, ySeg * i);
+                    g.drawLine(0, ySeg * i, w, ySeg * i);
                 }
 
                 int x = (int) finalEMax;
@@ -4386,7 +4385,7 @@ public class EntityHandler {
         }
 
         if (e.de.getTraits().contains(TreasureHolder.fullTraits.get(Data.TRAIT_ALIEN))) {
-            adjustedMagnification *= e.de.getStar() == 0 ? treasureSetting.getAlienMultiplier() : treasureSetting.getStarredAlienMultiplier();
+            adjustedMagnification = (int) Math.round(adjustedMagnification * (e.de.getStar() == 0 ? treasureSetting.getAlienMultiplier() : treasureSetting.getStarredAlienMultiplier()));
         }
 
         List<BigDecimal> nodes = new ArrayList<>();
@@ -5127,7 +5126,7 @@ public class EntityHandler {
             }
 
             action.queue(m -> {
-                while(done.size() > 0) {
+                while(!done.isEmpty()) {
                     File target = done.poll();
 
                     if(target != null && target.exists() && !target.delete()) {
@@ -5137,7 +5136,7 @@ public class EntityHandler {
             }, e -> {
                 StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateStageStatImage - Error happened while trying to upload analyzed stage image");
 
-                while(done.size() > 0) {
+                while(!done.isEmpty()) {
                     File target = done.poll();
 
                     if(target != null && target.exists() && !target.delete()) {

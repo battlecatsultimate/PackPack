@@ -3,9 +3,7 @@ package mandarin.packpack.supporter.calculation;
 import mandarin.packpack.supporter.lang.LangID;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.math.MathContext;
-import java.math.RoundingMode;
 
 public class Operator extends Element {
     public enum TYPE {
@@ -105,17 +103,12 @@ public class Operator extends Element {
 
     @Override
     public String toString() {
-        switch (type) {
-            case ADDITION:
-                return "+";
-            case SUBTRACTION:
-                return "-";
-            case MULTIPLICATION:
-                return "*";
-            case DIVISION:
-                return "/";
-            default:
-                return "^";
-        }
+        return switch (type) {
+            case ADDITION -> "+";
+            case SUBTRACTION -> "-";
+            case MULTIPLICATION -> "*";
+            case DIVISION -> "/";
+            default -> "^";
+        };
     }
 }
