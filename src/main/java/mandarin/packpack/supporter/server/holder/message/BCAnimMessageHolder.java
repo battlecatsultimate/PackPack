@@ -207,7 +207,8 @@ public class BCAnimMessageHolder extends MessageHolder {
 
             return STATUS.WAIT;
         } catch (Exception e) {
-            e.printStackTrace();
+            StaticStore.logger.uploadErrorLog(e, "E/BCAnimMessageHolder::onReceivedEvent - Failed to handle BC animation generator");
+
             return STATUS.WAIT;
         }
     }

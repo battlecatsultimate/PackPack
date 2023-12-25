@@ -227,7 +227,6 @@ public abstract class TimedConstraintCommand extends Command {
                     }
 
                     StaticStore.logger.uploadErrorLog(e, "Failed to perform timed constraint command : "+this.getClass()+"\n\n" + data);
-                    e.printStackTrace();
                 }
             }
         });

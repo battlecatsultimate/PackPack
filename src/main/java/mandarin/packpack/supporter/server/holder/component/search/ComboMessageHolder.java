@@ -94,7 +94,7 @@ public class ComboMessageHolder extends SearchHolder {
                 StaticStore.timeLimit.put(u.getId(), memberLimit);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            StaticStore.logger.uploadErrorLog(e, "E/ComboMessageHolder::onSelected - Failed to upload combo embed");
         }
     }
 

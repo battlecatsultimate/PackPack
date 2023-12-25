@@ -107,8 +107,6 @@ public class StageInfoButtonHolder extends ComponentHolder {
                     Castle.performButton(event, cs);
                 } catch (Exception e) {
                     StaticStore.logger.uploadErrorLog(e, "E/StageInfoButtonHolder | Failed to prepare interaction data for castle");
-
-                    e.printStackTrace();
                 }
             }
         }

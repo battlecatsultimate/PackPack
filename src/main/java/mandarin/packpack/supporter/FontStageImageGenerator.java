@@ -123,7 +123,7 @@ public class FontStageImageGenerator extends ImageGenerator{
                 return f;
             } catch (IOException e) {
                 StaticStore.logger.uploadErrorLog(e, "Failed to write png data : "+f.getAbsolutePath());
-                e.printStackTrace();
+
                 return null;
             }
         } else {
@@ -252,7 +252,7 @@ public class FontStageImageGenerator extends ImageGenerator{
                 ImageIO.write(real, "PNG", f);
             } catch (IOException e) {
                 StaticStore.logger.uploadErrorLog(e, "Failed to write png file : "+f.getAbsolutePath());
-                e.printStackTrace();
+
                 return null;
             }
 
@@ -284,7 +284,7 @@ public class FontStageImageGenerator extends ImageGenerator{
                 Context.check(f);
             } catch (IOException e) {
                 StaticStore.logger.uploadErrorLog(e, "Failed to check file : "+f.getAbsolutePath());
-                e.printStackTrace();
+
                 return null;
             }
 
@@ -292,7 +292,7 @@ public class FontStageImageGenerator extends ImageGenerator{
                 ImageIO.write(real, "PNG", f);
             } catch (IOException e) {
                 StaticStore.logger.uploadErrorLog(e, "Failed to write png file : "+f.getAbsolutePath());
-                e.printStackTrace();
+
                 return null;
             }
 

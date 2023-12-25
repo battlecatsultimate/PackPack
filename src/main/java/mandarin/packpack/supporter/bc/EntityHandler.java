@@ -93,7 +93,7 @@ public class EntityHandler {
 
             waiter.await();
         } catch (Exception e) {
-            e.printStackTrace();
+            StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::initialize - Failed to initialize font file");
         }
     }
 

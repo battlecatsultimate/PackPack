@@ -89,7 +89,7 @@ public class FormReactionSlashMessageHolder extends MessageHolder {
                 try {
                     EntityHandler.showUnitEmb(newForm, ch, null, config, isFrame, talent, extra, false, false, lv, treasure, t, lang, false, false, msg -> { });
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    StaticStore.logger.uploadErrorLog(e, "E/FormReactionSlashMessageHolder::onReactionEvent - Failed to upload unit embed");
                 }
             }
             case "Previous" -> {
@@ -106,7 +106,7 @@ public class FormReactionSlashMessageHolder extends MessageHolder {
                 try {
                     EntityHandler.showUnitEmb(newForm, ch, null, config, isFrame, talent, extra, false, false, lv, treasure, t, lang, false, false, msg -> { });
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    StaticStore.logger.uploadErrorLog(e, "E/FormReactionSlashMessageHolder::onReactionEvent - Failed to upload unit embed");
                 }
             }
             case "Next" -> {
@@ -123,7 +123,7 @@ public class FormReactionSlashMessageHolder extends MessageHolder {
                 try {
                     EntityHandler.showUnitEmb(newForm, ch, null, config, isFrame, talent, extra, false, false, lv, treasure, t, lang, false, false, msg -> { });
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    StaticStore.logger.uploadErrorLog(e, "E/FormReactionSlashMessageHolder::onReactionEvent - Failed to upload unit embed");
                 }
             }
             case "TwoNext" -> {
@@ -140,7 +140,7 @@ public class FormReactionSlashMessageHolder extends MessageHolder {
                 try {
                     EntityHandler.showUnitEmb(newForm, ch, null, config, isFrame, talent, extra, false, false, lv, treasure, t, lang, false, false, msg -> { });
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    StaticStore.logger.uploadErrorLog(e, "E/FormReactionSlashMessageHolder::onReactionEvent - Failed to upload unit embed");
                 }
             }
         }

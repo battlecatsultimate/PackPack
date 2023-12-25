@@ -93,7 +93,7 @@ public class ComboFormMessageHolder extends SearchHolder {
                 try {
                     EntityHandler.showComboEmbed(ch, getAuthorMessage(), combos.get(0), lang);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    StaticStore.logger.uploadErrorLog(e, "E/ComboFormMessageHolder::onSelected - Failed to upload combo embed");
                 }
             } else {
                 StringBuilder sb = new StringBuilder("```md\n").append(LangID.getStringByID("formst_pick", lang));
@@ -134,7 +134,7 @@ public class ComboFormMessageHolder extends SearchHolder {
                 });
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            StaticStore.logger.uploadErrorLog(e, "E/ComboFormMessageHolder::onSelected - Failed to handle combo embed holder");
         }
     }
 

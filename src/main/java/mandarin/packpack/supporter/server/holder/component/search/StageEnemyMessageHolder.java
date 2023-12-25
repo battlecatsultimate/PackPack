@@ -150,7 +150,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
                 msg.delete().queue();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            StaticStore.logger.uploadErrorLog(e, "E/StageEnemyMessageHolder::onSelected - Failed to upload stage selecting message");
         }
     }
 

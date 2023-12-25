@@ -48,7 +48,7 @@ public class MedalMessageHolder extends SearchHolder {
         try {
             EntityHandler.showMedalEmbed(id.get(i), ch, getAuthorMessage(), lang);
         } catch (Exception e) {
-            e.printStackTrace();
+            StaticStore.logger.uploadErrorLog(e, "E/MedalMessageHolder::onSelected - Failed to upload medal embed");
         }
     }
 

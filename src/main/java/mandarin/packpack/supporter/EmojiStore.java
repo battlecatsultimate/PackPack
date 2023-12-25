@@ -86,7 +86,7 @@ public class EmojiStore {
 
                 reader.close();
             } catch (Exception e) {
-                e.printStackTrace();
+                StaticStore.logger.uploadErrorLog(e, "E/EmojiStore::initialize - Failed to load emoji data");
             }
         }
     }

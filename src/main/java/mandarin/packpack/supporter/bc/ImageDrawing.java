@@ -259,7 +259,7 @@ public class ImageDrawing {
                 plotFont = new FontModel(14f, medium, FontModel.Type.FILL, 0f);
                 axisFont = new FontModel(18f, medium, FontModel.Type.FILL, 0f);
             } catch (Exception e) {
-                e.printStackTrace();
+                StaticStore.logger.uploadErrorLog(e, "E/ImageDrawing::initialize - Failed to initialize font file");
             }
         });
     }

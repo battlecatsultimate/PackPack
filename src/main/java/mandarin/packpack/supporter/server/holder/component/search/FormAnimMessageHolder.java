@@ -162,11 +162,11 @@ public class FormAnimMessageHolder extends SearchHolder {
                         StaticStore.timeLimit.put(u.getId(), memberLimit);
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    StaticStore.logger.uploadErrorLog(e, "E/FormAnimMessageHolder::onSelected - Failed to generate form image");
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            StaticStore.logger.uploadErrorLog(e, "E/FormAnimMessageHolder::onSelected - Failed to handle form image/animation");
         }
 
         msg.delete().queue();

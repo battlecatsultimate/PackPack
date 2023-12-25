@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.FileUpload;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
@@ -25,6 +26,7 @@ public class Logger {
     };
     private static final String separatorHalf = "==========";
     private static final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd-hh:mm:ss");
+    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger();
 
     public final static List<String> logMessages = new ArrayList<>();
 
@@ -38,7 +40,7 @@ public class Logger {
             if (!logFile.exists() && !logFile.createNewFile())
                 return;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("E/Logger::writeLog - Failed to create log file", e);
         }
 
         try (FileWriter fileWriter = new FileWriter(logFile, StandardCharsets.UTF_8, true)) {
@@ -51,7 +53,7 @@ public class Logger {
 
             writer.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("E/Logger::writeLog - Failed to write logs", e);
         }
 
         logMessages.clear();
@@ -89,7 +91,7 @@ public class Logger {
     }
 
     public void uploadErrorLog(Throwable e, String message, File... files) {
-        e.printStackTrace();
+        logger.error(message, e);
 
         logMessages.add(separatorHalf + " EXCEPTION HAPPENED " + separatorHalf);
         logMessages.add(getTimeStamp() + " - " + message);

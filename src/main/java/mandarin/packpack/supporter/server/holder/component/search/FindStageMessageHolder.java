@@ -139,7 +139,7 @@ public class FindStageMessageHolder extends SearchHolder {
                 StaticStore.putHolder(getAuthorMessage().getAuthor().getId(), new StageInfoButtonHolder(actualStage.get(id), getAuthorMessage(), msg, channelID, isCompact))
             );
         } catch (Exception e) {
-            e.printStackTrace();
+            StaticStore.logger.uploadErrorLog(e, "E/FindStageMessageHolder::onSelected - Failed to upload stage embed");
         }
     }
 

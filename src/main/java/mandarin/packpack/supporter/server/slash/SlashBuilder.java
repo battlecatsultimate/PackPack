@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.slash;
 
+import mandarin.packpack.supporter.StaticStore;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -140,7 +141,7 @@ public class SlashBuilder {
             try {
                 request.queue();
             } catch (Exception e) {
-                e.printStackTrace();
+                StaticStore.logger.uploadErrorLog(e, "E/SlashBuilder::applyCreatedSlashCommands - Failed to request command");
             }
         }
 

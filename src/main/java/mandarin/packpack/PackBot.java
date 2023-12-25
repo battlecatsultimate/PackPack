@@ -159,7 +159,7 @@ public class PackBot {
                             }
                         }
                     } catch (IOException exception) {
-                        exception.printStackTrace();
+                        StaticStore.logger.uploadErrorLog(exception, "E/PackBot::main - Failed to change profile image");
                     }
 
                     pfp = 1;
@@ -252,7 +252,7 @@ public class PackBot {
                 EventFileGrabber.initialize();
                 StaticStore.event.initialize();
             } catch (Exception e) {
-                e.printStackTrace();
+                StaticStore.logger.uploadErrorLog(e, "E/PackBot::main - Failed to initialize event data handler");
             }
 
             if(!StaticStore.contributors.contains(StaticStore.MANDARIN_SMELL)) {
@@ -262,7 +262,7 @@ public class PackBot {
             try {
                 StaticStore.fetchUDPData();
             } catch (Exception e) {
-                e.printStackTrace();
+                StaticStore.logger.uploadErrorLog(e, "E/PackBot::main - Failed to fetch UDP data");
             }
 
             StaticStore.initialized = true;
@@ -343,7 +343,7 @@ public class PackBot {
                                             if(!initial) {
                                                 initial = true;
 
-                                                builder.append(builder.length() == 0 ? "** **\n" : "");
+                                                builder.append(builder.isEmpty() ? "** **\n" : "");
 
                                                 switch (type) {
                                                     case DAILY ->

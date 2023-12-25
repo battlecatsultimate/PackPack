@@ -3,6 +3,7 @@ package mandarin.packpack.supporter.server.holder.component.search;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Form;
+import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -56,7 +57,7 @@ public class FormSpriteMessageHolder extends SearchHolder {
 
             EntityHandler.getFormSprite(f, ch, getAuthorMessage(), mode, lang);
         } catch (Exception e) {
-            e.printStackTrace();
+            StaticStore.logger.uploadErrorLog(e, "E/FormSpriteMessageHolder::onSelected - Failed to upload form sprite/icon");
         }
 
         msg.delete().queue();

@@ -128,12 +128,8 @@ public class EnemyAnimMessageHolder extends SearchHolder {
                                     StaticStore.conflictedAnimation.clear();
                                 }
                             });
-
-
-
-
                         } catch (Exception exception) {
-                            exception.printStackTrace();
+                            StaticStore.logger.uploadErrorLog(exception, "E/EnemyAnimMessageHolder::onSelected - Failed to generate enemy animation");
                         }
                     }).start();
                 } else {
@@ -167,11 +163,11 @@ public class EnemyAnimMessageHolder extends SearchHolder {
                         StaticStore.timeLimit.put(u.getId(), memberLimit);
                     }
                 } catch (Exception exception) {
-                    exception.printStackTrace();
+                    StaticStore.logger.uploadErrorLog(exception, "E/EnemyAnimMessageHolder::onSelected - Failed to generate enemy image");
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            StaticStore.logger.uploadErrorLog(e, "E/EnemyAnimMessageHolder::onSelected - Failed to handle enemy image/animation holder");
         }
 
         msg.delete().queue();

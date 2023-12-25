@@ -3,6 +3,7 @@ package mandarin.packpack.supporter.server.holder.component.search;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.unit.Enemy;
+import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.EntityHandler;
 import mandarin.packpack.supporter.server.data.TreasureHolder;
 import net.dv8tion.jda.api.entities.Message;
@@ -68,7 +69,7 @@ public class EnemyStatMessageHolder extends SearchHolder {
         try {
             EntityHandler.showEnemyEmb(enemy.get(id), ch, getAuthorMessage(), isFrame, isExtra, isCompact, magnification, treasure, lang);
         } catch (Exception e) {
-            e.printStackTrace();
+            StaticStore.logger.uploadErrorLog(e, "E/EnemyStatMessageHolder::onSelected - Failed to upload enemy embed");
         }
     }
 

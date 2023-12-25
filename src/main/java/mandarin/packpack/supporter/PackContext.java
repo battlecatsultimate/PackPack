@@ -39,7 +39,7 @@ public class PackContext implements Context {
             return new FileInputStream("./data/lang/" + file);
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "Failed to open lang file");
-            e.printStackTrace();
+
             return null;
         }
     }

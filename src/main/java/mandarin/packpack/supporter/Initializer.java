@@ -123,13 +123,13 @@ public class Initializer {
                 StaticStore.langs.put(key, CommonStatic.getConfig().localLangMap.get(key));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            StaticStore.logger.uploadErrorLog(e, "E/Initializer::checkAssetDownload - Failed to download asset data");
         }
 
         try {
             define(runLWJGL);
         } catch (Exception e) {
-            e.printStackTrace();
+            StaticStore.logger.uploadErrorLog(e, "E/Initializer::checkAssetDownload - Failed to load BC data");
         }
     }
 

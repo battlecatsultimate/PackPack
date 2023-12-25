@@ -82,8 +82,7 @@ public class Operator extends Element {
                         }
 
                         return new Number(result);
-                    } catch (ArithmeticException e) {
-                        e.printStackTrace();
+                    } catch (ArithmeticException ignored) {
                         Equation.error.add(LangID.getStringByID("calc_outofrange", lang));
 
                         return new Number(0);

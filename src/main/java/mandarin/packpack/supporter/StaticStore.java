@@ -601,7 +601,7 @@ public class StaticStore {
             return obj == null ? null : obj.isJsonObject() ? obj.getAsJsonObject() : null;
         } catch (FileNotFoundException e) {
             StaticStore.logger.uploadErrorLog(e, "Failed to read json file", f);
-            e.printStackTrace();
+
             return null;
         }
     }
@@ -686,7 +686,6 @@ public class StaticStore {
             writer.close();
         } catch (IOException e) {
             StaticStore.logger.uploadErrorLog(e, "Failed to save server info");
-            e.printStackTrace();
         }
     }
 
