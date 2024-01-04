@@ -176,6 +176,7 @@ public class StaticStore {
     public final static String SUPPORT_SERVER = "964054872649515048";
 
     public static String[] EMOJI_ARCHIVES = {
+            "1192008484926005288",
             "1010103237958959194",
             "1010126565545357443",
             "1012995850739388416",

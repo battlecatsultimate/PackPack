@@ -21,24 +21,25 @@ import java.util.function.Function;
 public class Interpret extends Data {
     public static final String[] TRAIT = {
             "data_red", "data_float", "data_black", "data_metal", "data_angel", "data_alien", "data_zombie",
-            "data_demon", "data_relic", "data_white", "data_eva", "data_witch", "data_baron", "data_beast", "data_baset"
+            "data_demon", "data_relic", "data_white", "data_eva", "data_witch", "data_baron", "data_beast", "data_sage",
+            "data_baset"
     };
 
     public static final String[] TRAITICON = {
             "T_RED", "T_FLOAT", "T_BLACK", "T_METAL", "T_ANGEL", "T_ALIEN", "T_ZOMBIE", "T_AKU", "T_RELIC", "T_WHITE",
-            "EVA", "WITCH", "COLOSSUS", "BEHEMOTH", "BASE"
+            "EVA", "WITCH", "COLOSSUS", "BEHEMOTH", "SAGE", "BASE"
     };
 
     public static final String[] ABIS = {
             "data_strong", "data_resistant", "data_massive", "data_attackon", "data_abimetal", "data_waveshie",
             "data_imusnipe", "data_imustoptt", "data_ghost", "data_zombiekill", "data_witchkill", "data_suicide",
             "data_imutheme", "data_evakill", "data_imuboss", "data_insanetou", "data_insanedmg", "data_baronkiller",
-            "data_corpsekiller", "data_countersurge"
+            "data_corpsekiller", "data_countersurge", "data_sageslayer"
     };
 
     public static final String[] PROCIND = {
             "WEAK", "STOP", "SLOW", "KB", "WARP", "CURSE", "IMUATK", "STRONG", "LETHAL", "ATKBASE", "CRIT", "BREAK", "SHIELDBREAK",
-            "SATK", "BOUNTY", "MINIWAVE", "WAVE", "MINIVOLC", "VOLC", "BSTHUNT", "IMUWEAK", "IMUSTOP", "IMUSLOW", "IMUKB", "IMUWAVE", "IMUVOLC",
+            "SATK", "BOUNTY", "MINIWAVE", "WAVE", "MINIVOLC", "VOLC", "SPIRIT", "BSTHUNT", "IMUWEAK", "IMUSTOP", "IMUSLOW", "IMUKB", "IMUWAVE", "IMUVOLC",
             "IMUWARP", "IMUCURSE", "IMUPOIATK", "POIATK", "DEMONSHIELD", "DEATHSURGE", "BURROW", "REVIVE", "SNIPER", "SEAL",
             "TIME", "SUMMON", "MOVEWAVE", "THEME", "POISON", "BOSS", "ARMOR", "SPEED", "COUNTER", "DMGCUT", "DMGCAP",
             "CRITI", "IMUSEAL", "IMUPOI", "IMUSUMMON", "IMUMOVING", "IMUARMOR", "IMUSPEED"
@@ -46,7 +47,7 @@ public class Interpret extends Data {
 
     public static final int[] P_INDEX = {
             P_WEAK, P_STOP, P_SLOW, P_KB, P_WARP, P_CURSE, P_IMUATK, P_STRONG, P_LETHAL, P_ATKBASE, P_CRIT, P_BREAK,
-            P_SHIELDBREAK, P_SATK, P_BOUNTY, P_MINIWAVE, P_WAVE, P_MINIVOLC, P_VOLC, P_BSTHUNT, P_IMUWEAK, P_IMUSTOP, P_IMUSLOW,
+            P_SHIELDBREAK, P_SATK, P_BOUNTY, P_MINIWAVE, P_WAVE, P_MINIVOLC, P_VOLC, P_SPIRIT, P_BSTHUNT, P_IMUWEAK, P_IMUSTOP, P_IMUSLOW,
             P_IMUKB, P_IMUWAVE, P_IMUVOLC, P_IMUWARP, P_IMUCURSE, P_IMUPOIATK, P_POIATK, P_DEMONSHIELD, P_DEATHSURGE,
             P_BURROW, P_REVIVE, P_SNIPER, P_SEAL, P_TIME, P_SUMMON, P_MOVEWAVE, P_THEME, P_POISON, P_BOSS, P_ARMOR,
             P_COUNTER, P_DMGCUT, P_DMGCUT, P_SPEED, P_CRITI, P_IMUSEAL, P_IMUPOI, P_IMUSUMMON, P_IMUMOVING, P_IMUARMOR,
@@ -144,6 +145,7 @@ public class Interpret extends Data {
                             }
                         }
                         case 17 -> ab += LangID.getStringByID("data_add7", lang);
+                        case 20 -> ab += LangID.getStringByID("data_add8", lang);
                     }
 
                 if(!l.contains(ab))
@@ -279,20 +281,17 @@ public class Interpret extends Data {
     }
 
     private static String getTraitEmoji(String code, int lang) {
+        Emoji emoji;
+
         if(code.startsWith("T_")) {
-            Emoji emoji = EmojiStore.TRAIT.getCont(code, lang);
-
-            if(emoji == null)
-                return "";
-            else
-                return emoji.getFormatted() + " ";
+            emoji = EmojiStore.TRAIT.getCont(code, lang);
         } else {
-            Emoji emoji = EmojiStore.ABILITY.get(code);
-
-            if(emoji == null)
-                return "";
-            else
-                return emoji.getFormatted() + " ";
+            emoji = EmojiStore.ABILITY.get(code);
         }
+
+        if(emoji == null)
+            return "";
+        else
+            return emoji.getFormatted() + " ";
     }
 }
