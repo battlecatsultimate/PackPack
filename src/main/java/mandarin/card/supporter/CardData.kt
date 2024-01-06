@@ -2,6 +2,7 @@ package mandarin.card.supporter
 
 import com.google.api.client.util.DateTime
 import com.google.gson.JsonParser
+import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.supporter.StaticStore
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
@@ -88,7 +89,7 @@ object CardData {
             //Girls and Monsters
             arrayOf(334, 335, 336, 357, 358, 607, 682),
             //The Almighties
-            arrayOf(257, 258, 259, 271, 272, 316, 439, 534, 642),
+            arrayOf(257, 258, 259, 271, 272, 316, 439, 534, 642, 723),
 
             //Seasonal Total
             arrayOf(587, 588, 644, 648, 693, 330, 331, 595, 699, 661, 711, 274, 275, 354, 438, 494, 563, 564, 614, 666, 714, 229, 230, 302, 570, 683, 241, 242, 243, 310, 526, 584, 687),
@@ -309,6 +310,8 @@ object CardData {
     const val SMALL = 0
     const val LARGE = 1
     const val PREMIUM = 2
+
+    val cardPacks = ArrayList<CardPack>()
 
     /*
     -------------------------------------------------------
