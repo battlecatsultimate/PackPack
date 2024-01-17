@@ -113,6 +113,8 @@ public class TalentInfo extends ConstraintCommand {
             for(String str : pureMessage) {
                 if(str.equals("-s"))
                     return false;
+                else if (str.equals("-f") || str.equals("-fr") || str.equals("-frame"))
+                    return true;
             }
         }
 
@@ -123,6 +125,7 @@ public class TalentInfo extends ConstraintCommand {
         String[] content = msg.split(" ");
 
         boolean isSec = false;
+        boolean isFrame = false;
 
         StringBuilder command = new StringBuilder();
 
@@ -132,6 +135,13 @@ public class TalentInfo extends ConstraintCommand {
             if ("-s".equals(content[i]) || "-second".equals(content[i])) {
                 if (!isSec)
                     isSec = true;
+                else {
+                    command.append(content[i]);
+                    written = true;
+                }
+            } else if ("-f".equals(content[i]) || "-fr".equals(content[i]) || "-frame".equals(content[i])) {
+                if (!isFrame)
+                    isFrame = true;
                 else {
                     command.append(content[i]);
                     written = true;

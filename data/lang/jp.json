@@ -886,7 +886,7 @@
   "help_allowchannelpermission_tip" : "Channel permission system is that moderators can make users able to use commands only in specific channel when having satisfying role. You can make bot consider assigned channel permission set back for this user",
   "help_talentinfo_use" : "`p!talentinfo [Unit Name]`",
   "help_talentinfo_desc" : "Try to search talent of this unit with specified name, and upload info of it if exists. `ti` is also valid command",
-  "help_talentinfo_argu" : "- `-s` or `-second`\nUse second unit",
+  "help_talentinfo_argu" : "- `-s` or `-second`\nDisplay info with seconds instead of frames\n- `-f` or `-fr` or -`frame`\nDisplay info with frames instead of seconds",
   "help_soul_use" : "`p!soul [Soul ID]`",
   "help_soul_desc" : "Upload animation of soul with specified ID. `sl` is also valid command",
   "help_soul_argu" : "- `-d`\nEnable debug mode\n- `-f` or `-fr`\nDecide end frame of animation\n- `-r` or `-raw`\nGenerate animation with mp4 format for high-res result. Cool down will be increased to 1 min. **Only trusted users can use this argument because it's quite heavy process**\n- `-g` or `-gif`\nMake bot bring cached gif link or generate gif result",
