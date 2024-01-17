@@ -1738,7 +1738,7 @@ public class DataToString extends Data {
             for(int[] d : data) {
                 res.add(d[0]/10.0);
             }
-        } else if((sum == data.length && sum != 1) || info.rand == -3) {
+        } else if(info.rand == -3) {
             return res;
         } else if(sum == 100) {
             for(int[] d : data) {
