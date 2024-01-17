@@ -160,6 +160,7 @@ public class FormStat extends ConstraintCommand {
     private static final int PARAM_COMPACT = 16;
     private static final int PARAM_TRUE_FORM = 32;
     private static final int PARAM_TREASURE = 64;
+    private static final int PARAM_FRAME = 128;
 
     private final ConfigHolder config;
 
@@ -202,7 +203,15 @@ public class FormStat extends ConstraintCommand {
 
         Level lv = handleLevel(command);
 
-        boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
+        boolean isFrame;
+
+        if ((param & PARAM_SECOND) > 0)
+            isFrame = false;
+        else if ((param & PARAM_FRAME) > 0)
+            isFrame = true;
+        else
+            isFrame = config.useFrame;
+
         boolean talent = (param & PARAM_TALENT) > 0 || lv.getTalents().length > 0;
         boolean extra = (param & PARAM_EXTRA) > 0 || config.extra;
         boolean compact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
@@ -285,6 +294,13 @@ public class FormStat extends ConstraintCommand {
                             result |= PARAM_SECOND;
                         } else
                             break label;
+                    }
+                    case "-f", "-fr" -> {
+                        if ((result & PARAM_FRAME) == 0) {
+                            result |= PARAM_FRAME;
+                        } else {
+                            break label;
+                        }
                     }
                     case "-e", "-extra" -> {
                         if ((result & PARAM_EXTRA) == 0) {

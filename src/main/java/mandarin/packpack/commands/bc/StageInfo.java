@@ -37,6 +37,7 @@ public class StageInfo extends TimedConstraintCommand {
     private static final int PARAM_SECOND = 2;
     private static final int PARAM_EXTRA = 4;
     private static final int PARAM_COMPACT = 8;
+    private static final int PARAM_FRAME = 16;
 
     private static final int STAGE = 0;
     private static final int MAP = 1;
@@ -193,7 +194,16 @@ public class StageInfo extends TimedConstraintCommand {
             } else if(stages.size() == 1) {
                 int param = checkParameters(command);
                 int star = getLevel(command);
-                boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
+
+                boolean isFrame;
+
+                if ((param & PARAM_SECOND) > 0)
+                    isFrame = false;
+                else if ((param & PARAM_FRAME) > 0)
+                    isFrame = true;
+                else
+                    isFrame = config.useFrame;
+
                 boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
                 boolean isCompact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
 
@@ -211,7 +221,16 @@ public class StageInfo extends TimedConstraintCommand {
             } else {
                 int param = checkParameters(command);
                 int star = getLevel(command);
-                boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
+
+                boolean isFrame;
+
+                if ((param & PARAM_SECOND) > 0)
+                    isFrame = false;
+                else if ((param & PARAM_FRAME) > 0)
+                    isFrame = true;
+                else
+                    isFrame = config.useFrame;
+
                 boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
                 boolean isCompact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
 
@@ -281,6 +300,12 @@ public class StageInfo extends TimedConstraintCommand {
                         result |= PARAM_COMPACT;
                     } else
                         break;
+                } else if (str.equals("-f") || str.equals("-fr")) {
+                    if ((result & PARAM_FRAME) == 0) {
+                        result |= PARAM_FRAME;
+                    } else {
+                        break;
+                    }
                 }
             }
         }

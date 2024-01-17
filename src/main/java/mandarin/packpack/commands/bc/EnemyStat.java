@@ -84,6 +84,7 @@ public class EnemyStat extends ConstraintCommand {
     private static final int PARAM_SECOND = 2;
     private static final int PARAM_EXTRA = 4;
     private static final int PARAM_COMPACT = 8;
+    private static final int PARAM_FRAME = 16;
 
     private final ConfigHolder config;
 
@@ -133,7 +134,15 @@ public class EnemyStat extends ConstraintCommand {
 
                 int[] magnification = handleMagnification(command);
 
-                boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
+                boolean isFrame;
+
+                if ((param & PARAM_SECOND) > 0)
+                    isFrame = false;
+                else if ((param & PARAM_FRAME) > 0)
+                    isFrame = true;
+                else
+                    isFrame = config.useFrame;
+
                 boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
                 boolean isCompact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
 
@@ -171,7 +180,15 @@ public class EnemyStat extends ConstraintCommand {
 
                     int param = checkParameters(command);
 
-                    boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
+                    boolean isFrame;
+
+                    if ((param & PARAM_SECOND) > 0)
+                        isFrame = false;
+                    else if ((param & PARAM_FRAME) > 0)
+                        isFrame = true;
+                    else
+                        isFrame = config.useFrame;
+
                     boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
                     boolean isCompact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
 
@@ -287,6 +304,13 @@ public class EnemyStat extends ConstraintCommand {
                     case "-c", "-compact" -> {
                         if ((result & PARAM_COMPACT) == 0) {
                             result |= PARAM_COMPACT;
+                        } else {
+                            break label;
+                        }
+                    }
+                    case "-f", "-fr" -> {
+                        if ((result & PARAM_FRAME) == 0) {
+                            result |= PARAM_FRAME;
                         } else {
                             break label;
                         }

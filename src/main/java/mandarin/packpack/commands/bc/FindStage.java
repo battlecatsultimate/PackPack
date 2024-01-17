@@ -61,6 +61,7 @@ public class FindStage extends TimedConstraintCommand {
     private static final int PARAM_AND = 32;
     private static final int PARAM_BOSS = 64;
     private static final int PARAM_MONTHLY = 128;
+    private static final int PARAM_FRAME = 256;
 
     private final ConfigHolder config;
 
@@ -107,7 +108,15 @@ public class FindStage extends TimedConstraintCommand {
         int castle = getCastle(command);
         int background = getBackground(command);
 
-        boolean isFrame = (param & PARAM_SECOND) == 0 && config.useFrame;
+        boolean isFrame;
+
+        if ((param & PARAM_SECOND) > 0)
+            isFrame = false;
+        else if ((param & PARAM_FRAME) > 0)
+            isFrame = true;
+        else
+            isFrame = config.useFrame;
+
         boolean isExtra = (param & PARAM_EXTRA) > 0 || config.extra;
         boolean isCompact = (param & PARAM_COMPACT) > 0 || ((holder != null && holder.forceCompact) ? holder.config.compact : config.compact);
         boolean orOperate = (param & PARAM_OR) > 0 && (param & PARAM_AND) == 0;
@@ -396,6 +405,13 @@ public class FindStage extends TimedConstraintCommand {
                     case "-m", "-monthly" -> {
                         if ((result & PARAM_MONTHLY) == 0) {
                             result |= PARAM_MONTHLY;
+                        } else {
+                            break label;
+                        }
+                    }
+                    case "-f", "-fr" -> {
+                        if ((result & PARAM_FRAME) == 0) {
+                            result |= PARAM_FRAME;
                         } else {
                             break label;
                         }
