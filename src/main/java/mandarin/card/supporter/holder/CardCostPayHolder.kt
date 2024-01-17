@@ -110,9 +110,6 @@ class CardCostPayHolder(
                     val amount = (inventory.cards[card] ?: 0) - containers.sumOf { c -> c.pickedCards.count { cd -> cd.unitID == card.unitID } }
 
                     if (amount > 1) {
-                        println(amount)
-                        println(min(amount - 1, container.cost.amount.toInt() - container.pickedCards.size))
-
                         repeat(min(amount - 1, container.cost.amount.toInt() - container.pickedCards.size)) {
                             container.pickedCards.add(card)
                         }
