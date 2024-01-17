@@ -1797,7 +1797,7 @@ public class DataToString extends Data {
         int[][] data = info.time;
 
         for(int i = 0; i < info.time.length; i++) {
-            String reward = MultiLangCont.getStatic().RWNAME.getCont(data[i][1]);
+            String reward = MultiLangCont.getStageDrop(data[i][1], lang);
 
             if(reward == null || reward.isBlank())
                 reward = LangID.getStringByID("data_dumreward", lang).replace("_", Data.trio(data[i][1]));
@@ -1822,7 +1822,7 @@ public class DataToString extends Data {
         for(int i = 0; i < info.time.length; i++) {
             String[] drop = new String[3];
 
-            String reward = MultiLangCont.getStatic().RWNAME.getCont(data[i][1], lang);
+            String reward = MultiLangCont.getStageDrop(data[i][1], lang);
 
             if (reward == null || reward.isBlank())
                 reward = map.rewardNames.get(data[i][1]);
