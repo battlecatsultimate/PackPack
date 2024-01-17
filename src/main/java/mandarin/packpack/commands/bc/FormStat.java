@@ -337,6 +337,7 @@ public class FormStat extends ConstraintCommand {
         String[] content = msg.split(" ");
 
         boolean isSec = false;
+        boolean isFrame = false;
         boolean isLevel = false;
         boolean isTalent = false;
         boolean isExtra = false;
@@ -353,6 +354,14 @@ public class FormStat extends ConstraintCommand {
                 case "-s" -> {
                     if (!isSec)
                         isSec = true;
+                    else {
+                        command.append(content[i]);
+                        written = true;
+                    }
+                }
+                case "-f", "-fr" -> {
+                    if (!isFrame)
+                        isFrame = true;
                     else {
                         command.append(content[i]);
                         written = true;

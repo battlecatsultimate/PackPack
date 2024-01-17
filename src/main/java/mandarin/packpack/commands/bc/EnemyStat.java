@@ -210,6 +210,7 @@ public class EnemyStat extends ConstraintCommand {
         String[] content = msg.split(" ");
 
         boolean isSec = false;
+        boolean isFrame = false;
         boolean isExtra = false;
         boolean isLevel = false;
         boolean isCompact = false;
@@ -223,6 +224,14 @@ public class EnemyStat extends ConstraintCommand {
                 case "-s" -> {
                     if (!isSec)
                         isSec = true;
+                    else {
+                        command.append(content[i]);
+                        written = true;
+                    }
+                }
+                case "-f", "-fr" -> {
+                    if (!isFrame)
+                        isFrame = true;
                     else {
                         command.append(content[i]);
                         written = true;

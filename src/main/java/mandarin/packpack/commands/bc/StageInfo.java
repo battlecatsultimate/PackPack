@@ -342,6 +342,7 @@ public class StageInfo extends TimedConstraintCommand {
         int mode = 0;
 
         boolean second = false;
+        boolean frame = false;
         boolean level = false;
         boolean stm = false;
         boolean mc = false;
@@ -353,6 +354,8 @@ public class StageInfo extends TimedConstraintCommand {
         for(int i = 1; i < contents.length; i++) {
             if(!second && contents[i].equals("-s")) {
                 second = true;
+            } else if (!frame && contents[i].matches("-f(r)?")) {
+                frame = true;
             } else if(!level && contents[i].matches("-lv(l)?") && i < contents.length - 1 && StaticStore.isNumeric(contents[i + 1])) {
                 level = true;
                 i++;

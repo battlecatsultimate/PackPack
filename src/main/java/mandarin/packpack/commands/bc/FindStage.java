@@ -290,6 +290,7 @@ public class FindStage extends TimedConstraintCommand {
         StringBuilder result = new StringBuilder();
 
         boolean second = false;
+        boolean frame = false;
         boolean level = false;
         boolean background = false;
         boolean or = false;
@@ -317,6 +318,8 @@ public class FindStage extends TimedConstraintCommand {
                 }
             } else if(!second && contents[i].equals("-s")) {
                 second = true;
+            } else if (!frame && contents[i].matches("-f(r)?")) {
+                frame = true;
             } else if(!background && (contents[i].equals("-bg") || contents[i].equals("-background")) && i < contents.length - 1 && StaticStore.isNumeric(contents[i + 1])) {
                 background = true;
                 i++;
