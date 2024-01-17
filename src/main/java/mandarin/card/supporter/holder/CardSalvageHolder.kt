@@ -186,20 +186,11 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
                 val adder: (GenericComponentInteractionCreateEvent) -> Unit = {
                     selectedCard.clear()
 
-                    inventory.cards.keys.filter { c -> c.tier == tier && c.unitID != 435 && c.unitID != 484 }
-                        .filter { c ->
-                            when (salvageMode) {
-                                CardData.SalvageMode.T2 -> c.unitID in BannerFilter.Banner.TheAlimighties.getBannerData() || c.unitID in BannerFilter.Banner.GirlsAndMonsters.getBannerData()
-                                CardData.SalvageMode.SEASONAL -> c.unitID in BannerFilter.Banner.Seasonal.getBannerData()
-                                CardData.SalvageMode.COLLAB -> c.unitID in BannerFilter.Banner.Collaboration.getBannerData()
-                                else -> true
-                            }
+                    cards.forEach { c ->
+                        repeat(inventory.cards[c] ?: 0) {
+                            selectedCard.add(c)
                         }
-                        .forEach { c ->
-                            repeat(inventory.cards[c] ?: 0) {
-                                selectedCard.add(c)
-                            }
-                        }
+                    }
 
                     it.deferReply()
                         .setContent("Successfully added all of your cards! Keep in mind that you can't undo the task once you salvage the cards")
@@ -235,21 +226,7 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
                 }, LangID.EN))
             }
             "dupe" -> {
-                selectedCard.clear()
-
-                inventory.cards.keys.filter { c -> c.tier == tier && c.unitID != 435 && c.unitID != 484 }
-                    .filter { c ->
-                        when (salvageMode) {
-                            CardData.SalvageMode.T2 -> c.unitID in BannerFilter.Banner.TheAlimighties.getBannerData() || c.unitID in BannerFilter.Banner.GirlsAndMonsters.getBannerData()
-                            CardData.SalvageMode.SEASONAL -> c.unitID in BannerFilter.Banner.Seasonal.getBannerData()
-                            CardData.SalvageMode.COLLAB -> c.unitID in BannerFilter.Banner.Collaboration.getBannerData()
-                            else -> true
-                        }
-                    }
-                    .filter { c ->
-                        (inventory.cards[c] ?: 0 ) > 1
-                    }
-                    .forEach { c ->
+                cards.forEach { c ->
                         val amount = (inventory.cards[c] ?: 0)
 
                         if (amount >= 2) {
