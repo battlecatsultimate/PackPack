@@ -70,7 +70,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
                 if (event instanceof EntitySelectInteractionEvent e) {
                     List<IMentionable> mentionables = e.getValues();
 
-                    if(mentionables.size() > 0 && mentionables.get(0) instanceof Role r) {
+                    if(!mentionables.isEmpty() && mentionables.get(0) instanceof Role r) {
                         if(alreadyBeingUsed(r.getId())) {
                             event.deferReply(true)
                                     .setContent(LangID.getStringByID("idset_rolealr", lang))
@@ -99,7 +99,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
                 if (event instanceof EntitySelectInteractionEvent e) {
                     List<IMentionable> mentionables = e.getValues();
 
-                    if(mentionables.size() > 0 && mentionables.get(0) instanceof Role r) {
+                    if(!mentionables.isEmpty() && mentionables.get(0) instanceof Role r) {
                         if(alreadyBeingUsed(r.getId())) {
                             event.deferReply(true)
                                     .setContent(LangID.getStringByID("idset_rolealr", lang))
@@ -136,7 +136,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
                 if (event instanceof EntitySelectInteractionEvent e) {
                     List<IMentionable> mentionables = e.getValues();
 
-                    if(mentionables.size() > 0 && mentionables.get(0) instanceof Role r) {
+                    if(!mentionables.isEmpty() && mentionables.get(0) instanceof Role r) {
                         if(alreadyBeingUsed(r.getId())) {
                             event.deferReply(true)
                                     .setContent(LangID.getStringByID("idset_rolealr", lang))
