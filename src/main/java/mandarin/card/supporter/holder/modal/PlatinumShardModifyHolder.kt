@@ -46,7 +46,7 @@ class PlatinumShardModifyHolder(author: Message, channelID: String, messageID: S
         }
 
         if (isAdd) {
-            val oldAmount = inventory.catFoods
+            val oldAmount = inventory.platinumShard
 
             event.deferReply()
                 .setContent("Successfully added ${EmojiStore.ABILITY["SHARD"]?.formatted} $amount\n" +
@@ -65,9 +65,9 @@ class PlatinumShardModifyHolder(author: Message, channelID: String, messageID: S
             val realAmount = min(amount, inventory.platinumShard)
 
             event.deferReply()
-                .setContent("Successfully removed ${EmojiStore.ABILITY["CF"]?.formatted} $amount\n" +
+                .setContent("Successfully removed ${EmojiStore.ABILITY["SHARD"]?.formatted} $amount\n" +
                         "\n" +
-                        "Result : ${EmojiStore.ABILITY["CF"]?.formatted} ${inventory.catFoods} -> ${EmojiStore.ABILITY["CF"]?.formatted} ${max(0, inventory.platinumShard - amount)}")
+                        "Result : ${EmojiStore.ABILITY["SHARD"]?.formatted} ${inventory.platinumShard} -> ${EmojiStore.ABILITY["SHARD"]?.formatted} ${max(0, inventory.platinumShard - amount)}")
                 .mentionRepliedUser(false)
                 .queue()
 
