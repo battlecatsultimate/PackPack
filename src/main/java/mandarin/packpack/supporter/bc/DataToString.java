@@ -591,7 +591,7 @@ public class DataToString extends Data {
             du = f;
 
         if(isFrame) {
-            return BasisSet.current().t().getFinRes(du.getRespawn())+"f";
+            return t.getCooldown(du.getRespawn())+"f";
         } else {
             return df.format(t.getCooldown(du.getRespawn())/30.0)+"s";
         }
