@@ -34,7 +34,7 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
         CardData.SalvageMode.COLLAB -> CardData.Tier.UNCOMMON
         CardData.SalvageMode.T3 -> CardData.Tier.ULTRA
     }
-    private val cards = ArrayList<Card>(inventory.cards.keys.filter { c -> c.tier == tier }.sortedWith(CardComparator()))
+    private val cards = ArrayList<Card>(inventory.cards.keys.filter { c -> c.tier == tier && c.unitID != 435 && c.unitID != 484 }.sortedWith(CardComparator()))
 
     private val selectedCard = ArrayList<Card>()
 
