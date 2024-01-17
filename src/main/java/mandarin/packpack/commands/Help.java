@@ -58,7 +58,7 @@ public class Help extends Command {
             case "checkbcu" ->
                     replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("checkbcu", true, false, false)));
             case "serverstat", "ss" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("bcustat", false, false, false)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("serverstat", false, false, false)));
             case "analyze" ->
                     replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("analyze", false, false, false)));
             case "prefix" ->
