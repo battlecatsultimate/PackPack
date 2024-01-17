@@ -4,6 +4,7 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
 
@@ -38,7 +39,7 @@ public class ConfirmPopUpHolder extends ComponentHolder {
     }
 
     @Override
-    public void onEvent(GenericComponentInteractionCreateEvent event) {
+    public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
         expired = true;
 
         StaticStore.removeHolder(userID, this);

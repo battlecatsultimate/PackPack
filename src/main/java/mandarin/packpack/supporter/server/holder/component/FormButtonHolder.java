@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -59,7 +60,7 @@ public class FormButtonHolder extends ComponentHolder {
     }
 
     @Override
-    public void onEvent(GenericComponentInteractionCreateEvent event) {
+    public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
         embed.delete().queue();
 
         MessageChannel ch = event.getMessageChannel();

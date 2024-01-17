@@ -16,7 +16,7 @@ public abstract class ModalHolder extends Holder {
     }
 
     @Override
-    public final STATUS handleEvent(Event event) {
+    public final STATUS handleEvent(@Nonnull Event event) {
         if(event instanceof ModalInteractionEvent modalEvent && canHandleEvent(modalEvent)) {
             onEvent(modalEvent);
         }
@@ -24,7 +24,7 @@ public abstract class ModalHolder extends Holder {
         return STATUS.WAIT;
     }
 
-    public abstract void onEvent(ModalInteractionEvent event);
+    public abstract void onEvent(@Nonnull ModalInteractionEvent event);
 
     @Nonnull
     public String getValueFromMap(List<ModalMapping> mappings, String key) {

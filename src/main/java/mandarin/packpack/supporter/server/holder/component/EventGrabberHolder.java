@@ -39,7 +39,7 @@ public class EventGrabberHolder extends ComponentHolder {
     }
 
     @Override
-    public void onEvent(GenericComponentInteractionCreateEvent event) {
+    public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
             case "bcen" -> {
                 EventFileGrabber.newWay.put(EventFactor.EN, !EventFileGrabber.newWay.get(EventFactor.EN));

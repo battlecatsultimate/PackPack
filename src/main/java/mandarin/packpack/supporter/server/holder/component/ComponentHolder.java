@@ -26,7 +26,7 @@ public abstract class ComponentHolder extends Holder {
         return STATUS.FINISH;
     }
 
-    public abstract void onEvent(GenericComponentInteractionCreateEvent event);
+    public abstract void onEvent(@Nonnull GenericComponentInteractionCreateEvent event);
 
     public int parseDataToInt(GenericComponentInteractionCreateEvent event) {
         if(!(event instanceof StringSelectInteractionEvent)) {

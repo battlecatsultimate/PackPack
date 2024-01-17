@@ -6,6 +6,7 @@ import mandarin.packpack.supporter.server.data.ConfigHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 
+import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 public class LevelModalHolder extends ModalHolder {
@@ -20,7 +21,7 @@ public class LevelModalHolder extends ModalHolder {
     }
 
     @Override
-    public void onEvent(ModalInteractionEvent event) {
+    public void onEvent(@Nonnull ModalInteractionEvent event) {
         String value = getValueFromMap(event.getValues(), "level");
 
         if(!StaticStore.isNumeric(value)) {

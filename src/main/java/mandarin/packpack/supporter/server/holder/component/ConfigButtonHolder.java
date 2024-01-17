@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.interactions.components.text.TextInput;
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle;
 import net.dv8tion.jda.api.interactions.modals.Modal;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +73,7 @@ public class ConfigButtonHolder extends ComponentHolder {
     }
 
     @Override
-    public void onEvent(GenericComponentInteractionCreateEvent event) {
+    public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
             case "language" -> {
                 StringSelectInteractionEvent es = (StringSelectInteractionEvent) event;

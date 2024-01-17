@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +49,7 @@ public class SetupModButtonHolder extends ComponentHolder {
     }
 
     @Override
-    public void onEvent(GenericComponentInteractionCreateEvent event) {
+    public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
         MessageChannel ch = msg.getChannel();
 
         switch (event.getComponentId()) {

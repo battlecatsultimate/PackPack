@@ -62,7 +62,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
     }
 
     @Override
-    public void onEvent(GenericComponentInteractionCreateEvent event) {
+    public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
         int lang = holder.config.lang;
 
         switch (event.getComponentId()) {

@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
@@ -42,7 +43,7 @@ public class StageInfoButtonHolder extends ComponentHolder {
     }
 
     @Override
-    public void onEvent(GenericComponentInteractionCreateEvent ev) {
+    public void onEvent(@NotNull GenericComponentInteractionCreateEvent ev) {
         expire(userID);
 
         if(!(ev instanceof ButtonInteractionEvent event)) {

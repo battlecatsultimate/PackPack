@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 public class TreasureModalHolder extends ModalHolder {
@@ -47,7 +48,7 @@ public class TreasureModalHolder extends ModalHolder {
     }
 
     @Override
-    public void onEvent(ModalInteractionEvent event) {
+    public void onEvent(@Nonnull ModalInteractionEvent event) {
         StringBuilder result = new StringBuilder();
         String key = null;
         boolean[] done = new boolean[1];

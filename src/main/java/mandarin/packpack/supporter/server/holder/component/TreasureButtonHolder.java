@@ -40,7 +40,7 @@ public class TreasureButtonHolder extends ComponentHolder {
     }
 
     @Override
-    public void onEvent(GenericComponentInteractionCreateEvent event) {
+    public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
             case "basic" -> {
                 TextInput research = buildTextInput("research", "data_lresearch", "treasure_lresearchpl", false,  1, TreasureHolder.basicMax[TreasureHolder.L_RESEARCH], String.valueOf(treasure.basic[TreasureHolder.L_RESEARCH]));

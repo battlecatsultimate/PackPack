@@ -5,6 +5,9 @@ import mandarin.packpack.supporter.lang.LangID;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.jcodec.api.NotSupportedException;
 
 import javax.annotation.Nonnull;
@@ -93,6 +96,9 @@ public abstract class Holder {
     @Nonnull
     public final String userID;
 
+    @Nullable
+    public Holder parent;
+
     public boolean expired = false;
 
     public Holder(@Nonnull Message author, @Nonnull String channelID, @Nonnull String messageID) {
@@ -143,6 +149,70 @@ public abstract class Holder {
     public void createMessageWithNoPings(MessageChannel ch, String content) {
         ch.sendMessage(content)
                 .setAllowedMentions(new ArrayList<>())
+                .queue();
+    }
+
+    public void onConnected(@Nonnull GenericComponentInteractionCreateEvent event) {
+
+    }
+
+    public void onBack() {
+
+    }
+
+    public void connectTo(Holder holder) {
+        if (holder.expired) {
+            throw new IllegalStateException("E/Holder::connectTo - Tried to connect already expired holder!\nCurrent holder : " + this.getClass() + "\nConnected holder : " + holder.getClass());
+        }
+
+        holder.parent = this;
+
+        if (holder.getClass() == this.getClass()) {
+            StaticStore.removeHolder(userID, this);
+        }
+
+        StaticStore.putHolder(userID, holder);
+    }
+
+    public void connectTo(@Nonnull GenericComponentInteractionCreateEvent event, Holder holder) {
+        if (holder.expired) {
+            throw new IllegalStateException("E/Holder::connectTo - Tried to connect already expired holder!\nCurrent holder : " + this.getClass() + "\nConnected holder : " + holder.getClass());
+        }
+
+        holder.parent = this;
+
+        if (holder.getClass() == this.getClass()) {
+            StaticStore.removeHolder(userID, this);
+        }
+
+        StaticStore.putHolder(userID, holder);
+
+        holder.onConnected(event);
+    }
+
+    public void goBack() {
+        if (parent == null) {
+            throw new IllegalStateException("E/Holder::goBack - Can't go back because there's no parent holder!\nHolder : " + this.getClass());
+        } else {
+            expired = true;
+            StaticStore.removeHolder(userID, this);
+            StaticStore.putHolder(userID, parent);
+
+            parent.onBack();
+        }
+    }
+
+    public void registerPopUp(GenericComponentInteractionCreateEvent event, String content, int lang) {
+        event.deferEdit()
+                .setContent(content)
+                .setAllowedMentions(new ArrayList<>())
+                .mentionRepliedUser(false)
+                .setComponents(
+                        ActionRow.of(
+                                Button.success("confirm", LangID.getStringByID("button_confirm", lang)),
+                                Button.danger("cancel", LangID.getStringByID("button_cancel", lang))
+                        )
+                )
                 .queue();
     }
 }

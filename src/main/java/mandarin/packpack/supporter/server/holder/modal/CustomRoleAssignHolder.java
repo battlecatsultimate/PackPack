@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.interactions.modals.ModalMapping;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +38,7 @@ public class CustomRoleAssignHolder extends ModalHolder {
     }
 
     @Override
-    public void onEvent(ModalInteractionEvent event) {
+    public void onEvent(@Nonnull ModalInteractionEvent event) {
         int lang = holder.config.lang;
         List<ModalMapping> values = event.getValues();
 

@@ -58,7 +58,7 @@ public class CustomIDManagerHolder extends ComponentHolder {
     }
 
     @Override
-    public void onEvent(GenericComponentInteractionCreateEvent event) {
+    public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
         int lang = holder.config.lang;
 
         switch (event.getComponentId()) {
