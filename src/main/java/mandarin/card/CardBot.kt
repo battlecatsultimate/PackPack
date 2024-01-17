@@ -10,7 +10,9 @@ import mandarin.card.commands.*
 import mandarin.card.supporter.*
 import mandarin.card.supporter.log.LogSession
 import mandarin.card.supporter.log.TransactionLogger
+import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.supporter.*
+import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.data.ShardLoader
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
@@ -30,6 +32,7 @@ import java.io.FileWriter
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.collections.HashMap
 
 object CardBot : ListenerAdapter() {
     var globalPrefix = "cd."
@@ -78,49 +81,47 @@ object CardBot : ListenerAdapter() {
 
         StaticStore.saver.schedule(object : TimerTask() {
             override fun run() {
-                if (notifier == 2 && !test) {
+                if (notifier == 2) {
                     notifier = 0
 
                     val removeQueue = ArrayList<String>()
 
                     CardData.notifierGroup.forEach { n ->
-                        client.retrieveUserById(n).queue { u ->
-                            val packList = StringBuilder()
+                        if (!test || n == StaticStore.MANDARIN_SMELL) {
+                            client.retrieveUserById(n).queue { u ->
+                                val packList = StringBuilder()
 
-                            val cooldown = CardData.cooldown[u.id] ?: return@queue
+                                val cooldown = CardData.cooldown[u.id] ?: return@queue
 
-                            val currentTime = CardData.getUnixEpochTime()
+                                val currentTime = CardData.getUnixEpochTime()
 
-                            cooldown.forEachIndexed { i, c ->
-                                if (c > 0 && c - currentTime <= 0) {
-                                    val packName = when (i) {
-                                        CardData.LARGE -> "Large Pack"
-                                        CardData.SMALL -> "Small Pack"
-                                        CardData.PREMIUM -> "Premium Pack"
-                                        else -> ""
-                                    }
+                                cooldown.forEach { (uuid, cd) ->
+                                    val pack = CardData.cardPacks.find { pack -> pack.uuid == uuid }
 
-                                    packList.append("- ")
-                                            .append(packName)
+                                    if (pack != null && cd > 0 && cd - currentTime <= 0) {
+                                        packList.append("- ")
+                                            .append(pack.packName)
                                             .append("\n")
+                                    }
                                 }
-                            }
 
-                            if (packList.isNotBlank()) {
-                                u.openPrivateChannel().queue({ private ->
-                                    private.sendMessage("You can roll pack below!\n\n$packList").queue({
-                                        for (i in cooldown.indices) {
-                                            if (cooldown[i] > 0 && cooldown[i] - currentTime <= 0)
-                                                cooldown[i] = 0
-                                        }
-                                    }, { e ->
-                                        if (e is ContextException) {
-                                            removeQueue.add(n)
-                                        }
+                                if (packList.isNotBlank()) {
+                                    u.openPrivateChannel().queue({ private ->
+                                        private.sendMessage("You can roll pack below!\n\n$packList").queue({
+                                            cooldown.forEach { (uuid, cd) ->
+                                                if (cd > 0 && cd - currentTime <= 0) {
+                                                    cooldown[uuid] = 0
+                                                }
+                                            }
+                                        }, { e ->
+                                            if (e is ContextException) {
+                                                removeQueue.add(n)
+                                            }
+                                        })
+                                    }, { _ ->
+                                        removeQueue.add(n)
                                     })
-                                }, { _ ->
-                                    removeQueue.add(n)
-                                })
+                                }
                             }
                         }
                     }
@@ -320,6 +321,8 @@ object CardBot : ListenerAdapter() {
                     Hack().execute(event)
                 }
             }
+            "${globalPrefix}managepack",
+            "${globalPrefix}mp" -> ManagePack().execute(event)
         }
 
         val session = findSession(event.channel.idLong) ?: return
@@ -376,6 +379,8 @@ object CardBot : ListenerAdapter() {
         CommonStatic.ctx = PackContext()
         CommonStatic.getConfig().ref = false
         CommonStatic.getConfig().updateOldMusic = false
+
+        LangID.initialize()
 
         readCardData()
 
@@ -450,6 +455,14 @@ object CardBot : ListenerAdapter() {
             rollLocked = obj.get("rollLocked").asBoolean
         }
 
+        if (obj.has("cardPacks")) {
+            val arr = obj.getAsJsonArray("cardPacks")
+
+            arr.forEach { e ->
+                CardData.cardPacks.add(CardPack.fromJson(e.asJsonObject))
+            }
+        }
+
         if (obj.has("inventory")) {
             val arr = obj.getAsJsonArray("inventory")
 
@@ -500,13 +513,25 @@ object CardBot : ListenerAdapter() {
                 if (o.has("key") && o.has("val")) {
                     val value = o.getAsJsonArray("val")
 
-                    val arr = longArrayOf(-1, -1, -1)
+                    val packCooldownMap = HashMap<String, Long>()
 
-                    value.forEachIndexed { i, v ->
-                        arr[i] = v.asLong
+                    value.forEach { e ->
+                        if (e.isJsonObject) {
+                            val mapObj = e.asJsonObject
+
+                            if (mapObj.has("key") && mapObj.has("val")) {
+                                val uuid = mapObj.get("key").asString
+
+                                val pack = CardData.cardPacks.find { pack -> pack.uuid == uuid }
+
+                                if (pack != null) {
+                                    packCooldownMap[uuid] = mapObj.get("val").asLong
+                                }
+                            }
+                        }
                     }
 
-                    CardData.cooldown[o.get("key").asString] = arr
+                    CardData.cooldown[o.get("key").asString] = packCooldownMap
                 }
             }
         }
@@ -601,6 +626,14 @@ object CardBot : ListenerAdapter() {
         obj.addProperty("locked", locked)
         obj.addProperty("rollLocked", rollLocked)
 
+        val cardPacks = JsonArray()
+
+        CardData.cardPacks.forEach { pack ->
+            cardPacks.add(pack.asJson())
+        }
+
+        obj.add("cardPacks", cardPacks)
+
         val inventory = JsonArray()
 
         for (key in CardData.inventories.keys) {
@@ -635,18 +668,23 @@ object CardBot : ListenerAdapter() {
         val cooldown = JsonArray()
 
         CardData.cooldown.keys.forEach {
-            val cd = CardData.cooldown[it]
+            val cooldownMap = CardData.cooldown[it]
 
-            if (cd != null) {
+            if (cooldownMap != null) {
                 val o = JsonObject()
 
                 o.addProperty("key", it)
 
                 val value = JsonArray()
 
-                value.add(cd[0])
-                value.add(cd[1])
-                value.add(cd[2])
+                cooldownMap.forEach { (uuid, cd) ->
+                    val mapObj = JsonObject()
+
+                    mapObj.addProperty("key", uuid)
+                    mapObj.addProperty("val", cd)
+
+                    value.add(mapObj)
+                }
 
                 o.add("val", value)
 

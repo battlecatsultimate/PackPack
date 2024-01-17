@@ -4,6 +4,7 @@ import mandarin.card.supporter.Activator
 import mandarin.card.supporter.Card
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.TradingSession
+import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import net.dv8tion.jda.api.EmbedBuilder
@@ -23,7 +24,7 @@ object TransactionLogger {
     lateinit var modChannel: MessageChannel
     lateinit var catFoodChannel: MessageChannel
 
-    fun logRoll(cards: List<Card>, pack: CardData.Pack, member: Member, manual: Boolean) {
+    fun logRoll(cards: List<Card>, pack: CardPack, member: Member, manual: Boolean) {
         if (!this::logChannel.isInitialized)
             return
 
@@ -39,7 +40,7 @@ object TransactionLogger {
             builder.setDescription("User ${member.asMention} successfully rolled card pack, and result is below")
         }
 
-        builder.addField(MessageEmbed.Field("Pack", pack.getPackName(), false))
+        builder.addField(MessageEmbed.Field("Pack", pack.packName, false))
 
         val cardBuilder = StringBuilder()
 
@@ -527,7 +528,7 @@ object TransactionLogger {
         LogSession.session.logCraft(member, shards, craftedCards)
     }
 
-    fun logMassRoll(manager: Member, people: Int, pack: CardData.Pack) {
+    fun logMassRoll(manager: Member, people: Int, pack: CardPack) {
         if (!this::logChannel.isInitialized)
             return
 
@@ -539,7 +540,7 @@ object TransactionLogger {
 
         builder.setDescription("Successfully rolled card pack manually by moderator, and result is below")
 
-        builder.addField(MessageEmbed.Field("Pack", pack.getPackName(), false))
+        builder.addField(MessageEmbed.Field("Pack", pack.packName, false))
         builder.addField(MessageEmbed.Field("Number of People", people.toString(), false))
 
         builder.setAuthor(manager.user.effectiveName, null, manager.user.effectiveAvatarUrl)

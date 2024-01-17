@@ -36,6 +36,10 @@ class Report : Command(LangID.EN, true) {
             session.catFoodPack.map { (_, catFood) -> catFood }.sum()
         }
 
+        val totalPlatinumShardPack = sessions.sumOf { session ->
+            session.platinumShardPack.map { (_, platinumShard) -> platinumShard }.sum()
+        }
+
         val totalGeneratedCards = sessions.sumOf { session ->
             session.generatedCards.map { (_, cardMap) -> cardMap.map { (_, amount) -> amount }.sum() }.sum()
         }
@@ -206,6 +210,7 @@ class Report : Command(LangID.EN, true) {
                 val existingMembers = allMembers.filter { member -> CardData.inventories.containsKey(member.id) }
 
                 val catFoodPackMap = HashMap<Long, Long>()
+                val platinumShardPackMap = HashMap<Long, Long>()
 
                 val generatedCardsMap = HashMap<Card, Long>()
 
@@ -250,6 +255,10 @@ class Report : Command(LangID.EN, true) {
                 sessions.forEach { session ->
                     session.catFoodPack.forEach { (id, amount) ->
                         catFoodPackMap[id] = (catFoodPackMap[id] ?: 0) + amount
+                    }
+
+                    session.platinumShardPack.forEach { (id, amount) ->
+                        platinumShardPackMap[id] = (platinumShardPackMap[id] ?: 0) + amount
                     }
 
                     session.generatedCards.map { (_, cardMap) -> cardMap }.forEach { cardMap ->
@@ -480,6 +489,25 @@ class Report : Command(LangID.EN, true) {
 
                     i++
                 }
+
+                reporter.append("\n=====================================\n\n")
+                    .append(totalPlatinumShardPack)
+                    .append(" shards have been consumed for generating pack\n\n===== PS consumed for each user =====\n\n")
+
+                i = 1
+
+                platinumShardPackMap.entries.sortedByDescending { e -> e.value }.forEach { (id, amount) ->
+                    val member = existingMembers.find { member -> member.idLong == id }
+
+                    if (member != null) {
+                        reporter.append(i).append(". ").append(member.effectiveName).append(" [").append(id).append("] : ").append(amount).append("\n")
+                    } else {
+                        reporter.append(i).append(". UNKNOWN [").append(id).append("] : ").append(amount).append("\n")
+                    }
+
+                    i++
+                }
+
 
                 reporter.append("\n=====================================\n\n")
                     .append(totalGeneratedCards)
@@ -926,6 +954,7 @@ class Report : Command(LangID.EN, true) {
                     "Out of these people :\n" +
                     "\n" +
                     "$totalCatFoodPack ${EmojiStore.ABILITY["CF"]?.formatted} have been consumed for generating pack\n" +
+                    "$totalPlatinumShardPack ${EmojiStore.ABILITY["SHARD"]?.formatted} have been consumed for generating pack\n" +
                     "\n" +
                     "$totalGeneratedCards cards have been generated, added into economy\n" +
                     "\n" +

@@ -141,7 +141,7 @@ class Product(val requiredFilter: Int, vararg filters: Filter) {
         )
 
         val seasonal = Product(1,
-            BannerFilter(BannerFilter.Banner.Seasonal, 3, "3 Sesonal Units")
+            BannerFilter(BannerFilter.Banner.Seasonal, 3, "3 Seasonal Units")
         )
 
         val ramiel = Product(1,

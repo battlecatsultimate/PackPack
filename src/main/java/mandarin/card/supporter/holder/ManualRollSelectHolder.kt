@@ -17,15 +17,7 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import kotlin.math.ceil
 import kotlin.math.min
 
-class PackSelectHolder(
-    author: Message,
-    channelID: String,
-    private val member: Member,
-    private val message: Message,
-    private val noImage: Boolean
-) : ComponentHolder(author, channelID, message.id) {
-    private val packList = CardData.cardPacks.filter { pack -> pack.activated && !pack.isInvalid() && (pack.cost.roles.isEmpty() || pack.cost.roles.any { id -> id in member.roles.map { role -> role.id } }) }
-
+class ManualRollSelectHolder(author: Message, channelID: String, private val message: Message, private val member: Member, private val users: List<String>) : ComponentHolder(author, channelID, message.id) {
     private var page = 0
 
     override fun clean() {
@@ -44,7 +36,7 @@ class PackSelectHolder(
 
                 val uuid = event.values[0]
 
-                val pack = packList.find { pack -> pack.uuid == uuid }
+                val pack = CardData.cardPacks.find { pack -> pack.uuid == uuid }
 
                 if (pack == null) {
                     event.deferReply()
@@ -55,7 +47,7 @@ class PackSelectHolder(
                     return
                 }
 
-                connectTo(event, PackPayHolder(authorMessage, channelID, message, member, pack, noImage))
+                connectTo(event, ManualRollConfirmHolder(authorMessage, channelID, message.id, member, pack, users))
             }
             "close" -> {
                 event.deferEdit()
@@ -92,14 +84,14 @@ class PackSelectHolder(
         }
     }
 
+    override fun onConnected(event: GenericComponentInteractionCreateEvent) {
+        applyResult(event)
+    }
+
     override fun onBack() {
         super.onBack()
 
         applyResult()
-    }
-
-    override fun onConnected(event: GenericComponentInteractionCreateEvent) {
-        applyResult(event)
     }
 
     private fun applyResult(event: GenericComponentInteractionCreateEvent) {
@@ -124,27 +116,10 @@ class PackSelectHolder(
 
         val packOptions = ArrayList<SelectOption>()
 
-        val size = min(packList.size, SearchHolder.PAGE_CHUNK * (page + 1))
+        val size = min(CardData.cardPacks.size, SearchHolder.PAGE_CHUNK * (page + 1))
 
         for (i in page * SearchHolder.PAGE_CHUNK until size) {
-            val pack = packList[i]
-            val cooldownMap = CardData.cooldown[authorMessage.author.id]
-
-            val desc = if (cooldownMap == null) {
-                ""
-            } else {
-                val cooldown = cooldownMap[pack.uuid]
-
-                if (cooldown != null && cooldown - CardData.getUnixEpochTime() > 0) {
-                    "Cooldown Left : ${CardData.convertMillisecondsToText(cooldown - CardData.getUnixEpochTime())}"
-                } else {
-                    ""
-                }
-            }
-
-            packOptions.add(
-                SelectOption.of(pack.packName, pack.uuid).withDescription(desc.ifEmpty { null })
-            )
+            packOptions.add(SelectOption.of(CardData.cardPacks[i].packName, CardData.cardPacks[i].uuid))
         }
 
         val packs = StringSelectMenu.create("pack")
@@ -154,9 +129,9 @@ class PackSelectHolder(
 
         result.add(ActionRow.of(packs))
 
-        if (packList.size > SearchHolder.PAGE_CHUNK) {
+        if (CardData.cardPacks.size > SearchHolder.PAGE_CHUNK) {
             val buttons = ArrayList<Button>()
-            val totalPage = ceil(packList.size * 1.0 / SearchHolder.PAGE_CHUNK)
+            val totalPage = ceil(CardData.cardPacks.size * 1.0 / SearchHolder.PAGE_CHUNK)
 
             if (totalPage > 10) {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).withDisabled(page - 10 < 0))

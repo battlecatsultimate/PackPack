@@ -9,6 +9,7 @@ import com.google.gson.JsonParser
 import mandarin.card.supporter.Card
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.TradingSession
+import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.supporter.StaticStore
 import java.io.BufferedReader
 import java.io.File
@@ -266,6 +267,7 @@ class LogSession {
     val activeMembers = HashSet<Long>()
 
     val catFoodPack = HashMap<Long, Long>()
+    val platinumShardPack = HashMap<Long, Long>()
 
     val generatedCards = HashMap<Long, HashMap<Card, Long>>()
 
@@ -404,14 +406,12 @@ class LogSession {
         activeMembers.add(member)
     }
 
-    fun logRoll(member: Long, pack: CardData.Pack, cards: List<Card>) {
-        val cf = if (pack == CardData.Pack.PREMIUM)
-            0
-        else
-            pack.cost
+    fun logRoll(member: Long, pack: CardPack, cards: List<Card>) {
+        if (pack.cost.catFoods != 0L)
+            catFoodPack[member] = (catFoodPack[member] ?: 0) + pack.cost.catFoods
 
-        if (cf != 0)
-            catFoodPack[member] = (catFoodPack[member] ?: 0) + cf
+        if (pack.cost.platinumShards != 0L)
+            platinumShardPack[member] = (platinumShardPack[member] ?: 0) + pack.cost.platinumShards
 
         val cardMap = generatedCards.computeIfAbsent(member) { HashMap() }
 

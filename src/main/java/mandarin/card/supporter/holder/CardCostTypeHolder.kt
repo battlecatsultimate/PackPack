@@ -1,0 +1,83 @@
+package mandarin.card.supporter.holder
+
+import mandarin.card.CardBot
+import mandarin.card.supporter.CardData
+import mandarin.card.supporter.filter.BannerFilter
+import mandarin.card.supporter.pack.BannerCardCost
+import mandarin.card.supporter.pack.CardCost
+import mandarin.card.supporter.pack.CardPack
+import mandarin.card.supporter.pack.TierCardCost
+import mandarin.packpack.supporter.server.holder.component.ComponentHolder
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
+import net.dv8tion.jda.api.interactions.components.ActionRow
+import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.interactions.components.selections.SelectOption
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
+
+class CardCostTypeHolder(author: Message, channelID: String, private val message: Message, private val pack: CardPack) : ComponentHolder(author, channelID, message.id) {
+    override fun clean() {
+
+    }
+
+    override fun onExpire(id: String?) {
+
+    }
+
+    override fun onEvent(event: GenericComponentInteractionCreateEvent) {
+        if (event.componentId == "type") {
+            if (event !is StringSelectInteractionEvent)
+                return
+
+            val type = CardCost.CostType.valueOf(event.values[0])
+
+            when(type) {
+                CardCost.CostType.BANNER -> {
+                    connectTo(event, BannerCostHolder(authorMessage, channelID, message, pack, BannerCardCost(BannerFilter.Banner.DarkHeroes, 0), true))
+                }
+                CardCost.CostType.TIER -> {
+                    connectTo(event, TierCostHolder(authorMessage, channelID, message, pack, TierCardCost(CardPack.CardType.T1, 0), true))
+                }
+            }
+        } else if (event.componentId == "back") {
+            if (pack in CardData.cardPacks) {
+                CardBot.saveCardData()
+            }
+
+            event.deferEdit().queue()
+
+            goBack()
+        }
+    }
+
+    override fun onConnected(event: GenericComponentInteractionCreateEvent) {
+        val options = ArrayList<SelectOption>()
+
+        for (type in CardCost.CostType.entries) {
+            when (type) {
+                CardCost.CostType.BANNER -> options.add(SelectOption.of("Banner", type.name))
+                CardCost.CostType.TIER -> options.add(SelectOption.of("Tier", type.name))
+            }
+        }
+
+        event.deferEdit()
+            .setContent("Select type of cost that you want to add")
+            .setComponents(
+                arrayListOf(
+                    ActionRow.of(
+                        StringSelectMenu.create("type")
+                            .addOptions(options)
+                            .setPlaceholder("Decide type of card cost")
+                            .build()
+                    ),
+                    ActionRow.of(
+                        Button.secondary("back", "Go Back")
+                    )
+                )
+            )
+            .setAllowedMentions(ArrayList())
+            .mentionRepliedUser(false)
+            .queue()
+    }
+}

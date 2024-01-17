@@ -177,16 +177,13 @@ object CardData {
 
     val activatedBanners = ArrayList<Activator>()
 
-    val cooldown = HashMap<String, LongArray>()
+    val cooldown = HashMap<String, HashMap<String, Long>>()
     val lastMessageSent = HashMap<String, Long>()
 
     var minimumCatFoods = 20L
     var maximumCatFoods = 20L
 
     var catFoodCooldown = 120000L // 120 seconds as default
-
-    const val smallLargePackCooldown = 3 * 24 * 60 * 60 * 1000 // 72 hours in milliseconds
-    const val premiumPackCooldown = 2 * 24 * 60 * 60 * 1000 // 48 hours in milliseconds
 
     /*
     -------------------------------------------------------
@@ -291,26 +288,6 @@ object CardData {
     -------------------------------------------------------
      */
 
-    enum class Pack(val cost: Int) {
-        LARGE(10000),
-        SMALL(5000),
-        PREMIUM(-1),
-        NONE(-1);
-
-        fun getPackName() : String {
-            return when(this) {
-                LARGE -> "Large Card Pack"
-                SMALL -> "Small Card Pack"
-                PREMIUM -> "Premium Card Pack"
-                else -> "Unknown Pack $this"
-            }
-        }
-    }
-
-    const val SMALL = 0
-    const val LARGE = 1
-    const val PREMIUM = 2
-
     val cardPacks = ArrayList<CardPack>()
 
     /*
@@ -373,8 +350,8 @@ object CardData {
         return organizer in roleList
     }
 
-    fun appendUncommon(banner: List<Card>) : List<Card> {
-        val result = ArrayList(banner)
+    fun appendUncommon(): List<Card> {
+        val result = ArrayList(uncommon)
 
         activatedBanners.filter { b -> b.tier == Tier.UNCOMMON }.forEach { b ->
             result.addAll(bannerData[b.tier.ordinal][b.banner].mapNotNull { i -> cards.find { c -> c.unitID == i && c.tier == b.tier } })
@@ -383,8 +360,8 @@ object CardData {
         return result
     }
 
-    fun appendUltra(banner: List<Card>) : List<Card> {
-        val result = ArrayList(banner)
+    fun appendUltra(): List<Card> {
+        val result = ArrayList(ultraRare)
 
         activatedBanners.filter { b -> b.tier == Tier.ULTRA }.forEach { b ->
             result.addAll(bannerData[b.tier.ordinal][b.banner].mapNotNull { i -> cards.find { c -> c.unitID == i && c.tier == b.tier } })
@@ -393,8 +370,8 @@ object CardData {
         return result
     }
 
-    fun appendLR(banner: List<Card>) : List<Card> {
-        val result = ArrayList(banner)
+    fun appendLR(): List<Card> {
+        val result = ArrayList(legendRare)
 
         if (Activator.Bikkuriman in activatedBanners) {
             result.addAll(bannerData[Tier.LEGEND.ordinal][0].mapNotNull { i -> cards.find { c -> c.unitID == i && c.tier == Tier.LEGEND } })

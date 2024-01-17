@@ -1,21 +1,24 @@
 package mandarin.card.commands
 
-import mandarin.card.CardBot
-import mandarin.card.supporter.Card
 import mandarin.card.supporter.CardData
-import mandarin.card.supporter.Inventory
-import mandarin.card.supporter.log.TransactionLogger
+import mandarin.card.supporter.holder.ManualRollSelectHolder
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.CommandLoader
+import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.UserSnowflake
-import net.dv8tion.jda.api.entities.emoji.Emoji
-import net.dv8tion.jda.api.utils.FileUpload
+import net.dv8tion.jda.api.interactions.components.ActionRow
+import net.dv8tion.jda.api.interactions.components.LayoutComponent
+import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
+import net.dv8tion.jda.api.interactions.components.selections.SelectOption
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import java.util.concurrent.CountDownLatch
-import kotlin.random.Random
+import kotlin.math.ceil
+import kotlin.math.min
 
 class RollManual : Command(LangID.EN, true) {
     @Throws(Exception::class)
@@ -29,11 +32,8 @@ class RollManual : Command(LangID.EN, true) {
 
         val contents = loader.content.split(" ")
 
-        if (contents.size < 3) {
-            replyToMessageSafely(ch, "Not enough data! When you call this command, you have to provide user and " +
-                    "which pack to be rolled. Format will be `${CardBot.globalPrefix}roll [User] [Pack]`\n\nUser can be provided via either " +
-                    "ID or mention. For pack, call `-l` for large pack, `-s` for small pack, and `-p` for premium pack\n\nFor example, if you want" +
-                    "to roll large pack for user A, then you have to call `p!roll @A -l`", loader.message
+        if (contents.size < 2) {
+            replyToMessageSafely(ch, "Not enough data! You have to pass members data to manually roll the pack!", loader.message
             ) { a -> a }
 
             return
@@ -47,82 +47,8 @@ class RollManual : Command(LangID.EN, true) {
             return
         }
 
-        val pack = findPack(contents)
-
-        if (pack == CardData.Pack.NONE) {
-            replyToMessageSafely(ch, "Please specify which pack will be rolled. Pass `-l` for large pack, an pass `-s` for small pack", loader.message) { a -> a }
-
-            return
-        }
-
-        try {
-            if (users.size == 1) {
-                g.retrieveMember(UserSnowflake.fromId(users[0])).queue { targetMember ->
-                    replyToMessageSafely(ch, "\uD83C\uDFB2 Rolling...!", loader.message) { a -> a }
-
-                    val result = rollCards(pack)
-
-                    val inventory = Inventory.getInventory(targetMember.id)
-
-                    try {
-                        val builder = StringBuilder("### ${pack.getPackName()} Result [${result.size} cards in total]\n\n")
-
-                        for (card in result) {
-                            builder.append("- ")
-
-                            if (card.tier == CardData.Tier.ULTRA) {
-                                builder.append(Emoji.fromUnicode("✨").formatted).append(" ")
-                            } else if (card.tier == CardData.Tier.LEGEND) {
-                                builder.append(EmojiStore.ABILITY["LEGEND"]?.formatted).append(" ")
-                            }
-
-                            builder.append(card.cardInfo())
-
-                            if (!inventory.cards.containsKey(card)) {
-                                builder.append(" {**NEW**}")
-                            }
-
-                            if (card.tier == CardData.Tier.ULTRA) {
-                                builder.append(" ").append(Emoji.fromUnicode("✨").formatted)
-                            } else if (card.tier == CardData.Tier.LEGEND) {
-                                builder.append(" ").append(EmojiStore.ABILITY["LEGEND"]?.formatted)
-                            }
-
-                            builder.append("\n")
-                        }
-
-                        ch.sendMessage(builder.toString())
-                            .setMessageReference(loader.message)
-                            .mentionRepliedUser(false)
-                            .addFiles(result.filter { c -> !inventory.cards.containsKey(c) }.map { c -> FileUpload.fromData(c.cardImage, "${c.name}.png") })
-                            .queue()
-                    } catch (_: Exception) {
-
-                    }
-
-                    inventory.addCards(result)
-
-                    TransactionLogger.logRoll(result, pack, targetMember, true)
-                }
-            } else {
-                users.forEach {
-                    g.retrieveMember(UserSnowflake.fromId(it)).queue { targetMember ->
-                        val result = rollCards(pack)
-
-                        val inventory = Inventory.getInventory(targetMember.id)
-
-                        inventory.addCards(result)
-
-                        TransactionLogger.logRoll(result, pack, targetMember, true)
-                    }
-                }
-
-                replyToMessageSafely(ch, "Rolled ${pack.getPackName()} for ${users.size} people successfully", loader.message) { a -> a }
-
-                TransactionLogger.logMassRoll(m, users.size, pack)
-            }
-        } catch (_: Exception) {
-            replyToMessageSafely(ch, "Bot failed to find provided user in this server", loader.message) { a -> a }
+        replyToMessageSafely(ch, "Please select the pack that you want to roll", loader.message, { a -> a.setComponents(getComponents()) }) { msg ->
+            StaticStore.putHolder(m.id, ManualRollSelectHolder(loader.message, ch.id, msg, m, users))
         }
     }
 
@@ -164,73 +90,44 @@ class RollManual : Command(LangID.EN, true) {
         return result
     }
 
-    private fun findPack(contents: List<String>) : CardData.Pack {
-        for(segment in contents) {
-            when(segment) {
-                "-s" -> return CardData.Pack.SMALL
-                "-l" -> return CardData.Pack.LARGE
-                "-p" -> return CardData.Pack.PREMIUM
-            }
+    private fun getComponents() : List<LayoutComponent> {
+        val result = ArrayList<LayoutComponent>()
+
+        val packOptions = ArrayList<SelectOption>()
+
+        val size = min(CardData.cardPacks.size, SearchHolder.PAGE_CHUNK)
+
+        for (i in 0 until size) {
+            packOptions.add(SelectOption.of(CardData.cardPacks[i].packName, CardData.cardPacks[i].uuid))
         }
 
-        return CardData.Pack.NONE
-    }
+        val packs = StringSelectMenu.create("pack")
+            .addOptions(packOptions)
+            .setPlaceholder("Select pack here")
+            .build()
 
-    private fun rollCards(pack: CardData.Pack) : List<Card> {
-        val result = ArrayList<Card>()
+        result.add(ActionRow.of(packs))
 
-        when(pack) {
-            CardData.Pack.SMALL -> {
-                repeat(4) {
-                    result.add(CardData.common.random())
-                }
+        if (CardData.cardPacks.size > SearchHolder.PAGE_CHUNK) {
+            val buttons = ArrayList<Button>()
+            val totalPage = ceil(CardData.cardPacks.size * 1.0 / SearchHolder.PAGE_CHUNK)
 
-                val chance = Random.nextDouble()
-
-                if (chance <= 0.7) {
-                    result.add(CardData.common.random())
-                } else {
-                    result.add(CardData.appendUncommon(CardData.uncommon).random())
-                }
+            if (totalPage > 10) {
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).asDisabled())
             }
-            CardData.Pack.LARGE -> {
-                repeat(8) {
-                    result.add(CardData.common.random())
-                }
 
-                var chance = Random.nextDouble()
+            buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", "Previous Pages", EmojiStore.PREVIOUS).asDisabled())
 
-                if (chance <= 0.5) {
-                    result.add(CardData.common.random())
-                } else {
-                    result.add(CardData.appendUncommon(CardData.uncommon).random())
-                }
+            buttons.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT))
 
-                chance = Random.nextDouble()
-
-                if (chance <= 0.99) {
-                    result.add(CardData.appendUncommon(CardData.uncommon).random())
-                } else {
-                    result.add(CardData.appendUltra(CardData.ultraRare).random())
-                }
+            if (totalPage > 10) {
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT))
             }
-            CardData.Pack.PREMIUM -> {
-                repeat(5) {
-                    val chance = Random.nextDouble()
 
-                    if (chance <= 0.93) {
-                        result.add(CardData.common.random())
-                    } else if (chance <= 0.995) {
-                        result.add(CardData.appendUltra(CardData.ultraRare).random())
-                    } else {
-                        result.add(CardData.appendLR(CardData.legendRare).random())
-                    }
-                }
-            }
-            else -> {
-                throw IllegalStateException("Invalid pack type $pack found")
-            }
+            result.add(ActionRow.of(buttons))
         }
+
+        result.add(ActionRow.of(Button.danger("close", "Close")))
 
         return result
     }

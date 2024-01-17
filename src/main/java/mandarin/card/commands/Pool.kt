@@ -16,9 +16,9 @@ class Pool(private val tier: CardData.Tier) : Command(LangID.EN, true) {
 
         val pool = when(tier) {
             CardData.Tier.COMMON -> CardData.common
-            CardData.Tier.UNCOMMON -> CardData.appendUncommon(CardData.uncommon)
-            CardData.Tier.ULTRA -> CardData.appendUltra(CardData.ultraRare)
-            CardData.Tier.LEGEND -> CardData.appendLR(CardData.legendRare)
+            CardData.Tier.UNCOMMON -> CardData.appendUncommon()
+            CardData.Tier.ULTRA -> CardData.appendUltra()
+            CardData.Tier.LEGEND -> CardData.appendLR()
             else -> return
         }
 
