@@ -1555,6 +1555,7 @@
   "eventarc_fail" : "Failed to bring archived event data for _...",
   "eventarc_bring" : "Bringing event data archive : _LLL_ - _FFF_\n\n",
   "eventarc_success" : "Successfully uploaded data",
+  "eventarc_current" : "Current Event Data File",
   "announce_content" : "Please specify the message that you want to make bot send message whenever it sends announcement",
   "announce_toolong" : "Message must contain less than 1500 letters!",
   "announce_success" : "Successfully assigned message. From now on, whenever bot sends announcement, it will sends content below together : \n\n%s",

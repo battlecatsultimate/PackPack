@@ -40,9 +40,11 @@ public class EventDataArchive extends ConstraintCommand {
             default -> "en";
         };
 
+        File current = new File("./data/event/" + l + "/" + fileName + ".tsv");
+
         File archive = new File("./data/event/" + l + "/archive/" + fileName);
 
-        if(!archive.exists()) {
+        if(!archive.exists() || !current.exists()) {
             createMessageWithNoPings(ch, LangID.getStringByID("eventarc_noarchive", lang).replace("_", l.equals("zh") ? "tw" : l));
 
             return;
@@ -56,7 +58,9 @@ public class EventDataArchive extends ConstraintCommand {
             return;
         }
 
-        List<File> files = Arrays.asList(fs);
+        List<File> files = new ArrayList<>(Arrays.asList(fs));
+
+        files.add(0, current);
 
         files.sort(Comparator.comparingLong(File::lastModified));
         Collections.reverse(files);
@@ -73,15 +77,12 @@ public class EventDataArchive extends ConstraintCommand {
 
         List<String> data = accumulateData(files);
 
-        for(int i = 0; i < data.size(); i++) {
+        for(int i = 0; i < Math.min(SearchHolder.PAGE_CHUNK, data.size()); i++) {
             sb.append(i+1).append(". ").append(data.get(i)).append("\n");
         }
 
         if(files.size() > SearchHolder.PAGE_CHUNK) {
-            int totalPage = files.size() / SearchHolder.PAGE_CHUNK;
-
-            if(files.size() % SearchHolder.PAGE_CHUNK != 0)
-                totalPage++;
+            int totalPage = (int) Math.ceil(files.size() * 1.0 / SearchHolder.PAGE_CHUNK);
 
             sb.append(LangID.getStringByID("formst_page", lang).replace("_", "1").replace("-", String.valueOf(totalPage))).append("\n");
         }
@@ -143,11 +144,12 @@ public class EventDataArchive extends ConstraintCommand {
     private List<String> accumulateData(List<File> files) {
         List<String> result = new ArrayList<>();
 
-        for(int i = 0; i < SearchHolder.PAGE_CHUNK; i++) {
-            if(i >= files.size())
-                break;
-
-            result.add(files.get(i).getName().replace(".txt", "").replaceAll(";", ":"));
+        for(int i = 0; i < Math.min(files.size(), SearchHolder.PAGE_CHUNK); i++) {
+            if (i == 0) {
+                result.add(LangID.getStringByID("eventarc_current", lang));
+            } else {
+                result.add(files.get(i).getName().replace(".txt", "").replaceAll(";", ":"));
+            }
         }
 
         return result;

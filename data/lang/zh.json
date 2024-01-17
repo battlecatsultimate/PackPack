@@ -1558,6 +1558,7 @@
   "eventarc_fail" : "未發現_的活動數據存檔...",
   "eventarc_bring" : "發現以下活動數據存檔: _LLL_ - _FFF_\n\n",
   "eventarc_success" : "成功上傳數據存檔",
+  "eventarc_current" : "Current Event Data File",
   "announce_content" : "Please specify the message that you want to make bot send message whenever it sends announcement",
   "announce_toolong" : "Message must contain less than 1500 letters!",
   "announce_success" : "Successfully assigned message. From now on, whenever bot sends announcement, it will sends content below together : \n\n%s",

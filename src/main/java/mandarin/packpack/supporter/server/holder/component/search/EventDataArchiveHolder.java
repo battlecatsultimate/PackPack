@@ -28,11 +28,12 @@ public class EventDataArchiveHolder extends SearchHolder {
     public List<String> accumulateListData(boolean onText) {
         List<String> result = new ArrayList<>();
 
-        for(int i = PAGE_CHUNK * page; i < PAGE_CHUNK * (page + 1); i++) {
-            if(i >= files.size())
-                break;
-
-            result.add(files.get(i).getName().replace(".txt", "").replaceAll(";", ":"));
+        for(int i = PAGE_CHUNK * page; i < Math.min(files.size(), PAGE_CHUNK * (page + 1)); i++) {
+            if (i == 0) {
+                result.add(LangID.getStringByID("eventarc_current", lang));
+            } else {
+                result.add(files.get(i).getName().replace(".txt", "").replaceAll(";", ":"));
+            }
         }
 
         return result;

@@ -1557,6 +1557,7 @@
   "eventarc_fail" : "_ 버전을 위한 이벤트 데이터 아카이브를 불러오는 데에 실패했습니다...",
   "eventarc_bring" : "이벤트 데이터 아카이브를 불러왔습니다 : _LLL_ - _FFF_\n\n",
   "eventarc_success" : "성공적으로 데이터를 업로드했습니다",
+  "eventarc_current" : "현재 이벤트 데이터 파일",
   "announce_content" : "봇이 공지를 올릴 때마다 같이 올릴 메세지의 내용을 정해주세요!",
   "announce_toolong" : "메세지 내용은 1500 글자 이내여야 합니다!",
   "announce_success" : "성공적으로 메세지를 등록했습니다. 이제부터 봇이 공지를 올릴 때마다 아래와 같은 내용의 메세지도 같이 올립니다 : \n\n%s",
