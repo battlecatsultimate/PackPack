@@ -5,8 +5,10 @@ import common.system.fake.FakeImage
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lwjgl.opengl.model.SpriteSheet
 import mandarin.packpack.supporter.lwjgl.opengl.model.TextureMesh
+import okhttp3.internal.and
 import org.lwjgl.opengl.GL33
 import java.awt.Color
+import java.nio.ByteBuffer
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicReference
 
@@ -48,8 +50,6 @@ class GLImage : FakeImage {
     }
 
     override fun getRGB(i: Int, j: Int): Int {
-
-
         val waiter = if (!Thread.currentThread().equals(StaticStore.renderManager.renderThread)) {
             CountDownLatch(1)
         } else {
@@ -62,9 +62,16 @@ class GLImage : FakeImage {
             StaticStore.renderManager.queueGL {
                 sprite.bind()
 
-                GL33.glReadPixels(i, j, 1, 1, GL33.GL_FLOAT, GL33.GL_UNSIGNED_INT, sharedRGBA)
+                val buffer = ByteBuffer.allocateDirect((sprite.width * sprite.height * 4).toInt())
 
-                rgb.set(Color(sharedRGBA[0], sharedRGBA[1], sharedRGBA[2]).rgb)
+                GL33.glGetTexImage(GL33.GL_TEXTURE_2D, 0, GL33.GL_RGBA, GL33.GL_UNSIGNED_BYTE, buffer)
+
+                val r = buffer[(i + j * width) * 4] and 0xFF
+                val g = buffer[(i + j * width) * 4 + 1] and 0xFF
+                val b = buffer[(i + j * width) * 4 + 2] and 0xFF
+                val a = buffer[(i + j * width) * 4 + 3] and 0xFF
+
+                rgb.set((a shl 24) + (r shl 16) + (g shl 8) + b)
 
                 waiter.countDown()
             }
@@ -75,12 +82,17 @@ class GLImage : FakeImage {
         } else {
             sprite.bind()
 
-            GL33.glReadPixels(i, j, 1, 1, GL33.GL_FLOAT, GL33.GL_UNSIGNED_INT, sharedRGBA)
+            val buffer = ByteBuffer.allocateDirect((sprite.width * sprite.height * 4).toInt())
 
-            Color(sharedRGBA[0], sharedRGBA[1], sharedRGBA[2]).rgb
+            GL33.glGetTexImage(GL33.GL_TEXTURE_2D, 0, GL33.GL_RGBA, GL33.GL_UNSIGNED_BYTE, buffer)
+
+            val r = buffer[(i + j * width) * 4] and 0xFF
+            val g = buffer[(i + j * width) * 4 + 1] and 0xFF
+            val b = buffer[(i + j * width) * 4 + 2] and 0xFF
+            val a = buffer[(i + j * width) * 4 + 3] and 0xFF
+
+            (a shl 24) + (r shl 16) + (g shl 8) + b
         }
-
-
     }
 
     override fun getSubimage(i: Int, j: Int, k: Int, l: Int): FakeImage {
@@ -126,12 +138,7 @@ class GLImage : FakeImage {
 
             val c = Color(p)
 
-            sharedRGBA[0] = c.red
-            sharedRGBA[1] = c.green
-            sharedRGBA[2] = c.blue
-            sharedRGBA[3] = c.alpha
-
-            GL33.glTexSubImage2D(GL33.GL_TEXTURE_2D, 0, i, j, 1, 1, GL33.GL_RGBA, GL33.GL_UNSIGNED_INT, sharedRGBA)
+            GL33.glTexSubImage2D(GL33.GL_TEXTURE_2D, 0, i, j, 1, 1, GL33.GL_RGBA, GL33.GL_UNSIGNED_INT, intArrayOf(c.red, c.green, c.blue, c.alpha))
         }
     }
 
