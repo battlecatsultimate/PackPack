@@ -49,14 +49,14 @@ object CardBot : ListenerAdapter() {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        initialize()
-
         args.forEachIndexed { index, arg ->
             if (arg == "--test" && index < args.size - 1 && args[index + 1] == "true") {
                 test = true
                 globalPrefix = "ct."
             }
         }
+
+        initialize()
 
         val token = args[0]
         val builder = DefaultShardManagerBuilder.createDefault(token)
@@ -440,7 +440,7 @@ object CardBot : ListenerAdapter() {
             }
         }
 
-        val element: JsonElement? = StaticStore.getJsonFile("cardSave")
+        val element: JsonElement? = StaticStore.getJsonFile(if (test) "testCardSave" else "cardSave")
 
         if (element == null || !element.isJsonObject)
             return
@@ -817,7 +817,7 @@ object CardBot : ListenerAdapter() {
 
             val tree = mapper.readTree(json)
 
-            val writer = FileWriter("./data/cardSave.json")
+            val writer = FileWriter("./data/${if (test) "testCardSave" else "cardSave"}.json")
 
             writer.append(mapper.writeValueAsString(tree))
             writer.close()
