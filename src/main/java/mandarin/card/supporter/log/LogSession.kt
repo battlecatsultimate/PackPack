@@ -6,6 +6,7 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import mandarin.card.CardBot
 import mandarin.card.supporter.Card
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.TradingSession
@@ -43,7 +44,7 @@ class LogSession {
         fun syncSession() {
             val currentTime = CardData.getUnixEpochTime()
 
-            val logFolder = File("./data/cardLog")
+            val logFolder = File(if (CardBot.test) "./data/testCardLog" else "./data/cardLog")
 
             if (!logFolder.exists() && !logFolder.mkdirs())
                 return
@@ -117,7 +118,7 @@ class LogSession {
 
             session.saveSessionAsFile()
 
-            val folder = File("./data/cardLog")
+            val folder = File(if (CardBot.test) "./data/testCardLog" else "./data/cardLog")
 
             if (!folder.exists())
                 return result
@@ -515,7 +516,7 @@ class LogSession {
     }
 
     fun saveSessionAsFile() {
-        val folder = File("./data/cardLog")
+        val folder = File(if (CardBot.test) "./data/testCardLog" else "./data/cardLog")
 
         if (!folder.exists() && !folder.mkdirs()) {
             StaticStore.logger.uploadLog("W/LogSession::generateLogFile - Failed to create folder : ${folder.absolutePath}")
