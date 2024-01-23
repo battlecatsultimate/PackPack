@@ -9,7 +9,7 @@ import java.util.function.Consumer;
 public class RecordableThread extends Thread {
     private static final List<RecordableThread> executingThreads = new ArrayList<>();
     //3h
-    private static final long expirationTime = 3 * 60 * 60 * 1000;
+    private static final long expirationTime = 60 * 60 * 1000;
 
     public static void handleExpiration() {
         long currentTime = System.currentTimeMillis();
