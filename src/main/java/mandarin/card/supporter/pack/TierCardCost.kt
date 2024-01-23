@@ -20,8 +20,6 @@ class TierCardCost(var tier: CardPack.CardType, amount: Long) : CardCost(CostTyp
     }
 
     override fun filter(c: Card) : Boolean {
-        println(c)
-
         return when(tier) {
             CardPack.CardType.T1 -> c.tier == CardData.Tier.COMMON
             CardPack.CardType.T2 -> c.tier == CardData.Tier.UNCOMMON

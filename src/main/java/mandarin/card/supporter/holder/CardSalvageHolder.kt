@@ -6,6 +6,7 @@ import mandarin.card.supporter.CardComparator
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.filter.BannerFilter
+import mandarin.card.supporter.holder.modal.CardAmountSelectHolder
 import mandarin.card.supporter.log.TransactionLogger
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
@@ -23,6 +24,9 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.interactions.components.text.TextInput
+import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
+import net.dv8tion.jda.api.interactions.modals.Modal
 import kotlin.math.min
 
 class CardSalvageHolder(author: Message, channelID: String, private val message: Message, private val salvageMode: CardData.SalvageMode) : ComponentHolder(author, channelID, message.id) {
@@ -172,15 +176,45 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
 
                 val card = cards[index]
 
-                selectedCard.add(card)
+                val realAmount = (inventory.cards[card] ?: 0) - selectedCard.count { c -> c.unitID == card.unitID }
 
-                filterCards()
+                if (realAmount > 2) {
+                    val input = TextInput.create("amount", "Amount of Cards", TextInputStyle.SHORT)
+                        .setPlaceholder("Put amount up to ${realAmount - 1L}")
+                        .build()
 
-                if (cards.size <= page * SearchHolder.PAGE_CHUNK && page > 0) {
-                    page--
+                    val modal = Modal.create("select", "Select Amount of Cards")
+                        .addActionRow(input)
+                        .build()
+
+                    event.replyModal(modal).queue()
+
+                    connectTo(CardAmountSelectHolder(authorMessage, channelID, message.id) { amount ->
+                        val filteredAmount = min(amount, realAmount - 1)
+
+                        repeat(filteredAmount) {
+                            selectedCard.add(card)
+                        }
+
+                        filterCards()
+
+                        if (cards.size <= page * SearchHolder.PAGE_CHUNK && page > 0) {
+                            page--
+                        }
+
+                        applyResult()
+                    })
+                } else {
+                    selectedCard.add(card)
+
+                    filterCards()
+
+                    if (cards.size <= page * SearchHolder.PAGE_CHUNK && page > 0) {
+                        page--
+                    }
+
+                    applyResult(event)
                 }
-
-                applyResult(event)
             }
             "all" -> {
                 val adder: (GenericComponentInteractionCreateEvent) -> Unit = {

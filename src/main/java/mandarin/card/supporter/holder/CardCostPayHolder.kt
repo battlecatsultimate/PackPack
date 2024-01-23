@@ -4,6 +4,7 @@ import mandarin.card.supporter.Card
 import mandarin.card.supporter.CardComparator
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
+import mandarin.card.supporter.holder.modal.CardAmountSelectHolder
 import mandarin.card.supporter.pack.BannerCardCost
 import mandarin.card.supporter.pack.CardPack
 import mandarin.card.supporter.pack.CardPayContainer
@@ -20,6 +21,9 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.interactions.components.text.TextInput
+import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
+import net.dv8tion.jda.api.interactions.modals.Modal
 import kotlin.math.ceil
 import kotlin.math.min
 
@@ -72,15 +76,47 @@ class CardCostPayHolder(
 
                 val selectedID = event.values[0].toInt()
 
-                container.pickedCards.add(cards[selectedID])
+                val card = cards[selectedID]
 
-                filterCards()
+                val realAmount = (inventory.cards[card] ?: 0) - containers.sumOf { container -> container.pickedCards.count { c -> c.unitID == card.unitID } }
 
-                if (cards.size <= page * SearchHolder.PAGE_CHUNK && page > 0) {
-                    page--
+                if (realAmount > 2 && container.cost.amount - container.pickedCards.size > 1) {
+                    val input = TextInput.create("amount", "Amount of Cards", TextInputStyle.SHORT)
+                        .setPlaceholder("Put amount up to ${min(realAmount - 1L, container.cost.amount - container.pickedCards.size)}")
+                        .build()
+
+                    val modal = Modal.create("select", "Select Amount of Cards")
+                        .addActionRow(input)
+                        .build()
+
+                    event.replyModal(modal).queue()
+
+                    connectTo(CardAmountSelectHolder(authorMessage, channelID, message.id) { amount ->
+                        val filteredAmount = min(min(amount, realAmount - 1).toLong(), container.cost.amount - container.pickedCards.size)
+
+                        repeat(filteredAmount.toInt()) {
+                            container.pickedCards.add(card)
+                        }
+
+                        filterCards()
+
+                        if (cards.size <= page * SearchHolder.PAGE_CHUNK && page > 0) {
+                            page--
+                        }
+
+                        applyResult()
+                    })
+                } else {
+                    container.pickedCards.add(card)
+
+                    filterCards()
+
+                    if (cards.size <= page * SearchHolder.PAGE_CHUNK && page > 0) {
+                        page--
+                    }
+
+                    applyResult(event)
                 }
-
-                applyResult(event)
             }
             "category" -> {
                 if (event !is StringSelectInteractionEvent)
