@@ -215,15 +215,23 @@ class CardCostPayHolder(
         if (container.pickedCards.isEmpty()) {
             builder.append("- No cards selected\n")
         } else {
+            val selectedCards = StringBuilder()
+
             container.pickedCards.toSet().forEach { card ->
                 val amount = container.pickedCards.count { c -> c.unitID == card.unitID }
 
-                builder.append(card.simpleCardInfo())
+                selectedCards.append(card.simpleCardInfo())
 
                 if (amount > 1)
-                    builder.append(" x").append(amount)
+                    selectedCards.append(" x").append(amount)
 
-                builder.append("\n")
+                selectedCards.append("\n")
+            }
+
+            if (selectedCards.length >= 1000) {
+                builder.append("Selected ${container.pickedCards.size} card(s)")
+            } else {
+                builder.append(selectedCards)
             }
         }
 
@@ -307,7 +315,7 @@ class CardCostPayHolder(
                 else if (cards.isEmpty())
                     "No Cards To Select"
                 else
-                    "Select Card To Suggest"
+                    "Select Card To Pay"
             )
             .setDisabled(container.paid() || cards.isEmpty())
             .build()
