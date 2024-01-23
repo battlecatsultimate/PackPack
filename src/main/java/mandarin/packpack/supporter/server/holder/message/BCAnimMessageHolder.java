@@ -120,7 +120,7 @@ public class BCAnimMessageHolder extends MessageHolder {
                 StaticStore.executorHandler.postDelayed(1000, () -> StaticStore.deleteFile(container, true));
             }, e -> StaticStore.logger.uploadErrorLog(e, "E/BCAnimMessageHolder::constructor - Failed to generate animation"));
 
-            t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime());
+            t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime() + " | Content : " + getAuthorMessage().getContentRaw());
             t.start();
         } else {
             StaticStore.putHolder(author.getAuthor().getId(), this);
@@ -192,7 +192,7 @@ public class BCAnimMessageHolder extends MessageHolder {
                         );
                     }, e -> StaticStore.logger.uploadErrorLog(e, "E/BCAnimMessageHolder::onReceivedEvent - Failed to generate animation"));
 
-                    t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime());
+                    t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime() + " | Content : " + getAuthorMessage().getContentRaw());
                     t.start();
 
                     return STATUS.FINISH;

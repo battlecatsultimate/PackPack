@@ -136,7 +136,7 @@ public abstract class FileAnalyzerHolder extends MessageHolder {
                     StaticStore.executorHandler.postDelayed(1000, this::releaseFiles);
                 }, e -> StaticStore.logger.uploadErrorLog(e, "E/FileAnalyzerHolder::checkAttachments - Error happened while trying to perform file analyzing"));
 
-                t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime());
+                t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime() + " | Content : " + getAuthorMessage().getContentRaw());
                 t.start();
 
                 return true;

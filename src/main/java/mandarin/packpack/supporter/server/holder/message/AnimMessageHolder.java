@@ -256,7 +256,7 @@ public class AnimMessageHolder extends MessageHolder {
                 StaticStore.logger.uploadErrorLog(e, "E/AnimMessageHolder::constructor - Failed to generate animation")
             );
 
-            t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime());
+            t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime() + " | Content : " + getAuthorMessage().getContentRaw());
             t.start();
         } else {
             StaticStore.putHolder(author.getAuthor().getId(), this);
@@ -481,7 +481,7 @@ public class AnimMessageHolder extends MessageHolder {
                         StaticStore.logger.uploadErrorLog(e, "E/AnimMessageHolder::onReceivedEvent - Failed to generate animation")
                     );
 
-                    t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime());
+                    t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime() + " | Content : " + getAuthorMessage().getContentRaw());
                     t.start();
 
                     return STATUS.FINISH;

@@ -129,7 +129,7 @@ public class FormAnimMessageHolder extends SearchHolder {
                         });
                     }, e -> StaticStore.logger.uploadErrorLog(e, "E/FormAnimMessageHolder::onSelected - Failed to generate animation"));
 
-                    t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime());
+                    t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime() + " | Content : " + getAuthorMessage().getContentRaw());
                     t.start();
                 } else {
                     ch.sendMessage(LangID.getStringByID("single_wait", lang).replace("_", DataToString.df.format((timeBoolean.totalTime - (System.currentTimeMillis() - StaticStore.canDo.get("gif").time)) / 1000.0))).queue();

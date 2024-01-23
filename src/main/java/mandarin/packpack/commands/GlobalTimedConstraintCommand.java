@@ -218,7 +218,7 @@ public abstract class GlobalTimedConstraintCommand extends Command {
                                 StaticStore.canDo.put(id, new TimeBoolean(true));
                             }, loader);
 
-                            t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime());
+                            t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime() + " | Content : " + loader.getContent());
                             t.start();
                         } else {
                             onAbort(loader);

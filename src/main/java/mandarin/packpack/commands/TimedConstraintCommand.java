@@ -191,7 +191,7 @@ public abstract class TimedConstraintCommand extends Command {
                         }
                     }, loader);
 
-                    t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime());
+                    t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime() + " | Content : " + loader.getContent());
                     t.start();
                 } catch (Exception e) {
                     String data = "Command : " + loader.getContent() + "\n\n" +
