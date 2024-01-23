@@ -268,7 +268,8 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}tr" -> Trade().execute(event)
             "${globalPrefix}trademanual",
             "${globalPrefix}tm" -> TradeManual().execute(event)
-            "${globalPrefix}cards" -> Cards().execute(event)
+            "${globalPrefix}cards",
+            "${globalPrefix}card" -> Cards().execute(event)
             "${globalPrefix}purchase",
             "${globalPrefix}buy" -> Buy().execute(event)
             "${globalPrefix}roll" -> Roll().execute(event)
