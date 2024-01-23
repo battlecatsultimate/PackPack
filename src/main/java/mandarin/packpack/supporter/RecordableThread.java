@@ -17,8 +17,6 @@ public class RecordableThread extends Thread {
         executingThreads.removeIf(t -> {
             boolean expired = t.isExpired(currentTime);
 
-            System.out.println(t.getName() + " - " + expired);
-
             if (expired) {
                 if (t.loader != null) {
                     String content = "I/RecordableThread::handleExpiration - Expired thread found : " + t.getName() + "\n" +
