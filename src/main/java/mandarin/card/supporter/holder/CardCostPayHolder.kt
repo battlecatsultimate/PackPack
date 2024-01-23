@@ -229,7 +229,7 @@ class CardCostPayHolder(
             }
 
             if (selectedCards.length >= 1000) {
-                builder.append("Selected ${container.pickedCards.size} card(s)")
+                builder.append("Selected ${container.pickedCards.size} card(s)\n")
             } else {
                 builder.append(selectedCards)
             }
