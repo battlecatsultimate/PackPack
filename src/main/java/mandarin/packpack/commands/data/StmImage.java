@@ -17,7 +17,6 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import org.jetbrains.annotations.NotNull;
-import org.lwjgl.system.linux.Stat;
 
 import java.awt.*;
 import java.io.File;

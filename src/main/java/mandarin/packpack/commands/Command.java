@@ -338,7 +338,7 @@ public abstract class Command {
                     } else {
                         onFail(loader, DEFAULT_ERROR);
                     }
-                });
+                }, loader);
 
                 t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime());
                 t.start();

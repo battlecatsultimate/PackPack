@@ -177,7 +177,7 @@ public abstract class ConstraintCommand extends Command {
                         } else {
                             onFail(loader, DEFAULT_ERROR);
                         }
-                    });
+                    }, loader);
 
                     t.setName("RecordableThread - " + this.getClass().getName() + " - " + System.nanoTime());
                     t.start();
