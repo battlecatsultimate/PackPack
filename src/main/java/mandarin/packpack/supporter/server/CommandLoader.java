@@ -139,4 +139,8 @@ public class CommandLoader {
 
         return content;
     }
+
+    public boolean hasGuild() {
+        return guild != null;
+    }
 }

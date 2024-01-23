@@ -1,5 +1,7 @@
 package mandarin.packpack.supporter;
 
+import mandarin.packpack.supporter.server.CommandLoader;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -18,7 +20,22 @@ public class RecordableThread extends Thread {
             System.out.println(t.getName() + " - " + expired);
 
             if (expired) {
-                StaticStore.logger.uploadLog("I/RecordableThread::handleExpiration - Expired thread found : " + t.getName());
+                if (t.loader != null) {
+                    String content = "I/RecordableThread::handleExpiration - Expired thread found : " + t.getName() + "\n" +
+                            "\n" +
+                            "Command : " + t.loader.getMessage().getContentRaw() + "\n" +
+                            "Channel : " + t.loader.getChannel().getName() + " [" + t.loader.getChannel().getId() + "]\n" +
+                            "User : " + t.loader.getUser().getEffectiveName() + " [" + t.loader.getUser().getId() + "]";
+
+                    if (t.loader.hasGuild()) {
+                        content += "\n" +
+                                "Guild : " + t.loader.getGuild().getName() + " [" + t.loader.getGuild().getId() + "]";
+                    }
+
+                    StaticStore.logger.uploadLog(content);
+                } else {
+                    StaticStore.logger.uploadLog("I/RecordableThread::handleExpiration - Expired thread found : " + t.getName());
+                }
 
                 t.interrupt();
             }
@@ -32,11 +49,20 @@ public class RecordableThread extends Thread {
     private boolean manualExpired = false;
 
     private final Consumer<Exception> onError;
+    private final CommandLoader loader;
 
     public RecordableThread(ThrowableRunnable executor, Consumer<Exception> onError) {
         super(executor);
 
         this.onError = onError;
+        this.loader = null;
+    }
+
+    public RecordableThread(ThrowableRunnable executor, Consumer<Exception> onError, CommandLoader loader) {
+        super(executor);
+
+        this.onError = onError;
+        this.loader = loader;
     }
 
     @Override
