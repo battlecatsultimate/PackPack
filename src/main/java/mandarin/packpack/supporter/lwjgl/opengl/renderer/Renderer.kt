@@ -8,21 +8,26 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class Renderer {
-    val renderThread: Thread
-
+    lateinit var renderThread: Thread
     lateinit var renderSessionManager: RenderSessionManager
 
     private val attachQueue = ArrayList<AttachQueue>()
     private val customQueue = Collections.synchronizedList(ArrayList<Runnable>())
 
     init {
-        renderThread = Thread {
-            renderSessionManager = RenderSessionManager()
+        Timer().schedule(object : TimerTask() {
+            override fun run() {
+                if (!this@Renderer::renderSessionManager.isInitialized) {
+                    renderSessionManager = RenderSessionManager()
+                }
 
-            while(true) {
+                if (!this@Renderer::renderThread.isInitialized) {
+                    renderThread = Thread.currentThread()
+                }
+
                 while(attachQueue.isNotEmpty()) {
                     try {
-                        attachQueue.removeAt(0).performQueue(this)
+                        attachQueue.removeAt(0).performQueue(this@Renderer)
                     } catch (e: Exception) {
                         StaticStore.logger.uploadErrorLog(e, "E/Renderer::init - Failed to attach render session")
                     }
@@ -58,9 +63,7 @@ class Renderer {
                     done
                 }
             }
-        }.also {
-            it.start()
-        }
+        }, 0L, 1L)
     }
 
     fun createRenderer(width: Int, height: Int, folder: File, onAttach: (RenderSessionConnector) -> Unit, onExport: ((Int) -> File)?, onFinished: () -> Unit) {

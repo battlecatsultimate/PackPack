@@ -1,27 +1,30 @@
-import java.io.File
+import java.util.Timer
+import java.util.TimerTask
+import java.util.concurrent.ScheduledThreadPoolExecutor
+import java.util.concurrent.TimeUnit
 
 class TestUnit {
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {
-            val cardFolder = File("./data/cards")
+            val executor = Timer()
 
-            if (!cardFolder.exists())
-                return
+            var thread: Thread? = null
 
-            val tiers = cardFolder.listFiles() ?: return
+            executor.schedule(object : TimerTask() {
+                override fun run() {
+                    println("!?")
 
-            for(t in tiers) {
-                val cards = t.listFiles() ?: continue
-
-                cards.sortBy { it.name.split("-")[0].toInt() }
-
-                for(card in cards) {
-                    val nameData = card.name.replace(".png", "").split(Regex("-"), 2)
-
-                    println("210660${nameData[0]} 3 --${nameData[1]}")
+                    if (thread == null) {
+                        thread = Thread.currentThread()
+                    } else {
+                        println(Thread.currentThread() === thread)
+                        println(Thread.currentThread().name)
+                        println(thread?.name)
+                        println("---")
+                    }
                 }
-            }
+            }, 0L, 1000L)
         }
     }
 }
