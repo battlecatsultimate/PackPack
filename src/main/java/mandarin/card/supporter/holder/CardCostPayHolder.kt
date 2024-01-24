@@ -76,6 +76,9 @@ class CardCostPayHolder(
 
                 val selectedID = event.values[0].toInt()
 
+                if (selectedID < 0 || selectedID >= cards.size)
+                    return
+
                 val card = cards[selectedID]
 
                 val realAmount = (inventory.cards[card] ?: 0) - containers.sumOf { container -> container.pickedCards.count { c -> c.unitID == card.unitID } }
