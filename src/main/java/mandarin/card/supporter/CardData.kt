@@ -257,7 +257,7 @@ object CardData {
     val modLog = ServerData.get("modLog")
     val catFoodLog = ServerData.get("catFoodLog")
 
-    const val MAX_CARDS = 20
+    const val MAX_CARDS = 10
     const val TAX = 0.0
 
     var sessionNumber = 1L
