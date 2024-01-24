@@ -16,7 +16,8 @@ import kotlin.math.min
 object TransactionLogger {
     enum class TradeStatus {
         CANCELED,
-        TRADED
+        TRADED,
+        EXPIRED
     }
 
     lateinit var logChannel: MessageChannel
@@ -78,7 +79,13 @@ object TransactionLogger {
         builder.addField("Trader 1's Suggestion", session.suggestion[0].suggestionInfoCompacted(), false)
         builder.addField("Trader 2's Suggestion", session.suggestion[1].suggestionInfoCompacted(), false)
 
-        builder.addField("Trading Result", if (status == TradeStatus.CANCELED) "Canceled" else "Trading Done", false)
+        val st = when(status) {
+            TradeStatus.CANCELED -> "Canceled"
+            TradeStatus.TRADED -> "Trading Done"
+            TradeStatus.EXPIRED -> "Expired"
+        }
+
+        builder.addField("Trading Result", st, false)
 
         builder.addField("Post", "<#${session.postID}> [${session.postID}]", false)
 

@@ -30,8 +30,11 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
+import java.sql.Timestamp
+import java.time.ZoneOffset
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 object CardBot : ListenerAdapter() {
@@ -186,6 +189,32 @@ object CardBot : ListenerAdapter() {
                 }
 
                 LogSession.syncSession()
+
+                if (!test) {
+                    val g = client.getGuildById(CardData.guild)
+
+                    if (g != null) {
+                        val forum = g.getForumChannelById(CardData.tradingPlace)
+
+                        if (forum != null) {
+                            val currentTime = CardData.getUnixEpochTime()
+
+                            ArrayList(CardData.sessions).forEach { session ->
+                                val ch = forum.threadChannels.find { ch -> ch.idLong == session.postID }
+
+                                if (ch != null) {
+                                    val timeStamp = Timestamp.valueOf(ch.timeCreated.atZoneSameInstant(ZoneOffset.UTC).toLocalDateTime())
+
+                                    if (currentTime - timeStamp.time >= CardData.TRADE_EXPIRATION_TIME) {
+                                        session.expire()
+                                    }
+                                } else {
+                                    session.expire()
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }, 0, TimeUnit.MINUTES.toMillis(1))
     }

@@ -48,7 +48,7 @@ class Trade : Command(LangID.EN, true) {
                 if (!CardData.tradeTrialCooldown.containsKey(m.id)) {
                     CardData.tradeTrialCooldown[m.id] = 0
                 } else {
-                    CardData.tradeTrialCooldown[m.id] = CardData.getUnixEpochTime() + CardData.tradeTrialCooldownTerm
+                    CardData.tradeTrialCooldown[m.id] = CardData.getUnixEpochTime() + CardData.TRADE_TRIAL_COOLDOWN
 
                     TransactionLogger.logTradeTrialFailure(m.idLong, Inventory.getInventory(m.id).cards.isEmpty(), cf)
                 }

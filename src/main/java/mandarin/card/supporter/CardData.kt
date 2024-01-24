@@ -240,6 +240,8 @@ object CardData {
         }
     }
 
+    val guild = ServerData.get("guild")
+
     val bankAccount = ServerData.get("bankAccount")
 
     private val banned = ServerData.get("banned")
@@ -262,12 +264,10 @@ object CardData {
 
     val sessions = ArrayList<TradingSession>()
 
-    const val tradeCooldownTerm = 5 * 60 * 1000 // 5 minutes in milliseconds
-    const val tradeCatFoodCooldownTerm = 5 * 60 * 1000 // 5 minutes in milliseconds
-
     val tradeTrialCooldown = HashMap<String, Long>()
 
-    const val tradeTrialCooldownTerm = 1 * 60 * 60 * 1000 // 1 hour in milliseconds
+    const val TRADE_TRIAL_COOLDOWN = 1 * 60 * 60 * 1000 // 1 hour in milliseconds
+    const val TRADE_EXPIRATION_TIME = 5 * 24 * 60 * 60 * 1000 // 5 days
 
     private val allowedChannel = ServerData.getArray("allowedChannel")
 
