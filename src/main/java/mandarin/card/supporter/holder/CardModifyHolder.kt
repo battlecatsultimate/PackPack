@@ -4,6 +4,7 @@ import mandarin.card.supporter.Card
 import mandarin.card.supporter.CardComparator
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
+import mandarin.card.supporter.holder.modal.CardAmountSelectHolder
 import mandarin.card.supporter.log.TransactionLogger
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
@@ -20,6 +21,9 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
+import net.dv8tion.jda.api.interactions.components.text.TextInput
+import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
+import net.dv8tion.jda.api.interactions.modals.Modal
 import kotlin.math.min
 
 class CardModifyHolder(author: Message, channelID: String, private val message: Message, private val isAdd: Boolean, private val inventory: Inventory, private val targetMember: Member) : ComponentHolder(author, channelID, message.id) {
@@ -102,16 +106,73 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
                     return
 
                 val index = event.values[0].toInt()
+                val card = cards[index]
 
-                selectedCards.add(cards[index])
+                if (isAdd) {
+                    val input = TextInput.create("amount", "Amount of Cards", TextInputStyle.SHORT)
+                        .setPlaceholder("Put amount of cards that will be added")
+                        .build()
 
-                filterCards()
+                    val modal = Modal.create("select", "Select Amount of Cards")
+                        .addActionRow(input)
+                        .build()
 
-                if (cards.size <= page * SearchHolder.PAGE_CHUNK && page > 0) {
-                    page--
+                    event.replyModal(modal).queue()
+
+                    connectTo(CardAmountSelectHolder(authorMessage, channelID, message.id) { amount ->
+                        repeat(amount) {
+                            selectedCards.add(card)
+                        }
+
+                        filterCards()
+
+                        if (cards.size <= page * SearchHolder.PAGE_CHUNK && page > 0) {
+                            page--
+                        }
+
+                        applyResult()
+                    })
+                } else {
+                    val realAmount = (inventory.cards[card] ?: 0) - selectedCards.count { c -> c.unitID == card.unitID }
+
+                    if (realAmount > 2) {
+                        val input = TextInput.create("amount", "Amount of Cards", TextInputStyle.SHORT)
+                            .setPlaceholder("Put amount up to $realAmount")
+                            .build()
+
+                        val modal = Modal.create("select", "Select Amount of Cards")
+                            .addActionRow(input)
+                            .build()
+
+                        event.replyModal(modal).queue()
+
+                        connectTo(CardAmountSelectHolder(authorMessage, channelID, message.id) { amount ->
+                            val filteredAmount = min(amount, realAmount)
+
+                            repeat(filteredAmount) {
+                                selectedCards.add(card)
+                            }
+
+                            filterCards()
+
+                            if (cards.size <= page * SearchHolder.PAGE_CHUNK && page > 0) {
+                                page--
+                            }
+
+                            applyResult()
+                        })
+                    } else {
+                        selectedCards.add(cards[index])
+
+                        filterCards()
+
+                        if (cards.size <= page * SearchHolder.PAGE_CHUNK && page > 0) {
+                            page--
+                        }
+
+                        applyResult(event)
+                    }
                 }
-
-                applyResult(event)
             }
             "prev" -> {
                 page--
