@@ -87,7 +87,7 @@ public class PackBot {
             public void run() {
                 Calendar c = Calendar.getInstance();
 
-                if(save % 5 == 0 && !test) {
+                if(save % 5 == 0) {
                     System.out.println("Save Process");
                     StaticStore.saveServerInfo();
 
@@ -101,13 +101,15 @@ public class PackBot {
                 if(backup % 360 == 0) {
                     System.out.println("Backup save file");
 
-                    client.retrieveUserById(StaticStore.MANDARIN_SMELL).queue(user -> user.openPrivateChannel().queue(pv -> pv.sendMessage("Sending backup")
-                            .addFiles(FileUpload.fromData(new File("./data/serverinfo.json")))
-                            .queue()));
+                    if (!test) {
+                        client.retrieveUserById(StaticStore.MANDARIN_SMELL).queue(user -> user.openPrivateChannel().queue(pv -> pv.sendMessage("Sending backup")
+                                .addFiles(FileUpload.fromData(new File("./data/serverinfo.json")))
+                                .queue()));
 
-                    client.retrieveUserById(195682910269865984L).queue(user -> user.openPrivateChannel().queue(pv -> pv.sendMessage("Sending backup")
-                            .addFiles(FileUpload.fromData(new File("./data/serverinfo.json")))
-                            .queue()));
+                        client.retrieveUserById(195682910269865984L).queue(user -> user.openPrivateChannel().queue(pv -> pv.sendMessage("Sending backup")
+                                .addFiles(FileUpload.fromData(new File("./data/serverinfo.json")))
+                                .queue()));
+                    }
 
                     backup = 1;
                 } else {
