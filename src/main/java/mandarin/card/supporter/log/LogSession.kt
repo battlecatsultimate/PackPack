@@ -88,15 +88,17 @@ class LogSession {
 
             calendar.time = currentDate
 
+            val currentYear = calendar.get(Calendar.YEAR)
             val currentMonth = calendar.get(Calendar.MONTH)
             val currentDay = calendar.get(Calendar.DAY_OF_MONTH)
 
             calendar.time = lastDate
 
+            val lastYear = calendar.get(Calendar.YEAR)
             val lastMonth = calendar.get(Calendar.MONTH)
             val lastDay = calendar.get(Calendar.DAY_OF_MONTH)
 
-            if (currentMonth > lastMonth || currentDay > lastDay) {
+            if (currentYear > lastYear || currentMonth > lastMonth || currentDay > lastDay) {
                 session.saveSessionAsFile()
 
                 val previousSession = session
