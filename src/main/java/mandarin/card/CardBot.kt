@@ -42,8 +42,8 @@ object CardBot : ListenerAdapter() {
     var test = false
 
     private var ready = false
-    private var notifier = 0
-    private var collectorMonitor = 0
+    private var notifier = 2
+    private var collectorMonitor = 30
     private var backup = 360
 
     var locked = false
@@ -85,7 +85,7 @@ object CardBot : ListenerAdapter() {
         StaticStore.saver.schedule(object : TimerTask() {
             override fun run() {
                 if (notifier == 2) {
-                    notifier = 0
+                    notifier = 1
 
                     val removeQueue = ArrayList<String>()
 
@@ -139,7 +139,7 @@ object CardBot : ListenerAdapter() {
                 }
 
                 if (collectorMonitor == 30 && !test) {
-                    collectorMonitor = 0
+                    collectorMonitor = 1
 
                     CardData.inventories.keys.forEach { userID ->
                         val inventory = Inventory.getInventory(userID)
@@ -162,7 +162,7 @@ object CardBot : ListenerAdapter() {
                 }
 
                 if (!test && backup == 360) {
-                    backup = 0
+                    backup = 1
 
                     client.retrieveUserById(StaticStore.MANDARIN_SMELL)
                         .queue {user ->
