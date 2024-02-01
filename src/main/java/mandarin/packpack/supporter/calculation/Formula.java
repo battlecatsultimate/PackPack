@@ -89,6 +89,12 @@ public class Formula {
                 .replaceAll("\\s", "")
                 .toLowerCase(Locale.ENGLISH).trim();
 
+        String[] test = stabilized.split("=");
+
+        if (test.length == 2) {
+            stabilized = test[0] + "-(" + test[1] + ")";
+        }
+
         if(stabilized.length() >= 2 && stabilized.substring(0, 2).matches("^-[^.\\d]")) {
             stabilized = "-1*" + stabilized.substring(1);
         }
@@ -137,6 +143,14 @@ public class Formula {
             variable = changed;
         }
 
+        if (test.length == 2 && variable.size() == 1) {
+            if (variable.get(0).name.equals("x")) {
+                variable.add(new NestedVariable(this, "y"));
+            } else {
+                variable.add(0, new NestedVariable(this, "x"));
+            }
+        }
+
         boolean rt = variable.size() == 2;
 
         for(int i = 0; i < variable.size(); i++) {
@@ -154,6 +168,14 @@ public class Formula {
             changed.add(variable.get(0));
 
             variable = changed;
+        }
+
+        if (test.length == 2 && variable.size() == 1) {
+            if (variable.get(0).name.equals("r")) {
+                variable.add(new NestedVariable(this, "t"));
+            } else {
+                variable.add(0, new NestedVariable(this, "r"));
+            }
         }
     }
 
