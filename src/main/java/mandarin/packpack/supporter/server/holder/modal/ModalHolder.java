@@ -15,6 +15,10 @@ public abstract class ModalHolder extends Holder {
         super(author, channelID, messageID);
     }
 
+    public ModalHolder(@Nonnull Message author, @Nonnull String channelID, @Nonnull Message message) {
+        super(author, channelID, message);
+    }
+
     @Override
     public final STATUS handleEvent(@Nonnull Event event) {
         if(event instanceof ModalInteractionEvent modalEvent && canHandleEvent(modalEvent)) {

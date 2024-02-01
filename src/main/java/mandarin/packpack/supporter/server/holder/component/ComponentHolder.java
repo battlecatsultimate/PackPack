@@ -15,6 +15,10 @@ public abstract class ComponentHolder extends Holder {
         super(author, channelID, messageID);
     }
 
+    public ComponentHolder(@Nonnull Message author, @Nonnull String channelID, @Nonnull Message message) {
+        super(author, channelID, message);
+    }
+
     public final long time = System.currentTimeMillis();
 
     @Override
