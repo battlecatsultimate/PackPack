@@ -109,6 +109,14 @@ public abstract class Holder {
         userID = author.getAuthor().getId();
     }
 
+    public Holder(@Nonnull Message author, @Nonnull String channelID, @Nonnull Message message) {
+        this.author = author;
+
+        this.channelID = channelID;
+        this.messageID = message.getId();
+        userID = author.getAuthor().getId();
+    }
+
     public Holder(@Nonnull String channelID, @Nonnull String messageID, @Nonnull String userID) {
         author = null;
 

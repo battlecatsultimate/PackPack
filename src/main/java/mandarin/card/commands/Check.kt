@@ -30,11 +30,12 @@ class Check(private val tier: CardData.Tier) : Command(LangID.EN, true) {
         val members = g.findMembers { member -> member.id in ids }.get().filter { member ->
             val inventory = Inventory.getInventory(member.id)
 
-            inventory.cards.keys.any { c -> c.tier == tier }
+            inventory.cards.keys.any { c -> c.tier == tier } || inventory.favorites.keys.any { c -> c.tier == tier }
         }.sortedByDescending {
             val inventory = Inventory.getInventory(it.id)
 
-            inventory.cards.keys.filter { c -> c.tier == tier }.sumOf { c -> inventory.cards[c] ?: 0 }
+            inventory.cards.entries.filter { e -> e.key.tier == tier }.sumOf { e -> e.value } +
+            inventory.favorites.entries.filter { e -> e.key.tier == tier }.sumOf { e -> e.value }
         }
 
         if (members.isNotEmpty()) {
@@ -63,7 +64,10 @@ class Check(private val tier: CardData.Tier) : Command(LangID.EN, true) {
                     .append(" [")
                     .append(members[i].id)
                     .append("] x")
-                    .append(inventory.cards.keys.filter { c -> c.tier == tier }.sumOf { c -> inventory.cards[c] ?: 0 })
+                    .append(
+                        inventory.cards.entries.filter { e -> e.key.tier == tier }.sumOf { e -> e.value } +
+                        inventory.favorites.entries.filter { e -> e.key.tier == tier }.sumOf { e -> e.value }
+                    )
                     .append("\n")
             }
         } else {

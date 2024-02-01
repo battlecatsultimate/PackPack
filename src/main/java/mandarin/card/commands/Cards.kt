@@ -82,9 +82,8 @@ class Cards : Command(LangID.EN, true) {
 
             rows.add(ActionRow.of(bannerCategory.build()))
 
-            val dataSize = inventory.cards.size
-
-            val cards = inventory.cards.keys.sortedWith(CardComparator())
+            val cards = inventory.cards.keys.union(inventory.favorites.keys).sortedWith(CardComparator())
+            val dataSize = cards.size
 
             val cardCategoryElements = ArrayList<SelectOption>()
 
@@ -145,7 +144,7 @@ class Cards : Command(LangID.EN, true) {
     }
 
     private fun getText(member: Member, inventory: Inventory) : String {
-        val cards = inventory.cards.keys.sortedWith(CardComparator())
+        val cards = inventory.cards.keys.union(inventory.favorites.keys).sortedWith(CardComparator())
 
         val authorMention = member.asMention
 
@@ -153,9 +152,15 @@ class Cards : Command(LangID.EN, true) {
 
         if (cards.isNotEmpty()) {
             for (i in 0 until min(SearchHolder.PAGE_CHUNK, cards.size)) {
-                builder.append("${i + 1}. ${cards[i].cardInfo()}")
+                builder.append("${i + 1}. ")
 
-                val amount = inventory.cards[cards[i]] ?: 1
+                if (inventory.favorites.containsKey(cards[i])) {
+                    builder.append("⭐")
+                }
+
+                builder.append(cards[i].cardInfo())
+
+                val amount = (inventory.cards[cards[i]] ?: 0) + (inventory.favorites[cards[i]] ?: 0)
 
                 if (amount >= 2) {
                     builder.append(" x$amount\n")

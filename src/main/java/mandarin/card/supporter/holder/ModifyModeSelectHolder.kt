@@ -62,7 +62,7 @@ class ModifyModeSelectHolder(author: Message, channelID: String, private val mes
                         val cards = if (isAdd)
                             CardData.cards.sortedWith(CardComparator())
                         else
-                            inventory.cards.keys.sortedWith(CardComparator())
+                            inventory.cards.keys.union(inventory.favorites.keys).sortedWith(CardComparator())
 
                         event.deferEdit()
                             .setContent(getCardText(cards, isAdd))
@@ -249,7 +249,7 @@ class ModifyModeSelectHolder(author: Message, channelID: String, private val mes
         confirmButtons.add(Button.danger("clear", "Clear").withDisabled(true))
 
         if (!isAdd) {
-            confirmButtons.add(Button.danger("remove", "Mass Remove").withDisabled(inventory.cards.isEmpty()))
+            confirmButtons.add(Button.danger("remove", "Mass Remove").withDisabled(inventory.cards.isEmpty() && inventory.favorites.isEmpty()))
         }
 
         confirmButtons.add(Button.secondary("back", "Back"))

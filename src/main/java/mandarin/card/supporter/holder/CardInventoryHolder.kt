@@ -1,30 +1,26 @@
 package mandarin.card.supporter.holder
 
-import common.util.Data
 import mandarin.card.supporter.Card
 import mandarin.card.supporter.CardComparator
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.packpack.supporter.EmojiStore
-import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
-import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.interactions.components.ActionRow
+import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
-import net.dv8tion.jda.api.requests.restaction.interactions.MessageEditCallbackAction
-import net.dv8tion.jda.api.utils.FileUpload
 import kotlin.math.min
 
 class CardInventoryHolder(author: Message, channelID: String, private val message: Message, private val inventory: Inventory, private val member: Member) : ComponentHolder(author, channelID, message.id) {
-    private val cards = ArrayList<Card>(inventory.cards.keys.sortedWith(CardComparator()))
+    private val cards = ArrayList<Card>(inventory.cards.keys.union(inventory.favorites.keys).sortedWith(CardComparator()))
 
     private var page = 0
     private var tier = CardData.Tier.NONE
@@ -134,32 +130,19 @@ class CardInventoryHolder(author: Message, channelID: String, private val messag
 
                 val card = cards[index]
 
-                event.deferEdit()
-                    .setContent("`${card.cardInfo()}` Selected")
-                    .setComponents()
-                    .setAllowedMentions(ArrayList())
-                    .mentionRepliedUser(false)
-                    .queue()
-
-                val embedBuilder = EmbedBuilder()
-
-                embedBuilder.setTitle("Card No.${Data.trio(card.unitID)}")
-
-                embedBuilder.setColor(StaticStore.grade[card.tier.ordinal])
-
-                embedBuilder.addField("Name", card.name, true)
-                embedBuilder.addField("Tier", card.getTier(), true)
-                embedBuilder.addField("Amount", (inventory.cards[card] ?: 1).toString(), false)
-
-                embedBuilder.setImage("attachment://card.png")
-
-                event.messageChannel.sendMessageEmbeds(embedBuilder.build())
-                    .setFiles(FileUpload.fromData(card.cardImage, "card.png"))
-                    .setMessageReference(message)
-                    .mentionRepliedUser(false)
-                    .queue()
+                connectTo(event, CardFavoriteHolder(authorMessage, channelID, message, inventory, card))
             }
         }
+    }
+
+    override fun onBack() {
+        message.editMessage(getText())
+            .setEmbeds()
+            .setFiles()
+            .setComponents(getComponents())
+            .mentionRepliedUser(false)
+            .setAllowedMentions(ArrayList())
+            .queue()
     }
 
     private fun filterCards() {
@@ -167,15 +150,21 @@ class CardInventoryHolder(author: Message, channelID: String, private val messag
 
         if (tier != CardData.Tier.NONE) {
             if (banner[0] == -1) {
-                cards.addAll(inventory.cards.keys.filter { c -> c.tier == tier })
+                cards.addAll(inventory.cards.keys.filter { c -> c.tier == tier }.union(inventory.favorites.keys.filter { c -> c.tier == tier }))
             } else {
-                cards.addAll(inventory.cards.keys.filter { c -> c.tier == tier && c.unitID in CardData.bannerData[tier.ordinal][banner[1]] })
+                cards.addAll(
+                    inventory.cards.keys.filter { c -> c.tier == tier && c.unitID in CardData.bannerData[tier.ordinal][banner[1]] }.union(
+                        inventory.favorites.keys.filter { c -> c.tier == tier && c.unitID in CardData.bannerData[tier.ordinal][banner[1]] }
+                    )
+                )
             }
         } else {
             if (banner[0] == -1) {
-                cards.addAll(inventory.cards.keys)
+                cards.addAll(inventory.cards.keys.union(inventory.favorites.keys))
             } else {
-                cards.addAll(inventory.cards.keys.filter { c -> c.unitID in CardData.bannerData[banner[0]][banner[1]] })
+                cards.addAll(inventory.cards.keys.filter { c -> c.unitID in CardData.bannerData[banner[0]][banner[1]] }.union(
+                    inventory.favorites.keys.filter { c -> c.unitID in CardData.bannerData[banner[0]][banner[1]] }
+                ))
             }
         }
 
@@ -183,15 +172,15 @@ class CardInventoryHolder(author: Message, channelID: String, private val messag
     }
 
     private fun applyResult(event: GenericComponentInteractionCreateEvent) {
-        assignComponents(
-            event.deferEdit()
-                .setContent(getText())
-                .mentionRepliedUser(false)
-                .setAllowedMentions(ArrayList())
-        ).queue()
+        event.deferEdit()
+            .setContent(getText())
+            .setComponents(getComponents())
+            .mentionRepliedUser(false)
+            .setAllowedMentions(ArrayList())
+            .queue()
     }
 
-    private fun assignComponents(action: MessageEditCallbackAction) : MessageEditCallbackAction {
+    private fun getComponents() : List<LayoutComponent> {
         val rows = ArrayList<ActionRow>()
 
         val tierCategoryElements = ArrayList<SelectOption>()
@@ -317,7 +306,7 @@ class CardInventoryHolder(author: Message, channelID: String, private val messag
 
         rows.add(ActionRow.of(confirmButtons))
 
-        return action.setComponents(rows)
+        return rows
     }
 
     private fun getText() : String {
@@ -325,9 +314,15 @@ class CardInventoryHolder(author: Message, channelID: String, private val messag
 
         if (cards.size > 0) {
             for (i in page * SearchHolder.PAGE_CHUNK until min((page + 1) * SearchHolder.PAGE_CHUNK, cards.size)) {
-                builder.append("${i + 1}. ${cards[i].cardInfo()}")
+                builder.append("${i + 1}. ")
 
-                val amount = inventory.cards[cards[i]] ?: 1
+                if (inventory.favorites.containsKey(cards[i])) {
+                    builder.append("⭐")
+                }
+
+                builder.append(cards[i].cardInfo())
+
+                val amount = (inventory.cards[cards[i]] ?: 0) + (inventory.favorites[cards[i]] ?: 0)
 
                 if (amount >= 2) {
                     builder.append(" x$amount\n")

@@ -6,6 +6,8 @@ import mandarin.packpack.supporter.StaticStore
 
 class Inventory {
     var cards = HashMap<Card, Int>()
+    var favorites = HashMap<Card, Int>()
+
     var vanityRoles = ArrayList<CardData.Role>()
 
     var catFoods = 0L
@@ -25,22 +27,59 @@ class Inventory {
 
     fun removeCards(c: List<Card>) {
         for (card in c) {
-            if (cards.containsKey(card)) {
-                val numberOfCards = cards[card]
+            if (cards.containsKey(card) || favorites.containsKey(card)) {
+                val numberOfCards = cards[card] ?: 0
+                val numberOfFavorites = favorites[card] ?: 0
 
-                if (numberOfCards == null) {
+                if (numberOfCards + numberOfFavorites == 0) {
                     StaticStore.logger.uploadLog("W/Inventory::removeCards - Tried to remove card that doesn't exist")
 
                     continue
                 }
 
-                cards[card] = numberOfCards - 1
+                if (numberOfCards != 0)
+                    cards[card] = numberOfCards - 1
+                else if (numberOfFavorites != 0)
+                    favorites[card] = numberOfFavorites - 1
             } else {
                 StaticStore.logger.uploadLog("W/Inventory::removeCards - Tried to remove card that doesn't exist")
             }
         }
 
         cards.entries.removeIf { e -> e.value <= 0 }
+        favorites.entries.removeIf { e -> e.value <= 0 }
+    }
+
+    fun favoriteCards(c: Card, amount: Int) {
+        val cardAmount = cards[c] ?: 0
+
+        if (cardAmount < amount) {
+            StaticStore.logger.uploadLog("W/Inventory::favoriteCards - Tried to favorite card that doesn't have enough amount $amount, currently having $cardAmount")
+
+            return
+        }
+
+        cards[c] = (cards[c] ?: 0) - amount
+        favorites[c] = (favorites[c] ?: 0) + amount
+
+        cards.entries.removeIf { e -> e.value <= 0 }
+        favorites.entries.removeIf { e -> e.value <= 0 }
+    }
+
+    fun unfavoriteCards(c: Card, amount: Int) {
+        val cardAmount = favorites[c] ?: 0
+
+        if (cardAmount < amount) {
+            StaticStore.logger.uploadLog("W/Inventory::unfavoriteCards - Tried to unfavorite card that doesn't have enough amount $amount, currently having $cardAmount")
+
+            return
+        }
+
+        cards[c] = (cards[c] ?: 0) + amount
+        favorites[c] = (favorites[c] ?: 0) - amount
+
+        cards.entries.removeIf { e -> e.value <= 0 }
+        favorites.entries.removeIf { e -> e.value <= 0 }
     }
 
     fun toJson(): JsonObject {
@@ -55,6 +94,16 @@ class Inventory {
         }
 
         obj.add("cards", c)
+
+        val f = JsonObject()
+
+        for (card in favorites.keys) {
+            val number = favorites[card] ?: 1
+
+            f.addProperty(card.unitID.toString(), number)
+        }
+
+        obj.add("favorites", f)
 
         val roleArray = JsonArray()
 
@@ -71,7 +120,7 @@ class Inventory {
     }
 
     fun validForLegendCollector() : Boolean {
-        val cardsTotal = cards.keys.map { card -> card.unitID }
+        val cardsTotal = cards.keys.map { card -> card.unitID }.union(favorites.keys.map { card -> card.unitID })
 
         for (i in 0..1) {
             if (CardData.permanents[i].map { index -> CardData.bannerData[i][index] }.any { idSet -> idSet.any { id -> id !in cardsTotal } })
@@ -81,7 +130,7 @@ class Inventory {
         val uberFest = cardsTotal.any { id -> id in CardData.bannerData[2][0] }
         val epicFest = cardsTotal.any { id -> id in CardData.bannerData[2][1] }
         val busters = cardsTotal.any { id -> id == 435 || id == 484 || id in CardData.bannerData[2][2] }
-        val legends = cards.keys.any { card -> card.tier == CardData.Tier.LEGEND }
+        val legends = cards.keys.any { card -> card.tier == CardData.Tier.LEGEND } || favorites.keys.any { card -> card.tier == CardData.Tier.LEGEND }
 
         return uberFest && epicFest && busters && legends
     }
@@ -97,6 +146,16 @@ class Inventory {
                     val foundCard = CardData.cards.find { c -> c.unitID == unitID.toInt() } ?: continue
 
                     inventory.cards[foundCard] = cardIDs.get(unitID).asInt
+                }
+            }
+
+            if (obj.has("favorites")) {
+                val cardIDs = obj.getAsJsonObject("favorites")
+
+                for (unitID in cardIDs.keySet()) {
+                    val foundCard = CardData.cards.find { c -> c.unitID == unitID.toInt() } ?: continue
+
+                    inventory.favorites[foundCard] = cardIDs.get(unitID).asInt
                 }
             }
 

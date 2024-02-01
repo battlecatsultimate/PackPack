@@ -31,7 +31,7 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
         if (isAdd) {
             CardData.cards.sortedWith(CardComparator())
         } else {
-            inventory.cards.keys.sortedWith(CardComparator())
+            inventory.cards.keys.union(inventory.favorites.keys).sortedWith(CardComparator())
         }
     )
 
@@ -195,21 +195,15 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
                 applyResult(event)
             }
             "confirm" -> {
-                selectedCards.forEach {
-                    if (isAdd) {
-                        inventory.cards[it] = (inventory.cards[it] ?: 0) + 1
-                    } else {
-                        inventory.cards[it] = (inventory.cards[it] ?: 1) - 1
-
-                        if (inventory.cards[it] == 0) {
-                            inventory.cards.remove(it)
-                        }
-                    }
+                if (isAdd) {
+                    inventory.addCards(selectedCards)
+                } else {
+                    inventory.removeCards(selectedCards)
                 }
 
                 val m = event.member ?: return
 
-                TransactionLogger.logCardsModify(selectedCards, m, targetMember, isAdd, !isAdd && inventory.cards.isNotEmpty() && selectedCards.size == inventory.cards.keys.sumOf { c -> inventory.cards[c] ?: 0 })
+                TransactionLogger.logCardsModify(selectedCards, m, targetMember, isAdd, !isAdd && inventory.cards.isNotEmpty() && inventory.favorites.isNotEmpty() && selectedCards.size == inventory.cards.keys.sumOf { c -> inventory.cards[c] ?: 0 })
 
                 selectedCards.clear()
 
@@ -224,6 +218,12 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
                 selectedCards.clear()
 
                 inventory.cards.keys.forEach { c ->
+                    repeat(inventory.cards[c] ?: 0) {
+                        selectedCards.add(c)
+                    }
+                }
+
+                inventory.favorites.keys.forEach { c ->
                     repeat(inventory.cards[c] ?: 0) {
                         selectedCards.add(c)
                     }
@@ -283,7 +283,7 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
         val tempCards = if (isAdd) {
             CardData.cards
         } else {
-            inventory.cards.keys
+            inventory.cards.keys.union(inventory.favorites.keys)
         }
 
         if (tier != CardData.Tier.NONE) {
