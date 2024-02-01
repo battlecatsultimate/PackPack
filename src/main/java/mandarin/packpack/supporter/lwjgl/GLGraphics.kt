@@ -3,6 +3,7 @@ package mandarin.packpack.supporter.lwjgl
 import common.system.fake.FakeGraphics
 import common.system.fake.FakeImage
 import common.system.fake.FakeTransform
+import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lwjgl.opengl.Program
 import mandarin.packpack.supporter.lwjgl.opengl.RenderSession
 import mandarin.packpack.supporter.lwjgl.opengl.model.FontModel
@@ -803,7 +804,22 @@ class GLGraphics(private val renderSession: RenderSession, private val program: 
     }
 
     fun clearUpTexture() {
-        usedTexture.forEach { mesh -> mesh.unload() }
-        usedFontModel.forEach { font -> font.flush() }
+        usedTexture.forEach { mesh ->
+            val beingUsed = StaticStore.renderManager.renderSessionManager.renderSessions.any { renderSession ->
+                renderSession.getGraphics().usedTexture.contains(mesh) && !renderSession.done()
+            }
+
+            if (!beingUsed)
+                mesh.unload()
+        }
+
+        usedFontModel.forEach { font ->
+            val beingUsed = StaticStore.renderManager.renderSessionManager.renderSessions.any { renderSession ->
+                renderSession.getGraphics().usedFontModel.contains(font) && !renderSession.done()
+            }
+
+            if (!beingUsed)
+                font.flush()
+        }
     }
 }

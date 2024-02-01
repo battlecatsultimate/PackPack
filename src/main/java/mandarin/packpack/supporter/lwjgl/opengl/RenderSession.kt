@@ -255,15 +255,7 @@ class RenderSession {
     }
 
     fun done() : Boolean {
-        val done = renderQueues.isEmpty() && pngExecuting.isEmpty()
-
-        if (done) {
-            onFinish?.invoke()
-
-            graphics.clearUpTexture()
-        }
-
-        return done
+        return renderQueues.isEmpty() && pngExecuting.isEmpty()
     }
 
     fun release() {
@@ -278,6 +270,10 @@ class RenderSession {
         postProcessor.release()
 
         VAO.releaseVAO(this)
+
+        onFinish?.invoke()
+
+        graphics.clearUpTexture()
     }
 
     private fun removeEvents() {
