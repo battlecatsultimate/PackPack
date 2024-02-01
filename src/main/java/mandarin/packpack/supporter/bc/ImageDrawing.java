@@ -214,17 +214,18 @@ public class ImageDrawing {
     private static final int comboIconNameGap = 40;
     private static final int comboContentGap = 60;
 
-    private static final int plotWidthHeight = 512;
-    private static final float axisStroke = 0.75f;
-    private static final float indicatorStroke = 1f;
+    private static final int plotWidthHeight = 2048;
+    private static final float axisStroke = 3f;
+    private static final float indicatorStroke = 4f;
     private static final float indicatorRatio = 0.025f;
-    private static final float subIndicatorStroke = 0.5f;
-    private static final int indicatorGap = 5;
-    private static final float plotStroke = 2f;
+    private static final float subIndicatorStroke = 2f;
+    private static final int indicatorGap = 20;
+    private static final float plotStroke = 8f;
     private static final float angleLimit = 89.9995f;
+    private static final float multivariableAngleLimit = 89.99f;
 
-    private static final int axisTitleGap = 20;
-    private static final int plotGraphOffset = 50;
+    private static final int axisTitleGap = 80;
+    private static final int plotGraphOffset = 200;
 
     private static final int CHANCE_WIDTH = 0;
     private static final int REWARD_WIDTH = 1;
@@ -256,8 +257,8 @@ public class ImageDrawing {
                 contentFont = new FontModel(42f, regular, FontModel.Type.FILL, 0f);
                 levelFont = new FontModel(48f, medium, FontModel.Type.FILL, 0f);
                 fruitFont = new FontModel(60f, medium, FontModel.Type.FILL, 0f);
-                plotFont = new FontModel(14f, medium, FontModel.Type.FILL, 0f);
-                axisFont = new FontModel(18f, medium, FontModel.Type.FILL, 0f);
+                plotFont = new FontModel(56f, medium, FontModel.Type.FILL, 0f);
+                axisFont = new FontModel(72f, medium, FontModel.Type.FILL, 0f);
             } catch (Exception e) {
                 StaticStore.logger.uploadErrorLog(e, "E/ImageDrawing::initialize - Failed to initialize font file");
             }
@@ -2159,7 +2160,7 @@ public class ImageDrawing {
                     int tempTotalWidth = tw + statPanelMargin * 2;
 
                     for(int i = ENEMY; i <= BOSS; i++) {
-                        tempTotalWidth -= stw[i];
+                        tempTotalWidth = Math.round(tempTotalWidth - stw[i]);
                     }
 
                     desiredStageGap = (int) Math.round((tempTotalWidth - rewardIconSize) / 19.0);
@@ -2173,7 +2174,7 @@ public class ImageDrawing {
                 int tempTotalWidth = uw * 4 + CellDrawer.lineOffset * 6 + statPanelMargin * 2;
 
                 for(int i = ENEMY; i <= BOSS; i++) {
-                    tempTotalWidth -= stw[i];
+                    tempTotalWidth = Math.round(tempTotalWidth - stw[i]);
                 }
 
                 desiredStageGap = (int) Math.round((tempTotalWidth - rewardIconSize) / 19.0);
@@ -2189,7 +2190,7 @@ public class ImageDrawing {
                 int tempTotalWidth = uw * 4 + CellDrawer.lineOffset * 6 + statPanelMargin * 2;
 
                 for(int i = ENEMY; i <= BOSS; i++) {
-                    tempTotalWidth -= stw[i];
+                    tempTotalWidth = Math.round(tempTotalWidth - stw[i]);
                 }
 
                 desiredStageGap = (int) Math.round((tempTotalWidth - rewardIconSize) / 19.0);
@@ -2482,7 +2483,7 @@ public class ImageDrawing {
                 float[] costTitleRect = contentFont.measureDimension(costTitle);
                 float[] costRect = nameFont.measureDimension(cost.toString());
 
-                panelHeight += Math.round(costTitleRect[3]) + talentTableGap + talentCostTableGap * 2 + costRect[3];
+                panelHeight = Math.round(panelHeight + Math.round(costTitleRect[3]) + talentTableGap + talentCostTableGap * 2 + costRect[3]);
             }
 
             if(i < talent.talents.size() - 1)
@@ -2618,13 +2619,13 @@ public class ImageDrawing {
                     }
 
                     if(i < talent.talents.size() - 1) {
-                        y += talentGap / 2.0;
+                        y = Math.round(y + talentGap / 2f);
 
                         g.setColor(191, 191, 191, 255);
                         g.setStroke(CellDrawer.lineStroke, GLGraphics.LineEndMode.ROUND);
                         g.drawLine(x, y, x + finalPanelWidth - statPanelMargin * 2, y);
 
-                        y += talentGap / 2.0;
+                        y = Math.round(y + talentGap / 2f);
                     }
                 }
 
@@ -3413,6 +3414,21 @@ public class ImageDrawing {
 
                             y++;
                         } else if(v0 * v1 < 0) {
+                            double ym = convertPixelToCoordinate((y + 0.5) * segment, yWidth, centerY, false);
+                            double vm = substituted.substitute(ym);
+
+                            if (!Equation.error.isEmpty() || substituted.element.isAborted()) {
+                                Equation.error.clear();
+
+                                continue;
+                            }
+
+                            double slope0 = Math.toDegrees(Math.atan((vm - v0) / (ym - y0)));
+                            double slope1 = Math.toDegrees(Math.atan((v1 - vm) / (y1 - ym)));
+
+                            if (Math.abs(slope0) >= multivariableAngleLimit || Math.abs(slope1) >= multivariableAngleLimit || slope0 * slope1 < 0)
+                                continue;
+
                             g.fillOval((int) Math.round(x * segment), convertCoordinateToPixel(-v1 * (y1 - y0) / (v1 - v0) + y1, yWidth, centerY, false), 3, 3);
                         }
                     }
@@ -3461,6 +3477,22 @@ public class ImageDrawing {
 
                             x++;
                         } else if(v0 * v1 < 0) {
+                            double xm = convertPixelToCoordinate((x + 0.5) * segment, xWidth, centerX, true);
+                            double vm = substituted.substitute(xm);
+
+                            if (!Equation.error.isEmpty() || substituted.element.isAborted()) {
+                                Equation.error.clear();
+
+                                continue;
+                            }
+
+                            double slope0 = Math.toDegrees(Math.atan((vm - v0) / (xm - x0)));
+                            double slope1 = Math.toDegrees(Math.atan((v1 - vm) / (x1 - xm)));
+
+                            if (Math.abs(slope0) >= multivariableAngleLimit || Math.abs(slope1) >= multivariableAngleLimit || slope0 * slope1 < 0) {
+                                continue;
+                            }
+
                             g.fillOval(convertCoordinateToPixel(-v1 * (x1 - x0) / (v1 - v0) + x1, xWidth, centerX, true), (int) Math.round(y * segment), 3, 3);
                         }
                     }
@@ -4658,7 +4690,7 @@ public class ImageDrawing {
         int w = desiredGap * 19 + rewardIconSize;
 
         for(int i = ENEMY; i <= BOSS; i++) {
-            w += dimension[i];
+            w = Math.round(w + dimension[i]);
         }
 
         int h = innerTableCellMargin * (st.data.datas.length + 1);

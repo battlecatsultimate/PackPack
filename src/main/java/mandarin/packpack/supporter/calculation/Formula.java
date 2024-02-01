@@ -41,7 +41,7 @@ public class Formula {
     public static final int maximumIteration = 100;
     public static final BigDecimal minimumError = new BigDecimal("0.001");
     public static final int maximumSections = 1000;
-    public static final int numberOfElements = 1536;
+    public static final int numberOfElements = 2048;
 
     private static final char[] operators = {
             '+', '-', '/', '*', '×', '÷', '^'
