@@ -48,8 +48,6 @@ public class RTheta extends TimedConstraintCommand {
             replyToMessageSafely(ch, LangID.getStringByID("plot_invalid", lang), loader.getMessage(), a -> a);
 
             return;
-        } else if(test.length == 2) {
-            f = test[0] + " - (" + test[1] + ")";
         }
 
         Formula formula = new Formula(f, 2, lang);
