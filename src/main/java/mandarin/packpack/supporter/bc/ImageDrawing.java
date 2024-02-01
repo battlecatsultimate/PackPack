@@ -3598,18 +3598,20 @@ public class ImageDrawing {
                 while(xPosition.compareTo(xw.pow(2).add(yw.pow(2)).sqrt(Equation.context)) <= 0) {
                     if(xPosition.compareTo(BigDecimal.ZERO) != 0) {
                         int xPos = convertCoordinateToPixel(xPosition.doubleValue(), xWidth, centerX, true);
+                        int radius = Math.abs(xPos - zeroX);
 
                         g.setColor(238, 238, 238, 64);
                         g.setStroke(indicatorStroke, GLGraphics.LineEndMode.ROUND);
 
-                        g.drawOval(zeroX * 2 - xPos, zeroY + zeroX - xPos, (xPos - zeroX) * 2, (xPos - zeroX) * 2);
+                        g.drawOval(zeroX - radius, zeroY - radius, radius, radius);
 
                         g.setStroke(indicatorStroke / 4f, GLGraphics.LineEndMode.ROUND);
 
                         for(int i = 1; i < 5; i++) {
                             int subXPos = convertCoordinateToPixel(xPosition.doubleValue() + xSegment.doubleValue() / 5.0 * i, xWidth, centerX, true);
+                            int subRadius = Math.abs(subXPos - zeroX);
 
-                            g.drawOval(zeroX * 2 - subXPos, zeroY + zeroX - subXPos, (subXPos - zeroX) * 2, (subXPos - zeroX) * 2);
+                            g.drawOval(zeroX - subRadius, zeroY - subRadius, subRadius, subRadius);
                         }
 
                         if(xPosition.compareTo(xRange[1]) <= 0) {
