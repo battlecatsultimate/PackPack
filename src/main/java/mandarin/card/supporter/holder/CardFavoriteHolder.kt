@@ -75,7 +75,7 @@ class CardFavoriteHolder(author: Message, channelID: String, private val message
 
                     event.replyModal(modal).queue()
 
-                    connectTo(CardFavoriteAmountHolder(authorMessage, channelID, message, inventory, card, true))
+                    connectTo(CardFavoriteAmountHolder(authorMessage, channelID, message, inventory, card, false))
                 } else {
                     inventory.unfavoriteCards(card, 1)
 
