@@ -586,6 +586,8 @@
   "item_35002" : "Event Stamp",
   "item_35003" : "Metal Slug Collab Stamp",
   "item_35004" : "BCJP TV 5th Anniversary Stamp",
+  "item_35005" : "White Day Stamp",
+  "item_35006" : "Cat's Day Stamp",
   "command_timelimit" : "You can run this command after _ sec later!",
   "command_prevent" : "Now <@_UUU_> can't use any commands for _TTT_due to spamming of command. More spamming in future will lengthen time of ban!",
   "const_man" : "This command can be only run by MandarinSmell!",
