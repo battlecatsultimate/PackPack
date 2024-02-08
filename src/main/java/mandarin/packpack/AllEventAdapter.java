@@ -474,7 +474,7 @@ public class AllEventAdapter extends ListenerAdapter {
             case "medal", "md" -> new Medal(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
             case "announcement", "ann" -> new Announcement(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
             case "catcombo", "combo", "cc" -> new CatCombo(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
-            case "serverjson", "json", "sj" -> new ServerJson(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "serverjson", "json", "sj" -> new ServerJson(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
             case "findstage", "findst", "fstage", "fst" ->
                     new FindStage(ConstraintCommand.ROLE.MEMBER, lang, idh, c, 5000).execute(event);
             case "suggest" ->

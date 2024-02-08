@@ -2,6 +2,7 @@ package mandarin.packpack.commands.bot;
 
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
+import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.Message;
@@ -17,6 +18,12 @@ public class ServerJson extends ConstraintCommand {
 
     @Override
     public void doSomething(@NotNull CommandLoader loader) throws Exception {
+        if (!loader.getMember().getId().equals(StaticStore.MANDARIN_SMELL) && !loader.getMember().getId().equals("195682910269865984")) {
+            loader.getChannel().sendMessage(LangID.getStringByID("const_man", lang)).queue();
+
+            return;
+        }
+
         StaticStore.saveServerInfo();
 
         File f = new File("./data/serverinfo.json");
