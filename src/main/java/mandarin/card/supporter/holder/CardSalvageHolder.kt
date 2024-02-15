@@ -295,7 +295,18 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
 
                 applyResult()
             }
+            "back" -> {
+                event.deferEdit().queue()
+
+                goBack()
+            }
         }
+    }
+
+    override fun onConnected(event: GenericComponentInteractionCreateEvent) {
+        filterCards()
+
+        applyResult(event)
     }
 
     private fun filterCards() {
@@ -306,9 +317,9 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
                 inventory.cards.keys.filter { c -> c.tier == tier && c.unitID != 435 && c.unitID != 484 }
                     .filter { c ->
                         when (salvageMode) {
-                            CardData.SalvageMode.T2 -> c.unitID in BannerFilter.Banner.TheAlimighties.getBannerData() || c.unitID in BannerFilter.Banner.GirlsAndMonsters.getBannerData()
-                            CardData.SalvageMode.SEASONAL -> c.unitID in BannerFilter.Banner.Seasonal.getBannerData()
-                            CardData.SalvageMode.COLLAB -> c.unitID in BannerFilter.Banner.Collaboration.getBannerData()
+                            CardData.SalvageMode.T2 -> c.isRegularUncommon()
+                            CardData.SalvageMode.SEASONAL -> c.isSeasonalUncommon()
+                            CardData.SalvageMode.COLLAB -> c.isCollaborationUncommon()
                             else -> true
                         }
                     }
@@ -324,7 +335,7 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
     private fun applyResult(event: GenericComponentInteractionCreateEvent) {
         event.deferEdit()
                 .setContent(getText())
-                .setComponents(assignComponents())
+                .setComponents(getComponents())
                 .mentionRepliedUser(false)
                 .setAllowedMentions(ArrayList())
                 .queue()
@@ -332,14 +343,25 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
 
     private fun applyResult() {
         message.editMessage(getText())
-                .setComponents(assignComponents())
+                .setComponents(getComponents())
                 .mentionRepliedUser(false)
                 .setAllowedMentions(ArrayList())
                 .queue()
     }
 
-    private fun assignComponents() : List<LayoutComponent> {
+    private fun getComponents() : List<LayoutComponent> {
         val rows = ArrayList<ActionRow>()
+
+        val pageButtons = ArrayList<Button>()
+
+        pageButtons.add(Button.secondary("back", "Back"))
+        pageButtons.add(Button.danger("cancel", "Cancel"))
+
+        if (cards.isEmpty() && selectedCard.isEmpty()) {
+            rows.add(ActionRow.of(pageButtons))
+
+            return rows
+        }
 
         if (salvageMode != CardData.SalvageMode.SEASONAL && salvageMode != CardData.SalvageMode.COLLAB) {
             val bannerCategoryElements = ArrayList<SelectOption>()
@@ -455,14 +477,18 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
         confirmButtons.add(Button.secondary("all", "Add All").withDisabled(selectedCard.size == inventory.cards.keys.filter { c -> c.tier == tier }.sumOf { c -> inventory.cards[c] ?: 0 }))
 
         confirmButtons.add(Button.danger("reset", "Reset").withDisabled(selectedCard.isEmpty()))
-        confirmButtons.add(Button.danger("cancel", "Cancel"))
 
         rows.add(ActionRow.of(confirmButtons))
+        rows.add(ActionRow.of(pageButtons))
 
         return rows
     }
 
     private fun getText() : String {
+        if (cards.isEmpty() && selectedCard.isEmpty()) {
+            return "You don't have any cards that meet condition of selected type!"
+        }
+
         val builder = StringBuilder(
             when (salvageMode) {
                 CardData.SalvageMode.T1 -> "Select Tier 1 [Common] cards\n\n### Selected Cards\n\n"
