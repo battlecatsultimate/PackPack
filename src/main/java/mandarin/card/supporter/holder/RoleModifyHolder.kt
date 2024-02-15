@@ -4,11 +4,9 @@ import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.log.TransactionLogger
 import mandarin.packpack.supporter.EmojiStore
-import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.interactions.components.ActionRow
@@ -93,21 +91,14 @@ class RoleModifyHolder(author: Message, channelID: String, private val message: 
                     .setEphemeral(true)
                     .queue()
 
+                filterRoles()
+
                 applyResult()
             }
             "back" -> {
-                event.deferEdit()
-                    .setContent("Do you want to add roles or remove roles?")
-                    .setComponents(getPreviousComponents())
-                    .mentionRepliedUser(false)
-                    .setAllowedMentions(ArrayList())
-                    .queue()
+                event.deferEdit().queue()
 
-                expired = true
-
-                expire(authorMessage.author.id)
-
-                StaticStore.putHolder(authorMessage.author.id, ModifyModeSelectHolder(authorMessage, channelID, message, CardData.ModifyCategory.ROLE, inventory, targetMember))
+                goBack()
             }
             "close" -> {
                 event.deferEdit()
@@ -122,6 +113,12 @@ class RoleModifyHolder(author: Message, channelID: String, private val message: 
                 expire(authorMessage.author.id)
             }
         }
+    }
+
+    override fun onConnected(event: GenericComponentInteractionCreateEvent) {
+        filterRoles()
+
+        applyResult(event)
     }
 
     private fun applyResult(event: GenericComponentInteractionCreateEvent) {
@@ -233,28 +230,5 @@ class RoleModifyHolder(author: Message, channelID: String, private val message: 
         builder.append("```")
 
         return builder.toString()
-    }
-
-    private fun getPreviousComponents() : List<LayoutComponent> {
-        val rows = ArrayList<ActionRow>()
-
-        val modeOptions = ArrayList<SelectOption>()
-
-        modeOptions.add(SelectOption.of("Add", "add").withEmoji(Emoji.fromUnicode("➕")))
-        modeOptions.add(SelectOption.of("Remove", "remove").withEmoji(Emoji.fromUnicode("➖")))
-
-        val modes = StringSelectMenu.create("mode")
-            .addOptions(modeOptions)
-            .setPlaceholder("Please select mode")
-            .build()
-
-        rows.add(ActionRow.of(modes))
-
-        rows.add(ActionRow.of(
-            Button.secondary("back", "Back"),
-            Button.danger("close", "Close")
-        ))
-
-        return rows
     }
 }

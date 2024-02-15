@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import kotlin.math.max
 
-class CatFoodModifyHolder(author: Message, channelID: String, messageID: String, private val inventory: Inventory, private val isAdd: Boolean, private val targetMember: String, private val editor: Runnable) : ModalHolder(author, channelID, messageID) {
+class CatFoodModifyHolder(author: Message, channelID: String, messageID: String, private val inventory: Inventory, private val isAdd: Boolean, private val targetMember: String) : ModalHolder(author, channelID, messageID) {
     override fun clean() {
 
     }
@@ -76,6 +76,6 @@ class CatFoodModifyHolder(author: Message, channelID: String, messageID: String,
             TransactionLogger.logCatFoodModification(authorMessage.author.id, targetMember, amount, false, oldAmount, newAmount)
         }
 
-        editor.run()
+        goBack()
     }
 }

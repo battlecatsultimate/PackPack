@@ -7,12 +7,10 @@ import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.holder.modal.CardAmountSelectHolder
 import mandarin.card.supporter.log.TransactionLogger
 import mandarin.packpack.supporter.EmojiStore
-import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.interactions.components.ActionRow
@@ -133,7 +131,7 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
                         applyResult()
                     })
                 } else {
-                    val realAmount = (inventory.cards[card] ?: 0) - selectedCards.count { c -> c.unitID == card.unitID }
+                    val realAmount = (inventory.cards[card] ?: 0) + (inventory.favorites[card] ?: 0) - selectedCards.count { c -> c.unitID == card.unitID }
 
                     if (realAmount > 2) {
                         val input = TextInput.create("amount", "Amount of Cards", TextInputStyle.SHORT)
@@ -246,21 +244,14 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
                     .setEphemeral(true)
                     .queue()
 
+                filterCards()
+
                 applyResult()
             }
             "back" -> {
-                event.deferEdit()
-                    .setContent("Do you want to add cards or remove cards?")
-                    .setComponents(getPreviousComponents())
-                    .mentionRepliedUser(false)
-                    .setAllowedMentions(ArrayList())
-                    .queue()
+                event.deferEdit().queue()
 
-                expired = true
-
-                expire(authorMessage.author.id)
-
-                StaticStore.putHolder(authorMessage.author.id, ModifyModeSelectHolder(authorMessage, channelID, message, CardData.ModifyCategory.CARD, inventory, targetMember))
+                goBack()
             }
             "close" -> {
                 event.deferEdit()
@@ -275,6 +266,12 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
                 expire(authorMessage.author.id)
             }
         }
+    }
+
+    override fun onConnected(event: GenericComponentInteractionCreateEvent) {
+        filterCards()
+
+        applyResult(event)
     }
 
     private fun filterCards() {
@@ -301,7 +298,7 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
         }
 
         if (!isAdd) {
-            cards.removeIf { c -> (inventory.cards[c] ?: 1) - selectedCards.filter { card -> c.unitID == card.unitID }.size <= 0 }
+            cards.removeIf { c -> (inventory.cards[c] ?: 0) + (inventory.favorites[c] ?: 0) - selectedCards.filter { card -> c.unitID == card.unitID }.size <= 0 }
         }
 
         cards.sortWith(CardComparator())
@@ -506,7 +503,7 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
                 val amount = if (isAdd)
                     1
                 else
-                    (inventory.cards[cards[i]] ?: 0) + (inventory.cards[cards[i]] ?: 0) - selectedCards.filter { c -> c.unitID == cards[i].unitID }.size
+                    (inventory.cards[cards[i]] ?: 0) + (inventory.favorites[cards[i]] ?: 0) - selectedCards.filter { c -> c.unitID == cards[i].unitID }.size
 
                 if (amount >= 2) {
                     builder.append(" x$amount\n")
@@ -521,28 +518,5 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
         builder.append("```")
 
         return builder.toString()
-    }
-
-    private fun getPreviousComponents() : List<LayoutComponent> {
-        val rows = ArrayList<ActionRow>()
-
-        val modeOptions = ArrayList<SelectOption>()
-
-        modeOptions.add(SelectOption.of("Add", "add").withEmoji(Emoji.fromUnicode("➕")))
-        modeOptions.add(SelectOption.of("Remove", "remove").withEmoji(Emoji.fromUnicode("➖")))
-
-        val modes = StringSelectMenu.create("mode")
-            .addOptions(modeOptions)
-            .setPlaceholder("Please select mode")
-            .build()
-
-        rows.add(ActionRow.of(modes))
-
-        rows.add(ActionRow.of(
-            Button.secondary("back", "Back"),
-            Button.danger("close", "Close")
-        ))
-
-        return rows
     }
 }

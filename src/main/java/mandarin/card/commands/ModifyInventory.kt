@@ -78,8 +78,8 @@ class ModifyInventory : Command(LangID.EN, true) {
 
         val modeOptions = ArrayList<SelectOption>()
 
-        modeOptions.add(SelectOption.of("Cards", "card"))
-        modeOptions.add(SelectOption.of("Vanity Roles", "role"))
+        modeOptions.add(SelectOption.of("Cards", "card").withEmoji(EmojiStore.ABILITY["CARD"]))
+        modeOptions.add(SelectOption.of("Vanity Roles", "role").withEmoji(EmojiStore.DOGE))
         modeOptions.add(SelectOption.of("Cat Foods", "cf").withEmoji(EmojiStore.ABILITY["CF"]))
         modeOptions.add(SelectOption.of("Platinum Shards", "shard").withEmoji(EmojiStore.ABILITY["SHARD"]))
 
