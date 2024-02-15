@@ -506,7 +506,7 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
                 val amount = if (isAdd)
                     1
                 else
-                    (inventory.cards[cards[i]] ?: 1) - selectedCards.filter { c -> c.unitID == cards[i].unitID }.size
+                    (inventory.cards[cards[i]] ?: 0) + (inventory.cards[cards[i]] ?: 0) - selectedCards.filter { c -> c.unitID == cards[i].unitID }.size
 
                 if (amount >= 2) {
                     builder.append(" x$amount\n")
