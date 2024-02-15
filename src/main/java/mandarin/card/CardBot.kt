@@ -15,7 +15,6 @@ import mandarin.packpack.supporter.*
 import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.data.ShardLoader
 import net.dv8tion.jda.api.entities.Activity
-import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent
@@ -36,8 +35,6 @@ import java.sql.Timestamp
 import java.time.ZoneOffset
 import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 object CardBot : ListenerAdapter() {
     var globalPrefix = "cd."
