@@ -6,7 +6,10 @@ import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.supporter.StaticStore
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
+import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel
 import org.apache.http.client.methods.CloseableHttpResponse
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.CloseableHttpClient
@@ -257,6 +260,14 @@ object CardData {
     val modLog = ServerData.get("modLog")
     val catFoodLog = ServerData.get("catFoodLog")
 
+    val globalCategory = arrayOf(
+        ServerData.get("bctcCategory"),
+        ServerData.get("bctcRaidCategory"),
+        ServerData.get("bctcDevelopmentCategory"),
+        ServerData.get("bctcgCategory"),
+        ServerData.get("eventCategory")
+    )
+
     const val MAX_CARDS = 10
     const val TAX = 0.0
 
@@ -468,5 +479,9 @@ object CardData {
         } else {
             ch.id in allowedChannel
         }
+    }
+
+    fun usedInGlobalChannel(member: Member, channel: StandardGuildMessageChannel) : Boolean {
+        return member.id == StaticStore.MANDARIN_SMELL || hasAllPermission(member) || channel.parentCategoryId in globalCategory
     }
 }

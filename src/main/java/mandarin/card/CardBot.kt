@@ -15,7 +15,9 @@ import mandarin.packpack.supporter.*
 import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.data.ShardLoader
 import net.dv8tion.jda.api.entities.Activity
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
+import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
@@ -254,35 +256,37 @@ object CardBot : ListenerAdapter() {
         else
             segments[0]
 
-        when(firstSegment) {
-            "${globalPrefix}catfood",
-            "${globalPrefix}cf" -> {
-                CatFood().execute(event)
+        if (ch is StandardGuildMessageChannel && CardData.usedInGlobalChannel(m, ch)) {
+            when(firstSegment) {
+                "${globalPrefix}catfood",
+                "${globalPrefix}cf" -> {
+                    CatFood().execute(event)
 
-                return
-            }
-            "${globalPrefix}transfercatfood",
-            "${globalPrefix}tcf" -> {
-                TransferCatFood().execute(event)
+                    return
+                }
+                "${globalPrefix}transfercatfood",
+                "${globalPrefix}tcf" -> {
+                    TransferCatFood().execute(event)
 
-                return
-            }
-            "${globalPrefix}rank" -> {
-                Rank().execute(event)
+                    return
+                }
+                "${globalPrefix}rank" -> {
+                    Rank().execute(event)
 
-                return
-            }
-            "${globalPrefix}shardrank",
-            "${globalPrefix}sr" -> {
-                ShardRank().execute(event)
+                    return
+                }
+                "${globalPrefix}shardrank",
+                "${globalPrefix}sr" -> {
+                    ShardRank().execute(event)
 
-                return
-            }
-            "${globalPrefix}platinumshard",
-            "${globalPrefix}ps" -> {
-                PlatinumShard().execute(event)
+                    return
+                }
+                "${globalPrefix}platinumshard",
+                "${globalPrefix}ps" -> {
+                    PlatinumShard().execute(event)
 
-                return
+                    return
+                }
             }
         }
 
