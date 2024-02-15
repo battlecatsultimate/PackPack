@@ -5,7 +5,6 @@ import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.holder.modal.CatFoodModifyHolder
 import mandarin.card.supporter.holder.modal.PlatinumShardModifyHolder
 import mandarin.packpack.supporter.EmojiStore
-import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message

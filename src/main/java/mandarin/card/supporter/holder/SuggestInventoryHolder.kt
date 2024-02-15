@@ -2,6 +2,7 @@ package mandarin.card.supporter.holder
 
 import mandarin.card.CardBot
 import mandarin.card.supporter.*
+import mandarin.card.supporter.holder.modal.CardAmountSelectHolder
 import mandarin.card.supporter.holder.modal.CatFoodHolder
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
@@ -199,23 +200,61 @@ class SuggestInventoryHolder(
 
                 val selectedID = event.values[0].toInt()
 
-                backup.cards.add(cards[selectedID])
+                val card = cards[selectedID]
 
-                suggestionMessage
-                    .editMessage(backup.suggestionInfo(member))
-                    .mentionRepliedUser(false)
-                    .setAllowedMentions(ArrayList())
-                    .queue()
+                val realAmount = (inventory.cards[card] ?: 0) - backup.cards.count { c -> c.unitID == card.unitID }
 
-                event.deferReply().setContent("Suggested : ${cards[selectedID].simpleCardInfo()}").setEphemeral(true).queue()
+                if (realAmount >= 2) {
+                    val input = TextInput.create("amount", "Amount of Cards", TextInputStyle.SHORT)
+                        .setPlaceholder("Put amount up to $realAmount")
+                        .build()
 
-                filterCards()
+                    val modal = Modal.create("select", "Select Amount of Cards")
+                        .addActionRow(input)
+                        .build()
 
-                if (cards.size <= page * SearchHolder.PAGE_CHUNK && page > 0) {
-                    page--
+                    event.replyModal(modal).queue()
+
+                    connectTo(CardAmountSelectHolder(authorMessage, channelID, message.id) { amount ->
+                        val filteredAmount = min(amount, realAmount)
+
+                        repeat(filteredAmount) {
+                            backup.cards.add(card)
+                        }
+
+                        filterCards()
+
+                        if (cards.size <= page * SearchHolder.PAGE_CHUNK && page > 0) {
+                            page--
+                        }
+
+                        suggestionMessage
+                            .editMessage(backup.suggestionInfo(member))
+                            .mentionRepliedUser(false)
+                            .setAllowedMentions(ArrayList())
+                            .queue()
+
+                        applyResult()
+                    })
+                } else {
+                    backup.cards.add(card)
+
+                    event.deferReply().setContent("Suggested : ${cards[selectedID].simpleCardInfo()}").setEphemeral(true).queue()
+
+                    filterCards()
+
+                    suggestionMessage
+                        .editMessage(backup.suggestionInfo(member))
+                        .mentionRepliedUser(false)
+                        .setAllowedMentions(ArrayList())
+                        .queue()
+
+                    if (cards.size <= page * SearchHolder.PAGE_CHUNK && page > 0) {
+                        page--
+                    }
+
+                    applyResult()
                 }
-
-                applyResult()
             }
             "cf" -> {
                 val input = TextInput.create("cf", "Cat Food", TextInputStyle.SHORT)
