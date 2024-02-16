@@ -995,6 +995,7 @@
   "stimg_wrong" : "画像を組み立てる間なにか問題が起きたようです。",
   "stimg_letter" : "あなたのテキストは有効ではない文字が含まれています。 : ",
   "stimg_more" : "コマンドに何も書いてないようです!\n使い方 : `_stageimg [文字]`",
+  "stimg_max" : "You can put only up to 128 letters!",
   "stmimg_argu" : "もう一つ引数が必要です!\n使い方 : `_stageimg [文字]`",
   "locale_set" : "ローカルは _ にセットされました!",
   "locale_argu" : "このコマンドはもう一つ引数が必要です : [ローカル]",

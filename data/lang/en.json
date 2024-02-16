@@ -1003,6 +1003,7 @@
   "stimg_wrong" : "Something went wrong while generating image",
   "stimg_letter" : "Your message has invalid letters : ",
   "stimg_more" : "It seems there isn't text in this command!\nUsage : `_stageimg [Text]`",
+  "stimg_max" : "You can put only up to 128 letters!",
   "stmimg_argu" : "You need one more argument!\nUsage : `_stageimg [Text]`",
   "locale_set" : "Locale is set to _!",
   "locale_argu" : "This command requires one more argument : [Locale]",

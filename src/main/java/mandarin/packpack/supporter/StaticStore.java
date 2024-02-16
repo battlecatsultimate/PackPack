@@ -84,6 +84,8 @@ public class StaticStore {
     public static String koreanVersion = "110000";
     public static String japaneseVersion = "110000";
 
+    public static final int MAX_STAGE_IMAGE_LENGTH = 128;
+
     public static final ConfigHolder defaultConfig = new ConfigHolder();
 
     public static Map<String, String> prefix = new HashMap<>();

@@ -72,6 +72,12 @@ public class StageImage extends ConstraintCommand {
 
                 String message = messages[startIndex];
 
+                if (!loader.getUser().getId().equals(StaticStore.MANDARIN_SMELL) && message.length() > StaticStore.MAX_STAGE_IMAGE_LENGTH) {
+                    replyToMessageSafely(ch, LangID.getStringByID("stimg_max", lang), loader.getMessage(), a -> a);
+
+                    return;
+                }
+
                 if((param & PARAM_FORCE) > 0 || !canImage(message)) {
                     File fon = new File("./data/ForceFont.otf");
                     Font font = Font.createFont(Font.TRUETYPE_FONT, fon).deriveFont(102f);
