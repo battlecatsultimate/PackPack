@@ -1283,7 +1283,7 @@ public class Formula {
 
                                             return function;
                                         } else {
-                                            retry = full.replace(prefix + "(" + inner + ")", prefix + "*(" + inner +")");
+                                            retry = full.replace(prefix + "(" + builder + ")", prefix + "*(" + builder +")");
 
                                             return null;
                                         }

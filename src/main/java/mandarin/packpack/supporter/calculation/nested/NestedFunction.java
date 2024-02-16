@@ -33,7 +33,7 @@ public class NestedFunction extends NestedElement {
         ROUND(1),
         FACTORIAL(1);
 
-        public int requiredParam;
+        public final int requiredParam;
 
         FUNC(int requiredParam) {
             this.requiredParam = requiredParam;
@@ -57,28 +57,29 @@ public class NestedFunction extends NestedElement {
             return BigDecimal.ZERO;
 
         switch (type) {
-            case NPR:
+            case NPR -> {
                 BigDecimal secondary = children.get(1).calculate(input);
 
-                if(!check() || secondary == null)
+                if (!check() || secondary == null)
                     return BigDecimal.ZERO;
 
                 return nPr(primary, secondary);
-            case NCR:
-                secondary = children.get(1).calculate(input);
+            }
+            case NCR -> {
+                BigDecimal secondary = children.get(1).calculate(input);
 
-                if(!check() || secondary == null)
+                if (!check() || secondary == null)
                     return BigDecimal.ZERO;
 
                 return nCr(primary, secondary);
-            case SIN:
-            case CSC:
+            }
+            case SIN, CSC -> {
                 BigDecimal sin = BigDecimal.valueOf(Math.sin(primary.doubleValue()));
 
-                if(type == FUNC.SIN) {
+                if (type == FUNC.SIN) {
                     return sin;
                 } else {
-                    if(sin.compareTo(BigDecimal.ZERO) == 0) {
+                    if (sin.compareTo(BigDecimal.ZERO) == 0) {
                         abort();
 
                         return BigDecimal.ZERO;
@@ -86,14 +87,14 @@ public class NestedFunction extends NestedElement {
 
                     return BigDecimal.ONE.divide(sin, Equation.context);
                 }
-            case COS:
-            case SEC:
+            }
+            case COS, SEC -> {
                 BigDecimal cos = BigDecimal.valueOf(Math.cos(primary.doubleValue()));
 
-                if(type == FUNC.COS) {
+                if (type == FUNC.COS) {
                     return cos;
                 } else {
-                    if(cos.compareTo(BigDecimal.ZERO) == 0) {
+                    if (cos.compareTo(BigDecimal.ZERO) == 0) {
                         abort();
 
                         return BigDecimal.ZERO;
@@ -101,20 +102,20 @@ public class NestedFunction extends NestedElement {
 
                     return BigDecimal.ONE.divide(cos, Equation.context);
                 }
-            case TAN:
-            case COT:
+            }
+            case TAN, COT -> {
                 boolean isPi = primary.remainder(BigDecimal.valueOf(Math.PI)).compareTo(BigDecimal.ZERO) == 0;
                 boolean isHalfPi = primary.remainder(BigDecimal.valueOf(Math.PI / 2.0)).compareTo(BigDecimal.ZERO) == 0;
 
-                if(type == FUNC.COT) {
-                    if(isPi) {
+                if (type == FUNC.COT) {
+                    if (isPi) {
                         abort();
 
                         return BigDecimal.ZERO;
-                    } else if(isHalfPi) {
+                    } else if (isHalfPi) {
                         return BigDecimal.ZERO;
                     }
-                } else if(!isPi && isHalfPi) {
+                } else if (!isPi && isHalfPi) {
                     abort();
 
                     return BigDecimal.ZERO;
@@ -122,96 +123,109 @@ public class NestedFunction extends NestedElement {
 
                 BigDecimal tan = BigDecimal.valueOf(Math.tan(primary.doubleValue()));
 
-                if(type == FUNC.TAN) {
+                if (type == FUNC.TAN) {
                     return tan;
                 } else {
                     return BigDecimal.ONE.divide(tan, Equation.context);
                 }
-            case LOG:
+            }
+            case LOG -> {
+                BigDecimal secondary;
                 secondary = children.get(1).calculate(input);
 
-                if(!check() || secondary == null)
+                if (!check() || secondary == null)
                     return BigDecimal.ZERO;
 
-                if(primary.min(secondary).compareTo(BigDecimal.ZERO) <= 0) {
+                if (primary.min(secondary).compareTo(BigDecimal.ZERO) <= 0) {
                     abort();
 
                     return BigDecimal.ZERO;
                 }
 
                 return BigDecimal.valueOf(Math.log(secondary.doubleValue())).divide(BigDecimal.valueOf(Math.log(primary.doubleValue())), Equation.context);
-            case SQRT:
+            }
+            case SQRT -> {
+                BigDecimal secondary;
                 secondary = children.get(1).calculate(input);
 
-                if(primary.compareTo(BigDecimal.ZERO) == 0) {
+                if (primary.compareTo(BigDecimal.ZERO) == 0) {
                     abort();
 
                     return BigDecimal.ZERO;
                 }
 
-                if(!check() || secondary == null)
+                if (!check() || secondary == null)
                     return BigDecimal.ZERO;
 
                 double check = Math.pow(secondary.doubleValue(), BigDecimal.ONE.divide(primary, Equation.context).doubleValue());
 
-                if(!Double.isFinite(check)) {
+                if (!Double.isFinite(check)) {
                     abort();
 
                     return BigDecimal.ZERO;
                 }
 
                 return BigDecimal.valueOf(check);
-            case EXP:
-                if(primary.stripTrailingZeros().scale() <= 0 && primary.abs().longValue() < 999999999) {
+            }
+            case EXP -> {
+                if (primary.stripTrailingZeros().scale() <= 0 && primary.abs().longValue() < 999999999) {
                     return BigDecimal.valueOf(Math.E).pow(primary.intValue());
                 } else {
                     return BigDecimal.valueOf(Math.pow(Math.E, primary.doubleValue()));
                 }
-            case ARCSIN:
-            case ARCCOS:
-                if(primary.compareTo(BigDecimal.ONE.negate()) < 0 || primary.compareTo(BigDecimal.ONE) > 0) {
+            }
+            case ARCSIN, ARCCOS -> {
+                if (primary.compareTo(BigDecimal.ONE.negate()) < 0 || primary.compareTo(BigDecimal.ONE) > 0) {
                     abort();
 
                     return BigDecimal.ZERO;
                 }
 
-                if(type == FUNC.ARCSIN) {
+                if (type == FUNC.ARCSIN) {
                     return BigDecimal.valueOf(Math.asin(primary.doubleValue()));
                 } else {
                     return BigDecimal.valueOf(Math.acos(primary.doubleValue()));
                 }
-            case ARCTAN:
+            }
+            case ARCTAN -> {
                 return BigDecimal.valueOf(Math.atan(primary.doubleValue()));
-            case ARCCSC:
-            case ARCSEC:
-                if(primary.compareTo(BigDecimal.ONE.negate()) > 0 && primary.compareTo(BigDecimal.ONE) < 0) {
+            }
+            case ARCCSC, ARCSEC -> {
+                if (primary.compareTo(BigDecimal.ONE.negate()) > 0 && primary.compareTo(BigDecimal.ONE) < 0) {
                     abort();
 
                     return BigDecimal.ZERO;
                 }
 
-                if(type == FUNC.ARCCSC) {
+                if (type == FUNC.ARCCSC) {
                     return BigDecimal.valueOf(Math.asin(BigDecimal.ONE.divide(primary, Equation.context).doubleValue()));
                 } else {
                     return BigDecimal.valueOf(Math.acos(BigDecimal.ONE.divide(primary, Equation.context).doubleValue()));
                 }
-            case ARCCOT:
+            }
+            case ARCCOT -> {
                 return BigDecimal.valueOf(Math.atan(BigDecimal.ONE.divide(primary, Equation.context).doubleValue()));
-            case ABS:
+            }
+            case ABS -> {
                 return primary.abs();
-            case SIGN:
+            }
+            case SIGN -> {
                 return BigDecimal.valueOf(primary.signum());
-            case FLOOR:
+            }
+            case FLOOR -> {
                 return new BigDecimal(primary.setScale(0, RoundingMode.FLOOR).unscaledValue());
-            case ROUND:
+            }
+            case ROUND -> {
                 return new BigDecimal(primary.setScale(0, RoundingMode.HALF_UP).unscaledValue());
-            case CEIL:
+            }
+            case CEIL -> {
                 return new BigDecimal(primary.setScale(0, RoundingMode.CEILING).unscaledValue());
-            case FACTORIAL:
+            }
+            case FACTORIAL -> {
                 return factorial(primary);
-            default:
-                throw new IllegalStateException("Invalid function type : " + type);
+            }
         }
+        throw new IllegalStateException("Invalid function type : " + type);
     }
 
     @Override
@@ -222,28 +236,29 @@ public class NestedFunction extends NestedElement {
             return 0;
 
         switch (type) {
-            case NPR:
+            case NPR -> {
                 double secondary = children.get(1).calculateFast(input);
 
-                if(!check())
+                if (!check())
                     return 0;
 
                 return nPr(primary, secondary);
-            case NCR:
-                secondary = children.get(1).calculateFast(input);
+            }
+            case NCR -> {
+                double secondary = children.get(1).calculateFast(input);
 
-                if(!check())
+                if (!check())
                     return 0;
 
                 return nCr(primary, secondary);
-            case SIN:
-            case CSC:
+            }
+            case SIN, CSC -> {
                 double sin = Math.sin(primary);
 
-                if(type == FUNC.SIN) {
+                if (type == FUNC.SIN) {
                     return sin;
                 } else {
-                    if(sin == 0) {
+                    if (sin == 0) {
                         abort();
 
                         return 0;
@@ -251,14 +266,14 @@ public class NestedFunction extends NestedElement {
 
                     return 1 / sin;
                 }
-            case COS:
-            case SEC:
+            }
+            case COS, SEC -> {
                 double cos = Math.cos(primary);
 
-                if(type == FUNC.COS) {
+                if (type == FUNC.COS) {
                     return cos;
                 } else {
-                    if(cos == 0) {
+                    if (cos == 0) {
                         abort();
 
                         return 0;
@@ -266,20 +281,20 @@ public class NestedFunction extends NestedElement {
 
                     return 1 / cos;
                 }
-            case TAN:
-            case COT:
+            }
+            case TAN, COT -> {
                 boolean isPi = primary % Math.PI == 0;
                 boolean isHalfPi = primary % (Math.PI / 2.0) == 0;
 
-                if(type == FUNC.COT) {
-                    if(isPi) {
+                if (type == FUNC.COT) {
+                    if (isPi) {
                         abort();
 
                         return 0;
-                    } else if(isHalfPi) {
+                    } else if (isHalfPi) {
                         return 0;
                     }
-                } else if(!isPi && isHalfPi) {
+                } else if (!isPi && isHalfPi) {
                     abort();
 
                     return 0;
@@ -287,98 +302,109 @@ public class NestedFunction extends NestedElement {
 
                 double tan = Math.tan(primary);
 
-                if(type == FUNC.TAN) {
+                if (type == FUNC.TAN) {
                     return tan;
                 } else {
                     return 1 / tan;
                 }
-            case LOG:
-                secondary = children.get(1).calculateFast(input);
+            }
+            case LOG -> {
+                double secondary = children.get(1).calculateFast(input);
 
-                if(!check())
+                if (!check())
                     return 0;
 
-                if(Math.min(primary, secondary) <= 0) {
+                if (Math.min(primary, secondary) <= 0) {
                     abort();
 
                     return 0;
                 }
 
                 return Math.log(secondary) / Math.log(primary);
-            case SQRT:
-                if(primary == 0) {
+            }
+            case SQRT -> {
+                if (primary == 0) {
                     abort();
 
                     return 0;
                 }
 
-                secondary = children.get(1).calculateFast(input);
+                double secondary = children.get(1).calculateFast(input);
 
-                if(!check())
+                if (!check())
                     return 0;
 
                 double check = Math.pow(secondary, 1 / primary);
 
-                if(!Double.isFinite(check)) {
+                if (!Double.isFinite(check)) {
                     abort();
 
                     return 0;
                 }
 
                 return check;
-            case EXP:
+            }
+            case EXP -> {
                 return Math.exp(primary);
-            case ARCSIN:
-            case ARCCOS:
-                if(primary < -1 || primary > 1) {
+            }
+            case ARCSIN, ARCCOS -> {
+                if (primary < -1 || primary > 1) {
                     abort();
 
                     return 0;
                 }
 
-                if(type == FUNC.ARCSIN) {
+                if (type == FUNC.ARCSIN) {
                     return Math.asin(primary);
                 } else {
                     return Math.acos(primary);
                 }
-            case ARCTAN:
+            }
+            case ARCTAN -> {
                 return Math.atan(primary);
-            case ARCCSC:
-            case ARCSEC:
-                if(primary > -1 && primary < 1) {
+            }
+            case ARCCSC, ARCSEC -> {
+                if (primary > -1 && primary < 1) {
                     abort();
 
                     return 0;
                 }
 
-                if(type == FUNC.ARCCSC) {
+                if (type == FUNC.ARCCSC) {
                     return Math.asin(1 / primary);
                 } else {
                     return Math.acos(1 / primary);
                 }
-            case ARCCOT:
-                if(primary == 0) {
+            }
+            case ARCCOT -> {
+                if (primary == 0) {
                     abort();
 
                     return 0;
                 }
 
                 return Math.atan(1 / primary);
-            case ABS:
+            }
+            case ABS -> {
                 return Math.abs(primary);
-            case SIGN:
+            }
+            case SIGN -> {
                 return Math.signum(primary);
-            case FLOOR:
+            }
+            case FLOOR -> {
                 return Math.floor(primary);
-            case ROUND:
+            }
+            case ROUND -> {
                 return Math.round(primary);
-            case CEIL:
+            }
+            case CEIL -> {
                 return Math.ceil(primary);
-            case FACTORIAL:
+            }
+            case FACTORIAL -> {
                 return factorial(primary);
-            default:
-                throw new IllegalStateException("Invalid function type : " + type);
+            }
         }
+        throw new IllegalStateException("Invalid function type : " + type);
     }
 
     private BigDecimal nPr(BigDecimal n, BigDecimal r) {
