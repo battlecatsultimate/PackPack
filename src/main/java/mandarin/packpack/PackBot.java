@@ -46,10 +46,7 @@ public class PackBot {
     public static int log = 0;
     public static int backup = 0;
 
-    public static boolean develop = false;
-
     public static final String normal = "p!help for command info!";
-    public static final String dev = "p!help, being developed, bot may not respond";
 
     public static RestAction<Message> statusMessage = null;
 
@@ -74,7 +71,7 @@ public class PackBot {
 
         builder.setEnabledIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_EMOJIS_AND_STICKERS, GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.DIRECT_MESSAGES, GatewayIntent.DIRECT_MESSAGE_REACTIONS, GatewayIntent.MESSAGE_CONTENT, GatewayIntent.SCHEDULED_EVENTS);
         builder.disableCache(CacheFlag.VOICE_STATE);
-        builder.setActivity(Activity.playing(develop ? dev : normal));
+        builder.setActivity(Activity.playing(normal));
         builder.addEventListeners(new AllEventAdapter());
 
         ShardManager client = builder.build();
