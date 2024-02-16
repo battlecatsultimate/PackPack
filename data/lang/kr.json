@@ -1517,6 +1517,7 @@
   "calc_alone" : "혼자 시작되거나 끝나는 연산자가 발견되었습니다",
   "calc_notnum" : "%s : 숫자가 아닙니다",
   "calc_result" : "결과 : %s",
+  "calc_factorial" : "펙토리얼은 `10000!` 까지만 허용됩니다",
   "calc_npcrparam" : "적합하지 않은 개수의 값이 발견되었습니다! : 요구되는 값의 개수 : %d | 발견된 값의 개수 : %d -> %s",
   "calc_npcrnum" : "함수 내의 값이 숫자가 아닙니다 : %s -> %s",
   "calc_npcrnoint" : "함수 내의 값이 정수가 아닙니다 : %s -> %s",

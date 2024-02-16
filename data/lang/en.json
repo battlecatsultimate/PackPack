@@ -1522,6 +1522,7 @@
   "calc_alone" : "Operator that starts/ends alone found",
   "calc_notnum" : "%s : Not a number",
   "calc_result" : "Result : %s",
+  "calc_factorial" : "Factorial is allowed only up to `10000!`",
   "calc_npcrparam" : "Invalid number of parameter passed! : Required number of parameter : %d | Number of found parameter : %d -> %s",
   "calc_npcrnum" : "Non-number value found in function : %s -> %s",
   "calc_npcrnoint" : "Non-integer value found in function : %s -> %s",

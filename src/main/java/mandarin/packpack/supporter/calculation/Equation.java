@@ -273,7 +273,7 @@ public class Equation {
                 case '|':
                     String pre;
 
-                    if(builder.length() != 0) {
+                    if(!builder.isEmpty()) {
                         pre = builder.toString();
 
                         builder.setLength(0);
@@ -347,7 +347,7 @@ public class Equation {
                 case '(':
                     String prefix;
 
-                    if(builder.length() != 0) {
+                    if(!builder.isEmpty()) {
                         prefix = builder.toString();
 
                         builder.setLength(0);
@@ -411,9 +411,9 @@ public class Equation {
                                     error.add(String.format(LangID.getStringByID("calc_npcrsize", lang), prefix + "(" + data.get(0) + ", " + data.get(1) + ")", data.get(0), data.get(1)));
                                 }
                                 if (prefix.equals("npr")) {
-                                    elements.add(new Number(nPr(n, r)));
+                                    elements.add(new Number(nPr(n, r, lang)));
                                 } else {
-                                    elements.add(new Number(nCr(n, r)));
+                                    elements.add(new Number(nCr(n, r, lang)));
                                 }
                             }
                             default -> {
@@ -701,19 +701,19 @@ public class Equation {
                 case '/':
                 case '÷':
                 case '^':
-                    if((builder.length() == 0 && i != 0 && equation.charAt(i - 1) != ')' && equation.charAt(i - 1) != '|') || i == equation.length() - 1) {
+                    if((builder.isEmpty() && i != 0 && equation.charAt(i - 1) != ')' && equation.charAt(i - 1) != '|') || i == equation.length() - 1) {
                         error.add(LangID.getStringByID("calc_alone", lang));
 
                         return new ArrayList<>();
                     }
 
-                    if(builder.length() == 0 && i == 0 && equation.charAt(i) == '-') {
+                    if(builder.isEmpty() && i == 0 && equation.charAt(i) == '-') {
                         builder.append(equation.charAt(i));
 
                         continue;
                     }
 
-                    if(builder.length() != 0) {
+                    if(!builder.isEmpty()) {
                         String wait = builder.toString();
 
                         if(StaticStore.isNumeric(wait)) {
@@ -744,7 +744,7 @@ public class Equation {
 
                                                 return new ArrayList<>();
                                             } else {
-                                                elements.add(new Number(factorial(valD.toBigInteger())));
+                                                elements.add(new Number(factorial(valD.toBigInteger(), lang)));
                                             }
                                         }
                                     } else if (wait.matches("\\d+p\\d+") || wait.matches("\\d+c\\d+")) {
@@ -791,9 +791,9 @@ public class Equation {
                                         }
 
                                         if (wait.matches("\\d+p\\d+")) {
-                                            elements.add(new Number(nPr(n, r)));
+                                            elements.add(new Number(nPr(n, r, lang)));
                                         } else {
-                                            elements.add(new Number(nCr(n, r)));
+                                            elements.add(new Number(nCr(n, r, lang)));
                                         }
                                     } else {
                                         double suffixCheck = checkSuffix(wait);
@@ -837,7 +837,7 @@ public class Equation {
             }
         }
 
-        if(builder.length() != 0) {
+        if(!builder.isEmpty()) {
             String prefix = builder.toString();
 
             if(StaticStore.isNumeric(prefix)) {
@@ -868,7 +868,7 @@ public class Equation {
 
                                     return new ArrayList<>();
                                 } else {
-                                    elements.add(new Number(factorial(valD.toBigInteger())));
+                                    elements.add(new Number(factorial(valD.toBigInteger(), lang)));
                                 }
                             }
                         } else if (prefix.matches("\\d+p\\d+") || prefix.matches("\\d+c\\d+")) {
@@ -915,9 +915,9 @@ public class Equation {
                             }
 
                             if (prefix.matches("\\d+p\\d+")) {
-                                elements.add(new Number(nPr(n, r)));
+                                elements.add(new Number(nPr(n, r, lang)));
                             } else {
-                                elements.add(new Number(nCr(n, r)));
+                                elements.add(new Number(nCr(n, r, lang)));
                             }
                         } else {
                             double suffixCheck = checkSuffix(prefix);
@@ -995,7 +995,7 @@ public class Equation {
             }
         }
 
-        if(builder.length() != 0)
+        if(!builder.isEmpty())
             result.add(builder.toString());
 
         return result;
@@ -1021,17 +1021,23 @@ public class Equation {
         return Double.NaN;
     }
 
-    private static BigDecimal nPr(BigInteger n, BigInteger r) {
-        return factorial(n).divide(factorial(n.subtract(r)), Equation.context);
+    private static BigDecimal nPr(BigInteger n, BigInteger r, int lang) {
+        return factorial(n, lang).divide(factorial(n.subtract(r), lang), Equation.context);
     }
 
-    private static BigDecimal nCr(BigInteger n, BigInteger r) {
-        return factorial(n).divide(factorial(r).multiply(factorial(n.subtract(r))), Equation.context);
+    private static BigDecimal nCr(BigInteger n, BigInteger r, int lang) {
+        return factorial(n, lang).divide(factorial(r, lang).multiply(factorial(n.subtract(r), lang)), Equation.context);
     }
 
-    private static BigDecimal factorial(BigInteger n) {
+    private static BigDecimal factorial(BigInteger n, int lang) {
         if(n.compareTo(BigInteger.ZERO) < 0)
-            return new BigDecimal("1");
+            return BigDecimal.ONE;
+
+        if (n.compareTo(BigInteger.valueOf(10000)) > 0) {
+            error.add(LangID.getStringByID("calc_factorial", lang));
+
+            return BigDecimal.ONE;
+        }
 
         BigDecimal f = new BigDecimal("1");
 

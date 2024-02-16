@@ -454,6 +454,12 @@ public class NestedFunction extends NestedElement {
             return BigDecimal.ZERO;
         }
 
+        if (n.compareTo(BigDecimal.valueOf(10000)) > 0) {
+            abort();
+
+            return BigDecimal.ZERO;
+        }
+
         BigDecimal f = BigDecimal.ONE;
 
         for(BigDecimal i = new BigDecimal("2"); i.compareTo(n) <= 0; i = i.add(BigDecimal.ONE)) {
