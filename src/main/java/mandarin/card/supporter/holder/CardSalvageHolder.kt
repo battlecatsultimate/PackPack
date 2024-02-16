@@ -37,6 +37,7 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
         CardData.SalvageMode.SEASONAL,
         CardData.SalvageMode.COLLAB -> CardData.Tier.UNCOMMON
         CardData.SalvageMode.T3 -> CardData.Tier.ULTRA
+        CardData.SalvageMode.T4 -> CardData.Tier.LEGEND
     }
     private val cards = ArrayList<Card>(inventory.cards.keys.filter { c -> c.tier == tier && c.unitID != 435 && c.unitID != 484 }.sortedWith(CardComparator()))
 
@@ -363,7 +364,7 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
             return rows
         }
 
-        if (salvageMode != CardData.SalvageMode.SEASONAL && salvageMode != CardData.SalvageMode.COLLAB) {
+        if (salvageMode != CardData.SalvageMode.SEASONAL && salvageMode != CardData.SalvageMode.COLLAB && salvageMode != CardData.SalvageMode.T4) {
             val bannerCategoryElements = ArrayList<SelectOption>()
 
             bannerCategoryElements.add(SelectOption.of("All", "all"))
@@ -495,7 +496,8 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
                 CardData.SalvageMode.T2 -> "Select Regular Tier 2 [Uncommon] cards\n\n### Selected Cards\n\n"
                 CardData.SalvageMode.SEASONAL -> "Select Seasonal Tier 2 [Uncommon] cards\n\n### Selected Cards\n\n"
                 CardData.SalvageMode.COLLAB -> "Select Collaboration Tier 2 [Uncommon] cards\n\n### Selected Cards\n\n"
-                else -> "Select Tier 3 [Ultra Rare (Exclusives)] cards\n\n### Selected card\n\n"
+                CardData.SalvageMode.T3 -> "Select Tier 3 [Ultra Rare (Exclusives)] cards\n\n### Selected Cards\n\n"
+                CardData.SalvageMode.T4 -> "Select Tier 4 [Legend Rare] cards\n\n### Selected Cards\n\n"
             }
         )
 

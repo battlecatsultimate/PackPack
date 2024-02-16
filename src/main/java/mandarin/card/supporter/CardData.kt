@@ -34,7 +34,8 @@ object CardData {
         T2(20),
         SEASONAL(40),
         COLLAB(60),
-        T3(300)
+        T3(300),
+        T4(1600)
     }
 
     enum class CraftMode(var cost: Int) {

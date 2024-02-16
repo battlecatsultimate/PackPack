@@ -52,6 +52,7 @@ class SalvageCostModifyHolder(author: Message, channelID: String, messageID: Str
             CardData.SalvageMode.SEASONAL -> "Seasonal Tier 2 [Uncommon]"
             CardData.SalvageMode.COLLAB -> "Collaboration Tier 2 [Uncommon]"
             CardData.SalvageMode.T3 -> "Tier 3 [Ultra Rare (Exclusives)]"
+            CardData.SalvageMode.T4 -> "Tier 4 [Legend Rare]"
         }
 
         event.deferReply()

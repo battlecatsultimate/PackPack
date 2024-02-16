@@ -410,6 +410,7 @@ object TransactionLogger {
             CardData.SalvageMode.SEASONAL -> "Seasonal T2"
             CardData.SalvageMode.COLLAB -> "Collaboration T2"
             CardData.SalvageMode.T3 -> "T3"
+            CardData.SalvageMode.T4 -> "T4"
         }
 
         builder.setDescription("Member <@$member> salvaged $cardType cards")
@@ -798,6 +799,7 @@ object TransactionLogger {
             CardData.SalvageMode.SEASONAL -> "Seasonal Tier 2 [Uncommon]"
             CardData.SalvageMode.COLLAB -> "Collaboration Tier 2 [Uncommon]"
             CardData.SalvageMode.T3 -> "Tier 3 [Ultra Rare (Exclusives)]"
+            CardData.SalvageMode.T4 -> "Tier 4 [Legend Rare]"
         }
 
         val builder = EmbedBuilder()

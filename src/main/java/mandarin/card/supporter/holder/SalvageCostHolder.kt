@@ -43,13 +43,15 @@ class SalvageCostHolder(author: Message, channelID: String, private val message:
             "t2",
             "seasonal",
             "collab",
-            "t3" -> {
+            "t3",
+            "t4" -> {
                 val salvageMode = when(event.componentId) {
                     "t1" -> CardData.SalvageMode.T1
                     "t2" -> CardData.SalvageMode.T2
                     "seasonal" -> CardData.SalvageMode.SEASONAL
                     "collab" -> CardData.SalvageMode.COLLAB
-                    else -> CardData.SalvageMode.T3
+                    "t3" -> CardData.SalvageMode.T3
+                    else -> CardData.SalvageMode.T4
                 }
 
                 val input = TextInput.create("cost", "Cost", TextInputStyle.SHORT)
@@ -110,6 +112,7 @@ class SalvageCostHolder(author: Message, channelID: String, private val message:
                 "- Seasonal Tier 2 [Uncommon] : ${EmojiStore.ABILITY["SHARD"]?.formatted} ${CardData.SalvageMode.SEASONAL.cost}\n" +
                 "- Collaboration Tier 2 [Uncommon] : ${EmojiStore.ABILITY["SHARD"]?.formatted} ${CardData.SalvageMode.COLLAB.cost}\n" +
                 "- Tier 3 [Ultra Rare (Exclusives)] : ${EmojiStore.ABILITY["SHARD"]?.formatted} ${CardData.SalvageMode.T3.cost}\n" +
+                "- Tier 4 [Legend Rare] : ${EmojiStore.ABILITY["SHARD"]?.formatted} ${CardData.SalvageMode.T4.cost}\n" +
                 "\n" +
                 "Page : ${page + 1} / $size"
     }
@@ -126,6 +129,7 @@ class SalvageCostHolder(author: Message, channelID: String, private val message:
             1 -> {
                 result.add(ActionRow.of(Button.secondary("collab", "Collaboration Tier 2 [Uncommon]")))
                 result.add(ActionRow.of(Button.secondary("t3", "Tier 3 [Ultra Rare (Exclusives)]")))
+                result.add(ActionRow.of(Button.secondary("t4", "Tier 4 [Legend Rare]")))
             }
         }
 

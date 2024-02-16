@@ -785,6 +785,7 @@ object CardBot : ListenerAdapter() {
                 CardData.SalvageMode.SEASONAL -> "seasonal"
                 CardData.SalvageMode.COLLAB -> "collab"
                 CardData.SalvageMode.T3 -> "t3"
+                CardData.SalvageMode.T4 -> "t4"
             }
 
             val o = JsonObject()
