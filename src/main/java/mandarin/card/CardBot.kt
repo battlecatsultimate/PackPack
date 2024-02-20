@@ -205,7 +205,7 @@ object CardBot : ListenerAdapter() {
                                     val timeStamp = Timestamp.valueOf(ch.timeCreated.atZoneSameInstant(ZoneOffset.UTC).toLocalDateTime())
 
                                     if (currentTime - timeStamp.time >= CardData.TRADE_EXPIRATION_TIME) {
-                                        session.expire()
+                                        session.expire(ch)
                                     }
                                 } else {
                                     session.expire()

@@ -190,7 +190,21 @@ class TradingSession(val postID: Long, val member: Array<Long>) {
 
         CardBot.saveCardData()
 
-        TransactionLogger.logTrade(this, TransactionLogger.TradeStatus.CANCELED)
+        TransactionLogger.logTrade(this, TransactionLogger.TradeStatus.EXPIRED)
+    }
+
+    fun expire(ch: MessageChannel) {
+        ch.sendMessage("This session is closed due to expiration. Please don't leave session opened for long time (5 days)").queue()
+
+        if (ch is ThreadChannel) {
+            ch.manager.setLocked(true).setArchived(true).queue()
+        }
+
+        CardData.sessions.remove(this)
+
+        CardBot.saveCardData()
+
+        TransactionLogger.logTrade(this, TransactionLogger.TradeStatus.EXPIRED)
     }
 
     fun needApproval(g: Guild, whenNeed: Runnable, otherwise: Runnable) {
