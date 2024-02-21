@@ -624,7 +624,8 @@ object CardBot : ListenerAdapter() {
                         "seasonal" -> CardData.SalvageMode.SEASONAL
                         "collab" -> CardData.SalvageMode.COLLAB
                         "t3" -> CardData.SalvageMode.T3
-                        else -> CardData.SalvageMode.T4
+                        "t4" -> CardData.SalvageMode.T4
+                        else -> throw IllegalStateException("E/CardBot::readCardData - Unknown salvage cost type : ${o.get("key")}")
                     }.cost = cost
                 }
             }
@@ -644,7 +645,8 @@ object CardBot : ListenerAdapter() {
                         "seasonal" -> CardData.CraftMode.SEASONAL
                         "collab" -> CardData.CraftMode.COLLAB
                         "t3" -> CardData.CraftMode.T3
-                        else -> CardData.CraftMode.T4
+                        "t4" -> CardData.CraftMode.T4
+                        else -> throw IllegalStateException("E/CardBot::readCardData - Unknown craft type : ${o.get("key")}")
                     }.cost = cost
                 }
             }
