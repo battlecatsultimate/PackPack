@@ -623,7 +623,8 @@ object CardBot : ListenerAdapter() {
                         "t2" -> CardData.SalvageMode.T2
                         "seasonal" -> CardData.SalvageMode.SEASONAL
                         "collab" -> CardData.SalvageMode.COLLAB
-                        else -> CardData.SalvageMode.T3
+                        "t3" -> CardData.SalvageMode.T3
+                        else -> CardData.SalvageMode.T4
                     }.cost = cost
                 }
             }
