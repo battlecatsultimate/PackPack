@@ -216,7 +216,7 @@ class SuggestInventoryHolder(
                     event.replyModal(modal).queue()
 
                     connectTo(CardAmountSelectHolder(authorMessage, channelID, message.id) { amount ->
-                        val filteredAmount = min(amount, realAmount)
+                        val filteredAmount = min(CardData.MAX_CARDS - backup.cards.size, min(amount, realAmount))
 
                         repeat(filteredAmount) {
                             backup.cards.add(card)
@@ -426,7 +426,7 @@ class SuggestInventoryHolder(
                 else
                     "Select Card To Suggest"
             )
-            .setDisabled(backup.cards.size == CardData.MAX_CARDS || cards.isEmpty())
+            .setDisabled(backup.cards.size >= CardData.MAX_CARDS || cards.isEmpty())
             .build()
 
         rows.add(ActionRow.of(cardCategory))
