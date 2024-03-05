@@ -7,7 +7,7 @@ Information providing bot for game called Battle Cats. Bot is run with BCU code,
 
 This project uses [FFMPEG](https://ffmpeg.org/) to generate mp4/gif from `The Battle Cats` units and enemies
 
-This project uses [LWJGL](https://www.lwjgl.org/) to render images and videos
+This project uses [LWJGL](https://www.lwjgl.org/) to render images and videos with [OpenGL 3.3](https://www.opengl.org/)
 
 ---
 ## Running the Bot
