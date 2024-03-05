@@ -26,15 +26,19 @@ Thanks to user called Xerpy, you can follow [this guide](https://docs.google.com
 ---
 ## Thanks To
 
-[Dr.Beako#3269](https://github.com/DrBeako) - For translating the bot to Chinese (Traditional)
+[dr.beako (Dr.Beako#3269)](https://github.com/DrBeako) - For translating the bot to Chinese (Traditional)
 
-[forestfamily4#5351](https://github.com/forestfamily4) - For translating the bot to Japanese
+[anenigmaticencounter (forestfamily4#5351)](https://github.com/forestfamily4) - For translating the bot to Japanese
 
-[Gideon#9787](https://github.com/Gideon9212) - For hosting the bot
+[gideon_g2 (Gideon#9787)](https://github.com/Gideon9212) - For hosting the bot
 
-[pandango#0958](https://github.com/hoopandango) - For helping to set up and polish the privacy policy
+[hoopandango (pandango#0958)](https://github.com/hoopandango) - For helping to set up and polish the privacy policy
 
-[Xerpy#9580](https://github.com/Xerpyy) - For setting up enemy name data and making guide to run the bot
+[.xerp (Xerpy#9580)](https://github.com/Xerpyy) - For setting up enemy name data and making guide to run the bot
+
+[p0rk_cut1et](https://github.com/pork-cutlet) - For translating the bot to Japanese
+
+iamodd_ (Iamodd#2568) - For translating the bot to Japanese
 
 ---
 ## Donation
