@@ -290,18 +290,37 @@ public class ImageDrawing {
             return null;
         }
 
+        float groundRatio = 0.1f;
+
+        float ratio = h * (1f - groundRatio * 2) / 2f / 512f;
+
+        int groundHeight = (int) (groundRatio * h);
+
+        bg.load();
+
+        BackgroundEffect effect;
+
+        if(eff && bg.effect != -1) {
+            if(bg.effect < 0) {
+                effect = BackgroundEffect.mixture.get(-bg.effect);
+            } else {
+                effect = CommonStatic.getBCAssets().bgEffects.get(bg.effect);
+            }
+
+            int len = (int) ((w / ratio - 400) / CommonStatic.BattleConst.ratio);
+            int bgHeight = (int) (h / ratio);
+            int midH = (int) (h * groundRatio / ratio);
+
+            effect.initialize(len, bgHeight, midH, bg);
+            effect.check();
+        } else {
+            effect = null;
+        }
+
         CountDownLatch waiter = new CountDownLatch(1);
 
         StaticStore.renderManager.createRenderer(w, h, temp, connector -> {
             connector.queue(g -> {
-                float groundRatio = 0.1f;
-
-                float ratio = h * (1f - groundRatio * 2) / 2f / 512f;
-
-                int groundHeight = (int) (groundRatio * h);
-
-                bg.load();
-
                 g.gradRect(0, h - groundHeight, w, groundHeight, 0, h - groundHeight, bg.cs[2], 0, h, bg.cs[3]);
 
                 int pos = (int) ((-bg.parts[Background.BG].getWidth()+200) * ratio);
@@ -337,21 +356,10 @@ public class ImageDrawing {
                     g.gradRect(0, 0, w, h - groundHeight - lowHeight, 0, 0, bg.cs[0], 0, h - groundHeight - lowHeight, bg.cs[1]);
                 }
 
-                if(eff && bg.effect != -1) {
-                    BackgroundEffect effect;
-
-                    if(bg.effect < 0) {
-                        effect = BackgroundEffect.mixture.get(-bg.effect);
-                    } else {
-                        effect = CommonStatic.getBCAssets().bgEffects.get(bg.effect);
-                    }
-
+                if(eff && bg.effect != -1 && effect != null) {
                     int len = (int) ((w / ratio - 400) / CommonStatic.BattleConst.ratio);
                     int bgHeight = (int) (h / ratio);
                     int midH = (int) (h * groundRatio / ratio);
-
-                    effect.initialize(len, bgHeight, midH, bg);
-                    effect.check();
 
                     for(int i = 0; i < 30; i++) {
                         effect.update(len, bgHeight, midH);
@@ -363,8 +371,6 @@ public class ImageDrawing {
                     effect.postDraw(g, base, ratio, midH);
 
                     P.delete(base);
-
-                    effect.release();
                 }
 
                 if(eff && bg.overlay != null) {
@@ -376,8 +382,10 @@ public class ImageDrawing {
 
             return null;
         }, progress -> image, () -> {
-            System.out.println("Finished");
             bg.unload();
+
+            if (effect != null)
+                effect.release();
 
             waiter.countDown();
 
