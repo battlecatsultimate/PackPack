@@ -63,6 +63,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.4.2'
     testImplementation group: 'junit', name: 'junit', version: '4.13.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation "io.github.kotlin-graphics:glm:0.9.9.1-12"
 
     implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
 
