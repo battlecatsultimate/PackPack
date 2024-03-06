@@ -521,7 +521,7 @@ public class AllEventAdapter extends ListenerAdapter {
             case "printgachaevent", "pge" ->
                     new PrintGachaEvent(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
             case "setbcversion", "sbv" -> new SetBCVersion(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
-            case "logout", "lo" -> new LogOut(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
+            case "logout", "lo" -> new LogOut(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
             case "printitemevent", "pie" -> new PrintItemEvent(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
             case "printevent", "pe" -> new PrintEvent(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
             case "statanalyzer", "sa" -> new StatAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
