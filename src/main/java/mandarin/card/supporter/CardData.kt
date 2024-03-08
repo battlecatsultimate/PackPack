@@ -87,7 +87,7 @@ object CardData {
         //Tier 2
         arrayOf(
             //Girls and Monsters
-            arrayOf(334, 335, 336, 357, 358, 607, 682),
+            arrayOf(334, 335, 336, 357, 358, 607, 682, 725),
             //The Almighties
             arrayOf(257, 258, 259, 271, 272, 316, 439, 534, 642, 723),
 
