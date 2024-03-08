@@ -47,7 +47,7 @@ public class LogOut extends ConstraintCommand {
         registerConfirmButtons(ch.sendMessage("Are you sure that you want to turn off the bot?"), 0).queue( msg -> {
             User u = loader.getUser();
 
-            StaticStore.putHolder(u.getId(), new ConfirmButtonHolder(loader.getMessage(), msg, ch.getId(), () -> {
+            StaticStore.putHolder(u.getId(), new ConfirmButtonHolder(loader.getMessage(), msg, ch.getId(), lang, () -> {
                 String self = ch.getJDA().getSelfUser().getAsMention();
 
                 String code = switch (contents[1]) {
@@ -114,7 +114,7 @@ public class LogOut extends ConstraintCommand {
                 RenderSessionManager.Companion.terminate();
 
                 System.exit(0);
-            }, lang));
+            }));
         });
     }
 }

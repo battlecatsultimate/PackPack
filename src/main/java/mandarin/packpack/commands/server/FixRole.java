@@ -70,7 +70,7 @@ public class FixRole extends ConstraintCommand {
 
             List<Member> members = g.loadMembers().get();
 
-            StaticStore.putHolder(me.getId(), new ConfirmButtonHolder(loader.getMessage(), msg, ch.getId(), () -> {
+            StaticStore.putHolder(me.getId(), new ConfirmButtonHolder(loader.getMessage(), msg, ch.getId(), lang, () -> {
                 Role role = g.getRoleById(finalPre);
 
                 if(role == null)
@@ -92,7 +92,7 @@ public class FixRole extends ConstraintCommand {
                 } else {
                     ch.sendMessage(LangID.getStringByID("fixrole_fixed", lang).replace("_", String.valueOf(fixed))).queue();
                 }
-            }, lang));
+            }));
         });
     }
 

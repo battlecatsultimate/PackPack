@@ -58,7 +58,7 @@ public class EventMessage extends ConstraintCommand {
         if(Pattern.compile("(<@(&)?\\d+>|@everyone|@here)").matcher(message).find()) {
             Member m = loader.getMember();
             replyToMessageSafely(ch, LangID.getStringByID("eventmes_mention", lang), loader.getMessage(), a -> registerConfirmButtons(a, lang), msg ->
-                StaticStore.putHolder(m.getId(), new ConfirmButtonHolder(loader.getMessage(), msg, ch.getId(), () -> {
+                StaticStore.putHolder(m.getId(), new ConfirmButtonHolder(loader.getMessage(), msg, ch.getId(), lang, () -> {
                     if(message.isBlank()) {
                         if(holder.eventMessage.containsKey(loc)) {
                             holder.eventMessage.remove(loc);
@@ -72,7 +72,7 @@ public class EventMessage extends ConstraintCommand {
 
                         replyToMessageSafely(ch, LangID.getStringByID("eventmes_added", lang), loader.getMessage(), a -> a);
                     }
-            } ,lang)));
+            })));
         } else {
             if(message.isBlank()) {
                 if(holder.eventMessage.containsKey(loc)) {

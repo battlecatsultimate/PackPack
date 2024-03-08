@@ -132,7 +132,7 @@ class CardCraftAmountHolder(author: Message, channelID: String, private val mess
                     .mentionRepliedUser(false)
                     .queue()
 
-                StaticStore.putHolder(authorMessage.author.id, ConfirmButtonHolder(authorMessage, message, channelID, {
+                StaticStore.putHolder(authorMessage.author.id, ConfirmButtonHolder(authorMessage, message, channelID, LangID.EN) {
                     val result = rollCards()
 
                     val builder = StringBuilder("### Craft Result [${result.size} cards in total]\n\n")
@@ -174,7 +174,7 @@ class CardCraftAmountHolder(author: Message, channelID: String, private val mess
                     CardBot.saveCardData()
 
                     TransactionLogger.logCraft(authorMessage.author.idLong, amount, craftMode, result, amount.toLong() * craftMode.cost)
-                }, LangID.EN))
+                })
             }
         }
     }

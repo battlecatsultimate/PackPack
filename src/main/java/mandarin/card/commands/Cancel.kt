@@ -30,7 +30,7 @@ class Cancel(private val session: TradingSession) : Command(LangID.EN, true) {
 
             a.setActionRow(components)
         }, { msg ->
-            StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, msg, ch.id, {
+            StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, msg, ch.id, LangID.EN) {
                 CardData.sessions.remove(session)
                 CardBot.saveCardData()
 
@@ -45,7 +45,7 @@ class Cancel(private val session: TradingSession) : Command(LangID.EN, true) {
                 if (ch is ThreadChannel) {
                     ch.manager.setLocked(true).queue()
                 }
-            }, LangID.EN))
+            })
         })
     }
 }

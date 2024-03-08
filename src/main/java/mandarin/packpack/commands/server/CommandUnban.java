@@ -62,11 +62,11 @@ public class CommandUnban extends ConstraintCommand {
                     ch.sendMessage(LangID.getStringByID("comunban_confirm", lang).replace("_", m.getId()))
                             .setAllowedMentions(new ArrayList<>())
                     , lang
-            ).queue(msg -> StaticStore.putHolder(me.getId(), new ConfirmButtonHolder(loader.getMessage(), msg, ch.getId(), () -> {
+            ).queue(msg -> StaticStore.putHolder(me.getId(), new ConfirmButtonHolder(loader.getMessage(), msg, ch.getId(), lang, () -> {
                 holder.banned.remove(m.getId());
 
                 createMessageWithNoPings(ch, LangID.getStringByID("comunban_success", lang).replace("_", m.getId()));
-            }, lang)), e -> StaticStore.logger.uploadErrorLog(e, "E/CommandUnban::doSomething - Failed to perform message with button"));
+            })), e -> StaticStore.logger.uploadErrorLog(e, "E/CommandUnban::doSomething - Failed to perform message with button"));
         }, e -> createMessageWithNoPings(ch, LangID.getStringByID("comban_nomember", lang)));
     }
 }

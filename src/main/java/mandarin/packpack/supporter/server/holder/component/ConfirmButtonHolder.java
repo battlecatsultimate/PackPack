@@ -12,7 +12,7 @@ public class ConfirmButtonHolder extends ComponentHolder {
 
     private final Message msg;
 
-    public ConfirmButtonHolder(Message author, Message msg, String channelID, Runnable action, int lang) {
+    public ConfirmButtonHolder(Message author, Message msg, String channelID, int lang, Runnable action) {
         super(author, channelID, msg.getId());
 
         this.action = action;

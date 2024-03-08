@@ -38,7 +38,7 @@ class Confirm(private val session: TradingSession) : Command(LangID.EN, true) {
 
                 a.setActionRow(components)
             }, { msg ->
-                StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, msg, ch.id, {
+                StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, msg, ch.id, LangID.EN) {
                     session.agreed[index] = true
 
                     val opposite = (2 - index) / 2
@@ -70,7 +70,7 @@ class Confirm(private val session: TradingSession) : Command(LangID.EN, true) {
 
                         CardBot.saveCardData()
                     }
-                }, LangID.EN))
+                })
             })
         })
     }

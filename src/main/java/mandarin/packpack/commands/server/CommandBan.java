@@ -67,11 +67,11 @@ public class CommandBan extends ConstraintCommand {
                     ch.sendMessage(LangID.getStringByID("comban_confirm", lang).replace("_", m.getId()))
                             .setAllowedMentions(new ArrayList<>())
                     , lang
-            ).queue(msg -> StaticStore.putHolder(me.getId(), new ConfirmButtonHolder(loader.getMessage(), msg, ch.getId(), () -> {
+            ).queue(msg -> StaticStore.putHolder(me.getId(), new ConfirmButtonHolder(loader.getMessage(), msg, ch.getId(), lang, () -> {
                 holder.banned.add(m.getId());
 
                 createMessageWithNoPings(ch, LangID.getStringByID("comban_success", lang).replace("_", m.getId()));
-            }, lang)), e -> StaticStore.logger.uploadErrorLog(e, "E/CommandBan::doSomething - Failed to perform message with button"));
+            })), e -> StaticStore.logger.uploadErrorLog(e, "E/CommandBan::doSomething - Failed to perform message with button"));
         }, e -> createMessageWithNoPings(ch, LangID.getStringByID("comban_nomember", lang)));
     }
 }

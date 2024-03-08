@@ -48,7 +48,7 @@ public class Setup extends ConstraintCommand {
                         Message author = loader.getMessage();
                         Member member = loader.getMember();
 
-                        StaticStore.putHolder(member.getId(), new ConfirmButtonHolder(author, m, ch.getId(), () -> initializeSetup(ch, author), lang));
+                        StaticStore.putHolder(member.getId(), new ConfirmButtonHolder(author, m, ch.getId(), lang, () -> initializeSetup(ch, author)));
                     });
         } else {
             Message author = loader.getMessage();

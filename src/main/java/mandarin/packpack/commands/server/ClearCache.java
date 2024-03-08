@@ -22,11 +22,11 @@ public class ClearCache extends ConstraintCommand {
         registerConfirmButtons(ch.sendMessage("Are you sure you want to clear cache? This cannot be undone"), lang).queue(res -> {
             Member m = loader.getMember();
 
-            StaticStore.putHolder(m.getId(), new ConfirmButtonHolder(loader.getMessage(), res, ch.getId(), () -> {
+            StaticStore.putHolder(m.getId(), new ConfirmButtonHolder(loader.getMessage(), res, ch.getId(), lang, () -> {
                 StaticStore.imgur.clear();
 
                 ch.sendMessage(LangID.getStringByID("clearcache_cleared", lang)).queue();
-            }, lang));
+            }));
         });
     }
 }

@@ -23,7 +23,7 @@ public class OptOut extends ConstraintCommand {
         String id = u.getId();
 
         replyToMessageSafely(ch, LangID.getStringByID("optout_warn", lang), loader.getMessage(), a -> registerConfirmButtons(a, lang), m ->
-            StaticStore.putHolder(id, new ConfirmButtonHolder(loader.getMessage(), m, ch.getId(), () -> {
+            StaticStore.putHolder(id, new ConfirmButtonHolder(loader.getMessage(), m, ch.getId(), lang, () -> {
                 StaticStore.optoutMembers.add(id);
 
                 StaticStore.spamData.remove(id);
@@ -31,7 +31,7 @@ public class OptOut extends ConstraintCommand {
                 StaticStore.timeZones.remove(id);
 
                 replyToMessageSafely(ch, LangID.getStringByID("optout_success", lang), loader.getMessage(), a -> a);
-            }, lang))
+            }))
         );
     }
 }

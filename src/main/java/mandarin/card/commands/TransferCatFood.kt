@@ -71,7 +71,7 @@ class TransferCatFood : Command(LangID.EN, true) {
 
                         a.setActionRow(components)
                     }) { msg ->
-                StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, msg, loader.channel.id, {
+                StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, msg, loader.channel.id, lang) {
                     val thatInventory = Inventory.getInventory(mem.id)
 
                     thatInventory.catFoods += amount
@@ -82,7 +82,7 @@ class TransferCatFood : Command(LangID.EN, true) {
                             "Now you have ${EmojiStore.ABILITY["CF"]?.formatted} ${thisInventory.catFoods}, and user ${mem.asMention} has ${EmojiStore.ABILITY["CF"]?.formatted} ${thatInventory.catFoods}", loader.message) { a -> a }
 
                     TransactionLogger.logCatFoodTransfer(m.id, mem.id, amount)
-                }, lang))
+                })
             }
         }) { _ ->
             replyToMessageSafely(loader.channel, "Failed to get member who will receive cat food... Maybe this user isn't in this server? Or you may have passed data with incorrect order. Proper format is :\n" +

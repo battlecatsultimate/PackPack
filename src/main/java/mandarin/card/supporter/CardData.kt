@@ -250,6 +250,8 @@ object CardData {
     private val headerMod = ServerData.get("headerMod")
     private val organizer = ServerData.get("organizer")
 
+    val statusChannel = ServerData.get("status")
+
     val tradingPlace = ServerData.get("tradingPlace")
     val testTradingPlace = ServerData.get("testTradingPlace")
     val transactionLog = ServerData.get("transactionLog")

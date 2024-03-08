@@ -82,7 +82,7 @@ class MassShard : Command(LangID.EN, true) {
 
                 a.setActionRow(components)
             }) { msg ->
-                StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, msg, loader.channel.id, {
+                StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, msg, loader.channel.id, lang) {
                     members.forEach { member ->
                         val inventory = Inventory.getInventory(member.id)
 
@@ -92,7 +92,7 @@ class MassShard : Command(LangID.EN, true) {
                     replyToMessageSafely(loader.channel, "Successfully gave out/took away ${EmojiStore.ABILITY["SHARD"]?.formatted} to/from users!", loader.message) { a -> a }
 
                     TransactionLogger.logMassShardModify(m.id, amount, members)
-                }, lang))
+                })
             }
         }.onError { _ ->
             replyToMessageSafely(loader.channel, "It seems bot failed to get user data from one of ID that you offered. Maybe this user isn't in this server?", loader.message) { a -> a }

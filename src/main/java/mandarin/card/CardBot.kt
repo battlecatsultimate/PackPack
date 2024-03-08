@@ -15,6 +15,7 @@ import mandarin.packpack.supporter.*
 import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.data.ShardLoader
 import net.dv8tion.jda.api.entities.Activity
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent
@@ -354,6 +355,8 @@ object CardBot : ListenerAdapter() {
             }
             "${globalPrefix}managepack",
             "${globalPrefix}mp" -> ManagePack().execute(event)
+            "${globalPrefix}logout",
+            "${globalPrefix}lo" -> LogOut().execute(event)
         }
 
         val session = findSession(event.channel.idLong) ?: return
@@ -404,6 +407,26 @@ object CardBot : ListenerAdapter() {
         }
 
         ready = true
+
+        val wasSafe = StaticStore.safeClose
+        StaticStore.safeClose = false
+
+        if (test)
+            return
+
+        val g = event.jda.getGuildById(CardData.guild) ?: return
+
+        val ch = g.getGuildChannelById(CardData.statusChannel) ?: return
+
+        if (ch is GuildMessageChannel) {
+            if (wasSafe) {
+                ch.sendMessage("${event.jda.selfUser.asMention} is online now").queue()
+            } else {
+                ch.sendMessage("There was technical issue, or unknown problem that made bot go offline. ${event.jda.selfUser.asMention} is online now").queue()
+            }
+        }
+
+        saveCardData()
     }
 
     private fun initialize() {
@@ -651,6 +674,10 @@ object CardBot : ListenerAdapter() {
                 }
             }
         }
+
+        if (obj.has("safeClose")) {
+            StaticStore.safeClose = obj.get("safeClose").asBoolean
+        }
     }
 
     @Synchronized
@@ -821,6 +848,8 @@ object CardBot : ListenerAdapter() {
         }
 
         obj.add("craftCost", craftCost)
+
+        obj.addProperty("safeClose", StaticStore.safeClose)
 
         try {
             val folder = File("./data/")
