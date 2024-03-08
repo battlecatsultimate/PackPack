@@ -11,6 +11,7 @@ import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.CommandLoader
 import mandarin.packpack.supporter.server.holder.component.ConfirmButtonHolder
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
+import kotlin.system.exitProcess
 
 class LogOut : Command(LangID.EN, true) {
     override fun doSomething(loader: CommandLoader) {
@@ -72,7 +73,7 @@ class LogOut : Command(LangID.EN, true) {
 
                         client.shutdown()
 
-                        System.exit(0)
+                        exitProcess(0)
                     }
                 }
             })
