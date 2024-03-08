@@ -22,7 +22,7 @@ class LogOut : Command(LangID.EN, true) {
         if (m.id != StaticStore.MANDARIN_SMELL && m.id != ServerData.get("gid"))
             return
 
-        val ch = loader.channel;
+        val ch = loader.channel
         val client = ch.jda.shardManager ?: return
 
         val contents = loader.content.split(" ")
