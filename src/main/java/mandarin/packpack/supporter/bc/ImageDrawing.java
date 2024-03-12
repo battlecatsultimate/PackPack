@@ -729,9 +729,9 @@ public class ImageDrawing {
 
         String folderName = folder.getName();
 
-        File gif = StaticStore.generateTempFile(temp, "result", ".mp4", false);
+        File mp4 = StaticStore.generateTempFile(temp, "result", ".mp4", false);
 
-        if(gif == null) {
+        if(mp4 == null) {
             return null;
         }
 
@@ -951,7 +951,7 @@ public class ImageDrawing {
                 msg.editMessage(content).queue();
 
                 ProcessBuilder builder = new ProcessBuilder(SystemUtils.IS_OS_WINDOWS ? "data/ffmpeg/bin/ffmpeg" : "ffmpeg", "-r", performance ? "60" : "30", "-f", "image2", "-s", rect.width+"x"+rect.height,
-                        "-i", "temp/"+folderName+"/%04d.png", "-vcodec", "libx264", "-crf", "25", "-pix_fmt", "yuv420p", "-y", "temp/"+gif.getName());
+                        "-i", "temp/"+folderName+"/%04d.png", "-vcodec", "libx264", "-crf", "25", "-pix_fmt", "yuv420p", "-y", "temp/"+mp4.getName());
                 builder.redirectErrorStream(true);
 
                 Process pro = builder.start();
@@ -990,7 +990,7 @@ public class ImageDrawing {
 
         waiter.await();
 
-        return gif;
+        return mp4;
     }
 
     public static File drawAnimGif(EAnimD<?> anim, Message msg, float siz, boolean performance, boolean debug, int limit, int lang) throws Exception {
@@ -1226,7 +1226,7 @@ public class ImageDrawing {
 
                 builder = new ProcessBuilder(
                         SystemUtils.IS_OS_WINDOWS ? "data/ffmpeg/bin/ffmpeg" : "ffmpeg",
-                        "-r", performance ? "60" : "30", "-i", "temp/" + targetFolder.getName() + "/%04d.png",
+                        "-r", performance ? "50" : "30", "-i", "temp/" + targetFolder.getName() + "/%04d.png",
                         "-i", "temp/" + targetFolder.getName() + "/palette.png", "-lavfi", "paletteuse",
                         "-y", "temp/" + gif.getName()
                 );
