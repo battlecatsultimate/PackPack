@@ -67,13 +67,15 @@ class LogOut : Command(LangID.EN, true) {
                     val message = "%s will be temporarily offline due to %s".format(self, reason)
 
                     channel.sendMessage(message).queue { _ ->
-                        StaticStore.safeClose = true
+                        replyToMessageSafely(ch, "Good bye!", loader.message, { a -> a }) { _ ->
+                            StaticStore.safeClose = true
 
-                        CardBot.saveCardData()
+                            CardBot.saveCardData()
 
-                        client.shutdown()
+                            client.shutdown()
 
-                        exitProcess(0)
+                            exitProcess(0)
+                        }
                     }
                 }
             })
