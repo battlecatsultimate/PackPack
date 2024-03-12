@@ -31,6 +31,7 @@ public class AnimMessageHolder extends MessageHolder {
 
     private final boolean debug;
     private final boolean raw;
+    private final boolean performance;
 
     private boolean pngDone = false;
     private boolean cutDone = false;
@@ -41,7 +42,7 @@ public class AnimMessageHolder extends MessageHolder {
     private final AtomicReference<String> mamodel = new AtomicReference<>("MAMODEL : -");
     private final ArrayList<AtomicReference<String>> maanim = new ArrayList<>();
 
-    public AnimMessageHolder(@Nonnull Message author, @Nonnull Message target, int lang, @Nonnull String channelID, File container, boolean debug, MessageChannel ch, boolean raw, int len) throws Exception {
+    public AnimMessageHolder(@Nonnull Message author, @Nonnull Message target, int lang, @Nonnull String channelID, File container, boolean performance, boolean debug, MessageChannel ch, boolean raw, int len) throws Exception {
         super(author, channelID, target.getId());
 
         this.msg = target;
@@ -50,6 +51,7 @@ public class AnimMessageHolder extends MessageHolder {
 
         this.debug = debug;
         this.raw = raw;
+        this.performance = performance;
 
         mixer = new AnimMixer(len);
 
@@ -248,7 +250,7 @@ public class AnimMessageHolder extends MessageHolder {
                 }
 
                 for(int i = 0; i < mixer.anim.length; i++) {
-                    EntityHandler.generateAnim(ch, mixer, g == null ? 0 : g.getBoostTier().getKey(), lang, debug, -1, raw, i);
+                    EntityHandler.generateAnim(ch, mixer, g == null ? 0 : g.getBoostTier().getKey(), performance, lang, debug, -1, raw, i);
                 }
 
                 StaticStore.executorHandler.postDelayed(1000, () -> StaticStore.deleteFile(container, true));
@@ -473,7 +475,7 @@ public class AnimMessageHolder extends MessageHolder {
                         }
 
                         for(int i = 0; i < maanim.size(); i++) {
-                            EntityHandler.generateAnim(ch, mixer, g == null ? 0 : g.getBoostTier().getKey(), lang, debug, -1, raw, i);
+                            EntityHandler.generateAnim(ch, mixer, g == null ? 0 : g.getBoostTier().getKey(), performance, lang, debug, -1, raw, i);
                         }
 
                         StaticStore.executorHandler.postDelayed(1000, () -> StaticStore.deleteFile(container, true));

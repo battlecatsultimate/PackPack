@@ -709,7 +709,7 @@ public class ImageDrawing {
         return file;
     }
 
-    public static File drawAnimMp4(EAnimD<?> anim, Message msg, float siz, boolean debug, int limit, int lang) throws Exception {
+    public static File drawAnimMp4(EAnimD<?> anim, Message msg, float siz, boolean performance, boolean debug, int limit, int lang) throws Exception {
         File temp = new File("./temp");
 
         if(!temp.exists()) {
@@ -749,7 +749,7 @@ public class ImageDrawing {
         ArrayList<ArrayList<int[][]>> rectFrames = new ArrayList<>();
         ArrayList<ArrayList<P>> centerFrames = new ArrayList<>();
 
-        for(int i = 0; i < frame; i++) {
+        for(float i = 0; i < frame; i += performance ? 0.5f : 1f) {
             anim.setTime(i);
 
             ArrayList<int[][]> rects = new ArrayList<>();
@@ -885,22 +885,22 @@ public class ImageDrawing {
             AtomicReference<Long> start = new AtomicReference<>(System.currentTimeMillis());
             AtomicReference<Long> current = new AtomicReference<>(System.currentTimeMillis());
 
-            for(int i = 0; i < finalFrame; i++) {
-                final int finalI = i;
+            for(float i = 0; i < finalFrame; i += performance ? 0.5f : 1f) {
+                final float finalF = i;
 
                 connector.queue(g -> {
                     if(System.currentTimeMillis() - current.get() >= 1500) {
                         String content = finalBaseContent +"\n\n";
 
-                        String prog = DataToString.df.format(finalI * 100.0 / finalFrame);
-                        String eta = getETA(start.get(), System.currentTimeMillis(), finalI, finalFrame);
-                        String ind = String.valueOf(finalI);
+                        String prog = DataToString.df.format(finalF * 100.0 / finalFrame);
+                        String eta = getETA(start.get(), System.currentTimeMillis(), finalF, performance ? finalFrame * 2 : finalFrame);
+                        String ind = String.valueOf(finalF);
                         String len = String.valueOf(finalFrame);
 
                         content += LangID.getStringByID("bg_prog", lang)
                                 .replace("_PPP_", " ".repeat(Math.max(0, len.length() - ind.length()))+ind)
                                 .replace("_LLL_", len)
-                                .replace("_BBB_", getProgressBar(finalI, finalFrame))
+                                .replace("_BBB_", getProgressBar(finalF, finalFrame))
                                 .replace("_VVV_", " ".repeat(Math.max(0, 6 - prog.length()))+prog)
                                 .replace("_SSS_", " ".repeat(Math.max(0, 6 - eta.length()))+eta);
 
@@ -909,7 +909,7 @@ public class ImageDrawing {
                         current.set(System.currentTimeMillis());
                     }
 
-                    anim.setTime(finalI);
+                    anim.setTime(finalF);
 
                     g.setStroke(1.5f, GLGraphics.LineEndMode.VERTICAL);
 
@@ -917,9 +917,11 @@ public class ImageDrawing {
                     g.fillRect(0, 0, rect.width, rect.height);
 
                     if(debug) {
-                        for(int j = 0; j < rectFrames.get(finalI).size(); j++) {
-                            int[][] r = rectFrames.get(finalI).get(j);
-                            P c = centerFrames.get(finalI).get(j);
+                        int rectIndex = (int) (performance ? finalF * 2f : finalF);
+
+                        for(int j = 0; j < rectFrames.get(rectIndex).size(); j++) {
+                            int[][] r = rectFrames.get(rectIndex).get(j);
+                            P c = centerFrames.get(rectIndex).get(j);
 
                             g.setColor(FakeGraphics.RED);
 
@@ -948,7 +950,7 @@ public class ImageDrawing {
 
                 msg.editMessage(content).queue();
 
-                ProcessBuilder builder = new ProcessBuilder(SystemUtils.IS_OS_WINDOWS ? "data/ffmpeg/bin/ffmpeg" : "ffmpeg", "-r", "30", "-f", "image2", "-s", rect.width+"x"+rect.height,
+                ProcessBuilder builder = new ProcessBuilder(SystemUtils.IS_OS_WINDOWS ? "data/ffmpeg/bin/ffmpeg" : "ffmpeg", "-r", performance ? "60" : "30", "-f", "image2", "-s", rect.width+"x"+rect.height,
                         "-i", "temp/"+folderName+"/%04d.png", "-vcodec", "libx264", "-crf", "25", "-pix_fmt", "yuv420p", "-y", "temp/"+gif.getName());
                 builder.redirectErrorStream(true);
 
@@ -991,7 +993,7 @@ public class ImageDrawing {
         return gif;
     }
 
-    public static File drawAnimGif(EAnimD<?> anim, Message msg, float siz, boolean debug, int limit, int lang) throws Exception {
+    public static File drawAnimGif(EAnimD<?> anim, Message msg, float siz, boolean performance, boolean debug, int limit, int lang) throws Exception {
         File temp = new File("./temp");
 
         if(!temp.exists()) {
@@ -1028,7 +1030,7 @@ public class ImageDrawing {
         ArrayList<ArrayList<int[][]>> rectFrames = new ArrayList<>();
         ArrayList<ArrayList<P>> centerFrames = new ArrayList<>();
 
-        for(int i = 0; i < Math.min(frame, 300); i++) {
+        for(float i = 0; i < Math.min(frame, 300); i += performance ? 0.5f : 1f) {
             anim.setTime(i);
 
             ArrayList<int[][]> rects = new ArrayList<>();
@@ -1128,22 +1130,22 @@ public class ImageDrawing {
         String finalCont = cont;
 
         StaticStore.renderManager.createRenderer(rect.width, rect.height, targetFolder, connector -> {
-            for(int i = 0; i < Math.min(finalFrame, 300); i++) {
-                int finalI = i;
+            for(float i = 0; i < Math.min(finalFrame, 300); i += performance ? 0.5f : 1f) {
+                final float finalF = i;
 
                 connector.queue(g -> {
                     if(System.currentTimeMillis() - current[0] >= 1000) {
                         String content = finalCont +"\n\n";
 
-                        String prog = DataToString.df.format(finalI * 100.0 / finalFrame);
-                        String eta = getETA(start, System.currentTimeMillis(), finalI, finalFrame);
-                        String ind = String.valueOf(finalI);
+                        String prog = DataToString.df.format(finalF * 100.0 / finalFrame);
+                        String eta = getETA(start, System.currentTimeMillis(), finalF, performance ? finalFrame * 2 : finalFrame);
+                        String ind = String.valueOf(finalF);
                         String len = String.valueOf(finalFrame);
 
                         content += LangID.getStringByID("bg_prog", lang)
                                 .replace("_PPP_", " ".repeat(Math.max(0, len.length() - ind.length()))+ind)
                                 .replace("_LLL_", len)
-                                .replace("_BBB_", getProgressBar(finalI, finalFrame))
+                                .replace("_BBB_", getProgressBar(finalF, finalFrame))
                                 .replace("_VVV_", " ".repeat(Math.max(0, 6 - prog.length()))+prog)
                                 .replace("_SSS_", " ".repeat(Math.max(0, 6 - eta.length()))+eta);
 
@@ -1152,7 +1154,7 @@ public class ImageDrawing {
                         current[0] = System.currentTimeMillis();
                     }
 
-                    anim.setTime(finalI);
+                    anim.setTime(finalF);
 
                     g.setStroke(1.5f, GLGraphics.LineEndMode.VERTICAL);
 
@@ -1160,9 +1162,11 @@ public class ImageDrawing {
                     g.fillRect(0, 0, rect.width, rect.height);
 
                     if(debug) {
-                        for(int j = 0; j < rectFrames.get(finalI).size(); j++) {
-                            int[][] r = rectFrames.get(finalI).get(j);
-                            P c = centerFrames.get(finalI).get(j);
+                        int rectIndex = (int) (performance ? finalF * 2f : finalF);
+
+                        for(int j = 0; j < rectFrames.get(rectIndex).size(); j++) {
+                            int[][] r = rectFrames.get(rectIndex).get(j);
+                            P c = centerFrames.get(rectIndex).get(j);
 
                             g.setColor(FakeGraphics.RED);
 
@@ -1176,7 +1180,7 @@ public class ImageDrawing {
                             g.fillRect(-rect.x + (int) (ratio * c.x) - 2, -rect.y + (int) (ratio * c.y) -2, 4, 4);
                         }
                     } else {
-                        anim.setTime(finalI);
+                        anim.setTime(finalF);
 
                         anim.draw(g, pos, siz * ratio * 0.5f);
                     }
@@ -1222,7 +1226,7 @@ public class ImageDrawing {
 
                 builder = new ProcessBuilder(
                         SystemUtils.IS_OS_WINDOWS ? "data/ffmpeg/bin/ffmpeg" : "ffmpeg",
-                        "-r", "30", "-i", "temp/" + targetFolder.getName() + "/%04d.png",
+                        "-r", performance ? "60" : "30", "-i", "temp/" + targetFolder.getName() + "/%04d.png",
                         "-i", "temp/" + targetFolder.getName() + "/palette.png", "-lavfi", "paletteuse",
                         "-y", "temp/" + gif.getName()
                 );
@@ -1255,7 +1259,7 @@ public class ImageDrawing {
         return gif;
     }
 
-    public static File drawBCAnim(AnimMixer mixer, Message msg, float siz, int lang) throws Exception {
+    public static File drawBCAnim(AnimMixer mixer, Message msg, float siz, boolean performance, int lang) throws Exception {
         File temp = new File("./temp");
 
         if(!temp.exists()) {
@@ -1291,7 +1295,7 @@ public class ImageDrawing {
             if(anim != null) {
                 anim.setTime(0);
 
-                for(int j = 0; j < anim.len(); j++) {
+                for(float j = 0; j < anim.len(); j += performance ? 0.5f : 1f) {
                     anim.setTime(j);
 
                     for(int k = 0; k < anim.getOrder().length; k++) {
@@ -1454,21 +1458,21 @@ public class ImageDrawing {
                         int stackFrame = 0;
 
                         while(stackFrame < 60) {
-                            for(int j = 0; j < frame; j++) {
-                                final int finalJ = j;
+                            for(float j = 0; j < frame; j += performance ? 0.5f : 1f) {
+                                final float finalJ = j;
 
                                 connector.queue(g -> {
                                     if(System.currentTimeMillis() - current.get() >= 1500) {
                                         String editContent = finalContent +"\n\n";
 
-                                        String prog = DataToString.df.format(progress.get() * 100.0 / finalTotalFrame);
-                                        String eta = getETA(start, System.currentTimeMillis(), progress.get(), finalTotalFrame);
+                                        String prog = DataToString.df.format(progress.get() * 100.0 / (performance ? finalTotalFrame * 2 : finalTotalFrame));
+                                        String eta = getETA(start, System.currentTimeMillis(), progress.get(), performance ? finalTotalFrame * 2 : finalTotalFrame);
 
                                         editContent += LangID.getStringByID("gif_makepng", lang) +
                                                 LangID.getStringByID("bg_prog", lang)
-                                                        .replace("_PPP_", String.valueOf(progress.get()))
+                                                        .replace("_PPP_", DataToString.df.format(performance ? progress.get() / 2f : progress.get()))
                                                         .replace("_LLL_", String.valueOf(finalTotalFrame))
-                                                        .replace("_BBB_", getProgressBar(progress.get(), finalTotalFrame))
+                                                        .replace("_BBB_", getProgressBar(progress.get(), performance ? finalTotalFrame * 2 : finalTotalFrame))
                                                         .replace("_VVV_", " ".repeat(Math.max(0, 6 - prog.length())) + prog)
                                                         .replace("_SSS_", " ".repeat(Math.max(0, 6 - eta.length())) + eta);
 
@@ -1493,21 +1497,21 @@ public class ImageDrawing {
                             stackFrame += frame;
                         }
                     } else {
-                        for(int j = 0; j < frame - 1; j++) {
-                            final int finalJ = j;
+                        for(float j = 0; j < frame - 1; j += performance ? 0.5f : 1f) {
+                            final float finalJ = j;
 
                             connector.queue(g -> {
                                 if(System.currentTimeMillis() - current.get() >= 1500) {
                                     String editContent = finalContent +"\n\n";
 
-                                    String prog = DataToString.df.format(progress.get() * 100.0 / finalTotalFrame);
-                                    String eta = getETA(start, System.currentTimeMillis(), progress.get(), finalTotalFrame);
+                                    String prog = DataToString.df.format(progress.get() * 100.0 / (performance ? finalTotalFrame * 2 : finalTotalFrame));
+                                    String eta = getETA(start, System.currentTimeMillis(), progress.get(), performance ? finalTotalFrame * 2 : finalTotalFrame);
 
                                     editContent += LangID.getStringByID("gif_makepng", lang) +
                                             LangID.getStringByID("bg_prog", lang)
-                                                    .replace("_PPP_", String.valueOf(progress.get()))
+                                                    .replace("_PPP_", DataToString.df.format(performance ? progress.get() / 2f : progress.get()))
                                                     .replace("_LLL_", String.valueOf(finalTotalFrame))
-                                                    .replace("_BBB_", getProgressBar(progress.get(), finalTotalFrame))
+                                                    .replace("_BBB_", getProgressBar(progress.get(), performance ? finalTotalFrame * 2 : finalTotalFrame))
                                                     .replace("_VVV_", " ".repeat(Math.max(0, 6 - prog.length())) + prog)
                                                     .replace("_SSS_", " ".repeat(Math.max(0, 6 - eta.length())) + eta);
 
@@ -1547,7 +1551,7 @@ public class ImageDrawing {
 
                 msg.editMessage(editContent).queue();
 
-                ProcessBuilder builder = new ProcessBuilder(SystemUtils.IS_OS_WINDOWS ? "data/ffmpeg/bin/ffmpeg" : "ffmpeg", "-r", "30", "-f", "image2", "-s", rect.width+"x"+rect.height,
+                ProcessBuilder builder = new ProcessBuilder(SystemUtils.IS_OS_WINDOWS ? "data/ffmpeg/bin/ffmpeg" : "ffmpeg", "-r", performance ? "60" : "30", "-f", "image2", "-s", rect.width+"x"+rect.height,
                         "-i", "temp/"+folderName+"/%04d.png", "-vcodec", "libx264", "-crf", "25", "-pix_fmt", "yuv420p", "-y", "temp/"+gif.getName());
                 builder.redirectErrorStream(true);
 
@@ -5008,15 +5012,15 @@ public class ImageDrawing {
         }
     }
 
-    private static String getProgressBar(int prog, int time) {
-        int ratio = (int) (prog * 40.0 / time);
+    private static String getProgressBar(float prog, int time) {
+        int ratio = (int) (prog * 40f / time);
 
         return "▓".repeat(Math.max(0, ratio)) +
                 "░".repeat(Math.max(0, 40 - ratio));
     }
 
-    private static String getETA(long start, long current, int prog, int time) {
-        double unit = (current - start) / 1000.0 / prog;
+    private static String getETA(long start, long current, float prog, int time) {
+        double unit = (current - start) / 1000f / prog;
 
         return DataToString.df.format(unit * (time - prog));
     }

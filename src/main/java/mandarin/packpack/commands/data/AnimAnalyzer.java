@@ -30,6 +30,7 @@ public class AnimAnalyzer extends ConstraintCommand {
     private static final int PARAM_BC = 8;
     private static final int PARAM_ZOMBIE = 16;
     private static final int PARAM_USEAPK = 32;
+    private static final int PARAM_PERFORMANCE = 64;
 
     public AnimAnalyzer(ROLE role, int lang, IDHolder id) {
         super(role, lang, id, false);
@@ -51,6 +52,7 @@ public class AnimAnalyzer extends ConstraintCommand {
         boolean bc = (PARAM_BC & param) > 0;
         boolean zombie = (PARAM_ZOMBIE & param) > 0;
         boolean apk = (PARAM_USEAPK & param) > 0;
+        boolean performance = (PARAM_PERFORMANCE & param) > 0;
 
         if(apk) {
             String animCode = getAnimCode(loader.getContent());
@@ -126,7 +128,7 @@ public class AnimAnalyzer extends ConstraintCommand {
                 boostLevel = loader.getGuild().getBoostTier().getKey();
             }
 
-            EntityHandler.generateBCAnim(ch, boostLevel, mixer, lang, () -> { }, () -> { });
+            EntityHandler.generateBCAnim(ch, boostLevel, mixer, performance, lang, () -> { }, () -> { });
         } else {
             int anim = getAnimNumber(loader.getContent());
 
@@ -175,9 +177,9 @@ public class AnimAnalyzer extends ConstraintCommand {
 
                 try {
                     if(bc) {
-                        new BCAnimMessageHolder(msg, m, lang, ch.getId(), container, ch, zombie);
+                        new BCAnimMessageHolder(msg, m, performance, lang, ch.getId(), container, ch, zombie);
                     } else {
-                        new AnimMessageHolder(msg, m, lang, ch.getId(), container, debug, ch, raw, finalAnim);
+                        new AnimMessageHolder(msg, m, lang, ch.getId(), container, performance, debug, ch, raw, finalAnim);
                     }
                 } catch (Exception e) {
                     StaticStore.logger.uploadErrorLog(e, "E/AnimAnalyzer::doSomething - Failed to initialize holder");
@@ -228,6 +230,13 @@ public class AnimAnalyzer extends ConstraintCommand {
                     case "-apk", "-a" -> {
                         if ((result & PARAM_USEAPK) == 0) {
                             result |= PARAM_USEAPK;
+                        } else {
+                            break label;
+                        }
+                    }
+                    case "-p", "-pf", "-performance" -> {
+                        if ((result & PARAM_PERFORMANCE) == 0) {
+                            result |= PARAM_PERFORMANCE;
                         } else {
                             break label;
                         }

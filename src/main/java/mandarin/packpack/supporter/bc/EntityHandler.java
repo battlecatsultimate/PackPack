@@ -2278,9 +2278,9 @@ public class EntityHandler {
                 File img;
 
                 if(raw) {
-                    img = ImageDrawing.drawAnimMp4(anim, msg, 1f, debug, limit, lang);
+                    img = ImageDrawing.drawAnimMp4(anim, msg, 1f, false, debug, limit, lang);
                 } else {
-                    img = ImageDrawing.drawAnimGif(anim, msg, 1f, debug, limit, lang);
+                    img = ImageDrawing.drawAnimGif(anim, msg, 1f, false, debug, limit, lang);
                 }
 
                 f.anim.unload();
@@ -2566,9 +2566,9 @@ public class EntityHandler {
                     max = 8 * 1024 * 1024;
 
                 if(raw) {
-                    img = ImageDrawing.drawAnimMp4(anim, msg, 1f, debug, limit, lang);
+                    img = ImageDrawing.drawAnimMp4(anim, msg, 1f, false, debug, limit, lang);
                 } else {
-                    img = ImageDrawing.drawAnimGif(anim, msg, 1f, debug, limit, lang);
+                    img = ImageDrawing.drawAnimGif(anim, msg, 1f, false, debug, limit, lang);
                 }
 
                 en.anim.unload();
@@ -2783,7 +2783,7 @@ public class EntityHandler {
         });
     }
 
-    public static void generateAnim(MessageChannel ch, AnimMixer mixer, int booster, int lang, boolean debug, int limit, boolean raw, int index) {
+    public static void generateAnim(MessageChannel ch, AnimMixer mixer, int booster, boolean performance, int lang, boolean debug, int limit, boolean raw, int index) {
         boolean mix = mixer.mix();
 
         if(!mix) {
@@ -2812,9 +2812,9 @@ public class EntityHandler {
                 File img;
 
                 if(raw) {
-                    img = ImageDrawing.drawAnimMp4(anim, msg, 1f, debug, limit, lang);
+                    img = ImageDrawing.drawAnimMp4(anim, msg, 1f, performance, debug, limit, lang);
                 } else {
-                    img = ImageDrawing.drawAnimGif(anim, msg, 1f, debug, lang, limit);
+                    img = ImageDrawing.drawAnimGif(anim, msg, 1f, performance, debug, lang, limit);
                 }
 
                 long end = System.currentTimeMillis();
@@ -2966,7 +2966,7 @@ public class EntityHandler {
         });
     }
 
-    public static void generateBCAnim(MessageChannel ch, int booster, AnimMixer mixer, int lang, Runnable onFail, Runnable onSuccess) {
+    public static void generateBCAnim(MessageChannel ch, int booster, AnimMixer mixer, boolean performance, int lang, Runnable onFail, Runnable onSuccess) {
         boolean mix = mixer.mix();
 
         if(!mix) {
@@ -2991,7 +2991,7 @@ public class EntityHandler {
             File img;
 
             try {
-                img = ImageDrawing.drawBCAnim(mixer, msg, 1f, lang);
+                img = ImageDrawing.drawBCAnim(mixer, msg, 1f, performance, lang);
             } catch (Exception e) {
                 StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateBCAnim - Failed to generate BC animation");
 
@@ -3209,9 +3209,9 @@ public class EntityHandler {
 
             try {
                 if(raw) {
-                    img = ImageDrawing.drawAnimMp4(anim, msg, 1f, debug, limit, lang);
+                    img = ImageDrawing.drawAnimMp4(anim, msg, 1f, false, debug, limit, lang);
                 } else {
-                    img = ImageDrawing.drawAnimGif(anim, msg, 1f, debug, limit, lang);
+                    img = ImageDrawing.drawAnimGif(anim, msg, 1f, false, debug, limit, lang);
                 }
             } catch (Exception e) {
                 StaticStore.logger.uploadErrorLog(e, "E/EntityHandler::generateSoulAnim - Failed to generate soul animaiton");

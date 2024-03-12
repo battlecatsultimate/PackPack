@@ -44,6 +44,7 @@ public class BCAnimMessageHolder extends MessageHolder {
 
     private final AnimMixer mixer;
     private final Message msg;
+    private final boolean performance;
     private final int lang;
     private final File container;
 
@@ -56,10 +57,11 @@ public class BCAnimMessageHolder extends MessageHolder {
     private final AtomicReference<String> imgcut = new AtomicReference<>("IMGCUT : -");
     private final ArrayList<AtomicReference<String>> maanim = new ArrayList<>();
 
-    public BCAnimMessageHolder(@Nonnull Message author, @Nonnull Message target, int lang, @Nonnull String channelID, File container, MessageChannel ch, boolean zombie) throws Exception {
+    public BCAnimMessageHolder(@Nonnull Message author, @Nonnull Message target, boolean performance, int lang, @Nonnull String channelID, File container, MessageChannel ch, boolean zombie) throws Exception {
         super(author, channelID, target.getId());
 
         this.msg = target;
+        this.performance = performance;
         this.lang = lang;
         this.container = container;
 
@@ -103,7 +105,7 @@ public class BCAnimMessageHolder extends MessageHolder {
                     g = null;
                 }
 
-                EntityHandler.generateBCAnim(ch, g == null ? 0 : g.getBoostTier().getKey(), mixer, lang, () -> {
+                EntityHandler.generateBCAnim(ch, g == null ? 0 : g.getBoostTier().getKey(), mixer, performance, lang, () -> {
                     StaticStore.canDo.put("gif", new TimeBoolean(false, TimeUnit.MINUTES.toMillis(1)));
 
                     StaticStore.executorHandler.postDelayed(60000, () -> {
@@ -177,7 +179,7 @@ public class BCAnimMessageHolder extends MessageHolder {
                             g = null;
                         }
 
-                        EntityHandler.generateBCAnim(ch, g == null ? 0 : g.getBoostTier().getKey(), mixer, lang, () -> {
+                        EntityHandler.generateBCAnim(ch, g == null ? 0 : g.getBoostTier().getKey(), mixer, performance, lang, () -> {
                             StaticStore.canDo.put("gif", new TimeBoolean(false, TimeUnit.MINUTES.toMillis(1)));
 
                             StaticStore.executorHandler.postDelayed(60000, () -> {
