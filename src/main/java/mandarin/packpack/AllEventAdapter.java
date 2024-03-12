@@ -372,15 +372,11 @@ public class AllEventAdapter extends ListenerAdapter {
 
                 IDHolder idh = StaticStore.idHolder.get(g.getId());
 
-                if(idh == null)
+                if(idh == null || idh.MOD == null)
                     return;
 
-                boolean isMod = false;
+                boolean isMod = StaticStore.rolesToString(m.getRoles()).contains(idh.MOD);
                 boolean canGo = false;
-
-                if(idh.MOD != null) {
-                    isMod = StaticStore.rolesToString(m.getRoles()).contains(idh.MOD);
-                }
 
                 ArrayList<String> channels = idh.getAllAllowedChannels(m);
 
@@ -812,7 +808,7 @@ public class AllEventAdapter extends ListenerAdapter {
                     if(inviter != null) {
                         inviter.getUser().openPrivateChannel()
                                 .flatMap(pc -> pc.sendMessage(LangID.getStringByID("needroleperm", holder.config.lang).replace("_", g.getName())))
-                                .queue();
+                                .queue(null, e -> { });
 
                         warned.set(true);
                     }
