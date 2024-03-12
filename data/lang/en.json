@@ -44,6 +44,7 @@
   "bot_bug" : "temporarily due to bug fix",
   "bot_update" : "temporarily due to updates",
   "bot_api" : "temporarily due to API updates",
+  "bot_maintenance" : "temporarily due to maintenance",
   "bot_end" : "permanently due to out of service. Thanks for using this bot",
   "search_prev10" : "Previous 10 Pages",
   "search_prev" : "Previous Page",

@@ -39,7 +39,7 @@ public class LogOut extends ConstraintCommand {
         String[] contents = loader.getContent().split(" ");
 
         if(contents.length < 2) {
-            replyToMessageSafely(ch, "Format : `p!lo -b/-u/-a/-p`\n\n-b : Bug fix\n-u : Update\n-a : API Update\n-p : Permanent out of service", loader.getMessage(), a -> a);
+            replyToMessageSafely(ch, "Format : `p!lo -b/-u/-a/-m/-p`\n\n-b : Bug fix\n-u : Update\n-a : API Update\n-m : Maintenance\n-p : Permanent out of service", loader.getMessage(), a -> a);
 
             return;
         }
@@ -54,6 +54,7 @@ public class LogOut extends ConstraintCommand {
                     case "-b" -> "bot_bug";
                     case "-a" -> "bot_api";
                     case "-p" -> "bot_end";
+                    case "-m" -> "bot_maintenance";
                     default -> "bot_update";
                 };
 

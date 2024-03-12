@@ -44,6 +44,7 @@
   "bot_bug" : "暫時離線：修理程序漏洞。",
   "bot_update" : "暫時離線：更新數據",
   "bot_api" : "暫時離線：API 更新",
+  "bot_maintenance" : "temporarily due to maintenance",
   "bot_end" : "永久離線。感謝使用PackPack",
   "search_prev10" : "前十頁",
   "search_prev" : "上一頁",
