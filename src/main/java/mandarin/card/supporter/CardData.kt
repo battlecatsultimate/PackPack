@@ -6,7 +6,9 @@ import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.supporter.StaticStore
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
+import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildChannel
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel
 import org.apache.http.client.methods.CloseableHttpResponse
 import org.apache.http.client.methods.HttpGet
@@ -480,7 +482,15 @@ object CardData {
         }
     }
 
-    fun usedInGlobalChannel(member: Member, channel: StandardGuildMessageChannel) : Boolean {
-        return member.id == StaticStore.MANDARIN_SMELL || hasAllPermission(member) || channel.parentCategoryId in globalCategory
+    fun canPerformGlobalCommand(member: Member, channel: MessageChannel) : Boolean {
+        return member.id == StaticStore.MANDARIN_SMELL || hasAllPermission(member) || when (channel) {
+            is StandardGuildMessageChannel -> channel.parentCategoryId in globalCategory
+            is ThreadChannel -> {
+                val parent = channel.parentChannel
+
+                parent is StandardGuildChannel && parent.parentCategoryId in globalCategory
+            }
+            else -> false
+        }
     }
 }
