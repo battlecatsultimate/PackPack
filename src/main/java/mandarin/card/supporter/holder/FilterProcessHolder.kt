@@ -101,6 +101,11 @@ class FilterProcessHolder : ComponentHolder {
 
                 applyResult(event)
             }
+            "back" -> {
+                event.deferEdit().queue()
+
+                goBack()
+            }
             "confirm" -> {
                 if (currentIndex < product.requiredFilter - 1) {
                     currentIndex++
@@ -278,6 +283,34 @@ class FilterProcessHolder : ComponentHolder {
         }
     }
 
+    override fun onConnected(event: GenericComponentInteractionCreateEvent) {
+        if (product.requiredFilter == product.possibleFilters.size && product.possibleFilters.any { f -> !f.match(inventory.cards.keys.toList(), inventory)}) {
+            event.deferEdit()
+                .setContent("It seems you can't afford this role with your cards")
+                .setAllowedMentions(ArrayList())
+                .setComponents(registerCardComponents())
+                .mentionRepliedUser(false)
+                .queue()
+
+            return
+        } else {
+            val doableFilters = product.possibleFilters.filter { f -> inventory.cards.keys.filter { c -> f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 1 } >= f.amount }
+
+            if (doableFilters.size < product.requiredFilter) {
+                event.deferEdit()
+                    .setContent("It seems you can't afford this role with your cards")
+                    .setAllowedMentions(ArrayList())
+                    .setComponents(registerCardComponents())
+                    .mentionRepliedUser(false)
+                    .queue()
+
+                return
+            }
+        }
+
+        applyResult(event)
+    }
+
     private fun applyResult(event: GenericComponentInteractionCreateEvent) {
         event.deferEdit()
             .setContent(getText())
@@ -325,6 +358,28 @@ class FilterProcessHolder : ComponentHolder {
 
     private fun registerCardComponents() : List<LayoutComponent> {
         val result = ArrayList<LayoutComponent>()
+
+        val impossibleFilter = filters.find { f -> inventory.cards.keys.filter { c -> f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 1 } < f.amount }
+
+        if (impossibleFilter != null) {
+            result.add(ActionRow.of(Button.secondary("back", "Back")))
+
+            return result
+        }
+
+        if (product.requiredFilter == product.possibleFilters.size && product.possibleFilters.any { f -> !f.match(inventory.cards.keys.toList(), inventory)}) {
+            result.add(ActionRow.of(Button.secondary("back", "Back")))
+
+            return result
+        } else {
+            val doableFilters = product.possibleFilters.filter { f -> inventory.cards.keys.filter { c -> f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 1 } >= f.amount }
+
+            if (doableFilters.size < product.requiredFilter) {
+                result.add(ActionRow.of(Button.secondary("back", "Back")))
+
+                return result
+            }
+        }
 
         val tierCategoryElements = ArrayList<SelectOption>()
 
@@ -445,12 +500,24 @@ class FilterProcessHolder : ComponentHolder {
             result.add(ActionRow.of(buttons))
         }
 
-        result.add(ActionRow.of(Button.success("confirm", "Confirm").withDisabled(filters[currentIndex].amount != cardGroups[currentIndex].size), Button.danger("cancel", "Cancel")))
+        result.add(
+            ActionRow.of(
+                Button.success("confirm", "Confirm").withDisabled(filters[currentIndex].amount != cardGroups[currentIndex].size),
+                Button.secondary("back", "Back"),
+                Button.danger("cancel", "Cancel")
+            )
+        )
 
         return result
     }
 
     private fun getText() : String {
+        val impossibleFilter = filters.find { f -> inventory.cards.keys.filter { c -> f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 1 } < f.amount }
+
+        if (impossibleFilter != null) {
+            return "It seems you selected requirement that you can't afford with your inventory, please select other requirements\n\nRequirement causing problem : ${impossibleFilter.name}"
+        }
+
         val builder = StringBuilder("Please select cards that meets the requirement\n\nCondition : ${filters[currentIndex].name}\n\n### Cards\n\n")
 
         if (cardGroups[currentIndex].isEmpty()) {
