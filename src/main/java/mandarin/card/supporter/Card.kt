@@ -19,6 +19,7 @@ class Card(val unitID: Int, val tier: Tier, val name: String, val cardImage: Fil
 
     fun getTier() : String {
         return when(tier) {
+            Tier.SPECIAL -> "Special"
             Tier.COMMON -> "Common"
             Tier.UNCOMMON -> "Uncommon"
             Tier.ULTRA -> "Ultra Rare (Exclusives)"

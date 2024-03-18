@@ -9,6 +9,7 @@ import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
+import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
@@ -27,6 +28,7 @@ class SuggestInventoryHolder(
     author: Message,
     channelID: String,
     private val message: Message,
+    private val targetMember: Member,
     private val suggestionMessage: Message,
     private val session: TradingSession,
     private val inventory: Inventory
@@ -202,6 +204,15 @@ class SuggestInventoryHolder(
 
                 val card = cards[selectedID]
 
+                if (card.unitID == -56) {
+                    event.deferReply()
+                        .setContent("Don't you dare \uD83D\uDC41\uFE0F, you can't trade it")
+                        .setEphemeral(true)
+                        .queue()
+
+                    return
+                }
+
                 val realAmount = (inventory.cards[card] ?: 0) - backup.cards.count { c -> c.unitID == card.unitID }
 
                 if (realAmount >= 2) {
@@ -320,12 +331,10 @@ class SuggestInventoryHolder(
             }
         }
 
-        for (card in inventory.cards.keys) {
-            val amount = inventory.cards[card] ?: 1
+        cards.removeIf { c ->
+            val amount = inventory.cards[c] ?: 0
 
-            if (amount - backup.cards.filter { c -> c.unitID == card.unitID }.size == 0) {
-                cards.remove(card)
-            }
+            amount - backup.cards.filter { cd -> cd.unitID == c.unitID }.size <= 0
         }
 
         cards.sortWith(CardComparator())
@@ -351,12 +360,20 @@ class SuggestInventoryHolder(
     private fun assignComponents() : List<LayoutComponent> {
         val rows = ArrayList<ActionRow>()
 
+        val member = authorMessage.member
+
         val tierCategoryElements = ArrayList<SelectOption>()
 
         tierCategoryElements.add(SelectOption.of("All", "all"))
 
         CardData.tierCategoryText.forEachIndexed { index, text ->
-            tierCategoryElements.add(SelectOption.of(text, "tier${index}"))
+            if (index == CardData.Tier.SPECIAL.ordinal) {
+                if (member != null && CardData.canTradeT0(member) && CardData.canTradeT0(targetMember)) {
+                    tierCategoryElements.add(SelectOption.of(text, "tier${index}"))
+                }
+            } else {
+                tierCategoryElements.add(SelectOption.of(text, "tier${index}"))
+            }
         }
 
         val tierCategory = StringSelectMenu.create("tier")
@@ -371,38 +388,40 @@ class SuggestInventoryHolder(
 
         rows.add(ActionRow.of(tierCategory.build()))
 
-        val bannerCategoryElements = ArrayList<SelectOption>()
+        if (tier == CardData.Tier.NONE || CardData.bannerCategoryText[tier.ordinal].isNotEmpty()) {
+            val bannerCategoryElements = ArrayList<SelectOption>()
 
-        bannerCategoryElements.add(SelectOption.of("All", "all"))
+            bannerCategoryElements.add(SelectOption.of("All", "all"))
 
-        if (tier == CardData.Tier.NONE) {
-            CardData.bannerCategoryText.forEachIndexed { index, array ->
-                array.forEachIndexed { i, a ->
-                    bannerCategoryElements.add(SelectOption.of(a, "category-$index-$i"))
+            if (tier == CardData.Tier.NONE) {
+                CardData.bannerCategoryText.forEachIndexed { index, array ->
+                    array.forEachIndexed { i, a ->
+                        bannerCategoryElements.add(SelectOption.of(a, "category-$index-$i"))
+                    }
+                }
+            } else {
+                CardData.bannerCategoryText[tier.ordinal].forEachIndexed { i, a ->
+                    bannerCategoryElements.add(SelectOption.of(a, "category-${tier.ordinal}-$i"))
                 }
             }
-        } else {
-            CardData.bannerCategoryText[tier.ordinal].forEachIndexed { i, a ->
-                bannerCategoryElements.add(SelectOption.of(a, "category-${tier.ordinal}-$i"))
+
+            val bannerCategory = StringSelectMenu.create("category")
+                .addOptions(bannerCategoryElements)
+                .setPlaceholder("Filter Cards by Banners")
+
+            val id = if (tier == CardData.Tier.NONE) {
+                "category-${banner[0]}-${banner[1]}"
+            } else {
+                "category-${tier.ordinal}-${banner[1]}"
             }
+
+            val option = bannerCategoryElements.find { e -> e.value == id }
+
+            if (option != null)
+                bannerCategory.setDefaultOptions(option)
+
+            rows.add(ActionRow.of(bannerCategory.build()))
         }
-
-        val bannerCategory = StringSelectMenu.create("category")
-            .addOptions(bannerCategoryElements)
-            .setPlaceholder("Filter Cards by Banners")
-
-        val id = if (tier == CardData.Tier.NONE) {
-            "category-${banner[0]}-${banner[1]}"
-        } else {
-            "category-${tier.ordinal}-${banner[1]}"
-        }
-
-        val option = bannerCategoryElements.find { e -> e.value == id }
-
-        if (option != null)
-            bannerCategory.setDefaultOptions(option)
-
-        rows.add(ActionRow.of(bannerCategory.build()))
 
         val dataSize = cards.size
 

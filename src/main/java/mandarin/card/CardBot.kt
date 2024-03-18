@@ -455,6 +455,7 @@ object CardBot : ListenerAdapter() {
 
             for(card in cards) {
                 val tier = when(t.name) {
+                    "Tier 0" -> CardData.Tier.SPECIAL
                     "Tier 1" -> CardData.Tier.COMMON
                     "Tier 2" -> CardData.Tier.UNCOMMON
                     "Tier 3" -> CardData.Tier.ULTRA
@@ -464,11 +465,20 @@ object CardBot : ListenerAdapter() {
 
                 val nameData = card.name.replace(".png", "").split(Regex("-"), 2)
 
-                CardData.cards.add(Card(nameData[0].toInt(), tier, nameData[1], card))
+                val cardID = if (tier == CardData.Tier.SPECIAL) {
+                    -(nameData[0].toInt())
+                } else {
+                    nameData[0].toInt()
+                }
+
+                CardData.cards.add(Card(cardID, tier, nameData[1], card))
             }
         }
 
         CardData.cards.removeIf { c ->
+            if (c.tier == CardData.Tier.SPECIAL)
+                return@removeIf false
+
             val result = !CardData.bannerData.any { t -> t.any { b -> c.tier == CardData.Tier.LEGEND || c.unitID in b } }
 
             if (result) {
@@ -478,10 +488,11 @@ object CardBot : ListenerAdapter() {
             result
         }
 
-        CardData.common.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.COMMON }.filter { r -> CardData.permanents[0].any { i -> r.unitID in CardData.bannerData[0][i] } })
-        CardData.uncommon.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.UNCOMMON }.filter { r -> CardData.permanents[1].any { i -> r.unitID in CardData.bannerData[1][i] } })
-        CardData.ultraRare.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.ULTRA }.filter { r -> CardData.permanents[2].any { i -> r.unitID in CardData.bannerData[2][i] } })
-        CardData.legendRare.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.LEGEND }.filter { r -> CardData.bannerData[3].any { arr -> r.unitID !in arr } })
+        CardData.special.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.SPECIAL })
+        CardData.common.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.COMMON }.filter { r -> CardData.permanents[r.tier.ordinal].any { i -> r.unitID in CardData.bannerData[r.tier.ordinal][i] } })
+        CardData.uncommon.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.UNCOMMON }.filter { r -> CardData.permanents[r.tier.ordinal].any { i -> r.unitID in CardData.bannerData[r.tier.ordinal][i] } })
+        CardData.ultraRare.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.ULTRA }.filter { r -> CardData.permanents[r.tier.ordinal].any { i -> r.unitID in CardData.bannerData[r.tier.ordinal][i] } })
+        CardData.legendRare.addAll(CardData.cards.filter { r -> r.tier == CardData.Tier.LEGEND }.filter { r -> CardData.bannerData[r.tier.ordinal].any { arr -> r.unitID !in arr } })
 
         val serverElement: JsonElement? = StaticStore.getJsonFile("serverinfo")
 

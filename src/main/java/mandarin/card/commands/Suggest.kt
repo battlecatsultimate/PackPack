@@ -9,6 +9,7 @@ import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.CommandLoader
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
@@ -22,123 +23,137 @@ class Suggest(private val session: TradingSession) : Command(LangID.EN, true) {
         val m = loader.member
         val author = loader.message
 
-        val inventory = Inventory.getInventory(m.id)
+        val targetIndex = if (session.member[0] == m.idLong)
+            1
+        else
+            0
 
-        val index = session.member.indexOf(m.idLong)
+        val g = loader.guild
+       g.retrieveMember(UserSnowflake.fromId(session.member[targetIndex])).queue { targetMember ->
+           val inventory = Inventory.getInventory(m.id)
 
-        if (index == -1)
-            return
+           val index = session.member.indexOf(m.idLong)
 
-        val cards = ArrayList<Card>(inventory.cards.keys)
+           if (index == -1)
+               return@queue
 
-        for (card in inventory.cards.keys) {
-            val amount = inventory.cards[card] ?: 1
+           val cards = ArrayList<Card>(inventory.cards.keys)
 
-            if (amount - session.suggestion[index].cards.filter { c -> c.unitID == card.unitID }.size == 0) {
-                cards.remove(card)
-            }
+           for (card in inventory.cards.keys) {
+               val amount = inventory.cards[card] ?: 1
+
+               if (amount - session.suggestion[index].cards.filter { c -> c.unitID == card.unitID }.size == 0) {
+                   cards.remove(card)
+               }
+           }
+
+           cards.sortWith(CardComparator())
+
+           replyToMessageSafely(ch, session.suggestion[index].suggestionInfo(m), loader.message, { a -> a }, { suggestionMessage ->
+               replyToMessageSafely(ch, getText(author, cards, inventory, index), author, Suggest@ { a ->
+                   val rows = ArrayList<ActionRow>()
+
+                   val tierCategoryElements = ArrayList<SelectOption>()
+
+                   tierCategoryElements.add(SelectOption.of("All", "all"))
+
+                   CardData.tierCategoryText.forEachIndexed { index, text ->
+                       if (index == CardData.Tier.SPECIAL.ordinal) {
+                           if (CardData.canTradeT0(m) && CardData.canTradeT0(targetMember)) {
+                               tierCategoryElements.add(SelectOption.of(text, "tier${index}"))
+                           }
+                       } else {
+                           tierCategoryElements.add(SelectOption.of(text, "tier${index}"))
+                       }
+                   }
+
+                   val tierCategory = StringSelectMenu.create("tier")
+                       .addOptions(tierCategoryElements)
+                       .setPlaceholder("Filter Cards by Tiers")
+
+                   rows.add(ActionRow.of(tierCategory.build()))
+
+                   val bannerCategoryElements = ArrayList<SelectOption>()
+
+                   bannerCategoryElements.add(SelectOption.of("All", "all"))
+
+                   CardData.bannerCategoryText.forEachIndexed { index, array ->
+                       array.forEachIndexed { i, a ->
+                           bannerCategoryElements.add(SelectOption.of(a, "category-$index-$i"))
+                       }
+                   }
+
+                   val bannerCategory = StringSelectMenu.create("category")
+                       .addOptions(bannerCategoryElements)
+                       .setPlaceholder("Filter Cards by Banners")
+
+                   rows.add(ActionRow.of(bannerCategory.build()))
+
+                   val dataSize = cards.size
+
+                   val cardCategoryElements = ArrayList<SelectOption>()
+
+                   if (cards.isEmpty()) {
+                       cardCategoryElements.add(SelectOption.of("a", "-1"))
+                   } else {
+                       for(i in 0 until min(dataSize, SearchHolder.PAGE_CHUNK)) {
+                           cardCategoryElements.add(SelectOption.of(cards[i].simpleCardInfo(), i.toString()))
+                       }
+                   }
+
+                   val cardCategory = StringSelectMenu.create("card")
+                       .addOptions(cardCategoryElements)
+                       .setPlaceholder(
+                           if (session.suggestion[index].cards.size == CardData.MAX_CARDS)
+                               "You can't suggest more than ${CardData.MAX_CARDS} cards!"
+                           else if (cards.isEmpty())
+                               "No Cards To Select"
+                           else
+                               "Select Card To Suggest"
+                       )
+                       .setDisabled(session.suggestion[index].cards.size == CardData.MAX_CARDS || cards.isEmpty())
+                       .build()
+
+                   rows.add(ActionRow.of(cardCategory))
+
+                   var totPage = dataSize / SearchHolder.PAGE_CHUNK
+
+                   if (dataSize % SearchHolder.PAGE_CHUNK != 0)
+                       totPage++
+
+                   if (dataSize > SearchHolder.PAGE_CHUNK) {
+                       val buttons = ArrayList<Button>()
+
+                       if (totPage > 10) {
+                           buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).asDisabled())
+                       }
+
+                       buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", "Previous Pages", EmojiStore.PREVIOUS).asDisabled())
+
+                       buttons.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT))
+
+                       if (totPage > 10) {
+                           buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT))
+                       }
+
+                       rows.add(ActionRow.of(buttons))
+                   }
+
+                   val confirmButtons = ArrayList<Button>()
+
+                   confirmButtons.add(Button.primary("confirm", "Suggest"))
+                   confirmButtons.add(Button.secondary("cf", "Suggest Cat Foods").withEmoji(EmojiStore.ABILITY["CF"]))
+                   confirmButtons.add(Button.danger("reset", "Clear Suggestions"))
+                   confirmButtons.add(Button.danger("cancel", "Cancel"))
+
+                   rows.add(ActionRow.of(confirmButtons))
+
+                   return@Suggest a.setComponents(rows)
+               }, { msg ->
+                   StaticStore.putHolder(m.id, SuggestInventoryHolder(author, ch.id, msg, targetMember, suggestionMessage, session, inventory))
+               })
+           })
         }
-
-        cards.sortWith(CardComparator())
-
-        replyToMessageSafely(ch, session.suggestion[index].suggestionInfo(m), loader.message, { a -> a }, { suggestionMessage ->
-            replyToMessageSafely(ch, getText(author, cards, inventory, index), author, Suggest@ { a ->
-                val rows = ArrayList<ActionRow>()
-
-                val tierCategoryElements = ArrayList<SelectOption>()
-
-                tierCategoryElements.add(SelectOption.of("All", "all"))
-
-                CardData.tierCategoryText.forEachIndexed { index, text ->
-                    tierCategoryElements.add(SelectOption.of(text, "tier${index}"))
-                }
-
-                val tierCategory = StringSelectMenu.create("tier")
-                    .addOptions(tierCategoryElements)
-                    .setPlaceholder("Filter Cards by Tiers")
-
-                rows.add(ActionRow.of(tierCategory.build()))
-
-                val bannerCategoryElements = ArrayList<SelectOption>()
-
-                bannerCategoryElements.add(SelectOption.of("All", "all"))
-
-                CardData.bannerCategoryText.forEachIndexed { index, array ->
-                    array.forEachIndexed { i, a ->
-                        bannerCategoryElements.add(SelectOption.of(a, "category-$index-$i"))
-                    }
-                }
-
-                val bannerCategory = StringSelectMenu.create("category")
-                    .addOptions(bannerCategoryElements)
-                    .setPlaceholder("Filter Cards by Banners")
-
-                rows.add(ActionRow.of(bannerCategory.build()))
-
-                val dataSize = cards.size
-
-                val cardCategoryElements = ArrayList<SelectOption>()
-
-                if (cards.isEmpty()) {
-                    cardCategoryElements.add(SelectOption.of("a", "-1"))
-                } else {
-                    for(i in 0 until min(dataSize, SearchHolder.PAGE_CHUNK)) {
-                        cardCategoryElements.add(SelectOption.of(cards[i].simpleCardInfo(), i.toString()))
-                    }
-                }
-
-                val cardCategory = StringSelectMenu.create("card")
-                    .addOptions(cardCategoryElements)
-                    .setPlaceholder(
-                        if (session.suggestion[index].cards.size == CardData.MAX_CARDS)
-                            "You can't suggest more than ${CardData.MAX_CARDS} cards!"
-                        else if (cards.isEmpty())
-                            "No Cards To Select"
-                        else
-                            "Select Card To Suggest"
-                    )
-                    .setDisabled(session.suggestion[index].cards.size == CardData.MAX_CARDS || cards.isEmpty())
-                    .build()
-
-                rows.add(ActionRow.of(cardCategory))
-
-                var totPage = dataSize / SearchHolder.PAGE_CHUNK
-
-                if (dataSize % SearchHolder.PAGE_CHUNK != 0)
-                    totPage++
-
-                if (dataSize > SearchHolder.PAGE_CHUNK) {
-                    val buttons = ArrayList<Button>()
-
-                    if (totPage > 10) {
-                        buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).asDisabled())
-                    }
-
-                    buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", "Previous Pages", EmojiStore.PREVIOUS).asDisabled())
-
-                    buttons.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT))
-
-                    if (totPage > 10) {
-                        buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT))
-                    }
-
-                    rows.add(ActionRow.of(buttons))
-                }
-
-                val confirmButtons = ArrayList<Button>()
-
-                confirmButtons.add(Button.primary("confirm", "Suggest"))
-                confirmButtons.add(Button.secondary("cf", "Suggest Cat Foods").withEmoji(EmojiStore.ABILITY["CF"]))
-                confirmButtons.add(Button.danger("reset", "Clear Suggestions"))
-                confirmButtons.add(Button.danger("cancel", "Cancel"))
-
-                rows.add(ActionRow.of(confirmButtons))
-
-                return@Suggest a.setComponents(rows)
-            }, { msg ->
-                StaticStore.putHolder(m.id, SuggestInventoryHolder(author, ch.id, msg, suggestionMessage, session, inventory))
-            })
-        })
     }
 
     private fun getText(message: Message, cards: List<Card>, inventory: Inventory, index: Int) : String {

@@ -205,36 +205,38 @@ class CardInventoryHolder(author: Message, channelID: String, private val messag
 
         val bannerCategoryElements = ArrayList<SelectOption>()
 
-        bannerCategoryElements.add(SelectOption.of("All", "all"))
+        if (tier == CardData.Tier.NONE || CardData.bannerCategoryText[tier.ordinal].isNotEmpty()) {
+            bannerCategoryElements.add(SelectOption.of("All", "all"))
 
-        if (tier == CardData.Tier.NONE) {
-            CardData.bannerCategoryText.forEachIndexed { index, array ->
-                array.forEachIndexed { i, a ->
-                    bannerCategoryElements.add(SelectOption.of(a, "category-$index-$i"))
+            if (tier == CardData.Tier.NONE) {
+                CardData.bannerCategoryText.forEachIndexed { index, array ->
+                    array.forEachIndexed { i, a ->
+                        bannerCategoryElements.add(SelectOption.of(a, "category-$index-$i"))
+                    }
+                }
+            } else {
+                CardData.bannerCategoryText[tier.ordinal].forEachIndexed { i, a ->
+                    bannerCategoryElements.add(SelectOption.of(a, "category-${tier.ordinal}-$i"))
                 }
             }
-        } else {
-            CardData.bannerCategoryText[tier.ordinal].forEachIndexed { i, a ->
-                bannerCategoryElements.add(SelectOption.of(a, "category-${tier.ordinal}-$i"))
+
+            val bannerCategory = StringSelectMenu.create("category")
+                .addOptions(bannerCategoryElements)
+                .setPlaceholder("Filter Cards by Banners")
+
+            val id = if (tier == CardData.Tier.NONE) {
+                "category-${banner[0]}-${banner[1]}"
+            } else {
+                "category-${tier.ordinal}-${banner[1]}"
             }
+
+            val option = bannerCategoryElements.find { e -> e.value == id }
+
+            if (option != null)
+                bannerCategory.setDefaultOptions(option)
+
+            rows.add(ActionRow.of(bannerCategory.build()))
         }
-
-        val bannerCategory = StringSelectMenu.create("category")
-            .addOptions(bannerCategoryElements)
-            .setPlaceholder("Filter Cards by Banners")
-
-        val id = if (tier == CardData.Tier.NONE) {
-            "category-${banner[0]}-${banner[1]}"
-        } else {
-            "category-${tier.ordinal}-${banner[1]}"
-        }
-
-        val option = bannerCategoryElements.find { e -> e.value == id }
-
-        if (option != null)
-            bannerCategory.setDefaultOptions(option)
-
-        rows.add(ActionRow.of(bannerCategory.build()))
 
         val dataSize = cards.size
 

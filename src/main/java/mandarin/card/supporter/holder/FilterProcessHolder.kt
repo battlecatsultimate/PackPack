@@ -346,6 +346,9 @@ class FilterProcessHolder : ComponentHolder {
         }
 
         cards.removeIf { c ->
+            if (c.tier == CardData.Tier.SPECIAL)
+                return@removeIf true
+
             val amount = inventory.cards[c] ?: 1
 
             amount - cardGroups.maxOf { g -> g.filter { card -> card.unitID == c.unitID }.size } <= 0

@@ -21,6 +21,7 @@ import java.text.NumberFormat
 import java.time.Clock
 import java.time.Instant
 import java.util.*
+import kotlin.collections.ArrayList
 
 @Suppress("unused")
 object CardData {
@@ -57,13 +58,17 @@ object CardData {
     val cards = ArrayList<Card>()
 
     val permanents = arrayOf(
+        0 until 1,
         0 until 9,
         0 until 2,
-        0 until 3
+        0 until 3,
+        0 until 1
     )
 
     //Stored as uber ID
     val bannerData = arrayOf(
+        //Tier 0
+        arrayOf(),
         //Tier 1
         arrayOf(
             //Dark Heroes
@@ -243,6 +248,9 @@ object CardData {
 
     val guild = ServerData.get("guild")
 
+    val cc = ServerData.get("cc")
+    val ecc = ServerData.get("ecc")
+
     val bankAccount = ServerData.get("bankAccount")
 
     private val banned = ServerData.get("banned")
@@ -308,6 +316,7 @@ object CardData {
      */
 
     enum class Tier {
+        SPECIAL,
         COMMON,
         UNCOMMON,
         ULTRA,
@@ -315,16 +324,18 @@ object CardData {
         NONE
     }
 
+    val special = ArrayList<Card>()
     val common = ArrayList<Card>()
     val uncommon = ArrayList<Card>()
     val ultraRare = ArrayList<Card>()
     val legendRare = ArrayList<Card>()
 
     val tierCategoryText = arrayOf(
-        "Tier 1 [Common]", "Tier 2 [Uncommon]", "Tier 3 [Ultra Rare (Exclusives)]", "Tier 4 [Legend Rare]"
+        "Tier 0 [Special]", "Tier 1 [Common]", "Tier 2 [Uncommon]", "Tier 3 [Ultra Rare (Exclusives)]", "Tier 4 [Legend Rare]"
     )
 
     val bannerCategoryText = arrayOf(
+        arrayOf(),
         arrayOf("Dark Heroes", "Dragon Emperors", "Dynamites", "Elemental Pixies", "Galaxy Gals", "Iron Legion", "Sengoku Wargods", "The Nekoluga Family", "Ultra Souls"),
         arrayOf("Girls and Monsters", "The Almighties", "Seasonal", "Collaboration"),
         arrayOf("Epicfest Exclusives", "Uberfest Exclusives", "Other Exclusives"),
@@ -491,5 +502,11 @@ object CardData {
             }
             else -> false
         }
+    }
+
+    fun canTradeT0(member: Member) : Boolean {
+        val roleList = member.roles.map { role -> role.id }
+
+        return cc in roleList || ecc in roleList
     }
 }
