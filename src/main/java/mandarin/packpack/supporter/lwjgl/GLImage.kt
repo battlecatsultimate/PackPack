@@ -15,6 +15,8 @@ import java.util.concurrent.atomic.AtomicReference
 class GLImage : FakeImage {
     private val cloneReferences = ArrayList<GLImage>()
 
+    private var byteData: ByteArray? = null
+
     private var sprite: SpriteSheet
     private var textureMesh: TextureMesh
     private var reference: GLImage?
@@ -46,6 +48,17 @@ class GLImage : FakeImage {
     }
 
     override fun getRGB(i: Int, j: Int): Int {
+        val data = byteData
+
+        if (data != null) {
+            val r = data[(i + j * width) * 4] and 0xFF
+            val g = data[(i + j * width) * 4 + 1] and 0xFF
+            val b = data[(i + j * width) * 4 + 2] and 0xFF
+            val a = data[(i + j * width) * 4 + 3] and 0xFF
+
+            return (a shl 24) + (r shl 16) + (g shl 8) + b
+        }
+
         val waiter = if (!Thread.currentThread().equals(StaticStore.renderManager.renderThread)) {
             CountDownLatch(1)
         } else {
@@ -62,10 +75,24 @@ class GLImage : FakeImage {
 
                 GL33.glGetTexImage(GL33.GL_TEXTURE_2D, 0, GL33.GL_RGBA, GL33.GL_UNSIGNED_BYTE, buffer)
 
-                val r = buffer[(i + j * width) * 4] and 0xFF
-                val g = buffer[(i + j * width) * 4 + 1] and 0xFF
-                val b = buffer[(i + j * width) * 4 + 2] and 0xFF
-                val a = buffer[(i + j * width) * 4 + 3] and 0xFF
+                byteData = ByteArray((sprite.width * sprite.height * 4).toInt())
+
+                buffer.put(byteData)
+
+                val colorData = byteData
+
+                if (colorData == null) {
+                    rgb.set(0)
+
+                    waiter.countDown()
+
+                    return@queueGL
+                }
+
+                val r = colorData[(i + j * width) * 4] and 0xFF
+                val g = colorData[(i + j * width) * 4 + 1] and 0xFF
+                val b = colorData[(i + j * width) * 4 + 2] and 0xFF
+                val a = colorData[(i + j * width) * 4 + 3] and 0xFF
 
                 rgb.set((a shl 24) + (r shl 16) + (g shl 8) + b)
 
@@ -82,10 +109,16 @@ class GLImage : FakeImage {
 
             GL33.glGetTexImage(GL33.GL_TEXTURE_2D, 0, GL33.GL_RGBA, GL33.GL_UNSIGNED_BYTE, buffer)
 
-            val r = buffer[(i + j * width) * 4] and 0xFF
-            val g = buffer[(i + j * width) * 4 + 1] and 0xFF
-            val b = buffer[(i + j * width) * 4 + 2] and 0xFF
-            val a = buffer[(i + j * width) * 4 + 3] and 0xFF
+            byteData = ByteArray((sprite.width * sprite.height * 4).toInt())
+
+            buffer.put(byteData)
+
+            val colorData = byteData ?: return 0
+
+            val r = colorData[(i + j * width) * 4] and 0xFF
+            val g = colorData[(i + j * width) * 4 + 1] and 0xFF
+            val b = colorData[(i + j * width) * 4 + 2] and 0xFF
+            val a = colorData[(i + j * width) * 4 + 3] and 0xFF
 
             (a shl 24) + (r shl 16) + (g shl 8) + b
         }
