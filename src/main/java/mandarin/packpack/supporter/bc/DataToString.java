@@ -889,7 +889,7 @@ public class DataToString extends Data {
         if( e == null)
             return "";
 
-        return String.valueOf((long) (e.multi(BasisSet.current()) * e.getHp() * magnification / 100.0));
+        return String.valueOf((long) (magnification / 100.0 * e.multi(BasisSet.current()) * e.getHp()));
     }
 
     public static String getTrait(MaskUnit f, boolean talent, Level lvs, boolean icon, int lang) {
