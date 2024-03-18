@@ -86,7 +86,7 @@ class BuyHolder(author: Message, channelID: String, private val message: Message
                     return
 
                 val product = when(event.values[0]) {
-                    "emoji" -> Product.customEmoji
+//                    "emoji" -> Product.customEmoji
                     "role" -> Product.customRole
                     else -> throw IllegalStateException("Invalid product name ${event.values[0]}")
                 }
@@ -193,11 +193,11 @@ class BuyHolder(author: Message, channelID: String, private val message: Message
 
         val restOptions = ArrayList<SelectOption>()
 
-        var affordable = Product.customEmoji.possibleFilters.filter { f -> inventory.cards.keys.filter { c -> f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 0 } >= f.amount }.size >= Product.customEmoji.requiredFilter
+//        var affordable = Product.customEmoji.possibleFilters.filter { f -> inventory.cards.keys.filter { c -> f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 0 } >= f.amount }.size >= Product.customEmoji.requiredFilter
+//
+//        restOptions.add(SelectOption.of("Custom Emoji", "emoji").withDescription(if (affordable) "Affordable" else "Cannot Afford"))
 
-        restOptions.add(SelectOption.of("Custom Emoji", "emoji").withDescription(if (affordable) "Affordable" else "Cannot Afford"))
-
-        affordable = Product.customRole.possibleFilters.filter { f -> inventory.cards.keys.filter { c -> f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 0 } >= f.amount }.size >= Product.customRole.requiredFilter
+        val affordable = Product.customRole.possibleFilters.filter { f -> inventory.cards.keys.filter { c -> f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 0 } >= f.amount }.size >= Product.customRole.requiredFilter
 
         restOptions.add(SelectOption.of("Custom Role", "role").withDescription(if (affordable) "Affordable" else "Cannot Afford"))
 
