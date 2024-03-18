@@ -108,7 +108,7 @@ object CardData {
             //Valentine
             arrayOf(587, 588, 644),
             //Whiteday
-            arrayOf(648, 693),
+            arrayOf(648, 693, 736),
             //Easter
             arrayOf(330, 331, 595, 699),
             //June Bride
@@ -129,7 +129,7 @@ object CardData {
             //Fate
             arrayOf(362, 363, 364, 365, 366, 367, 368, 456),
             //Miku
-            arrayOf(535, 536, 537, 560, 582, 583, 590),
+            arrayOf(535, 536, 537, 560, 582, 583, 590, 722),
             //Merc
             arrayOf(119, 185, 186, 187, 188, 345, 346, 506),
             //Evangelion
