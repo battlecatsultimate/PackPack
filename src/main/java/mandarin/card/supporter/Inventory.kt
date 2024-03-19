@@ -122,7 +122,7 @@ class Inventory {
     fun validForLegendCollector() : Boolean {
         val cardsTotal = cards.keys.map { card -> card.unitID }.union(favorites.keys.map { card -> card.unitID })
 
-        for (i in 0..1) {
+        for (i in CardData.Tier.COMMON.ordinal..CardData.Tier.UNCOMMON.ordinal) {
             if (CardData.permanents[i].map { index -> CardData.bannerData[i][index] }.any { idSet -> idSet.any { id -> id !in cardsTotal } })
                 return false
         }
