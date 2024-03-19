@@ -53,7 +53,7 @@ class CardCostPayHolder(
     }
     private var banner = when(container.cost) {
         is TierCardCost -> intArrayOf(-1, -1)
-        is BannerCardCost -> intArrayOf(container.cost.banner.tier, container.cost.banner.category)
+        is BannerCardCost -> intArrayOf(container.cost.banner.tier.ordinal, container.cost.banner.category)
         else -> throw IllegalStateException("E/CardCostPayHolder::init - Unknown cost type : ${container.cost::javaClass}")
     }
 

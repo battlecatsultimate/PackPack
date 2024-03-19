@@ -101,7 +101,7 @@ class BuyHolder(author: Message, channelID: String, private val message: Message
 
                     return
                 } else {
-                    val doableFilters = product.possibleFilters.filter { f -> inventory.cards.keys.filter { c -> f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 1 } >= f.amount }
+                    val doableFilters = product.possibleFilters.filter { f -> inventory.cards.keys.filter { c -> c.tier != CardData.Tier.SPECIAL && f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 1 } >= f.amount }
 
                     if (doableFilters.size < product.requiredFilter) {
                         event.deferEdit()
@@ -180,7 +180,7 @@ class BuyHolder(author: Message, channelID: String, private val message: Message
             val affordable = if (role == CardData.Role.LEGEND) {
                 inventory.validForLegendCollector()
             } else {
-                role.getProduct().possibleFilters.filter { f -> inventory.cards.keys.filter { c -> f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 0 } >= f.amount }.size >= role.getProduct().requiredFilter
+                role.getProduct().possibleFilters.filter { f -> inventory.cards.keys.filter { c -> c.tier != CardData.Tier.SPECIAL && f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 0 } >= f.amount }.size >= role.getProduct().requiredFilter
             }
 
             options.add(SelectOption.of(role.title, role.key).withEmoji(EmojiStore.ABILITY[role.key]).withDescription(if (affordable) "Affordable" else "Cannot Afford"))
@@ -197,7 +197,7 @@ class BuyHolder(author: Message, channelID: String, private val message: Message
 //
 //        restOptions.add(SelectOption.of("Custom Emoji", "emoji").withDescription(if (affordable) "Affordable" else "Cannot Afford"))
 
-        val affordable = Product.customRole.possibleFilters.filter { f -> inventory.cards.keys.filter { c -> f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 0 } >= f.amount }.size >= Product.customRole.requiredFilter
+        val affordable = Product.customRole.possibleFilters.filter { f -> inventory.cards.keys.filter { c -> c.tier != CardData.Tier.SPECIAL && f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 0 } >= f.amount }.size >= Product.customRole.requiredFilter
 
         restOptions.add(SelectOption.of("Custom Role", "role").withDescription(if (affordable) "Affordable" else "Cannot Afford"))
 

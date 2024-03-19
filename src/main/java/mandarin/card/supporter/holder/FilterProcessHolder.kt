@@ -389,7 +389,8 @@ class FilterProcessHolder : ComponentHolder {
         tierCategoryElements.add(SelectOption.of("All", "all"))
 
         CardData.tierCategoryText.forEachIndexed { index, text ->
-            tierCategoryElements.add(SelectOption.of(text, "tier${index}"))
+            if (CardData.Tier.SPECIAL.ordinal != index)
+                tierCategoryElements.add(SelectOption.of(text, "tier${index}"))
         }
 
         val tierCategory = StringSelectMenu.create("tier")

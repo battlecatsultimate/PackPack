@@ -14,53 +14,53 @@ class BannerFilter(private val banner: Banner, amount: Int, name: String) : Filt
         }
     }
 
-    enum class Banner(val tier: Int, val category: Int) {
-        DarkHeroes(0, 0),
-        DragonEmperors(0, 1),
-        Dynamites(0, 2),
-        ElementalPixies(0, 3),
-        GalaxyGals(0, 4),
-        IronLegion(0, 5),
-        SengokuWargods(0, 6),
-        TheNekolugaFamily(0, 7),
-        UltraSouls(0, 8),
-        GirlsAndMonsters(1, 0),
-        TheAlimighties(1, 1),
-        Valentine(1,4),
-        Whiteday(1, 5),
-        Easter(1, 6),
-        JuneBride(1, 7),
-        SummerGals(1, 8),
-        Halloweens(1, 9),
-        XMas(1, 10),
-        Bikkuriman(1, 11),
-        CrashFever(1, 12),
-        Fate(1, 13),
-        Miku(1, 14),
-        MercStroia(1, 15),
-        Evangelion(1, 16),
-        PowerPro(1, 17),
-        Ranma(1, 18),
-        RiverCity(1, 19),
-        ShoumetsuToshi(1, 20),
-        StreetFighters(1, 21),
-        MolaSurvive(1, 22),
-        MetalSlug(1, 23),
-        PrincessPunt(1, 24),
-        EpicfestExclusives(2, 0),
-        UberfestExclusives(2, 1),
-        OtherExclusives(2, 2),
-        Collaboration(1, 3),
-        Seasonal(1, 2),
-        LegendRare(-1, -1),
-        BusterExclusives(-1, -1);
+    enum class Banner(val tier: CardData.Tier, val category: Int) {
+        DarkHeroes(CardData.Tier.COMMON, 0),
+        DragonEmperors(CardData.Tier.COMMON, 1),
+        Dynamites(CardData.Tier.COMMON, 2),
+        ElementalPixies(CardData.Tier.COMMON, 3),
+        GalaxyGals(CardData.Tier.COMMON, 4),
+        IronLegion(CardData.Tier.COMMON, 5),
+        SengokuWargods(CardData.Tier.COMMON, 6),
+        TheNekolugaFamily(CardData.Tier.COMMON, 7),
+        UltraSouls(CardData.Tier.COMMON, 8),
+        GirlsAndMonsters(CardData.Tier.UNCOMMON, 0),
+        TheAlimighties(CardData.Tier.UNCOMMON, 1),
+        Valentine(CardData.Tier.UNCOMMON,4),
+        Whiteday(CardData.Tier.UNCOMMON, 5),
+        Easter(CardData.Tier.UNCOMMON, 6),
+        JuneBride(CardData.Tier.UNCOMMON, 7),
+        SummerGals(CardData.Tier.UNCOMMON, 8),
+        Halloweens(CardData.Tier.UNCOMMON, 9),
+        XMas(CardData.Tier.UNCOMMON, 10),
+        Bikkuriman(CardData.Tier.UNCOMMON, 11),
+        CrashFever(CardData.Tier.UNCOMMON, 12),
+        Fate(CardData.Tier.UNCOMMON, 13),
+        Miku(CardData.Tier.UNCOMMON, 14),
+        MercStroia(CardData.Tier.UNCOMMON, 15),
+        Evangelion(CardData.Tier.UNCOMMON, 16),
+        PowerPro(CardData.Tier.UNCOMMON, 17),
+        Ranma(CardData.Tier.UNCOMMON, 18),
+        RiverCity(CardData.Tier.UNCOMMON, 19),
+        ShoumetsuToshi(CardData.Tier.UNCOMMON, 20),
+        StreetFighters(CardData.Tier.UNCOMMON, 21),
+        MolaSurvive(CardData.Tier.UNCOMMON, 22),
+        MetalSlug(CardData.Tier.UNCOMMON, 23),
+        PrincessPunt(CardData.Tier.UNCOMMON, 24),
+        EpicfestExclusives(CardData.Tier.ULTRA, 0),
+        UberfestExclusives(CardData.Tier.ULTRA, 1),
+        OtherExclusives(CardData.Tier.ULTRA, 2),
+        Collaboration(CardData.Tier.UNCOMMON, 3),
+        Seasonal(CardData.Tier.UNCOMMON, 2),
+        LegendRare(CardData.Tier.NONE, -1),
+        BusterExclusives(CardData.Tier.NONE, -1);
 
         fun getBannerData() : Array<Int> {
-            return CardData.bannerData[tier][category]
+            return CardData.bannerData[tier.ordinal][category]
         }
 
         fun getCardType() : CardPack.CardType {
-            return if (tier == 1) {
+            return if (tier == CardData.Tier.UNCOMMON) {
                 val banners = getBannerData()
 
                 if (Seasonal.getBannerData().any { id -> id in banners })
@@ -71,9 +71,9 @@ class BannerFilter(private val banner: Banner, amount: Int, name: String) : Filt
                     CardPack.CardType.T2
             } else {
                 when(tier) {
-                    0 -> CardPack.CardType.T1
-                    2 -> CardPack.CardType.T3
-                    3 -> CardPack.CardType.T4
+                    CardData.Tier.COMMON -> CardPack.CardType.T1
+                    CardData.Tier.ULTRA -> CardPack.CardType.T3
+                    CardData.Tier.LEGEND -> CardPack.CardType.T4
                     else -> throw IllegalStateException("E/BannerFilter::getTier - Unknown tier $tier")
                 }
             }
