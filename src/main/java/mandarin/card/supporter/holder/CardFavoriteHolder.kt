@@ -3,9 +3,9 @@ package mandarin.card.supporter.holder
 import common.util.Data
 import mandarin.card.CardBot
 import mandarin.card.supporter.Card
+import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.holder.modal.CardFavoriteAmountHolder
-import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
@@ -128,7 +128,7 @@ class CardFavoriteHolder(author: Message, channelID: String, private val message
 
         embedBuilder.setTitle(favorite + "Card No.${Data.trio(card.unitID)}" + favorite)
 
-        embedBuilder.setColor(StaticStore.grade[card.tier.ordinal])
+        embedBuilder.setColor(CardData.grade[card.tier.ordinal])
 
         embedBuilder.addField("Name", card.name, true)
         embedBuilder.addField("Tier", card.getTier(), true)

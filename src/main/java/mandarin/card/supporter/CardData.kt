@@ -13,6 +13,7 @@ import org.apache.http.client.methods.CloseableHttpResponse
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClientBuilder
+import java.awt.Color
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.URI
@@ -63,6 +64,14 @@ object CardData {
         0 until 2,
         0 until 3,
         0 until 1
+    )
+
+    val grade = arrayOf(
+        rgb(155, 245, 66),
+        rgb(204,124,84),
+        rgb(206,209,210),
+        rgb(213,171,98),
+        rgb(218,232,240)
     )
 
     //Stored as uber ID
@@ -508,5 +517,9 @@ object CardData {
         val roleList = member.roles.map { role -> role.id }
 
         return cc in roleList || ecc in roleList
+    }
+
+    private fun rgb(r: Int, g: Int, b: Int) : Int {
+        return Color(r, g, b).rgb
     }
 }
