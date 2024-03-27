@@ -383,7 +383,9 @@ class SuggestInventoryHolder(
         if (tier == CardData.Tier.NONE) {
             tierCategory.setDefaultOptions(tierCategoryElements[0])
         } else {
-            tierCategory.setDefaultOptions(tierCategoryElements[tier.ordinal + 1])
+            val option = tierCategoryElements.find { option -> option.value == "tier${tier.ordinal}" }
+
+            tierCategory.setDefaultOptions(option)
         }
 
         rows.add(ActionRow.of(tierCategory.build()))
