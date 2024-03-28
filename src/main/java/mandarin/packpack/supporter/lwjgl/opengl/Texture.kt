@@ -109,11 +109,11 @@ class Texture private constructor(val textureID: Int, val width: Float, val heig
             return texture
         }
 
-        fun build(bitmap: FT_Bitmap) : Texture {
+        fun build(bitmap: FT_Bitmap, letter: Char) : Texture {
             GL33.glPixelStorei(GL33.GL_UNPACK_ALIGNMENT, 1)
 
             val id = GL33.glGenTextures()
-            Logger.addLog("Generating texture from Texture with FT_Bitmap : $id")
+            Logger.addLog("Generating texture from Texture with FT_Bitmap : $id, Letter \"$letter\"")
 
             GL33.glBindTexture(GL33.GL_TEXTURE_2D, id)
 

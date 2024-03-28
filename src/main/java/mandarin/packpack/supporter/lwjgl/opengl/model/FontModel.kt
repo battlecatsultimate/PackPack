@@ -163,7 +163,7 @@ class FontModel(private val size: Float, file: File, type: Type, stroke: Float =
     }
 
     private fun loadText(text: String) {
-        if (!text.any { letter -> !characters.containsKey(letter) })
+        if (text.isNotEmpty() && !text.any { letter -> !characters.containsKey(letter) })
             return
 
         val stack = MemoryStack.stackPush()
@@ -256,7 +256,7 @@ class FontModel(private val size: Float, file: File, type: Type, stroke: Float =
             vertexVBO.injectBuffer(vertexMap, vertexOffset)
 
             val charTexture = CharTexture(
-                Texture.build(bitmap),
+                Texture.build(bitmap, letter),
                 vertexOffset,
                 bitmap.width().toFloat(),
                 bitmap.rows().toFloat(),
