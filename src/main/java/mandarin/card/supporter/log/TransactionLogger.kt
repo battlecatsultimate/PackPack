@@ -10,6 +10,7 @@ import mandarin.packpack.supporter.StaticStore
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.MessageEmbed
+import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import kotlin.math.min
 
@@ -842,6 +843,25 @@ object TransactionLogger {
 
         builder.addField("Old Cost", "${EmojiStore.ABILITY["SHARD"]?.formatted} $oldCost", true)
         builder.addField("New Cost", "${EmojiStore.ABILITY["SHARD"]?.formatted} $newCost", true)
+
+        modChannel.sendMessageEmbeds(builder.build()).queue()
+    }
+
+    fun logCooldownReset(pack: CardPack, manager: String) {
+        if (!this::modChannel.isInitialized)
+            return
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("Pack Cooldown Reset")
+
+        builder.setColor(StaticStore.rainbow.random())
+
+        builder.setDescription("Manager <@$manager> reset cooldown of pack for all users")
+
+        builder.addField("Manager", "<@$manager> [$manager]", false)
+
+        builder.addField("Pack", pack.packName, true)
 
         modChannel.sendMessageEmbeds(builder.build()).queue()
     }

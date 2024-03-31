@@ -356,6 +356,8 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}mp" -> ManagePack().execute(event)
             "${globalPrefix}logout",
             "${globalPrefix}lo" -> LogOut().execute(event)
+            "${globalPrefix}resetcooldown",
+            "${globalPrefix}rc" -> ResetCooldown().execute(event)
         }
 
         val session = findSession(event.channel.idLong) ?: return
