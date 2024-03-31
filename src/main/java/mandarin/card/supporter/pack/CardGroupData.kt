@@ -51,11 +51,11 @@ class CardGroupData(
             )
         }
 
+        result.removeIf { c -> c.unitID < 0 }
+
         for (banner in extra) {
             result.addAll(banner.getBannerData().mapNotNull { id -> CardData.cards.find { c -> c.unitID == id } })
         }
-
-        result.removeIf { c -> c.unitID < 0 }
 
         return result.toSet().toList()
     }
