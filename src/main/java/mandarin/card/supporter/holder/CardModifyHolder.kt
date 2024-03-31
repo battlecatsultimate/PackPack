@@ -188,7 +188,7 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
                 applyResult(event)
             }
             "next10" -> {
-                page -= 10
+                page += 10
 
                 applyResult(event)
             }
