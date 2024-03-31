@@ -87,6 +87,11 @@ class BannerCardCost(var banner: BannerFilter.Banner, amount: Long) : CardCost(C
             BannerFilter.Banner.Collaboration,
             BannerFilter.Banner.Seasonal,
             BannerFilter.Banner.LegendRare ->  throw IllegalStateException("E/BannerCostHolder::getContents - Invalid banner $banner found")
+
+            BannerFilter.Banner.CheetahT1 -> "Cheetah Tier 1"
+            BannerFilter.Banner.CheetahT2 -> "Cheetah Tier 2"
+            BannerFilter.Banner.CheetahT3 -> "Cheetah Tier 3"
+            BannerFilter.Banner.CheetahT4 -> "Cheetah Tier 4"
         }
 
         return if (amount > 1) {

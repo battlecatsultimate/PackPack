@@ -186,7 +186,9 @@ object CardData {
             //Bikkuriman
             arrayOf(466),
             //SF
-            arrayOf(510)
+            arrayOf(510),
+            //???
+            arrayOf(-1003)
         )
     )
 

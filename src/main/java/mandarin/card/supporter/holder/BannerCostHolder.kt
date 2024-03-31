@@ -250,6 +250,11 @@ class BannerCostHolder(author: Message, channelID: String, private val message: 
                 BannerFilter.Banner.Collaboration,
                 BannerFilter.Banner.Seasonal,
                 BannerFilter.Banner.LegendRare ->  throw IllegalStateException("E/BannerCostHolder::getContents - Invalid banner ${BannerFilter.pureBanners[i]} found")
+
+                BannerFilter.Banner.CheetahT1 -> "Tier 1 [Common]"
+                BannerFilter.Banner.CheetahT2 -> "Tier 2 [Uncommon]"
+                BannerFilter.Banner.CheetahT3 -> "Tier 3 [Ultra Rare (Exclusives)]"
+                BannerFilter.Banner.CheetahT4 -> "Tier 3 [Legend Rare]"
             }
 
             options.add(SelectOption.of(bannerName, BannerFilter.pureBanners[i].name))
@@ -351,6 +356,11 @@ class BannerCostHolder(author: Message, channelID: String, private val message: 
                 BannerFilter.Banner.Collaboration,
                 BannerFilter.Banner.Seasonal,
                 BannerFilter.Banner.LegendRare ->  throw IllegalStateException("E/BannerCostHolder::getContents - Invalid banner ${BannerFilter.pureBanners[i]} found")
+
+                BannerFilter.Banner.CheetahT1 -> "Tier 1 [Common]"
+                BannerFilter.Banner.CheetahT2 -> "Tier 2 [Uncommon]"
+                BannerFilter.Banner.CheetahT3 -> "Tier 3 [Ultra Rare (Exclusives)]"
+                BannerFilter.Banner.CheetahT4 -> "Tier 3 [Legend Rare]"
             }
 
             val checkSymbol = if (BannerFilter.pureBanners[i] == cardCost.banner) {
