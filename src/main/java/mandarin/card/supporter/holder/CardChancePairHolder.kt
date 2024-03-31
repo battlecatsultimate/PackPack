@@ -309,7 +309,7 @@ class CardChancePairHolder(
                 BannerFilter.Banner.CheetahT1 -> "Tier 1 [Common]"
                 BannerFilter.Banner.CheetahT2 -> "Tier 2 [Uncommon]"
                 BannerFilter.Banner.CheetahT3 -> "Tier 3 [Ultra Rare (Exclusives)]"
-                BannerFilter.Banner.CheetahT4 -> "Tier 3 [Legend Rare]"
+                BannerFilter.Banner.CheetahT4 -> "Tier 4 [Legend Rare]"
             }
 
             val emoji = if (BannerFilter.pureBanners[i] in pair.cardGroup.extra) {
@@ -403,7 +403,7 @@ class CardChancePairHolder(
                 BannerFilter.Banner.CheetahT1 -> "Tier 1 [Common]"
                 BannerFilter.Banner.CheetahT2 -> "Tier 2 [Uncommon]"
                 BannerFilter.Banner.CheetahT3 -> "Tier 3 [Ultra Rare (Exclusives)]"
-                BannerFilter.Banner.CheetahT4 -> "Tier 3 [Legend Rare]"
+                BannerFilter.Banner.CheetahT4 -> "Tier 4 [Legend Rare]"
             }
 
             bannerOptions.add(SelectOption.of(bannerName, BannerFilter.pureBanners[i].name))

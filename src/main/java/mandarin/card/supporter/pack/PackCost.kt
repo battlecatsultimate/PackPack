@@ -167,7 +167,7 @@ class PackCost(
                 BannerFilter.Banner.CheetahT1 -> "Tier 1 [Common]"
                 BannerFilter.Banner.CheetahT2 -> "Tier 2 [Uncommon]"
                 BannerFilter.Banner.CheetahT3 -> "Tier 3 [Ultra Rare (Exclusives)]"
-                BannerFilter.Banner.CheetahT4 -> "Tier 3 [Legend Rare]"
+                BannerFilter.Banner.CheetahT4 -> "Tier 4 [Legend Rare]"
             }
 
             if (existingCards < cost.amount) {
