@@ -117,6 +117,7 @@ class PackPayHolder(
                             .setMessageReference(authorMessage)
                             .mentionRepliedUser(false)
                             .addFiles(result.filter { c -> !inventory.cards.containsKey(c) }
+                                .toSet()
                                 .map { c -> FileUpload.fromData(c.cardImage, "${c.name}.png") })
                             .queue()
                     }

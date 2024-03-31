@@ -74,7 +74,7 @@ class ManualRollConfirmHolder(author: Message, channelID: String, messageID: Str
                                 ch.sendMessage(builder.toString())
                                     .setMessageReference(authorMessage)
                                     .mentionRepliedUser(false)
-                                    .addFiles(result.filter { c -> !inventory.cards.containsKey(c) }.map { c -> FileUpload.fromData(c.cardImage, "${c.name}.png") })
+                                    .addFiles(result.filter { c -> !inventory.cards.containsKey(c) }.toSet().map { c -> FileUpload.fromData(c.cardImage, "${c.name}.png") })
                                     .queue()
                             } catch (_: Exception) {
 
