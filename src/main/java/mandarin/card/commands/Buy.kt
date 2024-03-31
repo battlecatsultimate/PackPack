@@ -45,7 +45,7 @@ class Buy : Command(LangID.EN, true) {
             val affordable = if (role == CardData.Role.LEGEND) {
                 inventory.validForLegendCollector()
             } else {
-                role.getProduct().possibleFilters.filter { f -> inventory.cards.keys.filter { c -> c.tier != CardData.Tier.SPECIAL && f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 0 } >= f.amount }.size >= role.getProduct().requiredFilter
+                role.getProduct().possibleFilters.filter { f -> inventory.cards.keys.filter { c -> c.unitID >= 0 && f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 0 } >= f.amount }.size >= role.getProduct().requiredFilter
             }
 
             options.add(SelectOption.of(role.title, role.key).withEmoji(EmojiStore.ABILITY[role.key]).withDescription(if (affordable) "Affordable" else "Cannot Afford"))
@@ -62,7 +62,7 @@ class Buy : Command(LangID.EN, true) {
 //
 //        restOptions.add(SelectOption.of("Custom Emoji", "emoji").withDescription(if (affordable) "Affordable" else "Cannot Afford"))
 
-        val affordable = Product.customRole.possibleFilters.filter { f -> inventory.cards.keys.filter { c -> c.tier != CardData.Tier.SPECIAL && f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 0 } >= f.amount }.size >= Product.customRole.requiredFilter
+        val affordable = Product.customRole.possibleFilters.filter { f -> inventory.cards.keys.filter { c -> c.unitID >= 0 && f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 0 } >= f.amount }.size >= Product.customRole.requiredFilter
 
         restOptions.add(SelectOption.of("Custom Role", "role").withDescription(if (affordable) "Affordable" else "Cannot Afford"))
 

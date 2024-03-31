@@ -97,7 +97,9 @@ object CardData {
             //The Nekoluga Family
             arrayOf(34, 168, 169, 170, 171, 240, 436, 546, 625, 712),
             //Ultra Souls
-            arrayOf(134, 135, 136, 137, 138, 203, 322, 525, 633, 692)
+            arrayOf(134, 135, 136, 137, 138, 203, 322, 525, 633, 692),
+            //???
+            arrayOf(-1000)
         ),
         //Tier 2
         arrayOf(
@@ -159,6 +161,8 @@ object CardData {
             arrayOf(222, 223, 224, 225),
             //Princess Punt
             arrayOf(66, 161, 337, 485, 530),
+            //???
+            arrayOf(-1001)
         ),
         //Tier 3
         arrayOf(
@@ -171,7 +175,9 @@ object CardData {
             //LilValk
             arrayOf(435),
             //Dark Lil valk
-            arrayOf(484)
+            arrayOf(484),
+            //???
+            arrayOf(-1002)
         ),
         //Tier 4
         arrayOf(

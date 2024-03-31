@@ -106,7 +106,7 @@ class RequirementSelectHolder : ComponentHolder {
 
             return
         } else {
-            val doableFilters = product.possibleFilters.filter { f -> inventory.cards.keys.filter { c -> c.tier != CardData.Tier.SPECIAL && f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 1 } >= f.amount }
+            val doableFilters = product.possibleFilters.filter { f -> inventory.cards.keys.filter { c -> c.unitID >= 0 && f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 1 } >= f.amount }
 
             if (doableFilters.size < product.requiredFilter) {
                 event.deferEdit()
@@ -148,7 +148,7 @@ class RequirementSelectHolder : ComponentHolder {
 
             return result
         } else {
-            val doableFilters = product.possibleFilters.filter { f -> inventory.cards.keys.filter { c -> c.tier != CardData.Tier.SPECIAL && f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 1 } >= f.amount }
+            val doableFilters = product.possibleFilters.filter { f -> inventory.cards.keys.filter { c -> c.unitID >= 0 && f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 1 } >= f.amount }
 
             if (doableFilters.size < product.requiredFilter) {
                 result.add(ActionRow.of(Button.secondary("back", "Back")))
@@ -160,7 +160,7 @@ class RequirementSelectHolder : ComponentHolder {
         val options = ArrayList<SelectOption>()
 
         product.possibleFilters.forEachIndexed { index, process ->
-            val possibleCards = inventory.cards.keys.filter { c -> c.tier != CardData.Tier.SPECIAL && process.filter(c) }.sumOf { c -> inventory.cards[c] ?: 0 }
+            val possibleCards = inventory.cards.keys.filter { c -> c.unitID >= 0 && process.filter(c) }.sumOf { c -> inventory.cards[c] ?: 0 }
 
             val desc = if (possibleCards < 2) {
                 "$possibleCards Card Available"

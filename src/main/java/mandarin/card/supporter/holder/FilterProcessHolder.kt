@@ -346,7 +346,7 @@ class FilterProcessHolder : ComponentHolder {
         }
 
         cards.removeIf { c ->
-            if (c.tier == CardData.Tier.SPECIAL)
+            if (c.unitID < 0)
                 return@removeIf true
 
             val amount = inventory.cards[c] ?: 1
@@ -400,7 +400,9 @@ class FilterProcessHolder : ComponentHolder {
         if (tier == CardData.Tier.NONE) {
             tierCategory.setDefaultOptions(tierCategoryElements[0])
         } else {
-            tierCategory.setDefaultOptions(tierCategoryElements[tier.ordinal + 1])
+            val option = tierCategoryElements.find { option -> option.value == "tier${tier.ordinal}" }
+
+            tierCategory.setDefaultOptions(option)
         }
 
         result.add(ActionRow.of(tierCategory.build()))

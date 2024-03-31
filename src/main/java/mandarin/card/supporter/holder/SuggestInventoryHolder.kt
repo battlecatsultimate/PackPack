@@ -46,13 +46,7 @@ class SuggestInventoryHolder(
     private var confirmed = false
 
     init {
-        for (card in inventory.cards.keys) {
-            val amount = inventory.cards[card] ?: 1
-
-            if (amount - suggestion.cards.filter { c -> c.unitID == card.unitID }.size == 0) {
-                cards.remove(card)
-            }
-        }
+        filterCards()
     }
 
     override fun clean() {
@@ -336,6 +330,8 @@ class SuggestInventoryHolder(
 
             amount - backup.cards.filter { cd -> cd.unitID == c.unitID }.size <= 0
         }
+
+        cards.removeIf { c -> c.tier == CardData.Tier.SPECIAL }
 
         cards.sortWith(CardComparator())
     }

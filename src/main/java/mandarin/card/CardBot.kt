@@ -451,7 +451,13 @@ object CardBot : ListenerAdapter() {
         for(t in tiers) {
             val cards = t.listFiles() ?: continue
 
-            cards.sortBy { it.name.split("-")[0].toInt() }
+            cards.sortBy {
+                if (it.name.startsWith("-")) {
+                    -it.name.split("-")[1].toInt()
+                } else {
+                    it.name.split("-")[0].toInt()
+                }
+            }
 
             for(card in cards) {
                 val tier = when(t.name) {
@@ -463,7 +469,18 @@ object CardBot : ListenerAdapter() {
                     else -> throw IllegalStateException("Invalid tier type ${t.name} found")
                 }
 
-                val nameData = card.name.replace(".png", "").split(Regex("-"), 2)
+                val fileName = card.name.replace(".png", "")
+
+                val nameData = if (fileName.startsWith("-")) {
+                    val tempData = fileName.split(Regex("-"), 3)
+
+                    if (tempData.size != 3)
+                        throw IllegalStateException("Invalid card name format : $fileName")
+
+                    listOf("-" + tempData[1], tempData[2])
+                } else {
+                    fileName.split(Regex("-"), 2)
+                }
 
                 val cardID = if (tier == CardData.Tier.SPECIAL) {
                     -(nameData[0].toInt())
