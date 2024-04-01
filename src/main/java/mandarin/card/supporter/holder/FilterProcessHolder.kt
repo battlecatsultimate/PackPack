@@ -5,6 +5,7 @@ import mandarin.card.supporter.*
 import mandarin.card.supporter.filter.Filter
 import mandarin.card.supporter.log.LogSession
 import mandarin.card.supporter.log.TransactionLogger
+import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
@@ -389,8 +390,20 @@ class FilterProcessHolder : ComponentHolder {
         tierCategoryElements.add(SelectOption.of("All", "all"))
 
         CardData.tierCategoryText.forEachIndexed { index, text ->
-            if (CardData.Tier.SPECIAL.ordinal != index)
-                tierCategoryElements.add(SelectOption.of(text, "tier${index}"))
+            if (CardData.Tier.SPECIAL.ordinal != index) {
+                val emoji = EmojiStore.getCardEmoji(
+                    when (index) {
+                        0 -> null
+                        1 -> CardPack.CardType.T1
+                        2 -> CardPack.CardType.T2
+                        3 -> CardPack.CardType.T3
+                        4 -> CardPack.CardType.T4
+                        else -> throw IllegalStateException("E/CardModifyHolder::assignComponents - Invalid tier index $index")
+                    }
+                )
+
+                tierCategoryElements.add(SelectOption.of(text, "tier${index}").withEmoji(emoji))
+            }
         }
 
         val tierCategory = StringSelectMenu.create("tier")

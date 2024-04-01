@@ -51,7 +51,6 @@ class Roll : Command(LangID.EN, true) {
     private fun registerComponents(member: Member, packList: List<CardPack>) : List<LayoutComponent> {
         val result = ArrayList<LayoutComponent>()
 
-
         val packOptions = ArrayList<SelectOption>()
 
         val size = min(packList.size, SearchHolder.PAGE_CHUNK)
@@ -73,7 +72,7 @@ class Roll : Command(LangID.EN, true) {
             }
 
             packOptions.add(
-                SelectOption.of(pack.packName, pack.uuid).withDescription(desc.ifEmpty { null })
+                SelectOption.of(pack.packName, pack.uuid).withDescription(desc.ifEmpty { null }).withEmoji(EmojiStore.getPackEmoji(pack))
             )
         }
 

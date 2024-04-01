@@ -2,6 +2,7 @@ package mandarin.card.supporter.holder
 
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
+import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
@@ -46,7 +47,15 @@ class CardCraftModeHolder(author: Message, channelID: String, private val messag
                     else -> CardData.CraftMode.T4
                 }
 
-                val name = when(selectedMode) {
+                val emoji = when(selectedMode) {
+                    CardData.CraftMode.T2 -> EmojiStore.getCardEmoji(CardPack.CardType.T2)
+                    CardData.CraftMode.SEASONAL -> EmojiStore.getCardEmoji(CardPack.CardType.SEASONAL)
+                    CardData.CraftMode.COLLAB -> EmojiStore.getCardEmoji(CardPack.CardType.COLLABORATION)
+                    CardData.CraftMode.T3 -> EmojiStore.getCardEmoji(CardPack.CardType.T3)
+                    CardData.CraftMode.T4 -> EmojiStore.getCardEmoji(CardPack.CardType.T4)
+                }
+
+                val name = (emoji?.formatted ?: "") + " " + when(selectedMode) {
                     CardData.CraftMode.T2 -> "Regular Tier 2 [Uncommon]"
                     CardData.CraftMode.SEASONAL -> "Seasonal Tier 2 [Uncommon]"
                     CardData.CraftMode.COLLAB -> "Collaboration Tier 2 [Uncommon]"

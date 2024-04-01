@@ -4,6 +4,7 @@ import mandarin.card.supporter.CardComparator
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.holder.CardInventoryHolder
+import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
@@ -57,7 +58,18 @@ class Cards : Command(LangID.EN, true) {
             tierCategoryElements.add(SelectOption.of("All", "all"))
 
             CardData.tierCategoryText.forEachIndexed { index, text ->
-                tierCategoryElements.add(SelectOption.of(text, "tier${index}"))
+                val emoji = EmojiStore.getCardEmoji(
+                    when (index) {
+                        0 -> null
+                        1 -> CardPack.CardType.T1
+                        2 -> CardPack.CardType.T2
+                        3 -> CardPack.CardType.T3
+                        4 -> CardPack.CardType.T4
+                        else -> throw IllegalStateException("E/CardModifyHolder::assignComponents - Invalid tier index $index")
+                    }
+                )
+
+                tierCategoryElements.add(SelectOption.of(text, "tier${index}").withEmoji(emoji))
             }
 
             val tierCategory = StringSelectMenu.create("tier")

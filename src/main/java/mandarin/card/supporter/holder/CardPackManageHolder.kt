@@ -123,7 +123,11 @@ class CardPackManageHolder(author: Message, channelID: String, private val messa
             val size = min((page + 1) * SearchHolder.PAGE_CHUNK, CardData.cardPacks.size)
 
             for (i in page * SearchHolder.PAGE_CHUNK until size) {
-                builder.append(i + 1).append(". ").append(CardData.cardPacks[i].packName).append("\n")
+                val emoji = EmojiStore.getPackEmoji(CardData.cardPacks[i])
+
+                val formatted = emoji?.formatted ?: ""
+
+                builder.append(i + 1).append(". ").append(formatted).append(" ").append(CardData.cardPacks[i].packName).append("\n")
             }
 
             if (CardData.cardPacks.size > SearchHolder.PAGE_CHUNK) {

@@ -5,6 +5,7 @@ import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.filter.BannerFilter
 import mandarin.card.supporter.holder.CardCraftModeHolder
+import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
@@ -40,22 +41,43 @@ class Craft : Command(LangID.EN, true) {
 
         val options = ArrayList<SelectOption>()
 
-        options.add(SelectOption.of("Tier 2 [Uncommon]", "t2").withDescription("${CardData.CraftMode.T2.cost} shards required"))
+        options.add(
+            SelectOption.of("Tier 2 [Uncommon]", "t2")
+                .withDescription("${CardData.CraftMode.T2.cost} shards required")
+                .withEmoji(EmojiStore.getCardEmoji(CardPack.CardType.T2))
+        )
 
         val seasonalCards = CardData.cards.filter { c -> c.unitID in BannerFilter.Banner.Seasonal.getBannerData() }.filter { c -> CardData.activatedBanners.any { a -> c.unitID in CardData.bannerData[a.tier.ordinal][a.banner] } }
 
         if (seasonalCards.isNotEmpty()) {
-            options.add(SelectOption.of("Seasonal Tier 2 [Uncommon]", "seasonal").withDescription("${CardData.CraftMode.SEASONAL.cost} shards required"))
+            options.add(
+                SelectOption.of("Seasonal Tier 2 [Uncommon]", "seasonal")
+                    .withDescription("${CardData.CraftMode.SEASONAL.cost} shards required")
+                    .withEmoji(EmojiStore.getCardEmoji(CardPack.CardType.SEASONAL))
+            )
         }
 
         val collaborationCards = CardData.cards.filter { c -> c.unitID in BannerFilter.Banner.Collaboration.getBannerData() }.filter { c -> CardData.activatedBanners.any { a -> c.unitID in CardData.bannerData[a.tier.ordinal][a.banner] } }
 
         if (collaborationCards.isNotEmpty()) {
-            options.add(SelectOption.of("Collaboration Tier 2 [Uncommon]", "collab").withDescription("${CardData.CraftMode.COLLAB.cost} shards required"))
+            options.add(
+                SelectOption.of("Collaboration Tier 2 [Uncommon]", "collab")
+                    .withDescription("${CardData.CraftMode.COLLAB.cost} shards required")
+                    .withEmoji(EmojiStore.getCardEmoji(CardPack.CardType.COLLABORATION))
+            )
         }
 
-        options.add(SelectOption.of("Tier 3 [Ultra Rare (Exclusives)]", "t3").withDescription("${CardData.CraftMode.T3.cost} shards required"))
-        options.add(SelectOption.of("Tier 4 [Legend Rare]", "t4").withDescription("${CardData.CraftMode.T4.cost} shards required"))
+        options.add(
+            SelectOption.of("Tier 3 [Ultra Rare (Exclusives)]", "t3")
+                .withDescription("${CardData.CraftMode.T3.cost} shards required")
+                .withEmoji(EmojiStore.getCardEmoji(CardPack.CardType.T3))
+        )
+
+        options.add(
+            SelectOption.of("Tier 4 [Legend Rare]", "t4")
+                .withDescription("${CardData.CraftMode.T4.cost} shards required")
+                .withEmoji(EmojiStore.getCardEmoji(CardPack.CardType.T4))
+        )
 
         rows.add(ActionRow.of(StringSelectMenu.create("tier").addOptions(options).build()))
 

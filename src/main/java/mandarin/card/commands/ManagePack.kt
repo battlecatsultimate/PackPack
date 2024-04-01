@@ -37,7 +37,11 @@ class ManagePack : Command(LangID.EN, true) {
             builder.append("- No packs")
         } else {
             for (i in 0 until min(SearchHolder.PAGE_CHUNK, CardData.cardPacks.size)) {
-                builder.append(i + 1).append(". ").append(CardData.cardPacks[i].packName).append("\n")
+                val emoji = EmojiStore.getPackEmoji(CardData.cardPacks[i])
+
+                val formatted = emoji?.formatted ?: ""
+
+                builder.append(i + 1).append(". ").append(formatted).append(" ").append(CardData.cardPacks[i].packName).append("\n")
             }
 
             if (CardData.cardPacks.size > SearchHolder.PAGE_CHUNK) {

@@ -1,12 +1,15 @@
 package mandarin.packpack.supporter;
 
 import common.util.lang.MultiLangCont;
+import mandarin.card.supporter.CardData;
+import mandarin.card.supporter.pack.CardPack;
 import mandarin.packpack.supporter.server.data.ShardLoader;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.entities.emoji.UnicodeEmoji;
 
+import javax.annotation.Nullable;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -66,19 +69,75 @@ public class EmojiStore {
 
                     String[] data = line.split("\t");
 
-                    if(data.length <= 3) {
-                        putAbility(loader, data[0], data[1], Long.parseLong(data[2]));
+                    if (data[0].startsWith("PACK_")) {
+                        String packName = switch (data[0].split("_")[1]) {
+                            case "SMALL" -> "Small Pack";
+                            case "LARGE" -> "Large Pack";
+                            case "PREMIUM" -> "Premium Pack";
+                            case "MYSTERY" -> "Mystery Pack";
+                            case "LEGEND" -> "Legendary Pack";
+                            case "EVA" -> "test";
+                            default -> null;
+                        };
+
+                        if (packName == null)
+                            continue;
+
+                        CardPack pack = null;
+
+                        for (CardPack p : CardData.INSTANCE.getCardPacks()) {
+                            if (p.getUuid().contains(packName)) {
+                                pack = p;
+
+                                break;
+                            }
+                        }
+
+                        if (pack != null) {
+                            ArrayList<Emoji> emojis = PACK.computeIfAbsent(pack, k -> new ArrayList<>());
+
+                            for (int i = 2; i < data.length; i++) {
+                                String emojiName = data[1] + (i == 2 ? "" : Integer.toString(i - 1));
+
+                                emojis.add(getEmoteWitNameAndID(loader, emojiName, Long.parseLong(data[i])));
+                            }
+                        }
+                    } else if (data[0].startsWith("CARD_")) {
+                        CardPack.CardType cardType = switch (data[0].split("_", 2)[1]) {
+                            case "T1" -> CardPack.CardType.T1;
+                            case "T2" -> CardPack.CardType.T2;
+                            case "T2_SEASONAL" -> CardPack.CardType.SEASONAL;
+                            case "T2_COLLAB" -> CardPack.CardType.COLLABORATION;
+                            case "T3" -> CardPack.CardType.T3;
+                            case "T4" -> CardPack.CardType.T4;
+                            default -> null;
+                        };
+
+                        if (cardType == null)
+                            continue;
+
+                        ArrayList<Emoji> emojis = CARDS.computeIfAbsent(cardType, k -> new ArrayList<>());
+
+                        for (int i = 2; i < data.length; i++) {
+                            String emojiName = data[1] + (i == 2 ? "" : Integer.toString(i - 1));
+
+                            emojis.add(getEmoteWitNameAndID(loader, emojiName, Long.parseLong(data[i])));
+                        }
                     } else {
-                        if(data[1].contains("LOC")) {
-                            for(int i = 2; i < data.length; i++) {
-                                String[] localeID = data[i].split("\\|");
+                        if(data.length <= 3) {
+                            putAbility(loader, data[0], data[1], Long.parseLong(data[2]));
+                        } else {
+                            if(data[1].contains("LOC")) {
+                                for(int i = 2; i < data.length; i++) {
+                                    String[] localeID = data[i].split("\\|");
 
-                                if(localeID.length != 2)
-                                    continue;
+                                    if(localeID.length != 2)
+                                        continue;
 
-                                localeID[0] = localeID[0].toLowerCase(Locale.ENGLISH);
+                                    localeID[0] = localeID[0].toLowerCase(Locale.ENGLISH);
 
-                                putTrait(loader, data[0], data[1], localeID[0], Long.parseLong(localeID[1]));
+                                    putTrait(loader, data[0], data[1], localeID[0], Long.parseLong(localeID[1]));
+                                }
                             }
                         }
                     }
@@ -128,8 +187,36 @@ public class EmojiStore {
     public static Emoji GREENLINE;
     public static Emoji REDDASHEDLINE;
 
-    public static Map<String, Emoji> ABILITY = new HashMap<>();
-    public static MultiLangCont<String, Emoji> TRAIT = new MultiLangCont<>();
+    public static final Map<String, Emoji> ABILITY = new HashMap<>();
+    public static final MultiLangCont<String, Emoji> TRAIT = new MultiLangCont<>();
+    public static final Map<CardPack, ArrayList<Emoji>> PACK = new HashMap<>();
+    public static final Map<CardPack.CardType, ArrayList<Emoji>> CARDS = new HashMap<>();
+
+    @Nullable
+    public static Emoji getCardEmoji(@Nullable CardPack.CardType type) {
+        if (type == null)
+            return null;
+
+        ArrayList<Emoji> emojiList = CARDS.computeIfAbsent(type, k -> new ArrayList<>());
+
+        if (emojiList.isEmpty())
+            return null;
+
+        return emojiList.get(StaticStore.random.nextInt(emojiList.size()));
+    }
+
+    @Nullable
+    public static Emoji getPackEmoji(@Nullable CardPack pack) {
+        if (pack == null)
+            return null;
+
+        ArrayList<Emoji> emojiList = PACK.computeIfAbsent(pack, k -> new ArrayList<>());
+
+        if (emojiList.isEmpty())
+            return null;
+
+        return emojiList.get(StaticStore.random.nextInt(emojiList.size()));
+    }
 
     private static void putAbility(ShardLoader loader, String key, String name, long id) {
         Emoji emoji = getEmoteWitNameAndID(loader, name, id);
@@ -166,8 +253,11 @@ public class EmojiStore {
 
         emotes.addAll(loader.supportServer.getEmojisByName(name, false));
 
-        if(emotes.isEmpty())
+        if(emotes.isEmpty()) {
+            StaticStore.logger.uploadLog("Failed to find emoji : " + name + " ID : " + id);
+
             return Emoji.fromUnicode("❔");
+        }
 
         for(RichCustomEmoji e : emotes) {
             if(e.getIdLong() == id && !e.isAnimated())

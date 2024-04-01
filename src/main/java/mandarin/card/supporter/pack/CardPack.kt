@@ -70,7 +70,9 @@ class CardPack {
     var cooldown: Long // in milliseconds
 
     fun displayInfo() : String {
-        val builder = StringBuilder("## $packName\n### Pack Cost\n")
+        val emoji = EmojiStore.getPackEmoji(this)?.formatted ?: ""
+
+        val builder = StringBuilder("## $emoji $packName\n### Pack Cost\n")
 
         if (cost.catFoods > 0) {
             builder.append("- ${EmojiStore.ABILITY["CF"]?.formatted} ${cost.catFoods}\n")

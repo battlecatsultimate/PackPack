@@ -2,6 +2,7 @@ package mandarin.card.commands
 
 import mandarin.card.supporter.*
 import mandarin.card.supporter.holder.SuggestInventoryHolder
+import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
@@ -58,12 +59,23 @@ class Suggest(private val session: TradingSession) : Command(LangID.EN, true) {
                    tierCategoryElements.add(SelectOption.of("All", "all"))
 
                    CardData.tierCategoryText.forEachIndexed { index, text ->
+                       val emoji = EmojiStore.getCardEmoji(
+                           when (index) {
+                               0 -> null
+                               1 -> CardPack.CardType.T1
+                               2 -> CardPack.CardType.T2
+                               3 -> CardPack.CardType.T3
+                               4 -> CardPack.CardType.T4
+                               else -> throw IllegalStateException("E/CardModifyHolder::assignComponents - Invalid tier index $index")
+                           }
+                       )
+
                        if (index == CardData.Tier.SPECIAL.ordinal) {
                            if (CardData.canTradeT0(m) && CardData.canTradeT0(targetMember)) {
-                               tierCategoryElements.add(SelectOption.of(text, "tier${index}"))
+                               tierCategoryElements.add(SelectOption.of(text, "tier${index}").withEmoji(emoji))
                            }
                        } else {
-                           tierCategoryElements.add(SelectOption.of(text, "tier${index}"))
+                           tierCategoryElements.add(SelectOption.of(text, "tier${index}").withEmoji(emoji))
                        }
                    }
 
