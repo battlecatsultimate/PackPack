@@ -87,7 +87,10 @@ class BannerFilter(private val banner: Banner, amount: Int, name: String) : Filt
     override fun filter(card: Card): Boolean {
         return when (banner) {
             Banner.LegendRare -> {
-                val u = UserProfile.getBCData().units[card.unitID]
+                if (card.unitID < 0)
+                    return false
+
+                val u = UserProfile.getBCData().units[card.unitID] ?: return false
 
                 u.rarity == 5
             }

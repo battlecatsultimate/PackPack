@@ -5,7 +5,10 @@ import mandarin.card.supporter.Card
 
 class AbilityFilter(private val ability: Int, amount: Int, name: String) : Filter(amount, name) {
     override fun filter(card: Card): Boolean {
-        val unit = UserProfile.getBCData().units[card.unitID]
+        if (card.unitID < 0)
+            return false
+
+        val unit = UserProfile.getBCData().units[card.unitID] ?: return false
 
         return unit.forms.any { f ->
             if (f.fid == 2 && f.du.pCoin != null) {

@@ -73,7 +73,10 @@ class Product(val requiredFilter: Int, vararg filters: Filter) {
             AbilityFilter(Data.AB_ZKILL, 5, "5 Units with Zombie Killer"),
             ProcFilter("SLOW", 3, "3 Units with Slow"),
             CustomFilter(3, "3 Unis with Immunity to Slow/Freeze/KB/Weaken/Wave") { c ->
-                val u = UserProfile.getBCData().units[c.unitID]
+                if (c.unitID < 0)
+                    return@CustomFilter false
+
+                val u = UserProfile.getBCData().units[c.unitID] ?: return@CustomFilter false
 
                 arrayOf("IMUSLOW", "IMUSTOP", "IMUKB", "IMUWEAK", "IMUWAVE").any {
                     u.forms.any { f ->

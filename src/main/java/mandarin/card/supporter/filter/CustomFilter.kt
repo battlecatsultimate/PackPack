@@ -9,16 +9,33 @@ import java.util.function.Function
 class CustomFilter(amount: Int, name: String, private val function: Function<Card, Boolean>) : Filter(amount, name) {
     companion object {
         fun withOmni(amount: Int, name: String) : CustomFilter {
-            return CustomFilter(amount, name) { c -> UserProfile.getBCData().units[c.unitID].forms.any { f -> f.du.isOmni } }
+            return CustomFilter(amount, name) { c ->
+                if (c.unitID < 0)
+                    return@CustomFilter false
+
+                val u = UserProfile.getBCData().units[c.unitID] ?: return@CustomFilter false
+
+                u.forms.any { f -> f.du.isOmni }
+            }
         }
 
         fun withLD(amount: Int, name: String) : CustomFilter {
-            return CustomFilter(amount, name) { c -> UserProfile.getBCData().units[c.unitID].forms.any { f -> f.du.isLD } }
+            return CustomFilter(amount, name) { c ->
+                if (c.unitID < 0)
+                    return@CustomFilter false
+
+                val u = UserProfile.getBCData().units[c.unitID] ?: return@CustomFilter false
+
+                u.forms.any { f -> f.du.isLD }
+            }
         }
 
         fun withRangeNoLuga(amount: Int, name: String) : CustomFilter {
             return CustomFilter(amount, name) { c ->
-                val u = UserProfile.getBCData().units[c.unitID]
+                if (c.unitID < 0)
+                    return@CustomFilter false
+
+                val u = UserProfile.getBCData().units[c.unitID] ?: return@CustomFilter false
 
                 if (c.unitID in BannerFilter.Banner.TheNekolugaFamily.getBannerData()) {
                     u.forms.any { f -> f.fid != 0 && !f.du.isRange }
@@ -30,7 +47,12 @@ class CustomFilter(amount: Int, name: String, private val function: Function<Car
 
         fun withAntiWave(amount: Int, name: String) : CustomFilter {
             return CustomFilter(amount, name) { c ->
-                UserProfile.getBCData().units[c.unitID].forms.any { f ->
+                if (c.unitID < 0)
+                    return@CustomFilter false
+
+                val u = UserProfile.getBCData().units[c.unitID] ?: return@CustomFilter false
+
+                u.forms.any { f ->
                     val du = if (f.fid == 2 && f.du.pCoin != null)
                         f.du.pCoin.full
                     else

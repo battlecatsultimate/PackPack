@@ -6,9 +6,12 @@ import mandarin.card.supporter.Card
 
 class TraitFilter(private val trait: Trait, amount: Int, name: String) : Filter(amount, name) {
     override fun filter(card: Card): Boolean {
-        val uber = UserProfile.getBCData().units[card.unitID]
+        if (card.unitID < 0)
+            return false
 
-        return uber.forms.any { f ->
+        val u = UserProfile.getBCData().units[card.unitID] ?: return false
+
+        return u.forms.any { f ->
             if (f.fid == 2 && f.du.pCoin != null) {
                 f.du.pCoin.full.traits.contains(trait)
             } else {
