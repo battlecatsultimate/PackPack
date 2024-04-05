@@ -87,6 +87,7 @@ object CardBot : ListenerAdapter() {
                     notifier = 1
 
                     val removeQueue = ArrayList<String>()
+                    val currentTime = CardData.getUnixEpochTime()
 
                     CardData.notifierGroup.forEach { n ->
                         if (!test || n == StaticStore.MANDARIN_SMELL) {
@@ -94,8 +95,6 @@ object CardBot : ListenerAdapter() {
                                 val packList = StringBuilder()
 
                                 val cooldown = CardData.cooldown[u.id] ?: return@queue
-
-                                val currentTime = CardData.getUnixEpochTime()
 
                                 cooldown.forEach { (uuid, cd) ->
                                     val pack = CardData.cardPacks.find { pack -> pack.uuid == uuid }

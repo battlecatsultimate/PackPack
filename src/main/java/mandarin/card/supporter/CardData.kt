@@ -422,56 +422,7 @@ object CardData {
     }
 
     fun getUnixEpochTime() : Long {
-        try {
-            val get = HttpGet()
-
-            get.uri = URI("http://worldtimeapi.org/api/timezone/Etc/UTC")
-
-            val client = HttpClientBuilder.create().build() as CloseableHttpClient
-
-            val response = client.execute(get) as CloseableHttpResponse
-
-            val statusLine = response.statusLine
-
-            if (statusLine.statusCode / 100 != 2) {
-                StaticStore.logger.uploadLog("W/CardData::getUnixEpochTime - Failed to get unix epoch time from server\n\nStatus Code : ${statusLine.statusCode}\nReason : ${statusLine.reasonPhrase}")
-
-                return Instant.now(Clock.systemUTC()).toEpochMilli()
-            }
-
-            val reader = BufferedReader(InputStreamReader(response.entity.content))
-
-            var line = ""
-
-            val builder = StringBuilder()
-
-            while(reader.readLine()?.also { line = it } != null) {
-                builder.append(line)
-                    .append("\n")
-            }
-
-            reader.close()
-            response.close()
-            client.close()
-
-            val element = JsonParser.parseString(builder.toString())
-
-            if (!element.isJsonObject) {
-                return Instant.now(Clock.systemUTC()).toEpochMilli()
-            }
-
-            val obj = element.asJsonObject
-
-            if (!obj.has("datetime")) {
-                return Instant.now(Clock.systemUTC()).toEpochMilli()
-            }
-
-            val dateTime = DateTime(obj.get("datetime").asString)
-
-            return dateTime.value
-        } catch (_: Exception) {
-            return Instant.now(Clock.systemUTC()).toEpochMilli()
-        }
+        return Instant.now(Clock.systemUTC()).toEpochMilli()
     }
 
     fun convertMillisecondsToText(time: Long) : String {
