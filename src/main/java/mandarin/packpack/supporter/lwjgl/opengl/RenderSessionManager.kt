@@ -16,10 +16,10 @@ class RenderSessionManager {
         val program = Program()
 
         program.addShader(
-            ShaderScript.build("fragment.fs", ShaderScript.Type.FRAGMENT,
+            ShaderScript.build("fragment.frag", ShaderScript.Type.FRAGMENT,
             "state", "step1", "step2", "color1", "color2", "screenSize", "alpha", "dashMode", "fillMode", "factor", "pattern", "opposite", "addMode")
         )
-        program.addShader(ShaderScript.build("vertex.vs", ShaderScript.Type.VERTEX, "state", "projection", "matrix"))
+        program.addShader(ShaderScript.build("vertex.vert", ShaderScript.Type.VERTEX, "state", "projection", "matrix"))
 
         program.initialize()
 
