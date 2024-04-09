@@ -332,7 +332,11 @@ class SuggestInventoryHolder(
             amount - backup.cards.filter { cd -> cd.unitID == c.unitID }.size <= 0
         }
 
-        cards.removeIf { c -> c.tier == CardData.Tier.SPECIAL }
+        val member = authorMessage.member
+
+        if (member != null && CardData.canTradeT0(member) && CardData.canTradeT0(targetMember)) {
+            cards.removeIf { c -> c.tier == CardData.Tier.SPECIAL }
+        }
 
         cards.sortWith(CardComparator())
     }
