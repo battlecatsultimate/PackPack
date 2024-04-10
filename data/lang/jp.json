@@ -1415,7 +1415,7 @@
   "config_forcetreafalse" : "ユーザーは自分で設定したお宝を使用できるようになります。これにより、Botがユーザーごとに異なるステータスを表示する可能性に注意してください",
   "config_booster" : "ブースターによるメッセージの固定を許可します : %s",
   "config_boochan" : "チャンネルを選択 [全てチャンネルの選択を削除]",
-  "config_boofalse" : "ブースターはメッセージの管理権限を与えられていない限り、メッセージを固定できませんBoosters can't pin message unless message managing permission is given",
+  "config_boofalse" : "ブースターはメッセージの管理権限を与えられていない限り、メッセージを固定できません",
   "config_booother" : "... と %d 以上のチャンネル",
   "config_boootherset" : "他のチャンネルは正常に割り当てられました/削除されました",
   "config_boodescall" : "ブースターは全てのチャンネルで`p!boostrepin`コマンドを使用することでメッセージを固定できるようになります。モデレータが`p!idset`コマンドでブースターに役割を割り当てた場合に限ります",
