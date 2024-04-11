@@ -334,7 +334,7 @@ class SuggestInventoryHolder(
 
         val member = authorMessage.member
 
-        if (member == null || !fixCardData.canTradeT0(member) || !CardData.canTradeT0(targetMember)) {
+        if (member == null || !CardData.canTradeT0(member) || !CardData.canTradeT0(targetMember)) {
             cards.removeIf { c -> c.tier == CardData.Tier.SPECIAL }
         }
 
