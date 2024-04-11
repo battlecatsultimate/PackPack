@@ -36,7 +36,7 @@ Thanks to user called Xerpy, you can follow [this guide](https://docs.google.com
 
 [.xerp (Xerpy#9580)](https://github.com/Xerpyy) - For setting up enemy name data and making guide to run the bot
 
-[p0rk_cut1et](https://github.com/pork-cutlet) - For translating the bot to Japanese
+[p0rk_cut1et](https://github.com/p0rk-cut1et) - For translating the bot to Japanese
 
 iamodd_ (Iamodd#2568) - For translating the bot to Japanese
 
