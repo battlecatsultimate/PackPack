@@ -42,12 +42,6 @@ class ModifyInventory : Command(LangID.EN, true) {
 
         try {
             g.retrieveMember(UserSnowflake.fromId(userID)).queue { targetMember ->
-                if (targetMember.user.isBot) {
-                    replyToMessageSafely(ch, "You can't modify inventory of the bot!", loader.message) { a -> a }
-
-                    return@queue
-                }
-
                 val inventory = Inventory.getInventory(targetMember.id)
 
                 replyToMessageSafely(ch, "Please select which thing you want to modify for inventory of ${targetMember.asMention}", loader.message, { a ->
