@@ -147,7 +147,7 @@ public class Formula {
             if (variable.getFirst().name.equals("x")) {
                 variable.add(new NestedVariable(this, "y"));
             } else {
-                variable.add(0, new NestedVariable(this, "x"));
+                variable.addFirst(new NestedVariable(this, "x"));
             }
         }
 
@@ -174,7 +174,7 @@ public class Formula {
             if (variable.getFirst().name.equals("r")) {
                 variable.add(new NestedVariable(this, "t"));
             } else {
-                variable.add(0, new NestedVariable(this, "r"));
+                variable.addFirst(new NestedVariable(this, "r"));
             }
         }
     }
@@ -1367,7 +1367,7 @@ public class Formula {
 
                                 if(!variable.contains(va)) {
                                     if(variable.size() >= maxVariable) {
-                                        error.add(String.format(LangID.getStringByID("calc_var", lang), va.name, maxVariable, variable.get(variable.size() - 1).name));
+                                        error.add(String.format(LangID.getStringByID("calc_var", lang), va.name, maxVariable, variable.getLast().name));
 
                                         return null;
                                     } else {
@@ -1488,7 +1488,7 @@ public class Formula {
 
         if(!variable.contains(v)) {
             if(variable.size() >= maxVariable) {
-                error.add(String.format(LangID.getStringByID("calc_var", lang), v.name, maxVariable, variable.get(variable.size() - 1).name));
+                error.add(String.format(LangID.getStringByID("calc_var", lang), v.name, maxVariable, variable.getLast().name));
 
                 return null;
             } else {

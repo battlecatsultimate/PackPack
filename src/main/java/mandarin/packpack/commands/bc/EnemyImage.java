@@ -24,6 +24,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class EnemyImage extends TimedConstraintCommand {
     private static final int PARAM_TRANSPARENT = 2;
@@ -93,7 +94,7 @@ public class EnemyImage extends TimedConstraintCommand {
                         fName = enemies.getFirst().names.toString();
 
                     if(fName.isBlank())
-                        fName = LangID.getStringByID("data_enemy", lang)+" "+ Data.trio(enemies.getFirst().id.id);
+                        fName = LangID.getStringByID("data_enemy", lang)+" "+ Data.trio(Objects.requireNonNull(enemies.getFirst().id).id);
 
                     sendMessageWithFile(
                             ch,

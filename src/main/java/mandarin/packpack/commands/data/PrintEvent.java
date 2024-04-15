@@ -128,7 +128,7 @@ public class PrintEvent extends ConstraintCommand {
                             if (type == EventFactor.SCHEDULE.MISSION)
                                 builder.append("\n");
 
-                            data.remove(0);
+                            data.removeFirst();
                         }
 
                         builder.append("```");
@@ -184,7 +184,7 @@ public class PrintEvent extends ConstraintCommand {
                         String line = result.getFirst();
 
                         if(line.length() > 1950) {
-                            result.remove(0);
+                            result.removeFirst();
 
                             continue;
                         }
@@ -194,7 +194,7 @@ public class PrintEvent extends ConstraintCommand {
 
                         builder.append(line).append("\n");
 
-                        result.remove(0);
+                        result.removeFirst();
                     }
 
                     if(result.isEmpty() && j == EventFactor.GATYA) {

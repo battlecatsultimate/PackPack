@@ -75,7 +75,7 @@ public class PrintGachaEvent extends ConstraintCommand {
                 String line = result.getFirst();
 
                 if(line.length() > 1950) {
-                    result.remove(0);
+                    result.removeFirst();
 
                     continue;
                 }
@@ -85,7 +85,7 @@ public class PrintGachaEvent extends ConstraintCommand {
 
                 builder.append(line).append("\n");
 
-                result.remove(0);
+                result.removeFirst();
             }
 
             if(result.isEmpty()) {

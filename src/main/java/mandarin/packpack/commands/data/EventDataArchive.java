@@ -60,7 +60,7 @@ public class EventDataArchive extends ConstraintCommand {
 
         List<File> files = new ArrayList<>(Arrays.asList(fs));
 
-        files.add(0, current);
+        files.addFirst(current);
 
         files.sort(Comparator.comparingLong(File::lastModified));
         Collections.reverse(files);

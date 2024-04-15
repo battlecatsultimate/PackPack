@@ -98,10 +98,7 @@ class Restoration(val message: Message) {
                 type = Type.MODIFY
                 modifyType = ModifyType.ROLE
 
-                modifyAction = if (title == CARD_MODIFY_ADD_TITLE)
-                    ModifyAction.ADD
-                else
-                    ModifyAction.REMOVE
+                modifyAction = ModifyAction.REMOVE
 
                 source = Source.MOD
             }

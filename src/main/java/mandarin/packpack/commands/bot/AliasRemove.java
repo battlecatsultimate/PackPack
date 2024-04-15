@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bot;
 
+import common.pack.Identifier;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.stage.MapColc;
@@ -23,6 +24,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class AliasRemove extends ConstraintCommand {
 
@@ -61,8 +63,15 @@ public class AliasRemove extends ConstraintCommand {
                     if (fname == null || fname.isBlank())
                         fname = forms.getFirst().names.toString();
 
-                    if (fname.isBlank())
-                        fname = Data.trio(forms.getFirst().unit.id.id) + "-" + Data.trio(forms.getFirst().fid);
+                    if (fname.isBlank()) {
+                        Identifier<?> id = forms.getFirst().unit.id;
+
+                        if (id == null) {
+                            fname = "UNKNOWN-" + Data.trio(forms.getFirst().fid);
+                        } else {
+                            fname = Data.trio(forms.getFirst().unit.id.id) + "-" + Data.trio(forms.getFirst().fid);
+                        }
+                    }
 
                     ArrayList<String> alias = AliasHolder.getAlias(type, lang, forms.getFirst());
 
@@ -149,8 +158,15 @@ public class AliasRemove extends ConstraintCommand {
                     if (eName == null || eName.isBlank())
                         eName = enemies.getFirst().names.toString();
 
-                    if (eName.isBlank())
-                        eName = Data.trio(enemies.getFirst().id.id);
+                    if (eName.isBlank()) {
+                        Identifier<?> id = enemies.getFirst().id;
+
+                        if (id == null) {
+                            eName = "UNKNOWN";
+                        } else {
+                            eName = Data.trio(id.id);
+                        }
+                    }
 
                     ArrayList<String> alias = AliasHolder.getAlias(type, lang, enemies.getFirst());
 
@@ -244,7 +260,7 @@ public class AliasRemove extends ConstraintCommand {
                         stName = stages.getFirst().name;
 
                     if (stName == null || stName.isBlank())
-                        stName = stages.getFirst().getCont().getSID() + "-" + Data.trio(stages.getFirst().getCont().id.id) + "-" + Data.trio(stages.getFirst().id.id);
+                        stName = stages.getFirst().getCont().getSID() + "-" + Data.trio(Objects.requireNonNull(stages.getFirst().getCont().id).id) + "-" + Data.trio(Objects.requireNonNull(stages.getFirst().id).id);
 
                     ArrayList<String> alias = AliasHolder.getAlias(type, lang, stages.getFirst());
 

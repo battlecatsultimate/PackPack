@@ -74,7 +74,7 @@ public class PrintItemEvent extends ConstraintCommand {
                 String line = result.getFirst();
 
                 if(line.length() > 1950) {
-                    result.remove(0);
+                    result.removeFirst();
 
                     continue;
                 }
@@ -84,7 +84,7 @@ public class PrintItemEvent extends ConstraintCommand {
 
                 builder.append(line).append("\n");
 
-                result.remove(0);
+                result.removeFirst();
             }
 
             builder.append("```");

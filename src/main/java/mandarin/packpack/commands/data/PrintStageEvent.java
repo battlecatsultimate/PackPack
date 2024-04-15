@@ -104,7 +104,7 @@ public class PrintStageEvent extends ConstraintCommand {
                     String line = data.getFirst();
 
                     if(line.length() > 1950) {
-                        data.remove(0);
+                        data.removeFirst();
 
                         continue;
                     }
@@ -117,7 +117,7 @@ public class PrintStageEvent extends ConstraintCommand {
                     if(type == EventFactor.SCHEDULE.MISSION)
                         builder.append("\n");
 
-                    data.remove(0);
+                    data.removeFirst();
                 }
 
                 builder.append("```");

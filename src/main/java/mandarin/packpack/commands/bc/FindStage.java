@@ -38,6 +38,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class FindStage extends TimedConstraintCommand {
@@ -184,7 +185,7 @@ public class FindStage extends TimedConstraintCommand {
                     String n = StaticStore.safeMultiLangGet(enemies.getFirst(), lang);
 
                     if(n == null || n.isBlank()) {
-                        n = Data.trio(enemies.getFirst().id.id);
+                        n = Data.trio(Objects.requireNonNull(enemies.getFirst().id).id);
                     }
 
                     enemyList.append(n).append(", ");

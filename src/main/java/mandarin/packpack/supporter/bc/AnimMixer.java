@@ -90,7 +90,7 @@ public class AnimMixer implements Source.AnimLoader {
     }
 
     public boolean mix() {
-        if(png != null && imgCut != null && model != null && anim != null) {
+        if(png != null && imgCut != null && model != null) {
             mixture = new AnimCI(this);
             mixture.load();
             return true;

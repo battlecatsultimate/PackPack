@@ -143,12 +143,12 @@ public class Equation {
                     continue;
                 }
 
-                filtered.add(0, ((Operator) e).calculate((Number) elements.get(i - 1), (Number) filtered.getFirst(), lang));
+                filtered.addFirst(((Operator) e).calculate((Number) elements.get(i - 1), (Number) filtered.getFirst(), lang));
                 filtered.remove(1);
 
                 i--;
             } else {
-                filtered.add(0, e);
+                filtered.addFirst(e);
             }
         }
 
@@ -168,7 +168,7 @@ public class Equation {
                     continue;
                 }
 
-                filtered.add(((Operator) e).calculate((Number) filtered.get(filtered.size() - 1), (Number) elements.get(i + 1), lang));
+                filtered.add(((Operator) e).calculate((Number) filtered.getLast(), (Number) elements.get(i + 1), lang));
                 filtered.remove(filtered.size() - 2);
 
                 i++;
@@ -193,7 +193,7 @@ public class Equation {
                     continue;
                 }
 
-                filtered.add(((Operator) e).calculate((Number) filtered.get(filtered.size() - 1), (Number) elements.get(i + 1), lang));
+                filtered.add(((Operator) e).calculate((Number) filtered.getLast(), (Number) elements.get(i + 1), lang));
                 filtered.remove(filtered.size() - 2);
 
                 i++;

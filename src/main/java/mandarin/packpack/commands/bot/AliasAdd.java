@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class AliasAdd extends ConstraintCommand {
 
@@ -63,7 +64,7 @@ public class AliasAdd extends ConstraintCommand {
                         fname = forms.getFirst().names.toString();
 
                     if (fname.isBlank())
-                        fname = Data.trio(forms.getFirst().unit.id.id) + "-" + Data.trio(forms.getFirst().fid);
+                        fname = Data.trio(Objects.requireNonNull(forms.getFirst().unit.id).id) + "-" + Data.trio(forms.getFirst().fid);
 
                     ArrayList<String> alias = AliasHolder.getAlias(type, lang, forms.getFirst());
 
@@ -155,7 +156,7 @@ public class AliasAdd extends ConstraintCommand {
                         eName = enemies.getFirst().names.toString();
 
                     if (eName.isBlank())
-                        eName = Data.trio(enemies.getFirst().id.id);
+                        eName = Data.trio(Objects.requireNonNull(enemies.getFirst().id).id);
 
                     ArrayList<String> alias = AliasHolder.getAlias(type, lang, enemies.getFirst());
 
@@ -253,7 +254,11 @@ public class AliasAdd extends ConstraintCommand {
                         stName = stages.getFirst().name;
 
                     if (stName == null || stName.isBlank())
-                        stName = stages.getFirst().getCont().getSID() + "-" + Data.trio(stages.getFirst().getCont().id.id) + "-" + Data.trio(stages.getFirst().id.id);
+                        stName = stages.getFirst().getCont().getSID() +
+                                "-" +
+                                Data.trio(Objects.requireNonNull(stages.getFirst().getCont().id).id) +
+                                "-" +
+                                Data.trio(Objects.requireNonNull(stages.getFirst().id).id);
 
                     ArrayList<String> alias = AliasHolder.getAlias(type, lang, stages.getFirst());
 

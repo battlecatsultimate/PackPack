@@ -69,7 +69,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
         this.castle = castle;
         this.music = music;
 
-        enemy = enemySequences.remove(0);
+        enemy = enemySequences.removeFirst();
 
         registerAutoFinish(this, msg, lang, FIVE_MIN);
     }
@@ -172,7 +172,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
         if(enemySequences.isEmpty()) {
             super.finish(event);
         } else {
-            enemy = enemySequences.remove(0);
+            enemy = enemySequences.removeFirst();
             page = 0;
 
             apply(event);
