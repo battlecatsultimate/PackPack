@@ -46,27 +46,7 @@ class BuyHolder(author: Message, channelID: String, private val message: Message
 
                 val selectedRole = CardData.Role.entries.find { r -> r.key == value } ?: return
 
-                if (selectedRole == CardData.Role.LEGEND) {
-                    if (inventory.validForLegendCollector()) {
-                        inventory.vanityRoles.add(CardData.Role.LEGEND)
-
-                        event.deferEdit()
-                            .setContent("Successfully bought the role <@&${selectedRole.id}>! You can always equip or unequip later by calling `${CardBot.globalPrefix}equip` command")
-                            .setComponents()
-                            .setAllowedMentions(ArrayList())
-                            .mentionRepliedUser(false)
-                            .queue()
-
-                        CardBot.saveCardData()
-                    } else {
-                        event.deferReply()
-                            .setContent("You haven't collected all cards yet, so you can't get this role")
-                            .setComponents()
-                            .setAllowedMentions(ArrayList())
-                            .setEphemeral(true)
-                            .queue()
-                    }
-
+                if (handleExtraRoles(event, selectedRole)) {
                     return
                 }
 
@@ -177,10 +157,30 @@ class BuyHolder(author: Message, channelID: String, private val message: Message
         val options = ArrayList<SelectOption>()
 
         for (role in possibleRoles) {
-            val affordable = if (role == CardData.Role.LEGEND) {
-                inventory.validForLegendCollector()
-            } else {
-                role.getProduct().possibleFilters.filter { f -> inventory.cards.keys.filter { c -> f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 0 } >= f.amount }.size >= role.getProduct().requiredFilter
+            val affordable = when (role) {
+                CardData.Role.LEGEND -> inventory.validForLegendCollector()
+                CardData.Role.ZAMBONER,
+                CardData.Role.WHALELORD -> {
+                    val pendingCatFoods = CardData.sessions.filter { s -> s.member.any { id -> authorMessage.author.idLong == id } }
+                        .sumOf { s ->
+                            val index = s.member.indexOf(authorMessage.author.idLong)
+
+                            if (index == -1)
+                                return@sumOf 0
+
+                            return@sumOf s.suggestion[index].catFood
+                        }
+
+                    val cost = if (role == CardData.Role.ZAMBONER) {
+                        1000000
+                    } else {
+                        5000000
+                    }
+
+                    inventory.catFoods - pendingCatFoods >= cost
+                }
+                else -> role.getProduct().possibleFilters.filter { f -> inventory.cards.keys.filter { c -> f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 0 } >= f.amount }.size >= role.getProduct().requiredFilter
+
             }
 
             options.add(SelectOption.of(role.title, role.key).withEmoji(EmojiStore.ABILITY[role.key]).withDescription(if (affordable) "Affordable" else "Cannot Afford"))
@@ -212,5 +212,76 @@ class BuyHolder(author: Message, channelID: String, private val message: Message
         rows.add(ActionRow.of(Button.danger("cancel", "Cancel")))
 
         return rows
+    }
+
+    private fun handleExtraRoles(event: GenericComponentInteractionCreateEvent, role: CardData.Role) : Boolean {
+        when (role) {
+            CardData.Role.LEGEND -> {
+                if (inventory.validForLegendCollector()) {
+                    inventory.vanityRoles.add(CardData.Role.LEGEND)
+
+                    event.deferEdit()
+                        .setContent("Successfully bought the role <@&${role.id}>! You can always equip or unequip later by calling `${CardBot.globalPrefix}equip` command")
+                        .setComponents()
+                        .setAllowedMentions(ArrayList())
+                        .mentionRepliedUser(false)
+                        .queue()
+
+                    CardBot.saveCardData()
+                } else {
+                    event.deferReply()
+                        .setContent("You haven't collected all cards yet, so you can't get this role")
+                        .setAllowedMentions(ArrayList())
+                        .setEphemeral(true)
+                        .queue()
+                }
+
+                return true
+            }
+            CardData.Role.ZAMBONER,
+            CardData.Role.WHALELORD -> {
+                val pendingCatFoods = CardData.sessions.filter { s -> s.member.any { id -> authorMessage.author.idLong == id } }
+                    .sumOf { s ->
+                        val index = s.member.indexOf(authorMessage.author.idLong)
+
+                        if (index == -1)
+                            return@sumOf 0
+
+                        return@sumOf s.suggestion[index].catFood
+                    }
+
+                val cost = if (role == CardData.Role.ZAMBONER) {
+                    1000000
+                } else {
+                    5000000
+                }
+
+                if (inventory.catFoods - pendingCatFoods < cost) {
+                    event.deferReply()
+                        .setContent("You can't afford this role. If you have over $cost ${EmojiStore.ABILITY["CF"]?.formatted} already, it's because you suggested some of your ${EmojiStore.ABILITY["CF"]?.formatted} in trading session(s)")
+                        .setEphemeral(true)
+                        .setAllowedMentions(ArrayList())
+                        .queue()
+                } else {
+                    inventory.vanityRoles.add(role)
+
+                    inventory.catFoods -= cost
+
+                    event.deferEdit()
+                        .setContent("Successfully bought the role <@&${role.id}>! You can always equip or unequip later by calling `${CardBot.globalPrefix}equip` command")
+                        .setComponents()
+                        .setAllowedMentions(ArrayList())
+                        .mentionRepliedUser(false)
+                        .queue()
+
+                    CardBot.saveCardData()
+                }
+
+                return true
+            }
+            else -> {
+                return false
+            }
+        }
     }
 }

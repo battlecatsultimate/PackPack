@@ -10,6 +10,7 @@ import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.CommandLoader
+import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -30,24 +31,42 @@ class Buy : Command(LangID.EN, true) {
         val possibleRoles = CardData.Role.entries.filter { r -> r != CardData.Role.NONE && r !in inventory.vanityRoles }.toList()
 
         replyToMessageSafely(ch, "Please select a list that you want to get", author, {
-            a -> a.setComponents(registerComponents(possibleRoles, inventory))
+            a -> a.setComponents(registerComponents(possibleRoles, m, inventory))
         }, { msg ->
             StaticStore.putHolder(m.id, BuyHolder(author, ch.id, msg))
         })
     }
 
-    private fun registerComponents(roles: List<CardData.Role>, inventory: Inventory) : List<LayoutComponent> {
+    private fun registerComponents(roles: List<CardData.Role>, member: Member, inventory: Inventory) : List<LayoutComponent> {
         val rows = ArrayList<LayoutComponent>()
 
         val options = ArrayList<SelectOption>()
 
         for (role in roles) {
-            val affordable = if (role == CardData.Role.LEGEND) {
-                inventory.validForLegendCollector()
-            } else {
-                role.getProduct().possibleFilters.filter { f -> inventory.cards.keys.filter { c -> f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 0 } >= f.amount }.size >= role.getProduct().requiredFilter
-            }
+            val affordable = when(role) {
+                CardData.Role.LEGEND -> inventory.validForLegendCollector()
+                CardData.Role.ZAMBONER,
+                CardData.Role.WHALELORD -> {
+                    val pendingCatFoods = CardData.sessions.filter { s -> s.member.any { id -> member.idLong == id } }
+                        .sumOf { s ->
+                            val index = s.member.indexOf(member.idLong)
 
+                            if (index == -1)
+                                return@sumOf 0
+
+                            return@sumOf s.suggestion[index].catFood
+                        }
+
+                    val cost = if (role == CardData.Role.ZAMBONER) {
+                        1000000
+                    } else {
+                        5000000
+                    }
+
+                    inventory.catFoods - pendingCatFoods >= cost
+                }
+                else -> role.getProduct().possibleFilters.filter { f -> inventory.cards.keys.filter { c -> f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 0 } >= f.amount }.size >= role.getProduct().requiredFilter
+            }
             options.add(SelectOption.of(role.title, role.key).withEmoji(EmojiStore.ABILITY[role.key]).withDescription(if (affordable) "Affordable" else "Cannot Afford"))
         }
 
