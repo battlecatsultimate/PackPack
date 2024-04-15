@@ -64,8 +64,8 @@ public class RawPointGetter {
     }
 
     public void finalSize(double sizX, double sizY) {
-        rawSizX = (int) (rawSizX * sizX);
-        rawSizY = (int) (rawSizY * sizY);
+        rawSizX = (float) (rawSizX * sizX);
+        rawSizY = (float) (rawSizY * sizY);
 
         rightUp = scalePoint(rawSizX, rawSizY, rightUp);
         rightDown = scalePoint(rawSizX, rawSizY, rightDown);
