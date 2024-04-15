@@ -256,7 +256,13 @@ class BuyHolder(author: Message, channelID: String, private val message: Message
                     5000000
                 }
 
-                if (inventory.catFoods - pendingCatFoods < cost) {
+                if (inventory.catFoods < cost) {
+                    event.deferReply()
+                        .setContent("You can't afford this role because you don't have $cost ${EmojiStore.ABILITY["CF"]?.formatted}")
+                        .setEphemeral(true)
+                        .setAllowedMentions(ArrayList())
+                        .queue()
+                } else if (inventory.catFoods - pendingCatFoods < cost) {
                     event.deferReply()
                         .setContent("You can't afford this role. If you have over $cost ${EmojiStore.ABILITY["CF"]?.formatted} already, it's because you suggested some of your ${EmojiStore.ABILITY["CF"]?.formatted} in trading session(s)")
                         .setEphemeral(true)
