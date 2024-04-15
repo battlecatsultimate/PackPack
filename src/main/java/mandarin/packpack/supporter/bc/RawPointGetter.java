@@ -11,12 +11,7 @@ public class RawPointGetter {
 
     float flipX = 1f, flipY = 1f;
 
-    final double w, h;
-
     public RawPointGetter(int w, int h) {
-        this.w = w;
-        this.h = h;
-
         rightDown = new P(w, h);
         rightUp = new P(w, 0f);
         leftUp = new P(0f, 0f);
@@ -69,8 +64,8 @@ public class RawPointGetter {
     }
 
     public void finalSize(double sizX, double sizY) {
-        rawSizX *= sizX;
-        rawSizY *= sizY;
+        rawSizX = (int) (rawSizX * sizX);
+        rawSizY = (int) (rawSizY * sizY);
 
         rightUp = scalePoint(rawSizX, rawSizY, rightUp);
         rightDown = scalePoint(rawSizX, rawSizY, rightDown);

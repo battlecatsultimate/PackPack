@@ -49,19 +49,19 @@ public class SetupMemberButtonHolder extends ComponentHolder {
                 if (es.getValues().size() != 1)
                     return;
                 
-                roleID = es.getValues().get(0).getId();
+                roleID = es.getValues().getFirst().getId();
                 
                 if (roleID.equals(modID)) {
                     roleID = null;
 
                     event.deferEdit()
-                            .setContent(LangID.getStringByID("setup_already", lang).replace("_RRR_", es.getValues().get(0).getId()))
+                            .setContent(LangID.getStringByID("setup_already", lang).replace("_RRR_", es.getValues().getFirst().getId()))
                             .setComponents(getComponents(false))
                             .setAllowedMentions(new ArrayList<>())
                             .queue();
                 } else {
                     event.deferEdit()
-                            .setContent(LangID.getStringByID("setup_memsele", lang).replace("_RRR_", es.getValues().get(0).getId()))
+                            .setContent(LangID.getStringByID("setup_memsele", lang).replace("_RRR_", es.getValues().getFirst().getId()))
                             .setComponents(getComponents(true))
                             .setAllowedMentions(new ArrayList<>())
                             .queue();

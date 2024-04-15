@@ -51,7 +51,7 @@ public class ScamLinkSubscriptionHolder extends ComponentHolder {
                 if (es.getValues().size() != 1)
                     return;
                 
-                switch (es.getValues().get(0)) {
+                switch (es.getValues().getFirst()) {
                     case "mute" -> action = ScamLinkHandler.ACTION.MUTE;
                     case "kick" -> action = ScamLinkHandler.ACTION.KICK;
                     case "ban" -> action = ScamLinkHandler.ACTION.BAN;
@@ -68,7 +68,7 @@ public class ScamLinkSubscriptionHolder extends ComponentHolder {
                 if (es.getValues().size() != 1)
                     return;
                 
-                noticeAll = es.getValues().get(0).equals("noticeAll");
+                noticeAll = es.getValues().getFirst().equals("noticeAll");
                 
                 event.deferEdit()
                         .setContent(parseMessage())

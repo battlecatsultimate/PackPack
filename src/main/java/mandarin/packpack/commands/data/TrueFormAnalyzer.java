@@ -42,7 +42,7 @@ public class TrueFormAnalyzer extends ConstraintCommand {
     }
 
     @Override
-    public void prepare() throws Exception {
+    public void prepare() {
         registerRequiredPermission(Permission.MESSAGE_MANAGE, Permission.MESSAGE_ATTACH_FILES);
     }
 
@@ -429,7 +429,7 @@ public class TrueFormAnalyzer extends ConstraintCommand {
                 continue;
             }
 
-            String[] ind = arrays.get(0).split(",");
+            String[] ind = arrays.getFirst().split(",");
             String[] isTime = arrays.get(1).split(",");
 
             if(isTime.length != ind.length) {
@@ -475,7 +475,7 @@ public class TrueFormAnalyzer extends ConstraintCommand {
                 res.append("W : Invalid index array data at proc cell No.")
                         .append(i + 1)
                         .append(" -> ")
-                        .append(arrays.get(0))
+                        .append(arrays.getFirst())
                         .append("\n");
 
                 i++;
@@ -495,7 +495,7 @@ public class TrueFormAnalyzer extends ConstraintCommand {
                 continue;
             }
 
-            String[] rest = group.replace("["+arrays.get(0)+"]", "").split("\\["+arrays.get(1)+"]");
+            String[] rest = group.replace("["+arrays.getFirst()+"]", "").split("\\["+arrays.get(1)+"]");
 
             if(rest.length != 2) {
                 res.append("W : Insufficient data is provided at proc cell No.")
@@ -701,7 +701,7 @@ public class TrueFormAnalyzer extends ConstraintCommand {
                 continue;
             }
 
-            String[] ind = arrays.get(0).split(",");
+            String[] ind = arrays.getFirst().split(",");
 
             int[] indexes = new int[ind.length];
 
@@ -720,7 +720,7 @@ public class TrueFormAnalyzer extends ConstraintCommand {
                 res.append("W : Invalid index array data at cell No.")
                         .append(i + 1)
                         .append(" -> ")
-                        .append(arrays.get(0))
+                        .append(arrays.getFirst())
                         .append("\n");
 
                 i++;
@@ -728,7 +728,7 @@ public class TrueFormAnalyzer extends ConstraintCommand {
                 continue;
             }
 
-            String[] rest = group.replaceAll("\\["+arrays.get(0)+"]( +?)?,", "").split(",");
+            String[] rest = group.replaceAll("\\["+arrays.getFirst()+"]( +?)?,", "").split(",");
 
             if(rest.length != 4) {
                 res.append("W : Insufficient data is provided at cell No.")

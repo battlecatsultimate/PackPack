@@ -4,6 +4,7 @@ import mandarin.packpack.supporter.Logger
 import org.lwjgl.opengl.GL33
 
 class VBO private constructor(val vboID: Int, type: Type) {
+    @Suppress("unused")
     enum class Type {
         ELEMENT,
         BUFFER
@@ -112,7 +113,7 @@ class VBO private constructor(val vboID: Int, type: Type) {
      * @param method - Method of hint
      * @param purpose - Purpose of this VBO
      */
-    fun renewBuffer(buffer: IntArray, method: Method, purpose: Purpose) {
+    private fun renewBuffer(buffer: IntArray, method: Method, purpose: Purpose) {
         if (!bound) {
             throw IllegalStateException("Tried to get buffer size while VBO hasn't bound")
         }
@@ -140,6 +141,7 @@ class VBO private constructor(val vboID: Int, type: Type) {
      * @param buffer - Buffer data that will be injected into this VBO
      * @param offset - Offset in the buffer
      */
+    @Suppress("unused")
     fun injectBuffer(buffer: IntArray, offset: Long) {
         if (!bound) {
             throw IllegalStateException("Tried to get buffer size while VBO hasn't bound")

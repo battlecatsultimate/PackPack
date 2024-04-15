@@ -100,7 +100,7 @@ public class FormGif extends GlobalTimedConstraintCommand {
                 boolean gif = (param & PARAM_GIF) > 0;
                 int frame = getFrame(loader.getContent());
 
-                Form f = forms.get(0);
+                Form f = forms.getFirst();
 
                 if(forbidden.contains(f.unit.id.id)) {
                     replyToMessageSafely(ch, LangID.getStringByID("gif_dummy", lang), loader.getMessage(), a -> a);

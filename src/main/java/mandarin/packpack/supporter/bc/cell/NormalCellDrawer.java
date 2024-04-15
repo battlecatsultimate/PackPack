@@ -88,7 +88,7 @@ public class NormalCellDrawer implements CellDrawer {
         int w = 0;
 
         for(int i = 0; i < names.length; i++) {
-            w += uw;
+            w = (int) (w + uw);
 
             if(i < names.length - 1) {
                 w += lineOffset * 2;

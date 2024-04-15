@@ -110,7 +110,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
             } else if(stages.size() == 1) {
                 msg.delete().queue();
 
-                EntityHandler.showStageEmb(stages.get(0), ch, getAuthorMessage(), isFrame, isExtra, isCompact, star, treasure, lang, result -> {
+                EntityHandler.showStageEmb(stages.getFirst(), ch, getAuthorMessage(), isFrame, isExtra, isCompact, star, treasure, lang, result -> {
                     if(StaticStore.timeLimit.containsKey(author.getAuthor().getId())) {
                         StaticStore.timeLimit.get(author.getAuthor().getId()).put(StaticStore.COMMAND_FINDSTAGE_ID, System.currentTimeMillis());
                     } else {
@@ -121,7 +121,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
                         StaticStore.timeLimit.put(author.getAuthor().getId(), memberLimit);
                     }
 
-                    StaticStore.putHolder(author.getAuthor().getId(), new StageInfoButtonHolder(stages.get(0), author, result, channelID, isCompact));
+                    StaticStore.putHolder(author.getAuthor().getId(), new StageInfoButtonHolder(stages.getFirst(), author, result, channelID, isCompact));
                 });
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("fstage_several", lang)).append("```md\n");

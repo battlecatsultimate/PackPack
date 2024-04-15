@@ -21,14 +21,14 @@ public class StageSchedule extends EventFactor implements Schedule {
 
     private final int locale;
 
-    public ArrayList<EventSection> sections = new ArrayList<>();
-    public EventDateSet date;
-    public String minVersion, maxVersion;
+    public final ArrayList<EventSection> sections = new ArrayList<>();
+    public final EventDateSet date;
+    public final String minVersion, maxVersion;
     public TYPE type;
     public boolean isMission;
 
-    public ArrayList<StageMap> stages = new ArrayList<>();
-    public ArrayList<String> unknownStages = new ArrayList<>();
+    public final ArrayList<StageMap> stages = new ArrayList<>();
+    public final ArrayList<String> unknownStages = new ArrayList<>();
 
     public StageSchedule(String line, int locale) {
         this.locale = locale;
@@ -80,7 +80,7 @@ public class StageSchedule extends EventFactor implements Schedule {
 
                 section.parseWeekDay(data[index]);
 
-                if (date.dateEnd.equals(END) && section.weekDays.size() != 0 && type == null) {
+                if (date.dateEnd.equals(END) && !section.weekDays.isEmpty() && type == null) {
                     type = TYPE.WEEKLY;
                 } else if (date.dateEnd.equals(END) && type == null)
                     type = TYPE.DAILY;
@@ -223,7 +223,7 @@ public class StageSchedule extends EventFactor implements Schedule {
                 result.append("} ");
             }
 
-            if (section.weekDays.size() != 0) {
+            if (!section.weekDays.isEmpty()) {
                 result.append("{");
 
                 for(int i = 0; i < section.weekDays.size(); i++) {

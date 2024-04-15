@@ -9,7 +9,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class SlashOption {
-    enum TYPE {
+    @SuppressWarnings("unused")
+    public enum TYPE {
         INT(OptionType.INTEGER),
         BOOLEAN(OptionType.BOOLEAN),
         STRING(OptionType.STRING),
@@ -18,7 +19,7 @@ public class SlashOption {
         SUB_COMMAND(OptionType.SUB_COMMAND),
         GROUP(OptionType.SUB_COMMAND_GROUP);
 
-        OptionType type;
+        final OptionType type;
 
         TYPE(OptionType type) {
             this.type = type;

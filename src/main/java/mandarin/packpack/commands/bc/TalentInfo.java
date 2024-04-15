@@ -34,7 +34,7 @@ public class TalentInfo extends ConstraintCommand {
     }
 
     @Override
-    public void prepare() throws Exception {
+    public void prepare() {
         registerRequiredPermission(Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_ATTACH_FILES, Permission.MESSAGE_EMBED_LINKS);
     }
 
@@ -52,7 +52,7 @@ public class TalentInfo extends ConstraintCommand {
             if (forms.size() == 1) {
                 boolean isFrame = isFrame(loader.getContent()) && config.useFrame;
 
-                Form f = forms.get(0);
+                Form f = forms.getFirst();
 
                 if(f.unit.forms.length < 3) {
                     createMessageWithNoPings(ch, LangID.getStringByID("talentinfo_notf", lang));

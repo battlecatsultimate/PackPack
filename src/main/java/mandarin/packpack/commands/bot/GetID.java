@@ -19,7 +19,7 @@ public class GetID extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) throws Exception {
+    public void doSomething(@NotNull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
 
         String[] contents = loader.getContent().split(" ");
@@ -49,17 +49,12 @@ public class GetID extends ConstraintCommand {
                     if (c == null)
                         return;
 
-                    String type;
-
-                    if (c instanceof TextChannel) {
-                        type = "Text Channel";
-                    } else if (c instanceof NewsChannel) {
-                        type = "News Channel";
-                    } else if (c instanceof MessageChannel) {
-                        type = "Message Channel";
-                    } else {
-                        type = "Channel";
-                    }
+                    String type = switch (c) {
+                        case TextChannel ignored -> "Text Channel";
+                        case NewsChannel ignored -> "News Channel";
+                        case MessageChannel ignored -> "Message Channel";
+                        default -> "Channel";
+                    };
 
                     replyToMessageSafely(ch, type + " : " + c.getName() + " (" + c.getAsMention() + ")", loader.getMessage(), a -> a);
                 }

@@ -102,11 +102,7 @@ public class SpamPrevent {
             if(count == 5) {
                 preventTime = PREVENT_TIME * scale;
 
-                try {
-                    scale *= 4;
-                } catch (Exception ignored) {
-
-                }
+                scale *= 4;
 
                 StaticStore.logger.uploadLog("Spammer found : " + id);
 
@@ -140,11 +136,7 @@ public class SpamPrevent {
             if(count == 5) {
                 preventTime = PREVENT_TIME * scale;
 
-                try {
-                    scale *= 2;
-                } catch (Exception ignored) {
-
-                }
+                scale *= 2;
 
                 int lang = LangID.EN;
 

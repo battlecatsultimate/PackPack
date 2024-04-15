@@ -12,7 +12,7 @@ public class Memory extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) throws Exception {
+    public void doSomething(@NotNull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
 
         long f = Runtime.getRuntime().freeMemory();

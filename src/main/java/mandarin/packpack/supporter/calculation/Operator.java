@@ -17,8 +17,6 @@ public class Operator extends Element {
     public final TYPE type;
 
     public Operator(TYPE type) {
-        super(false);
-
         this.type = type;
     }
 

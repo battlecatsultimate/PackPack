@@ -6,6 +6,7 @@ import org.checkerframework.common.value.qual.IntRange
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.opengl.GL33
 
+@Suppress("unused")
 class VAO private constructor(private val vaoID: Int) {
     enum class ValueType {
         FLOAT,

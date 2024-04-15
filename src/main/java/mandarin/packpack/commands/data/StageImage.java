@@ -36,7 +36,7 @@ public class StageImage extends ConstraintCommand {
     private int startIndex = 1;
 
     @Override
-    public void prepare() throws Exception {
+    public void prepare() {
         registerRequiredPermission(Permission.MESSAGE_ATTACH_FILES);
     }
 

@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.requests.RestAction
 import java.lang.UnsupportedOperationException
 
+@Suppress("unused")
 class Restoration(val message: Message) {
     enum class Type {
         ROLL,
@@ -32,7 +33,7 @@ class Restoration(val message: Message) {
     }
 
     companion object {
-        val restorationLog = ArrayList<String>()
+        private val restorationLog = ArrayList<String>()
 
         private const val ROLL_TITLE = "Card Rolled"
         private const val TRADE_TITLE = "Trade Session Closed"

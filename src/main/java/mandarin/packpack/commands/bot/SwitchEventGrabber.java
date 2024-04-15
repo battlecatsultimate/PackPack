@@ -28,7 +28,7 @@ public class SwitchEventGrabber extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) throws Exception {
+    public void doSomething(@NotNull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
 
         replyToMessageSafely(ch, parseMessage(), loader.getMessage(), this::registerComponent, m -> {
@@ -50,7 +50,7 @@ public class SwitchEventGrabber extends ConstraintCommand {
                 case EventFactor.ZH -> "BCTW : ";
                 case EventFactor.JP -> "BCJP : ";
                 case EventFactor.KR -> "BCKR : ";
-                default -> "UNKNOWN : ";
+                default -> "";
             };
 
             String isNew = newWay ? "New Way" : "Old Way";
@@ -76,7 +76,7 @@ public class SwitchEventGrabber extends ConstraintCommand {
                 case EventFactor.ZH -> "BCTW : ";
                 case EventFactor.JP -> "BCJP : ";
                 case EventFactor.KR -> "BCKR : ";
-                default -> "UNKNOWN : ";
+                default -> "";
             };
 
             String isNew = newWay ? "New Way" : "Old Way";

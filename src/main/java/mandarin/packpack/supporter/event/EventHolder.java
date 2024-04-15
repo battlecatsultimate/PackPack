@@ -7,20 +7,21 @@ import mandarin.packpack.supporter.lang.LangID;
 import java.io.*;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class EventHolder extends EventFactor {
-    public Map<Integer, List<Integer>> yearly = new HashMap<>();
-    public Map<Integer, List<Integer>> monthly = new HashMap<>();
-    public Map<Integer, List<Integer>> weekly = new HashMap<>();
-    public Map<Integer, List<Integer>> daily = new HashMap<>();
+    public final Map<Integer, List<Integer>> yearly = new HashMap<>();
+    public final Map<Integer, List<Integer>> monthly = new HashMap<>();
+    public final Map<Integer, List<Integer>> weekly = new HashMap<>();
+    public final Map<Integer, List<Integer>> daily = new HashMap<>();
 
-    public Map<Integer, List<StageSchedule>> stages = new HashMap<>();
-    public Map<Integer, List<GachaSchedule>> gachas = new HashMap<>();
-    public Map<Integer, List<ItemSchedule>> items = new HashMap<>();
+    public final Map<Integer, List<StageSchedule>> stages = new HashMap<>();
+    public final Map<Integer, List<GachaSchedule>> gachas = new HashMap<>();
+    public final Map<Integer, List<ItemSchedule>> items = new HashMap<>();
 
     public Map<Integer, List<Integer>> stageCache = new HashMap<>();
     public Map<Integer, List<Integer>> gachaCache = new HashMap<>();
@@ -414,18 +415,24 @@ public class EventHolder extends EventFactor {
         for(GroupHandler handler : EventFactor.handlers) {
             for(EventGroup event : handler.getGroups()) {
                 if(event.finished) {
-                    if (handler instanceof NormalGroupHandler) {
-                        StageSchedule start = (StageSchedule) event.schedules[0];
+                    switch (handler) {
+                        case NormalGroupHandler ignored -> {
+                            StageSchedule start = (StageSchedule) event.schedules[0];
 
-                        appendProperly(start, start.beautifyWithCustomName(LangID.getStringByID(event.name, lang), lang), normals, dailys, weeklys, monthlys, yearlys, missions);
-                    } else if (handler instanceof SequenceGroupHandler) {
-                        StageSchedule start = (StageSchedule) event.schedules[0];
-                        StageSchedule end = (StageSchedule) event.schedules[event.schedules.length - 1];
+                            appendProperly(start, start.beautifyWithCustomName(LangID.getStringByID(event.name, lang), lang), normals, dailys, weeklys, monthlys, yearlys, missions);
+                        }
+                        case SequenceGroupHandler ignored -> {
+                            StageSchedule start = (StageSchedule) event.schedules[0];
+                            StageSchedule end = (StageSchedule) event.schedules[event.schedules.length - 1];
 
-                        appendProperly(start, manualSchedulePrint(start.date.dateStart, end.date.dateEnd, LangID.getStringByID(event.name, lang), lang), normals, dailys, weeklys, monthlys, yearlys, missions);
-                    } else if (handler instanceof ContainedGroupHandler) {
-                        StageSchedule primary = (StageSchedule) event.schedules[0];
-                        appendProperly(primary, primary.beautifyWithCustomName(LangID.getStringByID(event.name, lang), lang), normals, dailys, weeklys, monthlys, yearlys, missions);
+                            appendProperly(start, manualSchedulePrint(start.date.dateStart, end.date.dateEnd, LangID.getStringByID(event.name, lang), lang), normals, dailys, weeklys, monthlys, yearlys, missions);
+                        }
+                        case ContainedGroupHandler ignored -> {
+                            StageSchedule primary = (StageSchedule) event.schedules[0];
+                            appendProperly(primary, primary.beautifyWithCustomName(LangID.getStringByID(event.name, lang), lang), normals, dailys, weeklys, monthlys, yearlys, missions);
+                        }
+                        default -> {
+                        }
                     }
                 }
             }
@@ -832,7 +839,7 @@ public class EventHolder extends EventFactor {
 
                         File target = new File(temp, fi.split("\\.")[0] + ".tsv");
 
-                        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+                        HttpURLConnection connection = (HttpURLConnection) URI.create(url).toURL().openConnection();
                         connection.setRequestMethod("GET");
 
                         connection.connect();
@@ -861,16 +868,6 @@ public class EventHolder extends EventFactor {
                             case SALE -> updateStage(target, i, false);
                             case GATYA -> updateGacha(target, i, false);
                             case ITEM -> updateItem(target, i, false);
-                            default -> {
-                                if (f.exists() && !f.delete()) {
-                                    StaticStore.logger.uploadLog("Failed to delete file : " + f.getAbsolutePath());
-                                    break;
-                                }
-
-                                if (!target.renameTo(f)) {
-                                    StaticStore.logger.uploadLog("Failed to rename file\nSrc : " + target.getAbsolutePath() + "\nDst : " + f.getAbsolutePath());
-                                }
-                            }
                         }
                     }
                 } else {
@@ -888,7 +885,7 @@ public class EventHolder extends EventFactor {
                         continue;
                     }
 
-                    HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+                    HttpURLConnection connection = (HttpURLConnection) URI.create(url).toURL().openConnection();
                     connection.setRequestMethod("GET");
 
                     connection.connect();
@@ -917,16 +914,6 @@ public class EventHolder extends EventFactor {
                         case SALE -> updateStage(target, i, false);
                         case GATYA -> updateGacha(target, i, false);
                         case ITEM -> updateItem(target, i, false);
-                        default -> {
-                            if (f.exists() && !f.delete()) {
-                                StaticStore.logger.uploadLog("Failed to delete file : " + f.getAbsolutePath());
-                                break;
-                            }
-
-                            if (!target.renameTo(f)) {
-                                StaticStore.logger.uploadLog("Failed to rename file\nSrc : " + target.getAbsolutePath() + "\nDst : " + f.getAbsolutePath());
-                            }
-                        }
                     }
 
                     archive(f, i, j);
@@ -938,7 +925,7 @@ public class EventHolder extends EventFactor {
     }
 
     private String getMD5fromURL(String url) throws Exception {
-        URL u = new URL(url);
+        URL u = URI.create(url).toURL();
 
         HttpURLConnection connection = (HttpURLConnection) u.openConnection();
 
@@ -974,11 +961,11 @@ public class EventHolder extends EventFactor {
 
         original.removeIf(s -> {
             if(s instanceof GachaSchedule)
-                return !((GachaSchedule) s).date.inRange(date);
+                return ((GachaSchedule) s).date.notInRange(date);
             else if(s instanceof ItemSchedule)
-                return !((ItemSchedule) s).date.inRange(date);
+                return ((ItemSchedule) s).date.notInRange(date);
             else if(s instanceof StageSchedule)
-                return !((StageSchedule) s).date.inRange(date);
+                return ((StageSchedule) s).date.notInRange(date);
 
             return false;
         });

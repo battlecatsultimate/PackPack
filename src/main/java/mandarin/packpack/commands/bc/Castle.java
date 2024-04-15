@@ -146,7 +146,7 @@ public class Castle extends ConstraintCommand {
     private int startIndex = 1;
 
     @Override
-    public void prepare() throws Exception {
+    public void prepare() {
         registerRequiredPermission(Permission.MESSAGE_ATTACH_FILES);
     }
 
@@ -266,7 +266,7 @@ public class Castle extends ConstraintCommand {
                     imgs = castleLists.get(3).getList();
                     code = 3;
                 } else {
-                    imgs = castleLists.get(0).getList();
+                    imgs = castleLists.getFirst().getList();
                     code = 0;
                 }
 

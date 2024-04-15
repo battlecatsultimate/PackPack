@@ -44,7 +44,7 @@ public class FindReward extends TimedConstraintCommand {
     }
 
     @Override
-    public void prepare() throws Exception {
+    public void prepare() {
         registerRequiredPermission(Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_ATTACH_FILES, Permission.MESSAGE_EMBED_LINKS);
     }
 
@@ -87,7 +87,7 @@ public class FindReward extends TimedConstraintCommand {
 
             disableTimer();
         } else if(rewards.size() == 1) {
-            List<Stage> stages = EntityFilter.findStageByReward(rewards.get(0), chance, amount);
+            List<Stage> stages = EntityFilter.findStageByReward(rewards.getFirst(), chance, amount);
 
             if(stages.isEmpty()) {
                 replyToMessageSafely(ch, LangID.getStringByID("freward_nosta", lang).replace("_", validateName(rewardName)), loader.getMessage(), a -> a);
@@ -96,12 +96,12 @@ public class FindReward extends TimedConstraintCommand {
             } else if(stages.size() == 1) {
                 TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getMessage().getAuthor().getId(), TreasureHolder.global);
 
-                EntityHandler.showStageEmb(stages.get(0), ch, loader.getMessage(), holder == null || holder.config.useFrame, isExtra, isCompact, 0, treasure, lang, result -> {
+                EntityHandler.showStageEmb(stages.getFirst(), ch, loader.getMessage(), holder == null || holder.config.useFrame, isExtra, isCompact, 0, treasure, lang, result -> {
                     User u = loader.getUser();
 
                     Message msg = loader.getMessage();
 
-                    StaticStore.putHolder(u.getId(), new StageInfoButtonHolder(stages.get(0), msg, result, ch.getId(), isCompact));
+                    StaticStore.putHolder(u.getId(), new StageInfoButtonHolder(stages.getFirst(), msg, result, ch.getId(), isCompact));
                 });
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("freward_severalst", lang).replace("_", validateName(rewardName)))

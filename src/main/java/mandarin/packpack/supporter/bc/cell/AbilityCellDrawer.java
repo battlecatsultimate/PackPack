@@ -96,7 +96,7 @@ public class AbilityCellDrawer implements CellDrawer {
         for(int i = 0; i < contents.length; i++) {
             String[] segment = contents[i].split("\n");
 
-            rh += uh * segment.length + lineSpace * (segment.length - 1);
+            rh = (int) (rh + uh * segment.length + lineSpace * (segment.length - 1));
 
             if(i < contents.length - 1)
                 rh += abilityMargin;
@@ -127,7 +127,7 @@ public class AbilityCellDrawer implements CellDrawer {
                     g.drawText(segment[j], x + spaceDotMargin, ry + offset, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
                 }
 
-                ry += uh;
+                ry = (int) (ry + uh);
 
                 if(j < segment.length - 1)
                     ry += lineSpace;

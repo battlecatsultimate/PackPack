@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class GlobalTimedConstraintCommand extends Command {
-    static String ABORT = "ABORT";
+    static final String ABORT = "ABORT";
 
     final String constRole;
     final String mainID;

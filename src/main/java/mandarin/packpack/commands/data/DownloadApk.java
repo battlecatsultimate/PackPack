@@ -22,7 +22,7 @@ public class DownloadApk extends ConstraintCommand {
     }
 
     @Override
-    public void prepare() throws Exception {
+    public void prepare() {
         registerRequiredPermission(Permission.MESSAGE_ATTACH_FILES);
     }
 

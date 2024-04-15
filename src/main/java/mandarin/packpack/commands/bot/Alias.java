@@ -1,5 +1,6 @@
 package mandarin.packpack.commands.bot;
 
+import common.pack.Identifier;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
 import common.util.stage.MapColc;
@@ -32,7 +33,7 @@ public class Alias extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) throws Exception {
+    public void doSomething(@NotNull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
 
         User u = loader.getUser();
@@ -59,15 +60,22 @@ public class Alias extends ConstraintCommand {
                 if (forms.isEmpty()) {
                     createMessageWithNoPings(ch, LangID.getStringByID("formst_nounit", lang).replace("_", validateName(unitName)));
                 } else if (forms.size() == 1) {
-                    String fname = StaticStore.safeMultiLangGet(forms.get(0), lang);
+                    String fname = StaticStore.safeMultiLangGet(forms.getFirst(), lang);
 
                     if (fname == null || fname.isBlank())
-                        fname = forms.get(0).names.toString();
+                        fname = forms.getFirst().names.toString();
 
-                    if (fname.isBlank())
-                        fname = Data.trio(forms.get(0).unit.id.id) + "-" + Data.trio(forms.get(0).fid);
+                    if (fname.isBlank()) {
+                        Identifier<?> id = forms.getFirst().unit.id;
 
-                    ArrayList<String> alias = AliasHolder.getAlias(type, lang, forms.get(0));
+                        if (id == null) {
+                            fname = "UNKNOWN-" + Data.trio(forms.getFirst().fid);
+                        } else {
+                            fname = Data.trio(id.id) + "-" + Data.trio(forms.getFirst().fid);
+                        }
+                    }
+
+                    ArrayList<String> alias = AliasHolder.getAlias(type, lang, forms.getFirst());
 
                     if (alias == null || alias.isEmpty()) {
                         createMessageWithNoPings(ch, LangID.getStringByID("alias_noalias", lang).replace("_", fname));
@@ -155,15 +163,15 @@ public class Alias extends ConstraintCommand {
                 if (enemies.isEmpty()) {
                     createMessageWithNoPings(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", validateName(enemyName)));
                 } else if (enemies.size() == 1) {
-                    String eName = StaticStore.safeMultiLangGet(enemies.get(0), lang);
+                    String eName = StaticStore.safeMultiLangGet(enemies.getFirst(), lang);
 
                     if (eName == null || eName.isBlank())
-                        eName = enemies.get(0).names.toString();
+                        eName = enemies.getFirst().names.toString();
 
                     if (eName.isBlank())
-                        eName = Data.trio(enemies.get(0).id.id);
+                        eName = Data.trio(enemies.getFirst().id.id);
 
-                    ArrayList<String> alias = AliasHolder.getAlias(type, lang, enemies.get(0));
+                    ArrayList<String> alias = AliasHolder.getAlias(type, lang, enemies.getFirst());
 
                     if (alias == null || alias.isEmpty()) {
                         createMessageWithNoPings(ch, LangID.getStringByID("alias_noalias", lang).replace("_", eName));
@@ -258,15 +266,15 @@ public class Alias extends ConstraintCommand {
                 if (stages.isEmpty()) {
                     createMessageWithNoPings(ch, LangID.getStringByID("stinfo_nores", lang).replace("_", generateSearchName(names)));
                 } else if (stages.size() == 1) {
-                    String stName = StaticStore.safeMultiLangGet(stages.get(0), lang);
+                    String stName = StaticStore.safeMultiLangGet(stages.getFirst(), lang);
 
                     if (stName == null || stName.isBlank())
-                        stName = stages.get(0).name;
+                        stName = stages.getFirst().name;
 
                     if (stName == null || stName.isBlank())
-                        stName = stages.get(0).getCont().getSID() + "-" + Data.trio(stages.get(0).getCont().id.id) + "-" + Data.trio(stages.get(0).id.id);
+                        stName = stages.getFirst().getCont().getSID() + "-" + Data.trio(stages.getFirst().getCont().id.id) + "-" + Data.trio(stages.getFirst().id.id);
 
-                    ArrayList<String> alias = AliasHolder.getAlias(type, lang, stages.get(0));
+                    ArrayList<String> alias = AliasHolder.getAlias(type, lang, stages.getFirst());
 
                     if (alias == null || alias.isEmpty()) {
                         createMessageWithNoPings(ch, LangID.getStringByID("alias_noalias", lang).replace("_", stName));

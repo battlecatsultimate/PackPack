@@ -34,7 +34,7 @@ public class EnemyImage extends TimedConstraintCommand {
     }
 
     @Override
-    public void prepare() throws Exception {
+    public void prepare() {
         registerRequiredPermission(Permission.MESSAGE_ATTACH_FILES);
     }
 
@@ -75,29 +75,29 @@ public class EnemyImage extends TimedConstraintCommand {
                 int mode = getMode(loader.getContent());
                 int frame = getFrame(loader.getContent());
 
-                enemies.get(0).anim.load();
+                enemies.getFirst().anim.load();
 
-                if(mode >= enemies.get(0).anim.anims.length)
+                if(mode >= enemies.getFirst().anim.anims.length)
                     mode = 0;
 
-                EAnimD<?> anim = enemies.get(0).getEAnim(ImageDrawing.getAnimType(mode, enemies.get(0).anim.anims.length));
+                EAnimD<?> anim = enemies.getFirst().getEAnim(ImageDrawing.getAnimType(mode, enemies.getFirst().anim.anims.length));
 
                 File img = ImageDrawing.drawAnimImage(anim, frame, 1f, (param & PARAM_TRANSPARENT) > 0, (param & PARAM_DEBUG) > 0);
 
-                enemies.get(0).anim.unload();
+                enemies.getFirst().anim.unload();
 
                 if(img != null) {
-                    String fName = MultiLangCont.get(enemies.get(0), lang);
+                    String fName = MultiLangCont.get(enemies.getFirst(), lang);
 
                     if(fName == null || fName.isBlank())
-                        fName = enemies.get(0).names.toString();
+                        fName = enemies.getFirst().names.toString();
 
                     if(fName.isBlank())
-                        fName = LangID.getStringByID("data_enemy", lang)+" "+ Data.trio(enemies.get(0).id.id);
+                        fName = LangID.getStringByID("data_enemy", lang)+" "+ Data.trio(enemies.getFirst().id.id);
 
                     sendMessageWithFile(
                             ch,
-                            LangID.getStringByID("eimg_result", lang).replace("_", fName).replace(":::", getModeName(mode, enemies.get(0).anim.anims.length)).replace("=", String.valueOf(frame)),
+                            LangID.getStringByID("eimg_result", lang).replace("_", fName).replace(":::", getModeName(mode, enemies.getFirst().anim.anims.length)).replace("=", String.valueOf(frame)),
                             img,
                             loader.getMessage()
                     );

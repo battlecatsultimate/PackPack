@@ -3,7 +3,9 @@ package mandarin.packpack.supporter.calculation;
 import javax.annotation.Nonnull;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.util.Arrays;
 
+@SuppressWarnings("unused")
 public class Matrix {
     public enum ALGORITHM {
         GAUSSIAN,
@@ -87,9 +89,7 @@ public class Matrix {
         for(int x = 0; x < row; x++) {
             BigDecimal[] r = new BigDecimal[col];
 
-            for(int y = 0; y < col; y++) {
-                r[y] = BigDecimal.valueOf(0);
-            }
+            Arrays.fill(r, BigDecimal.valueOf(0));
 
             matrix[x] = r;
         }

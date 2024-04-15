@@ -7,6 +7,7 @@ import mandarin.packpack.supporter.event.EventFactor;
 import mandarin.packpack.supporter.event.EventFileGrabber;
 import mandarin.packpack.supporter.event.GachaSet;
 import mandarin.packpack.supporter.lang.LangID;
+import mandarin.packpack.supporter.lwjgl.LwjglContext;
 import mandarin.packpack.supporter.server.SpamPrevent;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.JDA;
@@ -24,7 +25,6 @@ import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.FileUpload;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
-import javax.security.auth.login.LoginException;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -42,7 +42,6 @@ public class PackBot {
     public static int event = 0;
     public static int pfp = 0;
     public static int udp = 0;
-    public static int status = 0;
     public static int log = 0;
     public static int backup = 0;
 
@@ -50,7 +49,7 @@ public class PackBot {
 
     public static RestAction<Message> statusMessage = null;
 
-    public static void main(String[] args) throws LoginException {
+    public static void main(String[] args) {
         Runtime.getRuntime().addShutdownHook(new Thread(Logger::writeLog));
 
         for (int i = 0; i < args.length; i++) {
@@ -366,10 +365,10 @@ public class PackBot {
                                             }
 
                                             while(builder.length() < 1980 && !data.isEmpty()) {
-                                                String line = data.get(0);
+                                                String line = data.getFirst();
 
                                                 if(line.length() > 1950) {
-                                                    data.remove(0);
+                                                    data.removeFirst();
 
                                                     continue;
                                                 }
@@ -382,7 +381,7 @@ public class PackBot {
                                                 if(type == EventFactor.SCHEDULE.MISSION)
                                                     builder.append("\n");
 
-                                                data.remove(0);
+                                                data.removeFirst();
                                                 dataFound[i] += 1;
                                             }
 
@@ -436,10 +435,10 @@ public class PackBot {
                                         builder.append("```ansi\n");
 
                                         while(builder.length() < (j == EventFactor.GATYA ? 1800 : 1950) && !result.isEmpty()) {
-                                            String line = result.get(0);
+                                            String line = result.getFirst();
 
                                             if(line.length() > 1950) {
-                                                result.remove(0);
+                                                result.removeFirst();
 
                                                 continue;
                                             }
@@ -449,7 +448,7 @@ public class PackBot {
 
                                             builder.append(line).append("\n");
 
-                                            result.remove(0);
+                                            result.removeFirst();
                                             dataFound[i] += 1;
                                         }
 

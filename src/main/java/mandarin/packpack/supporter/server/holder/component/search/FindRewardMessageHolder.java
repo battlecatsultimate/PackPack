@@ -89,7 +89,7 @@ public class FindRewardMessageHolder extends SearchHolder {
             if(stages.isEmpty()) {
                 ch.sendMessage(LangID.getStringByID("freward_nosta", lang).replace("_", validateName(keyword))).queue();
             } else if(stages.size() == 1) {
-                EntityHandler.showStageEmb(stages.get(0), ch, getAuthorMessage(), isFrame, isExtra, isCompact, 0, treasure, lang, result -> {
+                EntityHandler.showStageEmb(stages.getFirst(), ch, getAuthorMessage(), isFrame, isExtra, isCompact, 0, treasure, lang, result -> {
                     if(StaticStore.timeLimit.containsKey(author.getAuthor().getId())) {
                         StaticStore.timeLimit.get(author.getAuthor().getId()).put(StaticStore.COMMAND_FINDSTAGE_ID, System.currentTimeMillis());
                     } else {
@@ -100,7 +100,7 @@ public class FindRewardMessageHolder extends SearchHolder {
                         StaticStore.timeLimit.put(author.getAuthor().getId(), memberLimit);
                     }
 
-                    StaticStore.putHolder(author.getAuthor().getId(), new StageInfoButtonHolder(stages.get(0), author, result, channelID, isCompact));
+                    StaticStore.putHolder(author.getAuthor().getId(), new StageInfoButtonHolder(stages.getFirst(), author, result, channelID, isCompact));
                 });
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("freward_several", lang).replace("_", validateName(keyword))).append("```md\n");

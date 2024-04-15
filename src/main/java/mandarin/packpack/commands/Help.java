@@ -24,7 +24,7 @@ public class Help extends Command {
     }
 
     @Override
-    public void prepare() throws Exception {
+    public void prepare() {
         registerRequiredPermission(Permission.MESSAGE_EMBED_LINKS);
     }
 

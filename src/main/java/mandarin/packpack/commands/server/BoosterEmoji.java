@@ -27,7 +27,7 @@ public class BoosterEmoji extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) throws Exception {
+    public void doSomething(@NotNull CommandLoader loader) {
         if(holder == null)
             return;
 

@@ -34,7 +34,7 @@ public class FormImage extends TimedConstraintCommand {
     }
 
     @Override
-    public void prepare() throws Exception {
+    public void prepare() {
         registerRequiredPermission(Permission.MESSAGE_ATTACH_FILES);
     }
 
@@ -74,27 +74,27 @@ public class FormImage extends TimedConstraintCommand {
                 int mode = getMode(loader.getContent());
                 int frame = getFrame(loader.getContent());
 
-                forms.get(0).anim.load();
+                forms.getFirst().anim.load();
 
-                if(mode >= forms.get(0).anim.anims.length)
+                if(mode >= forms.getFirst().anim.anims.length)
                     mode = 0;
 
-                EAnimD<?> anim = forms.get(0).anim.getEAnim(ImageDrawing.getAnimType(mode, forms.get(0).anim.anims.length));
+                EAnimD<?> anim = forms.getFirst().anim.getEAnim(ImageDrawing.getAnimType(mode, forms.getFirst().anim.anims.length));
 
                 File img = ImageDrawing.drawAnimImage(anim, frame, 1f, ((param & PARAM_TRANSPARENT) > 0), ((param & PARAM_DEBUG) > 0));
 
-                forms.get(0).anim.unload();
+                forms.getFirst().anim.unload();
 
                 if(img != null) {
-                    String fName = MultiLangCont.get(forms.get(0), lang);
+                    String fName = MultiLangCont.get(forms.getFirst(), lang);
 
                     if(fName == null || fName.isBlank())
-                        fName = forms.get(0).names.toString();
+                        fName = forms.getFirst().names.toString();
 
                     if(fName.isBlank())
-                        fName = LangID.getStringByID("data_unit", lang)+" "+ Data.trio(forms.get(0).uid.id)+" "+Data.trio(forms.get(0).fid);
+                        fName = LangID.getStringByID("data_unit", lang)+" "+ Data.trio(forms.getFirst().uid.id)+" "+Data.trio(forms.getFirst().fid);
 
-                    sendMessageWithFile(ch, LangID.getStringByID("fimg_result", lang).replace("_", fName).replace(":::", getModeName(mode, forms.get(0).anim.anims.length)).replace("=", String.valueOf(frame)), img, "result.png", loader.getMessage());
+                    sendMessageWithFile(ch, LangID.getStringByID("fimg_result", lang).replace("_", fName).replace(":::", getModeName(mode, forms.getFirst().anim.anims.length)).replace("=", String.valueOf(frame)), img, "result.png", loader.getMessage());
                 }
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", getSearchKeyword(loader.getContent())));

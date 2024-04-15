@@ -20,7 +20,7 @@ public class BoosterRoleRemove extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) throws Exception {
+    public void doSomething(@NotNull CommandLoader loader) {
         Guild g = loader.getGuild();
         MessageChannel ch = loader.getChannel();
 

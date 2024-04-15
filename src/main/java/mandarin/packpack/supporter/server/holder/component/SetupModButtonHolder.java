@@ -59,10 +59,10 @@ public class SetupModButtonHolder extends ComponentHolder {
                 if (es.getValues().size() != 1)
                     return;
 
-                roleID = es.getValues().get(0).getId();
+                roleID = es.getValues().getFirst().getId();
 
                 event.deferEdit()
-                        .setContent(LangID.getStringByID("setup_modsele", lang).replace("_RRR_", es.getValues().get(0).getId()))
+                        .setContent(LangID.getStringByID("setup_modsele", lang).replace("_RRR_", es.getValues().getFirst().getId()))
                         .setComponents(getComponents())
                         .setAllowedMentions(new ArrayList<>())
                         .queue();

@@ -8,7 +8,7 @@ import mandarin.packpack.supporter.StaticStore;
 import java.util.*;
 
 public class GachaSet {
-    public static Map<Integer, GachaSet> gachaSet = new HashMap<>();
+    public final static Map<Integer, GachaSet> gachaSet = new HashMap<>();
 
     public static void initialize() {
         VFile vf = VFile.get("./org/data/GatyaDataSetR1.csv");
@@ -35,7 +35,7 @@ public class GachaSet {
     }
 
     public final int[] data;
-    public Map<Integer, List<Unit>> buffUnits = new HashMap<>();
+    public final Map<Integer, List<Unit>> buffUnits = new HashMap<>();
 
     public GachaSet(String line) {
         String[] data = line.split(",");

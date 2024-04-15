@@ -71,7 +71,7 @@ class MassCatFood : Command(LangID.EN, true) {
             val sentence = if (amount < 0) {
                 "take away ${EmojiStore.ABILITY["CF"]?.formatted} ${-amount} from"
             } else {
-                "give ${EmojiStore.ABILITY["CF"]?.formatted} ${amount} to"
+                "give ${EmojiStore.ABILITY["CF"]?.formatted} $amount to"
             }
 
             replyToMessageSafely(loader.channel, "Are you sure you want to $sentence users?", loader.message, { a ->

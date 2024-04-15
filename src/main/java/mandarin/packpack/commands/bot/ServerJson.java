@@ -17,7 +17,7 @@ public class ServerJson extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) throws Exception {
+    public void doSomething(@NotNull CommandLoader loader) {
         if (!loader.getMember().getId().equals(StaticStore.MANDARIN_SMELL) && !loader.getMember().getId().equals("195682910269865984")) {
             loader.getChannel().sendMessage(LangID.getStringByID("const_man", lang)).queue();
 

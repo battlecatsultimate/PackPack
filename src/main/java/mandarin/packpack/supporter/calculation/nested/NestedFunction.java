@@ -51,7 +51,7 @@ public class NestedFunction extends NestedElement {
 
     @Override
     public BigDecimal perform(BigDecimal... input) {
-        BigDecimal primary = children.get(0).calculate(input);
+        BigDecimal primary = children.getFirst().calculate(input);
 
         if(!check() || primary == null)
             return BigDecimal.ZERO;
@@ -230,7 +230,7 @@ public class NestedFunction extends NestedElement {
 
     @Override
     protected double performFast(double... input) {
-        double primary = children.get(0).calculateFast(input);
+        double primary = children.getFirst().calculateFast(input);
 
         if(!check())
             return 0;

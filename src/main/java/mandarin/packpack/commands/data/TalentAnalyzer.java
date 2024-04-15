@@ -41,7 +41,7 @@ public class TalentAnalyzer extends ConstraintCommand {
     private MaskUnit unit;
 
     @Override
-    public void prepare() throws Exception {
+    public void prepare() {
         registerRequiredPermission(Permission.MESSAGE_ATTACH_FILES);
     }
 
@@ -216,13 +216,13 @@ public class TalentAnalyzer extends ConstraintCommand {
             if(unit == null)
                 return false;
 
-            talent = new CustomTalent(talentLine, unit, uid, unitIcon);
+            talent = new CustomTalent(talentLine, unit, unitIcon);
         } else {
             Unit u = UserProfile.getBCData().units.get(uid);
 
             unit = u.forms[2].du;
 
-            talent = new CustomTalent(talentLine, u.forms[2].du, uid, unitIcon);
+            talent = new CustomTalent(talentLine, u.forms[2].du, unitIcon);
         }
 
         if(StaticStore.isNumeric(talentLine[1])) {
@@ -232,7 +232,7 @@ public class TalentAnalyzer extends ConstraintCommand {
                 List<Trait> traits = Trait.convertType(traitID);
 
                 if(traits.size() == 1) {
-                    talent.traitIcon = CommonStatic.getBCAssets().icon[3][traits.get(0).id.id].getImg().cloneImage();
+                    talent.traitIcon = CommonStatic.getBCAssets().icon[3][traits.getFirst().id.id].getImg().cloneImage();
                 }
             }
         }

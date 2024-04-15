@@ -94,7 +94,7 @@ public class EventGrabberHolder extends ComponentHolder {
                 case EventFactor.ZH -> "BCTW : ";
                 case EventFactor.JP -> "BCJP : ";
                 case EventFactor.KR -> "BCKR : ";
-                default -> "UNKNOWN : ";
+                default -> "";
             };
 
             String isNew = newWay ? "New Way" : "Old Way";
@@ -120,7 +120,7 @@ public class EventGrabberHolder extends ComponentHolder {
                 case EventFactor.ZH -> "BCTW : ";
                 case EventFactor.JP -> "BCJP : ";
                 case EventFactor.KR -> "BCKR : ";
-                default -> "UNKNOWN : ";
+                default -> "";
             };
 
             String isNew = newWay ? "New Way" : "Old Way";

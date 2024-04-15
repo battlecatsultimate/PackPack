@@ -30,7 +30,7 @@ public class BoosterHolder {
         return holder;
     }
 
-    public Map<String, BoosterData> serverBooster = new HashMap<>();
+    public final Map<String, BoosterData> serverBooster = new HashMap<>();
 
     public JsonArray jsonfy() {
         JsonArray arr = new JsonArray();

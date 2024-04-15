@@ -33,8 +33,8 @@ public class EventFactor {
 
     public static int currentYear;
 
-    public static EventDate END = new EventDate(20300101, false, null, false);
-    public static String NOMAX = "99.99.99";
+    public static final EventDate END = new EventDate(20300101, false, null, false);
+    public static final String NOMAX = "99.99.99";
 
     public static final int EN = 0;
     public static final int ZH = 1;
@@ -344,6 +344,7 @@ public class EventFactor {
         }
     }
 
+    @SuppressWarnings("unused")
     public static String getNumberExtension(int num, int lang) {
         if(lang == LangID.EN) {
             if(num != 11 && num % 10 == 1)
@@ -383,7 +384,7 @@ public class EventFactor {
         int v = 0;
 
         for(int i = numbers.length - 1; i >= 0; i--) {
-            v += StaticStore.safeParseInt(numbers[i]) * Math.pow(10, (numbers.length - 1 - i) * 2);
+            v = (int) (v + StaticStore.safeParseInt(numbers[i]) * Math.pow(10, (numbers.length - 1 - i) * 2));
         }
 
         return v;

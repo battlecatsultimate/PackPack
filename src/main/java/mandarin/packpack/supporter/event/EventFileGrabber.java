@@ -232,7 +232,7 @@ public class EventFileGrabber {
         password = null;
         passwordRefreshToken = null;
 
-        HttpURLConnection connection = (HttpURLConnection) new URL(userCreationLink).openConnection();
+        HttpURLConnection connection = (HttpURLConnection) URI.create(userCreationLink).toURL().openConnection();
         connection.setRequestMethod("GET");
 
         connection.connect();

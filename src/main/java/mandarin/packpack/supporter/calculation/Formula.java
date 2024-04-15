@@ -35,7 +35,7 @@ public class Formula {
         BACK
     }
 
-    public static List<String> error = new ArrayList<>();
+    public static final List<String> error = new ArrayList<>();
 
     public static final BigDecimal H = BigDecimal.ONE.divide(BigDecimal.TEN.pow(8), Equation.context);
     public static final int maximumIteration = 100;
@@ -134,17 +134,17 @@ public class Formula {
             }
         }
 
-        if(xy && !variable.get(0).name.equals("x")) {
+        if(xy && !variable.getFirst().name.equals("x")) {
             List<NestedVariable> changed = new ArrayList<>();
 
             changed.add(variable.get(1));
-            changed.add(variable.get(0));
+            changed.add(variable.getFirst());
 
             variable = changed;
         }
 
         if (test.length == 2 && variable.size() == 1) {
-            if (variable.get(0).name.equals("x")) {
+            if (variable.getFirst().name.equals("x")) {
                 variable.add(new NestedVariable(this, "y"));
             } else {
                 variable.add(0, new NestedVariable(this, "x"));
@@ -161,17 +161,17 @@ public class Formula {
             }
         }
 
-        if(rt && !variable.get(0).name.equals("r")) {
+        if(rt && !variable.getFirst().name.equals("r")) {
             List<NestedVariable> changed = new ArrayList<>();
 
             changed.add(variable.get(1));
-            changed.add(variable.get(0));
+            changed.add(variable.getFirst());
 
             variable = changed;
         }
 
         if (test.length == 2 && variable.size() == 1) {
-            if (variable.get(0).name.equals("r")) {
+            if (variable.getFirst().name.equals("r")) {
                 variable.add(new NestedVariable(this, "t"));
             } else {
                 variable.add(0, new NestedVariable(this, "r"));
@@ -1098,7 +1098,7 @@ public class Formula {
                                     return null;
                                 }
 
-                                NestedElement n = analyze(data.get(0), lang);
+                                NestedElement n = analyze(data.getFirst(), lang);
 
                                 if(n == null) {
                                     return null;

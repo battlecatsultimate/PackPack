@@ -14,7 +14,7 @@ public class ReloadLanguage extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) throws Exception {
+    public void doSomething(@NotNull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
 
        replyToMessageSafely(ch, "Reloading language data...", loader.getMessage(), a -> a, msg -> {

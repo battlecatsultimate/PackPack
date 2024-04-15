@@ -101,7 +101,7 @@ public class StageInfoButtonHolder extends ComponentHolder {
                 if (cs == null) {
                     ArrayList<CastleList> lists = new ArrayList<>(CastleList.defset());
 
-                    cs = lists.get(0).get(0);
+                    cs = lists.getFirst().get(0);
                 }
 
                 try {

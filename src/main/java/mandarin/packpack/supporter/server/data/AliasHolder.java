@@ -265,15 +265,11 @@ public class AliasHolder {
     }
 
     public static String getLangCode(int lang) {
-        switch (lang) {
-            case LangID.ZH:
-                return "zh";
-            case LangID.KR:
-                return "kr";
-            case LangID.JP:
-                return "jp";
-            default:
-                return "en";
-        }
+        return switch (lang) {
+            case LangID.ZH -> "zh";
+            case LangID.KR -> "kr";
+            case LangID.JP -> "jp";
+            default -> "en";
+        };
     }
 }

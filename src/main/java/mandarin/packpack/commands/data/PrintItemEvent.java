@@ -18,7 +18,7 @@ public class PrintItemEvent extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) throws Exception {
+    public void doSomething(@NotNull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
 
         boolean now = isNow(loader.getContent());
@@ -71,7 +71,7 @@ public class PrintItemEvent extends ConstraintCommand {
             builder.append("```ansi\n");
 
             while(builder.length() < 1950 && !result.isEmpty()) {
-                String line = result.get(0);
+                String line = result.getFirst();
 
                 if(line.length() > 1950) {
                     result.remove(0);

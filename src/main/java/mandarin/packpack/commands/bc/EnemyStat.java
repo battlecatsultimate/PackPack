@@ -98,7 +98,7 @@ public class EnemyStat extends ConstraintCommand {
     }
 
     @Override
-    public void prepare() throws Exception {
+    public void prepare() {
         registerRequiredPermission(Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_ATTACH_FILES, Permission.MESSAGE_EMBED_LINKS);
     }
 
@@ -150,7 +150,7 @@ public class EnemyStat extends ConstraintCommand {
 
                 TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(m.getAuthor().getId(), TreasureHolder.global);
 
-                EntityHandler.showEnemyEmb(enemies.get(0), ch, m, isFrame, isExtra, isCompact, magnification, treasure, lang);
+                EntityHandler.showEnemyEmb(enemies.getFirst(), ch, m, isFrame, isExtra, isCompact, magnification, treasure, lang);
             } else if(enemies.isEmpty()) {
                 replyToMessageSafely(ch, LangID.getStringByID("enemyst_noenemy", lang).replace("_", getSearchKeyword(command)), loader.getMessage(), a -> a);
             } else {

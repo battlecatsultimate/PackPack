@@ -144,7 +144,7 @@ public class StageInfo extends TimedConstraintCommand {
     }
 
     @Override
-    public void prepare() throws Exception {
+    public void prepare() {
         registerRequiredPermission(Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_ATTACH_FILES, Permission.MESSAGE_EMBED_LINKS);
     }
 
@@ -211,12 +211,12 @@ public class StageInfo extends TimedConstraintCommand {
 
                 ArrayList<Stage> finalStages = stages;
 
-                EntityHandler.showStageEmb(stages.get(0), ch, loader.getMessage(), isFrame, isExtra, isCompact, star, treasure, lang, result -> {
+                EntityHandler.showStageEmb(stages.getFirst(), ch, loader.getMessage(), isFrame, isExtra, isCompact, star, treasure, lang, result -> {
                     User u = loader.getUser();
 
                     Message author = loader.getMessage();
 
-                    StaticStore.putHolder(u.getId(), new StageInfoButtonHolder(finalStages.get(0), author, result, ch.getId(), isCompact));
+                    StaticStore.putHolder(u.getId(), new StageInfoButtonHolder(finalStages.getFirst(), author, result, ch.getId(), isCompact));
                 });
             } else {
                 int param = checkParameters(command);

@@ -15,7 +15,7 @@ public class Converter implements Composite, CompositeContext {
 
 	@Override
 	public void compose(Raster src, Raster dst, WritableRaster out) {
-		comp3(src, dst, out);
+		comp3(dst, out);
 	}
 
 	@Override
@@ -27,7 +27,7 @@ public class Converter implements Composite, CompositeContext {
 	public void dispose() {
 	}
 
-	private void comp3(Raster src, Raster dst, WritableRaster out) {
+	private void comp3(Raster dst, WritableRaster out) {
 		int w = dst.getWidth();
 		int h = dst.getHeight();
 		int[] dsts = dst.getPixels(0, 0, w, h, new int[w * h * 3]);

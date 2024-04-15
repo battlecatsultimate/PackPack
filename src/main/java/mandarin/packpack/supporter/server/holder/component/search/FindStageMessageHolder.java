@@ -152,7 +152,7 @@ public class FindStageMessageHolder extends SearchHolder {
     @Override
     public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
         if(event.getComponentId().equals("category")) {
-            String name = ((StringSelectInteractionEvent) event).getValues().get(0);
+            String name = ((StringSelectInteractionEvent) event).getValues().getFirst();
 
             selected = FindStage.MONTHLY.valueOf(name.toUpperCase(Locale.ENGLISH));
 

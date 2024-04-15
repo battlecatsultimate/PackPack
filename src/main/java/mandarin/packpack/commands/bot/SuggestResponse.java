@@ -23,7 +23,7 @@ public class SuggestResponse extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) throws Exception {
+    public void doSomething(@NotNull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
 
         ShardManager client = ch.getJDA().getShardManager();
@@ -60,7 +60,7 @@ public class SuggestResponse extends ConstraintCommand {
                 if(emb == null || emb.getEmbeds().isEmpty())
                     return;
 
-                MessageEmbed embed = emb.getEmbeds().get(0);
+                MessageEmbed embed = emb.getEmbeds().getFirst();
 
                 EmbedBuilder builder = new EmbedBuilder()
                         .setTitle(LangID.getStringByID("response_title", lang))

@@ -6,41 +6,29 @@ import mandarin.packpack.supporter.bc.DataToString;
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 
-public class AbilityData {
-    @Nonnull
-    public final int[] indexes;
-    @Nonnull
-    public final String format;
-    @Nonnull
-    public final boolean[] isTime;
-    public final int ignoreIndex;
-
-    public AbilityData(@Nonnull int[] indexes, @Nonnull String format, @Nonnull boolean[] isTime, int ignoreIndex) {
-        if(indexes.length != isTime.length) {
-            throw new IllegalStateException("Indexes and isTime must be synchronized!\nIndexes : "+ Arrays.toString(indexes)+"\nIsTime : "+Arrays.toString(isTime));
+public record AbilityData(@Nonnull int[] indexes, @Nonnull String format, @Nonnull boolean[] isTime, int ignoreIndex) {
+    public AbilityData {
+        if (indexes.length != isTime.length) {
+            throw new IllegalStateException("Indexes and isTime must be synchronized!\nIndexes : " + Arrays.toString(indexes) + "\nIsTime : " + Arrays.toString(isTime));
         }
 
-        this.indexes = indexes;
-        this.format = format;
-        this.isTime = isTime;
-        this.ignoreIndex = ignoreIndex;
     }
 
     public String beautify(String[] data, boolean isFrame) {
-        if(data[ignoreIndex].strip().equals("0"))
+        if (data[ignoreIndex].strip().equals("0"))
             return "";
 
         String result = format;
 
-        for(int i = 0; i < indexes.length; i++) {
-            String replace = "_"+i+"_";
+        for (int i = 0; i < indexes.length; i++) {
+            String replace = "_" + i + "_";
 
             int ind = indexes[i];
 
-            if(ind < 0 || ind > data.length)
+            if (ind < 0 || ind > data.length)
                 ind = 0;
 
-            if(isTime[i]) {
+            if (isTime[i]) {
                 result = result.replace(replace, parseTime(data[ind], isFrame));
             } else {
                 result = result.replace(replace, data[ind]);
@@ -51,13 +39,13 @@ public class AbilityData {
     }
 
     private String parseTime(String v, boolean isFrame) {
-        if(StaticStore.isNumeric(v)) {
+        if (StaticStore.isNumeric(v)) {
             int iv = StaticStore.safeParseInt(v);
 
-            if(isFrame) {
-                return iv+"f";
+            if (isFrame) {
+                return iv + "f";
             } else {
-                return DataToString.df.format(iv / 30.0)+"s";
+                return DataToString.df.format(iv / 30.0) + "s";
             }
         }
 

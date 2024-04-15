@@ -8,6 +8,7 @@ import mandarin.packpack.supporter.event.StageSchedule;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class ContainedGroupHandler implements GroupHandler {
@@ -100,7 +101,7 @@ public class ContainedGroupHandler implements GroupHandler {
     }
 
     private boolean isPrimarySchedule(StageSchedule schedule) {
-        List<Integer> primary = containedGroup.get(0);
+        List<Integer> primary = containedGroup.getFirst();
 
         List<Integer> ids = new ArrayList<>();
 
@@ -126,7 +127,7 @@ public class ContainedGroupHandler implements GroupHandler {
             }
         }
 
-        return primary.containsAll(ids);
+        return new HashSet<>(primary).containsAll(ids);
     }
 
     private boolean groupCanBeApplied(Schedule[] schedules, StageSchedule schedule) {

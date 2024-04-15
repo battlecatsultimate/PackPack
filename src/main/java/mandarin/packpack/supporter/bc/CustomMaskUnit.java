@@ -9,7 +9,7 @@ public class CustomMaskUnit extends DataUnit {
     public final String[] data;
     public final UnitLevel curve;
     public final MaAnim anim;
-    public final int rarity, max, maxp;
+    public final int rarity;
     public final int[][] evo;
 
     public CustomMaskUnit(String[] data, String[] curve, MaAnim anim, String[] rare) {
@@ -19,8 +19,6 @@ public class CustomMaskUnit extends DataUnit {
         this.curve = new UnitLevel(toCurve(curve));
         this.anim = anim;
         this.rarity = Integer.parseInt(rare[13]);
-        this.max = Integer.parseInt(rare[50]);
-        this.maxp = Integer.parseInt(rare[51]);
         int et = Integer.parseInt(rare[23]);
         if (et >= 15000 && et < 17000) {
             evo = new int[6][2];

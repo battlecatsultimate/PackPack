@@ -1646,12 +1646,12 @@ public class ImageDrawing {
         for(int i = 0; i < cellGroup.size(); i++) {
             List<CellDrawer> group = cellGroup.get(i);
 
-            group.get(group.size() - 1).initialize(nameFont, contentFont, (int) Math.round((uw * 3 + CellDrawer.lineOffset * 4) * 1.5));
+            group.getLast().initialize(nameFont, contentFont, (int) Math.round((uw * 3 + CellDrawer.lineOffset * 4) * 1.5));
 
-            offset = Math.round(Math.max(((AbilityCellDrawer) group.get(group.size() - 1)).offset, offset));
+            offset = Math.round(Math.max(((AbilityCellDrawer) group.getLast()).offset, offset));
 
-            int tempH = Math.round(((AbilityCellDrawer) group.get(group.size() - 1)).h);
-            int tempUw = Math.round(((AbilityCellDrawer) group.get(group.size() - 1)).w);
+            int tempH = Math.round(((AbilityCellDrawer) group.getLast()).h);
+            int tempUw = Math.round(((AbilityCellDrawer) group.getLast()).w);
 
             ah = Math.max(tempH, ah);
             aw = Math.max(tempUw, aw);
@@ -1937,12 +1937,12 @@ public class ImageDrawing {
             }
         }
 
-        cellGroup.get(cellGroup.size() - 1).initialize(nameFont, contentFont, (int) Math.round((uw * 3 + CellDrawer.lineOffset * 4) * 1.5));
+        cellGroup.getLast().initialize(nameFont, contentFont, (int) Math.round((uw * 3 + CellDrawer.lineOffset * 4) * 1.5));
 
-        offset = Math.round(Math.max(((AbilityCellDrawer) cellGroup.get(cellGroup.size() - 1)).offset, offset));
+        offset = Math.round(Math.max(((AbilityCellDrawer) cellGroup.getLast()).offset, offset));
 
-        int tempH = Math.round(((AbilityCellDrawer) cellGroup.get(cellGroup.size() - 1)).h);
-        int tempUw = Math.round(((AbilityCellDrawer) cellGroup.get(cellGroup.size() - 1)).w);
+        int tempH = Math.round(((AbilityCellDrawer) cellGroup.getLast()).h);
+        int tempUw = Math.round(((AbilityCellDrawer) cellGroup.getLast()).w);
 
         ah = Math.max(tempH, ah);
         aw = Math.max(tempUw, aw);
@@ -2120,12 +2120,12 @@ public class ImageDrawing {
             uw = (aw - CellDrawer.lineOffset * 6) / 4;
         }
 
-        group.get(group.size() - 1).initialize(nameFont, contentFont, (int) ((uw * 4 + CellDrawer.lineOffset * 6) * 1.5));
+        group.getLast().initialize(nameFont, contentFont, (int) ((uw * 4 + CellDrawer.lineOffset * 6) * 1.5));
 
-        offset = Math.round(Math.max(((AbilityCellDrawer) group.get(group.size() - 1)).offset, offset));
+        offset = Math.round(Math.max(((AbilityCellDrawer) group.getLast()).offset, offset));
 
-        int mh = Math.round(((AbilityCellDrawer) group.get(group.size() - 1)).h);
-        int mw = Math.round(((AbilityCellDrawer) group.get(group.size() - 1)).w);
+        int mh = Math.round(((AbilityCellDrawer) group.getLast()).h);
+        int mw = Math.round(((AbilityCellDrawer) group.getLast()).w);
 
         if(mw > uw * 4 + CellDrawer.lineOffset * 6) {
             uw = (mw - CellDrawer.lineOffset * 6) / 4;
@@ -2419,7 +2419,7 @@ public class ImageDrawing {
             }
 
             if(data.cost.size() == 1) {
-                String cost = String.format(LangID.getStringByID("talanalyzer_singlenp", lang), data.cost.get(0));
+                String cost = String.format(LangID.getStringByID("talanalyzer_singlenp", lang), data.cost.getFirst());
 
                 float[] costRect = contentFont.measureDimension(cost);
 
@@ -2478,7 +2478,7 @@ public class ImageDrawing {
             panelHeight += talentCostGap;
 
             if(data.cost.size() == 1) {
-                String cost = String.format(LangID.getStringByID("talanalyzer_singlenp", lang), data.cost.get(0));
+                String cost = String.format(LangID.getStringByID("talanalyzer_singlenp", lang), data.cost.getFirst());
 
                 float[] costRect = contentFont.measureDimension(cost);
 
@@ -2591,7 +2591,7 @@ public class ImageDrawing {
                     y += talentCostGap;
 
                     if(data.cost.size() == 1) {
-                        String cost = String.format(LangID.getStringByID("talanalyzer_singlenp", lang), data.cost.get(0));
+                        String cost = String.format(LangID.getStringByID("talanalyzer_singlenp", lang), data.cost.getFirst());
 
                         g.setFontModel(contentFont);
                         g.setColor(238, 238, 238, 255);
@@ -2673,9 +2673,9 @@ public class ImageDrawing {
         if(image == null || !image.exists())
             return null;
 
-        float[] titleRect = titleFont.measureDimension(combo.title);
-        float[] typeRect = typeFont.measureDimension(combo.type);
-        float[] levelRect = typeFont.measureDimension(combo.level);
+        float[] titleRect = titleFont.measureDimension(combo.getTitle());
+        float[] typeRect = typeFont.measureDimension(combo.getType());
+        float[] levelRect = typeFont.measureDimension(combo.getLevel());
 
         int levelBoxDimension = Math.round(Math.max(levelRect[2], levelRect[3]) + comboTypeInnerGap * 2);
 
@@ -2685,29 +2685,29 @@ public class ImageDrawing {
         int titleHeight = Math.round(titleRect[3] + comboTitleGap + typeBoxHeight);
         int titleWidth = Math.round(Math.max(titleRect[2], typeBoxWidth));
 
-        int maxIconTableWidth = Math.round(comboIconLeftRightGap * 2 + combo.icons.get(0).getWidth() * comboIconScaleFactor);
+        int maxIconTableWidth = Math.round(comboIconLeftRightGap * 2 + combo.getIcons().getFirst().getWidth() * comboIconScaleFactor);
         int maxUnitNameHeight = 0;
 
-        for(int i = 0; i < combo.icons.size(); i++) {
-            float[] unitNameRect = nameFont.measureDimension(combo.names.get(i));
+        for(int i = 0; i < combo.getIcons().size(); i++) {
+            float[] unitNameRect = nameFont.measureDimension(combo.getNames().get(i));
 
             maxUnitNameHeight = Math.round(Math.max(maxUnitNameHeight, unitNameRect[3]));
             maxIconTableWidth = Math.round(Math.max(maxIconTableWidth, comboIconLeftRightGap * 2 + unitNameRect[2]));
         }
 
-        int maxIconTableHeight = Math.round(comboIconUpDownGap * 2 + combo.icons.get(0).getHeight() * comboIconScaleFactor + comboIconNameGap + maxUnitNameHeight);
+        int maxIconTableHeight = Math.round(comboIconUpDownGap * 2 + combo.getIcons().getFirst().getHeight() * comboIconScaleFactor + comboIconNameGap + maxUnitNameHeight);
 
-        float[] descRect = contentFont.measureDimension(combo.description);
+        float[] descRect = contentFont.measureDimension(combo.getDescription());
 
-        maxIconTableWidth = (int) Math.round(Math.max(maxIconTableWidth, (descRect[2] - comboIconGap * (combo.icons.size() - 1)) / (1.0 * combo.icons.size())));
+        maxIconTableWidth = (int) Math.round(Math.max(maxIconTableWidth, (descRect[2] - comboIconGap * (combo.getIcons().size() - 1)) / (1.0 * combo.getIcons().size())));
 
         int panelHeight = Math.round(statPanelMargin * 2 + maxIconTableHeight + comboContentGap + descRect[3]);
-        int panelWidth = Math.round(statPanelMargin * 2 + Math.max(maxIconTableWidth * combo.icons.size() + comboIconGap * (combo.icons.size() - 1), descRect[2]));
+        int panelWidth = Math.round(statPanelMargin * 2 + Math.max(maxIconTableWidth * combo.getIcons().size() + comboIconGap * (combo.getIcons().size() - 1), descRect[2]));
 
         if(titleWidth > panelWidth) {
             panelWidth = titleWidth + bgMargin * 2 + statPanelMargin;
 
-            maxIconTableWidth = (int) Math.round((panelWidth - statPanelMargin * 2 - comboIconGap * (combo.icons.size() - 1)) / (1.0 * combo.icons.size()));
+            maxIconTableWidth = (int) Math.round((panelWidth - statPanelMargin * 2 - comboIconGap * (combo.getIcons().size() - 1)) / (1.0 * combo.getIcons().size()));
         }
 
         int totalHeight = bgMargin * 5 + titleHeight + panelHeight;
@@ -2731,30 +2731,30 @@ public class ImageDrawing {
 
                 g.setFontModel(titleFont);
                 g.setColor(238, 238, 238, 255);
-                g.drawText(combo.title, bgMargin * 2, bgMargin * 2, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
+                g.drawText(combo.getTitle(), bgMargin * 2, bgMargin * 2, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
 
                 g.setFontModel(typeFont);
-                g.drawText(combo.type, bgMargin * 2, (int) Math.round(bgMargin * 2 + titleRect[3] + comboTitleGap + (Math.max(typeRect[3], levelBoxDimension)) / 2.0), GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
+                g.drawText(combo.getType(), bgMargin * 2, (int) Math.round(bgMargin * 2 + titleRect[3] + comboTitleGap + (Math.max(typeRect[3], levelBoxDimension)) / 2.0), GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.MIDDLE);
 
                 g.setColor(88, 101, 242, 255);
                 g.fillRoundRect(Math.round(bgMargin * 2 + typeRect[2] + comboTypeGap), (int) Math.round(bgMargin * 2 + titleRect[3] + comboTitleGap + (Math.max(typeRect[3], levelBoxDimension) - levelBoxDimension) / 2.0), levelBoxDimension, levelBoxDimension, comboTypeRadius, comboTypeRadius);
 
                 g.setColor(238, 238, 238, 255);
-                g.drawText(combo.level, Math.round(bgMargin * 2 + typeRect[2] + comboTypeGap + (Math.max(typeRect[3], levelBoxDimension)) / 2f), Math.round(bgMargin * 2 + titleRect[3] + comboTitleGap + (Math.max(typeRect[3], levelBoxDimension)) / 2f), GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
+                g.drawText(combo.getLevel(), Math.round(bgMargin * 2 + typeRect[2] + comboTypeGap + (Math.max(typeRect[3], levelBoxDimension)) / 2f), Math.round(bgMargin * 2 + titleRect[3] + comboTitleGap + (Math.max(typeRect[3], levelBoxDimension)) / 2f), GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.MIDDLE);
 
                 int x = bgMargin + statPanelMargin;
                 int y = bgMargin * 4 + titleHeight + statPanelMargin;
 
                 g.setFontModel(nameFont);
 
-                for(int i = 0; i < combo.icons.size(); i++) {
+                for(int i = 0; i < combo.getIcons().size(); i++) {
                     g.setColor(51, 53, 60, 255);
                     g.fillRoundRect(x, y, finalMaxIconTableWidth, maxIconTableHeight, comboIconTableRadius, comboIconTableRadius);
 
-                    g.drawImage(combo.icons.get(i), Math.round(x + (finalMaxIconTableWidth - combo.icons.get(i).getWidth() * comboIconScaleFactor) / 2.0), y + comboIconUpDownGap, Math.round(combo.icons.get(i).getWidth() * comboIconScaleFactor), Math.round(combo.icons.get(i).getHeight() * comboIconScaleFactor));
+                    g.drawImage(combo.getIcons().get(i), Math.round(x + (finalMaxIconTableWidth - combo.getIcons().get(i).getWidth() * comboIconScaleFactor) / 2.0), y + comboIconUpDownGap, Math.round(combo.getIcons().get(i).getWidth() * comboIconScaleFactor), Math.round(combo.getIcons().get(i).getHeight() * comboIconScaleFactor));
 
                     g.setColor(191, 191, 191, 255);
-                    g.drawText(combo.names.get(i), (int) Math.round(x + (finalMaxIconTableWidth) / 2.0), Math.round(y + comboIconUpDownGap + combo.icons.get(i).getHeight() * comboIconScaleFactor + comboIconNameGap), GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.TOP);
+                    g.drawText(combo.getNames().get(i), (int) Math.round(x + (finalMaxIconTableWidth) / 2.0), Math.round(y + comboIconUpDownGap + combo.getIcons().get(i).getHeight() * comboIconScaleFactor + comboIconNameGap), GLGraphics.HorizontalSnap.MIDDLE, GLGraphics.VerticalSnap.TOP);
 
                     x += finalMaxIconTableWidth + comboIconGap;
                 }
@@ -2764,7 +2764,7 @@ public class ImageDrawing {
 
                 g.setFontModel(contentFont);
                 g.setColor(238, 238, 238, 255);
-                g.drawText(combo.description, x, y, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
+                g.drawText(combo.getDescription(), x, y, GLGraphics.HorizontalSnap.RIGHT, GLGraphics.VerticalSnap.TOP);
 
                 return null;
             });
@@ -4357,8 +4357,8 @@ public class ImageDrawing {
 
         String chance;
 
-        if(dropData.get(dropData.size() - 1).length == 1) {
-            dropData.remove(dropData.size() - 1);
+        if(dropData.getLast().length == 1) {
+            dropData.removeLast();
 
             chance = LangID.getStringByID("data_rewardno", lang);
         } else {
@@ -4598,8 +4598,8 @@ public class ImageDrawing {
                     case CHANCE_WIDTH -> {
                         String chance;
 
-                        if (data.get(data.size() - 1).length == 1) {
-                            data.remove(data.size() - 1);
+                        if (data.getLast().length == 1) {
+                            data.removeLast();
 
                             chance = LangID.getStringByID("data_rewardno", lang);
                         } else {

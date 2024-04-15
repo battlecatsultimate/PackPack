@@ -28,14 +28,11 @@ public class LangID {
 
         if(fs != null) {
             for(File g : fs) {
-                if(g.getName().equals("en.json")) {
-                    EN_OBJ = StaticStore.getJsonFile("lang/en");
-                } else if(g.getName().equals("jp.json")) {
-                    JP_OBJ = StaticStore.getJsonFile("lang/jp");
-                } else if(g.getName().equals("kr.json")) {
-                    KR_OBJ = StaticStore.getJsonFile("lang/kr");
-                } else if(g.getName().equals("zh.json")) {
-                    ZH_OBJ = StaticStore.getJsonFile("lang/zh");
+                switch (g.getName()) {
+                    case "en.json" -> EN_OBJ = StaticStore.getJsonFile("lang/en");
+                    case "jp.json" -> JP_OBJ = StaticStore.getJsonFile("lang/jp");
+                    case "kr.json" -> KR_OBJ = StaticStore.getJsonFile("lang/kr");
+                    case "zh.json" -> ZH_OBJ = StaticStore.getJsonFile("lang/zh");
                 }
             }
         }
@@ -112,18 +109,13 @@ public class LangID {
     }
 
     public static boolean hasID(String id, int locale) {
-        switch (locale) {
-            case EN:
-                return EN_OBJ != null && EN_OBJ.has(id);
-            case JP:
-                return JP_OBJ != null && JP_OBJ.has(id);
-            case KR:
-                return KR_OBJ != null && KR_OBJ.has(id);
-            case ZH:
-                return ZH_OBJ != null && ZH_OBJ.has(id);
-            default:
-                return false;
-        }
+        return switch (locale) {
+            case EN -> EN_OBJ != null && EN_OBJ.has(id);
+            case JP -> JP_OBJ != null && JP_OBJ.has(id);
+            case KR -> KR_OBJ != null && KR_OBJ.has(id);
+            case ZH -> ZH_OBJ != null && ZH_OBJ.has(id);
+            default -> false;
+        };
     }
 
     public static void printMissingTags() {

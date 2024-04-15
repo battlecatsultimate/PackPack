@@ -9,9 +9,9 @@ import java.util.ArrayList;
 public class ItemSchedule extends EventFactor implements Schedule {
     private final int locale;
 
-    public ArrayList<EventSection> sections = new ArrayList<>();
-    public EventDateSet date;
-    public String minVersion, maxVersion;
+    public final ArrayList<EventSection> sections = new ArrayList<>();
+    public final EventDateSet date;
+    public final String minVersion, maxVersion;
 
     public int categoryID;
     public int itemID;
@@ -258,7 +258,7 @@ public class ItemSchedule extends EventFactor implements Schedule {
                 result.append("} ");
             }
 
-            if (section.weekDays.size() != 0) {
+            if (!section.weekDays.isEmpty()) {
                 result.append("{");
 
                 for(int i = 0; i < section.weekDays.size(); i++) {

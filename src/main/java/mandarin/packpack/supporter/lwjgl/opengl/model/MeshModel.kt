@@ -21,7 +21,6 @@ class MeshModel : Model() {
         private const val LINE_VERTEX_OFFSET = 410L * 2L * Float.SIZE_BYTES
         private const val CUSTOM_VERTEX_OFFSET = 412L * 2L * Float.SIZE_BYTES
         private const val VERTEX_SIZE_LIMIT = (410L + 1000L) * 2L * Float.SIZE_BYTES
-        private const val INDEX_SIZE_LIMIT = (410L + 1000L) * Int.SIZE_BYTES
     }
 
     private val vertexBufferVBO = VBO.build(VBO.Type.BUFFER)
@@ -169,14 +168,6 @@ class MeshModel : Model() {
         }
 
         drawLine(meshes[LINE])
-    }
-
-    fun meshSize() : Int {
-        return meshes.size
-    }
-
-    fun getMesh(index: Int) : PolygonMesh {
-        return meshes[index]
     }
 
     fun fillSquare() {

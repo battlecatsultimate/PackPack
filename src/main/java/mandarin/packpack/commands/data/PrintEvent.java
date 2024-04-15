@@ -20,7 +20,7 @@ public class PrintEvent extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) throws Exception {
+    public void doSomething(@NotNull CommandLoader loader) {
         if(holder == null)
             return;
 
@@ -112,7 +112,7 @@ public class PrintEvent extends ConstraintCommand {
                         }
 
                         while(builder.length() < 1950 && !data.isEmpty()) {
-                            String line = data.get(0);
+                            String line = data.getFirst();
 
                             if(line.length() > 1950) {
                                 data.remove(0);
@@ -181,7 +181,7 @@ public class PrintEvent extends ConstraintCommand {
                     builder.append("```ansi\n");
 
                     while(builder.length() < (j == EventFactor.GATYA ? 1800 : 1950) && !result.isEmpty()) {
-                        String line = result.get(0);
+                        String line = result.getFirst();
 
                         if(line.length() > 1950) {
                             result.remove(0);

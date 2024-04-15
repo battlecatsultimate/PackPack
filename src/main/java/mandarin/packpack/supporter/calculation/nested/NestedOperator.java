@@ -20,7 +20,7 @@ public class NestedOperator extends NestedElement {
 
     @Override
     public BigDecimal perform(BigDecimal... input) {
-        BigDecimal d0 = children.get(0).calculate(input);
+        BigDecimal d0 = children.getFirst().calculate(input);
         BigDecimal d1 = children.get(1).calculate(input);
 
         if(d0 == null || d1 == null) {
@@ -108,7 +108,7 @@ public class NestedOperator extends NestedElement {
 
     @Override
     protected double performFast(double... input) {
-        double d0 = children.get(0).calculateFast(input);
+        double d0 = children.getFirst().calculateFast(input);
         double d1 = children.get(1).calculateFast(input);
 
         if(aborted) {

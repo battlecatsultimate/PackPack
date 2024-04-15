@@ -75,10 +75,10 @@ public class ChannelPermissionRoleHolder extends ComponentHolder {
 
                 String value;
 
-                if (((StringSelectInteractionEvent) event).getValues().get(0).equals(holder.MEMBER)) {
+                if (((StringSelectInteractionEvent) event).getValues().getFirst().equals(holder.MEMBER)) {
                     value = holder.MEMBER;
                 } else {
-                    value = ((StringSelectInteractionEvent) event).getValues().get(0);
+                    value = ((StringSelectInteractionEvent) event).getValues().getFirst();
                 }
 
                 event.deferEdit()

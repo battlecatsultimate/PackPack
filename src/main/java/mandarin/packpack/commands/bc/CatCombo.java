@@ -32,7 +32,7 @@ public class CatCombo extends TimedConstraintCommand {
     }
 
     @Override
-    public void prepare() throws Exception {
+    public void prepare() {
         registerRequiredPermission(Permission.MESSAGE_MANAGE, Permission.MESSAGE_ATTACH_FILES, Permission.MESSAGE_EMBED_LINKS);
     }
 
@@ -50,7 +50,7 @@ public class CatCombo extends TimedConstraintCommand {
                 disableTimer();
                 replyToMessageSafely(ch, LangID.getStringByID("combo_noname", lang).replace("_", validateKeyword(getSearchKeywords(name, cName, lang))), loader.getMessage(), a -> a);
             } else if(combos.size() == 1) {
-                EntityHandler.showComboEmbed(ch, loader.getMessage(), combos.get(0), lang);
+                EntityHandler.showComboEmbed(ch, loader.getMessage(), combos.getFirst(), lang);
             } else {
                 disableTimer();
 
@@ -90,14 +90,14 @@ public class CatCombo extends TimedConstraintCommand {
                 disableTimer();
                 replyToMessageSafely(ch, LangID.getStringByID("combo_noname", lang).replace("_", validateKeyword(getSearchKeywords(name, cName, lang))), loader.getMessage(), a -> a);
             } else if(forms.size() == 1) {
-                ArrayList<Combo> combos = EntityFilter.filterComboWithUnit(forms.get(0), cName);
+                ArrayList<Combo> combos = EntityFilter.filterComboWithUnit(forms.getFirst(), cName);
 
                 if(combos.isEmpty()) {
                     disableTimer();
 
                     replyToMessageSafely(ch, LangID.getStringByID("combo_noname", lang).replace("_", validateKeyword(getSearchKeywords(name, cName, lang))), loader.getMessage(), a -> a);
                 } else if(combos.size() == 1) {
-                    EntityHandler.showComboEmbed(ch, loader.getMessage(), combos.get(0), lang);
+                    EntityHandler.showComboEmbed(ch, loader.getMessage(), combos.getFirst(), lang);
                 } else {
                     disableTimer();
 

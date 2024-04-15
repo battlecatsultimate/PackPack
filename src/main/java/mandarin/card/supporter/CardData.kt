@@ -1,7 +1,5 @@
 package mandarin.card.supporter
 
-import com.google.api.client.util.DateTime
-import com.google.gson.JsonParser
 import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.supporter.StaticStore
 import net.dv8tion.jda.api.entities.Member
@@ -9,20 +7,12 @@ import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildChannel
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildMessageChannel
-import org.apache.http.client.methods.CloseableHttpResponse
-import org.apache.http.client.methods.HttpGet
-import org.apache.http.impl.client.CloseableHttpClient
-import org.apache.http.impl.client.HttpClientBuilder
 import java.awt.Color
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.net.URI
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.time.Clock
 import java.time.Instant
 import java.util.*
-import kotlin.collections.ArrayList
 
 @Suppress("unused")
 object CardData {
@@ -235,7 +225,9 @@ object CardData {
         HERMIT(ServerData.get("hermit"), "HERMIT", "Hermit Cat"),
         EASTER(ServerData.get("easter"), "EASTER", "Easter Duche"),
         RAMIEL(ServerData.get("ramiel"), "RAMIEL", "Ramiel"),
-        LEGEND(ServerData.get("legend"), "LEGEND", "Legend Collector");
+        LEGEND(ServerData.get("legend"), "LEGEND", "Legend Collector"),
+        ZAMBONER(ServerData.get("zamboner"), "ZAMBONER", "Zamboner"),
+        WHALELORD(ServerData.get("whaleLord"), "WHALELORD", "Whale Lord");
 
         fun getProduct() : Product {
             return when(this) {
@@ -265,8 +257,8 @@ object CardData {
 
     val guild = ServerData.get("guild")
 
-    val cc = ServerData.get("cc")
-    val ecc = ServerData.get("ecc")
+    private val cc = ServerData.get("cc")
+    private val ecc = ServerData.get("ecc")
 
     val bankAccount = ServerData.get("bankAccount")
 
@@ -285,7 +277,7 @@ object CardData {
     val modLog = ServerData.get("modLog")
     val catFoodLog = ServerData.get("catFoodLog")
 
-    val globalCategory = arrayOf(
+    private val globalCategory = arrayOf(
         ServerData.get("bctcCategory"),
         ServerData.get("bctcRaidCategory"),
         ServerData.get("bctcDevelopmentCategory"),

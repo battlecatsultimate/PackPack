@@ -191,7 +191,7 @@ public class AllEventAdapter extends ListenerAdapter {
             StaticStore.idHolder.put(g.getId(), idh);
 
             if(StaticStore.scamLinkHandlers.servers.containsKey(g.getId())) {
-                String channel = StaticStore.scamLinkHandlers.servers.get(g.getId()).channel;
+                String channel = StaticStore.scamLinkHandlers.servers.get(g.getId()).getChannel();
 
                 if(channel != null && channel.equals(ch.getId())) {
                     StaticStore.scamLinkHandlers.servers.remove(g.getId());
@@ -638,38 +638,44 @@ public class AllEventAdapter extends ListenerAdapter {
         User u = event.getUser();
 
         try {
-            if (event instanceof GenericComponentInteractionCreateEvent c) {
-                if (StaticStore.holderContainsKey(u.getId())) {
-                    HolderHub holder = StaticStore.getHolderHub(u.getId());
+            switch (event) {
+                case GenericComponentInteractionCreateEvent c -> {
+                    if (StaticStore.holderContainsKey(u.getId())) {
+                        HolderHub holder = StaticStore.getHolderHub(u.getId());
 
-                    holder.handleEvent(c);
-                }
-            } else if (event instanceof ModalInteractionEvent m) {
-                if (StaticStore.holderContainsKey(u.getId())) {
-                    HolderHub holder = StaticStore.getHolderHub(u.getId());
-
-                    holder.handleEvent(m);
-                }
-            } else if (event instanceof  GenericCommandInteractionEvent i) {
-                if (StaticStore.spamData.containsKey(u.getId())) {
-                    SpamPrevent spam = StaticStore.spamData.get(u.getId());
-
-                    String result = spam.isPrevented(event);
-
-                    if (result != null) {
-                        if (!result.isBlank()) {
-
-                            i.deferReply().setContent(result).queue();
-                        }
-
-                        return;
+                        holder.handleEvent(c);
                     }
                 }
+                case ModalInteractionEvent m -> {
+                    if (StaticStore.holderContainsKey(u.getId())) {
+                        HolderHub holder = StaticStore.getHolderHub(u.getId());
 
-                switch (i.getName()) {
-                    case "fs" -> FormStat.performInteraction(i);
-                    case "es" -> EnemyStat.performInteraction(i);
-                    case "si" -> StageInfo.performInteraction(i);
+                        holder.handleEvent(m);
+                    }
+                }
+                case GenericCommandInteractionEvent i -> {
+                    if (StaticStore.spamData.containsKey(u.getId())) {
+                        SpamPrevent spam = StaticStore.spamData.get(u.getId());
+
+                        String result = spam.isPrevented(event);
+
+                        if (result != null) {
+                            if (!result.isBlank()) {
+
+                                i.deferReply().setContent(result).queue();
+                            }
+
+                            return;
+                        }
+                    }
+
+                    switch (i.getName()) {
+                        case "fs" -> FormStat.performInteraction(i);
+                        case "es" -> EnemyStat.performInteraction(i);
+                        case "si" -> StageInfo.performInteraction(i);
+                    }
+                }
+                default -> {
                 }
             }
         } catch (Exception e) {

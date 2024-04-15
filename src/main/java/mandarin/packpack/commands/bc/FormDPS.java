@@ -81,7 +81,7 @@ public class FormDPS extends TimedConstraintCommand {
             ArrayList<Form> forms = EntityFilter.findUnitWithName(filterCommand(command), false, lang);
 
             if (forms.size() == 1) {
-                Form f = forms.get(0);
+                Form f = forms.getFirst();
 
                 TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getMessage().getAuthor().getId(), TreasureHolder.global);
 
@@ -250,7 +250,7 @@ public class FormDPS extends TimedConstraintCommand {
                         Level level = new Level(0);
 
                         if(!lv.isEmpty())
-                            level.setLevel(lv.get(0));
+                            level.setLevel(lv.getFirst());
                         else
                             level.setLevel(-1);
 

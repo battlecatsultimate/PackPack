@@ -2,6 +2,7 @@ package mandarin.packpack.supporter.lwjgl.opengl
 
 import org.lwjgl.opengl.GL33
 
+@Suppress("unused")
 class Program {
     private val uniformFields = HashSet<String>()
 

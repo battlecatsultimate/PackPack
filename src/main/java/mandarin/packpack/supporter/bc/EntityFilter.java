@@ -309,7 +309,7 @@ public class EntityFilter {
         if(forms.isEmpty())
             return null;
         else if(forms.size() == 1)
-            return forms.get(0);
+            return forms.getFirst();
         else {
             ArrayList<Integer> min = getFullDistances(forms, name, lang, Form.class);
 
@@ -545,7 +545,7 @@ public class EntityFilter {
         if(e.isEmpty())
             return null;
         else if(e.size() == 1)
-            return e.get(0);
+            return e.getFirst();
         else {
             ArrayList<Integer> min = getFullDistances(e, name, lang, Enemy.class);
 
@@ -590,32 +590,30 @@ public class EntityFilter {
                     if(mcName == null || mcName.isBlank())
                         continue;
 
-                    if(!mcName.isBlank()) {
-                        boolean s0 = mcName.toLowerCase(Locale.ENGLISH).contains(names[0].toLowerCase(Locale.ENGLISH));
+                    boolean s0 = mcName.toLowerCase(Locale.ENGLISH).contains(names[0].toLowerCase(Locale.ENGLISH));
 
-                        if(!s0) {
-                            mcName = mcName.replace("-", " ");
+                    if(!s0) {
+                        mcName = mcName.replace("-", " ");
 
-                            if(mcName.toLowerCase(Locale.ENGLISH).contains(names[0].toLowerCase(Locale.ENGLISH))) {
-                                s0 = true;
-                            }
+                        if(mcName.toLowerCase(Locale.ENGLISH).contains(names[0].toLowerCase(Locale.ENGLISH))) {
+                            s0 = true;
                         }
+                    }
 
-                        if(s0) {
-                            for(StageMap stm : mc.maps.getList()) {
-                                if(stm == null)
+                    if(s0) {
+                        for(StageMap stm : mc.maps.getList()) {
+                            if(stm == null)
+                                continue;
+
+                            for(Stage st : stm.list.getList()) {
+                                if(st == null)
                                     continue;
 
-                                for(Stage st : stm.list.getList()) {
-                                    if(st == null)
-                                        continue;
-
-                                    result.add(st);
-                                }
+                                result.add(st);
                             }
-
-                            break;
                         }
+
+                        break;
                     }
                 }
             }
@@ -1503,7 +1501,7 @@ public class EntityFilter {
         if(stages.isEmpty()) {
             return null;
         } else if(stages.size() == 1) {
-            return stages.get(0);
+            return stages.getFirst();
         } else {
             if(names[2] == null) {
                 return null;

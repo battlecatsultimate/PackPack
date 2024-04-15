@@ -70,7 +70,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
                 if (event instanceof EntitySelectInteractionEvent e) {
                     List<IMentionable> mentionables = e.getValues();
 
-                    if(!mentionables.isEmpty() && mentionables.get(0) instanceof Role r) {
+                    if(!mentionables.isEmpty() && mentionables.getFirst() instanceof Role r) {
                         if(alreadyBeingUsed(r.getId())) {
                             event.deferReply(true)
                                     .setContent(LangID.getStringByID("idset_rolealr", lang))
@@ -99,7 +99,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
                 if (event instanceof EntitySelectInteractionEvent e) {
                     List<IMentionable> mentionables = e.getValues();
 
-                    if(!mentionables.isEmpty() && mentionables.get(0) instanceof Role r) {
+                    if(!mentionables.isEmpty() && mentionables.getFirst() instanceof Role r) {
                         if(alreadyBeingUsed(r.getId())) {
                             event.deferReply(true)
                                     .setContent(LangID.getStringByID("idset_rolealr", lang))
@@ -136,7 +136,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
                 if (event instanceof EntitySelectInteractionEvent e) {
                     List<IMentionable> mentionables = e.getValues();
 
-                    if(!mentionables.isEmpty() && mentionables.get(0) instanceof Role r) {
+                    if(!mentionables.isEmpty() && mentionables.getFirst() instanceof Role r) {
                         if(alreadyBeingUsed(r.getId())) {
                             event.deferReply(true)
                                     .setContent(LangID.getStringByID("idset_rolealr", lang))
@@ -184,7 +184,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
             case "announce" -> {
                 if (event instanceof EntitySelectInteractionEvent e) {
                     if (!e.getValues().isEmpty()) {
-                        IMentionable mentionable = e.getValues().get(0);
+                        IMentionable mentionable = e.getValues().getFirst();
 
                         if (mentionable instanceof GuildMessageChannel m) {
                             if (!m.canTalk()) {
@@ -228,7 +228,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
             case "logDM" -> {
                 if (event instanceof EntitySelectInteractionEvent e) {
                     if (!e.getValues().isEmpty()) {
-                        IMentionable mentionable = e.getValues().get(0);
+                        IMentionable mentionable = e.getValues().getFirst();
 
                         if (mentionable instanceof GuildMessageChannel m) {
                             if (!m.canTalk()) {
@@ -658,7 +658,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
     }
 
     @Override
-    public void onConflict(Holder holder) {
+    public void onConflict() {
         expire(userID);
     }
 }

@@ -12,7 +12,7 @@ public abstract class NestedElement {
     @Nullable
     public NestedElement parent = null;
     @Nonnull
-    public Formula formula;
+    public final Formula formula;
 
     public boolean aborted = false;
 
@@ -22,7 +22,7 @@ public abstract class NestedElement {
         this.formula = formula;
     }
 
-    protected List<NestedElement> children = new ArrayList<>();
+    protected final List<NestedElement> children = new ArrayList<>();
 
     @Nullable
     public BigDecimal calculate(BigDecimal... input) {
@@ -137,5 +137,6 @@ public abstract class NestedElement {
 
     protected abstract NestedElement copy(Formula newFormula);
 
+    @SuppressWarnings("unused")
     public abstract String printTree(String tab);
 }

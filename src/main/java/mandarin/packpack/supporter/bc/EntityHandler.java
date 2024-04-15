@@ -4005,10 +4005,10 @@ public class EntityHandler {
                     List<Integer> possibleWave = getWaveIndex(range, waveLevel, BigDecimal.valueOf(Data.W_U_WID), BigDecimal.valueOf(Data.W_U_INI));
 
                     if (possibleWave.size() == 1) {
-                        if (possibleWave.get(0) == 1000) {
+                        if (possibleWave.getFirst() == 1000) {
                             y2 = y2.add(waveAttack);
                             y3 = y3.add(waveAttack);
-                        } else if (possibleWave.get(0) == -1000) {
+                        } else if (possibleWave.getFirst() == -1000) {
                             y1 = y1.add(waveAttack);
                             y3 = y3.add(waveAttack);
                         } else {
@@ -4060,9 +4060,9 @@ public class EntityHandler {
                     List<Integer> possibleWave = getWaveIndex(range, waveLevel, BigDecimal.valueOf(Data.W_U_WID), BigDecimal.valueOf(Data.W_U_INI));
 
                     if (possibleWave.size() == 1) {
-                        if (possibleWave.get(0) == 1000) {
+                        if (possibleWave.getFirst() == 1000) {
                             y2 = y2.add(waveAttack);
-                        } else if (possibleWave.get(0) == -1000) {
+                        } else if (possibleWave.getFirst() == -1000) {
                             y1 = y1.add(waveAttack);
                         } else {
                             y1 = y1.add(waveAttack);
@@ -4173,10 +4173,10 @@ public class EntityHandler {
                         List<Integer> possibleWave = getWaveIndex(range, waveLevel, BigDecimal.valueOf(Data.W_U_WID), BigDecimal.valueOf(Data.W_U_INI));
 
                         if (possibleWave.size() == 1) {
-                            if (possibleWave.get(0) == 1000) {
+                            if (possibleWave.getFirst() == 1000) {
                                 y2 = y2.add(waveAttack);
                                 y3 = y3.add(waveAttack);
-                            } else if (possibleWave.get(0) == -1000) {
+                            } else if (possibleWave.getFirst() == -1000) {
                                 y1 = y1.add(waveAttack);
                                 y3 = y3.add(waveAttack);
                             } else {
@@ -4228,9 +4228,9 @@ public class EntityHandler {
                         List<Integer> possibleWave = getWaveIndex(range, waveLevel, BigDecimal.valueOf(Data.W_U_WID), BigDecimal.valueOf(Data.W_U_INI));
 
                         if (possibleWave.size() == 1) {
-                            if (possibleWave.get(0) == 1000) {
+                            if (possibleWave.getFirst() == 1000) {
                                 y2 = y2.add(waveAttack);
-                            } else if (possibleWave.get(0) == -1000) {
+                            } else if (possibleWave.getFirst() == -1000) {
                                 y1 = y1.add(waveAttack);
                             } else {
                                 y1 = y1.add(waveAttack);
@@ -4637,10 +4637,10 @@ public class EntityHandler {
                     List<Integer> possibleWave = getWaveIndex(range, waveLevel, BigDecimal.valueOf(Data.W_E_WID), BigDecimal.valueOf(Data.W_E_INI));
 
                     if (possibleWave.size() == 1) {
-                        if (possibleWave.get(0) == 1000) {
+                        if (possibleWave.getFirst() == 1000) {
                             y2 = y2.add(waveAttack);
                             y3 = y3.add(waveAttack);
-                        } else if (possibleWave.get(0) == -1000) {
+                        } else if (possibleWave.getFirst() == -1000) {
                             y1 = y1.add(waveAttack);
                             y3 = y3.add(waveAttack);
                         } else {
@@ -4692,9 +4692,9 @@ public class EntityHandler {
                     List<Integer> possibleWave = getWaveIndex(range, waveLevel, BigDecimal.valueOf(Data.W_E_WID), BigDecimal.valueOf(Data.W_E_INI));
 
                     if (possibleWave.size() == 1) {
-                        if (possibleWave.get(0) == 1000) {
+                        if (possibleWave.getFirst() == 1000) {
                             y2 = y2.add(waveAttack);
-                        } else if (possibleWave.get(0) == -1000) {
+                        } else if (possibleWave.getFirst() == -1000) {
                             y1 = y1.add(waveAttack);
                         } else {
                             y1 = y1.add(waveAttack);
@@ -5203,14 +5203,14 @@ public class EntityHandler {
 
             List<CellData> group = new ArrayList<>();
 
-            if(d.oneLine) {
+            if(d.isOneLine()) {
                 group.add(d);
 
                 cellGroup.add(group);
             } else {
                 int j = i;
 
-                while(group.size() < 3 && !data.get(j).oneLine) {
+                while(group.size() < 3 && !data.get(j).isOneLine()) {
                     group.add(data.get(j));
 
                     j++;
@@ -5237,7 +5237,7 @@ public class EntityHandler {
             String[] contents = new String[group.size()];
 
             for(int j = 0; j < group.size(); j++) {
-                names[j] = group.get(j).name;
+                names[j] = group.get(j).getName();
                 String c = group.get(j).dataToString(u.data, isFrame);
 
                 if(c.isBlank()) {
@@ -5337,14 +5337,14 @@ public class EntityHandler {
 
             List<CellData> group = new ArrayList<>();
 
-            if(d.oneLine) {
+            if(d.isOneLine()) {
                 group.add(d);
 
                 cellGroup.add(group);
             } else {
                 int j = i;
 
-                while(group.size() < 3 && !data.get(j).oneLine) {
+                while(group.size() < 3 && !data.get(j).isOneLine()) {
                     group.add(data.get(j));
 
                     j++;
@@ -5371,7 +5371,7 @@ public class EntityHandler {
             String[] contents = new String[group.size()];
 
             for(int j = 0; j < group.size(); j++) {
-                names[j] = group.get(j).name;
+                names[j] = group.get(j).getName();
                 String c = group.get(j).dataToString(e.data, isFrame);
 
                 if(c.isBlank()) {

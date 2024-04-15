@@ -19,6 +19,7 @@ import java.io.InputStreamReader;
 
 import static java.awt.AlphaComposite.SRC_OVER;
 
+@SuppressWarnings("unused")
 public class FG2D implements FakeGraphics {
 	private static final Object KAS = RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED;
 	private static final Object KAD = RenderingHints.VALUE_ALPHA_INTERPOLATION_DEFAULT;

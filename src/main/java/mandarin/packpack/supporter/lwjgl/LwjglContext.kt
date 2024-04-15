@@ -1,4 +1,4 @@
-package mandarin.packpack.supporter
+package mandarin.packpack.supporter.lwjgl
 
 import common.io.Backup
 import common.io.PackLoader

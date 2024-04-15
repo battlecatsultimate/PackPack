@@ -34,10 +34,10 @@ public class ComboAnalyzer extends ConstraintCommand {
         super(role, lang, id, false);
     }
 
-    List<CustomCombo> combos = new ArrayList<>();
+    final List<CustomCombo> combos = new ArrayList<>();
 
     @Override
-    public void prepare() throws Exception {
+    public void prepare() {
         registerRequiredPermission(Permission.MESSAGE_ATTACH_FILES);
     }
 
@@ -89,8 +89,8 @@ public class ComboAnalyzer extends ConstraintCommand {
         for(int i = 0; i < combos.size(); i++) {
             File image = ImageDrawing.drawComboImage(folder, combos.get(i));
 
-            for (int j = 0; j < combos.get(i).icons.size(); j++) {
-                combos.get(i).icons.get(j).unload();
+            for (int j = 0; j < combos.get(i).getIcons().size(); j++) {
+                combos.get(i).getIcons().get(j).unload();
             }
 
             if(image != null)

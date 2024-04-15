@@ -19,8 +19,6 @@ public abstract class ComponentHolder extends Holder {
         super(author, channelID, message);
     }
 
-    public final long time = System.currentTimeMillis();
-
     @Override
     public final STATUS handleEvent(Event event) {
         if(event instanceof GenericComponentInteractionCreateEvent componentEvent && canHandleEvent(componentEvent)) {
@@ -37,7 +35,7 @@ public abstract class ComponentHolder extends Holder {
             throw new IllegalStateException("Event type isn't StringSelectInteractionEvent!");
         }
 
-        return StaticStore.safeParseInt(((StringSelectInteractionEvent) event).getValues().get(0));
+        return StaticStore.safeParseInt(((StringSelectInteractionEvent) event).getValues().getFirst());
     }
 
     public int getTotalPage(int size) {

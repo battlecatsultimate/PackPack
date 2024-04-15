@@ -151,6 +151,7 @@ class Product(val requiredFilter: Int, vararg filters: Filter) {
             BannerFilter(BannerFilter.Banner.Collaboration, 3, "3 Collaboration Units")
         )
 
+        @Suppress("unused")
         val customEmoji = Product(1,
             BannerFilter(BannerFilter.Banner.UberfestExclusives, 5, "5 Uberfest Exclusive Units"),
             BannerFilter(BannerFilter.Banner.EpicfestExclusives, 5, "5 Epicfest Exclusive Units"),

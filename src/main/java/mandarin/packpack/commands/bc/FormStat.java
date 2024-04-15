@@ -126,7 +126,7 @@ public class FormStat extends ConstraintCommand {
         Level lv = new Level(0);
 
         if(!levels.isEmpty())
-            lv.setLevel(levels.get(0));
+            lv.setLevel(levels.getFirst());
         else
             lv.setLevel(-1);
 
@@ -174,7 +174,7 @@ public class FormStat extends ConstraintCommand {
     }
 
     @Override
-    public void prepare() throws Exception {
+    public void prepare() {
         registerRequiredPermission(Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_ATTACH_FILES, Permission.MESSAGE_EMBED_LINKS);
     }
 
@@ -224,7 +224,7 @@ public class FormStat extends ConstraintCommand {
             ArrayList<Form> forms = EntityFilter.findUnitWithName(filterCommand(command), isTrueForm, lang);
 
             if (forms.size() == 1) {
-                Form f = forms.get(0);
+                Form f = forms.getFirst();
 
                 TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getMessage().getAuthor().getId(), TreasureHolder.global);
 
@@ -233,7 +233,7 @@ public class FormStat extends ConstraintCommand {
 
                     Message author = loader.getMessage();
 
-                    StaticStore.putHolder(u.getId(), new FormButtonHolder(forms.get(0), author, result, config, isFrame, talent, extra, compact, isTreasure, treasure, lv, lang, ch.getId()));
+                    StaticStore.putHolder(u.getId(), new FormButtonHolder(forms.getFirst(), author, result, config, isFrame, talent, extra, compact, isTreasure, treasure, lv, lang, ch.getId()));
                 });
             } else if (forms.isEmpty()) {
                 replyToMessageSafely(ch, LangID.getStringByID("formst_nounit", lang).replace("_", getSearchKeyword(loader.getContent())), loader.getMessage(), a -> a);
@@ -475,7 +475,7 @@ public class FormStat extends ConstraintCommand {
                         Level level = new Level(0);
 
                         if(!lv.isEmpty())
-                            level.setLevel(lv.get(0));
+                            level.setLevel(lv.getFirst());
                         else
                             level.setLevel(-1);
 

@@ -16,7 +16,7 @@ public class ClearCache extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) throws Exception {
+    public void doSomething(@NotNull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
 
         registerConfirmButtons(ch.sendMessage("Are you sure you want to clear cache? This cannot be undone"), lang).queue(res -> {

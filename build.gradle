@@ -7,22 +7,6 @@ apply plugin: 'application'
 group 'org.example'
 version '1.0-SNAPSHOT'
 
-compileJava {
-    options.compilerArgs += ['--enable-preview']
-}
-
-tasks.withType(JavaCompile).configureEach {
-    options.compilerArgs += "--enable-preview"
-}
-
-tasks.withType(Test).configureEach {
-    jvmArgs += "--enable-preview"
-}
-
-tasks.withType(JavaExec).configureEach {
-    jvmArgs += "--enable-preview"
-}
-
 repositories {
     mavenCentral()
     maven { url 'https://jitpack.io' }
@@ -160,7 +144,7 @@ dependencies {
 }
 
 buildscript {
-    ext.kotlin_version = '1.9.0'
+    ext.kotlin_version = '1.9.23'
     repositories {
         mavenCentral()
     }

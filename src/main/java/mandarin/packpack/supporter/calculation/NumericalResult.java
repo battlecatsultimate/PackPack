@@ -11,7 +11,6 @@ public class NumericalResult {
     @Nonnull
     public final Formula.ROOT ROOT;
 
-
     public String warning;
 
     public NumericalResult(@Nonnull BigDecimal value, @Nonnull BigDecimal error, @Nonnull Formula.ROOT ROOT) {

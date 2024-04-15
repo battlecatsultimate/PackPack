@@ -25,7 +25,7 @@ public class Medal extends ConstraintCommand {
     }
 
     @Override
-    public void prepare() throws Exception {
+    public void prepare() {
         registerRequiredPermission(Permission.MESSAGE_ATTACH_FILES, Permission.MESSAGE_EMBED_LINKS);
     }
 
@@ -43,7 +43,7 @@ public class Medal extends ConstraintCommand {
             if(id.isEmpty()) {
                 createMessageWithNoPings(ch, LangID.getStringByID("medal_nomed", lang).replace("_", getSearchKeyword(realContents[1])));
             } else if(id.size() == 1) {
-                EntityHandler.showMedalEmbed(id.get(0), ch, loader.getMessage(), lang);
+                EntityHandler.showMedalEmbed(id.getFirst(), ch, loader.getMessage(), lang);
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", getSearchKeyword(realContents[1])));
 

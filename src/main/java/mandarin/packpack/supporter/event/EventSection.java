@@ -3,10 +3,10 @@ package mandarin.packpack.supporter.event;
 import java.util.ArrayList;
 
 public class EventSection {
-    public ArrayList<EventDateSet> daySets = new ArrayList<>();
-    public ArrayList<Integer> days = new ArrayList<>();
-    public ArrayList<EventTimeSection> times = new ArrayList<>();
-    public ArrayList<Integer> weekDays = new ArrayList<>();
+    public final ArrayList<EventDateSet> daySets = new ArrayList<>();
+    public final ArrayList<Integer> days = new ArrayList<>();
+    public final ArrayList<EventTimeSection> times = new ArrayList<>();
+    public final ArrayList<Integer> weekDays = new ArrayList<>();
 
     public void parseWeekDay(int mask) {
         if(mask == 65) {

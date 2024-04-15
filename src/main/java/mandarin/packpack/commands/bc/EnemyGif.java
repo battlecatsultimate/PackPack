@@ -44,7 +44,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
     }
 
     @Override
-    public void prepare() throws Exception {
+    public void prepare() {
         registerRequiredPermission(Permission.MESSAGE_ATTACH_FILES);
     }
 
@@ -93,7 +93,7 @@ public class EnemyGif extends GlobalTimedConstraintCommand {
                 boolean gif = (param & PARAM_GIF) > 0;
                 int frame = getFrame(loader.getContent());
 
-                Enemy en = enemies.get(0);
+                Enemy en = enemies.getFirst();
 
                 if(forbidden.contains(en.id.id)) {
                     ch.sendMessage(LangID.getStringByID("gif_dummy", lang)).queue();

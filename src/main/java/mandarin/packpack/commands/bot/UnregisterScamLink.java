@@ -15,7 +15,7 @@ public class UnregisterScamLink extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) throws Exception {
+    public void doSomething(@NotNull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
         Guild g = loader.getGuild();
 

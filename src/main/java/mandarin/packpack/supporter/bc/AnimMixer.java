@@ -61,7 +61,7 @@ public class AnimMixer implements Source.AnimLoader {
     public FakeImage png;
     public ImgCut imgCut;
     public MaModel model;
-    public MaAnim[] anim;
+    public final MaAnim[] anim;
 
     public AnimCI mixture;
 

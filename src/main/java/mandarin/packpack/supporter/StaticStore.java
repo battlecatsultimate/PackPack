@@ -91,7 +91,7 @@ public class StaticStore {
     public static Map<String, String> prefix = new HashMap<>();
     public static Map<String, String> langs = new HashMap<>();
     public static Map<String, String> musics = new HashMap<>();
-    public static Map<String, Integer> timeZones = new HashMap<>();
+    public static final Map<String, Integer> timeZones = new HashMap<>();
     public static Map<String, ConfigHolder> config = new HashMap<>();
     public static Map<String, TreasureHolder> treasure = new HashMap<>();
 
@@ -103,7 +103,7 @@ public class StaticStore {
 
     public static ImgurDataHolder imgur = new ImgurDataHolder(null);
 
-    public static Map<String, TimeBoolean> canDo = new HashMap<>();
+    public static final Map<String, TimeBoolean> canDo = new HashMap<>();
 
     public static Map<String, SpamPrevent> spamData = new HashMap<>();
 
@@ -111,12 +111,12 @@ public class StaticStore {
 
     public static ArrayList<String> needFixing = new ArrayList<>();
 
-    public static EventHolder event = new EventHolder();
+    public static final EventHolder event = new EventHolder();
 
     public static ArrayList<String> optoutMembers = new ArrayList<>();
 
-    public static ScamLinkHolder scamLink = new ScamLinkHolder();
-    public static ScamLinkHandlerHolder scamLinkHandlers = new ScamLinkHandlerHolder();
+    public static final ScamLinkHolder scamLink = new ScamLinkHolder();
+    public static final ScamLinkHandlerHolder scamLinkHandlers = new ScamLinkHandlerHolder();
 
     public static final MultiLangCont<Integer, String> MEDNAME = new MultiLangCont<>();
     public static final MultiLangCont<Integer, String> MEDEXP = new MultiLangCont<>();
@@ -126,7 +126,7 @@ public class StaticStore {
     public static final MultiLangCont<Integer, String> MISSIONNAME = new MultiLangCont<>();
     public static int medalNumber = 0;
     public static JsonElement medalData;
-    public static List<Integer> existingRewards = new ArrayList<>();
+    public static final List<Integer> existingRewards = new ArrayList<>();
 
     public static final Map<String, Map<String, Long>> timeLimit = new HashMap<>();
 
@@ -161,10 +161,10 @@ public class StaticStore {
             "th"
     };
 
-    public static int[] rainbow = {rgb(217, 65, 68), rgb(217, 128, 65), rgb(224, 213, 85)
+    public static final int[] rainbow = {rgb(217, 65, 68), rgb(217, 128, 65), rgb(224, 213, 85)
     , rgb(118, 224, 85), rgb(85, 169, 224), rgb(185, 85, 224)};
 
-    public static int[] grade = {
+    public static final int[] grade = {
         rgb(204,124,84),
         rgb(206,209,210),
         rgb(213,171,98),
@@ -177,7 +177,7 @@ public class StaticStore {
 
     public final static String SUPPORT_SERVER = "964054872649515048";
 
-    public static String[] EMOJI_ARCHIVES = {
+    public static final String[] EMOJI_ARCHIVES = {
             "1192008484926005288",
             "1010103237958959194",
             "1010126565545357443",
@@ -201,8 +201,8 @@ public class StaticStore {
     public static final String PAYPAL = "https://www.paypal.com/paypalme/GidGalG2";
     public static final String CASHAPP = "https://cash.app/$Gideon9787";
 
-    public static String downPack = "./pack/download";
-    public static String tempPack = "./pack/download";
+    public static final String downPack = "./pack/download";
+    public static final String tempPack = "./pack/download";
 
     public static final String ERROR_MSG = "`INTERNAL_ERROR`";
 
@@ -214,7 +214,7 @@ public class StaticStore {
 
     public static List<String> cultist = new ArrayList<>();
 
-    public static Map<String, String> conflictedAnimation = new HashMap<>();
+    public static final Map<String, String> conflictedAnimation = new HashMap<>();
 
     public static String rolesToString(List<Role> roles) {
         StringBuilder builder = new StringBuilder();
@@ -1128,11 +1128,11 @@ public class StaticStore {
     synchronized private static void handleConflict(Conflictable holder) {
         for(HolderHub hub : holders.values()) {
             if(holder instanceof MessageHolder m && hub.messageHolder instanceof Conflictable c && c.isConflicted(m)) {
-                c.onConflict(m);
+                c.onConflict();
             } else if (holder instanceof ComponentHolder c && hub.componentHolder instanceof Conflictable co && co.isConflicted(c)) {
-                co.onConflict(c);
+                co.onConflict();
             } else if (holder instanceof ModalHolder m && hub.modalHolder instanceof Conflictable c && c.isConflicted(m)) {
-                c.onConflict(m);
+                c.onConflict();
             }
         }
     }

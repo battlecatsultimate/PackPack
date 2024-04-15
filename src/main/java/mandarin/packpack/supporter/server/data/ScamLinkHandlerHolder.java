@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ScamLinkHandlerHolder {
-    public Map<String, ScamLinkHandler> servers = new HashMap<>();
+    public final Map<String, ScamLinkHandler> servers = new HashMap<>();
 
     public JsonArray jsonfy() {
         JsonArray arr = new JsonArray();
@@ -53,18 +53,11 @@ public class ScamLinkHandlerHolder {
                 mute = null;
             }
 
-            ScamLinkHandler.ACTION action;
-
-            switch (h.get("action").getAsString()) {
-                case "kick":
-                    action = ScamLinkHandler.ACTION.KICK;
-                    break;
-                case "ban":
-                    action = ScamLinkHandler.ACTION.BAN;
-                    break;
-                default:
-                    action = ScamLinkHandler.ACTION.MUTE;
-            }
+            ScamLinkHandler.ACTION action = switch (h.get("action").getAsString()) {
+                case "kick" -> ScamLinkHandler.ACTION.KICK;
+                case "ban" -> ScamLinkHandler.ACTION.BAN;
+                default -> ScamLinkHandler.ACTION.MUTE;
+            };
 
             ScamLinkHandler handler = new ScamLinkHandler(author, server, channel, mute, action, noticeAll);
 

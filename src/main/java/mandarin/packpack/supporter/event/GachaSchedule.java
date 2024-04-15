@@ -8,7 +8,7 @@ import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.lang.LangID;
 
 import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -26,11 +26,11 @@ public class GachaSchedule extends EventFactor implements Schedule {
 
     private final int locale;
 
-    public ArrayList<EventSection> sections = new ArrayList<>();
-    public EventDateSet date;
-    public String minVersion, maxVersion;
+    public final ArrayList<EventSection> sections = new ArrayList<>();
+    public final EventDateSet date;
+    public final String minVersion, maxVersion;
 
-    public ArrayList<GachaSection> gacha = new ArrayList<>();
+    public final ArrayList<GachaSection> gacha = new ArrayList<>();
 
     public GachaSchedule(String line, int locale) {
         this.locale = locale;
@@ -460,7 +460,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
                 result.append("} ");
             }
 
-            if (section.weekDays.size() != 0) {
+            if (!section.weekDays.isEmpty()) {
                 result.append("{");
 
                 for(int i = 0; i < section.weekDays.size(); i++) {
@@ -608,7 +608,7 @@ public class GachaSchedule extends EventFactor implements Schedule {
     }
 
     private String getHtmlFromUrl(String url) throws Exception {
-        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        HttpURLConnection connection = (HttpURLConnection) URI.create(url).toURL().openConnection();
 
         if(connection.getResponseCode() == 403)
             return null;

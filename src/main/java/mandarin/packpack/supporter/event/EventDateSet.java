@@ -15,29 +15,29 @@ public class EventDateSet {
         return dateStart.equals(thatSet.dateStart) && dateEnd.equals(thatSet.dateEnd) && section.equals(thatSet.section);
     }
 
-    public boolean inRange(EventDate current) {
+    public boolean notInRange(EventDate current) {
         int c = dateStart.compare(current);
 
         if(c == 1)
-            return false;
+            return true;
         else if(c == 0) {
             c = section.start.compare(current.section.start);
 
             if(c == 1)
-                return false;
+                return true;
         }
 
         c = dateEnd.compare(current);
 
         if(c == -1)
-            return false;
+            return true;
         else if(c == 0) {
             c = section.end.compare(current.section.end);
 
-            return c == 1;
+            return c != 1;
         }
 
 
-        return true;
+        return false;
     }
 }

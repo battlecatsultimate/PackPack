@@ -564,12 +564,12 @@ public class DataToString extends Data {
             return true;
 
         for(int i : near) {
-            if(i != near.get(0))
+            if(i != near.getFirst())
                 return false;
         }
 
         for(int f : far) {
-            if(f != far.get(0))
+            if(f != far.getFirst())
                 return false;
         }
 
@@ -1081,17 +1081,23 @@ public class DataToString extends Data {
 
         PackData pack = UserProfile.getPack(id);
 
-        if (pack == null) {
-            return id;
-        } else if (pack instanceof PackData.DefPack) {
-            return LangID.getStringByID("data_default", lang);
-        } else if (pack instanceof PackData.UserPack userPack) {
-            String p = userPack.desc.name;
+        switch (pack) {
+            case null -> {
+                return id;
+            }
+            case PackData.DefPack ignored -> {
+                return LangID.getStringByID("data_default", lang);
+            }
+            case PackData.UserPack userPack -> {
+                String p = userPack.desc.name;
 
-            if (p == null)
-                p = id;
+                if (p == null)
+                    p = id;
 
-            return p;
+                return p;
+            }
+            default -> {
+            }
         }
 
         return id;
@@ -2494,7 +2500,7 @@ public class DataToString extends Data {
         }
 
         if(du.getPCoin().trait.size() == 1 && index == 0) {
-            String code = Interpret.TRAITICON[du.getPCoin().trait.get(0).id.id];
+            String code = Interpret.TRAITICON[du.getPCoin().trait.getFirst().id.id];
 
             Emoji emoji = EmojiStore.TRAIT.getCont(code, lang);
 
@@ -2552,7 +2558,7 @@ public class DataToString extends Data {
         String desc = "";
 
         if(du.getPCoin().trait.size() == 1 && index == 0) {
-            desc += LangID.getStringByID("talentinfo_together", lang).replace("_", LangID.getStringByID(Interpret.TRAIT[du.getPCoin().trait.get(0).id.id], lang)) + "\n\n";
+            desc += LangID.getStringByID("talentinfo_together", lang).replace("_", LangID.getStringByID(Interpret.TRAIT[du.getPCoin().trait.getFirst().id.id], lang)) + "\n\n";
         }
 
         switch (type[0]) {
@@ -2674,7 +2680,7 @@ public class DataToString extends Data {
         String desc = "";
 
         if(traits.size() == 1 && index == 0) {
-            desc += LangID.getStringByID("talentinfo_together", lang).replace("_", LangID.getStringByID(Interpret.TRAIT[traits.get(0).id.id], lang)) + "\n\n";
+            desc += LangID.getStringByID("talentinfo_together", lang).replace("_", LangID.getStringByID(Interpret.TRAIT[traits.getFirst().id.id], lang)) + "\n\n";
         }
 
         switch (type[0]) {

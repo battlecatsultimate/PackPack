@@ -17,7 +17,7 @@ public class CheckEventUpdate extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) throws Exception {
+    public void doSomething(@NotNull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
 
         ch.sendMessage(LangID.getStringByID("chevent_check", lang)).queue( msg -> {

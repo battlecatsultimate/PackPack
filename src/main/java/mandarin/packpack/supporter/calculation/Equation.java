@@ -14,9 +14,9 @@ import java.util.List;
 import java.util.Locale;
 
 public class Equation {
-    public static List<String> error = new ArrayList<>();
+    public static final List<String> error = new ArrayList<>();
 
-    public static MathContext context = new MathContext(256, RoundingMode.HALF_EVEN);
+    public static final MathContext context = new MathContext(256, RoundingMode.HALF_EVEN);
 
     private static final String[] suffix = { "k", "m", "b", "t" };
     private static final BigDecimal PI = new BigDecimal(Math.PI);
@@ -143,7 +143,7 @@ public class Equation {
                     continue;
                 }
 
-                filtered.add(0, ((Operator) e).calculate((Number) elements.get(i - 1), (Number) filtered.get(0), lang));
+                filtered.add(0, ((Operator) e).calculate((Number) elements.get(i - 1), (Number) filtered.getFirst(), lang));
                 filtered.remove(1);
 
                 i--;
@@ -207,14 +207,14 @@ public class Equation {
 
         filtered.clear();
 
-        if(elements.size() != 1 || !(elements.get(0) instanceof Number)) {
+        if(elements.size() != 1 || !(elements.getFirst() instanceof Number)) {
             StaticStore.logger.uploadLog("W/Equation::calculate - Invalid equation format : " + equation + "\n\nData : " + elements);
 
             error.add(LangID.getStringByID("calc_fail", lang));
 
             return new BigDecimal(0);
         } else {
-            return ((Number) elements.get(0)).bd;
+            return ((Number) elements.getFirst()).bd;
         }
     }
 
@@ -392,23 +392,23 @@ public class Equation {
                                     BigDecimal valD = calculate(data.get(j), null, formula, lang);
 
                                     if (originalLength != error.size()) {
-                                        error.add(String.format(LangID.getStringByID("calc_npcrnum", lang), prefix + "(" + data.get(0) + ", " + data.get(1) + ")", data.get(j)));
+                                        error.add(String.format(LangID.getStringByID("calc_npcrnum", lang), prefix + "(" + data.getFirst() + ", " + data.get(1) + ")", data.get(j)));
 
                                         return new ArrayList<>();
                                     } else if (valD.divideAndRemainder(new BigDecimal(1))[1].doubleValue() != 0) {
-                                        error.add(String.format(LangID.getStringByID("calc_npcrnoint", lang), prefix + "(" + data.get(0) + ", " + data.get(1) + ")", data.get(j)));
+                                        error.add(String.format(LangID.getStringByID("calc_npcrnoint", lang), prefix + "(" + data.getFirst() + ", " + data.get(1) + ")", data.get(j)));
 
                                         return new ArrayList<>();
                                     } else if (valD.doubleValue() < 0) {
-                                        error.add(String.format(LangID.getStringByID("calc_npcrnoint", lang), prefix + "(" + data.get(0) + ", " + data.get(1) + ")", data.get(j)));
+                                        error.add(String.format(LangID.getStringByID("calc_npcrnoint", lang), prefix + "(" + data.getFirst() + ", " + data.get(1) + ")", data.get(j)));
 
                                         return new ArrayList<>();
                                     }
                                 }
-                                BigInteger n = calculate(data.get(0), null, formula, lang).toBigInteger();
+                                BigInteger n = calculate(data.getFirst(), null, formula, lang).toBigInteger();
                                 BigInteger r = calculate(data.get(1), null, formula, lang).toBigInteger();
                                 if (n.compareTo(r) < 0) {
-                                    error.add(String.format(LangID.getStringByID("calc_npcrsize", lang), prefix + "(" + data.get(0) + ", " + data.get(1) + ")", data.get(0), data.get(1)));
+                                    error.add(String.format(LangID.getStringByID("calc_npcrsize", lang), prefix + "(" + data.getFirst() + ", " + data.get(1) + ")", data.getFirst(), data.get(1)));
                                 }
                                 if (prefix.equals("npr")) {
                                     elements.add(new Number(nPr(n, r, lang)));

@@ -20,7 +20,7 @@ public class PrintStageEvent extends ConstraintCommand {
     }
 
     @Override
-    public void doSomething(@NotNull CommandLoader loader) throws Exception {
+    public void doSomething(@NotNull CommandLoader loader) {
         MessageChannel ch = loader.getChannel();
 
         boolean now = isNow(loader.getContent());
@@ -101,7 +101,7 @@ public class PrintStageEvent extends ConstraintCommand {
                 }
 
                 while(builder.length() < 1950 && !data.isEmpty()) {
-                    String line = data.get(0);
+                    String line = data.getFirst();
 
                     if(line.length() > 1950) {
                         data.remove(0);

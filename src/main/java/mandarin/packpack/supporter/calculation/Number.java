@@ -7,22 +7,18 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 public class Number extends Element {
-    public static BigDecimal cutOff = BigDecimal.valueOf(1E-128);
+    public static final BigDecimal cutOff = BigDecimal.valueOf(1E-128);
 
     public final String raw;
     @Nonnull
     public final BigDecimal bd;
 
     public Number(double value) {
-        super(true);
-
         this.bd = new BigDecimal(value);
         this.raw = null;
     }
 
     public Number(@Nonnull String raw) {
-        super(true);
-
         this.raw = raw;
 
         BigDecimal test = new BigDecimal(raw);
@@ -35,8 +31,6 @@ public class Number extends Element {
     }
 
     public Number(@Nonnull BigDecimal bd) {
-        super(true);
-
         if(bd.abs().compareTo(cutOff) < 0) {
             this.bd = BigDecimal.valueOf(0);
             this.raw = "0";
@@ -47,8 +41,6 @@ public class Number extends Element {
     }
 
     public Number(@Nonnull BigInteger bi) {
-        super(true);
-
         this.raw = bi.toString();
         this.bd = new BigDecimal(bi);
     }

@@ -75,7 +75,7 @@ public class FindStage extends TimedConstraintCommand {
     }
 
     @Override
-    public void prepare() throws Exception {
+    public void prepare() {
         registerRequiredPermission(Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_ATTACH_FILES, Permission.MESSAGE_EMBED_LINKS);
     }
 
@@ -143,7 +143,7 @@ public class FindStage extends TimedConstraintCommand {
 
         ArrayList<CastleList> castleLists = new ArrayList<>(CastleList.defset());
 
-        if(castle >= 0 && castle >= castleLists.get(0).size()) {
+        if(castle >= 0 && castle >= castleLists.getFirst().size()) {
             replyToMessageSafely(ch, LangID.getStringByID("fstage_castle", lang), loader.getMessage(), a -> a);
 
             return;
@@ -179,12 +179,12 @@ public class FindStage extends TimedConstraintCommand {
 
                     return;
                 } else if(enemies.size() == 1) {
-                    filterEnemy.add(enemies.get(0));
+                    filterEnemy.add(enemies.getFirst());
 
-                    String n = StaticStore.safeMultiLangGet(enemies.get(0), lang);
+                    String n = StaticStore.safeMultiLangGet(enemies.getFirst(), lang);
 
                     if(n == null || n.isBlank()) {
-                        n = Data.trio(enemies.get(0).id.id);
+                        n = Data.trio(enemies.getFirst().id.id);
                     }
 
                     enemyList.append(n).append(", ");
@@ -204,12 +204,12 @@ public class FindStage extends TimedConstraintCommand {
             } else if(stages.size() == 1) {
                 TreasureHolder treasure = holder != null && holder.forceFullTreasure ? TreasureHolder.global : StaticStore.treasure.getOrDefault(loader.getMessage().getAuthor().getId(), TreasureHolder.global);
 
-                EntityHandler.showStageEmb(stages.get(0), ch, loader.getMessage(), isFrame, isExtra, isCompact, star, treasure, lang, result -> {
+                EntityHandler.showStageEmb(stages.getFirst(), ch, loader.getMessage(), isFrame, isExtra, isCompact, star, treasure, lang, result -> {
                     User u = loader.getUser();
 
                     Message msg = loader.getMessage();
 
-                    StaticStore.putHolder(u.getId(), new StageInfoButtonHolder(stages.get(0), msg, result, ch.getId(), isCompact));
+                    StaticStore.putHolder(u.getId(), new StageInfoButtonHolder(stages.getFirst(), msg, result, ch.getId(), isCompact));
                 });
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("fstage_several", lang)).append("```md\n");
@@ -250,7 +250,7 @@ public class FindStage extends TimedConstraintCommand {
 
             sb.append("```md\n").append(LangID.getStringByID("formst_pick", lang));
 
-            List<Enemy> enemies = enemySequences.get(0);
+            List<Enemy> enemies = enemySequences.getFirst();
 
             List<String> data = accumulateEnemy(enemies);
 

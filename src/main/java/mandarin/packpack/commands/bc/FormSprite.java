@@ -31,7 +31,7 @@ public class FormSprite extends TimedConstraintCommand {
     }
 
     @Override
-    public void prepare() throws Exception {
+    public void prepare() {
         registerRequiredPermission(Permission.MESSAGE_ATTACH_FILES);
     }
 
@@ -59,7 +59,7 @@ public class FormSprite extends TimedConstraintCommand {
             } else if(forms.size() == 1) {
                 int param = checkParameter(loader.getContent());
 
-                EntityHandler.getFormSprite(forms.get(0), ch, loader.getMessage(), getModeFromParam(param), lang);
+                EntityHandler.getFormSprite(forms.getFirst(), ch, loader.getMessage(), getModeFromParam(param), lang);
             } else {
                 StringBuilder sb = new StringBuilder(LangID.getStringByID("formst_several", lang).replace("_", getSearchKeyword(loader.getContent())));
 

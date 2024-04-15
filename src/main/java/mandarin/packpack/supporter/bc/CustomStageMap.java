@@ -137,7 +137,7 @@ public class CustomStageMap extends StageMap {
 
             List<int[]> lineList = new ArrayList<>();
 
-            while(stageData.size() > 0) {
+            while(!stageData.isEmpty()) {
                 String line = stageData.poll();
 
                 if(line == null || line.isBlank())
@@ -210,7 +210,7 @@ public class CustomStageMap extends StageMap {
 
             st.data = def;
 
-            if(((DefStageInfo) st.info).drop != null && ((DefStageInfo) st.info).drop.length != 0) {
+            if(((DefStageInfo) st.info).drop != null) {
                 for(int[] drop : ((DefStageInfo) st.info).drop) {
                     if(MultiLangCont.getStatic().RWNAME.getCont(drop[1]) == null) {
                         if(drop[1] < 1000) {
@@ -230,7 +230,7 @@ public class CustomStageMap extends StageMap {
                 }
             }
 
-            if(((DefStageInfo) st.info).time != null && ((DefStageInfo) st.info).time.length != 0) {
+            if(((DefStageInfo) st.info).time != null) {
                 for(int[] drop : ((DefStageInfo) st.info).time) {
                     if(MultiLangCont.getStatic().RWNAME.getCont(drop[1]) == null) {
                         if(drop[1] < 1000) {
@@ -259,7 +259,7 @@ public class CustomStageMap extends StageMap {
 
         groupLine.poll();
 
-        while(groupLine.size() > 0) {
+        while(!groupLine.isEmpty()) {
             String line = groupLine.poll();
 
             if(line == null)
@@ -283,7 +283,7 @@ public class CustomStageMap extends StageMap {
 
         limitLine.poll();
 
-        while (limitLine.size() > 0) {
+        while (!limitLine.isEmpty()) {
             String line = limitLine.poll();
 
             if(line == null || line.isBlank())
@@ -332,7 +332,7 @@ public class CustomStageMap extends StageMap {
         for(int i = 0; i < list.size(); i++) {
             Stage st = list.get(i);
 
-            if(((DefStageInfo) st.info).drop != null && ((DefStageInfo) st.info).drop.length != 0) {
+            if(((DefStageInfo) st.info).drop != null) {
                 for(int[] drop : ((DefStageInfo) st.info).drop) {
                     if(drop[1] >= 1000 && drop[1] < 30000) {
                         requiredIDs.add(drop[1]);
@@ -340,7 +340,7 @@ public class CustomStageMap extends StageMap {
                 }
             }
 
-            if(((DefStageInfo) st.info).time != null && ((DefStageInfo) st.info).time.length != 0) {
+            if(((DefStageInfo) st.info).time != null) {
                 for(int[] drop : ((DefStageInfo) st.info).time) {
                     if(drop[1] >= 1000 && drop[1] < 30000) {
                         requiredIDs.add(drop[1]);
@@ -354,7 +354,7 @@ public class CustomStageMap extends StageMap {
 
             dropLines.poll();
 
-            while(dropLines.size() > 0) {
+            while(!dropLines.isEmpty()) {
                 String line = dropLines.poll();
 
                 if(line == null || line.isBlank())
@@ -378,7 +378,7 @@ public class CustomStageMap extends StageMap {
         if(buyFile != null) {
             Queue<String> buyLines = buyFile.getData().readLine();
 
-            while(buyLines.size() > 0) {
+            while(!buyLines.isEmpty()) {
                 String line = buyLines.poll();
 
                 if(line == null || line.isBlank())
@@ -417,7 +417,7 @@ public class CustomStageMap extends StageMap {
 
             int count = 0;
 
-            while(qs.size() > 0) {
+            while(!qs.isEmpty()) {
                 String line = qs.poll();
 
                 if(line == null || line.isBlank())
@@ -460,7 +460,7 @@ public class CustomStageMap extends StageMap {
 
             int count = 0;
 
-            while(qs.size() > 0) {
+            while(!qs.isEmpty()) {
                 String line = qs.poll();
 
                 if(line == null)
@@ -510,7 +510,7 @@ public class CustomStageMap extends StageMap {
 
             qs.poll();
 
-            while(qs.size() > 0) {
+            while(!qs.isEmpty()) {
                 String line = qs.poll();
 
                 if(line == null)
@@ -599,7 +599,7 @@ public class CustomStageMap extends StageMap {
 
             int count = 0;
 
-            while(qs.size() > 0) {
+            while(!qs.isEmpty()) {
                 String line = qs.poll();
 
                 if(line == null || line.isBlank())
@@ -666,7 +666,7 @@ public class CustomStageMap extends StageMap {
 
         int count = 0;
 
-        while(units.size() > 0) {
+        while(!units.isEmpty()) {
             String unitLine = units.poll();
 
             if(unitLine == null)

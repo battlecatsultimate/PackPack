@@ -81,7 +81,7 @@ public class ConfigButtonHolder extends ComponentHolder {
                 if (es.getValues().size() != 1)
                     return;
                 
-                config.lang = StaticStore.safeParseInt(es.getValues().get(0));
+                config.lang = StaticStore.safeParseInt(es.getValues().getFirst());
                 
                 performResult(event);
             }
@@ -117,7 +117,7 @@ public class ConfigButtonHolder extends ComponentHolder {
                 if (es.getValues().size() != 1)
                     return;
                 
-                config.useFrame = es.getValues().get(0).equals("frame");
+                config.useFrame = es.getValues().getFirst().equals("frame");
                 
                 performResult(event);
             }

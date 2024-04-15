@@ -38,7 +38,7 @@ public class Analyze extends ConstraintCommand {
             if(!msg.getAttachments().isEmpty()) {
                 List<Message.Attachment> attachments = new ArrayList<>(msg.getAttachments());
 
-                Message.Attachment at = attachments.get(0);
+                Message.Attachment at = attachments.getFirst();
 
                 if(at.getFileName().endsWith("pack.bcuzip")) {
                     ch.sendMessage(LangID.getStringByID("analyz_down", lang).replace("_", String.valueOf(0))).queue(message -> {

@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.JDABuilder;
 import javax.security.auth.login.LoginException;
 
 public class SlashCommandUpdater {
-    public static void main(String[] args) throws LoginException {
+    public static void main(String[] args) {
         final String TOKEN = args[0];
 
         JDA client = JDABuilder.createDefault(TOKEN).build();
