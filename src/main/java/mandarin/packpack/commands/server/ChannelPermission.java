@@ -134,7 +134,12 @@ public class ChannelPermission extends ConstraintCommand {
             if (key.equals(holder.MEMBER)) {
                 options.add(SelectOption.of(LangID.getStringByID("idset_member", lang), LangID.getStringByID("idset_member", lang) + " : " + holder.MEMBER).withDescription(holder.MEMBER));
             } else {
-                options.add(SelectOption.of(key, key).withDescription(roleMap.get(key)));
+                String id = roleMap.get(key);
+
+                if (id == null)
+                    continue;
+
+                options.add(SelectOption.of(key, id).withDescription(id));
             }
 
             i++;

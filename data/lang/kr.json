@@ -1142,7 +1142,7 @@
   "chperm_all": "**해당 역할은 모든 채널이 허용되어 있습니다**",
   "chperm_none" : "**해당 역할은 모든 채널이 금지되어 있습니다**",
   "chperm_desc" : "채널 권한을 조정하고 싶은 역할을 선택해 주세요",
-  "chperm_chdesc" : "유저들이 명령어 사용 권한을 허용할 채널들을 조정해 주세요",
+  "chperm_chdesc" : "유저들이 명령어 사용 권한을 허용할 채널들을 조정해 주세요\n\n선택된 역할 : <@&%s> [%s]",
   "chperm_roleselect" : "역할 선택",
   "chperm_challow" : "채널 허용",
   "chperm_chdisallow" : "채널 금지",

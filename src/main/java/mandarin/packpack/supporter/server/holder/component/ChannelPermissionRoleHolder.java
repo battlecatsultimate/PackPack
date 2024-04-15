@@ -1,22 +1,17 @@
 package mandarin.packpack.supporter.server.holder.component;
 
 import mandarin.packpack.supporter.EmojiStore;
-import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.channel.ChannelType;
-import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
-import net.dv8tion.jda.api.interactions.components.ActionComponent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
-import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import org.jetbrains.annotations.NotNull;
@@ -81,14 +76,7 @@ public class ChannelPermissionRoleHolder extends ComponentHolder {
                     value = ((StringSelectInteractionEvent) event).getValues().getFirst();
                 }
 
-                event.deferEdit()
-                        .setContent(getChannelSelectorMessage(value))
-                        .setComponents(getChannelSelector(value))
-                        .mentionRepliedUser(false)
-                        .setAllowedMentions(new ArrayList<>())
-                        .queue();
-
-                StaticStore.putHolder(userID, new ChannelPermissionHolder(getAuthorMessage(), channelID, msg, g, holder, value));
+                connectTo(event, new ChannelPermissionHolder(getAuthorMessage(), channelID, msg, g, holder, value));
             }
             case "confirm" -> {
                 event.deferEdit()
@@ -121,6 +109,11 @@ public class ChannelPermissionRoleHolder extends ComponentHolder {
                 applyResult(event);
             }
         }
+    }
+
+    @Override
+    public void onBack(@NotNull GenericComponentInteractionCreateEvent event) {
+        applyResult(event);
     }
 
     private void applyResult(GenericComponentInteractionCreateEvent event) {
@@ -201,55 +194,6 @@ public class ChannelPermissionRoleHolder extends ComponentHolder {
         return builder.toString();
     }
 
-    private String getChannelSelectorMessage(String roleId) {
-        int lang = holder.config.lang;
-
-        StringBuilder builder = new StringBuilder(LangID.getStringByID("chperm_chdesc", lang))
-                .append("\n\n");
-
-        List<String> channels = holder.channel.get(roleId);
-
-        if (channels == null) {
-            builder.append(LangID.getStringByID("chperm_all", lang));
-        } else {
-            if (channels.isEmpty()) {
-                builder.append(LangID.getStringByID("chperm_none", lang));
-            } else {
-                int i = 0;
-
-                for (String id : channels) {
-                    if (i == SearchHolder.PAGE_CHUNK)
-                        break;
-
-                    builder.append(i + 1).append(". ");
-
-                    GuildChannel channel = g.getGuildChannelById(id);
-
-                    if (channel == null) {
-                        builder.append("UNKNOWN");
-                    } else {
-                        builder.append(channel.getAsMention());
-                    }
-
-                    builder.append(" [").append(id).append("]\n");
-
-                    i++;
-                }
-
-                if(channels.size() > SearchHolder.PAGE_CHUNK) {
-                    int totalPage = channels.size() / SearchHolder.PAGE_CHUNK;
-
-                    if(holder.ID.size() % SearchHolder.PAGE_CHUNK != 0)
-                        totalPage++;
-
-                    builder.append("\n").append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(1)).replace("-", String.valueOf(totalPage)));
-                }
-            }
-        }
-
-        return builder.toString();
-    }
-
     public List<LayoutComponent> getRoleSelector() {
         int lang = holder.config.lang;
 
@@ -281,7 +225,12 @@ public class ChannelPermissionRoleHolder extends ComponentHolder {
             if (key.equals(holder.MEMBER)) {
                 options.add(SelectOption.of(LangID.getStringByID("idset_member", lang), LangID.getStringByID("idset_member", lang) + " : " + holder.MEMBER).withDescription(holder.MEMBER));
             } else {
-                options.add(SelectOption.of(key, key).withDescription(roleMap.get(key)));
+                String id = roleMap.get(key);
+
+                if (id == null)
+                    continue;
+
+                options.add(SelectOption.of(key, id).withDescription(id));
             }
 
             i++;
@@ -331,88 +280,6 @@ public class ChannelPermissionRoleHolder extends ComponentHolder {
         }
 
         result.add(ActionRow.of(Button.primary("confirm", LangID.getStringByID("button_confirm", lang))));
-
-        return result;
-    }
-
-    private List<LayoutComponent> getChannelSelector(String roleId) {
-        int lang = holder.config.lang;
-
-        List<LayoutComponent> result = new ArrayList<>();
-
-        result.add(
-                ActionRow.of(
-                        Button.secondary("allow", LangID.getStringByID("chperm_allow", lang)),
-                        Button.secondary("disallow", LangID.getStringByID("chperm_disallow",  lang))
-                )
-        );
-
-        result.add(
-                ActionRow.of(
-                        EntitySelectMenu.create("addChannel", EntitySelectMenu.SelectTarget.CHANNEL)
-                                .setChannelTypes(ChannelType.TEXT, ChannelType.FORUM, ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_PRIVATE_THREAD)
-                                .setMaxValues(25)
-                                .setPlaceholder(LangID.getStringByID("chperm_challow", lang))
-                                .build()
-                )
-        );
-
-        List<String> channels = holder.channel.get(roleId);
-
-        if (channels != null && !channels.isEmpty()) {
-            List<SelectOption> channelOptions = new ArrayList<>();
-
-            int i = 0;
-
-            for (String id : channels) {
-                if (i == SearchHolder.PAGE_CHUNK)
-                    break;
-
-                GuildChannel channel = g.getGuildChannelById(id);
-
-                if (channel != null) {
-                    channelOptions.add(SelectOption.of(channel.getName(), id).withDescription(id));
-                } else {
-                    channelOptions.add(SelectOption.of("UNKNOWN", id).withDescription(id));
-                }
-
-                i++;
-            }
-
-            result.add(
-                    ActionRow.of(
-                            StringSelectMenu.create("removeChannel")
-                                    .addOptions(channelOptions)
-                                    .setPlaceholder(LangID.getStringByID("chperm_chdisallow", lang))
-                                    .setMaxValues(25)
-                                    .build()
-                    )
-            );
-
-            if (channels.size() > SearchHolder.PAGE_CHUNK) {
-                List<ActionComponent> pages = new ArrayList<>();
-
-                if (channels.size() > SearchHolder.PAGE_CHUNK * 10) {
-                    pages.add(Button.of(ButtonStyle.SECONDARY, "prev10", LangID.getStringByID("search_prev10", lang), EmojiStore.TWO_PREVIOUS).asDisabled());
-                }
-
-                pages.add(Button.secondary("prev", LangID.getStringByID("search_prev", lang)).withEmoji(EmojiStore.PREVIOUS).asDisabled());
-                pages.add(Button.secondary("next", LangID.getStringByID("search_next", lang)).withEmoji(EmojiStore.NEXT));
-
-                if (channels.size() > SearchHolder.PAGE_CHUNK * 10) {
-                    pages.add(Button.of(ButtonStyle.SECONDARY, "next10", LangID.getStringByID("search_next10", lang), EmojiStore.TWO_NEXT).asDisabled());
-                }
-
-                result.add(ActionRow.of(pages));
-            }
-        }
-
-        result.add(
-                ActionRow.of(
-                        Button.secondary("back", LangID.getStringByID("button_back", lang)),
-                        Button.primary("confirm", LangID.getStringByID("button_confirm", lang))
-                )
-        );
 
         return result;
     }
