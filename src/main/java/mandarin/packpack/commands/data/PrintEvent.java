@@ -115,7 +115,7 @@ public class PrintEvent extends ConstraintCommand {
                             String line = data.getFirst();
 
                             if(line.length() > 1950) {
-                                data.remove(0);
+                                data.removeFirst();
 
                                 continue;
                             }
