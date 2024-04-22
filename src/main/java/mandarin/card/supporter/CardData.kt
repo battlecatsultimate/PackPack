@@ -111,7 +111,7 @@ object CardData {
             //Whiteday
             arrayOf(648, 693, 736),
             //Easter
-            arrayOf(330, 331, 595, 699),
+            arrayOf(330, 331, 595, 699, 737),
             //June Bride
             arrayOf(661, 711),
             //Summer Gals
