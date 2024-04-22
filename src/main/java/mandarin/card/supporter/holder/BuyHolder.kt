@@ -6,7 +6,10 @@ import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.Product
 import mandarin.card.supporter.log.TransactionLogger
 import mandarin.packpack.supporter.EmojiStore
+import mandarin.packpack.supporter.StaticStore
+import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
+import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
@@ -240,6 +243,12 @@ class BuyHolder(author: Message, channelID: String, private val message: Message
             }
             CardData.Role.ZAMBONER,
             CardData.Role.WHALELORD -> {
+                val cost = if (role == CardData.Role.ZAMBONER) {
+                    1000000
+                } else {
+                    5000000
+                }
+
                 val pendingCatFoods = CardData.sessions.filter { s -> s.member.any { id -> authorMessage.author.idLong == id } }
                     .sumOf { s ->
                         val index = s.member.indexOf(authorMessage.author.idLong)
@@ -249,12 +258,6 @@ class BuyHolder(author: Message, channelID: String, private val message: Message
 
                         return@sumOf s.suggestion[index].catFood
                     }
-
-                val cost = if (role == CardData.Role.ZAMBONER) {
-                    1000000
-                } else {
-                    5000000
-                }
 
                 if (inventory.catFoods < cost) {
                     event.deferReply()
@@ -269,18 +272,37 @@ class BuyHolder(author: Message, channelID: String, private val message: Message
                         .setAllowedMentions(ArrayList())
                         .queue()
                 } else {
-                    inventory.vanityRoles.add(role)
+                    registerPopUp(event, "Are you sure you want to purchase this role? It costs $cost ${EmojiStore.ABILITY["CF"]?.formatted}", LangID.EN)
 
-                    inventory.catFoods -= cost
+                    StaticStore.removeHolder(authorMessage.author.id, this)
 
-                    event.deferEdit()
-                        .setContent("Successfully bought the role <@&${role.id}>! You can always equip or unequip later by calling `${CardBot.globalPrefix}equip` command")
-                        .setComponents()
-                        .setAllowedMentions(ArrayList())
-                        .mentionRepliedUser(false)
-                        .queue()
+                    StaticStore.putHolder(authorMessage.author.id, ConfirmPopUpHolder(authorMessage, message, channelID, { e ->
+                        inventory.vanityRoles.add(role)
 
-                    CardBot.saveCardData()
+                        inventory.catFoods -= cost
+
+                        e.deferEdit()
+                            .setContent("Successfully bought the role <@&${role.id}>! You can always equip or unequip later by calling `${CardBot.globalPrefix}equip` command")
+                            .setComponents()
+                            .setAllowedMentions(ArrayList())
+                            .mentionRepliedUser(false)
+                            .queue()
+
+                        CardBot.saveCardData()
+
+                        return@ConfirmPopUpHolder null
+                    }, { e ->
+                        StaticStore.putHolder(authorMessage.author.id, this)
+
+                        e.deferEdit()
+                            .setContent("Please select a list that you want to get")
+                            .setComponents(registerComponents())
+                            .mentionRepliedUser(false)
+                            .setAllowedMentions(ArrayList())
+                            .queue()
+
+                        return@ConfirmPopUpHolder null
+                    }, LangID.EN))
                 }
 
                 return true
