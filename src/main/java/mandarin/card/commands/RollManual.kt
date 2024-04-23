@@ -1,7 +1,7 @@
 package mandarin.card.commands
 
 import mandarin.card.supporter.CardData
-import mandarin.card.supporter.holder.ManualRollSelectHolder
+import mandarin.card.supporter.holder.moderation.ManualRollSelectHolder
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore

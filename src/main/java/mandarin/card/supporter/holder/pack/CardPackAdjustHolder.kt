@@ -1,4 +1,4 @@
-package mandarin.card.supporter.holder
+package mandarin.card.supporter.holder.pack
 
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData

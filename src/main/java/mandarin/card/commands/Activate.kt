@@ -2,7 +2,7 @@ package mandarin.card.commands
 
 import mandarin.card.supporter.Activator
 import mandarin.card.supporter.CardData
-import mandarin.card.supporter.holder.ActivatorHolder
+import mandarin.card.supporter.holder.moderation.ActivatorHolder
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
