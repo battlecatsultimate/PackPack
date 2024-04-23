@@ -27,12 +27,12 @@ class Check(private val tier: CardData.Tier) : Command(LangID.EN, true) {
 
         val ids = CardData.inventories.keys
 
-        val members = g.findMembers { member -> member.id in ids }.get().filter { member ->
-            val inventory = Inventory.getInventory(member.id)
+        val members = g.findMembers { member -> member.idLong in ids }.get().filter { member ->
+            val inventory = Inventory.getInventory(member.idLong)
 
             inventory.cards.keys.any { c -> c.tier == tier } || inventory.favorites.keys.any { c -> c.tier == tier }
         }.sortedByDescending {
-            val inventory = Inventory.getInventory(it.id)
+            val inventory = Inventory.getInventory(it.idLong)
 
             inventory.cards.entries.filter { e -> e.key.tier == tier }.sumOf { e -> e.value } +
             inventory.favorites.entries.filter { e -> e.key.tier == tier }.sumOf { e -> e.value }
@@ -56,7 +56,7 @@ class Check(private val tier: CardData.Tier) : Command(LangID.EN, true) {
             builder.append("Below list is members who have T${tier.ordinal + 1} cards\n\n")
 
             for (i in 0 until min(members.size, SearchHolder.PAGE_CHUNK)) {
-                val inventory = Inventory.getInventory(members[i].id)
+                val inventory = Inventory.getInventory(members[i].idLong)
 
                 builder.append(i + 1)
                     .append(". ")

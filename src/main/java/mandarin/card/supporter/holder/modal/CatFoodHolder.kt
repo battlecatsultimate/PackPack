@@ -32,7 +32,7 @@ class CatFoodHolder(author: Message, channelID: String, message:Message, private
                 return
             }
 
-            val inventory = Inventory.getInventory(authorMessage.author.id)
+            val inventory = Inventory.getInventory(authorMessage.author.idLong)
 
             val currentCatFood = inventory.catFoods
 

@@ -31,7 +31,7 @@ class Suggest(private val session: TradingSession) : Command(LangID.EN, true) {
 
         val g = loader.guild
        g.retrieveMember(UserSnowflake.fromId(session.member[targetIndex])).queue { targetMember ->
-           val inventory = Inventory.getInventory(m.id)
+           val inventory = Inventory.getInventory(m.idLong)
 
            val index = session.member.indexOf(m.idLong)
 

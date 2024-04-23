@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import java.util.function.Consumer
 
 class BuyHolder(author: Message, channelID: String, private val message: Message) : ComponentHolder(author, channelID, message.id) {
-    private val inventory = Inventory.getInventory(author.author.id)
+    private val inventory = Inventory.getInventory(author.author.idLong)
     private val possibleRoles = CardData.Role.entries.filter { r -> r != CardData.Role.NONE && r !in inventory.vanityRoles }.toList()
 
     override fun clean() {
@@ -35,7 +35,7 @@ class BuyHolder(author: Message, channelID: String, private val message: Message
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         val m = event.member ?: return
 
-        val inventory = Inventory.getInventory(m.id)
+        val inventory = Inventory.getInventory(m.idLong)
 
         when(event.componentId) {
             "role" -> {
@@ -164,23 +164,13 @@ class BuyHolder(author: Message, channelID: String, private val message: Message
                 CardData.Role.LEGEND -> inventory.validForLegendCollector()
                 CardData.Role.ZAMBONER,
                 CardData.Role.WHALELORD -> {
-                    val pendingCatFoods = CardData.sessions.filter { s -> s.member.any { id -> authorMessage.author.idLong == id } }
-                        .sumOf { s ->
-                            val index = s.member.indexOf(authorMessage.author.idLong)
-
-                            if (index == -1)
-                                return@sumOf 0
-
-                            return@sumOf s.suggestion[index].catFood
-                        }
-
                     val cost = if (role == CardData.Role.ZAMBONER) {
                         1000000
                     } else {
                         5000000
                     }
 
-                    inventory.catFoods - pendingCatFoods >= cost
+                    inventory.actualCatFood >= cost
                 }
                 else -> role.getProduct().possibleFilters.filter { f -> inventory.cards.keys.filter { c -> f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 0 } >= f.amount }.size >= role.getProduct().requiredFilter
 
@@ -249,23 +239,13 @@ class BuyHolder(author: Message, channelID: String, private val message: Message
                     5000000
                 }
 
-                val pendingCatFoods = CardData.sessions.filter { s -> s.member.any { id -> authorMessage.author.idLong == id } }
-                    .sumOf { s ->
-                        val index = s.member.indexOf(authorMessage.author.idLong)
-
-                        if (index == -1)
-                            return@sumOf 0
-
-                        return@sumOf s.suggestion[index].catFood
-                    }
-
                 if (inventory.catFoods < cost) {
                     event.deferReply()
                         .setContent("You can't afford this role because you don't have $cost ${EmojiStore.ABILITY["CF"]?.formatted}")
                         .setEphemeral(true)
                         .setAllowedMentions(ArrayList())
                         .queue()
-                } else if (inventory.catFoods - pendingCatFoods < cost) {
+                } else if (inventory.actualCatFood < cost) {
                     event.deferReply()
                         .setContent("You can't afford this role. If you have over $cost ${EmojiStore.ABILITY["CF"]?.formatted} already, it's because you suggested some of your ${EmojiStore.ABILITY["CF"]?.formatted} in trading session(s)")
                         .setEphemeral(true)

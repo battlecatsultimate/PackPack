@@ -47,14 +47,8 @@ class PackCost(
         }
     }
 
-    fun affordable(inventory: Inventory, id: Long) : Boolean {
-        val queuedCatFoods = CardData.sessions.filter { session -> id in session.member }.sumOf { session ->
-            val index = session.member.indexOf(id)
-
-            session.suggestion[index].catFood
-        }
-
-        if (inventory.catFoods - queuedCatFoods < catFoods)
+    fun affordable(inventory: Inventory) : Boolean {
+        if (inventory.actualCatFood < catFoods)
             return false
 
         if (inventory.platinumShard < platinumShards)
@@ -99,15 +93,9 @@ class PackCost(
     fun getReason(inventory: Inventory, id: Long) : String {
         val builder = StringBuilder()
 
-        val queuedCatFoods = CardData.sessions.filter { session -> id in session.member }.sumOf { session ->
-            val index = session.member.indexOf(id)
-
-            session.suggestion[index].catFood
-        }
-
-        if (inventory.catFoods - queuedCatFoods < catFoods) {
+        if (inventory.actualCatFood < catFoods) {
             if (inventory.catFoods >= catFoods) {
-                builder.append("- You don't have enough cat foods because you already suggested your cat food in other trading sessions. You currently have ${EmojiStore.ABILITY["CF"]?.formatted} ${inventory.catFoods - queuedCatFoods} free\n")
+                builder.append("- You don't have enough cat foods because you already suggested your cat food in other trading sessions. You currently have ${EmojiStore.ABILITY["CF"]?.formatted} ${inventory.actualCatFood} free\n")
             } else {
                 builder.append("- You don't have enough cat foods. You currently have ${EmojiStore.ABILITY["CF"]?.formatted} ${inventory.catFoods}\n")
             }

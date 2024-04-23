@@ -21,7 +21,7 @@ class Equip : Command(LangID.EN, true) {
         val m = loader.member
         val g = loader.guild
 
-        val inventory = Inventory.getInventory(m.id)
+        val inventory = Inventory.getInventory(m.idLong)
 
         replyToMessageSafely(ch, getText(g, m, inventory), loader.message, { a ->
             a.setComponents(getComponents(g, m, inventory))

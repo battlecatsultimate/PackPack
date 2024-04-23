@@ -26,7 +26,7 @@ import net.dv8tion.jda.api.interactions.modals.Modal
 import net.dv8tion.jda.api.utils.FileUpload
 
 class CardCraftAmountHolder(author: Message, channelID: String, private val message: Message, private val craftMode: CardData.CraftMode) : ComponentHolder(author, channelID, message.id) {
-    private val inventory = Inventory.getInventory(author.author.id)
+    private val inventory = Inventory.getInventory(author.author.idLong)
 
     private var amount = 1
 

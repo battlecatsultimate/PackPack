@@ -42,7 +42,7 @@ class ManualRollConfirmHolder(author: Message, channelID: String, messageID: Str
                         g.retrieveMember(UserSnowflake.fromId(users[0])).queue { targetMember ->
                             val result = pack.roll()
 
-                            val inventory = Inventory.getInventory(targetMember.id)
+                            val inventory = Inventory.getInventory(targetMember.idLong)
 
                             try {
                                 val builder = StringBuilder("### ${pack.packName} Result [${result.size} cards in total]\n\n")
@@ -89,7 +89,7 @@ class ManualRollConfirmHolder(author: Message, channelID: String, messageID: Str
                             g.retrieveMember(UserSnowflake.fromId(it)).queue { targetMember ->
                                 val result = pack.roll()
 
-                                val inventory = Inventory.getInventory(targetMember.id)
+                                val inventory = Inventory.getInventory(targetMember.idLong)
 
                                 inventory.addCards(result)
 

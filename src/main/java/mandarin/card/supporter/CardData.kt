@@ -186,7 +186,7 @@ object CardData {
 
     val regularLegend = arrayOf(481, 450, 455, 478, 449, 463, 448, 461, 451, 544, 493)
 
-    var inventories = HashMap<String, Inventory>()
+    var inventories = HashMap<Long, Inventory>()
 
     val activatedBanners = ArrayList<Activator>()
 

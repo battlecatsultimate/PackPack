@@ -48,7 +48,7 @@ class Cards : Command(LangID.EN, true) {
             return
         }
 
-        val inventory = Inventory.getInventory(member.id)
+        val inventory = Inventory.getInventory(member.idLong)
 
         replyToMessageSafely(ch, getText(member, inventory), author, { a ->
             val rows = ArrayList<ActionRow>()

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
+import com.google.gson.JsonPrimitive
 import common.CommonStatic
 import mandarin.card.commands.*
 import mandarin.card.supporter.*
@@ -230,7 +231,7 @@ object CardBot : ListenerAdapter() {
         if (currentTime - lastTime >= CardData.catFoodCooldown && ch.id !in CardData.excludedCatFoodChannel) {
             CardData.lastMessageSent[m.id] = currentTime
 
-            val inventory = Inventory.getInventory(m.id)
+            val inventory = Inventory.getInventory(m.idLong)
 
             inventory.catFoods += if (CardData.minimumCatFoods != CardData.maximumCatFoods) {
                 CardData.minimumCatFoods.rangeTo(CardData.maximumCatFoods).random()
@@ -554,9 +555,18 @@ object CardBot : ListenerAdapter() {
                 if (!pair.has("key") || !pair.has("val"))
                     continue
 
-                val key = pair["key"].asString
+                val keyData = pair["key"]
 
-                val value = Inventory.readInventory(pair["val"].asJsonObject)
+                if (keyData !is JsonPrimitive)
+                    continue
+
+                val key = if (keyData.isString) {
+                    keyData.asString.toLong()
+                } else {
+                    keyData.asLong
+                }
+
+                val value = Inventory.readInventory(key, pair["val"].asJsonObject)
 
                 CardData.inventories[key] = value
             }

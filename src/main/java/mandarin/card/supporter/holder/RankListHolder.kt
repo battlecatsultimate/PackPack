@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle
 import kotlin.math.ceil
 import kotlin.math.min
 
-class RankListHolder(author: Message, channelID: String, messageID: String, private val users: List<String>, private val currencies: List<Long>, private val catFood: Boolean) : ComponentHolder(author, channelID, messageID) {
+class RankListHolder(author: Message, channelID: String, messageID: String, private val users: List<Long>, private val currencies: List<Long>, private val catFood: Boolean) : ComponentHolder(author, channelID, messageID) {
     private var page = 0
 
     override fun clean() {
@@ -70,7 +70,7 @@ class RankListHolder(author: Message, channelID: String, messageID: String, priv
     }
 
     private fun getRankList() : String {
-        val rank = users.indexOf(authorMessage.author.id)
+        val rank = users.indexOf(authorMessage.author.idLong)
 
         val builder = StringBuilder(
             if (rank != -1) {

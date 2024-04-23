@@ -33,8 +33,8 @@ class Trade : Command(LangID.EN, true) {
             return
         }
 
-        if (Inventory.getInventory(m.id).cards.isEmpty()) {
-            val cf = Inventory.getInventory(m.id).catFoods
+        if (Inventory.getInventory(m.idLong).cards.isEmpty()) {
+            val cf = Inventory.getInventory(m.idLong).catFoods
 
             if (cf < 1000) {
                 val additional = if (!CardData.tradeTrialCooldown.containsKey(m.id)) {
@@ -50,7 +50,7 @@ class Trade : Command(LangID.EN, true) {
                 } else {
                     CardData.tradeTrialCooldown[m.id] = CardData.getUnixEpochTime() + CardData.TRADE_TRIAL_COOLDOWN
 
-                    TransactionLogger.logTradeTrialFailure(m.idLong, Inventory.getInventory(m.id).cards.isEmpty(), cf)
+                    TransactionLogger.logTradeTrialFailure(m.idLong, Inventory.getInventory(m.idLong).cards.isEmpty(), cf)
                 }
 
                 CardBot.saveCardData()
@@ -76,7 +76,7 @@ class Trade : Command(LangID.EN, true) {
         }
 
         action.queue { targetMember ->
-            val inventory = Inventory.getInventory(targetMember.id)
+            val inventory = Inventory.getInventory(targetMember.idLong)
 
             if (targetMember.user.isBot) {
                 replyToMessageSafely(ch, "You can't trade with bot!", loader.message) { a -> a }

@@ -34,7 +34,7 @@ class CardCostPayHolder(
     private val container: CardPayContainer,
     private val containers: Array<CardPayContainer>
 ) : ComponentHolder(author, channelID, message.id) {
-    private val inventory = Inventory.getInventory(author.author.id)
+    private val inventory = Inventory.getInventory(author.author.idLong)
     private val cards = ArrayList<Card>(inventory.cards.keys)
 
     private var page = 0

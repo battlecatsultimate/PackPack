@@ -213,7 +213,7 @@ class Report : Command(LangID.EN, true) {
                 val memberIds = sessions.flatMap { session -> session.activeMembers }.toSet()
 
                 val activeMembers = allMembers.filter { member -> member.idLong in memberIds }.sortedBy { member -> member.effectiveName }
-                val existingMembers = allMembers.filter { member -> CardData.inventories.containsKey(member.id) }
+                val existingMembers = allMembers.filter { member -> CardData.inventories.containsKey(member.idLong) }
 
                 val catFoodPackMap = HashMap<Long, Long>()
                 val platinumShardPackMap = HashMap<Long, Long>()
@@ -714,7 +714,7 @@ class Report : Command(LangID.EN, true) {
                 i = 1
 
                 CardData.inventories.entries.filter { e -> e.value.platinumShard > 0 }.sortedByDescending { e -> e.value.platinumShard }.forEach { (id, inventory) ->
-                    val member = existingMembers.find { member -> member.id == id }
+                    val member = existingMembers.find { member -> member.idLong == id }
 
                     if (member != null) {
                         reporter.append(i).append(". ").append(member.effectiveName).append(" [").append(id).append("] : ").append(inventory.platinumShard).append("\n")
@@ -732,7 +732,7 @@ class Report : Command(LangID.EN, true) {
                 i = 1
 
                 CardData.inventories.entries.filter { e -> e.value.catFoods > 0 }.sortedByDescending { e -> e.value.catFoods }.forEach { (id, inventory) ->
-                    val member = existingMembers.find { member -> member.id == id }
+                    val member = existingMembers.find { member -> member.idLong == id }
 
                     if (member != null) {
                         reporter.append(i).append(". ").append(member.effectiveName).append(" [").append(id).append("] : ").append(inventory.catFoods).append("\n")

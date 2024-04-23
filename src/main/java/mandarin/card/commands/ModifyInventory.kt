@@ -42,7 +42,7 @@ class ModifyInventory : Command(LangID.EN, true) {
 
         try {
             g.retrieveMember(UserSnowflake.fromId(userID)).queue { targetMember ->
-                val inventory = Inventory.getInventory(targetMember.id)
+                val inventory = Inventory.getInventory(targetMember.idLong)
 
                 replyToMessageSafely(ch, "Please select which thing you want to modify for inventory of ${targetMember.asMention}", loader.message, { a ->
                     a.setComponents(registerComponents())

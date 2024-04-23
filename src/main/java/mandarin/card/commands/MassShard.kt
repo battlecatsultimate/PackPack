@@ -53,7 +53,7 @@ class MassShard : Command(LangID.EN, true) {
 
         getMembers(contents[2], loader.guild).onSuccess { members ->
             if (members.any { member ->
-                val inventory = Inventory.getInventory(member.id)
+                val inventory = Inventory.getInventory(member.idLong)
 
                 if (amount < 0) {
                     inventory.platinumShard < abs(amount)
@@ -84,7 +84,7 @@ class MassShard : Command(LangID.EN, true) {
             }) { msg ->
                 StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, msg, loader.channel.id, lang) {
                     members.forEach { member ->
-                        val inventory = Inventory.getInventory(member.id)
+                        val inventory = Inventory.getInventory(member.idLong)
 
                         inventory.platinumShard += amount
                     }

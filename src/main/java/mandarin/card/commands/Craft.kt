@@ -26,7 +26,7 @@ class Craft : Command(LangID.EN, true) {
             return
         }
 
-        val inventory = Inventory.getInventory(m.id)
+        val inventory = Inventory.getInventory(m.idLong)
 
         replyToMessageSafely(ch, "Select tier that you want to craft\n\n" +
                 "You currently have ${EmojiStore.ABILITY["SHARD"]?.formatted} ${inventory.platinumShard}", loader.message, { a ->

@@ -21,7 +21,7 @@ class CatFood : Command(LangID.EN, true) {
 
             if (memberGetter != null) {
                 memberGetter.queue({ mem ->
-                    val inventory = Inventory.getInventory(mem.id)
+                    val inventory = Inventory.getInventory(mem.idLong)
 
                     replyToMessageSafely(loader.channel, "User ${mem.asMention} currently has ${EmojiStore.ABILITY["CF"]?.formatted} ${inventory.catFoods}", loader.message) { a -> a }
                 }) { _ ->
@@ -31,7 +31,7 @@ class CatFood : Command(LangID.EN, true) {
                 replyToMessageSafely(loader.channel, "You have passed invalid format of ID! Please provide member data via either raw ID or mention", loader.message) { a -> a }
             }
         } else {
-            val inventory = Inventory.getInventory(m.id)
+            val inventory = Inventory.getInventory(m.idLong)
 
             replyToMessageSafely(loader.channel, "${m.asMention}, you currently have ${EmojiStore.ABILITY["CF"]?.formatted} ${inventory.catFoods}", loader.message) { a -> a }
         }

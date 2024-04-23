@@ -11,7 +11,7 @@ class Hack : Command(LangID.EN, true) {
         val ch = loader.channel
         val m = loader.member
 
-        val inventory = Inventory.getInventory(m.id)
+        val inventory = Inventory.getInventory(m.idLong)
 
         CardData.permanents.forEachIndexed { index, bannerSet -> bannerSet.forEach { banner -> CardData.bannerData[index][banner].forEach { id ->
             val card = CardData.cards.find { c -> c.unitID == id }

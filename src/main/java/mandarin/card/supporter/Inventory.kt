@@ -4,7 +4,7 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import mandarin.packpack.supporter.StaticStore
 
-class Inventory {
+class Inventory(private val id: Long) {
     var cards = HashMap<Card, Int>()
     var favorites = HashMap<Card, Int>()
 
@@ -12,6 +12,15 @@ class Inventory {
 
     var catFoods = 0L
     var platinumShard = 0L
+
+    val actualCatFood: Long
+        get() {
+            return catFoods - tradePendingCatFood
+        }
+    val tradePendingCatFood: Long
+        get() {
+            return CardData.sessions.filter { s -> id in s.member }.sumOf { s -> s.suggestion[s.member.indexOf(id)].catFood }.toLong()
+        }
 
     fun addCards(c: List<Card>) {
         for (card in c) {
@@ -136,8 +145,8 @@ class Inventory {
     }
 
     companion object {
-        fun readInventory(obj: JsonObject): Inventory {
-            val inventory = Inventory()
+        fun readInventory(id: Long, obj: JsonObject): Inventory {
+            val inventory = Inventory(id)
 
             if (obj.has("cards")) {
                 val cardIDs = obj.getAsJsonObject("cards")
@@ -184,11 +193,11 @@ class Inventory {
             return inventory
         }
 
-        fun getInventory(id: String) : Inventory {
+        fun getInventory(id: Long) : Inventory {
             var inventory = CardData.inventories[id]
 
             if (inventory == null) {
-                inventory = Inventory()
+                inventory = Inventory(id)
 
                 CardData.inventories[id] = inventory
             }

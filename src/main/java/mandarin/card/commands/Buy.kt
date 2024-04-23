@@ -27,7 +27,7 @@ class Buy : Command(LangID.EN, true) {
             return
         }
 
-        val inventory = Inventory.getInventory(m.id)
+        val inventory = Inventory.getInventory(m.idLong)
         val possibleRoles = CardData.Role.entries.filter { r -> r != CardData.Role.NONE && r !in inventory.vanityRoles }.toList()
 
         replyToMessageSafely(ch, "Please select a list that you want to get", author, {
@@ -47,23 +47,13 @@ class Buy : Command(LangID.EN, true) {
                 CardData.Role.LEGEND -> inventory.validForLegendCollector()
                 CardData.Role.ZAMBONER,
                 CardData.Role.WHALELORD -> {
-                    val pendingCatFoods = CardData.sessions.filter { s -> s.member.any { id -> member.idLong == id } }
-                        .sumOf { s ->
-                            val index = s.member.indexOf(member.idLong)
-
-                            if (index == -1)
-                                return@sumOf 0
-
-                            return@sumOf s.suggestion[index].catFood
-                        }
-
                     val cost = if (role == CardData.Role.ZAMBONER) {
                         1000000
                     } else {
                         5000000
                     }
 
-                    inventory.catFoods - pendingCatFoods >= cost
+                    inventory.actualCatFood >= cost
                 }
                 else -> role.getProduct().possibleFilters.filter { f -> inventory.cards.keys.filter { c -> f.filter(c) }.sumOf { c -> inventory.cards[c] ?: 0 } >= f.amount }.size >= role.getProduct().requiredFilter
             }

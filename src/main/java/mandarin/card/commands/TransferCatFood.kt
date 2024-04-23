@@ -42,7 +42,7 @@ class TransferCatFood : Command(LangID.EN, true) {
             return
         }
 
-        val thisInventory = Inventory.getInventory(m.id)
+        val thisInventory = Inventory.getInventory(m.idLong)
 
         if (thisInventory.catFoods - amount < 0) {
             replyToMessageSafely(loader.channel, "You currently have ${EmojiStore.ABILITY["CF"]?.formatted} ${thisInventory.catFoods}. You can't transfer ${EmojiStore.ABILITY["CF"]?.formatted} $amount to others!", loader.message) { a -> a }
@@ -72,7 +72,7 @@ class TransferCatFood : Command(LangID.EN, true) {
                         a.setActionRow(components)
                     }) { msg ->
                 StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, msg, loader.channel.id, lang) {
-                    val thatInventory = Inventory.getInventory(mem.id)
+                    val thatInventory = Inventory.getInventory(mem.idLong)
 
                     thatInventory.catFoods += amount
                     thisInventory.catFoods -= amount

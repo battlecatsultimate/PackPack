@@ -21,7 +21,7 @@ class ShardRank : Command(LangID.EN, true) {
     override fun doSomething(loader: CommandLoader) {
         val m = loader.member
 
-        Inventory.getInventory(m.id)
+        Inventory.getInventory(m.idLong)
 
         val users = CardData.inventories.keys.sortedBy { id ->
             val inventory = Inventory.getInventory(id)
@@ -35,12 +35,12 @@ class ShardRank : Command(LangID.EN, true) {
             inventory.platinumShard
         }
 
-        replyToMessageSafely(loader.channel, getRankList(users, shards, m.id), loader.message, { a -> a.setComponents(getComponents(users)) }) { msg ->
+        replyToMessageSafely(loader.channel, getRankList(users, shards, m.idLong), loader.message, { a -> a.setComponents(getComponents(users)) }) { msg ->
             StaticStore.putHolder(m.id, RankListHolder(loader.message, loader.channel.id, msg.id, users, shards, false))
         }
     }
 
-    private fun getRankList(memberList: List<String>, catFoods: List<Long>, member: String) : String {
+    private fun getRankList(memberList: List<Long>, catFoods: List<Long>, member: Long) : String {
         val rank = memberList.indexOf(member)
 
         val builder = StringBuilder(
@@ -69,7 +69,7 @@ class ShardRank : Command(LangID.EN, true) {
         return builder.toString()
     }
 
-    private fun getComponents(memberList: List<String>) : List<LayoutComponent> {
+    private fun getComponents(memberList: List<Long>) : List<LayoutComponent> {
         val result = ArrayList<LayoutComponent>()
 
         if (memberList.size > SearchHolder.PAGE_CHUNK) {

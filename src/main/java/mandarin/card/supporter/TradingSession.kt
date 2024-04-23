@@ -95,8 +95,8 @@ class TradingSession(val postID: Long, val member: Array<Long>) {
     }
 
     fun validate(ch: MessageChannel) : Boolean {
-        val thisInventory = Inventory.getInventory(member[0].toString())
-        val thatInventory = Inventory.getInventory(member[1].toString())
+        val thisInventory = Inventory.getInventory(member[0])
+        val thatInventory = Inventory.getInventory(member[1])
 
         for (card in suggestion[0].cards) {
             if (!thisInventory.cards.containsKey(card)) {
@@ -144,8 +144,8 @@ class TradingSession(val postID: Long, val member: Array<Long>) {
     }
 
     fun trade() {
-        val thisInventory = Inventory.getInventory(member[0].toString())
-        val thatInventory = Inventory.getInventory(member[1].toString())
+        val thisInventory = Inventory.getInventory(member[0])
+        val thatInventory = Inventory.getInventory(member[1])
 
         for (card in suggestion[1].cards) {
             thisInventory.cards[card] = (thisInventory.cards[card] ?: 0) + 1

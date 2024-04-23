@@ -30,7 +30,7 @@ import net.dv8tion.jda.api.interactions.modals.Modal
 import kotlin.math.min
 
 class CardSalvageHolder(author: Message, channelID: String, private val message: Message, private val salvageMode: CardData.SalvageMode) : ComponentHolder(author, channelID, message.id) {
-    private val inventory = Inventory.getInventory(author.author.id)
+    private val inventory = Inventory.getInventory(author.author.idLong)
     private val tier = when(salvageMode) {
         CardData.SalvageMode.T1 -> CardData.Tier.COMMON
         CardData.SalvageMode.T2,

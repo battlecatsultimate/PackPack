@@ -34,7 +34,7 @@ class PackPayHolder(
         CardPayContainer(pack.cost.cardsCosts[it])
     }
 
-    private val inventory = Inventory.getInventory(author.author.id)
+    private val inventory = Inventory.getInventory(author.author.idLong)
 
     override fun clean() {
 
@@ -218,7 +218,7 @@ class PackPayHolder(
         } else {
             builder.append(pack.displayInfo())
 
-            if (!pack.cost.affordable(inventory, authorMessage.author.idLong)) {
+            if (!pack.cost.affordable(inventory)) {
                 builder.append("\n\nYou can't afford this pack. Check reason below :\n\n").append(pack.cost.getReason(inventory, authorMessage.author.idLong))
             } else if (containers.any { container -> !container.paid() }) {
                 builder.append("\n\nTo roll this pack, you have to pay all card costs. You can check if you paid for each card cost or not by checking each list's descriptions\n" +
@@ -255,14 +255,16 @@ class PackPayHolder(
                     )
                 }
 
-                result.add(ActionRow.of(StringSelectMenu.create("cost").addOptions(options).setPlaceholder("Select cost to pay cards").setDisabled(!pack.cost.affordable(inventory, authorMessage.author.idLong)).build()))
+                result.add(ActionRow.of(StringSelectMenu.create("cost").addOptions(options).setPlaceholder("Select cost to pay cards").setDisabled(!pack.cost.affordable(
+                    inventory
+                )).build()))
             }
 
             val buttons = ArrayList<Button>()
 
             buttons.add(
                 Button.success("roll", "Roll")
-                    .withDisabled(!pack.cost.affordable(inventory, authorMessage.author.idLong) || containers.any { container -> !container.paid() })
+                    .withDisabled(!pack.cost.affordable(inventory) || containers.any { container -> !container.paid() })
                     .withEmoji(Emoji.fromUnicode("\uD83C\uDFB2"))
             )
 
