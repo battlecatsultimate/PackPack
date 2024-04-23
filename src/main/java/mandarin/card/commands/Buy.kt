@@ -10,7 +10,6 @@ import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.CommandLoader
-import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -31,13 +30,13 @@ class Buy : Command(LangID.EN, true) {
         val possibleRoles = CardData.Role.entries.filter { r -> r != CardData.Role.NONE && r !in inventory.vanityRoles }.toList()
 
         replyToMessageSafely(ch, "Please select a list that you want to get", author, {
-            a -> a.setComponents(registerComponents(possibleRoles, m, inventory))
+            a -> a.setComponents(registerComponents(possibleRoles, inventory))
         }, { msg ->
             StaticStore.putHolder(m.id, BuyHolder(author, ch.id, msg))
         })
     }
 
-    private fun registerComponents(roles: List<CardData.Role>, member: Member, inventory: Inventory) : List<LayoutComponent> {
+    private fun registerComponents(roles: List<CardData.Role>, inventory: Inventory) : List<LayoutComponent> {
         val rows = ArrayList<LayoutComponent>()
 
         val options = ArrayList<SelectOption>()

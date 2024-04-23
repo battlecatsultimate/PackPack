@@ -443,12 +443,12 @@ class Report : Command(LangID.EN, true) {
                 }
 
                 CardData.inventories.filter { (_, inventory) -> inventory.cards.isNotEmpty() || inventory.favorites.isNotEmpty() }.forEach { (id, inventory) ->
-                    val t1CardMap = cardsT1Map.computeIfAbsent(id.toLong()) { HashMap() }
-                    val t2RegularCardMap = cardsT2RegularMap.computeIfAbsent(id.toLong()) { HashMap() }
-                    val t2SeasonalCardMap = cardsT2SeasonalMap.computeIfAbsent(id.toLong()) { HashMap() }
-                    val t2CollaborationCardMap = cardsT2CollaborationMap.computeIfAbsent(id.toLong()) { HashMap() }
-                    val t3CardMap = cardsT3Map.computeIfAbsent(id.toLong()) { HashMap() }
-                    val t4CardMap = cardsT4Map.computeIfAbsent(id.toLong()) { HashMap() }
+                    val t1CardMap = cardsT1Map.computeIfAbsent(id) { HashMap() }
+                    val t2RegularCardMap = cardsT2RegularMap.computeIfAbsent(id) { HashMap() }
+                    val t2SeasonalCardMap = cardsT2SeasonalMap.computeIfAbsent(id) { HashMap() }
+                    val t2CollaborationCardMap = cardsT2CollaborationMap.computeIfAbsent(id) { HashMap() }
+                    val t3CardMap = cardsT3Map.computeIfAbsent(id) { HashMap() }
+                    val t4CardMap = cardsT4Map.computeIfAbsent(id) { HashMap() }
 
                     inventory.cards.forEach { (card, amount) ->
                         when {

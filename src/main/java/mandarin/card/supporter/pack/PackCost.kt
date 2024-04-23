@@ -90,7 +90,7 @@ class PackCost(
         return true
     }
 
-    fun getReason(inventory: Inventory, id: Long) : String {
+    fun getReason(inventory: Inventory) : String {
         val builder = StringBuilder()
 
         if (inventory.actualCatFood < catFoods) {

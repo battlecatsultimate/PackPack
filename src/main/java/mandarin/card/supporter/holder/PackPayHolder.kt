@@ -219,7 +219,9 @@ class PackPayHolder(
             builder.append(pack.displayInfo())
 
             if (!pack.cost.affordable(inventory)) {
-                builder.append("\n\nYou can't afford this pack. Check reason below :\n\n").append(pack.cost.getReason(inventory, authorMessage.author.idLong))
+                builder.append("\n\nYou can't afford this pack. Check reason below :\n\n").append(pack.cost.getReason(
+                    inventory
+                ))
             } else if (containers.any { container -> !container.paid() }) {
                 builder.append("\n\nTo roll this pack, you have to pay all card costs. You can check if you paid for each card cost or not by checking each list's descriptions\n" +
                         "\n" +

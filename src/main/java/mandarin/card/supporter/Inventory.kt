@@ -15,9 +15,9 @@ class Inventory(private val id: Long) {
 
     val actualCatFood: Long
         get() {
-            return catFoods - tradePendingCatFood
+            return catFoods - tradePendingCatFoods
         }
-    val tradePendingCatFood: Long
+    val tradePendingCatFoods: Long
         get() {
             return CardData.sessions.filter { s -> id in s.member }.sumOf { s -> s.suggestion[s.member.indexOf(id)].catFood }.toLong()
         }
