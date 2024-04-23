@@ -16,6 +16,8 @@ class CatFood : Command(LangID.EN, true) {
         val m = loader.member
         val contents = loader.content.split(" ")
 
+        val cf = EmojiStore.ABILITY["CF"]?.formatted
+
         if (contents.size >= 2) {
             val memberGetter = tryToGetMember(contents[1], loader.guild)
 
@@ -23,7 +25,7 @@ class CatFood : Command(LangID.EN, true) {
                 memberGetter.queue({ mem ->
                     val inventory = Inventory.getInventory(mem.idLong)
 
-                    replyToMessageSafely(loader.channel, "User ${mem.asMention} currently has ${EmojiStore.ABILITY["CF"]?.formatted} ${inventory.catFoods}", loader.message) { a -> a }
+                    replyToMessageSafely(loader.channel, "User ${mem.asMention} currently has $cf ${inventory.catFoods}", loader.message) { a -> a }
                 }) { _ ->
                     replyToMessageSafely(loader.channel, "Bot failed to find such user in this server...", loader.message) { a -> a }
                 }
@@ -33,7 +35,12 @@ class CatFood : Command(LangID.EN, true) {
         } else {
             val inventory = Inventory.getInventory(m.idLong)
 
-            replyToMessageSafely(loader.channel, "${m.asMention}, you currently have ${EmojiStore.ABILITY["CF"]?.formatted} ${inventory.catFoods}", loader.message) { a -> a }
+            replyToMessageSafely(loader.channel, "${m.asMention}, here's your $cf status\n" +
+                    "\n" +
+                    "In total, you have $cf ${inventory.catFoods}\n" +
+                    "$cf ${inventory.tradePendingCatFoods} are queued in trading sessions\n" +
+                    "\n" +
+                    "You can actually use $cf ${inventory.actualCatFood}", loader.message) { a -> a }
         }
     }
 
