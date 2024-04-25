@@ -50,7 +50,7 @@ class CatFoodHolder(author: Message, channelID: String, message:Message, private
                 return
             }
 
-            suggestion.catFood = value.toInt()
+            suggestion.catFood = catFood
 
             val tax = (suggestion.catFood * CardData.TAX).toInt()
             val actualCf = suggestion.catFood - tax
