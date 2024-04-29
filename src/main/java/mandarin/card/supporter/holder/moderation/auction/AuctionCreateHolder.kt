@@ -124,6 +124,10 @@ class AuctionCreateHolder(author: Message, channelID: String, private val messag
 
                     inventory.cards[card] = (inventory.cards[card] ?: 0) - amount
                     inventory.auctionQueued[card] = (inventory.auctionQueued[card] ?: 0) + amount
+
+                    if ((inventory.cards[card] ?: 0) < 0) {
+                        inventory.cards.remove(card)
+                    }
                 }
 
                 CardBot.saveCardData()
