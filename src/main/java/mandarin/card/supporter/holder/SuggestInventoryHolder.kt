@@ -133,7 +133,7 @@ class SuggestInventoryHolder(
                     val g = event.guild ?: return
 
                     session.needApproval(g, {
-                        event.messageChannel.sendMessage("Pinging <@&${ServerData.get("dealer")}> for approval because this trade contains above 200k cf or above tier 3 cards").queue()
+                        event.messageChannel.sendMessage("Pinging <@&${CardData.dealer}> for approval because this trade contains above 200k cf or above tier 3 cards").queue()
                     }, { })
                 }
 

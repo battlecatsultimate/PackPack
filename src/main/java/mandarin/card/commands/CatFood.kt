@@ -39,6 +39,7 @@ class CatFood : Command(LangID.EN, true) {
                     "\n" +
                     "In total, you have $cf ${inventory.catFoods}\n" +
                     "$cf ${inventory.tradePendingCatFoods} are queued in trading sessions\n" +
+                    "$cf ${inventory.auctionPendingCatFoods} are queued in auction sessions\n" +
                     "\n" +
                     "You can actually use $cf ${inventory.actualCatFood}", loader.message) { a -> a }
         }

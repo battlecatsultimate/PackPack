@@ -16,6 +16,8 @@ import mandarin.packpack.supporter.*
 import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.data.ShardLoader
 import net.dv8tion.jda.api.entities.Activity
+import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent
@@ -35,7 +37,9 @@ import java.io.IOException
 import java.sql.Timestamp
 import java.time.ZoneOffset
 import java.util.*
+import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicReference
 
 object CardBot : ListenerAdapter() {
     var globalPrefix = "cd."
@@ -68,7 +72,9 @@ object CardBot : ListenerAdapter() {
             GatewayIntent.GUILD_MEMBERS,
             GatewayIntent.GUILD_EMOJIS_AND_STICKERS,
             GatewayIntent.GUILD_MESSAGES,
+            GatewayIntent.DIRECT_MESSAGES,
             GatewayIntent.GUILD_MESSAGE_REACTIONS,
+            GatewayIntent.DIRECT_MESSAGE_REACTIONS,
             GatewayIntent.MESSAGE_CONTENT,
             GatewayIntent.SCHEDULED_EVENTS
         )
@@ -140,18 +146,25 @@ object CardBot : ListenerAdapter() {
                 if (collectorMonitor == 30 && !test) {
                     collectorMonitor = 1
 
+                    val g = client.getGuildById(CardData.guild)
+                    val collectorRole = g?.roles?.find { r -> r.id == CardData.Role.LEGEND.id }
+
                     CardData.inventories.keys.forEach { userID ->
                         val inventory = Inventory.getInventory(userID)
 
                         if (!inventory.validForLegendCollector() && inventory.vanityRoles.contains(CardData.Role.LEGEND)) {
                             inventory.vanityRoles.remove(CardData.Role.LEGEND)
 
+                            if (collectorRole != null) {
+                                g.removeRoleFromMember(UserSnowflake.fromId(userID), collectorRole).queue()
+                            }
+
                             client.retrieveUserById(userID).queue { u ->
                                 u.openPrivateChannel().queue({ privateChannel ->
                                     privateChannel.sendMessage("Your Legendary Collector role has been removed from your inventory. There are 2 possible reasons for this decision\n\n" +
                                             "1. You spent your card on trading, crafting, etc. so you don't meet condition of legendary collector now\n" +
                                             "2. New cards have been added, so you have to collect those cards to retrieve role back\n\n" +
-                                            "This is automated system. Please contact card managers if this seems to be incorrect automation").queue(null) { _ -> }
+                                            "This is automated system. Please contact card managers if this seems to be incorrect automation\n\n${inventory.getInvalidReason()}").queue(null) { _ -> }
                                 }, { _ -> })
                             }
                         }
@@ -222,16 +235,31 @@ object CardBot : ListenerAdapter() {
         if (!ready)
             return
 
-        val m = event.member ?: return
+        val u = event.author
+
+        val waiter = CountDownLatch(1)
+        val atomicMember = AtomicReference<Member>(null)
+
+        event.jda.getGuildById(CardData.guild)?.retrieveMemberById(u.id)?.queue({
+            atomicMember.set(it)
+
+            waiter.countDown()
+        }) { _ ->
+            waiter.countDown()
+        }
+
+        waiter.await()
+
+        val m = atomicMember.get() ?: return
         val ch = event.channel
 
-        val lastTime = CardData.lastMessageSent[m.id] ?: 0L
+        val lastTime = CardData.lastMessageSent[u.id] ?: 0L
         val currentTime = CardData.getUnixEpochTime()
 
         if (currentTime - lastTime >= CardData.catFoodCooldown && ch.id !in CardData.excludedCatFoodChannel) {
-            CardData.lastMessageSent[m.id] = currentTime
+            CardData.lastMessageSent[u.id] = currentTime
 
-            val inventory = Inventory.getInventory(m.idLong)
+            val inventory = Inventory.getInventory(u.idLong)
 
             inventory.catFoods += if (CardData.minimumCatFoods != CardData.maximumCatFoods) {
                 CardData.minimumCatFoods.rangeTo(CardData.maximumCatFoods).random()
@@ -245,7 +273,7 @@ object CardBot : ListenerAdapter() {
 
         val segments = event.message.contentRaw.lowercase().split(" ")
 
-        if (locked && m.id != StaticStore.MANDARIN_SMELL && !CardData.hasAllPermission(m))
+        if (locked && u.id != StaticStore.MANDARIN_SMELL && !CardData.hasAllPermission(m))
             return
 
         val firstSegment = if (segments.isEmpty())
@@ -287,7 +315,7 @@ object CardBot : ListenerAdapter() {
             }
         }
 
-        if (m.id != StaticStore.MANDARIN_SMELL && !CardData.hasAllPermission(m) && !CardData.isAllowed(ch))
+        if (u.id != StaticStore.MANDARIN_SMELL && !CardData.hasAllPermission(m) && !CardData.isAllowed(ch))
             return
 
         when(firstSegment) {
@@ -358,22 +386,63 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}lo" -> LogOut().execute(event)
             "${globalPrefix}resetcooldown",
             "${globalPrefix}rc" -> ResetCooldown().execute(event)
+            "${globalPrefix}auctionplace",
+            "${globalPrefix}ap" -> AuctionPlace().execute(event)
+            "${globalPrefix}createauction",
+            "${globalPrefix}cra" -> CreateAuction().execute(event)
+            "${globalPrefix}addauctionplace",
+            "${globalPrefix}aap" -> AddAuctionPlace().execute(event)
+            "${globalPrefix}removeauctionplace",
+            "${globalPrefix}rap" -> RemoveAuctionPlace().execute(event)
+            "${globalPrefix}approveauction",
+            "${globalPrefix}apa" -> ApproveAuction().execute(event)
+            "${globalPrefix}cancelauction",
+            "${globalPrefix}caa" -> CancelAuction().execute(event)
+            "${globalPrefix}closeauction",
+            "${globalPrefix}cla" -> CloseAuction().execute(event)
+            "${globalPrefix}changeauctiontime",
+            "${globalPrefix}cat" -> ChangeAuctionTime().execute(event)
+            "${globalPrefix}bid" -> Bid().execute(event)
+            "${globalPrefix}cancelbid",
+            "${globalPrefix}cb" -> CancelBid().execute(event)
+            "${globalPrefix}forcecancelbid",
+            "${globalPrefix}fcb" -> ForceCancelBid().execute(event)
+            "${globalPrefix}test" -> Test().execute(event)
         }
 
-        val session = findSession(event.channel.idLong) ?: return
+        val session = CardData.sessions.find { s -> s.postID == event.channel.idLong }
 
-        when(firstSegment) {
-            "${globalPrefix}suggest",
-            "${globalPrefix}su" -> Suggest(session).execute(event)
-            "${globalPrefix}confirm" -> Confirm(session).execute(event)
-            "${globalPrefix}cancel" -> Cancel(session).execute(event)
+        if (session != null) {
+            when(firstSegment) {
+                "${globalPrefix}suggest",
+                "${globalPrefix}su" -> Suggest(session).execute(event)
+                "${globalPrefix}confirm" -> Confirm(session).execute(event)
+                "${globalPrefix}cancel" -> Cancel(session).execute(event)
+            }
+
+            return
         }
     }
 
     override fun onGenericInteractionCreate(event: GenericInteractionCreateEvent) {
         super.onGenericInteractionCreate(event)
 
-        val m = event.member ?: return
+        val u = event.user
+
+        val waiter = CountDownLatch(1)
+        val atomicMember = AtomicReference<Member>(null)
+
+        event.jda.getGuildById(CardData.guild)?.retrieveMemberById(u.id)?.queue({
+            atomicMember.set(it)
+
+            waiter.countDown()
+        }) { _ ->
+            waiter.countDown()
+        }
+
+        waiter.await()
+
+        val m = atomicMember.get() ?: return
 
         if (CardData.isBanned(m))
             return
@@ -398,6 +467,7 @@ object CardBot : ListenerAdapter() {
         TransactionLogger.tradeChannel = event.jda.getGuildChannelById(CardData.tradingLog) as MessageChannel
         TransactionLogger.modChannel = event.jda.getGuildChannelById(CardData.modLog) as MessageChannel
         TransactionLogger.catFoodChannel = event.jda.getGuildChannelById(CardData.catFoodLog) as MessageChannel
+        TransactionLogger.bidLogChannel = event.jda.getGuildChannelById(CardData.bidLog) as MessageChannel
 
         StaticStore.loggingChannel = ServerData.get("loggingChannel")
 
@@ -411,6 +481,8 @@ object CardBot : ListenerAdapter() {
 
         val wasSafe = StaticStore.safeClose
         StaticStore.safeClose = false
+
+        CardData.auctionSessions.forEach { it.queueSession(event.jda) }
 
         if (test)
             return
@@ -716,6 +788,26 @@ object CardBot : ListenerAdapter() {
         if (obj.has("safeClose")) {
             StaticStore.safeClose = obj.get("safeClose").asBoolean
         }
+
+        if (obj.has("auctionPlaces")) {
+            val arr = obj.getAsJsonArray("auctionPlaces")
+
+            arr.forEach { e ->
+                CardData.auctionPlaces.add(e.asLong)
+            }
+        }
+
+        if (obj.has("auctionSessions")) {
+            val arr = obj.getAsJsonArray("auctionSessions")
+
+            arr.forEach { e ->
+                CardData.auctionSessions.add(AuctionSession.fromJson(e.asJsonObject))
+            }
+        }
+
+        if (obj.has("auctionSessionNumber")) {
+            CardData.auctionSessionNumber = obj.get("auctionSessionNumber").asLong
+        }
     }
 
     @Synchronized
@@ -889,6 +981,20 @@ object CardBot : ListenerAdapter() {
 
         obj.addProperty("safeClose", StaticStore.safeClose)
 
+        val auctionPlaces = JsonArray()
+
+        CardData.auctionPlaces.forEach { id -> auctionPlaces.add(id) }
+
+        obj.add("auctionPlaces", auctionPlaces)
+
+        val auctionSessions = JsonArray()
+
+        CardData.auctionSessions.forEach { s -> auctionSessions.add(s.asJson()) }
+
+        obj.add("auctionSessions", auctionSessions)
+
+        obj.addProperty("auctionSessionNumber", CardData.auctionSessionNumber)
+
         try {
             val folder = File("./data/")
 
@@ -926,9 +1032,5 @@ object CardBot : ListenerAdapter() {
         } catch (e: IOException) {
             StaticStore.logger.uploadErrorLog(e, "Failed to save card save")
         }
-    }
-
-    private fun findSession(channelID: Long) : TradingSession? {
-        return CardData.sessions.find { s -> s.postID == channelID }
     }
 }

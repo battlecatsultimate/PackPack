@@ -1,9 +1,6 @@
 package mandarin.card.supporter.log
 
-import mandarin.card.supporter.Activator
-import mandarin.card.supporter.Card
-import mandarin.card.supporter.CardData
-import mandarin.card.supporter.TradingSession
+import mandarin.card.supporter.*
 import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
@@ -24,6 +21,7 @@ object TransactionLogger {
     lateinit var tradeChannel: MessageChannel
     lateinit var modChannel: MessageChannel
     lateinit var catFoodChannel: MessageChannel
+    lateinit var bidLogChannel: MessageChannel
 
     fun logRoll(cards: List<Card>, pack: CardPack, member: Member, manual: Boolean) {
         if (!this::logChannel.isInitialized)
@@ -863,5 +861,267 @@ object TransactionLogger {
         builder.addField("Pack", pack.packName, true)
 
         modChannel.sendMessageEmbeds(builder.build()).queue()
+    }
+
+    fun logBid(session: AuctionSession, user: Long, amount: Long) {
+        if (!this::bidLogChannel.isInitialized)
+            return
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("Auction Bid")
+
+        builder.setColor(StaticStore.rainbow.random())
+
+        builder.setDescription("User <@$user> has bid the auction #${session.id}")
+
+        builder.addField("Auction ID" , "${session.id} <#${session.channel}> [${session.channel}]", false)
+
+        builder.addField("User", "<@$user> [$user]", true)
+        builder.addField("Amount", "${EmojiStore.ABILITY["CF"]?.formatted} $amount", true)
+
+        val auctionMessage = session.getAuctionMessage()
+
+        if (auctionMessage != null) {
+            builder.addField("Reference", auctionMessage.jumpUrl, false)
+        }
+
+        bidLogChannel.sendMessageEmbeds(builder.build()).queue()
+    }
+
+    fun logBidCancel(session: AuctionSession, user: Long, previousBid: Long) {
+        if (!this::bidLogChannel.isInitialized) {
+            return
+        }
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("Auction Bid")
+
+        builder.setColor(StaticStore.rainbow.random())
+
+        builder.setDescription("User <@$user> has canceled the bid in the auction #${session.id}")
+
+        builder.addField("Auction ID" , "${session.id} <#${session.channel}> [${session.channel}]", false)
+
+        builder.addField("User", "<@$user> [$user]", true)
+        builder.addField("Previous Amount", "${EmojiStore.ABILITY["CF"]?.formatted} $previousBid", true)
+
+        val auctionMessage = session.getAuctionMessage()
+
+        if (auctionMessage != null) {
+            builder.addField("Reference", auctionMessage.jumpUrl, false)
+        }
+
+        bidLogChannel.sendMessageEmbeds(builder.build()).queue()
+    }
+
+    fun logBidForceCancel(session: AuctionSession, canceler: Long, user: Long, previousBid: Long) {
+        if (!this::bidLogChannel.isInitialized) {
+            return
+        }
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("Auction Bid")
+
+        builder.setColor(StaticStore.rainbow.random())
+
+        builder.setDescription("Manager <@$canceler> force-canceled <@$user>'s bid in the auction #${session.id}")
+
+        builder.addField("Canceler", "<@$canceler> [$canceler]", false)
+
+        builder.addField("Auction ID" , "${session.id} <#${session.channel}> [${session.channel}]", false)
+
+        builder.addField("User", "<@$user> [$user]", true)
+        builder.addField("Previous Amount", "${EmojiStore.ABILITY["CF"]?.formatted} $previousBid", true)
+
+        val auctionMessage = session.getAuctionMessage()
+
+        if (auctionMessage != null) {
+            builder.addField("Reference", auctionMessage.jumpUrl, false)
+        }
+
+        bidLogChannel.sendMessageEmbeds(builder.build()).queue()
+    }
+
+    fun logAuctionCreate(creator: Long, session: AuctionSession) {
+        if (!this::modChannel.isInitialized) {
+            return
+        }
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("Auction Created")
+
+        builder.setColor(StaticStore.rainbow.random())
+
+        builder.setDescription("Manager <@$creator> has created the auction #${session.id}")
+
+        builder.addField("Creator", "<@$creator> [$creator]", false)
+
+        builder.addField("Auction Session", "Auction Session #${session.id} <#${session.channel}> [${session.channel}]", false)
+
+        builder.addField("Selected Card", session.card.simpleCardInfo(), true)
+        builder.addField("Amount", session.amount.toString(), true)
+
+        builder.addField("Author", if (session.author == -1L) "System" else "<@${session.author}> [${session.author}]", false)
+
+        builder.addField("Initial Price", "${EmojiStore.ABILITY["CF"]?.formatted} ${session.initialPrice}", true)
+
+        builder.addField("Minimum Bid Increase", "${EmojiStore.ABILITY["CF"]?.formatted} ${session.minimumBid}", true)
+
+        builder.addField("Anonymous?", if (session.anonymous) "Yes" else "No", false)
+
+        val auctionMessage = session.getAuctionMessage()
+
+        if (auctionMessage != null) {
+            builder.addField("Reference", auctionMessage.jumpUrl, false)
+        }
+
+        modChannel.sendMessageEmbeds(builder.build()).queue()
+    }
+
+    fun logAuctionClose(closer: Long, session: AuctionSession) {
+        if (!this::modChannel.isInitialized) {
+            return
+        }
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("Auction Closed")
+
+        builder.setColor(StaticStore.rainbow.random())
+
+        builder.setDescription("Manager <@$closer> has force-closed the auction #${session.id}")
+
+        builder.addField("Closer", "<@$closer> [$closer]", false)
+
+        builder.addField("Auction Session", "Auction Session #${session.id} <#${session.channel}> [${session.channel}]", false)
+
+        val auctionMessage = session.getAuctionMessage()
+
+        if (auctionMessage != null) {
+            builder.addField("Reference", auctionMessage.jumpUrl, false)
+        }
+
+        modChannel.sendMessageEmbeds(builder.build()).queue()
+    }
+
+    fun logAuctionCancel(canceler: Long, session: AuctionSession) {
+        if (!this::modChannel.isInitialized) {
+            return
+        }
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("Auction Closed")
+
+        builder.setColor(StaticStore.rainbow.random())
+
+        builder.setDescription("Manager <@$canceler> has canceled the auction #${session.id}")
+
+        builder.addField("Canceler", "<@$canceler> [$canceler]", false)
+
+        builder.addField("Auction Session", "Auction Session #${session.id} <#${session.channel}> [${session.channel}]", false)
+
+        val auctionMessage = session.getAuctionMessage()
+
+        if (auctionMessage != null) {
+            builder.addField("Reference", auctionMessage.jumpUrl, false)
+        }
+
+        modChannel.sendMessageEmbeds(builder.build()).queue()
+    }
+
+    fun logAuctionApprove(approver: Long, session: AuctionSession) {
+        if (!this::modChannel.isInitialized) {
+            return
+        }
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("Auction Closed")
+
+        builder.setColor(StaticStore.rainbow.random())
+
+        builder.setDescription("Manager <@$approver> has approved the auction #${session.id}")
+
+        builder.addField("Approver", "<@$approver> [$approver]", false)
+
+        builder.addField("Auction Session", "Auction Session #${session.id} <#${session.channel}> [${session.channel}]", false)
+
+        val auctionMessage = session.getAuctionMessage()
+
+        if (auctionMessage != null) {
+            builder.addField("Reference", auctionMessage.jumpUrl, false)
+        }
+
+        modChannel.sendMessageEmbeds(builder.build()).queue()
+    }
+
+    fun logAuctionEndDateChange(changer: Long, previousEndDate: Long, session: AuctionSession) {
+        if (!this::modChannel.isInitialized) {
+            return
+        }
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("Auction End Time Changed")
+
+        builder.setColor(StaticStore.rainbow.random())
+
+        builder.setDescription("Manager <@$changer> has changed end time of auction #${session.id}")
+
+        builder.addField("Changer", "<@$changer> [$changer]", false)
+
+        builder.addField("Auction Session", "Auction Session #${session.id} <#${session.channel}> [${session.channel}]", false)
+
+        builder.addField("From", "<t:$previousEndDate:f>", true)
+        builder.addField("To", "<t:${session.endDate}:f>", true)
+
+        if (session.endDate - previousEndDate < 0) {
+            builder.addField("Time Decreased By", CardData.convertMillisecondsToText((previousEndDate - session.endDate) * 1000L), false)
+        } else {
+            builder.addField("Time Increased By", CardData.convertMillisecondsToText((session.endDate - previousEndDate) * 1000L), false)
+        }
+
+        val auctionMessage = session.getAuctionMessage()
+
+        if (auctionMessage != null) {
+            builder.addField("Reference", auctionMessage.jumpUrl, false)
+        }
+
+        modChannel.sendMessageEmbeds(builder.build()).queue()
+    }
+
+    fun logAuctionResult(session: AuctionSession) {
+        if (!this::tradeChannel.isInitialized)
+            return
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("Auction Ended")
+
+        builder.setColor(StaticStore.rainbow.random())
+
+        builder.setDescription("Auction #${session.id} has ended, and approved!")
+
+        builder.addField("Auction Host", if (session.author == -1L) "System" else "<@${session.author}> [${session.author}]", false)
+
+        builder.addField("Card", session.card.simpleCardInfo(), true)
+        builder.addField("Amount", session.amount.toString(), true)
+
+        builder.addField("Receiver", "<@${session.getMostBidMember()}> [${session.getMostBidMember()}]", false)
+
+        builder.addField("Bid Amount", "${EmojiStore.ABILITY["CF"]?.formatted} ${session.currentBid}", false)
+
+        val auctionMessage = session.getAuctionMessage()
+
+        if (auctionMessage != null) {
+            builder.addField("Reference", auctionMessage.jumpUrl, false)
+        }
+
+        tradeChannel.sendMessageEmbeds(builder.build()).queue()
     }
 }

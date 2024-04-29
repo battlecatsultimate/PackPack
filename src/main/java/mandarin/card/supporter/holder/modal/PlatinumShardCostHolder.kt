@@ -34,7 +34,7 @@ class PlatinumShardCostHolder(author: Message, channelID: String, message: Messa
             return
         }
 
-        val amount = value.toDouble().toLong()
+        val amount = StaticStore.safeParseLong(value)
 
         if (amount < 0) {
             event.deferReply()

@@ -3,6 +3,7 @@ package mandarin.card.supporter
 import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.supporter.StaticStore
 import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.entities.channel.middleman.StandardGuildChannel
@@ -13,6 +14,7 @@ import java.text.NumberFormat
 import java.time.Clock
 import java.time.Instant
 import java.util.*
+import kotlin.collections.ArrayList
 
 @Suppress("unused")
 object CardData {
@@ -79,7 +81,7 @@ object CardData {
             //Elemental Pixies
             arrayOf(359, 360, 361, 401, 569, 631, 655, 719),
             //Galaxy Gals
-            arrayOf(75, 76, 105, 106, 107, 159, 351, 502, 619, 647),
+            arrayOf(75, 76, 105, 106, 107, 159, 351, 502, 619, 647, 733),
             //Iron Legion
             arrayOf(304, 305, 306, 355, 417, 594, 632, 674, 715),
             //Sengoku Wargods
@@ -198,6 +200,8 @@ object CardData {
 
     var catFoodCooldown = 120000L // 120 seconds as default
 
+    const val MINIMUM_BID = 1000L
+
     /*
     -------------------------------------------------------
     |                   Role and Channel                  |
@@ -263,7 +267,7 @@ object CardData {
     val bankAccount = ServerData.get("bankAccount")
 
     private val banned = ServerData.get("banned")
-    private val dealer = ServerData.get("dealer")
+    val dealer = ServerData.get("dealer")
     private val mod = ServerData.get("modRole")
     private val headerMod = ServerData.get("headerMod")
     private val organizer = ServerData.get("organizer")
@@ -276,6 +280,7 @@ object CardData {
     val tradingLog = ServerData.get("tradingLog")
     val modLog = ServerData.get("modLog")
     val catFoodLog = ServerData.get("catFoodLog")
+    val bidLog = ServerData.get("bidLog")
 
     private val globalCategory = arrayOf(
         ServerData.get("bctcCategory"),
@@ -289,8 +294,10 @@ object CardData {
     const val TAX = 0.0
 
     var sessionNumber = 1L
+    var auctionSessionNumber = 1L
 
     val sessions = ArrayList<TradingSession>()
+    val auctionSessions = ArrayList<AuctionSession>()
 
     val tradeTrialCooldown = HashMap<String, Long>()
 
@@ -309,6 +316,8 @@ object CardData {
     }
 
     val excludedCatFoodChannel = ArrayList<String>()
+
+    val auctionPlaces = ArrayList<Long>()
 
     /*
     -------------------------------------------------------
@@ -363,7 +372,9 @@ object CardData {
         return dealer in roleList
     }
 
-    fun hasAllPermission(member: Member) : Boolean {
+    fun hasAllPermission(member: Member?) : Boolean {
+        member ?: return true
+
         val roleList = member.roles.map { r -> r.id }
 
         return dealer in roleList || mod in roleList || headerMod in roleList || member.id == StaticStore.MANDARIN_SMELL
@@ -445,10 +456,10 @@ object CardData {
     }
 
     fun isAllowed(ch: MessageChannel) : Boolean {
-        return if (ch is ThreadChannel) {
-            ch.parentChannel.id in allowedChannel
-        } else {
-            ch.id in allowedChannel
+        return when(ch) {
+            is ThreadChannel -> ch.parentChannel.id in allowedChannel
+            is PrivateChannel -> true
+            else -> ch.id in allowedChannel
         }
     }
 
@@ -468,6 +479,16 @@ object CardData {
         val roleList = member.roles.map { role -> role.id }
 
         return cc in roleList || ecc in roleList
+    }
+
+    fun findPossibleAuctionPlace() : Long {
+        auctionPlaces.forEach { id ->
+            if (!auctionSessions.any { s -> s.channel == id }) {
+                return id
+            }
+        }
+
+        return -1L
     }
 
     private fun rgb(r: Int, g: Int, b: Int) : Int {

@@ -128,7 +128,19 @@ public abstract class Holder {
     public abstract STATUS handleEvent(Event event);
 
     public abstract void clean();
+
     public final void expire(String userID) {
+        HolderHub hub = StaticStore.getHolderHub(userID);
+
+        if(hub == null)
+            throw new IllegalStateException("E/Holder::expire - Unregistered holder found : " + getClass().getName());
+
+        onExpire(userID);
+
+        StaticStore.removeHolder(userID, this);
+    }
+
+    public final void expire() {
         HolderHub hub = StaticStore.getHolderHub(userID);
 
         if(hub == null)

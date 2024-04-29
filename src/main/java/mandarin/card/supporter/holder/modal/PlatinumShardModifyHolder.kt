@@ -34,7 +34,7 @@ class PlatinumShardModifyHolder(author: Message, channelID: String, messageID: S
             return
         }
 
-        val amount = value.toDouble().toLong()
+        val amount = StaticStore.safeParseLong(value)
 
         if (amount <= 0) {
             event.deferReply()

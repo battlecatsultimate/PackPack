@@ -43,7 +43,7 @@ class MassShard : Command(LangID.EN, true) {
             return
         }
 
-        val amount = contents[1].toDouble().toLong()
+        val amount = StaticStore.safeParseLong(contents[1])
 
         if (amount == 0L) {
             replyToMessageSafely(loader.channel, "Let's not give 0 shards to users", loader.message) { a -> a }

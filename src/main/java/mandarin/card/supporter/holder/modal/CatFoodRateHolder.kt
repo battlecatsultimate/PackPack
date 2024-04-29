@@ -41,8 +41,8 @@ class CatFoodRateHolder(author: Message, channelID: String, messageID: String, p
             return
         }
 
-        val minValue = min.toDouble().toLong()
-        val maxValue = max.toDouble().toLong()
+        val minValue = StaticStore.safeParseLong(min)
+        val maxValue = StaticStore.safeParseLong(max)
 
         if (minValue < 0) {
             event.reply("Minimum cat food value must be positive value!")

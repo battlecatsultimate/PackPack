@@ -33,7 +33,7 @@ class CatFoodModifyHolder(author: Message, channelID: String, messageID: String,
             return
         }
 
-        val amount = value.toDouble().toLong()
+        val amount = StaticStore.safeParseLong(value)
 
         if (amount <= 0) {
             event.deferReply()

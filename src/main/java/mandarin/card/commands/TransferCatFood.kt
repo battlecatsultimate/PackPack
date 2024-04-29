@@ -34,7 +34,7 @@ class TransferCatFood : Command(LangID.EN, true) {
             return
         }
 
-        val amount = contents[2].toDouble().toLong()
+        val amount = StaticStore.safeParseLong(contents[2])
 
         if (amount <= 0) {
             replyToMessageSafely(loader.channel, "Amount of cat food must be positive!", loader.message) { a -> a }

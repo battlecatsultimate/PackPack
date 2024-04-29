@@ -7,6 +7,7 @@ import mandarin.packpack.supporter.StaticStore
 class Inventory(private val id: Long) {
     var cards = HashMap<Card, Int>()
     var favorites = HashMap<Card, Int>()
+    var auctionQueued = HashMap<Card, Int>()
 
     var vanityRoles = ArrayList<CardData.Role>()
 
@@ -15,11 +16,15 @@ class Inventory(private val id: Long) {
 
     val actualCatFood: Long
         get() {
-            return catFoods - tradePendingCatFoods
+            return catFoods - tradePendingCatFoods - auctionPendingCatFoods
         }
     val tradePendingCatFoods: Long
         get() {
             return CardData.sessions.filter { s -> id in s.member }.sumOf { s -> s.suggestion[s.member.indexOf(id)].catFood }.toLong()
+        }
+    val auctionPendingCatFoods: Long
+        get() {
+            return CardData.auctionSessions.filter { s -> s.bidData.containsKey(id) }.sumOf { s -> s.bidData[id] ?: 0L }
         }
 
     fun addCards(c: List<Card>) {
@@ -114,6 +119,16 @@ class Inventory(private val id: Long) {
 
         obj.add("favorites", f)
 
+        val a = JsonObject()
+
+        for (card in auctionQueued.keys) {
+            val number = auctionQueued[card] ?: 1
+
+            a.addProperty(card.unitID.toString(), number)
+        }
+
+        obj.add("auctionQueued", a)
+
         val roleArray = JsonArray()
 
         for (r in vanityRoles) {
@@ -144,6 +159,70 @@ class Inventory(private val id: Long) {
         return uberFest && epicFest && busters && legends
     }
 
+    fun getInvalidReason() : String {
+        val builder = StringBuilder("Missing Condition : \n\n")
+
+        val missingCards = ArrayList<Card>()
+
+        val cardsTotal = this.cards.keys.map { card -> card.unitID }.union(favorites.keys.map { card -> card.unitID })
+
+        for (i in CardData.Tier.COMMON.ordinal..CardData.Tier.UNCOMMON.ordinal) {
+            CardData.permanents[i].map { index -> CardData.bannerData[i][index] }.forEach { idSet ->
+                idSet.forEach { id ->
+                    if (id !in cardsTotal) {
+                        val c = CardData.cards.find { c -> c.unitID == id }
+
+                        if (c != null)
+                            missingCards.add(c)
+                    }
+                }
+            }
+        }
+
+        val uberFest = cardsTotal.any { id -> id in CardData.bannerData[CardData.Tier.ULTRA.ordinal][0] }
+        val epicFest = cardsTotal.any { id -> id in CardData.bannerData[CardData.Tier.ULTRA.ordinal][1] }
+        val busters = cardsTotal.any { id -> id == 435 || id == 484 || id in CardData.bannerData[CardData.Tier.ULTRA.ordinal][2] }
+        val legends = this.cards.keys.any { card -> card.tier == CardData.Tier.LEGEND } || favorites.keys.any { card -> card.tier == CardData.Tier.LEGEND }
+
+        if (missingCards.isNotEmpty()) {
+            val cardBuilder = StringBuilder("- Missing T1/T2 cards -> ")
+
+            missingCards.forEachIndexed { index, card ->
+                if (cardBuilder.length + card.simpleCardInfo().length > 1024) {
+                    cardBuilder.append("... and ${missingCards.size - index - 1} card(s) more")
+
+                    return@forEachIndexed
+                }
+
+                cardBuilder.append(card.simpleCardInfo())
+
+                if (index < missingCards.size - 1) {
+                    cardBuilder.append(", ")
+                }
+            }
+
+            builder.append(cardBuilder).append("\n")
+        }
+
+        if (!uberFest) {
+            builder.append("- Missing uber fest card\n")
+        }
+
+        if (!epicFest) {
+            builder.append("- Missing epic fest card\n")
+        }
+
+        if (!busters) {
+            builder.append("- Missing busters card\n")
+        }
+
+        if (!legends) {
+            builder.append("- Missing T4 [Legend Rare] card")
+        }
+
+        return builder.toString().trim()
+    }
+
     companion object {
         fun readInventory(id: Long, obj: JsonObject): Inventory {
             val inventory = Inventory(id)
@@ -165,6 +244,16 @@ class Inventory(private val id: Long) {
                     val foundCard = CardData.cards.find { c -> c.unitID == unitID.toInt() } ?: continue
 
                     inventory.favorites[foundCard] = cardIDs.get(unitID).asInt
+                }
+            }
+
+            if (obj.has("auctionQueued")) {
+                val cardIDs = obj.getAsJsonObject("auctionQueued")
+
+                for (unitID in cardIDs.keySet()) {
+                    val foundCard = CardData.cards.find { c -> c.unitID == unitID.toInt() } ?: continue
+
+                    inventory.auctionQueued[foundCard] = cardIDs.get(unitID).asInt
                 }
             }
 

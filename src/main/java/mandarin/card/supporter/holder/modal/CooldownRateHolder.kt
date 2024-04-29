@@ -30,7 +30,7 @@ class CooldownRateHolder(author: Message, channelID: String, messageID: String, 
             return
         }
 
-        val cooldownValue = cooldown.toDouble().toLong()
+        val cooldownValue = StaticStore.safeParseLong(cooldown)
 
         if (cooldownValue < 0) {
             event.reply("Cooldown must be positive value!")

@@ -44,7 +44,7 @@ class CardPackCooldownHolder(author: Message, channelID: String, messageID: Stri
 
             goBack()
         } else {
-            val cooldown = value.toDouble().toLong()
+            val cooldown = StaticStore.safeParseLong(value)
 
             if (cooldown < 0) {
                 event.deferReply()
@@ -91,7 +91,7 @@ class CardPackCooldownHolder(author: Message, channelID: String, messageID: Stri
             if (!StaticStore.isNumeric(split[0]))
                 return -1
 
-            val day = split[0].toDouble().toLong()
+            val day = StaticStore.safeParseLong(split[0])
 
             time += day * 24 * 60 * 60 * 1000
 
@@ -107,7 +107,7 @@ class CardPackCooldownHolder(author: Message, channelID: String, messageID: Stri
             if (!StaticStore.isNumeric(split[0]))
                 return -1
 
-            val hour = split[0].toDouble().toLong()
+            val hour = StaticStore.safeParseLong(split[0])
 
             time += hour * 60 * 60 * 1000
 
@@ -123,7 +123,7 @@ class CardPackCooldownHolder(author: Message, channelID: String, messageID: Stri
             if (!StaticStore.isNumeric(split[0]))
                 return -1
 
-            val minute = split[0].toDouble().toLong()
+            val minute = StaticStore.safeParseLong(split[0])
 
             time += minute * 60 * 1000
 
@@ -139,7 +139,7 @@ class CardPackCooldownHolder(author: Message, channelID: String, messageID: Stri
             if (!StaticStore.isNumeric(split[0]))
                 return -1
 
-            val second = split[0].toDouble().toLong()
+            val second = StaticStore.safeParseLong(split[0])
 
             time += second * 1000
         }

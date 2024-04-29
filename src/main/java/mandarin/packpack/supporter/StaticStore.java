@@ -189,8 +189,15 @@ public class StaticStore {
     public static boolean checkingBCU = false;
 
     public static final Random random = new Random();
-    public static final BigInteger max = new BigInteger(Integer.toString(Integer.MAX_VALUE));
-    public static final BigInteger min = new BigInteger(Integer.toString(Integer.MIN_VALUE));
+
+    public static final BigInteger intMax = new BigInteger(Integer.toString(Integer.MAX_VALUE));
+    public static final BigInteger intMin = new BigInteger(Integer.toString(Integer.MIN_VALUE));
+
+    public static final BigInteger longMax = new BigInteger(Long.toString(Long.MAX_VALUE));
+    public static final BigInteger longMin = new BigInteger(Long.toString(Long.MIN_VALUE));
+
+    public static final BigDecimal doubleMax = new BigDecimal(Double.toString(Double.MAX_VALUE));
+    public static final BigDecimal doubleMin = new BigDecimal(Double.toString(Double.MIN_VALUE));
 
     public static final String MANDARIN_SMELL = "460409259021172781";
 
@@ -992,12 +999,44 @@ public class StaticStore {
         if(isNumeric(value)) {
             BigInteger big = new BigDecimal(value.trim()).toBigInteger();
 
-            if(big.compareTo(max) > 0) {
+            if(big.compareTo(intMax) > 0) {
                 return Integer.MAX_VALUE;
-            } else if(big.compareTo(min) < 0) {
+            } else if(big.compareTo(intMin) < 0) {
                 return Integer.MIN_VALUE;
             } else {
                 return big.intValue();
+            }
+        } else {
+            throw new IllegalStateException("Value isn't numeric! : "+value);
+        }
+    }
+
+    public static long safeParseLong(String value) {
+        if(isNumeric(value)) {
+            BigInteger big = new BigDecimal(value.trim()).toBigInteger();
+
+            if(big.compareTo(longMax) > 0) {
+                return Long.MAX_VALUE;
+            } else if(big.compareTo(longMin) < 0) {
+                return Long.MIN_VALUE;
+            } else {
+                return big.longValue();
+            }
+        } else {
+            throw new IllegalStateException("Value isn't numeric! : "+value);
+        }
+    }
+
+    public static double safeParseDouble(String value) {
+        if(isNumeric(value)) {
+            BigDecimal big = new BigDecimal(value.trim());
+
+            if(big.compareTo(doubleMax) > 0) {
+                return Double.MAX_VALUE;
+            } else if(big.compareTo(doubleMin) < 0) {
+                return Double.MIN_VALUE;
+            } else {
+                return big.doubleValue();
             }
         } else {
             throw new IllegalStateException("Value isn't numeric! : "+value);
@@ -1255,5 +1294,17 @@ public class StaticStore {
         } else {
             return text;
         }
+    }
+
+    public static boolean hasAllTag(JsonObject obj, String tag, String... tags) {
+        if (!obj.has(tag))
+            return false;
+
+        for (int i = 0; i < tags.length; i++) {
+            if (!obj.has(tags[i]))
+                return false;
+        }
+
+        return true;
     }
 }
