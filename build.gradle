@@ -33,7 +33,7 @@ switch (org.gradle.internal.os.OperatingSystem.current()) {
 }
 
 dependencies {
-    implementation 'net.dv8tion:JDA:5.0.0-beta.22'
+    implementation 'net.dv8tion:JDA:5.0.0-beta.23'
     implementation 'com.google.code.gson:gson:2.8.9'
     implementation 'org.json:json:20231013'
     implementation 'org.jetbrains:annotations:22.0.0'
