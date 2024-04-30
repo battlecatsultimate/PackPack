@@ -514,6 +514,10 @@ class AuctionSession(
 
         builder.append("**")
 
+        if (anonymous) {
+            builder.append("\n\nThis is an anonymous auction. You have to bid in DM! Channel ID is $channel")
+        }
+
         return builder.toString()
     }
 
