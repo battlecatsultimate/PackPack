@@ -251,4 +251,17 @@ public abstract class Holder {
                 )
                 .queue();
     }
+
+    public void registerPopUp(Message message, String content, int lang) {
+        message.editMessage(content)
+                .setAllowedMentions(new ArrayList<>())
+                .mentionRepliedUser(false)
+                .setComponents(
+                        ActionRow.of(
+                                Button.success("confirm", LangID.getStringByID("button_confirm", lang)),
+                                Button.danger("cancel", LangID.getStringByID("button_cancel", lang))
+                        )
+                )
+                .queue();
+    }
 }

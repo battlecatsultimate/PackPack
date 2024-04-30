@@ -2,119 +2,183 @@ package mandarin.card.commands
 
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
+import mandarin.card.supporter.Inventory
+import mandarin.card.supporter.holder.auction.AuctionPlaceSelectHolder
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.CommandLoader
 import mandarin.packpack.supporter.server.holder.component.ConfirmButtonHolder
+import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel
+import net.dv8tion.jda.api.interactions.components.ActionRow
+import net.dv8tion.jda.api.interactions.components.LayoutComponent
+import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.interactions.components.selections.SelectOption
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 
 class Bid : Command(LangID.EN, false) {
     override fun doSomething(loader: CommandLoader) {
         val u = loader.user
         val ch = loader.channel
 
+        val inventory = Inventory.getInventory(u.idLong)
         val segments = loader.content.split(Regex(" "), 3)
 
-        if (ch is PrivateChannel && segments.size < 3) {
-            replyToMessageSafely(ch, "Please provide how much cat food ${EmojiStore.ABILITY["CF"]?.formatted} you will bid and which auction you will bid! Format is `${CardBot.globalPrefix}bid [Auction Channel ID] [Cat Food]`", loader.message) { a -> a }
+        val g = u.jda.getGuildById(CardData.guild) ?: return
 
-            return
-        }
+        if (ch is PrivateChannel) {
+            if (segments.size < 3) {
+                replyToMessageSafely(ch, "Please select auction place where you want to bid\n\nYou can bid up to ${EmojiStore.ABILITY["CF"]?.formatted} ${inventory.actualCatFood}", loader.message, { a -> a.setComponents(getComponents(g)) }) { msg ->
+                    StaticStore.putHolder(u.id, AuctionPlaceSelectHolder(loader.message, ch.id, msg, g))
+                }
+            } else {
+                val id = getChannelID(segments[1])
 
-        if (ch !is PrivateChannel && ch.idLong !in CardData.auctionPlaces) {
-            return
-        }
+                if (id == -1L) {
+                    replyToMessageSafely(ch, "It seems you have passed invalid channel format. Channel ID must be passed as raw number or mention", loader.message) { a -> a }
 
-        val auctionSession = if (ch is PrivateChannel) {
-            val id = getChannelID(segments[1])
+                    return
+                }
 
-            if (id == -1L) {
-                replyToMessageSafely(ch, "It seems you have passed invalid channel format. Channel ID must be passed as raw number or mention", loader.message) { a -> a }
+                val auctionSession = CardData.auctionSessions.find { s -> s.channel == id }
+
+                if (auctionSession == null) {
+                    replyToMessageSafely(ch, "Failed to find auction from provided channel. Maybe incorrect ID or auction has been closed already?", loader.message) { a -> a }
+
+                    return
+                }
+
+                if (auctionSession.author == u.idLong) {
+                    replyToMessageSafely(ch, "You can't bid your auction!", loader.message) { a -> a }
+
+                    return
+                }
+
+                if (!auctionSession.opened) {
+                    replyToMessageSafely(ch, "This auction is closed already, you can't participate this auction anymore", loader.message) { a -> a }
+
+                    return
+                }
+
+                val catFoods = getCatFoods(segments[2])
+
+                if (catFoods == null) {
+                    replyToMessageSafely(ch, "Please pass numeric value!", loader.message) { a -> a }
+
+                    return
+                }
+
+                if (catFoods < 0) {
+                    replyToMessageSafely(ch, "You have to bid positive numbers! ...", loader.message) { a -> a }
+
+                    return
+                }
+
+                if (catFoods < auctionSession.currentBid + auctionSession.minimumBid) {
+                    if (catFoods <= auctionSession.currentBid) {
+                        replyToMessageSafely(ch, "You have to bid over ${EmojiStore.ABILITY["CF"]?.formatted} ${auctionSession.currentBid + auctionSession.minimumBid}!", loader.message) { a -> a }
+                    } else {
+                        replyToMessageSafely(ch, "You have to bid over ${EmojiStore.ABILITY["CF"]?.formatted} ${auctionSession.minimumBid} than current bid!", loader.message) { a -> a }
+                    }
+
+                    return
+                }
+
+                if (catFoods > inventory.actualCatFood + (auctionSession.bidData[u.idLong] ?: 0)) {
+                    replyToMessageSafely(ch, "You currently have ${EmojiStore.ABILITY["CF"]?.formatted} ${inventory.actualCatFood + (auctionSession.bidData[u.idLong] ?: 0)}. You can't bid more than what you have!", loader.message) { a -> a }
+
+                    return
+                }
+
+                replyToMessageSafely(ch, "Are you sure you want to bid ${EmojiStore.ABILITY["CF"]?.formatted} $catFoods? You won't be able to use bid cat foods in other place until you cancel the bid", loader.message, { a -> registerConfirmButtons(a, LangID.EN) }) { msg ->
+                    StaticStore.putHolder(u.id, ConfirmButtonHolder(loader.message, msg, ch.id, LangID.EN) {
+                        auctionSession.bid(u.idLong, catFoods)
+
+                        replyToMessageSafely(ch, "Successfully posted to the bid $catFoods ${EmojiStore.ABILITY["CF"]?.formatted} to auction #${auctionSession.id}!", loader.message) { a -> a }
+                    })
+                }
+            }
+        } else {
+            if (ch.idLong !in CardData.auctionPlaces)
+                return
+
+            val auctionSession = CardData.auctionSessions.find { s -> s.channel == ch.idLong }
+
+            if (auctionSession == null) {
+                return
+            }
+
+            if (auctionSession.author == u.idLong) {
+                if (!auctionSession.anonymous) {
+                    replyToMessageSafely(ch, "You can't bid your auction!", loader.message) { a -> a }
+                }
 
                 return
             }
 
-            CardData.auctionSessions.find { s -> s.channel == id }
-        } else {
-            CardData.auctionSessions.find { s -> s.channel == ch.idLong }
-        }
-
-        if (auctionSession == null) {
-            if (ch is PrivateChannel) {
-                replyToMessageSafely(ch, "Failed to find auction from provided channel. Maybe incorrect ID or auction has been closed already?", loader.message) { a -> a }
+            if (!auctionSession.opened) {
+                return
             }
 
-            return
-        }
+            if (auctionSession.anonymous) {
+                loader.message.delete().queue {
+                    replyToMessageSafely(ch, "This auction is anonymous auction! Users shall not see who bid this auction. Please call this command via DM", loader.message) { a -> a }
+                }
 
-        if (auctionSession.author == u.idLong) {
-            if (ch is PrivateChannel || !auctionSession.anonymous) {
-                replyToMessageSafely(ch, "You can't bid your auction!", loader.message) { a -> a }
+                return
             }
 
-            return
-        }
+            if (segments.size < 2) {
+                replyToMessageSafely(ch, "Please provide how much cat food ${EmojiStore.ABILITY["CF"]?.formatted} you will bid! Format is `${CardBot.globalPrefix}bid [Cat Food]`", loader.message) { a -> a }
 
-        if (!auctionSession.opened) {
-            if (ch is PrivateChannel) {
-                replyToMessageSafely(ch, "This auction is closed already, you can't participate this auction anymore", loader.message) { a -> a }
+                return
             }
 
-            return
-        }
+            val catFoods = getCatFoods(segments[1])
 
-        if (ch !is PrivateChannel && segments.size < 2) {
-            replyToMessageSafely(ch, "Please provide how much cat food ${EmojiStore.ABILITY["CF"]?.formatted} you will bid! Format is `${CardBot.globalPrefix}bid [Cat Food]`", loader.message) { a -> a }
+            if (catFoods == null) {
+                replyToMessageSafely(ch, "Please pass numeric value!", loader.message) { a -> a }
 
-            return
-        }
-
-        if (auctionSession.anonymous && ch !is PrivateChannel) {
-            loader.message.delete().queue {
-                replyToMessageSafely(ch, "This auction is anonymous auction! Users shall not see who bid this auction. Please call this command via DM", loader.message) { a -> a }
+                return
             }
 
-            return
-        }
+            if (catFoods < 0) {
+                replyToMessageSafely(ch, "You have to bid positive numbers! ...", loader.message) { a -> a }
 
-        val catFoods = getCatFoods(if (ch is PrivateChannel) segments[2] else segments[1])
-
-        if (catFoods == null) {
-            replyToMessageSafely(ch, "Please pass numeric value!", loader.message) { a -> a }
-
-            return
-        }
-
-        if (catFoods < 0) {
-            replyToMessageSafely(ch, "You have to bid positive numbers! ...", loader.message) { a -> a }
-
-            return
-        }
-
-        if (catFoods < auctionSession.currentBid + auctionSession.minimumBid) {
-            if (catFoods <= auctionSession.currentBid) {
-                replyToMessageSafely(ch, "You have to bid over ${EmojiStore.ABILITY["CF"]?.formatted} ${auctionSession.currentBid + auctionSession.minimumBid}!", loader.message) { a -> a }
-            } else {
-                replyToMessageSafely(ch, "You have to bid over ${EmojiStore.ABILITY["CF"]?.formatted} ${auctionSession.minimumBid} than current bid!", loader.message) { a -> a }
+                return
             }
 
-            return
-        }
+            if (catFoods < auctionSession.currentBid + auctionSession.minimumBid) {
+                if (catFoods <= auctionSession.currentBid) {
+                    replyToMessageSafely(ch, "You have to bid over ${EmojiStore.ABILITY["CF"]?.formatted} ${auctionSession.currentBid + auctionSession.minimumBid}!", loader.message) { a -> a }
+                } else {
+                    replyToMessageSafely(ch, "You have to bid over ${EmojiStore.ABILITY["CF"]?.formatted} ${auctionSession.minimumBid} than current bid!", loader.message) { a -> a }
+                }
 
-        replyToMessageSafely(ch, "Are you sure you want to bid ${EmojiStore.ABILITY["CF"]?.formatted} $catFoods? You won't be able to use bid cat foods in other place until you cancel the bid", loader.message, { a -> registerConfirmButtons(a, LangID.EN) }) { msg ->
-            StaticStore.putHolder(u.id, ConfirmButtonHolder(loader.message, msg, ch.id, LangID.EN) {
-                auctionSession.bid(u.idLong, catFoods)
+                return
+            }
 
-                replyToMessageSafely(ch, "Successfully posted to the bid $catFoods ${EmojiStore.ABILITY["CF"]?.formatted} to auction #${auctionSession.id}!", loader.message) { a -> a }
-            })
+            if (catFoods > inventory.actualCatFood + (auctionSession.bidData[u.idLong] ?: 0)) {
+                replyToMessageSafely(ch, "You currently have ${EmojiStore.ABILITY["CF"]?.formatted} ${inventory.actualCatFood + (auctionSession.bidData[u.idLong] ?: 0)}. You can't bid more than what you have!", loader.message) { a -> a }
+
+                return
+            }
+
+            replyToMessageSafely(ch, "Are you sure you want to bid ${EmojiStore.ABILITY["CF"]?.formatted} $catFoods? You won't be able to use bid cat foods in other place until you cancel the bid", loader.message, { a -> registerConfirmButtons(a, LangID.EN) }) { msg ->
+                StaticStore.putHolder(u.id, ConfirmButtonHolder(loader.message, msg, ch.id, LangID.EN) {
+                    auctionSession.bid(u.idLong, catFoods)
+
+                    replyToMessageSafely(ch, "Successfully posted to the bid $catFoods ${EmojiStore.ABILITY["CF"]?.formatted} to auction #${auctionSession.id}!", loader.message) { a -> a }
+                })
+            }
         }
     }
 
     private fun getCatFoods(value: String) : Long? {
         return if (StaticStore.isNumeric(value)) {
-            value.toLong()
+            StaticStore.safeParseLong(value)
         } else {
             val suffix = when {
                 value.endsWith("k") -> "k"
@@ -140,7 +204,7 @@ class Bid : Command(LangID.EN, false) {
                 else -> 1
             }
 
-            (filteredValue.toDouble() * multiplier).toLong()
+            (StaticStore.safeParseDouble(filteredValue) * multiplier).toLong()
         }
     }
 
@@ -156,5 +220,22 @@ class Bid : Command(LangID.EN, false) {
 
             StaticStore.safeParseLong(filteredValue)
         }
+    }
+
+    private fun getComponents(g: Guild) : List<LayoutComponent> {
+        val result = ArrayList<LayoutComponent>()
+
+        val options = ArrayList<SelectOption>()
+
+        for (channel in CardData.auctionSessions.map { s -> s.channel }) {
+            val ch = g.getGuildChannelById(channel) ?: continue
+
+            options.add(SelectOption.of(ch.name, ch.id))
+        }
+
+        result.add(ActionRow.of(StringSelectMenu.create("auction").addOptions(options).build()))
+        result.add(ActionRow.of(Button.danger("cancel", "Cancel")))
+
+        return result
     }
 }
