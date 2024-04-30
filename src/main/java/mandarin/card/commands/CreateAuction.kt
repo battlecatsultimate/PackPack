@@ -1,7 +1,7 @@
 package mandarin.card.commands
 
 import mandarin.card.supporter.CardData
-import mandarin.card.supporter.holder.moderation.auction.AuctionCreateHolder
+import mandarin.card.supporter.holder.auction.AuctionCreateHolder
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
@@ -59,7 +59,8 @@ class CreateAuction : Command(LangID.EN, true) {
                 StaticStore.putHolder(m.id, AuctionCreateHolder(loader.message, ch.id, msg, targetMember.idLong, placeChannel, anonymous))
             }
         } else {
-            replyToMessageSafely(ch, "## Preparation of auction creation\n" +
+            replyToMessageSafely(ch,
+                "## Preparation of auction creation\n" +
                     "\n" +
                     "Auction author : System\n" +
                     "Auction Place : <#$placeChannel>\n" +

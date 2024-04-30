@@ -1,4 +1,4 @@
-package mandarin.card.supporter.holder.moderation.auction
+package mandarin.card.supporter.holder.auction
 
 import mandarin.card.CardBot
 import mandarin.card.supporter.Card
