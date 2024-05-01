@@ -60,6 +60,7 @@ public class StaticStore {
     public static boolean apkDownloading = false;
 
     public static boolean safeClose = false;
+    public static boolean wasSafeClose = false;
 
     public static final String COMMAND_BG_ID = "bg";
     public static final String COMMAND_COMBO_ID = "combo";
@@ -875,6 +876,9 @@ public class StaticStore {
 
                 EventFileGrabber.jwtToken = null;
             }
+
+            wasSafeClose = safeClose;
+            safeClose = false;
         }
     }
 

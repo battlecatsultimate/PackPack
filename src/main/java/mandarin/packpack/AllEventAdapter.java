@@ -961,7 +961,7 @@ public class AllEventAdapter extends ListenerAdapter {
                     if(!(ch instanceof MessageChannel) || !((MessageChannel) ch).canTalk())
                         continue;
 
-                    if(StaticStore.safeClose) {
+                    if(StaticStore.wasSafeClose) {
                         ((MessageChannel) ch).sendMessage(String.format(LangID.getStringByID("bot_online", holder.config.lang), client.getSelfUser().getAsMention()))
                                 .setAllowedMentions(new ArrayList<>())
                                 .queue();
@@ -1016,8 +1016,6 @@ public class AllEventAdapter extends ListenerAdapter {
                 PackBot.statusMessage = ((MessageChannel) ch).retrieveMessageById("1100615782272090213");
             }
         } catch (Exception ignore) { }
-
-        StaticStore.safeClose = false;
 
         readyDone = true;
     }
