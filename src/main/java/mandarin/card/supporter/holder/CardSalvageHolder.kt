@@ -413,7 +413,7 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
                         else
                             "Select Card"
                 )
-                .setDisabled(cards.isEmpty() || (salvageMode == CardData.SalvageMode.T1 && selectedCard.size == 10) || (salvageMode == CardData.SalvageMode.T3 && selectedCard.size == 1))
+                .setDisabled(cards.isEmpty())
                 .build()
 
         rows.add(ActionRow.of(cardCategory))
