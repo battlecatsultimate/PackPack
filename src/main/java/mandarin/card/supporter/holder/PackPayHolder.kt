@@ -1,5 +1,6 @@
 package mandarin.card.supporter.holder
 
+import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.log.TransactionLogger
@@ -135,7 +136,7 @@ class PackPayHolder(
                     cooldownMap[pack.uuid] = CardData.getUnixEpochTime() + pack.cooldown
                 }
 
-                StaticStore.saveServerInfo()
+                CardBot.saveCardData()
 
                 TransactionLogger.logRoll(result, pack, member, false)
             }
