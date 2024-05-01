@@ -602,14 +602,13 @@ public class StaticStore {
         if(!f.exists())
             return null;
 
-        try {
-            InputStreamReader reader = new InputStreamReader(new FileInputStream(f), StandardCharsets.UTF_8);
-            BufferedReader br = new BufferedReader(reader);
-
+        try(BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(f), StandardCharsets.UTF_8))) {
             JsonElement obj = JsonParser.parseReader(br);
 
+            br.close();
+
             return obj == null ? null : obj.isJsonObject() ? obj.getAsJsonObject() : null;
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             StaticStore.logger.uploadErrorLog(e, "Failed to read json file", f);
 
             return null;
