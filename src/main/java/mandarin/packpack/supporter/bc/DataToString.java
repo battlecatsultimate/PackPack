@@ -1253,6 +1253,14 @@ public class DataToString extends Data {
         }
     }
 
+    public static String getBossGuard(Stage st, int lang) {
+        if (st.bossGuard) {
+            return LangID.getStringByID("data_active", lang);
+        } else {
+            return LangID.getStringByID("data_inactive", lang);
+        }
+    }
+
     public static ArrayList<String> getLimit(Limit l, int lang) {
         ArrayList<String> res = new ArrayList<>();
 

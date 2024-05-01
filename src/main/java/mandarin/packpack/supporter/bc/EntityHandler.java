@@ -1345,6 +1345,7 @@ public class EntityHandler {
 
             spec.addField(LangID.getStringByID("data_encole", lang), DataToString.getEnemyContinuableLength(st, lang), false);
             spec.addField(LangID.getStringByID("data_mubaca", lang).replace("_BBB_", String.valueOf(st.mush)), DataToString.getMusciBackgroundCastle(st, lang), false);
+            spec.addField(LangID.getStringByID("data_guard", lang), DataToString.getBossGuard(st, lang), false);
             spec.setFooter(LangID.getStringByID("data_minres", lang).replace("_RRR_", DataToString.getMinSpawn(st, isFrame)));
         } else {
             spec.addField(LangID.getStringByID("data_id", lang), DataToString.getStageCode(st), true);
@@ -1369,6 +1370,7 @@ public class EntityHandler {
             spec.addField(LangID.getStringByID("data_castle", lang), DataToString.getCastle(st, lang), true);
             spec.addField(LangID.getStringByID("data_length", lang), DataToString.getLength(st), true);
             spec.addField(LangID.getStringByID("data_minspawn", lang), DataToString.getMinSpawn(st, isFrame), true);
+            spec.addField(LangID.getStringByID("data_guard", lang), DataToString.getBossGuard(st, lang), true);
         }
 
         ArrayList<String> limit = DataToString.getLimit(st.getLim(sta), lang);
@@ -3868,8 +3870,10 @@ public class EntityHandler {
             BigDecimal wv = waveLevel;
 
             while (wv.compareTo(BigDecimal.ZERO) != 0) {
-                nodes.add(position.subtract(BigDecimal.valueOf(Data.W_U_WID).divide(new BigDecimal("2"), Equation.context)));
-                nodes.add(position.add(BigDecimal.valueOf(Data.W_U_WID).divide(new BigDecimal("2"), Equation.context)));
+                BigDecimal halfWidth = BigDecimal.valueOf(Data.W_U_WID).divide(new BigDecimal("2"), Equation.context);
+
+                nodes.add(position.subtract(halfWidth));
+                nodes.add(position.add(halfWidth));
 
                 wv = wv.subtract(BigDecimal.ONE);
                 position = position.add(BigDecimal.valueOf(Data.W_PROG));
@@ -4501,8 +4505,10 @@ public class EntityHandler {
             BigDecimal wv = waveLevel;
 
             while (wv.compareTo(BigDecimal.ZERO) != 0) {
-                nodes.add(position.subtract(BigDecimal.valueOf(Data.W_E_WID).divide(new BigDecimal("2"), Equation.context)));
-                nodes.add(position.add(BigDecimal.valueOf(Data.W_E_WID).divide(new BigDecimal("2"), Equation.context)));
+                BigDecimal halfWidth = BigDecimal.valueOf(Data.W_E_WID).divide(new BigDecimal("2"), Equation.context);
+
+                nodes.add(position.subtract(halfWidth));
+                nodes.add(position.add(halfWidth));
 
                 wv = wv.subtract(BigDecimal.ONE);
                 position = position.add(BigDecimal.valueOf(Data.W_PROG));
