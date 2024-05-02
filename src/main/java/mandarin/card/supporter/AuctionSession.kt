@@ -169,7 +169,7 @@ class AuctionSession(
                             auctionMessage.unpin().queue()
                     }
                 } else {
-                    auctionChannel.sendMessage("Auction #$id has ended! Waiting for approval of <@${StaticStore.MANDARIN_SMELL}>!").queue()
+                    auctionChannel.sendMessage("Auction #$id has ended! Waiting for approval of <@&${CardData.dealer}>!").queue()
 
                     if (this::auctionMessage.isInitialized) {
                         auctionMessage
@@ -230,7 +230,7 @@ class AuctionSession(
                             auctionMessage.unpin().queue()
                     }
                 } else {
-                    auctionChannel.sendMessage("Auction $id has ended! Waiting for approval of <@${StaticStore.MANDARIN_SMELL}>!").queue()
+                    auctionChannel.sendMessage("Auction $id has ended! Waiting for approval of <@&${CardData.dealer}>!").queue()
 
                     if (this::auctionMessage.isInitialized) {
                         auctionMessage
@@ -408,7 +408,7 @@ class AuctionSession(
                             auctionMessage.unpin().queue()
                     }
                 } else {
-                    auctionChannel.sendMessage("Auction $id has ended! Waiting for approval of <@${StaticStore.MANDARIN_SMELL}>!").queue()
+                    auctionChannel.sendMessage("Auction $id has ended! Waiting for approval of <@&${CardData.dealer}>!").queue()
 
                     if (this::auctionMessage.isInitialized) {
                         auctionMessage
