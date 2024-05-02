@@ -129,7 +129,7 @@ class AuctionPlaceSelectHolder(author: Message, channelID: String, private val m
 
         val options = ArrayList<SelectOption>()
 
-        for (channel in CardData.auctionSessions.map { s -> s.channel }) {
+        for (channel in CardData.auctionSessions.filter { s -> s.opened }.map { s -> s.channel }) {
             val ch = guild.getGuildChannelById(channel) ?: continue
 
             options.add(SelectOption.of(ch.name, ch.id))

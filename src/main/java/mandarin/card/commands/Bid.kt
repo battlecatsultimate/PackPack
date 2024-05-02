@@ -30,7 +30,7 @@ class Bid : Command(LangID.EN, false) {
 
         if (ch is PrivateChannel) {
             if (segments.size < 3) {
-                if (CardData.auctionSessions.isEmpty()) {
+                if (CardData.auctionSessions.filter { s -> s.opened}.isEmpty()) {
                     replyToMessageSafely(ch, "Currently there's no auction going on!", loader.message) { a -> a }
 
                     return
@@ -233,7 +233,7 @@ class Bid : Command(LangID.EN, false) {
 
         val options = ArrayList<SelectOption>()
 
-        for (channel in CardData.auctionSessions.map { s -> s.channel }) {
+        for (channel in CardData.auctionSessions.filter { s -> s.opened }.map { s -> s.channel }) {
             val ch = g.getGuildChannelById(channel) ?: continue
 
             options.add(SelectOption.of(ch.name, ch.id))
