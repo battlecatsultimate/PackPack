@@ -253,6 +253,12 @@ class AuctionSession(
 
         CardData.auctionSessions.remove(this)
 
+        CardBot.saveCardData()
+
+        TransactionLogger.logAuctionCancel(managerID, this)
+
+        opened = false
+
         if (this::auctionMessage.isInitialized) {
             auctionMessage
                 .editMessage(getAuctionInfo("Canceled"))
@@ -262,12 +268,6 @@ class AuctionSession(
             if (auctionMessage.isPinned)
                 auctionMessage.unpin().queue()
         }
-
-        CardBot.saveCardData()
-
-        TransactionLogger.logAuctionCancel(managerID, this)
-
-        opened = false
     }
 
     fun closeSession(managerID: Long) : String {
@@ -291,6 +291,15 @@ class AuctionSession(
             authorInventory.auctionQueued[card] = (authorInventory.auctionQueued[card] ?: 0) - amount
         }
 
+        CardData.auctionSessions.remove(this)
+
+        CardBot.saveCardData()
+
+        TransactionLogger.logAuctionClose(managerID, this)
+        TransactionLogger.logAuctionResult(this)
+
+        opened = false
+
         if (this::auctionMessage.isInitialized) {
             auctionMessage
                 .editMessage(getAuctionInfo("Force Closed"))
@@ -300,15 +309,6 @@ class AuctionSession(
             if (auctionMessage.isPinned)
                 auctionMessage.unpin().queue()
         }
-
-        CardData.auctionSessions.remove(this)
-
-        CardBot.saveCardData()
-
-        TransactionLogger.logAuctionClose(managerID, this)
-        TransactionLogger.logAuctionResult(this)
-
-        opened = false
 
         return ""
     }
@@ -334,6 +334,15 @@ class AuctionSession(
             authorInventory.auctionQueued[card] = (authorInventory.auctionQueued[card] ?: 0) - amount
         }
 
+        CardData.auctionSessions.remove(this)
+
+        CardBot.saveCardData()
+
+        TransactionLogger.logAuctionApprove(managerID, this)
+        TransactionLogger.logAuctionResult(this)
+
+        opened = false
+
         if (this::auctionMessage.isInitialized) {
             auctionMessage
                 .editMessage(getAuctionInfo("Approved"))
@@ -343,15 +352,6 @@ class AuctionSession(
             if (auctionMessage.isPinned)
                 auctionMessage.unpin().queue()
         }
-
-        CardData.auctionSessions.remove(this)
-
-        CardBot.saveCardData()
-
-        TransactionLogger.logAuctionApprove(managerID, this)
-        TransactionLogger.logAuctionResult(this)
-
-        opened = false
 
         return ""
     }
