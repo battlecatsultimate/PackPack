@@ -1,4 +1,4 @@
-package mandarin.packpack.commands.server;
+package mandarin.packpack.commands.bot.manage;
 
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;

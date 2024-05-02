@@ -1,15 +1,17 @@
-package mandarin.packpack.commands.server;
+package mandarin.packpack.commands.bot.manage;
 
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.sharding.ShardManager;
 import org.jetbrains.annotations.NotNull;
 
-public class UnregisterFixing extends ConstraintCommand {
-    public UnregisterFixing(ROLE role, int lang, IDHolder id) {
-        super(role, lang, id, true);
+public class RegisterFixing extends ConstraintCommand {
+    public RegisterFixing(ROLE role, int lang, IDHolder id) {
+        super(role, lang, id, false);
     }
 
     @Override
@@ -30,14 +32,19 @@ public class UnregisterFixing extends ConstraintCommand {
             return;
         }
 
-        if(!StaticStore.needFixing.contains(contents[1])) {
-            ch.sendMessage("This server (`"+contents[1]+"`) isn't registered as fixing server already").queue();
+        ShardManager client = ch.getJDA().getShardManager();
 
+        if (client == null)
             return;
+
+        Guild g = client.getGuildById(contents[1]);
+
+        if(g != null) {
+            StaticStore.needFixing.add(contents[1]);
+
+            ch.sendMessage("Added `"+contents[1]+"` [**"+g.getName()+"**] as fixing server").queue();
+        } else {
+            ch.sendMessage("Couldn't find such guild").queue();
         }
-
-        StaticStore.needFixing.remove(contents[1]);
-
-        ch.sendMessage("Removed `"+contents[1]+"` from fixing server list").queue();
     }
 }
