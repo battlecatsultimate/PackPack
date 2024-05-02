@@ -30,6 +30,12 @@ class Bid : Command(LangID.EN, false) {
 
         if (ch is PrivateChannel) {
             if (segments.size < 3) {
+                if (CardData.auctionSessions.isEmpty()) {
+                    replyToMessageSafely(ch, "Currently there's no auction going on!", loader.message) { a -> a }
+
+                    return
+                }
+
                 replyToMessageSafely(ch, "Please select auction place where you want to bid\n\nYou can bid up to ${EmojiStore.ABILITY["CF"]?.formatted} ${inventory.actualCatFood}", loader.message, { a -> a.setComponents(getComponents(g)) }) { msg ->
                     StaticStore.putHolder(u.id, AuctionPlaceSelectHolder(loader.message, ch.id, msg, g))
                 }
