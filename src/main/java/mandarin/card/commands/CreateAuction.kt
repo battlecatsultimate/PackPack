@@ -36,7 +36,7 @@ class CreateAuction : Command(LangID.EN, true) {
 
         val segments = loader.content.trim().split(Regex(" "))
 
-        val anonymous = "-a" in segments
+        val anonymous = "-p" !in segments
 
         if (segments.size >= if (anonymous) 3 else 2) {
             val targetMember = findMember(loader.guild, segments[1])
@@ -56,7 +56,7 @@ class CreateAuction : Command(LangID.EN, true) {
                     "Selected Card : __Need Selection__\n" +
                     "End Time : __Need to be decided__\n" +
                     "Initial Price : __Need to be decided__",
-                loader.message, { a -> a.setComponents(getComponents()) }) { msg ->
+                loader.message, { a -> a.setComponents(getComponents(anonymous)) }) { msg ->
                 StaticStore.putHolder(m.id, AuctionCreateHolder(loader.message, ch.id, msg, targetMember.idLong, placeChannel, anonymous))
             }
         } else {
@@ -71,7 +71,7 @@ class CreateAuction : Command(LangID.EN, true) {
                     "End Time : __Need to be decided__\n" +
                     "Initial Price : __Need to be decided__\n" +
                     "Minimum Bid Increase : ${EmojiStore.ABILITY["CF"]?.formatted} ${CardData.MINIMUM_BID}",
-                loader.message, { a -> a.setComponents(getComponents()) }) { msg ->
+                loader.message, { a -> a.setComponents(getComponents(anonymous)) }) { msg ->
                 StaticStore.putHolder(m.id, AuctionCreateHolder(loader.message, ch.id, msg, -1L, placeChannel, anonymous))
             }
         }
@@ -112,14 +112,15 @@ class CreateAuction : Command(LangID.EN, true) {
         return null
     }
 
-    private fun getComponents() : List<LayoutComponent> {
+    private fun getComponents(anonymous: Boolean) : List<LayoutComponent> {
         val result = ArrayList<LayoutComponent>()
 
         result.add(ActionRow.of(
             Button.secondary("card", "Card").withEmoji(EmojiStore.ABILITY["CARD"]),
             Button.secondary("duration", "Duration").withEmoji(Emoji.fromUnicode("⏰")),
             Button.secondary("price", "Initial Price").withEmoji(EmojiStore.ABILITY["CF"]),
-            Button.secondary("bid", "Minimum Bid").withEmoji(Emoji.fromUnicode("\uD83D\uDCB5"))
+            Button.secondary("bid", "Minimum Bid").withEmoji(Emoji.fromUnicode("\uD83D\uDCB5")),
+            Button.secondary("anonymous", "Anonymous?").withEmoji(if (anonymous) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF)
         ))
 
         result.add(
