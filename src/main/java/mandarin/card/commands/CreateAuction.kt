@@ -34,10 +34,11 @@ class CreateAuction : Command(LangID.EN, true) {
             return
         }
 
-        val anonymous = "-a" in loader.content
         val segments = loader.content.trim().split(Regex(" "))
 
-        if (segments.size >= 2) {
+        val anonymous = "-a" in segments
+
+        if (segments.size >= if (anonymous) 3 else 2) {
             val targetMember = findMember(loader.guild, segments[1])
 
             if (targetMember == null) {
@@ -76,31 +77,39 @@ class CreateAuction : Command(LangID.EN, true) {
         }
     }
 
-    private fun findMember(g: Guild, id: String) : Member? {
-        val actualId = if (StaticStore.isNumeric(id)) {
-            id
-        } else {
-            val filteredId = id.replace("<@", "").replace(">", "")
+    private fun findMember(g: Guild, content: String) : Member? {
+        val segments = content.trim().split(" ")
 
-            if (!StaticStore.isNumeric(filteredId)) {
-                return null
+        for (segment in segments) {
+            if (StaticStore.isNumeric(segment) || segment.matches(Regex("<@\\d+>"))) {
+                val actualId = if (StaticStore.isNumeric(segment)) {
+                    segment
+                } else {
+                    val filteredId = segment.replace("<@", "").replace(">", "")
+
+                    if (!StaticStore.isNumeric(filteredId)) {
+                        return null
+                    }
+
+                    filteredId
+                }
+
+                val memberReference = AtomicReference<Member>(null)
+                val countDownLatch = CountDownLatch(1)
+
+                g.retrieveMember(UserSnowflake.fromId(actualId)).queue { m ->
+                    memberReference.set(m)
+
+                    countDownLatch.countDown()
+                }
+
+                countDownLatch.await()
+
+                return memberReference.get()
             }
-
-            filteredId
         }
 
-        val memberReference = AtomicReference<Member>(null)
-        val countDownLatch = CountDownLatch(1)
-
-        g.retrieveMember(UserSnowflake.fromId(actualId)).queue { m ->
-            memberReference.set(m)
-
-            countDownLatch.countDown()
-        }
-
-        countDownLatch.await()
-
-        return memberReference.get()
+        return null
     }
 
     private fun getComponents() : List<LayoutComponent> {
