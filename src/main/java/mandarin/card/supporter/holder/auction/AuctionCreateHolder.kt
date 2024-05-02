@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 
-class AuctionCreateHolder(author: Message, channelID: String, private val message: Message, private val authorID: Long, private val auctionPlace: Long, private val anonymous: Boolean) : ComponentHolder(author, channelID, message) {
+class AuctionCreateHolder(author: Message, channelID: String, private val message: Message, private val authorID: Long, private val auctionPlace: Long, private var anonymous: Boolean) : ComponentHolder(author, channelID, message) {
     private var selectedCard: Card? = null
     private var amount: Int = -1
     private var endTime: Long = -1L
@@ -107,6 +107,16 @@ class AuctionCreateHolder(author: Message, channelID: String, private val messag
                         .mentionRepliedUser(false)
                         .queue()
                 })
+            }
+            "anonymous" -> {
+                anonymous = !anonymous
+
+                event.deferEdit()
+                    .setContent(getContent())
+                    .setComponents(getComponent())
+                    .setAllowedMentions(ArrayList())
+                    .mentionRepliedUser(false)
+                    .queue()
             }
             "start" -> {
                 val card = selectedCard ?: return
@@ -239,14 +249,16 @@ class AuctionCreateHolder(author: Message, channelID: String, private val messag
             Button.secondary("card", "Card").withEmoji(EmojiStore.ABILITY["CARD"]),
             Button.secondary("duration", "Duration").withEmoji(Emoji.fromUnicode("⏰")),
             Button.secondary("price", "Initial Price").withEmoji(EmojiStore.ABILITY["CF"]),
-            Button.secondary("bid", "Minimum Bid").withEmoji(Emoji.fromUnicode("\uD83D\uDCB5"))
+            Button.secondary("bid", "Minimum Bid").withEmoji(Emoji.fromUnicode("\uD83D\uDCB5")),
+            Button.secondary("anonymous", "Anonymous?").withEmoji(if (anonymous) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF)
         ))
 
         result.add(
             ActionRow.of(
-            Button.success("start", "Start Auction").withDisabled(selectedCard == null || amount == -1 || endTime == -1L || initialPrice == -1L),
-            Button.danger("cancel", "Cancel")
-        ))
+                Button.success("start", "Start Auction").asDisabled(),
+                Button.danger("cancel", "Cancel")
+            )
+        )
 
         return result
     }
