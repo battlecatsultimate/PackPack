@@ -153,6 +153,8 @@ object CardData {
             arrayOf(222, 223, 224, 225),
             //Princess Punt
             arrayOf(66, 161, 337, 485, 530),
+            //Tower of Savior
+            arrayOf(741),
             //???
             arrayOf(-1001)
         ),

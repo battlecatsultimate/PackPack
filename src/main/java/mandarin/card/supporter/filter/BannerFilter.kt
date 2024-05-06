@@ -54,10 +54,10 @@ class BannerFilter(private val banner: Banner, amount: Int, name: String) : Filt
         Seasonal(CardData.Tier.UNCOMMON, 2),
         LegendRare(CardData.Tier.NONE, -1),
         BusterExclusives(CardData.Tier.NONE, -1),
-        CheetahT1(CardData.Tier.COMMON, 9),
-        CheetahT2(CardData.Tier.UNCOMMON, 25),
-        CheetahT3(CardData.Tier.ULTRA, 5),
-        CheetahT4(CardData.Tier.LEGEND, 2);
+        CheetahT1(CardData.Tier.COMMON, CardData.bannerData[CardData.Tier.COMMON.ordinal].size - 1),
+        CheetahT2(CardData.Tier.UNCOMMON, CardData.bannerData[CardData.Tier.UNCOMMON.ordinal].size - 1),
+        CheetahT3(CardData.Tier.ULTRA, CardData.bannerData[CardData.Tier.ULTRA.ordinal].size - 1),
+        CheetahT4(CardData.Tier.LEGEND, CardData.bannerData[CardData.Tier.LEGEND.ordinal].size - 1);
 
         fun getBannerData() : Array<Int> {
             return CardData.bannerData[tier.ordinal][category]
