@@ -94,6 +94,16 @@ class AuctionSession(
         }
 
         TransactionLogger.logBid(this, userId, amount)
+
+        if (this::auctionChannel.isInitialized) {
+            if (anonymous) {
+                auctionChannel.sendMessage("User bid ${EmojiStore.ABILITY["CF"]?.formatted} $amount!")
+            } else {
+                auctionChannel.sendMessage("<@$userId> bid ${EmojiStore.ABILITY["CF"]?.formatted} $amount!")
+                    .setAllowedMentions(ArrayList())
+                    .queue()
+            }
+        }
     }
 
     fun cancelBid(userID: Long) {
@@ -109,6 +119,16 @@ class AuctionSession(
         }
 
         TransactionLogger.logBidCancel(this, userID, previousAmount)
+
+        if (this::auctionChannel.isInitialized) {
+            if (anonymous) {
+                auctionChannel.sendMessage("User canceled the bid ${EmojiStore.ABILITY["CF"]?.formatted} $previousAmount!")
+            } else {
+                auctionChannel.sendMessage("<@$userID> canceled the bid ${EmojiStore.ABILITY["CF"]?.formatted} $previousAmount!")
+                    .setAllowedMentions(ArrayList())
+                    .queue()
+            }
+        }
     }
 
     fun forceCancelBid(canceler: Long, userID: Long) {
