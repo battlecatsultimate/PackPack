@@ -27,7 +27,7 @@ public class OptOut extends ConstraintCommand {
                 StaticStore.optoutMembers.add(id);
 
                 StaticStore.spamData.remove(id);
-                StaticStore.prefix.remove(id);
+                StaticStore.config.remove(id);
                 StaticStore.timeZones.remove(id);
 
                 replyToMessageSafely(ch, LangID.getStringByID("optout_success", lang), loader.getMessage(), a -> a);
