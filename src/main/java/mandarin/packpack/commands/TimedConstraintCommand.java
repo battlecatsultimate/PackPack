@@ -105,7 +105,7 @@ public abstract class TimedConstraintCommand extends Command {
             } else if(constRole.equals("TRUSTED")) {
                 hasRole = StaticStore.contributors.contains(memberID);
 
-                if (hasRole) {
+                if (hasRole && !u.getId().equals(StaticStore.MANDARIN_SMELL)) {
                     StaticStore.logger.uploadLog("User " + loader.getUser().getAsMention() + " called command : \n\n" + loader.getContent());
                 }
             } else {

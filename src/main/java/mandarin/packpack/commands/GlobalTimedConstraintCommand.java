@@ -116,7 +116,7 @@ public abstract class GlobalTimedConstraintCommand extends Command {
             } else if(constRole.equals("TRUSTED")) {
                 hasRole = StaticStore.contributors.contains(u.getId());
 
-                if (hasRole) {
+                if (hasRole && !u.getId().equals(StaticStore.MANDARIN_SMELL)) {
                     StaticStore.logger.uploadLog("User " + loader.getUser().getAsMention() + " called command : \n\n" + loader.getContent());
                 }
             } else {
