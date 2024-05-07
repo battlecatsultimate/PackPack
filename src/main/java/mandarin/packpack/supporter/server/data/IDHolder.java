@@ -16,10 +16,6 @@ public class IDHolder implements Cloneable {
     public static IDHolder jsonToIDHolder(JsonObject obj) {
         IDHolder id = new IDHolder();
 
-        if(obj.has("server")) {
-            id.serverPrefix = id.setOr(obj.get("server").getAsString());
-        }
-
         if (obj.has("publish")) {
             id.publish = obj.get("publish").getAsBoolean();
         }
@@ -68,6 +64,14 @@ public class IDHolder implements Cloneable {
 
         if(obj.has("config")) {
             id.config = ConfigHolder.parseJson(obj.getAsJsonObject("config"));
+        }
+
+        if(obj.has("server")) {
+            JsonElement e = obj.get("server");
+
+            if (!e.isJsonNull()) {
+                id.config.prefix = e.getAsString();
+            }
         }
 
         if(obj.has("locale")) {
@@ -127,8 +131,6 @@ public class IDHolder implements Cloneable {
         return id;
     }
 
-    public String serverPrefix = "p!";
-
     public String MOD;
     public String MEMBER;
     public String BOOSTER;
@@ -166,7 +168,6 @@ public class IDHolder implements Cloneable {
     public JsonObject jsonfy() {
         JsonObject obj = new JsonObject();
 
-        obj.addProperty("server", getOrNull(serverPrefix));
         obj.addProperty("publish", publish);
         obj.addProperty("mod", getOrNull(MOD));
         obj.addProperty("mem", getOrNull(MEMBER));
@@ -238,10 +239,6 @@ public class IDHolder implements Cloneable {
 
     private String setOrNull(String id) {
         return id.equals("null") ? null : id;
-    }
-
-    private String setOr(String id) {
-        return id.equals("null") ? "p!" : id;
     }
 
     private JsonElement listStringToJsonObject(List<String> arr) {
@@ -431,8 +428,7 @@ public class IDHolder implements Cloneable {
     @Override
     public String toString() {
         return "IDHolder{" +
-                "serverPrefix='" + serverPrefix + '\'' +
-                ", publish=" + publish +
+                "publish=" + publish +
                 ", MOD='" + MOD + '\'' +
                 ", MEMBER='" + MEMBER + '\'' +
                 ", BOOSTER='" + BOOSTER + '\'' +
@@ -446,8 +442,6 @@ public class IDHolder implements Cloneable {
     public IDHolder clone() {
         try {
             IDHolder id = (IDHolder) super.clone();
-
-            id.serverPrefix = serverPrefix;
 
             id.MOD = MOD;
             id.MEMBER = MEMBER;

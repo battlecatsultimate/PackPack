@@ -65,7 +65,7 @@ public class StageImage extends ConstraintCommand {
                 String[] messages = loader.getContent().split(" ", startIndex+1);
 
                 if(messages.length <= startIndex) {
-                    replyToMessageSafely(ch, LangID.getStringByID("stimg_more", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.serverPrefix), loader.getMessage(), a -> a);
+                    replyToMessageSafely(ch, LangID.getStringByID("stimg_more", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.config.prefix), loader.getMessage(), a -> a);
 
                     return;
                 }
@@ -98,7 +98,7 @@ public class StageImage extends ConstraintCommand {
 
                 handleLast(message, ch, loader.getMessage(), generator);
             } else {
-                replyToMessageSafely(ch, LangID.getStringByID("stimg_argu", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.serverPrefix), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("stimg_argu", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.config.prefix), loader.getMessage(), a -> a);
             }
         } catch (Exception e) {
             StaticStore.logger.uploadErrorLog(e, "Failed to handle stage image command");

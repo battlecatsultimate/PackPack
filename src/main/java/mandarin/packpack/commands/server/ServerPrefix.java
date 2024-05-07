@@ -27,9 +27,9 @@ public class ServerPrefix extends ConstraintCommand {
                 return;
             }
 
-            holder.serverPrefix = list[1];
+            holder.config.prefix = list[1];
 
-            createMessageWithNoPings(ch, LangID.getStringByID("serverpre_set", lang).replace("_", holder.serverPrefix));
+            createMessageWithNoPings(ch, LangID.getStringByID("serverpre_set", lang).replace("_", holder.config.prefix));
         } else if(list.length == 1) {
             ch.sendMessage(LangID.getStringByID("prefix_argu", lang)).queue();
         } else {

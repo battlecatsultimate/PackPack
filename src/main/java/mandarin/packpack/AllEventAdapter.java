@@ -395,8 +395,8 @@ public class AllEventAdapter extends ListenerAdapter {
                 if(!mandarin && idh.banned.contains(u.getId()))
                     return;
 
-                if(msg.getContentRaw().toLowerCase(java.util.Locale.ENGLISH).startsWith(idh.serverPrefix))
-                    prefix = idh.serverPrefix;
+                if(msg.getContentRaw().toLowerCase(java.util.Locale.ENGLISH).startsWith(idh.config.prefix))
+                    prefix = idh.config.prefix;
 
                 if(lang == -1)
                     lang = idh.config.lang;

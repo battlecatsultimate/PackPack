@@ -272,13 +272,13 @@ public class Help extends Command {
         builder.setColor(StaticStore.rainbow[StaticStore.random.nextInt(StaticStore.rainbow.length)]);
 
         if(LangID.hasID("help_" + mainCommand + "_url", lang)) {
-            builder.setTitle((holder == null ? StaticStore.globalPrefix : holder.serverPrefix) + mainCommand, LangID.getStringByID("help_" + mainCommand + "_url", lang));
+            builder.setTitle((holder == null ? StaticStore.globalPrefix : holder.config.prefix) + mainCommand, LangID.getStringByID("help_" + mainCommand + "_url", lang));
             builder.setDescription(LangID.getStringByID("help_guide", lang));
         } else {
-            builder.setTitle((holder == null ? StaticStore.globalPrefix : holder.serverPrefix) + mainCommand);
+            builder.setTitle((holder == null ? StaticStore.globalPrefix : holder.config.prefix) + mainCommand);
         }
 
-        builder.addField(LangID.getStringByID("help_use", lang), LangID.getStringByID("help_"+mainCommand+"_use", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.serverPrefix), false);
+        builder.addField(LangID.getStringByID("help_use", lang), LangID.getStringByID("help_"+mainCommand+"_use", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.config.prefix), false);
         builder.addField(LangID.getStringByID("help_desc", lang), LangID.getStringByID("help_"+mainCommand+"_desc", lang), false);
 
         if(argument) {

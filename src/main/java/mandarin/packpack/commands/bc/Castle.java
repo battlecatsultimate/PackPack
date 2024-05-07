@@ -234,7 +234,7 @@ public class Castle extends ConstraintCommand {
                 String[] messages = loader.getContent().split(" ", startIndex+1);
 
                 if(messages.length <= startIndex) {
-                    replyToMessageSafely(ch, LangID.getStringByID("castle_more", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.serverPrefix), loader.getMessage(), a -> a);
+                    replyToMessageSafely(ch, LangID.getStringByID("castle_more", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.config.prefix), loader.getMessage(), a -> a);
 
                     return;
                 }
@@ -323,7 +323,7 @@ public class Castle extends ConstraintCommand {
 
                 sendMessageWithFile(ch, LangID.getStringByID("castle_result", lang).replace("_CCC_", castleCode).replace("_III_", Data.trio(id)).replace("_BBB_", String.valueOf(image.boss_spawn)), img, "result.png", loader.getMessage());
             } else {
-                replyToMessageSafely(ch, LangID.getStringByID("castle_argu", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.serverPrefix), loader.getMessage(), a -> a);
+                replyToMessageSafely(ch, LangID.getStringByID("castle_argu", lang).replace("_", holder == null ? StaticStore.globalPrefix : holder.config.prefix), loader.getMessage(), a -> a);
             }
         }
     }

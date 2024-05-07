@@ -3,6 +3,7 @@ package mandarin.packpack.commands;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
+import mandarin.packpack.supporter.server.data.ConfigHolder;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -36,7 +37,9 @@ public class Prefix extends ConstraintCommand {
 
             User u = loader.getUser();
 
-            StaticStore.prefix.put(u.getId(), list[1]);
+            ConfigHolder config = StaticStore.config.computeIfAbsent(u.getId(), k -> new ConfigHolder());
+
+            config.prefix = list[1];
 
             String result = String.format(LangID.getStringByID("prefix_set", lang), list[1]);
 

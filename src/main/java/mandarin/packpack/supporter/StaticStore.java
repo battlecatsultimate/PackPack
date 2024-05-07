@@ -89,7 +89,6 @@ public class StaticStore {
 
     public static final ConfigHolder defaultConfig = new ConfigHolder();
 
-    public static Map<String, String> prefix = new HashMap<>();
     public static Map<String, String> langs = new HashMap<>();
     public static Map<String, String> musics = new HashMap<>();
     public static final Map<String, Integer> timeZones = new HashMap<>();
@@ -270,7 +269,9 @@ public class StaticStore {
     }
 
     public static String getPrefix(String id) {
-        String pre = prefix.get(id);
+        ConfigHolder holder = config.get(id);
+
+        String pre = holder == null ? null : holder.prefix;
 
         return Objects.requireNonNullElse(pre, globalPrefix);
     }
@@ -627,7 +628,6 @@ public class StaticStore {
         obj.addProperty("taiwaneseVersion", taiwaneseVersion);
         obj.addProperty("koreanVersion", koreanVersion);
         obj.addProperty("japaneseVersion", japaneseVersion);
-        obj.add("prefix", mapToJsonString(prefix));
         obj.add("lang", mapToJsonString(langs));
         obj.add("music", mapToJsonString(musics));
         obj.add("config", mapToJsonConfigHolder(config));
@@ -730,10 +730,6 @@ public class StaticStore {
                 previousExecuted = executed;
             }
 
-            if(obj.has("prefix")) {
-                prefix = jsonToMapString(obj.get("prefix").getAsJsonArray());
-            }
-
             if(obj.has("lang")) {
                 langs = jsonToMapString(obj.get("lang").getAsJsonArray());
             }
@@ -744,6 +740,21 @@ public class StaticStore {
 
             if(obj.has("config")) {
                 config = jsonToMapConfigHolder(obj.getAsJsonArray("config"));
+            }
+
+            if(obj.has("prefix")) {
+                Map<String, String> map = jsonToMapString(obj.get("prefix").getAsJsonArray());
+
+                for (String id : map.keySet()) {
+                    String prefix = map.get(id);
+
+                    if (prefix == null)
+                        continue;
+
+                    ConfigHolder holder = config.computeIfAbsent(id, k -> new ConfigHolder());
+
+                    holder.prefix = prefix;
+                }
             }
 
             if(obj.has("treasure")) {

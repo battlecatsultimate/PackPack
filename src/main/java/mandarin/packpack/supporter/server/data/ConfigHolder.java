@@ -7,6 +7,10 @@ public class ConfigHolder implements Cloneable {
     public static ConfigHolder parseJson(JsonObject obj) {
         ConfigHolder holder = new ConfigHolder();
 
+        if (obj.has("prefix")) {
+            holder.prefix = obj.get("prefix").getAsString();
+        }
+
         if(obj.has("lang")) {
             holder.lang = obj.get("lang").getAsInt();
         }
@@ -38,12 +42,14 @@ public class ConfigHolder implements Cloneable {
         return holder;
     }
 
+    public String prefix = "p!";
     public int lang = -1, defLevel = 30;
     public boolean useFrame = true, extra = false, compact = false, trueForm = false, treasure = false;
 
     public JsonObject jsonfy() {
         JsonObject obj = new JsonObject();
 
+        obj.addProperty("prefix", prefix);
         obj.addProperty("lang", lang);
         obj.addProperty("defLevel", defLevel);
         obj.addProperty("useFrame", useFrame);
@@ -67,6 +73,7 @@ public class ConfigHolder implements Cloneable {
             c = new ConfigHolder();
         }
 
+        c.prefix = prefix;
         c.lang = lang;
         c.defLevel = defLevel;
         c.useFrame = useFrame;
