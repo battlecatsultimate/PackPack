@@ -42,7 +42,7 @@ public class ConfigHolder implements Cloneable {
         return holder;
     }
 
-    public String prefix = "p!";
+    public String prefix = StaticStore.globalPrefix;
     public int lang = -1, defLevel = 30;
     public boolean useFrame = true, extra = false, compact = false, trueForm = false, treasure = false;
 
