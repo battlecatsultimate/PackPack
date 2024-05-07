@@ -269,8 +269,6 @@ class BuyHolder(author: Message, channelID: String, private val message: Message
                             .queue()
 
                         CardBot.saveCardData()
-
-                        return@ConfirmPopUpHolder null
                     }, { e ->
                         StaticStore.putHolder(authorMessage.author.id, this)
 
@@ -280,8 +278,6 @@ class BuyHolder(author: Message, channelID: String, private val message: Message
                             .mentionRepliedUser(false)
                             .setAllowedMentions(ArrayList())
                             .queue()
-
-                        return@ConfirmPopUpHolder null
                     }, LangID.EN))
                 }
 

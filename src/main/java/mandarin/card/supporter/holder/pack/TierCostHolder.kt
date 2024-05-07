@@ -91,14 +91,10 @@ class TierCostHolder(author: Message, channelID: String, private val message: Me
                         e.deferEdit().queue()
 
                         parent?.goBack()
-
-                        return@ConfirmPopUpHolder null
                     }, { e ->
                         StaticStore.putHolder(authorMessage.author.id, this)
 
                         applyResult(e)
-
-                        return@ConfirmPopUpHolder null
                     }, LangID.EN))
                 } else {
                     if (pack in CardData.cardPacks) {
@@ -134,14 +130,10 @@ class TierCostHolder(author: Message, channelID: String, private val message: Me
                         .queue()
 
                     goBack()
-
-                    return@ConfirmPopUpHolder null
                 }, { e ->
                     StaticStore.putHolder(authorMessage.author.id, this)
 
                     applyResult(e)
-
-                    return@ConfirmPopUpHolder null
                 }, LangID.EN))
             }
         }

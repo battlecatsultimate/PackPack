@@ -100,14 +100,10 @@ class BannerCostHolder(author: Message, channelID: String, private val message: 
                         e.deferEdit().queue()
 
                         parent?.goBack()
-
-                        return@ConfirmPopUpHolder null
                     }, { e ->
                         StaticStore.putHolder(authorMessage.author.id, this)
 
                         applyResult(e)
-
-                        return@ConfirmPopUpHolder null
                     }, LangID.EN))
                 } else {
                     if (pack in CardData.cardPacks) {
@@ -143,14 +139,10 @@ class BannerCostHolder(author: Message, channelID: String, private val message: 
                         .queue()
 
                     goBack()
-
-                    return@ConfirmPopUpHolder null
                 }, { e ->
                     StaticStore.putHolder(authorMessage.author.id, this)
 
                     applyResult(e)
-
-                    return@ConfirmPopUpHolder null
                 }, LangID.EN))
             }
             "prev" -> {

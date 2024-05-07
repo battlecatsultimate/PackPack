@@ -129,14 +129,10 @@ class CardChancePairHolder(
                         e.deferEdit().queue()
 
                         goBack()
-
-                        return@ConfirmPopUpHolder null
                     }, { e ->
                         StaticStore.putHolder(authorMessage.author.id, this)
 
                         applyResult(e)
-
-                        return@ConfirmPopUpHolder null
                     }, LangID.EN))
                 } else {
                     if (pack in CardData.cardPacks) {
@@ -170,14 +166,10 @@ class CardChancePairHolder(
                         .queue()
 
                     goBack()
-
-                    return@ConfirmPopUpHolder null
                 }, { e ->
                     StaticStore.putHolder(authorMessage.author.id, this)
 
                     applyResult(e)
-
-                    return@ConfirmPopUpHolder null
                 }, LangID.EN))
             }
             "prev" -> {

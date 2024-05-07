@@ -116,14 +116,10 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
 
                     StaticStore.putHolder(authorMessage.author.id, ConfirmPopUpHolder(authorMessage, message, channelID, {
                         salvage.invoke(it)
-
-                        return@ConfirmPopUpHolder null
                     }, {
                         applyResult(it)
 
                         StaticStore.putHolder(authorMessage.author.id, this)
-
-                        return@ConfirmPopUpHolder null
                     }, LangID.EN))
                 } else {
                     salvage.invoke(event)
@@ -250,14 +246,10 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
 
                 StaticStore.putHolder(authorMessage.author.id, ConfirmPopUpHolder(authorMessage, message, channelID, {
                     adder.invoke(it)
-
-                    return@ConfirmPopUpHolder null
                 }, {
                     applyResult(it)
 
                     StaticStore.putHolder(authorMessage.author.id, this)
-
-                    return@ConfirmPopUpHolder null
                 }, LangID.EN))
             }
             "dupe" -> {

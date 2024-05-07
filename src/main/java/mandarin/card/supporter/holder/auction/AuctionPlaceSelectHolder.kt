@@ -70,14 +70,10 @@ class AuctionPlaceSelectHolder(author: Message, channelID: String, private val m
                         expired = true
 
                         expire()
-
-                        return@ConfirmPopUpHolder null
                     }, { e ->
                         applyResult(e)
 
                         StaticStore.putHolder(authorMessage.author.id, this)
-
-                        return@ConfirmPopUpHolder null
                     }, LangID.EN))
                 })
             }

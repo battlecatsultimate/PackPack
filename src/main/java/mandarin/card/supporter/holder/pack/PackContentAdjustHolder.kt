@@ -99,14 +99,10 @@ class PackContentAdjustHolder(author: Message, channelID: String,
                         e.deferEdit().queue()
 
                         goBack()
-
-                        return@ConfirmPopUpHolder null
                     }, { e ->
                         StaticStore.putHolder(authorMessage.author.id, this)
 
                         applyResult(e)
-
-                        return@ConfirmPopUpHolder null
                     }, LangID.EN))
                 } else {
                     cardChancePairList.validateChance()
@@ -142,14 +138,10 @@ class PackContentAdjustHolder(author: Message, channelID: String,
                         .queue()
 
                     goBack()
-
-                    return@ConfirmPopUpHolder null
                 }, { e ->
                     StaticStore.putHolder(authorMessage.author.id, this)
 
                     applyResult(e)
-
-                    return@ConfirmPopUpHolder null
                 }, LangID.EN))
             }
         }

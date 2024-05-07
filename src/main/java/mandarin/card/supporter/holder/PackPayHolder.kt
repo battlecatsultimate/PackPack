@@ -159,14 +159,10 @@ class PackPayHolder(
                         e.deferEdit().queue()
 
                         goBack()
-
-                        return@ConfirmPopUpHolder null
                     }, { e ->
                         StaticStore.putHolder(authorMessage.author.id, this)
 
                         applyResult(e)
-
-                        return@ConfirmPopUpHolder null
                     }, LangID.EN))
                 } else {
                     event.deferEdit().queue()

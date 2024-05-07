@@ -60,14 +60,10 @@ class ResetCooldownHolder(author: Message, channelID: String, private val messag
                         .setAllowedMentions(ArrayList())
                         .mentionRepliedUser(false)
                         .queue()
-
-                    return@ConfirmPopUpHolder null
                 }, { e ->
                     StaticStore.putHolder(authorMessage.author.id, this)
 
                     applyResult(e)
-
-                    return@ConfirmPopUpHolder null
                 }, LangID.EN))
             }
             "prev" -> {

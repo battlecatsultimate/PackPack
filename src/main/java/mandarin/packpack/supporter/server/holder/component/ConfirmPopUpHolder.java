@@ -5,22 +5,46 @@ import mandarin.packpack.supporter.lang.LangID;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 public class ConfirmPopUpHolder extends ComponentHolder {
-    private final Function<GenericComponentInteractionCreateEvent, Void> onConfirm;
-    private final Function<GenericComponentInteractionCreateEvent, Void>  onCancel;
+    private final Consumer<GenericComponentInteractionCreateEvent> onConfirm;
+    @Nullable
+    private final Consumer<GenericComponentInteractionCreateEvent>  onCancel;
 
     private final int lang;
 
     private final Message msg;
 
-    public ConfirmPopUpHolder(Message author, Message msg, String channelID, Function<GenericComponentInteractionCreateEvent, Void> onConfirm, Function<GenericComponentInteractionCreateEvent, Void> onCancel, int lang) {
+    public ConfirmPopUpHolder(Message author, Message msg, String channelID, Consumer<GenericComponentInteractionCreateEvent> onConfirm, Consumer<GenericComponentInteractionCreateEvent> onCancel, int lang) {
         super(author, channelID, msg.getId());
 
         this.onConfirm = onConfirm;
         this.onCancel = onCancel;
+
+        this.lang = lang;
+
+        this.msg = msg;
+
+        StaticStore.executorHandler.postDelayed(FIVE_MIN, () -> {
+            if(expired)
+                return;
+
+            expired = true;
+
+            StaticStore.removeHolder(author.getAuthor().getId(), ConfirmPopUpHolder.this);
+
+            expire(userID);
+        });
+    }
+
+    public ConfirmPopUpHolder(Message author, Message msg, String channelID, Consumer<GenericComponentInteractionCreateEvent> onConfirm, int lang) {
+        super(author, channelID, msg);
+
+        this.onConfirm = onConfirm;
+        this.onCancel = null;
 
         this.lang = lang;
 
@@ -45,8 +69,14 @@ public class ConfirmPopUpHolder extends ComponentHolder {
         StaticStore.removeHolder(userID, this);
 
         switch (event.getComponentId()) {
-            case "confirm" -> onConfirm.apply(event);
-            case "cancel" -> onCancel.apply(event);
+            case "confirm" -> onConfirm.accept(event);
+            case "cancel" -> {
+                if (onCancel == null) {
+                    goBack();
+                } else {
+                    onCancel.accept(event);
+                }
+            }
         }
     }
 
