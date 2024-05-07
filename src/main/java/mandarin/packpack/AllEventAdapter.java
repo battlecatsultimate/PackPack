@@ -999,14 +999,14 @@ public class AllEventAdapter extends ListenerAdapter {
 
         System.out.println("Filtering out url format prefixes...");
 
-        for(String key : StaticStore.prefix.keySet()) {
-            String prefix = StaticStore.prefix.get(key);
+        for(String key : StaticStore.config.keySet()) {
+            ConfigHolder config = StaticStore.config.get(key);
 
-            if(prefix == null)
+            if(config == null)
                 continue;
 
-            if(prefix.matches("(.+)?http(s)?://(.+)?")) {
-                StaticStore.prefix.remove(key);
+            if(config.prefix.matches("(.+)?http(s)?://(.+)?")) {
+                config.prefix = StaticStore.globalPrefix;
             }
         }
 
