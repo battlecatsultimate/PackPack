@@ -240,7 +240,7 @@ public class StaticStore {
         if(r == null)
             return "NULL";
         else
-            return r.getName();
+            return r.getAsMention();
     }
 
     public static File getDownPackFile() {
