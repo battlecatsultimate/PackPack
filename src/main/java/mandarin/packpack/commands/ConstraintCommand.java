@@ -149,14 +149,14 @@ public abstract class ConstraintCommand extends Command {
 
             if(!hasRole && !isMod) {
                 if(constRole.equals("MANDARIN")) {
-                    ch.sendMessage(LangID.getStringByID("const_man", lang)).queue();
+                    replyToMessageSafely(ch, LangID.getStringByID("const_man", lang), loader.getMessage(), a -> a);
                 } else if(constRole.equals("TRUSTED")) {
-                    createMessageWithNoPings(ch, LangID.getStringByID("const_con", lang));
+                    replyToMessageSafely(ch, LangID.getStringByID("const_con", lang), loader.getMessage(), a -> a);
                 } else {
                     if (ch instanceof GuildChannel) {
                         Guild g = loader.getGuild();
 
-                        ch.sendMessage(LangID.getStringByID("const_role", lang).replace("_", StaticStore.roleNameFromID(g, constRole))).queue();
+                        replyToMessageSafely(ch, LangID.getStringByID("const_role", lang).replace("_", StaticStore.roleNameFromID(g, constRole)), loader.getMessage(), a -> a);
                     }
                 }
             } else {
