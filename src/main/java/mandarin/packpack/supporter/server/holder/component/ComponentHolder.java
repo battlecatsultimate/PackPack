@@ -28,6 +28,11 @@ public abstract class ComponentHolder extends Holder {
         return STATUS.FINISH;
     }
 
+    @Override
+    public final Type getType() {
+        return Type.COMPONENT;
+    }
+
     public abstract void onEvent(@Nonnull GenericComponentInteractionCreateEvent event);
 
     public int parseDataToInt(GenericComponentInteractionCreateEvent event) {

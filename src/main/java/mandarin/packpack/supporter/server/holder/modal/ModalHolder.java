@@ -56,6 +56,11 @@ public abstract class ModalHolder extends Holder {
         throw new IllegalStateException(builder.toString());
     }
 
+    @Override
+    public final Type getType() {
+        return Type.MODAL;
+    }
+
     private boolean canHandleEvent(ModalInteractionEvent event) {
         boolean result = event.getChannel().getId().equals(channelID);
 

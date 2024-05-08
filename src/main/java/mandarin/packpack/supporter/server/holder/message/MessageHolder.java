@@ -28,6 +28,11 @@ public abstract class MessageHolder extends Holder {
         return STATUS.WAIT;
     }
 
+    @Override
+    public final Type getType() {
+        return Type.MESSAGE;
+    }
+
     public STATUS onReceivedEvent(MessageReceivedEvent event) {
         return STATUS.WAIT;
     }
