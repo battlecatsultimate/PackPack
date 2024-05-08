@@ -22,7 +22,9 @@ class AuctionSession(
     var endDate: Long,
     val anonymous: Boolean,
     val initialPrice: Long,
-    val minimumBid: Long
+    val minimumBid: Long,
+    val autoClose: Boolean,
+    val autoCloseTime: Long
 ) {
     companion object {
         fun fromJson(obj: JsonObject) : AuctionSession {
@@ -44,7 +46,17 @@ class AuctionSession(
 
             val opened = obj.get("opened").asBoolean
 
-            val session = AuctionSession(id, channel, author, card, amount, endDate, anonymous, currentBid, minimumBid)
+            val autoClose = if (obj.has("autoClose"))
+                obj.get("autoClose").asBoolean
+            else
+                false
+
+            val autoCloseTime = if (obj.has("autoCloseTime"))
+                obj.get("autoCloseTime").asLong
+            else
+                CardData.AUTO_CLOSE_TIME
+
+            val session = AuctionSession(id, channel, author, card, amount, endDate, anonymous, currentBid, minimumBid, autoClose, autoCloseTime)
 
             val bidData = obj.getAsJsonArray("bidData")
 
@@ -59,6 +71,10 @@ class AuctionSession(
             session.opened = opened
 
             session.message = obj.get("message").asLong
+
+            if (obj.has("lastBidTime")) {
+                session.lastBidTime = obj.get("lastBidTime").asLong
+            }
 
             return session
         }
@@ -78,6 +94,9 @@ class AuctionSession(
     var opened = true
     var message = -1L
 
+    var lastBidTime = 0L
+        private set
+
     private lateinit var auctionChannel: GuildMessageChannel
     private lateinit var auctionMessage: Message
 
@@ -85,6 +104,8 @@ class AuctionSession(
 
     fun bid(userId: Long, amount: Long) {
         bidData[userId] = max((bidData[userId] ?: 0L), amount)
+
+        lastBidTime = CardData.getUnixEpochTime()
 
         if (this::auctionMessage.isInitialized) {
             auctionMessage
@@ -97,7 +118,7 @@ class AuctionSession(
 
         if (this::auctionChannel.isInitialized) {
             if (anonymous) {
-                auctionChannel.sendMessage("User bid ${EmojiStore.ABILITY["CF"]?.formatted} $amount!")
+                auctionChannel.sendMessage("User bid ${EmojiStore.ABILITY["CF"]?.formatted} $amount!").queue()
             } else {
                 auctionChannel.sendMessage("<@$userId> bid ${EmojiStore.ABILITY["CF"]?.formatted} $amount!")
                     .setAllowedMentions(ArrayList())
@@ -122,7 +143,7 @@ class AuctionSession(
 
         if (this::auctionChannel.isInitialized) {
             if (anonymous) {
-                auctionChannel.sendMessage("User canceled the bid ${EmojiStore.ABILITY["CF"]?.formatted} $previousAmount!")
+                auctionChannel.sendMessage("User canceled the bid ${EmojiStore.ABILITY["CF"]?.formatted} $previousAmount!").queue()
             } else {
                 auctionChannel.sendMessage("<@$userID> canceled the bid ${EmojiStore.ABILITY["CF"]?.formatted} $previousAmount!")
                     .setAllowedMentions(ArrayList())
@@ -189,7 +210,11 @@ class AuctionSession(
                             auctionMessage.unpin().queue()
                     }
                 } else {
-                    auctionChannel.sendMessage("Auction #$id has ended! Waiting for approval of <@&${CardData.dealer}>!").queue()
+                    if (CardBot.test) {
+                        auctionChannel.sendMessage("Auction #$id has ended! Waiting for approval of <@${StaticStore.MANDARIN_SMELL}>!").queue()
+                    } else {
+                        auctionChannel.sendMessage("Auction #$id has ended! Waiting for approval of <@&${CardData.dealer}>!").queue()
+                    }
 
                     if (this::auctionMessage.isInitialized) {
                         auctionMessage
@@ -250,7 +275,11 @@ class AuctionSession(
                             auctionMessage.unpin().queue()
                     }
                 } else {
-                    auctionChannel.sendMessage("Auction $id has ended! Waiting for approval of <@&${CardData.dealer}>!").queue()
+                    if (CardBot.test) {
+                        auctionChannel.sendMessage("Auction #$id has ended! Waiting for approval of <@${StaticStore.MANDARIN_SMELL}>!").queue()
+                    } else {
+                        auctionChannel.sendMessage("Auction #$id has ended! Waiting for approval of <@&${CardData.dealer}>!").queue()
+                    }
 
                     if (this::auctionMessage.isInitialized) {
                         auctionMessage
@@ -290,8 +319,11 @@ class AuctionSession(
         }
     }
 
-    fun closeSession(managerID: Long) : String {
+    fun closeSession(managerID: Long, auto: Boolean) : String {
         val memberId = getMostBidMember()
+
+        if (auto)
+            opened = false
 
         if (memberId == 0L) {
             return "Auction performing failed\n\nReason : Failed to find most bid user"
@@ -311,18 +343,20 @@ class AuctionSession(
             authorInventory.auctionQueued[card] = (authorInventory.auctionQueued[card] ?: 0) - amount
         }
 
-        CardData.auctionSessions.remove(this)
+        if (!auto) {
+            CardData.auctionSessions.remove(this)
+        }
 
         CardBot.saveCardData()
 
-        TransactionLogger.logAuctionClose(managerID, this)
+        TransactionLogger.logAuctionClose(managerID, auto, this)
         TransactionLogger.logAuctionResult(this)
 
         opened = false
 
         if (this::auctionMessage.isInitialized) {
             auctionMessage
-                .editMessage(getAuctionInfo("Force Closed"))
+                .editMessage(getAuctionInfo(if (auto) "Auto Closed" else "Force Closed"))
                 .setAllowedMentions(ArrayList())
                 .queue()
 
@@ -428,7 +462,11 @@ class AuctionSession(
                             auctionMessage.unpin().queue()
                     }
                 } else {
-                    auctionChannel.sendMessage("Auction $id has ended! Waiting for approval of <@&${CardData.dealer}>!").queue()
+                    if (CardBot.test) {
+                        auctionChannel.sendMessage("Auction #$id has ended! Waiting for approval of <@${StaticStore.MANDARIN_SMELL}>!").queue()
+                    } else {
+                        auctionChannel.sendMessage("Auction #$id has ended! Waiting for approval of <@&${CardData.dealer}>!").queue()
+                    }
 
                     if (this::auctionMessage.isInitialized) {
                         auctionMessage
@@ -471,6 +509,9 @@ class AuctionSession(
         obj.addProperty("minimumBid", minimumBid)
         obj.addProperty("opened", opened)
         obj.addProperty("message", message)
+        obj.addProperty("lastBidTime", lastBidTime)
+        obj.addProperty("autoClose", autoClose)
+        obj.addProperty("autoCloseTime", autoCloseTime)
 
         val bidArray = JsonArray()
 
@@ -495,6 +536,13 @@ class AuctionSession(
             auctionMessage
     }
 
+    fun getAuctionChannel() : GuildMessageChannel? {
+        return if (!this::auctionChannel.isInitialized)
+            null
+        else
+            auctionChannel
+    }
+
     private fun getAuctionInfo(status: String = "") : String {
         val builder = StringBuilder("## Auction #$id\n")
 
@@ -511,7 +559,7 @@ class AuctionSession(
             .append(":f> (<t:")
             .append(endDate)
             .append(":R>)")
-            .append("\n\n### Bid Info\nMost Bid User : ")
+            .append("\n### Bid Info\nMost Bid User : ")
             .append(getBidMember())
             .append("\nAmount of ")
             .append(EmojiStore.ABILITY["CF"]?.formatted)
@@ -532,10 +580,14 @@ class AuctionSession(
             }
         }
 
-        builder.append("**")
+        builder.append("**\n")
 
         if (anonymous) {
-            builder.append("\n\nThis is an anonymous auction. You have to bid in DM! Channel ID is $channel")
+            builder.append("\n- This is an anonymous auction. You have to bid in DM! Channel ID is $channel")
+        }
+
+        if (autoClose) {
+            builder.append("\n- This auction will be automatically closed if there's no bid for ${CardData.convertMillisecondsToText(autoCloseTime)} after first bid. **__Transaction will be performed if auction gets auto-closed__**")
         }
 
         return builder.toString()

@@ -119,8 +119,16 @@ class CreateAuction : Command(LangID.EN, true) {
             Button.secondary("card", "Card").withEmoji(EmojiStore.ABILITY["CARD"]),
             Button.secondary("duration", "Duration").withEmoji(Emoji.fromUnicode("⏰")),
             Button.secondary("price", "Initial Price").withEmoji(EmojiStore.ABILITY["CF"]),
-            Button.secondary("bid", "Minimum Bid").withEmoji(Emoji.fromUnicode("\uD83D\uDCB5")),
+            Button.secondary("bid", "Minimum Bid").withEmoji(Emoji.fromUnicode("\uD83D\uDCB5"))
+        ))
+
+        result.add(ActionRow.of(
             Button.secondary("anonymous", "Anonymous?").withEmoji(if (anonymous) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF)
+        ))
+
+        result.add(ActionRow.of(
+            Button.secondary("autoClose", "Auto Close?").withEmoji(EmojiStore.SWITCHOFF),
+            Button.secondary("closeTime", "Auto Close Time").withEmoji(Emoji.fromUnicode("⏱️")).asDisabled()
         ))
 
         result.add(

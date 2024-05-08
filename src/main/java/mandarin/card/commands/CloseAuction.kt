@@ -26,7 +26,7 @@ class CloseAuction : Command(LangID.EN, true) {
 
         replyToMessageSafely(loader.channel, "Are you sure you want to close this auction? This process cannot be undone\n\n**__This command performs transaction. If you want to close the auction AND NOT perform the transaction, please call `${CardBot.globalPrefix}cancelauction`__**", loader.message, { a -> registerConfirmButtons(a, LangID.EN) }) { msg ->
             StaticStore.putHolder(m.id, ConfirmButtonHolder(loader.message, msg, loader.channel.id, LangID.EN) {
-                val warnMessage = auctionSession.closeSession(m.idLong)
+                val warnMessage = auctionSession.closeSession(m.idLong, false)
 
                 if (warnMessage.isNotEmpty()) {
                     replyToMessageSafely(ch, warnMessage, loader.message) { a -> a }

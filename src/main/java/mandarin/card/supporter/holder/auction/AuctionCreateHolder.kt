@@ -5,6 +5,7 @@ import mandarin.card.supporter.Card
 import mandarin.card.supporter.AuctionSession
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
+import mandarin.card.supporter.holder.modal.AuctionAutoCloseHolder
 import mandarin.card.supporter.holder.modal.AuctionEndTimeHolder
 import mandarin.card.supporter.holder.modal.AuctionInitialPriceHolder
 import mandarin.card.supporter.holder.modal.AuctionMinimumBidHolder
@@ -23,10 +24,12 @@ import net.dv8tion.jda.api.interactions.modals.Modal
 
 class AuctionCreateHolder(author: Message, channelID: String, private val message: Message, private val authorID: Long, private val auctionPlace: Long, private var anonymous: Boolean) : ComponentHolder(author, channelID, message) {
     private var selectedCard: Card? = null
-    private var amount: Int = -1
-    private var endTime: Long = -1L
-    private var initialPrice: Long = -1L
-    private var minimumBid: Long = CardData.MINIMUM_BID
+    private var amount = -1
+    private var endTime = -1L
+    private var initialPrice = -1L
+    private var minimumBid = CardData.MINIMUM_BID
+    private var autoClose = false
+    private var autoCloseTime = CardData.AUTO_CLOSE_TIME
 
     override fun clean() {
 
@@ -118,10 +121,36 @@ class AuctionCreateHolder(author: Message, channelID: String, private val messag
                     .mentionRepliedUser(false)
                     .queue()
             }
+            "autoClose" -> {
+                autoClose = !autoClose
+
+                event.deferEdit()
+                    .setContent(getContent())
+                    .setComponents(getComponent())
+                    .setAllowedMentions(ArrayList())
+                    .mentionRepliedUser(false)
+                    .queue()
+            }
+            "closeTime" -> {
+                val input = TextInput.create("time", "Time", TextInputStyle.SHORT)
+                    .setRequired(true)
+                    .setPlaceholder("i.e. 43200 = 12 hours, 3d6h30m - 3 days 6 hours 30 minutes")
+                    .build()
+
+                val modal = Modal.create("autoClose", "Auto Close Time")
+                    .addActionRow(input)
+                    .build()
+
+                event.replyModal(modal).queue()
+
+                connectTo(AuctionAutoCloseHolder(authorMessage, channelID, message) { time ->
+                    autoCloseTime = time
+                })
+            }
             "start" -> {
                 val card = selectedCard ?: return
 
-                val auctionSession = AuctionSession(CardData.auctionSessionNumber++, auctionPlace, authorID, card, amount, endTime, anonymous, initialPrice, minimumBid)
+                val auctionSession = AuctionSession(CardData.auctionSessionNumber++, auctionPlace, authorID, card, amount, endTime, anonymous, initialPrice, minimumBid, autoClose, autoCloseTime)
 
                 auctionSession.queueSession(authorMessage.jda)
 
@@ -239,6 +268,17 @@ class AuctionCreateHolder(author: Message, channelID: String, private val messag
             .append(" ")
             .append(minimumBid)
 
+        builder.append("\nAuto Close? : ")
+
+        if (autoClose) {
+            builder.append("True\nAuto Close Time : ")
+                .append(CardData.convertMillisecondsToText(autoCloseTime))
+        } else {
+            builder.append("False")
+        }
+
+        builder.append("\n\n### Auto Close?\nAuto close auction is an auction that bot will automatically close the auction if there's no bid for 12 hours. ")
+
         return builder.toString()
     }
 
@@ -249,13 +289,21 @@ class AuctionCreateHolder(author: Message, channelID: String, private val messag
             Button.secondary("card", "Card").withEmoji(EmojiStore.ABILITY["CARD"]),
             Button.secondary("duration", "Duration").withEmoji(Emoji.fromUnicode("⏰")),
             Button.secondary("price", "Initial Price").withEmoji(EmojiStore.ABILITY["CF"]),
-            Button.secondary("bid", "Minimum Bid").withEmoji(Emoji.fromUnicode("\uD83D\uDCB5")),
+            Button.secondary("bid", "Minimum Bid").withEmoji(Emoji.fromUnicode("\uD83D\uDCB5"))
+        ))
+
+        result.add(ActionRow.of(
             Button.secondary("anonymous", "Anonymous?").withEmoji(if (anonymous) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF)
+        ))
+
+        result.add(ActionRow.of(
+            Button.secondary("autoClose", "Auto Close?").withEmoji(if (autoClose) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF),
+            Button.secondary("closeTime", "Auto Close Time").withEmoji(Emoji.fromUnicode("⏱️")).withDisabled(!autoClose)
         ))
 
         result.add(
             ActionRow.of(
-                Button.success("start", "Start Auction").asDisabled(),
+                Button.success("start", "Start Auction").withDisabled(selectedCard == null || amount == -1 || endTime == -1L || initialPrice == -1L || (autoClose && autoCloseTime == -1L)),
                 Button.danger("cancel", "Cancel")
             )
         )

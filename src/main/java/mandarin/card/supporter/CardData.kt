@@ -203,6 +203,7 @@ object CardData {
     var catFoodCooldown = 120000L // 120 seconds as default
 
     const val MINIMUM_BID = 1000L
+    const val AUTO_CLOSE_TIME = 12L * 60 * 60 * 1000 // 12 hours
 
     /*
     -------------------------------------------------------

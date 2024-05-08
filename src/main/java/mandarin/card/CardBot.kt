@@ -90,11 +90,12 @@ object CardBot : ListenerAdapter() {
 
         StaticStore.saver.schedule(object : TimerTask() {
             override fun run() {
+                val currentTime = CardData.getUnixEpochTime()
+
                 if (notifier == 2) {
                     notifier = 1
 
                     val removeQueue = ArrayList<String>()
-                    val currentTime = CardData.getUnixEpochTime()
 
                     CardData.notifierGroup.forEach { n ->
                         if (!test || n == StaticStore.MANDARIN_SMELL) {
@@ -209,8 +210,6 @@ object CardBot : ListenerAdapter() {
                         val forum = g.getForumChannelById(CardData.tradingPlace)
 
                         if (forum != null) {
-                            val currentTime = CardData.getUnixEpochTime()
-
                             ArrayList(CardData.sessions).forEach { session ->
                                 val ch = forum.threadChannels.find { ch -> ch.idLong == session.postID }
 
@@ -226,6 +225,46 @@ object CardBot : ListenerAdapter() {
                             }
                         }
                     }
+                }
+
+                val jda = client.shards.firstOrNull()
+
+                CardData.auctionSessions.removeIf { auction ->
+                    if (!auction.opened)
+                        return@removeIf false
+
+                    val ended = auction.autoClose && auction.autoCloseTime > 0L && auction.lastBidTime > 0L && currentTime >= auction.lastBidTime + auction.autoCloseTime
+
+                    if (ended) {
+                        val result = auction.closeSession(jda?.selfUser?.idLong ?: 0L, true)
+
+                        val ch = auction.getAuctionChannel() ?: return@removeIf result.isEmpty()
+
+                        if (result.isNotEmpty()) {
+                            val mention = if (test) {
+                                "<@${StaticStore.MANDARIN_SMELL}>"
+                            } else {
+                                "<@&${CardData.dealer}>"
+                            }
+
+                            ch.sendMessage("Tried to auto close the auction due to no bid for ${CardData.convertMillisecondsToText(auction.autoCloseTime)}, but failed\n\n$result\n\nPinging $mention for manual close").queue()
+
+                            return@removeIf false
+                        } else {
+                            ch.sendMessage("Auction has been auto-closed due to no bid for ${CardData.convertMillisecondsToText(auction.autoCloseTime)}").queue()
+
+                            val successMessage = StringBuilder()
+
+                            if (auction.author != -1L)
+                                successMessage.append("<@").append(auction.author).append(">, ")
+
+                            successMessage.append("<@").append(auction.getMostBidMember()).append("> Check your inventory")
+
+                            ch.sendMessage(successMessage).queue()
+                        }
+                    }
+
+                    return@removeIf ended
                 }
             }
         }, 0, TimeUnit.MINUTES.toMillis(1))

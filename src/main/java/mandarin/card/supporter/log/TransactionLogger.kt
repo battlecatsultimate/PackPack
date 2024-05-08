@@ -982,20 +982,20 @@ object TransactionLogger {
         modChannel.sendMessageEmbeds(builder.build()).queue()
     }
 
-    fun logAuctionClose(closer: Long, session: AuctionSession) {
+    fun logAuctionClose(closer: Long, auto: Boolean, session: AuctionSession) {
         if (!this::modChannel.isInitialized) {
             return
         }
 
         val builder = EmbedBuilder()
 
-        builder.setTitle("Auction Closed")
+        builder.setTitle("Auction ${if (auto) "Auto" else "Force"} Closed")
 
         builder.setColor(StaticStore.rainbow.random())
 
-        builder.setDescription("Manager <@$closer> has force-closed the auction #${session.id}")
+        builder.setDescription("Manager ${if (closer != 0L) "<@$closer>" else "System"} has ${if (auto) "auto" else "force"}-closed the auction #${session.id}")
 
-        builder.addField("Closer", "<@$closer> [$closer]", false)
+        builder.addField("Closer", if (closer != 0L) "<@$closer> [$closer]" else "System", false)
 
         builder.addField("Auction Session", "Auction Session #${session.id} <#${session.channel}> [${session.channel}]", false)
 
