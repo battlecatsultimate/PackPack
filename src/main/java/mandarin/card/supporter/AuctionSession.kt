@@ -594,11 +594,11 @@ class AuctionSession(
     }
 
     private fun getBidMember() : String {
-        if (anonymous)
-            return "Anonymous"
-
         if (bidData.isEmpty())
             return "None"
+
+        if (anonymous)
+            return "Anonymous"
 
         return "<@${getMostBidMember()}>"
     }
