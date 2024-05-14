@@ -383,6 +383,12 @@ object CardData {
         return dealer in roleList || mod in roleList || headerMod in roleList || member.id == StaticStore.MANDARIN_SMELL
     }
 
+    fun isMod(member: Member) : Boolean {
+        val roleList = member.roles.map { r -> r.id }
+
+        return mod in roleList || headerMod in roleList || member.id == StaticStore.MANDARIN_SMELL
+    }
+
     fun isBanned(member: Member) : Boolean {
         val roleList = member.roles.map { r -> r.id }
 

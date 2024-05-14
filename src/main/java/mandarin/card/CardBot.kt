@@ -12,6 +12,7 @@ import mandarin.card.supporter.*
 import mandarin.card.supporter.log.LogSession
 import mandarin.card.supporter.log.TransactionLogger
 import mandarin.card.supporter.pack.CardPack
+import mandarin.card.supporter.slot.SlotEmojiContainer
 import mandarin.packpack.supporter.*
 import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.data.ShardLoader
@@ -53,6 +54,7 @@ object CardBot : ListenerAdapter() {
     var locked = false
     var rollLocked = false
     var forceReplace = false
+    var inviteLocked = false
 
     @JvmStatic
     fun main(args: Array<String>) {
@@ -266,6 +268,14 @@ object CardBot : ListenerAdapter() {
 
                     return@removeIf ended
                 }
+
+                if (inviteLocked) {
+                    val g = client.getGuildById(CardData.guild)
+
+                    if (g != null && !g.isInvitesDisabled) {
+                        g.manager.setInvitesDisabled(true).queue()
+                    }
+                }
             }
         }, 0, TimeUnit.MINUTES.toMillis(1))
     }
@@ -447,6 +457,8 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}forcecancelbid",
             "${globalPrefix}fcb" -> ForceCancelBid().execute(event)
             "${globalPrefix}test" -> Test().execute(event)
+            "${globalPrefix}pauseinvite",
+            "${globalPrefix}pi" -> PauseInvite().execute(event)
         }
 
         val session = CardData.sessions.find { s -> s.postID == event.channel.idLong }
@@ -501,6 +513,7 @@ object CardBot : ListenerAdapter() {
         super.onReady(event)
 
         EmojiStore.initialize(ShardLoader(event.jda.shardManager))
+        SlotEmojiContainer.load(event.jda.shardManager)
 
         TransactionLogger.logChannel = event.jda.getGuildChannelById(CardData.transactionLog) as MessageChannel
         TransactionLogger.tradeChannel = event.jda.getGuildChannelById(CardData.tradingLog) as MessageChannel
@@ -847,6 +860,14 @@ object CardBot : ListenerAdapter() {
         if (obj.has("auctionSessionNumber")) {
             CardData.auctionSessionNumber = obj.get("auctionSessionNumber").asLong
         }
+
+        if (obj.has("slotEmojiContainer")) {
+            SlotEmojiContainer.fromJson(obj.getAsJsonArray("slotEmojiContainer"))
+        }
+
+        if (obj.has("inviteLocked")) {
+            inviteLocked = obj.get("inviteLocked").asBoolean
+        }
     }
 
     @Synchronized
@@ -1033,6 +1054,10 @@ object CardBot : ListenerAdapter() {
         obj.add("auctionSessions", auctionSessions)
 
         obj.addProperty("auctionSessionNumber", CardData.auctionSessionNumber)
+
+        obj.add("slotEmojiContainer", SlotEmojiContainer.asJson())
+
+        obj.addProperty("inviteLocked", inviteLocked)
 
         try {
             val folder = File("./data/")
