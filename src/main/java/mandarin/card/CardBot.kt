@@ -273,7 +273,9 @@ object CardBot : ListenerAdapter() {
                     val g = client.getGuildById(CardData.guild)
 
                     if (g != null && !g.isInvitesDisabled) {
-                        g.manager.setInvitesDisabled(true).queue()
+                        g.manager.setInvitesDisabled(true).queue(null) { e ->
+                            StaticStore.logger.uploadErrorLog(e, "E/CardBot::main - Failed to pause invite links")
+                        }
                     }
                 }
             }

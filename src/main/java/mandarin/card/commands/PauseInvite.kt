@@ -26,7 +26,7 @@ class PauseInvite : Command(LangID.EN, true) {
         replyToMessageSafely(loader.channel, message, loader.message, { a -> registerConfirmButtons(a, LangID.EN) }) { msg ->
             StaticStore.putHolder(loader.member.id, ConfirmButtonHolder(loader.message, msg, loader.channel.id, LangID.EN) {
                 replyToMessageSafely(loader.channel, if (CardBot.inviteLocked) "Enabling..." else "Disabling...", loader.message, { a -> a }) { m ->
-                    g.manager.setInvitesDisabled(!CardBot.inviteLocked).queue {
+                    g.manager.setInvitesDisabled(!CardBot.inviteLocked).queue( {
                         val alreadyLocked = CardBot.inviteLocked
                         CardBot.inviteLocked = !CardBot.inviteLocked
 
@@ -41,6 +41,8 @@ class PauseInvite : Command(LangID.EN, true) {
                                 .mentionRepliedUser(false)
                                 .queue()
                         }
+                    }) { e ->
+                        StaticStore.logger.uploadErrorLog(e, "E/PauseInvite::doSomething - Failed to pause/unpause the server")
                     }
                 }
             })
