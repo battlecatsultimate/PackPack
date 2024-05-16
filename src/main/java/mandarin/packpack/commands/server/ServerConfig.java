@@ -26,9 +26,9 @@ public class ServerConfig extends ConstraintCommand {
         if (holder == null)
             return;
 
-        replyToMessageSafely(loader.getChannel(), LangID.getStringByID("sercon_category", lang), loader.getMessage(), a -> a.setComponents(getComponents()), msg -> {
-            StaticStore.putHolder(loader.getMember().getId(), new ConfigCategoryHolder(loader.getMessage(), loader.getChannel().getId(), msg, holder, lang));
-        });
+        replyToMessageSafely(loader.getChannel(), LangID.getStringByID("sercon_category", lang), loader.getMessage(), a -> a.setComponents(getComponents()), msg ->
+                StaticStore.putHolder(loader.getMember().getId(), new ConfigCategoryHolder(loader.getMessage(), loader.getChannel().getId(), msg, holder, lang))
+        );
     }
 
     private List<LayoutComponent> getComponents() {
