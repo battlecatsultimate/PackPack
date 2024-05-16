@@ -274,16 +274,6 @@ public class ConfigButtonHolder extends ComponentHolder {
         if(forServer) {
             if(holder != null) {
                 holder.config = backup;
-
-                if(getAuthorMessage().getChannel() instanceof GuildMessageChannel m) {
-                    Guild g = m.getGuild();
-
-                    holderBackup.config = backup;
-
-                    if(StaticStore.idHolder.containsKey(g.getId())) {
-                        StaticStore.idHolder.put(g.getId(), holderBackup);
-                    }
-                }
             }
         } else {
             if(StaticStore.config.containsKey(id)) {

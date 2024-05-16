@@ -1,5 +1,6 @@
 package mandarin.packpack.supporter.server.holder;
 
+import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import net.dv8tion.jda.api.entities.Message;
@@ -20,6 +21,12 @@ public abstract class Holder {
         WAIT,
         FINISH,
         FAIL
+    }
+
+    public enum Type {
+        MESSAGE,
+        COMPONENT,
+        MODAL
     }
 
     protected static final long FIVE_MIN = TimeUnit.MINUTES.toMillis(5);
@@ -153,6 +160,8 @@ public abstract class Holder {
 
     public abstract void onExpire(String id);
 
+    public abstract Type getType();
+
     @Nonnull
     public final Message getAuthorMessage() {
         if(author == null) {
@@ -191,7 +200,7 @@ public abstract class Holder {
 
         holder.parent = this;
 
-        if (holder.getClass() == this.getClass()) {
+        if (holder.getType() == this.getType()) {
             StaticStore.removeHolder(userID, this);
         }
 
@@ -205,7 +214,7 @@ public abstract class Holder {
 
         holder.parent = this;
 
-        if (holder.getClass() == this.getClass()) {
+        if (holder.getType() == this.getType()) {
             StaticStore.removeHolder(userID, this);
         }
 
@@ -245,8 +254,8 @@ public abstract class Holder {
                 .mentionRepliedUser(false)
                 .setComponents(
                         ActionRow.of(
-                                Button.success("confirm", LangID.getStringByID("button_confirm", lang)),
-                                Button.danger("cancel", LangID.getStringByID("button_cancel", lang))
+                                Button.success("confirm", LangID.getStringByID("button_confirm", lang)).withEmoji(EmojiStore.CHECK),
+                                Button.danger("cancel", LangID.getStringByID("button_cancel", lang)).withEmoji(EmojiStore.CROSS)
                         )
                 )
                 .queue();
@@ -258,8 +267,8 @@ public abstract class Holder {
                 .mentionRepliedUser(false)
                 .setComponents(
                         ActionRow.of(
-                                Button.success("confirm", LangID.getStringByID("button_confirm", lang)),
-                                Button.danger("cancel", LangID.getStringByID("button_cancel", lang))
+                                Button.success("confirm", LangID.getStringByID("button_confirm", lang)).withEmoji(EmojiStore.CHECK),
+                                Button.danger("cancel", LangID.getStringByID("button_cancel", lang)).withEmoji(EmojiStore.CROSS)
                         )
                 )
                 .queue();

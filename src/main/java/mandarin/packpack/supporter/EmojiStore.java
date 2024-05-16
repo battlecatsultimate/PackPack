@@ -55,6 +55,16 @@ public class EmojiStore {
         GREENLINE = getEmoteWitNameAndID(loader, "Green_Line", 1140575224526536795L);
         REDDASHEDLINE = getEmoteWitNameAndID(loader, "Red_Dashed_Line", 1140575742082691172L);
 
+        ROLE = getEmoteWitNameAndID(loader, "Role", 1237290096529641472L);
+        MEMBER = getEmoteWitNameAndID(loader, "Member", 1237303379911508028L);
+        MODERATOR = getEmoteWitNameAndID(loader, "Moderator", 1237303422290759711L);
+        BOOSTER = getEmoteWitNameAndID(loader, "Booster", 1237303434915348521L);
+        LANGUAGE = getEmoteWitNameAndID(loader, "Language", 1237306025753706546L);
+
+        CHECK = getEmoteWitNameAndID(loader, "Check", 1237662032560525332L);
+        CROSS = getEmoteWitNameAndID(loader, "Cross", 1237662049031684136L);
+        BACK = getEmoteWitNameAndID(loader, "Back", 1237685808354426921L);
+
         File iconData = new File("./data/abilityIcons.txt");
 
         if(iconData.exists()) {
@@ -186,6 +196,16 @@ public class EmojiStore {
     public static Emoji SHIBALIENELITE;
     public static Emoji GREENLINE;
     public static Emoji REDDASHEDLINE;
+
+    public static Emoji ROLE;
+    public static Emoji MEMBER;
+    public static Emoji MODERATOR;
+    public static Emoji BOOSTER;
+    public static Emoji LANGUAGE;
+
+    public static Emoji CHECK;
+    public static Emoji CROSS;
+    public static Emoji BACK;
 
     public static final Map<String, Emoji> ABILITY = new HashMap<>();
     public static final MultiLangCont<String, Emoji> TRAIT = new MultiLangCont<>();

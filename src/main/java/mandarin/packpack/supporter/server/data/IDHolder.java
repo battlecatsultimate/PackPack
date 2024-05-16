@@ -165,6 +165,28 @@ public class IDHolder implements Cloneable {
         config.lang = LangID.EN;
     }
 
+    public void inject(IDHolder holder) {
+        publish = holder.publish;
+        MOD = holder.MOD;
+        MEMBER = holder.MEMBER;
+        ANNOUNCE = holder.ANNOUNCE;
+        status = holder.status;
+        BOOSTER = holder.BOOSTER;
+        channel = holder.channel;
+        ID = holder.ID;
+        logDM = holder.logDM;
+        eventMap = holder.eventMap;
+        config.inject(holder.config);
+        banned = holder.banned;
+        channelException = holder.channelException;
+        forceCompact = holder.forceCompact;
+        forceFullTreasure = holder.forceFullTreasure;
+        announceMessage = holder.announceMessage;
+        eventMessage = holder.eventMessage;
+        boosterPin = holder.boosterPin;
+        boosterPinChannel = holder.boosterPinChannel;
+    }
+
     public JsonObject jsonfy() {
         JsonObject obj = new JsonObject();
 
@@ -422,8 +444,6 @@ public class IDHolder implements Cloneable {
 
         return map;
     }
-
-
 
     @Override
     public String toString() {

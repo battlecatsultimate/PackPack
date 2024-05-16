@@ -72,7 +72,7 @@ public class ConfirmPopUpHolder extends ComponentHolder {
             case "confirm" -> onConfirm.accept(event);
             case "cancel" -> {
                 if (onCancel == null) {
-                    goBack();
+                    goBack(event);
                 } else {
                     onCancel.accept(event);
                 }

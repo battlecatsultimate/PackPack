@@ -61,6 +61,17 @@ public class ConfigHolder implements Cloneable {
         return obj;
     }
 
+    public void inject(ConfigHolder clone) {
+        prefix = clone.prefix;
+        lang = clone.lang;
+        defLevel = clone.defLevel;
+        useFrame = clone.useFrame;
+        extra = clone.extra;
+        compact = clone.compact;
+        trueForm = clone.trueForm;
+        treasure = clone.treasure;
+    }
+
     @Override
     public ConfigHolder clone() {
         ConfigHolder c;
