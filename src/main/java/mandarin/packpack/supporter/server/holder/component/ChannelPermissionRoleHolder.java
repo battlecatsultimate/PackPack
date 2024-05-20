@@ -66,8 +66,6 @@ public class ChannelPermissionRoleHolder extends ComponentHolder {
                 if (((StringSelectInteractionEvent) event).getValues().isEmpty())
                     return;
 
-                expired = true;
-
                 String value;
 
                 if (((StringSelectInteractionEvent) event).getValues().getFirst().equals(holder.MEMBER)) {

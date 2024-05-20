@@ -226,6 +226,8 @@ public abstract class Holder {
     public void goBack() {
         if (parent == null) {
             throw new IllegalStateException("E/Holder::goBack - Can't go back because there's no parent holder!\nHolder : " + this.getClass());
+        } else if (parent.expired) {
+            throw new IllegalStateException("E/Holder::goBack - Parent holder " + parent.getClass() + " is already expired!\nHolder : " + this.getClass());
         } else {
             expired = true;
             StaticStore.removeHolder(userID, this);
