@@ -12,6 +12,7 @@ import mandarin.packpack.supporter.server.holder.message.MessageHolder;
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
@@ -216,8 +217,13 @@ public class AliasStageMessageHolder extends MessageHolder {
     @Override
     public void clean() {
         for(Message m : cleaner) {
-            if(m != null)
-                m.delete().queue();
+            if (m == null)
+                continue;
+
+            if (m.getChannel() instanceof PrivateChannel)
+                return;
+
+            m.delete().queue();
         }
     }
 
