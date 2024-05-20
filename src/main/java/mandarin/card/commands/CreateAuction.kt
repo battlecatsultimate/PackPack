@@ -38,78 +38,62 @@ class CreateAuction : Command(LangID.EN, true) {
 
         val anonymous = "-p" !in segments
 
-        if (segments.size >= if (anonymous) 3 else 2) {
-            val targetMember = findMember(loader.guild, segments[1])
+        val possibleMember = segments.find { s -> StaticStore.isNumeric(s) || s.matches(Regex("<@\\d+>")) }
 
-            if (targetMember == null) {
-                replyToMessageSafely(ch, "Failed to retrieve member data from offered ID/Mention. Maybe ID is invalid or user left the server?", loader.message) { a -> a }
+        println(possibleMember)
 
-                return
-            }
+        val targetMember: Member? = if (possibleMember != null)
+            findMember(loader.guild, possibleMember)
+        else
+            null
 
-            replyToMessageSafely(ch, "## Preparation of auction creation\n" +
-                    "\n" +
-                    "Auction author : ${targetMember.asMention}\n" +
-                    "Auction Place : <#$placeChannel>\n" +
-                    "Anonymous? : ${if (anonymous) "True" else "False"}\n" +
-                    "\n" +
-                    "Selected Card : __Need Selection__\n" +
-                    "End Time : __Need to be decided__\n" +
-                    "Initial Price : __Need to be decided__",
-                loader.message, { a -> a.setComponents(getComponents(anonymous)) }) { msg ->
-                StaticStore.putHolder(m.id, AuctionCreateHolder(loader.message, ch.id, msg, targetMember.idLong, placeChannel, anonymous))
-            }
-        } else {
-            replyToMessageSafely(ch,
-                "## Preparation of auction creation\n" +
-                    "\n" +
-                    "Auction author : System\n" +
-                    "Auction Place : <#$placeChannel>\n" +
-                    "Anonymous? : ${if (anonymous) "True" else "False"}\n" +
-                    "\n" +
-                    "Selected Card : __Need Selection__\n" +
-                    "End Time : __Need to be decided__\n" +
-                    "Initial Price : __Need to be decided__\n" +
-                    "Minimum Bid Increase : ${EmojiStore.ABILITY["CF"]?.formatted} ${CardData.MINIMUM_BID}",
-                loader.message, { a -> a.setComponents(getComponents(anonymous)) }) { msg ->
-                StaticStore.putHolder(m.id, AuctionCreateHolder(loader.message, ch.id, msg, -1L, placeChannel, anonymous))
-            }
+        if (possibleMember != null && targetMember == null) {
+            replyToMessageSafely(ch, "Failed to retrieve member data from offered ID/Mention. Maybe ID is invalid or user left the server?", loader.message) { a -> a }
+
+            return
+        }
+
+        replyToMessageSafely(ch, "## Preparation of auction creation\n" +
+                "\n" +
+                "Auction author : ${targetMember?.asMention ?: "System"}\n" +
+                "Auction Place : <#$placeChannel>\n" +
+                "Anonymous? : ${if (anonymous) "True" else "False"}\n" +
+                "\n" +
+                "Selected Card : __Need Selection__\n" +
+                "End Time : __Need to be decided__\n" +
+                "Initial Price : __Need to be decided__",
+            loader.message, { a -> a.setComponents(getComponents(anonymous)) }) { msg ->
+            StaticStore.putHolder(m.id, AuctionCreateHolder(loader.message, ch.id, msg, targetMember?.idLong ?: -1L, placeChannel, anonymous))
         }
     }
 
-    private fun findMember(g: Guild, content: String) : Member? {
-        val segments = content.trim().split(" ")
+    private fun findMember(g: Guild, segment: String) : Member? {
+        val actualId = if (StaticStore.isNumeric(segment)) {
+            segment
+        } else {
+            val filteredId = segment.replace("<@", "").replace(">", "")
 
-        for (segment in segments) {
-            if (StaticStore.isNumeric(segment) || segment.matches(Regex("<@\\d+>"))) {
-                val actualId = if (StaticStore.isNumeric(segment)) {
-                    segment
-                } else {
-                    val filteredId = segment.replace("<@", "").replace(">", "")
-
-                    if (!StaticStore.isNumeric(filteredId)) {
-                        return null
-                    }
-
-                    filteredId
-                }
-
-                val memberReference = AtomicReference<Member>(null)
-                val countDownLatch = CountDownLatch(1)
-
-                g.retrieveMember(UserSnowflake.fromId(actualId)).queue { m ->
-                    memberReference.set(m)
-
-                    countDownLatch.countDown()
-                }
-
-                countDownLatch.await()
-
-                return memberReference.get()
+            if (!StaticStore.isNumeric(filteredId)) {
+                return null
             }
+
+            filteredId
         }
 
-        return null
+        val memberReference = AtomicReference<Member?>(null)
+        val countDownLatch = CountDownLatch(1)
+
+        g.retrieveMember(UserSnowflake.fromId(actualId)).queue({ m ->
+            memberReference.set(m)
+
+            countDownLatch.countDown()
+        }) { _ ->
+            countDownLatch.countDown()
+        }
+
+        countDownLatch.await()
+
+        return memberReference.get()
     }
 
     private fun getComponents(anonymous: Boolean) : List<LayoutComponent> {
