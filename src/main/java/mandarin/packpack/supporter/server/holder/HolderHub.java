@@ -14,54 +14,85 @@ public class HolderHub {
     public ComponentHolder componentHolder;
     public ModalHolder modalHolder;
 
-    public void handleEvent(Event e) {
-        try {
-            if (e instanceof GenericMessageEvent && messageHolder != null) {
-                if (messageHolder.expired) {
-                    StaticStore.logger.uploadLog("W/HolderHub::handleEvent - Expired message holder didn't get removed : " + messageHolder.getClass().getName());
+    public void handleEvent(Event event) {
+        switch (event) {
+            case GenericMessageEvent ge -> {
+                if (messageHolder == null)
+                    return;
 
-                    messageHolder = null;
-                } else {
-                    Holder.STATUS result = messageHolder.handleEvent(e);
+                try {
+                    if (messageHolder.expired) {
+                        StaticStore.logger.uploadLog("W/HolderHub::handleEvent - Expired message holder didn't get removed : " + messageHolder.getClass().getName());
 
-                    if (result == Holder.STATUS.FINISH || result == Holder.STATUS.FAIL) {
-                        messageHolder.clean();
                         messageHolder = null;
+                    } else {
+                        Holder.STATUS result = messageHolder.handleEvent(ge);
+
+                        if (result == Holder.STATUS.FINISH || result == Holder.STATUS.FAIL) {
+                            messageHolder.clean();
+                            messageHolder = null;
+                        }
                     }
-                }
-            } else if (e instanceof GenericComponentInteractionCreateEvent && componentHolder != null) {
-                if (componentHolder.expired) {
-                    StaticStore.logger.uploadLog("W/HolderHub::handleEvent - Expired interaction holder didn't get removed : " + componentHolder.getClass().getName());
-
-                    componentHolder = null;
-                } else {
-                    Holder.STATUS result = componentHolder.handleEvent(e);
-
-                    if (result == Holder.STATUS.FINISH && componentHolder != null && componentHolder.expired) {
-                        componentHolder = null;
-                    }
-                }
-            } else if (e instanceof ModalInteractionEvent && modalHolder != null) {
-                if (modalHolder.expired) {
-                    StaticStore.logger.uploadLog("W/HolderHub::handleEvent - Expired modal holder didn't get removed : " + modalHolder.getClass().getName());
-
-                    modalHolder = null;
-                } else {
-                    Holder.STATUS result = modalHolder.handleEvent(e);
-
-                    if (result == Holder.STATUS.FINISH && modalHolder != null && modalHolder.expired) {
-                        modalHolder = null;
-                    }
+                } catch (Exception e) {
+                    StaticStore.logger.uploadErrorLog(e,
+                            "E/HolderHub::handleEvent - Failed to handle message holder\n" +
+                                    "\n" +
+                                    "Holder = " + messageHolder.getClass().getName() + "\n" +
+                                    "Command = " + messageHolder.getAuthorMessage().getContentRaw()
+                    );
                 }
             }
-        } catch (Exception exception) {
-            String message = "E/HolderHub::handleEvent - Failed to handle the event\n\n";
+            case GenericComponentInteractionCreateEvent gie -> {
+                if (componentHolder == null)
+                    return;
 
-            message += "MessageHolder : " + (messageHolder == null ? "None" : messageHolder.getClass().getName()) + "\n";
-            message += "ComponentHolder : " + (componentHolder == null ? "None" : componentHolder.getClass().getName()) + "\n";
-            message += "ModalHolder : " + (modalHolder == null ? "None" : modalHolder.getClass().getName());
+                try {
+                    if (componentHolder.expired) {
+                        StaticStore.logger.uploadLog("W/HolderHub::handleEvent - Expired interaction holder didn't get removed : " + componentHolder.getClass().getName());
 
-            StaticStore.logger.uploadErrorLog(exception, message);
+                        componentHolder = null;
+                    } else {
+                        Holder.STATUS result = componentHolder.handleEvent(gie);
+
+                        if (result == Holder.STATUS.FINISH && componentHolder != null && componentHolder.expired) {
+                            componentHolder = null;
+                        }
+                    }
+                } catch (Exception e) {
+                    StaticStore.logger.uploadErrorLog(e,
+                            "E/HolderHub::handleEvent - Failed to handle component holder\n" +
+                                    "\n" +
+                                    "Holder = " + componentHolder.getClass().getName() + "\n" +
+                                    "Command = " + componentHolder.getAuthorMessage().getContentRaw()
+                    );
+                }
+            }
+            case ModalInteractionEvent mie -> {
+                if (modalHolder == null)
+                    return;
+
+                try {
+                    if (modalHolder.expired) {
+                        StaticStore.logger.uploadLog("W/HolderHub::handleEvent - Expired modal holder didn't get removed : " + modalHolder.getClass().getName());
+
+                        modalHolder = null;
+                    } else {
+                        Holder.STATUS result = modalHolder.handleEvent(mie);
+
+                        if (result == Holder.STATUS.FINISH && modalHolder != null && modalHolder.expired) {
+                            modalHolder = null;
+                        }
+                    }
+                } catch (Exception e) {
+                    StaticStore.logger.uploadErrorLog(e,
+                            "E/HolderHub::handleEvent - Failed to handle modal holder\n" +
+                                    "\n" +
+                                    "Holder = " + modalHolder.getClass().getName() + "\n" +
+                                    "Command = " + modalHolder.getAuthorMessage().getContentRaw()
+                    );
+                }
+            }
+            default -> { }
         }
     }
 }
