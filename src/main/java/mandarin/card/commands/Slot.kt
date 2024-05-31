@@ -22,6 +22,12 @@ class Slot : Command(LangID.EN, true){
     private val possibleSlotMachines = CardData.slotMachines.filter { s -> s.valid && s.activate }
 
     override fun doSomething(loader: CommandLoader) {
+        if (CardData.slotMachines.isEmpty()) {
+            replyToMessageSafely(loader.channel, "There's no slot machine to roll... Contact card managers!", loader.message) { a -> a }
+
+            return
+        }
+
         replyToMessageSafely(loader.channel, "Select slot machine to roll", loader.message, { a -> a.setComponents(getComponents(loader.user)) }) { msg ->
             StaticStore.putHolder(loader.user.id, SlotMachineSelectHolder(loader.message, loader.channel.id, msg))
         }
