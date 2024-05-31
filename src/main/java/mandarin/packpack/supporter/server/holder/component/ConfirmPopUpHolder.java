@@ -18,7 +18,7 @@ public class ConfirmPopUpHolder extends ComponentHolder {
 
     private final Message msg;
 
-    public ConfirmPopUpHolder(Message author, Message msg, String channelID, Consumer<GenericComponentInteractionCreateEvent> onConfirm, @NotNull Consumer<GenericComponentInteractionCreateEvent> onCancel, int lang) {
+    public ConfirmPopUpHolder(Message author, String channelID, Message msg, Consumer<GenericComponentInteractionCreateEvent> onConfirm, @NotNull Consumer<GenericComponentInteractionCreateEvent> onCancel, int lang) {
         super(author, channelID, msg.getId());
 
         this.onConfirm = onConfirm;
@@ -40,7 +40,7 @@ public class ConfirmPopUpHolder extends ComponentHolder {
         });
     }
 
-    public ConfirmPopUpHolder(Message author, Message msg, String channelID, Consumer<GenericComponentInteractionCreateEvent> onConfirm, int lang) {
+    public ConfirmPopUpHolder(Message author, String channelID, Message msg, Consumer<GenericComponentInteractionCreateEvent> onConfirm, int lang) {
         super(author, channelID, msg);
 
         this.onConfirm = onConfirm;

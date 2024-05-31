@@ -3,6 +3,7 @@ package mandarin.card.supporter
 import mandarin.card.supporter.pack.CardPack
 import mandarin.card.supporter.slot.SlotMachine
 import mandarin.packpack.supporter.StaticStore
+import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel
 import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel
@@ -16,6 +17,7 @@ import java.time.Clock
 import java.time.Instant
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 @Suppress("unused")
 object CardData {
@@ -196,6 +198,8 @@ object CardData {
     val activatedBanners = ArrayList<Activator>()
 
     val cooldown = HashMap<String, HashMap<String, Long>>()
+    val slotCooldown = HashMap<String, HashMap<String, Long>>()
+
     val lastMessageSent = HashMap<String, Long>()
 
     var minimumCatFoods = 20L
@@ -205,6 +209,8 @@ object CardData {
 
     const val MINIMUM_BID = 1000L
     const val AUTO_CLOSE_TIME = 12L * 60 * 60 * 1000 // 12 hours
+
+    const val EMOJI_SPACE = "   "
 
     /*
     -------------------------------------------------------
@@ -285,6 +291,8 @@ object CardData {
     val modLog = ServerData.get("modLog")
     val catFoodLog = ServerData.get("catFoodLog")
     val bidLog = ServerData.get("bidLog")
+
+    val managerPlace = ServerData.get("managerPlace")
 
     private val globalCategory = arrayOf(
         ServerData.get("bctcCategory"),
@@ -460,10 +468,12 @@ object CardData {
 
         val secondTime = second + leftTime / 1000.0
 
-        return (if (day == 0L) "" else if (day == 1L) "$day day " else "$day days ") +
-                (if (hour == 0L) "" else if (hour == 1L) "$hour hour " else "$hour hours ") +
-                (if (minute == 0L) "" else if (minute == 1L) "$minute minute " else "$minute minutes ") +
-                (if (secondTime == 0.0) "" else if (secondTime <= 1.0) "${df.format(secondTime)} second " else "${df.format(secondTime)} seconds ")
+        val result =  (if (day == 0L) "" else if (day == 1L) "$day Day " else "$day Days ") +
+                (if (hour == 0L) "" else if (hour == 1L) "$hour Hour " else "$hour Hours ") +
+                (if (minute == 0L) "" else if (minute == 1L) "$minute Minute " else "$minute Minutes ") +
+                (if (secondTime == 0.0) "" else if (secondTime <= 1.0) "${df.format(secondTime)} Second " else "${df.format(secondTime)} Seconds ")
+
+        return result.trim()
     }
 
     fun isAllowed(ch: MessageChannel) : Boolean {

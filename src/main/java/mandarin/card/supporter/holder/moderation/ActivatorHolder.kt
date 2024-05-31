@@ -46,7 +46,7 @@ class ActivatorHolder(author: Message, channelID: String, message: Message) : Co
                 applyResult(event)
             }
             "next10" -> {
-                page -= 10
+                page += 10
 
                 applyResult(event)
             }

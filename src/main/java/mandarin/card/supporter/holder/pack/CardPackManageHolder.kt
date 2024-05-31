@@ -87,7 +87,7 @@ class CardPackManageHolder(author: Message, channelID: String, private val messa
                 applyResult(event)
             }
             "next10" -> {
-                page -= 10
+                page += 10
 
                 applyResult(event)
             }

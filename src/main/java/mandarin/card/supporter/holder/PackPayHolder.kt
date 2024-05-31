@@ -155,14 +155,10 @@ class PackPayHolder(
 
                     registerPopUp(event, "Are you sure you want to go back? All your selected cards will be cleared", LangID.EN)
 
-                    StaticStore.putHolder(authorMessage.author.id, ConfirmPopUpHolder(authorMessage, message, channelID, { e ->
+                    connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                         e.deferEdit().queue()
 
                         goBack()
-                    }, { e ->
-                        StaticStore.putHolder(authorMessage.author.id, this)
-
-                        applyResult(e)
                     }, LangID.EN))
                 } else {
                     event.deferEdit().queue()

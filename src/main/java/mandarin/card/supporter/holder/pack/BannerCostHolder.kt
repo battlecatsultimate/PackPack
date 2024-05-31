@@ -7,7 +7,6 @@ import mandarin.card.supporter.holder.modal.CardCostAmountHolder
 import mandarin.card.supporter.pack.BannerCardCost
 import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.supporter.EmojiStore
-import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
@@ -92,18 +91,12 @@ class BannerCostHolder(author: Message, channelID: String, private val message: 
                         LangID.EN
                     )
 
-                    StaticStore.removeHolder(authorMessage.author.id, this)
-
-                    StaticStore.putHolder(authorMessage.author.id, ConfirmPopUpHolder(authorMessage, message, channelID, { e ->
+                    connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                         expired = true
 
                         e.deferEdit().queue()
 
                         parent?.goBack()
-                    }, { e ->
-                        StaticStore.putHolder(authorMessage.author.id, this)
-
-                        applyResult(e)
                     }, LangID.EN))
                 } else {
                     if (pack in CardData.cardPacks) {
@@ -124,9 +117,7 @@ class BannerCostHolder(author: Message, channelID: String, private val message: 
                     LangID.EN
                 )
 
-                StaticStore.removeHolder(authorMessage.author.id, this)
-
-                StaticStore.putHolder(authorMessage.author.id, ConfirmPopUpHolder(authorMessage, message, channelID, { e ->
+                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                     pack.cost.cardsCosts.remove(cardCost)
 
                     if (pack in CardData.cardPacks) {
@@ -139,10 +130,6 @@ class BannerCostHolder(author: Message, channelID: String, private val message: 
                         .queue()
 
                     goBack()
-                }, { e ->
-                    StaticStore.putHolder(authorMessage.author.id, this)
-
-                    applyResult(e)
                 }, LangID.EN))
             }
             "prev" -> {
@@ -161,7 +148,7 @@ class BannerCostHolder(author: Message, channelID: String, private val message: 
                 applyResult(event)
             }
             "next10" -> {
-                page -= 10
+                page += 10
 
                 applyResult(event)
             }

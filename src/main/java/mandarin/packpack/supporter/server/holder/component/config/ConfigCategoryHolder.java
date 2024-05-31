@@ -42,7 +42,7 @@ public class ConfigCategoryHolder extends ServerConfigHolder {
             case "cancel" -> {
                 registerPopUp(event, LangID.getStringByID("sercon_cancelask", lang), lang);
 
-                connectTo(new ConfirmPopUpHolder(getAuthorMessage(), message, channelID, e -> {
+                connectTo(new ConfirmPopUpHolder(getAuthorMessage(), channelID, message, e -> {
                     e.deferEdit()
                             .setContent(LangID.getStringByID("sercon_cancel", lang))
                             .setComponents()

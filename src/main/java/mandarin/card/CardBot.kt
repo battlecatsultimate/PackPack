@@ -13,6 +13,7 @@ import mandarin.card.supporter.log.LogSession
 import mandarin.card.supporter.log.TransactionLogger
 import mandarin.card.supporter.pack.CardPack
 import mandarin.card.supporter.slot.SlotEmojiContainer
+import mandarin.card.supporter.slot.SlotMachine
 import mandarin.packpack.supporter.*
 import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.data.ShardLoader
@@ -21,6 +22,8 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
+import net.dv8tion.jda.api.events.emoji.EmojiAddedEvent
+import net.dv8tion.jda.api.events.emoji.EmojiRemovedEvent
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
@@ -421,7 +424,7 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}masscatfood",
             "${globalPrefix}mcf" -> MassCatFood().execute(event)
             "${globalPrefix}massshard",
-            "${globalPrefix}ms" -> MassShard().execute(event)
+            "${globalPrefix}mps" -> MassShard().execute(event)
             "${globalPrefix}salvagecost",
             "${globalPrefix}sc" -> SalvageCost().execute(event)
             "${globalPrefix}craftcost",
@@ -461,6 +464,15 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}test" -> Test().execute(event)
             "${globalPrefix}pauseinvite",
             "${globalPrefix}pi" -> PauseInvite().execute(event)
+            "${globalPrefix}manageslot",
+            "${globalPrefix}ms" -> ManageSlot().execute(event)
+            "${globalPrefix}registeremojiserver",
+            "${globalPrefix}res" -> RegisterEmojiServer().execute(event)
+            "${globalPrefix}unregisteremojiserver",
+            "${globalPrefix}ues" -> UnregisterEmojiServer().execute(event)
+            "${globalPrefix}slot",
+            "${globalPrefix}slotmachine",
+            "${globalPrefix}sl" -> Slot().execute(event)
         }
 
         val session = CardData.sessions.find { s -> s.postID == event.channel.idLong }
@@ -475,6 +487,30 @@ object CardBot : ListenerAdapter() {
 
             return
         }
+    }
+
+    override fun onEmojiAdded(event: EmojiAddedEvent) {
+        super.onEmojiAdded(event)
+
+        val g = event.guild
+
+        if (g.idLong !in SlotEmojiContainer.registeredServer)
+            return
+
+        SlotEmojiContainer.updateEmojiAdd(event.emoji)
+    }
+
+    override fun onEmojiRemoved(event: EmojiRemovedEvent) {
+        super.onEmojiRemoved(event)
+
+        val g = event.guild
+
+        if (g.idLong !in SlotEmojiContainer.registeredServer)
+            return
+
+        SlotEmojiContainer.updateEmojiRemoved(event.emoji)
+
+        saveCardData()
     }
 
     override fun onGenericInteractionCreate(event: GenericInteractionCreateEvent) {
@@ -516,6 +552,8 @@ object CardBot : ListenerAdapter() {
 
         EmojiStore.initialize(ShardLoader(event.jda.shardManager))
         SlotEmojiContainer.load(event.jda.shardManager)
+
+        CardData.slotMachines.forEach { s -> s.content.forEach { c -> c.load() } }
 
         TransactionLogger.logChannel = event.jda.getGuildChannelById(CardData.transactionLog) as MessageChannel
         TransactionLogger.tradeChannel = event.jda.getGuildChannelById(CardData.tradingLog) as MessageChannel
@@ -672,6 +710,14 @@ object CardBot : ListenerAdapter() {
             }
         }
 
+        if (obj.has("slotMachines")) {
+            val arr = obj.getAsJsonArray("slotMachines")
+
+            arr.forEach { e ->
+                CardData.slotMachines.add(SlotMachine.fromJson(e.asJsonObject))
+            }
+        }
+
         if (obj.has("inventory")) {
             val arr = obj.getAsJsonArray("inventory")
 
@@ -750,6 +796,36 @@ object CardBot : ListenerAdapter() {
                     }
 
                     CardData.cooldown[o.get("key").asString] = packCooldownMap
+                }
+            }
+        }
+
+        if (obj.has("slotCooldown")) {
+            obj.getAsJsonArray("slotCooldown").forEach {
+                val o = it.asJsonObject
+
+                if (o.has("key") && o.has("val")) {
+                    val value = o.getAsJsonArray("val")
+
+                    val slotCooldownMap = HashMap<String, Long>()
+
+                    value.forEach { e ->
+                        if (e.isJsonObject) {
+                            val mapObj = e.asJsonObject
+
+                            if (mapObj.has("key") && mapObj.has("val")) {
+                                val uuid = mapObj.get("key").asString
+
+                                val pack = CardData.slotMachines.find { slot -> slot.uuid == uuid }
+
+                                if (pack != null) {
+                                    slotCooldownMap[uuid] = mapObj.get("val").asLong
+                                }
+                            }
+                        }
+                    }
+
+                    CardData.slotCooldown[o.get("key").asString] = slotCooldownMap
                 }
             }
         }
@@ -887,6 +963,14 @@ object CardBot : ListenerAdapter() {
 
         obj.add("cardPacks", cardPacks)
 
+        val slotMachines = JsonArray()
+
+        CardData.slotMachines.forEach { machine ->
+            slotMachines.add(machine.asJson())
+        }
+
+        obj.add("slotMachines", slotMachines)
+
         val inventory = JsonArray()
 
         for (key in CardData.inventories.keys) {
@@ -946,6 +1030,35 @@ object CardBot : ListenerAdapter() {
         }
 
         obj.add("cooldown", cooldown)
+
+        val slotCooldown = JsonArray()
+
+        CardData.slotCooldown.keys.forEach {
+            val cooldownMap = CardData.slotCooldown[it]
+
+            if (cooldownMap != null) {
+                val o = JsonObject()
+
+                o.addProperty("key", it)
+
+                val value = JsonArray()
+
+                cooldownMap.forEach { (uuid, cd) ->
+                    val mapObj = JsonObject()
+
+                    mapObj.addProperty("key", uuid)
+                    mapObj.addProperty("val", cd)
+
+                    value.add(mapObj)
+                }
+
+                o.add("val", value)
+
+                slotCooldown.add(o)
+            }
+        }
+
+        obj.add("slotCooldown", slotCooldown)
 
         val tradeTrialCooldown = JsonArray()
 

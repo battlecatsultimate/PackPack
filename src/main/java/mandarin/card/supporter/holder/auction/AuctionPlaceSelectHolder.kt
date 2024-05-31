@@ -57,7 +57,7 @@ class AuctionPlaceSelectHolder(author: Message, channelID: String, private val m
                 connectTo(AuctionBidHolder(authorMessage, channelID, message, auctionSession) { bid ->
                     registerPopUp(message, "Are you sure you want to bid ${EmojiStore.ABILITY["CF"]?.formatted} $bid to Auction #${auctionSession.id} <#${auctionSession.channel}>? You won't be able to use bid cat foods in other place until you cancel the bid", LangID.EN)
 
-                    StaticStore.putHolder(authorMessage.author.id, ConfirmPopUpHolder(authorMessage, message, channelID, { e ->
+                    connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                         auctionSession.bid(authorMessage.author.idLong, bid)
 
                         e.deferEdit()
@@ -70,10 +70,6 @@ class AuctionPlaceSelectHolder(author: Message, channelID: String, private val m
                         expired = true
 
                         expire()
-                    }, { e ->
-                        applyResult(e)
-
-                        StaticStore.putHolder(authorMessage.author.id, this)
                     }, LangID.EN))
                 })
             }

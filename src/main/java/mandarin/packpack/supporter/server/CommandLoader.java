@@ -1,6 +1,7 @@
 package mandarin.packpack.supporter.server;
 
 import mandarin.packpack.supporter.StaticStore;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -17,6 +18,7 @@ import java.lang.reflect.Method;
 import java.util.function.Consumer;
 
 public class CommandLoader {
+    private JDA client = null;
     private Guild guild = null;
     private MessageChannel channel = null;
     private Member member = null;
@@ -26,6 +28,8 @@ public class CommandLoader {
 
     public void load(GenericMessageEvent event, Consumer<CommandLoader> onLoaded) {
         RestAction<Message> lazyMessageConsumer = null;
+
+        client = event.getJDA();
 
         try {
             Method m = event.getClass().getMethod("getMessage");
@@ -138,6 +142,15 @@ public class CommandLoader {
         }
 
         return content;
+    }
+
+    @NotNull
+    public JDA getClient() {
+        if (client == null) {
+            throw new NullPointerException("Client is null while loader doesn't support it");
+        }
+
+        return client;
     }
 
     public boolean hasGuild() {

@@ -45,7 +45,7 @@ class EquipHolder(author: Message, channelID: String, private val message: Messa
                 applyResult(event)
             }
             "next10" -> {
-                page -= 10
+                page += 10
 
                 applyResult(event)
             }

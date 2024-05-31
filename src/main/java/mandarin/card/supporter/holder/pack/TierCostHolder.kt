@@ -85,7 +85,7 @@ class TierCostHolder(author: Message, channelID: String, private val message: Me
 
                     StaticStore.removeHolder(authorMessage.author.id, this)
 
-                    StaticStore.putHolder(authorMessage.author.id, ConfirmPopUpHolder(authorMessage, message, channelID, { e ->
+                    StaticStore.putHolder(authorMessage.author.id, ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                         expired = true
 
                         e.deferEdit().queue()
@@ -115,7 +115,7 @@ class TierCostHolder(author: Message, channelID: String, private val message: Me
 
                 StaticStore.removeHolder(authorMessage.author.id, this)
 
-                StaticStore.putHolder(authorMessage.author.id, ConfirmPopUpHolder(authorMessage, message, channelID, { e ->
+                StaticStore.putHolder(authorMessage.author.id, ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                     expired = true
 
                     pack.cost.cardsCosts.remove(cardCost)

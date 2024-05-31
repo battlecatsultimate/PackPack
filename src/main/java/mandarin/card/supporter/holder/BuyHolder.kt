@@ -6,7 +6,6 @@ import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.Product
 import mandarin.card.supporter.log.TransactionLogger
 import mandarin.packpack.supporter.EmojiStore
-import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
@@ -254,9 +253,7 @@ class BuyHolder(author: Message, channelID: String, private val message: Message
                 } else {
                     registerPopUp(event, "Are you sure you want to purchase this role? It costs $cost ${EmojiStore.ABILITY["CF"]?.formatted}", LangID.EN)
 
-                    StaticStore.removeHolder(authorMessage.author.id, this)
-
-                    StaticStore.putHolder(authorMessage.author.id, ConfirmPopUpHolder(authorMessage, message, channelID, { e ->
+                    connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                         inventory.vanityRoles.add(role)
 
                         inventory.catFoods -= cost
@@ -269,15 +266,6 @@ class BuyHolder(author: Message, channelID: String, private val message: Message
                             .queue()
 
                         CardBot.saveCardData()
-                    }, { e ->
-                        StaticStore.putHolder(authorMessage.author.id, this)
-
-                        e.deferEdit()
-                            .setContent("Please select a list that you want to get")
-                            .setComponents(registerComponents())
-                            .mentionRepliedUser(false)
-                            .setAllowedMentions(ArrayList())
-                            .queue()
                     }, LangID.EN))
                 }
 

@@ -43,7 +43,7 @@ class CardCheckHolder(author: Message, channelID: String, message: Message, priv
                 applyResult(event)
             }
             "next10" -> {
-                page -= 10
+                page += 10
 
                 applyResult(event)
             }

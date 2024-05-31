@@ -57,7 +57,7 @@ class CardInventoryHolder(author: Message, channelID: String, private val messag
                 applyResult(event)
             }
             "next10" -> {
-                page -= 10
+                page += 10
 
                 applyResult(event)
             }

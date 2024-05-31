@@ -5,40 +5,41 @@ import mandarin.packpack.supporter.StaticStore
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji
 import net.dv8tion.jda.api.entities.emoji.Emoji
 
-class SlotContent(private val emojiName: String, private val emojiID: Long) {
-    enum class Mode {
-        FLAT,
-        PERCENTAGE
+abstract class SlotContent(private var emojiName: String, private var emojiID: Long, private val rewardType: RewardType) {
+    enum class RewardType {
+        CURRENCY,
+        CARD
     }
 
     companion object {
         fun fromJson(obj: JsonObject) : SlotContent {
-            if (!StaticStore.hasAllTag(obj,"emojiName", "emojiID", "mode", "amount")) {
-                throw IllegalStateException("E/SlotContent::fromJson - Invalid data found")
+            if (!StaticStore.hasAllTag(obj, "emojiName", "emojiID", "rewardType")) {
+                throw IllegalStateException("E/SlotContent::fromJson - Got invalid json data")
             }
 
-            val content = SlotContent(obj.get("emojiName").asString, obj.get("emojiID").asLong)
+            val rewardType = RewardType.valueOf(obj.get("rewardType").asString)
 
-            content.mode = Mode.valueOf(obj.get("mode").asString)
-            content.amount = obj.get("amount").asLong
-
-            return content
+            return when(rewardType) {
+                RewardType.CURRENCY -> SlotCurrencyContent.fromJson(obj)
+                RewardType.CARD -> SlotCardContent.fromJson(obj)
+            }
         }
     }
 
-    lateinit var emoji: Emoji
-
-    var mode = Mode.PERCENTAGE
-    var amount = 0L
+    var emoji: CustomEmoji? = null
+        private set
 
     fun load() {
+        if (emojiName.isBlank() || emojiID == 0L)
+            return
+
         val e = SlotEmojiContainer.loadedEmoji.filter { emote ->
             if (emote.name != emojiName)
                 return@filter false
 
             return@filter when(emote.type) {
                 Emoji.Type.UNICODE -> false
-                Emoji.Type.CUSTOM -> (emote as CustomEmoji).idLong == emojiID
+                Emoji.Type.CUSTOM -> emote.idLong == emojiID
             }
         }
 
@@ -54,9 +55,19 @@ class SlotContent(private val emojiName: String, private val emojiID: Long) {
         obj.addProperty("emojiName", emojiName)
         obj.addProperty("emojiID", emojiID)
 
-        obj.addProperty("mode", mode.name)
-        obj.addProperty("amount", amount)
+        obj.addProperty("rewardType", rewardType.name)
+
+        appendJson(obj)
 
         return obj
     }
+
+    fun changeEmoji(e: CustomEmoji?) {
+        emoji = e
+
+        emojiName = e?.name ?: ""
+        emojiID = e?.idLong ?: 0L
+    }
+
+    abstract fun appendJson(obj: JsonObject)
 }

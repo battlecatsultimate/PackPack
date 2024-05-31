@@ -3,7 +3,6 @@ package mandarin.card.supporter.holder
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.log.TransactionLogger
 import mandarin.packpack.supporter.EmojiStore
-import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
@@ -45,7 +44,7 @@ class ResetCooldownHolder(author: Message, channelID: String, private val messag
 
                 registerPopUp(event, "Are you sure you want to reset cooldown of this pack [`${pack.packName}`] **for all users?\n\n__This cannot be undone__**", LangID.EN)
 
-                StaticStore.putHolder(authorMessage.author.id, ConfirmPopUpHolder(authorMessage, message, channelID, { e ->
+                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                     expired = true
 
                     for (cooldown in CardData.cooldown.values) {
@@ -60,10 +59,6 @@ class ResetCooldownHolder(author: Message, channelID: String, private val messag
                         .setAllowedMentions(ArrayList())
                         .mentionRepliedUser(false)
                         .queue()
-                }, { e ->
-                    StaticStore.putHolder(authorMessage.author.id, this)
-
-                    applyResult(e)
                 }, LangID.EN))
             }
             "prev" -> {
@@ -82,7 +77,7 @@ class ResetCooldownHolder(author: Message, channelID: String, private val messag
                 applyResult(event)
             }
             "next10" -> {
-                page -= 10
+                page += 10
 
                 applyResult(event)
             }

@@ -85,7 +85,7 @@ class PackSelectHolder(
                 applyResult(event)
             }
             "next10" -> {
-                page -= 10
+                page += 10
 
                 applyResult(event)
             }

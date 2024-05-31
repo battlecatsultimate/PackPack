@@ -76,7 +76,7 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
                 applyResult(event)
             }
             "next10" -> {
-                page -= 10
+                page += 10
 
                 applyResult(event)
             }
@@ -105,21 +105,12 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
                 }
 
                 if (shard >= 100 || selectedCard.size >= 20) {
-                    event.deferEdit()
-                        .setContent("Are you sure you are fine with salvaging selected cards?\n" +
-                                "\n" +
-                                "**Salvaging means you will lose selected cards from your inventory and gain platinum shards as return. You can't undo the process once you confirm it**")
-                        .setComponents(toConfirmationPopUp())
-                        .setAllowedMentions(ArrayList())
-                        .mentionRepliedUser(false)
-                        .queue()
+                    registerPopUp(event, "Are you sure you are fine with salvaging selected cards?\n" +
+                            "\n" +
+                            "**Salvaging means you will lose selected cards from your inventory and gain platinum shards as return. You can't undo the process once you confirm it**", LangID.EN)
 
-                    StaticStore.putHolder(authorMessage.author.id, ConfirmPopUpHolder(authorMessage, message, channelID, {
-                        salvage.invoke(it)
-                    }, {
-                        applyResult(it)
-
-                        StaticStore.putHolder(authorMessage.author.id, this)
+                    connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                        salvage.invoke(e)
                     }, LangID.EN))
                 } else {
                     salvage.invoke(event)
@@ -237,19 +228,10 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
                     StaticStore.putHolder(authorMessage.author.id, this)
                 }
 
-                event.deferEdit()
-                    .setContent("Are you sure you want to add all cards?")
-                    .setComponents(toConfirmationPopUp())
-                    .setAllowedMentions(ArrayList())
-                    .mentionRepliedUser(false)
-                    .queue()
+                registerPopUp(event, "Are you sure you want to add all cards?", LangID.EN)
 
-                StaticStore.putHolder(authorMessage.author.id, ConfirmPopUpHolder(authorMessage, message, channelID, {
-                    adder.invoke(it)
-                }, {
-                    applyResult(it)
-
-                    StaticStore.putHolder(authorMessage.author.id, this)
+                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                    adder.invoke(e)
                 }, LangID.EN))
             }
             "dupe" -> {
@@ -538,9 +520,5 @@ class CardSalvageHolder(author: Message, channelID: String, private val message:
         }
 
         return builder.toString()
-    }
-
-    private fun toConfirmationPopUp() : List<LayoutComponent> {
-        return arrayListOf(ActionRow.of(Button.success("confirm", "Confirm"), Button.danger("cancel", "Cancel")))
     }
 }

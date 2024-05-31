@@ -134,7 +134,7 @@ public class StaticStore {
     public static Renderer renderManager = null;
     public static final FixedScheduleHandler executorHandler = new FixedScheduleHandler(5);
 
-    private static final Map<String, HolderHub> holders = new HashMap<>();
+    public static final Map<String, HolderHub> holders = new HashMap<>();
     private static final List<String> queuedFileNames = new ArrayList<>();
 
     public static final int[] langIndex = {
@@ -183,7 +183,8 @@ public class StaticStore {
             "1010126565545357443",
             "1012995850739388416",
             "1096841217528053882",
-            "964054872649515048"
+            "964054872649515048",
+            "1246002716480639086"
     };
 
     public static boolean checkingBCU = false;

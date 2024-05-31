@@ -1,4 +1,4 @@
-package mandarin.card.supporter.holder.pack
+package mandarin.card.supporter.holder.slot
 
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
@@ -6,7 +6,9 @@ import mandarin.card.supporter.holder.modal.CardChancePairAmountHolder
 import mandarin.card.supporter.pack.CardChancePair
 import mandarin.card.supporter.pack.CardChancePairList
 import mandarin.card.supporter.pack.CardGroupData
-import mandarin.card.supporter.pack.CardPack
+import mandarin.card.supporter.slot.SlotCardContent
+import mandarin.card.supporter.slot.SlotMachine
+import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
@@ -23,12 +25,15 @@ import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 
-class PackContentAdjustHolder(author: Message, channelID: String,
+class SlotMachineCardChancePairListHolder(
+    author: Message,
+    channelID: String,
     private val message: Message,
-    private val pack: CardPack,
+    private val slotMachine: SlotMachine,
+    private val content: SlotCardContent,
     private val cardChancePairList: CardChancePairList,
     private val new: Boolean
-) : ComponentHolder(author, channelID, message.id) {
+) : ComponentHolder(author, channelID, message) {
     override fun clean() {
 
     }
@@ -61,24 +66,24 @@ class PackContentAdjustHolder(author: Message, channelID: String,
 
                 val pairList = cardChancePairList.pairs[index]
 
-                connectTo(event, CardChancePairHolder(authorMessage, channelID, message, pack, cardChancePairList, pairList, false))
+                connectTo(event, SlotMachineCardChancePairHolder(authorMessage, channelID, message, slotMachine, cardChancePairList, pairList, false))
             }
             "add" -> {
                 val pairList = CardChancePair(0.0, CardGroupData(ArrayList(), ArrayList()))
 
-                connectTo(event, CardChancePairHolder(authorMessage, channelID, message, pack, cardChancePairList, pairList, true))
+                connectTo(event, SlotMachineCardChancePairHolder(authorMessage, channelID, message, slotMachine, cardChancePairList, pairList, true))
             }
             "create" -> {
                 cardChancePairList.validateChance()
 
-                pack.cardChancePairLists.add(cardChancePairList)
+                content.cardChancePairLists.add(cardChancePairList)
 
-                if (pack in CardData.cardPacks) {
+                if (slotMachine in CardData.slotMachines) {
                     CardBot.saveCardData()
                 }
 
                 event.deferReply()
-                    .setContent("Successfully added card/chance pair list to the pack! Check result above")
+                    .setContent("Successfully added card/chance pair list to the reward! Check result above")
                     .setEphemeral(true)
                     .queue()
 
@@ -89,33 +94,25 @@ class PackContentAdjustHolder(author: Message, channelID: String,
                     registerPopUp(event, "Are you sure you want to cancel creating card/chance pair list? This cannot be undone", LangID.EN)
 
                     connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
-                        e.deferEdit().queue()
-
-                        goBack()
+                        goBack(e)
                     }, LangID.EN))
                 } else {
                     cardChancePairList.validateChance()
 
-                    if (pack in CardData.cardPacks) {
+                    if (slotMachine in CardData.slotMachines) {
                         CardBot.saveCardData()
                     }
 
-                    event.deferEdit().queue()
-
-                    goBack()
+                    goBack(event)
                 }
             }
             "delete" -> {
-                registerPopUp(
-                    event,
-                    "Are you sure you want to delete card/chance pair list? This cannot be undone",
-                    LangID.EN
-                )
+                registerPopUp(event, "Are you sure you want to delete card/chance pair list? This cannot be undone", LangID.EN)
 
                 connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
-                    pack.cardChancePairLists.remove(cardChancePairList)
+                    content.cardChancePairLists.remove(cardChancePairList)
 
-                    if (pack in CardData.cardPacks) {
+                    if (slotMachine in CardData.slotMachines) {
                         CardBot.saveCardData()
                     }
 
@@ -127,6 +124,18 @@ class PackContentAdjustHolder(author: Message, channelID: String,
                     goBack()
                 }, LangID.EN))
             }
+            "cancel" -> {
+                registerPopUp(event, "Are you sure you want to cancel creation of slot machine? This cannot be undone", LangID.EN)
+
+                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                    e.deferReply()
+                        .setContent("Canceled creation of slot machine")
+                        .setEphemeral(true)
+                        .queue()
+
+                    goBackTo(SlotMachineListHolder::class.java)
+                }, LangID.EN))
+            }
         }
     }
 
@@ -134,6 +143,10 @@ class PackContentAdjustHolder(author: Message, channelID: String,
         super.onBack()
 
         applyResult()
+    }
+
+    override fun onBack(event: GenericComponentInteractionCreateEvent) {
+        applyResult(event)
     }
 
     override fun onConnected(event: GenericComponentInteractionCreateEvent) {
@@ -158,29 +171,28 @@ class PackContentAdjustHolder(author: Message, channelID: String,
     }
 
     private fun getContent() : String {
-        val builder = StringBuilder("## Card/Chance Pair List Adjust Menu\nPack name : ")
-            .append(pack.packName)
-            .append("\n\nAmount : ")
-            .append(cardChancePairList.amount)
-            .append(" card")
+        val builder = StringBuilder()
 
-        if (cardChancePairList.amount > 1)
-            builder.append("s")
+        builder.append("# ").append(slotMachine.name).append("\n")
+            .append("## Slot Machine Reward Create Section\n")
+            .append("In this section, you can adjust how bot will roll the card rewards.")
+            .append(" Card chance pair list is group of paris of card and chance with specific amount.")
+            .append(" Define the amount that will be rolled for this pool.")
+            .append(" Then you can add card/chance pair, or modify already-added one\n")
+            .append("### Card Pool Info\n")
+            .append("- ").append(cardChancePairList.amount).append(" ")
 
-        builder.append("\n\n")
-
-        if (cardChancePairList.pairs.isEmpty()) {
-            builder.append("- No card/chance pairs")
+        if (cardChancePairList.amount >= 2) {
+            builder.append("Cards\n")
         } else {
-            for (i in cardChancePairList.pairs.indices) {
-                builder.append(i + 1)
-                    .append(". ")
-                    .append(CardData.df.format(cardChancePairList.pairs[i].chance))
-                    .append(" % : ")
-                    .append(cardChancePairList.pairs[i].cardGroup.getName())
+            builder.append("Card\n")
+        }
 
-                if (i < cardChancePairList.pairs.size - 1)
-                    builder.append("\n")
+        cardChancePairList.pairs.forEachIndexed { index, p ->
+            builder.append("  - ").append(CardData.df.format(p.chance)).append("% : ").append(p.cardGroup.getName())
+
+            if (index < cardChancePairList.pairs.size - 1) {
+                builder.append("\n")
             }
         }
 
@@ -190,48 +202,53 @@ class PackContentAdjustHolder(author: Message, channelID: String,
     private fun getComponents() : List<LayoutComponent> {
         val result = ArrayList<LayoutComponent>()
 
-        result.add(ActionRow.of(
+        result.add(
+            ActionRow.of(
             Button.secondary("amount", "Adjust Card Amount")
         ))
 
-        if (cardChancePairList.pairs.isNotEmpty()) {
-            val options = ArrayList<SelectOption>()
+        val options = ArrayList<SelectOption>()
 
+        if (cardChancePairList.pairs.isNotEmpty()) {
             for (i in cardChancePairList.pairs.indices) {
                 options.add(SelectOption.of((i + 1).toString(), i.toString()))
             }
+        } else {
+            options.add(SelectOption.of("A", "A"))
+        }
 
-            result.add(ActionRow.of(
+        result.add(
+            ActionRow.of(
                 StringSelectMenu.create("pair")
                     .addOptions(options)
                     .setPlaceholder("Select card/chance pair to adjust it")
+                    .setDisabled(cardChancePairList.pairs.isEmpty())
                     .build()
             ))
-        }
 
         result.add(
             ActionRow.of(
                 Button.secondary("add", "Add Card/Chance Pair")
                     .withEmoji(Emoji.fromUnicode("➕"))
-                    .withDisabled(pack.cardChancePairLists.size >= StringSelectMenu.OPTIONS_MAX_AMOUNT)
+                    .withDisabled(cardChancePairList.pairs.size >= StringSelectMenu.OPTIONS_MAX_AMOUNT)
             )
         )
 
+        val buttons = ArrayList<Button>()
+
         if (new) {
-            result.add(
-                ActionRow.of(
-                    Button.success("create", "Create"),
-                    Button.danger("back", "Go Back")
-                )
-            )
+            buttons.add(Button.success("create", "Create").withEmoji(EmojiStore.CHECK).withDisabled(cardChancePairList.amount == 0 || cardChancePairList.pairs.isEmpty()))
+            buttons.add(Button.secondary("back", "Go Back").withEmoji(EmojiStore.BACK))
         } else {
-            result.add(
-                ActionRow.of(
-                    Button.secondary("back", "Go Back"),
-                    Button.danger("delete", "Delete")
-                )
-            )
+            buttons.add(Button.secondary("back", "Go Back").withEmoji(EmojiStore.BACK).withDisabled(cardChancePairList.amount == 0 || cardChancePairList.pairs.isEmpty()))
+            buttons.add(Button.danger("delete", "Delete").withEmoji(EmojiStore.CROSS))
         }
+
+        if (slotMachine !in CardData.slotMachines) {
+            buttons.add(Button.danger("cancel", "Cancel").withEmoji(EmojiStore.CROSS))
+        }
+
+        result.add(ActionRow.of(buttons))
 
         return result
     }

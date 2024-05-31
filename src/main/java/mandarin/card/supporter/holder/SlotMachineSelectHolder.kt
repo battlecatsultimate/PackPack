@@ -1,10 +1,9 @@
-package mandarin.card.supporter.holder.moderation
+package mandarin.card.supporter.holder
 
 import mandarin.card.supporter.CardData
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
-import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
@@ -17,7 +16,9 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import kotlin.math.ceil
 import kotlin.math.min
 
-class ManualRollSelectHolder(author: Message, channelID: String, private val message: Message, private val member: Member, private val users: List<String>) : ComponentHolder(author, channelID, message.id) {
+class SlotMachineSelectHolder(author: Message, channelID: String, private val message: Message) : ComponentHolder(author, channelID, message) {
+    private val possibleSlotMachines = CardData.slotMachines.filter { s -> s.valid && s.activate }
+
     private var page = 0
 
     override fun clean() {
@@ -30,36 +31,13 @@ class ManualRollSelectHolder(author: Message, channelID: String, private val mes
 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
-            "pack" -> {
+            "slot" -> {
                 if (event !is StringSelectInteractionEvent)
                     return
 
-                val uuid = event.values[0]
+                val slotMachine = CardData.slotMachines[event.values[0].toInt()]
 
-                val pack = CardData.cardPacks.find { pack -> pack.uuid == uuid }
-
-                if (pack == null) {
-                    event.deferReply()
-                        .setContent("Sorry, bot failed bring information of selected pack...")
-                        .setEphemeral(true)
-                        .queue()
-
-                    return
-                }
-
-                connectTo(event, ManualRollConfirmHolder(authorMessage, channelID, message.id, member, pack, users))
-            }
-            "close" -> {
-                event.deferEdit()
-                    .setContent("Closed pack selection")
-                    .setComponents()
-                    .setAllowedMentions(ArrayList())
-                    .mentionRepliedUser(false)
-                    .queue()
-
-                expired = true
-
-                expire(authorMessage.author.id)
+                connectTo(event, SlotMachineConfirmHolder(authorMessage, channelID, message, slotMachine))
             }
             "prev" -> {
                 page--
@@ -81,30 +59,26 @@ class ManualRollSelectHolder(author: Message, channelID: String, private val mes
 
                 applyResult(event)
             }
+            "close" -> {
+                event.deferEdit()
+                    .setContent("Closed slot machine selection!")
+                    .setComponents()
+                    .setAllowedMentions(ArrayList())
+                    .mentionRepliedUser(false)
+                    .queue()
+
+                expired = true
+            }
         }
     }
 
-    override fun onConnected(event: GenericComponentInteractionCreateEvent) {
+    override fun onBack(event: GenericComponentInteractionCreateEvent) {
         applyResult(event)
-    }
-
-    override fun onBack() {
-        super.onBack()
-
-        applyResult()
     }
 
     private fun applyResult(event: GenericComponentInteractionCreateEvent) {
         event.deferEdit()
-            .setContent("Please select the pack that you want to roll")
-            .setComponents(getComponents())
-            .setAllowedMentions(ArrayList())
-            .mentionRepliedUser(false)
-            .queue()
-    }
-
-    private fun applyResult() {
-        message.editMessage("Please select the pack that you want to roll")
+            .setContent("Select slot machine to roll")
             .setComponents(getComponents())
             .setAllowedMentions(ArrayList())
             .mentionRepliedUser(false)
@@ -112,26 +86,32 @@ class ManualRollSelectHolder(author: Message, channelID: String, private val mes
     }
 
     private fun getComponents() : List<LayoutComponent> {
+        val cooldownMap = CardData.slotCooldown.computeIfAbsent(authorMessage.author.id) { HashMap() }
+
+        val currentTime = CardData.getUnixEpochTime()
+
         val result = ArrayList<LayoutComponent>()
 
-        val packOptions = ArrayList<SelectOption>()
+        val options = ArrayList<SelectOption>()
 
-        val size = min(CardData.cardPacks.size, SearchHolder.PAGE_CHUNK * (page + 1))
+        for (i in page * SearchHolder.PAGE_CHUNK until min(possibleSlotMachines.size, (page + 1) * SearchHolder.PAGE_CHUNK)) {
+            val cooldown = cooldownMap[possibleSlotMachines[i].uuid]
 
-        for (i in page * SearchHolder.PAGE_CHUNK until size) {
-            packOptions.add(SelectOption.of(CardData.cardPacks[i].packName, CardData.cardPacks[i].uuid))
+            var option = SelectOption.of(possibleSlotMachines[i].name, i.toString())
+
+            if (cooldown != null && currentTime - cooldown < 0) {
+                option = option.withDescription("Cooldown Left : ${CardData.convertMillisecondsToText(cooldown - currentTime)}")
+            }
+
+            options.add(option)
         }
 
-        val packs = StringSelectMenu.create("pack")
-            .addOptions(packOptions)
-            .setPlaceholder("Select pack here")
-            .build()
+        result.add(ActionRow.of(StringSelectMenu.create("slot").addOptions(options).setPlaceholder("Select Slot Machine To Roll").build()))
 
-        result.add(ActionRow.of(packs))
-
-        if (CardData.cardPacks.size > SearchHolder.PAGE_CHUNK) {
+        if (possibleSlotMachines.size > SearchHolder.PAGE_CHUNK) {
             val buttons = ArrayList<Button>()
-            val totalPage = ceil(CardData.cardPacks.size * 1.0 / SearchHolder.PAGE_CHUNK)
+
+            val totalPage = ceil(possibleSlotMachines.size * 1.0 / SearchHolder.PAGE_CHUNK)
 
             if (totalPage > 10) {
                 buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).withDisabled(page - 10 < 0))
@@ -148,7 +128,7 @@ class ManualRollSelectHolder(author: Message, channelID: String, private val mes
             result.add(ActionRow.of(buttons))
         }
 
-        result.add(ActionRow.of(Button.danger("close", "Close")))
+        result.add(ActionRow.of(Button.danger("close", "Close").withEmoji(EmojiStore.CROSS)))
 
         return result
     }

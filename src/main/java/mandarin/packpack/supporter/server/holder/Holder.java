@@ -6,6 +6,7 @@ import mandarin.packpack.supporter.lang.LangID;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.Event;
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
@@ -14,6 +15,7 @@ import org.jcodec.api.NotSupportedException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public abstract class Holder {
@@ -185,6 +187,10 @@ public abstract class Holder {
 
     }
 
+    public void onConnected(@Nonnull ModalInteractionEvent event) {
+
+    }
+
     public void onBack() {
 
     }
@@ -207,6 +213,22 @@ public abstract class Holder {
         StaticStore.putHolder(userID, holder);
     }
 
+    public void connectTo(@Nonnull ModalInteractionEvent event, Holder holder) {
+        if (holder.expired) {
+            throw new IllegalStateException("E/Holder::connectTo - Tried to connect already expired holder!\nCurrent holder : " + this.getClass() + "\nConnected holder : " + holder.getClass());
+        }
+
+        holder.parent = this;
+
+        if (holder.getType() == this.getType()) {
+            StaticStore.removeHolder(userID, this);
+        }
+
+        StaticStore.putHolder(userID, holder);
+
+        holder.onConnected(event);
+    }
+
     public void connectTo(@Nonnull GenericComponentInteractionCreateEvent event, Holder holder) {
         if (holder.expired) {
             throw new IllegalStateException("E/Holder::connectTo - Tried to connect already expired holder!\nCurrent holder : " + this.getClass() + "\nConnected holder : " + holder.getClass());
@@ -225,9 +247,9 @@ public abstract class Holder {
 
     public void goBack() {
         if (parent == null) {
-            throw new IllegalStateException("E/Holder::goBack - Can't go back because there's no parent holder!\nHolder : " + this.getClass());
+            throw new IllegalStateException("E/Holder::goBack - Can't go back because there's no parent holder!\n\nHolder : " + this.getClass());
         } else if (parent.expired) {
-            throw new IllegalStateException("E/Holder::goBack - Parent holder " + parent.getClass() + " is already expired!\nHolder : " + this.getClass());
+            throw new IllegalStateException("E/Holder::goBack - Parent holder " + parent.getClass() + " is already expired!\n\nHolder : " + this.getClass());
         } else {
             expired = true;
             StaticStore.removeHolder(userID, this);
@@ -239,7 +261,9 @@ public abstract class Holder {
 
     public void goBack(GenericComponentInteractionCreateEvent event) {
         if (parent == null) {
-            throw new IllegalStateException("E/Holder::goBack - Can't go back because there's no parent holder!\nHolder : " + this.getClass());
+            throw new IllegalStateException("E/Holder::goBack - Can't go back because there's no parent holder!\n\nHolder : " + this.getClass());
+        } else if (parent.expired) {
+            throw new IllegalStateException("E/Holder::goBack - Parent holder " + parent.getClass() + " is already expired!\n\nHolder : " + this.getClass());
         } else {
             expired = true;
             StaticStore.removeHolder(userID, this);
@@ -249,7 +273,119 @@ public abstract class Holder {
         }
     }
 
+    public void goBackTo(Class<?> parentClass) {
+        Holder parent = this.parent;
+
+        List<Holder> skimmedHolder = new ArrayList<>();
+
+        if (parent == null) {
+            throw new IllegalStateException("E/Holder::goBackTo - Can't go back because there's no parent holder!\n\nHolder : " + this.getClass());
+        } else {
+            while(parent != null) {
+                if (parent.getClass() == parentClass) {
+                    if (parent.expired) {
+                        skimmedHolder.add(parent);
+
+                        parent = parent.parent;
+
+                        continue;
+                    }
+
+                    expired = true;
+
+                    StaticStore.removeHolder(userID, this);
+                    StaticStore.putHolder(userID, parent);
+
+                    parent.onBack();
+
+                    return;
+                } else {
+                    skimmedHolder.add(parent);
+
+                    parent = parent.parent;
+                }
+            }
+
+            StringBuilder errorMessage = new StringBuilder("E/Holder::goBackTo - Failed to find parent holder in this hierarchy!\n\nTargeted Holder : ")
+                    .append(parentClass.getName())
+                    .append("\nHierarchy : \n```");
+
+            for (int i = 0; i < skimmedHolder.size(); i++) {
+                errorMessage.append("    ".repeat(i)).append("- ").append(skimmedHolder.get(i).getClass()).append("\n");
+
+                if (i < skimmedHolder.size() - 1) {
+                    errorMessage.append("    ".repeat(i)).append("   |\n");
+                }
+            }
+
+            throw new IllegalStateException(errorMessage.toString());
+        }
+    }
+
+    public void goBackTo(@Nonnull GenericComponentInteractionCreateEvent event, Class<?> parentClass) {
+        Holder parent = this.parent;
+
+        List<Holder> skimmedHolder = new ArrayList<>();
+
+        if (parent == null) {
+            throw new IllegalStateException("E/Holder::goBackTo - Can't go back because there's no parent holder!\n\nHolder : " + this.getClass());
+        } else {
+            while(parent != null) {
+                if (parent.getClass() == parentClass) {
+                    if (parent.expired) {
+                        skimmedHolder.add(parent);
+
+                        parent = parent.parent;
+
+                        continue;
+                    }
+
+                    expired = true;
+
+                    StaticStore.removeHolder(userID, this);
+                    StaticStore.putHolder(userID, parent);
+
+                    parent.onBack(event);
+
+                    return;
+                } else {
+                    skimmedHolder.add(parent);
+
+                    parent = parent.parent;
+                }
+            }
+
+            StringBuilder errorMessage = new StringBuilder("E/Holder::goBackTo - Failed to find parent holder in this hierarchy!\n\nTargeted Holder : ")
+                    .append(parentClass.getName())
+                    .append("\nHierarchy : \n```");
+
+            for (int i = 0; i < skimmedHolder.size(); i++) {
+                errorMessage.append("    ".repeat(i)).append("- ").append(skimmedHolder.get(i).getClass()).append("\n");
+
+                if (i < skimmedHolder.size() - 1) {
+                    errorMessage.append("    ".repeat(i)).append("   |\n");
+                }
+            }
+
+            throw new IllegalStateException(errorMessage.toString());
+        }
+    }
+
     public void registerPopUp(GenericComponentInteractionCreateEvent event, String content, int lang) {
+        event.deferEdit()
+                .setContent(content)
+                .setAllowedMentions(new ArrayList<>())
+                .mentionRepliedUser(false)
+                .setComponents(
+                        ActionRow.of(
+                                Button.success("confirm", LangID.getStringByID("button_confirm", lang)).withEmoji(EmojiStore.CHECK),
+                                Button.danger("cancel", LangID.getStringByID("button_cancel", lang)).withEmoji(EmojiStore.CROSS)
+                        )
+                )
+                .queue();
+    }
+
+    public void registerPopUp(ModalInteractionEvent event, String content, int lang) {
         event.deferEdit()
                 .setContent(content)
                 .setAllowedMentions(new ArrayList<>())

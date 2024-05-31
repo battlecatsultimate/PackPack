@@ -6,7 +6,6 @@ import mandarin.card.supporter.holder.modal.CardPackCooldownHolder
 import mandarin.card.supporter.holder.modal.CardPackNameHolder
 import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.supporter.EmojiStore
-import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
@@ -106,18 +105,12 @@ class CardPackAdjustHolder(
                         LangID.EN
                     )
 
-                    StaticStore.removeHolder(authorMessage.author.id, this)
-
-                    StaticStore.putHolder(authorMessage.author.id, ConfirmPopUpHolder(authorMessage, message, channelID, { e ->
+                    connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                         expired = true
 
                         e.deferEdit().queue()
 
                         goBack()
-                    }, { e ->
-                        StaticStore.putHolder(authorMessage.author.id, this)
-
-                        applyResult(e)
                     }, LangID.EN))
                 } else {
                     CardBot.saveCardData()
@@ -134,9 +127,7 @@ class CardPackAdjustHolder(
                     LangID.EN
                 )
 
-                StaticStore.removeHolder(authorMessage.author.id, this)
-
-                StaticStore.putHolder(authorMessage.author.id, ConfirmPopUpHolder(authorMessage, message, channelID, { e ->
+                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                     CardData.cardPacks.remove(pack)
 
                     CardBot.saveCardData()
@@ -147,10 +138,6 @@ class CardPackAdjustHolder(
                         .queue()
 
                     goBack()
-                }, { e ->
-                    StaticStore.putHolder(authorMessage.author.id, this)
-
-                    applyResult(e)
                 }, LangID.EN))
             }
         }

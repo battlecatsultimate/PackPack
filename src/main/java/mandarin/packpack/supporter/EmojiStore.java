@@ -18,6 +18,10 @@ import java.util.*;
 
 public class EmojiStore {
     public static void initialize(ShardLoader loader) {
+        UNKNOWN = Emoji.fromUnicode("❔");
+
+        AIR = getEmoteWitNameAndID(loader, "Air", 1246011639325528144L);
+
         THREE_PREVIOUS = getEmoteWitNameAndID(loader, "ThreePrevious", 993716493458083900L);
         TWO_PREVIOUS = getEmoteWitNameAndID(loader, "TwoPrevious", 1174180530871337000L);
         PREVIOUS = getEmoteWitNameAndID(loader, "Previous", 993716355817807883L);
@@ -159,6 +163,9 @@ public class EmojiStore {
             }
         }
     }
+
+    public static Emoji UNKNOWN;
+    public static Emoji AIR;
 
     public static Emoji THREE_PREVIOUS;
     public static Emoji TWO_PREVIOUS;

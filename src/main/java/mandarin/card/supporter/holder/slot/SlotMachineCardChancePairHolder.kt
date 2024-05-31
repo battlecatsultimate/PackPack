@@ -1,12 +1,13 @@
-package mandarin.card.supporter.holder.pack
+package mandarin.card.supporter.holder.slot
 
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.filter.BannerFilter
-import mandarin.card.supporter.holder.modal.CardChanceHolder
+import mandarin.card.supporter.holder.modal.SlotMachineCardChanceHolder
 import mandarin.card.supporter.pack.CardChancePair
 import mandarin.card.supporter.pack.CardChancePairList
 import mandarin.card.supporter.pack.CardPack
+import mandarin.card.supporter.slot.SlotMachine
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
@@ -26,14 +27,15 @@ import net.dv8tion.jda.api.interactions.modals.Modal
 import kotlin.math.ceil
 import kotlin.math.min
 
-class CardChancePairHolder(
-    author: Message, channelID: String,
+class SlotMachineCardChancePairHolder(
+    author: Message,
+    channelID: String,
     private val message: Message,
-    private val pack: CardPack,
+    private val slotMachine: SlotMachine,
     private val cardChancePairList: CardChancePairList,
     private val pair: CardChancePair,
     private val new: Boolean
-) : ComponentHolder(author, channelID, message.id) {
+) : ComponentHolder(author, channelID, message) {
     private var page = 0
 
     override fun clean() {
@@ -58,7 +60,7 @@ class CardChancePairHolder(
 
                 event.replyModal(modal).queue()
 
-                connectTo(CardChanceHolder(authorMessage, channelID, message.id, pack, pair))
+                connectTo(SlotMachineCardChanceHolder(authorMessage, channelID, message.id, slotMachine, pair))
             }
             "tier" -> {
                 if (event !is StringSelectInteractionEvent)
@@ -74,7 +76,7 @@ class CardChancePairHolder(
 
                 pair.cardGroup.types.sortBy { t -> t.ordinal }
 
-                if (pack in CardData.cardPacks) {
+                if (slotMachine in CardData.slotMachines) {
                     CardBot.saveCardData()
                 }
 
@@ -94,7 +96,7 @@ class CardChancePairHolder(
 
                 pair.cardGroup.extra.sortBy { b -> b.ordinal }
 
-                if (pack in CardData.cardPacks) {
+                if (slotMachine in CardData.slotMachines) {
                     CardBot.saveCardData()
                 }
 
@@ -103,7 +105,7 @@ class CardChancePairHolder(
             "create" -> {
                 cardChancePairList.pairs.add(pair)
 
-                if (pack in CardData.cardPacks) {
+                if (slotMachine in CardData.slotMachines) {
                     CardBot.saveCardData()
                 }
 
@@ -116,19 +118,13 @@ class CardChancePairHolder(
             }
             "back" -> {
                 if (new) {
-                    registerPopUp(
-                        event,
-                        "Are you sure you want to cancel creating card/chance pair? This cannot be undone",
-                        LangID.EN
-                    )
+                    registerPopUp(event, "Are you sure you want to cancel creating card/chance pair? This cannot be undone", LangID.EN)
 
                     connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
-                        e.deferEdit().queue()
-
-                        goBack()
+                        goBack(e)
                     }, LangID.EN))
                 } else {
-                    if (pack in CardData.cardPacks) {
+                    if (slotMachine in CardData.slotMachines) {
                         CardBot.saveCardData()
                     }
 
@@ -138,16 +134,12 @@ class CardChancePairHolder(
                 }
             }
             "delete" -> {
-                registerPopUp(
-                    event,
-                    "Are you sure you want to delete this card/chance pair? This cannot be undone",
-                    LangID.EN
-                )
+                registerPopUp(event, "Are you sure you want to delete this card/chance pair? This cannot be undone", LangID.EN)
 
                 connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                     cardChancePairList.pairs.remove(pair)
 
-                    if (pack in CardData.cardPacks) {
+                    if (slotMachine in CardData.slotMachines) {
                         CardBot.saveCardData()
                     }
 
@@ -157,6 +149,18 @@ class CardChancePairHolder(
                         .queue()
 
                     goBack()
+                }, LangID.EN))
+            }
+            "cancel" -> {
+                registerPopUp(event, "Are you sure you want to cancel creation of slot machine? This cannot be undone", LangID.EN)
+
+                connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                    e.deferReply()
+                        .setContent("Canceled creation of slot machine")
+                        .setEphemeral(true)
+                        .queue()
+
+                    goBackTo(SlotMachineListHolder::class.java)
                 }, LangID.EN))
             }
             "prev" -> {
@@ -210,11 +214,19 @@ class CardChancePairHolder(
     }
 
     private fun getContent() : String {
-        val builder = StringBuilder("## Card/Chance Pair Adjust Menu\n\nPack name : ")
-            .append(pack.packName)
-            .append("\n\nChance : ")
-            .append(CardData.df.format(pair.chance))
-            .append("%\n\n### Tier\n")
+        val builder = StringBuilder()
+
+        builder.append("# ").append(slotMachine.name).append("\n")
+            .append("## Slot Machine Reward Create Section\n")
+            .append("In this section, you can adjust card and chance pair.")
+            .append(" You will have to decide chance value first.")
+            .append(" Chance value's unit is percentage.")
+            .append(" For example, if you want to set chance as 45.5%, you have to type `45.5`.")
+            .append(" Next thing is deciding which pool you will activate when card/chance pair list picked this card/chance pair.")
+            .append(" It allows pool per banner or tier\n")
+            .append("### Card/Chance Pair Info\n")
+            .append("- **Chance** : ").append(CardData.df.format(pair.chance)).append("%\n\n")
+            .append("### Tier\n")
 
         CardPack.CardType.entries.forEach { tier ->
             val tierName = when(tier) {
@@ -415,21 +427,21 @@ class CardChancePairHolder(
 
         result.add(ActionRow.of(buttons))
 
+        val pageButtons = ArrayList<Button>()
+
         if (new) {
-            result.add(
-                ActionRow.of(
-                    Button.success("create", "Create"),
-                    Button.danger("back", "Go Back")
-                )
-            )
+            pageButtons.add(Button.success("create", "Create").withEmoji(EmojiStore.CHECK))
+            pageButtons.add(Button.secondary("back", "Go Back").withEmoji(EmojiStore.BACK))
         } else {
-            result.add(
-                ActionRow.of(
-                    Button.secondary("back", "Go Back"),
-                    Button.danger("delete", "Delete")
-                )
-            )
+            pageButtons.add(Button.secondary("back", "Go Back").withEmoji(EmojiStore.BACK))
+            pageButtons.add(Button.secondary("delete", "Delete").withEmoji(EmojiStore.CROSS))
         }
+
+        if (slotMachine !in CardData.slotMachines) {
+            pageButtons.add(Button.danger("cancel", "Cancel").withEmoji(EmojiStore.CROSS))
+        }
+
+        result.add(ActionRow.of(pageButtons))
 
         return result
     }
