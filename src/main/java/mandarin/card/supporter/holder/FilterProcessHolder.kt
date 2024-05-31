@@ -393,7 +393,6 @@ class FilterProcessHolder : ComponentHolder {
             if (CardData.Tier.SPECIAL.ordinal != index) {
                 val emoji = EmojiStore.getCardEmoji(
                     when (index) {
-                        0 -> null
                         1 -> CardPack.CardType.T1
                         2 -> CardPack.CardType.T2
                         3 -> CardPack.CardType.T3
