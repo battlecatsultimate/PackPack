@@ -10,6 +10,7 @@ import mandarin.packpack.supporter.StaticStore
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji
 import net.dv8tion.jda.api.entities.emoji.Emoji
+import net.dv8tion.jda.api.utils.FileUpload
 import kotlin.math.round
 
 class SlotMachine {
@@ -307,23 +308,29 @@ class SlotMachine {
 
                             if (c.tier == CardData.Tier.ULTRA) {
                                 result.append("✨")
-                            } else {
+                            } else if (c.tier == CardData.Tier.LEGEND) {
                                 result.append(EmojiStore.ABILITY["LEGEND"]?.formatted)
                             }
 
                             result.append(c.simpleCardInfo())
 
-                            if (inventory.cards.containsKey(c)) {
+                            if (!inventory.cards.containsKey(c)) {
                                 result.append(" {**NEW**}")
                             }
 
                             if (c.tier == CardData.Tier.ULTRA) {
                                 result.append("✨")
-                            } else {
+                            } else if (c.tier == CardData.Tier.LEGEND) {
                                 result.append(EmojiStore.ABILITY["LEGEND"]?.formatted)
                             }
 
                             result.append("\n")
+                        }
+
+                        val files = ArrayList<FileUpload>()
+
+                        cards.toSet().filter { c -> !inventory.cards.containsKey(c) }.forEach { c ->
+                            files.add(FileUpload.fromData(c.cardImage))
                         }
 
                         cards.forEach { c ->
@@ -333,6 +340,7 @@ class SlotMachine {
                         message.editMessage(result)
                             .setComponents()
                             .setAllowedMentions(ArrayList())
+                            .setFiles(files)
                             .mentionRepliedUser(false)
                             .queue()
                     }
