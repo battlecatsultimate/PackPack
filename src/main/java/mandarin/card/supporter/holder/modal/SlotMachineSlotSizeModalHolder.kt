@@ -36,9 +36,9 @@ class SlotMachineSlotSizeModalHolder(author: Message, channelID: String, message
 
         val amount = value.toDouble().toInt()
 
-        if (amount < 0) {
+        if (amount <= 0) {
             event.deferReply()
-                .setContent("Slot size value must be 0 or positive!")
+                .setContent("Slot size value must be positive!")
                 .setEphemeral(true)
                 .queue()
 
