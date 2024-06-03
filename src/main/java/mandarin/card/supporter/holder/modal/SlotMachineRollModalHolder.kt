@@ -25,7 +25,7 @@ class SlotMachineRollModalHolder(author: Message, channelID: String, message: Me
         val value = getValueFromMap(event.values, "fee")
 
         val entryFee = if (StaticStore.isNumeric(value)) {
-            val entryFee = value.toLong()
+            val entryFee = StaticStore.safeParseLong(value)
 
             if (entryFee <= 0) {
                 event.deferReply().setContent("Entry fee must be positive!").setEphemeral(true).queue()
