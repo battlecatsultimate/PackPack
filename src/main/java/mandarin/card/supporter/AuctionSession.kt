@@ -546,7 +546,7 @@ class AuctionSession(
     private fun getAuctionInfo(status: String = "") : String {
         val builder = StringBuilder("## Auction #$id\n")
 
-        builder.append(getAuthor()).append(" has opened the acution\n")
+        builder.append(getAuthor()).append(" has opened the auction\n")
             .append("\nCard : ")
             .append(card.cardInfo())
 
