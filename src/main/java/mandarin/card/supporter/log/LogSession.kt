@@ -11,6 +11,7 @@ import mandarin.card.supporter.Card
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.TradingSession
 import mandarin.card.supporter.pack.CardPack
+import mandarin.card.supporter.slot.SlotEntryFee
 import mandarin.packpack.supporter.StaticStore
 import java.io.BufferedReader
 import java.io.File
@@ -212,6 +213,12 @@ class LogSession {
                 session.tradeDone = obj.get("tradeDone").asLong
             }
 
+            loadUserAmount(obj, "catFoodSlotMachineInput", session.catFoodSlotMachineInput)
+            loadUserAmount(obj, "catFoodSlotMachineReward", session.catFoodSlotMachineReward)
+
+            loadUserAmount(obj, "platinumShardSlotMachineInput", session.platinumShardSlotMachineInput)
+            loadUserAmount(obj, "platinumShardSlotMachineReward", session.platinumShardSlotMachineReward)
+
             loadUserCardMap(obj, "tradedCards", session.tradedCards)
 
             return session
@@ -310,6 +317,12 @@ class LogSession {
     var tradeDone = 0L
 
     val tradedCards = HashMap<Long, HashMap<Card, Long>>()
+
+    val catFoodSlotMachineInput = HashMap<Long, Long>()
+    val catFoodSlotMachineReward = HashMap<Long, Long>()
+
+    val platinumShardSlotMachineInput = HashMap<Long, Long>()
+    val platinumShardSlotMachineReward = HashMap<Long, Long>()
 
     constructor() {
         createdTime = CardData.getUnixEpochTime()
@@ -517,6 +530,43 @@ class LogSession {
         }
     }
 
+    fun logSlotMachineFail(user: Long, input: Long, compensation: Long) {
+        activeMembers.add(user)
+
+        catFoodSlotMachineInput[user] = (catFoodSlotMachineInput[user] ?: 0) + input
+        catFoodSlotMachineReward[user] = (catFoodSlotMachineReward[user] ?: 0) + compensation
+    }
+
+    fun logSlotMachineCurrency(user: Long, input: Long, reward: Long, entryType: SlotEntryFee.EntryType) {
+        activeMembers.add(user)
+
+        when(entryType) {
+            SlotEntryFee.EntryType.CAT_FOOD -> {
+                catFoodSlotMachineInput[user] = (catFoodSlotMachineInput[user] ?: 0) + input
+                catFoodSlotMachineReward[user] = (catFoodSlotMachineReward[user] ?: 0) + reward
+            }
+            SlotEntryFee.EntryType.PLATINUM_SHARDS -> {
+                platinumShardSlotMachineInput[user] = (platinumShardSlotMachineInput[user] ?: 0) + input
+                platinumShardSlotMachineReward[user] = (platinumShardSlotMachineReward[user] ?: 0) + reward
+            }
+        }
+    }
+
+    fun logSlotMachineCard(user: Long, input: Long, cards: List<Card>, entryType: SlotEntryFee.EntryType) {
+        activeMembers.add(user)
+
+        when(entryType) {
+            SlotEntryFee.EntryType.CAT_FOOD -> catFoodSlotMachineInput[user] = (catFoodSlotMachineInput[user] ?: 0) + input
+            SlotEntryFee.EntryType.PLATINUM_SHARDS -> platinumShardSlotMachineInput[user] = (platinumShardSlotMachineInput[user] ?: 0) + input
+        }
+
+        val cardMap = generatedCards.computeIfAbsent(user) { HashMap() }
+
+        cards.forEach { c ->
+            cardMap[c] = (cardMap[c] ?: 0) + 1
+        }
+    }
+
     fun saveSessionAsFile() {
         val folder = File(if (CardBot.test) "./data/testCardLog" else "./data/cardLog")
 
@@ -603,6 +653,12 @@ class LogSession {
         saveUserAmount(obj, "catFoodTrade", catFoodTrade)
         obj.addProperty("catFoodTradeSum", catFoodTradeSum)
         obj.addProperty("tradeDone", tradeDone)
+
+        saveUserAmount(obj, "catFoodSlotMachineInput", catFoodSlotMachineInput)
+        saveUserAmount(obj, "catFoodSlotMachineReward", catFoodSlotMachineReward)
+
+        saveUserAmount(obj, "platinumShardSlotMachineInput", platinumShardSlotMachineInput)
+        saveUserAmount(obj, "platinumShardSlotMachineReward", platinumShardSlotMachineReward)
 
         return obj
     }

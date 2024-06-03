@@ -189,6 +189,23 @@ class Report : Command(LangID.EN, true) {
             inventory.favorites.filter { (c, _) -> c.tier == CardData.Tier.LEGEND }.map { (_, amount) -> amount }.sum()
         }
 
+        val totalCatFoodSlotMachineInput = sessions.sumOf { s ->
+            s.catFoodSlotMachineInput.entries.sumOf { e -> e.value }
+        }
+        val totalCatFoodSlotMachineReward = sessions.sumOf { s ->
+            s.catFoodSlotMachineReward.entries.sumOf { e -> e.value }
+        }
+
+        val totalPlatinumShardSlotMachineInput = sessions.sumOf { s ->
+            s.platinumShardSlotMachineInput.entries.sumOf { e -> e.value }
+        }
+        val totalPlatinumShardSlotMachineReward = sessions.sumOf { s ->
+            s.platinumShardSlotMachineReward.entries.sumOf { e -> e.value }
+        }
+        
+        val shard = EmojiStore.ABILITY["SHARD"]?.formatted
+        val cf = EmojiStore.ABILITY["CF"]?.formatted
+
         if (loader.content.contains("-f")) {
             loader.guild.loadMembers().onSuccess { allMembers ->
                 val comparator: (Map.Entry<Card, Long>?, Map.Entry<Card, Long>?) -> Int = comparator@ { c0, c1 ->
@@ -257,6 +274,12 @@ class Report : Command(LangID.EN, true) {
                 val cardsT2CollaborationMap = HashMap<Long, HashMap<Card, Long>>()
                 val cardsT3Map = HashMap<Long, HashMap<Card, Long>>()
                 val cardsT4Map = HashMap<Long, HashMap<Card, Long>>()
+
+                val catFoodSlotMachineInput = HashMap<Long, Long>()
+                val catFoodSlotMachineReward = HashMap<Long, Long>()
+
+                val platinumShardSlotMachineInput = HashMap<Long, Long>()
+                val platinumShardSlotMachineReward = HashMap<Long, Long>()
 
                 sessions.forEach { session ->
                     session.catFoodPack.forEach { (id, amount) ->
@@ -439,6 +462,22 @@ class Report : Command(LangID.EN, true) {
                         cardMap.forEach { (card, amount) ->
                             craftedCardsMap[card] = (craftedCardsMap[card] ?: 0) + amount
                         }
+                    }
+
+                    session.catFoodSlotMachineInput.forEach { (id, amount) ->
+                        catFoodSlotMachineInput[id] = (catFoodSlotMachineInput[id] ?: 0) + amount
+                    }
+
+                    session.catFoodSlotMachineReward.forEach { (id, amount) ->
+                        catFoodSlotMachineReward[id] = (catFoodSlotMachineReward[id] ?: 0) + amount
+                    }
+
+                    session.platinumShardSlotMachineInput.forEach { (id, amount) ->
+                        platinumShardSlotMachineInput[id] = (platinumShardSlotMachineInput[id] ?: 0) + amount
+                    }
+
+                    session.platinumShardSlotMachineReward.forEach { (id, amount) ->
+                        platinumShardSlotMachineReward[id] = (platinumShardSlotMachineReward[id] ?: 0) + amount
                     }
                 }
 
@@ -941,7 +980,67 @@ class Report : Command(LangID.EN, true) {
                     reporter.append("\n").append("=".repeat(title.length)).append("\n\n")
                 }
 
-                reporter.append("============================")
+                reporter.append("===== Cat food data spent for slot machine =====\n\n")
+                    .append("Users have spent ").append(totalCatFoodSlotMachineInput).append(" cat foods for rolling slot machine\n\n")
+
+                catFoodSlotMachineInput.entries.sortedBy { e -> e.value }.forEachIndexed { index, (u, amount) ->
+                    val user = existingMembers.find { m -> m.idLong == u }
+
+                    if (user == null) {
+                        reporter.append(index + 1).append(". UNKNOWN [").append(u).append("] : ").append(amount)
+                    } else {
+                        reporter.append(index + 1).append(". ").append(user.effectiveName).append(" [").append(u).append("] : ").append(amount)
+                    }
+
+                    reporter.append("\n")
+                }
+
+                reporter.append("\n================================================\n\n===== Cat food data gotten from slot machine =====\n\n")
+                    .append("User have gotten ").append(totalCatFoodSlotMachineReward).append(" cat foods from slot machine\n\n")
+
+                catFoodSlotMachineReward.entries.sortedBy { e -> e.value }.forEachIndexed { index, (u, amount) ->
+                    val user = existingMembers.find { m -> m.idLong == u }
+
+                    if (user == null) {
+                        reporter.append(index + 1).append(". UNKNOWN [").append(u).append("] : ").append(amount)
+                    } else {
+                        reporter.append(index + 1).append(". ").append(user.effectiveName).append(" [").append(u).append("] : ").append(amount)
+                    }
+
+                    reporter.append("\n")
+                }
+
+                reporter.append("\n==================================================\n\n===== Platinum shard data spent for slot machine =====\n\n")
+                    .append("User have spent ").append(totalPlatinumShardSlotMachineInput).append(" platinum shards for slot machine\n\n")
+
+                platinumShardSlotMachineInput.entries.sortedBy { e -> e.value }.forEachIndexed { index, (u, amount) ->
+                    val user = existingMembers.find { m -> m.idLong == u }
+
+                    if (user == null) {
+                        reporter.append(index + 1).append(". UNKNOWN [").append(u).append("] : ").append(amount)
+                    } else {
+                        reporter.append(index + 1).append(". ").append(user.effectiveName).append(" [").append(u).append("] : ").append(amount)
+                    }
+
+                    reporter.append("\n")
+                }
+
+                reporter.append("\n======================================================\n\n===== Platinum shard data gotten from slot machine =====\n\n")
+                    .append("User have gotten ").append(totalPlatinumShardSlotMachineReward).append(" platinum shards from slot machine\n\n")
+
+                platinumShardSlotMachineReward.entries.sortedBy { e -> e.value }.forEachIndexed { index, (u, amount) ->
+                    val user = existingMembers.find { m -> m.idLong == u }
+
+                    if (user == null) {
+                        reporter.append(index + 1).append(". UNKNOWN [").append(u).append("] : ").append(amount)
+                    } else {
+                        reporter.append(index + 1).append(". ").append(user.effectiveName).append(" [").append(u).append("] : ").append(amount)
+                    }
+
+                    reporter.append("\n")
+                }
+
+                reporter.append("\n========================================================\n\n============================")
 
                 val folder = File("./temp")
 
@@ -970,8 +1069,8 @@ class Report : Command(LangID.EN, true) {
                     "\n" +
                     "Out of these people :\n" +
                     "\n" +
-                    "$totalCatFoodPack ${EmojiStore.ABILITY["CF"]?.formatted} have been consumed for generating pack\n" +
-                    "$totalPlatinumShardPack ${EmojiStore.ABILITY["SHARD"]?.formatted} have been consumed for generating pack\n" +
+                    "$totalCatFoodPack $cf have been consumed for generating pack\n" +
+                    "$totalPlatinumShardPack $shard have been consumed for generating pack\n" +
                     "\n" +
                     "$totalGeneratedCards cards have been generated, added into economy\n" +
                     "\n" +
@@ -982,24 +1081,24 @@ class Report : Command(LangID.EN, true) {
                     "\n" +
                     "Summing all, ${abs(totalCards)} cards have been $verb, $afterVerb economy\n" +
                     "\n" +
-                    "$totalShardSalvageT1 ${EmojiStore.ABILITY["SHARD"]?.formatted} have been generated from T1, and $totalCardSalvageT1 cards have been consumed\n" +
-                    "$totalShardSalvageT2Regular ${EmojiStore.ABILITY["SHARD"]?.formatted} have been generated from Regular T2, and $totalCardSalvageT2Regular cards have been consumed\n" +
-                    "$totalShardSalvageT2Seasonal ${EmojiStore.ABILITY["SHARD"]?.formatted} have been generated from Seasonal T2, and $totalCardSalvageT2Seasonal cards have been consumed\n" +
-                    "$totalShardSalvageT2Collaboration ${EmojiStore.ABILITY["SHARD"]?.formatted} have been generated from Collaboration T2, and $totalCardSalvageT2Collaboration cards have been consumed\n" +
-                    "$totalShardSalvageT3 ${EmojiStore.ABILITY["SHARD"]?.formatted} have been generated from T3, and $totalCardSalvageT3 cards have been consumed\n" +
+                    "$totalShardSalvageT1 $shard have been generated from T1, and $totalCardSalvageT1 cards have been consumed\n" +
+                    "$totalShardSalvageT2Regular $shard have been generated from Regular T2, and $totalCardSalvageT2Regular cards have been consumed\n" +
+                    "$totalShardSalvageT2Seasonal $shard have been generated from Seasonal T2, and $totalCardSalvageT2Seasonal cards have been consumed\n" +
+                    "$totalShardSalvageT2Collaboration $shard have been generated from Collaboration T2, and $totalCardSalvageT2Collaboration cards have been consumed\n" +
+                    "$totalShardSalvageT3 $shard have been generated from T3, and $totalCardSalvageT3 cards have been consumed\n" +
                     "\n" +
-                    "Total $totalShards ${EmojiStore.ABILITY["SHARD"]?.formatted} in users' inventories\n" +
-                    "Total $totalCatFoods ${EmojiStore.ABILITY["CF"]?.formatted} in users' inventories"
+                    "Total $totalShards $shard in users' inventories\n" +
+                    "Total $totalCatFoods $cf in users' inventories"
 
-            val content2 = "$totalCardCraftT2Regular Regular T2 cards have been crafted, and ${EmojiStore.ABILITY["SHARD"]?.formatted} $totalShardCraftT2Regular have been consumed\n" +
-                    "$totalCardCraftT2Seasonal Seasonal T2 cards have been crafted, and ${EmojiStore.ABILITY["SHARD"]?.formatted} $totalShardCraftT2Seasonal have been consumed\n" +
-                    "$totalCardCraftT2Collaboration Collaboration T2 cards have been crafted, and ${EmojiStore.ABILITY["SHARD"]?.formatted} $totalShardCraftT2Collaboration have been consumed\n" +
-                    "$totalCardCraftT3 T3 cards have been crafted, and ${EmojiStore.ABILITY["SHARD"]?.formatted} $totalShardCraftT3 have been consumed\n" +
-                    "$totalCardCraftT4 T4 have been generated crafted, and ${EmojiStore.ABILITY["SHARD"]?.formatted} $totalShardCraftT4 have been consumed\n" +
+            val content2 = "$totalCardCraftT2Regular Regular T2 cards have been crafted, and $shard $totalShardCraftT2Regular have been consumed\n" +
+                    "$totalCardCraftT2Seasonal Seasonal T2 cards have been crafted, and $shard $totalShardCraftT2Seasonal have been consumed\n" +
+                    "$totalCardCraftT2Collaboration Collaboration T2 cards have been crafted, and $shard $totalShardCraftT2Collaboration have been consumed\n" +
+                    "$totalCardCraftT3 T3 cards have been crafted, and $shard $totalShardCraftT3 have been consumed\n" +
+                    "$totalCardCraftT4 T4 have been generated crafted, and $shard $totalShardCraftT4 have been consumed\n" +
                     "\n" +
                     "Total $totalCraftedCards cards have been crafted\n" +
                     "\n" +
-                    "$totalTransferredCatFoods ${EmojiStore.ABILITY["CF"]?.formatted} have been transferred among users via trading\n" +
+                    "$totalTransferredCatFoods $cf have been transferred among users via trading\n" +
                     "$totalTradeDone trades were done during this time\n" +
                     "\n" +
                     "There are $totalT1Cards T1 cards\n" +
@@ -1008,6 +1107,12 @@ class Report : Command(LangID.EN, true) {
                     "There are $totalT2CollaborationCards Collaboration T2 cards\n" +
                     "There are $totalT3Cards T3 cards\n" +
                     "There are $totalT4Cards T4 cards\n" +
+                    "\n" +
+                    "Users have spent $cf $totalCatFoodSlotMachineInput for rolling slot machine\n" +
+                    "Users have spent $cf $totalCatFoodSlotMachineReward from slot machine\n" +
+                    "\n" +
+                    "Users have spent $shard $totalPlatinumShardSlotMachineInput for rolling slot machine\n" +
+                    "Users have spent $shard $totalPlatinumShardSlotMachineReward from slot machine" +
                     "\n" +
                     "============================"
 

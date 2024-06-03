@@ -5,6 +5,7 @@ import mandarin.card.supporter.CardData
 import mandarin.card.supporter.holder.modal.SlotMachineCooldownModalHolder
 import mandarin.card.supporter.holder.modal.SlotMachineNameModalHolder
 import mandarin.card.supporter.holder.modal.SlotMachineSlotSizeModalHolder
+import mandarin.card.supporter.log.TransactionLogger
 import mandarin.card.supporter.slot.SlotMachine
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.lang.LangID
@@ -74,6 +75,8 @@ class SlotMachineManageHolder(author: Message, channelID: String, private val me
 
                 CardBot.saveCardData()
 
+                TransactionLogger.logSlotMachineCreation(authorMessage.author.idLong, slotMachine)
+
                 event.deferReply()
                     .setContent("Successfully created slot machine! Check the list above")
                     .setEphemeral(true)
@@ -112,6 +115,8 @@ class SlotMachineManageHolder(author: Message, channelID: String, private val me
                     CardData.slotMachines.remove(slotMachine)
 
                     CardBot.saveCardData()
+
+                    TransactionLogger.logSlotMachineDeletion(authorMessage.author.idLong, slotMachine)
 
                     e.deferReply().setContent("Successfully removed slot machine : ${slotMachine.name}!").queue()
 

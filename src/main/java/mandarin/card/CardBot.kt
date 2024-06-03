@@ -560,6 +560,7 @@ object CardBot : ListenerAdapter() {
         TransactionLogger.modChannel = event.jda.getGuildChannelById(CardData.modLog) as MessageChannel
         TransactionLogger.catFoodChannel = event.jda.getGuildChannelById(CardData.catFoodLog) as MessageChannel
         TransactionLogger.bidLogChannel = event.jda.getGuildChannelById(CardData.bidLog) as MessageChannel
+        TransactionLogger.slotChannel = event.jda.getGuildChannelById(CardData.slotLog) as MessageChannel
 
         StaticStore.loggingChannel = ServerData.get("loggingChannel")
 

@@ -2,6 +2,10 @@ package mandarin.card.supporter.log
 
 import mandarin.card.supporter.*
 import mandarin.card.supporter.pack.CardPack
+import mandarin.card.supporter.slot.SlotCardContent
+import mandarin.card.supporter.slot.SlotCurrencyContent
+import mandarin.card.supporter.slot.SlotEntryFee
+import mandarin.card.supporter.slot.SlotMachine
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import net.dv8tion.jda.api.EmbedBuilder
@@ -22,6 +26,7 @@ object TransactionLogger {
     lateinit var modChannel: MessageChannel
     lateinit var catFoodChannel: MessageChannel
     lateinit var bidLogChannel: MessageChannel
+    lateinit var slotChannel: MessageChannel
 
     fun logRoll(cards: List<Card>, pack: CardPack, member: Member, manual: Boolean) {
         if (!this::logChannel.isInitialized)
@@ -1123,5 +1128,157 @@ object TransactionLogger {
         }
 
         tradeChannel.sendMessageEmbeds(builder.build()).queue()
+    }
+
+    fun logSlotMachineCreation(manager: Long, slotMachine: SlotMachine) {
+        if (!this::modChannel.isInitialized)
+            return
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("Slot Machine Created")
+
+        builder.setColor(StaticStore.rainbow.random())
+
+        builder.setDescription("Manager <@$manager> has created slot machine")
+
+        builder.addField("Slot Machine", slotMachine.name, true)
+        builder.addField("UUID", slotMachine.uuid, true)
+
+        builder.addField("Creator", "<@$manager> ($manager)", false)
+
+        modChannel.sendMessageEmbeds(builder.build()).queue()
+    }
+
+    fun logSlotMachineDeletion(manager: Long, slotMachine: SlotMachine) {
+        if (!this::modChannel.isInitialized)
+            return
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("Slot Machine Deleted")
+
+        builder.setColor(StaticStore.rainbow.random())
+
+        builder.setDescription("Manager <@$manager> has removed slot machine")
+
+        builder.addField("Slot Machine", slotMachine.name, true)
+        builder.addField("UUID", slotMachine.uuid, true)
+
+        builder.addField("Remover", "<@$manager> ($manager)", false)
+
+        modChannel.sendMessageEmbeds(builder.build()).queue()
+    }
+
+    fun logSlotMachineRollFail(user: Long, input: Long, slotMachine: SlotMachine, score: Int, compensation: Long) {
+        if (!this::slotChannel.isInitialized)
+            return
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("Slot Machine Rolled")
+
+        builder.setColor(StaticStore.rainbow.random())
+
+        builder.setDescription("User <@$user> rolled slot machine")
+
+        builder.addField("Slot Machine", "${slotMachine.name} (${slotMachine.uuid})", false)
+
+        builder.addField("Result", "Lost", false)
+
+        val feeEmoji = when(slotMachine.entryFee.entryType) {
+            SlotEntryFee.EntryType.CAT_FOOD -> EmojiStore.ABILITY["CF"]?.formatted
+            SlotEntryFee.EntryType.PLATINUM_SHARDS -> EmojiStore.ABILITY["SHARD"]?.formatted
+        }
+
+        builder.addField("Input", "$feeEmoji $input", false)
+
+        builder.addField("Score", if (score >= 2) "$score Scores" else "$score Score", true)
+        builder.addField("Compensation", "$feeEmoji $compensation", true)
+
+        slotChannel.sendMessageEmbeds(builder.build()).queue()
+
+        LogSession.session.logSlotMachineFail(user, input, compensation)
+    }
+
+    fun logSlotMachineRollCurrency(user: Long, input: Long, slotMachine: SlotMachine, pickedContent: SlotCurrencyContent, reward: Long) {
+        if (!this::slotChannel.isInitialized)
+            return
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("Slot Machine Rolled")
+
+        builder.setColor(StaticStore.rainbow.random())
+
+        builder.setDescription("User <@$user> rolled slot machine")
+
+        builder.addField("Slot Machine", "${slotMachine.name} (${slotMachine.uuid})", false)
+
+        builder.addField("Result", "Won", false)
+
+        val feeEmoji = when(slotMachine.entryFee.entryType) {
+            SlotEntryFee.EntryType.CAT_FOOD -> EmojiStore.ABILITY["CF"]?.formatted
+            SlotEntryFee.EntryType.PLATINUM_SHARDS -> EmojiStore.ABILITY["SHARD"]?.formatted
+        }
+
+        val contentEmoji = (pickedContent.emoji ?: EmojiStore.UNKNOWN).formatted
+
+        val content = when (pickedContent.mode) {
+            SlotCurrencyContent.Mode.FLAT -> "$contentEmoji [Flat] : $feeEmoji ${pickedContent.amount}"
+            SlotCurrencyContent.Mode.PERCENTAGE -> "$contentEmoji [Percentage] : ${pickedContent.amount}% of Entry Fee"
+        }
+
+        builder.addField("Picked Reward", content, false)
+
+        builder.addField("Input", "$feeEmoji $input", true)
+        builder.addField("Reward", "$feeEmoji $reward", true)
+
+        slotChannel.sendMessageEmbeds(builder.build()).queue()
+
+        LogSession.session.logSlotMachineCurrency(user, input, reward, slotMachine.entryFee.entryType)
+    }
+
+    fun logSlotMachineRollCard(user: Long, input: Long, slotMachine: SlotMachine, pickedContent: SlotCardContent, cards: List<Card>) {
+        if (!this::slotChannel.isInitialized)
+            return
+
+        val builder = EmbedBuilder()
+
+        builder.setTitle("Slot Machine Rolled")
+
+        builder.setColor(StaticStore.rainbow.random())
+
+        builder.setDescription("User <@$user> rolled slot machine")
+
+        builder.addField("Slot Machine", "${slotMachine.name} (${slotMachine.uuid})", false)
+
+        builder.addField("Result", "Won", false)
+
+        val feeEmoji = when(slotMachine.entryFee.entryType) {
+            SlotEntryFee.EntryType.CAT_FOOD -> EmojiStore.ABILITY["CF"]?.formatted
+            SlotEntryFee.EntryType.PLATINUM_SHARDS -> EmojiStore.ABILITY["SHARD"]?.formatted
+        }
+
+        val contentEmoji = (pickedContent.emoji ?: EmojiStore.UNKNOWN).formatted
+
+        builder.addField("Picked Reward", "$contentEmoji [Card] : ${pickedContent.name}", false)
+
+        val cardBuilder = StringBuilder()
+
+        cards.forEachIndexed { index, card ->
+            cardBuilder.append(card.simpleCardInfo())
+
+            if (index < cards.size - 1) {
+                cardBuilder.append("\n")
+            }
+        }
+
+        builder.addField("Input", "$feeEmoji $input", true)
+        builder.addField("Reward", cardBuilder.toString(), false)
+
+        slotChannel.sendMessageEmbeds(builder.build()).queue()
+
+        LogSession.session.logSlotMachineCard(user, input, cards, slotMachine.entryFee.entryType)
     }
 }

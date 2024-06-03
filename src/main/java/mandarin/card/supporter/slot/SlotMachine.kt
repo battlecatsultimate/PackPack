@@ -5,6 +5,7 @@ import com.google.gson.JsonObject
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
+import mandarin.card.supporter.log.TransactionLogger
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import net.dv8tion.jda.api.entities.Message
@@ -273,6 +274,8 @@ class SlotMachine {
                             SlotEntryFee.EntryType.PLATINUM_SHARDS -> inventory.platinumShard += reward
                         }
 
+                        TransactionLogger.logSlotMachineRollCurrency(user, input, this, pickedContent, reward)
+
                         result.append("\n\n🎰 You won the slot machine!!! 🎰\n\nPicked Reward : ")
                             .append(pickedContent.emoji?.formatted).append(" ")
 
@@ -337,6 +340,8 @@ class SlotMachine {
                             inventory.cards[c] = (inventory.cards[c] ?: 0) + 1
                         }
 
+                        TransactionLogger.logSlotMachineRollCard(user, input, this, pickedContent, cards)
+
                         message.editMessage(result)
                             .setComponents()
                             .setAllowedMentions(ArrayList())
@@ -367,6 +372,8 @@ class SlotMachine {
                 SlotEntryFee.EntryType.CAT_FOOD -> inventory.catFoods += compensation
                 SlotEntryFee.EntryType.PLATINUM_SHARDS -> inventory.platinumShard += compensation
             }
+
+            TransactionLogger.logSlotMachineRollFail(user, input, this, sequenceStack, compensation)
 
             message.editMessage(result)
                 .setComponents()

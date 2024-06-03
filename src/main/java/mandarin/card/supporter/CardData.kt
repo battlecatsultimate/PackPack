@@ -288,6 +288,7 @@ object CardData {
     val modLog = ServerData.get("modLog")
     val catFoodLog = ServerData.get("catFoodLog")
     val bidLog = ServerData.get("bidLog")
+    val slotLog = ServerData.get("slotLog")
 
     val managerPlace = ServerData.get("managerPlace")
 
