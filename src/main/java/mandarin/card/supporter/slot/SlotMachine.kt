@@ -168,7 +168,7 @@ class SlotMachine {
         return builder.toString()
     }
 
-    fun roll(message: Message, user: Long, inventory: Inventory, input: Long) {
+    fun roll(message: Message, user: Long, inventory: Inventory, input: Long, skip: Boolean) {
         content.filter { c -> c.emoji == null }.forEach { c -> c.load() }
 
         if (content.any { c -> c.emoji == null }) {
@@ -194,40 +194,54 @@ class SlotMachine {
         val downArrow = Emoji.fromUnicode("🔽").formatted
         val upArrow = Emoji.fromUnicode("🔼").formatted
 
-        repeat(slotSize) { index ->
-            val builder = StringBuilder()
+        if (skip) {
+            repeat(slotSize) { index ->
+                val c = content.random()
 
-            val c = content.random()
+                if (index > 0 && previousEmoji === c.emoji) {
+                    sequenceStack++
+                }
 
-            if (index > 0) {
-                builder.append("**").append(" ").append(EmojiStore.AIR?.formatted?.repeat(index)).append("**").append(downArrow)
-            } else {
-                builder.append("** **").append(downArrow)
+                previousEmoji = c.emoji
+
+                emojiSequence.add(c.emoji!!)
             }
+        } else {
+            repeat(slotSize) { index ->
+                val builder = StringBuilder()
 
-            builder.append("\n ")
+                val c = content.random()
 
-            emojiSequence.forEach { e -> builder.append(e.formatted) }
+                if (index > 0) {
+                    builder.append("**").append(" ").append(EmojiStore.AIR?.formatted?.repeat(index)).append("**").append(downArrow)
+                } else {
+                    builder.append("** **").append(downArrow)
+                }
 
-            builder.append(c.emoji?.formatted).append("\n ")
+                builder.append("\n ")
 
-            builder.append(EmojiStore.AIR?.formatted?.repeat(index)).append(upArrow)
+                emojiSequence.forEach { e -> builder.append(e.formatted) }
 
-            message.editMessage(builder.toString())
-                .setComponents()
-                .setAllowedMentions(ArrayList())
-                .mentionRepliedUser(false)
-                .queue()
+                builder.append(c.emoji?.formatted).append("\n ")
 
-            if (index > 0 && previousEmoji === c.emoji) {
-                sequenceStack++
+                builder.append(EmojiStore.AIR?.formatted?.repeat(index)).append(upArrow)
+
+                message.editMessage(builder.toString())
+                    .setComponents()
+                    .setAllowedMentions(ArrayList())
+                    .mentionRepliedUser(false)
+                    .queue()
+
+                if (index > 0 && previousEmoji === c.emoji) {
+                    sequenceStack++
+                }
+
+                previousEmoji = c.emoji
+
+                emojiSequence.add(c.emoji!!)
+
+                Thread.sleep(1000)
             }
-
-            previousEmoji = c.emoji
-
-            emojiSequence.add(c.emoji!!)
-
-            Thread.sleep(1000)
         }
 
         val result = StringBuilder()

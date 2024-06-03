@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.interactions.modals.Modal
 import kotlin.math.max
 import kotlin.math.min
 
-class SlotMachineConfirmHolder(author: Message, channelID: String, private val message: Message, private val slotMachine: SlotMachine) : ComponentHolder(author, channelID, message) {
+class SlotMachineConfirmHolder(author: Message, channelID: String, private val message: Message, private val slotMachine: SlotMachine, private val skip: Boolean) : ComponentHolder(author, channelID, message) {
     val inventory = Inventory.getInventory(author.author.idLong)
 
     override fun clean() {
@@ -63,7 +63,7 @@ class SlotMachineConfirmHolder(author: Message, channelID: String, private val m
                             .setAllowedMentions(ArrayList())
                             .mentionRepliedUser(false)
                             .queue {
-                                slotMachine.roll(message, authorMessage.author.idLong, inventory, fee)
+                                slotMachine.roll(message, authorMessage.author.idLong, inventory, fee, skip)
                             }
 
                         expired = true

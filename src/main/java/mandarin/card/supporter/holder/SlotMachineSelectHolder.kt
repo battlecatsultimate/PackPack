@@ -16,7 +16,7 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import kotlin.math.ceil
 import kotlin.math.min
 
-class SlotMachineSelectHolder(author: Message, channelID: String, private val message: Message) : ComponentHolder(author, channelID, message) {
+class SlotMachineSelectHolder(author: Message, channelID: String, private val message: Message, private val skip: Boolean) : ComponentHolder(author, channelID, message) {
     private val possibleSlotMachines = CardData.slotMachines.filter { s -> s.valid && s.activate }
 
     private var page = 0
@@ -37,7 +37,7 @@ class SlotMachineSelectHolder(author: Message, channelID: String, private val me
 
                 val slotMachine = CardData.slotMachines[event.values[0].toInt()]
 
-                connectTo(event, SlotMachineConfirmHolder(authorMessage, channelID, message, slotMachine))
+                connectTo(event, SlotMachineConfirmHolder(authorMessage, channelID, message, slotMachine, skip))
             }
             "prev" -> {
                 page--

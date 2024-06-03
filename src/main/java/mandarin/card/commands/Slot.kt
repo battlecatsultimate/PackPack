@@ -28,8 +28,12 @@ class Slot : Command(LangID.EN, true){
             return
         }
 
+        val contents = loader.content.split(" ")
+
+        val skip = "-s" in contents || "-skip" in contents
+
         replyToMessageSafely(loader.channel, "Select slot machine to roll", loader.message, { a -> a.setComponents(getComponents(loader.user)) }) { msg ->
-            StaticStore.putHolder(loader.user.id, SlotMachineSelectHolder(loader.message, loader.channel.id, msg))
+            StaticStore.putHolder(loader.user.id, SlotMachineSelectHolder(loader.message, loader.channel.id, msg, skip))
         }
     }
 
