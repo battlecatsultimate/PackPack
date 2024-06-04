@@ -118,7 +118,7 @@ class SlotMachineManageHolder(author: Message, channelID: String, private val me
 
                     TransactionLogger.logSlotMachineDeletion(authorMessage.author.idLong, slotMachine)
 
-                    e.deferReply().setContent("Successfully removed slot machine : ${slotMachine.name}!").queue()
+                    e.deferReply().setContent("Successfully removed slot machine : ${slotMachine.name}!").setEphemeral(true).queue()
 
                     goBackTo(SlotMachineListHolder::class.java)
                 }, LangID.EN))
