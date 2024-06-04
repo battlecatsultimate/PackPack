@@ -1,10 +1,7 @@
 package mandarin.card.supporter.holder.slot
 
 import mandarin.card.supporter.CardData
-import mandarin.card.supporter.slot.SlotCardContent
-import mandarin.card.supporter.slot.SlotCurrencyContent
-import mandarin.card.supporter.slot.SlotEntryFee
-import mandarin.card.supporter.slot.SlotMachine
+import mandarin.card.supporter.slot.*
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
@@ -40,6 +37,7 @@ class SlotMachineContentHolder(author: Message, channelID: String, private val m
                 when(val content = slotMachine.content[event.values[0].toInt()]) {
                     is SlotCurrencyContent -> connectTo(event, SlotMachineCurrencyRewardHolder(authorMessage, channelID, message, slotMachine, content, false))
                     is SlotCardContent -> connectTo(event, SlotMachineCardRewardHolder(authorMessage, channelID, message, slotMachine, content, false))
+                    is SlotPlaceHolderContent -> connectTo(event, SlotMachinePlaceHolderRewardHolder(authorMessage, channelID, message, slotMachine, content, false))
                 }
             }
             "back" -> {
@@ -112,6 +110,10 @@ class SlotMachineContentHolder(author: Message, channelID: String, private val m
             slotMachine.content.forEachIndexed { index, content ->
                 builder.append(index + 1).append(". ").append(content.emoji?.formatted ?: EmojiStore.UNKNOWN.formatted)
 
+                if (content !is SlotPlaceHolderContent) {
+                    builder.append("x").append(content.slot)
+                }
+
                 when (content) {
                     is SlotCurrencyContent -> {
                         when(content.mode) {
@@ -152,6 +154,9 @@ class SlotMachineContentHolder(author: Message, channelID: String, private val m
                                 builder.append("\n")
                         }
                     }
+                    is SlotPlaceHolderContent -> {
+                        builder.append(" [Place Holder]")
+                    }
                 }
 
                 if (index < slotMachine.content.size - 1)
@@ -179,7 +184,10 @@ class SlotMachineContentHolder(author: Message, channelID: String, private val m
                         }
                     }
                     is SlotCardContent -> {
-                        "[Card]"
+                        "[Card] : ${content.name}"
+                    }
+                    is SlotPlaceHolderContent -> {
+                        "[Place Holder]"
                     }
                     else -> {
                         throw IllegalStateException("E/SlotMachineContentHolder::getComponents - Unknown slot machine content type : ${content.javaClass.name}")

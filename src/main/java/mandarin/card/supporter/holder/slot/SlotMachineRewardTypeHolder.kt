@@ -4,6 +4,7 @@ import mandarin.card.supporter.CardData
 import mandarin.card.supporter.slot.SlotCardContent
 import mandarin.card.supporter.slot.SlotCurrencyContent
 import mandarin.card.supporter.slot.SlotMachine
+import mandarin.card.supporter.slot.SlotPlaceHolderContent
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
@@ -30,6 +31,9 @@ class SlotMachineRewardTypeHolder(author: Message, channelID: String, private va
             }
             "currency" -> {
                 connectTo(event, SlotMachineCurrencyRewardHolder(authorMessage, channelID, message, slotMachine, SlotCurrencyContent("", 0L), true))
+            }
+            "placeHolder" -> {
+                connectTo(event, SlotMachinePlaceHolderRewardHolder(authorMessage, channelID, message, slotMachine, SlotPlaceHolderContent("", 0L), true))
             }
             "back" -> {
                 goBack(event)
@@ -62,11 +66,13 @@ class SlotMachineRewardTypeHolder(author: Message, channelID: String, private va
         return "# ${slotMachine.name}\n" +
                 "## Slot Machine Reward Type Section\n" +
                 "In this section, you can decide which reward type this reward will have." +
-                " There are two reward types : Currency, and Card." +
+                " There are three reward types : Currency, Card, and Place Holder." +
                 " Currency mode will follow this slot machine's entry fee type." +
                 " For example, if users have to put ${EmojiStore.ABILITY["CF"]?.formatted} Cat Foods as entry fee, reward will give ${EmojiStore.ABILITY["CF"]?.formatted} Cat Foods as well." +
                 " Card mode will allow managers to create its own some form of card pack." +
-                " If user got this reward, bot will roll RNG pool of it, and give cards to them\n" +
+                " If user got this reward, bot will roll RNG pool of it, and give cards to them." +
+                " Lastly, Place Holder mode is only for holding emoji. It doesn't give anything to users." +
+                " This can be used if you want to add only emojis into the slot machine\n" +
                 "\n" +
                 "**__Once you decide the reward type, you can't change it to other type__**"
     }
@@ -74,8 +80,11 @@ class SlotMachineRewardTypeHolder(author: Message, channelID: String, private va
     private fun getComponents() : List<LayoutComponent> {
         val result = ArrayList<LayoutComponent>()
 
-        result.add(ActionRow.of(Button.secondary("card", "Card").withEmoji(EmojiStore.ABILITY["CARD"])))
-        result.add(ActionRow.of(Button.secondary("currency", "Currency").withEmoji(EmojiStore.ABILITY["CF"])))
+        result.add(ActionRow.of(
+            Button.secondary("card", "Card").withEmoji(EmojiStore.ABILITY["CARD"]),
+            Button.secondary("currency", "Currency").withEmoji(EmojiStore.ABILITY["CF"]),
+            Button.secondary("placeHolder", "Place Holder").withEmoji(EmojiStore.UNKNOWN)
+        ))
 
         if (slotMachine !in CardData.slotMachines) {
             result.add(ActionRow.of(

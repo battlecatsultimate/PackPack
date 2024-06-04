@@ -3,6 +3,7 @@ package mandarin.card.supporter.slot
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import mandarin.card.CardBot
+import mandarin.card.supporter.Card
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.log.TransactionLogger
@@ -68,6 +69,9 @@ class SlotMachine {
                 if (c.cardChancePairLists.isEmpty())
                     return false
 
+                if (c.slot == 0)
+                    return false
+
                 c.cardChancePairLists.forEach { l ->
                     if (l.amount == 0)
                         return false
@@ -123,6 +127,10 @@ class SlotMachine {
             content.forEachIndexed { index, content ->
                 builder.append(index + 1).append(". ").append(content.emoji?.formatted ?: EmojiStore.UNKNOWN.formatted)
 
+                if (content !is SlotPlaceHolderContent) {
+                    builder.append("x").append(content.slot)
+                }
+
                 when (content) {
                     is SlotCardContent -> {
                         builder.append(" [Card] : ").append(content.name.ifBlank { "None" }).append("\n")
@@ -152,6 +160,9 @@ class SlotMachine {
                             SlotCurrencyContent.Mode.FLAT -> builder.append(" [Flat] : ").append(emoji).append(" ").append(content.amount)
                             SlotCurrencyContent.Mode.PERCENTAGE -> builder.append(" [Percentage] : ").append(content.amount).append("% of Entry Fee")
                         }
+                    }
+                    is SlotPlaceHolderContent -> {
+                        builder.append(" [Place Holder]")
                     }
                 }
 
@@ -191,28 +202,48 @@ class SlotMachine {
         var previousEmoji: CustomEmoji? = null
 
         val emojiSequence = ArrayList<CustomEmoji>()
-        var sequenceStack = 0
+        val sequenceStacks = HashMap<CustomEmoji, Int>()
 
         val downArrow = Emoji.fromUnicode("🔽").formatted
         val upArrow = Emoji.fromUnicode("🔼").formatted
 
+        val emojis = content.mapNotNull { c -> c.emoji }.toSet()
+
+        if (emojis.isEmpty()) {
+            message.editMessage("Failed to roll slot machine due to empty emoji data... Contact card managers!")
+                .setComponents()
+                .setAllowedMentions(ArrayList())
+                .mentionRepliedUser(false)
+                .queue()
+
+            return
+        }
+
         if (skip) {
             repeat(slotSize) { index ->
-                val c = content.random()
+                val emoji = emojis.random()
 
-                if (index > 0 && previousEmoji === c.emoji) {
-                    sequenceStack++
+                sequenceStacks.computeIfAbsent(emoji) { 0 }
+
+                if (index > 0 && previousEmoji === emoji) {
+                    val e = previousEmoji
+
+                    if (e != null) {
+                        sequenceStacks[e] = (sequenceStacks[e] ?: 0) + 1
+                    }
                 }
 
-                previousEmoji = c.emoji
+                previousEmoji = emoji
 
-                emojiSequence.add(c.emoji!!)
+                emojiSequence.add(emoji)
             }
         } else {
             repeat(slotSize) { index ->
                 val builder = StringBuilder()
 
-                val c = content.random()
+                val emoji = emojis.random()
+
+                sequenceStacks.computeIfAbsent(emoji) { 0 }
 
                 if (index > 0) {
                     builder.append("**").append(" ").append(EmojiStore.AIR?.formatted?.repeat(index)).append("**").append(downArrow)
@@ -224,7 +255,7 @@ class SlotMachine {
 
                 emojiSequence.forEach { e -> builder.append(e.formatted) }
 
-                builder.append(c.emoji?.formatted).append("\n ")
+                builder.append(emoji.formatted).append("\n ")
 
                 builder.append(EmojiStore.AIR?.formatted?.repeat(index)).append(upArrow)
 
@@ -234,13 +265,17 @@ class SlotMachine {
                     .mentionRepliedUser(false)
                     .queue()
 
-                if (index > 0 && previousEmoji === c.emoji) {
-                    sequenceStack++
+                if (index > 0 && previousEmoji === emoji) {
+                    val e = previousEmoji
+
+                    if (e != null) {
+                        sequenceStacks[e] = (sequenceStacks[e] ?: 0) + 1
+                    }
                 }
 
-                previousEmoji = c.emoji
+                previousEmoji = emoji
 
-                emojiSequence.add(c.emoji!!)
+                emojiSequence.add(emoji)
 
                 Thread.sleep(1000)
             }
@@ -250,10 +285,10 @@ class SlotMachine {
 
         emojiSequence.forEach { e -> result.append(e.formatted) }
 
-        if (sequenceStack == slotSize - 1) {
-            val pickedContent = content.find { c -> c.emoji === previousEmoji }
+        val pickedContents = pickReward(sequenceStacks)
 
-            if (pickedContent == null) {
+        if (pickedContents.isNotEmpty()) {
+            if (pickedContents.any { c -> c.emoji == null }) {
                 result.append("\n\nBot failed to find reward with emoji above... Please contact card managers!")
 
                 message.editMessage(result.toString())
@@ -262,100 +297,101 @@ class SlotMachine {
                     .mentionRepliedUser(false)
                     .queue()
             } else {
-                when (pickedContent) {
-                    is SlotCurrencyContent -> {
-                        val reward = when (pickedContent.mode) {
-                            SlotCurrencyContent.Mode.FLAT -> pickedContent.amount
-                            SlotCurrencyContent.Mode.PERCENTAGE -> round(input * pickedContent.amount / 100.0).toLong()
-                        }
+                val feeEmoji = when(entryFee.entryType) {
+                    SlotEntryFee.EntryType.CAT_FOOD -> EmojiStore.ABILITY["CF"]?.formatted
+                    SlotEntryFee.EntryType.PLATINUM_SHARDS -> EmojiStore.ABILITY["SHARD"]?.formatted
+                }
 
-                        when (entryFee.entryType) {
-                            SlotEntryFee.EntryType.CAT_FOOD -> inventory.catFoods += reward
-                            SlotEntryFee.EntryType.PLATINUM_SHARDS -> inventory.platinumShard += reward
-                        }
+                var currencySum = 0L
+                val cardsSum = ArrayList<Card>()
 
-                        TransactionLogger.logSlotMachineRollCurrency(user, input, this, pickedContent, reward)
+                result.append("\n\n🎰 You won the slot machine!!! 🎰\n\nPicked Reward : \n")
 
-                        result.append("\n\n🎰 You won the slot machine!!! 🎰\n\nPicked Reward : ")
-                            .append(pickedContent.emoji?.formatted).append(" ")
+                pickedContents.forEach { c ->
+                    result.append("- ").append(c.emoji?.formatted).append("x").append(c.slot).append(" ")
 
-                        val rewardEmoji = when(entryFee.entryType) {
-                            SlotEntryFee.EntryType.CAT_FOOD -> EmojiStore.ABILITY["CF"]?.formatted
-                            SlotEntryFee.EntryType.PLATINUM_SHARDS -> EmojiStore.ABILITY["SHARD"]?.formatted
-                        }
-
-                        when (pickedContent.mode) {
-                            SlotCurrencyContent.Mode.FLAT -> result.append("[Flat] : ").append(rewardEmoji).append(" ").append(reward)
-                            SlotCurrencyContent.Mode.PERCENTAGE -> result.append("[Percentage] : ").append(CardData.df.format(pickedContent.amount)).append("% of Entry Fee")
-                        }
-
-                        result.append("\nReward : ").append(rewardEmoji).append(" ").append(reward)
-
-                        message.editMessage(result)
-                            .setComponents()
-                            .setAllowedMentions(ArrayList())
-                            .mentionRepliedUser(false)
-                            .queue()
-                    }
-                    is SlotCardContent -> {
-                        val cards = pickedContent.roll()
-
-                        result.append("\n\n🎰 You won the slot machine!!! 🎰\n\nPicked Reward : ")
-                            .append(pickedContent.emoji?.formatted)
-                            .append(" [Card] : ")
-                            .append(pickedContent.name)
-                            .append("\nReward : \n\n")
-
-                        cards.forEachIndexed { i, c ->
-                            result.append(i + 1).append(". ")
-
-                            if (c.tier == CardData.Tier.ULTRA) {
-                                result.append("✨")
-                            } else if (c.tier == CardData.Tier.LEGEND) {
-                                result.append(EmojiStore.ABILITY["LEGEND"]?.formatted)
+                    when(c) {
+                        is SlotCurrencyContent -> {
+                            val reward = when(c.mode) {
+                                SlotCurrencyContent.Mode.FLAT -> c.amount
+                                SlotCurrencyContent.Mode.PERCENTAGE -> round(input * c.amount / 100.0).toLong()
                             }
 
-                            result.append(c.simpleCardInfo())
+                            currencySum += reward
 
-                            if (!inventory.cards.containsKey(c)) {
-                                result.append(" {**NEW**}")
-                            }
-
-                            if (c.tier == CardData.Tier.ULTRA) {
-                                result.append("✨")
-                            } else if (c.tier == CardData.Tier.LEGEND) {
-                                result.append(EmojiStore.ABILITY["LEGEND"]?.formatted)
+                            when(c.mode) {
+                                SlotCurrencyContent.Mode.FLAT -> {
+                                    result.append("[Flat] : ").append(feeEmoji).append(" ").append(c.amount)
+                                }
+                                SlotCurrencyContent.Mode.PERCENTAGE -> {
+                                    result.append("[Percentage] : ").append(c.amount).append("% of Entry Fee")
+                                }
                             }
 
                             result.append("\n")
                         }
+                        is SlotCardContent -> {
+                            val cards = c.roll()
 
-                        val files = ArrayList<FileUpload>()
+                            cardsSum.addAll(cards)
 
-                        cards.toSet().filter { c -> !inventory.cards.containsKey(c) }.forEach { c ->
-                            files.add(FileUpload.fromData(c.cardImage))
+                            result.append("[Card] : ").append(c.name).append("\n")
                         }
-
-                        cards.forEach { c ->
-                            inventory.cards[c] = (inventory.cards[c] ?: 0) + 1
-                        }
-
-                        TransactionLogger.logSlotMachineRollCard(user, input, this, pickedContent, cards)
-
-                        message.editMessage(result)
-                            .setComponents()
-                            .setAllowedMentions(ArrayList())
-                            .setFiles(files)
-                            .mentionRepliedUser(false)
-                            .queue()
                     }
                 }
+
+                result.append("\nReward : \n")
+
+                if (currencySum != 0L) {
+                    val feeName = when(entryFee.entryType) {
+                        SlotEntryFee.EntryType.CAT_FOOD -> "Cat Foods"
+                        SlotEntryFee.EntryType.PLATINUM_SHARDS -> "Platinum Shards"
+                    }
+
+                    result.append("### ").append(feeName).append("\n").append(feeEmoji).append(" ").append(currencySum).append("\n")
+                }
+
+                if (cardsSum.isNotEmpty()) {
+                    result.append("### Cards\n")
+
+                    cardsSum.forEach { c ->
+                        result.append("- ").append(c.simpleCardInfo()).append("\n")
+                    }
+                }
+
+                val files = ArrayList<FileUpload>()
+
+                cardsSum.toSet().filter { c -> !inventory.cards.containsKey(c) }.forEach { c ->
+                    files.add(FileUpload.fromData(c.cardImage))
+                }
+
+                when(entryFee.entryType) {
+                    SlotEntryFee.EntryType.CAT_FOOD -> inventory.catFoods += currencySum
+                    SlotEntryFee.EntryType.PLATINUM_SHARDS -> inventory.platinumShard += currencySum
+                }
+
+                cardsSum.forEach { c ->
+                    inventory.cards[c] = (inventory.cards[c] ?: 0) + 1
+                }
+
+                CardBot.saveCardData()
+
+                TransactionLogger.logSlotMachineWin(user, input, this, pickedContents, currencySum, cardsSum)
+
+                message.editMessage(result.toString())
+                    .setComponents()
+                    .setFiles(files)
+                    .setAllowedMentions(ArrayList())
+                    .mentionRepliedUser(false)
+                    .queue()
             }
         } else {
+            val score = sequenceStacks.entries.sumOf { e -> e.value }
+
             val percentage = if (slotSize == 2)
                 0.0
             else
-                sequenceStack * 1.0 / (slotSize - 2)
+                score * 1.0 / (slotSize - 2)
 
             val entryEmoji = when(entryFee.entryType) {
                 SlotEntryFee.EntryType.CAT_FOOD -> EmojiStore.ABILITY["CF"]?.formatted
@@ -365,7 +401,7 @@ class SlotMachine {
             val compensation = round(input * percentage).toLong()
 
             result.append("\n\n😔 You lost the slot machine... 😔\n\n")
-                .append("Sequence Stack Score : ").append(sequenceStack).append(" Point(s)\n")
+                .append("Sequence Stack Score : ").append(score).append(" Point(s)\n")
                 .append("Compensation : ").append(CardData.df.format(percentage * 100.0)).append("% of Entry Fee -> $entryEmoji $compensation")
 
             when (entryFee.entryType) {
@@ -373,7 +409,7 @@ class SlotMachine {
                 SlotEntryFee.EntryType.PLATINUM_SHARDS -> inventory.platinumShard += compensation
             }
 
-            TransactionLogger.logSlotMachineRollFail(user, input, this, sequenceStack, compensation)
+            TransactionLogger.logSlotMachineRollFail(user, input, this, score, compensation)
 
             message.editMessage(result)
                 .setComponents()
@@ -410,5 +446,31 @@ class SlotMachine {
         obj.add("content", arr)
 
         return obj
+    }
+
+    private fun pickReward(sequenceStacks: Map<CustomEmoji, Int>) : List<SlotContent> {
+        val result = HashMap<CustomEmoji, HashSet<SlotContent>>()
+
+        content.filter { c -> c !is SlotPlaceHolderContent }.forEach { c ->
+            val e = c.emoji ?: return@forEach
+
+            val stack = sequenceStacks[e] ?: return@forEach
+
+            if (c.slot <= stack + 1) {
+                val contentSet = result.computeIfAbsent(e) { HashSet() }
+
+                contentSet.add(c)
+            }
+        }
+
+        val finalResult = ArrayList<SlotContent>()
+
+        result.forEach { (_, contents) ->
+            val maxStack = contents.maxOf { c -> c.slot }
+
+            finalResult.addAll(contents.filter { c -> c.slot == maxStack })
+        }
+
+        return finalResult
     }
 }

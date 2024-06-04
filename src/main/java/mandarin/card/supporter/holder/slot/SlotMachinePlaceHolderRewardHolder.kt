@@ -2,13 +2,8 @@ package mandarin.card.supporter.holder.slot
 
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
-import mandarin.card.supporter.holder.modal.SlotMachineAmountHolder
-import mandarin.card.supporter.holder.modal.SlotMachineContentSlotModalHolder
 import mandarin.card.supporter.holder.modal.SlotMachineEmojiSearchModalHolder
-import mandarin.card.supporter.slot.SlotCurrencyContent
-import mandarin.card.supporter.slot.SlotEmojiContainer
-import mandarin.card.supporter.slot.SlotEntryFee
-import mandarin.card.supporter.slot.SlotMachine
+import mandarin.card.supporter.slot.*
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
@@ -30,17 +25,18 @@ import net.dv8tion.jda.api.interactions.modals.Modal
 import kotlin.math.ceil
 import kotlin.math.min
 
-class SlotMachineCurrencyRewardHolder(
-    author: Message, messageID: String,
+class SlotMachinePlaceHolderRewardHolder(
+    author: Message,
+    channelID: String,
     private val message: Message,
     private val slotMachine: SlotMachine,
-    private val content: SlotCurrencyContent,
+    private val content: SlotPlaceHolderContent,
     private val new: Boolean
-) : ComponentHolder(author, messageID, message) {
+) : ComponentHolder(author, channelID, message) {
+    private var emojiName = ""
     private var page = 0
 
-    private var emojiName = ""
-    private val actualEmojis = SlotEmojiContainer.loadedEmoji.filter { e -> emojiName in e.name }.toMutableList()
+    private val actualEmojis = SlotEmojiContainer.loadedEmoji.filter { e -> emojiName in e.name.lowercase() && !slotMachine.content.any { c -> c.emoji?.name == e.name && c.emoji?.idLong == e.idLong } }.toMutableList()
 
     override fun clean() {
 
@@ -97,45 +93,6 @@ class SlotMachineCurrencyRewardHolder(
                     updateEmojiStatus()
                 })
             }
-            "slot" -> {
-                val input = TextInput.create("size", "Size", TextInputStyle.SHORT).setRequired(true).setPlaceholder("Put Slot Size Here").build()
-
-                val modal = Modal.create("slot", "Slot Content Required Slot Size").addActionRow(input).build()
-
-                event.replyModal(modal).queue()
-
-                connectTo(SlotMachineContentSlotModalHolder(authorMessage, channelID, message, slotMachine, content))
-            }
-            "mode" -> {
-                content.mode = SlotCurrencyContent.Mode.entries[(content.mode.ordinal + 1) % SlotCurrencyContent.Mode.entries.size]
-
-                val modeName = when(content.mode) {
-                    SlotCurrencyContent.Mode.FLAT -> "Flat"
-                    SlotCurrencyContent.Mode.PERCENTAGE -> "Percentage"
-                }
-
-                event.deferReply().setContent("Changed mode to $modeName!").setEphemeral(true).queue()
-
-                applyResult()
-            }
-            "amount" -> {
-                val valueName = when(content.mode) {
-                    SlotCurrencyContent.Mode.FLAT -> "Amount"
-                    SlotCurrencyContent.Mode.PERCENTAGE -> "Percentage"
-                }
-
-                val input = TextInput.create("amount", "Amount", TextInputStyle.SHORT).setRequired(true).setPlaceholder("Decide $valueName Value").build()
-
-                val modal = Modal.create("amount", "$valueName Value").addActionRow(input).build()
-
-                event.replyModal(modal).queue()
-
-                connectTo(SlotMachineAmountHolder(authorMessage, channelID, message) { v ->
-                    content.amount = v
-
-                    applyResult()
-                })
-            }
             "create" -> {
                 slotMachine.content.add(content)
 
@@ -147,17 +104,9 @@ class SlotMachineCurrencyRewardHolder(
                 goBackTo(SlotMachineContentHolder::class.java)
             }
             "back" -> {
-                if (new) {
-                    registerPopUp(event, "Are you sure you want to cancel creation of this reward? This cannot be undone", LangID.EN)
+                CardBot.saveCardData()
 
-                    connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
-                        goBackTo(e, SlotMachineContentHolder::class.java)
-                    }, LangID.EN))
-                } else {
-                    CardBot.saveCardData()
-
-                    goBack(event)
-                }
+                goBack(event)
             }
             "delete" -> {
                 registerPopUp(event, "Are you sure you want to delete this reward? This cannot be undone", LangID.EN)
@@ -189,16 +138,10 @@ class SlotMachineCurrencyRewardHolder(
         applyResult(event)
     }
 
-    override fun onBack() {
-        super.onBack()
-
-        applyResult()
-    }
-
     fun updateEmojiStatus() {
         actualEmojis.clear()
 
-        actualEmojis.addAll(SlotEmojiContainer.loadedEmoji.filter { e -> emojiName in e.name.lowercase() })
+        actualEmojis.addAll(SlotEmojiContainer.loadedEmoji.filter { e -> emojiName in e.name.lowercase() && !slotMachine.content.any { c -> c.emoji?.name == e.name && c.emoji?.idLong == e.idLong } })
 
         if (actualEmojis.isNotEmpty()) {
             val totalPage = ceil(actualEmojis.size * 1.0 / SearchHolder.PAGE_CHUNK).toInt()
@@ -233,16 +176,6 @@ class SlotMachineCurrencyRewardHolder(
     }
 
     private fun getContents() : String {
-        val modeName = when(content.mode) {
-            SlotCurrencyContent.Mode.FLAT -> "Flat"
-            SlotCurrencyContent.Mode.PERCENTAGE -> "Percentage"
-        }
-
-        val rewardEmoji = when(slotMachine.entryFee.entryType) {
-            SlotEntryFee.EntryType.CAT_FOOD -> EmojiStore.ABILITY["CF"]?.formatted
-            SlotEntryFee.EntryType.PLATINUM_SHARDS -> EmojiStore.ABILITY["SHARD"]?.formatted
-        }
-
         return "# ${slotMachine.name}\n" +
                 "## Slot Machine Reward Create Section\n" +
                 "In this section, you can create reward of this slot machine." +
@@ -251,22 +184,12 @@ class SlotMachineCurrencyRewardHolder(
                 " (Server invite link i in pinned message in <#${CardData.managerPlace}>)." +
                 " As soon as you add new emoji, bot will update its message, so that you can select that emoji\n" +
                 "\n" +
-                "This reward has Currency reward type." +
-                " You will have to decide reward mode : Flat of Percentage." +
-                " Flat mode will give fixed amount of currency to the users." +
-                " Percentage mode will give specific percentage of what user had put into the slot machine." +
-                " After this, you can decide the amount or the percentage value\n" +
+                "This reward has Place Holder reward type." +
+                " This is only for adding emojis to slot machine." +
+                " It doesn't perform anything more than this, so as long as you decided the emoji, it's all done\n" +
                 "### Reward Info\n" +
                 "- **Emoji** : ${content.emoji?.formatted ?: "None"}\n" +
-                "- **Required Slot** : ${content.slot}\n" +
-                "- **Reward Type** : Currency\n" +
-                "- **Mode** : $modeName\n" +
-                "- **Amount** : ${
-                    when(content.mode) {
-                        SlotCurrencyContent.Mode.FLAT -> "$rewardEmoji ${content.amount}"
-                        SlotCurrencyContent.Mode.PERCENTAGE -> "${content.amount}% of Entry Fee"
-                    }
-                }"
+                "- **Reward Type** : Place Holder"
     }
 
     private fun getComponents() : List<LayoutComponent> {
@@ -309,29 +232,6 @@ class SlotMachineCurrencyRewardHolder(
         } else {
             result.add(ActionRow.of(Button.secondary("search", "Search Emoji").withEmoji(Emoji.fromUnicode("🔎"))))
         }
-
-        val modeName = when(content.mode) {
-            SlotCurrencyContent.Mode.FLAT -> "Mode : Flat"
-            SlotCurrencyContent.Mode.PERCENTAGE -> "Mode : Percentage"
-        }
-
-        val modeEmoji = when(content.mode) {
-            SlotCurrencyContent.Mode.FLAT -> Emoji.fromUnicode("💵")
-            SlotCurrencyContent.Mode.PERCENTAGE -> Emoji.fromUnicode("⚖️")
-        }
-
-        val amountEmoji = when(slotMachine.entryFee.entryType) {
-            SlotEntryFee.EntryType.CAT_FOOD -> EmojiStore.ABILITY["CF"]
-            SlotEntryFee.EntryType.PLATINUM_SHARDS -> EmojiStore.ABILITY["SHARD"]
-        }
-
-        result.add(
-            ActionRow.of(
-                Button.secondary("slot", "Change Required Slot Size").withEmoji(Emoji.fromUnicode("🎰")),
-                Button.secondary("mode", modeName).withEmoji(modeEmoji),
-                Button.secondary("amount", "Set Amount").withEmoji(amountEmoji)
-            )
-        )
 
         val buttons = ArrayList<Button>()
 

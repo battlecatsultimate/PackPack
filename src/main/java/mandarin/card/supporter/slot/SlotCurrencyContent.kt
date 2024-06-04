@@ -17,6 +17,7 @@ class SlotCurrencyContent(emojiName: String, emojiID: Long) : SlotContent(emojiN
 
             val content = SlotCurrencyContent(obj.get("emojiName").asString, obj.get("emojiID").asLong)
 
+            content.slot = obj.get("slot").asInt
             content.mode = Mode.valueOf(obj.get("mode").asString)
             content.amount = obj.get("amount").asLong
 

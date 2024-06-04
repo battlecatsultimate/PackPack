@@ -3,6 +3,7 @@ package mandarin.card.supporter.holder.slot
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.holder.modal.SlotMachineCardRewardNameModalHolder
+import mandarin.card.supporter.holder.modal.SlotMachineContentSlotModalHolder
 import mandarin.card.supporter.holder.modal.SlotMachineEmojiSearchModalHolder
 import mandarin.card.supporter.pack.CardChancePairList
 import mandarin.card.supporter.slot.SlotCardContent
@@ -38,7 +39,7 @@ class SlotMachineCardRewardHolder(
     private val new: Boolean) : ComponentHolder(author, channelID, message) {
     private var emojiName = ""
 
-    private val actualEmojis = SlotEmojiContainer.loadedEmoji.filter { e -> emojiName in e.name.lowercase() && !slotMachine.content.any { c -> c.emoji?.name == e.name && c.emoji?.id == e.id } }.toMutableList()
+    private val actualEmojis = SlotEmojiContainer.loadedEmoji.filter { e -> emojiName in e.name.lowercase() }.toMutableList()
 
     private var page = 0
     
@@ -51,8 +52,6 @@ class SlotMachineCardRewardHolder(
     }
 
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
-        val content = content
-
         when(event.componentId) {
             "emoji" -> {
                 if (event !is StringSelectInteractionEvent)
@@ -107,6 +106,15 @@ class SlotMachineCardRewardHolder(
 
                 connectTo(event, SlotMachineCardChancePairListHolder(authorMessage, channelID, message, slotMachine, content, cardChancePairList, false))
             }
+            "slot" -> {
+                val input = TextInput.create("size", "Size", TextInputStyle.SHORT).setRequired(true).setPlaceholder("Put Slot Size Here").build()
+
+                val modal = Modal.create("slot", "Slot Content Required Slot Size").addActionRow(input).build()
+
+                event.replyModal(modal).queue()
+
+                connectTo(SlotMachineContentSlotModalHolder(authorMessage, channelID, message, slotMachine, content))
+            }
             "add" -> {
                 connectTo(event, SlotMachineCardChancePairListHolder(authorMessage, channelID, message, slotMachine, content, CardChancePairList(0), true))
             }
@@ -141,6 +149,8 @@ class SlotMachineCardRewardHolder(
                         goBackTo(e, SlotMachineContentHolder::class.java)
                     }, LangID.EN))
                 } else {
+                    CardBot.saveCardData()
+
                     goBack(event)
                 }
             }
@@ -176,7 +186,7 @@ class SlotMachineCardRewardHolder(
     fun updateEmojiStatus() {
         actualEmojis.clear()
 
-        actualEmojis.addAll(SlotEmojiContainer.loadedEmoji.filter { e -> emojiName in e.name.lowercase() && !slotMachine.content.any { c -> c.emoji?.name == e.name && c.emoji?.id == e.id } })
+        actualEmojis.addAll(SlotEmojiContainer.loadedEmoji.filter { e -> emojiName in e.name.lowercase() })
 
         if (actualEmojis.isNotEmpty()) {
             val totalPage = ceil(actualEmojis.size * 1.0 / SearchHolder.PAGE_CHUNK).toInt()
@@ -225,6 +235,9 @@ class SlotMachineCardRewardHolder(
             .append("### Reward Info\n")
             .append("- **Emoji** : ")
             .append(content.emoji?.formatted ?: "None")
+            .append("\n")
+            .append("- **Required Slot** : ")
+            .append(content.slot)
             .append("\n")
             .append("- **RewardType** : Card\n")
             .append("- **Name** : ")
@@ -278,17 +291,17 @@ class SlotMachineCardRewardHolder(
             val totalPage = ceil(actualEmojis.size * 1.0 / SearchHolder.PAGE_CHUNK)
 
             if (totalPage > 10) {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10e", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).withDisabled(page - 10 < 0))
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "prev10", "Previous 10 Pages", EmojiStore.TWO_PREVIOUS).withDisabled(page - 10 < 0))
             }
 
-            buttons.add(Button.of(ButtonStyle.SECONDARY, "preve", "Previous Pages", EmojiStore.PREVIOUS).withDisabled(page - 1 < 0))
+            buttons.add(Button.of(ButtonStyle.SECONDARY, "prev", "Previous Pages", EmojiStore.PREVIOUS).withDisabled(page - 1 < 0))
 
             buttons.add(Button.secondary("search", "Search Emoji").withEmoji(Emoji.fromUnicode("🔎")))
 
-            buttons.add(Button.of(ButtonStyle.SECONDARY, "nexte", "Next Page", EmojiStore.NEXT).withDisabled(page + 1 >= totalPage))
+            buttons.add(Button.of(ButtonStyle.SECONDARY, "next", "Next Page", EmojiStore.NEXT).withDisabled(page + 1 >= totalPage))
 
             if (totalPage > 10) {
-                buttons.add(Button.of(ButtonStyle.SECONDARY, "next10e", "Next 10 Pages", EmojiStore.TWO_NEXT).withDisabled(page + 10 >= totalPage))
+                buttons.add(Button.of(ButtonStyle.SECONDARY, "next10", "Next 10 Pages", EmojiStore.TWO_NEXT).withDisabled(page + 10 >= totalPage))
             }
 
             result.add(ActionRow.of(buttons))
@@ -323,6 +336,7 @@ class SlotMachineCardRewardHolder(
         }
 
         result.add(ActionRow.of(
+            Button.secondary("slot", "Change Required Slot Size").withEmoji(Emoji.fromUnicode("🎰")),
             Button.secondary("add", "Create New Card Pair Chance List")
                 .withEmoji(EmojiStore.CARDS.entries.filter { e -> e.value.isNotEmpty() }.random().value.random())
                 .withDisabled(content.cardChancePairLists.size >= StringSelectMenu.OPTIONS_MAX_AMOUNT || content.emoji == null),
@@ -333,10 +347,10 @@ class SlotMachineCardRewardHolder(
         val buttons = ArrayList<Button>()
 
         if (new) {
-            buttons.add(Button.success("create", "Create").withEmoji(EmojiStore.CHECK).withDisabled(content.cardChancePairLists.isEmpty() || content.emoji == null))
+            buttons.add(Button.success("create", "Create").withEmoji(EmojiStore.CHECK).withDisabled(content.cardChancePairLists.isEmpty() || content.emoji == null || content.slot == 0))
             buttons.add(Button.secondary("back", "Go Back").withEmoji(EmojiStore.BACK))
         } else {
-            buttons.add(Button.secondary("back", "Go Back").withEmoji(EmojiStore.BACK).withDisabled(content.cardChancePairLists.isEmpty() || content.emoji == null))
+            buttons.add(Button.secondary("back", "Go Back").withEmoji(EmojiStore.BACK).withDisabled(content.cardChancePairLists.isEmpty() || content.emoji == null || content.slot == 0))
             buttons.add(Button.danger("delete", "Delete").withEmoji(EmojiStore.CROSS))
         }
 

@@ -2,10 +2,7 @@ package mandarin.card.supporter.log
 
 import mandarin.card.supporter.*
 import mandarin.card.supporter.pack.CardPack
-import mandarin.card.supporter.slot.SlotCardContent
-import mandarin.card.supporter.slot.SlotCurrencyContent
-import mandarin.card.supporter.slot.SlotEntryFee
-import mandarin.card.supporter.slot.SlotMachine
+import mandarin.card.supporter.slot.*
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import net.dv8tion.jda.api.EmbedBuilder
@@ -1201,7 +1198,7 @@ object TransactionLogger {
         LogSession.session.logSlotMachineFail(user, input, compensation)
     }
 
-    fun logSlotMachineRollCurrency(user: Long, input: Long, slotMachine: SlotMachine, pickedContent: SlotCurrencyContent, reward: Long) {
+    fun logSlotMachineWin(user: Long, input: Long, slotMachine: SlotMachine, pickedContents: List<SlotContent>, currencySum: Long, cardsSum: List<Card>) {
         if (!this::slotChannel.isInitialized)
             return
 
@@ -1215,70 +1212,60 @@ object TransactionLogger {
 
         builder.addField("Slot Machine", "${slotMachine.name} (${slotMachine.uuid})", false)
 
-        builder.addField("Result", "Won", false)
-
         val feeEmoji = when(slotMachine.entryFee.entryType) {
             SlotEntryFee.EntryType.CAT_FOOD -> EmojiStore.ABILITY["CF"]?.formatted
             SlotEntryFee.EntryType.PLATINUM_SHARDS -> EmojiStore.ABILITY["SHARD"]?.formatted
         }
 
-        val contentEmoji = (pickedContent.emoji ?: EmojiStore.UNKNOWN).formatted
-
-        val content = when (pickedContent.mode) {
-            SlotCurrencyContent.Mode.FLAT -> "$contentEmoji [Flat] : $feeEmoji ${pickedContent.amount}"
-            SlotCurrencyContent.Mode.PERCENTAGE -> "$contentEmoji [Percentage] : ${pickedContent.amount}% of Entry Fee"
-        }
-
-        builder.addField("Picked Reward", content, false)
-
+        builder.addField("Result", "Won", true)
         builder.addField("Input", "$feeEmoji $input", true)
-        builder.addField("Reward", "$feeEmoji $reward", true)
 
-        slotChannel.sendMessageEmbeds(builder.build()).queue()
-
-        LogSession.session.logSlotMachineCurrency(user, input, reward, slotMachine.entryFee.entryType)
-    }
-
-    fun logSlotMachineRollCard(user: Long, input: Long, slotMachine: SlotMachine, pickedContent: SlotCardContent, cards: List<Card>) {
-        if (!this::slotChannel.isInitialized)
-            return
-
-        val builder = EmbedBuilder()
-
-        builder.setTitle("Slot Machine Rolled")
-
-        builder.setColor(StaticStore.rainbow.random())
-
-        builder.setDescription("User <@$user> rolled slot machine")
-
-        builder.addField("Slot Machine", "${slotMachine.name} (${slotMachine.uuid})", false)
-
-        builder.addField("Result", "Won", false)
-
-        val feeEmoji = when(slotMachine.entryFee.entryType) {
-            SlotEntryFee.EntryType.CAT_FOOD -> EmojiStore.ABILITY["CF"]?.formatted
-            SlotEntryFee.EntryType.PLATINUM_SHARDS -> EmojiStore.ABILITY["SHARD"]?.formatted
+        val feeName = when(slotMachine.entryFee.entryType) {
+            SlotEntryFee.EntryType.CAT_FOOD -> "Cat Foods"
+            SlotEntryFee.EntryType.PLATINUM_SHARDS -> "Platinum Shards"
         }
 
-        val contentEmoji = (pickedContent.emoji ?: EmojiStore.UNKNOWN).formatted
+        val contentBuilder = StringBuilder()
 
-        builder.addField("Picked Reward", "$contentEmoji [Card] : ${pickedContent.name}", false)
+        pickedContents.forEachIndexed { i, c ->
+            val contentEmoji = (c.emoji ?: EmojiStore.UNKNOWN).formatted
 
-        val cardBuilder = StringBuilder()
+            val content =  when(c) {
+                is SlotCurrencyContent -> {
+                    when (c.mode) {
+                        SlotCurrencyContent.Mode.FLAT -> "${contentEmoji}x${c.slot} [Flat] : $feeEmoji ${c.amount}"
+                        SlotCurrencyContent.Mode.PERCENTAGE -> "${contentEmoji}x${c.slot} [Percentage] : ${c.amount}% of Entry Fee"
+                    }
+                }
+                is SlotCardContent -> {
+                    "${contentEmoji}x${c.slot} [Card] : ${c.name}"
+                }
+                else -> "UNKNOWN"
+            }
 
-        cards.forEachIndexed { index, card ->
-            cardBuilder.append(card.simpleCardInfo())
+            contentBuilder.append(i + 1).append(". ").append(content).append("\n")
+        }
 
-            if (index < cards.size - 1) {
-                cardBuilder.append("\n")
+        builder.addField("Picked Reward", contentBuilder.toString().trim(), false)
+
+        val rewardBuilder = StringBuilder()
+
+        rewardBuilder.append("**$feeName**\n")
+            .append("$feeEmoji $currencySum\n")
+            .append("**Cards**\n")
+
+        if (cardsSum.isEmpty()) {
+            rewardBuilder.append("- None")
+        } else {
+            cardsSum.forEach { c ->
+                rewardBuilder.append("- ").append(c.simpleCardInfo()).append("\n")
             }
         }
 
-        builder.addField("Input", "$feeEmoji $input", true)
-        builder.addField("Reward", cardBuilder.toString(), false)
+        builder.addField("Reward", rewardBuilder.toString().trim(), true)
 
         slotChannel.sendMessageEmbeds(builder.build()).queue()
 
-        LogSession.session.logSlotMachineCard(user, input, cards, slotMachine.entryFee.entryType)
+        LogSession.session.logSlotMachineWin(user, input, currencySum, cardsSum, slotMachine.entryFee.entryType)
     }
 }

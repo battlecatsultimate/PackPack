@@ -4,6 +4,7 @@ import com.google.gson.JsonArray
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.holder.slot.SlotMachineCardRewardHolder
 import mandarin.card.supporter.holder.slot.SlotMachineCurrencyRewardHolder
+import mandarin.card.supporter.holder.slot.SlotMachinePlaceHolderRewardHolder
 import mandarin.packpack.supporter.StaticStore
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji
@@ -126,6 +127,7 @@ object SlotEmojiContainer {
             when(componentHolder) {
                 is SlotMachineCardRewardHolder -> componentHolder.updateEmojiStatus()
                 is SlotMachineCurrencyRewardHolder -> componentHolder.updateEmojiStatus()
+                is SlotMachinePlaceHolderRewardHolder -> componentHolder.updateEmojiStatus()
             }
         }
     }

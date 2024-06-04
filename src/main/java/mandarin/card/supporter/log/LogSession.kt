@@ -537,7 +537,7 @@ class LogSession {
         catFoodSlotMachineReward[user] = (catFoodSlotMachineReward[user] ?: 0) + compensation
     }
 
-    fun logSlotMachineCurrency(user: Long, input: Long, reward: Long, entryType: SlotEntryFee.EntryType) {
+    fun logSlotMachineWin(user: Long, input: Long, reward: Long, cards: List<Card>, entryType: SlotEntryFee.EntryType) {
         activeMembers.add(user)
 
         when(entryType) {
@@ -549,15 +549,6 @@ class LogSession {
                 platinumShardSlotMachineInput[user] = (platinumShardSlotMachineInput[user] ?: 0) + input
                 platinumShardSlotMachineReward[user] = (platinumShardSlotMachineReward[user] ?: 0) + reward
             }
-        }
-    }
-
-    fun logSlotMachineCard(user: Long, input: Long, cards: List<Card>, entryType: SlotEntryFee.EntryType) {
-        activeMembers.add(user)
-
-        when(entryType) {
-            SlotEntryFee.EntryType.CAT_FOOD -> catFoodSlotMachineInput[user] = (catFoodSlotMachineInput[user] ?: 0) + input
-            SlotEntryFee.EntryType.PLATINUM_SHARDS -> platinumShardSlotMachineInput[user] = (platinumShardSlotMachineInput[user] ?: 0) + input
         }
 
         val cardMap = generatedCards.computeIfAbsent(user) { HashMap() }

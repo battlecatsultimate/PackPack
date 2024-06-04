@@ -8,7 +8,8 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
 abstract class SlotContent(private var emojiName: String, private var emojiID: Long, private val rewardType: RewardType) {
     enum class RewardType {
         CURRENCY,
-        CARD
+        CARD,
+        PLACE_HOLDER
     }
 
     companion object {
@@ -22,12 +23,15 @@ abstract class SlotContent(private var emojiName: String, private var emojiID: L
             return when(rewardType) {
                 RewardType.CURRENCY -> SlotCurrencyContent.fromJson(obj)
                 RewardType.CARD -> SlotCardContent.fromJson(obj)
+                RewardType.PLACE_HOLDER -> SlotPlaceHolderContent.fromJson(obj)
             }
         }
     }
 
     var emoji: CustomEmoji? = null
         private set
+
+    var slot = 1
 
     fun load() {
         if (emojiName.isBlank() || emojiID == 0L)
@@ -56,6 +60,8 @@ abstract class SlotContent(private var emojiName: String, private var emojiID: L
         obj.addProperty("emojiID", emojiID)
 
         obj.addProperty("rewardType", rewardType.name)
+
+        obj.addProperty("slot", slot)
 
         appendJson(obj)
 

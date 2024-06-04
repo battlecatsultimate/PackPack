@@ -1,15 +1,13 @@
 package mandarin.card.supporter.holder.modal
 
-import mandarin.card.CardBot
-import mandarin.card.supporter.CardData
+import mandarin.card.supporter.slot.SlotContent
 import mandarin.card.supporter.slot.SlotMachine
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.modal.ModalHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
-import kotlin.math.min
 
-class SlotMachineSlotSizeModalHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine) : ModalHolder(author, channelID, message) {
+class SlotMachineContentSlotModalHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine, private val slotContent: SlotContent) : ModalHolder(author, channelID, message) {
     override fun clean() {
 
     }
@@ -19,14 +17,14 @@ class SlotMachineSlotSizeModalHolder(author: Message, channelID: String, message
     }
 
     override fun onEvent(event: ModalInteractionEvent) {
-        if (event.modalId != "size")
+        if (event.modalId != "slot")
             return
 
-        val value = getValueFromMap(event.values, "slot")
+        val value = getValueFromMap(event.values, "size")
 
         if (!StaticStore.isNumeric(value)) {
             event.deferReply()
-                .setContent("Slot size value must be numeric!")
+                .setContent("Slot value must be numeric!")
                 .setEphemeral(true)
                 .queue()
 
@@ -39,7 +37,7 @@ class SlotMachineSlotSizeModalHolder(author: Message, channelID: String, message
 
         if (amount <= 0) {
             event.deferReply()
-                .setContent("Slot size value must be positive!")
+                .setContent("Slot value must be positive!")
                 .setEphemeral(true)
                 .queue()
 
@@ -48,24 +46,21 @@ class SlotMachineSlotSizeModalHolder(author: Message, channelID: String, message
             return
         }
 
-        if (amount > 15) {
-            event.deferReply().setContent("Max slot size is 15!").setEphemeral(true).queue()
+        if (amount > slotMachine.slotSize) {
+            event.deferReply()
+                .setContent("Slot value must not exceed slot machine's slot size : ${slotMachine.slotSize}")
+                .setEphemeral(true)
+                .queue()
+
+            goBack()
 
             return
         }
 
-        slotMachine.slotSize = amount
-
-        slotMachine.content.forEach { c ->
-            c.slot = min(c.slot, amount)
-        }
-
-        if (slotMachine in CardData.slotMachines) {
-            CardBot.saveCardData()
-        }
+        slotContent.slot = amount
 
         event.deferReply()
-            .setContent("Successfully set slot size for this slot machine! Check result above")
+            .setContent("Successfully changed required amount of slot like above!")
             .setEphemeral(true)
             .queue()
 

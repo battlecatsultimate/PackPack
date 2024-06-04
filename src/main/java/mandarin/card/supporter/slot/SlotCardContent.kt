@@ -18,6 +18,7 @@ class SlotCardContent(emojiName: String, emojiID: Long) : SlotContent(emojiName,
 
             val content = SlotCardContent(obj.get("emojiName").asString, obj.get("emojiID").asLong)
 
+            content.slot = obj.get("slot").asInt
             content.name = obj.get("name").asString
 
             obj.getAsJsonArray("cardChancePairLists").forEach { e ->
