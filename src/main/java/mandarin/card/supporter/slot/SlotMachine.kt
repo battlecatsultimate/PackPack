@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.utils.FileUpload
+import kotlin.math.max
 import kotlin.math.round
 
 class SlotMachine {
@@ -203,6 +204,9 @@ class SlotMachine {
 
         val emojiSequence = ArrayList<CustomEmoji>()
         val sequenceStacks = HashMap<CustomEmoji, Int>()
+        var totalSequenceStacks = 0
+
+        var temporalSequenceStack = 0
 
         val downArrow = Emoji.fromUnicode("🔽").formatted
         val upArrow = Emoji.fromUnicode("🔼").formatted
@@ -225,11 +229,18 @@ class SlotMachine {
 
                 sequenceStacks.computeIfAbsent(emoji) { 0 }
 
-                if (index > 0 && previousEmoji === emoji) {
-                    val e = previousEmoji
+                if (index > 0) {
+                    if (previousEmoji === emoji) {
+                        temporalSequenceStack++
+                        totalSequenceStacks++
+                    } else {
+                        val e = previousEmoji
 
-                    if (e != null) {
-                        sequenceStacks[e] = (sequenceStacks[e] ?: 0) + 1
+                        if (e != null) {
+                            sequenceStacks[e] = max(sequenceStacks[e] ?: 0, temporalSequenceStack)
+                        }
+
+                        temporalSequenceStack = 0
                     }
                 }
 
@@ -265,11 +276,18 @@ class SlotMachine {
                     .mentionRepliedUser(false)
                     .queue()
 
-                if (index > 0 && previousEmoji === emoji) {
-                    val e = previousEmoji
+                if (index > 0) {
+                    if (previousEmoji === emoji) {
+                        temporalSequenceStack++
+                        totalSequenceStacks++
+                    } else {
+                        val e = previousEmoji
 
-                    if (e != null) {
-                        sequenceStacks[e] = (sequenceStacks[e] ?: 0) + 1
+                        if (e != null) {
+                            sequenceStacks[e] = max(sequenceStacks[e] ?: 0, temporalSequenceStack)
+                        }
+
+                        temporalSequenceStack = 0
                     }
                 }
 
@@ -386,12 +404,10 @@ class SlotMachine {
                     .queue()
             }
         } else {
-            val score = sequenceStacks.entries.sumOf { e -> e.value }
-
             val percentage = if (slotSize == 2)
                 0.0
             else
-                score * 1.0 / (slotSize - 2)
+                totalSequenceStacks * 1.0 / (slotSize - 2)
 
             val entryEmoji = when(entryFee.entryType) {
                 SlotEntryFee.EntryType.CAT_FOOD -> EmojiStore.ABILITY["CF"]?.formatted
@@ -401,7 +417,7 @@ class SlotMachine {
             val compensation = round(input * percentage).toLong()
 
             result.append("\n\n😔 You lost the slot machine... 😔\n\n")
-                .append("Sequence Stack Score : ").append(score).append(" Point(s)\n")
+                .append("Sequence Stack Score : ").append(totalSequenceStacks).append(" Point(s)\n")
                 .append("Compensation : ").append(CardData.df.format(percentage * 100.0)).append("% of Entry Fee -> $entryEmoji $compensation")
 
             when (entryFee.entryType) {
@@ -409,7 +425,7 @@ class SlotMachine {
                 SlotEntryFee.EntryType.PLATINUM_SHARDS -> inventory.platinumShard += compensation
             }
 
-            TransactionLogger.logSlotMachineRollFail(user, input, this, score, compensation)
+            TransactionLogger.logSlotMachineRollFail(user, input, this, totalSequenceStacks, compensation)
 
             message.editMessage(result)
                 .setComponents()
