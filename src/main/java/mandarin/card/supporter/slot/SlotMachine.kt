@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.entities.emoji.CustomEmoji
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.utils.FileUpload
 import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.round
 
 class SlotMachine {
@@ -426,7 +427,7 @@ class SlotMachine {
             val percentage = if (slotSize == 2)
                 0.0
             else
-                totalSequenceStacks * 1.0 / (slotSize - 2)
+                min(1.0, totalSequenceStacks * 1.0 / (slotSize - 2))
 
             val entryEmoji = when(entryFee.entryType) {
                 SlotEntryFee.EntryType.CAT_FOOD -> EmojiStore.ABILITY["CF"]?.formatted
