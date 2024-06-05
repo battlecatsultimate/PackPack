@@ -268,6 +268,12 @@ class SlotMachine {
 
                 emojiSequence.add(emoji)
             }
+
+            val e = previousEmoji
+
+            if (e != null) {
+                sequenceStacks[e] = max(sequenceStacks[e] ?: 0, temporalSequenceStack)
+            }
         } else {
             repeat(slotSize) { index ->
                 val builder = StringBuilder()
@@ -316,6 +322,12 @@ class SlotMachine {
                 emojiSequence.add(emoji)
 
                 Thread.sleep(1000)
+            }
+
+            val e = previousEmoji
+
+            if (e != null) {
+                sequenceStacks[e] = max(sequenceStacks[e] ?: 0, temporalSequenceStack)
             }
         }
 
@@ -493,6 +505,8 @@ class SlotMachine {
     private fun pickReward(sequenceStacks: Map<CustomEmoji, Int>) : List<SlotContent> {
         val result = HashMap<CustomEmoji, HashSet<SlotContent>>()
 
+        println(sequenceStacks)
+
         content.filter { c -> c !is SlotPlaceHolderContent }.forEach { c ->
             val e = c.emoji ?: return@forEach
 
@@ -512,6 +526,8 @@ class SlotMachine {
 
             finalResult.addAll(contents.filter { c -> c.slot == maxStack })
         }
+
+        println(finalResult)
 
         return finalResult
     }
