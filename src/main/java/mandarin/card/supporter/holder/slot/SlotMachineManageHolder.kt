@@ -97,7 +97,7 @@ class SlotMachineManageHolder(author: Message, channelID: String, private val me
                 }, LangID.EN))
             }
             "back" -> {
-                slotMachine.activate = slotMachine.valid
+                slotMachine.activate = slotMachine.activate && slotMachine.valid
 
                 goBack(event)
             }
