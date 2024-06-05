@@ -25,7 +25,7 @@ class Slot : Command(LangID.EN, true){
         val roles = loader.member.roles.map { r -> r.idLong }
         val possibleSlotMachines = CardData.slotMachines.filter { s -> s.valid && s.activate && (s.roles.isEmpty() || s.roles.any { r -> r in roles }) }
 
-        if (CardData.slotMachines.isEmpty()) {
+        if (possibleSlotMachines.isEmpty()) {
             replyToMessageSafely(loader.channel, "There's no slot machine to roll... Contact card managers!", loader.message) { a -> a }
 
             return
