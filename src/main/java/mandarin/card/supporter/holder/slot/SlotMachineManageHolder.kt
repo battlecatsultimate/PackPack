@@ -14,10 +14,13 @@ import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
+import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenu
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
@@ -43,6 +46,22 @@ class SlotMachineManageHolder(author: Message, channelID: String, private val me
                 event.replyModal(modal).queue()
 
                 connectTo(SlotMachineSlotSizeModalHolder(authorMessage, channelID, message, slotMachine))
+            }
+            "roles" -> {
+                if (event !is EntitySelectInteractionEvent)
+                    return
+
+                event.values.forEach { id ->
+                    if (id.idLong in slotMachine.roles) {
+                        slotMachine.roles.remove(id.idLong)
+                    } else {
+                        slotMachine.roles.add(id.idLong)
+                    }
+                }
+
+                event.deferReply().setContent("Successfully added/removed selected roles! Check the result above").setEphemeral(true).queue()
+
+                applyResult()
             }
             "name" -> {
                 val input = TextInput.create("name", "Name", TextInputStyle.SHORT).setPlaceholder("Decide Slot Machine Name Here").setRequired(true).setRequiredRange(1, 50).build()
@@ -179,7 +198,12 @@ class SlotMachineManageHolder(author: Message, channelID: String, private val me
             Button.secondary("entryFee", "Entry Fee").withEmoji(Emoji.fromUnicode("💵")),
             Button.secondary("content", "Slot Contents").withEmoji(Emoji.fromUnicode("🎰"))
         ))
+
         result.add(ActionRow.of(Button.secondary("cooldown", "Cooldown").withEmoji(Emoji.fromUnicode("⏰"))))
+
+        result.add(ActionRow.of(
+            EntitySelectMenu.create("roles", EntitySelectMenu.SelectTarget.ROLE).setPlaceholder("Select Role To Add/Delete").setRequiredRange(0, SelectMenu.OPTIONS_MAX_AMOUNT).build()
+        ))
 
         if (new) {
             result.add(ActionRow.of(

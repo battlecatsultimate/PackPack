@@ -40,6 +40,12 @@ class SlotMachine {
                 slotMachine.content.add(SlotContent.fromJson(e.asJsonObject))
             }
 
+            if (obj.has("roles")) {
+                obj.getAsJsonArray("roles").forEach { e ->
+                    slotMachine.roles.add(e.asLong)
+                }
+            }
+
             return slotMachine
         }
     }
@@ -54,6 +60,8 @@ class SlotMachine {
         private set
 
     val content = ArrayList<SlotContent>()
+
+    val roles = ArrayList<Long>()
 
     val valid: Boolean
         get() {
@@ -177,6 +185,17 @@ class SlotMachine {
             builder.append("`No Cooldown`")
         } else {
             builder.append("`").append(CardData.convertMillisecondsToText(cooldown)).append("`")
+        }
+
+        if (roles.isNotEmpty()) {
+            builder.append("\n\nThis slot machine requires any of roles below!\n")
+
+            roles.forEachIndexed { i, r ->
+                builder.append("- <@&").append(r).append(">")
+
+                if (i < roles.size - 1)
+                    builder.append("\n")
+            }
         }
 
         return builder.toString()
@@ -460,6 +479,12 @@ class SlotMachine {
         }
 
         obj.add("content", arr)
+
+        val roleArr = JsonArray()
+
+        roles.forEach { r -> roleArr.add(r) }
+
+        obj.add("roles", roleArr)
 
         return obj
     }

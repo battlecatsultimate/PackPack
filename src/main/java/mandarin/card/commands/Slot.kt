@@ -1,7 +1,8 @@
 package mandarin.card.commands
 
 import mandarin.card.supporter.CardData
-import mandarin.card.supporter.holder.SlotMachineSelectHolder
+import mandarin.card.supporter.holder.slot.SlotMachineSelectHolder
+import mandarin.card.supporter.slot.SlotMachine
 import mandarin.packpack.commands.Command
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
@@ -19,9 +20,11 @@ import kotlin.math.ceil
 import kotlin.math.min
 
 class Slot : Command(LangID.EN, true){
-    private val possibleSlotMachines = CardData.slotMachines.filter { s -> s.valid && s.activate }
 
     override fun doSomething(loader: CommandLoader) {
+        val roles = loader.member.roles.map { r -> r.idLong }
+        val possibleSlotMachines = CardData.slotMachines.filter { s -> s.valid && s.activate && (s.roles.isEmpty() || s.roles.any { r -> r in roles }) }
+
         if (CardData.slotMachines.isEmpty()) {
             replyToMessageSafely(loader.channel, "There's no slot machine to roll... Contact card managers!", loader.message) { a -> a }
 
@@ -32,12 +35,12 @@ class Slot : Command(LangID.EN, true){
 
         val skip = "-s" in contents || "-skip" in contents
 
-        replyToMessageSafely(loader.channel, "Select slot machine to roll", loader.message, { a -> a.setComponents(getComponents(loader.user)) }) { msg ->
+        replyToMessageSafely(loader.channel, "Select slot machine to roll", loader.message, { a -> a.setComponents(getComponents(loader.user, possibleSlotMachines)) }) { msg ->
             StaticStore.putHolder(loader.user.id, SlotMachineSelectHolder(loader.message, loader.channel.id, msg, skip))
         }
     }
 
-    private fun getComponents(user: User) : List<LayoutComponent> {
+    private fun getComponents(user: User, possibleSlotMachines: List<SlotMachine>) : List<LayoutComponent> {
         val cooldownMap = CardData.slotCooldown.computeIfAbsent(user.id) { HashMap() }
 
         val currentTime = CardData.getUnixEpochTime()
