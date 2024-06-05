@@ -1109,10 +1109,10 @@ class Report : Command(LangID.EN, true) {
                     "There are $totalT4Cards T4 cards\n" +
                     "\n" +
                     "Users have spent $cf $totalCatFoodSlotMachineInput for rolling slot machine\n" +
-                    "Users have spent $cf $totalCatFoodSlotMachineReward from slot machine\n" +
+                    "Users have gotten $cf $totalCatFoodSlotMachineReward from slot machine\n" +
                     "\n" +
                     "Users have spent $shard $totalPlatinumShardSlotMachineInput for rolling slot machine\n" +
-                    "Users have spent $shard $totalPlatinumShardSlotMachineReward from slot machine" +
+                    "Users have gotten $shard $totalPlatinumShardSlotMachineReward from slot machine" +
                     "\n" +
                     "============================"
 
