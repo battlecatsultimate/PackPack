@@ -151,7 +151,7 @@ class SlotMachinePlaceHolderRewardHolder(
             }
         }
 
-        if (content.emoji != null && content.emoji !in actualEmojis) {
+        if (content.emoji != null && content.emoji !in SlotEmojiContainer.loadedEmoji) {
             content.changeEmoji(null)
         }
 

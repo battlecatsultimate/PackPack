@@ -9,6 +9,7 @@ import mandarin.card.supporter.pack.CardChancePairList
 import mandarin.card.supporter.slot.SlotCardContent
 import mandarin.card.supporter.slot.SlotEmojiContainer
 import mandarin.card.supporter.slot.SlotMachine
+import mandarin.card.supporter.slot.SlotPlaceHolderContent
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
@@ -39,7 +40,7 @@ class SlotMachineCardRewardHolder(
     private val new: Boolean) : ComponentHolder(author, channelID, message) {
     private var emojiName = ""
 
-    private val actualEmojis = SlotEmojiContainer.loadedEmoji.filter { e -> emojiName in e.name.lowercase() }.toMutableList()
+    private val actualEmojis = SlotEmojiContainer.loadedEmoji.filter { e -> emojiName in e.name.lowercase() && !slotMachine.content.filter { c -> c !== content && c is SlotPlaceHolderContent }.any { c -> c.emoji?.name == e.name && c.emoji?.id == e.id } }.toMutableList()
 
     private var page = 0
     
@@ -186,7 +187,7 @@ class SlotMachineCardRewardHolder(
     fun updateEmojiStatus() {
         actualEmojis.clear()
 
-        actualEmojis.addAll(SlotEmojiContainer.loadedEmoji.filter { e -> emojiName in e.name.lowercase() })
+        actualEmojis.addAll(SlotEmojiContainer.loadedEmoji.filter { e -> emojiName in e.name.lowercase() && !slotMachine.content.filter { c -> c !== content && c is SlotPlaceHolderContent }.any { c -> c.emoji?.name == e.name && c.emoji?.id == e.id } })
 
         if (actualEmojis.isNotEmpty()) {
             val totalPage = ceil(actualEmojis.size * 1.0 / SearchHolder.PAGE_CHUNK).toInt()
@@ -196,7 +197,7 @@ class SlotMachineCardRewardHolder(
             }
         }
 
-        if (content.emoji != null && content.emoji !in actualEmojis) {
+        if (content.emoji != null && content.emoji !in SlotEmojiContainer.loadedEmoji) {
             content.changeEmoji(null)
         }
 
