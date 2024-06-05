@@ -470,8 +470,9 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}res" -> RegisterEmojiServer().execute(event)
             "${globalPrefix}unregisteremojiserver",
             "${globalPrefix}ues" -> UnregisterEmojiServer().execute(event)
-            "${globalPrefix}slot",
             "${globalPrefix}slotmachine",
+            "${globalPrefix}slot",
+            "${globalPrefix}slots",
             "${globalPrefix}sl" -> Slot().execute(event)
         }
 
