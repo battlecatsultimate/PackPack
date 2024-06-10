@@ -1764,5 +1764,7 @@
   "sercon_rolememalready" : "This role is registered as member role already!",
   "sercon_rolemodalready" : "This role is registered as moderator role already!",
   "sercon_rolebooalready" : "This role is registered as booster role already!",
-  "sercon_customalready" : "This role is registered as custom role already!"
+  "sercon_customalready" : "This role is registered as custom role already!",
+  "sercon_customunreg" : "Are you sure you want to unregister role <@&%s>? This cannot be undone",
+  "sercon_customremoved" : "Successfully unregistered role <@&%s>!"
 }

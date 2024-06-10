@@ -1,6 +1,7 @@
 package mandarin.packpack.supporter.server.holder.component.config;
 
 import mandarin.packpack.supporter.EmojiStore;
+import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder;
@@ -13,6 +14,7 @@ import net.dv8tion.jda.api.entities.RoleIcon;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
@@ -84,6 +86,37 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
                         applyResult();
                     }));
                 }
+            }
+            case "unregister" -> {
+                if (!(event instanceof StringSelectInteractionEvent e))
+                    return;
+
+                List<String> values = e.getValues();
+
+                if (values.isEmpty())
+                    return;
+
+                String id = values.getFirst();
+
+                registerPopUp(e, LangID.getStringByID("sercon_customunreg", lang).formatted(id), lang);
+
+                connectTo(new ConfirmPopUpHolder(getAuthorMessage(), channelID, message, ev -> {
+                    holder.ID.entrySet().removeIf(entry -> {
+                        String targetID = entry.getValue();
+
+                        return targetID != null && targetID.equals(id);
+                    });
+
+                    ev.deferReply()
+                            .setContent(LangID.getStringByID("sercon_customremoved", lang).formatted(id))
+                            .setAllowedMentions(new ArrayList<>())
+                            .setEphemeral(true)
+                            .queue();
+
+                    StaticStore.putHolder(getAuthorMessage().getAuthor().getId(), this);
+
+                    applyResult();
+                }, lang));
             }
             case "prev10" -> {
                 page -= 10;
