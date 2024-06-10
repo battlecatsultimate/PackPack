@@ -552,7 +552,7 @@ public class AllEventAdapter extends ListenerAdapter {
                     new StageStatAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
             case "serverconfig", "sconfig", "serverc", "sc" -> {
                 if (idh != null) {
-                    new Config(ConstraintCommand.ROLE.MOD, lang, idh, idh.config, true).execute(event);
+                    new ServerConfig(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
                 }
             }
             case "commandban", "cb" -> new CommandBan(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
