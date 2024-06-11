@@ -1,3 +1,4 @@
+import mandarin.card.supporter.PositiveMap
 import java.util.Timer
 import java.util.TimerTask
 import java.util.concurrent.ScheduledThreadPoolExecutor
@@ -7,24 +8,17 @@ class TestUnit {
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {
-            val executor = Timer()
+            val map = PositiveMap<String, Long>()
 
-            var thread: Thread? = null
+            map["hello"] = 1L
 
-            executor.schedule(object : TimerTask() {
-                override fun run() {
-                    println("!?")
+            println(map["hello"])
+            println(map.containsKey("hello"))
 
-                    if (thread == null) {
-                        thread = Thread.currentThread()
-                    } else {
-                        println(Thread.currentThread() === thread)
-                        println(Thread.currentThread().name)
-                        println(thread?.name)
-                        println("---")
-                    }
-                }
-            }, 0L, 1000L)
+            map["hello"] = (map["hello"] ?: 0L) - 2L
+
+            println(map["hello"])
+            println(map.containsKey("hello"))
         }
     }
 }

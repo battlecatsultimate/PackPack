@@ -744,8 +744,6 @@ object CardBot : ListenerAdapter() {
 
                 CardData.inventories[key] = value
             }
-
-            CardData.inventories.values.forEach { i -> i.cards.entries.removeIf { e -> e.value <= 0 } }
         }
 
         if (obj.has("sessions")) {

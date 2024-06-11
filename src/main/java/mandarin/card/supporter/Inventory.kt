@@ -5,9 +5,9 @@ import com.google.gson.JsonObject
 import mandarin.packpack.supporter.StaticStore
 
 class Inventory(private val id: Long) {
-    var cards = HashMap<Card, Int>()
-    var favorites = HashMap<Card, Int>()
-    var auctionQueued = HashMap<Card, Int>()
+    var cards = PositiveMap<Card, Int>()
+    var favorites = PositiveMap<Card, Int>()
+    var auctionQueued = PositiveMap<Card, Int>()
 
     var vanityRoles = ArrayList<CardData.Role>()
 
