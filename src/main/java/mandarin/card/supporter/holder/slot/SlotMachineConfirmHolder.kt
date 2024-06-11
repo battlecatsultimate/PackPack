@@ -35,26 +35,15 @@ class SlotMachineConfirmHolder(author: Message, channelID: String, private val m
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
             "roll" -> {
-                val minimumInput = max(slotMachine.entryFee.minimumFee, 1)
-
-                val maximumInput = when(slotMachine.entryFee.entryType) {
-                    SlotEntryFee.EntryType.CAT_FOOD -> min(slotMachine.entryFee.maximumFee, inventory.actualCatFood)
-                    SlotEntryFee.EntryType.PLATINUM_SHARDS -> min(slotMachine.entryFee.maximumFee, inventory.platinumShard)
-                }
-
-                val input = TextInput.create("fee", "Entry Fee", TextInputStyle.SHORT).setPlaceholder("Put Entry Fee From $minimumInput To $maximumInput").setRequired(true).build()
-
-                val modal = Modal.create("roll", "Slot Machine Roll").addActionRow(input).build()
-
-                event.replyModal(modal).queue()
-
-                connectTo(SlotMachineRollModalHolder(authorMessage, channelID, message, slotMachine, inventory) { e, fee ->
+                if (slotMachine.entryFee.minimumFee == slotMachine.entryFee.maximumFee) {
                     val entryEmoji = when(slotMachine.entryFee.entryType) {
                         SlotEntryFee.EntryType.CAT_FOOD -> EmojiStore.ABILITY["CF"]?.formatted
                         SlotEntryFee.EntryType.PLATINUM_SHARDS -> EmojiStore.ABILITY["SHARD"]?.formatted
                     }
 
-                    registerPopUp(e, "Are you sure you want to roll this slot machine with entry fee of $entryEmoji $fee?", LangID.EN)
+                    val fee = slotMachine.entryFee.maximumFee
+
+                    registerPopUp(event, "Are you sure you want to roll this slot machine with entry fee of $entryEmoji $fee?", LangID.EN)
 
                     connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { ev ->
                         ev.deferEdit()
@@ -68,7 +57,42 @@ class SlotMachineConfirmHolder(author: Message, channelID: String, private val m
 
                         expired = true
                     }, LangID.EN))
-                })
+                } else {
+                    val minimumInput = max(slotMachine.entryFee.minimumFee, 1)
+
+                    val maximumInput = when(slotMachine.entryFee.entryType) {
+                        SlotEntryFee.EntryType.CAT_FOOD -> min(slotMachine.entryFee.maximumFee, inventory.actualCatFood)
+                        SlotEntryFee.EntryType.PLATINUM_SHARDS -> min(slotMachine.entryFee.maximumFee, inventory.platinumShard)
+                    }
+
+                    val input = TextInput.create("fee", "Entry Fee", TextInputStyle.SHORT).setPlaceholder("Put Entry Fee From $minimumInput To $maximumInput").setRequired(true).build()
+
+                    val modal = Modal.create("roll", "Slot Machine Roll").addActionRow(input).build()
+
+                    event.replyModal(modal).queue()
+
+                    connectTo(SlotMachineRollModalHolder(authorMessage, channelID, message, slotMachine, inventory) { e, fee ->
+                        val entryEmoji = when(slotMachine.entryFee.entryType) {
+                            SlotEntryFee.EntryType.CAT_FOOD -> EmojiStore.ABILITY["CF"]?.formatted
+                            SlotEntryFee.EntryType.PLATINUM_SHARDS -> EmojiStore.ABILITY["SHARD"]?.formatted
+                        }
+
+                        registerPopUp(e, "Are you sure you want to roll this slot machine with entry fee of $entryEmoji $fee?", LangID.EN)
+
+                        connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { ev ->
+                            ev.deferEdit()
+                                .setContent("Rolling...! 🎲")
+                                .setComponents()
+                                .setAllowedMentions(ArrayList())
+                                .mentionRepliedUser(false)
+                                .queue {
+                                    slotMachine.roll(message, authorMessage.author.idLong, inventory, fee, skip)
+                                }
+
+                            expired = true
+                        }, LangID.EN))
+                    })
+                }
             }
             "back" -> {
                 goBack(event)
