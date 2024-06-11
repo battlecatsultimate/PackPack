@@ -238,6 +238,10 @@ class SlotMachine {
             return
         }
 
+        val cooldownMap = CardData.slotCooldown.computeIfAbsent(user.toString()) { _ -> HashMap() }
+
+        cooldownMap[uuid] = CardData.getUnixEpochTime() + cooldown
+
         when(entryFee.entryType) {
             SlotEntryFee.EntryType.CAT_FOOD -> inventory.catFoods -= input
             SlotEntryFee.EntryType.PLATINUM_SHARDS -> inventory.platinumShard -= input
@@ -488,10 +492,6 @@ class SlotMachine {
                 .mentionRepliedUser(false)
                 .queue()
         }
-
-        val cooldownMap = CardData.slotCooldown.computeIfAbsent(user.toString()) { _ -> HashMap() }
-
-        cooldownMap[uuid] = CardData.getUnixEpochTime() + cooldown
 
         CardBot.saveCardData()
     }
