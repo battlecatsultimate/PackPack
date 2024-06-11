@@ -9,10 +9,13 @@ import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.log.TransactionLogger
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
+import mandarin.packpack.supporter.calculation.Equation
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.emoji.CustomEmoji
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.utils.FileUpload
+import java.math.BigDecimal
+import java.math.BigInteger
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.round
@@ -134,6 +137,8 @@ class SlotMachine {
                 SlotEntryFee.EntryType.PLATINUM_SHARDS -> EmojiStore.ABILITY["SHARD"]?.formatted
             }
 
+            val odds = getOdds()
+
             content.forEachIndexed { index, content ->
                 builder.append(index + 1).append(". ").append(content.emoji?.formatted ?: EmojiStore.UNKNOWN.formatted)
 
@@ -143,7 +148,13 @@ class SlotMachine {
 
                 when (content) {
                     is SlotCardContent -> {
-                        builder.append(" [Card] : ").append(content.name.ifBlank { "None" }).append("\n")
+                        builder.append(" [Card] : ").append(content.name.ifBlank { "None" })
+
+                        if (odds.isNotEmpty()) {
+                            builder.append(" { Chance = ").append("%5f".format(odds[index].toDouble())).append("% }")
+                        }
+
+                        builder.append("\n")
 
                         content.cardChancePairLists.forEachIndexed { ind, list ->
                             builder.append("  - ").append(list.amount).append(" ")
@@ -167,8 +178,20 @@ class SlotMachine {
                     }
                     is SlotCurrencyContent -> {
                         when(content.mode) {
-                            SlotCurrencyContent.Mode.FLAT -> builder.append(" [Flat] : ").append(emoji).append(" ").append(content.amount)
-                            SlotCurrencyContent.Mode.PERCENTAGE -> builder.append(" [Percentage] : ").append(content.amount).append("% of Entry Fee")
+                            SlotCurrencyContent.Mode.FLAT -> {
+                                builder.append(" [Flat] : ").append(emoji).append(" ").append(content.amount)
+
+                                if (odds.isNotEmpty()) {
+                                    builder.append(" { Chance = ").append("%5f".format(odds[index].toDouble())).append("% }")
+                                }
+                            }
+                            SlotCurrencyContent.Mode.PERCENTAGE -> {
+                                builder.append(" [Percentage] : ").append(content.amount).append("% of Entry Fee")
+
+                                if (odds.isNotEmpty()) {
+                                    builder.append(" { Chance = ").append("%5f".format(odds[index].toDouble())).append("% }")
+                                }
+                            }
                         }
                     }
                     is SlotPlaceHolderContent -> {
@@ -473,6 +496,19 @@ class SlotMachine {
         CardBot.saveCardData()
     }
 
+    fun getOdd(c: SlotContent) : BigDecimal {
+        val e = c.emoji ?: return BigDecimal.ZERO
+
+        val sameEmojiContent = content.filter { co -> c.emoji == e && co.slot > c.slot }
+
+        val maxSequence = if (sameEmojiContent.isEmpty())
+            slotSize
+        else
+            sameEmojiContent.minOf { co -> co.slot }
+
+        return calculateOdd(c.slot, maxSequence)
+    }
+
     fun asJson() : JsonObject {
         val obj = JsonObject()
 
@@ -505,8 +541,6 @@ class SlotMachine {
     private fun pickReward(sequenceStacks: Map<CustomEmoji, Int>) : List<SlotContent> {
         val result = HashMap<CustomEmoji, HashSet<SlotContent>>()
 
-        println(sequenceStacks)
-
         content.filter { c -> c !is SlotPlaceHolderContent }.forEach { c ->
             val e = c.emoji ?: return@forEach
 
@@ -530,5 +564,208 @@ class SlotMachine {
         println(finalResult)
 
         return finalResult
+    }
+
+    private fun factorial(n: BigInteger) : BigInteger {
+        if (n <= BigInteger.ONE)
+            return BigInteger.ONE
+
+        return n * factorial(n - BigInteger.ONE)
+    }
+
+    private fun nCr(n: BigInteger, r: BigInteger) : BigInteger {
+        if (r > n)
+            return BigInteger.ZERO
+
+        return factorial(n) / (factorial(r) * factorial(n - r))
+    }
+
+    private fun getStacks(sameEmoji: Int, sequence: Int) : List<IntArray> {
+        val result = ArrayList<IntArray>()
+
+        if (sequence == slotSize) {
+            result.add(intArrayOf(sequence))
+
+            return result
+        }
+
+        if (sequence == sameEmoji) {
+            result.add(intArrayOf(sequence))
+
+            return result
+        }
+
+        if (sequence > slotSize || sequence > sameEmoji) {
+            return result
+        }
+
+        val stack = sequence + 1
+
+        var possibleSTack = min(sequence, sameEmoji - sequence)
+
+        while (possibleSTack >= 1) {
+            val subStacks = getSubStacks(slotSize - stack, sameEmoji - sequence, possibleSTack)
+
+            for (subStack in subStacks) {
+                val subList = ArrayList<Int>()
+
+                subList.add(sequence)
+
+                for (stackElement in subStack) {
+                    subList.add(stackElement)
+                }
+
+                if (subList.sum() == sameEmoji) {
+                    result.add(subList.toIntArray())
+                }
+            }
+
+            possibleSTack -= 1
+        }
+
+        return result
+    }
+
+    private fun getSubStacks(slotSize: Int, sameEmoji: Int, sequence: Int) : List<IntArray> {
+        val result = ArrayList<IntArray>()
+
+        if (sequence > slotSize || sequence > sameEmoji)
+            return result
+
+        val stack = sequence + 1
+        var possibleStack = min(sequence, sameEmoji - sequence)
+
+        if (possibleStack == 0) {
+            result.add(intArrayOf(sequence))
+        } else {
+            while (possibleStack >= 1) {
+                val subStacks = getSubStacks(slotSize - stack, sameEmoji - sequence, possibleStack)
+
+                if (subStacks.isEmpty()) {
+                    result.add(intArrayOf(sequence))
+                } else {
+                    for (subStack in subStacks) {
+                        val subList = ArrayList<Int>()
+
+                        subList.add(sequence)
+
+                        for (stackElement in subStack) {
+                            subList.add(stackElement)
+                        }
+
+                        result.add(subList.toIntArray())
+                    }
+                }
+
+                possibleStack -= 1
+            }
+        }
+
+        return result
+    }
+
+    private fun calculateOccasion(sameEmoji: Int, sequence: Int) : BigInteger {
+        if (slotSize < sameEmoji) {
+            throw IllegalStateException("E/SlotMachine::calculateOccasion - Out of bounds : slotSize < sameEmoji => %d < %d".format(slotSize, sameEmoji))
+        }
+
+        if (slotSize < sequence) {
+            throw IllegalStateException("E/SlotMachine::calculateOccasion - Out of bounds : slotSize < sequence => %d < %d".format(slotSize, sequence))
+        }
+
+        if (sameEmoji < sequence) {
+            throw IllegalStateException("E/SlotMachine::calculateOccasion - Out of bounds : sameEmoji > sequence => %d < %d".format(sameEmoji, sequence))
+        }
+
+        if (slotSize == sameEmoji && slotSize == sequence)
+            return BigInteger.ONE
+
+        if (sameEmoji < 2 * sequence) {
+            val edge = BigInteger.TWO * nCr(BigInteger.valueOf((slotSize - sequence - 1).toLong()), BigInteger.valueOf((sameEmoji - sequence).toLong()))
+            val middle = BigInteger.valueOf((slotSize - 2 - sequence + 1).toLong()) * nCr(BigInteger.valueOf((slotSize - sequence - 2).toLong()), BigInteger.valueOf((sameEmoji - sequence).toLong()))
+
+            return edge + middle
+        } else if (sameEmoji == 2 * sequence) {
+            val edge = BigInteger.TWO * nCr(BigInteger.valueOf((slotSize - sequence - 1).toLong()), BigInteger.valueOf((sameEmoji - sequence).toLong()))
+            val middle = BigInteger.valueOf((slotSize - 2 - sequence + 1).toLong()) * nCr(BigInteger.valueOf((slotSize - sequence - 2).toLong()), BigInteger.valueOf((sameEmoji - sequence).toLong()))
+
+            val exception = nCr(BigInteger.valueOf((slotSize - sameEmoji + 1).toLong()), BigInteger.TWO)
+
+            return edge + middle - exception
+        } else {
+            var occasions = BigInteger.ZERO
+            val stacks = getStacks(sameEmoji, sequence)
+
+            for (stack in stacks) {
+                val stackMap = HashMap<Int, Int>()
+                var sum = 0
+
+                for (element in stack) {
+                    stackMap[element] = (stackMap[element] ?: 0) + 1
+                    sum++
+                }
+
+                var possiblePosition = BigInteger.ONE
+                var tempSum = sum.toLong()
+
+                stackMap.keys.forEach { k ->
+                    val v = stackMap[k]?.toLong() ?: return@forEach
+
+                    possiblePosition *= nCr(BigInteger.valueOf(tempSum), BigInteger.valueOf(v))
+
+                    tempSum -= v
+                }
+
+                occasions += possiblePosition * nCr(BigInteger.valueOf((slotSize - sameEmoji + 1).toLong()), BigInteger.valueOf((slotSize - sameEmoji - sum + 1).toLong()))
+            }
+
+            return occasions
+        }
+    }
+
+    private fun calculateOdd(minSequence: Int, maxSequence: Int) : BigDecimal {
+        val emojiSize = content.mapNotNull { c -> c.emoji }.toSet().size
+
+        var odd = BigDecimal.ZERO
+
+        for (s in minSequence..maxSequence) {
+            for (sameEmoji in s..slotSize) {
+                val occasion = calculateOccasion(sameEmoji, s)
+
+                odd += BigDecimal.valueOf(emojiSize - 1L).pow(slotSize - sameEmoji) * occasion.toBigDecimal()
+            }
+        }
+
+        return odd.divide(BigDecimal.valueOf(emojiSize.toLong()).pow(slotSize), Equation.context) * BigDecimal.valueOf(100L)
+    }
+
+    private fun getOdds() : List<BigDecimal> {
+        val result = ArrayList<BigDecimal>()
+
+        if (content.any { c -> c.emoji == null }) {
+            return result
+        }
+
+        content.forEach { c ->
+            if (c is SlotPlaceHolderContent) {
+                result.add(BigDecimal.ZERO)
+
+                return@forEach
+            }
+
+            val sameEmojiContents = content.filter { co -> co.emoji == c.emoji && co.slot > c.slot }
+
+            val maxSequence = if (sameEmojiContents.isEmpty()) {
+                slotSize
+            } else {
+                sameEmojiContents.minOf { co -> co.slot }
+            }
+
+            val odd = calculateOdd(c.slot, maxSequence)
+
+            result.add(odd)
+        }
+
+        return result
     }
 }

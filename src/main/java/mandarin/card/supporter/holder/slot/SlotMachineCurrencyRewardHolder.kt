@@ -256,6 +256,7 @@ class SlotMachineCurrencyRewardHolder(
                 "### Reward Info\n" +
                 "- **Emoji** : ${content.emoji?.formatted ?: "None"}\n" +
                 "- **Required Slot** : ${content.slot}\n" +
+                "- **Chance** : ${"%5f".format(slotMachine.getOdd(content).toDouble())} %\n" +
                 "- **Reward Type** : Currency\n" +
                 "- **Mode** : $modeName\n" +
                 "- **Amount** : ${
