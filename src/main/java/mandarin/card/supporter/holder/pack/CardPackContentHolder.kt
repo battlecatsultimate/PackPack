@@ -3,6 +3,7 @@ package mandarin.card.supporter.holder.pack
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.pack.CardChancePairList
 import mandarin.card.supporter.pack.CardPack
+import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.emoji.Emoji
@@ -53,8 +54,8 @@ class CardPackContentHolder(
         }
     }
 
-    override fun onBack() {
-        super.onBack()
+    override fun onBack(child: Holder) {
+        super.onBack(child)
 
         applyResult()
     }

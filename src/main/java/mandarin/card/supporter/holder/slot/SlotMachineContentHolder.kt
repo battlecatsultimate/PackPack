@@ -4,6 +4,7 @@ import mandarin.card.supporter.CardData
 import mandarin.card.supporter.slot.*
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.lang.LangID
+import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
 import net.dv8tion.jda.api.entities.Message
@@ -58,11 +59,11 @@ class SlotMachineContentHolder(author: Message, channelID: String, private val m
         }
     }
 
-    override fun onBack() {
+    override fun onBack(child: Holder) {
         applyResult()
     }
 
-    override fun onBack(event: GenericComponentInteractionCreateEvent) {
+    override fun onBack(event: GenericComponentInteractionCreateEvent, child: Holder) {
         applyResult(event)
     }
 

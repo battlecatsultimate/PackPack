@@ -1,0 +1,138 @@
+package mandarin.card.supporter.holder.moderation
+
+import mandarin.card.supporter.CardData
+import mandarin.card.supporter.Inventory
+import mandarin.packpack.supporter.EmojiStore
+import mandarin.packpack.supporter.server.holder.Holder
+import mandarin.packpack.supporter.server.holder.component.ComponentHolder
+import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.entities.emoji.Emoji
+import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent
+import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
+import net.dv8tion.jda.api.interactions.components.ActionRow
+import net.dv8tion.jda.api.interactions.components.LayoutComponent
+import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu
+
+class TransferInventorySourceHolder(author: Message, channelID: String, private val message: Message) : ComponentHolder(author, channelID, message) {
+    private var transferMode = CardData.TransferMode.INJECT
+    private var reset = false
+
+    override fun onEvent(event: GenericComponentInteractionCreateEvent) {
+        when(event.componentId) {
+            "member" -> {
+                if (event !is EntitySelectInteractionEvent)
+                    return
+
+                val id = event.values[0].idLong
+
+                val inventory = Inventory.getInventory(id)
+
+                if (inventory.auctionQueued.isNotEmpty()) {
+                    event.deferReply().setContent("This user has cards that are bound with auction. Resolve auctions first, then perform the transfer!").setEphemeral(true).queue()
+
+                    return
+                }
+
+                connectTo(event, TransferInventoryTargetHolder(authorMessage, channelID, message, id, transferMode, reset))
+            }
+            "mode" -> {
+                transferMode = CardData.TransferMode.entries[(transferMode.ordinal + 1) % CardData.TransferMode.entries.size]
+
+                applyResult(event)
+            }
+            "reset" -> {
+                reset = !reset
+
+                applyResult(event)
+            }
+            "close" -> {
+                event.deferEdit()
+                    .setContent("Closed inventory transfer")
+                    .setComponents()
+                    .setAllowedMentions(ArrayList())
+                    .mentionRepliedUser(false)
+                    .queue()
+
+                expired = true
+            }
+        }
+    }
+
+    override fun clean() {
+
+    }
+
+    override fun onExpire(id: String?) {
+
+    }
+
+    override fun onBack(event: GenericComponentInteractionCreateEvent, child: Holder) {
+        if (child is TransferInventoryTargetHolder) {
+            transferMode = child.transferMode
+            reset = child.reset
+        }
+
+        applyResult(event)
+    }
+
+    private fun applyResult(event: GenericComponentInteractionCreateEvent) {
+        event.deferEdit()
+            .setContent(getContents())
+            .setComponents(getComponents())
+            .setAllowedMentions(ArrayList())
+            .mentionRepliedUser(false)
+            .queue()
+    }
+
+    private fun getContents() : String {
+        val cf = EmojiStore.ABILITY["CF"]?.formatted
+
+        val modeExplanation = when(transferMode) {
+            CardData.TransferMode.INJECT ->  "Inject mode will keep target user's contents, and add up contents to it.\n\n" +
+                    " For example, if you want to transfer inventory of user A to user B, and if we assume that user A had $cf 5000 and user B had $cf 10000, after transfer is done, user B will have $cf 15000"
+            CardData.TransferMode.OVERRIDE -> "Override mode will completely remove what target user had, and replace it to picked user's inventory.\n\n" +
+                    " For example, if you want to transfer inventory of user A to user B, and if we assume that user A had $cf 5000 and user B had $cf 10000, after transfer is done, regardless of what user B had, user B will have $cf 5000"
+        }
+
+        val resetExplanation = if (reset) {
+            "After transfer is done, picked user's inventory won't get reset, and keep the contents"
+        } else {
+            "After transfer is done, picked user's inventory will be wiped out"
+        }
+
+        return return "## Inventory Transfer\n" +
+                "This command will allow you to transfer specific user's inventory to other user. First, you have to pick which user's inventory you want to transfer\n" +
+                "### Transfer Mode : Inject\n" +
+                "$modeExplanation\n" +
+                "### Reset User's Inventory? : No\n" +
+                resetExplanation
+    }
+
+    private fun getComponents() : List<LayoutComponent> {
+        val result = ArrayList<LayoutComponent>()
+
+        result.add(ActionRow.of(
+            EntitySelectMenu.create("member", EntitySelectMenu.SelectTarget.USER)
+                .setPlaceholder("Pick user here")
+                .setRequiredRange(1, 1)
+                .build()
+        ))
+
+        val modeName = when(transferMode) {
+            CardData.TransferMode.INJECT -> "Inject"
+            CardData.TransferMode.OVERRIDE -> "Override"
+        }
+
+        result.add(ActionRow.of(
+            Button.secondary("mode", "Mode : $modeName").withEmoji(Emoji.fromUnicode("🎛️")),
+            Button.secondary("reset", "Reset User's Inventory").withEmoji(if (reset) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF)
+        ))
+
+        result.add(ActionRow.of(
+            Button.danger("close", "Close").withEmoji(EmojiStore.CROSS)
+        ))
+
+        return result
+    }
+}

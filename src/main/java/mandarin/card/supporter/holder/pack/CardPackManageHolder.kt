@@ -4,6 +4,7 @@ import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.holder.modal.CardPackNameHolder
 import mandarin.packpack.supporter.EmojiStore
+import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.Message
@@ -94,8 +95,8 @@ class CardPackManageHolder(author: Message, channelID: String, private val messa
         }
     }
 
-    override fun onBack() {
-        super.onBack()
+    override fun onBack(child: Holder) {
+        super.onBack(child)
 
         message.editMessage(getContent())
             .setComponents(getComponents())

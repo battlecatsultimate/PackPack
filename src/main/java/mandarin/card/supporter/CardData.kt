@@ -48,6 +48,11 @@ object CardData {
         SHARD
     }
 
+    enum class TransferMode {
+        INJECT,
+        OVERRIDE
+    }
+
     val cards = ArrayList<Card>()
 
     val permanents = arrayOf(

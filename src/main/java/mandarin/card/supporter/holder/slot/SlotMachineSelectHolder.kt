@@ -2,6 +2,7 @@ package mandarin.card.supporter.holder.slot
 
 import mandarin.card.supporter.CardData
 import mandarin.packpack.supporter.EmojiStore
+import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.Message
@@ -73,7 +74,7 @@ class SlotMachineSelectHolder(author: Message, channelID: String, private val me
         }
     }
 
-    override fun onBack(event: GenericComponentInteractionCreateEvent) {
+    override fun onBack(event: GenericComponentInteractionCreateEvent, child: Holder) {
         applyResult(event)
     }
 

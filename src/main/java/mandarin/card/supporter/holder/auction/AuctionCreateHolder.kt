@@ -11,6 +11,7 @@ import mandarin.card.supporter.holder.modal.AuctionInitialPriceHolder
 import mandarin.card.supporter.holder.modal.AuctionMinimumBidHolder
 import mandarin.card.supporter.log.TransactionLogger
 import mandarin.packpack.supporter.EmojiStore
+import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.emoji.Emoji
@@ -195,7 +196,7 @@ class AuctionCreateHolder(author: Message, channelID: String, private val messag
         }
     }
 
-    override fun onBack(event: GenericComponentInteractionCreateEvent) {
+    override fun onBack(event: GenericComponentInteractionCreateEvent, child: Holder) {
         event.deferEdit()
             .setContent(getContent())
             .setComponents(getComponent())
@@ -204,7 +205,7 @@ class AuctionCreateHolder(author: Message, channelID: String, private val messag
             .queue()
     }
 
-    override fun onBack() {
+    override fun onBack(child: Holder) {
         message.editMessage(getContent())
             .setComponents(getComponent())
             .setAllowedMentions(ArrayList())

@@ -2,6 +2,7 @@ package mandarin.card.supporter.holder
 
 import mandarin.card.supporter.CardData
 import mandarin.packpack.supporter.EmojiStore
+import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.Member
@@ -92,8 +93,8 @@ class PackSelectHolder(
         }
     }
 
-    override fun onBack() {
-        super.onBack()
+    override fun onBack(child: Holder) {
+        super.onBack(child)
 
         applyResult()
     }

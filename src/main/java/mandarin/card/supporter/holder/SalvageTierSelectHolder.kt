@@ -2,6 +2,7 @@ package mandarin.card.supporter.holder
 
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
+import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
@@ -55,7 +56,7 @@ class SalvageTierSelectHolder(author: Message, channelID: String, private val me
         }
     }
 
-    override fun onBack() {
+    override fun onBack(child: Holder) {
         message.editMessage("Select tier of the cards that will be salvaged")
             .setComponents(getComponents())
             .setAllowedMentions(ArrayList())

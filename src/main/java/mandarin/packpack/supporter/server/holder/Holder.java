@@ -191,11 +191,11 @@ public abstract class Holder {
 
     }
 
-    public void onBack() {
+    public void onBack(Holder child) {
 
     }
 
-    public void onBack(@Nonnull GenericComponentInteractionCreateEvent event) {
+    public void onBack(@Nonnull GenericComponentInteractionCreateEvent event, Holder child) {
 
     }
 
@@ -255,7 +255,7 @@ public abstract class Holder {
             StaticStore.removeHolder(userID, this);
             StaticStore.putHolder(userID, parent);
 
-            parent.onBack();
+            parent.onBack(this);
         }
     }
 
@@ -269,7 +269,7 @@ public abstract class Holder {
             StaticStore.removeHolder(userID, this);
             StaticStore.putHolder(userID, parent);
 
-            parent.onBack(event);
+            parent.onBack(event, this);
         }
     }
 
@@ -296,7 +296,7 @@ public abstract class Holder {
                     StaticStore.removeHolder(userID, this);
                     StaticStore.putHolder(userID, parent);
 
-                    parent.onBack();
+                    parent.onBack(this);
 
                     return;
                 } else {
@@ -345,7 +345,7 @@ public abstract class Holder {
                     StaticStore.removeHolder(userID, this);
                     StaticStore.putHolder(userID, parent);
 
-                    parent.onBack(event);
+                    parent.onBack(event, this);
 
                     return;
                 } else {

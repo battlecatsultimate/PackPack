@@ -10,6 +10,7 @@ import mandarin.card.supporter.slot.SlotCardContent
 import mandarin.card.supporter.slot.SlotMachine
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.lang.LangID
+import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
 import net.dv8tion.jda.api.entities.Message
@@ -139,13 +140,13 @@ class SlotMachineCardChancePairListHolder(
         }
     }
 
-    override fun onBack() {
-        super.onBack()
+    override fun onBack(child: Holder) {
+        super.onBack(child)
 
         applyResult()
     }
 
-    override fun onBack(event: GenericComponentInteractionCreateEvent) {
+    override fun onBack(event: GenericComponentInteractionCreateEvent, child: Holder) {
         applyResult(event)
     }
 

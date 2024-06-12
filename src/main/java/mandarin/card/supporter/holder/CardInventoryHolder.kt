@@ -6,6 +6,7 @@ import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.supporter.EmojiStore
+import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.Member
@@ -136,7 +137,7 @@ class CardInventoryHolder(author: Message, channelID: String, private val messag
         }
     }
 
-    override fun onBack() {
+    override fun onBack(child: Holder) {
         message.editMessage(getText())
             .setEmbeds()
             .setFiles()

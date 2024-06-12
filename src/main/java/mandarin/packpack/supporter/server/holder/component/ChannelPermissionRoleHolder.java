@@ -3,6 +3,7 @@ package mandarin.packpack.supporter.server.holder.component;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
@@ -110,7 +111,7 @@ public class ChannelPermissionRoleHolder extends ComponentHolder {
     }
 
     @Override
-    public void onBack(@NotNull GenericComponentInteractionCreateEvent event) {
+    public void onBack(@NotNull GenericComponentInteractionCreateEvent event, Holder child) {
         applyResult(event);
     }
 

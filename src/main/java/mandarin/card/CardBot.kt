@@ -474,6 +474,8 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}slot",
             "${globalPrefix}slots",
             "${globalPrefix}sl" -> Slot().execute(event)
+            "${globalPrefix}transferinventory",
+            "${globalPrefix}ti" -> TransferInventory().execute(event)
         }
 
         val session = CardData.sessions.find { s -> s.postID == event.channel.idLong }

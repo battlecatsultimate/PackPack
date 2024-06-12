@@ -7,6 +7,7 @@ import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.holder.modal.AuctionCardAmountHolder
 import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.supporter.EmojiStore
+import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.Message
@@ -149,7 +150,7 @@ class AuctionCardSelectHolder(author: Message, channelID: String, private val me
         }
     }
 
-    override fun onBack() {
+    override fun onBack(child: Holder) {
         filterCards()
 
         applyResult()

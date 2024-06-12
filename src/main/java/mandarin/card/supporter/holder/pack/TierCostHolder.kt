@@ -8,6 +8,7 @@ import mandarin.card.supporter.pack.TierCardCost
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
+import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
 import net.dv8tion.jda.api.entities.Message
@@ -143,8 +144,8 @@ class TierCostHolder(author: Message, channelID: String, private val message: Me
         applyResult(event)
     }
 
-    override fun onBack() {
-        super.onBack()
+    override fun onBack(child: Holder) {
+        super.onBack(child)
 
         applyResult()
     }
