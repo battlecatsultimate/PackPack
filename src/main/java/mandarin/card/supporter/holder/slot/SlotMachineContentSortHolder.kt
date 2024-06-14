@@ -119,7 +119,7 @@ class SlotMachineContentSortHolder(author: Message, channelID: String, private v
                                     .setEphemeral(true)
                                     .queue()
 
-                                returnmandarin.card.supporter.holder.modal.slot.SlotMachineContentSortModalHolder
+                                return@SlotMachineContentSortModalHolder
                             }
 
                             if (targetIndex == index) {
@@ -128,7 +128,7 @@ class SlotMachineContentSortHolder(author: Message, channelID: String, private v
                                     .setEphemeral(true)
                                     .queue()
 
-                                returnmandarin.card.supporter.holder.modal.slot.SlotMachineContentSortModalHolder
+                                return@SlotMachineContentSortModalHolder
                             }
 
                             val from = slotMachine.content[index]
