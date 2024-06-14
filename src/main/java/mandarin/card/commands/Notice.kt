@@ -1,38 +1,70 @@
 package mandarin.card.commands
 
-import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
+import mandarin.card.supporter.holder.NotificationConfigHolder
 import mandarin.packpack.commands.Command
+import mandarin.packpack.supporter.EmojiStore
+import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.CommandLoader
+import net.dv8tion.jda.api.entities.emoji.Emoji
+import net.dv8tion.jda.api.interactions.components.ActionRow
+import net.dv8tion.jda.api.interactions.components.LayoutComponent
+import net.dv8tion.jda.api.interactions.components.buttons.Button
 
 class Notice : Command(LangID.EN, true) {
     override fun doSomething(loader: CommandLoader) {
         val m = loader.member
         val ch = loader.channel
 
-        if (m.id in CardData.notifierGroup) {
-            CardData.notifierGroup.remove(m.id)
+        replyToMessageSafely(ch, getContents(m.idLong), loader.message, { a -> a.setComponents(getComponents(m.idLong))}) { msg ->
+            StaticStore.putHolder(m.id, NotificationConfigHolder(loader.message, ch.id, msg))
+        }
+    }
 
-            CardBot.saveCardData()
+    private fun getContents(userID: Long) : String {
+        val notifyGroup = CardData.notifierGroup.computeIfAbsent(userID) { booleanArrayOf(false, false) }
 
-            replyToMessageSafely(ch, "Bot now won't notify you even though you can roll the packs!", loader.message) { a -> a }
+        val builder = StringBuilder(
+            "## Notification Config\n" +
+            "You can make bot notify you whenever available card pack or slot machine is found\n" +
+            "\n" +
+            "**Keep in mind that you have to allow DM to make bot send you notification. Disallowing DM from bot will make it automatically turn off notifications**\n\n"
+        )
 
-            return
+        builder.append("- **Notify Card Pack** : ")
+
+        if (notifyGroup[0]) {
+            builder.append(EmojiStore.SWITCHON.formatted).append(" On")
+        } else {
+            builder.append(EmojiStore.SWITCHOFF.formatted).append(" Off")
         }
 
-        m.user.openPrivateChannel().queue({ private ->
-            private.sendMessage("This is testing message if bot can reach to your DM").queue( { _ ->
-                CardData.notifierGroup.add(m.id)
+        builder.append("\n- **Notify Slot Machine** : ")
 
-                CardBot.saveCardData()
+        if (notifyGroup[1]) {
+            builder.append(EmojiStore.SWITCHON.formatted).append(" On")
+        } else {
+            builder.append(EmojiStore.SWITCHOFF.formatted).append(" Off")
+        }
 
-                replyToMessageSafely(ch, "Bot will now notify if you can roll any packs from now on! Keep in mind that closing DM will automatically make bot not notify you anymore. Call this command again to make bot not notify you manually", loader.message) { a -> a }
-            }, { _ ->
-                replyToMessageSafely(ch, "Bot failed to send test message in your DM. Please check if your DM is opened, or contact managers", loader.message) { a -> a }
-            })
-        }, { _ ->
-            replyToMessageSafely(ch, "Please open your DM to get notified", loader.message) { a -> a }
-        })
+        return builder.toString()
+    }
+
+    private fun getComponents(userID: Long) : List<LayoutComponent> {
+        val notifyGroup = CardData.notifierGroup.computeIfAbsent(userID) { booleanArrayOf(false, false) }
+
+        val result = ArrayList<LayoutComponent>()
+
+        result.add(ActionRow.of(
+            Button.secondary("card", "Notify Available Card Pack").withEmoji(if (notifyGroup[0]) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF),
+            Button.secondary("slot", "Notify Available Slot Machine").withEmoji(if (notifyGroup[1]) EmojiStore.SWITCHON else EmojiStore.SWITCHOFF)
+        ))
+
+        result.add(ActionRow.of(Button.secondary("test", "Test Sending DM").withEmoji(Emoji.fromUnicode("📢"))))
+
+        result.add(ActionRow.of(Button.danger("close", "Close").withEmoji(EmojiStore.CROSS)))
+
+        return result
     }
 }

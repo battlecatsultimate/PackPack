@@ -321,7 +321,7 @@ object CardData {
 
     private val allowedChannel = ServerData.getArray("allowedChannel")
 
-    val notifierGroup = ArrayList<String>()
+    val notifierGroup = HashMap<Long, BooleanArray>()
 
     val df = run {
         val nf = NumberFormat.getInstance(Locale.US)
@@ -342,6 +342,8 @@ object CardData {
 
     val cardPacks = ArrayList<CardPack>()
     val slotMachines = ArrayList<SlotMachine>()
+
+    const val MINIMUM_NOTIFY_TIME = 1 * 60 * 60 * 1000 //1 hour
 
     /*
     -------------------------------------------------------
