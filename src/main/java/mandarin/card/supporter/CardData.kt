@@ -74,7 +74,9 @@ object CardData {
     //Stored as uber ID
     val bannerData = arrayOf(
         //Tier 0
-        arrayOf(),
+        arrayOf(
+            arrayOf()
+        ),
         //Tier 1
         arrayOf(
             //Dark Heroes
