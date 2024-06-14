@@ -5,10 +5,10 @@ import mandarin.card.supporter.Card
 import mandarin.card.supporter.AuctionSession
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
-import mandarin.card.supporter.holder.modal.AuctionAutoCloseHolder
-import mandarin.card.supporter.holder.modal.AuctionEndTimeHolder
-import mandarin.card.supporter.holder.modal.AuctionInitialPriceHolder
-import mandarin.card.supporter.holder.modal.AuctionMinimumBidHolder
+import mandarin.card.supporter.holder.modal.auction.AuctionAutoCloseHolder
+import mandarin.card.supporter.holder.modal.auction.AuctionEndTimeHolder
+import mandarin.card.supporter.holder.modal.auction.AuctionInitialPriceHolder
+import mandarin.card.supporter.holder.modal.auction.AuctionMinimumBidHolder
 import mandarin.card.supporter.log.TransactionLogger
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.Holder

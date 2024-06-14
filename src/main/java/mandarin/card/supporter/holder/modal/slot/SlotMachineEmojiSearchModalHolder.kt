@@ -1,4 +1,4 @@
-package mandarin.card.supporter.holder.modal
+package mandarin.card.supporter.holder.modal.slot
 
 import mandarin.packpack.supporter.server.holder.modal.ModalHolder
 import net.dv8tion.jda.api.entities.Message

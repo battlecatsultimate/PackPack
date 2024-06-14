@@ -2,9 +2,9 @@ package mandarin.card.supporter.holder.slot
 
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
-import mandarin.card.supporter.holder.modal.SlotMachineCooldownModalHolder
-import mandarin.card.supporter.holder.modal.SlotMachineNameModalHolder
-import mandarin.card.supporter.holder.modal.SlotMachineSlotSizeModalHolder
+import mandarin.card.supporter.holder.modal.slot.SlotMachineCooldownModalHolder
+import mandarin.card.supporter.holder.modal.slot.SlotMachineNameModalHolder
+import mandarin.card.supporter.holder.modal.slot.SlotMachineSlotSizeModalHolder
 import mandarin.card.supporter.log.TransactionLogger
 import mandarin.card.supporter.slot.SlotMachine
 import mandarin.packpack.supporter.EmojiStore

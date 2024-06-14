@@ -2,7 +2,7 @@ package mandarin.card.supporter.holder.slot
 
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
-import mandarin.card.supporter.holder.modal.SlotMachineEntryFeeMinMaxHolder
+import mandarin.card.supporter.holder.modal.slot.SlotMachineEntryFeeMinMaxHolder
 import mandarin.card.supporter.slot.SlotEntryFee
 import mandarin.card.supporter.slot.SlotMachine
 import mandarin.packpack.supporter.EmojiStore

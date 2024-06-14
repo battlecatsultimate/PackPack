@@ -2,7 +2,7 @@ package mandarin.card.supporter.holder.slot
 
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
-import mandarin.card.supporter.holder.modal.SlotMachineContentSortModalHolder
+import mandarin.card.supporter.holder.modal.slot.SlotMachineContentSortModalHolder
 import mandarin.card.supporter.slot.SlotCardContent
 import mandarin.card.supporter.slot.SlotCurrencyContent
 import mandarin.card.supporter.slot.SlotEntryFee
@@ -114,11 +114,12 @@ class SlotMachineContentSortHolder(author: Message, channelID: String, private v
                             val targetIndex = i - 1
 
                             if (targetIndex < 0 || targetIndex >= slotMachine.content.size) {
-                                e.deferReply().setContent("Out of bounds! You have to offer only value in range from 1 to ${slotMachine.content.size}")
+                                e.deferReply()
+                                    .setContent("Out of bounds! You have to offer only value in range from 1 to ${slotMachine.content.size}")
                                     .setEphemeral(true)
                                     .queue()
 
-                                return@SlotMachineContentSortModalHolder
+                                returnmandarin.card.supporter.holder.modal.slot.SlotMachineContentSortModalHolder
                             }
 
                             if (targetIndex == index) {
@@ -127,7 +128,7 @@ class SlotMachineContentSortHolder(author: Message, channelID: String, private v
                                     .setEphemeral(true)
                                     .queue()
 
-                                return@SlotMachineContentSortModalHolder
+                                returnmandarin.card.supporter.holder.modal.slot.SlotMachineContentSortModalHolder
                             }
 
                             val from = slotMachine.content[index]

@@ -1,7 +1,7 @@
 package mandarin.card.supporter.holder.slot
 
 import mandarin.card.supporter.CardData
-import mandarin.card.supporter.holder.modal.SlotMachineNameModalHolder
+import mandarin.card.supporter.holder.modal.slot.SlotMachineNameModalHolder
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder

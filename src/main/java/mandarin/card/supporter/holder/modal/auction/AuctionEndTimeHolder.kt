@@ -1,4 +1,4 @@
-package mandarin.card.supporter.holder.modal
+package mandarin.card.supporter.holder.modal.auction
 
 import mandarin.card.supporter.CardData
 import mandarin.packpack.supporter.StaticStore
@@ -7,8 +7,10 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import okhttp3.internal.UTC
 import java.util.Calendar
+import kotlin.collections.forEachIndexed
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.text.split
 
 class AuctionEndTimeHolder(author: Message, channelID: String, message: Message, private val onSelected: (timeStamp: Long) -> Unit) : ModalHolder(author, channelID, message) {
     override fun clean() {

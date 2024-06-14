@@ -2,7 +2,7 @@ package mandarin.card.supporter.holder.slot
 
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
-import mandarin.card.supporter.holder.modal.SlotMachineRollModalHolder
+import mandarin.card.supporter.holder.modal.slot.SlotMachineRollModalHolder
 import mandarin.card.supporter.slot.SlotEntryFee
 import mandarin.card.supporter.slot.SlotMachine
 import mandarin.packpack.supporter.EmojiStore
@@ -72,27 +72,38 @@ class SlotMachineConfirmHolder(author: Message, channelID: String, private val m
 
                     event.replyModal(modal).queue()
 
-                    connectTo(SlotMachineRollModalHolder(authorMessage, channelID, message, slotMachine, inventory) { e, fee ->
-                        val entryEmoji = when(slotMachine.entryFee.entryType) {
-                            SlotEntryFee.EntryType.CAT_FOOD -> EmojiStore.ABILITY["CF"]?.formatted
-                            SlotEntryFee.EntryType.PLATINUM_SHARDS -> EmojiStore.ABILITY["SHARD"]?.formatted
-                        }
+                    connectTo(
+                        SlotMachineRollModalHolder(
+                            authorMessage,
+                            channelID,
+                            message,
+                            slotMachine,
+                            inventory
+                        ) { e, fee ->
+                            val entryEmoji = when (slotMachine.entryFee.entryType) {
+                                SlotEntryFee.EntryType.CAT_FOOD -> EmojiStore.ABILITY["CF"]?.formatted
+                                SlotEntryFee.EntryType.PLATINUM_SHARDS -> EmojiStore.ABILITY["SHARD"]?.formatted
+                            }
 
-                        registerPopUp(e, "Are you sure you want to roll this slot machine with entry fee of $entryEmoji $fee?", LangID.EN)
+                            registerPopUp(
+                                e,
+                                "Are you sure you want to roll this slot machine with entry fee of $entryEmoji $fee?",
+                                LangID.EN
+                            )
 
-                        connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { ev ->
-                            ev.deferEdit()
-                                .setContent("Rolling...! 🎲")
-                                .setComponents()
-                                .setAllowedMentions(ArrayList())
-                                .mentionRepliedUser(false)
-                                .queue {
-                                    slotMachine.roll(message, authorMessage.author.idLong, inventory, fee, skip)
-                                }
+                            connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { ev ->
+                                ev.deferEdit()
+                                    .setContent("Rolling...! 🎲")
+                                    .setComponents()
+                                    .setAllowedMentions(ArrayList())
+                                    .mentionRepliedUser(false)
+                                    .queue {
+                                        slotMachine.roll(message, authorMessage.author.idLong, inventory, fee, skip)
+                                    }
 
-                            expired = true
-                        }, LangID.EN))
-                    })
+                                expired = true
+                            }, LangID.EN))
+                        })
                 }
             }
             "back" -> {

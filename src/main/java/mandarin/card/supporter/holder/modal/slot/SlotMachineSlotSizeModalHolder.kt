@@ -1,4 +1,4 @@
-package mandarin.card.supporter.holder.modal
+package mandarin.card.supporter.holder.modal.slot
 
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
@@ -7,7 +7,9 @@ import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.modal.ModalHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
+import kotlin.collections.forEach
 import kotlin.math.min
+import kotlin.text.toDouble
 
 class SlotMachineSlotSizeModalHolder(author: Message, channelID: String, message: Message, private val slotMachine: SlotMachine) : ModalHolder(author, channelID, message) {
     override fun clean() {

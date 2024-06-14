@@ -1,9 +1,15 @@
-package mandarin.card.supporter.holder.modal
+package mandarin.card.supporter.holder.modal.auction
 
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.modal.ModalHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
+import kotlin.collections.forEach
+import kotlin.text.contains
+import kotlin.text.count
+import kotlin.text.lowercase
+import kotlin.text.replace
+import kotlin.text.split
 
 class AuctionAutoCloseHolder(author: Message, channelID: String, message: Message, private val onSelected: (Long) -> Unit) : ModalHolder(author, channelID, message) {
     override fun clean() {

@@ -3,7 +3,7 @@ package mandarin.card.supporter.holder.slot
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.filter.BannerFilter
-import mandarin.card.supporter.holder.modal.SlotMachineCardChanceHolder
+import mandarin.card.supporter.holder.modal.slot.SlotMachineCardChanceHolder
 import mandarin.card.supporter.pack.CardChancePair
 import mandarin.card.supporter.pack.CardChancePairList
 import mandarin.card.supporter.pack.CardPack
