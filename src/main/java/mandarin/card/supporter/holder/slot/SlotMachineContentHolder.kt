@@ -41,6 +41,9 @@ class SlotMachineContentHolder(author: Message, channelID: String, private val m
                     is SlotPlaceHolderContent -> connectTo(event, SlotMachinePlaceHolderRewardHolder(authorMessage, channelID, message, slotMachine, content, false))
                 }
             }
+            "sort" -> {
+                connectTo(event, SlotMachineContentSortHolder(authorMessage, channelID, message, slotMachine))
+            }
             "back" -> {
                 goBack(event)
             }
@@ -220,7 +223,10 @@ class SlotMachineContentHolder(author: Message, channelID: String, private val m
 
         val emojiList = arrayOf("🍌", "🍇", "🥝", "🍊", "🍎")
 
-        result.add(ActionRow.of(Button.secondary("create", "Create New Reward").withEmoji(Emoji.fromUnicode(emojiList.random())).withDisabled(slotMachine.content.size >= StringSelectMenu.OPTIONS_MAX_AMOUNT)))
+        result.add(ActionRow.of(
+            Button.secondary("create", "Create New Reward").withEmoji(Emoji.fromUnicode(emojiList.random())).withDisabled(slotMachine.content.size >= StringSelectMenu.OPTIONS_MAX_AMOUNT),
+            Button.secondary("sort", "Sort Reward").withEmoji(Emoji.fromUnicode("🔧")).withDisabled(slotMachine.content.isEmpty())
+        ))
 
         if (slotMachine !in CardData.slotMachines) {
             result.add(ActionRow.of(
