@@ -214,26 +214,17 @@ class SlotMachineContentSortHolder(author: Message, channelID: String, private v
                                     .append(emoji)
                                     .append(" ")
                                     .append(content.amount)
-                                    .append(" { Chance = ")
-                                    .append("%5f".format(slotMachine.getOdd(content).toDouble()))
-                                    .append("% }")
                             }
                             SlotCurrencyContent.Mode.PERCENTAGE -> {
                                 builder.append(" [Percentage] : ")
                                     .append(content.amount)
                                     .append("% of Entry Fee")
-                                    .append(" { Chance = ")
-                                    .append("%5f".format(slotMachine.getOdd(content).toDouble()))
-                                    .append("% }")
                             }
                         }
                     }
                     is SlotCardContent -> {
                         builder.append(" [Card] : ")
                             .append(content.name)
-                            .append(" { Chance = ")
-                            .append("%5f".format(slotMachine.getOdd(content).toDouble()))
-                            .append("% }")
                             .append("\n")
 
                         content.cardChancePairLists.forEachIndexed { ind, l ->
