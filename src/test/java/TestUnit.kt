@@ -1,20 +1,18 @@
 import mandarin.card.supporter.PositiveMap
+import java.math.BigDecimal
+import java.math.MathContext
+import java.math.RoundingMode
 
 class TestUnit {
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {
-            val map = PositiveMap<String, Long>()
+            val a = 0.00000000212345
 
-            map["hello"] = 1L
+            val b = BigDecimal.valueOf(a).round(MathContext(5, RoundingMode.HALF_EVEN))
 
-            println(map["hello"])
-            println(map.containsKey("hello"))
-
-            map["hello"] = (map["hello"] ?: 0L) - 2L
-
-            println(map["hello"])
-            println(map.containsKey("hello"))
+            println(String.format("%5g", a))
+            println(b.toPlainString())
         }
     }
 }

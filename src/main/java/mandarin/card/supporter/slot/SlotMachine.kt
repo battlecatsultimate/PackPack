@@ -16,6 +16,8 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.utils.FileUpload
 import java.math.BigDecimal
 import java.math.BigInteger
+import java.math.MathContext
+import java.math.RoundingMode
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.round
@@ -155,7 +157,7 @@ class SlotMachine {
                         builder.append(" [Card] : ").append(content.name.ifBlank { "None" })
 
                         if (odds.isNotEmpty()) {
-                            builder.append(" { Chance = ").append("%5f".format(odds[index].toDouble())).append("% }")
+                            builder.append(" { Chance = ").append(odds[index].toPlainString()).append("% }")
                         }
 
                         builder.append("\n")
@@ -186,14 +188,14 @@ class SlotMachine {
                                 builder.append(" [Flat] : ").append(emoji).append(" ").append(content.amount)
 
                                 if (odds.isNotEmpty()) {
-                                    builder.append(" { Chance = ").append("%5f".format(odds[index].toDouble())).append("% }")
+                                    builder.append(" { Chance = ").append(odds[index].toPlainString()).append("% }")
                                 }
                             }
                             SlotCurrencyContent.Mode.PERCENTAGE -> {
                                 builder.append(" [Percentage] : ").append(content.amount).append("% of Entry Fee")
 
                                 if (odds.isNotEmpty()) {
-                                    builder.append(" { Chance = ").append("%5f".format(odds[index].toDouble())).append("% }")
+                                    builder.append(" { Chance = ").append(odds[index].toPlainString()).append("% }")
                                 }
                             }
                         }
@@ -205,6 +207,10 @@ class SlotMachine {
 
                 builder.append("\n")
             }
+        }
+
+        if (content.size > PAGE_CHUNK) {
+            builder.append("\n- **These rewards aren't all! Please click page button below to check more rewards**\n")
         }
 
         builder.append("### Cooldown\n")
@@ -765,7 +771,7 @@ class SlotMachine {
                 sameEmojiContents.minOf { co -> co.slot }
             }
 
-            val odd = calculateOdd(c.slot, maxSequence)
+            val odd = calculateOdd(c.slot, maxSequence).round(MathContext(5, RoundingMode.HALF_EVEN))
 
             result.add(odd)
         }
