@@ -16,8 +16,14 @@ import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
+import java.math.MathContext
+import java.math.RoundingMode
+import kotlin.math.ceil
+import kotlin.math.min
 
 class SlotMachineContentHolder(author: Message, channelID: String, private val message: Message, private val slotMachine: SlotMachine) : ComponentHolder(author, channelID, message) {
+    private var page = 0
+
     override fun clean() {
 
     }
@@ -40,6 +46,16 @@ class SlotMachineContentHolder(author: Message, channelID: String, private val m
                     is SlotCardContent -> connectTo(event, SlotMachineCardRewardHolder(authorMessage, channelID, message, slotMachine, content, false))
                     is SlotPlaceHolderContent -> connectTo(event, SlotMachinePlaceHolderRewardHolder(authorMessage, channelID, message, slotMachine, content, false))
                 }
+            }
+            "prev" -> {
+                page--
+
+                applyResult(event)
+            }
+            "next" -> {
+                page++
+
+                applyResult(event)
             }
             "sort" -> {
                 connectTo(event, SlotMachineContentSortHolder(authorMessage, channelID, message, slotMachine))
@@ -111,7 +127,9 @@ class SlotMachineContentHolder(author: Message, channelID: String, private val m
                 SlotEntryFee.EntryType.PLATINUM_SHARDS -> EmojiStore.ABILITY["SHARD"]?.formatted
             }
 
-            slotMachine.content.forEachIndexed { index, content ->
+            for (index in page * SlotMachine.PAGE_CHUNK until min(slotMachine.content.size, (page + 1) * SlotMachine.PAGE_CHUNK)) {
+                val content = slotMachine.content[index]
+
                 builder.append(index + 1).append(". ").append(content.emoji?.formatted ?: EmojiStore.UNKNOWN.formatted)
 
                 if (content !is SlotPlaceHolderContent) {
@@ -128,7 +146,7 @@ class SlotMachineContentHolder(author: Message, channelID: String, private val m
                                     .append(" ")
                                     .append(content.amount)
                                     .append(" { Chance = ")
-                                    .append("%5f".format(slotMachine.getOdd(content).toDouble()))
+                                    .append(slotMachine.getOdd(content).round(MathContext(5, RoundingMode.HALF_EVEN)).toPlainString())
                                     .append("% }")
                             }
                             SlotCurrencyContent.Mode.PERCENTAGE -> {
@@ -136,7 +154,7 @@ class SlotMachineContentHolder(author: Message, channelID: String, private val m
                                     .append(content.amount)
                                     .append("% of Entry Fee")
                                     .append(" { Chance = ")
-                                    .append("%5f".format(slotMachine.getOdd(content).toDouble()))
+                                    .append(slotMachine.getOdd(content).round(MathContext(5, RoundingMode.HALF_EVEN)).toPlainString())
                                     .append("% }")
                             }
                         }
@@ -145,7 +163,7 @@ class SlotMachineContentHolder(author: Message, channelID: String, private val m
                         builder.append(" [Card] : ")
                             .append(content.name)
                             .append(" { Chance = ")
-                            .append("%5f".format(slotMachine.getOdd(content).toDouble()))
+                            .append(slotMachine.getOdd(content).round(MathContext(5, RoundingMode.HALF_EVEN)).toPlainString())
                             .append("% }")
                             .append("\n")
 
@@ -190,7 +208,9 @@ class SlotMachineContentHolder(author: Message, channelID: String, private val m
         if (slotMachine.content.isEmpty()) {
             options.add(SelectOption.of("A", "A"))
         } else {
-            slotMachine.content.forEachIndexed { i, content ->
+            for (i in page * SlotMachine.PAGE_CHUNK until min(slotMachine.content.size, (page + 1) * SlotMachine.PAGE_CHUNK)) {
+                val content = slotMachine.content[i]
+
                 val description = when (content) {
                     is SlotCurrencyContent -> {
                         when (content.mode) {
@@ -220,6 +240,15 @@ class SlotMachineContentHolder(author: Message, channelID: String, private val m
                 .setDisabled(slotMachine.content.isEmpty())
                 .build()
         ))
+
+        if (slotMachine.content.size > SlotMachine.PAGE_CHUNK) {
+            val totalPage = ceil(slotMachine.content.size * 1.0 / SlotMachine.PAGE_CHUNK).toInt()
+
+            result.add(ActionRow.of(
+                Button.secondary("prev", "Previous Rewards").withEmoji(EmojiStore.PREVIOUS).withDisabled(page - 1 < 0),
+                Button.secondary("next", "Next Rewards").withEmoji(EmojiStore.NEXT).withDisabled(page + 1 >= totalPage)
+            ))
+        }
 
         val emojiList = arrayOf("🍌", "🍇", "🥝", "🍊", "🍎")
 

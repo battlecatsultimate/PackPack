@@ -29,6 +29,8 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
+import java.math.MathContext
+import java.math.RoundingMode
 import kotlin.math.ceil
 import kotlin.math.min
 
@@ -241,7 +243,7 @@ class SlotMachineCardRewardHolder(
             .append("- **Required Slot** : ")
             .append(content.slot)
             .append("- **Chance** : ")
-            .append("%5f".format(slotMachine.getOdd(content).toDouble()))
+            .append(slotMachine.getOdd(content).round(MathContext(5, RoundingMode.HALF_EVEN)).toPlainString())
             .append(" %\n")
             .append("- **RewardType** : Card\n")
             .append("- **Name** : ")
