@@ -2,12 +2,13 @@ package mandarin.card.supporter
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import mandarin.card.CardBot
 import mandarin.packpack.supporter.StaticStore
 
 class Inventory(private val id: Long) {
-    var cards = HashMap<Card, Int>()
-    var favorites = HashMap<Card, Int>()
-    var auctionQueued = HashMap<Card, Int>()
+    var cards = PositiveMap<Card, Int>()
+    var favorites = PositiveMap<Card, Int>()
+    var auctionQueued = PositiveMap<Card, Int>()
 
     var vanityRoles = ArrayList<CardData.Role>()
 
@@ -94,6 +95,58 @@ class Inventory(private val id: Long) {
 
         cards.entries.removeIf { e -> e.value <= 0 }
         favorites.entries.removeIf { e -> e.value <= 0 }
+    }
+
+    fun transferInventory(other: Inventory, transferMode: CardData.TransferMode) {
+        when (transferMode) {
+            CardData.TransferMode.INJECT ->  {
+                catFoods += other.catFoods
+                platinumShard += other.platinumShard
+
+                other.cards.entries.forEach { (card, amount) ->
+                    cards[card] = (cards[card] ?: 0) + amount
+                }
+
+                other.auctionQueued.entries.forEach { (card, amount) ->
+                    cards[card] = (cards[card] ?: 0) + amount
+                }
+
+                other.favorites.entries.forEach { (card, amount) ->
+                    cards[card] = (cards[card] ?: 0) + amount
+                }
+
+                other.vanityRoles.forEach { role ->
+                    if (role !in vanityRoles)
+                        vanityRoles.add(role)
+                }
+            }
+            CardData.TransferMode.OVERRIDE -> {
+                catFoods = other.catFoods
+                platinumShard = other.platinumShard
+
+                cards.clear()
+                auctionQueued.clear()
+                favorites.clear()
+
+                vanityRoles.clear()
+
+                other.cards.entries.forEach { (card, amount) ->
+                    cards[card] = (cards[card] ?: 0) + amount
+                }
+
+                other.auctionQueued.entries.forEach { (card, amount) ->
+                    cards[card] = (cards[card] ?: 0) + amount
+                }
+
+                other.favorites.entries.forEach { (card, amount) ->
+                    cards[card] = (cards[card] ?: 0) + amount
+                }
+
+                vanityRoles.addAll(other.vanityRoles)
+            }
+        }
+
+        CardBot.saveCardData()
     }
 
     fun toJson(): JsonObject {

@@ -4,9 +4,10 @@ import mandarin.card.supporter.Card
 import mandarin.card.supporter.CardComparator
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
-import mandarin.card.supporter.holder.modal.AuctionCardAmountHolder
+import mandarin.card.supporter.holder.modal.auction.AuctionCardAmountHolder
 import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.supporter.EmojiStore
+import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.Message
@@ -89,11 +90,14 @@ class AuctionCardSelectHolder(author: Message, channelID: String, private val me
                         min(amount, (inventory.cards[card] ?: 0) - (inventory.favorites[card] ?: 0))
 
                     if (actualAmount < 0L) {
-                        e.deferReply().setContent("It seems this user doesn't have such card in their inventory, or they are favorite card. Please select other card").setEphemeral(true).queue()
+                        e.deferReply()
+                            .setContent("It seems this user doesn't have such card in their inventory, or they are favorite card. Please select other card")
+                            .setEphemeral(true).queue()
                     } else {
                         onSelected.invoke(card, actualAmount)
 
-                        e.deferReply().setContent("Successfully set the card and the amount! Check the result above").setEphemeral(true).queue()
+                        e.deferReply().setContent("Successfully set the card and the amount! Check the result above")
+                            .setEphemeral(true).queue()
                     }
 
                     goBack()
@@ -149,7 +153,7 @@ class AuctionCardSelectHolder(author: Message, channelID: String, private val me
         }
     }
 
-    override fun onBack() {
+    override fun onBack(child: Holder) {
         filterCards()
 
         applyResult()

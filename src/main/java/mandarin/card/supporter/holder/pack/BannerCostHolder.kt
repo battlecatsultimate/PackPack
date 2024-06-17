@@ -8,6 +8,7 @@ import mandarin.card.supporter.pack.BannerCardCost
 import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.lang.LangID
+import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
@@ -159,8 +160,8 @@ class BannerCostHolder(author: Message, channelID: String, private val message: 
         applyResult(event)
     }
 
-    override fun onBack() {
-        super.onBack()
+    override fun onBack(child: Holder) {
+        super.onBack(child)
 
         applyResult()
     }

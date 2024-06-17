@@ -1,30 +1,18 @@
-import java.util.Timer
-import java.util.TimerTask
-import java.util.concurrent.ScheduledThreadPoolExecutor
-import java.util.concurrent.TimeUnit
+import mandarin.card.supporter.PositiveMap
+import java.math.BigDecimal
+import java.math.MathContext
+import java.math.RoundingMode
 
 class TestUnit {
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {
-            val executor = Timer()
+            val a = 0.00000000212345
 
-            var thread: Thread? = null
+            val b = BigDecimal.valueOf(a).round(MathContext(5, RoundingMode.HALF_EVEN))
 
-            executor.schedule(object : TimerTask() {
-                override fun run() {
-                    println("!?")
-
-                    if (thread == null) {
-                        thread = Thread.currentThread()
-                    } else {
-                        println(Thread.currentThread() === thread)
-                        println(Thread.currentThread().name)
-                        println(thread?.name)
-                        println("---")
-                    }
-                }
-            }, 0L, 1000L)
+            println(String.format("%5g", a))
+            println(b.toPlainString())
         }
     }
 }

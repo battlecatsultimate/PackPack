@@ -4,6 +4,7 @@ import mandarin.card.supporter.CardData
 import mandarin.card.supporter.slot.*
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.lang.LangID
+import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
 import net.dv8tion.jda.api.entities.Message
@@ -15,8 +16,14 @@ import net.dv8tion.jda.api.interactions.components.LayoutComponent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
+import java.math.MathContext
+import java.math.RoundingMode
+import kotlin.math.ceil
+import kotlin.math.min
 
 class SlotMachineContentHolder(author: Message, channelID: String, private val message: Message, private val slotMachine: SlotMachine) : ComponentHolder(author, channelID, message) {
+    private var page = 0
+
     override fun clean() {
 
     }
@@ -40,6 +47,19 @@ class SlotMachineContentHolder(author: Message, channelID: String, private val m
                     is SlotPlaceHolderContent -> connectTo(event, SlotMachinePlaceHolderRewardHolder(authorMessage, channelID, message, slotMachine, content, false))
                 }
             }
+            "prev" -> {
+                page--
+
+                applyResult(event)
+            }
+            "next" -> {
+                page++
+
+                applyResult(event)
+            }
+            "sort" -> {
+                connectTo(event, SlotMachineContentSortHolder(authorMessage, channelID, message, slotMachine))
+            }
             "back" -> {
                 goBack(event)
             }
@@ -58,11 +78,11 @@ class SlotMachineContentHolder(author: Message, channelID: String, private val m
         }
     }
 
-    override fun onBack() {
+    override fun onBack(child: Holder) {
         applyResult()
     }
 
-    override fun onBack(event: GenericComponentInteractionCreateEvent) {
+    override fun onBack(event: GenericComponentInteractionCreateEvent, child: Holder) {
         applyResult(event)
     }
 
@@ -107,7 +127,9 @@ class SlotMachineContentHolder(author: Message, channelID: String, private val m
                 SlotEntryFee.EntryType.PLATINUM_SHARDS -> EmojiStore.ABILITY["SHARD"]?.formatted
             }
 
-            slotMachine.content.forEachIndexed { index, content ->
+            for (index in page * SlotMachine.PAGE_CHUNK until min(slotMachine.content.size, (page + 1) * SlotMachine.PAGE_CHUNK)) {
+                val content = slotMachine.content[index]
+
                 builder.append(index + 1).append(". ").append(content.emoji?.formatted ?: EmojiStore.UNKNOWN.formatted)
 
                 if (content !is SlotPlaceHolderContent) {
@@ -123,16 +145,27 @@ class SlotMachineContentHolder(author: Message, channelID: String, private val m
                                     .append(emoji)
                                     .append(" ")
                                     .append(content.amount)
+                                    .append(" { Chance = ")
+                                    .append(slotMachine.getOdd(content).round(MathContext(5, RoundingMode.HALF_EVEN)).toPlainString())
+                                    .append("% }")
                             }
                             SlotCurrencyContent.Mode.PERCENTAGE -> {
                                 builder.append(" [Percentage] : ")
                                     .append(content.amount)
                                     .append("% of Entry Fee")
+                                    .append(" { Chance = ")
+                                    .append(slotMachine.getOdd(content).round(MathContext(5, RoundingMode.HALF_EVEN)).toPlainString())
+                                    .append("% }")
                             }
                         }
                     }
                     is SlotCardContent -> {
-                        builder.append(" [Card] : ").append(content.name).append("\n")
+                        builder.append(" [Card] : ")
+                            .append(content.name)
+                            .append(" { Chance = ")
+                            .append(slotMachine.getOdd(content).round(MathContext(5, RoundingMode.HALF_EVEN)).toPlainString())
+                            .append("% }")
+                            .append("\n")
 
                         content.cardChancePairLists.forEachIndexed { ind, l ->
                             builder.append("  - ").append(l.amount).append(" ")
@@ -175,7 +208,9 @@ class SlotMachineContentHolder(author: Message, channelID: String, private val m
         if (slotMachine.content.isEmpty()) {
             options.add(SelectOption.of("A", "A"))
         } else {
-            slotMachine.content.forEachIndexed { i, content ->
+            for (i in page * SlotMachine.PAGE_CHUNK until min(slotMachine.content.size, (page + 1) * SlotMachine.PAGE_CHUNK)) {
+                val content = slotMachine.content[i]
+
                 val description = when (content) {
                     is SlotCurrencyContent -> {
                         when (content.mode) {
@@ -206,9 +241,21 @@ class SlotMachineContentHolder(author: Message, channelID: String, private val m
                 .build()
         ))
 
+        if (slotMachine.content.size > SlotMachine.PAGE_CHUNK) {
+            val totalPage = ceil(slotMachine.content.size * 1.0 / SlotMachine.PAGE_CHUNK).toInt()
+
+            result.add(ActionRow.of(
+                Button.secondary("prev", "Previous Rewards").withEmoji(EmojiStore.PREVIOUS).withDisabled(page - 1 < 0),
+                Button.secondary("next", "Next Rewards").withEmoji(EmojiStore.NEXT).withDisabled(page + 1 >= totalPage)
+            ))
+        }
+
         val emojiList = arrayOf("🍌", "🍇", "🥝", "🍊", "🍎")
 
-        result.add(ActionRow.of(Button.secondary("create", "Create New Reward").withEmoji(Emoji.fromUnicode(emojiList.random())).withDisabled(slotMachine.content.size >= StringSelectMenu.OPTIONS_MAX_AMOUNT)))
+        result.add(ActionRow.of(
+            Button.secondary("create", "Create New Reward").withEmoji(Emoji.fromUnicode(emojiList.random())).withDisabled(slotMachine.content.size >= StringSelectMenu.OPTIONS_MAX_AMOUNT),
+            Button.secondary("sort", "Sort Reward").withEmoji(Emoji.fromUnicode("🔧")).withDisabled(slotMachine.content.isEmpty())
+        ))
 
         if (slotMachine !in CardData.slotMachines) {
             result.add(ActionRow.of(

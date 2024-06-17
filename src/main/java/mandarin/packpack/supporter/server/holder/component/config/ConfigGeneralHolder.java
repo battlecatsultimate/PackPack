@@ -4,6 +4,7 @@ import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder;
 import mandarin.packpack.supporter.server.holder.modal.ServerPrefixModalHolder;
 import net.dv8tion.jda.api.entities.Message;
@@ -112,12 +113,12 @@ public class ConfigGeneralHolder extends ServerConfigHolder {
     }
 
     @Override
-    public void onBack(@NotNull GenericComponentInteractionCreateEvent event) {
+    public void onBack(@NotNull GenericComponentInteractionCreateEvent event, Holder child) {
         applyResult(event);
     }
 
     @Override
-    public void onBack() {
+    public void onBack(Holder child) {
         applyResult();
 
         System.out.println(holder.config.prefix);

@@ -2,13 +2,14 @@ package mandarin.card.supporter.holder.slot
 
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
-import mandarin.card.supporter.holder.modal.SlotMachineCooldownModalHolder
-import mandarin.card.supporter.holder.modal.SlotMachineNameModalHolder
-import mandarin.card.supporter.holder.modal.SlotMachineSlotSizeModalHolder
+import mandarin.card.supporter.holder.modal.slot.SlotMachineCooldownModalHolder
+import mandarin.card.supporter.holder.modal.slot.SlotMachineNameModalHolder
+import mandarin.card.supporter.holder.modal.slot.SlotMachineSlotSizeModalHolder
 import mandarin.card.supporter.log.TransactionLogger
 import mandarin.card.supporter.slot.SlotMachine
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.lang.LangID
+import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
 import net.dv8tion.jda.api.entities.Message
@@ -24,8 +25,11 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectMenu
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
+import kotlin.math.ceil
 
 class SlotMachineManageHolder(author: Message, channelID: String, private val message: Message, private val slotMachine: SlotMachine, private val new: Boolean) : ComponentHolder(author, channelID, message) {
+    private var page = 0
+
     override fun clean() {
 
     }
@@ -115,6 +119,16 @@ class SlotMachineManageHolder(author: Message, channelID: String, private val me
                     goBack()
                 }, LangID.EN))
             }
+            "prev" -> {
+                page--
+
+                applyResult(event)
+            }
+            "next" -> {
+                page++
+
+                applyResult(event)
+            }
             "back" -> {
                 slotMachine.activate = slotMachine.activate && slotMachine.valid
 
@@ -153,16 +167,16 @@ class SlotMachineManageHolder(author: Message, channelID: String, private val me
         applyResult(event)
     }
 
-    override fun onBack(event: GenericComponentInteractionCreateEvent) {
+    override fun onBack(event: GenericComponentInteractionCreateEvent, child: Holder) {
         applyResult(event)
     }
 
-    override fun onBack() {
+    override fun onBack(child: Holder) {
         applyResult()
     }
 
     private fun applyResult() {
-        message.editMessage(slotMachine.asText())
+        message.editMessage(slotMachine.asText(page))
             .setComponents(getComponents())
             .setAllowedMentions(ArrayList())
             .mentionRepliedUser(false)
@@ -171,7 +185,7 @@ class SlotMachineManageHolder(author: Message, channelID: String, private val me
 
     private fun applyResult(event: GenericComponentInteractionCreateEvent) {
         event.deferEdit()
-            .setContent(slotMachine.asText())
+            .setContent(slotMachine.asText(page))
             .setComponents(getComponents())
             .setAllowedMentions(ArrayList())
             .mentionRepliedUser(false)
@@ -180,7 +194,7 @@ class SlotMachineManageHolder(author: Message, channelID: String, private val me
 
     private fun applyResult(event: ModalInteractionEvent) {
         event.deferEdit()
-            .setContent(slotMachine.asText())
+            .setContent(slotMachine.asText(page))
             .setComponents(getComponents())
             .setAllowedMentions(ArrayList())
             .mentionRepliedUser(false)
@@ -192,14 +206,23 @@ class SlotMachineManageHolder(author: Message, channelID: String, private val me
 
         result.add(ActionRow.of(
             Button.secondary("name", "Change Slot Machine Name").withEmoji(Emoji.fromUnicode("🏷️")),
-            Button.secondary("slot", "Change Slot Size").withEmoji(Emoji.fromUnicode("🍀"))
-        ))
-        result.add(ActionRow.of(
-            Button.secondary("entryFee", "Entry Fee").withEmoji(Emoji.fromUnicode("💵")),
-            Button.secondary("content", "Slot Contents").withEmoji(Emoji.fromUnicode("🎰"))
+            Button.secondary("slot", "Change Slot Size").withEmoji(Emoji.fromUnicode("🍀")),
+            Button.secondary("entryFee", "Entry Fee").withEmoji(Emoji.fromUnicode("💵"))
         ))
 
-        result.add(ActionRow.of(Button.secondary("cooldown", "Cooldown").withEmoji(Emoji.fromUnicode("⏰"))))
+        result.add(ActionRow.of(
+            Button.secondary("content", "Slot Contents").withEmoji(Emoji.fromUnicode("🎰")),
+            Button.secondary("cooldown", "Cooldown").withEmoji(Emoji.fromUnicode("⏰"))
+        ))
+
+        if (slotMachine.content.size > SlotMachine.PAGE_CHUNK) {
+            val totalPage = ceil(slotMachine.content.size * 1.0 / SlotMachine.PAGE_CHUNK).toInt()
+
+            result.add(ActionRow.of(
+                Button.secondary("prev", "Previous Rewards").withEmoji(EmojiStore.PREVIOUS).withDisabled(page - 1 < 0),
+                Button.secondary("next", "Next Rewards").withEmoji(EmojiStore.NEXT).withDisabled(page + 1 >= totalPage)
+            ))
+        }
 
         result.add(ActionRow.of(
             EntitySelectMenu.create("roles", EntitySelectMenu.SelectTarget.ROLE).setPlaceholder("Select Role To Add/Delete").setRequiredRange(0, SelectMenu.OPTIONS_MAX_AMOUNT).build()

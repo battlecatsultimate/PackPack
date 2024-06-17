@@ -1,4 +1,4 @@
-package mandarin.card.supporter.holder.modal
+package mandarin.card.supporter.holder.modal.slot
 
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.modal.ModalHolder

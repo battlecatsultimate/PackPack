@@ -8,6 +8,7 @@ import mandarin.card.supporter.pack.BannerCardCost
 import mandarin.card.supporter.pack.CardPack
 import mandarin.card.supporter.pack.TierCardCost
 import mandarin.packpack.supporter.EmojiStore
+import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.emoji.Emoji
@@ -118,7 +119,7 @@ class CardPackCostHolder(author: Message, channelID: String, private val message
         applyResult(event)
     }
 
-    override fun onBack() {
+    override fun onBack(child: Holder) {
         applyResult()
     }
 

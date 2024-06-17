@@ -29,7 +29,6 @@ import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.session.ReadyEvent
-import net.dv8tion.jda.api.exceptions.ContextException
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
@@ -100,49 +99,85 @@ object CardBot : ListenerAdapter() {
                 if (notifier == 2) {
                     notifier = 1
 
-                    val removeQueue = ArrayList<String>()
+                    val removeQueue = ArrayList<Long>()
 
-                    CardData.notifierGroup.forEach { n ->
-                        if (!test || n == StaticStore.MANDARIN_SMELL) {
-                            client.retrieveUserById(n).queue { u ->
-                                val packList = StringBuilder()
+                    CardData.notifierGroup.filter { (_, notifier) -> notifier.any { b -> b } }.forEach { (id, notifier) ->
+                        if (!test || id.toString() == StaticStore.MANDARIN_SMELL) {
+                            client.retrieveUserById(id).queue { u ->
+                                val messageContent = StringBuilder()
 
-                                val cooldown = CardData.cooldown[u.id] ?: return@queue
+                                if (notifier[0]) {
+                                    val packList = StringBuilder()
 
-                                cooldown.forEach { (uuid, cd) ->
-                                    val pack = CardData.cardPacks.find { pack -> pack.uuid == uuid }
+                                    val cooldown = CardData.cooldown[u.id] ?: return@queue
 
-                                    if (pack != null && cd > 0 && cd - currentTime <= 0) {
-                                        packList.append("- ")
-                                            .append(pack.packName)
-                                            .append("\n")
+                                    cooldown.forEach { (uuid, cd) ->
+                                        val pack = CardData.cardPacks.find { pack -> pack.uuid == uuid }
+
+                                        if (pack != null && cd > 0 && cd - currentTime <= 0) {
+                                            packList.append("- ")
+                                                .append(pack.packName)
+                                                .append("\n")
+                                        }
+                                    }
+
+                                    if (packList.isNotBlank()) {
+                                        messageContent.append("You can roll pack below!\n\n")
+                                            .append(packList)
                                     }
                                 }
 
-                                if (packList.isNotBlank()) {
-                                    u.openPrivateChannel().queue({ private ->
-                                        private.sendMessage("You can roll pack below!\n\n$packList").queue({
-                                            cooldown.forEach { (uuid, cd) ->
-                                                if (cd > 0 && cd - currentTime <= 0) {
-                                                    cooldown[uuid] = 0
+                                if (notifier[1]) {
+                                    val slotList = StringBuilder()
+
+                                    val cooldown = CardData.slotCooldown[u.id] ?: return@queue
+
+                                    cooldown.forEach { (uuid, cd) ->
+                                        val slot = CardData.slotMachines.filter { slot -> slot.cooldown >= CardData.MINIMUM_NOTIFY_TIME }.find { slot -> slot.uuid == uuid }
+
+                                        if (slot != null && cd > 0 && cd - currentTime <= 0) {
+                                            slotList.append("- ")
+                                                .append(slot.name)
+                                                .append("\n")
+                                        }
+                                    }
+
+                                    if (slotList.isNotBlank()) {
+                                        if (messageContent.isNotBlank()) {
+                                            messageContent.append("\n")
+                                        }
+
+                                        messageContent.append("You can roll slot machine below!\n\n")
+                                            .append(slotList)
+                                    }
+                                }
+
+                                if (messageContent.isNotBlank()) {
+                                    u.openPrivateChannel().queue { pc ->
+                                        pc.sendMessage(messageContent).queue {
+                                            CardData.cooldown.forEach { (_, cooldownMap) ->
+                                                cooldownMap.forEach { (uuid, cd) ->
+                                                    if (cd > 0 && cd - currentTime <= 0) {
+                                                        cooldownMap[uuid] = 0
+                                                    }
                                                 }
                                             }
-                                        }, { e ->
-                                            if (e is ContextException) {
-                                                removeQueue.add(n)
+
+                                            CardData.slotCooldown.forEach { (_, cooldownMap) ->
+                                                cooldownMap.forEach { (uuid, cd) ->
+                                                    if (cd > 0 && cd - currentTime <= 0) {
+                                                        cooldownMap[uuid] = 0
+                                                    }
+                                                }
                                             }
-                                        })
-                                    }, { _ ->
-                                        removeQueue.add(n)
-                                    })
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
 
-                    if (removeQueue.isNotEmpty()) {
-                        CardData.notifierGroup.removeAll(removeQueue.toSet())
-                    }
+                    removeQueue.forEach { id -> CardData.notifierGroup.remove(id) }
 
                     RecordableThread.handleExpiration()
                 } else {
@@ -474,6 +509,8 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}slot",
             "${globalPrefix}slots",
             "${globalPrefix}sl" -> Slot().execute(event)
+            "${globalPrefix}transferinventory",
+            "${globalPrefix}ti" -> TransferInventory().execute(event)
         }
 
         val session = CardData.sessions.find { s -> s.postID == event.channel.idLong }
@@ -744,8 +781,6 @@ object CardBot : ListenerAdapter() {
 
                 CardData.inventories[key] = value
             }
-
-            CardData.inventories.values.forEach { i -> i.cards.entries.removeIf { e -> e.value <= 0 } }
         }
 
         if (obj.has("sessions")) {
@@ -768,7 +803,20 @@ object CardBot : ListenerAdapter() {
             val arr = obj.getAsJsonArray("notifierGroup")
 
             arr.forEach { e ->
-                CardData.notifierGroup.add(e.asString)
+                if (e is JsonPrimitive && e.isString) {
+                    val text = e.asString
+
+                    if (StaticStore.isNumeric(text)) {
+                        val id = StaticStore.safeParseLong(text)
+
+                        CardData.notifierGroup[id] = booleanArrayOf(true, false)
+                    }
+                } else if (e is JsonObject && e.has("key") && e.has("val")) {
+                    val id = e.get("key").asLong
+                    val array = e.getAsJsonArray("val").map { e -> e.asBoolean }.toBooleanArray()
+
+                    CardData.notifierGroup[id] = array
+                }
             }
         }
 
@@ -1081,8 +1129,18 @@ object CardBot : ListenerAdapter() {
 
         val notifierGroup = JsonArray()
 
-        CardData.notifierGroup.forEach { id ->
-            notifierGroup.add(id)
+        CardData.notifierGroup.forEach { (id, notifier) ->
+            val o = JsonObject()
+
+            o.addProperty("key", id)
+
+            val a = JsonArray()
+
+            notifier.forEach { b -> a.add(b) }
+
+            o.add("val", a)
+
+            notifierGroup.add(o)
         }
 
         obj.add("notifierGroup", notifierGroup)

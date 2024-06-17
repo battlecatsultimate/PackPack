@@ -3,6 +3,7 @@ package mandarin.packpack.supporter.server.holder.component.config;
 import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
@@ -143,12 +144,12 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
     }
 
     @Override
-    public void onBack() {
+    public void onBack(Holder child) {
         applyResult();
     }
 
     @Override
-    public void onBack(@NotNull GenericComponentInteractionCreateEvent event) {
+    public void onBack(@NotNull GenericComponentInteractionCreateEvent event, Holder child) {
         applyResult(event);
     }
 

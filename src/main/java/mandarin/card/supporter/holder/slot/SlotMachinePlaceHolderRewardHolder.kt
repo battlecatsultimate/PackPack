@@ -2,7 +2,7 @@ package mandarin.card.supporter.holder.slot
 
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
-import mandarin.card.supporter.holder.modal.SlotMachineEmojiSearchModalHolder
+import mandarin.card.supporter.holder.modal.slot.SlotMachineEmojiSearchModalHolder
 import mandarin.card.supporter.slot.*
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.lang.LangID

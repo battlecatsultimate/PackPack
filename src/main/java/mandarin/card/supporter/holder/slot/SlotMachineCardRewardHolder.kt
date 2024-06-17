@@ -2,9 +2,9 @@ package mandarin.card.supporter.holder.slot
 
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
-import mandarin.card.supporter.holder.modal.SlotMachineCardRewardNameModalHolder
-import mandarin.card.supporter.holder.modal.SlotMachineContentSlotModalHolder
-import mandarin.card.supporter.holder.modal.SlotMachineEmojiSearchModalHolder
+import mandarin.card.supporter.holder.modal.slot.SlotMachineCardRewardNameModalHolder
+import mandarin.card.supporter.holder.modal.slot.SlotMachineContentSlotModalHolder
+import mandarin.card.supporter.holder.modal.slot.SlotMachineEmojiSearchModalHolder
 import mandarin.card.supporter.pack.CardChancePairList
 import mandarin.card.supporter.slot.SlotCardContent
 import mandarin.card.supporter.slot.SlotEmojiContainer
@@ -12,6 +12,7 @@ import mandarin.card.supporter.slot.SlotMachine
 import mandarin.card.supporter.slot.SlotPlaceHolderContent
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.lang.LangID
+import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
@@ -28,6 +29,8 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
+import java.math.MathContext
+import java.math.RoundingMode
 import kotlin.math.ceil
 import kotlin.math.min
 
@@ -170,13 +173,13 @@ class SlotMachineCardRewardHolder(
         }
     }
 
-    override fun onBack() {
-        super.onBack()
+    override fun onBack(child: Holder) {
+        super.onBack(child)
 
         applyResult()
     }
 
-    override fun onBack(event: GenericComponentInteractionCreateEvent) {
+    override fun onBack(event: GenericComponentInteractionCreateEvent, child: Holder) {
         applyResult(event)
     }
 
@@ -239,7 +242,9 @@ class SlotMachineCardRewardHolder(
             .append("\n")
             .append("- **Required Slot** : ")
             .append(content.slot)
-            .append("\n")
+            .append("- **Chance** : ")
+            .append(slotMachine.getOdd(content).round(MathContext(5, RoundingMode.HALF_EVEN)).toPlainString())
+            .append(" %\n")
             .append("- **RewardType** : Card\n")
             .append("- **Name** : ")
             .append(content.name.ifBlank { "None" })

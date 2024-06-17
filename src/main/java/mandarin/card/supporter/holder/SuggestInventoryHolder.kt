@@ -145,7 +145,7 @@ class SuggestInventoryHolder(
                 if (event !is StringSelectInteractionEvent)
                     return
 
-                if (event.values.size < 1)
+                if (event.values.isEmpty())
                     return
 
                 val value = event.values[0]
@@ -168,7 +168,7 @@ class SuggestInventoryHolder(
                 if (event !is StringSelectInteractionEvent)
                     return
 
-                if (event.values.size < 1)
+                if (event.values.isEmpty())
                     return
 
                 val value = event.values[0]
@@ -192,7 +192,7 @@ class SuggestInventoryHolder(
                 if (event !is StringSelectInteractionEvent)
                     return
 
-                if (event.values.size < 1)
+                if (event.values.isEmpty())
                     return
 
                 val selectedID = event.values[0].toInt()
@@ -520,11 +520,11 @@ class SuggestInventoryHolder(
 
         val builder = StringBuilder("Inventory of ${authorMention}\n\n```md\n")
 
-        if (cards.size > 0) {
+        if (cards.isNotEmpty()) {
             for (i in page * SearchHolder.PAGE_CHUNK until min((page + 1) * SearchHolder.PAGE_CHUNK, cards.size)) {
                 builder.append("${i + 1}. ${cards[i].cardInfo()}")
 
-                val amount = (inventory.cards[cards[i]] ?: 1) - backup.cards.filter { c -> c.unitID == cards[i].unitID }.size
+                val amount = (inventory.cards[cards[i]] ?: 0) - backup.cards.filter { c -> c.unitID == cards[i].unitID }.size
 
                 if (amount >= 2) {
                     builder.append(" x$amount\n")

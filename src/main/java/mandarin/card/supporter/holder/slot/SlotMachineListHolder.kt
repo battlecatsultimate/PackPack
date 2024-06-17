@@ -1,8 +1,9 @@
 package mandarin.card.supporter.holder.slot
 
 import mandarin.card.supporter.CardData
-import mandarin.card.supporter.holder.modal.SlotMachineNameModalHolder
+import mandarin.card.supporter.holder.modal.slot.SlotMachineNameModalHolder
 import mandarin.packpack.supporter.EmojiStore
+import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
 import net.dv8tion.jda.api.entities.Message
@@ -88,8 +89,8 @@ class SlotMachineListHolder(author: Message, channelID: String, private val mess
         }
     }
 
-    override fun onBack() {
-        super.onBack()
+    override fun onBack(child: Holder) {
+        super.onBack(child)
 
         message.editMessage(getContents())
             .setComponents(getComponents())
@@ -98,7 +99,7 @@ class SlotMachineListHolder(author: Message, channelID: String, private val mess
             .queue()
     }
 
-    override fun onBack(event: GenericComponentInteractionCreateEvent) {
+    override fun onBack(event: GenericComponentInteractionCreateEvent, child: Holder) {
         applyResult(event)
     }
 

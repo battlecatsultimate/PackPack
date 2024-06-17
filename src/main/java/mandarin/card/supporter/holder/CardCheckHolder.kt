@@ -87,8 +87,8 @@ class CardCheckHolder(author: Message, channelID: String, message: Message, priv
                     .append(members[i].id)
                     .append("] x")
                     .append(
-                        inventory.cards.keys.filter { c -> c.tier == tier }.sumOf { c -> inventory.cards[c] ?: 0 } +
-                        inventory.favorites.keys.filter { c -> c.tier == tier }.sumOf { c -> inventory.cards[c] ?: 0 }
+                        inventory.cards.entries.filter { e -> e.key.tier == tier }.sumOf { e -> e.value } +
+                                inventory.favorites.entries.filter { e -> e.key.tier == tier }.sumOf { e -> e.value }
                     )
                     .append("\n")
             }

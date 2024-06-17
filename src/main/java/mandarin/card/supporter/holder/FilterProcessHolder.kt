@@ -139,15 +139,11 @@ class FilterProcessHolder : ComponentHolder {
                             spentCard.add(card)
                         }
 
-                        inventory.cards[card] = (inventory.cards[card] ?: 0) - number
-
-                                if (inventory.cards[card]!! < 0) {
+                        if ((inventory.cards[card] ?: 0) - number < 0) {
                             StaticStore.logger.uploadLog("W/FilterProcessHolder::onEvent - Bot found card with negative amount : ${card.cardInfo()}")
-
-                            inventory.cards.remove(card)
-                        } else if (inventory.cards[card]!! == 0) {
-                            inventory.cards.remove(card)
                         }
+
+                        inventory.cards[card] = (inventory.cards[card] ?: 0) - number
                     }
 
                     if (role != CardData.Role.NONE) {

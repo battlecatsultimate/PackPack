@@ -2,11 +2,12 @@ package mandarin.card.supporter.holder.slot
 
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
-import mandarin.card.supporter.holder.modal.SlotMachineRollModalHolder
+import mandarin.card.supporter.holder.modal.slot.SlotMachineRollModalHolder
 import mandarin.card.supporter.slot.SlotEntryFee
 import mandarin.card.supporter.slot.SlotMachine
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.lang.LangID
+import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
 import net.dv8tion.jda.api.entities.Message
@@ -18,11 +19,14 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
+import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 
 class SlotMachineConfirmHolder(author: Message, channelID: String, private val message: Message, private val slotMachine: SlotMachine, private val skip: Boolean) : ComponentHolder(author, channelID, message) {
-    val inventory = Inventory.getInventory(author.author.idLong)
+    private val inventory = Inventory.getInventory(author.author.idLong)
+
+    private var page = 0
 
     override fun clean() {
 
@@ -35,26 +39,15 @@ class SlotMachineConfirmHolder(author: Message, channelID: String, private val m
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
             "roll" -> {
-                val minimumInput = max(slotMachine.entryFee.minimumFee, 1)
-
-                val maximumInput = when(slotMachine.entryFee.entryType) {
-                    SlotEntryFee.EntryType.CAT_FOOD -> min(slotMachine.entryFee.maximumFee, inventory.actualCatFood)
-                    SlotEntryFee.EntryType.PLATINUM_SHARDS -> min(slotMachine.entryFee.maximumFee, inventory.platinumShard)
-                }
-
-                val input = TextInput.create("fee", "Entry Fee", TextInputStyle.SHORT).setPlaceholder("Put Entry Fee From $minimumInput To $maximumInput").setRequired(true).build()
-
-                val modal = Modal.create("roll", "Slot Machine Roll").addActionRow(input).build()
-
-                event.replyModal(modal).queue()
-
-                connectTo(SlotMachineRollModalHolder(authorMessage, channelID, message, slotMachine, inventory) { e, fee ->
+                if (slotMachine.entryFee.minimumFee == slotMachine.entryFee.maximumFee) {
                     val entryEmoji = when(slotMachine.entryFee.entryType) {
                         SlotEntryFee.EntryType.CAT_FOOD -> EmojiStore.ABILITY["CF"]?.formatted
                         SlotEntryFee.EntryType.PLATINUM_SHARDS -> EmojiStore.ABILITY["SHARD"]?.formatted
                     }
 
-                    registerPopUp(e, "Are you sure you want to roll this slot machine with entry fee of $entryEmoji $fee?", LangID.EN)
+                    val fee = slotMachine.entryFee.maximumFee
+
+                    registerPopUp(event, "Are you sure you want to roll this slot machine with entry fee of $entryEmoji $fee?", LangID.EN)
 
                     connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { ev ->
                         ev.deferEdit()
@@ -68,7 +61,63 @@ class SlotMachineConfirmHolder(author: Message, channelID: String, private val m
 
                         expired = true
                     }, LangID.EN))
-                })
+                } else {
+                    val minimumInput = max(slotMachine.entryFee.minimumFee, 1)
+
+                    val maximumInput = when(slotMachine.entryFee.entryType) {
+                        SlotEntryFee.EntryType.CAT_FOOD -> min(slotMachine.entryFee.maximumFee, inventory.actualCatFood)
+                        SlotEntryFee.EntryType.PLATINUM_SHARDS -> min(slotMachine.entryFee.maximumFee, inventory.platinumShard)
+                    }
+
+                    val input = TextInput.create("fee", "Entry Fee", TextInputStyle.SHORT).setPlaceholder("Put Entry Fee From $minimumInput To $maximumInput").setRequired(true).build()
+
+                    val modal = Modal.create("roll", "Slot Machine Roll").addActionRow(input).build()
+
+                    event.replyModal(modal).queue()
+
+                    connectTo(
+                        SlotMachineRollModalHolder(
+                            authorMessage,
+                            channelID,
+                            message,
+                            slotMachine,
+                            inventory
+                        ) { e, fee ->
+                            val entryEmoji = when (slotMachine.entryFee.entryType) {
+                                SlotEntryFee.EntryType.CAT_FOOD -> EmojiStore.ABILITY["CF"]?.formatted
+                                SlotEntryFee.EntryType.PLATINUM_SHARDS -> EmojiStore.ABILITY["SHARD"]?.formatted
+                            }
+
+                            registerPopUp(
+                                e,
+                                "Are you sure you want to roll this slot machine with entry fee of $entryEmoji $fee?",
+                                LangID.EN
+                            )
+
+                            connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { ev ->
+                                ev.deferEdit()
+                                    .setContent("Rolling...! 🎲")
+                                    .setComponents()
+                                    .setAllowedMentions(ArrayList())
+                                    .mentionRepliedUser(false)
+                                    .queue {
+                                        slotMachine.roll(message, authorMessage.author.idLong, inventory, fee, skip)
+                                    }
+
+                                expired = true
+                            }, LangID.EN))
+                        })
+                }
+            }
+            "prev" -> {
+                page--
+
+                applyResult(event)
+            }
+            "next" -> {
+                page++
+
+                applyResult(event)
             }
             "back" -> {
                 goBack(event)
@@ -76,13 +125,13 @@ class SlotMachineConfirmHolder(author: Message, channelID: String, private val m
         }
     }
 
-    override fun onBack() {
-        super.onBack()
+    override fun onBack(child: Holder) {
+        super.onBack(child)
 
         applyResult()
     }
 
-    override fun onBack(event: GenericComponentInteractionCreateEvent) {
+    override fun onBack(event: GenericComponentInteractionCreateEvent, child: Holder) {
         applyResult(event)
     }
 
@@ -108,7 +157,7 @@ class SlotMachineConfirmHolder(author: Message, channelID: String, private val m
     }
 
     private fun getContents() : String {
-        var result = slotMachine.asText() + "\n"
+        var result = slotMachine.asText(page) + "\n"
 
         val currentTime = CardData.getUnixEpochTime()
         val cooldownMap = CardData.slotCooldown.computeIfAbsent(authorMessage.author.id) { HashMap() }
@@ -162,6 +211,15 @@ class SlotMachineConfirmHolder(author: Message, channelID: String, private val m
             Button.secondary("roll", "Roll!").withEmoji(Emoji.fromUnicode("🎰")).withDisabled(!slotMachine.valid || !canRoll || !timeEnded),
             Button.secondary("back", "Go Back").withEmoji(EmojiStore.BACK)
         ))
+
+        if (slotMachine.content.size > SlotMachine.PAGE_CHUNK) {
+            val totalPage = ceil(slotMachine.content.size * 1.0 / SlotMachine.PAGE_CHUNK).toInt()
+
+            result.add(ActionRow.of(
+                Button.secondary("prev", "Previous Rewards").withEmoji(EmojiStore.PREVIOUS).withDisabled(page - 1 < 0),
+                Button.secondary("next", "Next Rewards").withEmoji(EmojiStore.NEXT).withDisabled(page + 1 >= totalPage)
+            ))
+        }
 
         return result
     }

@@ -1,4 +1,4 @@
-package mandarin.card.supporter.holder.modal
+package mandarin.card.supporter.holder.modal.slot
 
 import mandarin.card.supporter.holder.slot.SlotMachineManageHolder
 import mandarin.card.supporter.slot.SlotMachine

@@ -48,6 +48,11 @@ object CardData {
         SHARD
     }
 
+    enum class TransferMode {
+        INJECT,
+        OVERRIDE
+    }
+
     val cards = ArrayList<Card>()
 
     val permanents = arrayOf(
@@ -69,7 +74,9 @@ object CardData {
     //Stored as uber ID
     val bannerData = arrayOf(
         //Tier 0
-        arrayOf(),
+        arrayOf(
+            arrayOf()
+        ),
         //Tier 1
         arrayOf(
             //Dark Heroes
@@ -316,7 +323,7 @@ object CardData {
 
     private val allowedChannel = ServerData.getArray("allowedChannel")
 
-    val notifierGroup = ArrayList<String>()
+    val notifierGroup = HashMap<Long, BooleanArray>()
 
     val df = run {
         val nf = NumberFormat.getInstance(Locale.US)
@@ -337,6 +344,8 @@ object CardData {
 
     val cardPacks = ArrayList<CardPack>()
     val slotMachines = ArrayList<SlotMachine>()
+
+    const val MINIMUM_NOTIFY_TIME = 1 * 60 * 60 * 1000 //1 hour
 
     /*
     -------------------------------------------------------

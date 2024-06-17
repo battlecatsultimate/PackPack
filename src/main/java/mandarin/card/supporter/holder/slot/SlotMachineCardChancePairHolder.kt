@@ -3,13 +3,14 @@ package mandarin.card.supporter.holder.slot
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.filter.BannerFilter
-import mandarin.card.supporter.holder.modal.SlotMachineCardChanceHolder
+import mandarin.card.supporter.holder.modal.slot.SlotMachineCardChanceHolder
 import mandarin.card.supporter.pack.CardChancePair
 import mandarin.card.supporter.pack.CardChancePairList
 import mandarin.card.supporter.pack.CardPack
 import mandarin.card.supporter.slot.SlotMachine
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.lang.LangID
+import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder
@@ -186,8 +187,8 @@ class SlotMachineCardChancePairHolder(
         }
     }
 
-    override fun onBack() {
-        super.onBack()
+    override fun onBack(child: Holder) {
+        super.onBack(child)
 
         applyResult()
     }

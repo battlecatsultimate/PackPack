@@ -2,9 +2,10 @@ package mandarin.card.supporter.holder.auction
 
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
-import mandarin.card.supporter.holder.modal.AuctionBidHolder
+import mandarin.card.supporter.holder.modal.auction.AuctionBidHolder
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.lang.LangID
+import mandarin.packpack.supporter.server.holder.Holder
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder
 import net.dv8tion.jda.api.entities.Guild
@@ -54,7 +55,11 @@ class AuctionPlaceSelectHolder(author: Message, channelID: String, private val m
                 event.replyModal(modal).queue()
 
                 connectTo(AuctionBidHolder(authorMessage, channelID, message, auctionSession) { bid ->
-                    registerPopUp(message, "Are you sure you want to bid ${EmojiStore.ABILITY["CF"]?.formatted} $bid to Auction #${auctionSession.id} <#${auctionSession.channel}>? You won't be able to use bid cat foods in other place until you cancel the bid", LangID.EN)
+                    registerPopUp(
+                        message,
+                        "Are you sure you want to bid ${EmojiStore.ABILITY["CF"]?.formatted} $bid to Auction #${auctionSession.id} <#${auctionSession.channel}>? You won't be able to use bid cat foods in other place until you cancel the bid",
+                        LangID.EN
+                    )
 
                     connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                         auctionSession.bid(authorMessage.author.idLong, bid)
@@ -87,12 +92,12 @@ class AuctionPlaceSelectHolder(author: Message, channelID: String, private val m
         }
     }
 
-    override fun onBack(event: GenericComponentInteractionCreateEvent) {
+    override fun onBack(event: GenericComponentInteractionCreateEvent, child: Holder) {
         applyResult(event)
     }
 
-    override fun onBack() {
-        super.onBack()
+    override fun onBack(child: Holder) {
+        super.onBack(child)
 
         message.editMessage(
             "Please select auction place where you want to bid\n" +
