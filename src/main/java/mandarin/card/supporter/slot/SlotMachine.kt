@@ -52,6 +52,8 @@ class SlotMachine {
 
             return slotMachine
         }
+
+        const val PAGE_CHUNK = 10
     }
 
     var name: String
@@ -115,7 +117,7 @@ class SlotMachine {
         this.uuid = uuid
     }
 
-    fun asText() : String {
+    fun asText(page: Int) : String {
         val builder = StringBuilder("## ")
             .append(name)
             .append("\nThis slot machine has ")
@@ -139,7 +141,9 @@ class SlotMachine {
 
             val odds = getOdds()
 
-            content.forEachIndexed { index, content ->
+            for (index in page * PAGE_CHUNK until min(content.size, (page + 1) * PAGE_CHUNK)) {
+                val content = content[index]
+
                 builder.append(index + 1).append(". ").append(content.emoji?.formatted ?: EmojiStore.UNKNOWN.formatted)
 
                 if (content !is SlotPlaceHolderContent) {

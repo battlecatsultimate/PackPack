@@ -19,11 +19,14 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
+import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 
 class SlotMachineConfirmHolder(author: Message, channelID: String, private val message: Message, private val slotMachine: SlotMachine, private val skip: Boolean) : ComponentHolder(author, channelID, message) {
-    val inventory = Inventory.getInventory(author.author.idLong)
+    private val inventory = Inventory.getInventory(author.author.idLong)
+
+    private var page = 0
 
     override fun clean() {
 
@@ -106,6 +109,16 @@ class SlotMachineConfirmHolder(author: Message, channelID: String, private val m
                         })
                 }
             }
+            "prev" -> {
+                page--
+
+                applyResult(event)
+            }
+            "next" -> {
+                page++
+
+                applyResult(event)
+            }
             "back" -> {
                 goBack(event)
             }
@@ -144,7 +157,7 @@ class SlotMachineConfirmHolder(author: Message, channelID: String, private val m
     }
 
     private fun getContents() : String {
-        var result = slotMachine.asText() + "\n"
+        var result = slotMachine.asText(page) + "\n"
 
         val currentTime = CardData.getUnixEpochTime()
         val cooldownMap = CardData.slotCooldown.computeIfAbsent(authorMessage.author.id) { HashMap() }
@@ -198,6 +211,15 @@ class SlotMachineConfirmHolder(author: Message, channelID: String, private val m
             Button.secondary("roll", "Roll!").withEmoji(Emoji.fromUnicode("🎰")).withDisabled(!slotMachine.valid || !canRoll || !timeEnded),
             Button.secondary("back", "Go Back").withEmoji(EmojiStore.BACK)
         ))
+
+        if (slotMachine.content.size > SlotMachine.PAGE_CHUNK) {
+            val totalPage = ceil(slotMachine.content.size * 1.0 / SlotMachine.PAGE_CHUNK).toInt()
+
+            result.add(ActionRow.of(
+                Button.secondary("prev", "Previous Rewards").withEmoji(EmojiStore.PREVIOUS).withDisabled(page - 1 < 0),
+                Button.secondary("next", "Next Rewards").withEmoji(EmojiStore.NEXT).withDisabled(page + 1 >= totalPage)
+            ))
+        }
 
         return result
     }
