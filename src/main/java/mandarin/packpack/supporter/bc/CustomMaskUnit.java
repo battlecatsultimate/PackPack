@@ -48,6 +48,6 @@ public class CustomMaskUnit extends DataUnit {
 
     @Override
     public int getAnimLen() {
-        return anim.len;
+        return anim.len + 1;
     }
 }
