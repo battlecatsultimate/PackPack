@@ -16,22 +16,28 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConfigCategoryHolder extends ServerConfigHolder {
-    public ConfigCategoryHolder(Message author, String channelID, Message message, @NotNull IDHolder holder, int lang) {
-        super(author, channelID, message, holder, lang);
-    }
+public class ConfigChannelHolder extends ServerConfigHolder {
 
-    @Override
-    public void clean() {
-
+    public ConfigChannelHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, @NotNull IDHolder backup, int lang) {
+        super(author, channelID, message, holder, backup, lang);
     }
 
     @Override
     public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
-            case "general" -> connectTo(event, new ConfigGeneralHolder(getAuthorMessage(), channelID, message, holder, backup, lang));
-            case "command" -> connectTo(event, new ConfigCommandHolder(getAuthorMessage(), channelID, message, holder, backup, lang));
-            case "channel" -> connectTo(event, new ConfigChannelHolder(getAuthorMessage(), channelID, message, holder, backup, lang));
+            case "event" -> {
+
+            }
+            case "announcement" -> {
+
+            }
+            case "status" -> {
+
+            }
+            case "booster" -> {
+
+            }
+            case "back" -> goBack(event);
             case "confirm" -> {
                 event.deferEdit()
                         .setContent(LangID.getStringByID("sercon_done", lang))
@@ -62,34 +68,52 @@ public class ConfigCategoryHolder extends ServerConfigHolder {
     }
 
     @Override
+    public void clean() {
+
+    }
+
+    @Override
+    public void onConnected(@NotNull GenericComponentInteractionCreateEvent event) {
+        applyResult(event);
+    }
+
+    @Override
     public void onBack(@NotNull GenericComponentInteractionCreateEvent event, Holder child) {
+        applyResult(event);
+    }
+
+    private void applyResult(GenericComponentInteractionCreateEvent event) {
         event.deferEdit()
-                .setContent(LangID.getStringByID("sercon_category", lang))
+                .setContent(getContents())
                 .setComponents(getComponents())
                 .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)
                 .queue();
     }
 
+    private String getContents() {
+        return LangID.getStringByID("sercon_channeltitle", lang) + "\n" +
+                LangID.getStringByID("sercon_channeldesc", lang) + "\n" +
+                LangID.getStringByID("sercon_channeleventtit", lang).formatted(Emoji.fromUnicode("🗓️")) + "\n" +
+                LangID.getStringByID("sercon_channeleventdesc", lang) + "\n" +
+                LangID.getStringByID("sercon_channelanntit", lang).formatted(Emoji.fromUnicode("📢")) + "\n" +
+                LangID.getStringByID("sercon_channelanndesc", lang) + "\n" +
+                LangID.getStringByID("sercon_channelstatustit", lang).formatted(Emoji.fromUnicode("📡")) + "\n" +
+                LangID.getStringByID("sercon_channelstatusdesc", lang) + "\n" +
+                LangID.getStringByID("sercon_channelboosttit", lang).formatted(Emoji.fromUnicode("📌")) + "\n" +
+                LangID.getStringByID("sercon_channelboostdesc", lang);
+    }
+
     private List<LayoutComponent> getComponents() {
         List<LayoutComponent> result = new ArrayList<>();
 
-        result.add(
-                ActionRow.of(
-                        Button.secondary("general", LangID.getStringByID("sercon_general", lang)).withEmoji(Emoji.fromUnicode("🎛️")),
-                        Button.secondary("command", LangID.getStringByID("sercon_command", lang)).withEmoji(Emoji.fromUnicode("📟"))
-                )
-        );
-
-        result.add(
-                ActionRow.of(
-                        Button.secondary("permission", LangID.getStringByID("sercon_perm", lang)).withEmoji(Emoji.fromUnicode("📖")),
-                        Button.secondary("channel", LangID.getStringByID("sercon_channel", lang)).withEmoji(Emoji.fromUnicode("💬")),
-                        Button.secondary("moderation", LangID.getStringByID("sercon_mod", lang)).withEmoji(Emoji.fromUnicode("🛡️"))
-                )
-        );
+        result.add(ActionRow.of(Button.secondary("event", LangID.getStringByID("sercon_channeleventbutton", lang)).withEmoji(Emoji.fromUnicode("🗓️"))));
+        result.add(ActionRow.of(Button.secondary("announcement", LangID.getStringByID("sercon_channelannbutton", lang)).withEmoji(Emoji.fromUnicode("📢"))));
+        result.add(ActionRow.of(Button.secondary("status", LangID.getStringByID("sercon_channelstatusbutton", lang)).withEmoji(Emoji.fromUnicode("📡"))));
+        result.add(ActionRow.of(Button.secondary("booster", LangID.getStringByID("sercon_channelboostbutton", lang)).withEmoji(Emoji.fromUnicode("📌"))));
 
         result.add(ActionRow.of(
+                Button.secondary("back", LangID.getStringByID("button_back", lang)).withEmoji(EmojiStore.BACK),
                 Button.success("confirm", LangID.getStringByID("button_confirm", lang)).withEmoji(EmojiStore.CHECK),
                 Button.danger("cancel", LangID.getStringByID("button_cancel", lang)).withEmoji(EmojiStore.CROSS)
         ));

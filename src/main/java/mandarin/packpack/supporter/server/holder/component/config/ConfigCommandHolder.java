@@ -24,18 +24,10 @@ import java.util.List;
 public class ConfigCommandHolder extends ServerConfigHolder {
     private static final int PAGE_SIZE = 3;
 
-    private final Message message;
-    private final IDHolder holder;
-    private final int lang;
-
     private int page = 0;
 
     public ConfigCommandHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, @NotNull IDHolder backup, int lang) {
         super(author, channelID, message, holder, backup, lang);
-
-        this.message = message;
-        this.holder = holder;
-        this.lang = lang;
     }
 
     @Override
