@@ -242,6 +242,7 @@ class SlotMachineCardRewardHolder(
             .append("\n")
             .append("- **Required Slot** : ")
             .append(content.slot)
+            .append("\n")
             .append("- **Chance** : ")
             .append(slotMachine.getOdd(content).round(MathContext(5, RoundingMode.HALF_EVEN)).toPlainString())
             .append(" %\n")
