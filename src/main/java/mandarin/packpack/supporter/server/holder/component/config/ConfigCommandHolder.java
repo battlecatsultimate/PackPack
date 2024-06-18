@@ -102,9 +102,7 @@ public class ConfigCommandHolder extends ServerConfigHolder {
 
                 applyResult(event);
             }
-            case "back" -> {
-                goBack(event);
-            }
+            case "back" -> goBack(event);
             case "confirm" -> {
                 event.deferEdit()
                         .setContent(LangID.getStringByID("sercon_done", lang))
