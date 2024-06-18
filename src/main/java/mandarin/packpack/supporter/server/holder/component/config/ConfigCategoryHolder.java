@@ -30,6 +30,7 @@ public class ConfigCategoryHolder extends ServerConfigHolder {
     public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
             case "general" -> connectTo(event, new ConfigGeneralHolder(getAuthorMessage(), channelID, message, holder, backup, lang));
+            case "command" -> connectTo(event, new ConfigCommandHolder(getAuthorMessage(), channelID, message, holder, backup, lang));
             case "confirm" -> {
                 event.deferEdit()
                         .setContent(LangID.getStringByID("sercon_done", lang))
@@ -50,6 +51,8 @@ public class ConfigCategoryHolder extends ServerConfigHolder {
                             .setAllowedMentions(new ArrayList<>())
                             .mentionRepliedUser(false)
                             .queue();
+
+                    holder.inject(backup);
 
                     expired = true;
                 }, lang));

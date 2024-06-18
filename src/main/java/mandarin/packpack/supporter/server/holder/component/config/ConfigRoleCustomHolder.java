@@ -159,6 +159,8 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
                             .mentionRepliedUser(false)
                             .queue();
 
+                    holder.inject(backup);
+
                     expired = true;
                 }, lang));
             }

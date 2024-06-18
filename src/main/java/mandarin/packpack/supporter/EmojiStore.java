@@ -64,6 +64,9 @@ public class EmojiStore {
         MODERATOR = getEmoteWitNameAndID(loader, "Moderator", 1237303422290759711L);
         BOOSTER = getEmoteWitNameAndID(loader, "Booster", 1237303434915348521L);
         LANGUAGE = getEmoteWitNameAndID(loader, "Language", 1237306025753706546L);
+        LEVEL = getEmoteWitNameAndID(loader, "Level", 1252169167977844767L);
+        COMPRESS = getEmoteWitNameAndID(loader, "Compress", 1252183494738710528L);
+        INFORMATION = getEmoteWitNameAndID(loader, "Information", 1252415073029328996L);
 
         CHECK = getEmoteWitNameAndID(loader, "Check", 1237662032560525332L);
         CROSS = getEmoteWitNameAndID(loader, "Cross", 1237662049031684136L);
@@ -209,6 +212,9 @@ public class EmojiStore {
     public static Emoji MODERATOR;
     public static Emoji BOOSTER;
     public static Emoji LANGUAGE;
+    public static Emoji LEVEL;
+    public static Emoji COMPRESS;
+    public static Emoji INFORMATION;
 
     public static Emoji CHECK;
     public static Emoji CROSS;

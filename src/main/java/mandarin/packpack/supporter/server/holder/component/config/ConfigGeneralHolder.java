@@ -95,6 +95,8 @@ public class ConfigGeneralHolder extends ServerConfigHolder {
                             .mentionRepliedUser(false)
                             .queue();
 
+                    holder.inject(backup);
+
                     expired = true;
                 }, lang));
             }
@@ -120,8 +122,6 @@ public class ConfigGeneralHolder extends ServerConfigHolder {
     @Override
     public void onBack(Holder child) {
         applyResult();
-
-        System.out.println(holder.config.prefix);
     }
 
     private void applyResult(GenericComponentInteractionCreateEvent event) {
