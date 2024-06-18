@@ -736,6 +736,9 @@ class SlotMachine {
     private fun calculateOdd(minSequence: Int, maxSequence: Int) : BigDecimal {
         val emojiSize = content.mapNotNull { c -> c.emoji }.toSet().size
 
+        if (emojiSize == 0)
+            return BigDecimal.ZERO
+
         var odd = BigDecimal.ZERO
 
         for (s in minSequence..maxSequence) {
