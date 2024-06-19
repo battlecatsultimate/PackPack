@@ -425,6 +425,8 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}mi"-> ModifyInventory().execute(event)
             "${globalPrefix}activate" -> Activate().execute(event)
             "${globalPrefix}equip" -> Equip().execute(event)
+            "${globalPrefix}checkt0",
+            "${globalPrefix}t0" -> Check(CardData.Tier.SPECIAL).execute(event)
             "${globalPrefix}checkt3",
             "${globalPrefix}t3" -> Check(CardData.Tier.ULTRA).execute(event)
             "${globalPrefix}checkt4",
