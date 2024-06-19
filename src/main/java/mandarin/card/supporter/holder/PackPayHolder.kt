@@ -49,6 +49,24 @@ class PackPayHolder(
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
             "roll" -> {
+                val cooldownMap = CardData.cooldown.computeIfAbsent(authorMessage.author.id) { HashMap() }
+
+                if (cooldownMap.containsKey(pack.uuid)) {
+                    val cooldown = cooldownMap[pack.uuid] ?: 0
+
+                    if (cooldown - CardData.getUnixEpochTime() > 0L) {
+                        event.deferReply().setContent("Failed to roll the pack due to cooldown!")
+                            .setEphemeral(true)
+                            .queue()
+
+                        return
+                    }
+                }
+
+                if (pack.cooldown > 0L) {
+                    cooldownMap[pack.uuid] = CardData.getUnixEpochTime() + pack.cooldown
+                }
+
                 event.deferEdit()
                     .setContent("Rolling...! \uD83C\uDFB2")
                     .setComponents()
@@ -71,8 +89,6 @@ class PackPayHolder(
                                     "Amount : ${inventory.cards[card]}"
                         )
                 } }
-
-                inventory.cards.entries.removeIf { (_, amount) -> amount <= 0 }
 
                 val result = pack.roll()
 
@@ -129,12 +145,6 @@ class PackPayHolder(
 
                 result.forEach { card ->
                     inventory.cards[card] = (inventory.cards[card] ?: 0) + 1
-                }
-
-                if (pack.cooldown > 0L) {
-                    val cooldownMap = CardData.cooldown.computeIfAbsent(authorMessage.author.id) { HashMap() }
-
-                    cooldownMap[pack.uuid] = CardData.getUnixEpochTime() + pack.cooldown
                 }
 
                 CardBot.saveCardData()
