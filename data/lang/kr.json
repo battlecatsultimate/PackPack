@@ -165,6 +165,7 @@
   "data_add5" : " (피격 시 x1/6~x1/7)",
   "data_add6" : " (공격 시 x5~x6)",
   "data_add7" : " (피격 시 0.7x / 공격 시 1.6x)",
+  "data_add8" : " (피격 시 0.5x / 공격 시 1.2x)",
   "data_add0t" : " (피격 시 x0.5~x0.4 <%sx> / 공격 시 x1.5~x1.8 <%sx>)",
   "data_add1t" : " (피격 시 x0.25~x0.2 <%sx>)",
   "data_add2t" : " (공격 시 x3~x4 <%sx>)",
@@ -1003,6 +1004,8 @@
   "help_enemydps_desc" : "제공된 적의 범위에 따른 DPS 그래프를 생성합니다. `edps`, `ed` 또한 유효한 명령어입니다",
   "help_enemydps_argu" : "- `-m`\n해당 적의 공격력 배율을 정합니다",
   "help_enemydps_exam" : "`p!ed 가아아파Jr. -m 200`",
+  "help_hasrole_use" : "`p!hasrole [역할]`",
+  "help_hasrole_desc" : "제공된 역할을 가진 유저들을 검색합니다. 역할은 맨션이나 ID로 제공되어야 합니다. **서버 관리자만 사용할 수 있는 명령어 입니다.** `hr` 또한 유효한 명령어 입니다",
   "prefix_space" : "접두사는 여백으로 설정될 수 없습니다!",
   "prefix_set" : "접두사가 %s 로 설정되었습니다!",
   "prefix_setnone" : "접두사가 설정되었습니다!",
@@ -1264,6 +1267,7 @@
   "button_no" : "아니요",
   "button_dps" : "DPS 그래프",
   "button_back" : "뒤로가기",
+  "button_close" : "닫기",
   "confirm_expired" : "확인 시간 초과",
   "setup_select" : "역할을 선택해 주세요",
   "setup_confirm" : "이미 이 서버에 역할 ID 가 따로 지정된 것 같습니다, 역할 ID 를 재지정하시겠습니까?",
@@ -1702,5 +1706,12 @@
   "fdps_descnoplv" : "레벨 : %d",
   "fdps_desc" : "레벨 : %d + %d",
   "fdps_talent" : "본능 레벨 : [%s]",
-  "edps_mag" : "배율 : %d%%"
+  "edps_mag" : "배율 : %d%%",
+  "hasrole_nodata" : "역할을 맨션이나 ID를 통해서 제공해줘야 합니다!",
+  "hasrole_norole" : "해당 명령어에서 역할 데이터를 가져오지 못했습니다! 존재하지 않는 역할을 제공하셨나요?",
+  "hasrole_title" : "%s 역할을 가진 유저 리스트",
+  "hasrole_number" : "%s 역할을 가진 유저가 %d명 있습니다",
+  "hasrole_numbersingle" : "%s 역할을 가진 유저가 1명 있습니다",
+  "hasrole_page" : "페이지 : %d / %d",
+  "hasrole_close" : "유저 리스트를 종료했습니다"
 }

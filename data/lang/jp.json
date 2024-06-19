@@ -150,6 +150,7 @@
   "data_add5" : " (被ダメx1/6~x1/7)",
   "data_add6" : " (与ダメx5~x6)",
   "data_add7" : " (被ダメx0.7/ 与ダメx1.6)",
+  "data_add8" : " (被ダメx0.5/ 与ダメx1.2)",
   "data_add0t" : " (被ダメx0.5~x0.4 <%sx> / 与ダメx1.5~x1.8 <%sx>)",
   "data_add1t" : " (与ダメx0.25~x0.2 <%sx>)",
   "data_add2t" : " (与ダメx3~x4 <%sx>)",
@@ -1002,6 +1003,8 @@
   "help_enemydps_desc" : "Show DPS graph of specified enemy depending on range. `edps`, `ed` are also valid command",
   "help_enemydps_argu" : "- `-m`\nSet attack magnification of this enemy",
   "help_enemydps_exam" : "`p!ed Kappy Jr. -m 200`",
+  "help_hasrole_use" : "`p!hasrole [Role]`",
+  "help_hasrole_desc" : "Find list of users who have specified role. Role must be offered as either mention or ID. **Only Moderators can use this command.** `hr` is also valid command",
   "prefix_set" : "Prefixは %s にセットされました!",
   "prefix_setnone" : "あなたのPrefixはアップデートされました!",
   "prefix_argu" : "このコマンドはもう一つ引数が必要です。 : [Prefix]",
@@ -1262,6 +1265,7 @@
   "button_no" : "No",
   "button_dps" : "DPS Graph",
   "button_back" : "Back",
+  "button_close" : "Close",
   "confirm_expired" : "タイムアウトしました。",
   "setup_select" : "ロールの選択",
   "setup_confirm" : "このサーバーではすでにロールとIDが設定されているようです。データを上書きしてもよろしいですか？",
@@ -1700,5 +1704,12 @@
   "fdps_descnoplv" : "レベル : %d",
   "fdps_desc" : "レベル : %d + %d",
   "fdps_talent" : "本能 : [%s]",
-  "edps_mag" : "倍率 : %d%%"
+  "edps_mag" : "倍率 : %d%%",
+  "hasrole_nodata" : "You have to pass role data either via ID or mention!",
+  "hasrole_norole" : "Failed to find role from command! Maybe you have passed invalid role?",
+  "hasrole_title" : "Users with %s",
+  "hasrole_number" : "There are total %d users who have %s role",
+  "hasrole_numbersingle" : "There is 1 user who has %s role",
+  "hasrole_page" : "Page : %d / %d",
+  "hasrole_close" : "User list closed"
 }
