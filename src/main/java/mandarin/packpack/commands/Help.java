@@ -261,6 +261,8 @@ public class Help extends Command {
                     replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("formdps", true, true, false)));
             case "enemydps", "edps", "ed" ->
                     replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("enemydps", true, true, false)));
+            case "hasrole", "hr" ->
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("hasrole", false, false, false)));
             default ->
                     replyToMessageSafely(ch, LangID.getStringByID("help_nocomm", lang).replace("_", command), reference, a -> a);
         }
