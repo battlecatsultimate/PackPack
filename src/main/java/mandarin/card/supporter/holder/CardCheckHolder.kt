@@ -75,7 +75,7 @@ class CardCheckHolder(author: Message, channelID: String, message: Message, priv
         val builder = StringBuilder()
 
         if (members.isNotEmpty()) {
-            builder.append("Below list is members who have T${tier.ordinal + 1} cards\n\n")
+            builder.append("Below list is members who have T${tier.ordinal} cards\n\n")
 
             for (i in page * SearchHolder.PAGE_CHUNK until min(members.size, (page + 1) * SearchHolder.PAGE_CHUNK)) {
                 val inventory = Inventory.getInventory(members[i].idLong)

@@ -53,7 +53,7 @@ class Check(private val tier: CardData.Tier) : Command(LangID.EN, true) {
         val builder = StringBuilder()
 
         if (members.isNotEmpty()) {
-            builder.append("Below list is members who have T${tier.ordinal + 1} cards\n\n")
+            builder.append("Below list is members who have T${tier.ordinal} cards\n\n")
 
             for (i in 0 until min(members.size, SearchHolder.PAGE_CHUNK)) {
                 val inventory = Inventory.getInventory(members[i].idLong)
