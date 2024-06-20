@@ -1034,7 +1034,7 @@
   "enemyst_noenemy" : "_で検索しましたが、そのような敵は存在しません!",
   "castle_more" : "IDがコマンドに含まれてないようです!\n使い方 : `_城 [ID]",
   "castle_number" : "IDは数である必要があります!",
-　"castle_result" : "_CCC_-_III_をアップロードしました\nボス出現地点 = _BBB_",
+  "castle_result" : "_CCC_-_III_をアップロードしました\nボス出現地点 = _BBB_",
   "castle_argu" : "このコマンドはもう一つ引数が必要です! : [ID]",
   "stinfo_mc" : "マップコレクション : _",
   "stinfo_stm" : "マップ : _",
