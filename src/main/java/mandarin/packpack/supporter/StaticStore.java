@@ -146,7 +146,8 @@ public class StaticStore {
             LangID.IT,
             LangID.ES,
             LangID.DE,
-            LangID.TH
+            LangID.TH,
+            LangID.RU
     };
 
     public static final String[] langCode = {
@@ -158,7 +159,21 @@ public class StaticStore {
             "it",
             "es",
             "de",
-            "th"
+            "th",
+            "ru"
+    };
+
+    public static final String[] langUnicode = {
+            "🇺🇸",
+            "🇹🇼",
+            "🇰🇷",
+            "🇯🇵",
+            "🇫🇷",
+            "🇮🇹",
+            "🇪🇸",
+            "🇩🇪",
+            "🇹🇭",
+            "🇷🇺"
     };
 
     public static final int[] rainbow = {rgb(217, 65, 68), rgb(217, 128, 65), rgb(224, 213, 85)
