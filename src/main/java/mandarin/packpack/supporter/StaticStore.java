@@ -728,7 +728,7 @@ public class StaticStore {
     }
 
     public static void readServerInfo() {
-        String fileName = PackBot.test ? "testserverinfo.json" : "serverinfo.json";
+        String fileName = PackBot.test ? "testserverinfo" : "serverinfo";
 
         JsonObject obj = getJsonFile(fileName);
 
