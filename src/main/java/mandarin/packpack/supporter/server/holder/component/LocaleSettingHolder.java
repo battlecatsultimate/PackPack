@@ -41,21 +41,12 @@ public class LocaleSettingHolder extends ComponentHolder {
 
     @Override
     public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
-        int lang;
-
-        if (config.lang == -1)
-            lang = holder != null ? holder.config.lang : config.lang;
-        else
-            lang = config.lang;
-
         switch (event.getComponentId()) {
             case "locale" -> {
                 if (!(event instanceof StringSelectInteractionEvent e))
                     return;
 
                 String localeCode = e.getValues().getFirst();
-
-                System.out.println(localeCode);
 
                 if (localeCode.equals("auto")) {
                     config.lang = -1;
@@ -78,6 +69,8 @@ public class LocaleSettingHolder extends ComponentHolder {
 
                     config.lang = StaticStore.langIndex[index];
                 }
+
+                int lang;
 
                 if (config.lang == -1)
                     lang = holder != null ? holder.config.lang : config.lang;
@@ -118,6 +111,13 @@ public class LocaleSettingHolder extends ComponentHolder {
                         .queue();
             }
             case "confirm" -> {
+                int lang;
+
+                if (config.lang == -1)
+                    lang = holder != null ? holder.config.lang : config.lang;
+                else
+                    lang = config.lang;
+
                 event.deferEdit()
                         .setContent(LangID.getStringByID("locale_confirm", lang))
                         .setComponents()
