@@ -278,7 +278,7 @@ public class IDManagerHolder extends ComponentHolder implements Conflictable {
                 StaticStore.removeHolder(userID, this);
 
                 event.deferEdit()
-                        .setContent(LangID.getStringByID("idset_apply", holder.config.lang))
+                        .setContent(LangID.getStringByID("idset_apply", lang))
                         .setComponents()
                         .queue();
             }

@@ -10,6 +10,7 @@ public class LangID {
     public static final int ZH = 1;
     public static final int KR = 2;
     public static final int JP = 3;
+    public static final int RU = 4;
     public static final int FR = 6;
     public static final int IT = 9;
     public static final int ES = 8;
@@ -20,6 +21,7 @@ public class LangID {
     public static JsonObject JP_OBJ;
     public static JsonObject KR_OBJ;
     public static JsonObject ZH_OBJ;
+    public static JsonObject RU_OBJ;
 
     public static void initialize() {
         File f = new File("./data/lang");
@@ -33,6 +35,7 @@ public class LangID {
                     case "jp.json" -> JP_OBJ = StaticStore.getJsonFile("lang/jp");
                     case "kr.json" -> KR_OBJ = StaticStore.getJsonFile("lang/kr");
                     case "zh.json" -> ZH_OBJ = StaticStore.getJsonFile("lang/zh");
+                    case "ru.json" -> RU_OBJ = StaticStore.getJsonFile("lang/ru");
                 }
             }
         }
@@ -42,67 +45,76 @@ public class LangID {
 
     public static String getStringByID(String id, int locale) {
         switch (locale) {
-            case EN:
-                if(EN_OBJ == null)
+            case EN -> {
+                if (EN_OBJ == null)
                     return id;
 
-                if(EN_OBJ.has(id))
+                if (EN_OBJ.has(id))
                     return EN_OBJ.get(id).getAsString();
-
-                break;
-            case JP:
-                if(JP_OBJ == null || !JP_OBJ.has(id)) {
-                    if(EN_OBJ == null)
+            }
+            case JP -> {
+                if (JP_OBJ == null || !JP_OBJ.has(id)) {
+                    if (EN_OBJ == null)
                         return id;
 
-                    if(EN_OBJ.has(id))
+                    if (EN_OBJ.has(id))
                         return EN_OBJ.get(id).getAsString();
                     else
                         return id;
                 }
 
-                if(JP_OBJ.has(id))
+                if (JP_OBJ.has(id))
                     return JP_OBJ.get(id).getAsString();
-
-                break;
-            case KR:
-                if(KR_OBJ == null || !KR_OBJ.has(id)) {
-                    if(EN_OBJ == null)
+            }
+            case KR -> {
+                if (KR_OBJ == null || !KR_OBJ.has(id)) {
+                    if (EN_OBJ == null)
                         return id;
 
-                    if(EN_OBJ.has(id))
+                    if (EN_OBJ.has(id))
                         return EN_OBJ.get(id).getAsString();
                     else
                         return id;
                 }
 
-                if(KR_OBJ.has(id))
+                if (KR_OBJ.has(id))
                     return KR_OBJ.get(id).getAsString();
-
-                break;
-            case ZH:
-                if(ZH_OBJ == null || !ZH_OBJ.has(id)) {
-                    if(EN_OBJ == null)
+            }
+            case ZH -> {
+                if (ZH_OBJ == null || !ZH_OBJ.has(id)) {
+                    if (EN_OBJ == null)
                         return id;
 
-                    if(EN_OBJ.has(id))
+                    if (EN_OBJ.has(id))
                         return EN_OBJ.get(id).getAsString();
                     else
                         return id;
                 }
 
-                if(ZH_OBJ.has(id))
+                if (ZH_OBJ.has(id))
                     return ZH_OBJ.get(id).getAsString();
+            }
+            case RU -> {
+                if (RU_OBJ == null || !RU_OBJ.has(id)) {
+                    if (EN_OBJ == null)
+                        return id;
 
-                break;
-            default:
-                if(EN_OBJ == null)
+                    if (EN_OBJ.has(id))
+                        return EN_OBJ.get(id).getAsString();
+                    else
+                        return id;
+                }
+
+                if (RU_OBJ.has(id))
+                    return RU_OBJ.get(id).getAsString();
+            }
+            default -> {
+                if (EN_OBJ == null)
                     return id;
 
-                if(EN_OBJ.has(id))
+                if (EN_OBJ.has(id))
                     return EN_OBJ.get(id).getAsString();
-
-                break;
+            }
         }
 
         return id;

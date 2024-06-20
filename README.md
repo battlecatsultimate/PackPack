@@ -26,9 +26,7 @@ Thanks to user called Xerpy, you can follow [this guide](https://docs.google.com
 ---
 ## Thanks To
 
-[dr.beako (Dr.Beako#3269)](https://github.com/DrBeako) - For translating the bot to Chinese (Traditional)
-
-[anenigmaticencounter (forestfamily4#5351)](https://github.com/forestfamily4) - For translating the bot to Japanese
+### Contributor
 
 [gideon_g2 (Gideon#9787)](https://github.com/Gideon9212) - For hosting the bot
 
@@ -36,9 +34,23 @@ Thanks to user called Xerpy, you can follow [this guide](https://docs.google.com
 
 [.xerp (Xerpy#9580)](https://github.com/Xerpyy) - For setting up enemy name data and making guide to run the bot
 
+### Translator
+
+[dr.beako (Dr.Beako#3269)](https://github.com/DrBeako) - For translating the bot to Chinese (Traditional)
+
+[anenigmaticencounter (forestfamily4#5351)](https://github.com/forestfamily4) - For translating the bot to Japanese
+
 [p0rk_cut1et](https://github.com/p0rk-cut1et) - For translating the bot to Japanese
 
 iamodd_ (Iamodd#2568) - For translating the bot to Japanese
+
+[babuin_riga](https://github.com/BabuinRiga) - For translating the bot to Russian
+
+tensytyan - For translating the bot to Russian
+
+terakopik93 (лл#6691) - For translating the bot to Russian
+
+unknownentity0968 (UnknownEntity#0968) - For translating the bot to Russian
 
 ---
 ## Donation

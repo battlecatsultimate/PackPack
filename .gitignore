@@ -50,3 +50,4 @@ hs_err_pid*
 /data/testCardLog/
 /build/
 /build/*
+/data/testserverinfo.json
