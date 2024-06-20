@@ -689,7 +689,9 @@ public class StaticStore {
                 }
             }
 
-            File file = new File(folder.getAbsolutePath(), "serverinfo.json");
+            String fileName = PackBot.test ? "testserverinfo.json" : "serverinfo.json";
+
+            File file = new File(folder.getAbsolutePath(), fileName);
 
             if(!file.exists()) {
                 boolean res = file.createNewFile();
@@ -726,7 +728,9 @@ public class StaticStore {
     }
 
     public static void readServerInfo() {
-        JsonObject obj = getJsonFile("serverinfo");
+        String fileName = PackBot.test ? "testserverinfo.json" : "serverinfo.json";
+
+        JsonObject obj = getJsonFile(fileName);
 
         if(obj != null) {
             if(obj.has("safeClose")) {
