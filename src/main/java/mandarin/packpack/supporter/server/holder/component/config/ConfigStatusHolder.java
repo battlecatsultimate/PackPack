@@ -123,7 +123,7 @@ public class ConfigStatusHolder extends ServerConfigHolder {
             builder.append("```\n").append(LangID.getStringByID("sercon_channelstatusno", lang)).append("\n```");
         } else {
             for (int i = 0; i < holder.status.size(); i++) {
-                builder.append(i + 1).append("<#").append(holder.status.get(i)).append("> [").append(holder.status.get(i)).append("]");
+                builder.append(i + 1).append(". <#").append(holder.status.get(i)).append("> [").append(holder.status.get(i)).append("]");
 
                 if (i < holder.status.size() - 1) {
                     builder.append("\n");
