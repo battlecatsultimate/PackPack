@@ -74,13 +74,13 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
                 }
             }
             case "additional" -> {
-                TextInput input = TextInput.create("message", LangID.getStringByID("sercon_channeleventinput", lang), TextInputStyle.PARAGRAPH)
-                        .setPlaceholder(LangID.getStringByID("sercon_channeleventinputplace", lang))
+                TextInput input = TextInput.create("message", LangID.getStringByID("sercon_channeladditionalinput", lang), TextInputStyle.PARAGRAPH)
+                        .setPlaceholder(LangID.getStringByID("sercon_channeladditionalinputplace", lang))
                         .setRequired(true)
                         .setMaxLength(500)
                         .build();
 
-                Modal modal = Modal.create("additional", LangID.getStringByID("sercon_channeleventmodal", lang))
+                Modal modal = Modal.create("additional", LangID.getStringByID("sercon_channeladditionalmodal", lang))
                         .addActionRow(input)
                         .build();
 
@@ -236,7 +236,7 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
                     .append(LangID.getStringByID("sercon_channelmessage", lang))
                     .append("\n```\n")
                     .append(message)
-                    .append("\n```\n")
+                    .append("\n\n```\n")
                     .append("=".repeat(LangID.getStringByID("sercon_channeleventmessage", lang).length()))
                     .append("\n```");
 

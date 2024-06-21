@@ -5,15 +5,13 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import org.jetbrains.annotations.NotNull;
 
-public class EventAdditionalMessageHolder extends ModalHolder {
+public class AnnouncementAdditionalMessageHolder extends ModalHolder {
     private final IDHolder holder;
-    private final String locale;
 
-    public EventAdditionalMessageHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, IDHolder holder, String locale) {
+    public AnnouncementAdditionalMessageHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, IDHolder holder) {
         super(author, channelID, message);
 
         this.holder = holder;
-        this.locale = locale;
     }
 
     @Override
@@ -22,9 +20,7 @@ public class EventAdditionalMessageHolder extends ModalHolder {
             return;
         }
 
-        String message = getValueFromMap(event.getValues(), "message").strip();
-
-        holder.eventMessage.put(locale, message);
+        holder.announceMessage = getValueFromMap(event.getValues(), "message").strip();
 
         goBack(event);
     }

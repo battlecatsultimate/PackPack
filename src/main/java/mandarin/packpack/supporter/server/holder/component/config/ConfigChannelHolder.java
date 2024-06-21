@@ -26,9 +26,7 @@ public class ConfigChannelHolder extends ServerConfigHolder {
     public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
             case "event" -> connectTo(event, new ConfigEventVersionSelectHolder(getAuthorMessage(), channelID, message, holder, backup, lang));
-            case "announcement" -> {
-
-            }
+            case "announcement" -> connectTo(event, new ConfigAnnouncementHolder(getAuthorMessage(), channelID, message, holder, backup, lang));
             case "status" -> {
 
             }
