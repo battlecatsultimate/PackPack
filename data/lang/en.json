@@ -1853,5 +1853,12 @@
   "sercon_channelannwarn" : "%s **Warning! Additional message contains mention. This will notify targeted user/role whenever important announcement gets posted!** %s",
   "sercon_channelannselect" : "Select channel to subscribe to announcement",
   "sercon_channelannpostbutotn" : "Publish Message",
-  "sercon_channelannmodal" : "Additional Message"
+  "sercon_channelannmodal" : "Additional Message",
+  "sercon_channelstatusmanagedesc" : "You can manage status channel where bot will post notification whenever bot goes offline or online under developer's maintenance. This means that unexpectedly being offline (i.e. Server power out) can't be handled still, but bot will send notification message when it comes online back. You can assign multiple channels for this. This is for making bot able to send status message in the several channels, reaching users as much as possible. The limit is up to %d channels. Select channel select menu to assign channels. Select assigned channel to remove them in the 2nd select menu",
+  "sercon_channelstatuslist" : "- Assigned Channel List",
+  "sercon_channelstatusassign" : "Select Channel To Assign",
+  "sercon_channelstatusremove" : "Select Assigned Channel To Remove",
+  "sercon_channelstatusnochannel" : "No Channel To Remove",
+  "sercon_channelstatusno" : "No Channels",
+  "sercon_channelstatusalready" : "This channel is already assigned!"
 }
