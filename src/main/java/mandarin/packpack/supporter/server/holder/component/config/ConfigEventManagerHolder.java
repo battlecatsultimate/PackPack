@@ -258,7 +258,7 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
         if (holder.eventMap.containsKey(locale)) {
             String channelID = holder.eventMap.get(locale);
 
-            channelBuilder = channelBuilder.setDefaultValues(EntitySelectMenu.DefaultValue.channel(channelID));
+            channelBuilder = channelBuilder.setDefaultValues(EntitySelectMenu.DefaultValue.channel(channelID)).setRequiredRange(0, 1);
         }
 
         String sortButton;
