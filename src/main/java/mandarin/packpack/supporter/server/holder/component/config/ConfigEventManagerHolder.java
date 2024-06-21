@@ -211,6 +211,14 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
             channel = LangID.getStringByID("data_none", lang);
         }
 
+        String additional;
+
+        if (holder.eventMessage.containsKey(localeCode)) {
+            additional = LangID.getStringByID("sercon_channelcontents", lang);
+        } else {
+            additional = LangID.getStringByID("sercon_channelnone", lang);
+        }
+
         StringBuilder builder = new StringBuilder();
 
         builder.append(LangID.getStringByID("sercon_channeltitle", lang)).append("\n")
@@ -218,14 +226,14 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
                 .append(LangID.getStringByID("sercon_channeleventmanagedesc", lang)).append("\n\n")
                 .append(LangID.getStringByID("sercon_channeleventbcver", lang).formatted(emoji.getFormatted(), bcVersion)).append("\n")
                 .append(LangID.getStringByID("sercon_channeleventsort", lang).formatted(sort)).append("\n")
-                .append(LangID.getStringByID("sercon_channeleventchannel", lang).formatted(channel)).append("\n");
+                .append(LangID.getStringByID("sercon_channeleventchannel", lang).formatted(channel)).append("\n")
+                .append(LangID.getStringByID("sercon_channeleventadditional", lang).formatted(additional));
 
         if (holder.eventMessage.containsKey(localeCode)) {
             String message = holder.eventMessage.get(localeCode);
 
-            builder.append(LangID.getStringByID("sercon_channeleventmessageyes", lang))
-                    .append("\n\n```\n")
-                    .append(LangID.getStringByID("sercon_channeleventmessage", lang))
+            builder.append("\n\n```\n")
+                    .append(LangID.getStringByID("sercon_channelmessage", lang))
                     .append("\n```\n")
                     .append(message)
                     .append("\n```\n")
@@ -237,8 +245,6 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
 
                 builder.append("\n\n").append(LangID.getStringByID("sercon_channeleventwarn", lang).formatted(warning, warning));
             }
-        } else {
-            builder.append(LangID.getStringByID("sercon_channeleventmessagenone", lang));
         }
 
         return builder.toString();
@@ -264,7 +270,7 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
         }
 
         result.add(ActionRow.of(channelBuilder.build()));
-        result.add(ActionRow.of(Button.secondary("additional", LangID.getStringByID("sercon_channeleventadditional", lang)).withEmoji(Emoji.fromUnicode("💬"))));
+        result.add(ActionRow.of(Button.secondary("additional", LangID.getStringByID("sercon_channeladditional", lang)).withEmoji(Emoji.fromUnicode("💬"))));
         result.add(ActionRow.of(Button.secondary("sort", LangID.getStringByID("sercon_channeleventsortbutton", lang).formatted(sortButton)).withEmoji(Emoji.fromUnicode("⚖️"))));
 
         result.add(
