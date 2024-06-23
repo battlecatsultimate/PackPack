@@ -37,7 +37,7 @@ class SlotMachineSelectHolder(author: Message, channelID: String, private val me
                 if (event !is StringSelectInteractionEvent)
                     return
 
-                val slotMachine = CardData.slotMachines[event.values[0].toInt()]
+                val slotMachine = possibleSlotMachines[event.values[0].toInt()]
 
                 connectTo(event, SlotMachineConfirmHolder(authorMessage, channelID, message, slotMachine, skip))
             }
