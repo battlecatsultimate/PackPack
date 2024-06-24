@@ -45,13 +45,17 @@ public class BoosterPin extends ConstraintCommand {
             return;
         }
 
-        if(!holder.boosterPinChannel.isEmpty()) {
+        if(holder.boosterAll || !holder.boosterPinChannel.isEmpty()) {
             boolean pinAllowed;
 
-            if(ch instanceof ThreadChannel t) {
-                pinAllowed = holder.boosterPinChannel.contains(t.getParentChannel().getId());
+            if (holder.boosterAll) {
+                pinAllowed = true;
             } else {
-                pinAllowed = holder.boosterPinChannel.contains(ch.getId());
+                if(ch instanceof ThreadChannel t) {
+                    pinAllowed = holder.boosterPinChannel.contains(t.getParentChannel().getId());
+                } else {
+                    pinAllowed = holder.boosterPinChannel.contains(ch.getId());
+                }
             }
 
             if(!pinAllowed) {

@@ -37,11 +37,30 @@ public class ConfigStatusHolder extends ServerConfigHolder {
                 if (!(event instanceof EntitySelectInteractionEvent e))
                     return;
 
+                Guild g = event.getGuild();
+
+                if (g == null)
+                    return;
+
                 String id = e.getValues().getFirst().getId();
+
+                TextChannel channel = g.getTextChannelById(id);
+
+                if (channel == null)
+                    return;
 
                 if (holder.status.contains(id)) {
                     event.deferReply()
                             .setContent(LangID.getStringByID("sercon_channelstatusalready", lang))
+                            .setEphemeral(true)
+                            .queue();
+
+                    return;
+                }
+
+                if (!channel.canTalk()) {
+                    event.deferReply()
+                            .setContent(LangID.getStringByID("sercon_channelcanttalk", lang))
                             .setEphemeral(true)
                             .queue();
 

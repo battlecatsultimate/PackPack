@@ -121,6 +121,10 @@ public class IDHolder implements Cloneable {
             id.boosterPin = obj.get("boosterPin").getAsBoolean();
         }
 
+        if (obj.has("boosterAll")) {
+            id.boosterAll = obj.get("boosterAll").getAsBoolean();
+        }
+
         if(obj.has("boosterPinChannel")) {
             id.boosterPinChannel = id.jsonObjectToListString(obj.getAsJsonArray("boosterPinChannel"));
         }
@@ -137,7 +141,7 @@ public class IDHolder implements Cloneable {
     public String ANNOUNCE;
     public String logDM = null;
 
-    public boolean publish = false, eventRaw = false, forceCompact = false, forceFullTreasure = false, boosterPin = false;
+    public boolean publish = false, eventRaw = false, forceCompact = false, forceFullTreasure = false, boosterPin = false, boosterAll = false;
 
     public ConfigHolder config = new ConfigHolder();
 
@@ -208,6 +212,7 @@ public class IDHolder implements Cloneable {
         obj.addProperty("announceMessage", announceMessage);
         obj.add("eventMessage", StaticStore.mapToJsonString(eventMessage));
         obj.addProperty("boosterPin", boosterPin);
+        obj.addProperty("boosterAll", boosterAll);
         obj.add("boosterPinChannel", listStringToJsonObject(boosterPinChannel));
 
         return obj;
@@ -443,19 +448,6 @@ public class IDHolder implements Cloneable {
         }
 
         return map;
-    }
-
-    @Override
-    public String toString() {
-        return "IDHolder{" +
-                "publish=" + publish +
-                ", MOD='" + MOD + '\'' +
-                ", MEMBER='" + MEMBER + '\'' +
-                ", BOOSTER='" + BOOSTER + '\'' +
-                ", ANNOUNCE='" + ANNOUNCE + '\'' +
-                ", ID=" + ID +
-                ", channel=" + channel +
-                '}';
     }
 
     @Override

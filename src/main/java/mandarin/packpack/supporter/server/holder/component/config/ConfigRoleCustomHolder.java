@@ -121,22 +121,22 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
             case "prev10" -> {
                 page -= 10;
 
-                applyResult();
+                applyResult(event);
             }
             case "prev" -> {
                 page--;
 
-                applyResult();
+                applyResult(event);
             }
             case "next" -> {
                 page++;
 
-                applyResult();
+                applyResult(event);
             }
             case "next10" -> {
                 page += 10;
 
-                applyResult();
+                applyResult(event);
             }
             case "confirm" -> {
                 event.deferEdit()

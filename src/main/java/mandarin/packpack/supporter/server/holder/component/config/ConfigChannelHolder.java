@@ -28,9 +28,7 @@ public class ConfigChannelHolder extends ServerConfigHolder {
             case "event" -> connectTo(event, new ConfigEventVersionSelectHolder(getAuthorMessage(), channelID, message, holder, backup, lang));
             case "announcement" -> connectTo(event, new ConfigAnnouncementHolder(getAuthorMessage(), channelID, message, holder, backup, lang));
             case "status" -> connectTo(event, new ConfigStatusHolder(getAuthorMessage(), channelID, message, holder, backup, lang));
-            case "booster" -> {
-
-            }
+            case "booster" -> connectTo(event, new ConfigBoosterChannelHolder(getAuthorMessage(), channelID, message, holder, backup, lang));
             case "back" -> goBack(event);
             case "confirm" -> {
                 event.deferEdit()
