@@ -84,8 +84,7 @@ public class ConfigCategoryHolder extends ServerConfigHolder {
         result.add(
                 ActionRow.of(
                         Button.secondary("permission", LangID.getStringByID("sercon_perm", lang)).withEmoji(Emoji.fromUnicode("📖")),
-                        Button.secondary("channel", LangID.getStringByID("sercon_channel", lang)).withEmoji(Emoji.fromUnicode("💬")),
-                        Button.secondary("moderation", LangID.getStringByID("sercon_mod", lang)).withEmoji(Emoji.fromUnicode("🛡️"))
+                        Button.secondary("channel", LangID.getStringByID("sercon_channel", lang)).withEmoji(Emoji.fromUnicode("💬"))
                 )
         );
 
