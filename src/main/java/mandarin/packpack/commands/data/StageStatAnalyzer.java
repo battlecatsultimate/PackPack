@@ -1,10 +1,15 @@
 package mandarin.packpack.commands.data;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import common.CommonStatic;
 import common.pack.UserProfile;
 import common.system.files.VFile;
 import common.util.Data;
 import common.util.lang.MultiLangCont;
+import common.util.stage.StageLimit;
 import mandarin.packpack.commands.ConstraintCommand;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.bc.CustomStageMap;
@@ -20,9 +25,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 public class StageStatAnalyzer extends ConstraintCommand {
     private static final List<String> allParameters = List.of(
@@ -214,6 +217,119 @@ public class StageStatAnalyzer extends ConstraintCommand {
             File unitBuy = new File(dataLocal, "unitbuy.csv");
 
             map.handleNewTrueForms(unitBuy, resLocal, imageLocal);
+        }
+
+        File specialRule = new File(dataLocal, "SpecialRulesMap.json");
+        File specialRuleOption = new File(dataLocal, "SpecialRulesMapOption.json");
+
+        FileReader ruleReader = new FileReader(specialRule, StandardCharsets.UTF_8);
+        FileReader ruleOptionReader = new FileReader(specialRuleOption, StandardCharsets.UTF_8);
+
+        JsonElement ruleElement = JsonParser.parseReader(ruleReader);
+        JsonElement ruleOptionElement = JsonParser.parseReader(ruleOptionReader);
+
+        ruleReader.close();
+        ruleOptionReader.close();
+
+        if (ruleElement.isJsonObject() && ruleOptionElement.isJsonObject()) {
+            JsonObject rule = ruleElement.getAsJsonObject();
+            JsonObject ruleOption = ruleOptionElement.getAsJsonObject();
+
+            Map<Integer, List<Integer>> bannedComboData = new HashMap<>();
+
+            JsonObject ruleList = ruleOption.getAsJsonObject("RuleType");
+
+            for (String key : ruleList.keySet()) {
+                JsonElement comboData = ruleList.get(key);
+
+                int ruleID = CommonStatic.parseIntN(key);
+
+                JsonArray comboArray = comboData.getAsJsonObject().getAsJsonArray("InvalidNyancomboID");
+
+                List<Integer> bannedCombo = new ArrayList<>();
+
+                for (JsonElement element : comboArray) {
+                    if (!element.isJsonPrimitive())
+                        continue;
+
+                    bannedCombo.add(element.getAsInt());
+                }
+
+                bannedComboData.put(ruleID, bannedCombo);
+            }
+
+            JsonObject mapIDs = rule.getAsJsonObject("MapID");
+
+            for (String id : mapIDs.keySet()) {
+                int mapID = CommonStatic.safeParseInt(id);
+
+                if (mapID != mid)
+                    continue;
+
+                JsonObject ruleData = mapIDs.getAsJsonObject(id);
+
+                JsonObject ruleTypes = ruleData.getAsJsonObject("RuleType");
+
+                for (String key : ruleTypes.keySet()) {
+                    int ruleID = CommonStatic.parseIntN(key);
+                    JsonObject parameterData = ruleTypes.getAsJsonObject(key);
+
+                    JsonArray parameter = parameterData.getAsJsonArray("Parameters");
+
+                    switch (ruleID) {
+                        case 0:
+                            if (!parameter.isEmpty()) {
+                                if (parameter.size() != 1)
+                                    System.out.printf("W/MapColc::read - Unknown parameter data found for rule type %d : %s%n", ruleID, parameter);
+
+                                int maxMoney = parameter.get(0).getAsInt();
+
+                                List<Integer> bannedCombo = bannedComboData.compute(ruleID, (k, v) -> {
+                                    if (v == null) {
+                                        System.out.printf("W/MapColc::read - Unknown banned cat combo data found for rule type %d%n", ruleID);
+
+                                        return new ArrayList<>();
+                                    } else {
+                                        return v;
+                                    }
+                                });
+
+                                if (map.stageLimit == null) {
+                                    map.stageLimit = new StageLimit(maxMoney, -1, bannedCombo);
+                                } else {
+                                    map.stageLimit.maxMoney = maxMoney;
+                                    map.stageLimit.bannedCatCombo.addAll(bannedCombo);
+                                }
+                            }
+
+                            break;
+                        case 1:
+                            if (!parameter.isEmpty()) {
+                                if (parameter.size() != 1)
+                                    System.out.printf("W/MapColc::read - Unknown parameter data found for rule type %d : %s%n", ruleID, parameter);
+
+                                int globalCooldown = parameter.get(0).getAsInt();
+
+                                List<Integer> bannedCombo = bannedComboData.compute(ruleID, (k, v) -> {
+                                    if (v == null) {
+                                        System.out.printf("W/MapColc::read - Unknown banned cat combo data found for rule type %d%n", ruleID);
+
+                                        return new ArrayList<>();
+                                    } else {
+                                        return v;
+                                    }
+                                });
+
+                                if (map.stageLimit == null) {
+                                    map.stageLimit = new StageLimit(-1, globalCooldown, bannedCombo);
+                                } else {
+                                    map.stageLimit.globalCooldown = globalCooldown;
+                                    map.stageLimit.bannedCatCombo.addAll(bannedCombo);
+                                }
+                            }
+                    }
+                }
+            }
         }
 
         if(level >= map.stars.length)
@@ -606,8 +722,10 @@ public class StageStatAnalyzer extends ConstraintCommand {
         File mapOption = new File(dataLocal, "Map_option.csv");
         File stageOption = new File(dataLocal, "Stage_option.csv");
         File characterGroup = new File(dataLocal, "Charagroup.csv");
+        File specialRule = new File(dataLocal, "SpecialRulesMap.json");
+        File specialRuleOption = new File(dataLocal, "SpecialRulesMapOption.json");
 
-        return exists(mapOption, stageOption, characterGroup);
+        return exists(mapOption, stageOption, characterGroup, specialRule, specialRuleOption);
     }
 
     private boolean exists(File... files) {

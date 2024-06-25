@@ -708,7 +708,7 @@ public class StaticStore {
             String json = obj.toString();
             JsonNode tree = mapper.readTree(json);
 
-            FileWriter writer = new FileWriter("./data/serverinfo.json");
+            FileWriter writer = new FileWriter("./data/" + fileName);
 
             writer.append(mapper.writeValueAsString(tree));
             writer.close();

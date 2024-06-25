@@ -1373,7 +1373,7 @@ public class EntityHandler {
             spec.addField(LangID.getStringByID("data_guard", lang), DataToString.getBossGuard(st, lang), true);
         }
 
-        ArrayList<String> limit = DataToString.getLimit(st.getLim(sta), lang);
+        ArrayList<String> limit = DataToString.getLimit(st, st.getLim(sta), isFrame, lang);
 
         if(!limit.isEmpty()) {
             StringBuilder sb = new StringBuilder();
@@ -1568,7 +1568,7 @@ public class EntityHandler {
         spec.addField(LangID.getStringByID("data_length", lang), DataToString.getLength(st), true);
         spec.addField(LangID.getStringByID("data_minspawn", lang), DataToString.getMinSpawn(st, isFrame), true);
 
-        ArrayList<String> limit = DataToString.getLimit(st.getLim(sta), lang);
+        ArrayList<String> limit = DataToString.getLimit(st, st.getLim(sta), isFrame, lang);
 
         if(!limit.isEmpty()) {
             StringBuilder sb = new StringBuilder();
@@ -5447,7 +5447,7 @@ public class EntityHandler {
                 new String[] {DataToString.getContinuable(st, lang), DataToString.getMaxEnemy(st), DataToString.getMinSpawn(st, isFrame), DataToString.getLength(st)}
         ));
 
-        List<String> limits = DataToString.getLimit(st.lim, map, lang);
+        List<String> limits = DataToString.getLimit(st.lim, map, isFrame, lang);
 
         if(limits.isEmpty())
             limits.add(LangID.getStringByID("data_none", lang));
