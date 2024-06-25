@@ -1870,5 +1870,15 @@
   "sercon_channelboostallchannel" : "- All Channels",
   "sercon_channelboostnochannel" : "- No Channels",
   "sercon_channelboostenable" : "Allow Boosters To Pin Messages",
-  "sercon_channelboostdisable" : "This feature is disabled, please enable the feature to manage the channels!"
+  "sercon_channelboostdisable" : "This feature is disabled, please enable the feature to manage the channels!",
+  "sercon_permission" : "## Permission Setting",
+  "sercon_permissionchannel" : "### %s Channel Permission",
+  "sercon_permissionchanneldesc" : "For the case when moderators want members to use commands only in specific channels, this feature is the one. You can allow or disallow users to use commands of the bot in any channels",
+  "sercon_permissionban" : "### %s Ban User From Using Commands",
+  "sercon_permissionbandesc" : "If member abuses the commands, or spams them, moderators can temporarily ban user from using this bot's commands",
+  "sercon_permissionmanage" : "### %s Manage Channel Permission For User",
+  "sercon_permissionmanagedesc" : "Similar like scenario above, but if moderators don't want complete ban from using commands, they can temporarily disable channel permission, preventing member from using commands in some channels",
+  "sercon_permissionchannelbutton" : "Manage Channel Permission",
+  "sercon_permissionbanbutton" : "Manage Banning User From Bot",
+  "sercon_permissionmanagebutton" : "Manage User's Channel Permission"
 }
