@@ -94,6 +94,8 @@ public class AbilityCellDrawer implements CellDrawer {
         }
 
         for(int i = 0; i < contents.length; i++) {
+            System.out.println(contents[i]);
+
             String[] segment = contents[i].split("\n");
 
             rh = (int) (rh + uh * segment.length + lineSpace * (segment.length - 1));

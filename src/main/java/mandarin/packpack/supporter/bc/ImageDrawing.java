@@ -2303,7 +2303,7 @@ public class ImageDrawing {
                 for(int i = 0; i < group.size(); i++) {
                     group.get(i).draw(g, x, y, finalUw, finalOffset, finalUh, nameFont, contentFont);
 
-                    if(i < group.size() - 1)
+                    if(i < group.size() - 2)
                         y += finalUh + cellMargin;
                     else
                         y += ah + cellMargin;
