@@ -159,7 +159,7 @@ class Product(val requiredFilter: Int, vararg filters: Filter) {
         )
 
         val customRole = Product(1,
-            BannerFilter(BannerFilter.Banner.LegendRare, 5, "5 Legend Rare Units")
+            BannerFilter(BannerFilter.Banner.LegendRare, 10, "5 Legend Rare Units")
         )
 
         private fun getTrait(trait: Byte) : Trait {
