@@ -225,23 +225,14 @@ object CardData {
     enum class Role(val id: String, val key: String, val title: String) {
         NONE("", "", ""),
         DOGE(ServerData.get("doge"), "DOGE", "Doge"),
-        TWOCAN(ServerData.get("twocan"), "TWOCAN", "Twocan"),
-        AHIRUJO(ServerData.get("ahirujo"), "AHIRUJO", "Casaurian Ahirujo"),
-        BAKOO(ServerData.get("bakoo"), "BAKOO", "Bakoo"),
         YOUCAN(ServerData.get("youcan"), "YOUCAN", "Youcan"),
         GOBBLE(ServerData.get("gobble"), "GOBBLE", "Gobble"),
-        SMH(ServerData.get("smh"), "SMH", "Super Metal Hippoe"),
-        SCISSOR(ServerData.get("scissor"), "SCISSOR", "Crustaceous Scissorex"),
         LILDOGE(ServerData.get("lilDoge"), "LILDOGE", "Li'l Doge"),
-        DABOO(ServerData.get("daboo"), "DABOO", "Daboo of the Dead"),
         AKUCYCLONE(ServerData.get("akuCyclone"), "AKUCYCLONE", "Aku Cyclone"),
         RELICBUN(ServerData.get("relicBun"), "RELICBUN", "Relic Bun-Bun"),
-        WOGE(ServerData.get("wildDoge"), "WOGE", "Wild Doge"),
         EXIEL(ServerData.get("exiel"), "EXIEL", "Archangel Exiel"),
-        OMENS(ServerData.get("omens"), "OMENS", "Omens"),
         LUZA(ServerData.get("luza"), "LUZA", "Zero Luza"),
         HERMIT(ServerData.get("hermit"), "HERMIT", "Hermit Cat"),
-        EASTER(ServerData.get("easter"), "EASTER", "Easter Duche"),
         RAMIEL(ServerData.get("ramiel"), "RAMIEL", "Ramiel"),
         LEGEND(ServerData.get("legend"), "LEGEND", "Legend Collector"),
         ZAMBONER(ServerData.get("zamboner"), "ZAMBONER", "Zamboner"),
@@ -250,23 +241,14 @@ object CardData {
         fun getProduct() : Product {
             return when(this) {
                 DOGE -> Product.doge
-                TWOCAN -> Product.twocan
-                AHIRUJO -> Product.ahirujo
-                BAKOO -> Product.bakoo
                 YOUCAN -> Product.youcan
                 GOBBLE -> Product.gobble
-                SMH -> Product.smh
-                SCISSOR -> Product.scissor
                 LILDOGE -> Product.lilDoge
-                DABOO -> Product.daboo
                 AKUCYCLONE -> Product.akuCyclone
                 RELICBUN -> Product.relicBun
-                WOGE -> Product.wildDoge
                 EXIEL -> Product.exiel
-                OMENS -> Product.omens
                 LUZA -> Product.luza
                 HERMIT -> Product.hermitCat
-                EASTER -> Product.seasonal
                 RAMIEL -> Product.ramiel
                 else -> throw IllegalStateException("You can't get product for $this")
             }

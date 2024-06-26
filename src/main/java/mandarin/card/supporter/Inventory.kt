@@ -315,11 +315,13 @@ class Inventory(private val id: Long) {
 
                 for (r in roleArray) {
                     when (r.asString) {
-                        "ASSASSIN" -> inventory.vanityRoles.add(CardData.Role.BAKOO)
                         "ANGELIC" -> inventory.vanityRoles.add(CardData.Role.YOUCAN)
-                        "SIRSEAL" -> inventory.vanityRoles.add(CardData.Role.AHIRUJO)
                         "MOOTH" -> inventory.vanityRoles.add(CardData.Role.GOBBLE)
-                        else -> inventory.vanityRoles.add(CardData.Role.valueOf(r.asString))
+                        else -> try {
+                            inventory.vanityRoles.add(CardData.Role.valueOf(r.asString))
+                        } catch (_: IllegalArgumentException) {
+
+                        }
                     }
                 }
             }
