@@ -2,9 +2,6 @@ package mandarin.card.supporter
 
 import common.pack.UserProfile
 import common.util.Data
-import common.util.Data.Proc.IMU
-import common.util.Data.Proc.IMUAD
-import common.util.Data.Proc.WAVEI
 import common.util.unit.Trait
 import mandarin.card.supporter.filter.*
 
