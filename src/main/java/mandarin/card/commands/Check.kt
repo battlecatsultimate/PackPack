@@ -71,7 +71,7 @@ class Check(private val tier: CardData.Tier) : Command(LangID.EN, true) {
                     .append("\n")
             }
         } else {
-            builder.append("There are no members who have T${tier.ordinal + 1} cards yet")
+            builder.append("There are no members who have T${tier.ordinal} cards yet")
         }
 
         return builder.toString()

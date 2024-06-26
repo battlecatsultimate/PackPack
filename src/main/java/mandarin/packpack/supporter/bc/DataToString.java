@@ -40,8 +40,8 @@ public class DataToString extends Data {
 
     private static final Map<Integer, String> talentText = new HashMap<>();
     private static final Map<Integer, String> talentIcon = new HashMap<>();
-    private static final List<String> mapIds = Arrays.asList("000000", "000001", "000002", "000003", "000004", "000006", "000007", "000011", "000012", "000013", "000014", "000024", "000025", "000027", "000031", "000033", "000034");
-    private static final String[] mapCodes = {"N", "S", "C", "CH", "E", "T", "V", "R", "M", "NA", "B", "A", "H", "CA", "Q", "L", "ND"};
+    private static final List<String> mapIds = Arrays.asList("000000", "000001", "000002", "000003", "000004", "000006", "000007", "000011", "000012", "000013", "000014", "000024", "000025", "000027", "000031", "000033", "000034", "000036");
+    private static final String[] mapCodes = {"N", "S", "C", "CH", "E", "T", "V", "R", "M", "NA", "B", "A", "H", "CA", "Q", "L", "ND", "SR"};
     private static final int maxDifficulty = 11;
     private static final int[] materialDrops = {85, 86, 87, 88, 89, 90, 91, 140, 187, 188, 189, 190, 191, 192, 193, 194};
 
@@ -1261,22 +1261,22 @@ public class DataToString extends Data {
         }
     }
 
-    public static ArrayList<String> getLimit(Limit l, int lang) {
+    public static ArrayList<String> getLimit(Stage st, Limit l, boolean isFrame, int lang) {
         ArrayList<String> res = new ArrayList<>();
 
         if(l == null)
             return res;
 
         if(l.line != 0) {
-            res.add(LangID.getStringByID("data_linelim", lang)+" : "+LangID.getStringByID("data_firstline", lang));
+            res.add(LangID.getStringByID("data_linelim", lang)+"\n"+LangID.getStringByID("data_firstline", lang));
         }
 
         if(l.max != 0) {
-            res.add(LangID.getStringByID("data_maxcolim", lang)+" : "+LangID.getStringByID("data_costmax", lang).replace("_", String.valueOf(l.max)));
+            res.add(LangID.getStringByID("data_maxcolim", lang)+"\n"+LangID.getStringByID("data_costmax", lang).replace("_", String.valueOf(l.max)));
         }
 
         if(l.min != 0) {
-            res.add(LangID.getStringByID("data_mincolim", lang)+" : "+LangID.getStringByID("data_costmin", lang).replace("_", String.valueOf(l.min)));
+            res.add(LangID.getStringByID("data_mincolim", lang)+"\n"+LangID.getStringByID("data_costmin", lang).replace("_", String.valueOf(l.min)));
         }
 
         if(l.rare != 0) {
@@ -1288,11 +1288,11 @@ public class DataToString extends Data {
                     rare.append(LangID.getStringByID(rid[i], lang)).append(", ");
             }
 
-            res.add(LangID.getStringByID("data_rarelim", lang)+" : "+ rare.substring(0, rare.length() - 2));
+            res.add(LangID.getStringByID("data_rarelim", lang)+"\n"+ rare.substring(0, rare.length() - 2));
         }
 
         if(l.num != 0) {
-            res.add(LangID.getStringByID("data_maxunitlim", lang)+" : "+l.num);
+            res.add(LangID.getStringByID("data_maxunitlim", lang)+"\n"+l.num);
         }
 
         if(l.group != null && !l.group.set.isEmpty()) {
@@ -1322,33 +1322,59 @@ public class DataToString extends Data {
             String result;
 
             if(l.group.type == 0) {
-                result = LangID.getStringByID("data_charagroup", lang)+" : "+LangID.getStringByID("data_only", lang).replace("_", units.toString());
+                result = LangID.getStringByID("data_charagroup", lang)+"\n"+LangID.getStringByID("data_only", lang).replace("_", units.toString());
             } else {
-                result = LangID.getStringByID("data_charagroup", lang)+" : "+LangID.getStringByID("data_cantuse", lang).replace("_", units.toString());
+                result = LangID.getStringByID("data_charagroup", lang)+"\n"+LangID.getStringByID("data_cantuse", lang).replace("_", units.toString());
             }
 
             res.add(result);
         }
 
+        StageMap map = st.getCont();
+
+        if (map.stageLimit != null) {
+            if (map.stageLimit.globalCooldown != -1) {
+                String time;
+
+                if (isFrame) {
+                    time = map.stageLimit.globalCooldown + "f";
+                } else {
+                    time = df.format(map.stageLimit.globalCooldown / 30.0) + "s";
+                }
+
+                res.add(LangID.getStringByID("data_cooldownlimit", lang) + "\n" + LangID.getStringByID("data_globalcool", lang).formatted(time));
+            }
+
+            if (map.stageLimit.maxMoney != -1) {
+                res.add(LangID.getStringByID("data_moneylimit", lang) + "\n" + LangID.getStringByID("data_maxmoney", lang).formatted(map.stageLimit.maxMoney));
+            }
+
+            if (!map.stageLimit.bannedCatCombo.isEmpty()) {
+                String comboList = String.join(", ", map.stageLimit.bannedCatCombo.stream().map(type -> getComboType(type, lang)).toList());
+
+                res.add(LangID.getStringByID("data_combolimit", lang) + "\n" + LangID.getStringByID("data_comboban", lang).formatted(comboList));
+            }
+        }
+
         return res;
     }
 
-    public static ArrayList<String> getLimit(Limit l, CustomStageMap map, int lang) {
+    public static ArrayList<String> getLimit(Limit l, CustomStageMap map, boolean isFrame, int lang) {
         ArrayList<String> res = new ArrayList<>();
 
         if(l == null)
             return res;
 
         if(l.line != 0) {
-            res.add(LangID.getStringByID("data_linelim", lang)+" : "+LangID.getStringByID("data_firstline", lang));
+            res.add(LangID.getStringByID("data_linelim", lang)+"\n"+LangID.getStringByID("data_firstline", lang));
         }
 
         if(l.max != 0) {
-            res.add(LangID.getStringByID("data_maxcolim", lang)+" : "+LangID.getStringByID("data_costmax", lang).replace("_", String.valueOf(l.max)));
+            res.add(LangID.getStringByID("data_maxcolim", lang)+"\n"+LangID.getStringByID("data_costmax", lang).replace("_", String.valueOf(l.max)));
         }
 
         if(l.min != 0) {
-            res.add(LangID.getStringByID("data_mincolim", lang)+" : "+LangID.getStringByID("data_costmin", lang).replace("_", String.valueOf(l.min)));
+            res.add(LangID.getStringByID("data_mincolim", lang)+"\n"+LangID.getStringByID("data_costmin", lang).replace("_", String.valueOf(l.min)));
         }
 
         if(l.rare != 0) {
@@ -1360,11 +1386,11 @@ public class DataToString extends Data {
                     rare.append(LangID.getStringByID(rid[i], lang)).append(", ");
             }
 
-            res.add(LangID.getStringByID("data_rarelim", lang)+" : "+ rare.substring(0, rare.length() - 2));
+            res.add(LangID.getStringByID("data_rarelim", lang)+"\n"+ rare.substring(0, rare.length() - 2));
         }
 
         if(l.num != 0) {
-            res.add(LangID.getStringByID("data_maxunitlim", lang)+" : "+l.num);
+            res.add(LangID.getStringByID("data_maxunitlim", lang)+"\n"+l.num);
         }
 
         if(l.group instanceof CustomCharaGroup && !((CustomCharaGroup) l.group).identifiers.isEmpty()) {
@@ -1405,15 +1431,39 @@ public class DataToString extends Data {
             String result;
 
             if(l.group.type == 0) {
-                result = LangID.getStringByID("data_charagroup", lang)+" : "+LangID.getStringByID("data_only", lang).replace("_", units.toString());
+                result = LangID.getStringByID("data_charagroup", lang)+"\n"+LangID.getStringByID("data_only", lang).replace("_", units.toString());
             } else {
-                result = LangID.getStringByID("data_charagroup", lang)+" : "+LangID.getStringByID("data_cantuse", lang).replace("_", units.toString());
+                result = LangID.getStringByID("data_charagroup", lang)+"\n"+LangID.getStringByID("data_cantuse", lang).replace("_", units.toString());
             }
 
             res.add(result);
         }
 
-        res.replaceAll(s -> " - " + s.replace("**", ""));
+        if (map.stageLimit != null) {
+            if (map.stageLimit.globalCooldown != -1) {
+                String time;
+
+                if (isFrame) {
+                    time = map.stageLimit.globalCooldown + "f";
+                } else {
+                    time = df.format(map.stageLimit.globalCooldown / 30.0) + "s";
+                }
+
+                res.add(LangID.getStringByID("data_cooldownlimit", lang) + "\n" + LangID.getStringByID("data_globalcool", lang).formatted(time));
+            }
+
+            if (map.stageLimit.maxMoney != -1) {
+                res.add(LangID.getStringByID("data_moneylimit", lang) + "\n" + LangID.getStringByID("data_maxmoney", lang).formatted(map.stageLimit.maxMoney));
+            }
+
+            if (!map.stageLimit.bannedCatCombo.isEmpty()) {
+                String comboList = String.join(", ", map.stageLimit.bannedCatCombo.stream().map(type -> getComboType(type, lang)).toList());
+
+                res.add(LangID.getStringByID("data_combolimit", lang) + "\n" + LangID.getStringByID("data_comboban", lang).formatted(comboList));
+            }
+        }
+
+        res.replaceAll(s -> s.replace("**", ""));
 
         return res;
     }
@@ -1857,24 +1907,41 @@ public class DataToString extends Data {
     public static String getComboDescription(Combo c, int lang) {
         int factor = getComboFactor(c.type, c.lv);
 
-        String desc = LangID.getStringByID("data_"+getComboKeyword(c.type)+"combodesc", lang).replace("_", String.valueOf(factor));
+        String desc;
 
         if(c.type == 14) {
-            desc = desc.replace("ttt", df.format(0.5 * (100 - factor) / 100.0))
-                    .replace("TTT", df.format(0.4 * (100 - factor) / 100.0))
-                    .replace("ggg", df.format(1.5 * (100 + factor) / 100.0))
-                    .replace("GGG", df.format(1.8 * (100 + factor) / 100.0));
+            desc = LangID.getStringByID("data_"+getComboKeyword(c.type)+"combodesc", lang).formatted(
+                    factor,
+                    df.format(0.5 * (100 - factor) / 100.0),
+                    df.format(0.4 * (100 - factor) / 100.0),
+                    df.format(1.5 * (100 + factor) / 100.0),
+                    df.format(1.8 * (100 + factor) / 100.0)
+            );
         } else if(c.type == 15) {
-            desc = desc.replace("ggg", df.format(3.0 * (100 + factor) / 100.0))
-                    .replace("GGG", df.format(4.0 * (100 + factor) / 100.0));
+            desc = LangID.getStringByID("data_"+getComboKeyword(c.type)+"combodesc", lang).formatted(
+                    factor,
+                    df.format(3.0 * (100 + factor) / 100.0),
+                    df.format(4.0 * (100 + factor) / 100.0)
+            );
         } else if(c.type == 16) {
-            desc = desc.replace("ttt", df.format(0.25 * (100 - factor) / 100.0))
-                    .replace("TTT", df.format(0.2 * (100 - factor) / 100.0));
+            desc = LangID.getStringByID("data_"+getComboKeyword(c.type)+"combodesc", lang).formatted(
+                    factor,
+                    df.format(0.25 * (100 - factor) / 100.0),
+                    df.format(0.2 * (100 - factor) / 100.0)
+            );
         } else if(c.type == 22 || c.type == 23) {
-            desc = desc.replace("ttt", df.format(0.2 / ((100 + factor) / 100.0)))
-                    .replace("ggg", df.format(5 * (100 + factor) / 100.0));
+            desc = LangID.getStringByID("data_"+getComboKeyword(c.type)+"combodesc", lang).formatted(
+                    factor,
+                    df.format(0.2 / ((100 + factor) / 100.0)),
+                    df.format(5 * (100 + factor) / 100.0)
+            );
         } else if(c.type == 7 || c.type == 11) {
-            desc = desc.replace("-", df.format(factor / 30.0));
+            desc = LangID.getStringByID("data_"+getComboKeyword(c.type)+"combodesc", lang).formatted(
+                    factor,
+                    df.format(factor / 30.0)
+            );
+        } else {
+            desc = LangID.getStringByID("data_"+getComboKeyword(c.type)+"combodesc", lang).formatted(factor);
         }
 
         StringBuilder builder = new StringBuilder("[");
@@ -1960,8 +2027,12 @@ public class DataToString extends Data {
             case 0, 2 -> {
                 return 10 + lv * 5;
             }
-            case 1, 20, 19, 18, 17, 16, 15, 14, 13, 12, 9 -> {
-                return 10 + 10 * lv;
+            case 1, 20, 19, 18, 17, 16, 15, 14, 13, 12, 8, 9 -> {
+                if (lv < 3) {
+                    return 10 + 10 * lv;
+                } else {
+                    return 50;
+                }
             }
             case 3 -> {
                 return 20 + 20 * lv;
@@ -2007,6 +2078,17 @@ public class DataToString extends Data {
             case 0 -> "atk";
             case 1 -> "health";
             case 2 -> "speed";
+            case 3 -> "caninitchar";
+            case 4 -> "worker";
+            case 5 -> "initmon";
+            case 6 -> "canatk";
+            case 7 -> "canchar";
+            case 8 -> "efficiency";
+            case 9 -> "wallet";
+            case 10 -> "basehp";
+            case 11 -> "cooldown";
+            case 12 -> "acc";
+            case 13 -> "study";
             case 14 -> "strong";
             case 15 -> "massive";
             case 16 -> "resistant";
@@ -2018,16 +2100,6 @@ public class DataToString extends Data {
             case 23 -> "eva";
             case 22 -> "witch";
             case 24 -> "critical";
-            case 3 -> "caninitchar";
-            case 6 -> "canatk";
-            case 7 -> "canchar";
-            case 10 -> "basehp";
-            case 5 -> "initmon";
-            case 4 -> "worker";
-            case 9 -> "wallet";
-            case 11 -> "cooldown";
-            case 12 -> "acc";
-            case 13 -> "study";
             default -> throw new IllegalStateException("Invalid Combo Type : " + type);
         };
     }

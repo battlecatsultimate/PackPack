@@ -93,7 +93,7 @@ class CardCheckHolder(author: Message, channelID: String, message: Message, priv
                     .append("\n")
             }
         } else {
-            builder.append("There are no members who have T${tier.ordinal + 1} cards yet")
+            builder.append("There are no members who have T${tier.ordinal} cards yet")
         }
 
         return builder.toString()

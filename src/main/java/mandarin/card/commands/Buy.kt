@@ -26,8 +26,21 @@ class Buy : Command(LangID.EN, true) {
             return
         }
 
+        val removedRole = arrayOf(
+            CardData.Role.EASTER,
+            CardData.Role.OMENS,
+            CardData.Role.DABOO,
+            CardData.Role.BAKOO,
+            CardData.Role.SCISSOR,
+            CardData.Role.AHIRUJO,
+            CardData.Role.SMH,
+            CardData.Role.WOGE,
+            CardData.Role.TWOCAN,
+            CardData.Role.NONE
+        )
+
         val inventory = Inventory.getInventory(m.idLong)
-        val possibleRoles = CardData.Role.entries.filter { r -> r != CardData.Role.NONE && r !in inventory.vanityRoles }.toList()
+        val possibleRoles = CardData.Role.entries.filter { r -> r !in removedRole && r !in inventory.vanityRoles }.toList()
 
         replyToMessageSafely(ch, "Please select a list that you want to get", author, {
             a -> a.setComponents(registerComponents(possibleRoles, inventory))

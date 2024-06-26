@@ -427,6 +427,10 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}equip" -> Equip().execute(event)
             "${globalPrefix}checkt0",
             "${globalPrefix}t0" -> Check(CardData.Tier.SPECIAL).execute(event)
+            "${globalPrefix}checkt1",
+            "${globalPrefix}t1" -> Check(CardData.Tier.COMMON).execute(event)
+            "${globalPrefix}checkt2",
+            "${globalPrefix}t2" -> Check(CardData.Tier.UNCOMMON).execute(event)
             "${globalPrefix}checkt3",
             "${globalPrefix}t3" -> Check(CardData.Tier.ULTRA).execute(event)
             "${globalPrefix}checkt4",
