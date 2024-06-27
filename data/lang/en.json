@@ -659,7 +659,7 @@
   "formst_pre" : "\"p\" for previous page\n\"n [Number]\" to directly skip to specific page\n\n",
   "formst_nexpre" : "\"n\" for next page, \"p\" for previous page\n\"n [Number]\" to directly skip to specific page\n\n",
   "formst_can" : "\n\"c\" to cancel searching process",
-  "formst_page" : "\nPage : _/-",
+  "formst_page" : "\nPage : %d/%d",
   "formst_cancel" : "Canceled searching process",
   "formst_expire" : "Searching process time expired...",
   "formst_specific" : "No such data found. Or you have to provide more specific name!",
@@ -1891,5 +1891,12 @@
   "sercon_permissionmanagedesc" : "Similar like scenario above, but if moderators don't want complete ban from using commands, they can temporarily disable channel permission, preventing member from using commands in some channels",
   "sercon_permissionchannelbutton" : "Manage Channel Permission",
   "sercon_permissionbanbutton" : "Manage Banning User From Bot",
-  "sercon_permissionmanagebutton" : "Manage User's Channel Permission"
+  "sercon_permissionmanagebutton" : "Manage User's Channel Permission",
+  "sercon_permissionchannelrole" : "You can manage channel permission for each assigned role here. First, select the role that you want to manage",
+  "sercon_permissionchannellist" : "### Assigned Role List",
+  "sercon_permissionchannelmember" : "**Member** : ",
+  "sercon_permissionchannelbooster" : "**Booster** : ",
+  "sercon_permissionchannelcustom" : "**%s** : ",
+  "sercon_permissionchannelcustomtype" : "Custom",
+  "sercon_permissionchannelnorole" : "- No Roles Assigned"
 }

@@ -234,7 +234,7 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
             if (holder.ID.size() > SearchHolder.PAGE_CHUNK) {
                 int totalPage = (int) Math.ceil(1.0 * holder.ID.size() / SearchHolder.PAGE_CHUNK);
 
-                builder.append(LangID.getStringByID("formst_page", lang).replace("_", Integer.toString(page + 1)).replace("-", Integer.toString(totalPage)));
+                builder.append(LangID.getStringByID("formst_page", lang).formatted(page + 1, totalPage));
             }
         }
 

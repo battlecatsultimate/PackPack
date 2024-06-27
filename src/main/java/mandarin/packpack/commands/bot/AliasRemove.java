@@ -127,8 +127,11 @@ public class AliasRemove extends ConstraintCommand {
                         sb.append(i + 1).append(". ").append(fname).append("\n");
                     }
 
-                    if (forms.size() > 20)
-                        sb.append(LangID.getStringByID("formst_page", lang).replace("_", "1").replace("-", String.valueOf(forms.size() / 20 + 1)));
+                    if (forms.size() > 20) {
+                        int totalPage = (int) Math.ceil(forms.size() * 1.0 / 20);
+
+                        sb.append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage));
+                    }
 
                     sb.append(LangID.getStringByID("formst_can", lang));
                     sb.append("```");
@@ -220,8 +223,11 @@ public class AliasRemove extends ConstraintCommand {
                         sb.append(i + 1).append(". ").append(ename).append("\n");
                     }
 
-                    if (enemies.size() > 20)
-                        sb.append(LangID.getStringByID("formst_page", lang).replace("_", "1").replace("-", String.valueOf(enemies.size() / 20 + 1)));
+                    if (enemies.size() > 20) {
+                        int totalPage = (int) Math.ceil(enemies.size() * 1.0 / 20);
+
+                        sb.append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage));
+                    }
 
                     sb.append(LangID.getStringByID("formst_can", lang));
                     sb.append("```");
@@ -361,8 +367,11 @@ public class AliasRemove extends ConstraintCommand {
                         sb.append(i + 1).append(". ").append(stageName).append("\n");
                     }
 
-                    if (stages.size() > 20)
-                        sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(1)).replace("-", String.valueOf(stages.size() / 20 + 1)));
+                    if (stages.size() > 20) {
+                        int totalPage = (int) Math.ceil(stages.size() * 1.0 / 20);
+
+                        sb.append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage));
+                    }
 
                     sb.append(LangID.getStringByID("formst_can", lang));
                     sb.append("```");

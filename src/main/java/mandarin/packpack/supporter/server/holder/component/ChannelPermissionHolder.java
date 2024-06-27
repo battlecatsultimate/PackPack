@@ -245,7 +245,7 @@ public class ChannelPermissionHolder extends ComponentHolder {
                     if(holder.ID.size() % SearchHolder.PAGE_CHUNK != 0)
                         totalPage++;
 
-                    builder.append("\n").append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(1)).replace("-", String.valueOf(totalPage)));
+                    builder.append("\n").append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage));
                 }
             }
         }

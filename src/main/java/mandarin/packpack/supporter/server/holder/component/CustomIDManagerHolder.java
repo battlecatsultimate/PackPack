@@ -194,7 +194,7 @@ public class CustomIDManagerHolder extends ComponentHolder {
             if(holder.ID.size() % SearchHolder.PAGE_CHUNK != 0)
                 totalPage++;
 
-            builder.append("\n").append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page + 1)).replace("-", String.valueOf(totalPage)));
+            builder.append("\n").append(LangID.getStringByID("formst_page", lang).formatted(page + 1, totalPage));
         }
 
         return builder.toString();

@@ -661,7 +661,7 @@
   "formst_pre" : "\"p\" for previous page\n\"n [Number]\" to directly skip to specific page\n\n",
   "formst_nexpre" : "\"n\" for next page, \"p\" for previous page\n\"n [Number]\" to directly skip to specific page\n\n",
   "formst_can" : "\n\"c\" to cancel searching process",
-  "formst_page" : "\nPage : _/-",
+  "formst_page" : "\nPage : %d/%d",
   "formst_cancel" : "已取消搜尋",
   "formst_expire" : "搜尋時間已超時",
   "formst_specific" : "無數據/需要更具體的名字",

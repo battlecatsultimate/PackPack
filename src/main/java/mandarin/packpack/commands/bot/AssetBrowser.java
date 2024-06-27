@@ -58,7 +58,7 @@ public class AssetBrowser extends ConstraintCommand {
             if(data.size() % SearchHolder.PAGE_CHUNK != 0)
                 totalPage++;
 
-            builder.append(LangID.getStringByID("formst_page", lang).replace("_", "1").replace("-", String.valueOf(totalPage))).append("\n");
+            builder.append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage)).append("\n");
         }
 
         builder.append("```");

@@ -657,7 +657,7 @@
   "formst_pre" : "\"p\" で前のページ\n\n",
   "formst_nexpre" : "\"n\" で次のページ, \"p\" で前のページ\n\n",
   "formst_can" : "\n\"c\" でキャンセルできます",
-  "formst_page" : "\nページ : _/-",
+  "formst_page" : "\nページ : %d/%d",
   "formst_cancel" : "検索をキャンセルしました",
   "formst_expire" : "検索がタイムアウトしました...",
   "formst_specific" : "データが見つかりません。 もっと正確に名前を指定してください!",

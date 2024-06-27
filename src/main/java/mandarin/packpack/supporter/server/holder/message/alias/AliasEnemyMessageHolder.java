@@ -254,7 +254,7 @@ public class AliasEnemyMessageHolder extends MessageHolder {
             if(enemy.size() % SearchHolder.PAGE_CHUNK != 0)
                 totalPage++;
 
-            sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page+1)).replace("-", String.valueOf(totalPage)));
+            sb.append(LangID.getStringByID("formst_page", lang).formatted(page + 1, totalPage));
         }
 
         sb.append(LangID.getStringByID("formst_can", lang));

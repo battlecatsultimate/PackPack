@@ -75,7 +75,7 @@ public class SolutionHolder extends SearchHolder {
             if(getDataSize() % 5 != 0)
                 totalPage++;
 
-            sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page + 1)).replace("-", String.valueOf(totalPage))).append("\n");
+            sb.append(LangID.getStringByID("formst_page", lang).formatted(page + 1, totalPage)).append("\n");
         }
 
         sb.append("```");
