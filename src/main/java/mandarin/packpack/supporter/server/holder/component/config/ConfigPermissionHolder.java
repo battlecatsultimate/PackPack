@@ -24,9 +24,7 @@ public class ConfigPermissionHolder extends ServerConfigHolder {
     @Override
     public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
-            case "channel" -> {
-
-            }
+            case "channel" -> connectTo(event, new ConfigChannelRoleSelectHolder(getAuthorMessage(), channelID, message, holder, backup, lang));
             case "back" -> goBack(event);
             case "confirm" -> {
                 event.deferEdit()

@@ -32,6 +32,7 @@ public class ConfigCategoryHolder extends ServerConfigHolder {
             case "general" -> connectTo(event, new ConfigGeneralHolder(getAuthorMessage(), channelID, message, holder, backup, lang));
             case "command" -> connectTo(event, new ConfigCommandHolder(getAuthorMessage(), channelID, message, holder, backup, lang));
             case "channel" -> connectTo(event, new ConfigChannelHolder(getAuthorMessage(), channelID, message, holder, backup, lang));
+            case "permission" -> connectTo(event, new ConfigPermissionHolder(getAuthorMessage(), channelID, message, holder, backup, lang));
             case "confirm" -> {
                 event.deferEdit()
                         .setContent(LangID.getStringByID("sercon_done", lang))

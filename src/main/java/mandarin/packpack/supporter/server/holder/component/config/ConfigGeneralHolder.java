@@ -193,6 +193,7 @@ public class ConfigGeneralHolder extends ServerConfigHolder {
                 case LangID.ES -> Emoji.fromUnicode("🇪🇸");
                 case LangID.DE -> Emoji.fromUnicode("🇩🇪");
                 case LangID.TH -> Emoji.fromUnicode("🇹🇭");
+                case LangID.RU -> Emoji.fromUnicode("🇷🇺");
                 default -> throw new IllegalStateException("E/ConfigGeneralHolder::getComponents - Unrecognized locale " + StaticStore.langCode[j] + " detected");
             };
 

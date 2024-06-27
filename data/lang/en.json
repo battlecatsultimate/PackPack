@@ -1898,5 +1898,15 @@
   "sercon_permissionchannelbooster" : "**Booster** : ",
   "sercon_permissionchannelcustom" : "**%s** : ",
   "sercon_permissionchannelcustomtype" : "Custom",
-  "sercon_permissionchannelnorole" : "- No Roles Assigned"
+  "sercon_permissionchannelmembertype" : "Member",
+  "sercon_permissionchannelboostertype" : "Booster",
+  "sercon_permissionchannelnorole" : "- No Roles Assigned",
+  "sercon_permissionchannelselect" : "Select Role To Manage Channel Permission",
+  "sercon_permissionchannelmanagedesc" : "You can manage channel permission for role %s here. You can select channel in 1st select menu to add them into the channel list. Let's say you want to allow members to use commands only in `#A`. Then you can select `#A` in the select menu, then bot will start to force members to use commands only in that channel. Add more channels to allow members to use commands in several places. Select channel same channel again to remove that channel from the list. If you want to allow all channels, click `Allow All Channels` button (This will reset all your channel permission setting for this role!). If you want to allow no channels for this role, click `Disallow All Channels`\n\nFor interaction between other roles, bot will gather all the channels from roles that specific member has. For example, if member has `role A`, and `role B`, and if `role A` has permission in `#Channel-1`, and `role B` has permission in `#Channel-2`, this member will be able to use commands in both `#Channel-1` and `#Channel-2`",
+  "sercon_permissionchannelallowedchannel" : "### Allowed Channel List",
+  "sercon_permissionchannelall" : "- All Channels Allowed",
+  "sercon_permissionchannelno" : "- No Channels Allowed",
+  "sercon_permissionchannelallow" : "Allow All Channels",
+  "sercon_permissionchanneldisallow": "Disallow All Channels",
+  "sercon_permissionchannelchannelselect" : "Select Channel To Allow/Disallow"
 }
