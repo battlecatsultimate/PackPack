@@ -1908,5 +1908,9 @@
   "sercon_permissionchannelno" : "- No Channels Allowed",
   "sercon_permissionchannelallow" : "Allow All Channels",
   "sercon_permissionchanneldisallow": "Disallow All Channels",
-  "sercon_permissionchannelchannelselect" : "Select Channel To Allow/Disallow"
+  "sercon_permissionchannelchannelselect" : "Select Channels To Allow/Disallow",
+  "sercon_permissionbanmanagedesc" : "You can ban or unban members from using the commands. Reason can be anything. If member keeps spamming the commands, interrupting the discussion or clogging the chat, you can just prevent them from using any bot's commands. Select user in the select menu to ban them. Select already banned user again to unban them. Bot and yourself can't be banned of course",
+  "sercon_permissionbanlist" : "### Banned User List",
+  "sercon_permissionbannoban" : "- No Banned Users",
+  "sercon_permissionbanselect" : "Select Users To Ban/Unban"
 }
