@@ -25,10 +25,13 @@ import net.dv8tion.jda.api.audit.ActionType;
 import net.dv8tion.jda.api.audit.AuditLogEntry;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.unions.IThreadContainerUnion;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
@@ -386,7 +389,17 @@ public class AllEventAdapter extends ListenerAdapter {
                 if(channels == null)
                     canGo = true;
                 else if(!channels.isEmpty()) {
-                    canGo = channels.contains(mc.getId());
+                    if (mc instanceof ThreadChannel tc) {
+                        IThreadContainerUnion parent = tc.getParentChannel();
+
+                        canGo = channels.contains(tc.getId());
+
+                        if (parent instanceof ForumChannel) {
+                            canGo |= channels.contains(parent.getId());
+                        }
+                    } else {
+                        canGo = channels.contains(mc.getId());
+                    }
                 }
 
                 if(!mandarin && !isMod && !canGo)
