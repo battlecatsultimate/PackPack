@@ -1,0 +1,1296 @@
+{
+    "KB": {
+        "abbr_name": "КБ",
+        "full_name": "Отталкивание",
+        "tooltip": null,
+        "format": [
+            "(prob)% отталкнуть врага назад",
+            "[(dis>0&dis!=165){ на расстояние (dis)}(dis<0){ (_abs(dis)) к себе]",
+            "[(time>0&time!=11){ на (_dispTime(time))}]"
+        ],
+        "class": {
+            "prob": {
+                "name": "шанс",
+                "tooltip": null
+            },
+            "time": {
+                "name": "длительность",
+                "tooltip": "поставьте 0 по умолчанию"
+            },
+            "dis": {
+                "name": "дистанция",
+                "tooltip": "поставьте 0 по умолчанию"
+            }
+        }
+    },
+    "STOP": {
+        "abbr_name": "фриз",
+        "full_name": "Заморозка",
+        "tooltip": null,
+        "format": "(prob)% шанс заморозить на (_dispFruit(time))",
+        "class": {
+            "prob": {
+                "name": "шанс",
+                "tooltip": null
+            },
+            "time": {
+                "name": "длительность",
+                "tooltip": "actual duration is subjected to treasure values and traits. Set duration to negative to override only if proc duration is higher"
+            }
+        }
+    },
+    "SLOW": {
+        "abbr_name": "слоу",
+        "full_name": "Замедление",
+        "tooltip": null,
+        "format": "(prob)% шанс замедлить на (_dispFruit(time))",
+        "class": {
+            "prob": {
+                "name": "шанс",
+                "tooltip": null
+            },
+            "time": {
+                "name": "длительность",
+                "tooltip": "actual duration is subjected to treasure values and traits. Set duration to negative to override only if proc duration is higher"
+            }
+        }
+    },
+    "CRIT": {
+        "abbr_name": "крит",
+        "full_name": "Критический Удар",
+        "tooltip": "Даёт больше урона по врагам",
+        "format": [
+            "(prob)% шанс нанести критический удар",
+            "[(mult>0&mult!=200){ наносит (mult)% урона по врагу}",
+            "(mult<0){ прибавляет (_abs(mult))% здоровья металлическому врагу}]"
+        ],
+        "class": {
+            "prob": {
+                "name": "шанс",
+                "tooltip": null
+            },
+            "mult": {
+                "name": "множитель",
+                "tooltip": "default value is 200. enter negative value for water cannon type attack that deal percent damage to metal enemies."
+            }
+        }
+    },
+    "WAVE": {
+        "abbr_name": "волна",
+        "full_name": "Волна",
+        "tooltip": null,
+        "format": "(prob)% шанс сделать (lv)Ур. (_left)На дистанцию (_waveRange(lv))(_right) атаку волной",
+        "class": {
+            "prob": {
+                "name": "шанс",
+                "tooltip": null
+            },
+            "lv": {
+                "name": "уровень",
+                "tooltip": null
+            }
+        }
+    },
+    "WEAK": {
+        "abbr_name": "викен",
+        "full_name": "Осслабление",
+        "tooltip": null,
+        "format": "(prob)% шанс [(mult>100){усилить}(mult<=100){ослабить}] атаку цели на [(mult>100){(mult)}(mult<=100){(mult)}]% на (_dispFruit(time))",
+        "class": {
+            "prob": {
+                "name": "шанс",
+                "tooltip": null
+            },
+            "time": {
+                "name": "длительность",
+                "tooltip": null
+            },
+            "mult": {
+                "name": "множитель",
+                "tooltip": "What percent of original attack the target will be weaken to"
+            }
+        }
+    },
+    "BREAK": {
+        "abbr_name": "брейк",
+        "full_name": "Ломатель Барьеров",
+        "tooltip": null,
+        "format": "(prob)% шанс сломать барьер",
+        "class": {
+            "prob": {
+                "name": "шанс",
+                "tooltip": null
+            }
+        }
+    },
+    "WARP": {
+        "abbr_name": "варп",
+        "full_name": "Телепортация",
+        "tooltip": null,
+        "format": [
+            "(prob)% шанс телепортировать цель в течении (_dispTime(time)) на дальность",
+            "[(dis_0==dis_1){ of (_abs(dis_0))[(dis_0<0){ назад}(dis_0>=0){ вперед}]}",
+            "(dis_0!=dis_1){ ",
+            "[(dis_0*dis_1>=0){(_abs(dis_0))~(_abs(dis_1)) [(dis_0<0){ назад}(dis_0>=0){ вперед}]}",
+            "(dis_0*dis_1<0){от (_abs(dis_0))[(dis_0<0){ назад}(dis_0>=0){ вперед}] до (_abs(dis_1))[(dis_1<0){ назад}(dis_1>=0){ вперед}]}]}]"
+        ],
+        "class": {
+            "prob": {
+                "name": "шанс",
+                "tooltip": null
+            },
+            "time": {
+                "name": "длительность",
+                "tooltip": "exclude time for warp animation"
+            },
+            "dis_0": {
+                "name": "начальная точка",
+                "tooltip": null
+            },
+            "dis_1": {
+                "name": "конечная точка",
+                "tooltip": null
+            }
+        }
+    },
+    "CURSE": {
+        "abbr_name": "курс",
+        "full_name": "Проклятие",
+        "tooltip": "Убирает способности против трейтов",
+        "format": "(prob)% шанс убрать проклятие на (_dispFruit(time))",
+        "class": {
+            "prob": {
+                "name": "шанс",
+                "tooltip": null
+            },
+            "time": {
+                "name": "длительность",
+                "tooltip": "actual duration is subjected to treasure values and traits. Set duration to negative to override only if proc duration is higher"
+            }
+        }
+    },
+    "STRONG": {
+        "abbr_name": "стронг",
+        "full_name": "Берсерк",
+        "tooltip": null,
+        "format": "Увеличивает атаку на (mult)% после того как здоровье упадёт до (health)%",
+        "class": {
+            "health": {
+                "name": "здоровье",
+                "tooltip": null
+            },
+            "mult": {
+                "name": "множитель",
+                "tooltip": null
+            }
+        }
+    },
+    "LETHAL": {
+        "abbr_name": "летальный удар",
+        "full_name": "Летальный Удар",
+        "tooltip": null,
+        "format": "(prob)% шанс выжить после летального удара",
+        "class": {
+            "prob": {
+                "name": "шанс",
+                "tooltip": null
+            }
+        }
+    },
+    "BURROW": {
+        "abbr_name": "закоп",
+        "full_name": "Закоп",
+        "tooltip": null,
+        "format": "Закапывается [(count<0){бесконечное количество раз}(count==0){(count) раз}(count==1){один раз}(count>=2&count<5){(count) раза}(count>4){(count) раз}] на дистанцию (dis)",
+        "class": {
+            "count": {
+                "name": "количество закапываний",
+                "tooltip": "enter -1 for infinite times"
+            },
+            "dis": {
+                "name": "дистанция",
+                "tooltip": "burrow time is decided by speed and distance together"
+            }
+        }
+    },
+    "REVIVE": {
+        "abbr_name": "воскрешение",
+        "full_name": "Воскрешение",
+        "tooltip": "Basic Revive only includes first 3 parameter. Later parameters are used for Ranged Revive",
+        "format": [
+            "Воскрешается [(count<0){бесконечно раз}(count==0){(count) раз}(count==1){один раз}(count>=2&count<5){(count) раза}(count>4){(count) раз}]",
+            " после (_dispTime(time)) с (health)% здоровья от максимального.",
+            "[(type.imu_zkill){ Иммунитет к Зомби Киллеру.}]",
+            "[(type.revive_others){ Эта способность будет применима и к другим ",
+            "[(type.revive_non_zombie){союзники}]",
+            "[(!type.revive_non_zombie){союзники-зомби}] ",
+            "[(type.range_type>=2){что однажды в пределах }]",
+            "в радиусе (dis_0)~(dis_1) ",
+            "[(type.range_type==0){когда это существо находится на сцене и ходит/ожидает/атакует}]",
+            "[(type.range_type==1){когда это существо присутствует на сцене}]",
+            "[(type.range_type==2){пока это существо присутствует на сцене}]",
+            "[(type.range_type==3){действует вечно}].}]"
+        ],
+        "class": {
+            "count": {
+                "name": "количество воскрешений",
+                "tooltip": "enter -1 for infinite times"
+            },
+            "time": {
+                "name": "длительность",
+                "tooltip": null
+            },
+            "health": {
+                "name": "здоровье",
+                "tooltip": "health in percent after revive"
+            },
+            "dis_0": {
+                "name": "точка 0",
+                "tooltip": "advanced: ranged revive point 0. Applicable only when revive others is enabled"
+            },
+            "dis_1": {
+                "name": "точка 1",
+                "tooltip": "advanced: ranged revive point 1. Applicable only when revive others is enabled"
+            },
+            "type.range_type": {
+                "name": "тип воскрешения",
+                "tooltip": [
+                    "Applicable only when revive others is enabled",
+                    "0 for effective in range when in normal state. ",
+                    "1 for effective in range when present on the stage. ",
+                    "2 for effective for allies once passed the range as long as it is on the stage. ",
+                    "3 for effective for allies once passed the range forever"
+                ]
+            },
+            "type.imu_zkill": {
+                "name": "Имунитет к Зомби Киллеру",
+                "tooltip": "immune to Zombie Killer ability"
+            },
+            "type.revive_non_zombie": {
+                "name": "не зомби",
+                "tooltip": "revive non-zombie as well. Applicable only when revive others is enabled"
+            },
+            "type.revive_others": {
+                "name": "воскрешает других",
+                "tooltip": "toggle point for advanced range revive feature"
+            }
+        }
+    },
+    "IMUKB": {
+        "abbr_name": "имунн. КБ",
+        "full_name": "Иммунитет/Защита к Отталкиванию",
+        "tooltip": null,
+        "format": ["[(mult!=0&block!=100){[(mult==100){Иммунитет}(mult<100&mult>0){Защита}(mult<0){Слабость}] к Отталкиваниям",
+            "[(mult<100&mult>0){ (_left)Уменьшает дальность на (mult)%(_right)}(mult<0){ (_left)Увеличивает дальность на (_abs(mult))%(_right)}]",
+            "[(block!=0&block<100){ & }]}][(block!=0){Отталкивание [(block==100){блокируется}(block<100&block>0){поглощается}(block<0){увеличивается}]",
+            "[(block<100&block>0){ (_left)Уменьшает дальность на (block)%(_right)}(block<0){ (_left)Увеличивает дальность на (_abs(block))%(_right)}]}]"],
+        "class": {
+            "mult": {
+                "name": "проценты",
+                "tooltip": null
+            },
+            "block": {
+                "name": "Блокировка",
+                "tooltip": "Set from 1 to 99 to reduce distance amongst all units. Set to 100 to completely block KB"
+            }
+        }
+    },
+    "IMUSTOP": {
+        "abbr_name": "имунн. Фриз",
+        "full_name": "Иммунитет/Защита к Заморозке",
+        "tooltip": null,
+        "format": ["[(mult!=0&block!=100){[(mult==100){Иммунитет}(mult<100&mult>0){Защита}(mult<0){Слабость}] к Заморозке",
+            "[(mult<100&mult>0){ (_left)Уменьшает длительность на (mult)%(_right)}(mult<0){ (_left)Увеличивает длительность на (_abs(mult))%(_right)}]",
+            "[(block!=0&block<100){ & }]}][(block!=0){Заморозка [(block==100){блокируется}(block<100&block>0){поглощается}(block<0){увеличивается}]",
+            "[(block<100&block>0){ (_left)Уменьшает длительность на (block)%(_right)}(block<0){ (_left)Увеличивает длительность на (_abs(block))%(_right)}]}]"],
+        "class": {
+            "mult": {
+                "name": "проценты",
+                "tooltip": null
+            },
+            "block": {
+                "name": "Блокировка",
+                "tooltip": "Set from 1 to 99 to reduce duration amongst all units. Set to 100 to completely block freeze"
+            }
+        }
+    },
+    "IMUSLOW": {
+        "abbr_name": "имунн. Слоу",
+        "full_name": "Иммунитет/Защита к Замедлению",
+        "tooltip": null,
+        "format": ["[(mult!=0&block!=100){[(mult==100){Иммунитет}(mult<100&mult>0){Защита}(mult<0){Слабость}] к Замедлению",
+            "[(mult<100&mult>0){ (_left)Уменьшает длительность на (mult)%(_right)}(mult<0){ (_left)Увеличивает длительность на (_abs(mult))%(_right)}]",
+            "[(block!=0&block<100){ & }]}][(block!=0){Замедление [(block==100){блокируется}(block<100&block>0){поглощается}(block<0){увеличивается}]",
+            "[(block<100&block>0){ (_left)Уменьшает длительность на (block)%(_right)}(block<0){ (_left)Увеличивает длительность на (_abs(block))%(_right)}]}]"],
+        "class": {
+            "mult": {
+                "name": "проценты",
+                "tooltip": null
+            },
+            "block": {
+                "name": "Блокировка",
+                "tooltip": "Set from 1 to 99 to reduce duration amongst all units. Set to 100 to completely block slow"
+            }
+        }
+    },
+    "IMUWAVE": {
+        "abbr_name": "имунн. Волна",
+        "full_name": "Иммунитет/Защита к Волне",
+        "tooltip": null,
+        "format": "[(mult==100){Иммунитет}(mult<100&mult>0){Защита}(mult<0){Слабость}] к Волне[(mult<100&mult>0){ (_left)Уменьшает полученный урон на (mult)%(_right)}(mult<0){ (_left)Увеличивает полученный урон на (_abs(mult))%(_right)}]",
+        "class": {
+            "mult": {
+                "name": "percent",
+                "tooltip": null
+            }
+        }
+    },
+    "IMUWEAK": {
+        "abbr_name": "имунн. Викен",
+        "full_name": "Иммунитет/Защита к Ослаблению",
+        "tooltip": null,
+        "format": ["[(mult!=0&block!=100){[(mult==100){Иммунитет}(mult<100&mult>0){Защита}(mult<0){Слабость}] к Ослаблению",
+            "[(mult<100&mult>0){ (_left)Уменьшает длительность на (mult)%(_right)}(mult<0){ (_left)Увеличивает длительность на (_abs(mult))%(_right)}]",
+            "[(block!=0&block<100){ & }]}][(block!=0){Ослабление [(block==100){блокируется}(block<100&block>0){поглощается}(block<0){увеличивается}]",
+            "[(block<100&block>0){ (_left)Уменьшает длительность на (block)%(_right)}(block<0){ (_left)Увеличивает длительность на (_abs(block))%(_right)}]}]",
+            "[(smartImu!=0){. Влияет только на [(smartImu>0){ослабление}(smartImu<0){увеличение}] атаки}]"],
+        "class": {
+            "mult": {
+                "name": "проценты",
+                "tooltip": null
+            },
+            "block": {
+                "name": "Блокировка",
+                "tooltip": "Set from 1 to 99 to reduce duration amongst all units. Set to 100 to completely block weaken"
+            },
+            "smartImu": {
+                "name": "Игорируется",
+                "tooltip": "0 = Resist buffs and debuffs, 1 = Only resistant to attack debuffs, -1 = Only resistant to attack buffs"
+            }
+        }
+    },
+    "IMUWARP": {
+        "abbr_name": "имунн. Варп",
+        "full_name": "Иммунитет/Защита к Телепортации",
+        "tooltip": null,
+        "format": ["[(mult!=0&block!=100){[(mult==100){Иммунитет}(mult<100&mult>0){Защита}(mult<0){Слабость}] к Телепортации",
+            "[(mult<100&mult>0){ (_left)Уменьшает длительность на (mult)%(_right)}(mult<0){ (_left)Увеличивает длительность на (_abs(mult))%(_right)}]",
+            "[(block!=0&block<100){ & }]}][(block!=0){Телепортирование [(block==100){блокируется}(block<100&block>0){поглощается}(block<0){увеличивается}]",
+            "[(block<100&block>0){ (_left)Уменьшает длительность на (block)%(_right)}(block<0){ (_left)Увеличивает длительность на (_abs(block))%(_right)}]}]"],
+        "class": {
+            "mult": {
+                "name": "проценты",
+                "tooltip": null
+            },
+            "block": {
+                "name": "Блокировка",
+                "tooltip": "Set from 1 to 99 to reduce duration amongst all units. Set to 100 to completely block warp"
+            }
+        }
+    },
+    "IMUCURSE": {
+        "abbr_name": "имунн. Курс",
+        "full_name": "Иммунитет/Защита к Проклятию",
+        "tooltip": null,
+        "format": ["[(mult!=0&block!=100){[(mult==100){Иммунитет}(mult<100&mult>0){Защита}(mult<0){Слабость}] к Проклятию",
+            "[(mult<100&mult>0){ (_left)Уменьшает длительность на (mult)%(_right)}(mult<0){ (_left)Увеличивает длительность на (_abs(mult))%(_right)}]",
+            "[(block!=0&block<100){ & }]}][(block!=0){Проклятие [(block==100){блокируется}(block<100&block>0){поглощается}(block<0){увеличивается}]",
+            "[(block<100&block>0){ (_left)Уменьшает длительность на (block)%(_right)}(block<0){ (_left)Увеличивает длительность на (_abs(block))%(_right)}]}]"],
+        "class": {
+            "mult": {
+                "name": "проценты",
+                "tooltip": null
+            },
+            "block": {
+                "name": "Блокировка",
+                "tooltip": "Set from 1 to 99 to reduce duration amongst all units. Set to 100 to completely block curse"
+            }
+        }
+    },
+    "IMUSEAL": {
+        "abbr_name": "имунн. Печать",
+        "full_name": "Иммунитет/Защита к Печати",
+        "tooltip": null,
+        "format": ["[(mult!=0&block!=100){[(mult==100){Иммунитет}(mult<100&mult>0){Защита}(mult<0){Слабость}] к Печати",
+            "[(mult<100&mult>0){ (_left)Уменьшает длительность на (mult)%(_right)}(mult<0){ (_left)Увеличивает длительность на (_abs(mult))%(_right)}]",
+            "[(block!=0&block<100){ & }]}][(block!=0){Печать [(block==100){блокируется}(block<100&block>0){поглощается}(block<0){увеличивается}]",
+            "[(block<100&block>0){ (_left)Уменьшает длительность на (block)%(_right)}(block<0){ (_left)Увеличивает длительность на (_abs(block))%(_right)}]}]"],
+        "class": {
+            "mult": {
+                "name": "проценты",
+                "tooltip": null
+            },
+            "block": {
+                "name": "Блокировка",
+                "tooltip": "Set from 1 to 99 to reduce duration amongst all units. Set to 100 to completely block seal"
+            }
+        }
+    },
+    "IMUSUMMON": {
+        "abbr_name": "имунн. Призыв",
+        "full_name": "Иммунитет/Защита к Призыву",
+        "tooltip": null,
+        "format": ["[(mult!=0&block!=100){[(mult==100){Иммунитет}(mult<100&mult>0){Защита}(mult<0){Слабость}] к Призыву при Ударе/Убийстве",
+            "[(mult<100&mult>0){ (_left)Уменьшает (mult)% от силы призванного существа(_right)}(mult<0){ (_left)Призванные существа будут на (_abs(mult))% сильнее(_right)}]",
+            "[(block!=0&block<100){ & }]}][(block!=0){Призывание [(block==100){блокируется}(block<100&block>0){поглощается}(block<0){увеличивается}]",
+            "[(block<100&block>0){ (_left)Уменьшает (block)% от силы призванного существ(_right)}(block<0){ (_left)Призванные существа будут на (_abs(block))% сильнее(_right)}]}]"],
+        "class": {
+            "mult": {
+                "name": "проценты",
+                "tooltip": "Only applies to On Hit and On Kill summon."
+            },
+            "block": {
+                "name": "Блокировка",
+                "tooltip": "Set from 1 to 99 to reduce all summoned entities' strength. Set to 100 to completely block summon"
+            }
+        }
+    },
+    "SNIPER": {
+        "abbr_name": "снайпер",
+        "full_name": "Отталкивание Снайпера",
+        "tooltip": "This ability penetrates Knock Back Immunity",
+        "format": "(prob)% шанс отталкнуть врага в стиле кота-снайпера",
+        "class": {
+            "prob": {
+                "name": "шанс",
+                "tooltip": null
+            }
+        }
+    },
+    "TIME": {
+        "abbr_name": "время",
+        "full_name": "Остановка времени",
+        "tooltip": "Unlike Stop, this ability freezes everything including waves, money gain, cat and enemy cool down, etc",
+        "format": "(prob)% остановить время на (_dispTime(time))",
+        "class": {
+            "prob": {
+                "name": "шанс",
+                "tooltip": null
+            },
+            "time": {
+                "name": "длительность",
+                "tooltip": null
+            }
+        }
+    },
+    "SEAL": {
+        "abbr_name": "печать",
+        "full_name": "Печать",
+        "tooltip": "Seal will disable all abilities except Burrow, Metal, Self-Destruct, Only-Attack, and basic Revive",
+        "format": "(prob)% шанс дать цели печать на (_dispTime(time))",
+        "class": {
+            "prob": {
+                "name": "шанс",
+                "tooltip": null
+            },
+            "time": {
+                "name": "длительность",
+                "tooltip": "actual duration is subjected to treasure values and traits. Set duration to negative to override only if proc duration is higher"
+            }
+        }
+    },
+    "SUMMON": {
+        "abbr_name": "ПРИЗЫВ",
+        "full_name": "Призыв",
+        "tooltip": null,
+        "format": [
+            "(prob)% шанс призвать [(!type.fix_buff){(_summonMagnification(mult))}(type.fix_buff){[(_isEnemy){(mult)%}(!_isEnemy){Ур(mult)}]}] (_entity(id)) после (_dispTime(time)), ",
+            "одного призванного на дистанции (dis) от ",
+            "[(type.on_kill|type.on_hit){каждой цели}",
+            "(!type.on_hit&!type.on_kill){призывателя}] ",
+            "[(type.on_hit){попадании}",
+            "(type.on_kill&!type.on_hit){убийства}",
+            "(!type.on_kill&!type.on_hit){при этой атаке}], ",
+            "[(type.same_health){Призванные существа будут иметь такое же здоровье, как и это существо, }]",
+            "и [(!type.ignore_limit){будут} (type.ignore_limit){не будут}] ограничены лимитом существ на сцене. ",
+            "Призванные существа будут находиться в [(!type.random_layer){том же слое, что и это существо}",
+            "(type.random_layer){случайном слое}]. ",
+            "Призыв [(type.anim_type==0){не будет изображен}(type.anim_type==1){будет ввиде телепортации}(type.anim_type>=2){будет ввиде выкапывания}]",
+            " анимация[(type.anim_type==3){  и отключит проникновение для призванных существ}]."
+        ],
+        "class": {
+            "prob": {
+                "name": "шанс",
+                "tooltip": null
+            },
+            "id": {
+                "name": "ID",
+                "tooltip": null
+            },
+            "dis": {
+                "name": "дистанция",
+                "tooltip": "Distance from this entity by default, distance from the target if on hit or on kill is enabled"
+            },
+            "mult": {
+                "name": "множитель",
+                "tooltip": "Buff of the summoned entity, relative to this entity by default, fixed buff if you enable fix buff"
+            },
+            "type.anim_type": {
+                "name": "анимация призыва",
+                "tooltip": [
+                    "summon animation, 0 for no animation, 1 for warp animation,",
+                    " 2 for burrow animation, 3 for burrow animation and disable further burrow.",
+                    " The summoned entity must have burrow animation in order to use 2 or 3."
+                ]
+            },
+            "type.ignore_limit": {
+                "name": "игнорируется лимит",
+                "tooltip": "ignore the stage entity limit. Be careful with this, don't summon too much. It can break the game"
+            },
+            "type.fix_buff": {
+                "name": "фиксированный слой",
+                "tooltip": [
+                    "Use fixed buff instead of relative buff. ",
+                    "Ex: 200% summoner and 300% buff would mean 600% buff if fix buff is disabled and 300% buff if fix buff is enabled"
+                ]
+            },
+            "type.same_health": {
+                "name": "такое же здоровье",
+                "tooltip": "Set the summoned entity to have the same health as this entity."
+            },
+            "type.random_layer": {
+                "name": "случайный слой",
+                "tooltip": "By default, summoned entity will have the same layer as this entity. Enable this to make the layer randomized."
+            },
+            "type.on_hit": {
+                "name": "при ударе",
+                "tooltip": [
+                    "Summon if and only if this attack hits targets.",
+                    " Summon per target attacked, distance origins are set to the targets' positions.",
+                    " Multiple summon possible for ranged attack."
+                ]
+            },
+            "type.on_kill": {
+                "name": "при убийстве",
+                "tooltip": [
+                    "Summon if and only if this attack kills targets.",
+                    " Summon per target killed, distance origins are set to the targets' positions.",
+                    " Multiple summon possible for ranged attack."
+                ]
+            },
+            "time": {
+                "name": "длительность",
+                "tooltip": "delay of this summon"
+            },
+            "form": {
+                "name": "Форма",
+                "tooltip": "Set which form of the unit you want to summon. Only applicable on Cat Units."
+            }
+        }
+    },
+    "MOVEWAVE": {
+        "abbr_name": "движ. атака",
+        "full_name": "Движущаяся атака",
+        "tooltip": null,
+        "format": [
+            "(prob)% шанс сделать движущуюся атаку, ",
+            "начиная с расстояния (dis) от этого существа ",
+            "с шириной (width), ",
+            " скоростью (speed) и интервалом (_dispTime(itv)) на протяжении (_dispTime(time))"
+        ],
+        "class": {
+            "prob": {
+                "name": "шанс",
+                "tooltip": null
+            },
+            "speed": {
+                "name": "скорость",
+                "tooltip": "in units per frame"
+            },
+            "width": {
+                "name": "ширина",
+                "tooltip": "width of the hitbox, from left to right"
+            },
+            "time": {
+                "name": "длительность",
+                "tooltip": null
+            },
+            "dis": {
+                "name": "дистанция",
+                "tooltip": "describes the location of the center of the hitbox when initiated"
+            },
+            "itv": {
+                "name": "интервал",
+                "tooltip": null
+            }
+        }
+    },
+    "IMUMOVING": {
+        "abbr_name": "имунн. Движ",
+        "full_name": "Иммунитет/Защита к Движущейся Атаке",
+        "tooltip": null,
+        "format": "[(mult==100){Иммунитет}(mult<100&mult>0){Защита}(mult<0){Слабость}] к Движущимся Атакам[(mult<100&mult>0){ (_left)Уменьшает длительность на (mult)%(_right)}(mult<0){ (_left)Увеличивается длительность на (_abs(mult))%(_right)}]",
+        "class": {
+            "mult": {
+                "name": "проценты",
+                "tooltip": null
+            }
+        }
+    },
+    "THEME": {
+        "abbr_name": "тема",
+        "full_name": "Смена Темы",
+        "tooltip": null,
+        "format": [
+            "(prob)% сменить тему на (_bg(id)) в течении (_dispTime(time))",
+            "[(type.kill){ и убивает все существ на сцене}]"
+        ],
+        "class": {
+            "prob": {
+                "name": "шанс",
+                "tooltip": null
+            },
+            "time": {
+                "name": "длительность",
+                "tooltip": "time until background switch back"
+            },
+            "id": {
+                "name": "ID Фона",
+                "tooltip": null
+            },
+            "mus": {
+                "name": "ID Музыки",
+                "tooltip": null
+            },
+            "type.kill": {
+                "name": "убивать",
+                "tooltip": "Kill all entities in the stage"
+            }
+        }
+    },
+    "POISON": {
+        "abbr_name": "веном",
+        "full_name": "Веном",
+        "tooltip": null,
+        "format": [
+            "(prob)% шанс на [(type.damage_type==0){горение}(type.damage_type==1){отравление}",
+            "(type.damage_type==2){истекать кровью}(type.damage_type==3){разъедать}] цель в течении (_dispTime(time)), ",
+            "наносит [(type.damage_type==0){(damage) урона}",
+            "(type.damage_type>0){наносит (damage)% урона по целям ",
+            "[(type.damage_type==1){общее}(type.damage_type==2){определенное}(type.damage_type==3){потерянное}]",
+            " здоровье}] каждые (_dispTime(itv)). ",
+            "Этот эффект [(type.unstackable){не }]стакается[(type.ignoreMetal){, [(!type.modifAffected){и }]обходит способность металлов}][(type.modifAffected){, и на его урон влияет все, что изменяет урон исходной атаки}]."
+        ],
+        "class": {
+            "prob": {
+                "name": "шанс",
+                "tooltip": null
+            },
+            "time": {
+                "name": "длительность",
+                "tooltip": null
+            },
+            "damage": {
+                "name": "урон",
+                "tooltip": "whether it is percent or actual value depends on the damage type"
+            },
+            "itv": {
+                "name": "интервал",
+                "tooltip": null
+            },
+            "type.damage_type": {
+                "name": "тип урона",
+                "tooltip": "0 for fixed damage (burn), 1 for a % of total health (poison), 2 for a % of current health, 3 for a % of lost health (corrode)."
+            },
+            "type.unstackable": {
+                "name": "не стакается",
+                "tooltip": null
+            },
+            "type.ignoreMetal": {
+                "name": "Способность Металлов",
+                "tooltip": "Activate this to deal regular damage to metal enemies."
+            },
+            "type.modifAffected": {
+                "name": "Учитывает Способности",
+                "tooltip": "Toggle this to make poison damage affected by damage-modifying abilities such as strong against or critical."
+            }
+        }
+    },
+    "IMUPOI": {
+        "abbr_name": "имунн. Веном",
+        "full_name": "Иммунитет/Защита к Веному",
+        "tooltip": null,
+        "format": ["[(mult!=0&block!=100){[(mult==100){Иммунитет}(mult<100&mult>0){Защита}(mult<0){Слабость}] к Веному",
+            "[(mult<100&mult>0){ (_left)Уменьшает длительность на (mult)%(_right)}(mult<0){ (_left)Увеличивает длительность на (_abs(mult))%(_right)}]",
+            "[(block!=0&block<100){ & }]}][(block!=0){Отравление [(block==100){блокируется}(block<100&block>0){поглощается}(block<0){увеличивается}]",
+            "[(block<100&block>0){ (_left)Уменьшает длительность на (block)%(_right)}(block<0){ (_left)Увеличивает длительность на (_abs(block))%(_right)}]}]",
+            "[(smartImu!=0){. Влияет только на [(smartImu>0){вредный}(smartImu<0){целебный}] яд}]"],
+        "class": {
+            "mult": {
+                "name": "проценты",
+                "tooltip": null
+            },
+            "block": {
+                "name": "Блокировка",
+                "tooltip": "Set from 1 to 99 to reduce damage over time. Set to 100 to completely block poison"
+            },
+            "smartImu": {
+                "name": "Игнорируется",
+                "tooltip": "0 = Resist all venom, 1 = Only resistant to harmful venom, -1 = Only resistant to healing venom"
+            }
+        }
+    },
+    "BOSS": {
+        "abbr_name": "босс",
+        "full_name": "Босс Волна",
+        "tooltip": null,
+        "format": "(prob)% шанс сделать босс волну",
+        "class": {
+            "prob": {
+                "name": "шанс",
+                "tooltip": null
+            }
+        }
+    },
+    "CRITI": {
+        "abbr_name": "имунн. крит",
+        "full_name": "Иммунитет к Критическим Ударам",
+        "tooltip": null,
+        "format": ["[(mult!=0&block!=100){[(mult==100){Иммунитет}(mult<100&mult>0){Защита}(mult<0){Слабость}] к Критическим Ударам",
+            "[(mult<100&mult>0){ (_left)Уменьшает урон на (mult)%(_right)}(mult<0){ (_left)Увеличивает урон на (_abs(mult))%(_right)}]",
+            "[(block!=0&block<100){ & }]}][(block!=0){Критический Удар [(block==100){блокируется}(block<100&block>0){поглощается}(block<0){увеличивается}]",
+            "[(block<100&block>0){ (_left)Уменьшает урон на (block)%(_right)}(block<0){ (_left)Увеличивает урон на (_abs(block))%(_right)}]}]"],
+        "class": {
+            "mult": {
+                "name": "проценты",
+                "tooltip": null
+            },
+            "block": {
+                "name": "Блокировка",
+                "tooltip": "Set from 1 to 99 to reduce critical damage. Set to 100 to completely block crits"
+            }
+        }
+    },
+    "SATK": {
+        "abbr_name": "Сильный Удар",
+        "full_name": "Дикий Удар",
+        "tooltip": null,
+        "format": "(prob)% шанс сделать дикий удар (_left)Даёт на (mult)% больше урона(_right)",
+        "class": {
+            "prob": {
+                "name": "шанс",
+                "tooltip": null
+            },
+            "mult": {
+                "name": "проценты",
+                "tooltip": null
+            }
+        }
+    },
+    "IMUATK": {
+        "abbr_name": "Инвиз.",
+        "full_name": "Невидимость",
+        "tooltip": null,
+        "format": "(prob)% шанс стать невидимым в течении (_dispFruit(time))",
+        "class": {
+            "prob": {
+                "name": "шанс",
+                "tooltip": null
+            },
+            "time": {
+                "name": "длительность",
+                "tooltip": null
+            }
+        }
+    },
+    "POIATK": {
+        "abbr_name": "токсик",
+        "full_name": "Токсик",
+        "tooltip": null,
+        "format": "(prob)% шанс нанести токсичный удар (_left)Наносит (mult)% от максимального здоровья цели(_right)",
+        "class": {
+            "prob": {
+                "name": "шанс",
+                "tooltip": null
+            },
+            "mult": {
+                "name": "проценты",
+                "tooltip": null
+            }
+        }
+    },
+    "VOLC": {
+        "abbr_name": "сурдж",
+        "full_name": "Сурдж",
+        "tooltip": null,
+        "format": "(prob)% шанс сделать Сурдж (time/20) Ур (_left)Длится (_dispTime(time)), Создается в радиусе (dis_0) ~ (dis_1)(_right)",
+        "class": {
+            "prob": {
+                "name": "шанс",
+                "tooltip": null
+            },
+            "dis_0": {
+                "name": "начальная точка",
+                "tooltip": null
+            },
+            "dis_1": {
+                "name": "конечная точка",
+                "tooltip": null
+            },
+            "time": {
+                "name": "длительность",
+                "tooltip": null
+            }
+        }
+    },
+    "IMUPOIATK": {
+        "abbr_name": "имунн. токсик",
+        "full_name": "Иммунитет/Защита к Токсику",
+        "tooltip": null,
+        "format": ["[(mult!=0&block!=100){[(mult==100){Иммунитет}(mult<100&mult>0){Защита}(mult<0){Weak}] к Токсику",
+            "[(mult<100&mult>0){ (_left)Уменьшает урон на (mult)%(_right)}(mult<0){ (_left)Увеличивает урон на (_abs(mult))%(_right)}]",
+            "[(block!=0&block<100){ & }]}][(block!=0){Токсик [(block==100){блокируется}(block<100&block>0){поглащается}(block<0){увеличивается}]",
+            "[(block<100&block>0){ (_left)Уменьшает урон на (block)%(_right)}(block<0){ (_left)Увеличивает урон на (_abs(block))%(_right)}]}]"],
+        "class": {
+            "mult": {
+                "name": "проценты",
+                "tooltip": null
+            },
+            "block": {
+                "name": "Блокировка",
+                "tooltip": "Set from 1 to 99 to reduce damage. Set to 100 to completely block toxic"
+            }
+        }
+    },
+    "IMUVOLC": {
+        "abbr_name": "имунн. Сурдж",
+        "full_name": "Иммунитет/Защита к Сурджу",
+        "tooltip": null,
+        "format": "[(mult==100){Иммунитет}(mult<100&mult>0){Защита}(mult<0){Слабость}] к Сурджу[(mult<100&mult>0){ (_left)Уменьшает урон на (mult)%(_right)}(mult<0){ (_left)Увеличивает урон на (_abs(mult))%(_right)}]",
+        "class": {
+            "mult": {
+                "name": "проценты",
+                "tooltip": null
+            }
+        }
+    },
+    "ARMOR": {
+        "abbr_name": "ломатель брони",
+        "full_name": "Ломатель Брони",
+        "tooltip": null,
+        "format": "(prob)% шанс [(mult<0){починить}(mult>=0){сломать}] броню цели на (_dispTime(time)) (_left)Даёт целе получать (_abs(mult))% [(mult<0){меньше}(mult>=0){больше}] урона(_right)",
+        "class": {
+            "prob": {
+                "name": "шанс",
+                "tooltip": null
+            },
+            "time": {
+                "name": "длительность",
+                "tooltip": null
+            },
+            "mult": {
+                "name": "проценты",
+                "tooltip": null
+            }
+        }
+    },
+    "SPEED": {
+        "abbr_name": "спешка",
+        "full_name": "Спешка",
+        "tooltip": null,
+        "format": [
+            "(prob)% шанс ",
+            "[(type==2){set}(type!=2){[(speed>=0){увеличить}(speed<0){уменьшить}]}]",
+            " скорость целе ",
+            "[(type!=2){by}(type==2){на}] [(type==2){(speed)}(type!=2){(_abs(speed))}][(type==1){%}]",
+            " в течении (_dispTime(time))"
+        ],
+        "class": {
+            "prob": {
+                "name": "шанс",
+                "tooltip": null
+            },
+            "time": {
+                "name": "длительность",
+                "tooltip": null
+            },
+            "speed": {
+                "name": "скорость",
+                "tooltip": null
+            },
+            "type": {
+                "name": "тип",
+                "tooltip": "0 for adding speed by a value, 1 for increasing the speed by a percentage, 2 for setting speed to a value"
+            }
+        }
+    },
+    "IMUARMOR": {
+        "abbr_name": "имунн. ЛомБрони",
+        "full_name": "Иммунитет/Защита к Ломанию Брони",
+        "tooltip": null,
+        "format": ["[(mult!=0&block!=100){[(mult==100){Иммунитет}(mult<100&mult>0){Защита}(mult<0){Слабость}] к Ломанию Барьеров",
+            "[(mult<100&mult>0){ (_left)Уменьшает длительность на (mult)%(_right)}(mult<0){ (_left)Увеличивает длительность на (_abs(mult))%(_right)}]",
+            "[(block!=0&block<100){ & }]}][(block!=0){Ломание Брони [(block==100){блокируется}(block<100&block>0){поглощается}(block<0){увеличивается}]",
+            "[(block<100&block>0){ (_left)Уменьшает длительность на (block)%(_right)}(block<0){ (_left)Увеличивает длительность на (_abs(block))%(_right)}]}]",
+            "[(smartImu!=0){. Only affects armor [(smartImu>0){debuffs}(smartImu<0){buffs}]}]"],
+        "class": {
+            "mult": {
+                "name": "проценты",
+                "tooltip": null
+            },
+            "block": {
+                "name": "Блокировка",
+                "tooltip": "Set from 1 to 99 to reduce damage. Set to 100 to completely block armor break"
+            },
+            "smartImu": {
+                "name": "Игнорируется",
+                "tooltip": "0 = Resist buffs and debuffs, 1 = Only resistant to armor debuffs, -1 = Only resistant to armor buffs"
+            }
+        }
+    },
+    "IMUSPEED": {
+        "abbr_name": "имунн. Спешка",
+        "full_name": "Иммунитет/Защита к Спешке",
+        "tooltip": null,
+        "format": ["[(mult!=0&block!=100){[(mult==100){Иммунитет}(mult<100&mult>0){Защита}(mult<0){Слабость}] к Спешке",
+            "[(mult<100&mult>0){ (_left)Уменьшает длительность на (mult)%(_right)}(mult<0){ (_left)Увеличивает длительность на (_abs(mult))%(_right)}]",
+            "[(block!=0&block<100){ & }]}][(block!=0){Спешка [(block==100){блокируется}(block<100&block>0){поглощается}(block<0){увеличивается}]",
+            "[(block<100&block>0){ (_left)Уменьшает длительность на (block)%(_right)}(block<0){ (_left)Увеличивает длительность на (_abs(block))%(_right)}]}]",
+            "[(smartImu!=0){. Влияет только на [(smartImu>0){уменьшение}(smartImu<0){увеличении}] скорости}]"],
+        "class": {
+            "mult": {
+                "name": "проценты",
+                "tooltip": null
+            },
+            "block": {
+                "name": "Блокировка",
+                "tooltip": "Set from 1 to 99 to reduce damage. Set to 100 to completely block Haste"
+            },
+            "smartImu": {
+                "name": "Игнорируется",
+                "tooltip": "0 = Resist buffs and debuffs, 1 = Only resistant to speed debuffs, -1 = Only resistant to speed buffs"
+            }
+        }
+    },
+    "MINIWAVE" : {
+        "abbr_name" : "мини-волна",
+        "full_name" : "Мини-волна",
+        "tooltip" : "Creates small wave which moves twice faster than normal wave with dynamic damage multiplication parameter",
+        "format" : "(prob)% шанс сделать мини-волну (lv)Ур. (_left)С дальностью (_waveRange(lv))(_right) [(multi!=20){(_left)Даёт целе (multi)% урона от изначального(_right)}]",
+        "class" : {
+            "prob" : {
+                "name" : "шанс",
+                "tooltip" : null
+            },
+            "lv" : {
+                "name" : "уровень",
+                "tooltip" : null
+            },
+            "multi" : {
+                "name" : "множитель",
+                "tooltip" : "Percentage of activator's damage.<br>If multi is 20, it will have 20% of activator's damage. Negative values are allowed"
+            }
+        }
+    },
+    "DMGCUT" : {
+        "abbr_name" : "Суп. Броня",
+        "full_name" : "Супер Броня",
+        "tooltip" : "Преображает полученный урон в ноль.",
+        "format" : "(prob)% шанс [(reduction>=0){уменьшить}(reduction<0){увеличить}] [(type.traitIgnore){весь }]урон меньше чем [(type.magnif){(_shield(dmg))}(!type.magnif){(dmg)}] в (reduction)% [(type.procs){ и игнорирует все способности от атак}]",
+        "class" : {
+            "prob" : {
+                "name" : "шанс",
+                "tooltip" : null
+            },
+            "dmg" : {
+                "name" : "урон",
+                "tooltip" : "The maximum amount of damage to be negated."
+            },
+            "reduction" : {
+                "name" : "преображает %",
+                "tooltip" : "Percentage of the damage to reduce it by."
+            },
+            "type.traitIgnore" : {
+                "name" : "игнорируются трейты",
+                "tooltip" : "When this is checked, this ability can trigger regardless of the attacker's trait."
+            },
+            "type.procs" : {
+                "name" : "игнорируются способности",
+                "tooltip" : "When this is checked, procs from nullified attacks will also be negated."
+            },
+            "type.magnif" : {
+                "name" : "использует множитель",
+                "tooltip" : "Activate this to make armor's HP affected by the entity's HP magnification."
+            }
+        }
+    },
+    "DMGCAP" : {
+        "abbr_name" : "М. Щит",
+        "full_name" : "Мистический Щит",
+        "tooltip" : "This ability reduces all damage that is above certain amount to said amount (Or nullifies, if 'nullify damage' is checked).",
+        "format" : "(prob)% шанс [(type.nullify){аннулировать[(type.traitIgnore){ весь}]}(!type.nullify){определенный}] урон больше чем [(type.magnif){(_shield(dmg))}(!type.magnif){(dmg)}][(!type.nullify){ на (dmg)}(type.procs){ и игнорирует все способности от атак}]",
+        "class" : {
+            "prob" : {
+                "name" : "шанс",
+                "tooltip" : null
+            },
+            "dmg" : {
+                "name" : "урон",
+                "tooltip" : "The minimum amount of damage to be capped."
+            },
+            "type.traitIgnore" : {
+                "name" : "игнорируются трейты",
+                "tooltip" : "When this is checked, this ability can trigger regardless of the enemy's trait."
+            },
+            "type.nullify" : {
+                "name" : "аннулируется урон",
+                "tooltip" : "When this is checked, damage from the attack will be negated instead of set to the amount"
+            },
+            "type.procs" : {
+                "name" : "игнорируются способности",
+                "tooltip" : "When this is checked, procs from nullified attacks will also be negated."
+            },
+            "type.magnif" : {
+                "name" : "Используется множитель",
+                "tooltip" : "Activate this to make shield's HP affected by the entity's HP magnification."
+            }
+        }
+    },
+    "BARRIER" : {
+        "abbr_name" : "барьер",
+        "full_name" : "Барьер",
+        "tooltip" : "Blocks all damage lower than the barrier's HP. Will break if an attack deals more damage than it's HP",
+        "format" : ["Барьер (_left)Имеет [(type.magnif){(_shield(health))}(!type.magnif){(health)}] здоровья",
+            "[(regentime>0){, регенерируется (_dispTime(regentime)) после того как сломался}]",
+            "[(timeout>0){, барьер ломается после (_dispTime(timeout))}](_right)"
+        ],
+        "class" : {
+            "health" : {
+                "name" : "здоровье",
+                "tooltip" : "Health of the barrier"
+            },
+            "regentime" : {
+                "name" : "Время Восстановления",
+                "tooltip" : "The entity's barrier will regenerate after a period of time passes. Set to 0 to deactivate this ability."
+            },
+            "timeout" : {
+                "name" : "Тайм-аут",
+                "tooltip" : "The entity's barrier will break after a period of time passes. Set to 0 to deactivate this ability."
+            },
+            "type.magnif" : {
+                "name" : "Используется множитель",
+                "tooltip" : "Activate this to make barrier's HP affected by the entity's HP magnification."
+            }
+        }
+    },
+    "DEMONSHIELD" : {
+        "abbr_name" : "Д. Щит",
+        "full_name" : "Аку Щит",
+        "tooltip" : "Blocks a certain amount of damage. Unlike barrier, it absorbs damage instead of negating it.",
+        "format" : "Аку Щит (_left)Имеет (_shield(hp)) здоровья, регенирируется с (regen)% здоровьем от изначального(_right)",
+        "class" : {
+            "hp" : {
+                "name" : "здоровье",
+                "tooltip" : "Health of the shield"
+            },
+            "regen" : {
+                "name" : "восстановление",
+                "tooltip" : "Percentage of the base HP it regenerates upon HB"
+            }
+        }
+    },
+    "SHIELDBREAK" : {
+        "abbr_name": "Лом. Щитов",
+        "full_name": "Ломатель Щитов",
+        "tooltip": "Directly breaks Aku shield. Be aware that this doesn't prevent shield from regenerating when hitbacked.",
+        "format": "(prob)% шанс сломать Аку щит",
+        "class": {
+            "prob": {
+                "name": "шанс",
+                "tooltip": null
+            }
+        }
+    },
+    "COUNTER" : {
+        "abbr_name": "Контр",
+        "full_name": "Контр-атака",
+        "tooltip": "Deal damage back when attacked.",
+        "format": ["(prob)% шанс на контр-атаку, наносит (damage)% [(!type.useOwnDamage){урона, полученного от удара}(type.useOwnDamage){урона от урона юнита}] обратно противнику. ",
+            "[(type.counterWave!=0){ Этот юнит также [(type.counterWave==1){контратакакует}(type.counterWave==2){отражает}] волновую/сурдж атаку. }][(type.procType!=0){Эта контратака ",
+            "[(type.procType==1|type.procType==3){имеет}(type.procType==2){заменяет}] оригинальные способности атаки[(type.procType==2){ на способности юнита}(type.procType==3){ и спосности врага}]. }]",
+            "Эта контратака бьёт [(type.areaAttack){ всех врагов}(!type.areaAttack){ только атакующего}][(type.areaAttack|!type.outRange){[(!type.areaAttack){ если они}] стоят ",
+            "[(minRange!=0|maxRange!=0){(minRange) ~ (maxRange) дальности юнита от этой сущности}(minRange==0&maxRange==0){на дальности сущности}]}]."],
+        "class": {
+            "prob": {
+                "name": "шанс",
+                "tooltip": null
+            },
+            "damage": {
+                "name": "Урон%",
+                "tooltip": "The percentage of damage to reflect when getting hit."
+            },
+            "minRange": {
+                "name": "Слепая зона",
+                "tooltip": "The counter won't hit anything standing below this number. Leave this and Max Range in 0 to use the unit's normal range."
+            },
+            "maxRange": {
+                "name": "Макс. дальность",
+                "tooltip": "The counter will hit anything standing below this number. Leave this and Blindspot in 0 to use the unit's normal range."
+            },
+            "type.procType": {
+                "name": "Тип Способности",
+                "tooltip": "The parameter here affects how attack procs are handled. 0 = Removes all procs. 1 = Reflects all procs back to the attacker. 2 = Replaces all the attack's procs with this unit's procs. 3 = Uses both this entity and the attacker's procs. Useless if there's a hit registered as counter"
+            },
+            "type.counterWave": {
+                "name": "Counter Waves",
+                "tooltip": "Toggle response when hit with a Wave or Surge. 0 = Do Nothing. 1 = Counter. 2 = Reflect."
+            },
+            "type.useOwnDamage": {
+                "name": "Использует Собств. Урон",
+                "tooltip": "Use this unit's damage for counters instead of received damage."
+            },
+            "type.outRange": {
+                "name": "Игнорирует Дистанцию",
+                "tooltip": "Toggle this on and the unit will counter regardless of how far away the attacker is."
+            },
+            "type.areaAttack": {
+                "name": "Атака по Области",
+                "tooltip": "Toggle this on and the counter will target all units in the counter's range. If left off, only the attacker will receive damage."
+            }
+        }
+    },
+    "DEATHSURGE": {
+        "abbr_name": "Смерт. Сурдж",
+        "full_name": "Предсмертный Сурдж",
+        "tooltip": null,
+        "format": "(prob)% шанс сделать сурдж атаку (_dispTime(time)) когда сущность погибает (_left)Создается в радиусе (dis_0) ~ (dis_1)(_right)",
+        "class": {
+            "prob": {
+                "name": "шанс",
+                "tooltip": null
+            },
+            "dis_0": {
+                "name": "начальная точка",
+                "tooltip": null
+            },
+            "dis_1": {
+                "name": "конечная точка",
+                "tooltip": null
+            },
+            "time": {
+                "name": "длительность",
+                "tooltip": null
+            }
+        }
+    },
+    "IMUCANNON": {
+        "abbr_name": "имунн. Пушки",
+        "full_name": "Иммунитет к Пушке",
+        "tooltip": null,
+        "format": ["[(mult==100){Иммунитет}(mult<100&mult>0){Защита}(mult<0){Слабость}] к ",
+            "[(type!=127){[(type&1>0){regular cannon waves[(type>2){, }]}",
+            "(type&2>0){slow beam[(type>4){, }]}",
+            "(type&4>0){thunderbolt[(type>8){, }]}",
+            "(type&8>0){waterblast[(type>16){, }]}",
+            "(type&16>0){holy blast[(type>32){, }]}",
+            "(type&32>0){breakerblast[(type>64){, и}]}",
+            "(type&64>0){curseblast}]}(type==127){атакам пушки}]",
+            "[(mult!=100){ (_left)[(mult>0){Уменьшает}(mult<0){Увеличивает}] получаемый урон и эффективность способностей на (_abs(mult))%(_right)}]"],
+        "class": {
+            "mult": {
+                "name": "проценты",
+                "tooltip": null
+            },
+            "type": {
+                "name": "тип",
+                "tooltip": "+1 for regular cannon immunity, +2 for slow beam immunity, +4 for thunderbolt immunity, +8 for waterblast immunity, +16 for holy blast immunity, +32 for breakerblast immunity, +64 for curseblast immunity"
+            }
+        }
+    },
+    "BOUNTY": {
+        "abbr_name": "2x Деньги",
+        "full_name": "Множитель Денег",
+        "tooltip": null,
+        "format": "[(mult>0){Доп. Деньги}(mult<0){Кража}] (_left)[(mult>0){прибавляет}(mult<0){уменьшает}] (_abs(mult))% деньги после убийства врага(_right)",
+        "class": {
+            "mult": {
+                "name": "проценты",
+                "tooltip": null
+            }
+        }
+    },
+    "ATKBASE": {
+        "abbr_name": "Против Базы",
+        "full_name": "Уничтожитель Баз",
+        "tooltip": null,
+        "format": "[(mult>0){Уничтожает Базы}(mult<0){Чинит Базы}] [(mult==300){(_left)Наносит 4x урона по базе противника(_right)}(mult!=300){(_left)Наносит на (_abs(mult))% [(mult>0){больше}(mult<0){меньше}] урона по Базе Противника(_right)}]",
+        "class": {
+            "mult": {
+                "name": "percent",
+                "tooltip": null
+            }
+        }
+    },
+    "BSTHUNT": {
+        "abbr_name": "Убийца ДКХ",
+        "full_name": "Убийца Диких",
+        "tooltip": null,
+        "format": "Убийца Диких (_left)Наносит 2.5x урона[(prob>0){, }(prob==0){ и }]получает только 0.6x урона[(prob>0){, и имеет (prob)% шанс уклонится от атаки диких врагов (_dispTime(time))}](_right)",
+        "class": {
+            "type.active": {
+                "name": "Сильнее против Диких",
+                "tooltip": null
+            },
+            "prob": {
+                "name": "шанс уворота",
+                "tooltip": null
+            },
+            "time": {
+                "name": "длительность",
+                "tooltip": null
+            }
+        }
+    },
+    "MINIVOLC" : {
+        "abbr_name": "м. сурдж",
+        "full_name": "Мини-Сурдж",
+        "tooltip": "Creates small surge that does exactly same behavior of normal surge, but with less damage",
+        "format": "(prob)% шанс сделать мини-сурдж (time/20) Ур. (_left)Длится (_dispTime(time)), создается в радиусе (dis_0) ~ (dis_1), даёт целе (multi)% урона от изначального(_right)",
+        "class": {
+            "prob": {
+                "name": "шанс",
+                "tooltip": null
+            },
+            "dis_0": {
+                "name": "начальная точка",
+                "tooltip": null
+            },
+            "dis_1": {
+                "name": "конечная точка",
+                "tooltip": null
+            },
+            "time": {
+                "name": "длительность",
+                "tooltip": null
+            },
+            "mult" : {
+                "name": "множитель",
+                "tooltip": null
+            }
+        }
+    },
+    "SPIRIT" : {
+        "abbr_name" : "душа",
+        "full_name" : "Призыв Души",
+        "tooltip": "Summons unit with invincibility and self-destruct automatically given, 150 range behind the summoner",
+        "format": "Призывает (_entity(id)) как душу",
+        "class": {
+            "id": {
+                "name": "ID сущности",
+                "tooltip": null
+            }
+        }
+    },
+    "METALKILL" : {
+        "abbr_name": "м. киллер",
+        "full_name": "Метал Киллер",
+        "tooltip": "Decreases metal target's current HP with specified percentage value along with its normal attack too",
+        "format": "Метал Киллер (_left)Наносит (mult)% урона от здоровья сущности(_right)",
+        "class": {
+            "mult": {
+                "name": "множитель",
+                "tooltip": null
+            }
+        }
+    }
+}
