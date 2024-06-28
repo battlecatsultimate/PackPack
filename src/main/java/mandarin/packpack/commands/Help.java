@@ -45,7 +45,7 @@ public class Help extends Command {
                     .addField(LangID.getStringByID("help_normal", lang), "```analyze, config, donate, locale, optout, prefix, timezone```", false)
                     .addField(LangID.getStringByID("help_math", lang), "```calculator, differentiate, integrate, plot, plotrtheta, tplot, solve```", false)
                     .addField(LangID.getStringByID("help_bc", lang), "```background, castle, catcombo, enemydps, enemygif, enemyimage, enemysprite, enemystat, findreward, findstage, formdps, formgif, formimage, formsprite, formstat, medal, music, soul, soulimage, soulsprite, stageinfo, talentinfo, treasure```", false)
-                    .addField(LangID.getStringByID("help_server", lang), "```addstatuschannel, boosteremoji, boosteremojiremove, boosterpin, boosterrole, boosterroleremove, channelpermission, checkbcu, clearcache, commandban, commandunban, eventmessage, fixrole, idset, removestatuschannel, save, serverconfig, serverjson, serverpre, serverstat, setup, subscribeevent, subscribescamlinkdetector, unsubscribescamlinkdetector, watchdm```", false)
+                    .addField(LangID.getStringByID("help_server", lang), "```boosteremoji, boosteremojiremove, boosterrole, boosterroleremove, channelpermission, checkbcu, clearcache, eventmessage, fixrole, save, serverconfig, serverjson, serverpre, serverstat, setup, subscribeevent, subscribescamlinkdetector, unsubscribescamlinkdetector, watchdm```", false)
                     .addField(LangID.getStringByID("help_data", lang), "```animanalyzer, announcement, checkeventupdate, comboanalyzer, downloadapk, enemystatanalyzer, eventdataarchive, printevent, printgachaevent, printitemevent, printstageevent, stageimage, stagestatanalyzer, statanalyzer, stagemapimage, talentanalyzer, trueformanalyzer```", false)
                     .addField(LangID.getStringByID("help_packpack", lang), "```alias, aliasadd, aliasremove, memory, registerscamlink, statistic, suggest, unregisterscamlink```", false);
 
@@ -152,7 +152,7 @@ public class Help extends Command {
             case "printstageevent", "pse" ->
                     replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("printstageevent", true, true, false)));
             case "subscribeevent", "se" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("subscribeevent", true, true, true)));
+                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("subscribeevent", false, false, false)));
             case "printevent", "pe" ->
                     replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("printevent", true, true, false)));
             case "statanalyzer", "sa" -> {
@@ -209,10 +209,6 @@ public class Help extends Command {
                     replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("stagestatanalyzer", true, true, true)));
             case "serverconfig", "sconfig", "serverc", "sc" ->
                     replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("serverconfig", false, false, true)));
-            case "commandban", "cb" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("commandban", false, false, false)));
-            case "commandunban", "cub" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("commandunban", false, false, false)));
             case "talentinfo", "ti" ->
                     replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("talentinfo", true, false, false)));
             case "soul", "sl" ->
@@ -227,16 +223,10 @@ public class Help extends Command {
                     replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("findreward", true, true, false)));
             case "eventdataarchive", "eventddataa", "earchive", "eda" ->
                     replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("eventdataarchive", true, true, false)));
-            case "announcemessage", "am" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("announcemessage", false, false, true)));
             case "talentanalyzer", "tala", "ta" ->
                     replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("talentanalyzer", true, true, false)));
             case "comboanalyzer", "catcomboanalyzer", "cca", "ca" ->
                     replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("comboanalyzer", true, false, true)));
-            case "addstatuschannel", "asc" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("addstatuschannel", false, false, true)));
-            case "removestatuschannel", "rsc" ->
-                    replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("removestatuschannel", false, false, true)));
             case "plot", "p" ->
                     replyToMessageSafely(ch, "", reference, a -> a.setEmbeds(addFields("plot", true, true, true)));
             case "tplot", "tp" ->

@@ -568,12 +568,6 @@ public class AllEventAdapter extends ListenerAdapter {
                     new ServerConfig(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
                 }
             }
-            case "commandban", "cb" -> new CommandBan(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-            case "commandunban", "cub" -> new CommandUnban(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-            case "ignorechannelpermission", "ichannelpermission", "ignorechp", "ichp" ->
-                    new IgnoreChannelPermission(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-            case "allowchannelpermission", "achannelpermission", "allowchp", "achp" ->
-                    new AllowChannelPermission(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
             case "talentinfo", "ti" -> new TalentInfo(ConstraintCommand.ROLE.MEMBER, lang, idh, c).execute(event);
             case "soul", "sl" -> new Soul(ConstraintCommand.ROLE.MEMBER, lang, idh, "gif").execute(event);
             case "soulimage", "soulimg", "simage", "simg" ->
@@ -590,15 +584,10 @@ public class AllEventAdapter extends ListenerAdapter {
                     new FindReward(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000, c).execute(event);
             case "eventdataarchive", "eventddataa", "earchive", "eda" ->
                     new EventDataArchive(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
-            case "announcemessage", "am" -> new AnnounceMessage(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
             case "talanetanalyzer", "tala", "ta" ->
                     new TalentAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
             case "catcomboanalyzer", "comboanalyzer", "cca", "ca" ->
                     new ComboAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
-            case "addstatuschannel", "asc" ->
-                    new AddStatusChannel(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-            case "removestatuschannel", "rsc" ->
-                    new RemoveStatusChannel(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
             case "say", "s" -> new Say(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
             case "plot", "p" -> new Plot(ConstraintCommand.ROLE.MEMBER, lang, idh, 30000).execute(event);
             case "tplot", "tp" -> new TPlot(ConstraintCommand.ROLE.MEMBER, lang, idh, 30000).execute(event);

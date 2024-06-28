@@ -42,6 +42,22 @@ public class ConfigChannelRoleSelectHolder extends ServerConfigHolder {
         roles.addAll(holder.ID.values());
     }
 
+    public ConfigChannelRoleSelectHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, int lang) {
+        super(author, channelID, message, holder, lang);
+
+        roles = new ArrayList<>();
+
+        if (holder.MEMBER != null) {
+            roles.add("MEMBER|" + holder.MEMBER);
+        }
+
+        if (holder.BOOSTER != null) {
+            roles.add("BOOSTER|" + holder.BOOSTER);
+        }
+
+        roles.addAll(holder.ID.values());
+    }
+
     @Override
     public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
@@ -254,13 +270,22 @@ public class ConfigChannelRoleSelectHolder extends ServerConfigHolder {
             result.add(ActionRow.of(buttons));
         }
 
-        result.add(
-                ActionRow.of(
-                        Button.secondary("back", LangID.getStringByID("button_back", lang)).withEmoji(EmojiStore.BACK),
-                        Button.success("confirm", LangID.getStringByID("button_confirm", lang)).withEmoji(EmojiStore.CHECK),
-                        Button.danger("cancel", LangID.getStringByID("button_cancel", lang)).withEmoji(EmojiStore.CROSS)
-                )
-        );
+        if (parent != null) {
+            result.add(
+                    ActionRow.of(
+                            Button.secondary("back", LangID.getStringByID("button_back", lang)).withEmoji(EmojiStore.BACK),
+                            Button.success("confirm", LangID.getStringByID("button_confirm", lang)).withEmoji(EmojiStore.CHECK),
+                            Button.danger("cancel", LangID.getStringByID("button_cancel", lang)).withEmoji(EmojiStore.CROSS)
+                    )
+            );
+        } else {
+            result.add(
+                    ActionRow.of(
+                            Button.success("confirm", LangID.getStringByID("button_confirm", lang)).withEmoji(EmojiStore.CHECK),
+                            Button.danger("cancel", LangID.getStringByID("button_cancel", lang)).withEmoji(EmojiStore.CROSS)
+                    )
+            );
+        }
 
         return result;
     }

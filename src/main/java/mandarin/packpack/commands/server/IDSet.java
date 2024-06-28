@@ -6,16 +6,15 @@ import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.CommandLoader;
 import mandarin.packpack.supporter.server.data.IDHolder;
-import mandarin.packpack.supporter.server.holder.component.IDManagerHolder;
+import mandarin.packpack.supporter.server.holder.component.config.ConfigRoleRegistrationHolder;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import net.dv8tion.jda.api.interactions.components.ActionComponent;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
-import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -36,82 +35,121 @@ public class IDSet extends ConstraintCommand {
         if(holder == null)
             return;
 
-        replyToMessageSafely(ch, generateIDData(g), loader.getMessage(), this::registerComponents, msg ->
-                StaticStore.putHolder(u.getId(), new IDManagerHolder(loader.getMessage(), ch.getId(), msg, holder, g))
+        replyToMessageSafely(ch, getContents(), loader.getMessage(), a -> a.setComponents(getComponents(g)), msg ->
+            StaticStore.putHolder(u.getId(), new ConfigRoleRegistrationHolder(loader.getMessage(), ch.getId(), msg, holder, lang))
         );
     }
 
-    private String generateIDData(Guild g) {
-        if(holder == null)
-            throw new IllegalStateException("E/IDSet::generateIDData - IDHolder is required to perform IDHolder");
+    private String getContents() {
+        if (holder == null)
+            return "";
 
-        String[] data = { "moderator", "member", "booster" };
-        String[] ids = { holder.MOD, holder.MEMBER, holder.BOOSTER };
+        StringBuilder builder = new StringBuilder(LangID.getStringByID("sercon_roletit", lang).formatted(EmojiStore.ROLE.getFormatted()))
+                .append("\n")
+                .append(LangID.getStringByID("sercon_roledesc", lang))
+                .append("\n")
+                .append(LangID.getStringByID("sercon_rolemod", lang).formatted(EmojiStore.MODERATOR.getFormatted(), "<@&" + holder.MOD + ">"))
+                .append("\n")
+                .append(LangID.getStringByID("sercon_rolemoddesc", lang))
+                .append("\n");
 
-        StringBuilder result = new StringBuilder();
+        String memberRole;
 
-        for(int i = 0; i < data.length; i++) {
-            result.append("**")
-                    .append(LangID.getStringByID("idset_" + data[i], lang))
-                    .append("** : ");
-
-            if(ids[i] == null) {
-                result.append(LangID.getStringByID(i == 1 ? "data_everyone" : "data_none", lang));
-            } else {
-                Role r = getRoleSafelyWithID(ids[i], g);
-
-                if (r == null) {
-                    result.append(LangID.getStringByID(i == 1 ? "data_everyone" : "data_none", lang));
-                } else {
-                    result.append(r.getId())
-                            .append(" [")
-                            .append(r.getAsMention())
-                            .append("]");
-                }
-            }
-
-            if(i < data.length - 1) {
-                result.append("\n\n");
-            }
+        if (holder.MEMBER == null) {
+            memberRole = "@everyone";
+        } else {
+            memberRole = "<@&" + holder.MEMBER + ">";
         }
 
-        return result.toString();
-    }
+        builder.append(LangID.getStringByID("sercon_rolemem", lang).formatted(EmojiStore.MEMBER.getFormatted(), memberRole))
+                .append("\n")
+                .append(LangID.getStringByID("sercon_rolememdesc", lang))
+                .append("\n");
 
-    private Role getRoleSafelyWithID(String id, Guild g) {
-        try {
-            return g.getRoleById(id);
-        } catch (Exception ignored) {
-            return null;
+        String boosterRole;
+
+        if (holder.BOOSTER == null) {
+            boosterRole = LangID.getStringByID("data_none", lang);
+        } else {
+            boosterRole = "<@&" + holder.BOOSTER + ">";
         }
+
+        builder.append(LangID.getStringByID("sercon_roleboo", lang).formatted(EmojiStore.BOOSTER.getFormatted(), boosterRole))
+                .append("\n")
+                .append(LangID.getStringByID("sercon_roleboodesc", lang));
+
+        return builder.toString();
     }
 
-    private MessageCreateAction registerComponents(MessageCreateAction m) {
-        List<ActionComponent> pages = new ArrayList<>();
+    private List<LayoutComponent> getComponents(Guild g) {
+        List<LayoutComponent> result = new ArrayList<>();
 
-        pages.add(Button.secondary("prev", LangID.getStringByID("search_prev", lang)).withEmoji(EmojiStore.PREVIOUS).asDisabled());
-        pages.add(Button.secondary("next", LangID.getStringByID("search_next", lang)).withEmoji(EmojiStore.NEXT));
+        if (holder == null)
+            return result;
 
-        return m.addComponents(
+        EntitySelectMenu.DefaultValue moderator = g.getRoles()
+                .stream()
+                .filter(r -> r.getId().equals(holder.MOD))
+                .findAny()
+                .map(role -> EntitySelectMenu.DefaultValue.role(role.getId()))
+                .orElse(null);
+
+        EntitySelectMenu.DefaultValue member = g.getRoles()
+                .stream()
+                .filter(r -> r.getId().equals(holder.MEMBER))
+                .findAny()
+                .map(r -> EntitySelectMenu.DefaultValue.role(r.getId()))
+                .orElse(null);
+
+        EntitySelectMenu.DefaultValue booster = g.getRoles()
+                .stream()
+                .filter(r -> r.getId().equals(holder.BOOSTER))
+                .findAny()
+                .map(r -> EntitySelectMenu.DefaultValue.role(r.getId()))
+                .orElse(null);
+
+        result.add(
                 ActionRow.of(
-                        EntitySelectMenu.create("mod", EntitySelectMenu.SelectTarget.ROLE)
+                        EntitySelectMenu.create("moderator", EntitySelectMenu.SelectTarget.ROLE)
+                                .setDefaultValues(moderator)
                                 .setRequiredRange(1, 1)
-                                .setPlaceholder(LangID.getStringByID("idset_modselect", lang))
-                                .build()),
+                                .build()
+                )
+        );
+
+        result.add(
                 ActionRow.of(
                         EntitySelectMenu.create("member", EntitySelectMenu.SelectTarget.ROLE)
+                                .setPlaceholder(LangID.getStringByID("sercon_roleevery", lang))
+                                .setDefaultValues(member == null ? new EntitySelectMenu.DefaultValue[0] : new EntitySelectMenu.DefaultValue[] { member })
                                 .setRequiredRange(0, 1)
-                                .setPlaceholder(LangID.getStringByID("idset_memberselect", lang))
                                 .build()
-                ),
+                )
+        );
+
+        result.add(
                 ActionRow.of(
                         EntitySelectMenu.create("booster", EntitySelectMenu.SelectTarget.ROLE)
+                                .setDefaultValues(booster == null ? new EntitySelectMenu.DefaultValue[0] : new EntitySelectMenu.DefaultValue[] { booster })
+                                .setPlaceholder(LangID.getStringByID("sercon_rolenone", lang))
                                 .setRequiredRange(0, 1)
-                                .setPlaceholder(LangID.getStringByID("idset_boosterselect", lang))
                                 .build()
-                ),
-                ActionRow.of(pages),
-                ActionRow.of(Button.primary("confirm", LangID.getStringByID("button_confirm", lang)))
+                )
         );
+
+        result.add(
+                ActionRow.of(
+                        Button.secondary("custom", LangID.getStringByID("sercon_custom", lang)).withEmoji(Emoji.fromUnicode("⚙️"))
+                )
+        );
+
+        result.add(
+                ActionRow.of(
+                        Button.success("confirm", LangID.getStringByID("button_confirm", lang)).withEmoji(EmojiStore.CHECK),
+                        Button.danger("cancel", LangID.getStringByID("button_cancel", lang)).withEmoji(EmojiStore.CROSS)
+                )
+        );
+
+        return result;
     }
 }

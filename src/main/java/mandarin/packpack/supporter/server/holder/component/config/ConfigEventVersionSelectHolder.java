@@ -21,6 +21,10 @@ public class ConfigEventVersionSelectHolder extends ServerConfigHolder {
         super(author, channelID, message, holder, backup, lang);
     }
 
+    public ConfigEventVersionSelectHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, int lang) {
+        super(author, channelID, message, holder, lang);
+    }
+
     @Override
     public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
@@ -127,13 +131,22 @@ public class ConfigEventVersionSelectHolder extends ServerConfigHolder {
             result.add(ActionRow.of(Button.secondary(id, label).withEmoji(emoji)));
         }
 
-        result.add(
-                ActionRow.of(
-                        Button.secondary("back", LangID.getStringByID("button_back", lang)).withEmoji(EmojiStore.BACK),
-                        Button.success("confirm", LangID.getStringByID("button_confirm", lang)).withEmoji(EmojiStore.CHECK),
-                        Button.danger("cancel", LangID.getStringByID("button_cancel", lang)).withEmoji(EmojiStore.CROSS)
-                )
-        );
+        if (parent != null) {
+            result.add(
+                    ActionRow.of(
+                            Button.secondary("back", LangID.getStringByID("button_back", lang)).withEmoji(EmojiStore.BACK),
+                            Button.success("confirm", LangID.getStringByID("button_confirm", lang)).withEmoji(EmojiStore.CHECK),
+                            Button.danger("cancel", LangID.getStringByID("button_cancel", lang)).withEmoji(EmojiStore.CROSS)
+                    )
+            );
+        } else {
+            result.add(
+                    ActionRow.of(
+                            Button.success("confirm", LangID.getStringByID("button_confirm", lang)).withEmoji(EmojiStore.CHECK),
+                            Button.danger("cancel", LangID.getStringByID("button_cancel", lang)).withEmoji(EmojiStore.CROSS)
+                    )
+            );
+        }
 
         return result;
     }
