@@ -5,8 +5,8 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder;
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
-import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
@@ -34,7 +34,39 @@ public class ConfigUserBanHolder extends ServerConfigHolder {
                 if (!(event instanceof EntitySelectInteractionEvent e))
                     return;
 
-                List<String> ids = e.getValues().stream().map(IMentionable::getId).toList();
+                List<String> cantBan = new ArrayList<>();
+                List<User> users = e.getMentions().getUsers();
+                List<String> ids = new ArrayList<>();
+
+                for (User u : users) {
+                    if (u.isBot()) {
+                        cantBan.add("- <@" + u.getId() + "> [" + u.getId() + "] : " + LangID.getStringByID("sercon_permissionbanbot", lang));
+                    } else if (u.getId().equals(getAuthorMessage().getAuthor().getId())) {
+                        cantBan.add("- <@" + u.getId() + "> [" + u.getId() + "] : " + LangID.getStringByID("sercon_permissionbanyou", lang));
+                    } else {
+                        ids.add(u.getId());
+                    }
+                }
+
+                StringBuilder invalidUser = new StringBuilder();
+
+                if (!cantBan.isEmpty()) {
+                    if (cantBan.size() == 1) {
+                        invalidUser.append(LangID.getStringByID("sercon_permissioncantbanuser", lang));
+                    } else {
+                        invalidUser.append(LangID.getStringByID("sercon_permissioncantbanusers", lang).formatted(cantBan.size()));
+                    }
+
+                    invalidUser.append("\n");
+
+                    for (int i = 0; i < cantBan.size(); i++) {
+                        invalidUser.append(cantBan.get(i));
+
+                        if (i < cantBan.size() - 1) {
+                            invalidUser.append("\n");
+                        }
+                    }
+                }
 
                 for (String id : ids) {
                     if (holder.banned.contains(id)) {
@@ -44,7 +76,17 @@ public class ConfigUserBanHolder extends ServerConfigHolder {
                     }
                 }
 
-                applyResult(event);
+                if (!invalidUser.isEmpty()) {
+                    event.deferReply()
+                            .setContent(invalidUser.toString())
+                            .setEphemeral(true)
+                            .setAllowedMentions(new ArrayList<>())
+                            .queue();
+
+                    applyResult();
+                } else {
+                    applyResult(event);
+                }
             }
             case "prev10" -> {
                 page -= 10;
@@ -104,6 +146,14 @@ public class ConfigUserBanHolder extends ServerConfigHolder {
     @Override
     public void onConnected(@NotNull GenericComponentInteractionCreateEvent event) {
         applyResult(event);
+    }
+
+    private void applyResult() {
+        message.editMessage(getContents())
+                .setComponents(getComponents())
+                .setAllowedMentions(new ArrayList<>())
+                .mentionRepliedUser(false)
+                .queue();
     }
 
     private void applyResult(GenericComponentInteractionCreateEvent event) {

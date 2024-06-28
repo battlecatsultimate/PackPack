@@ -151,12 +151,12 @@ public class ConfigChannelRoleSelectHolder extends ServerConfigHolder {
                     id = id.replace("MEMBER|", "");
                     isCustom = false;
 
-                    builder.append(LangID.getStringByID("sercon_permissionchannelmember", lang));
+                    builder.append(LangID.getStringByID("sercon_permissionrolemember", lang));
                 } else if (id.startsWith("BOOSTER|")) {
                     id = id.replace("BOOSTER|", "");
                     isCustom = false;
 
-                    builder.append(LangID.getStringByID("sercon_permissionchannelbooster", lang));
+                    builder.append(LangID.getStringByID("sercon_permissionrolelbooster", lang));
                 } else {
                     final String finalID = id;
 
@@ -166,13 +166,13 @@ public class ConfigChannelRoleSelectHolder extends ServerConfigHolder {
                         return v != null && v.equals(finalID);
                     }).findAny().orElse("UNKNOWN");
 
-                    builder.append(LangID.getStringByID("sercon_permissionchannelcustom", lang).formatted(foundRoleName));
+                    builder.append(LangID.getStringByID("sercon_permissionrolecustom", lang).formatted(foundRoleName));
                 }
 
                 builder.append("<@&").append(id).append("> [").append(id).append("]");
 
                 if (isCustom) {
-                    builder.append(" <").append(LangID.getStringByID("sercon_permissionchannelcustomtype", lang)).append(">");
+                    builder.append(" <").append(LangID.getStringByID("sercon_permissionrolecustomtype", lang)).append(">");
                 }
 
                 if (i < size - 1) {
@@ -208,11 +208,11 @@ public class ConfigChannelRoleSelectHolder extends ServerConfigHolder {
                 if (id.startsWith("MEMBER|")) {
                     id = id.replace("MEMBER|", "");
                     value = id;
-                    label = LangID.getStringByID("sercon_permissionchannelmembertype", lang);
+                    label = LangID.getStringByID("sercon_permissionrolemembertype", lang);
                 } else if (id.startsWith("BOOSTER|")) {
                     id = id.replace("BOOSTER|", "");
                     value = id;
-                    label = LangID.getStringByID("sercon_permissionchannelboostertype", lang);
+                    label = LangID.getStringByID("sercon_permissionrolelboostertype", lang);
                 } else {
                     value = id;
 
@@ -220,7 +220,7 @@ public class ConfigChannelRoleSelectHolder extends ServerConfigHolder {
                         String v = holder.ID.get(k);
 
                         return v != null && v.equals(value);
-                    }).findAny().orElse("UNKNOWN") + LangID.getStringByID("sercon_permissionchannelcustomtype", lang);
+                    }).findAny().orElse("UNKNOWN") + " <" + LangID.getStringByID("sercon_permissionrolecustomtype", lang) + ">";
                 }
 
                 roleOptions.add(SelectOption.of(label, value).withDescription(id));

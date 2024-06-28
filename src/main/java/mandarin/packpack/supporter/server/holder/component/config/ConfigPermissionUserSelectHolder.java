@@ -5,29 +5,56 @@ import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
+import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConfigPermissionHolder extends ServerConfigHolder {
-    public ConfigPermissionHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, @NotNull IDHolder backup, int lang) {
+public class ConfigPermissionUserSelectHolder extends ServerConfigHolder {
+    public ConfigPermissionUserSelectHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, @NotNull IDHolder backup, int lang) {
         super(author, channelID, message, holder, backup, lang);
     }
 
     @Override
     public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
-            case "channel" -> connectTo(event, new ConfigChannelRoleSelectHolder(getAuthorMessage(), channelID, message, holder, backup, lang));
-            case "ban" -> connectTo(event, new ConfigUserBanHolder(getAuthorMessage(), channelID, message, holder, backup, lang));
-            case "manage" -> connectTo(event, new ConfigPermissionUserSelectHolder(getAuthorMessage(), channelID, message, holder, backup, lang));
-            case "back" -> goBack(event);
+            case "user" -> {
+                if (!(event instanceof EntitySelectInteractionEvent e))
+                    return;
+
+                Guild g = event.getGuild();
+
+                if (g == null)
+                    return;
+
+                String id = e.getValues().getFirst().getId();
+
+                if (id.equals(userID)) {
+                    event.deferReply().setEphemeral(true).setContent(LangID.getStringByID("sercon_permissionuserself", lang)).queue();
+
+                    return;
+                }
+
+                User u = e.getMentions().getUsers().getFirst();
+
+                if (u.isBot()) {
+                    event.deferReply().setEphemeral(true).setContent(LangID.getStringByID("sercon_permissionuserbot", lang)).queue();
+
+                    return;
+                }
+
+                connectTo(event, new ConfigPermissionUserPermissionHolder(getAuthorMessage(), channelID, message, holder, backup, g, id, lang));
+            }
             case "confirm" -> {
                 event.deferEdit()
                         .setContent(LangID.getStringByID("sercon_done", lang))
@@ -54,6 +81,7 @@ public class ConfigPermissionHolder extends ServerConfigHolder {
                     expired = true;
                 }, lang));
             }
+            case "back" -> goBack(event);
         }
     }
 
@@ -83,20 +111,19 @@ public class ConfigPermissionHolder extends ServerConfigHolder {
 
     private String getContents() {
         return LangID.getStringByID("sercon_permission", lang) + "\n" +
-                LangID.getStringByID("sercon_permissionchannel", lang).formatted(Emoji.fromUnicode("📜")) + "\n" +
-                LangID.getStringByID("sercon_permissionchanneldesc", lang) + "\n" +
-                LangID.getStringByID("sercon_permissionban", lang).formatted(Emoji.fromUnicode("🔨")) + "\n" +
-                LangID.getStringByID("sercon_permissionbandesc", lang) + "\n" +
                 LangID.getStringByID("sercon_permissionmanage", lang).formatted(Emoji.fromUnicode("🔧")) + "\n" +
-                LangID.getStringByID("sercon_permissionmanagedesc", lang);
+                LangID.getStringByID("sercon_permissiondeactivateuser", lang);
     }
 
     private List<LayoutComponent> getComponents() {
         List<LayoutComponent> result = new ArrayList<>();
 
-        result.add(ActionRow.of(Button.secondary("channel", LangID.getStringByID("sercon_permissionchannelbutton", lang)).withEmoji(Emoji.fromUnicode("📜"))));
-        result.add(ActionRow.of(Button.secondary("ban", LangID.getStringByID("sercon_permissionbanbutton", lang)).withEmoji(Emoji.fromUnicode("🔨"))));
-        result.add(ActionRow.of(Button.secondary("manage", LangID.getStringByID("sercon_permissionmanagebutton", lang)).withEmoji(Emoji.fromUnicode("🔧"))));
+        result.add(ActionRow.of(
+                EntitySelectMenu.create("user", EntitySelectMenu.SelectTarget.USER)
+                        .setPlaceholder(LangID.getStringByID("sercon_permissiondeactivateselect", lang))
+                        .setRequiredRange(1, 1)
+                        .build()
+        ));
 
         result.add(
                 ActionRow.of(
