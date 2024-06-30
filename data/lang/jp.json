@@ -1725,7 +1725,7 @@
   "sercon_channelanntit" : "### %s Announcement Channel",
   "sercon_channelanndesc" : "Bot has capability to send an announcement in assigned channel. Similar like event data feature, you can also make bot send additional message",
   "sercon_channelstatustit" : "### %s Status Channel",
-  "sercon_channelstatusdesc" : "Bot isn't always online. It can go offline due to update, bug fix, or any reason. If this happens, members may wonder why it's offline. For this situation, you can make bot send status of it. IT will send message whenever it will go offline (Unexpectedly going offline can't be handled), and send message again when it becomes online",
+  "sercon_channelstatusdesc" : "Bot isn't always online. It can go offline due to update, bug fix, or any reason. If this happens, members may wonder why it's offline. For this situation, you can make bot send status of it. It will send message whenever it will go offline (Unexpectedly going offline can't be handled), and send message again when it becomes online",
   "sercon_channelboosttit" : "### %s Booster Pin Channel",
   "sercon_channelboostdesc" : "This is very minor feature, but for moderators who want to give perks to members who boosted the server, you can achieve pin permission **without message manage permission**. Idea is simple, you can allow boosters to use command which makes bot pin message instead. This way moderators can allow boosters to have pin permission only, as well as controllability of which channels boosters will be able to pin/unpin messages",
   "sercon_channeleventbutton" : "Manage Event Data Channel",
