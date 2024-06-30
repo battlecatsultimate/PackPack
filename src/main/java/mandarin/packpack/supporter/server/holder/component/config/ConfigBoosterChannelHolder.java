@@ -1,26 +1,24 @@
 package mandarin.packpack.supporter.server.holder.component.config;
 
 import mandarin.packpack.supporter.EmojiStore;
-import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder;
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
-import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.interactions.components.selections.EntitySelectMenu;
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -45,42 +43,44 @@ public class ConfigBoosterChannelHolder extends ServerConfigHolder {
                 if (g == null)
                     return;
 
-                String id = e.getValues().getFirst().getId();
+                List<GuildChannel> channels = e.getMentions().getChannels();
 
-                TextChannel channel = g.getTextChannelById(id);
+                List<String> reasons = new ArrayList<>();
 
-                if (channel == null)
-                    return;
+                for (GuildChannel channel : channels) {
+                    if (holder.boosterPinChannel.contains(channel.getId())) {
+                        holder.boosterPinChannel.remove(channel.getId());
+                    } else {
+                        boolean invalid = false;
 
-                if (holder.boosterPinChannel.contains(id)) {
-                    event.deferReply()
-                            .setContent(LangID.getStringByID("sercon_channelboostalready", lang))
-                            .setEphemeral(true)
-                            .queue();
+                        if (channel instanceof GuildMessageChannel m) {
+                            if (!m.canTalk()) {
+                                reasons.add(channel.getAsMention() + " : " + LangID.getStringByID("sercon_channelboostnosee", lang));
+                                invalid = true;
+                            } else if (!g.getSelfMember().hasPermission(m, Permission.MESSAGE_MANAGE)) {
+                                reasons.add(channel.getAsMention() + " : " + LangID.getStringByID("sercon_channelboostnoperm", lang));
+                                invalid = true;
+                            }
+                        }
 
-                    return;
+                        if (!invalid) {
+                            holder.boosterPinChannel.add(channel.getId());
+                        }
+                    }
                 }
 
-                if (!channel.canTalk()) {
+                if (!reasons.isEmpty()) {
+                    StringBuilder problem = new StringBuilder(LangID.getStringByID("sercon_channelboosterproblem", lang)).append("\n\n");
+
+                    for (String reason : reasons) {
+                        problem.append("- ").append(reason).append("\n");
+                    }
+
                     event.deferReply()
-                            .setContent(LangID.getStringByID("sercon_channelcanttalk", lang))
+                            .setContent(problem.toString())
                             .setEphemeral(true)
                             .queue();
-
-                    return;
                 }
-
-                holder.boosterPinChannel.add(id);
-
-                applyResult(event);
-            }
-            case "remove" -> {
-                if (!(event instanceof StringSelectInteractionEvent e))
-                    return;
-
-                int index = StaticStore.safeParseInt(e.getValues().getFirst());
-
-                holder.boosterPinChannel.remove(index);
 
                 applyResult(event);
             }
@@ -215,36 +215,8 @@ public class ConfigBoosterChannelHolder extends ServerConfigHolder {
                     EntitySelectMenu.create("channel", EntitySelectMenu.SelectTarget.CHANNEL)
                             .setChannelTypes(ChannelType.TEXT)
                             .setPlaceholder(LangID.getStringByID("sercon_channelboostallow", lang))
+                            .setRequiredRange(1, EntitySelectMenu.OPTIONS_MAX_AMOUNT)
                             .setDisabled(channelNotManageable)
-                            .build()
-            ));
-
-            List<SelectOption> options = new ArrayList<>();
-
-            if (holder.boosterPinChannel.isEmpty()) {
-                options.add(SelectOption.of("A", "A"));
-            } else {
-                int size = Math.min(holder.boosterPinChannel.size(), (page + 1) * SearchHolder.PAGE_CHUNK);
-
-                for (int i = page * SearchHolder.PAGE_CHUNK; i < size; i++) {
-                    String id = holder.boosterPinChannel.get(i);
-
-                    TextChannel channel = g.getTextChannelById(id);
-
-                    if (channel == null) {
-                        options.add(SelectOption.of((i + 1) + ". UNKNOWN", String.valueOf(i)).withDescription(id));
-                    } else {
-                        options.add(SelectOption.of((i + 1) + ". " + channel.getName(), String.valueOf(i)).withDescription(id));
-                    }
-                }
-            }
-
-            result.add(ActionRow.of(
-                    StringSelectMenu.create("remove")
-                            .addOptions(options)
-                            .setRequiredRange(1, 1)
-                            .setPlaceholder(LangID.getStringByID("sercon_channelboostremove", lang))
-                            .setDisabled(channelNotManageable || holder.boosterPinChannel.isEmpty())
                             .build()
             ));
 
