@@ -78,6 +78,7 @@ public class ConfigBoosterChannelHolder extends ServerConfigHolder {
 
                     event.deferReply()
                             .setContent(problem.toString())
+                            .setAllowedMentions(new ArrayList<>())
                             .setEphemeral(true)
                             .queue();
                 }

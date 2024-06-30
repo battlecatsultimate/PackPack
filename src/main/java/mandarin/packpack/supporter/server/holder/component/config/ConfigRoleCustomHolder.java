@@ -67,6 +67,7 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
 
                     event.deferReply()
                             .setContent(LangID.getStringByID("sercon_customexist", lang).formatted(name))
+                            .setAllowedMentions(new ArrayList<>())
                             .setEphemeral(true)
                             .queue();
                 } else {
@@ -347,6 +348,7 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
         if (id.equals(holder.MOD)) {
             event.deferReply()
                     .setContent(LangID.getStringByID("sercon_rolemodalready", lang))
+                    .setAllowedMentions(new ArrayList<>())
                     .setEphemeral(true)
                     .queue();
 
@@ -354,6 +356,7 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
         } else if (id.equals(holder.MEMBER)) {
             event.deferReply()
                     .setContent(LangID.getStringByID("sercon_rolememalready", lang))
+                    .setAllowedMentions(new ArrayList<>())
                     .setEphemeral(true)
                     .queue();
 
@@ -361,6 +364,7 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
         } else if (id.equals(holder.BOOSTER)) {
             event.deferReply()
                     .setContent(LangID.getStringByID("sercon_rolebooalready", lang))
+                    .setAllowedMentions(new ArrayList<>())
                     .setEphemeral(true)
                     .queue();
 

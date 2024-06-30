@@ -62,6 +62,7 @@ public class ConfigEventManagerHolder extends ServerConfigHolder {
                     if (!channel.canTalk()) {
                         event.deferReply()
                                 .setContent(LangID.getStringByID("sercon_channelcanttalk", lang))
+                                .setAllowedMentions(new ArrayList<>())
                                 .setEphemeral(true)
                                 .queue();
 

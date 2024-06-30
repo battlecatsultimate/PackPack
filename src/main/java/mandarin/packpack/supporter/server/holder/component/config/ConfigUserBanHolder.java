@@ -79,8 +79,8 @@ public class ConfigUserBanHolder extends ServerConfigHolder {
                 if (!invalidUser.isEmpty()) {
                     event.deferReply()
                             .setContent(invalidUser.toString())
-                            .setEphemeral(true)
                             .setAllowedMentions(new ArrayList<>())
+                            .setEphemeral(true)
                             .queue();
 
                     applyResult();

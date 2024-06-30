@@ -40,7 +40,7 @@ public class ConfigPermissionUserSelectHolder extends ServerConfigHolder {
                 String id = e.getValues().getFirst().getId();
 
                 if (id.equals(userID)) {
-                    event.deferReply().setEphemeral(true).setContent(LangID.getStringByID("sercon_permissionuserself", lang)).queue();
+                    event.deferReply().setEphemeral(true).setAllowedMentions(new ArrayList<>()).setContent(LangID.getStringByID("sercon_permissionuserself", lang)).queue();
 
                     return;
                 }
@@ -48,7 +48,7 @@ public class ConfigPermissionUserSelectHolder extends ServerConfigHolder {
                 User u = e.getMentions().getUsers().getFirst();
 
                 if (u.isBot()) {
-                    event.deferReply().setEphemeral(true).setContent(LangID.getStringByID("sercon_permissionuserbot", lang)).queue();
+                    event.deferReply().setEphemeral(true).setAllowedMentions(new ArrayList<>()).setContent(LangID.getStringByID("sercon_permissionuserbot", lang)).queue();
 
                     return;
                 }

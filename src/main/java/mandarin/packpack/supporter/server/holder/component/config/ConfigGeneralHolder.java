@@ -54,6 +54,7 @@ public class ConfigGeneralHolder extends ServerConfigHolder {
 
                 event.deferReply()
                         .setContent(LangID.getStringByID("sercon_langset", lang).formatted(languageName))
+                        .setAllowedMentions(new ArrayList<>())
                         .setEphemeral(true)
                         .queue();
 

@@ -52,6 +52,7 @@ public class ConfigStatusHolder extends ServerConfigHolder {
                 if (holder.status.contains(id)) {
                     event.deferReply()
                             .setContent(LangID.getStringByID("sercon_channelstatusalready", lang))
+                            .setAllowedMentions(new ArrayList<>())
                             .setEphemeral(true)
                             .queue();
 
@@ -61,6 +62,7 @@ public class ConfigStatusHolder extends ServerConfigHolder {
                 if (!channel.canTalk()) {
                     event.deferReply()
                             .setContent(LangID.getStringByID("sercon_channelcanttalk", lang))
+                            .setAllowedMentions(new ArrayList<>())
                             .setEphemeral(true)
                             .queue();
 

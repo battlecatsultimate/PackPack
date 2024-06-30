@@ -54,6 +54,7 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
 
                 event.deferReply()
                         .setContent(LangID.getStringByID("sercon_modset", lang).formatted("<@&" + role.getId() + ">"))
+                        .setAllowedMentions(new ArrayList<>())
                         .setEphemeral(true)
                         .queue();
 
@@ -122,6 +123,7 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
 
                 event.deferReply()
                         .setContent(LangID.getStringByID(id, lang).formatted(mention))
+                        .setAllowedMentions(new ArrayList<>())
                         .setEphemeral(true)
                         .queue();
 
@@ -320,6 +322,7 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
         if (id.equals(holder.MOD)) {
             event.deferReply()
                     .setContent(LangID.getStringByID("sercon_rolemodalready", lang))
+                    .setAllowedMentions(new ArrayList<>())
                     .setEphemeral(true)
                     .queue();
 
@@ -327,6 +330,7 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
         } else if (id.equals(holder.MEMBER)) {
             event.deferReply()
                     .setContent(LangID.getStringByID("sercon_rolememalready", lang))
+                    .setAllowedMentions(new ArrayList<>())
                     .setEphemeral(true)
                     .queue();
 
@@ -334,6 +338,7 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
         } else if (id.equals(holder.BOOSTER)) {
             event.deferReply()
                     .setContent(LangID.getStringByID("sercon_rolebooalready", lang))
+                    .setAllowedMentions(new ArrayList<>())
                     .setEphemeral(true)
                     .queue();
 
@@ -341,6 +346,7 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
         } else if (holder.ID.containsValue(id)) {
             event.deferReply()
                     .setContent(LangID.getStringByID("sercon_customalready", lang))
+                    .setAllowedMentions(new ArrayList<>())
                     .setEphemeral(true)
                     .queue();
 
