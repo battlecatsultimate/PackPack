@@ -151,9 +151,17 @@ public class ConfigChannelManageHolder extends ServerConfigHolder {
     private String getContents() {
         StringBuilder builder = new StringBuilder();
 
+        String roleMention;
+
+        if (role.equals("Member")) {
+            roleMention = "@everyone";
+        } else {
+            roleMention = "<@&" + role + ">";
+        }
+
         builder.append(LangID.getStringByID("sercon_permission", lang)).append("\n")
                 .append(LangID.getStringByID("sercon_permissionchannel", lang).formatted(Emoji.fromUnicode("📜"))).append("\n")
-                .append(LangID.getStringByID("sercon_permissionchannelmanagedesc", lang).formatted("<@&" + role + ">")).append("\n")
+                .append(LangID.getStringByID("sercon_permissionchannelmanagedesc", lang).formatted(roleMention)).append("\n")
                 .append(LangID.getStringByID("sercon_permissionchannelallowedchannel", lang)).append("\n");
 
         if (channels != null) {

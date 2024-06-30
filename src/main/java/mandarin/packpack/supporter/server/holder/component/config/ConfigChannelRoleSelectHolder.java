@@ -33,6 +33,8 @@ public class ConfigChannelRoleSelectHolder extends ServerConfigHolder {
 
         if (holder.MEMBER != null) {
             roles.add("MEMBER|" + holder.MEMBER);
+        } else {
+            roles.add("MEMBER|");
         }
 
         if (holder.BOOSTER != null) {
@@ -49,6 +51,8 @@ public class ConfigChannelRoleSelectHolder extends ServerConfigHolder {
 
         if (holder.MEMBER != null) {
             roles.add("MEMBER|" + holder.MEMBER);
+        } else {
+            roles.add("MEMBER|");
         }
 
         if (holder.BOOSTER != null) {
@@ -185,7 +189,11 @@ public class ConfigChannelRoleSelectHolder extends ServerConfigHolder {
                     builder.append(LangID.getStringByID("sercon_permissionrolecustom", lang).formatted(foundRoleName));
                 }
 
-                builder.append("<@&").append(id).append("> [").append(id).append("]");
+                if (id.isEmpty()) {
+                    builder.append("@everyone");
+                } else {
+                    builder.append("<@&").append(id).append("> [").append(id).append("]");
+                }
 
                 if (isCustom) {
                     builder.append(" <").append(LangID.getStringByID("sercon_permissionrolecustomtype", lang)).append(">");
@@ -223,7 +231,13 @@ public class ConfigChannelRoleSelectHolder extends ServerConfigHolder {
 
                 if (id.startsWith("MEMBER|")) {
                     id = id.replace("MEMBER|", "");
-                    value = id;
+
+                    if (id.isEmpty()) {
+                        value = "Member";
+                    } else {
+                        value = id;
+                    }
+
                     label = LangID.getStringByID("sercon_permissionrolemembertype", lang);
                 } else if (id.startsWith("BOOSTER|")) {
                     id = id.replace("BOOSTER|", "");
@@ -239,7 +253,11 @@ public class ConfigChannelRoleSelectHolder extends ServerConfigHolder {
                     }).findAny().orElse("UNKNOWN") + " <" + LangID.getStringByID("sercon_permissionrolecustomtype", lang) + ">";
                 }
 
-                roleOptions.add(SelectOption.of(label, value).withDescription(id));
+                if (id.isEmpty()) {
+                    roleOptions.add(SelectOption.of(label, value).withDescription("@everyone"));
+                } else {
+                    roleOptions.add(SelectOption.of(label, value).withDescription(id));
+                }
             }
         }
 
