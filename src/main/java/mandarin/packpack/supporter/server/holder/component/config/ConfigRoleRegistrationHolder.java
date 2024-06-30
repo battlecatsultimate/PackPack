@@ -89,6 +89,7 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
                 String mention;
 
                 if (event.getComponentId().equals("member")) {
+                    String oldID = holder.MEMBER;
                     holder.MEMBER = roleID;
                     id = "sercon_memset";
 
@@ -96,7 +97,16 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
                         mention = "@everyone";
                     else
                         mention = "<@&" + roleID + ">";
+
+                    if (holder.MEMBER != null && holder.channel.containsKey("Member")) {
+                        holder.channel.put(holder.MEMBER, holder.channel.get("Member"));
+                        holder.channel.remove("Member");
+                    } else if (holder.MEMBER == null && oldID != null && holder.channel.containsKey(oldID)) {
+                        holder.channel.put("Member", holder.channel.get(oldID));
+                        holder.channel.remove(oldID);
+                    }
                 } else {
+                    String oldID = holder.BOOSTER;
                     holder.BOOSTER = roleID;
                     id = "sercon_booset";
 
@@ -104,6 +114,10 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
                         mention = LangID.getStringByID("data_none", lang);
                     else
                         mention = "<@&" + roleID + ">";
+
+                    if (oldID != null && holder.BOOSTER == null) {
+                        holder.channel.remove(oldID);
+                    }
                 }
 
                 event.deferReply()

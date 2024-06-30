@@ -4,6 +4,7 @@ import mandarin.packpack.supporter.EmojiStore;
 import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder;
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import mandarin.packpack.supporter.server.holder.modal.CustomRoleNameModalHolder;
@@ -104,7 +105,17 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
                     holder.ID.entrySet().removeIf(entry -> {
                         String targetID = entry.getValue();
 
-                        return targetID != null && targetID.equals(id);
+                        boolean remove = targetID != null && targetID.equals(id);
+
+                        if (remove) {
+                            holder.channel.remove(targetID);
+                        }
+
+                        StaticStore.putHolder(getAuthorMessage().getAuthor().getId(), this);
+
+                        applyResult();
+
+                        return remove;
                     });
 
                     ev.deferReply()
@@ -112,10 +123,6 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
                             .setAllowedMentions(new ArrayList<>())
                             .setEphemeral(true)
                             .queue();
-
-                    StaticStore.putHolder(getAuthorMessage().getAuthor().getId(), this);
-
-                    applyResult();
                 }, lang));
             }
             case "prev10" -> {
@@ -171,6 +178,11 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
     @Override
     public void onConnected(@NotNull GenericComponentInteractionCreateEvent event) {
         applyResult(event);
+    }
+
+    @Override
+    public void onBack(Holder child) {
+        applyResult();
     }
 
     @Override
