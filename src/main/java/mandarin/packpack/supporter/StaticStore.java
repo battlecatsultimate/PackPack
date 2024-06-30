@@ -708,7 +708,7 @@ public class StaticStore {
             String json = obj.toString();
             JsonNode tree = mapper.readTree(json);
 
-            FileWriter writer = new FileWriter("./data/" + fileName);
+            FileWriter writer = new FileWriter(file);
 
             writer.append(mapper.writeValueAsString(tree));
             writer.close();
@@ -718,7 +718,9 @@ public class StaticStore {
     }
 
     public static void postReadServerInfo() {
-        JsonObject obj = getJsonFile("serverinfo");
+        String fileName = PackBot.test ? "testserverinfo" : "serverinfo";
+
+        JsonObject obj = getJsonFile(fileName);
 
         if(obj != null) {
             if(obj.has("alias")) {

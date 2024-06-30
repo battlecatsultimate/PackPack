@@ -137,7 +137,7 @@ public class Alias extends ConstraintCommand {
                         if (forms.size() % SearchHolder.PAGE_CHUNK != 0)
                             totalPage++;
 
-                        sb.append(LangID.getStringByID("formst_page", lang).replace("_", "1").replace("-", String.valueOf(totalPage)));
+                        sb.append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage));
                     }
 
                     sb.append(LangID.getStringByID("formst_can", lang));
@@ -233,7 +233,7 @@ public class Alias extends ConstraintCommand {
                         if (enemies.size() % SearchHolder.PAGE_CHUNK != 0)
                             totalPage++;
 
-                        sb.append(LangID.getStringByID("formst_page", lang).replace("_", "1").replace("-", String.valueOf(totalPage)));
+                        sb.append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage));
                     }
 
                     sb.append(LangID.getStringByID("formst_can", lang));
@@ -381,7 +381,7 @@ public class Alias extends ConstraintCommand {
                         if (stages.size() % SearchHolder.PAGE_CHUNK != 0)
                             totalPage++;
 
-                        sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(1)).replace("-", String.valueOf(totalPage)));
+                        sb.append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage));
                     }
 
                     sb.append(LangID.getStringByID("formst_can", lang));

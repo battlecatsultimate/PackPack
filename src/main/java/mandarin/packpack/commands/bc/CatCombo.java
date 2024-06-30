@@ -68,7 +68,7 @@ public class CatCombo extends TimedConstraintCommand {
                     if(combos.size() % SearchHolder.PAGE_CHUNK != 0)
                         totalPage++;
 
-                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(1)).replace("-", String.valueOf(totalPage))).append("\n");
+                    sb.append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage)).append("\n");
                 }
 
                 sb.append("```");
@@ -115,7 +115,7 @@ public class CatCombo extends TimedConstraintCommand {
                         if(combos.size() % SearchHolder.PAGE_CHUNK != 0)
                             totalPage++;
 
-                        sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(1)).replace("-", String.valueOf(totalPage))).append("\n");
+                        sb.append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage)).append("\n");
                     }
 
                     sb.append("```");
@@ -145,7 +145,7 @@ public class CatCombo extends TimedConstraintCommand {
                     if(forms.size() % SearchHolder.PAGE_CHUNK != 0)
                         totalPage++;
 
-                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(1)).replace("-", String.valueOf(totalPage))).append("\n");
+                    sb.append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage)).append("\n");
                 }
 
                 sb.append("```");

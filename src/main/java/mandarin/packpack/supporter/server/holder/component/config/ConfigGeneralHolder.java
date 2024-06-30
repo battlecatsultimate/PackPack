@@ -54,6 +54,7 @@ public class ConfigGeneralHolder extends ServerConfigHolder {
 
                 event.deferReply()
                         .setContent(LangID.getStringByID("sercon_langset", lang).formatted(languageName))
+                        .setAllowedMentions(new ArrayList<>())
                         .setEphemeral(true)
                         .queue();
 
@@ -95,6 +96,8 @@ public class ConfigGeneralHolder extends ServerConfigHolder {
                             .mentionRepliedUser(false)
                             .queue();
 
+                    holder.inject(backup);
+
                     expired = true;
                 }, lang));
             }
@@ -120,8 +123,6 @@ public class ConfigGeneralHolder extends ServerConfigHolder {
     @Override
     public void onBack(Holder child) {
         applyResult();
-
-        System.out.println(holder.config.prefix);
     }
 
     private void applyResult(GenericComponentInteractionCreateEvent event) {
@@ -193,6 +194,7 @@ public class ConfigGeneralHolder extends ServerConfigHolder {
                 case LangID.ES -> Emoji.fromUnicode("🇪🇸");
                 case LangID.DE -> Emoji.fromUnicode("🇩🇪");
                 case LangID.TH -> Emoji.fromUnicode("🇹🇭");
+                case LangID.RU -> Emoji.fromUnicode("🇷🇺");
                 default -> throw new IllegalStateException("E/ConfigGeneralHolder::getComponents - Unrecognized locale " + StaticStore.langCode[j] + " detected");
             };
 

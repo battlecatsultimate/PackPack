@@ -12,6 +12,9 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectMenu;
 
 import java.util.*;
 
+/**
+ * IDHolder is a class which contains server's preference data. Each IDHolder represents each server
+ */
 public class IDHolder implements Cloneable {
     public static IDHolder jsonToIDHolder(JsonObject obj) {
         IDHolder id = new IDHolder();
@@ -121,6 +124,10 @@ public class IDHolder implements Cloneable {
             id.boosterPin = obj.get("boosterPin").getAsBoolean();
         }
 
+        if (obj.has("boosterAll")) {
+            id.boosterAll = obj.get("boosterAll").getAsBoolean();
+        }
+
         if(obj.has("boosterPinChannel")) {
             id.boosterPinChannel = id.jsonObjectToListString(obj.getAsJsonArray("boosterPinChannel"));
         }
@@ -131,28 +138,119 @@ public class IDHolder implements Cloneable {
         return id;
     }
 
+    /**
+     * Moderator role ID, this must not be null value
+     */
     public String MOD;
+    /**
+     * Member role ID, nullable value. If this value is null, it means member will be
+     * everyone
+     */
     public String MEMBER;
+    /**
+     * Booster role ID, nullable value
+     */
     public String BOOSTER;
+    /**
+     * Channel where bot will post announcements, nullable value
+     */
     public String ANNOUNCE;
+    /**
+     * Channel where bot will post random link posts in bot's DM from other user. This is
+     *  for monitoring compromised accounts sending scam link to everyone
+     */
     public String logDM = null;
 
-    public boolean publish = false, eventRaw = false, forceCompact = false, forceFullTreasure = false, boosterPin = false;
+    /**
+     * Flag value whether bot will publish the announcement or not. This flag will be ignored
+     *  if channel isn't announcement channel
+     *
+     * @see <a href="https://support.discord.com/hc/en-us/articles/360032008192-Announcement-Channels">Discord Announcement Channel</a>
+     */
+    public boolean publish = false;
+    /**
+     * Sorting method for posting event data. Bot will post event data with raw order in the
+     * file if this is true
+     */
+    public boolean eventRaw = false;
+    /**
+     * Flag value whether bot will force users to use compact embed mode or not regardless of
+     *  user's preferences
+     */
+    public boolean forceCompact = false;
+    /**
+     * Flag value whether bot will force users to use full treasure config regardless of user's
+     *  preferences
+     */
+    public boolean forceFullTreasure = false;
+    /**
+     * Flag value whether bot will allow boosters to pin/unpin message from pinning command
+     *
+     * @see mandarin.packpack.commands.BoosterPin
+     */
+    public boolean boosterPin = false;
+    /**
+     * Flag value whether bot will allow boosters to pin/unpin message in all channels. If
+     * {@link IDHolder#boosterPin} is disabled, this flag will be ignored
+     */
+    public boolean boosterAll = false;
 
+    /**
+     * {@link ConfigHolder} of this server. It will be used if user doesn't have personal
+     *  preferences
+     */
     public ConfigHolder config = new ConfigHolder();
 
+    /**
+     * List of channel ID where bot will post its status whenever it goes online or offline
+     */
     public List<String> status = new ArrayList<>();
+    /**
+     * List of user ID who were banned from using any bot's commands in this server
+     */
     public List<String> banned = new ArrayList<>();
+    /**
+     * List of channels that moderators allowed server boosters to pin/unpin messages
+     */
     public List<String> boosterPinChannel = new ArrayList<>();
 
+    /**
+     * Custom assigned role data. Key is name of assigned role, and value is role ID
+     */
     public Map<String, String> ID = new TreeMap<>();
+    /**
+     * Additional message that will be sent whenever bot posts new event data. Key is locale
+     * value (BCEN, BCKR, ...), and value is contents of additional message
+     */
     public Map<String, String> eventMessage = new HashMap<>();
+    /**
+     * Event data posting channels. Key is locale value (BCEN, BCKR, ...), and value is channel
+     * ID
+     */
     public Map<Integer, String> eventMap = new TreeMap<>();
+    /**
+     * Channel permission data. Key is assigned role ID, and value is list of allowed channels.
+     * If channel list is null, it means this role allows users to use commands in all channels
+     */
     public Map<String, List<String>> channel = new TreeMap<>();
+    /**
+     * Deactivated channel permission for each user. Key is user ID, and value is list of
+     * deactivated channel permission for each role
+     */
     public Map<String, List<String>> channelException = new HashMap<>();
 
+    /**
+     * Additional message that will be sent together whenever bot posts announcements
+     */
     public String announceMessage = "";
 
+    /**
+     * IDHolder constructor if moderator, member, booster role is already known
+     *
+     * @param m Moderator role ID
+     * @param me Member role ID
+     * @param bo Booster roel ID
+     */
     public IDHolder(String m, String me, String bo) {
         this.MOD = m;
         this.MEMBER = me;
@@ -161,10 +259,18 @@ public class IDHolder implements Cloneable {
         config.lang = LangID.EN;
     }
 
+    /**
+     * Default IDHolder constructor for any server
+     */
     public IDHolder() {
         config.lang = LangID.EN;
     }
 
+    /**
+     * Inject {@code holder} data into this IDHolder
+     *
+     * @param holder Other IDHolder that will be used for injecting data
+     */
     public void inject(IDHolder holder) {
         publish = holder.publish;
         MOD = holder.MOD;
@@ -187,6 +293,11 @@ public class IDHolder implements Cloneable {
         boosterPinChannel = holder.boosterPinChannel;
     }
 
+    /**
+     * Convert this IDHolder into json format
+     *
+     * @return {@link JsonObject} of this IDHolder
+     */
     public JsonObject jsonfy() {
         JsonObject obj = new JsonObject();
 
@@ -208,11 +319,19 @@ public class IDHolder implements Cloneable {
         obj.addProperty("announceMessage", announceMessage);
         obj.add("eventMessage", StaticStore.mapToJsonString(eventMessage));
         obj.addProperty("boosterPin", boosterPin);
+        obj.addProperty("boosterAll", boosterAll);
         obj.add("boosterPinChannel", listStringToJsonObject(boosterPinChannel));
 
         return obj;
     }
 
+    /**
+     * Get allowed channels where this {@code member} can use bot's commands
+     *
+     * @param member Member data who is in this {@link net.dv8tion.jda.api.entities.Guild}
+     *
+     * @return List of channel ID where {@code member} can use the commands
+     */
     public ArrayList<String> getAllAllowedChannels(Member member) {
         List<Role> ids = member.getRoles();
         List<String> exceptions = channelException.get(member.getId());
@@ -443,19 +562,6 @@ public class IDHolder implements Cloneable {
         }
 
         return map;
-    }
-
-    @Override
-    public String toString() {
-        return "IDHolder{" +
-                "publish=" + publish +
-                ", MOD='" + MOD + '\'' +
-                ", MEMBER='" + MEMBER + '\'' +
-                ", BOOSTER='" + BOOSTER + '\'' +
-                ", ANNOUNCE='" + ANNOUNCE + '\'' +
-                ", ID=" + ID +
-                ", channel=" + channel +
-                '}';
     }
 
     @Override

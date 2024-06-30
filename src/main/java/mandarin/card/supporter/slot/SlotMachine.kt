@@ -771,7 +771,7 @@ class SlotMachine {
             val maxSequence = if (sameEmojiContents.isEmpty()) {
                 slotSize
             } else {
-                sameEmojiContents.minOf { co -> co.slot }
+                sameEmojiContents.minOf { co -> co.slot } - 1
             }
 
             val odd = calculateOdd(c.slot, maxSequence).round(MathContext(5, RoundingMode.HALF_EVEN))

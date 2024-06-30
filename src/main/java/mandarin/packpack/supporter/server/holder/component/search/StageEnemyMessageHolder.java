@@ -138,7 +138,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
                     if(stages.size() % PAGE_CHUNK != 0)
                         totalPage++;
 
-                    sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(1)).replace("-", String.valueOf(totalPage))).append("\n");
+                    sb.append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage)).append("\n");
                 }
 
                 sb.append("```");
@@ -201,7 +201,7 @@ public class StageEnemyMessageHolder extends SearchHolder {
             if(enemy.size() % SearchHolder.PAGE_CHUNK != 0)
                 totalPage++;
 
-            sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page + 1)).replace("-", String.valueOf(totalPage))).append("\n");
+            sb.append(LangID.getStringByID("formst_page", lang).formatted(page + 1, totalPage)).append("\n");
         }
 
         sb.append("```");

@@ -199,6 +199,10 @@ public abstract class Holder {
 
     }
 
+    public void onBack(@Nonnull ModalInteractionEvent event, Holder child) {
+
+    }
+
     public void connectTo(Holder holder) {
         if (holder.expired) {
             throw new IllegalStateException("E/Holder::connectTo - Tried to connect already expired holder!\nCurrent holder : " + this.getClass() + "\nConnected holder : " + holder.getClass());
@@ -260,6 +264,20 @@ public abstract class Holder {
     }
 
     public void goBack(GenericComponentInteractionCreateEvent event) {
+        if (parent == null) {
+            throw new IllegalStateException("E/Holder::goBack - Can't go back because there's no parent holder!\n\nHolder : " + this.getClass());
+        } else if (parent.expired) {
+            throw new IllegalStateException("E/Holder::goBack - Parent holder " + parent.getClass() + " is already expired!\n\nHolder : " + this.getClass());
+        } else {
+            expired = true;
+            StaticStore.removeHolder(userID, this);
+            StaticStore.putHolder(userID, parent);
+
+            parent.onBack(event, this);
+        }
+    }
+
+    public void goBack(ModalInteractionEvent event) {
         if (parent == null) {
             throw new IllegalStateException("E/Holder::goBack - Can't go back because there's no parent holder!\n\nHolder : " + this.getClass());
         } else if (parent.expired) {

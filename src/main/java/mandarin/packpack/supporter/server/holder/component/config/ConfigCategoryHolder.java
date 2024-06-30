@@ -30,6 +30,9 @@ public class ConfigCategoryHolder extends ServerConfigHolder {
     public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
             case "general" -> connectTo(event, new ConfigGeneralHolder(getAuthorMessage(), channelID, message, holder, backup, lang));
+            case "command" -> connectTo(event, new ConfigCommandHolder(getAuthorMessage(), channelID, message, holder, backup, lang));
+            case "channel" -> connectTo(event, new ConfigChannelHolder(getAuthorMessage(), channelID, message, holder, backup, lang));
+            case "permission" -> connectTo(event, new ConfigPermissionHolder(getAuthorMessage(), channelID, message, holder, backup, lang));
             case "confirm" -> {
                 event.deferEdit()
                         .setContent(LangID.getStringByID("sercon_done", lang))
@@ -50,6 +53,8 @@ public class ConfigCategoryHolder extends ServerConfigHolder {
                             .setAllowedMentions(new ArrayList<>())
                             .mentionRepliedUser(false)
                             .queue();
+
+                    holder.inject(backup);
 
                     expired = true;
                 }, lang));
@@ -80,8 +85,7 @@ public class ConfigCategoryHolder extends ServerConfigHolder {
         result.add(
                 ActionRow.of(
                         Button.secondary("permission", LangID.getStringByID("sercon_perm", lang)).withEmoji(Emoji.fromUnicode("📖")),
-                        Button.secondary("channel", LangID.getStringByID("sercon_channel", lang)).withEmoji(Emoji.fromUnicode("💬")),
-                        Button.secondary("moderation", LangID.getStringByID("sercon_mod", lang)).withEmoji(Emoji.fromUnicode("🛡️"))
+                        Button.secondary("channel", LangID.getStringByID("sercon_channel", lang)).withEmoji(Emoji.fromUnicode("💬"))
                 )
         );
 

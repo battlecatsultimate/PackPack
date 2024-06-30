@@ -84,7 +84,7 @@ public class EventDataArchive extends ConstraintCommand {
         if(files.size() > SearchHolder.PAGE_CHUNK) {
             int totalPage = (int) Math.ceil(files.size() * 1.0 / SearchHolder.PAGE_CHUNK);
 
-            sb.append(LangID.getStringByID("formst_page", lang).replace("_", "1").replace("-", String.valueOf(totalPage))).append("\n");
+            sb.append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage)).append("\n");
         }
 
         sb.append("```");

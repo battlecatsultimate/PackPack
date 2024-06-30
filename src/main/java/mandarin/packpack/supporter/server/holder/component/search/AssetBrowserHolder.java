@@ -228,7 +228,7 @@ public class AssetBrowserHolder extends SearchHolder implements Comparator<VFile
             if(files.size() % SearchHolder.PAGE_CHUNK != 0)
                 totalPage++;
 
-            builder.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(page + 1)).replace("-", String.valueOf(totalPage))).append("\n");
+            builder.append(LangID.getStringByID("formst_page", lang).formatted(page + 1, totalPage)).append("\n");
         }
 
         builder.append("```");

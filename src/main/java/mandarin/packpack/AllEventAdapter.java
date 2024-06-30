@@ -25,10 +25,13 @@ import net.dv8tion.jda.api.audit.ActionType;
 import net.dv8tion.jda.api.audit.AuditLogEntry;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.concrete.ForumChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.unions.IThreadContainerUnion;
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.events.channel.ChannelDeleteEvent;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
@@ -386,7 +389,17 @@ public class AllEventAdapter extends ListenerAdapter {
                 if(channels == null)
                     canGo = true;
                 else if(!channels.isEmpty()) {
-                    canGo = channels.contains(mc.getId());
+                    if (mc instanceof ThreadChannel tc) {
+                        IThreadContainerUnion parent = tc.getParentChannel();
+
+                        canGo = channels.contains(tc.getId());
+
+                        if (parent instanceof ForumChannel) {
+                            canGo |= channels.contains(parent.getId());
+                        }
+                    } else {
+                        canGo = channels.contains(mc.getId());
+                    }
                 }
 
                 if(!mandarin && !isMod && !canGo)
@@ -552,15 +565,9 @@ public class AllEventAdapter extends ListenerAdapter {
                     new StageStatAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
             case "serverconfig", "sconfig", "serverc", "sc" -> {
                 if (idh != null) {
-                    new Config(ConstraintCommand.ROLE.MOD, lang, idh, idh.config, true).execute(event);
+                    new ServerConfig(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
                 }
             }
-            case "commandban", "cb" -> new CommandBan(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-            case "commandunban", "cub" -> new CommandUnban(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-            case "ignorechannelpermission", "ichannelpermission", "ignorechp", "ichp" ->
-                    new IgnoreChannelPermission(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-            case "allowchannelpermission", "achannelpermission", "allowchp", "achp" ->
-                    new AllowChannelPermission(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
             case "talentinfo", "ti" -> new TalentInfo(ConstraintCommand.ROLE.MEMBER, lang, idh, c).execute(event);
             case "soul", "sl" -> new Soul(ConstraintCommand.ROLE.MEMBER, lang, idh, "gif").execute(event);
             case "soulimage", "soulimg", "simage", "simg" ->
@@ -577,15 +584,10 @@ public class AllEventAdapter extends ListenerAdapter {
                     new FindReward(ConstraintCommand.ROLE.MEMBER, lang, idh, 10000, c).execute(event);
             case "eventdataarchive", "eventddataa", "earchive", "eda" ->
                     new EventDataArchive(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
-            case "announcemessage", "am" -> new AnnounceMessage(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
             case "talanetanalyzer", "tala", "ta" ->
                     new TalentAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
             case "catcomboanalyzer", "comboanalyzer", "cca", "ca" ->
                     new ComboAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
-            case "addstatuschannel", "asc" ->
-                    new AddStatusChannel(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
-            case "removestatuschannel", "rsc" ->
-                    new RemoveStatusChannel(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
             case "say", "s" -> new Say(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
             case "plot", "p" -> new Plot(ConstraintCommand.ROLE.MEMBER, lang, idh, 30000).execute(event);
             case "tplot", "tp" -> new TPlot(ConstraintCommand.ROLE.MEMBER, lang, idh, 30000).execute(event);
@@ -611,6 +613,7 @@ public class AllEventAdapter extends ListenerAdapter {
             case "dumpheap", "dump", "heap", "dh" -> new DumpHeap(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "writelog", "wl" -> new WriteLog(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "zeroformanalyzer", "zfanalyzer", "zeroforma", "zfa" -> new ZeroFormAnalyzer(ConstraintCommand.ROLE.TRUSTED, lang, idh).execute(event);
+            case "hasrole", "hr" -> new HasRole(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
         }
     }
 

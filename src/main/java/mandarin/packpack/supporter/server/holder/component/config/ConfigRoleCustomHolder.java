@@ -1,8 +1,10 @@
 package mandarin.packpack.supporter.server.holder.component.config;
 
 import mandarin.packpack.supporter.EmojiStore;
+import mandarin.packpack.supporter.StaticStore;
 import mandarin.packpack.supporter.lang.LangID;
 import mandarin.packpack.supporter.server.data.IDHolder;
+import mandarin.packpack.supporter.server.holder.Holder;
 import mandarin.packpack.supporter.server.holder.component.ConfirmPopUpHolder;
 import mandarin.packpack.supporter.server.holder.component.search.SearchHolder;
 import mandarin.packpack.supporter.server.holder.modal.CustomRoleNameModalHolder;
@@ -13,6 +15,7 @@ import net.dv8tion.jda.api.entities.RoleIcon;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.interaction.component.EntitySelectInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteractionCreateEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
@@ -64,6 +67,7 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
 
                     event.deferReply()
                             .setContent(LangID.getStringByID("sercon_customexist", lang).formatted(name))
+                            .setAllowedMentions(new ArrayList<>())
                             .setEphemeral(true)
                             .queue();
                 } else {
@@ -85,25 +89,62 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
                     }));
                 }
             }
+            case "unregister" -> {
+                if (!(event instanceof StringSelectInteractionEvent e))
+                    return;
+
+                List<String> values = e.getValues();
+
+                if (values.isEmpty())
+                    return;
+
+                String id = values.getFirst();
+
+                registerPopUp(e, LangID.getStringByID("sercon_customunreg", lang).formatted(id), lang);
+
+                connectTo(new ConfirmPopUpHolder(getAuthorMessage(), channelID, message, ev -> {
+                    holder.ID.entrySet().removeIf(entry -> {
+                        String targetID = entry.getValue();
+
+                        boolean remove = targetID != null && targetID.equals(id);
+
+                        if (remove) {
+                            holder.channel.remove(targetID);
+                        }
+
+                        StaticStore.putHolder(getAuthorMessage().getAuthor().getId(), this);
+
+                        applyResult();
+
+                        return remove;
+                    });
+
+                    ev.deferReply()
+                            .setContent(LangID.getStringByID("sercon_customremoved", lang).formatted(id))
+                            .setAllowedMentions(new ArrayList<>())
+                            .setEphemeral(true)
+                            .queue();
+                }, lang));
+            }
             case "prev10" -> {
                 page -= 10;
 
-                applyResult();
+                applyResult(event);
             }
             case "prev" -> {
                 page--;
 
-                applyResult();
+                applyResult(event);
             }
             case "next" -> {
                 page++;
 
-                applyResult();
+                applyResult(event);
             }
             case "next10" -> {
                 page += 10;
 
-                applyResult();
+                applyResult(event);
             }
             case "confirm" -> {
                 event.deferEdit()
@@ -126,6 +167,8 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
                             .mentionRepliedUser(false)
                             .queue();
 
+                    holder.inject(backup);
+
                     expired = true;
                 }, lang));
             }
@@ -136,6 +179,11 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
     @Override
     public void onConnected(@NotNull GenericComponentInteractionCreateEvent event) {
         applyResult(event);
+    }
+
+    @Override
+    public void onBack(Holder child) {
+        applyResult();
     }
 
     @Override
@@ -199,7 +247,7 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
             if (holder.ID.size() > SearchHolder.PAGE_CHUNK) {
                 int totalPage = (int) Math.ceil(1.0 * holder.ID.size() / SearchHolder.PAGE_CHUNK);
 
-                builder.append(LangID.getStringByID("formst_page", lang).replace("_", Integer.toString(page + 1)).replace("-", Integer.toString(totalPage)));
+                builder.append(LangID.getStringByID("formst_page", lang).formatted(page + 1, totalPage));
             }
         }
 
@@ -300,6 +348,7 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
         if (id.equals(holder.MOD)) {
             event.deferReply()
                     .setContent(LangID.getStringByID("sercon_rolemodalready", lang))
+                    .setAllowedMentions(new ArrayList<>())
                     .setEphemeral(true)
                     .queue();
 
@@ -307,6 +356,7 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
         } else if (id.equals(holder.MEMBER)) {
             event.deferReply()
                     .setContent(LangID.getStringByID("sercon_rolememalready", lang))
+                    .setAllowedMentions(new ArrayList<>())
                     .setEphemeral(true)
                     .queue();
 
@@ -314,6 +364,7 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
         } else if (id.equals(holder.BOOSTER)) {
             event.deferReply()
                     .setContent(LangID.getStringByID("sercon_rolebooalready", lang))
+                    .setAllowedMentions(new ArrayList<>())
                     .setEphemeral(true)
                     .queue();
 

@@ -25,6 +25,10 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
         super(author, channelID, message, holder, backup, lang);
     }
 
+    public ConfigRoleRegistrationHolder(@NotNull Message author, @NotNull String channelID, @NotNull Message message, @NotNull IDHolder holder, int lang) {
+        super(author, channelID, message, holder, lang);
+    }
+
     @Override
     public void onEvent(@NotNull GenericComponentInteractionCreateEvent event) {
         switch (event.getComponentId()) {
@@ -50,6 +54,7 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
 
                 event.deferReply()
                         .setContent(LangID.getStringByID("sercon_modset", lang).formatted("<@&" + role.getId() + ">"))
+                        .setAllowedMentions(new ArrayList<>())
                         .setEphemeral(true)
                         .queue();
 
@@ -85,6 +90,7 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
                 String mention;
 
                 if (event.getComponentId().equals("member")) {
+                    String oldID = holder.MEMBER;
                     holder.MEMBER = roleID;
                     id = "sercon_memset";
 
@@ -92,7 +98,16 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
                         mention = "@everyone";
                     else
                         mention = "<@&" + roleID + ">";
+
+                    if (holder.MEMBER != null && holder.channel.containsKey("Member")) {
+                        holder.channel.put(holder.MEMBER, holder.channel.get("Member"));
+                        holder.channel.remove("Member");
+                    } else if (holder.MEMBER == null && oldID != null && holder.channel.containsKey(oldID)) {
+                        holder.channel.put("Member", holder.channel.get(oldID));
+                        holder.channel.remove(oldID);
+                    }
                 } else {
+                    String oldID = holder.BOOSTER;
                     holder.BOOSTER = roleID;
                     id = "sercon_booset";
 
@@ -100,10 +115,15 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
                         mention = LangID.getStringByID("data_none", lang);
                     else
                         mention = "<@&" + roleID + ">";
+
+                    if (oldID != null && holder.BOOSTER == null) {
+                        holder.channel.remove(oldID);
+                    }
                 }
 
                 event.deferReply()
                         .setContent(LangID.getStringByID(id, lang).formatted(mention))
+                        .setAllowedMentions(new ArrayList<>())
                         .setEphemeral(true)
                         .queue();
 
@@ -130,6 +150,8 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
                             .setAllowedMentions(new ArrayList<>())
                             .mentionRepliedUser(false)
                             .queue();
+
+                    holder.inject(backup);
 
                     expired = true;
                 }, lang));
@@ -274,13 +296,22 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
                 )
         );
 
-        result.add(
-                ActionRow.of(
-                        Button.secondary("back", LangID.getStringByID("button_back", lang)).withEmoji(EmojiStore.BACK),
-                        Button.success("confirm", LangID.getStringByID("button_confirm", lang)).withEmoji(EmojiStore.CHECK),
-                        Button.danger("cancel", LangID.getStringByID("button_cancel", lang)).withEmoji(EmojiStore.CROSS)
-                )
-        );
+        if (parent != null) {
+            result.add(
+                    ActionRow.of(
+                            Button.secondary("back", LangID.getStringByID("button_back", lang)).withEmoji(EmojiStore.BACK),
+                            Button.success("confirm", LangID.getStringByID("button_confirm", lang)).withEmoji(EmojiStore.CHECK),
+                            Button.danger("cancel", LangID.getStringByID("button_cancel", lang)).withEmoji(EmojiStore.CROSS)
+                    )
+            );
+        } else {
+            result.add(
+                    ActionRow.of(
+                            Button.success("confirm", LangID.getStringByID("button_confirm", lang)).withEmoji(EmojiStore.CHECK),
+                            Button.danger("cancel", LangID.getStringByID("button_cancel", lang)).withEmoji(EmojiStore.CROSS)
+                    )
+            );
+        }
 
         return result;
     }
@@ -291,6 +322,7 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
         if (id.equals(holder.MOD)) {
             event.deferReply()
                     .setContent(LangID.getStringByID("sercon_rolemodalready", lang))
+                    .setAllowedMentions(new ArrayList<>())
                     .setEphemeral(true)
                     .queue();
 
@@ -298,6 +330,7 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
         } else if (id.equals(holder.MEMBER)) {
             event.deferReply()
                     .setContent(LangID.getStringByID("sercon_rolememalready", lang))
+                    .setAllowedMentions(new ArrayList<>())
                     .setEphemeral(true)
                     .queue();
 
@@ -305,6 +338,7 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
         } else if (id.equals(holder.BOOSTER)) {
             event.deferReply()
                     .setContent(LangID.getStringByID("sercon_rolebooalready", lang))
+                    .setAllowedMentions(new ArrayList<>())
                     .setEphemeral(true)
                     .queue();
 
@@ -312,6 +346,7 @@ public class ConfigRoleRegistrationHolder extends ServerConfigHolder {
         } else if (holder.ID.containsValue(id)) {
             event.deferReply()
                     .setContent(LangID.getStringByID("sercon_customalready", lang))
+                    .setAllowedMentions(new ArrayList<>())
                     .setEphemeral(true)
                     .queue();
 

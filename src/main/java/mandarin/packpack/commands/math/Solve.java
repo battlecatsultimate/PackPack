@@ -194,7 +194,7 @@ public class Solve extends TimedConstraintCommand {
             if(solutions.size() % 5 != 0)
                 totalPage++;
 
-            sb.append(LangID.getStringByID("formst_page", lang).replace("_", String.valueOf(1)).replace("-", String.valueOf(totalPage))).append("\n");
+            sb.append(LangID.getStringByID("formst_page", lang).formatted(1, totalPage)).append("\n");
         }
 
         sb.append("```");
