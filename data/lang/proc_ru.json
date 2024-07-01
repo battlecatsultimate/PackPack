@@ -4,8 +4,8 @@
         "full_name": "Отталкивание",
         "tooltip": null,
         "format": [
-            "(prob)% отталкнуть врага назад",
-            "[(dis>0&dis!=165){ на расстояние (dis)}(dis<0){ (_abs(dis)) к себе]",
+            "(prob)% оттолкнуть врага назад",
+            "[(dis>0&dis!=165){ на расстояние (dis)}(dis<0){ (_abs(dis)) к себе}]",
             "[(time>0&time!=11){ на (_dispTime(time))}]"
         ],
         "class": {
