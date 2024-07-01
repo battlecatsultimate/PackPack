@@ -9,7 +9,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import common.io.WebFileIO;
 import common.io.assets.UpdateCheck;
+import common.io.json.JsonDecoder;
+import common.io.json.JsonEncoder;
+import common.pack.Identifier;
 import common.util.lang.MultiLangCont;
+import common.util.pack.Background;
 import mandarin.packpack.PackBot;
 import mandarin.packpack.supporter.bc.DataToString;
 import mandarin.packpack.supporter.event.EventFileGrabber;
@@ -124,9 +128,12 @@ public class StaticStore {
     public static final MultiLangCont<Integer, String> EXTRAGACHA = new MultiLangCont<>();
     public static final MultiLangCont<Integer, String> NORMALGACHA = new MultiLangCont<>();
     public static final MultiLangCont<Integer, String> MISSIONNAME = new MultiLangCont<>();
+
     public static int medalNumber = 0;
     public static JsonElement medalData;
     public static final List<Integer> existingRewards = new ArrayList<>();
+
+    public static Map<Identifier<Background>, Integer> backgroundStageLength = new HashMap<>();
 
     public static final Map<String, Map<String, Long>> timeLimit = new HashMap<>();
 
@@ -465,6 +472,23 @@ public class StaticStore {
         return arr;
     }
 
+    public static JsonArray mapToJsonBackgroundInteger(Map<Identifier<Background>, Integer> map) {
+        JsonArray arr = new JsonArray();
+
+        for (Identifier<Background> key : map.keySet()) {
+            int length = map.get(key);
+
+            JsonObject set = new JsonObject();
+
+            set.add("key", JsonEncoder.encode(key));
+            set.addProperty("val", length);
+
+            arr.add(set);
+        }
+
+        return arr;
+    }
+
     public static Map<String, IDHolder> jsonToMapIDHolder(JsonArray arr) {
         Map<String, IDHolder> map = new HashMap<>();
 
@@ -614,6 +638,33 @@ public class StaticStore {
         return map;
     }
 
+    @SuppressWarnings({"unchecked", "CastCanBeRemovedNarrowingVariableType"})
+    public static Map<Identifier<Background>, Integer> jsonToMapBackgroundInteger(JsonArray arr) {
+        Map<Identifier<Background>, Integer> map = new HashMap<>();
+
+        for (int i = 0; i < arr.size(); i++) {
+            JsonObject set = arr.get(i).getAsJsonObject();
+
+            if (set.has("key") && set.has("val")) {
+                Identifier<?> anyID = JsonDecoder.decode(set.getAsJsonObject("key"), Identifier.class);
+
+                if (anyID.cls != Background.class)
+                    continue;
+
+                Background bg = Identifier.get((Identifier<Background>) anyID);
+
+                if (bg == null)
+                    continue;
+
+                int length = set.get("val").getAsInt();
+
+                map.put(bg.id, length);
+            }
+        }
+
+        return map;
+    }
+
     public static JsonObject getJsonFile(String name) {
         File f = new File("./data/"+name+".json");
 
@@ -665,6 +716,7 @@ public class StaticStore {
         obj.add("optoutMembers", listToJsonString(optoutMembers));
         obj.add("cultist", listToJsonString(cultist));
         obj.add("eventNewWay", mapToJsonIntegerBoolean(EventFileGrabber.newWay));
+        obj.add("backgroundStageLength", mapToJsonBackgroundInteger(backgroundStageLength));
 
         if (EventFileGrabber.accountCode != null && EventFileGrabber.password != null && EventFileGrabber.passwordRefreshToken != null) {
             obj.addProperty("accountCode", EventFileGrabber.accountCode);
@@ -725,6 +777,10 @@ public class StaticStore {
         if(obj != null) {
             if(obj.has("alias")) {
                 AliasHolder.parseJson(obj.getAsJsonObject("alias"));
+            }
+
+            if (obj.has("backgroundStageLength")) {
+                backgroundStageLength = jsonToMapBackgroundInteger(obj.getAsJsonArray("backgroundStageLength"));
             }
         }
     }

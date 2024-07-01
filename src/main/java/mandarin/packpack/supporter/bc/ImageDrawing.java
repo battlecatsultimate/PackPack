@@ -15,8 +15,10 @@ import common.util.anim.EAnimD;
 import common.util.lang.MultiLangCont;
 import common.util.pack.Background;
 import common.util.pack.bgeffect.BackgroundEffect;
+import common.util.stage.MapColc;
 import common.util.stage.SCDef;
 import common.util.stage.Stage;
+import common.util.stage.StageMap;
 import common.util.stage.info.DefStageInfo;
 import common.util.unit.AbEnemy;
 import common.util.unit.Enemy;
@@ -54,118 +56,7 @@ public class ImageDrawing {
     private static final int bgAnimTime = 450;
     private static final int bgAnimHeight = 720;
     private static final float bgAnimRatio = bgAnimHeight * 0.8f / 2 / 512f;
-    private static final int[] preferredBGAnimWidth = {
-            5000, //star
-            5000, //rain
-            5000, //bubble
-            5000, //falling snow
-            5000, //snow
-            5000, //snow star
-            5000, //blizzard
-            5000, //shining
-            5000, //balloon
-            5000, //rock
-            5000, //102
-            3900, //103
-            4400, //110
-            5000, //117
-            3900, //121
-            5400, //128
-            4400, //132
-            5400, //137
-            3900, //141
-            3900, //142
-            5400, //145
-            4600, //148
-            3600, //153
-            4400, //154
-            4100, //155
-            5400, //157
-            5400, //158
-            4700, //159
-            6200, //164
-            5400, //166
-            4900, //172
-            5200, //173
-            4400, //174
-            3900, //180
-            3900, //181
-            3900, //182
-            4400, //183
-            4400, //184
-            6000, //191
-            4000, //192
-            6200, //193
-            5000, //195
-            5200, //196
-            5400, //197
-            4200, //198
-            4700, //200
-            4400, //201
-            5400, //202
-            4900, //203
-            4400, //204
-            5200, //206
-            5400, //207
-            5400, //209
-            4900, //210
-            4400, //215
-            3900, //1000
-            4600, //1002
-            4900, //1003
-            4400, //1004
-            5400, //1005
-            4900, //1006
-            4400, //1007
-            5400, //1008
-            5000, //1009
-            5200, //1010
-            3000, //1011
-            5100, //1012
-            4400, //1013
-            5000, //1014
-            5000, //1015
-            3400, //1016
-            5400, //1017
-            4500, //1018
-            4400, //1019
-            5400, //1020
-            4200, //1021
-            5300, //1022
-            4600, //1023
-            5400, //1024
-            4400, //1025
-            3600, //1026
-            4900, //1027
-            3600, //1029
-            3600, //1030
-            4900, //1031
-            5100, //1032
-            5400, //1033
-            4400, //1034
-            5400, //1035
-            5400, //1036
-            4400, //1037
-            5400, //1038
-            4000, //1039
-            3600, //1040
-            5400, //1041
-            4900, //1042
-            5100, //1043
-            5000, //1044
-            4800, //1045
-            3700, //1046
-            5400, //1047
-            4600, //1048
-            3000, //1049
-            5400, //1050
-            3900, //1052
-            5200, //1053
-            3600, //1054
-            3700, //1055
-            4900, //1056
-            4800
-    };
+    private static final int backgroundOffset = 600;
 
     private static FontModel titleFont;
     private static FontModel typeFont;
@@ -427,10 +318,23 @@ public class ImageDrawing {
 
         int pw;
 
-        if(bg.effect < 0)
-            pw = preferredBGAnimWidth[handleMixedBGEffect(bg.effect)];
-        else
-            pw = preferredBGAnimWidth[bg.effect];
+        if (StaticStore.backgroundStageLength.containsKey(bg.id)) {
+            pw = StaticStore.backgroundStageLength.get(bg.id);
+        } else {
+            pw = 600;
+
+            for (MapColc mc : MapColc.values()) {
+                for (StageMap map : mc.maps) {
+                    for (Stage stage : map.list) {
+                        if (stage.bg.equals(bg.id)) {
+                            pw = Math.max(pw, stage.len - backgroundOffset);
+                        }
+                    }
+                }
+            }
+
+            StaticStore.backgroundStageLength.put(bg.id, pw);
+        }
 
         int w = (int) ((400 + pw * CommonStatic.BattleConst.ratio) * bgAnimRatio);
 
@@ -5027,15 +4931,6 @@ public class ImageDrawing {
         double unit = (current - start) / 1000f / prog;
 
         return DataToString.df.format(unit * (time - prog));
-    }
-
-    private static int handleMixedBGEffect(int ind) {
-        for(int i = 0; i < BackgroundEffect.jsonList.size(); i++) {
-            if(BackgroundEffect.jsonList.get(i) == -ind)
-                return 10 + i;
-        }
-
-        return -1;
     }
 
     private static String convertValue(int value) {
