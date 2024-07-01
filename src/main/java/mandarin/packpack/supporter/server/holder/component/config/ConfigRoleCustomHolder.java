@@ -269,46 +269,54 @@ public class ConfigRoleCustomHolder extends ServerConfigHolder {
 
         List<SelectOption> roleOptions = new ArrayList<>();
 
-        List<Role> roles = g.getRoles();
+        if (holder.ID.isEmpty()) {
+            roleOptions.add(SelectOption.of("A", "A"));
+        } else {
+            List<Role> roles = g.getRoles();
 
-        for (String name : holder.ID.keySet()) {
-            String id = holder.ID.get(name);
+            for (String name : holder.ID.keySet()) {
+                String id = holder.ID.get(name);
 
-            if (id == null)
-                continue;
+                if (id == null)
+                    continue;
 
-            Role role = roles.stream().filter(r -> r.getId().equals(id)).findAny().orElse(null);
+                Role role = roles.stream().filter(r -> r.getId().equals(id)).findAny().orElse(null);
 
-            String description;
-            Emoji e;
+                String description;
+                Emoji e;
 
-            if (role != null) {
-                description = LangID.getStringByID("sercon_customroledesc", lang).formatted(role.getName(), id);
+                if (role != null) {
+                    description = LangID.getStringByID("sercon_customroledesc", lang).formatted(role.getName(), id);
 
-                RoleIcon icon = role.getIcon();
+                    RoleIcon icon = role.getIcon();
 
-                if (icon != null) {
-                    String emoji = icon.getEmoji();
+                    if (icon != null) {
+                        String emoji = icon.getEmoji();
 
-                    if (emoji != null) {
-                        e = Emoji.fromFormatted(emoji);
+                        if (emoji != null) {
+                            e = Emoji.fromFormatted(emoji);
+                        } else {
+                            e = null;
+                        }
                     } else {
                         e = null;
                     }
                 } else {
+                    description = LangID.getStringByID("sercon_customnone", lang);
                     e = null;
                 }
-            } else {
-                description = LangID.getStringByID("sercon_customnone", lang);
-                e = null;
-            }
 
-            roleOptions.add(SelectOption.of(name, id).withDescription(description).withEmoji(e));
+                roleOptions.add(SelectOption.of(name, id).withDescription(description).withEmoji(e));
+            }
         }
 
         result.add(
                 ActionRow.of(
-                        StringSelectMenu.create("unregister").addOptions(roleOptions).setPlaceholder(LangID.getStringByID("sercon_customdel", lang)).build()
+                        StringSelectMenu.create("unregister")
+                                .addOptions(roleOptions)
+                                .setPlaceholder(LangID.getStringByID("sercon_customdel", lang))
+                                .setDisabled(holder.ID.isEmpty())
+                                .build()
                 )
         );
 
