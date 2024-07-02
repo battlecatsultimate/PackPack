@@ -9,6 +9,7 @@ import com.google.gson.JsonPrimitive
 import common.CommonStatic
 import mandarin.card.commands.*
 import mandarin.card.supporter.*
+import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.log.LogSession
 import mandarin.card.supporter.log.TransactionLogger
 import mandarin.card.supporter.pack.CardPack

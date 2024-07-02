@@ -2,7 +2,7 @@ package mandarin.card.supporter.pack
 
 import com.google.gson.JsonObject
 import com.google.gson.stream.MalformedJsonException
-import mandarin.card.supporter.Card
+import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.CardData
 
 class TierCardCost(var tier: CardPack.CardType, amount: Long) : CardCost(CostType.TIER, amount) {

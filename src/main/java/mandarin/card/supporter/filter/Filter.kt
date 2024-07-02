@@ -1,6 +1,6 @@
 package mandarin.card.supporter.filter
 
-import mandarin.card.supporter.Card
+import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.Inventory
 
 abstract class Filter(val amount: Int, val name: String) {

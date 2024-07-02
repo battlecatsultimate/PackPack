@@ -2,6 +2,8 @@ package mandarin.card.supporter.holder
 
 import mandarin.card.CardBot
 import mandarin.card.supporter.*
+import mandarin.card.supporter.card.Card
+import mandarin.card.supporter.card.CardComparator
 import mandarin.card.supporter.holder.modal.CardAmountSelectHolder
 import mandarin.card.supporter.holder.modal.CatFoodHolder
 import mandarin.card.supporter.pack.CardPack

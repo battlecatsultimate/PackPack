@@ -3,7 +3,7 @@ package mandarin.card.supporter.pack
 import com.google.gson.JsonObject
 import com.google.gson.stream.MalformedJsonException
 import common.pack.UserProfile
-import mandarin.card.supporter.Card
+import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.filter.BannerFilter
 

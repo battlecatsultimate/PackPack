@@ -1,8 +1,8 @@
 package mandarin.card.supporter.holder.pack
 
 import mandarin.card.CardBot
-import mandarin.card.supporter.Card
-import mandarin.card.supporter.CardComparator
+import mandarin.card.supporter.card.Card
+import mandarin.card.supporter.card.CardComparator
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.holder.modal.CardCostAmountHolder
 import mandarin.card.supporter.pack.CardPack

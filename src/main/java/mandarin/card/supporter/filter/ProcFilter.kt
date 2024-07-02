@@ -3,7 +3,7 @@ package mandarin.card.supporter.filter
 import common.pack.UserProfile
 import common.util.Data.Proc.IMU
 import common.util.Data.Proc.IMUAD
-import mandarin.card.supporter.Card
+import mandarin.card.supporter.card.Card
 
 class ProcFilter(private val proc: String, amount: Int, name: String) : Filter(amount, name) {
     override fun filter(card: Card): Boolean {

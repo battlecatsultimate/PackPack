@@ -1,4 +1,4 @@
-package mandarin.card.supporter
+package mandarin.card.supporter.card
 
 class CardComparator : Comparator<Card> {
     override fun compare(o1: Card?, o2: Card?): Int {

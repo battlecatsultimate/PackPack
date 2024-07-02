@@ -3,7 +3,7 @@ package mandarin.card.supporter.filter
 import common.pack.UserProfile
 import common.util.Data
 import common.util.Data.Proc.WAVEI
-import mandarin.card.supporter.Card
+import mandarin.card.supporter.card.Card
 import java.util.function.Function
 
 class CustomFilter(amount: Int, name: String, private val function: Function<Card, Boolean>) : Filter(amount, name) {

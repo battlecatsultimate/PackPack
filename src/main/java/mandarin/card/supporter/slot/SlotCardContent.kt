@@ -2,7 +2,7 @@ package mandarin.card.supporter.slot
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import mandarin.card.supporter.Card
+import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.pack.CardChancePair
 import mandarin.card.supporter.pack.CardChancePairList
 import mandarin.card.supporter.pack.CardGroupData

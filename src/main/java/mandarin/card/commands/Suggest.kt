@@ -1,6 +1,8 @@
 package mandarin.card.commands
 
 import mandarin.card.supporter.*
+import mandarin.card.supporter.card.Card
+import mandarin.card.supporter.card.CardComparator
 import mandarin.card.supporter.holder.SuggestInventoryHolder
 import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.commands.Command

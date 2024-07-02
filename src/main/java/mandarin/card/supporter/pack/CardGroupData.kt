@@ -2,7 +2,7 @@ package mandarin.card.supporter.pack
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import mandarin.card.supporter.Card
+import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.filter.BannerFilter
 

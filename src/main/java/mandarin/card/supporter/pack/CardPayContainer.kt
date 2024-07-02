@@ -1,6 +1,6 @@
 package mandarin.card.supporter.pack
 
-import mandarin.card.supporter.Card
+import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.CardData
 
 class CardPayContainer(val cost: CardCost) {

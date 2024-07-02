@@ -1,6 +1,7 @@
 package mandarin.card.supporter.log
 
 import mandarin.card.supporter.*
+import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.pack.CardPack
 import mandarin.card.supporter.slot.*
 import mandarin.packpack.supporter.EmojiStore

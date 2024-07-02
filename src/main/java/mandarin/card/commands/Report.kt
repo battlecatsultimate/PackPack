@@ -1,6 +1,6 @@
 package mandarin.card.commands
 
-import mandarin.card.supporter.Card
+import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.log.LogSession
 import mandarin.packpack.commands.Command

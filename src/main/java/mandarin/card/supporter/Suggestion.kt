@@ -2,6 +2,7 @@ package mandarin.card.supporter
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import mandarin.card.supporter.card.Card
 import mandarin.packpack.supporter.EmojiStore
 import net.dv8tion.jda.api.entities.Member
 

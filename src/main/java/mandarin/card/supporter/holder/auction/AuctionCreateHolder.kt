@@ -1,7 +1,7 @@
 package mandarin.card.supporter.holder.auction
 
 import mandarin.card.CardBot
-import mandarin.card.supporter.Card
+import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.AuctionSession
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory

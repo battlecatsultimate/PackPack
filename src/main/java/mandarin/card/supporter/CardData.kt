@@ -1,5 +1,6 @@
 package mandarin.card.supporter
 
+import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.pack.CardPack
 import mandarin.card.supporter.slot.SlotMachine
 import mandarin.packpack.supporter.StaticStore

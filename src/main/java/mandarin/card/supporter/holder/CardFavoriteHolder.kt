@@ -2,7 +2,7 @@ package mandarin.card.supporter.holder
 
 import common.util.Data
 import mandarin.card.CardBot
-import mandarin.card.supporter.Card
+import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.holder.modal.CardFavoriteAmountHolder

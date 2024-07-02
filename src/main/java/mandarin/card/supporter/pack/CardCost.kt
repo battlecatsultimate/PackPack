@@ -2,7 +2,7 @@ package mandarin.card.supporter.pack
 
 import com.google.gson.JsonObject
 import com.google.gson.stream.MalformedJsonException
-import mandarin.card.supporter.Card
+import mandarin.card.supporter.card.Card
 
 abstract class CardCost(private val type: CostType, var amount: Long) {
     companion object {

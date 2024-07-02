@@ -3,7 +3,7 @@ package mandarin.card.supporter.slot
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import mandarin.card.CardBot
-import mandarin.card.supporter.Card
+import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.log.TransactionLogger

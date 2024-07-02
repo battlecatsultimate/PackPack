@@ -3,6 +3,7 @@ package mandarin.card.supporter
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import mandarin.card.CardBot
+import mandarin.card.supporter.card.Card
 import mandarin.packpack.supporter.StaticStore
 import kotlin.math.min
 

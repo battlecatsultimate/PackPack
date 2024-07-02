@@ -1,9 +1,10 @@
-package mandarin.card.supporter
+package mandarin.card.supporter.card
 
 import common.util.Data
 import mandarin.card.supporter.CardData.Tier
 import mandarin.card.supporter.filter.BannerFilter
 import java.io.File
+import kotlin.collections.contains
 
 class Card(val unitID: Int, val tier: Tier, val name: String, val cardImage: File) {
     override fun toString(): String {

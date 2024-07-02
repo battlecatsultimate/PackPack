@@ -1,5 +1,6 @@
 package mandarin.card.supporter
 
+import mandarin.card.supporter.card.Card
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.requests.RestAction
 import java.lang.UnsupportedOperationException
