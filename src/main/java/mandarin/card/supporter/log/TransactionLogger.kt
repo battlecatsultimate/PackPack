@@ -205,7 +205,7 @@ object TransactionLogger {
             .queue()
     }
 
-    fun logCardsModify(cards: List<Card>, mod: Member, targetMember: Member, isAdd: Boolean, isMassRemove: Boolean) {
+    fun logCardsModify(cards: Map<Card, Int>, mod: Member, targetMember: Member, isAdd: Boolean, isMassRemove: Boolean) {
         if (!this::modChannel.isInitialized)
             return
 
@@ -229,11 +229,9 @@ object TransactionLogger {
 
         val checker = StringBuilder()
 
-        for (card in cards.toSet()) {
+        cards.forEach { (card, amount) ->
             checker.append("- ")
                 .append(card.cardInfo())
-
-            val amount = cards.filter { c -> card.unitID == c.unitID }.size
 
             if (amount >= 2) {
                 checker.append(" x")
@@ -252,10 +250,8 @@ object TransactionLogger {
 
             checker.clear()
 
-            for (card in cards.toSet()) {
+            cards.forEach { (card, amount) ->
                 var line = "- ${card.cardInfo()}"
-
-                val amount = cards.filter { c -> card.unitID == c.unitID }.size
 
                 if (amount >= 2) {
                     line += " x$amount"

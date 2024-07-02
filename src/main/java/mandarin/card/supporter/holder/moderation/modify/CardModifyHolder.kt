@@ -4,6 +4,7 @@ import mandarin.card.supporter.Card
 import mandarin.card.supporter.CardComparator
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
+import mandarin.card.supporter.PositiveMap
 import mandarin.card.supporter.holder.modal.CardAmountSelectHolder
 import mandarin.card.supporter.log.TransactionLogger
 import mandarin.card.supporter.pack.CardPack
@@ -34,7 +35,7 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
         }
     )
 
-    private val selectedCards = ArrayList<Card>()
+    private val selectedCards = PositiveMap<Card, Int>()
 
     private var page = 0
     private var tier = CardData.Tier.NONE
@@ -54,7 +55,7 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
                 if (event !is StringSelectInteractionEvent)
                     return
 
-                if (event.values.size < 1)
+                if (event.values.isEmpty())
                     return
 
                 val value = event.values[0]
@@ -77,7 +78,7 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
                 if (event !is StringSelectInteractionEvent)
                     return
 
-                if (event.values.size < 1)
+                if (event.values.isEmpty())
                     return
 
                 val value = event.values[0]
@@ -119,9 +120,7 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
                     event.replyModal(modal).queue()
 
                     connectTo(CardAmountSelectHolder(authorMessage, channelID, message.id) { amount ->
-                        repeat(amount) {
-                            selectedCards.add(card)
-                        }
+                        selectedCards[card] = amount
 
                         filterCards()
 
@@ -132,7 +131,7 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
                         applyResult()
                     })
                 } else {
-                    val realAmount = (inventory.cards[card] ?: 0) + (inventory.favorites[card] ?: 0) - selectedCards.count { c -> c.unitID == card.unitID }
+                    val realAmount = (inventory.cards[card] ?: 0) + (inventory.favorites[card] ?: 0) - (selectedCards[card] ?: 0)
 
                     if (realAmount > 2) {
                         val input = TextInput.create("amount", "Amount of Cards", TextInputStyle.SHORT)
@@ -148,9 +147,7 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
                         connectTo(CardAmountSelectHolder(authorMessage, channelID, message.id) { amount ->
                             val filteredAmount = min(amount, realAmount)
 
-                            repeat(filteredAmount) {
-                                selectedCards.add(card)
-                            }
+                            selectedCards[card] = filteredAmount
 
                             filterCards()
 
@@ -161,7 +158,7 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
                             applyResult()
                         })
                     } else {
-                        selectedCards.add(cards[index])
+                        selectedCards[cards[index]] = 1
 
                         filterCards()
 
@@ -217,15 +214,11 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
                 selectedCards.clear()
 
                 inventory.cards.keys.forEach { c ->
-                    repeat(inventory.cards[c] ?: 0) {
-                        selectedCards.add(c)
-                    }
+                    selectedCards[c] = (inventory.cards[c] ?: 0)
                 }
 
                 inventory.favorites.keys.forEach { c ->
-                    repeat(inventory.cards[c] ?: 0) {
-                        selectedCards.add(c)
-                    }
+                    selectedCards[c] = (selectedCards[c] ?: 0) + (inventory.favorites[c] ?: 0)
                 }
 
                 event.deferReply()
@@ -299,7 +292,7 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
         }
 
         if (!isAdd) {
-            cards.removeIf { c -> (inventory.cards[c] ?: 0) + (inventory.favorites[c] ?: 0) - selectedCards.filter { card -> c.unitID == card.unitID }.size <= 0 }
+            cards.removeIf { c -> (inventory.cards[c] ?: 0) + (inventory.favorites[c] ?: 0) - (selectedCards[c] ?: 0) <= 0 }
         }
 
         cards.sortWith(CardComparator())
@@ -486,11 +479,9 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
         } else {
             val checker = StringBuilder()
 
-            for (card in selectedCards.toSet()) {
+            selectedCards.forEach { (card, amount) ->
                 checker.append("- ")
                     .append(card.cardInfo())
-
-                val amount = selectedCards.filter { c -> c.unitID == card.unitID }.size
 
                 if (amount >= 2) {
                     checker.append(" x$amount")
@@ -508,14 +499,14 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
 
         builder.append("\n```md\n")
 
-        if (cards.size > 0) {
+        if (cards.isNotEmpty()) {
             for (i in page * SearchHolder.PAGE_CHUNK until min((page + 1) * SearchHolder.PAGE_CHUNK, cards.size)) {
                 builder.append("${i + 1}. ${cards[i].cardInfo()}")
 
                 val amount = if (isAdd)
                     1
                 else
-                    (inventory.cards[cards[i]] ?: 0) + (inventory.favorites[cards[i]] ?: 0) - selectedCards.filter { c -> c.unitID == cards[i].unitID }.size
+                    (inventory.cards[cards[i]] ?: 0) + (inventory.favorites[cards[i]] ?: 0) - (selectedCards[cards[i]] ?: 0)
 
                 if (amount >= 2) {
                     builder.append(" x$amount\n")

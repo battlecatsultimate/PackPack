@@ -399,23 +399,23 @@ class LogSession {
         activeMembers.add(member)
     }
 
-    fun logModifyAdd(member: Long, cards: List<Card>) {
+    fun logModifyAdd(member: Long, cards: Map<Card, Int>) {
         val cardMap = generatedCards.computeIfAbsent(member) { HashMap() }
 
-        cards.forEach {
-            cardMap[it] = (cardMap[it] ?: 0) + 1
+        cards.forEach { (card, amount) ->
+            cardMap[card] = (cardMap[card] ?: 0) + amount
         }
 
         activeMembers.add(member)
     }
 
-    fun logModifyRemove(member: Long, cards: List<Card>) {
+    fun logModifyRemove(member: Long, cards: Map<Card, Int>) {
         val cardMap = removedCards.computeIfAbsent(member) { HashMap() }
         val managerMap = removedCardsManager.computeIfAbsent(member) { HashMap() }
 
-        cards.forEach {
-            cardMap[it] = (cardMap[it] ?: 0) + 1
-            managerMap[it] = (managerMap[it] ?: 0) + 1
+        cards.forEach { (card, amount) ->
+            cardMap[card] = (cardMap[card] ?: 0) + amount
+            managerMap[card] = (managerMap[card] ?: 0) + amount
         }
 
         activeMembers.add(member)

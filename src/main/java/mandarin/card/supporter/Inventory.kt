@@ -4,6 +4,7 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import mandarin.card.CardBot
 import mandarin.packpack.supporter.StaticStore
+import kotlin.math.min
 
 class Inventory(private val id: Long) {
     var cards = PositiveMap<Card, Int>()
@@ -28,14 +29,42 @@ class Inventory(private val id: Long) {
             return CardData.auctionSessions.filter { s -> s.bidData.containsKey(id) }.sumOf { s -> s.bidData[id] ?: 0L }
         }
 
-    fun addCards(c: List<Card>) {
-        for (card in c) {
-            if (cards.containsKey(card)) {
-                val numberOfCards = cards[card] ?: 0
+    fun addCards(c: Map<Card, Int>) {
+        c.forEach { (card, amount) ->
+            cards[card] = (cards[card] ?: 0) + amount
+        }
+    }
 
-                cards[card] = numberOfCards + 1
-            } else {
-                cards[card] = 1
+    fun addCards(c: List<Card>) {
+        c.forEach { card ->
+            cards[card] = (cards[card] ?: 0) + 1
+        }
+    }
+
+    fun removeCards(c: Map<Card, Int>) {
+        c.forEach { (card, amount) ->
+            var leftAmount = amount
+
+            val numberOfCards = cards[card] ?: 0
+            val numberOfFavorites = favorites[card] ?: 0
+
+            if (numberOfCards + numberOfFavorites == 0) {
+                StaticStore.logger.uploadLog("W/Inventory::removeCards - Tried to remove card that doesn't exist")
+
+                return@forEach
+            }
+
+            if (numberOfCards + numberOfFavorites < amount) {
+                StaticStore.logger.uploadLog("W/Inventory::removeCards - Tried to remove card more than what user had")
+
+                return@forEach
+            }
+
+            leftAmount -= (cards[card] ?: 0)
+            cards[card] = (cards[card] ?: 0) - min(cards[card] ?: 0, leftAmount)
+
+            if (leftAmount > 0) {
+                favorites[card] = (favorites[card] ?: 0) - min(favorites[card] ?: 0, leftAmount)
             }
         }
     }
@@ -60,9 +89,6 @@ class Inventory(private val id: Long) {
                 StaticStore.logger.uploadLog("W/Inventory::removeCards - Tried to remove card that doesn't exist")
             }
         }
-
-        cards.entries.removeIf { e -> e.value <= 0 }
-        favorites.entries.removeIf { e -> e.value <= 0 }
     }
 
     fun favoriteCards(c: Card, amount: Int) {
