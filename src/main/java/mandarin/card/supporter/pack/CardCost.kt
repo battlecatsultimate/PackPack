@@ -17,6 +17,9 @@ abstract class CardCost(private val type: CostType, var amount: Long) {
                     CostType.TIER -> {
                         TierCardCost.readJson(obj)
                     }
+                    CostType.CARD -> {
+                        SpecificCardCost.readJson(obj)
+                    }
                 }
             }
 
@@ -26,7 +29,8 @@ abstract class CardCost(private val type: CostType, var amount: Long) {
 
     enum class CostType {
         BANNER,
-        TIER
+        TIER,
+        CARD
     }
 
     abstract fun filter(c: Card) : Boolean

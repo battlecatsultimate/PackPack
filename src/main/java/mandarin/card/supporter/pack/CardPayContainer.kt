@@ -24,6 +24,9 @@ class CardPayContainer(val cost: CardCost) {
                     }
                 }.size.toLong() == cost.amount
             }
+            is SpecificCardCost -> {
+                return pickedCards.filter { c -> c in cost.cards }.size.toLong() == cost.amount
+            }
         }
 
         return false

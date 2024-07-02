@@ -6,6 +6,7 @@ import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.log.TransactionLogger
 import mandarin.card.supporter.pack.CardPack
 import mandarin.card.supporter.pack.CardPayContainer
+import mandarin.card.supporter.pack.SpecificCardCost
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.lang.LangID
@@ -256,7 +257,7 @@ class PackPayHolder(
 
                 containers.forEachIndexed { index, container ->
                     options.add(
-                        SelectOption.of(container.cost.getCostName(), index.toString())
+                        SelectOption.of(if (container.cost is SpecificCardCost) container.cost.simpleCostName() else container.cost.getCostName(), index.toString())
                             .withDescription(if (container.paid()) "Ready to pay" else "Need to be paid")
                     )
                 }

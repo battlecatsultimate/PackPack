@@ -8,6 +8,7 @@ import mandarin.card.supporter.holder.modal.CardAmountSelectHolder
 import mandarin.card.supporter.pack.BannerCardCost
 import mandarin.card.supporter.pack.CardPack
 import mandarin.card.supporter.pack.CardPayContainer
+import mandarin.card.supporter.pack.SpecificCardCost
 import mandarin.card.supporter.pack.TierCardCost
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
@@ -38,22 +39,28 @@ class CardCostPayHolder(
     private val cards = ArrayList<Card>(inventory.cards.keys)
 
     private var page = 0
-    private val tier = when(when(container.cost) {
-        is TierCardCost -> container.cost.tier
-        is BannerCardCost -> container.cost.banner.getCardType()
-        else -> throw IllegalStateException("E/CardCostPayHolder::init - Unknown cost type : ${container.cost::javaClass}")
-    }) {
-        CardPack.CardType.T1 -> CardData.Tier.COMMON
-        CardPack.CardType.T2,
-        CardPack.CardType.REGULAR,
-        CardPack.CardType.SEASONAL,
-        CardPack.CardType.COLLABORATION -> CardData.Tier.UNCOMMON
-        CardPack.CardType.T3 -> CardData.Tier.ULTRA
-        CardPack.CardType.T4 -> CardData.Tier.LEGEND
+    private val tier = if (container.cost is SpecificCardCost) {
+        CardData.Tier.NONE
+    } else {
+        when(when(container.cost) {
+            is TierCardCost -> container.cost.tier
+            is BannerCardCost -> container.cost.banner.getCardType()
+            else -> throw IllegalStateException("E/CardCostPayHolder::init - Unknown cost type : ${container.cost::javaClass}")
+        }) {
+            CardPack.CardType.T1 -> CardData.Tier.COMMON
+            CardPack.CardType.T2,
+            CardPack.CardType.REGULAR,
+            CardPack.CardType.SEASONAL,
+            CardPack.CardType.COLLABORATION -> CardData.Tier.UNCOMMON
+            CardPack.CardType.T3 -> CardData.Tier.ULTRA
+            CardPack.CardType.T4 -> CardData.Tier.LEGEND
+        }
     }
+
     private var banner = when(container.cost) {
         is TierCardCost -> intArrayOf(-1, -1)
         is BannerCardCost -> intArrayOf(container.cost.banner.tier.ordinal, container.cost.banner.category)
+        is SpecificCardCost -> intArrayOf(-1, -1)
         else -> throw IllegalStateException("E/CardCostPayHolder::init - Unknown cost type : ${container.cost::javaClass}")
     }
 
@@ -71,7 +78,7 @@ class CardCostPayHolder(
                 if (event !is StringSelectInteractionEvent)
                     return
 
-                if (event.values.size < 1)
+                if (event.values.isEmpty())
                     return
 
                 val selectedID = event.values[0].toInt()
@@ -125,7 +132,7 @@ class CardCostPayHolder(
                 if (event !is StringSelectInteractionEvent)
                     return
 
-                if (event.values.size < 1)
+                if (event.values.isEmpty())
                     return
 
                 val value = event.values[0]
@@ -230,17 +237,21 @@ class CardCostPayHolder(
     private fun filterCards() {
         cards.clear()
 
-        cards.addAll(
-            inventory.cards.keys.filter { c ->
-                c.tier == tier && (if (banner[0] == -1) true else c.unitID in CardData.bannerData[tier.ordinal][banner[1]])
-            }.filter(container.cost::filter)
-        )
+        if (container.cost is SpecificCardCost) {
+            cards.addAll(inventory.cards.keys.filter { c -> container.cost.cards.any { card -> card.unitID == c.unitID} })
+        } else {
+            cards.addAll(
+                inventory.cards.keys.filter { c ->
+                    c.tier == tier && (if (banner[0] == -1) true else c.unitID in CardData.bannerData[tier.ordinal][banner[1]])
+                }.filter(container.cost::filter)
+            )
 
-        cards.removeIf { card ->
-            val amount = inventory.cards[card] ?: 0
-            val selectedAmount = containers.sumOf { container -> container.pickedCards.count { c -> c.unitID == card.unitID } }
+            cards.removeIf { card ->
+                val amount = inventory.cards[card] ?: 0
+                val selectedAmount = containers.sumOf { container -> container.pickedCards.count { c -> c.unitID == card.unitID } }
 
-            amount - selectedAmount <= 0
+                amount - selectedAmount <= 0
+            }
         }
 
         cards.sortWith(CardComparator())
@@ -299,7 +310,7 @@ class CardCostPayHolder(
     private fun getComponents() : List<LayoutComponent> {
         val result = ArrayList<LayoutComponent>()
 
-        if (container.cost !is BannerCardCost) {
+        if (container.cost is TierCardCost) {
             val bannerCategoryElements = ArrayList<SelectOption>()
 
             bannerCategoryElements.add(SelectOption.of("All", "all"))

@@ -6,6 +6,7 @@ import mandarin.card.supporter.holder.modal.CatFoodCostHolder
 import mandarin.card.supporter.holder.modal.PlatinumShardCostHolder
 import mandarin.card.supporter.pack.BannerCardCost
 import mandarin.card.supporter.pack.CardPack
+import mandarin.card.supporter.pack.SpecificCardCost
 import mandarin.card.supporter.pack.TierCardCost
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.server.holder.Holder
@@ -83,6 +84,7 @@ class CardPackCostHolder(author: Message, channelID: String, private val message
                 when(val cost = pack.cost.cardsCosts[index]) {
                     is BannerCardCost -> connectTo(event, BannerCostHolder(authorMessage, channelID, message, pack, cost, false))
                     is TierCardCost -> connectTo(event, TierCostHolder(authorMessage, channelID, message, pack, cost, false))
+                    is SpecificCardCost -> connectTo(event, SpecificCardCostHolder(authorMessage, channelID, message, pack, cost, false))
                 }
             }
             "role" -> {

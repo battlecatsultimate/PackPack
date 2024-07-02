@@ -6,6 +6,7 @@ import mandarin.card.supporter.filter.BannerFilter
 import mandarin.card.supporter.pack.BannerCardCost
 import mandarin.card.supporter.pack.CardCost
 import mandarin.card.supporter.pack.CardPack
+import mandarin.card.supporter.pack.SpecificCardCost
 import mandarin.card.supporter.pack.TierCardCost
 import mandarin.packpack.supporter.server.holder.component.ComponentHolder
 import net.dv8tion.jda.api.entities.Message
@@ -39,6 +40,9 @@ class CardCostTypeHolder(author: Message, channelID: String, private val message
                 CardCost.CostType.TIER -> {
                     connectTo(event, TierCostHolder(authorMessage, channelID, message, pack, TierCardCost(CardPack.CardType.T1, 0), true))
                 }
+                CardCost.CostType.CARD -> {
+                    connectTo(event, SpecificCardCostHolder(authorMessage, channelID, message, pack, SpecificCardCost(HashSet(), 1), true))
+                }
             }
         } else if (event.componentId == "back") {
             if (pack in CardData.cardPacks) {
@@ -58,6 +62,7 @@ class CardCostTypeHolder(author: Message, channelID: String, private val message
             when (type) {
                 CardCost.CostType.BANNER -> options.add(SelectOption.of("Banner", type.name))
                 CardCost.CostType.TIER -> options.add(SelectOption.of("Tier", type.name))
+                CardCost.CostType.CARD -> options.add(SelectOption.of("Card", type.name))
             }
         }
 
