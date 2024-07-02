@@ -511,14 +511,14 @@ class LogSession {
             newMap
         }
 
-        session.suggestion[0].cards.forEach { card ->
-            firstTraderMap[card] = (firstTraderMap[card] ?: 0) - 1
-            secondTraderMap[card] = (secondTraderMap[card] ?: 0) + 1
+        session.suggestion[0].cards.forEach { (card, amount) ->
+            firstTraderMap[card] = (firstTraderMap[card] ?: 0) - amount
+            secondTraderMap[card] = (secondTraderMap[card] ?: 0) + amount
         }
 
-        session.suggestion[1].cards.forEach { card ->
-            firstTraderMap[card] = (firstTraderMap[card] ?: 0) + 1
-            secondTraderMap[card] = (secondTraderMap[card] ?: 0) - 1
+        session.suggestion[1].cards.forEach { (card, amount) ->
+            firstTraderMap[card] = (firstTraderMap[card] ?: 0) + amount
+            secondTraderMap[card] = (secondTraderMap[card] ?: 0) - amount
         }
 
         tradeDone++

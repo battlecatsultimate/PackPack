@@ -289,7 +289,7 @@ object CardData {
         ServerData.get("eventCategory")
     )
 
-    const val MAX_CARDS = 10
+    const val MAX_CARD_TYPE = 10
     const val TAX = 0.0
 
     var sessionNumber = 1L

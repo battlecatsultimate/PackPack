@@ -44,7 +44,7 @@ class Suggest(private val session: TradingSession) : Command(LangID.EN, true) {
             for (card in inventory.cards.keys) {
                 val amount = inventory.cards[card] ?: 0
 
-                if (amount - session.suggestion[index].cards.filter { c -> c.unitID == card.unitID }.size == 0) {
+                if (amount - (session.suggestion[index].cards[card] ?: 0) == 0) {
                     cards.remove(card)
                 }
             }
@@ -117,14 +117,14 @@ class Suggest(private val session: TradingSession) : Command(LangID.EN, true) {
                     val cardCategory = StringSelectMenu.create("card")
                         .addOptions(cardCategoryElements)
                         .setPlaceholder(
-                            if (session.suggestion[index].cards.size == CardData.MAX_CARDS)
-                                "You can't suggest more than ${CardData.MAX_CARDS} cards!"
+                            if (session.suggestion[index].cards.size == CardData.MAX_CARD_TYPE)
+                                "You can't suggest more than ${CardData.MAX_CARD_TYPE} cards!"
                             else if (cards.isEmpty())
                                 "No Cards To Select"
                             else
                                 "Select Card To Suggest"
                         )
-                        .setDisabled(session.suggestion[index].cards.size == CardData.MAX_CARDS || cards.isEmpty())
+                        .setDisabled(session.suggestion[index].cards.size == CardData.MAX_CARD_TYPE || cards.isEmpty())
                         .build()
 
                     rows.add(ActionRow.of(cardCategory))
@@ -152,9 +152,12 @@ class Suggest(private val session: TradingSession) : Command(LangID.EN, true) {
                         rows.add(ActionRow.of(buttons))
                     }
 
+                    val possibleCards = cards.filter { c -> (inventory.cards[c] ?: 0) - (session.suggestion[index].cards[c] ?: 0) > 1 }
+
                     val confirmButtons = ArrayList<Button>()
 
                     confirmButtons.add(Button.primary("confirm", "Suggest"))
+                    confirmButtons.add(Button.secondary("dupe", "Add Duplicated").withDisabled(session.suggestion[index].cards.size >= CardData.MAX_CARD_TYPE || possibleCards.isEmpty()))
                     confirmButtons.add(Button.secondary("cf", "Suggest Cat Foods").withEmoji(EmojiStore.ABILITY["CF"]))
                     confirmButtons.add(Button.danger("reset", "Clear Suggestions"))
                     confirmButtons.add(Button.danger("cancel", "Cancel"))
@@ -176,7 +179,7 @@ class Suggest(private val session: TradingSession) : Command(LangID.EN, true) {
             for (i in 0 until min(SearchHolder.PAGE_CHUNK, cards.size)) {
                 builder.append("${i + 1}. ${cards[i].cardInfo()}")
 
-                val amount = (inventory.cards[cards[i]] ?: 0) - session.suggestion[index].cards.filter { c -> c.unitID == cards[i].unitID }.size
+                val amount = (inventory.cards[cards[i]] ?: 0) - (session.suggestion[index].cards[cards[i]] ?: 0)
 
                 if (amount >= 2) {
                     builder.append(" x$amount\n")

@@ -12,10 +12,17 @@ class Suggestion {
 
             if (obj.has("cards")) {
                 obj.getAsJsonArray("cards").forEach {
-                    val foundCard = CardData.cards.find { c -> c.unitID == it.asInt }
+                    if (it is JsonObject && it.has("key") && it.has("val")) {
+                        val cardID = it.get("key").asInt
+                        val foundCard = CardData.cards.find { c -> c.unitID == cardID } ?: return@forEach
 
-                    if (foundCard != null) {
-                        suggestion.cards.add(foundCard)
+                        val amount = it.get("val").asInt
+
+                        suggestion.cards[foundCard] = amount
+                    } else {
+                        val foundCard = CardData.cards.find { c -> c.unitID == it.asInt } ?: return@forEach
+
+                        suggestion.cards[foundCard] = (suggestion.cards[foundCard] ?: 0) + 1
                     }
                 }
             }
@@ -32,7 +39,7 @@ class Suggestion {
         }
     }
 
-    val cards = ArrayList<Card>()
+    val cards = HashMap<Card, Int>()
     var catFood = 0
     var touched = false
 
@@ -42,10 +49,16 @@ class Suggestion {
         if (cards.isEmpty()) {
             builder.append("- No Cards\n\n")
         } else {
-            for (card in cards) {
+            cards.forEach { (card, amount) ->
                 builder.append("- ")
                     .append(card.cardInfo())
-                    .append("\n")
+
+                if (amount > 1) {
+                    builder.append(" x")
+                        .append(amount)
+                }
+
+                builder.append("\n")
             }
 
             builder.append("\n")
@@ -75,11 +88,19 @@ class Suggestion {
         if (cards.isEmpty()) {
             builder.append("- No Cards\n\n")
         } else {
-            for (card in cards) {
+            cards.forEach { (card, amount) ->
                 builder.append("- ")
                     .append(card.cardInfo())
-                    .append("\n")
+
+                if (amount > 1) {
+                    builder.append(" x")
+                        .append(amount)
+                }
+
+                builder.append("\n")
             }
+
+            builder.append("\n")
 
             builder.append("\n")
         }
@@ -109,8 +130,13 @@ class Suggestion {
 
         val arr = JsonArray()
 
-        for (card in cards) {
-            arr.add(card.unitID)
+        cards.forEach { (card, amount) ->
+            val o = JsonObject()
+
+            o.addProperty("key", card.unitID)
+            o.addProperty("val", amount)
+
+            arr.add(o)
         }
 
         obj.add("cards", arr)
@@ -122,7 +148,10 @@ class Suggestion {
     fun copy() : Suggestion {
         val suggestion = Suggestion()
 
-        suggestion.cards.addAll(cards)
+        cards.forEach { (card, amount) ->
+            suggestion.cards[card] = amount
+        }
+
         suggestion.catFood = catFood
         suggestion.touched = touched
 
@@ -131,7 +160,10 @@ class Suggestion {
 
     fun paste(suggestion: Suggestion) {
         cards.clear()
-        cards.addAll(suggestion.cards)
+
+        suggestion.cards.forEach { (card, amount) ->
+            cards[card] = amount
+        }
 
         catFood = suggestion.catFood
 

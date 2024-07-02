@@ -98,7 +98,7 @@ class TradingSession(val postID: Long, val member: Array<Long>) {
         val thisInventory = Inventory.getInventory(member[0])
         val thatInventory = Inventory.getInventory(member[1])
 
-        for (card in suggestion[0].cards) {
+        suggestion[0].cards.forEach { (card, amount) ->
             if (!thisInventory.cards.containsKey(card)) {
                 ch.sendMessage("Trading couldn't be done\n\nReason : <@${member[0]}>'s inventory doesn't have card\nCard : ${card.cardInfo()}")
                     .setAllowedMentions(ArrayList())
@@ -107,11 +107,10 @@ class TradingSession(val postID: Long, val member: Array<Long>) {
                 return false
             }
 
-            val amount = thisInventory.cards[card] ?: 1
-            val required = suggestion[0].cards.filter { c -> c.unitID == card.unitID }.size
+            val currentAmount = thisInventory.cards[card] ?: 0
 
-            if (amount - required < 0) {
-                ch.sendMessage("Trading couldn't be done\n\nReason : <@${member[0]}>'s inventory doesn't have enough card to trade\nCard : ${card.cardInfo()}\nRequired amount : $required")
+            if (currentAmount - amount < 0) {
+                ch.sendMessage("Trading couldn't be done\n\nReason : <@${member[0]}>'s inventory doesn't have enough card to trade\nCard : ${card.cardInfo()}\nRequired amount : $amount")
                     .setAllowedMentions(ArrayList())
                     .queue()
 
@@ -119,7 +118,7 @@ class TradingSession(val postID: Long, val member: Array<Long>) {
             }
         }
 
-        for (card in suggestion[1].cards) {
+        suggestion[1].cards.forEach { (card, amount) ->
             if (!thatInventory.cards.containsKey(card)) {
                 ch.sendMessage("Trading couldn't be done\n\nReason : <@${member[1]}>'s inventory doesn't have card\nCard : ${card.cardInfo()}")
                     .setAllowedMentions(ArrayList())
@@ -128,11 +127,10 @@ class TradingSession(val postID: Long, val member: Array<Long>) {
                 return false
             }
 
-            val amount = thatInventory.cards[card] ?: 1
-            val required = suggestion[1].cards.filter { c -> c.unitID == card.unitID }.size
+            val currentAmount = thatInventory.cards[card] ?: 1
 
-            if (amount - required < 0) {
-                ch.sendMessage("Trading couldn't be done\n\nReason : <@${member[1]}>'s inventory doesn't have enough card to trade\nCard : ${card.cardInfo()}\nRequired amount : $required")
+            if (currentAmount - amount < 0) {
+                ch.sendMessage("Trading couldn't be done\n\nReason : <@${member[1]}>'s inventory doesn't have enough card to trade\nCard : ${card.cardInfo()}\nRequired amount : $amount")
                     .setAllowedMentions(ArrayList())
                     .queue()
 
@@ -147,14 +145,14 @@ class TradingSession(val postID: Long, val member: Array<Long>) {
         val thisInventory = Inventory.getInventory(member[0])
         val thatInventory = Inventory.getInventory(member[1])
 
-        for (card in suggestion[1].cards) {
-            thisInventory.cards[card] = (thisInventory.cards[card] ?: 0) + 1
-            thatInventory.cards[card] = (thatInventory.cards[card] ?: 1) - 1
+        suggestion[1].cards.forEach { (card, amount) ->
+            thisInventory.cards[card] = (thisInventory.cards[card] ?: 0) + amount
+            thatInventory.cards[card] = (thatInventory.cards[card] ?: 0) - amount
         }
 
-        for (card in suggestion[0].cards) {
-            thatInventory.cards[card] = (thatInventory.cards[card] ?: 0) + 1
-            thisInventory.cards[card] = (thisInventory.cards[card] ?: 1) - 1
+        suggestion[0].cards.forEach { (card, amount) ->
+            thatInventory.cards[card] = (thatInventory.cards[card] ?: 0) + amount
+            thisInventory.cards[card] = (thisInventory.cards[card] ?: 0) - amount
         }
 
         //Transfer Cat food
@@ -209,7 +207,7 @@ class TradingSession(val postID: Long, val member: Array<Long>) {
 
     fun needApproval(g: Guild, whenNeed: Runnable, otherwise: Runnable) {
         g.retrieveMembers(member.map { id -> UserSnowflake.fromId(id) }).onSuccess { members ->
-            if (suggestion.any { s -> s.catFood >= 200000 || s.cards.any { c -> c.tier == CardData.Tier.SPECIAL || c.tier == CardData.Tier.LEGEND } } && !members.any { m -> CardData.hasAllPermission(m) } && !approved) {
+            if (suggestion.any { s -> s.catFood >= 200000 || s.cards.any { (c, _) -> c.tier == CardData.Tier.SPECIAL || c.tier == CardData.Tier.LEGEND } } && !members.any { m -> CardData.hasAllPermission(m) } && !approved) {
                 whenNeed.run()
             } else {
                 otherwise.run()

@@ -208,7 +208,7 @@ class SuggestInventoryHolder(
                     return
                 }
 
-                val realAmount = (inventory.cards[card] ?: 0) - backup.cards.count { c -> c.unitID == card.unitID }
+                val realAmount = (inventory.cards[card] ?: 0) - (backup.cards[card] ?: 0)
 
                 if (realAmount >= 2) {
                     val input = TextInput.create("amount", "Amount of Cards", TextInputStyle.SHORT)
@@ -222,11 +222,9 @@ class SuggestInventoryHolder(
                     event.replyModal(modal).queue()
 
                     connectTo(CardAmountSelectHolder(authorMessage, channelID, message.id) { amount ->
-                        val filteredAmount = min(CardData.MAX_CARDS - backup.cards.size, min(amount, realAmount))
+                        val filteredAmount = min(CardData.MAX_CARD_TYPE - backup.cards.size, min(amount, realAmount))
 
-                        repeat(filteredAmount) {
-                            backup.cards.add(card)
-                        }
+                        backup.cards[card] = (backup.cards[card] ?: 0) + filteredAmount
 
                         filterCards()
 
@@ -243,7 +241,7 @@ class SuggestInventoryHolder(
                         applyResult()
                     })
                 } else {
-                    backup.cards.add(card)
+                    backup.cards[card] = (backup.cards[card] ?: 0) + 1
 
                     event.deferReply().setContent("Suggested : ${cards[selectedID].simpleCardInfo()}").setEphemeral(true).queue()
 
@@ -275,6 +273,26 @@ class SuggestInventoryHolder(
                 event.replyModal(modal).queue()
 
                 StaticStore.putHolder(authorMessage.author.id, CatFoodHolder(authorMessage, channelID, message, suggestionMessage, backup))
+            }
+            "dupe" -> {
+                cards.filter { c -> (inventory.cards[c] ?: 0) - (backup.cards[c] ?: 0) > 1 }.forEach { c ->
+                    if (backup.cards.size >= CardData.MAX_CARD_TYPE)
+                        return@forEach
+
+                    val realAmount = (inventory.cards[c] ?: 0) - (backup.cards[c] ?: 0)
+
+                    backup.cards[c] = (backup.cards[c] ?: 0) + realAmount - 1
+                }
+
+                event.deferReply().setContent("Successfully added duplicated! Check the result above").setEphemeral(true).queue()
+
+                suggestionMessage
+                    .editMessage(backup.suggestionInfo(member))
+                    .mentionRepliedUser(false)
+                    .setAllowedMentions(ArrayList())
+                    .queue()
+
+                applyResult()
             }
             "reset" -> {
                 backup.cards.clear()
@@ -329,7 +347,7 @@ class SuggestInventoryHolder(
         cards.removeIf { c ->
             val amount = inventory.cards[c] ?: 0
 
-            amount - backup.cards.filter { cd -> cd.unitID == c.unitID }.size <= 0
+            amount - (backup.cards[c] ?: 0) <= 0
         }
 
         val member = authorMessage.member
@@ -452,14 +470,14 @@ class SuggestInventoryHolder(
         val cardCategory = StringSelectMenu.create("card")
             .addOptions(cardCategoryElements)
             .setPlaceholder(
-                if (backup.cards.size == CardData.MAX_CARDS)
-                    "You can't suggest more than ${CardData.MAX_CARDS} cards!"
+                if (backup.cards.size == CardData.MAX_CARD_TYPE)
+                    "You can't suggest more than ${CardData.MAX_CARD_TYPE} cards!"
                 else if (cards.isEmpty())
                     "No Cards To Select"
                 else
                     "Select Card To Suggest"
             )
-            .setDisabled(backup.cards.size >= CardData.MAX_CARDS || cards.isEmpty())
+            .setDisabled(backup.cards.size >= CardData.MAX_CARD_TYPE || cards.isEmpty())
             .build()
 
         rows.add(ActionRow.of(cardCategory))
@@ -503,9 +521,12 @@ class SuggestInventoryHolder(
             rows.add(ActionRow.of(buttons))
         }
 
+        val possibleCards = cards.filter { c -> (inventory.cards[c] ?: 0) - (session.suggestion[index].cards[c] ?: 0) > 1 }
+
         val confirmButtons = ArrayList<Button>()
 
         confirmButtons.add(Button.primary("confirm", "Suggest"))
+        confirmButtons.add(Button.secondary("dupe", "Add Duplicated").withDisabled(session.suggestion[index].cards.size >= CardData.MAX_CARD_TYPE || possibleCards.isEmpty()))
         confirmButtons.add(Button.secondary("cf", "Suggest Cat Foods").withEmoji(EmojiStore.ABILITY["CF"]))
         confirmButtons.add(Button.danger("reset", "Clear Suggestions"))
         confirmButtons.add(Button.danger("cancel", "Cancel"))
@@ -524,7 +545,7 @@ class SuggestInventoryHolder(
             for (i in page * SearchHolder.PAGE_CHUNK until min((page + 1) * SearchHolder.PAGE_CHUNK, cards.size)) {
                 builder.append("${i + 1}. ${cards[i].cardInfo()}")
 
-                val amount = (inventory.cards[cards[i]] ?: 0) - backup.cards.filter { c -> c.unitID == cards[i].unitID }.size
+                val amount = (inventory.cards[cards[i]] ?: 0) - (backup.cards[cards[i]] ?: 0)
 
                 if (amount >= 2) {
                     builder.append(" x$amount\n")
