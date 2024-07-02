@@ -326,6 +326,9 @@ object CardBot : ListenerAdapter() {
 
         val u = event.author
 
+        if (u.idLong in CardData.bannedUser)
+            return
+
         val waiter = CountDownLatch(1)
         val atomicMember = AtomicReference<Member>(null)
 
@@ -521,6 +524,8 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}lig" -> ListGuild().execute(event)
             "${globalPrefix}leaveguild",
             "${globalPrefix}leg" -> LeaveGuild().execute(event)
+            "${globalPrefix}banuser",
+            "${globalPrefix}bu" -> BanUser().execute(event)
         }
 
         val session = CardData.sessions.find { s -> s.postID == event.channel.idLong }
@@ -565,6 +570,9 @@ object CardBot : ListenerAdapter() {
         super.onGenericInteractionCreate(event)
 
         val u = event.user
+
+        if (u.idLong in CardData.bannedUser)
+            return
 
         val waiter = CountDownLatch(1)
         val atomicMember = AtomicReference<Member>(null)

@@ -318,6 +318,8 @@ object CardData {
 
     val auctionPlaces = ArrayList<Long>()
 
+    val bannedUser = ArrayList<Long>()
+
     /*
     -------------------------------------------------------
     |                        Packs                        |
