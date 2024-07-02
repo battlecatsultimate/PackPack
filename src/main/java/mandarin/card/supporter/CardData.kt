@@ -290,6 +290,7 @@ object CardData {
     )
 
     const val MAX_CARD_TYPE = 10
+    const val MAX_CAT_FOOD_SUGGESTION = 500000
     const val TAX = 0.0
 
     var sessionNumber = 1L

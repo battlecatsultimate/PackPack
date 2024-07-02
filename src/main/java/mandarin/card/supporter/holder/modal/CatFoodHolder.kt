@@ -3,7 +3,7 @@ package mandarin.card.supporter.holder.modal
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.Suggestion
-import mandarin.card.supporter.TradingSession
+import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.modal.ModalHolder
 import net.dv8tion.jda.api.entities.Message
@@ -32,18 +32,20 @@ class CatFoodHolder(author: Message, channelID: String, message:Message, private
                 return
             }
 
-            val inventory = Inventory.getInventory(authorMessage.author.idLong)
+            val cf = EmojiStore.ABILITY["CF"]?.formatted
 
-            val currentCatFood = inventory.catFoods
-
-            if (currentCatFood - catFood < 0) {
-                event.reply("The suggested amount of cat food ($catFood) is larger than what you have currently ($currentCatFood)!")
+            if (catFood > CardData.MAX_CAT_FOOD_SUGGESTION) {
+                event.reply("You can suggest only up to $cf ${CardData.MAX_CAT_FOOD_SUGGESTION}!")
                     .setEphemeral(true)
                     .queue()
+            }
 
-                return
-            } else if (currentCatFood - catFood - TradingSession.accumulateSuggestedCatFood(member.idLong) < 0) {
-                event.reply("It seems you already suggested other cat food in different trading session. You can suggest up to ${currentCatFood - TradingSession.accumulateSuggestedCatFood(member.idLong)} cat foods in this session!")
+            val inventory = Inventory.getInventory(authorMessage.author.idLong)
+
+            val currentCatFood = inventory.actualCatFood
+
+            if (currentCatFood - catFood < 0) {
+                event.reply("The suggested amount of cat food ($cf $catFood) is larger than what you can actually suggest ($cf $currentCatFood!")
                     .setEphemeral(true)
                     .queue()
 
