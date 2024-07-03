@@ -79,7 +79,7 @@
         "abbr_name": "волна",
         "full_name": "Волна",
         "tooltip": null,
-        "format": "(prob)% шанс сделать (lv)Ур. (_left)На дистанцию (_waveRange(lv))(_right) атаку волной",
+        "format": "(prob)% шанс сделать атаку волной (lv) Ур. (_left)На дистанцию (_waveRange(lv))(_right)",
         "class": {
             "prob": {
                 "name": "шанс",
@@ -129,7 +129,7 @@
         "tooltip": null,
         "format": [
             "(prob)% шанс телепортировать цель в течении (_dispTime(time)) на дальность",
-            "[(dis_0==dis_1){ of (_abs(dis_0))[(dis_0<0){ назад}(dis_0>=0){ вперед}]}",
+            "[(dis_0==dis_1){ (_abs(dis_0))[(dis_0<0){ назад}(dis_0>=0){ вперед}]}",
             "(dis_0!=dis_1){ ",
             "[(dis_0*dis_1>=0){(_abs(dis_0))~(_abs(dis_1)) [(dis_0<0){ назад}(dis_0>=0){ вперед}]}",
             "(dis_0*dis_1<0){от (_abs(dis_0))[(dis_0<0){ назад}(dis_0>=0){ вперед}] до (_abs(dis_1))[(dis_1<0){ назад}(dis_1>=0){ вперед}]}]}]"
@@ -157,7 +157,7 @@
         "abbr_name": "курс",
         "full_name": "Проклятие",
         "tooltip": "Убирает способности против трейтов",
-        "format": "(prob)% шанс убрать проклятие на (_dispFruit(time))",
+        "format": "(prob)% шанс нанести проклятие (_dispFruit(time))",
         "class": {
             "prob": {
                 "name": "шанс",
@@ -779,9 +779,9 @@
     },
     "IMUATK": {
         "abbr_name": "Инвиз.",
-        "full_name": "Невидимость",
+        "full_name": "Уворот",
         "tooltip": null,
-        "format": "(prob)% шанс стать невидимым в течении (_dispFruit(time))",
+        "format": "(prob)% шанс уварнуться от атак в течении (_dispFruit(time))",
         "class": {
             "prob": {
                 "name": "шанс",
@@ -813,7 +813,7 @@
         "abbr_name": "сурдж",
         "full_name": "Сурдж",
         "tooltip": null,
-        "format": "(prob)% шанс сделать Сурдж (time/20) Ур (_left)Длится (_dispTime(time)), Создается в радиусе (dis_0) ~ (dis_1)(_right)",
+        "format": "(prob)% шанс сделать сурдж (time/20) Ур. (_left)Длится (_dispTime(time)), Создается в радиусе (dis_0) ~ (dis_1)(_right)",
         "class": {
             "prob": {
                 "name": "шанс",
@@ -966,7 +966,7 @@
         "abbr_name" : "мини-волна",
         "full_name" : "Мини-волна",
         "tooltip" : "Creates small wave which moves twice faster than normal wave with dynamic damage multiplication parameter",
-        "format" : "(prob)% шанс сделать мини-волну (lv)Ур. (_left)С дальностью (_waveRange(lv))(_right) [(multi!=20){(_left)Даёт целе (multi)% урона от изначального(_right)}]",
+        "format" : "(prob)% шанс сделать мини-волну (lv) Ур. (_left)С дальностью (_waveRange(lv))(_right) [(multi!=20){(_left)Даёт целе (multi)% урона от изначального(_right)}]",
         "class" : {
             "prob" : {
                 "name" : "шанс",
@@ -1225,7 +1225,7 @@
         "abbr_name": "Убийца ДКХ",
         "full_name": "Убийца Диких",
         "tooltip": null,
-        "format": "Убийца Диких (_left)Наносит 2.5x урона[(prob>0){, }(prob==0){ и }]получает только 0.6x урона[(prob>0){, и имеет (prob)% шанс уклонится от атаки диких врагов (_dispTime(time))}](_right)",
+        "format": "Убийца Диких (_left)Наносит 2.5x урона[(prob>0){, }(prob==0){ и }]получает только 0.6x урона[(prob>0){, и имеет (prob)% шанс уклонится от атаки диких врагов на (_dispTime(time))}](_right)",
         "class": {
             "type.active": {
                 "name": "Сильнее против Диких",
