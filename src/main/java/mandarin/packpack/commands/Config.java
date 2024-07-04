@@ -24,14 +24,11 @@ import java.util.Objects;
 
 public class Config extends ConstraintCommand {
     private final ConfigHolder config;
-    private final boolean forServer;
 
-    public Config(ROLE role, int lang, IDHolder id, ConfigHolder config, boolean forServer) {
-        super(role, lang, id, forServer);
+    public Config(ROLE role, int lang, IDHolder id, ConfigHolder config) {
+        super(role, lang, id, false);
 
         this.config = Objects.requireNonNullElseGet(config, ConfigHolder::new);
-
-        this.forServer = forServer;
     }
 
     @Override
@@ -62,21 +59,12 @@ public class Config extends ConstraintCommand {
 
         List<SelectOption> languages = new ArrayList<>();
 
-        if(!forServer) {
-            if(config.lang == -1)
-                languages.add(SelectOption.of(LangID.getStringByID("config_auto", lang), "-1").withDefault(true));
-            else
-                languages.add(SelectOption.of(LangID.getStringByID("config_auto", lang), "-1"));
-        }
+        languages.add(SelectOption.of(LangID.getStringByID("config_auto", lang), "-1").withDefault(config.lang == -1));
 
         for(int i = 0; i < StaticStore.langIndex.length; i++) {
             String l = LangID.getStringByID("lang_"+StaticStore.langCode[i], config.lang);
 
-            if(config.lang == StaticStore.langIndex[i]) {
-                languages.add(SelectOption.of(LangID.getStringByID("config_locale", lang).replace("_", l), String.valueOf(StaticStore.langIndex[i])).withDefault(true));
-            } else {
-                languages.add(SelectOption.of(LangID.getStringByID("config_locale", lang).replace("_", l), String.valueOf(StaticStore.langIndex[i])));
-            }
+            languages.add(SelectOption.of(LangID.getStringByID("config_locale", lang).replace("_", l), String.valueOf(StaticStore.langIndex[i])).withDefault(config.lang == StaticStore.langIndex[i]));
         }
 
         Button extra;
@@ -108,7 +96,7 @@ public class Config extends ConstraintCommand {
 
             User u = author.getAuthor();
 
-            StaticStore.putHolder(u.getId(), new ConfigButtonHolder(author, msg, config, holder, ch.getId(), forServer));
+            StaticStore.putHolder(u.getId(), new ConfigButtonHolder(author, msg, config, holder, ch.getId()));
         });
     }
 }

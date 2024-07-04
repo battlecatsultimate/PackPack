@@ -551,7 +551,7 @@ public class AllEventAdapter extends ListenerAdapter {
                     new UnsubscribeScamLinkDetector(ConstraintCommand.ROLE.MOD, lang, idh).execute(event);
             case "timezone", "tz" -> new TimeZone(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
             case "optout" -> new OptOut(ConstraintCommand.ROLE.MEMBER, lang, idh).execute(event);
-            case "config" -> new Config(ConstraintCommand.ROLE.MEMBER, lang, idh, c, false).execute(event);
+            case "config" -> new Config(ConstraintCommand.ROLE.MEMBER, lang, idh, c).execute(event);
             case "removecache", "rc" -> new RemoveCache(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "sendmessage", "sm" -> new SendMessage(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);
             case "analyzeserver", "as" -> new AnalyzeServer(ConstraintCommand.ROLE.MANDARIN, lang, idh).execute(event);

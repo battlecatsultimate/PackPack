@@ -49,6 +49,7 @@ public class ConfigGeneralHolder extends ServerConfigHolder {
                     case LangID.ES -> LangID.getStringByID("lang_es", lang);
                     case LangID.DE -> LangID.getStringByID("lang_de", lang);
                     case LangID.TH -> LangID.getStringByID("lang_th", lang);
+                    case LangID.RU -> LangID.getStringByID("lang_ru", lang);
                     default -> throw new IllegalStateException("E/ConfigGeneralHolder::getContents - Unrecognized locale " + holder.config.lang + " detected");
                 };
 
@@ -153,6 +154,7 @@ public class ConfigGeneralHolder extends ServerConfigHolder {
             case LangID.ES -> Emoji.fromUnicode("🇪🇸");
             case LangID.DE -> Emoji.fromUnicode("🇩🇪");
             case LangID.TH -> Emoji.fromUnicode("🇹🇭");
+            case LangID.RU -> Emoji.fromUnicode("🇷🇺");
             default -> throw new IllegalStateException("E/ConfigGeneralHolder::getContents - Unrecognized locale " + holder.config.lang + " detected");
         };
 
@@ -166,6 +168,7 @@ public class ConfigGeneralHolder extends ServerConfigHolder {
             case LangID.ES -> LangID.getStringByID("lang_es", lang);
             case LangID.DE -> LangID.getStringByID("lang_de", lang);
             case LangID.TH -> LangID.getStringByID("lang_th", lang);
+            case LangID.RU -> LangID.getStringByID("lang_ru", lang);
             default -> throw new IllegalStateException("E/ConfigGeneralHolder::getContents - Unrecognized locale " + holder.config.lang + " detected");
         };
 
@@ -198,24 +201,14 @@ public class ConfigGeneralHolder extends ServerConfigHolder {
                 default -> throw new IllegalStateException("E/ConfigGeneralHolder::getComponents - Unrecognized locale " + StaticStore.langCode[j] + " detected");
             };
 
-            if (holder.config.lang == StaticStore.langIndex[j]) {
-                languageOptions.add(
-                        SelectOption.of(
-                                LangID.getStringByID("config_locale", lang).replace("_", l),
-                                String.valueOf(StaticStore.langIndex[j])
-                        )
-                                .withDefault(true)
-                                .withEmoji(e)
-                );
-            } else {
-                languageOptions.add(
-                        SelectOption.of(
-                                LangID.getStringByID("config_locale", lang).replace("_", l),
-                                String.valueOf(StaticStore.langIndex[j])
-                        )
-                                .withEmoji(e)
-                );
-            }
+            languageOptions.add(
+                    SelectOption.of(
+                                    LangID.getStringByID("config_locale", lang).replace("_", l),
+                                    String.valueOf(StaticStore.langIndex[j])
+                            )
+                            .withDefault(holder.config.lang == StaticStore.langIndex[j])
+                            .withEmoji(e)
+            );
         }
 
         result.add(ActionRow.of(StringSelectMenu.create("language").addOptions(languageOptions).setPlaceholder(LangID.getStringByID("sercon_lang", lang)).build()));
