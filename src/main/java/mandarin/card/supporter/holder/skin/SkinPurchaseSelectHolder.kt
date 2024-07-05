@@ -146,14 +146,18 @@ class SkinPurchaseSelectHolder(author: Message, channelID: String, private var m
 
         val options = ArrayList<SelectOption>()
 
-        for (i in page * SearchHolder.PAGE_CHUNK until min(skins.size, (page + 1) * SearchHolder.PAGE_CHUNK)) {
-            val purchasable = if (skins[0].cost.affordable(inventory)) {
-                "Purchasable"
-            } else {
-                "Can't Be Purchased"
-            }
+        if (skins.isEmpty()) {
+            options.add(SelectOption.of("A", "A"))
+        } else {
+            for (i in page * SearchHolder.PAGE_CHUNK until min(skins.size, (page + 1) * SearchHolder.PAGE_CHUNK)) {
+                val purchasable = if (skins[0].cost.affordable(inventory)) {
+                    "Purchasable"
+                } else {
+                    "Can't Be Purchased"
+                }
 
-            options.add(SelectOption.of(skins[i].name, i.toString()).withDescription("${skins[i].skinID} | $purchasable"))
+                options.add(SelectOption.of(skins[i].name, i.toString()).withDescription("${skins[i].skinID} | $purchasable"))
+            }
         }
 
         result.add(ActionRow.of(
