@@ -11,12 +11,15 @@ import net.dv8tion.jda.api.events.interaction.component.GenericComponentInteract
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.jcodec.api.NotSupportedException;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class Holder {
     public enum STATUS {
@@ -191,6 +194,10 @@ public abstract class Holder {
 
     }
 
+    public void onConnected() {
+
+    }
+
     public void onBack(Holder child) {
 
     }
@@ -201,6 +208,23 @@ public abstract class Holder {
 
     public void onBack(@Nonnull ModalInteractionEvent event, Holder child) {
 
+    }
+
+    public void handleMessageDetected(@Nonnull Message message) {
+        if (!(this instanceof MessageDetector detector))
+            return;
+
+        if(author == null) {
+            throw new NotSupportedException("E/Holder::getAuthorMessage - This holder doesn't support author message getter! : " + getClass().getName());
+        }
+
+        if (message.getChannelIdLong() != author.getChannelIdLong())
+            return;
+
+        if (message.getAuthor().getIdLong() != author.getAuthor().getIdLong())
+            return;
+
+        detector.onMessageDetected(message);
     }
 
     public void connectTo(Holder holder) {
@@ -215,6 +239,8 @@ public abstract class Holder {
         }
 
         StaticStore.putHolder(userID, holder);
+
+        holder.onConnected();
     }
 
     public void connectTo(@Nonnull ModalInteractionEvent event, Holder holder) {
@@ -393,6 +419,7 @@ public abstract class Holder {
         event.deferEdit()
                 .setContent(content)
                 .setAllowedMentions(new ArrayList<>())
+                .setFiles()
                 .mentionRepliedUser(false)
                 .setComponents(
                         ActionRow.of(
@@ -407,6 +434,7 @@ public abstract class Holder {
         event.deferEdit()
                 .setContent(content)
                 .setAllowedMentions(new ArrayList<>())
+                .setFiles()
                 .mentionRepliedUser(false)
                 .setComponents(
                         ActionRow.of(
@@ -421,6 +449,7 @@ public abstract class Holder {
         message.editMessage(content)
                 .setAllowedMentions(new ArrayList<>())
                 .mentionRepliedUser(false)
+                .setFiles()
                 .setComponents(
                         ActionRow.of(
                                 Button.success("confirm", LangID.getStringByID("button_confirm", lang)).withEmoji(EmojiStore.CHECK),
@@ -428,5 +457,31 @@ public abstract class Holder {
                         )
                 )
                 .queue();
+    }
+
+    public Message updateMessageStatus(@NotNull Message message) {
+        AtomicReference<Message> newMessage = new AtomicReference<>(message);
+
+        CountDownLatch countdown = new CountDownLatch(1);
+
+        try {
+            message.getChannel().retrieveMessageById(message.getIdLong()).queue(msg -> {
+                newMessage.set(msg);
+
+                countdown.countDown();
+            }, e -> {
+                StaticStore.logger.uploadErrorLog(e, "E/Holder::updateMessageStatus - Failed to retrieve message");
+
+                countdown.countDown();
+            });
+
+            countdown.await();
+        } catch (InterruptedException e) {
+            StaticStore.logger.uploadErrorLog(e, "E/Holder::updateMessageStatus - Failed to perform updating message status");
+
+            countdown.countDown();
+        }
+
+        return newMessage.get();
     }
 }

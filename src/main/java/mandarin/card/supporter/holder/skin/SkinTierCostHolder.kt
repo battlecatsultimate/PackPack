@@ -1,7 +1,8 @@
-package mandarin.card.supporter.holder.pack
+package mandarin.card.supporter.holder.skin
 
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
+import mandarin.card.supporter.card.Skin
 import mandarin.card.supporter.holder.modal.CardCostAmountHolder
 import mandarin.card.supporter.pack.CardPack
 import mandarin.card.supporter.pack.TierCardCost
@@ -23,7 +24,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 
-class TierCostHolder(author: Message, channelID: String, private val message: Message, private val pack: CardPack, private val cardCost: TierCardCost, private val new: Boolean) : ComponentHolder(author, channelID, message.id) {
+class SkinTierCostHolder(author: Message, channelID: String, private val message: Message, private val skin: Skin, private val cardCost: TierCardCost, private val new: Boolean) : ComponentHolder(author, channelID, message.id) {
     override fun clean() {
 
     }
@@ -40,7 +41,7 @@ class TierCostHolder(author: Message, channelID: String, private val message: Me
 
                 cardCost.tier = CardPack.CardType.valueOf(event.values[0])
 
-                if (pack in CardData.cardPacks) {
+                if (skin in CardData.skins) {
                     CardBot.saveCardData()
                 }
 
@@ -61,9 +62,9 @@ class TierCostHolder(author: Message, channelID: String, private val message: Me
                 connectTo(CardCostAmountHolder(authorMessage, channelID, message, cardCost))
             }
             "create" -> {
-                pack.cost.cardsCosts.add(cardCost)
+                skin.cost.cardsCosts.add(cardCost)
 
-                if (pack in CardData.cardPacks) {
+                if (skin in CardData.skins) {
                     CardBot.saveCardData()
                 }
 
@@ -98,10 +99,9 @@ class TierCostHolder(author: Message, channelID: String, private val message: Me
                         applyResult(e)
                     }, LangID.EN))
                 } else {
-                    if (pack in CardData.cardPacks) {
+                    if (skin in CardData.skins) {
                         CardBot.saveCardData()
                     }
-
                     event.deferEdit().queue()
 
                     goBack()
@@ -119,9 +119,9 @@ class TierCostHolder(author: Message, channelID: String, private val message: Me
                 StaticStore.putHolder(authorMessage.author.id, ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
                     expired = true
 
-                    pack.cost.cardsCosts.remove(cardCost)
+                    skin.cost.cardsCosts.remove(cardCost)
 
-                    if (pack in CardData.cardPacks) {
+                    if (skin in CardData.skins) {
                         CardBot.saveCardData()
                     }
 

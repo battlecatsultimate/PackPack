@@ -10,6 +10,7 @@ import common.CommonStatic
 import mandarin.card.commands.*
 import mandarin.card.supporter.*
 import mandarin.card.supporter.card.Card
+import mandarin.card.supporter.card.Skin
 import mandarin.card.supporter.log.LogSession
 import mandarin.card.supporter.log.TransactionLogger
 import mandarin.card.supporter.pack.CardPack
@@ -369,6 +370,12 @@ object CardBot : ListenerAdapter() {
         if (locked && u.id != StaticStore.MANDARIN_SMELL && !CardData.hasAllPermission(m))
             return
 
+        val hub = StaticStore.getHolderHub(u.id)
+
+        if (hub != null) {
+            hub.componentHolder?.handleMessageDetected(event.message)
+        }
+
         val firstSegment = if (segments.isEmpty())
             ""
         else
@@ -527,6 +534,8 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}leg" -> LeaveGuild().execute(event)
             "${globalPrefix}banuser",
             "${globalPrefix}bu" -> BanUser().execute(event)
+            "${globalPrefix}managecardskin",
+            "${globalPrefix}mc" -> ManageCardSkin().execute(event)
         }
 
         val session = CardData.sessions.find { s -> s.postID == event.channel.idLong }
@@ -673,6 +682,9 @@ object CardBot : ListenerAdapter() {
         val tiers = cardFolder.listFiles() ?: return
 
         for(t in tiers) {
+            if (t.name == "Skin")
+                continue
+
             val cards = t.listFiles() ?: continue
 
             cards.sortBy {
@@ -751,6 +763,14 @@ object CardBot : ListenerAdapter() {
             return
 
         val obj = element.asJsonObject
+
+        if (obj.has("skins")) {
+            val arr = obj.getAsJsonArray("skins")
+
+            arr.forEach { e ->
+                CardData.skins.add(Skin.fromJson(e.asJsonObject))
+            }
+        }
 
         if (obj.has("locked")) {
             locked = obj.get("locked").asBoolean
@@ -1252,6 +1272,14 @@ object CardBot : ListenerAdapter() {
         obj.add("slotEmojiContainer", SlotEmojiContainer.asJson())
 
         obj.addProperty("inviteLocked", inviteLocked)
+
+        val skins = JsonArray()
+
+        CardData.skins.forEach { skin ->
+            skins.add(skin.asJson())
+        }
+
+        obj.add("skins", skins)
 
         try {
             val folder = File("./data/")

@@ -3,12 +3,13 @@ package mandarin.card.supporter.holder.modal
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.pack.CardPack
+import mandarin.card.supporter.pack.PackCost
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.modal.ModalHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 
-class CatFoodCostHolder(author: Message, channelID: String, message: Message, private val pack: CardPack) : ModalHolder(author, channelID, message.id) {
+class CatFoodCostHolder(author: Message, channelID: String, message: Message, private val cost: PackCost) : ModalHolder(author, channelID, message.id) {
     override fun clean() {
 
     }
@@ -47,11 +48,7 @@ class CatFoodCostHolder(author: Message, channelID: String, message: Message, pr
             return
         }
 
-        pack.cost.catFoods = amount
-
-        if (pack in CardData.cardPacks) {
-            CardBot.saveCardData()
-        }
+        cost.catFoods = amount
 
         event.deferReply()
             .setContent("Successfully set cost of cat food for this card pack! Check result above")

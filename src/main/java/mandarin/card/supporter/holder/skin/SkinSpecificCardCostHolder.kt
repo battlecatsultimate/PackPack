@@ -1,9 +1,10 @@
-package mandarin.card.supporter.holder.pack
+package mandarin.card.supporter.holder.skin
 
 import mandarin.card.CardBot
+import mandarin.card.supporter.CardData
 import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.card.CardComparator
-import mandarin.card.supporter.CardData
+import mandarin.card.supporter.card.Skin
 import mandarin.card.supporter.holder.modal.CardCostAmountHolder
 import mandarin.card.supporter.pack.CardPack
 import mandarin.card.supporter.pack.SpecificCardCost
@@ -26,11 +27,11 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import kotlin.math.min
 
-class SpecificCardCostHolder(
+class SkinSpecificCardCostHolder(
     author: Message,
     channelID: String,
     private val message: Message,
-    private val pack: CardPack,
+    private val skin: Skin,
     private val cost: SpecificCardCost,
     private val new: Boolean
 ) : ComponentHolder(author, channelID, message) {
@@ -136,9 +137,9 @@ class SpecificCardCostHolder(
                 connectTo(CardCostAmountHolder(authorMessage, channelID, message, cost))
             }
             "create" -> {
-                pack.cost.cardsCosts.add(cost)
+                skin.cost.cardsCosts.add(cost)
 
-                if (pack in CardData.cardPacks) {
+                if (skin in CardData.skins) {
                     CardBot.saveCardData()
                 }
 
@@ -167,7 +168,7 @@ class SpecificCardCostHolder(
                         parent?.goBack()
                     }, LangID.EN))
                 } else {
-                    if (pack in CardData.cardPacks) {
+                    if (skin in CardData.skins) {
                         CardBot.saveCardData()
                     }
 
@@ -186,9 +187,9 @@ class SpecificCardCostHolder(
                 )
 
                 connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
-                    pack.cost.cardsCosts.remove(cost)
+                    skin.cost.cardsCosts.remove(cost)
 
-                    if (pack in CardData.cardPacks) {
+                    if (skin in CardData.skins) {
                         CardBot.saveCardData()
                     }
 

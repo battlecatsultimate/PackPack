@@ -1,11 +1,11 @@
-package mandarin.card.supporter.holder.pack
+package mandarin.card.supporter.holder.skin
 
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
+import mandarin.card.supporter.card.Skin
 import mandarin.card.supporter.filter.BannerFilter
 import mandarin.card.supporter.holder.modal.CardCostAmountHolder
 import mandarin.card.supporter.pack.BannerCardCost
-import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.lang.LangID
 import mandarin.packpack.supporter.server.holder.Holder
@@ -26,7 +26,7 @@ import net.dv8tion.jda.api.interactions.modals.Modal
 import kotlin.math.ceil
 import kotlin.math.min
 
-class BannerCostHolder(author: Message, channelID: String, private val message: Message, private val pack: CardPack, private val cardCost: BannerCardCost, private val new: Boolean) : ComponentHolder(author, channelID, message.id) {
+class SkinBannerCostHolder(author: Message, channelID: String, private val message: Message, private val skin: Skin, private val cardCost: BannerCardCost, private val new: Boolean) : ComponentHolder(author, channelID, message.id) {
 
     private var page = 0
 
@@ -48,7 +48,7 @@ class BannerCostHolder(author: Message, channelID: String, private val message: 
 
                 cardCost.banner = banner
 
-                if (pack in CardData.cardPacks) {
+                if (skin in CardData.skins) {
                     CardBot.saveCardData()
                 }
 
@@ -69,14 +69,14 @@ class BannerCostHolder(author: Message, channelID: String, private val message: 
                 connectTo(CardCostAmountHolder(authorMessage, channelID, message, cardCost))
             }
             "create" -> {
-                pack.cost.cardsCosts.add(cardCost)
+                skin.cost.cardsCosts.add(cardCost)
 
-                if (pack in CardData.cardPacks) {
+                if (skin in CardData.skins) {
                     CardBot.saveCardData()
                 }
 
                 event.deferReply()
-                    .setContent("Successfully added card cost to this card pack!")
+                    .setContent("Successfully added card cost to this skin!")
                     .setEphemeral(true)
                     .queue()
 
@@ -100,7 +100,7 @@ class BannerCostHolder(author: Message, channelID: String, private val message: 
                         parent?.goBack()
                     }, LangID.EN))
                 } else {
-                    if (pack in CardData.cardPacks) {
+                    if (skin in CardData.skins) {
                         CardBot.saveCardData()
                     }
 
@@ -119,9 +119,9 @@ class BannerCostHolder(author: Message, channelID: String, private val message: 
                 )
 
                 connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
-                    pack.cost.cardsCosts.remove(cardCost)
+                    skin.cost.cardsCosts.remove(cardCost)
 
-                    if (pack in CardData.cardPacks) {
+                    if (skin in CardData.skins) {
                         CardBot.saveCardData()
                     }
 

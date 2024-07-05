@@ -4,6 +4,7 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import mandarin.card.CardBot
 import mandarin.card.supporter.card.Card
+import mandarin.card.supporter.card.Skin
 import mandarin.packpack.supporter.StaticStore
 import kotlin.math.min
 
@@ -13,6 +14,8 @@ class Inventory(private val id: Long) {
     var auctionQueued = PositiveMap<Card, Int>()
 
     var vanityRoles = ArrayList<CardData.Role>()
+
+    var skins = ArrayList<Skin>()
 
     var catFoods = 0L
     var platinumShard = 0L
@@ -199,6 +202,14 @@ class Inventory(private val id: Long) {
 
         obj.add("favorites", f)
 
+        val s = JsonArray()
+
+        for (skin in skins) {
+            s.add(skin.skinID)
+        }
+
+        obj.add("skins", s)
+
         val a = JsonObject()
 
         for (card in auctionQueued.keys) {
@@ -324,6 +335,18 @@ class Inventory(private val id: Long) {
                     val foundCard = CardData.cards.find { c -> c.unitID == unitID.toInt() } ?: continue
 
                     inventory.favorites[foundCard] = cardIDs.get(unitID).asInt
+                }
+            }
+
+            if (obj.has("skins")) {
+                val skins = obj.getAsJsonArray("skins")
+
+                skins.forEach { e ->
+                    val skinID = e.asInt
+
+                    val foundSkin = CardData.skins.find { s -> s.skinID == skinID } ?: return@forEach
+
+                    inventory.skins.add(foundSkin)
                 }
             }
 

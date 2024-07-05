@@ -1,6 +1,7 @@
 package mandarin.card.supporter
 
 import mandarin.card.supporter.card.Card
+import mandarin.card.supporter.card.Skin
 import mandarin.card.supporter.pack.CardPack
 import mandarin.card.supporter.slot.SlotMachine
 import mandarin.packpack.supporter.StaticStore
@@ -55,6 +56,11 @@ object CardData {
     }
 
     val cards = ArrayList<Card>()
+    val skins = ArrayList<Skin>()
+
+    val supportedFileFormat = arrayOf(
+        "png", "jpg", "gif", "mp4"
+    )
 
     val permanents = arrayOf(
         0 until 1,

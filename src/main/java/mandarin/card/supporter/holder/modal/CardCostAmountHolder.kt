@@ -9,7 +9,7 @@ import mandarin.packpack.supporter.server.holder.modal.ModalHolder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 
-class CardCostAmountHolder(author: Message, channelID: String, messageID: String, private val pack: CardPack, private val cost: CardCost) : ModalHolder(author, channelID, messageID) {
+class CardCostAmountHolder(author: Message, channelID: String, message: Message, private val cost: CardCost) : ModalHolder(author, channelID, message) {
     override fun clean() {
 
     }
@@ -49,10 +49,6 @@ class CardCostAmountHolder(author: Message, channelID: String, messageID: String
         }
 
         cost.amount = amount
-
-        if (pack in CardData.cardPacks) {
-            CardBot.saveCardData()
-        }
 
         event.deferReply()
             .setContent("Successfully changed amount of required cards! Check result above")
