@@ -225,7 +225,7 @@ class CardFavoriteHolder(author: Message, channelID: String, private var message
         } else {
             "You can favorite card to prevent it from being spent accidentally\n" +
             "\n" +
-            "Select skin to equip purchased skins. You can equip multiple skins, then bot will pick random one among the picked skins"
+            "Select skin to equip purchased skins. You can unequip skin by selecting equipped skin again"
         }
     }
 
