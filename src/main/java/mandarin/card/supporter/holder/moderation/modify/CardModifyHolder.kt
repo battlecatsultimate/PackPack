@@ -491,7 +491,7 @@ class CardModifyHolder(author: Message, channelID: String, private val message: 
             }
 
             if (checker.length > 1500) {
-                builder.append("- ${selectedCards.size} Cards Selected")
+                builder.append("- ${selectedCards.entries.sumOf { it.value }} Cards Selected")
             } else {
                 builder.append(checker)
             }

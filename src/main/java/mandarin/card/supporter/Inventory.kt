@@ -64,8 +64,9 @@ class Inventory(private val id: Long) {
                 return@forEach
             }
 
-            leftAmount -= (cards[card] ?: 0)
+            val previousAmount = (cards[card] ?: 0)
             cards[card] = (cards[card] ?: 0) - min(cards[card] ?: 0, leftAmount)
+            leftAmount -= previousAmount
 
             if (leftAmount > 0) {
                 favorites[card] = (favorites[card] ?: 0) - min(favorites[card] ?: 0, leftAmount)
