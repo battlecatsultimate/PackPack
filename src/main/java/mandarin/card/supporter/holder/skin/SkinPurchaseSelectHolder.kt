@@ -125,7 +125,7 @@ class SkinPurchaseSelectHolder(author: Message, channelID: String, private var m
             .append(card.simpleCardInfo()).append("\n### List of Skin\n")
 
         if (skins.isEmpty()) {
-            builder.append("- You owned all skins of this card!")
+            builder.append("- You owned all skins of this card!\n")
         } else {
             for (i in page * SearchHolder.PAGE_CHUNK until min(skins.size, (page + 1) * SearchHolder.PAGE_CHUNK)) {
                 builder.append(i + 1).append(". ").append(skins[i].name).append("\n")
