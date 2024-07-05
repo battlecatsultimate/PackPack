@@ -3,6 +3,7 @@ package mandarin.card.supporter.card
 import com.google.gson.JsonObject
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.pack.PackCost
+import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
 import java.io.File
 import java.io.IOException
@@ -95,6 +96,57 @@ class Skin {
         this.cost = cost
 
         name = "Skin $skinID"
+    }
+
+    fun displayInfo(showPublic: Boolean) : String {
+        val builder = StringBuilder()
+
+        builder.append("**Targeted Card** : ").append(card.simpleCardInfo()).append("\n\n")
+            .append("**Skin ID** : ").append(skinID).append("\n")
+            .append("**Skin Name** : ").append(name).append("\n")
+            .append("**Creator** : ")
+
+        if (creator == -1L) {
+            builder.append("<@").append(CardData.bankAccount).append("> [Official Skin]\n\n")
+        } else {
+            builder.append("<@").append(creator).append(">\n\n")
+        }
+
+        if (showPublic) {
+            builder.append("**Is Public?** : ")
+
+            if (public) {
+                builder.append("Yes")
+            } else {
+                builder.append("No")
+            }
+
+            builder.append("\n")
+        }
+
+        builder.append("**Cost** : ")
+
+        if (cost.catFoods <= 0L && cost.platinumShards <= 0L && cost.cardsCosts.isEmpty()) {
+            builder.append("Free")
+        } else {
+            builder.append("\n")
+
+            if (cost.catFoods != 0L) {
+                builder.append("- ").append(EmojiStore.ABILITY["CF"]?.formatted).append(" ").append(cost.catFoods).append("\n")
+            }
+
+            if (cost.platinumShards != 0L) {
+                builder.append("- ").append(EmojiStore.ABILITY["SHARD"]?.formatted).append(" ").append(cost.platinumShards).append("\n")
+            }
+
+            if (cost.cardsCosts.isNotEmpty()) {
+                cost.cardsCosts.forEach { cost ->
+                    builder.append("- ").append(cost.getCostName()).append("\n")
+                }
+            }
+        }
+
+        return builder.toString().trim()
     }
 
     fun asJson() : JsonObject {

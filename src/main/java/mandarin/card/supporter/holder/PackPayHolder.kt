@@ -280,8 +280,6 @@ class PackPayHolder(
             result.add(ActionRow.of(buttons))
         }
 
-
-
         return result
     }
 }

@@ -31,7 +31,7 @@ import kotlin.math.min
 class CardCostPayHolder(
     author: Message,
     channelID: String,
-    private val message: Message,
+    private var message: Message,
     private val container: CardPayContainer,
     private val containers: Array<CardPayContainer>
 ) : ComponentHolder(author, channelID, message.id) {
@@ -218,20 +218,32 @@ class CardCostPayHolder(
     }
 
     private fun applyResult() {
-        message.editMessage(getContent())
+        message = updateMessageStatus(message)
+
+        var builder = message.editMessage(getContent())
             .setComponents(getComponents())
             .setAllowedMentions(ArrayList())
             .mentionRepliedUser(false)
-            .queue()
+
+        if (message.attachments.isNotEmpty()) {
+            builder = builder.setFiles()
+        }
+
+        builder.queue()
     }
 
     private fun applyResult(event: GenericComponentInteractionCreateEvent) {
-        event.deferEdit()
+        var builder = event.deferEdit()
             .setContent(getContent())
             .setComponents(getComponents())
             .setAllowedMentions(ArrayList())
             .mentionRepliedUser(false)
-            .queue()
+
+        if (event.message.attachments.isNotEmpty()) {
+            builder = builder.setFiles()
+        }
+
+        builder.queue()
     }
 
     private fun filterCards() {

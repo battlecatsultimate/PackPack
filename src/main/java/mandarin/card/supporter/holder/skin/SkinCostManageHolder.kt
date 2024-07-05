@@ -204,7 +204,7 @@ class SkinCostManageHolder(author: Message, channelID: String, private var messa
         result.add(ActionRow.of(
             Button.secondary("cf", "Adjust Cat Food").withEmoji(EmojiStore.ABILITY["CF"]),
             Button.secondary("shard", "Adjust Platinum Shard").withEmoji(EmojiStore.ABILITY["SHARD"]),
-            Button.secondary("add", "Add Card Cost").withEmoji(Emoji.fromUnicode("➕")).withDisabled(skin.cost.cardsCosts.size == StringSelectMenu.OPTIONS_MAX_AMOUNT)
+            Button.secondary("add", "Add Card Cost").withEmoji(Emoji.fromUnicode("➕")).withDisabled(skin.cost.cardsCosts.size == StringSelectMenu.OPTIONS_MAX_AMOUNT && skin.cost.cardsCosts.any { cost -> cost is SpecificCardCost })
         ))
 
         if (skin.cost.cardsCosts.isNotEmpty()) {

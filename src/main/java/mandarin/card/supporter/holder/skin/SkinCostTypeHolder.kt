@@ -60,10 +60,18 @@ class SkinCostTypeHolder(author: Message, channelID: String, private val message
         val options = ArrayList<SelectOption>()
 
         for (type in CardCost.CostType.entries) {
-            when (type) {
-                CardCost.CostType.BANNER -> options.add(SelectOption.of("Banner", type.name))
-                CardCost.CostType.TIER -> options.add(SelectOption.of("Tier", type.name))
-                CardCost.CostType.CARD -> options.add(SelectOption.of("Card", type.name))
+            if (skin.cost.cardsCosts.isEmpty()) {
+                when (type) {
+                    CardCost.CostType.BANNER -> options.add(SelectOption.of("Banner", type.name))
+                    CardCost.CostType.TIER -> options.add(SelectOption.of("Tier", type.name))
+                    CardCost.CostType.CARD -> options.add(SelectOption.of("Card", type.name))
+                }
+            } else {
+                when (type) {
+                    CardCost.CostType.BANNER -> options.add(SelectOption.of("Banner", type.name))
+                    CardCost.CostType.TIER -> options.add(SelectOption.of("Tier", type.name))
+                    CardCost.CostType.CARD -> {}
+                }
             }
         }
 

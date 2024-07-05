@@ -185,46 +185,7 @@ class SkinModifyHolder(
 
     private fun getContents() : String {
         val builder = StringBuilder("## Skin Manager\n")
-            .append("**Targeted Card** : ").append(skin.card.simpleCardInfo()).append("\n\n")
-            .append("**Skin ID** : ").append(skin.skinID).append("\n")
-            .append("**Skin Name** : ").append(skin.name).append("\n")
-            .append("**Creator** : ")
-
-        if (skin.creator == -1L) {
-            builder.append("<@").append(CardData.bankAccount).append("> [Official Skin]\n\n")
-        } else {
-            builder.append("<@").append(skin.creator).append(">\n\n")
-        }
-
-        builder.append("**Is Public?** : ")
-
-        if (skin.public) {
-            builder.append("Yes")
-        } else {
-            builder.append("No")
-        }
-
-        builder.append("\n**Cost** : ")
-
-        if (skin.cost.catFoods <= 0L && skin.cost.platinumShards <= 0L && skin.cost.cardsCosts.isEmpty()) {
-            builder.append("Free")
-        } else {
-            builder.append("\n")
-
-            if (skin.cost.catFoods != 0L) {
-                builder.append("- ").append(EmojiStore.ABILITY["CF"]?.formatted).append(" ").append(skin.cost.catFoods).append("\n")
-            }
-
-            if (skin.cost.platinumShards != 0L) {
-                builder.append("- ").append(EmojiStore.ABILITY["SHARD"]?.formatted).append(" ").append(skin.cost.platinumShards).append("\n")
-            }
-
-            if (skin.cost.cardsCosts.isNotEmpty()) {
-                skin.cost.cardsCosts.forEach { cost ->
-                    builder.append("- ").append(cost.getCostName()).append("\n")
-                }
-            }
-        }
+            .append(skin.displayInfo(true))
 
         return builder.toString()
     }

@@ -43,6 +43,10 @@ class PackCost(
                 }
             }
 
+            if (cost.cardsCosts.any { cost -> cost is SpecificCardCost } && cost.cardsCosts.size != 1) {
+                throw IllegalStateException("E/PackCost::fromJson - There must be only ONE specific card cost!")
+            }
+
             return cost
         }
     }
@@ -54,37 +58,45 @@ class PackCost(
         if (inventory.platinumShard < platinumShards)
             return false
 
-        val bannerCards = HashMap<BannerFilter.Banner, Long>()
-
-        cardsCosts.filterIsInstance<BannerCardCost>().forEach { cost ->
-            val existingCards = inventory.cards.entries.sumOf { (card, amount) -> if (card.unitID in cost.banner.getBannerData()) amount else 0 } - (bannerCards[cost.banner] ?: 0)
-
-            if (existingCards < cost.amount)
-                return false
-
-            bannerCards[cost.banner] = (bannerCards[cost.banner] ?: 0L) + cost.amount
-        }
-
-        cardsCosts.filterIsInstance<TierCardCost>().forEach { cost ->
-            val existingCards = inventory.cards.entries.sumOf { (card, amount) ->
-                val match = when(cost.tier) {
-                    CardPack.CardType.T1 -> card.tier == CardData.Tier.COMMON
-                    CardPack.CardType.T2 -> card.tier == CardData.Tier.UNCOMMON
-                    CardPack.CardType.REGULAR -> card.isRegularUncommon()
-                    CardPack.CardType.SEASONAL -> card.isSeasonalUncommon()
-                    CardPack.CardType.COLLABORATION -> card.isCollaborationUncommon()
-                    CardPack.CardType.T3 -> card.tier == CardData.Tier.ULTRA
-                    CardPack.CardType.T4 -> card.tier == CardData.Tier.LEGEND
-                }
-
-                if (match)
-                    amount
-                else
-                    0
-            } - bannerCards.entries.sumOf { (banner, amount) -> if (banner.getCardType() == cost.tier) amount else 0 }
+        if (cardsCosts.any { cost -> cost is SpecificCardCost }) {
+            val cost = cardsCosts[0] as SpecificCardCost
+            val existingCards = inventory.cards.entries.filter { (card, _) -> card in cost.cards }.sumOf { it.value }
 
             if (existingCards < cost.amount)
                 return false
+        } else {
+            val bannerCards = HashMap<BannerFilter.Banner, Long>()
+
+            cardsCosts.filterIsInstance<BannerCardCost>().forEach { cost ->
+                val existingCards = inventory.cards.entries.sumOf { (card, amount) -> if (card.unitID in cost.banner.getBannerData()) amount else 0 } - (bannerCards[cost.banner] ?: 0)
+
+                if (existingCards < cost.amount)
+                    return false
+
+                bannerCards[cost.banner] = (bannerCards[cost.banner] ?: 0L) + cost.amount
+            }
+
+            cardsCosts.filterIsInstance<TierCardCost>().forEach { cost ->
+                val existingCards = inventory.cards.entries.sumOf { (card, amount) ->
+                    val match = when(cost.tier) {
+                        CardPack.CardType.T1 -> card.tier == CardData.Tier.COMMON
+                        CardPack.CardType.T2 -> card.tier == CardData.Tier.UNCOMMON
+                        CardPack.CardType.REGULAR -> card.isRegularUncommon()
+                        CardPack.CardType.SEASONAL -> card.isSeasonalUncommon()
+                        CardPack.CardType.COLLABORATION -> card.isCollaborationUncommon()
+                        CardPack.CardType.T3 -> card.tier == CardData.Tier.ULTRA
+                        CardPack.CardType.T4 -> card.tier == CardData.Tier.LEGEND
+                    }
+
+                    if (match)
+                        amount
+                    else
+                        0
+                } - bannerCards.entries.sumOf { (banner, amount) -> if (banner.getCardType() == cost.tier) amount else 0 }
+
+                if (existingCards < cost.amount)
+                    return false
+            }
         }
 
         return true
@@ -105,98 +117,106 @@ class PackCost(
             builder.append("- You don't have enough platinum shards. You currently have ${inventory.platinumShard} ${EmojiStore.ABILITY["SHARD"]?.formatted}\n")
         }
 
-        val bannerCards = HashMap<BannerFilter.Banner, Long>()
+        if (cardsCosts.any { cost -> cost is SpecificCardCost }) {
+            val cost = cardsCosts[0] as SpecificCardCost
+            val existingCards = inventory.cards.entries.filter { (card, _) -> card in cost.cards }.sumOf { it.value }
 
-        cardsCosts.filterIsInstance<BannerCardCost>().forEach { cost ->
-            val totalCards = inventory.cards.entries.sumOf { (card, amount) -> if (card.unitID in cost.banner.getBannerData()) amount else 0 }
-            val existingCards = totalCards - (bannerCards[cost.banner] ?: 0)
+            if (existingCards < cost.amount)
+                builder.append("- You don't have enough cards of these groups : ${cost.getCostName()}")
+        } else {
+            val bannerCards = HashMap<BannerFilter.Banner, Long>()
 
-            val bannerName = when(cost.banner) {
-                BannerFilter.Banner.DarkHeroes -> "Dark Heroes"
-                BannerFilter.Banner.DragonEmperors -> "Dragone Emperors"
-                BannerFilter.Banner.Dynamites -> "Dynamites"
-                BannerFilter.Banner.ElementalPixies -> "Elemental Pixies"
-                BannerFilter.Banner.GalaxyGals -> "Galaxy Girls"
-                BannerFilter.Banner.IronLegion -> "Iron Legion"
-                BannerFilter.Banner.SengokuWargods -> "Sengoku Wargods"
-                BannerFilter.Banner.TheNekolugaFamily -> "The Nekoluga Family"
-                BannerFilter.Banner.UltraSouls -> "Ultra Souls"
-                BannerFilter.Banner.GirlsAndMonsters -> "Girls And Monsters"
-                BannerFilter.Banner.TheAlimighties -> "The Almighties"
-                BannerFilter.Banner.EpicfestExclusives -> "Epicfest Exclusives"
-                BannerFilter.Banner.UberfestExclusives -> "Uberfest Exclusives"
-                BannerFilter.Banner.OtherExclusives -> "Other Exclusives"
-                BannerFilter.Banner.BusterExclusives -> "Buster Exclusives"
-                BannerFilter.Banner.Valentine -> "Valentine's Day"
-                BannerFilter.Banner.Whiteday -> "White Day"
-                BannerFilter.Banner.Easter -> "Easter"
-                BannerFilter.Banner.JuneBride -> "June Bride"
-                BannerFilter.Banner.SummerGals -> "Summer Gals"
-                BannerFilter.Banner.Halloweens -> "Halloween"
-                BannerFilter.Banner.XMas -> "X-Max"
-                BannerFilter.Banner.Bikkuriman -> "Bikkuriman"
-                BannerFilter.Banner.CrashFever -> "Crash Fever"
-                BannerFilter.Banner.Fate -> "Fate Stay/Night"
-                BannerFilter.Banner.Miku -> "Hatsune Miku"
-                BannerFilter.Banner.MercStroia -> "Merc Storia"
-                BannerFilter.Banner.Evangelion -> "Evangelion"
-                BannerFilter.Banner.PowerPro -> "Power Pro Baseball"
-                BannerFilter.Banner.Ranma -> "Ranma 1/2"
-                BannerFilter.Banner.RiverCity -> "River City"
-                BannerFilter.Banner.ShoumetsuToshi -> "Annihilated City"
-                BannerFilter.Banner.StreetFighters -> "Street Fighters"
-                BannerFilter.Banner.MolaSurvive -> "Survive! Mola Mola!"
-                BannerFilter.Banner.MetalSlug -> "Metal Slug"
-                BannerFilter.Banner.PrincessPunt -> "Princess Punt"
-                BannerFilter.Banner.Collaboration,
-                BannerFilter.Banner.Seasonal,
-                BannerFilter.Banner.LegendRare ->  throw IllegalStateException("E/BannerCostHolder::getContents - Invalid banner ${cost.banner} found")
+            cardsCosts.filterIsInstance<BannerCardCost>().forEach { cost ->
+                val totalCards = inventory.cards.entries.sumOf { (card, amount) -> if (card.unitID in cost.banner.getBannerData()) amount else 0 }
+                val existingCards = totalCards - (bannerCards[cost.banner] ?: 0)
 
-                BannerFilter.Banner.CheetahT1 -> "Tier 1 [Common]"
-                BannerFilter.Banner.CheetahT2 -> "Tier 2 [Uncommon]"
-                BannerFilter.Banner.CheetahT3 -> "Tier 3 [Ultra Rare (Exclusives)]"
-                BannerFilter.Banner.CheetahT4 -> "Tier 4 [Legend Rare]"
-            }
+                val bannerName = when(cost.banner) {
+                    BannerFilter.Banner.DarkHeroes -> "Dark Heroes"
+                    BannerFilter.Banner.DragonEmperors -> "Dragone Emperors"
+                    BannerFilter.Banner.Dynamites -> "Dynamites"
+                    BannerFilter.Banner.ElementalPixies -> "Elemental Pixies"
+                    BannerFilter.Banner.GalaxyGals -> "Galaxy Girls"
+                    BannerFilter.Banner.IronLegion -> "Iron Legion"
+                    BannerFilter.Banner.SengokuWargods -> "Sengoku Wargods"
+                    BannerFilter.Banner.TheNekolugaFamily -> "The Nekoluga Family"
+                    BannerFilter.Banner.UltraSouls -> "Ultra Souls"
+                    BannerFilter.Banner.GirlsAndMonsters -> "Girls And Monsters"
+                    BannerFilter.Banner.TheAlimighties -> "The Almighties"
+                    BannerFilter.Banner.EpicfestExclusives -> "Epicfest Exclusives"
+                    BannerFilter.Banner.UberfestExclusives -> "Uberfest Exclusives"
+                    BannerFilter.Banner.OtherExclusives -> "Other Exclusives"
+                    BannerFilter.Banner.BusterExclusives -> "Buster Exclusives"
+                    BannerFilter.Banner.Valentine -> "Valentine's Day"
+                    BannerFilter.Banner.Whiteday -> "White Day"
+                    BannerFilter.Banner.Easter -> "Easter"
+                    BannerFilter.Banner.JuneBride -> "June Bride"
+                    BannerFilter.Banner.SummerGals -> "Summer Gals"
+                    BannerFilter.Banner.Halloweens -> "Halloween"
+                    BannerFilter.Banner.XMas -> "X-Max"
+                    BannerFilter.Banner.Bikkuriman -> "Bikkuriman"
+                    BannerFilter.Banner.CrashFever -> "Crash Fever"
+                    BannerFilter.Banner.Fate -> "Fate Stay/Night"
+                    BannerFilter.Banner.Miku -> "Hatsune Miku"
+                    BannerFilter.Banner.MercStroia -> "Merc Storia"
+                    BannerFilter.Banner.Evangelion -> "Evangelion"
+                    BannerFilter.Banner.PowerPro -> "Power Pro Baseball"
+                    BannerFilter.Banner.Ranma -> "Ranma 1/2"
+                    BannerFilter.Banner.RiverCity -> "River City"
+                    BannerFilter.Banner.ShoumetsuToshi -> "Annihilated City"
+                    BannerFilter.Banner.StreetFighters -> "Street Fighters"
+                    BannerFilter.Banner.MolaSurvive -> "Survive! Mola Mola!"
+                    BannerFilter.Banner.MetalSlug -> "Metal Slug"
+                    BannerFilter.Banner.PrincessPunt -> "Princess Punt"
+                    BannerFilter.Banner.Collaboration,
+                    BannerFilter.Banner.Seasonal,
+                    BannerFilter.Banner.LegendRare ->  throw IllegalStateException("E/BannerCostHolder::getContents - Invalid banner ${cost.banner} found")
 
-            if (existingCards < cost.amount) {
-                builder.append("- You don't have enough $bannerName cards. You currently have $totalCards card(s)\n")
-            }
-
-            bannerCards[cost.banner] = (bannerCards[cost.banner] ?: 0L) + cost.amount
-        }
-
-        cardsCosts.filterIsInstance<TierCardCost>().forEach { cost ->
-            val totalCards = inventory.cards.entries.sumOf { (card, amount) ->
-                val match = when(cost.tier) {
-                    CardPack.CardType.T1 -> card.tier == CardData.Tier.COMMON
-                    CardPack.CardType.T2 -> card.tier == CardData.Tier.UNCOMMON
-                    CardPack.CardType.REGULAR -> card.isRegularUncommon()
-                    CardPack.CardType.SEASONAL -> card.isSeasonalUncommon()
-                    CardPack.CardType.COLLABORATION -> card.isCollaborationUncommon()
-                    CardPack.CardType.T3 -> card.tier == CardData.Tier.ULTRA
-                    CardPack.CardType.T4 -> card.tier == CardData.Tier.LEGEND
+                    BannerFilter.Banner.CheetahT1 -> "Tier 1 [Common]"
+                    BannerFilter.Banner.CheetahT2 -> "Tier 2 [Uncommon]"
+                    BannerFilter.Banner.CheetahT3 -> "Tier 3 [Ultra Rare (Exclusives)]"
+                    BannerFilter.Banner.CheetahT4 -> "Tier 4 [Legend Rare]"
                 }
 
-                if (match)
-                    amount
-                else
-                    0
+                if (existingCards < cost.amount) {
+                    builder.append("- You don't have enough $bannerName cards. You currently have $totalCards card(s)\n")
+                }
+
+                bannerCards[cost.banner] = (bannerCards[cost.banner] ?: 0L) + cost.amount
             }
 
-            val existingCards = totalCards - bannerCards.entries.sumOf { (banner, amount) -> if (banner.getCardType() == cost.tier) amount else 0 }
+            cardsCosts.filterIsInstance<TierCardCost>().forEach { cost ->
+                val totalCards = inventory.cards.entries.sumOf { (card, amount) ->
+                    val match = when(cost.tier) {
+                        CardPack.CardType.T1 -> card.tier == CardData.Tier.COMMON
+                        CardPack.CardType.T2 -> card.tier == CardData.Tier.UNCOMMON
+                        CardPack.CardType.REGULAR -> card.isRegularUncommon()
+                        CardPack.CardType.SEASONAL -> card.isSeasonalUncommon()
+                        CardPack.CardType.COLLABORATION -> card.isCollaborationUncommon()
+                        CardPack.CardType.T3 -> card.tier == CardData.Tier.ULTRA
+                        CardPack.CardType.T4 -> card.tier == CardData.Tier.LEGEND
+                    }
 
-            val tierName = when(cost.tier) {
-                CardPack.CardType.T1 -> "Tier 1 [Common]"
-                CardPack.CardType.T2 -> "Tier 2 [Uncommon]"
-                CardPack.CardType.REGULAR -> "Regular Tier 2 [Uncommon]"
-                CardPack.CardType.SEASONAL -> "Seasonal Tier 2 [Uncommon]"
-                CardPack.CardType.COLLABORATION -> "Collaboration Tier 2 [Uncommon]"
-                CardPack.CardType.T3 -> "Tier 3 [Ultra Rare (Exclusives)]"
-                CardPack.CardType.T4 -> "Tier 4 [Legend Rare]"
-            }
+                    if (match)
+                        amount
+                    else
+                        0
+                }
 
-            if (existingCards < cost.amount) {
-                builder.append("- You don't have enough $tierName cards if you pay other costs. You currently have $totalCards card(s)\n")
+                val existingCards = totalCards - bannerCards.entries.sumOf { (banner, amount) -> if (banner.getCardType() == cost.tier) amount else 0 }
+
+                val tierName = when(cost.tier) {
+                    CardPack.CardType.T1 -> "Tier 1 [Common]"
+                    CardPack.CardType.T2 -> "Tier 2 [Uncommon]"
+                    CardPack.CardType.REGULAR -> "Regular Tier 2 [Uncommon]"
+                    CardPack.CardType.SEASONAL -> "Seasonal Tier 2 [Uncommon]"
+                    CardPack.CardType.COLLABORATION -> "Collaboration Tier 2 [Uncommon]"
+                    CardPack.CardType.T3 -> "Tier 3 [Ultra Rare (Exclusives)]"
+                    CardPack.CardType.T4 -> "Tier 4 [Legend Rare]"
+                }
+
+                if (existingCards < cost.amount) {
+                    builder.append("- You don't have enough $tierName cards if you pay other costs. You currently have $totalCards card(s)\n")
+                }
             }
         }
 

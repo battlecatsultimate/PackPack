@@ -192,7 +192,7 @@ class CardPackCostHolder(author: Message, channelID: String, private val message
         result.add(ActionRow.of(
             Button.secondary("cf", "Adjust Cat Food").withEmoji(EmojiStore.ABILITY["CF"]),
             Button.secondary("shard", "Adjust Platinum Shard").withEmoji(EmojiStore.ABILITY["SHARD"]),
-            Button.secondary("add", "Add Card Cost").withEmoji(Emoji.fromUnicode("➕")).withDisabled(pack.cost.cardsCosts.size == StringSelectMenu.OPTIONS_MAX_AMOUNT)
+            Button.secondary("add", "Add Card Cost").withEmoji(Emoji.fromUnicode("➕")).withDisabled(pack.cost.cardsCosts.size == StringSelectMenu.OPTIONS_MAX_AMOUNT && pack.cost.cardsCosts.any { cost -> cost is SpecificCardCost })
         ))
 
         if (pack.cost.cardsCosts.isNotEmpty()) {

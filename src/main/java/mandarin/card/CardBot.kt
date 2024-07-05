@@ -536,6 +536,9 @@ object CardBot : ListenerAdapter() {
             "${globalPrefix}bu" -> BanUser().execute(event)
             "${globalPrefix}managecardskin",
             "${globalPrefix}mc" -> ManageCardSkin().execute(event)
+            "${globalPrefix}buyskin",
+            "${globalPrefix}bs" -> BuySkin().execute(event)
+
         }
 
         val session = CardData.sessions.find { s -> s.postID == event.channel.idLong }
