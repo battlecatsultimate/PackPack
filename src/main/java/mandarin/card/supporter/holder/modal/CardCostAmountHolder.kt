@@ -1,9 +1,6 @@
 package mandarin.card.supporter.holder.modal
 
-import mandarin.card.CardBot
-import mandarin.card.supporter.CardData
 import mandarin.card.supporter.pack.CardCost
-import mandarin.card.supporter.pack.CardPack
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.modal.ModalHolder
 import net.dv8tion.jda.api.entities.Message

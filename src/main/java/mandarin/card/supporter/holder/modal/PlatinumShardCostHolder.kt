@@ -1,8 +1,5 @@
 package mandarin.card.supporter.holder.modal
 
-import mandarin.card.CardBot
-import mandarin.card.supporter.CardData
-import mandarin.card.supporter.pack.CardPack
 import mandarin.card.supporter.pack.PackCost
 import mandarin.packpack.supporter.StaticStore
 import mandarin.packpack.supporter.server.holder.modal.ModalHolder

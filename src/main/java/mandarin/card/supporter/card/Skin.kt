@@ -4,9 +4,8 @@ import com.google.gson.JsonObject
 import mandarin.card.supporter.CardData
 import mandarin.card.supporter.pack.PackCost
 import mandarin.packpack.supporter.StaticStore
-import net.dv8tion.jda.api.entities.User
-import okio.IOException
 import java.io.File
+import java.io.IOException
 import java.nio.file.Files
 
 class Skin {
