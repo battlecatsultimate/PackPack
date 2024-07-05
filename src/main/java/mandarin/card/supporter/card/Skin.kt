@@ -1,7 +1,10 @@
 package mandarin.card.supporter.card
 
 import com.google.gson.JsonObject
+import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
+import mandarin.card.supporter.Inventory
+import mandarin.card.supporter.pack.CardPayContainer
 import mandarin.card.supporter.pack.PackCost
 import mandarin.packpack.supporter.EmojiStore
 import mandarin.packpack.supporter.StaticStore
@@ -147,6 +150,26 @@ class Skin {
         }
 
         return builder.toString().trim()
+    }
+
+    fun purchase(inventory: Inventory, containers: Array<CardPayContainer>) {
+        inventory.catFoods -= cost.catFoods
+        inventory.platinumShard -= cost.platinumShards
+
+        containers.forEach { container -> inventory.removeCards(container.pickedCards) }
+
+        inventory.skins.add(this)
+
+        if (creator != -1L) {
+            val creatorInventory = Inventory.getInventory(creator)
+
+            creatorInventory.catFoods += cost.catFoods
+            creatorInventory.platinumShard += cost.platinumShards
+
+            containers.forEach { container -> creatorInventory.addCards(container.pickedCards) }
+        }
+
+        CardBot.saveCardData()
     }
 
     fun asJson() : JsonObject {

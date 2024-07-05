@@ -1,6 +1,5 @@
 package mandarin.card.supporter.holder.skin
 
-import mandarin.card.CardBot
 import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.card.Skin
 import mandarin.card.supporter.holder.CardCostPayHolder
@@ -32,30 +31,46 @@ class SkinPurchasePayHolder(author: Message, channelID: String, private var mess
     override fun onEvent(event: GenericComponentInteractionCreateEvent) {
         when(event.componentId) {
             "purchase" -> {
-                inventory.catFoods -= skin.cost.catFoods
-                inventory.platinumShard -= skin.cost.platinumShards
+                var futureWarn = false
+                val warn = if (!inventory.cards.containsKey(skin.card)) {
+                    true
+                } else {
+                    val currentCards = inventory.cards[skin.card] ?: 0
+                    val paidCards = containers.sumOf { container -> container.pickedCards.count { c -> c == skin.card } }
 
-                containers.forEach { container -> inventory.removeCards(container.pickedCards) }
-
-                inventory.skins.add(skin)
-
-                if (skin.creator != -1L) {
-                    val creatorInventory = Inventory.getInventory(skin.creator)
-
-                    creatorInventory.catFoods += skin.cost.catFoods
-                    creatorInventory.platinumShard += skin.cost.platinumShards
-
-                    containers.forEach { container -> creatorInventory.addCards(container.pickedCards) }
+                    futureWarn = true
+                    currentCards - paidCards <= 0
                 }
 
-                CardBot.saveCardData()
+                if (warn) {
+                    val content = if (futureWarn) {
+                        "After payment, you won't own any of this card. Are you sure you want to purchase this skin? This cannot be undone"
+                    } else {
+                        "You don't own this card currently. Are you sure you want to purchase this skin? This cannot be undone"
+                    }
 
-                event.deferReply()
-                    .setContent("Successfully purchased skin : ${skin.name}! You can equip skin in `cd.cards` command!")
-                    .setEphemeral(true)
-                    .queue()
+                    registerPopUp(event, content, LangID.EN)
 
-                goBack()
+                    connectTo(ConfirmPopUpHolder(authorMessage, channelID, message, { e ->
+                        skin.purchase(inventory, containers)
+
+                        e.deferReply()
+                            .setContent("Successfully purchased skin : ${skin.name}! You can equip skin in `cd.cards` command!")
+                            .setEphemeral(true)
+                            .queue()
+
+                        goBack()
+                    }, LangID.EN))
+                } else {
+                    skin.purchase(inventory, containers)
+
+                    event.deferReply()
+                        .setContent("Successfully purchased skin : ${skin.name}! You can equip skin in `cd.cards` command!")
+                        .setEphemeral(true)
+                        .queue()
+
+                    goBack()
+                }
             }
             "cost" -> {
                 if (event !is StringSelectInteractionEvent)
@@ -92,6 +107,10 @@ class SkinPurchasePayHolder(author: Message, channelID: String, private var mess
 
     override fun onExpire(id: String?) {
 
+    }
+
+    override fun onBack(event: GenericComponentInteractionCreateEvent, child: Holder?) {
+        applyResult(event)
     }
 
     override fun onBack(child: Holder) {
