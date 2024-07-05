@@ -6,6 +6,7 @@ import mandarin.card.CardBot
 import mandarin.card.supporter.card.Card
 import mandarin.card.supporter.card.Skin
 import mandarin.packpack.supporter.StaticStore
+import java.util.HashMap
 import kotlin.math.min
 
 class Inventory(private val id: Long) {
@@ -16,6 +17,7 @@ class Inventory(private val id: Long) {
     var vanityRoles = ArrayList<CardData.Role>()
 
     var skins = ArrayList<Skin>()
+    var equippedSkins = HashMap<Card, Skin>()
 
     var catFoods = 0L
     var platinumShard = 0L
@@ -211,6 +213,19 @@ class Inventory(private val id: Long) {
 
         obj.add("skins", s)
 
+        val e = JsonArray()
+
+        equippedSkins.entries.forEach { (card, skin) ->
+            val o = JsonObject()
+
+            o.addProperty("key", card.unitID)
+            o.addProperty("val", skin.skinID)
+
+            e.add(o)
+        }
+
+        obj.add("equippedSkins", e)
+
         val a = JsonObject()
 
         for (card in auctionQueued.keys) {
@@ -348,6 +363,26 @@ class Inventory(private val id: Long) {
                     val foundSkin = CardData.skins.find { s -> s.skinID == skinID } ?: return@forEach
 
                     inventory.skins.add(foundSkin)
+                }
+            }
+
+            if (obj.has("equippedSkins")) {
+                val equippedSkins = obj.getAsJsonArray("equippedSkins")
+
+                equippedSkins.forEach { e ->
+                    val o = e.asJsonObject
+
+                    if (o.has("key") && o.has("val")) {
+                        val cardID = o.get("key").asInt
+
+                        val foundCard = CardData.cards.find { c -> c.unitID == cardID } ?: return@forEach
+
+                        val skinID = o.get("key").asInt
+
+                        val foundSkin = CardData.skins.find { s -> s.skinID == skinID } ?: return@forEach
+
+                        inventory.equippedSkins[foundCard] = foundSkin
+                    }
                 }
             }
 

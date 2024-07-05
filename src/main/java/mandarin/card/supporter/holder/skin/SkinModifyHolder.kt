@@ -2,6 +2,7 @@ package mandarin.card.supporter.holder.skin
 
 import mandarin.card.CardBot
 import mandarin.card.supporter.CardData
+import mandarin.card.supporter.Inventory
 import mandarin.card.supporter.card.Skin
 import mandarin.card.supporter.holder.modal.SkinNameHolder
 import mandarin.packpack.supporter.EmojiStore
@@ -75,10 +76,21 @@ class SkinModifyHolder(
 
                 CardBot.saveCardData()
 
-                event.deferReply()
-                    .setContent("Successfully added skin!")
-                    .setEphemeral(true)
-                    .queue()
+                if (skin.creator != -1L) {
+                    val inventory = Inventory.getInventory(skin.creator)
+
+                    inventory.skins.add(skin)
+
+                    event.deferReply()
+                        .setContent("Successfully added skin! Also skin is given to creator <@${skin.creator}>!")
+                        .setEphemeral(true)
+                        .queue()
+                } else {
+                    event.deferReply()
+                        .setContent("Successfully added skin!")
+                        .setEphemeral(true)
+                        .queue()
+                }
 
                 goBackTo(SkinSelectHolder::class.java)
             }

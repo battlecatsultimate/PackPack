@@ -266,21 +266,20 @@ class SkinCardSelectHolder(author: Message, channelID: String, private val messa
 
         result.add(ActionRow.of(cardCategory))
 
-        var totPage = getTotalPage(dataSize)
-
         if (dataSize > SearchHolder.PAGE_CHUNK) {
+            var totalPage = getTotalPage(dataSize)
             val buttons = ArrayList<Button>()
 
-            if (totPage > 10) {
+            if (totalPage > 10) {
                 buttons.add(Button.secondary("prev10", "Previous 10 Pages").withEmoji(EmojiStore.TWO_PREVIOUS).withDisabled(page - 10 < 0))
             }
 
             buttons.add(Button.secondary("prev", "Previous Pages").withEmoji(EmojiStore.PREVIOUS).withDisabled(page - 1 < 0))
 
-            buttons.add(Button.secondary("next", "Next Page").withEmoji(EmojiStore.NEXT).withDisabled(page + 1 >= totPage))
+            buttons.add(Button.secondary("next", "Next Page").withEmoji(EmojiStore.NEXT).withDisabled(page + 1 >= totalPage))
 
-            if (totPage > 10) {
-                buttons.add(Button.secondary("next10", "Next 10 Pages").withEmoji(EmojiStore.TWO_NEXT).withDisabled(page + 10 >= totPage))
+            if (totalPage > 10) {
+                buttons.add(Button.secondary("next10", "Next 10 Pages").withEmoji(EmojiStore.TWO_NEXT).withDisabled(page + 10 >= totalPage))
             }
 
             result.add(ActionRow.of(buttons))
